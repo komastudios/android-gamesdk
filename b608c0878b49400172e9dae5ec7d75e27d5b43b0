@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da25d9fc_fdc2e9aa",
+        "filename": "bouncyball/app/src/main/cpp/Renderer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-05T15:32:02Z",
+      "side": 1,
+      "message": "Is this not better handled by an asm(\"\") block? Disclaimer I have never done this with clang so I may be totally leading you up the wrong path here but I\u0027m thinking something like this:\n\nhttps://stackoverflow.com/questions/7083482/how-to-prevent-gcc-from-optimizing-out-a-busy-wait-loop",
+      "revId": "b608c0878b49400172e9dae5ec7d75e27d5b43b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a9a423b7_c46be28c",
+        "filename": "swappy/ChoreographerFilter.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-05T15:32:02Z",
+      "side": 1,
+      "message": "Suggest we make this configurable from the game side.",
+      "revId": "b608c0878b49400172e9dae5ec7d75e27d5b43b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
