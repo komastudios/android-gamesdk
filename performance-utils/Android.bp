@@ -1,0 +1,25 @@
+cc_binary{
+  name: "device_info",
+
+  srcs: [
+    "device_info.cc",
+    "device_info.proto",
+  ],
+
+  proto: {
+    //static: true,
+    type: "full",
+  },
+
+  shared_libs: [
+    "libEGL",
+    "libGLESv2",
+    //"libprotobuf-cpp-lite",
+  ],
+
+  include_dirs: [
+    "frameworks/opt/gamesdk/performance-utils",
+  ],
+
+  //cpp_std: "c++17",
+}
