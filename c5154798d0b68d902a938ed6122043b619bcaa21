@@ -1,0 +1,174 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fe445f44_8151fde8",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-08T16:24:24Z",
+      "side": 1,
+      "message": "Can you expand this slightly? The intention is that a person unfamiliar with the change could cp it to their local machine and duplicate your testing procedure.",
+      "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9dc8d8b6_01fb797d",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-08T16:24:24Z",
+      "side": 1,
+      "message": "Typically we don\u0027t allow using in this context, see: \nhttps://google.github.io/styleguide/cppguide.html#Namespaces",
+      "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "beafc5ef_8fe814ec",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-08T16:24:24Z",
+      "side": 1,
+      "message": "C header files should be included before C++ header files: https://google.github.io/styleguide/cppguide.html#Names_and_Order_of_Includes",
+      "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8529331b_fd6f31d3",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-08T16:24:24Z",
+      "side": 1,
+      "message": "Spaces not Tabs: https://google.github.io/styleguide/cppguide.html#Spaces_vs._Tabs\n\nI could have sworn there was something to do this automatically during the upload...",
+      "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5703274f_410cb877",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-08T16:24:24Z",
+      "side": 1,
+      "message": "No trailing whitespace: https://google.github.io/styleguide/cppguide.html#Horizontal_Whitespace",
+      "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "22406c8e_97dab3dc",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-08T16:24:24Z",
+      "side": 1,
+      "message": "constexpr\nAlso - I think these should have more descriptive names and be nearer the top of the file (before the code but after the #includes)",
+      "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "366f7e0c_6079273e",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-08T16:24:24Z",
+      "side": 1,
+      "message": "This is something of a generic namespace name. Maybe something like device_info_glutil?",
+      "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2269a8a0_b968fee3",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-08T16:24:24Z",
+      "side": 1,
+      "message": "This function is huge - can we break it up into some more logical pieces (i.e. gl2 and gl3 pieces could be their own functions)?",
+      "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d1a0f9e9_7ae785e1",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 346,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-08T16:24:24Z",
+      "side": 1,
+      "message": "Is there no way to #include these from somewhere?",
+      "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "886346b9_b9c17f22",
+        "filename": "performance-utils/device_info.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-08T16:24:24Z",
+      "side": 1,
+      "message": "Not sure that these ones should be \u0027required\u0027 either. I can imagine cases where we would get no data for these parameters but still want to create the proto (i.e. totally broken driver).\n\nIn general it is better to err on the side of optional unless the proto doesn\u0027t actually make sense to create without a field (in which case required) is more appropriate. \n\nIt\u0027s a nuanced topic though. See go/required-considered-harmful and go/required-fields-helpful :)",
+      "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
