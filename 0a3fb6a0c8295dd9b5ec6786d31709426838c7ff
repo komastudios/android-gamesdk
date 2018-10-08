@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cbfd2ce5_fcffb44d",
+        "filename": "swappy/Swappy.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-10-08T21:26:46Z",
+      "side": 1,
+      "message": "Nit: this project puts the * on the variable not the type (because those are the default Android Studio settings, not for any *good* reason)",
+      "range": {
+        "startLine": 47,
+        "startChar": 27,
+        "endLine": 47,
+        "endChar": 29
+      },
+      "revId": "0a3fb6a0c8295dd9b5ec6786d31709426838c7ff",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
