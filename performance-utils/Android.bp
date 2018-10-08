@@ -1,0 +1,17 @@
+cc_binary{
+	name: "device_info",
+
+	srcs: [
+		"device_info.cc",
+		"device_info.proto",
+	],
+
+	proto: { 
+		type: "full",
+	},
+
+	shared_libs: [
+		"libEGL",
+		"libGLESv2",
+	],
+}
