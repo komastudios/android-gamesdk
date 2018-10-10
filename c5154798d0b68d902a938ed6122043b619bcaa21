@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "944b5bc6_ee9c4284",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-10T17:20:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fe445f44_8151fde8",
+      "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9dc8d8b6_01fb797d",
         "filename": "performance-utils/device_info.cc",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "390e9590_57f7a31d",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-10T17:20:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9dc8d8b6_01fb797d",
+      "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "688c1691_92e325b6",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-10T17:20:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "beafc5ef_8fe814ec",
+      "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8529331b_fd6f31d3",
         "filename": "performance-utils/device_info.cc",
         "patchSetId": 2
@@ -67,6 +121,24 @@
       "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "313c4300_bd6b6fe0",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-10T17:20:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8529331b_fd6f31d3",
+      "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "414457e3_c6033822",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-10T17:20:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5703274f_410cb877",
+      "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "22406c8e_97dab3dc",
         "filename": "performance-utils/device_info.cc",
         "patchSetId": 2
@@ -104,6 +194,24 @@
     },
     {
       "key": {
+        "uuid": "b891cc79_e5f45ee3",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-10T17:20:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "22406c8e_97dab3dc",
+      "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "366f7e0c_6079273e",
         "filename": "performance-utils/device_info.cc",
         "patchSetId": 2
@@ -115,6 +223,24 @@
       "writtenOn": "2018-10-08T16:24:24Z",
       "side": 1,
       "message": "This is something of a generic namespace name. Maybe something like device_info_glutil?",
+      "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c9f2c750_a380bdad",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-10T17:20:11Z",
+      "side": 1,
+      "message": "It is already inside an unnamed namespace. \n\nMaybe I should rename it to gl_util and refer to it by:\n::gl_util::foo ?",
+      "parentUuid": "366f7e0c_6079273e",
       "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -138,6 +264,24 @@
     },
     {
       "key": {
+        "uuid": "1c488464_1d34121c",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-10T17:20:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2269a8a0_b968fee3",
+      "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d1a0f9e9_7ae785e1",
         "filename": "performance-utils/device_info.cc",
         "patchSetId": 2
@@ -149,6 +293,24 @@
       "writtenOn": "2018-10-08T16:24:24Z",
       "side": 1,
       "message": "Is there no way to #include these from somewhere?",
+      "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9f037d37_09231851",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 346,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-10T17:20:11Z",
+      "side": 1,
+      "message": "These constants live in gl3.h, which I should not include. I will investigate other ways.",
+      "parentUuid": "d1a0f9e9_7ae785e1",
       "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -169,6 +331,24 @@
       "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aa8e7ccc_03689bb8",
+        "filename": "performance-utils/device_info.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-10T17:20:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "886346b9_b9c17f22",
+      "revId": "c5154798d0b68d902a938ed6122043b619bcaa21",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
