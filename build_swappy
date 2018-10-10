@@ -1,0 +1,7 @@
+#!/bin/sh
+rm -rf cmake_armv7
+mkdir cmake_armv7
+cd cmake_armv7
+cmake -DCMAKE_BUILD_TYPE=Release -DANDROID_NDK=$ANDROID_NDK -DCMAKE_CXX_FLAGS= -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK/build/cmake/android.toolchain.cmake -DANDROID_ABI=armeabi-v7a -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=./build -B./cmake -H./ ..
+make
+cd ..
