@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2246b420_ed0a6411",
+        "filename": "CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-11T06:55:31Z",
+      "side": 1,
+      "message": "I know very little about the details of cmake, but surely this can be replaced with a swappy/*.cpp type of specification?",
+      "revId": "6b209129134009c682ede8585142e3d6ac0a31fe",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
