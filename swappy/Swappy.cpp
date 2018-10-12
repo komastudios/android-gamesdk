@@ -34,6 +34,25 @@ using namespace std::chrono_literals;
 std::mutex Swappy::sInstanceMutex;
 std::unique_ptr<Swappy> Swappy::sInstance;
 
+extern "C" {
+    void swappy_init(JNIEnv *env, jobject jactivity) {
+        Swappy::init(env, jactivity);
+    }
+
+    bool swappy_swap(EGLDisplay display, EGLSurface surface, int swapInterval) {
+        Settings::getInstance()->setSwapInterval(swapInterval);
+        return Swappy::swap(display, surface);
+    }
+
+    void swappy_set_preference(const char* key, const char* value) {
+        Settings::getInstance()->setPreference(key, value);
+    }
+
+    void swappy_destroy() {
+        Swappy::destroyInstance();
+    }
+}
+
 void Swappy::init(JNIEnv *env, jobject jactivity) {
     jclass activityClass = env->FindClass("android/app/NativeActivity");
     jclass windowManagerClass = env->FindClass("android/view/WindowManager");
@@ -139,6 +158,11 @@ bool Swappy::swap(EGLDisplay display, EGLSurface surface) {
 Swappy *Swappy::getInstance() {
     std::lock_guard<std::mutex> lock(sInstanceMutex);
     return sInstance.get();
+}
+
+void Swappy::destroyInstance() {
+    std::lock_guard<std::mutex> lock(sInstanceMutex);
+    sInstance.reset();
 }
 
 EGL *Swappy::getEgl() {

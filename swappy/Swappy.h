@@ -32,6 +32,14 @@ class EGL;
 using EGLDisplay = void *;
 using EGLSurface = void *;
 
+// Swappy public library interface
+extern "C" {
+    void swappy_init(JNIEnv *env, jobject jactivity);
+    bool swappy_swap(EGLDisplay display, EGLSurface surface, int swapInterval);
+    void swappy_set_preference(const char* key, const char* value);
+    void swappy_destroy();
+}
+
 class Swappy {
   private:
     // Allows construction with std::unique_ptr from a static method, but disallows construction
@@ -45,6 +53,7 @@ class Swappy {
            ConstructorTag tag);
 
     static void init(JNIEnv *env, jobject jactivity);
+    static void destroyInstance();
 
     static void onChoreographer(int64_t frameTimeNanos);
 
@@ -54,6 +63,7 @@ class Swappy {
     static void init(std::chrono::nanoseconds refreshPeriod,
                      std::chrono::nanoseconds appOffset,
                      std::chrono::nanoseconds sfOffset);
+
 
     static Swappy *getInstance();
 

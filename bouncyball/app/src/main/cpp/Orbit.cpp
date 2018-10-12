@@ -46,8 +46,6 @@ JNIEXPORT void JNICALL
 Java_com_prefabulated_bouncyball_OrbitActivity_nInit(JNIEnv *env, jobject activity) {
     // Get the Renderer instance to create it
     Renderer::getInstance();
-
-    Swappy::init(env, activity);
 }
 
 JNIEXPORT void JNICALL
@@ -65,8 +63,9 @@ Java_com_prefabulated_bouncyball_OrbitActivity_nClearSurface(JNIEnv * /* env */,
 }
 
 JNIEXPORT void JNICALL
-Java_com_prefabulated_bouncyball_OrbitActivity_nStart(JNIEnv * /* env */, jobject /* this */) {
+Java_com_prefabulated_bouncyball_OrbitActivity_nStart(JNIEnv * env, jobject jactivity) {
     ALOGI("start");
+    swappy_init(env, jactivity);
     Renderer::getInstance()->start();
 }
 
@@ -74,6 +73,7 @@ JNIEXPORT void JNICALL
 Java_com_prefabulated_bouncyball_OrbitActivity_nStop(JNIEnv * /* env */, jobject /* this */) {
     ALOGI("stop");
     Renderer::getInstance()->stop();
+    swappy_destroy();
 }
 
 JNIEXPORT void JNICALL
@@ -85,7 +85,7 @@ Java_com_prefabulated_bouncyball_OrbitActivity_nOnChoreographer(JNIEnv * /* env 
 JNIEXPORT void JNICALL
 Java_com_prefabulated_bouncyball_OrbitActivity_nSetPreference(JNIEnv *env, jobject /* this */,
                                                          jstring key, jstring value) {
-    Settings::getInstance()->setPreference(to_string(key, env), to_string(value, env));
+    swappy_set_preference(to_string(key, env).c_str(), to_string(value, env).c_str());
 }
 
 } // extern "C"

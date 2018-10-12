@@ -53,6 +53,19 @@ void Settings::setPreference(std::string key, std::string value) {
     notifyListeners();
 }
 
+void Settings::setSwapInterval(int swapInterval) {
+    {
+        std::lock_guard lock(mMutex);
+        if (mSwapInterval == swapInterval) {
+            return;
+        }
+        mSwapInterval = swapInterval;
+    }
+
+    // Notify the listeners without the lock held
+    notifyListeners();
+}
+
 std::chrono::nanoseconds Settings::getRefreshPeriod() const {
     std::lock_guard lock(mMutex);
     return mRefreshPeriod;

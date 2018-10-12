@@ -207,7 +207,9 @@ void Renderer::draw(ThreadState *threadState) {
 
     Circle::draw(aspectRatio, circles);
 
-    Swappy::swap(threadState->display, threadState->surface);
+    if (!swappy_swap(threadState->display, threadState->surface, threadState->swapInterval)) {
+        return;
+    }
 
     // If we're still started, request another frame
     requestDraw();

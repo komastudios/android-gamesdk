@@ -38,6 +38,7 @@ class Settings {
     void addListener(Listener listener);
 
     void setPreference(std::string key, std::string value);
+    void setSwapInterval(int swapInterval);
 
     std::chrono::nanoseconds getRefreshPeriod() const;
     int32_t getSwapInterval() const;
