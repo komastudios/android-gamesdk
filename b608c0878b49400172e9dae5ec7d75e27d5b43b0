@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "22f4ed6d_26f66f21",
+        "filename": "bouncyball/app/src/main/cpp/Renderer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-10-12T22:26:27Z",
+      "side": 1,
+      "message": "You may be right, but this seems to fool clang well enough for now, and ideally we wouldn\u0027t even need this code (and won\u0027t once we have a heavier-weight test app)",
+      "parentUuid": "da25d9fc_fdc2e9aa",
+      "revId": "b608c0878b49400172e9dae5ec7d75e27d5b43b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a9a423b7_c46be28c",
         "filename": "swappy/ChoreographerFilter.cpp",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2018-10-05T15:32:02Z",
       "side": 1,
       "message": "Suggest we make this configurable from the game side.",
+      "revId": "b608c0878b49400172e9dae5ec7d75e27d5b43b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1cb193c4_70570191",
+        "filename": "swappy/ChoreographerFilter.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-10-12T22:26:27Z",
+      "side": 1,
+      "message": "The hardcoded constant is probably bad, so I put it in terms of the refresh period, but it\u0027s not clear that we need to make this an app-side tunable. We can always revisit that later.",
+      "parentUuid": "a9a423b7_c46be28c",
       "revId": "b608c0878b49400172e9dae5ec7d75e27d5b43b0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true

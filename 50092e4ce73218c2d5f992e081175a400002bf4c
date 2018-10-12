@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "03add564_b3339293",
+        "filename": "swappy/Swappy.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-10-12T22:26:27Z",
+      "side": 1,
+      "message": "Note: I added this locally to avoid some startup stutter on some devices",
+      "revId": "50092e4ce73218c2d5f992e081175a400002bf4c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
