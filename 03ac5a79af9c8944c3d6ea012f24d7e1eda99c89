@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6d0ddc16_90de12b2",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-15T14:42:45Z",
+      "side": 1,
+      "message": "s/WIDTH/DEVICE_INFO_VIEW_WIDTH/",
+      "revId": "03ac5a79af9c8944c3d6ea012f24d7e1eda99c89",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9e1788f4_7c657a56",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-15T14:42:45Z",
+      "side": 1,
+      "message": "Suggest you make this global and give it a name more like READ_ERROR?",
+      "revId": "03ac5a79af9c8944c3d6ea012f24d7e1eda99c89",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
