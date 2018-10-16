@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "5b08081d_2f89fadd",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-16T11:36:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6d0ddc16_90de12b2",
+      "revId": "03ac5a79af9c8944c3d6ea012f24d7e1eda99c89",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9e1788f4_7c657a56",
         "filename": "performance-utils/device_info.cc",
         "patchSetId": 6
@@ -30,6 +48,24 @@
       "writtenOn": "2018-10-15T14:42:45Z",
       "side": 1,
       "message": "Suggest you make this global and give it a name more like READ_ERROR?",
+      "revId": "03ac5a79af9c8944c3d6ea012f24d7e1eda99c89",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "57dd8518_9f2adb61",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-16T11:36:12Z",
+      "side": 1,
+      "message": "I am having a difficult time on deciding on the error handling mechanism. I started to implement one approach and then cancelled it:\nI had an enum called \"Status\" with success and all the error cases like:\n- failed to read kernelMax\n- failed to read cpuInfo\n\nI had a repeated error field: an array of all errors encountered. Then I realized they were not very useful as they are already implicit in result, such as:\n- If I fail to get max cpu index, the cpu_cores array is empty.\n- If I fail to read cpuInfo, hardware and cpu_extensions are empty.\n\nIn the end, I postponed the error handling, as right now it is not in a bad state. But I think we should talk about it in detail.",
+      "parentUuid": "9e1788f4_7c657a56",
       "revId": "03ac5a79af9c8944c3d6ea012f24d7e1eda99c89",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true

@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "33108590_9fabf81f",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-16T11:36:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "806eddc6_1de431fb",
+      "revId": "07683a8f990f84da54ed1e2569f34e63190a9c63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "109de21b_f340fde2",
         "filename": "performance-utils/device_info.cc",
         "patchSetId": 4
@@ -33,6 +51,24 @@
       "revId": "07683a8f990f84da54ed1e2569f34e63190a9c63",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5a34a64b_3845a842",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-16T11:36:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "109de21b_f340fde2",
+      "revId": "07683a8f990f84da54ed1e2569f34e63190a9c63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "780724f6_1a5e0475",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-16T11:36:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c8b4341c_01953d4d",
+      "revId": "07683a8f990f84da54ed1e2569f34e63190a9c63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cceed7ef_57cf7889",
         "filename": "performance-utils/device_info.cc",
         "patchSetId": 4
@@ -67,6 +121,24 @@
       "revId": "07683a8f990f84da54ed1e2569f34e63190a9c63",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "87d3134f_a9ea9cd3",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-16T11:36:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cceed7ef_57cf7889",
+      "revId": "07683a8f990f84da54ed1e2569f34e63190a9c63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "73b8735a_759ce39e",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-16T11:36:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "90321771_f38bed48",
+      "revId": "07683a8f990f84da54ed1e2569f34e63190a9c63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6ba8de20_6fe37782",
         "filename": "performance-utils/device_info.cc",
         "patchSetId": 4
@@ -98,6 +188,24 @@
       "writtenOn": "2018-10-15T13:55:54Z",
       "side": 1,
       "message": "Set these function pointers to 0 and then initialize all of them in one go at startup, rather than haphazardly, below.",
+      "revId": "07683a8f990f84da54ed1e2569f34e63190a9c63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c88161b9_84ada0b7",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-16T11:36:12Z",
+      "side": 1,
+      "message": "The reason that they are not initialized together at startup is that we can not be sure that they are available. This code needs to run on any device that supports OpengGL-ES 2.0 or higher, which is practically all Android devices. These dynamically loaded functions depend on different GL versions. I am investigating a cleaner way to do it.",
+      "parentUuid": "6ba8de20_6fe37782",
       "revId": "07683a8f990f84da54ed1e2569f34e63190a9c63",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -121,6 +229,24 @@
     },
     {
       "key": {
+        "uuid": "0dd6e36b_89ca7970",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 276,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-16T11:36:12Z",
+      "side": 1,
+      "message": "Same deal as above. I can not include the headers above GL-ES 2.0, because I can not be sure they are available on the device. I am investigating a cleaner way to do it.",
+      "parentUuid": "02b0f672_f3eb39c5",
+      "revId": "07683a8f990f84da54ed1e2569f34e63190a9c63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c7add17c_737063db",
         "filename": "performance-utils/device_info.cc",
         "patchSetId": 4
@@ -138,6 +264,24 @@
     },
     {
       "key": {
+        "uuid": "0312f572_3ef4da9f",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 335,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-16T11:36:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c7add17c_737063db",
+      "revId": "07683a8f990f84da54ed1e2569f34e63190a9c63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "69a70119_59dd6212",
         "filename": "performance-utils/device_info.cc",
         "patchSetId": 4
@@ -152,6 +296,24 @@
       "revId": "07683a8f990f84da54ed1e2569f34e63190a9c63",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "99a9aebe_eea158b5",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 432,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-16T11:36:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "69a70119_59dd6212",
+      "revId": "07683a8f990f84da54ed1e2569f34e63190a9c63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -175,6 +337,30 @@
       "revId": "07683a8f990f84da54ed1e2569f34e63190a9c63",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "013dfe3e_31856577",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 560,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-16T11:36:12Z",
+      "side": 1,
+      "message": "Yes, this is the behavior I want. Also, this part changed a bit on later patches. I record the numCpu separately as cpu_max_index.",
+      "parentUuid": "c0d234ed_f5dea74f",
+      "range": {
+        "startLine": 554,
+        "startChar": 0,
+        "endLine": 560,
+        "endChar": 3
+      },
+      "revId": "07683a8f990f84da54ed1e2569f34e63190a9c63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
