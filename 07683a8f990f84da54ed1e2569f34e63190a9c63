@@ -302,6 +302,24 @@
     },
     {
       "key": {
+        "uuid": "7383a70a_76485351",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-16T13:25:23Z",
+      "side": 1,
+      "message": "I thought they were automatically initialized to zero, since they are global?\n\nAlso, eglGetProcAddress function does not guarantee to return 0 in case of error:\nhttps://www.khronos.org/registry/EGL/sdk/docs/man/html/eglGetProcAddress.xhtml\nhttps://twitter.com/id_aa_carmack/status/387383037794603008?lang\u003den\n\nSo checking for zero-ness would not be too helpful.\n\nHowever, this is the first time I implemented dynamic function loading myself. I am sure you have much more experience. So I am open to any corrections and/or further suggestions.",
+      "parentUuid": "78be954f_dea96834",
+      "revId": "07683a8f990f84da54ed1e2569f34e63190a9c63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "02b0f672_f3eb39c5",
         "filename": "performance-utils/device_info.cc",
         "patchSetId": 4
@@ -349,6 +367,24 @@
       "side": 1,
       "message": "You only need the headers available when compiling your program, not when it\u0027s running on a device, or am I misunderstanding something?",
       "parentUuid": "0dd6e36b_89ca7970",
+      "revId": "07683a8f990f84da54ed1e2569f34e63190a9c63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1f0c0a52_2aaa3b88",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 276,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-16T13:25:23Z",
+      "side": 1,
+      "message": "I believe you are correct. I will need to clarify how we will deploy this code and get back to answer this.",
+      "parentUuid": "c394fc14_09a3d7ef",
       "revId": "07683a8f990f84da54ed1e2569f34e63190a9c63",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
