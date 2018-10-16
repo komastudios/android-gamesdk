@@ -320,6 +320,24 @@
     },
     {
       "key": {
+        "uuid": "b524fd5e_2360edcf",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-10-16T13:52:09Z",
+      "side": 1,
+      "message": "You\u0027re right that they are initialized to zero at startup - my bad. It\u0027s still a good idea to check if they are non-zero when you call them and only assign to them if you know the function is supported (assuming the gl driver is not lying).",
+      "parentUuid": "7383a70a_76485351",
+      "revId": "07683a8f990f84da54ed1e2569f34e63190a9c63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "02b0f672_f3eb39c5",
         "filename": "performance-utils/device_info.cc",
         "patchSetId": 4
