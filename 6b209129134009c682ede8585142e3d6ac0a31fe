@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "24c43328_9c385b68",
+        "filename": "CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-10-16T22:35:10Z",
+      "side": 1,
+      "message": "I found a potential way of doing it using GLOB, but they don\u0027t recommend it, they recommend to list all files instead.",
+      "parentUuid": "2246b420_ed0a6411",
+      "revId": "6b209129134009c682ede8585142e3d6ac0a31fe",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a3cb2621_2c195481",
         "filename": "build_swappy",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "6b209129134009c682ede8585142e3d6ac0a31fe",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "62fabc31_b2952282",
+        "filename": "build_swappy",
+        "patchSetId": 2
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-10-16T22:35:10Z",
+      "side": 1,
+      "message": "Added to the other CL.",
+      "parentUuid": "a3cb2621_2c195481",
+      "revId": "6b209129134009c682ede8585142e3d6ac0a31fe",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
