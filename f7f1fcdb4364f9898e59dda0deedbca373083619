@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b9300095_63d15a45",
+        "filename": "bouncyball/build.gradle",
+        "patchSetId": 6
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-10-16T22:36:43Z",
+      "side": 1,
+      "message": "Is this an intentional downgrade?",
+      "revId": "f7f1fcdb4364f9898e59dda0deedbca373083619",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
