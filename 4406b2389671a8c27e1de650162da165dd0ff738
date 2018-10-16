@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f41c199a_50bf2fa6",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 7
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-16T13:48:07Z",
+      "side": 1,
+      "message": "Do we need the full directory? Can\u0027t we change the build flags so that \u0027.\u0027 is always on the include path?",
+      "revId": "4406b2389671a8c27e1de650162da165dd0ff738",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4e0fef90_09052ef8",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 7
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-16T13:48:07Z",
+      "side": 1,
+      "message": "Fine for this to be a TODO right now, in the future perhaps we can pass a callback object so that the calling code can decide how to handle errors?",
+      "revId": "4406b2389671a8c27e1de650162da165dd0ff738",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
