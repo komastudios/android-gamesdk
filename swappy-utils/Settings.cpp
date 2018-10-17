@@ -32,22 +32,27 @@ void Settings::addListener(Listener listener) {
     mListeners.emplace_back(std::move(listener));
 }
 
-void Settings::setPreference(std::string key, std::string value) {
+void Settings::setRefreshPeriod(std::chrono::nanoseconds value) {
     {
         std::lock_guard lock(mMutex);
-        if (key == "refresh_period") {
-            mRefreshPeriod = std::chrono::nanoseconds{std::stoll(value)};
-        } else if (key == "swap_interval") {
-            mSwapInterval = std::stoi(value);
-        } else if (key == "use_affinity") {
-            mUseAffinity = (value == "true");
-        } else {
-            ALOGI("Can't find matching preference for %s", key.c_str());
-            return;
-        }
+        mRefreshPeriod = value;
     }
+    notifyListeners();
+}
 
-    // Notify the listeners without the lock held
+void Settings::setSwapInterval(int32_t value) {
+    {
+        std::lock_guard lock(mMutex);
+        mSwapInterval = value;
+    }
+    notifyListeners();
+}
+
+void Settings::setUseAffinity(bool value) {
+    {
+        std::lock_guard lock(mMutex);
+        mUseAffinity = value;
+    }
     notifyListeners();
 }
 

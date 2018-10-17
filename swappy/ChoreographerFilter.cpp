@@ -22,7 +22,6 @@
 #include <unistd.h>
 
 #include <deque>
-#include <string>
 
 #include "swappy-utils/Log.h"
 #include "swappy-utils/Settings.h"
@@ -70,6 +69,15 @@ class Timer {
     const std::chrono::nanoseconds mAppToSfDelay;
     time_point mBaseTime = std::chrono::steady_clock::now();
 };
+
+// Print the last n decimal digits of i to p, padding with zeros
+void printDecimal(int i, char* p, int n) {
+    int w = i;
+    for(char* q = p+n-1; q>=p; --q) {
+        *q = '0'+ (w%10);
+        w/=10;
+    }
+}
 }
 
 ChoreographerFilter::ChoreographerFilter(std::chrono::nanoseconds refreshPeriod,
@@ -144,9 +152,9 @@ void ChoreographerFilter::threadMain(bool useAffinity, int32_t thread) {
         setAffinity(getNumCpus() - 1 - thread);
     }
 
-    std::string threadName = "Filter";
-    threadName += std::to_string(thread);
-    pthread_setname_np(pthread_self(), threadName.c_str());
+    static char threadName[11] = "Filter    ";
+    printDecimal(thread, threadName+7, 3);
+    pthread_setname_np(pthread_self(), threadName);
 
     std::unique_lock lock(mMutex);
     while (mIsRunning) {

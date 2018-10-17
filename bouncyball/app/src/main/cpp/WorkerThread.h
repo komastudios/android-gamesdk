@@ -20,6 +20,7 @@
 #include <mutex>
 #include <queue>
 #include <thread>
+#include <string>
 
 #include "swappy-utils/Settings.h"
 #include "swappy-utils/Thread.h"

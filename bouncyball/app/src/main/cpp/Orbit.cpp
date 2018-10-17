@@ -32,11 +32,35 @@
 using std::chrono::nanoseconds;
 
 namespace {
-std::string to_string(jstring jstr, JNIEnv *env) {
+
+template<typename T>
+T to(jstring jstr, JNIEnv *env);
+
+template<>
+std::string to<std::string>(jstring jstr, JNIEnv *env) {
     const char *utf = env->GetStringUTFChars(jstr, nullptr);
     std::string str(utf);
     env->ReleaseStringUTFChars(jstr, utf);
     return str;
+}
+template <>
+uint32_t to<uint32_t>(jstring jstr, JNIEnv *env) {
+    auto utf = to<std::string>(jstr, env);
+    uint32_t i = std::stoi(utf);
+    return i;
+}
+template <>
+uint64_t to<uint64_t>(jstring jstr, JNIEnv *env) {
+    auto utf = to<std::string>(jstr, env);
+    uint64_t i = std::stoll(utf);
+    return i;
+}
+template <>
+bool to<bool>(jstring jstr, JNIEnv *env) {
+    auto utf = to<std::string>(jstr, env);
+    bool value = false;
+    if("true"==utf) value = true;
+    return value;
 }
 } // anonymous namespace
 
@@ -84,8 +108,19 @@ Java_com_prefabulated_bouncyball_OrbitActivity_nOnChoreographer(JNIEnv * /* env 
 
 JNIEXPORT void JNICALL
 Java_com_prefabulated_bouncyball_OrbitActivity_nSetPreference(JNIEnv *env, jobject /* this */,
-                                                         jstring key, jstring value) {
-    Settings::getInstance()->setPreference(to_string(key, env), to_string(value, env));
+                                                         jstring key_in, jstring value) {
+    auto key = to<std::string>(key_in, env);
+    if(key=="refresh_period") {
+        Settings::getInstance()->setRefreshPeriod(std::chrono::nanoseconds(to<uint64_t>(value, env)));
+    }
+    else if(key =="swap_interval") {
+        Settings::getInstance()->setSwapInterval(to<uint32_t>(value, env));
+    }
+    else if(key == "use_affinity") {
+        Settings::getInstance()->setUseAffinity(to<bool>(value, env));
+    }
+    else
+        ALOGE("Unknown preference: %s", key.c_str());
 }
 
 } // extern "C"

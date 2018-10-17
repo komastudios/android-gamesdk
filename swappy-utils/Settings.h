@@ -18,7 +18,6 @@
 
 #include <cstdint>
 #include <mutex>
-#include <string>
 #include <vector>
 
 #include "Thread.h"
@@ -37,11 +36,13 @@ class Settings {
     using Listener = std::function<void()>;
     void addListener(Listener listener);
 
-    void setPreference(std::string key, std::string value);
-
     std::chrono::nanoseconds getRefreshPeriod() const;
     int32_t getSwapInterval() const;
     bool getUseAffinity() const;
+
+    void setRefreshPeriod(std::chrono::nanoseconds value);
+    void setSwapInterval(int32_t value);
+    void setUseAffinity(bool value);
 
   private:
     void notifyListeners();
