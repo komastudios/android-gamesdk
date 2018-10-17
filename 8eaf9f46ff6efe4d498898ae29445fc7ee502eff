@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "05c47c86_8d35920c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-10-17T15:23:02Z",
+      "side": 1,
+      "message": "There needs to be an empty line before the Bug line, so that the title of the commit is shown correctly on gerrit web page.",
+      "revId": "8eaf9f46ff6efe4d498898ae29445fc7ee502eff",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
