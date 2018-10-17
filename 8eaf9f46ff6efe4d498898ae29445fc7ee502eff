@@ -16,6 +16,23 @@
       "revId": "8eaf9f46ff6efe4d498898ae29445fc7ee502eff",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ae0a7603_58664396",
+        "filename": "samples/tuningfork/prototest/src/eng_game.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2018-10-17T15:28:33Z",
+      "side": 1,
+      "message": "Does the Android standard set a maximum column width?",
+      "revId": "8eaf9f46ff6efe4d498898ae29445fc7ee502eff",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
