@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "52be707e_ad010ed8",
+        "filename": "packagesdk/.gitignore",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-18T14:46:20Z",
+      "side": 1,
+      "message": "I think that there\u0027s a few more things you should add to this:\n\nhttps://stackoverflow.com/questions/11968531/what-to-gitignore-from-the-idea-folder\n\nAlso might want to consider using the **/ syntax mentioned in that article (and removing the .gitignore files in sub-directories). Also there\u0027s a tool referenced in that article for generating a .gitignore that might be easier than trying to make one by hand that does all the things.",
+      "revId": "ca900cdfaaa2c06d397812e418e18aaed135a3c7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ad505738_5724eccf",
+        "filename": "packagesdk/app/src/main/cpp/Swappy_c.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-18T14:46:20Z",
+      "side": 1,
+      "message": "This should be the first #include",
+      "revId": "ca900cdfaaa2c06d397812e418e18aaed135a3c7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "02f1a6e3_479cc069",
+        "filename": "packagesdk/app/src/main/cpp/swappy",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-18T14:46:20Z",
+      "side": 1,
+      "message": "What does this file do?",
+      "revId": "ca900cdfaaa2c06d397812e418e18aaed135a3c7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fbf972d2_8d283c6d",
+        "filename": "packagesdk/app/src/test/java/com/google/packagesdk/ExampleUnitTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-18T14:46:20Z",
+      "side": 1,
+      "message": "I\u0027m not sure if you intend to have any unit tests for this? If so pls add a TODO. If not then let\u0027s remove the file entirely (if possible). Or at least not check in something called \u0027Example\u0027.",
+      "revId": "ca900cdfaaa2c06d397812e418e18aaed135a3c7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cb2237f7_ef0bb310",
+        "filename": "swappy/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-18T14:46:20Z",
+      "side": 1,
+      "message": "This change does not seem to be covered by the cl description?",
+      "revId": "ca900cdfaaa2c06d397812e418e18aaed135a3c7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
