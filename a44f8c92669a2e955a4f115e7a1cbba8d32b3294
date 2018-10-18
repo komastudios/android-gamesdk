@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "798d92d3_c16e03e5",
+        "filename": "bouncyball/.idea/codeStyles/Project.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-18T14:56:20Z",
+      "side": 1,
+      "message": "Can we augment the .gitignore to stop these kinds of things from getting check in at all?",
+      "revId": "a44f8c92669a2e955a4f115e7a1cbba8d32b3294",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "760948e8_822f1360",
+        "filename": "build_swappy",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-18T14:56:20Z",
+      "side": 1,
+      "message": "Is using \u0027cd\u0027 in this context considered best practice? I am far more used to the windows pushd/popd approach so maybe it\u0027s just me?",
+      "revId": "a44f8c92669a2e955a4f115e7a1cbba8d32b3294",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
