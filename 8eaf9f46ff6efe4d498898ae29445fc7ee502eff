@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "e7fb8f31_a37740d4",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-10-18T14:30:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "05c47c86_8d35920c",
+      "revId": "8eaf9f46ff6efe4d498898ae29445fc7ee502eff",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ae0a7603_58664396",
         "filename": "samples/tuningfork/prototest/src/eng_game.cc",
         "patchSetId": 2
