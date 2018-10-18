@@ -16,6 +16,24 @@
       "revId": "50092e4ce73218c2d5f992e081175a400002bf4c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ac3c676c_2412591b",
+        "filename": "swappy/Swappy.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-18T14:53:13Z",
+      "side": 1,
+      "message": "LGTM but maybe add a comment explaining this a bit more?",
+      "parentUuid": "03add564_b3339293",
+      "revId": "50092e4ce73218c2d5f992e081175a400002bf4c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
