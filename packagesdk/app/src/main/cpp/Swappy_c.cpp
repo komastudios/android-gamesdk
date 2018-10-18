@@ -17,8 +17,8 @@
 #include <chrono>
 #include "Swappy_c.h"
 #include "swappy/Swappy.h"
-#include "swappy-utils/Settings.h"
-#include "swappy-utils/Thread.h"
+#include "swappy/Settings.h"
+#include "swappy/Thread.h"
 
 extern "C" void Swappy_init(int64_t refreshPeriodNanos, int64_t appOffsetNanos, int64_t sfOffsetNanos) {
   Swappy::init(std::chrono::nanoseconds(refreshPeriodNanos), std::chrono::nanoseconds(appOffsetNanos), std::chrono::nanoseconds(sfOffsetNanos));

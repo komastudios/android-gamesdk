@@ -1,6 +1,14 @@
 cmake_minimum_required(VERSION 3.4.1)
 
-set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Werror -Wthread-safety -D _LIBCPP_ENABLE_THREAD_SAFETY_ANNOTATIONS" )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Werror -Wthread-safety" )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D _LIBCPP_ENABLE_THREAD_SAFETY_ANNOTATIONS -O3 -fPIC" )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions" )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti" )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffunction-sections -fdata-sections" )
+
+set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--gc-sections" )
+set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--version-script=${CMAKE_SOURCE_DIR}/version.script" )
+set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-s" )
 
 add_library( androidgamesdk
 
@@ -9,8 +17,8 @@ add_library( androidgamesdk
              src/main/cpp/swappy/ChoreographerFilter.cpp
              src/main/cpp/swappy/EGL.cpp
              src/main/cpp/swappy/Swappy.cpp
-             src/main/cpp/swappy-utils/Settings.cpp
-             src/main/cpp/swappy-utils/Thread.cpp
+             src/main/cpp/swappy/Settings.cpp
+             src/main/cpp/swappy/Thread.cpp
              src/main/cpp/Swappy_c.cpp)
 
 include_directories( src/main/cpp )
