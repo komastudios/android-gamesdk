@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "451c3985_f42a1adf",
+        "filename": "bouncyball/.idea/codeStyles/Project.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-10-22T18:02:56Z",
+      "side": 1,
+      "message": "Yes! I tried with not much success. Any suggestion?",
+      "parentUuid": "798d92d3_c16e03e5",
+      "revId": "a44f8c92669a2e955a4f115e7a1cbba8d32b3294",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "760948e8_822f1360",
         "filename": "build_swappy",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "a44f8c92669a2e955a4f115e7a1cbba8d32b3294",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b921c39a_1cfecb78",
+        "filename": "build_swappy",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-10-22T18:02:56Z",
+      "side": 1,
+      "message": "I\u0027m a total bash noob. Any suggestion here is very welcomed.",
+      "parentUuid": "760948e8_822f1360",
+      "revId": "a44f8c92669a2e955a4f115e7a1cbba8d32b3294",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
