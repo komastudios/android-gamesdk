@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9981d020_2a35ec6a",
+        "filename": "samples/tuningfork/prototest/.gitignore",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-10-24T16:32:28Z",
+      "side": 1,
+      "message": "Can we update augment this to address the feedback in:\n\nhttps://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/799694/1/.gitignore",
+      "revId": "b336d9734467899bf902c349f5b0d790d91e1838",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
