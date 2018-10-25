@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "2a40cb32_f71544c4",
+        "filename": "packagesdk/app/src/main/cpp/Swappy_c.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-10-25T13:07:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ad505738_5724eccf",
+      "revId": "ca900cdfaaa2c06d397812e418e18aaed135a3c7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "02f1a6e3_479cc069",
         "filename": "packagesdk/app/src/main/cpp/swappy",
         "patchSetId": 1
@@ -50,6 +68,24 @@
       "revId": "ca900cdfaaa2c06d397812e418e18aaed135a3c7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0b05938e_723b804f",
+        "filename": "packagesdk/app/src/main/cpp/swappy",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-10-25T13:07:38Z",
+      "side": 1,
+      "message": "It\u0027s a soft link to the swappy folder",
+      "parentUuid": "02f1a6e3_479cc069",
+      "revId": "ca900cdfaaa2c06d397812e418e18aaed135a3c7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -81,6 +117,24 @@
       "writtenOn": "2018-10-18T14:46:20Z",
       "side": 1,
       "message": "This change does not seem to be covered by the cl description?",
+      "revId": "ca900cdfaaa2c06d397812e418e18aaed135a3c7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5f90c028_060fc696",
+        "filename": "swappy/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-10-25T13:07:38Z",
+      "side": 1,
+      "message": "True, but mRefreshPeriod is not used, so needs clearing up",
+      "parentUuid": "cb2237f7_ef0bb310",
       "revId": "ca900cdfaaa2c06d397812e418e18aaed135a3c7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
