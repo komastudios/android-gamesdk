@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "42a1dae5_aacb8e79",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-10-26T20:17:16Z",
+      "side": 1,
+      "message": "I don\u0027t know what standard there is (if any), but it seems like we should pick one here.\n\nLines 1-10 are indented 1 space relative to nothing (?), lines 12-48 use a consistent 2-space indent, cleanBuild uses 4 spaces, build uses 3 spaces (except for a block that uses an additional 2), and archive is back to 4.\n\nMaybe we can standardize on 2?",
+      "parentUuid": "bffad9c2_ec9436de",
+      "revId": "853c186d1f0e0b6cf19e9ce55c92c69c2e116262",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6d4ebc98_bf503bdc",
         "filename": "build.gradle",
         "patchSetId": 1
