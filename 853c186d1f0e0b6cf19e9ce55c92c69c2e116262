@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "bffad9c2_ec9436de",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-10-26T20:09:16Z",
+      "side": 1,
+      "message": "Not a big expert of indentation with gradle files. What\u0027s wrong?",
+      "parentUuid": "affce8c6_552d774c",
+      "revId": "853c186d1f0e0b6cf19e9ce55c92c69c2e116262",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6d4ebc98_bf503bdc",
         "filename": "build.gradle",
         "patchSetId": 1
@@ -39,6 +57,30 @@
       "revId": "853c186d1f0e0b6cf19e9ce55c92c69c2e116262",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8642468e_640bb850",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-10-26T20:09:16Z",
+      "side": 1,
+      "message": "On it.",
+      "parentUuid": "6d4ebc98_bf503bdc",
+      "range": {
+        "startLine": 25,
+        "startChar": 25,
+        "endLine": 25,
+        "endChar": 35
+      },
+      "revId": "853c186d1f0e0b6cf19e9ce55c92c69c2e116262",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
