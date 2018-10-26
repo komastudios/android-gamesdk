@@ -1,0 +1,72 @@
+ def getAndroidNDKPath() {
+   return System.getenv("ANDROID_HOME")
+ }
+
+ ext.tempFolder = '.temp'
+ ext.buildFolder = 'build'
+ ext.androidNDK = getAndroidNDKPath()
+
+ println "Build folder: $buildFolder"
+ println "Android NDK folder: $androidNDK"
+
+def buildGameSDK(arch) {
+  def cmakeFolder = project.property('tempFolder') + '/' + arch + '/.cmake'
+  def buildFolder = project.property('buildFolder') + '/libs/' + arch
+
+  mkdir cmakeFolder
+  mkdir buildFolder
+
+  exec {
+    workingDir cmakeFolder
+
+    commandLine "cmake",
+     "$projectDir/src/swappy/",
+     "-DCMAKE_BUILD_TYPE=Release ",
+     "-DANDROID_PLATFORM=android-26 ",
+     "-DANDROID_NDK=" + project.property('androidNDK') + " ",
+     "-DANDROID_STL=c++_static ",
+     "-DANDROID_ABI=" + arch,
+     "-DCMAKE_CXX_FLAGS= ",
+     "-DCMAKE_TOOLCHAIN_FILE=" + project.property('androidNDK') + "/build/cmake/android.toolchain.cmake",
+     "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=./"
+  }
+
+  exec {
+    workingDir cmakeFolder
+
+    commandLine "make"
+  }
+
+  copy {
+    from file(cmakeFolder + "/libswappy_static.a")
+    into file(buildFolder + "/libswappy_static.a")
+  }
+  copy {
+    from file(cmakeFolder + "/libswappy.so")
+    into file(buildFolder + "/libswappy.so")
+  }
+}
+
+task cleanBuild(type: Delete) {
+    delete project.property('tempFolder')
+    delete project.property('buildFolder')
+}
+
+task build() {
+   buildGameSDK("armeabi-v7a")
+   buildGameSDK("arm64-v8a")
+
+   copy {
+     from "$projectDir/includes"
+     into project.property('buildFolder') + '/includes'
+   }
+}
+
+task archiveZip(type: Zip, dependsOn: 'build') {
+    baseName = project.property('buildFolder') + '/gamesdk'
+
+    from fileTree(project.property('buildFolder'))
+    exclude "*.zip"
+
+    into 'gamesdk'
+}
