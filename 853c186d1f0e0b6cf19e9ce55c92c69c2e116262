@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "affce8c6_552d774c",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-10-26T18:38:59Z",
+      "side": 1,
+      "message": "Nit: indentation seems a bit wonky here; is that by design?",
+      "revId": "853c186d1f0e0b6cf19e9ce55c92c69c2e116262",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6d4ebc98_bf503bdc",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-10-26T18:38:59Z",
+      "side": 1,
+      "message": "Should (can) this be parameterizable?",
+      "range": {
+        "startLine": 25,
+        "startChar": 25,
+        "endLine": 25,
+        "endChar": 35
+      },
+      "revId": "853c186d1f0e0b6cf19e9ce55c92c69c2e116262",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
