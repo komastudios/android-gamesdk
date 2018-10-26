@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "96f1e57d_e7b4112b",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-10-26T20:29:23Z",
+      "side": 1,
+      "message": "Let me know if it looks better now.",
+      "parentUuid": "42a1dae5_aacb8e79",
+      "revId": "853c186d1f0e0b6cf19e9ce55c92c69c2e116262",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6d4ebc98_bf503bdc",
         "filename": "build.gradle",
         "patchSetId": 1
