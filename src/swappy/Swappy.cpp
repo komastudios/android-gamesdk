@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <swappy/Swappy.h>
+#include "swappy/Swappy.h"
 
 #define LOG_TAG "Swappy"
 
@@ -140,6 +140,11 @@ void Swappy::sleepModulo(int32_t modulo) {
 Swappy *Swappy::getInstance() {
     std::lock_guard<std::mutex> lock(sInstanceMutex);
     return sInstance.get();
+}
+
+void Swappy::destroyInstance() {
+    std::lock_guard<std::mutex> lock(sInstanceMutex);
+    sInstance.reset();
 }
 
 EGL *Swappy::getEgl() {

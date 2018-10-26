@@ -21,21 +21,21 @@
 #include <stdint.h>
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
+#include <jni.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 void Swappy_init(int64_t refreshPeriodNanos, int64_t appOffsetNanos, int64_t sfOffsetNanos);
+void Swappy_initQueryingParamsFromSystem(JNIEnv *env, jobject jactivity);
 bool Swappy_swap(EGLDisplay display, EGLSurface surface);
 void Swappy_onChoreographer(int64_t frameTimeNanos);
-
 void Swappy_setPreference(const char* name, const char* value);
 uint64_t Swappy_getRefreshPeriodNanos();
-
 int32_t Swappy_getSwapInterval();
-
 bool Swappy_getUseAffinity();
+void Swappy_destroy();
 
 #ifdef __cplusplus
 };

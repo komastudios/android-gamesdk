@@ -14,15 +14,25 @@
  * limitations under the License.
  */
 
-#include "Swappy_c.h"
+#include "swappy/Swappy_c.h"
 #include "swappy/Swappy.h"
 #include "swappy/Settings.h"
 #include "swappy/Thread.h"
 
 #include <chrono>
 
+
+extern "C" void Swappy_initQueryingParamsFromSystem(JNIEnv *env, jobject jactivity) {
+    Swappy::init(env, jactivity);
+}
+extern "C" void Swappy_destroy() {
+    Swappy::destroyInstance();
+}
+
 extern "C" void Swappy_init(int64_t refreshPeriodNanos, int64_t appOffsetNanos, int64_t sfOffsetNanos) {
-  Swappy::init(std::chrono::nanoseconds(refreshPeriodNanos), std::chrono::nanoseconds(appOffsetNanos), std::chrono::nanoseconds(sfOffsetNanos));
+  Swappy::init(std::chrono::nanoseconds(refreshPeriodNanos),
+               std::chrono::nanoseconds(appOffsetNanos),
+               std::chrono::nanoseconds(sfOffsetNanos));
 }
 extern "C" bool Swappy_swap(EGLDisplay display, EGLSurface surface) {
   return Swappy::swap(display, surface);
