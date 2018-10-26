@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b64a7fa1_c4547714",
+        "filename": "src/swappy/Swappy_c.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-10-26T18:15:34Z",
+      "side": 1,
+      "message": "I know this wasn\u0027t changed, but should it be extern \"C\" as well? More generally, should we just put an extern \"C\" block around everything instead of per function?",
+      "range": {
+        "startLine": 47,
+        "startChar": 0,
+        "endLine": 49,
+        "endChar": 1
+      },
+      "revId": "a0a0ebfe645f7ec759097a9b595bd437ed8f0675",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
