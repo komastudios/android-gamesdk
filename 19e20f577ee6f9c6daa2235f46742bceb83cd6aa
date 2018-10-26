@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f203ba06_a1da04ea",
+        "filename": "build.gradle",
+        "patchSetId": 5
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-10-26T20:39:34Z",
+      "side": 1,
+      "message": "Nit: should be 2 spaces",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 1
+      },
+      "revId": "19e20f577ee6f9c6daa2235f46742bceb83cd6aa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "44aa0eef_3ea1a91b",
+        "filename": "build.gradle",
+        "patchSetId": 5
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-10-26T20:39:34Z",
+      "side": 1,
+      "message": "Any chance we can group the \u0027.\u0027 with the function, e.g.:\n\n  out.style(Style.Identifier).text(\u0027\\nGameSDK zip is in \u0027)\n      .style(Style.ProgressStatus)\n      .println(project.property(\u0027buildFolder\u0027) + \u0027/gamesdk.zip\u0027 );",
+      "revId": "19e20f577ee6f9c6daa2235f46742bceb83cd6aa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
