@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "1e7744c4_7c78204d",
+        "filename": "build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-10-26T20:27:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a1f7e177_3fcbce9d",
+      "range": {
+        "startLine": 15,
+        "startChar": 5,
+        "endLine": 15,
+        "endChar": 11
+      },
+      "revId": "8b1a93167d2fa40ced9bb4934972095693d43436",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "654b7e97_3983ecc4",
         "filename": "build.gradle",
         "patchSetId": 2
@@ -45,6 +69,30 @@
       "revId": "8b1a93167d2fa40ced9bb4934972095693d43436",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3bc8952c_a6d47ce8",
+        "filename": "build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-10-26T20:27:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "654b7e97_3983ecc4",
+      "range": {
+        "startLine": 64,
+        "startChar": 37,
+        "endLine": 64,
+        "endChar": 43
+      },
+      "revId": "8b1a93167d2fa40ced9bb4934972095693d43436",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "d37d33e7_23bfd1cf",
+        "filename": "build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-10-26T20:27:59Z",
+      "side": 1,
+      "message": "Rename to just \"output\"?",
+      "parentUuid": "d441289e_393df1b5",
+      "range": {
+        "startLine": 83,
+        "startChar": 65,
+        "endLine": 83,
+        "endChar": 70
+      },
+      "revId": "8b1a93167d2fa40ced9bb4934972095693d43436",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b86e8f16_d4b7ae97",
         "filename": "build.gradle",
         "patchSetId": 2
@@ -82,6 +154,30 @@
       "writtenOn": "2018-10-26T20:17:16Z",
       "side": 1,
       "message": "Any chance we could wrap this:\n\n  out.style(Style.Identifier).text(...)\n    .style(Style.ProgressStatus).println(...);",
+      "range": {
+        "startLine": 85,
+        "startChar": 0,
+        "endLine": 85,
+        "endChar": 150
+      },
+      "revId": "8b1a93167d2fa40ced9bb4934972095693d43436",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6c88c247_55e2c1c9",
+        "filename": "build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-10-26T20:27:59Z",
+      "side": 1,
+      "message": "How do you suggest to do it?",
+      "parentUuid": "b86e8f16_d4b7ae97",
       "range": {
         "startLine": 85,
         "startChar": 0,
