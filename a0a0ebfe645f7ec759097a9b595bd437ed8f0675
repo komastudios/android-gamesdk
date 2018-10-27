@@ -2,6 +2,74 @@
   "comments": [
     {
       "key": {
+        "uuid": "a71f6303_f569ec3e",
+        "filename": "includes/swappy/Swappy_c.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-10-27T15:37:55Z",
+      "side": 1,
+      "message": "Can you rename this function to Swappy_init and the other function to Swappy_initWithXXX? I want to make it clear this is the preferred way of initializing Swappy.",
+      "revId": "a0a0ebfe645f7ec759097a9b595bd437ed8f0675",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c71fdce3_d68d0ffe",
+        "filename": "includes/swappy/Swappy_c.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-10-27T15:37:55Z",
+      "side": 1,
+      "message": "I would like to have an enum instead of a string, unless there is a case in the future where we might want to add new preferences without forcing a recompilation of client code.",
+      "revId": "a0a0ebfe645f7ec759097a9b595bd437ed8f0675",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0f21db4d_b2d721c2",
+        "filename": "includes/swappy/Swappy_c.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-10-27T15:37:55Z",
+      "side": 1,
+      "message": "Do we need this function? This value can be retrieved from Android.",
+      "revId": "a0a0ebfe645f7ec759097a9b595bd437ed8f0675",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "11b4fffc_08afb3fa",
+        "filename": "includes/swappy/Swappy_c.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-10-27T15:37:55Z",
+      "side": 1,
+      "message": "If we have a setPreferences, we can add a getPreferences function and remove two getters: it\u0027s more coherent.",
+      "revId": "a0a0ebfe645f7ec759097a9b595bd437ed8f0675",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b64a7fa1_c4547714",
         "filename": "src/swappy/Swappy_c.cpp",
         "patchSetId": 1
