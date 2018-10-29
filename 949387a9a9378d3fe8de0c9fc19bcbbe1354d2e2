@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "db3f3f7d_937ab7c9",
+        "filename": "includes/swappy/Swappy_c.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-10-29T18:03:29Z",
+      "side": 1,
+      "message": "Do we have a compelling argument for why the swap interval should be a separate setter and not passed via the swap call?",
+      "revId": "949387a9a9378d3fe8de0c9fc19bcbbe1354d2e2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3face34c_75dbd72c",
+        "filename": "includes/swappy/Swappy_c.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-10-29T18:03:29Z",
+      "side": 1,
+      "message": "Do we still need this call?",
+      "revId": "949387a9a9378d3fe8de0c9fc19bcbbe1354d2e2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
