@@ -150,6 +150,65 @@ static PFN_vkGetDeviceProcAddr g_gdpa = NULL;
         }                                                                                                        \
     }
 
+typedef enum TimingEvent {
+    EVENT_CALLING_ANI = 1,
+    EVENT_CALLED_ANI  = 2,
+    EVENT_CALLING_QP  = 3,
+    EVENT_CALLED_QP   = 4,
+    EVENT_CALLING_WFF = 5,
+    EVENT_CALLED_WFF  = 6,
+} TimingEvent;
+struct TrackTiming {
+    uint64_t now;
+    uint64_t lastEvent;
+    uint64_t lastANI;
+    uint32_t frame;
+};
+struct TrackTiming timing;
+void InitializeTrackTiming() {
+    timing.now = 0;
+    timing.lastEvent = 0;
+    timing.lastANI = 0;
+    timing.frame = 0;
+}
+void logEvent(TimingEvent event)
+{
+    timing.now = getTimeInNanoseconds();
+    uint64_t delta = timing.now - timing.lastEvent;
+    uint64_t deltaANI = timing.now - timing.lastANI;
+    if (timing.frame > 10) return;
+    switch (event) {
+        case EVENT_CALLING_ANI:
+            DbgMsg("About to call vkAcquireNextImageKHR at %llu nsec"
+                   " (delta %llu)", timing.now, delta);
+            break;
+        case EVENT_CALLED_ANI:
+            DbgMsg("After calling vkAcquireNextImageKHR at %llu nsec"
+                   " (delta %llu) (delta from last ANI: %llu)",
+                   timing.now, delta, deltaANI);
+            timing.lastANI = timing.now;
+            timing.frame++;
+            break;
+        case EVENT_CALLING_QP:
+            DbgMsg("About to call vkQueuePresentKHR at     %llu nsec"
+                   " (delta %llu)", timing.now, delta);
+            break;
+        case EVENT_CALLED_QP:
+            DbgMsg("After calling vkQueuePresentKHR at     %llu nsec"
+                   " (delta %llu)", timing.now, delta);
+            break;
+        case EVENT_CALLING_WFF:
+            DbgMsg("About to call vkWaitForFences at       %llu nsec"
+                   " (delta %llu)", timing.now, delta);
+            break;
+        case EVENT_CALLED_WFF:
+            DbgMsg("After calling vkWaitForFences at       %llu nsec"
+                   " (delta %llu)", timing.now, delta);
+            break;
+    }
+    timing.lastEvent = timing.now;
+}
+
 /*
  * structure to track all objects related to a texture.
  */
@@ -1000,14 +1059,18 @@ static void demo_draw(struct demo *demo) {
     VkResult U_ASSERT_ONLY err;
 
     // Ensure no more than FRAME_LAG renderings are outstanding
+logEvent(EVENT_CALLING_WFF);
     vkWaitForFences(demo->device, 1, &demo->fences[demo->frame_index], VK_TRUE, UINT64_MAX);
+logEvent(EVENT_CALLED_WFF);
     vkResetFences(demo->device, 1, &demo->fences[demo->frame_index]);
 
     do {
         // Get the index of the next available swapchain image:
+logEvent(EVENT_CALLING_ANI);
         err =
             demo->fpAcquireNextImageKHR(demo->device, demo->swapchain, UINT64_MAX,
                                         demo->image_acquired_semaphores[demo->frame_index], VK_NULL_HANDLE, &demo->current_buffer);
+logEvent(EVENT_CALLED_ANI);
 
         if (err == VK_ERROR_OUT_OF_DATE_KHR) {
             // demo->swapchain is out of date (e.g. the window was resized) and
@@ -1148,7 +1211,9 @@ static void demo_draw(struct demo *demo) {
         }
     }
 
+logEvent(EVENT_CALLING_QP);
     err = demo->fpQueuePresentKHR(demo->present_queue, &present);
+logEvent(EVENT_CALLED_QP);
     demo->frame_index += 1;
     demo->frame_index %= FRAME_LAG;
 
@@ -3656,6 +3721,7 @@ static void demo_init(struct demo *demo, int argc, char **argv) {
     vec3 eye = {0.0f, 3.0f, 5.0f};
     vec3 origin = {0, 0, 0};
     vec3 up = {0.0f, 1.0f, 0.0};
+InitializeTrackTiming();
 
     memset(demo, 0, sizeof(*demo));
     demo->presentMode = VK_PRESENT_MODE_FIFO_KHR;
