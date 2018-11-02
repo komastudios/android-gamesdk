@@ -56,6 +56,8 @@
 #include "linmath.h"
 #include "object_type_string_helper.h"
 
+#include <SwappyVk.h>
+
 #include "gettime.h"
 #include "inttypes.h"
 #define MILLION 1000000L
@@ -1385,6 +1387,7 @@ static void demo_prepare_buffers(struct demo *demo) {
         assert(!err);
     }
 
+    demo->refresh_duration = swappyVkGetRefreshCycleDuration(demo->gpu, demo->device, demo->swapchain);
     if (demo->VK_GOOGLE_display_timing_enabled) {
         VkRefreshCycleDurationGOOGLE rc_dur;
         err = demo->fpGetRefreshCycleDurationGOOGLE(demo->device, demo->swapchain, &rc_dur);
@@ -3222,6 +3225,7 @@ static void demo_init_vk(struct demo *demo) {
             }
         }
 
+demo->VK_GOOGLE_display_timing_enabled = true;
         if (demo->VK_GOOGLE_display_timing_enabled) {
             // Even though the user "enabled" the extension via the command
             // line, we must make sure that it's enumerated for use with the
@@ -3240,6 +3244,7 @@ static void demo_init_vk(struct demo *demo) {
                 DbgMsg("VK_GOOGLE_display_timing extension NOT AVAILABLE\n");
             }
         }
+demo->VK_GOOGLE_display_timing_enabled = false;
 
         free(device_extensions);
     }
