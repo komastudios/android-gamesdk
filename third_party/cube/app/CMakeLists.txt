@@ -61,6 +61,7 @@ add_library( native-lib
 
              ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c
              src/main/cpp/cube.c
+             src/main/cpp/SwappyVk.cpp
              src/main/cpp/common/android_util.cpp
              src/main/cpp/common/vulkan_wrapper.cpp
         )
