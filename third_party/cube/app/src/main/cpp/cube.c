@@ -50,6 +50,8 @@
 #include <vulkan/vulkan.h>
 #endif
 
+#include <android/trace.h>
+
 #include <vulkan/vk_platform.h>
 #include "linmath.h"
 #include "object_type_string_helper.h"
@@ -359,6 +361,7 @@ struct demo {
     VkSemaphore image_acquired_semaphores[FRAME_LAG];
     VkSemaphore draw_complete_semaphores[FRAME_LAG];
     VkSemaphore image_ownership_semaphores[FRAME_LAG];
+    VkSemaphore draw_complete_and_prev_acquired[FRAME_LAG][2];
     VkPhysicalDeviceProperties gpu_props;
     VkQueueFamilyProperties *queue_props;
     VkPhysicalDeviceMemoryProperties memory_properties;
@@ -771,6 +774,10 @@ static void demo_draw_build_cmd(struct demo *demo, VkCommandBuffer cmd_buf) {
     viewport.maxDepth = (float)1.0f;
     vkCmdSetViewport(cmd_buf, 0, 1, &viewport);
 
+    for (int i = 0; i < 100; i++){
+        vkCmdSetViewport(cmd_buf, 0, 1, &viewport);
+    }
+
     VkRect2D scissor;
     memset(&scissor, 0, sizeof(scissor));
     scissor.extent.width = demo->width;
@@ -1005,9 +1012,12 @@ static void demo_draw(struct demo *demo) {
 
     do {
         // Get the index of the next available swapchain image:
-        err =
-            demo->fpAcquireNextImageKHR(demo->device, demo->swapchain, UINT64_MAX,
+
+                ATrace_beginSection("fpAcquireNextImageKHR");
+
+        err = demo->fpAcquireNextImageKHR(demo->device, demo->swapchain, UINT64_MAX,
                                         demo->image_acquired_semaphores[demo->frame_index], VK_NULL_HANDLE, &demo->current_buffer);
+                ATrace_endSection();
 
         if (err == VK_ERROR_OUT_OF_DATE_KHR) {
             // demo->swapchain is out of date (e.g. the window was resized) and
@@ -1052,8 +1062,10 @@ static void demo_draw(struct demo *demo) {
     submit_info.pCommandBuffers = &demo->swapchain_image_resources[demo->current_buffer].cmd;
     submit_info.signalSemaphoreCount = 1;
     submit_info.pSignalSemaphores = &demo->draw_complete_semaphores[demo->frame_index];
+    ATrace_beginSection("vkQueueSubmit");
     err = vkQueueSubmit(demo->graphics_queue, 1, &submit_info, demo->fences[demo->frame_index]);
     assert(!err);
+    ATrace_endSection();
 
     if (demo->separate_present_queue) {
         // If we are using separate queues, change image ownership to the
@@ -1079,6 +1091,8 @@ static void demo_draw(struct demo *demo) {
         .waitSemaphoreCount = 1,
         .pWaitSemaphores = (demo->separate_present_queue) ? &demo->image_ownership_semaphores[demo->frame_index]
                                                           : &demo->draw_complete_semaphores[demo->frame_index],
+        //.waitSemaphoreCount = 2,
+        //.pWaitSemaphores = demo->draw_complete_and_prev_acquired[demo->frame_index],
         .swapchainCount = 1,
         .pSwapchains = &demo->swapchain,
         .pImageIndices = &demo->current_buffer,
@@ -1148,7 +1162,9 @@ static void demo_draw(struct demo *demo) {
         }
     }
 
+    ATrace_beginSection("fpQueuePresentKHR");
     err = demo->fpQueuePresentKHR(demo->present_queue, &present);
+    ATrace_endSection();
     demo->frame_index += 1;
     demo->frame_index %= FRAME_LAG;
 
@@ -3506,6 +3522,10 @@ static void demo_init_vk_swapchain(struct demo *demo) {
             err = vkCreateSemaphore(demo->device, &semaphoreCreateInfo, NULL, &demo->image_ownership_semaphores[i]);
             assert(!err);
         }
+    }
+    for (uint32_t i = 0; i < FRAME_LAG; i++) {
+        demo->draw_complete_and_prev_acquired[i][0] = demo->draw_complete_semaphores[i];
+        demo->draw_complete_and_prev_acquired[i][1] = demo->image_acquired_semaphores[(i - 1) % FRAME_LAG];
     }
     demo->frame_index = 0;
 
