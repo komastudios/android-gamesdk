@@ -46,6 +46,7 @@
 
 #ifdef ANDROID
 #include "vulkan_wrapper.h"
+#include <android/trace.h>
 #else
 #include <vulkan/vulkan.h>
 #endif
@@ -1011,9 +1012,10 @@ static void demo_draw(struct demo *demo) {
 
     do {
         // Get the index of the next available swapchain image:
-        err =
-            demo->fpAcquireNextImageKHR(demo->device, demo->swapchain, UINT64_MAX,
-                                        demo->image_acquired_semaphores[demo->frame_index], VK_NULL_HANDLE, &demo->current_buffer);
+        ATrace_beginSection("fpAcquireNextImageKHR");
+        err = demo->fpAcquireNextImageKHR(demo->device, demo->swapchain, UINT64_MAX,
+                                      demo->image_acquired_semaphores[demo->frame_index], VK_NULL_HANDLE, &demo->current_buffer);
+        ATrace_endSection();
 
         if (err == VK_ERROR_OUT_OF_DATE_KHR) {
             // demo->swapchain is out of date (e.g. the window was resized) and
@@ -1058,8 +1060,10 @@ static void demo_draw(struct demo *demo) {
     submit_info.pCommandBuffers = &demo->swapchain_image_resources[demo->current_buffer].cmd;
     submit_info.signalSemaphoreCount = 1;
     submit_info.pSignalSemaphores = &demo->draw_complete_semaphores[demo->frame_index];
+    ATrace_beginSection("vkQueueSubmit");
     err = vkQueueSubmit(demo->graphics_queue, 1, &submit_info, demo->fences[demo->frame_index]);
     assert(!err);
+    ATrace_endSection();
 
     if (demo->separate_present_queue) {
         // If we are using separate queues, change image ownership to the
@@ -1154,7 +1158,9 @@ static void demo_draw(struct demo *demo) {
         }
     }
 
+    ATrace_beginSection("swappyVkQueuePresent");
     err = swappyVkQueuePresent(demo->present_queue, &present);
+    ATrace_endSection();
     demo->frame_index += 1;
     demo->frame_index %= FRAME_LAG;
 

@@ -333,7 +333,6 @@ public:
     virtual VkResult doQueuePresent(VkQueue                 queue,
                                     const VkPresentInfoKHR* pPresentInfo)
     {
-        ATRACE_CALL();
         // register for a callback when next frame is presented
         AChoreographer_postFrameCallbackDelayed(mChoreographer, frameCallback, this, 1);
         {
