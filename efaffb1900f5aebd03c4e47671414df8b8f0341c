@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f8406519_72a8f057",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-03T16:21:49Z",
+      "side": 1,
+      "message": "should we add way to toggle logging on/off ?",
+      "range": {
+        "startLine": 174,
+        "startChar": 5,
+        "endLine": 174,
+        "endChar": 13
+      },
+      "revId": "efaffb1900f5aebd03c4e47671414df8b8f0341c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
