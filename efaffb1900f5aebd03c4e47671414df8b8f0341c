@@ -22,6 +22,30 @@
       "revId": "efaffb1900f5aebd03c4e47671414df8b8f0341c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7dd710d0_f09f5011",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-05T23:32:39Z",
+      "side": 1,
+      "message": "Interesting idea.  I was thinking that this CL was just temporary, but perhaps it\u0027s useful longer term.  Should we keep it and add the toggle?",
+      "parentUuid": "f8406519_72a8f057",
+      "range": {
+        "startLine": 174,
+        "startChar": 5,
+        "endLine": 174,
+        "endChar": 13
+      },
+      "revId": "efaffb1900f5aebd03c4e47671414df8b8f0341c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
