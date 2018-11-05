@@ -105,6 +105,40 @@
       "revId": "b608c0878b49400172e9dae5ec7d75e27d5b43b0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "55a8f162_06db29bb",
+        "filename": "swappy/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-11-05T16:33:40Z",
+      "side": 1,
+      "message": "Comment on where the 1ms offset comes from?",
+      "revId": "b608c0878b49400172e9dae5ec7d75e27d5b43b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fbf0f4ba_bba69c5f",
+        "filename": "swappy/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-11-05T16:33:40Z",
+      "side": 1,
+      "message": "I\u0027m not sure I understand the factor of 2 here",
+      "revId": "b608c0878b49400172e9dae5ec7d75e27d5b43b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
