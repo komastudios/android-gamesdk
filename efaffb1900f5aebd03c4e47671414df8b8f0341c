@@ -46,6 +46,30 @@
       "revId": "efaffb1900f5aebd03c4e47671414df8b8f0341c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d96339e2_3d5c05b4",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-11-05T23:34:37Z",
+      "side": 1,
+      "message": "As a drive-by, I also wonder if we should add tracing markers [1], since systrace is so useful for verifying whether pacing is working correctly.\n\n[1] https://developer.android.com/ndk/guides/tracing",
+      "parentUuid": "7dd710d0_f09f5011",
+      "range": {
+        "startLine": 174,
+        "startChar": 5,
+        "endLine": 174,
+        "endChar": 13
+      },
+      "revId": "efaffb1900f5aebd03c4e47671414df8b8f0341c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
