@@ -255,6 +255,7 @@ struct vktexcube_vs_uniform {
     float mvp[4][4];
     float position[12 * 3][4];
     float attr[12 * 3][4];
+    int rand;
 };
 
 //--------------------------------------------------------------------------------------
@@ -941,7 +942,7 @@ void demo_build_image_ownership_cmd(struct demo *demo, int i) {
 void demo_update_data_buffer(struct demo *demo) {
     mat4x4 MVP, Model, VP;
     int matrixSize = sizeof(MVP);
-    uint8_t *pData;
+    struct vktexcube_vs_uniform *pData;
     VkResult U_ASSERT_ONLY err;
 
     mat4x4_mul(VP, demo->projection_matrix, demo->view_matrix);
@@ -956,6 +957,7 @@ void demo_update_data_buffer(struct demo *demo) {
     assert(!err);
 
     memcpy(pData, (const void *)&MVP[0][0], matrixSize);
+    pData->rand = rand();
 
     vkUnmapMemory(demo->device, demo->swapchain_image_resources[demo->current_buffer].uniform_memory);
 }
@@ -1863,6 +1865,7 @@ void demo_prepare_cube_data_buffers(struct demo *demo) {
         data.attr[i][2] = 0;
         data.attr[i][3] = 0;
     }
+    data.rand = 0;
 
     memset(&buf_info, 0, sizeof(buf_info));
     buf_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
