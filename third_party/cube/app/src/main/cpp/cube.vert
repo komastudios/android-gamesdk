@@ -25,6 +25,7 @@ layout(std140, binding = 0) uniform buf {
         mat4 MVP;
         vec4 position[12*3];
         vec4 attr[12*3];
+        int rand;
 } ubuf;
 
 layout (location = 0) out vec4 texcoord;
@@ -35,4 +36,15 @@ void main()
    texcoord = ubuf.attr[gl_VertexIndex];
    gl_Position = ubuf.MVP * ubuf.position[gl_VertexIndex];
    frag_pos = gl_Position.xyz;
+   /* make gpu work harder */
+   if (ubuf.rand % 4 == 0) {
+    int i, j, k;
+    for (i = 0; i < 580; i++) {
+        for (j = 0; j < i; j++) {
+            for (k = 0; k < j; k++) {
+                    gl_Position = ubuf.MVP * ubuf.position[gl_VertexIndex];
+            }
+        }
+    }
+   }
 }
