@@ -52,6 +52,9 @@
 
 #include <android/trace.h>
 
+#include <android/choreographer.h>
+#include <android/looper.h>
+
 #include <vulkan/vk_platform.h>
 #include "linmath.h"
 #include "object_type_string_helper.h"
@@ -448,6 +451,10 @@ struct demo {
 
     uint32_t current_buffer;
     uint32_t queue_family_count;
+
+    bool queue_frame;
+    bool present_frame;
+    long last_frame_reported;
 };
 
 VKAPI_ATTR VkBool32 VKAPI_CALL debug_messenger_callback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -710,7 +717,9 @@ static void demo_draw_build_cmd(struct demo *demo, VkCommandBuffer cmd_buf) {
         .pInheritanceInfo = NULL,
     };
     const VkClearValue clear_values[2] = {
-        [0] = {.color.float32 = {0.2f, 0.2f, 0.2f, 0.2f}},
+	// adyabr
+	[0] = {.color.float32 = {0.2f, 0.2f, 0.2f, 0.2f}},
+	//[0] = {.color.float32 = {1.0f, 1.0f, 0.2f, 0.2f}},
         [1] = {.depthStencil = {1.0f, 0}},
     };
     const VkRenderPassBeginInfo rp_begin = {
@@ -872,12 +881,17 @@ void demo_update_data_buffer(struct demo *demo) {
     struct vktexcube_vs_uniform *pData;
     VkResult U_ASSERT_ONLY err;
 
+    
+
     mat4x4_mul(VP, demo->projection_matrix, demo->view_matrix);
 
     // Rotate around the Y axis
     mat4x4_dup(Model, demo->model_matrix);
     mat4x4_rotate(demo->model_matrix, Model, 0.0f, 1.0f, 0.0f, (float)degreesToRadians(demo->spin_angle));
+
+
     mat4x4_mul(MVP, VP, demo->model_matrix);
+
 
     err = vkMapMemory(demo->device, demo->swapchain_image_resources[demo->current_buffer].uniform_memory, 0, VK_WHOLE_SIZE, 0,
                       (void **)&pData);
@@ -1005,21 +1019,199 @@ void DemoUpdateTargetIPD(struct demo *demo) {
     }
 }
 
+static void demo_frame_callback(long frameTimeNanos, void *data) {
+    struct demo *demo = (struct demo*)data;
+    static bool queue_not_present = true;
+    if (!demo-> prepared) demo->prepared = true;
+
+    if (demo->last_frame_reported != 0 && frameTimeNanos - demo->last_frame_reported < 16)
+        return;
+
+    ATrace_beginSection("demo_frame_callback");
+    if (queue_not_present)
+        demo->queue_frame = true;
+    else
+        demo->present_frame = true;
+    queue_not_present = !queue_not_present;
+    demo->last_frame_reported = frameTimeNanos;
+    ALooper_wake(ALooper_forThread());
+    ATrace_endSection();
+}
+
 static void demo_draw(struct demo *demo) {
     VkResult U_ASSERT_ONLY err;
 
-    // Ensure no more than FRAME_LAG renderings are outstanding
-    vkWaitForFences(demo->device, 1, &demo->fences[demo->frame_index], VK_TRUE, UINT64_MAX);
-    vkResetFences(demo->device, 1, &demo->fences[demo->frame_index]);
+    if (demo->queue_frame && !demo->present_frame) {
+        demo->queue_frame = false;
+        // Ensure no more than FRAME_LAG renderings are outstanding
+        ATrace_beginSection("vkWaitForFences");
+        vkWaitForFences(demo->device, 1, &demo->fences[demo->frame_index], VK_TRUE, UINT64_MAX);
+        ATrace_endSection();
+        vkResetFences(demo->device, 1, &demo->fences[demo->frame_index]);
 
-    do {
-        // Get the index of the next available swapchain image:
+        do {
+            // Get the index of the next available swapchain image:
 
-                ATrace_beginSection("fpAcquireNextImageKHR");
+            ATrace_beginSection("fpAcquireNextImageKHR");
 
-        err = demo->fpAcquireNextImageKHR(demo->device, demo->swapchain, UINT64_MAX,
-                                        demo->image_acquired_semaphores[demo->frame_index], VK_NULL_HANDLE, &demo->current_buffer);
-                ATrace_endSection();
+            err = demo->fpAcquireNextImageKHR(demo->device, demo->swapchain, UINT64_MAX,
+                                              demo->image_acquired_semaphores[demo->frame_index],
+                                              VK_NULL_HANDLE, &demo->current_buffer);
+            ATrace_endSection();
+
+            if (err == VK_ERROR_OUT_OF_DATE_KHR) {
+                // demo->swapchain is out of date (e.g. the window was resized) and
+                // must be recreated:
+                demo_resize(demo);
+            } else if (err == VK_SUBOPTIMAL_KHR) {
+                // demo->swapchain is not as optimal as it could be, but the platform's
+                // presentation engine will still present the image correctly.
+                break;
+            } else {
+                assert(!err);
+            }
+        } while (err != VK_SUCCESS);
+
+        demo_update_data_buffer(demo);
+
+        if (demo->VK_GOOGLE_display_timing_enabled) {
+            // Look at what happened to previous presents, and make appropriate
+            // adjustments in timing:
+            DemoUpdateTargetIPD(demo);
+
+            // Note: a real application would position its geometry to that it's in
+            // the correct locatoin for when the next image is presented.  It might
+            // also wait, so that there's less latency between any input and when
+            // the next image is rendered/presented.  This demo program is so
+            // simple that it doesn't do either of those.
+        }
+
+        // Wait for the image acquired semaphore to be signaled to ensure
+        // that the image won't be rendered to until the presentation
+        // engine has fully released ownership to the application, and it is
+        // okay to render to the image.
+        VkPipelineStageFlags pipe_stage_flags;
+        VkSubmitInfo submit_info;
+        submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submit_info.pNext = NULL;
+        submit_info.pWaitDstStageMask = &pipe_stage_flags;
+        pipe_stage_flags = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        submit_info.waitSemaphoreCount = 1;
+        submit_info.pWaitSemaphores = &demo->image_acquired_semaphores[demo->frame_index];
+        submit_info.commandBufferCount = 1;
+        submit_info.pCommandBuffers = &demo->swapchain_image_resources[demo->current_buffer].cmd;
+        submit_info.signalSemaphoreCount = 1;
+        submit_info.pSignalSemaphores = &demo->draw_complete_semaphores[demo->frame_index];
+        ATrace_beginSection("vkQueueSubmit");
+        err = vkQueueSubmit(demo->graphics_queue, 1, &submit_info, demo->fences[demo->frame_index]);
+        assert(!err);
+        ATrace_endSection();
+
+        if (demo->separate_present_queue) {
+            // If we are using separate queues, change image ownership to the
+            // present queue before presenting, waiting for the draw complete
+            // semaphore and signalling the ownership released semaphore when finished
+            VkFence nullFence = VK_NULL_HANDLE;
+            pipe_stage_flags = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+            submit_info.waitSemaphoreCount = 1;
+            submit_info.pWaitSemaphores = &demo->draw_complete_semaphores[demo->frame_index];
+            submit_info.commandBufferCount = 1;
+            submit_info.pCommandBuffers = &demo->swapchain_image_resources[demo->current_buffer].graphics_to_present_cmd;
+            submit_info.signalSemaphoreCount = 1;
+            submit_info.pSignalSemaphores = &demo->image_ownership_semaphores[demo->frame_index];
+            err = vkQueueSubmit(demo->present_queue, 1, &submit_info, nullFence);
+            assert(!err);
+        }
+
+    }
+
+    if (demo->present_frame){
+        demo->present_frame = false;
+        // If we are using separate queues we have to wait for image ownership,
+        // otherwise wait for draw complete
+        VkPresentInfoKHR present = {
+                .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+                .pNext = NULL,
+                .waitSemaphoreCount = 1,
+                .pWaitSemaphores = (demo->separate_present_queue)
+                                   ? &demo->image_ownership_semaphores[demo->frame_index]
+                                   : &demo->draw_complete_semaphores[demo->frame_index],
+                //.waitSemaphoreCount = 2,
+                //.pWaitSemaphores = demo->draw_complete_and_prev_acquired[demo->frame_index],
+                .swapchainCount = 1,
+                .pSwapchains = &demo->swapchain,
+                .pImageIndices = &demo->current_buffer,
+        };
+
+        if (demo->VK_KHR_incremental_present_enabled) {
+            // If using VK_KHR_incremental_present, we provide a hint of the region
+            // that contains changed content relative to the previously-presented
+            // image.  The implementation can use this hint in order to save
+            // work/power (by only copying the region in the hint).  The
+            // implementation is free to ignore the hint though, and so we must
+            // ensure that the entire image has the correctly-drawn content.
+            uint32_t eighthOfWidth = demo->width / 8;
+            uint32_t eighthOfHeight = demo->height / 8;
+            VkRectLayerKHR rect = {
+                    .offset.x = eighthOfWidth,
+                    .offset.y = eighthOfHeight,
+                    .extent.width = eighthOfWidth * 6,
+                    .extent.height = eighthOfHeight * 6,
+                    .layer = 0,
+            };
+            VkPresentRegionKHR region = {
+                    .rectangleCount = 1,
+                    .pRectangles = &rect,
+            };
+            VkPresentRegionsKHR regions = {
+                    .sType = VK_STRUCTURE_TYPE_PRESENT_REGIONS_KHR,
+                    .pNext = present.pNext,
+                    .swapchainCount = present.swapchainCount,
+                    .pRegions = &region,
+            };
+            present.pNext = &regions;
+        }
+
+        if (demo->VK_GOOGLE_display_timing_enabled) {
+            VkPresentTimeGOOGLE ptime;
+            if (demo->prev_desired_present_time == 0) {
+                // This must be the first present for this swapchain.
+                //
+                // We don't know where we are relative to the presentation engine's
+                // display's refresh cycle.  We also don't know how long rendering
+                // takes.  Let's make a grossly-simplified assumption that the
+                // desiredPresentTime should be half way between now and
+                // now+target_IPD.  We will adjust over time.
+                uint64_t curtime = getTimeInNanoseconds();
+                if (curtime == 0) {
+                    // Since we didn't find out the current time, don't give a
+                    // desiredPresentTime:
+                    ptime.desiredPresentTime = 0;
+                } else {
+                    ptime.desiredPresentTime = curtime + (demo->target_IPD >> 1);
+                }
+            } else {
+                ptime.desiredPresentTime = (demo->prev_desired_present_time + demo->target_IPD);
+            }
+            ptime.presentID = demo->next_present_id++;
+            demo->prev_desired_present_time = ptime.desiredPresentTime;
+
+            VkPresentTimesInfoGOOGLE present_time = {
+                    .sType = VK_STRUCTURE_TYPE_PRESENT_TIMES_INFO_GOOGLE,
+                    .pNext = present.pNext,
+                    .swapchainCount = present.swapchainCount,
+                    .pTimes = &ptime,
+            };
+            if (demo->VK_GOOGLE_display_timing_enabled) {
+                present.pNext = &present_time;
+            }
+        }
+
+        ATrace_beginSection("fpQueuePresentKHR");
+        err = demo->fpQueuePresentKHR(demo->present_queue, &present);
+        ATrace_endSection();
+        demo->frame_index += 1;
+        demo->frame_index %= FRAME_LAG;
 
         if (err == VK_ERROR_OUT_OF_DATE_KHR) {
             // demo->swapchain is out of date (e.g. the window was resized) and
@@ -1028,158 +1220,13 @@ static void demo_draw(struct demo *demo) {
         } else if (err == VK_SUBOPTIMAL_KHR) {
             // demo->swapchain is not as optimal as it could be, but the platform's
             // presentation engine will still present the image correctly.
-            break;
         } else {
             assert(!err);
         }
-    } while (err != VK_SUCCESS);
-
-    demo_update_data_buffer(demo);
-
-    if (demo->VK_GOOGLE_display_timing_enabled) {
-        // Look at what happened to previous presents, and make appropriate
-        // adjustments in timing:
-        DemoUpdateTargetIPD(demo);
-
-        // Note: a real application would position its geometry to that it's in
-        // the correct locatoin for when the next image is presented.  It might
-        // also wait, so that there's less latency between any input and when
-        // the next image is rendered/presented.  This demo program is so
-        // simple that it doesn't do either of those.
     }
 
-    // Wait for the image acquired semaphore to be signaled to ensure
-    // that the image won't be rendered to until the presentation
-    // engine has fully released ownership to the application, and it is
-    // okay to render to the image.
-    VkPipelineStageFlags pipe_stage_flags;
-    VkSubmitInfo submit_info;
-    submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submit_info.pNext = NULL;
-    submit_info.pWaitDstStageMask = &pipe_stage_flags;
-    pipe_stage_flags = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    submit_info.waitSemaphoreCount = 1;
-    submit_info.pWaitSemaphores = &demo->image_acquired_semaphores[demo->frame_index];
-    submit_info.commandBufferCount = 1;
-    submit_info.pCommandBuffers = &demo->swapchain_image_resources[demo->current_buffer].cmd;
-    submit_info.signalSemaphoreCount = 1;
-    submit_info.pSignalSemaphores = &demo->draw_complete_semaphores[demo->frame_index];
-    ATrace_beginSection("vkQueueSubmit");
-    err = vkQueueSubmit(demo->graphics_queue, 1, &submit_info, demo->fences[demo->frame_index]);
-    assert(!err);
-    ATrace_endSection();
-
-    if (demo->separate_present_queue) {
-        // If we are using separate queues, change image ownership to the
-        // present queue before presenting, waiting for the draw complete
-        // semaphore and signalling the ownership released semaphore when finished
-        VkFence nullFence = VK_NULL_HANDLE;
-        pipe_stage_flags = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        submit_info.waitSemaphoreCount = 1;
-        submit_info.pWaitSemaphores = &demo->draw_complete_semaphores[demo->frame_index];
-        submit_info.commandBufferCount = 1;
-        submit_info.pCommandBuffers = &demo->swapchain_image_resources[demo->current_buffer].graphics_to_present_cmd;
-        submit_info.signalSemaphoreCount = 1;
-        submit_info.pSignalSemaphores = &demo->image_ownership_semaphores[demo->frame_index];
-        err = vkQueueSubmit(demo->present_queue, 1, &submit_info, nullFence);
-        assert(!err);
-    }
-
-    // If we are using separate queues we have to wait for image ownership,
-    // otherwise wait for draw complete
-    VkPresentInfoKHR present = {
-        .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
-        .pNext = NULL,
-        .waitSemaphoreCount = 1,
-        .pWaitSemaphores = (demo->separate_present_queue) ? &demo->image_ownership_semaphores[demo->frame_index]
-                                                          : &demo->draw_complete_semaphores[demo->frame_index],
-        //.waitSemaphoreCount = 2,
-        //.pWaitSemaphores = demo->draw_complete_and_prev_acquired[demo->frame_index],
-        .swapchainCount = 1,
-        .pSwapchains = &demo->swapchain,
-        .pImageIndices = &demo->current_buffer,
-    };
-
-    if (demo->VK_KHR_incremental_present_enabled) {
-        // If using VK_KHR_incremental_present, we provide a hint of the region
-        // that contains changed content relative to the previously-presented
-        // image.  The implementation can use this hint in order to save
-        // work/power (by only copying the region in the hint).  The
-        // implementation is free to ignore the hint though, and so we must
-        // ensure that the entire image has the correctly-drawn content.
-        uint32_t eighthOfWidth = demo->width / 8;
-        uint32_t eighthOfHeight = demo->height / 8;
-        VkRectLayerKHR rect = {
-            .offset.x = eighthOfWidth,
-            .offset.y = eighthOfHeight,
-            .extent.width = eighthOfWidth * 6,
-            .extent.height = eighthOfHeight * 6,
-            .layer = 0,
-        };
-        VkPresentRegionKHR region = {
-            .rectangleCount = 1,
-            .pRectangles = &rect,
-        };
-        VkPresentRegionsKHR regions = {
-            .sType = VK_STRUCTURE_TYPE_PRESENT_REGIONS_KHR,
-            .pNext = present.pNext,
-            .swapchainCount = present.swapchainCount,
-            .pRegions = &region,
-        };
-        present.pNext = &regions;
-    }
-
-    if (demo->VK_GOOGLE_display_timing_enabled) {
-        VkPresentTimeGOOGLE ptime;
-        if (demo->prev_desired_present_time == 0) {
-            // This must be the first present for this swapchain.
-            //
-            // We don't know where we are relative to the presentation engine's
-            // display's refresh cycle.  We also don't know how long rendering
-            // takes.  Let's make a grossly-simplified assumption that the
-            // desiredPresentTime should be half way between now and
-            // now+target_IPD.  We will adjust over time.
-            uint64_t curtime = getTimeInNanoseconds();
-            if (curtime == 0) {
-                // Since we didn't find out the current time, don't give a
-                // desiredPresentTime:
-                ptime.desiredPresentTime = 0;
-            } else {
-                ptime.desiredPresentTime = curtime + (demo->target_IPD >> 1);
-            }
-        } else {
-            ptime.desiredPresentTime = (demo->prev_desired_present_time + demo->target_IPD);
-        }
-        ptime.presentID = demo->next_present_id++;
-        demo->prev_desired_present_time = ptime.desiredPresentTime;
-
-        VkPresentTimesInfoGOOGLE present_time = {
-            .sType = VK_STRUCTURE_TYPE_PRESENT_TIMES_INFO_GOOGLE,
-            .pNext = present.pNext,
-            .swapchainCount = present.swapchainCount,
-            .pTimes = &ptime,
-        };
-        if (demo->VK_GOOGLE_display_timing_enabled) {
-            present.pNext = &present_time;
-        }
-    }
-
-    ATrace_beginSection("fpQueuePresentKHR");
-    err = demo->fpQueuePresentKHR(demo->present_queue, &present);
-    ATrace_endSection();
-    demo->frame_index += 1;
-    demo->frame_index %= FRAME_LAG;
-
-    if (err == VK_ERROR_OUT_OF_DATE_KHR) {
-        // demo->swapchain is out of date (e.g. the window was resized) and
-        // must be recreated:
-        demo_resize(demo);
-    } else if (err == VK_SUBOPTIMAL_KHR) {
-        // demo->swapchain is not as optimal as it could be, but the platform's
-        // presentation engine will still present the image correctly.
-    } else {
-        assert(!err);
-    }
+    AChoreographer *choreographer = AChoreographer_getInstance();
+    AChoreographer_postFrameCallbackDelayed(choreographer, demo_frame_callback, demo, 1);
 }
 
 static void demo_prepare_buffers(struct demo *demo) {
@@ -1773,7 +1820,6 @@ void demo_prepare_cube_data_buffers(struct demo *demo) {
         data.attr[i][3] = 0;
     }
     data.rand = 0;
-
     memset(&buf_info, 0, sizeof(buf_info));
     buf_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     buf_info.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
@@ -2262,7 +2308,10 @@ static void demo_prepare(struct demo *demo) {
     }
 
     demo->current_buffer = 0;
-    demo->prepared = true;
+    demo->last_frame_reported = 0;
+    AChoreographer *choreographer = AChoreographer_getInstance();
+    AChoreographer_postFrameCallbackDelayed(choreographer, demo_frame_callback, demo, 1);
+
 }
 
 static void demo_cleanup(struct demo *demo) {
@@ -3676,8 +3725,11 @@ static void demo_init_connection(struct demo *demo) {
 }
 
 static void demo_init(struct demo *demo, int argc, char **argv) {
-    vec3 eye = {0.0f, 3.0f, 5.0f};
+    // adyabr
+    vec3 eye = {0.0f, 3.0f, 8.0f};
+    //vec3 eye = {0.0f, 8.0f, 0.0f};
     vec3 origin = {0, 0, 0};
+    //vec3 up = {0.0f, 0.0f, -1.0};
     vec3 up = {0.0f, 1.0f, 0.0};
 
     memset(demo, 0, sizeof(*demo));
@@ -3753,12 +3805,14 @@ static void demo_init(struct demo *demo, int argc, char **argv) {
 
     demo->width = 500;
     demo->height = 500;
-
-    demo->spin_angle = 4.0f;
+    // adyabr
+    demo->spin_angle = 2.0f;
+    //demo->spin_angle = 4.0f;
     demo->spin_increment = 0.2f;
     demo->pause = false;
 
-    mat4x4_perspective(demo->projection_matrix, (float)degreesToRadians(45.0f), 1.0f, 0.1f, 100.0f);
+    mat4x4_perspective(demo->projection_matrix, (float)degreesToRadians(45.0f), 0.5f, 0.1f, 100.0f);
+    //mat4x4_perspective(demo->projection_matrix, (float)degreesToRadians(45.0f), 1.0f, 0.1f, 100.0f);
     mat4x4_look_at(demo->view_matrix, eye, origin, up);
     mat4x4_identity(demo->model_matrix);
 
@@ -3935,7 +3989,7 @@ void android_main(struct android_app *app) {
     while (1) {
         int events;
         struct android_poll_source *source;
-        while (ALooper_pollAll(active ? 0 : -1, NULL, &events, (void **)&source) >= 0) {
+        while (ALooper_pollAll(-1, NULL, &events, (void **)&source) >= 0) {
             if (source) {
                 source->process(app, source);
             }
