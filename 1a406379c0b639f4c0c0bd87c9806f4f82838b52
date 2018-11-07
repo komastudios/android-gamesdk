@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4c1075b9_3267e904",
+        "filename": "src/swappy/Swappy.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-07T19:41:58Z",
+      "side": 1,
+      "message": "1ms feels a long time to pad. What do you think the lower limit could be?",
+      "revId": "1a406379c0b639f4c0c0bd87c9806f4f82838b52",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
