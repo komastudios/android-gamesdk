@@ -267,6 +267,24 @@
     },
     {
       "key": {
+        "uuid": "f1ab8812_52599555",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-11-07T14:18:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "615bb55f_78d18242",
+      "revId": "07683a8f990f84da54ed1e2569f34e63190a9c63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6ba8de20_6fe37782",
         "filename": "performance-utils/device_info.cc",
         "patchSetId": 4
@@ -374,6 +392,24 @@
     },
     {
       "key": {
+        "uuid": "d350f830_6417e65e",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-11-07T14:18:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d9a8ca50_520f6068",
+      "revId": "07683a8f990f84da54ed1e2569f34e63190a9c63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "02b0f672_f3eb39c5",
         "filename": "performance-utils/device_info.cc",
         "patchSetId": 4
@@ -460,6 +496,24 @@
       "revId": "07683a8f990f84da54ed1e2569f34e63190a9c63",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7a9d400d_ea6b66f8",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 276,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-11-07T14:18:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "08b0f936_b26de934",
+      "revId": "07683a8f990f84da54ed1e2569f34e63190a9c63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {

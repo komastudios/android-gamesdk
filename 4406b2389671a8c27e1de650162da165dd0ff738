@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "648b3239_b1245bf2",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 7
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-11-07T14:18:39Z",
+      "side": 1,
+      "message": "cpplint did not like your idea :)\n\ndevice_info.cc:1:  Include the directory when naming google .h files  [build/include] [4]\n\nWhat should I do?",
+      "parentUuid": "f41c199a_50bf2fa6",
+      "revId": "4406b2389671a8c27e1de650162da165dd0ff738",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4e0fef90_09052ef8",
         "filename": "performance-utils/device_info.cc",
         "patchSetId": 7
@@ -33,6 +51,24 @@
       "revId": "4406b2389671a8c27e1de650162da165dd0ff738",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d1641504_a46682d7",
+        "filename": "performance-utils/device_info.cc",
+        "patchSetId": 7
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-11-07T14:18:39Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "4e0fef90_09052ef8",
+      "revId": "4406b2389671a8c27e1de650162da165dd0ff738",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
