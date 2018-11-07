@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "225d1036_7fb6d72d",
+        "filename": "src/swappy/ChoreographerFilter.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-11-07T20:25:46Z",
+      "side": 1,
+      "message": "For a fresh pair of eyes on this code it\u0027s super unclear what the purpose of this return value is. Suggest you add a comment explaining it in a subsequent cl.",
+      "revId": "4b610dd44cdb73f25594059e8628a0471f970afb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
