@@ -16,6 +16,24 @@
       "revId": "1a406379c0b639f4c0c0bd87c9806f4f82838b52",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b0cc1440_845b54d5",
+        "filename": "src/swappy/Swappy.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-11-07T19:50:09Z",
+      "side": 1,
+      "message": "A long time, how? It doesn\u0027t really affect the performance of anything, since any timestamp between [now] and [now + 1 vsync] will be picked up by SurfaceFlinger all the same. We just need to ensure we don\u0027t end up before [now].",
+      "parentUuid": "4c1075b9_3267e904",
+      "revId": "1a406379c0b639f4c0c0bd87c9806f4f82838b52",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
