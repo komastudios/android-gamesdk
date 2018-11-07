@@ -34,6 +34,24 @@
       "revId": "50092e4ce73218c2d5f992e081175a400002bf4c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7e603696_36693f75",
+        "filename": "swappy/Swappy.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-11-07T19:30:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ac3c676c_2412591b",
+      "revId": "50092e4ce73218c2d5f992e081175a400002bf4c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
