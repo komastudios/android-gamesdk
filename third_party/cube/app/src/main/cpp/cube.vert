@@ -39,7 +39,7 @@ void main()
    /* make gpu work harder */
    if (ubuf.rand % 30 != 0) {
     int i, j, k;
-    for (i = 0; i < 1000; i++) {
+    for (i = 0; i < 800; i++) {
         for (j = 0; j < i; j++) {
             for (k = 0; k < j; k++) {
                     gl_Position = ubuf.MVP * ubuf.position[gl_VertexIndex];
