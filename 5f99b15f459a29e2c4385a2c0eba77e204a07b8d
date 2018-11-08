@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "063e7e82_4c46b75a",
+        "filename": "third_party/cube/app/src/main/cpp/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-08T21:04:58Z",
+      "side": 1,
+      "message": "Remove this",
+      "revId": "5f99b15f459a29e2c4385a2c0eba77e204a07b8d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0b1faafe_e89669ee",
+        "filename": "third_party/cube/app/src/main/cpp/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 439,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-08T21:04:58Z",
+      "side": 1,
+      "message": "this can be:\n SwappyVk(SwappyVk const\u0026) \u003ddelete;",
+      "revId": "5f99b15f459a29e2c4385a2c0eba77e204a07b8d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d0d2071c_846a29dc",
+        "filename": "third_party/cube/app/src/main/cpp/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 440,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-08T21:04:58Z",
+      "side": 1,
+      "message": "void operator\u003d(SwappyVk const\u0026) \u003ddelete;",
+      "revId": "5f99b15f459a29e2c4385a2c0eba77e204a07b8d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f66179e9_c0f5ccde",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 1171,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-08T21:04:58Z",
+      "side": 1,
+      "message": "Can we move the trace point in swappyPresent?",
+      "revId": "5f99b15f459a29e2c4385a2c0eba77e204a07b8d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
