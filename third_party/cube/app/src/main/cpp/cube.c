@@ -25,6 +25,7 @@
  * Author: Bill Hollings <bill.hollings@brenwill.com>
  */
 
+
  #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdarg.h>
@@ -33,6 +34,7 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <signal.h>
+#include <pthread.h>
 #if defined(VK_USE_PLATFORM_XLIB_KHR) || defined(VK_USE_PLATFORM_XCB_KHR)
 #include <X11/Xutil.h>
 #elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
@@ -46,11 +48,13 @@
 
 #ifdef ANDROID
 #include "vulkan_wrapper.h"
+#include <android/choreographer.h>
+#include <android/trace.h>
+
 #else
 #include <vulkan/vulkan.h>
 #endif
 
-#include <android/trace.h>
 
 #include <vulkan/vk_platform.h>
 #include "linmath.h"
@@ -333,6 +337,8 @@ struct demo {
     struct wl_keyboard *keyboard;
 #elif defined(VK_USE_PLATFORM_ANDROID_KHR)
     struct ANativeWindow *window;
+    pthread_t demo_thread;
+    AChoreographer *choreographer;
 #elif (defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK))
     void *window;
 #endif
@@ -386,7 +392,6 @@ struct demo {
     PFN_vkDestroySwapchainKHR fpDestroySwapchainKHR;
     PFN_vkGetSwapchainImagesKHR fpGetSwapchainImagesKHR;
     PFN_vkAcquireNextImageKHR fpAcquireNextImageKHR;
-    PFN_vkQueuePresentKHR fpQueuePresentKHR;
     PFN_vkGetRefreshCycleDurationGOOGLE fpGetRefreshCycleDurationGOOGLE;
     PFN_vkGetPastPresentationTimingGOOGLE fpGetPastPresentationTimingGOOGLE;
     uint32_t swapchainImageCount;
@@ -1166,8 +1171,8 @@ static void demo_draw(struct demo *demo) {
         }
     }
 
-    ATrace_beginSection("fpQueuePresentKHR");
-    err = demo->fpQueuePresentKHR(demo->present_queue, &present);
+    ATrace_beginSection("swappyVkQueuePresent");
+    err = swappyVkQueuePresent(demo->present_queue, &present);
     ATrace_endSection();
     demo->frame_index += 1;
     demo->frame_index %= FRAME_LAG;
@@ -1387,7 +1392,11 @@ static void demo_prepare_buffers(struct demo *demo) {
         assert(!err);
     }
 
-    demo->refresh_duration = swappyVkGetRefreshCycleDuration(demo->gpu, demo->device, demo->swapchain);
+    demo->refresh_duration = swappyVkGetRefreshCycleDuration(demo->gpu, demo->device, demo->swapchain, demo->choreographer);
+    // we want to render in 30Hz
+    swappyVkSetSwapInterval(demo->device, demo->swapchain, 33333333 / demo->refresh_duration);
+
+
     if (demo->VK_GOOGLE_display_timing_enabled) {
         VkRefreshCycleDurationGOOGLE rc_dur;
         err = demo->fpGetRefreshCycleDurationGOOGLE(demo->device, demo->swapchain, &rc_dur);
@@ -2734,11 +2743,17 @@ static void demo_create_window(struct demo *demo) {
     wl_shell_surface_set_title(demo->shell_surface, APP_SHORT_NAME);
 }
 #elif defined(VK_USE_PLATFORM_ANDROID_KHR)
-static void demo_run(struct demo *demo) {
-    if (!demo->prepared) return;
+static bool active = false;
+static void *demo_run(void *arg) {
+    struct demo* demo = (struct demo *)arg;
 
-    demo_draw(demo);
-    demo->curFrame++;
+    if (!demo->prepared)
+        return NULL;
+    while (active) {
+        demo_draw(demo);
+        demo->curFrame++;
+    }
+    return NULL;
 }
 #elif defined(VK_USE_PLATFORM_MACOS_MVK)
 static void demo_run(struct demo *demo) {
@@ -3469,7 +3484,6 @@ static void demo_init_vk_swapchain(struct demo *demo) {
     GET_DEVICE_PROC_ADDR(demo->device, DestroySwapchainKHR);
     GET_DEVICE_PROC_ADDR(demo->device, GetSwapchainImagesKHR);
     GET_DEVICE_PROC_ADDR(demo->device, AcquireNextImageKHR);
-    GET_DEVICE_PROC_ADDR(demo->device, QueuePresentKHR);
     if (demo->VK_GOOGLE_display_timing_enabled) {
         GET_DEVICE_PROC_ADDR(demo->device, GetRefreshCycleDurationGOOGLE);
         GET_DEVICE_PROC_ADDR(demo->device, GetPastPresentationTimingGOOGLE);
@@ -3688,6 +3702,7 @@ static void demo_init(struct demo *demo, int argc, char **argv) {
     memset(demo, 0, sizeof(*demo));
     demo->presentMode = VK_PRESENT_MODE_FIFO_KHR;
     demo->frameCount = INT32_MAX;
+    demo->choreographer = AChoreographer_getInstance();
 
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--use_staging") == 0) {
@@ -3869,7 +3884,6 @@ static void demo_main(struct demo *demo, void *view, int argc, const char *argv[
 #include "android_util.h"
 
 static bool initialized = false;
-static bool active = false;
 struct demo demo;
 
 static int32_t processInput(struct android_app *app, AInputEvent *event) { return 0; }
@@ -3916,7 +3930,10 @@ static void processCommand(struct android_app *app, int32_t cmd) {
             break;
         }
         case APP_CMD_GAINED_FOCUS: {
-            active = true;
+            if (initialized && demo.prepared) {
+                active = true;
+                pthread_create(&demo.demo_thread, NULL, demo_run, &demo);
+            }
             break;
         }
         case APP_CMD_LOST_FOCUS: {
@@ -3940,18 +3957,16 @@ void android_main(struct android_app *app) {
     while (1) {
         int events;
         struct android_poll_source *source;
-        while (ALooper_pollAll(active ? 0 : -1, NULL, &events, (void **)&source) >= 0) {
+        while (ALooper_pollAll(-1, NULL, &events, (void **)&source) >= 0) {
             if (source) {
                 source->process(app, source);
             }
 
             if (app->destroyRequested != 0) {
+                pthread_join(demo.demo_thread, NULL);
                 demo_cleanup(&demo);
                 return;
             }
-        }
-        if (initialized && active) {
-            demo_run(&demo);
         }
     }
 }

@@ -16,10 +16,14 @@
 
 #include "SwappyVk.h"
 #include <map>
-
+#include <mutex>
 #include <dlfcn.h>
-
+#include <android/choreographer.h>
 #include <android/log.h>
+
+// TODO: remove this
+//#define FORCE_FALLBACK
+
 #define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, "SwappyVk", __VA_ARGS__)
 #define ALOGW(...) __android_log_print(ANDROID_LOG_WARN, "SwappyVk", __VA_ARGS__)
 #define ALOGI(...) __android_log_print(ANDROID_LOG_INFO, "SwappyVk", __VA_ARGS__)
@@ -63,9 +67,11 @@ public:
                  uint64_t         refreshDur,
                  uint32_t         interval,
                  SwappyVk         &swappyVk,
-                 void             *libVulkan) :
+                 void             *libVulkan,
+                 AChoreographer   *choreographer) :
             mPhysicalDevice(physicalDevice), mDevice(device), mRefreshDur(refreshDur),
-            mInterval(interval), mSwappyVk(swappyVk), mLibVulkan(libVulkan) {};
+            mInterval(interval), mSwappyVk(swappyVk), mLibVulkan(libVulkan),
+            mChoreographer(choreographer) {};
     virtual uint64_t doGetRefreshCycleDuration(VkSwapchainKHR swapchain) = 0;
     virtual void doSetSwapInterval(VkSwapchainKHR swapchain,
                                    uint32_t       interval) = 0;
@@ -78,6 +84,7 @@ public:
     uint32_t         mInterval;
     SwappyVk         &mSwappyVk;
     void             *mLibVulkan;
+    AChoreographer   *mChoreographer;
 };
 
 
@@ -101,8 +108,9 @@ public:
     SwappyVkGoogle(VkPhysicalDevice physicalDevice,
                    VkDevice         device,
                    SwappyVk         &swappyVk,
-                   void             *libVulkan) :
-            SwappyVkBase(physicalDevice, device, 16666666, 1, swappyVk, libVulkan),
+                   void             *libVulkan,
+                   AChoreographer   *choreographer) :
+            SwappyVkBase(physicalDevice, device, 16666666, 1, swappyVk, libVulkan, choreographer),
             mInitialized(false), mNextPresentID(0), mNextDesiredPresentTime(0)
     {
         initialize();
@@ -270,8 +278,18 @@ public:
     SwappyVkAndroidFallback(VkPhysicalDevice physicalDevice,
                             VkDevice         device,
                             SwappyVk         &swappyVk,
-                            void             *libVulkan) :
-            SwappyVkBase(physicalDevice, device, 16666666, 1, swappyVk, libVulkan) {}
+                            void             *libVulkan,
+                            AChoreographer   *choreographer) :
+            SwappyVkBase(physicalDevice, device, 16666666, 1, swappyVk, libVulkan, choreographer) {
+
+        mpfnQueuePresentKHR = reinterpret_cast<PFN_vkQueuePresentKHR>(dlsym(mLibVulkan, "vkQueuePresentKHR"));
+        if (!mpfnQueuePresentKHR) {
+            throw std::runtime_error("failed to get vkQueuePresentKHR");
+        }
+    }
+
+
+
     virtual uint64_t doGetRefreshCycleDuration(VkSwapchainKHR swapchain)
     {
         // TODO: replace this with a better implementation, if there's another
@@ -281,15 +299,54 @@ public:
     virtual void doSetSwapInterval(VkSwapchainKHR swapchain,
                                    uint32_t       interval)
     {
-        // TODO: replace this with a real implementation
+        mSwapInterval = interval;
     }
     virtual VkResult doQueuePresent(VkQueue                 queue,
                                     const VkPresentInfoKHR* pPresentInfo)
     {
-        // TODO: replace this with a better implementation that waits before
-        // calling vkQueuePresentKHR
-        return vkQueuePresentKHR(queue, pPresentInfo);
+
+        // register for a callback when next frame is presented
+        AChoreographer_postFrameCallbackDelayed(mChoreographer, frameCallback, this, 1);
+        {
+            const long target = mFrameID + mSwapInterval;
+            std::unique_lock<std::mutex> lock(mWaitingMutex);
+
+
+            mWaitingCondition.wait(lock, [&]() {
+                if (mFrameID < target) {
+                    // wait for the next frame as this frame is too soon
+                    AChoreographer_postFrameCallbackDelayed(mChoreographer, frameCallback, this, 1);
+                    return false;
+                }
+                return true;
+            });
+        }
+        return mpfnQueuePresentKHR(queue, pPresentInfo);
     }
+
+private:
+    static void frameCallback(long frameTimeNanos, void *data) {
+        SwappyVkAndroidFallback *me = reinterpret_cast<SwappyVkAndroidFallback *>(data);
+        me->onDisplayRefresh(frameTimeNanos);
+    }
+
+    void onDisplayRefresh(long frameTimeNanos) {
+        std::lock_guard<std::mutex> lock(mWaitingMutex);
+        // TODO: define some threshold
+        if (mLastframeTimeNanos != 0 && frameTimeNanos - mLastframeTimeNanos < 1000)
+            return;
+
+        mLastframeTimeNanos = frameTimeNanos;
+        mFrameID++;
+        mWaitingCondition.notify_all();
+    }
+
+    PFN_vkQueuePresentKHR mpfnQueuePresentKHR = nullptr;
+    uint32_t mSwapInterval;
+    std::mutex mWaitingMutex;
+    std::condition_variable mWaitingCondition;
+    long mFrameID = 0;
+    long mLastframeTimeNanos = 0;
 };
 
 
@@ -314,11 +371,11 @@ public:
         static SwappyVk instance;
         return instance;
     }
-    ~SwappyVk() {}
 
     uint64_t GetRefreshCycleDuration(VkPhysicalDevice physicalDevice,
                                      VkDevice         device,
-                                     VkSwapchainKHR   swapchain);
+                                     VkSwapchainKHR   swapchain,
+                                     AChoreographer   *choreographer);
     void SetSwapInterval(VkDevice       device,
                          VkSwapchainKHR swapchain,
                          uint32_t       interval);
@@ -326,6 +383,7 @@ public:
                           const VkPresentInfoKHR* pPresentInfo);
 
 private:
+
     std::map<VkDevice, SwappyVkBase*> perDeviceImplementation;
     std::map<VkSwapchainKHR, SwappyVkBase*> perSwapchainImplementation;
 
@@ -335,9 +393,10 @@ public:
     PFN_vkQueuePresentKHR mpfnQueuePresentKHR = nullptr;
 
 private:
-    SwappyVk() {} // Need to implement this constructor
-//    SwappyVk(SwappyVk const&); // Don't implement a copy constructor--no copies
-//    void operator=(SwappyVk const&); // Don't implement--no copies
+    SwappyVk() = default;// {} // Need to implement this constructor
+    SwappyVk(SwappyVk const&); // Don't implement a copy constructor--no copies
+    void operator=(SwappyVk const&); // Don't implement--no copies
+    ~SwappyVk() {}
 public:
 //    SwappyVk(SwappyVk const&)       = delete;
 //    void operator=(SwappyVk const&) = delete;
@@ -349,7 +408,8 @@ public:
  */
 uint64_t SwappyVk::GetRefreshCycleDuration(VkPhysicalDevice physicalDevice,
                                            VkDevice         device,
-                                           VkSwapchainKHR   swapchain)
+                                           VkSwapchainKHR   swapchain,
+                                           AChoreographer   *choreographer)
 {
     SwappyVkBase *pImplementation = perDeviceImplementation[device];
     if (!pImplementation) {
@@ -390,16 +450,19 @@ uint64_t SwappyVk::GetRefreshCycleDuration(VkPhysicalDevice physicalDevice,
                 break;
             }
         }
-
+#ifdef FORCE_FALLBACK
+        have_VK_GOOGLE_display_timing = false;
+#endif
         // Second, determine which derived class to use to implement the rest of the
         // API
         if (have_VK_GOOGLE_display_timing) {
             // Instantiate the class that sits on top of VK_GOOGLE_display_timing
-            pImplementation = new SwappyVkGoogle(physicalDevice, device, getInstance(), mLibVulkan);
+            pImplementation = new SwappyVkGoogle(physicalDevice, device, getInstance(),
+                                                 mLibVulkan, choreographer);
         } else {
             // Instantiate the class that sits on top of the basic Vulkan APIs
             pImplementation = new SwappyVkAndroidFallback(physicalDevice, device, getInstance(),
-                                                          mLibVulkan);
+                                                          mLibVulkan, choreographer);
         }
 
         // Third, cache the per-device pointer to the derived class:
@@ -469,10 +532,11 @@ extern "C" {
 uint64_t swappyVkGetRefreshCycleDuration(
         VkPhysicalDevice physicalDevice,
         VkDevice         device,
-        VkSwapchainKHR   swapchain)
+        VkSwapchainKHR   swapchain,
+        AChoreographer   *choreographer)
 {
-    SwappyVk swappy = SwappyVk::getInstance();
-    return swappy.GetRefreshCycleDuration(physicalDevice, device, swapchain);
+    SwappyVk& swappy = SwappyVk::getInstance();
+    return swappy.GetRefreshCycleDuration(physicalDevice, device, swapchain, choreographer);
 }
 
 void swappyVkSetSwapInterval(
@@ -480,7 +544,7 @@ void swappyVkSetSwapInterval(
         VkSwapchainKHR swapchain,
         uint32_t       interval)
 {
-    SwappyVk swappy = SwappyVk::getInstance();
+    SwappyVk& swappy = SwappyVk::getInstance();
     swappy.SetSwapInterval(device, swapchain, interval);
 }
 
@@ -488,7 +552,7 @@ VkResult swappyVkQueuePresent(
         VkQueue                 queue,
         const VkPresentInfoKHR* pPresentInfo)
 {
-    SwappyVk swappy = SwappyVk::getInstance();
+    SwappyVk& swappy = SwappyVk::getInstance();
     return swappy.QueuePresent(queue, pPresentInfo);
 }
 

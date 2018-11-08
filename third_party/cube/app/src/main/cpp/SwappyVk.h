@@ -18,6 +18,7 @@
 #define SWAPPYVK_H
 
 #include <vulkan/vulkan.h>
+#include <android/choreographer.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,11 +42,13 @@ extern "C" {
  *  (IN)  physicalDevice - The VkPhysicalDevice asscoiated with the swapchain
  *  (IN)  device    - The VkDevice asscoiated with the swapchain
  *  (IN)  swapchain - The VkSwapchainKHR the application wants Swappy to swap
+ *  (IN)  choreographer - The Choreographer instance for this app
  */
 uint64_t swappyVkGetRefreshCycleDuration(
         VkPhysicalDevice physicalDevice,
         VkDevice         device,
-        VkSwapchainKHR   swapchain);
+        VkSwapchainKHR   swapchain,
+        AChoreographer   *choreographer);
 
 
 // TODO/TBD: DECIDE HOW TO HANDLE SWAPCHAIN RE-CREATION.  IT WOULD BE NICE FOR
