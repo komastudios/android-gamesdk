@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d8070cd7_1a0a87e6",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 1397,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-08T02:34:35Z",
+      "side": 1,
+      "message": "Can you use a constant pls?",
+      "revId": "ceee59b7f0261e26eb86b54683bc1f7648a33aac",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
