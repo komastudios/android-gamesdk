@@ -16,6 +16,24 @@
       "revId": "ceee59b7f0261e26eb86b54683bc1f7648a33aac",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e2d4182e_e601e960",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 1397,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-08T23:10:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d8070cd7_1a0a87e6",
+      "revId": "ceee59b7f0261e26eb86b54683bc1f7648a33aac",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
