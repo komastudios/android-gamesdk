@@ -16,10 +16,33 @@
 
 #include "SwappyVk.h"
 #include <map>
-
+#include <mutex>
+#include <pthread.h>
 #include <dlfcn.h>
-
+#include <android/looper.h>
+#include <android/choreographer.h>
 #include <android/log.h>
+#include <android/trace.h>
+
+#define ATRACE_NAME(name) ScopedTrace ___tracer(name)
+
+// ATRACE_CALL is an ATRACE_NAME that uses the current function name.
+#define ATRACE_CALL() ATRACE_NAME(__FUNCTION__)
+
+class ScopedTrace {
+public:
+    inline ScopedTrace(const char *name) {
+        ATrace_beginSection(name);
+    }
+
+    inline ~ScopedTrace() {
+        ATrace_endSection();
+    }
+};
+
+// TODO: remove this
+#define FORCE_FALLBACK
+
 #define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, "SwappyVk", __VA_ARGS__)
 #define ALOGW(...) __android_log_print(ANDROID_LOG_WARN, "SwappyVk", __VA_ARGS__)
 #define ALOGI(...) __android_log_print(ANDROID_LOG_INFO, "SwappyVk", __VA_ARGS__)
@@ -271,7 +294,31 @@ public:
                             VkDevice         device,
                             SwappyVk         &swappyVk,
                             void             *libVulkan) :
-            SwappyVkBase(physicalDevice, device, 16666666, 1, swappyVk, libVulkan) {}
+            SwappyVkBase(physicalDevice, device, 16666666, 1, swappyVk, libVulkan) {
+
+        mpfnQueuePresentKHR = reinterpret_cast<PFN_vkQueuePresentKHR>(dlsym(mLibVulkan, "vkQueuePresentKHR"));
+        if (!mpfnQueuePresentKHR) {
+            throw std::runtime_error("failed to get vkQueuePresentKHR");
+        }
+
+        // create a new ALooper thread to get Choreographer events
+        mTreadRunning = true;
+        pthread_create(&mThread, NULL, looperThreadWrapper, this);
+
+    }
+
+    ~SwappyVkAndroidFallback() {
+        if (mLooper) {
+            ALooper_acquire(mLooper);
+            mTreadRunning = false;
+            ALooper_wake(mLooper);
+            ALooper_release(mLooper);
+            pthread_join(mThread, NULL);
+        }
+    }
+
+
+
     virtual uint64_t doGetRefreshCycleDuration(VkSwapchainKHR swapchain)
     {
         // TODO: replace this with a better implementation, if there's another
@@ -281,15 +328,86 @@ public:
     virtual void doSetSwapInterval(VkSwapchainKHR swapchain,
                                    uint32_t       interval)
     {
-        // TODO: replace this with a real implementation
+        mSwapInterval = interval;
     }
     virtual VkResult doQueuePresent(VkQueue                 queue,
                                     const VkPresentInfoKHR* pPresentInfo)
     {
-        // TODO: replace this with a better implementation that waits before
-        // calling vkQueuePresentKHR
-        return vkQueuePresentKHR(queue, pPresentInfo);
+        ATRACE_CALL();
+        // register for a callback when next frame is presented
+        AChoreographer_postFrameCallbackDelayed(mChoreographer, frameCallback, this, 1);
+        {
+            const long target = mFrameID + mSwapInterval;
+            std::unique_lock<std::mutex> lock(mWaitingMutex);
+
+
+            mWaitingCondition.wait(lock, [&]() {
+                if (mFrameID < target) {
+                    // wait for the next frame as this frame is too soon
+                    AChoreographer_postFrameCallbackDelayed(mChoreographer, frameCallback, this, 1);
+                    return false;
+                }
+                return true;
+            });
+        }
+        return mpfnQueuePresentKHR(queue, pPresentInfo);
     }
+
+private:
+    static void *looperThreadWrapper(void *data) {
+        SwappyVkAndroidFallback *me = reinterpret_cast<SwappyVkAndroidFallback *>(data);
+        return me->looperThread();
+    }
+
+    void *looperThread() {
+        int outFd, outEvents;
+        void *outData;
+
+        mLooper = ALooper_prepare(0);
+        if (!mLooper) {
+            ALOGE("ALooper_prepare failed");
+            return NULL;
+        }
+
+        mChoreographer = AChoreographer_getInstance();
+        if (!mChoreographer) {
+            ALOGE("AChoreographer_getInstance failed");
+            return NULL;
+        }
+
+        while (mTreadRunning) {
+            ALooper_pollAll(-1, &outFd, &outEvents, &outData);
+        }
+
+        return NULL;
+    }
+
+    static void frameCallback(long frameTimeNanos, void *data) {
+        SwappyVkAndroidFallback *me = reinterpret_cast<SwappyVkAndroidFallback *>(data);
+        me->onDisplayRefresh(frameTimeNanos);
+    }
+
+    void onDisplayRefresh(long frameTimeNanos) {
+        std::lock_guard<std::mutex> lock(mWaitingMutex);
+        // TODO: define some threshold
+        if (mLastframeTimeNanos != 0 && frameTimeNanos - mLastframeTimeNanos < 1000)
+            return;
+
+        mLastframeTimeNanos = frameTimeNanos;
+        mFrameID++;
+        mWaitingCondition.notify_all();
+    }
+
+    pthread_t mThread = 0;
+    ALooper *mLooper = nullptr;
+    bool mTreadRunning = false;
+    AChoreographer *mChoreographer = nullptr;
+    PFN_vkQueuePresentKHR mpfnQueuePresentKHR = nullptr;
+    uint32_t mSwapInterval;
+    std::mutex mWaitingMutex;
+    std::condition_variable mWaitingCondition;
+    long mFrameID = 0;
+    long mLastframeTimeNanos = 0;
 };
 
 
@@ -314,7 +432,6 @@ public:
         static SwappyVk instance;
         return instance;
     }
-    ~SwappyVk() {}
 
     uint64_t GetRefreshCycleDuration(VkPhysicalDevice physicalDevice,
                                      VkDevice         device,
@@ -335,9 +452,10 @@ public:
     PFN_vkQueuePresentKHR mpfnQueuePresentKHR = nullptr;
 
 private:
-    SwappyVk() {} // Need to implement this constructor
-//    SwappyVk(SwappyVk const&); // Don't implement a copy constructor--no copies
-//    void operator=(SwappyVk const&); // Don't implement--no copies
+    SwappyVk() = default;// {} // Need to implement this constructor
+    SwappyVk(SwappyVk const&) = delete;
+    void operator=(SwappyVk const&) = delete;
+    ~SwappyVk() {}
 public:
 //    SwappyVk(SwappyVk const&)       = delete;
 //    void operator=(SwappyVk const&) = delete;
@@ -390,7 +508,10 @@ uint64_t SwappyVk::GetRefreshCycleDuration(VkPhysicalDevice physicalDevice,
                 break;
             }
         }
-
+// TODO: remove this
+#ifdef FORCE_FALLBACK
+        have_VK_GOOGLE_display_timing = false;
+#endif
         // Second, determine which derived class to use to implement the rest of the
         // API
         if (have_VK_GOOGLE_display_timing) {
@@ -471,7 +592,8 @@ uint64_t swappyVkGetRefreshCycleDuration(
         VkDevice         device,
         VkSwapchainKHR   swapchain)
 {
-    SwappyVk swappy = SwappyVk::getInstance();
+    ATRACE_CALL();
+    SwappyVk& swappy = SwappyVk::getInstance();
     return swappy.GetRefreshCycleDuration(physicalDevice, device, swapchain);
 }
 
@@ -480,7 +602,8 @@ void swappyVkSetSwapInterval(
         VkSwapchainKHR swapchain,
         uint32_t       interval)
 {
-    SwappyVk swappy = SwappyVk::getInstance();
+    ATRACE_CALL();
+    SwappyVk& swappy = SwappyVk::getInstance();
     swappy.SetSwapInterval(device, swapchain, interval);
 }
 
@@ -488,7 +611,8 @@ VkResult swappyVkQueuePresent(
         VkQueue                 queue,
         const VkPresentInfoKHR* pPresentInfo)
 {
-    SwappyVk swappy = SwappyVk::getInstance();
+    ATRACE_CALL();
+    SwappyVk& swappy = SwappyVk::getInstance();
     return swappy.QueuePresent(queue, pPresentInfo);
 }
 

@@ -61,6 +61,9 @@
 #define MILLION 1000000L
 #define BILLION 1000000000L
 
+// render at 30Hz
+#define RENDER_INTERVAL 33333333
+
 #define DEMO_TEXTURE_COUNT 1
 #define APP_SHORT_NAME "cube"
 #define APP_LONG_NAME "The Vulkan Cube Demo Program"
@@ -383,7 +386,6 @@ struct demo {
     PFN_vkDestroySwapchainKHR fpDestroySwapchainKHR;
     PFN_vkGetSwapchainImagesKHR fpGetSwapchainImagesKHR;
     PFN_vkAcquireNextImageKHR fpAcquireNextImageKHR;
-    PFN_vkQueuePresentKHR fpQueuePresentKHR;
     PFN_vkGetRefreshCycleDurationGOOGLE fpGetRefreshCycleDurationGOOGLE;
     PFN_vkGetPastPresentationTimingGOOGLE fpGetPastPresentationTimingGOOGLE;
     uint32_t swapchainImageCount;
@@ -1152,7 +1154,7 @@ static void demo_draw(struct demo *demo) {
         }
     }
 
-    err = demo->fpQueuePresentKHR(demo->present_queue, &present);
+    err = swappyVkQueuePresent(demo->present_queue, &present);
     demo->frame_index += 1;
     demo->frame_index %= FRAME_LAG;
 
@@ -1372,6 +1374,7 @@ static void demo_prepare_buffers(struct demo *demo) {
     }
 
     demo->refresh_duration = swappyVkGetRefreshCycleDuration(demo->gpu, demo->device, demo->swapchain);
+    swappyVkSetSwapInterval(demo->device, demo->swapchain, RENDER_INTERVAL / demo->refresh_duration);
     if (demo->VK_GOOGLE_display_timing_enabled) {
         VkRefreshCycleDurationGOOGLE rc_dur;
         err = demo->fpGetRefreshCycleDurationGOOGLE(demo->device, demo->swapchain, &rc_dur);
@@ -3453,7 +3456,6 @@ static void demo_init_vk_swapchain(struct demo *demo) {
     GET_DEVICE_PROC_ADDR(demo->device, DestroySwapchainKHR);
     GET_DEVICE_PROC_ADDR(demo->device, GetSwapchainImagesKHR);
     GET_DEVICE_PROC_ADDR(demo->device, AcquireNextImageKHR);
-    GET_DEVICE_PROC_ADDR(demo->device, QueuePresentKHR);
     if (demo->VK_GOOGLE_display_timing_enabled) {
         GET_DEVICE_PROC_ADDR(demo->device, GetRefreshCycleDurationGOOGLE);
         GET_DEVICE_PROC_ADDR(demo->device, GetPastPresentationTimingGOOGLE);
