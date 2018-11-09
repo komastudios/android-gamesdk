@@ -69,6 +69,23 @@
       "revId": "944ef3f101c4504839d57ac2f567f72d737b5cf4",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c4ef058e_caf11269",
+        "filename": "samples/unitypackaging/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-09T15:38:00Z",
+      "side": 1,
+      "message": "Would it make sense to create the unity package from the main gradle script instead?",
+      "revId": "944ef3f101c4504839d57ac2f567f72d737b5cf4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
