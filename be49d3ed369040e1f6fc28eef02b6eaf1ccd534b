@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2958b8f6_39889043",
+        "filename": "samples/tuningfork/tftestapp/app/src/androidTest/java/com/google/tuningfork/Tests.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2018-11-09T14:40:17Z",
+      "side": 1,
+      "message": "Are you working to a maximum column width? If so, break up the string.",
+      "revId": "be49d3ed369040e1f6fc28eef02b6eaf1ccd534b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7c07b0ee_00cdf09e",
+        "filename": "samples/tuningfork/tftestapp/app/src/androidTest/java/com/google/tuningfork/Tests.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2018-11-09T14:40:17Z",
+      "side": 1,
+      "message": "I\u0027m not sure what is being compared here exactly, but could it be broken up into separate tests? If the test fails, it\u0027s a large block of content to search.",
+      "revId": "be49d3ed369040e1f6fc28eef02b6eaf1ccd534b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ea20bb28_7f4b1c68",
+        "filename": "samples/tuningfork/tftestapp/app/src/test/cpp/tuningfork_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2018-11-09T14:40:17Z",
+      "side": 1,
+      "message": "Does the standard you\u0027re working with call for comments to be sentences that start with capital letters and end with full stops?",
+      "range": {
+        "startLine": 146,
+        "startChar": 31,
+        "endLine": 146,
+        "endChar": 88
+      },
+      "revId": "be49d3ed369040e1f6fc28eef02b6eaf1ccd534b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
