@@ -72,6 +72,24 @@
     },
     {
       "key": {
+        "uuid": "de61c785_a6db7974",
+        "filename": "src/swappyVk/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-09T01:21:22Z",
+      "side": 1,
+      "message": "Is there any possibility that someone trying to build swappy doesn\u0027t have that file on the machine?",
+      "parentUuid": "ad899c68_2973f65d",
+      "revId": "f45f9201a478bc4aad0cce581361e9f3e5d58c47",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f672ebf9_12bc28d9",
         "filename": "src/swappyVk/CMakeLists.txt",
         "patchSetId": 1
@@ -136,6 +154,24 @@
       "side": 1,
       "message": "I added the Init() as we cannot use exceptions.\nThe Constructor is private and can only be called from SwappyVkFactory, so we don\u0027t rely on external source to call to Init(). What is the advantage of having isValid() instead of init()",
       "parentUuid": "3420cca7_c90ffe08",
+      "revId": "f45f9201a478bc4aad0cce581361e9f3e5d58c47",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "71a9fa95_274f9ae5",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-09T01:21:22Z",
+      "side": 1,
+      "message": "Better design and less chances to get the initialization protocol wrong for whoever comes after us.",
+      "parentUuid": "a61535a9_9dac5f70",
       "revId": "f45f9201a478bc4aad0cce581361e9f3e5d58c47",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
