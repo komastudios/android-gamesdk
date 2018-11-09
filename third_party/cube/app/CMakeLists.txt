@@ -7,7 +7,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99  -Werror -DVK_USE_PLATFORM_ANDROID_
 include_directories( ../../../includes ) # Games SDK Public Includes
 include_directories( ../../../src ) # Games SDK Internal Includes
 
-# add_subdirectory(../../../src/swappy ./swappy-output)   # Swappy Library
+add_subdirectory(../../../src/swappyVk ./swappyVk-output)   # SwappyVk Library
 
 # ============== cube
 
@@ -61,10 +61,9 @@ add_library( native-lib
 
              ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c
              src/main/cpp/cube.c
-             src/main/cpp/SwappyVk.cpp
-             src/main/cpp/common/android_util.cpp
-             src/main/cpp/common/vulkan_wrapper.cpp
-        )
+             ${ANDROID_NDK}/sources/third_party/vulkan/src/common/android_util.cpp
+             ${ANDROID_NDK}/sources/third_party/vulkan/src/common/vulkan_wrapper.cpp
+           )
 
 target_include_directories(native-lib
 
@@ -73,15 +72,14 @@ target_include_directories(native-lib
                            ${SHADERC_SRC}/third_party/spirv-tools/include
                            ${SHADERC_SRC}/third_party/spirv-tools/include/spirv-tools
                            src/main/cpp/include
-                           src/main/cpp/common
+                           ${ANDROID_NDK}/sources/third_party/vulkan/src/common
                            ${ANDROID_NDK}/sources/android/native_app_glue)
 
 
 target_link_libraries( native-lib
 
+                       swappyVk
                        android
-                       EGL
-                       GLESv2
                        log
                        )
 

@@ -89,6 +89,8 @@ public:
                  void             *libVulkan) :
             mPhysicalDevice(physicalDevice), mDevice(device), mRefreshDur(refreshDur),
             mInterval(interval), mSwappyVk(swappyVk), mLibVulkan(libVulkan) {};
+    virtual bool isValid() = 0;
+
     virtual uint64_t doGetRefreshCycleDuration(VkSwapchainKHR swapchain) = 0;
     virtual void doSetSwapInterval(VkSwapchainKHR swapchain,
                                    uint32_t       interval) = 0;
@@ -121,32 +123,11 @@ class SwappyVkGoogleSwapchain;
 class SwappyVkGoogle : public SwappyVkBase
 {
 public:
-    SwappyVkGoogle(VkPhysicalDevice physicalDevice,
-                   VkDevice         device,
-                   SwappyVk         &swappyVk,
-                   void             *libVulkan) :
-            SwappyVkBase(physicalDevice, device, 16666666, 1, swappyVk, libVulkan),
-            mInitialized(false), mNextPresentID(0), mNextDesiredPresentTime(0)
-    {
-        initialize();
-    }
-    void initialize()
-    {
-        PFN_vkGetDeviceProcAddr pfnGetDeviceProcAddr =
-                reinterpret_cast<PFN_vkGetDeviceProcAddr>(
-                    dlsym(mLibVulkan, "vkGetDeviceProcAddr"));
+    friend class SwappyVkFactory;
 
-        mpfnGetRefreshCycleDurationGOOGLE =
-                reinterpret_cast<PFN_vkGetRefreshCycleDurationGOOGLE>(
-                    pfnGetDeviceProcAddr(mDevice, "vkGetRefreshCycleDurationGOOGLE"));
-        mpfnGetPastPresentationTimingGOOGLE =
-                reinterpret_cast<PFN_vkGetPastPresentationTimingGOOGLE>(
-                    pfnGetDeviceProcAddr(mDevice, "vkGetPastPresentationTimingGOOGLE"));
-        if (mpfnGetRefreshCycleDurationGOOGLE && mpfnGetPastPresentationTimingGOOGLE) {
-            mInitialized = true;
-        }
-    }
-    virtual uint64_t doGetRefreshCycleDuration(VkSwapchainKHR swapchain)
+    bool isValid() override { return mInitialized; } // TODO: implement
+
+    uint64_t doGetRefreshCycleDuration(VkSwapchainKHR swapchain) override
     {
         // FIXME/TODO: NEED TO CACHE THIS SWAPCHAIN, SO THAT WE KNOW ALL SWAPCHAINS FOR THIS DEVICE
 
@@ -167,16 +148,16 @@ public:
         }
         return mRefreshDur;
     }
-    virtual void doSetSwapInterval(VkSwapchainKHR swapchain,
-                                   uint32_t       interval)
+    void doSetSwapInterval(VkSwapchainKHR swapchain,
+                                   uint32_t       interval) override
     {
         // TODO: replace this with a better implementation.  While an
         // application will likely call this once, before presenting any images,
         // in case it calls it later, will need to adjust other values
         mInterval = interval;
     }
-    virtual VkResult doQueuePresent(VkQueue                 queue,
-                                    const VkPresentInfoKHR* pPresentInfo);
+    VkResult doQueuePresent(VkQueue                 queue,
+                                    const VkPresentInfoKHR* pPresentInfo) override;
 
 private:
     bool mInitialized;
@@ -185,6 +166,33 @@ private:
 
     PFN_vkGetRefreshCycleDurationGOOGLE mpfnGetRefreshCycleDurationGOOGLE = nullptr;
     PFN_vkGetPastPresentationTimingGOOGLE mpfnGetPastPresentationTimingGOOGLE = nullptr;
+
+    SwappyVkGoogle(VkPhysicalDevice physicalDevice,
+                   VkDevice         device,
+                   SwappyVk         &swappyVk,
+                   void             *libVulkan) :
+            SwappyVkBase(physicalDevice, device, 16666666, 1, swappyVk, libVulkan),
+            mInitialized(false), mNextPresentID(0), mNextDesiredPresentTime(0)
+    {
+        initialize();
+    }
+
+    void initialize()
+    {
+        PFN_vkGetDeviceProcAddr pfnGetDeviceProcAddr =
+                reinterpret_cast<PFN_vkGetDeviceProcAddr>(
+                        dlsym(mLibVulkan, "vkGetDeviceProcAddr"));
+
+        mpfnGetRefreshCycleDurationGOOGLE =
+                reinterpret_cast<PFN_vkGetRefreshCycleDurationGOOGLE>(
+                        pfnGetDeviceProcAddr(mDevice, "vkGetRefreshCycleDurationGOOGLE"));
+        mpfnGetPastPresentationTimingGOOGLE =
+                reinterpret_cast<PFN_vkGetPastPresentationTimingGOOGLE>(
+                        pfnGetDeviceProcAddr(mDevice, "vkGetPastPresentationTimingGOOGLE"));
+        if (mpfnGetRefreshCycleDurationGOOGLE && mpfnGetPastPresentationTimingGOOGLE) {
+            mInitialized = true;
+        }
+    }
 
 #ifdef NOT_NEEDED
     std::map<VkSwapchainKHR, SwappyVkGoogleSwapchain> swapchains;
@@ -290,48 +298,23 @@ public:
 class SwappyVkAndroidFallback : public SwappyVkBase
 {
 public:
-    SwappyVkAndroidFallback(VkPhysicalDevice physicalDevice,
-                            VkDevice         device,
-                            SwappyVk         &swappyVk,
-                            void             *libVulkan) :
-            SwappyVkBase(physicalDevice, device, 16666666, 1, swappyVk, libVulkan) {
+    friend class SwappyVkFactory;
 
-        mpfnQueuePresentKHR = reinterpret_cast<PFN_vkQueuePresentKHR>(dlsym(mLibVulkan, "vkQueuePresentKHR"));
-        if (!mpfnQueuePresentKHR) {
-            throw std::runtime_error("failed to get vkQueuePresentKHR");
-        }
+    bool isValid() override { return mInitialized; }
 
-        // create a new ALooper thread to get Choreographer events
-        mTreadRunning = true;
-        pthread_create(&mThread, NULL, looperThreadWrapper, this);
-
-    }
-
-    ~SwappyVkAndroidFallback() {
-        if (mLooper) {
-            ALooper_acquire(mLooper);
-            mTreadRunning = false;
-            ALooper_wake(mLooper);
-            ALooper_release(mLooper);
-            pthread_join(mThread, NULL);
-        }
-    }
-
-
-
-    virtual uint64_t doGetRefreshCycleDuration(VkSwapchainKHR swapchain)
+    uint64_t doGetRefreshCycleDuration(VkSwapchainKHR swapchain) override
     {
         // TODO: replace this with a better implementation, if there's another
         // Android API that can provide this value
         return mRefreshDur;
     }
-    virtual void doSetSwapInterval(VkSwapchainKHR swapchain,
-                                   uint32_t       interval)
+    void doSetSwapInterval(VkSwapchainKHR swapchain,
+                                   uint32_t       interval) override
     {
         mSwapInterval = interval;
     }
-    virtual VkResult doQueuePresent(VkQueue                 queue,
-                                    const VkPresentInfoKHR* pPresentInfo)
+    VkResult doQueuePresent(VkQueue                 queue,
+                                    const VkPresentInfoKHR* pPresentInfo) override
     {
         // register for a callback when next frame is presented
         AChoreographer_postFrameCallbackDelayed(mChoreographer, frameCallback, this, 1);
@@ -353,6 +336,37 @@ public:
     }
 
 private:
+    SwappyVkAndroidFallback(VkPhysicalDevice physicalDevice,
+                            VkDevice         device,
+                            SwappyVk         &swappyVk,
+                            void             *libVulkan) :
+            SwappyVkBase(physicalDevice, device, 16666666, 1, swappyVk, libVulkan) {
+        initialize();
+    }
+
+    void  initialize() {
+        mpfnQueuePresentKHR = reinterpret_cast<PFN_vkQueuePresentKHR>(dlsym(mLibVulkan,
+                                                                            "vkQueuePresentKHR"));
+        if (!mpfnQueuePresentKHR) {
+            return;
+        }
+
+        // create a new ALooper thread to get Choreographer events
+        mTreadRunning = true;
+        pthread_create(&mThread, NULL, looperThreadWrapper, this);
+        mInitialized = true;
+    }
+
+    ~SwappyVkAndroidFallback() {
+        if (mLooper) {
+            ALooper_acquire(mLooper);
+            mTreadRunning = false;
+            ALooper_wake(mLooper);
+            ALooper_release(mLooper);
+            pthread_join(mThread, NULL);
+        }
+    }
+
     static void *looperThreadWrapper(void *data) {
         SwappyVkAndroidFallback *me = reinterpret_cast<SwappyVkAndroidFallback *>(data);
         return me->looperThread();
@@ -397,6 +411,7 @@ private:
         mWaitingCondition.notify_all();
     }
 
+    bool mInitialized = false;
     pthread_t mThread = 0;
     ALooper *mLooper = nullptr;
     bool mTreadRunning = false;
@@ -407,6 +422,46 @@ private:
     std::condition_variable mWaitingCondition;
     long mFrameID = 0;
     long mLastframeTimeNanos = 0;
+};
+
+class SwappyVkFactory {
+public:
+    static SwappyVkBase *getSwappyVkGoogle(VkPhysicalDevice physicalDevice,
+                                    VkDevice         device,
+                                    SwappyVk         &swappyVk,
+                                    void             *libVulkan) {
+        SwappyVkBase *swappy = new SwappyVkGoogle(physicalDevice, device, swappyVk, libVulkan);
+        if (!swappy) {
+            ALOGE("failed to create SwappyVkGoogle");
+            return NULL;
+        }
+
+        if (!swappy->isValid()) {
+            ALOGE("failed to initialize SwappyVkGoogle");
+            return NULL;
+        }
+
+        return swappy;
+
+    }
+
+    static SwappyVkBase *getSwappyVkAndroidFallback(VkPhysicalDevice physicalDevice,
+                                             VkDevice         device,
+                                             SwappyVk         &swappyVk,
+                                             void             *libVulkan) {
+        SwappyVkBase *swappy = new SwappyVkAndroidFallback(physicalDevice, device, swappyVk, libVulkan);
+        if (!swappy) {
+            ALOGE("failed to create SwappyVkAndroidFallback");
+            return NULL;
+        }
+
+        if (!swappy->isValid()) {
+            ALOGE("failed to initialize SwappyVkAndroidFallback");
+            return NULL;
+        }
+
+        return swappy;
+    }
 };
 
 
@@ -515,10 +570,10 @@ uint64_t SwappyVk::GetRefreshCycleDuration(VkPhysicalDevice physicalDevice,
         // API
         if (have_VK_GOOGLE_display_timing) {
             // Instantiate the class that sits on top of VK_GOOGLE_display_timing
-            pImplementation = new SwappyVkGoogle(physicalDevice, device, getInstance(), mLibVulkan);
+            pImplementation = SwappyVkFactory::getSwappyVkGoogle(physicalDevice, device, getInstance(), mLibVulkan);
         } else {
             // Instantiate the class that sits on top of the basic Vulkan APIs
-            pImplementation = new SwappyVkAndroidFallback(physicalDevice, device, getInstance(),
+            pImplementation = SwappyVkFactory::getSwappyVkAndroidFallback(physicalDevice, device, getInstance(),
                                                           mLibVulkan);
         }
 

@@ -38,8 +38,8 @@ extern "C" {
  *
  * Parameters:
  *
- *  (IN)  physicalDevice - The VkPhysicalDevice asscoiated with the swapchain
- *  (IN)  device    - The VkDevice asscoiated with the swapchain
+ *  (IN)  physicalDevice - The VkPhysicalDevice associated with the swapchain
+ *  (IN)  device    - The VkDevice associated with the swapchain
  *  (IN)  swapchain - The VkSwapchainKHR the application wants Swappy to swap
  */
 uint64_t swappyVkGetRefreshCycleDuration(
@@ -66,7 +66,7 @@ uint64_t swappyVkGetRefreshCycleDuration(
  *
  * Parameters:
  *
- *  (IN)  device    - The VkDevice asscoiated with the swapchain
+ *  (IN)  device    - The VkDevice associated with the swapchain
  *  (IN)  swapchain - The VkSwapchainKHR the application wants Swappy to swap
  *  (IN)  interval  - The number of vertical-blanking intervals each image
  *                    should be visible
@@ -91,7 +91,7 @@ void swappyVkSetSwapInterval(
  *
  * Parameters:
  *
- *  (IN)  queue     - The VkQueue asscoiated with the device and swapchain
+ *  (IN)  queue     - The VkQueue associated with the device and swapchain
  *  (IN)  pPresentInfo - A pointer to the VkPresentInfoKHR containing the
  *                    information about what image(s) to present on which
  *                    swapchain(s).
