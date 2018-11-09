@@ -7,7 +7,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99  -Werror -DVK_USE_PLATFORM_ANDROID_
 include_directories( ../../../includes ) # Games SDK Public Includes
 include_directories( ../../../src ) # Games SDK Internal Includes
 
-# add_subdirectory(../../../src/swappy ./swappy-output)   # Swappy Library
+add_subdirectory(../../../src/swappyVk ./swappyVk-output)   # SwappyVk Library
 
 # ============== cube
 get_filename_component(SHADERC_SRC
@@ -59,8 +59,7 @@ target_include_directories(native-lib
 
 target_link_libraries( native-lib
 
+                       swappyVk
                        android
-                       EGL
-                       GLESv2
                        log
                        )

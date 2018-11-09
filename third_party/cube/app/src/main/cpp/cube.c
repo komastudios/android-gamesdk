@@ -55,6 +55,8 @@
 #include "linmath.h"
 #include "object_type_string_helper.h"
 
+#include <SwappyVk.h>
+
 #include "gettime.h"
 #include "inttypes.h"
 #define MILLION 1000000L
@@ -1234,7 +1236,8 @@ static void demo_draw(struct demo *demo) {
 
     logEvent(EVENT_CALLING_QP);
     ATrace_beginSection("cube_QueuePresent");
-    err = demo->fpQueuePresentKHR(demo->present_queue, &present);
+    //err = demo->fpQueuePresentKHR(demo->present_queue, &present);
+    err = swappyVkQueuePresent(demo->present_queue, &present);
     ATrace_endSection();
     logEvent(EVENT_CALLED_QP);
 
@@ -1468,6 +1471,18 @@ static void demo_prepare_buffers(struct demo *demo) {
         demo->refresh_duration_multiplier = 1;
         demo->prev_desired_present_time = 0;
         demo->next_present_id = 1;
+    }
+
+    demo->refresh_duration = swappyVkGetRefreshCycleDuration(demo->gpu, demo->device, demo->swapchain);
+    if (demo->refresh_duration > (16 * MILLION)) {
+        // Likely a 60Hz display--need a swap interval of 2 for 30FPS:
+        swappyVkSetSwapInterval(demo->device, demo->swapchain, 2);
+    } else if (demo->refresh_duration > (10 * MILLION)) {
+        // Likely a 90Hz display--need a swap interval of 3 for 30FPS:
+        swappyVkSetSwapInterval(demo->device, demo->swapchain, 3);
+    } else {
+        // Likely a 120Hz display--need a swap interval of 4 for 30FPS:
+        swappyVkSetSwapInterval(demo->device, demo->swapchain, 4);
     }
 
     if (NULL != presentModes) {
@@ -3309,6 +3324,23 @@ static void demo_init_vk(struct demo *demo) {
             if (!demo->VK_GOOGLE_display_timing_enabled) {
                 DbgMsg("VK_GOOGLE_display_timing extension NOT AVAILABLE\n");
             }
+        }
+
+        // Add any extensions that SwappyVk requires:
+        uint32_t swappy_required_extension_count = 0;
+        char **swappy_required_extension_names;
+        swappyVkDetermineDeviceExtensions(demo->gpu, device_extension_count, device_extensions,
+                                          &swappy_required_extension_count, NULL);
+        swappy_required_extension_names = malloc(swappy_required_extension_count);
+        for (uint32_t i = 0; i < swappy_required_extension_count; i++) {
+            swappy_required_extension_names[i] = malloc(VK_MAX_EXTENSION_NAME_SIZE + 1);
+        }
+        swappyVkDetermineDeviceExtensions(demo->gpu, device_extension_count, device_extensions,
+                                          &swappy_required_extension_count,
+                                          swappy_required_extension_names);
+        for (uint32_t i = 0; i < swappy_required_extension_count; i++) {
+            demo->extension_names[demo->enabled_extension_count++] = swappy_required_extension_names[i];
+            DbgMsg("SwappyVk requires the following extension: %s\n", swappy_required_extension_names[i]);
         }
 
         free(device_extensions);
