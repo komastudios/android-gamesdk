@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7f7e0a65_ce003a1c",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-09T15:01:42Z",
+      "side": 1,
+      "message": "We should be able to get the NDK path once we have the SDK path.",
+      "revId": "944ef3f101c4504839d57ac2f567f72d737b5cf4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "def1cf5b_cd8548fd",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-09T15:01:42Z",
+      "side": 1,
+      "message": "Nice one!",
+      "revId": "944ef3f101c4504839d57ac2f567f72d737b5cf4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
