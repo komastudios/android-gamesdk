@@ -90,6 +90,24 @@
     },
     {
       "key": {
+        "uuid": "e87805ad_eb7c551e",
+        "filename": "src/swappyVk/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-09T01:30:30Z",
+      "side": 1,
+      "message": "It is part on the NDK. If you get the NDK from Android Studio you should get this file as well",
+      "parentUuid": "de61c785_a6db7974",
+      "revId": "f45f9201a478bc4aad0cce581361e9f3e5d58c47",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f672ebf9_12bc28d9",
         "filename": "src/swappyVk/CMakeLists.txt",
         "patchSetId": 1
@@ -172,6 +190,24 @@
       "side": 1,
       "message": "Better design and less chances to get the initialization protocol wrong for whoever comes after us.",
       "parentUuid": "a61535a9_9dac5f70",
+      "revId": "f45f9201a478bc4aad0cce581361e9f3e5d58c47",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5331256d_0cfca306",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-09T01:30:30Z",
+      "side": 1,
+      "message": "makes sense :)",
+      "parentUuid": "71a9fa95_274f9ae5",
       "revId": "f45f9201a478bc4aad0cce581361e9f3e5d58c47",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
