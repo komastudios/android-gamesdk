@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "f38dfacc_0982fb06",
+        "filename": "src/swappyVk/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-09T01:17:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1dc811a1_215aeba2",
+      "revId": "f45f9201a478bc4aad0cce581361e9f3e5d58c47",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "436f38a7_6a11b0d5",
         "filename": "src/swappyVk/CMakeLists.txt",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2018-11-09T00:33:18Z",
       "side": 1,
       "message": "I\u0027m considering if it\u0027d be easier to bring this file in our repo under third_party.",
+      "revId": "f45f9201a478bc4aad0cce581361e9f3e5d58c47",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ad899c68_2973f65d",
+        "filename": "src/swappyVk/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-09T01:17:27Z",
+      "side": 1,
+      "message": "This is how cube was implemented... but I think it is better to have it from the sdk rather than having a copy of the file. What are the advantages you see ?",
+      "parentUuid": "436f38a7_6a11b0d5",
       "revId": "f45f9201a478bc4aad0cce581361e9f3e5d58c47",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "a8cd390b_dead59fa",
+        "filename": "src/swappyVk/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-09T01:17:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f672ebf9_12bc28d9",
+      "revId": "f45f9201a478bc4aad0cce581361e9f3e5d58c47",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3420cca7_c90ffe08",
         "filename": "src/swappyVk/SwappyVk.cpp",
         "patchSetId": 1
@@ -64,6 +118,24 @@
       "writtenOn": "2018-11-09T00:33:18Z",
       "side": 1,
       "message": "the other methods are lowercase, shouldnt Init be lowercase as well?\nGenerally speaking, I don\u0027t love an Init() method at all, since the class should be fully constructed after the constructor is invoked. Requiring a Init() call is a code smell. Can\u0027t we make this method private and call it from the constructor?\nIf returning a flag is necessary and exceptions are not available, I\u0027d consider a const status method of some sort (isValid()).",
+      "revId": "f45f9201a478bc4aad0cce581361e9f3e5d58c47",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a61535a9_9dac5f70",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-09T01:17:27Z",
+      "side": 1,
+      "message": "I added the Init() as we cannot use exceptions.\nThe Constructor is private and can only be called from SwappyVkFactory, so we don\u0027t rely on external source to call to Init(). What is the advantage of having isValid() instead of init()",
+      "parentUuid": "3420cca7_c90ffe08",
       "revId": "f45f9201a478bc4aad0cce581361e9f3e5d58c47",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
