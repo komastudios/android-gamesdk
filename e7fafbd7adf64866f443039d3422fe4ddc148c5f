@@ -1,0 +1,78 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e9f0c885_9d7adff2",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-09T23:36:39Z",
+      "side": 1,
+      "message": "I think we need to return some error to the user instead of silently ignore it.\nAs swappyVkGetRefreshCycleDuration() is the init API, we should fail there if there is some error with initialization",
+      "range": {
+        "startLine": 141,
+        "startChar": 15,
+        "endLine": 141,
+        "endChar": 19
+      },
+      "revId": "e7fafbd7adf64866f443039d3422fe4ddc148c5f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f7e6748a_4840eaee",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-09T23:36:39Z",
+      "side": 1,
+      "message": "why do we have both SwappyVkAndroidFallback and SwappyVkVulkanFallback ?",
+      "revId": "e7fafbd7adf64866f443039d3422fe4ddc148c5f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "15009e62_48b177da",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 403,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-09T23:36:39Z",
+      "side": 1,
+      "message": "we should just use the \u003ddelete.",
+      "revId": "e7fafbd7adf64866f443039d3422fe4ddc148c5f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5dde839d_580cb105",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 462,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-09T23:36:39Z",
+      "side": 1,
+      "message": "we already have it in SwappyVkBase, why do we need it here as well ?",
+      "revId": "e7fafbd7adf64866f443039d3422fe4ddc148c5f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
