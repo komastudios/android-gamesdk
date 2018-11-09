@@ -86,6 +86,24 @@
       "revId": "944ef3f101c4504839d57ac2f567f72d737b5cf4",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a7966f17_5f14499b",
+        "filename": "samples/unitypackaging/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-11-09T15:41:30Z",
+      "side": 1,
+      "message": "Yes, you\u0027re right, although we can do that after this release.",
+      "parentUuid": "c4ef058e_caf11269",
+      "revId": "944ef3f101c4504839d57ac2f567f72d737b5cf4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
