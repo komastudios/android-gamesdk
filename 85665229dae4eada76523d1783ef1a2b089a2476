@@ -72,6 +72,24 @@
     },
     {
       "key": {
+        "uuid": "9f04d583_815e7877",
+        "filename": "third_party/cube/app/src/main/cpp/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 350,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-09T23:23:14Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "a65ef238_9df545b2",
+      "revId": "85665229dae4eada76523d1783ef1a2b089a2476",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a36418d2_2c5d34de",
         "filename": "third_party/cube/app/src/main/cpp/SwappyVk.cpp",
         "patchSetId": 1
@@ -101,6 +119,24 @@
       "side": 1,
       "message": "I think I moved it.",
       "parentUuid": "a36418d2_2c5d34de",
+      "revId": "85665229dae4eada76523d1783ef1a2b089a2476",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f066d455_f7198da9",
+        "filename": "third_party/cube/app/src/main/cpp/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 370,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-09T23:23:14Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "145c60ae_8464baa5",
       "revId": "85665229dae4eada76523d1783ef1a2b089a2476",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
@@ -142,6 +178,24 @@
     },
     {
       "key": {
+        "uuid": "5810d373_59d5ff6d",
+        "filename": "third_party/cube/app/src/main/cpp/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 449,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-09T23:23:14Z",
+      "side": 1,
+      "message": "Can an app have more than one device ? If not we can simply initialize one implementation and use it without worrying about which device is that.",
+      "parentUuid": "356e304d_49237051",
+      "revId": "85665229dae4eada76523d1783ef1a2b089a2476",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "580c593a_bc5d44ac",
         "filename": "third_party/cube/app/src/main/cpp/SwappyVk.cpp",
         "patchSetId": 1
@@ -177,6 +231,24 @@
     },
     {
       "key": {
+        "uuid": "5d704a6e_b6fa2d93",
+        "filename": "third_party/cube/app/src/main/cpp/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 474,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-09T23:23:14Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f5b4d166_4662b022",
+      "revId": "85665229dae4eada76523d1783ef1a2b089a2476",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4d8dcfec_eced0549",
         "filename": "third_party/cube/app/src/main/cpp/SwappyVk.h",
         "patchSetId": 1
@@ -206,6 +278,24 @@
       "side": 1,
       "message": "No.",
       "parentUuid": "4d8dcfec_eced0549",
+      "revId": "85665229dae4eada76523d1783ef1a2b089a2476",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "35710af4_2e632db4",
+        "filename": "third_party/cube/app/src/main/cpp/SwappyVk.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-09T23:23:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "64d6a26b_bc9815e1",
       "revId": "85665229dae4eada76523d1783ef1a2b089a2476",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
