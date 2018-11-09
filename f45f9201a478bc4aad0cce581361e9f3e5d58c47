@@ -108,6 +108,24 @@
     },
     {
       "key": {
+        "uuid": "e71ef3ea_bcc852e8",
+        "filename": "src/swappyVk/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-09T01:32:37Z",
+      "side": 1,
+      "message": "All good! Does it work when this CMakeLists.txt is referenced from the CMakeLists.txt in the sample? It requires ANDROID_NDK to be set.",
+      "parentUuid": "e87805ad_eb7c551e",
+      "revId": "f45f9201a478bc4aad0cce581361e9f3e5d58c47",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f672ebf9_12bc28d9",
         "filename": "src/swappyVk/CMakeLists.txt",
         "patchSetId": 1
