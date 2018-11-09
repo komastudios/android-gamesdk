@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "769124af_32a09327",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-09T02:10:05Z",
+      "side": 1,
+      "message": "Nitpicking: you don\u0027t strictly need to have this method polymorphic. You can promote mInitialized from SwappyVKGoogle and return that flag. One less entry point to override for subclasses.",
+      "revId": "42e58132e6369bbe48fd0069addb0642b600a959",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
