@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "b3088a03_237a9b72",
+        "filename": "third_party/cube/app/src/main/cpp/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 339,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-09T22:18:30Z",
+      "side": 1,
+      "message": "Let\u0027s look at this again in the new CL.",
+      "parentUuid": "c74f892c_d7004946",
+      "revId": "85665229dae4eada76523d1783ef1a2b089a2476",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "046db3fc_61a04902",
         "filename": "third_party/cube/app/src/main/cpp/SwappyVk.cpp",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "85665229dae4eada76523d1783ef1a2b089a2476",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a65ef238_9df545b2",
+        "filename": "third_party/cube/app/src/main/cpp/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 350,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-09T22:18:30Z",
+      "side": 1,
+      "message": "The Vulkan way is to tell ISVs how to use the API, and if they use it wrong, bad things can happen (including crashes).",
+      "parentUuid": "046db3fc_61a04902",
+      "revId": "85665229dae4eada76523d1783ef1a2b089a2476",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "145c60ae_8464baa5",
+        "filename": "third_party/cube/app/src/main/cpp/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 370,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-09T22:18:30Z",
+      "side": 1,
+      "message": "I think I moved it.",
+      "parentUuid": "a36418d2_2c5d34de",
+      "revId": "85665229dae4eada76523d1783ef1a2b089a2476",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ce9ae774_4e205633",
         "filename": "third_party/cube/app/src/main/cpp/SwappyVk.cpp",
         "patchSetId": 1
@@ -67,6 +121,24 @@
       "revId": "85665229dae4eada76523d1783ef1a2b089a2476",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "356e304d_49237051",
+        "filename": "third_party/cube/app/src/main/cpp/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 449,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-09T22:18:30Z",
+      "side": 1,
+      "message": "This is a std::map (at least in the current version--in a different CL) that maps from a VkSwapchainKHR to the implementation.  A similar map exists from VkDevice to implementation.  I set up both maps because in this call, we don\u0027t get a VkDevice.  Instead we get a VkSwapchainKHR, but still need to get to the per-device implementation (there\u0027s only one implementation per VkDevice).",
+      "parentUuid": "ce9ae774_4e205633",
+      "revId": "85665229dae4eada76523d1783ef1a2b089a2476",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "f5b4d166_4662b022",
+        "filename": "third_party/cube/app/src/main/cpp/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 474,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-09T22:18:30Z",
+      "side": 1,
+      "message": "You\u0027re right, thanks for catching this.",
+      "parentUuid": "580c593a_bc5d44ac",
+      "revId": "85665229dae4eada76523d1783ef1a2b089a2476",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4d8dcfec_eced0549",
         "filename": "third_party/cube/app/src/main/cpp/SwappyVk.h",
         "patchSetId": 1
@@ -101,6 +191,24 @@
       "revId": "85665229dae4eada76523d1783ef1a2b089a2476",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "64d6a26b_bc9815e1",
+        "filename": "third_party/cube/app/src/main/cpp/SwappyVk.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-09T22:18:30Z",
+      "side": 1,
+      "message": "No.",
+      "parentUuid": "4d8dcfec_eced0549",
+      "revId": "85665229dae4eada76523d1783ef1a2b089a2476",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
