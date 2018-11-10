@@ -59,6 +59,23 @@
     },
     {
       "key": {
+        "uuid": "001a6f66_0a08b8ce",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 460,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-10T00:22:25Z",
+      "side": 1,
+      "message": "same here, we should return an error to the user",
+      "revId": "e7fafbd7adf64866f443039d3422fe4ddc148c5f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5dde839d_580cb105",
         "filename": "src/swappyVk/SwappyVk.cpp",
         "patchSetId": 1
