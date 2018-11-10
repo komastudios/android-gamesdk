@@ -53,9 +53,9 @@ add_library( native-lib
              cube.frag.inc
              ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c
              src/main/cpp/cube.c
-             src/main/cpp/common/android_util.cpp
-             src/main/cpp/common/vulkan_wrapper.cpp
-        )
+             ${ANDROID_NDK}/sources/third_party/vulkan/src/common/android_util.cpp
+             ${ANDROID_NDK}/sources/third_party/vulkan/src/common/vulkan_wrapper.cpp
+           )
 
 target_include_directories(native-lib
 
@@ -64,7 +64,7 @@ target_include_directories(native-lib
                            ${SHADERC_SRC}/third_party/spirv-tools/include
                            ${SHADERC_SRC}/third_party/spirv-tools/include/spirv-tools
                            src/main/cpp/include
-                           src/main/cpp/common
+                           ${ANDROID_NDK}/sources/third_party/vulkan/src/common
                            ${ANDROID_NDK}/sources/android/native_app_glue)
 
 
