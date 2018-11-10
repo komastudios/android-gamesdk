@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b261b4c7_a9b76c7a",
+        "filename": "third_party/cube/app/CMakeLists.txt",
+        "patchSetId": 6
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-10T19:00:22Z",
+      "side": 1,
+      "message": "I don\u0027t know CMake, but I wonder if there is a way to refactor these two shader compilations into one place, since the only thing changing is the shader file. There\u0027s a lot of duplication.",
+      "revId": "b150d8b695c3ff7154e5ed8bd3862da9e6995e94",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
