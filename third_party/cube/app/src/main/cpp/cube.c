@@ -370,13 +370,16 @@ void dumpVec4(const char *note, vec4 vector) {
 
 typedef struct {
     VkImage image;
-    VkCommandBuffer cmd;
+    VkCommandBuffer cmd[2];
     VkCommandBuffer graphics_to_present_cmd;
     VkImageView view;
     VkBuffer uniform_buffer;
+    VkBuffer uniform_buffer2;
     VkDeviceMemory uniform_memory;
+    VkDeviceMemory uniform_memory2;
     VkFramebuffer framebuffer;
     VkDescriptorSet descriptor_set;
+    VkDescriptorSet descriptor_set2;
 } SwapchainImageResources;
 
 struct demo {
@@ -495,6 +498,10 @@ struct demo {
     mat4x4 projection_matrix;
     mat4x4 view_matrix;
     mat4x4 model_matrix;
+
+    mat4x4 projection_matrix2;
+    mat4x4 view_matrix2;
+    mat4x4 model_matrix2;
 
     float spin_angle;
     float spin_increment;
@@ -704,14 +711,14 @@ static void demo_flush_init_cmd(struct demo *demo) {
 
     const VkCommandBuffer cmd_bufs[] = {demo->cmd};
     VkSubmitInfo submit_info = {.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-                                .pNext = NULL,
-                                .waitSemaphoreCount = 0,
-                                .pWaitSemaphores = NULL,
-                                .pWaitDstStageMask = NULL,
-                                .commandBufferCount = 1,
-                                .pCommandBuffers = cmd_bufs,
-                                .signalSemaphoreCount = 0,
-                                .pSignalSemaphores = NULL};
+            .pNext = NULL,
+            .waitSemaphoreCount = 0,
+            .pWaitSemaphores = NULL,
+            .pWaitDstStageMask = NULL,
+            .commandBufferCount = 1,
+            .pCommandBuffers = cmd_bufs,
+            .signalSemaphoreCount = 0,
+            .pSignalSemaphores = NULL};
 
     err = vkQueueSubmit(demo->graphics_queue, 1, &submit_info, fence);
     assert(!err);
@@ -909,6 +916,143 @@ static void demo_draw_build_cmd(struct demo *demo, VkCommandBuffer cmd_buf) {
     assert(!err);
 }
 
+static void demo_draw_build_cmd2(struct demo *demo, VkCommandBuffer cmd_buf) {
+    VkDebugUtilsLabelEXT label;
+    memset(&label, 0, sizeof(label));
+    const VkCommandBufferBeginInfo cmd_buf_info = {
+            .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+            .pNext = NULL,
+            .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT,
+            .pInheritanceInfo = NULL,
+    };
+    const VkClearValue clear_values[2] = {
+            [0] = {.color.float32 = {0.2f, 0.2f, 0.2f, 0.2f}},
+            [1] = {.depthStencil = {1.0f, 0}},
+    };
+    const VkRenderPassBeginInfo rp_begin = {
+            .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+            .pNext = NULL,
+            .renderPass = demo->render_pass,
+            .framebuffer = demo->swapchain_image_resources[demo->current_buffer].framebuffer,
+            .renderArea.offset.x = 0,
+            .renderArea.offset.y = 0,
+            .renderArea.extent.width = demo->width,
+            .renderArea.extent.height = demo->height / 4,
+            .clearValueCount = 2,
+            .pClearValues = clear_values,
+    };
+    VkResult U_ASSERT_ONLY err;
+
+    err = vkBeginCommandBuffer(cmd_buf, &cmd_buf_info);
+
+    if (demo->validate) {
+        // Set a name for the command buffer
+        VkDebugUtilsObjectNameInfoEXT cmd_buf_name = {
+                .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+                .pNext = NULL,
+                .objectType = VK_OBJECT_TYPE_COMMAND_BUFFER,
+                .objectHandle = (uint64_t)cmd_buf,
+                .pObjectName = "CubeDrawCommandBuf",
+        };
+        demo->SetDebugUtilsObjectNameEXT(demo->device, &cmd_buf_name);
+
+        label.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT;
+        label.pNext = NULL;
+        label.pLabelName = "DrawBegin";
+        label.color[0] = 0.4f;
+        label.color[1] = 0.3f;
+        label.color[2] = 0.2f;
+        label.color[3] = 0.1f;
+        demo->CmdBeginDebugUtilsLabelEXT(cmd_buf, &label);
+    }
+
+    assert(!err);
+    vkCmdBeginRenderPass(cmd_buf, &rp_begin, VK_SUBPASS_CONTENTS_INLINE);
+
+    if (demo->validate) {
+        label.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT;
+        label.pNext = NULL;
+        label.pLabelName = "InsideRenderPass";
+        label.color[0] = 8.4f;
+        label.color[1] = 7.3f;
+        label.color[2] = 6.2f;
+        label.color[3] = 7.1f;
+        demo->CmdBeginDebugUtilsLabelEXT(cmd_buf, &label);
+    }
+
+    vkCmdBindPipeline(cmd_buf, VK_PIPELINE_BIND_POINT_GRAPHICS, demo->pipeline);
+    vkCmdBindDescriptorSets(cmd_buf, VK_PIPELINE_BIND_POINT_GRAPHICS, demo->pipeline_layout, 0, 1,
+                            &demo->swapchain_image_resources[demo->current_buffer].descriptor_set2, 0, NULL);
+    VkViewport viewport;
+    memset(&viewport, 0, sizeof(viewport));
+    viewport.height = (float)demo->height;
+    viewport.width = (float)demo->width;
+    viewport.minDepth = (float)0.0f;
+    viewport.maxDepth = (float)1.0f;
+    vkCmdSetViewport(cmd_buf, 0, 1, &viewport);
+
+    for (int i = 0; i < 100; i++){
+        vkCmdSetViewport(cmd_buf, 0, 1, &viewport);
+    }
+
+    VkRect2D scissor;
+    memset(&scissor, 0, sizeof(scissor));
+    scissor.extent.width = demo->width;
+    scissor.extent.height = demo->height;
+    scissor.offset.x = 0;
+    scissor.offset.y = 0;
+    vkCmdSetScissor(cmd_buf, 0, 1, &scissor);
+
+    if (demo->validate) {
+        label.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT;
+        label.pNext = NULL;
+        label.pLabelName = "ActualDraw";
+        label.color[0] = -0.4f;
+        label.color[1] = -0.3f;
+        label.color[2] = -0.2f;
+        label.color[3] = -0.1f;
+        demo->CmdBeginDebugUtilsLabelEXT(cmd_buf, &label);
+    }
+
+    vkCmdDraw(cmd_buf, 12 * 3, 1, 0, 0);
+    if (demo->validate) {
+        demo->CmdEndDebugUtilsLabelEXT(cmd_buf);
+    }
+
+    // Note that ending the renderpass changes the image's layout from
+    // COLOR_ATTACHMENT_OPTIMAL to PRESENT_SRC_KHR
+    vkCmdEndRenderPass(cmd_buf);
+    if (demo->validate) {
+        demo->CmdEndDebugUtilsLabelEXT(cmd_buf);
+    }
+
+    if (demo->separate_present_queue) {
+        // We have to transfer ownership from the graphics queue family to the
+        // present queue family to be able to present.  Note that we don't have
+        // to transfer from present queue family back to graphics queue family at
+        // the start of the next frame because we don't care about the image's
+        // contents at that point.
+        VkImageMemoryBarrier image_ownership_barrier = {.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+                .pNext = NULL,
+                .srcAccessMask = 0,
+                .dstAccessMask = 0,
+                .oldLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+                .newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+                .srcQueueFamilyIndex = demo->graphics_queue_family_index,
+                .dstQueueFamilyIndex = demo->present_queue_family_index,
+                .image = demo->swapchain_image_resources[demo->current_buffer].image,
+                .subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1}};
+
+        vkCmdPipelineBarrier(cmd_buf, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, NULL, 0,
+                             NULL, 1, &image_ownership_barrier);
+    }
+    if (demo->validate) {
+        demo->CmdEndDebugUtilsLabelEXT(cmd_buf);
+    }
+    err = vkEndCommandBuffer(cmd_buf);
+    assert(!err);
+}
+
 void demo_build_image_ownership_cmd(struct demo *demo, int i) {
     VkResult U_ASSERT_ONLY err;
 
@@ -958,6 +1102,29 @@ void demo_update_data_buffer(struct demo *demo) {
     memcpy(pData, (const void *)&MVP[0][0], matrixSize);
 
     vkUnmapMemory(demo->device, demo->swapchain_image_resources[demo->current_buffer].uniform_memory);
+}
+
+void demo_update_data_buffer2(struct demo *demo) {
+    mat4x4 MVP, VP;
+    int matrixSize = sizeof(MVP);
+    struct vktexcube_vs_uniform *pData;
+    VkResult U_ASSERT_ONLY err;
+    static float step = 0.1;
+
+    if (demo->model_matrix2[3][0] < -3.5 || demo->model_matrix2[3][0] > 3.5)
+        step *=-1;
+
+    mat4x4_translate_in_place(demo->model_matrix2, step,0,0);
+    mat4x4_mul(VP, demo->projection_matrix2, demo->view_matrix2);
+    mat4x4_mul(MVP, VP, demo->model_matrix2);
+
+    err = vkMapMemory(demo->device, demo->swapchain_image_resources[demo->current_buffer].uniform_memory2, 0, VK_WHOLE_SIZE, 0,
+                      (void **)&pData);
+    assert(!err);
+
+    memcpy(pData, (const void *)&MVP[0][0], matrixSize);
+
+    vkUnmapMemory(demo->device, demo->swapchain_image_resources[demo->current_buffer].uniform_memory2);
 }
 
 void DemoUpdateTargetIPD(struct demo *demo) {
@@ -1111,6 +1278,7 @@ static void demo_draw(struct demo *demo) {
     } while (err != VK_SUCCESS);
 
     demo_update_data_buffer(demo);
+    demo_update_data_buffer2(demo);
 
     if (demo->VK_GOOGLE_display_timing_enabled) {
         // Look at what happened to previous presents, and make appropriate
@@ -1136,8 +1304,8 @@ static void demo_draw(struct demo *demo) {
     pipe_stage_flags = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
     submit_info.waitSemaphoreCount = 1;
     submit_info.pWaitSemaphores = &demo->image_acquired_semaphores[demo->frame_index];
-    submit_info.commandBufferCount = 1;
-    submit_info.pCommandBuffers = &demo->swapchain_image_resources[demo->current_buffer].cmd;
+    submit_info.commandBufferCount = 2;
+    submit_info.pCommandBuffers = &demo->swapchain_image_resources[demo->current_buffer].cmd[0];
     submit_info.signalSemaphoreCount = 1;
     submit_info.pSignalSemaphores = &demo->draw_complete_semaphores[demo->frame_index];
     ATrace_beginSection("cube_QueueSubmit");
@@ -1901,6 +2069,69 @@ void demo_prepare_cube_data_buffers(struct demo *demo) {
     }
 }
 
+void demo_prepare_cube_data_buffers2(struct demo *demo) {
+    VkBufferCreateInfo buf_info;
+    VkMemoryRequirements mem_reqs;
+    VkMemoryAllocateInfo mem_alloc;
+    uint8_t *pData;
+    mat4x4 MVP, VP;
+    VkResult U_ASSERT_ONLY err;
+    bool U_ASSERT_ONLY pass;
+    struct vktexcube_vs_uniform data;
+
+    mat4x4_mul(VP, demo->projection_matrix2, demo->view_matrix2);
+    mat4x4_mul(MVP, VP, demo->model_matrix2);
+    memcpy(data.mvp, MVP, sizeof(MVP));
+    //    dumpMatrix("MVP", MVP);
+
+    for (unsigned int i = 0; i < 12 * 3; i++) {
+        data.position[i][0] = g_vertex_buffer_data[i * 3];
+        data.position[i][1] = g_vertex_buffer_data[i * 3 + 1];
+        data.position[i][2] = g_vertex_buffer_data[i * 3 + 2];
+        data.position[i][3] = 1.0f;
+        data.attr[i][0] = g_uv_buffer_data[2 * i];
+        data.attr[i][1] = g_uv_buffer_data[2 * i + 1];
+        data.attr[i][2] = 0;
+        data.attr[i][3] = 0;
+    }
+
+    memset(&buf_info, 0, sizeof(buf_info));
+    buf_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    buf_info.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+    buf_info.size = sizeof(data);
+
+    for (unsigned int i = 0; i < demo->swapchainImageCount; i++) {
+        err = vkCreateBuffer(demo->device, &buf_info, NULL, &demo->swapchain_image_resources[i].uniform_buffer2);
+        assert(!err);
+
+        vkGetBufferMemoryRequirements(demo->device, demo->swapchain_image_resources[i].uniform_buffer2, &mem_reqs);
+
+        mem_alloc.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+        mem_alloc.pNext = NULL;
+        mem_alloc.allocationSize = mem_reqs.size;
+        mem_alloc.memoryTypeIndex = 0;
+
+        pass = memory_type_from_properties(demo, mem_reqs.memoryTypeBits,
+                                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                                           &mem_alloc.memoryTypeIndex);
+        assert(pass);
+
+        err = vkAllocateMemory(demo->device, &mem_alloc, NULL, &demo->swapchain_image_resources[i].uniform_memory2);
+        assert(!err);
+
+        err = vkMapMemory(demo->device, demo->swapchain_image_resources[i].uniform_memory2, 0, VK_WHOLE_SIZE, 0, (void **)&pData);
+        assert(!err);
+
+        memcpy(pData, &data, sizeof data);
+
+        vkUnmapMemory(demo->device, demo->swapchain_image_resources[i].uniform_memory2);
+
+        err = vkBindBufferMemory(demo->device, demo->swapchain_image_resources[i].uniform_buffer2,
+                                 demo->swapchain_image_resources[i].uniform_memory2, 0);
+        assert(!err);
+    }
+}
+
 static void demo_prepare_descriptor_layout(struct demo *demo) {
     const VkDescriptorSetLayoutBinding layout_bindings[2] = {
         [0] =
@@ -2233,6 +2464,51 @@ static void demo_prepare_descriptor_set(struct demo *demo) {
     }
 }
 
+static void demo_prepare_descriptor_set2(struct demo *demo) {
+    VkDescriptorImageInfo tex_descs[DEMO_TEXTURE_COUNT];
+    VkWriteDescriptorSet writes[2];
+    VkResult U_ASSERT_ONLY err;
+
+    VkDescriptorSetAllocateInfo alloc_info = {.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+            .pNext = NULL,
+            .descriptorPool = demo->desc_pool,
+            .descriptorSetCount = 1,
+            .pSetLayouts = &demo->desc_layout};
+
+    VkDescriptorBufferInfo buffer_info;
+    buffer_info.offset = 0;
+    buffer_info.range = sizeof(struct vktexcube_vs_uniform);
+
+    memset(&tex_descs, 0, sizeof(tex_descs));
+    for (unsigned int i = 0; i < DEMO_TEXTURE_COUNT; i++) {
+        tex_descs[i].sampler = demo->textures[i].sampler;
+        tex_descs[i].imageView = demo->textures[i].view;
+        tex_descs[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    }
+
+    memset(&writes, 0, sizeof(writes));
+
+    writes[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    writes[0].descriptorCount = 1;
+    writes[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    writes[0].pBufferInfo = &buffer_info;
+
+    writes[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    writes[1].dstBinding = 1;
+    writes[1].descriptorCount = DEMO_TEXTURE_COUNT;
+    writes[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    writes[1].pImageInfo = tex_descs;
+
+    for (unsigned int i = 0; i < demo->swapchainImageCount; i++) {
+        err = vkAllocateDescriptorSets(demo->device, &alloc_info, &demo->swapchain_image_resources[i].descriptor_set2);
+        assert(!err);
+        buffer_info.buffer = demo->swapchain_image_resources[i].uniform_buffer2;
+        writes[0].dstSet = demo->swapchain_image_resources[i].descriptor_set2;
+        writes[1].dstSet = demo->swapchain_image_resources[i].descriptor_set2;
+        vkUpdateDescriptorSets(demo->device, 2, writes, 0, NULL);
+    }
+}
+
 static void demo_prepare_framebuffers(struct demo *demo) {
     VkImageView attachments[2];
     attachments[1] = demo->depth.view;
@@ -2298,13 +2574,15 @@ static void demo_prepare(struct demo *demo) {
     demo_prepare_depth(demo);
     demo_prepare_textures(demo);
     demo_prepare_cube_data_buffers(demo);
+    demo_prepare_cube_data_buffers2(demo);
 
     demo_prepare_descriptor_layout(demo);
     demo_prepare_render_pass(demo);
     demo_prepare_pipeline(demo);
 
     for (uint32_t i = 0; i < demo->swapchainImageCount; i++) {
-        err = vkAllocateCommandBuffers(demo->device, &cmd, &demo->swapchain_image_resources[i].cmd);
+        err = vkAllocateCommandBuffers(demo->device, &cmd, &demo->swapchain_image_resources[i].cmd[0]);
+        err = vkAllocateCommandBuffers(demo->device, &cmd, &demo->swapchain_image_resources[i].cmd[1]);
         assert(!err);
     }
 
@@ -2334,12 +2612,14 @@ static void demo_prepare(struct demo *demo) {
 
     demo_prepare_descriptor_pool(demo);
     demo_prepare_descriptor_set(demo);
+    demo_prepare_descriptor_set2(demo);
 
     demo_prepare_framebuffers(demo);
 
     for (uint32_t i = 0; i < demo->swapchainImageCount; i++) {
         demo->current_buffer = i;
-        demo_draw_build_cmd(demo, demo->swapchain_image_resources[i].cmd);
+        demo_draw_build_cmd(demo, demo->swapchain_image_resources[i].cmd[0]);
+        demo_draw_build_cmd2(demo, demo->swapchain_image_resources[i].cmd[1]);
     }
 
     /*
@@ -2399,9 +2679,11 @@ static void demo_cleanup(struct demo *demo) {
 
         for (i = 0; i < demo->swapchainImageCount; i++) {
             vkDestroyImageView(demo->device, demo->swapchain_image_resources[i].view, NULL);
-            vkFreeCommandBuffers(demo->device, demo->cmd_pool, 1, &demo->swapchain_image_resources[i].cmd);
+            vkFreeCommandBuffers(demo->device, demo->cmd_pool, 2, &demo->swapchain_image_resources[i].cmd[0]);
             vkDestroyBuffer(demo->device, demo->swapchain_image_resources[i].uniform_buffer, NULL);
+            vkDestroyBuffer(demo->device, demo->swapchain_image_resources[i].uniform_buffer2, NULL);
             vkFreeMemory(demo->device, demo->swapchain_image_resources[i].uniform_memory, NULL);
+            vkFreeMemory(demo->device, demo->swapchain_image_resources[i].uniform_memory2, NULL);
         }
         free(demo->swapchain_image_resources);
         free(demo->queue_props);
@@ -2481,9 +2763,11 @@ static void demo_resize(struct demo *demo) {
 
     for (i = 0; i < demo->swapchainImageCount; i++) {
         vkDestroyImageView(demo->device, demo->swapchain_image_resources[i].view, NULL);
-        vkFreeCommandBuffers(demo->device, demo->cmd_pool, 1, &demo->swapchain_image_resources[i].cmd);
+        vkFreeCommandBuffers(demo->device, demo->cmd_pool, 2, &demo->swapchain_image_resources[i].cmd[0]);
         vkDestroyBuffer(demo->device, demo->swapchain_image_resources[i].uniform_buffer, NULL);
+        vkDestroyBuffer(demo->device, demo->swapchain_image_resources[i].uniform_buffer2, NULL);
         vkFreeMemory(demo->device, demo->swapchain_image_resources[i].uniform_memory, NULL);
+        vkFreeMemory(demo->device, demo->swapchain_image_resources[i].uniform_memory2, NULL);
     }
     vkDestroyCommandPool(demo->device, demo->cmd_pool, NULL);
     demo->cmd_pool = VK_NULL_HANDLE;
@@ -3779,7 +4063,7 @@ static void demo_init_connection(struct demo *demo) {
 }
 
 static void demo_init(struct demo *demo, int argc, char **argv) {
-    vec3 eye = {0.0f, 3.0f, 5.0f};
+    vec3 eye = {0.0f, 3.0f, 8.0f};
     vec3 origin = {0, 0, 0};
     vec3 up = {0.0f, 1.0f, 0.0};
 
@@ -3861,11 +4145,21 @@ static void demo_init(struct demo *demo, int argc, char **argv) {
     demo->spin_increment = 0.2f;
     demo->pause = false;
 
-    mat4x4_perspective(demo->projection_matrix, (float)degreesToRadians(45.0f), 1.0f, 0.1f, 100.0f);
+    mat4x4_perspective(demo->projection_matrix, (float)degreesToRadians(45.0f), 0.5f, 0.1f, 100.0f);
     mat4x4_look_at(demo->view_matrix, eye, origin, up);
     mat4x4_identity(demo->model_matrix);
 
     demo->projection_matrix[1][1] *= -1;  // Flip projection matrix from GL to Vulkan orientation.
+
+    vec3 eye2 = {0.0f, 0.0f, 25.0f};
+    vec3 origin2 = {0.0f, -7.0f, 0.0f};
+    vec3 up2 = {0.0f, 1.0f, 0.0};
+
+    mat4x4_perspective(demo->projection_matrix2, (float)degreesToRadians(45.0f), 0.5f, 0.1f, 100.0f);
+    mat4x4_look_at(demo->view_matrix2, eye2, origin2, up2);
+    mat4x4_identity(demo->model_matrix2);
+
+    demo->projection_matrix2[1][1] *= -1;  // Flip projection matrix from GL to Vulkan orientation.
 }
 
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
