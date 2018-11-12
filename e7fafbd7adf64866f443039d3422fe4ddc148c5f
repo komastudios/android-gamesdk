@@ -302,6 +302,24 @@
     },
     {
       "key": {
+        "uuid": "8c60420c_560de474",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 462,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-12T20:06:02Z",
+      "side": 1,
+      "message": "Removed (haven\u0027t pushed yet).",
+      "parentUuid": "5dde839d_580cb105",
+      "revId": "e7fafbd7adf64866f443039d3422fe4ddc148c5f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f0f70805_43de3bc4",
         "filename": "src/swappyVk/SwappyVk.cpp",
         "patchSetId": 1
