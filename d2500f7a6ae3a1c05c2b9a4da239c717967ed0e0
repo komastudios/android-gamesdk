@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "ca2a9d43_1be1a6aa",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-12T19:46:21Z",
+      "side": 1,
+      "message": "sure, we should do it in the same CL though",
+      "parentUuid": "c43ac0fd_d376678d",
+      "revId": "d2500f7a6ae3a1c05c2b9a4da239c717967ed0e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "7a700f60_2265d0f2",
         "filename": "third_party/cube/app/src/main/cpp/cube.c",
         "patchSetId": 1
@@ -107,6 +125,24 @@
     },
     {
       "key": {
+        "uuid": "281b687e_5868696c",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 1479,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-12T19:46:21Z",
+      "side": 1,
+      "message": "I was talking about a macro to allow changing the FPS in one place. So if we want to render in 60GPS, 30FPS or 20FPS, we will be able to do that by just changing this macro.",
+      "parentUuid": "6e7d4734_e1df337a",
+      "revId": "d2500f7a6ae3a1c05c2b9a4da239c717967ed0e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "76033a69_04dec815",
         "filename": "third_party/cube/app/src/main/cpp/cube.c",
         "patchSetId": 1
@@ -136,6 +172,24 @@
       "side": 1,
       "message": "We could.  However, I\u0027m demonstrating the Vulkan way of doing things, which the API implements.",
       "parentUuid": "76033a69_04dec815",
+      "revId": "d2500f7a6ae3a1c05c2b9a4da239c717967ed0e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fcd7f371_679b85fa",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 3332,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-12T19:46:21Z",
+      "side": 1,
+      "message": "Agree, I just read that in the documentation :)",
+      "parentUuid": "e82ae9c6_6ecc21d0",
       "revId": "d2500f7a6ae3a1c05c2b9a4da239c717967ed0e0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
