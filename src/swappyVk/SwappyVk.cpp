@@ -16,7 +16,6 @@
 
 #include "SwappyVk.h"
 #include <map>
-
 #include <dlfcn.h>
 
 #ifdef ANDROID
@@ -24,8 +23,25 @@
 #include <pthread.h>
 #include <android/looper.h>
 #include <android/choreographer.h>
-
 #include <android/log.h>
+#include <android/trace.h>
+
+#define ATRACE_NAME(name) ScopedTrace ___tracer(name)
+
+// ATRACE_CALL is an ATRACE_NAME that uses the current function name.
+#define ATRACE_CALL() ATRACE_NAME(__FUNCTION__)
+
+class ScopedTrace {
+public:
+    inline ScopedTrace(const char *name) {
+        ATrace_beginSection(name);
+    }
+
+    inline ~ScopedTrace() {
+        ATrace_endSection();
+    }
+};
+
 #define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, "SwappyVk", __VA_ARGS__)
 #define ALOGW(...) __android_log_print(ANDROID_LOG_WARN, "SwappyVk", __VA_ARGS__)
 #define ALOGI(...) __android_log_print(ANDROID_LOG_INFO, "SwappyVk", __VA_ARGS__)
@@ -36,12 +52,14 @@
 #define ALOGV(...) ((void)0)
 #endif
 #else
+#define ATRACE_CALL()
 #define ALOGE(...)
 #define ALOGW(...)
 #define ALOGI(...)
 #define ALOGD(...)
 #define ALOGV(...)
 #endif
+
 
 
 
@@ -528,6 +546,7 @@ uint64_t SwappyVk::GetRefreshCycleDuration(VkPhysicalDevice physicalDevice,
                 return 0;
             }
         }
+
         // First, based on whether VK_GOOGLE_display_timing is available
         // (determined and cached by swappyVkDetermineDeviceExtensions),
         // determine which derived class to use to implement the rest of the API
@@ -620,6 +639,7 @@ void swappyVkDetermineDeviceExtensions(
     uint32_t*              pRequiredExtensionCount,
     char**                 pRequiredExtensions)
 {
+    ATRACE_CALL();
     SwappyVk& swappy = SwappyVk::getInstance();
     swappy.swappyVkDetermineDeviceExtensions(physicalDevice,
                                              availableExtensionCount, pAvailableExtensions,
@@ -631,6 +651,7 @@ uint64_t swappyVkGetRefreshCycleDuration(
         VkDevice         device,
         VkSwapchainKHR   swapchain)
 {
+    ATRACE_CALL();
     SwappyVk& swappy = SwappyVk::getInstance();
     return swappy.GetRefreshCycleDuration(physicalDevice, device, swapchain);
 }
@@ -640,6 +661,7 @@ void swappyVkSetSwapInterval(
         VkSwapchainKHR swapchain,
         uint32_t       interval)
 {
+    ATRACE_CALL();
     SwappyVk& swappy = SwappyVk::getInstance();
     swappy.SetSwapInterval(device, swapchain, interval);
 }
@@ -648,6 +670,7 @@ VkResult swappyVkQueuePresent(
         VkQueue                 queue,
         const VkPresentInfoKHR* pPresentInfo)
 {
+    ATRACE_CALL();
     SwappyVk& swappy = SwappyVk::getInstance();
     return swappy.QueuePresent(queue, pPresentInfo);
 }
