@@ -19,6 +19,12 @@
 
 #include <dlfcn.h>
 
+#ifdef ANDROID
+#include <mutex>
+#include <pthread.h>
+#include <android/looper.h>
+#include <android/choreographer.h>
+
 #include <android/log.h>
 #define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, "SwappyVk", __VA_ARGS__)
 #define ALOGW(...) __android_log_print(ANDROID_LOG_WARN, "SwappyVk", __VA_ARGS__)
@@ -29,6 +35,15 @@
 #else
 #define ALOGV(...) ((void)0)
 #endif
+#else
+#define ALOGE(...)
+#define ALOGW(...)
+#define ALOGI(...)
+#define ALOGD(...)
+#define ALOGV(...)
+#endif
+
+#define CHOREOGRAPHER_THRESH 1000
 
 
 constexpr uint32_t kThousand = 1000;
@@ -298,6 +313,7 @@ public:
 /**
  * Concrete/derived class that sits on top of the Vulkan API
  */
+#ifdef ANDROID
 class SwappyVkAndroidFallback : public SwappyVkBase
 {
 public:
@@ -305,24 +321,141 @@ public:
                             VkDevice         device,
                             SwappyVk         &swappyVk,
                             void             *libVulkan) :
-            SwappyVkBase(physicalDevice, device, k16_6msec, 1, swappyVk, libVulkan) {}
+            SwappyVkBase(physicalDevice, device, 0, 1, swappyVk, libVulkan) {
+
+        std::unique_lock<std::mutex> lock(mWaitingMutex);
+        // create a new ALooper thread to get Choreographer events
+        mTreadRunning = true;
+        pthread_create(&mThread, NULL, looperThreadWrapper, this);
+        mWaitingCondition.wait(lock, [&]() { return mChoreographer != nullptr; });
+    }
+
+        ~SwappyVkAndroidFallback() {
+        if (mLooper) {
+            ALooper_acquire(mLooper);
+            mTreadRunning = false;
+            ALooper_wake(mLooper);
+            ALooper_release(mLooper);
+            pthread_join(mThread, NULL);
+        }
+    }
+
     virtual bool doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
-                                           uint64_t*      pRefreshDuration) override
+                                               uint64_t*      pRefreshDuration) override
     {
-        // TODO: replace this with a better implementation, if there's another
-        // Android API that can provide this value
+        std::unique_lock<std::mutex> lock(mWaitingMutex);
+        mWaitingCondition.wait(lock, [&]() {
+            if (mRefreshDur == 0) {
+                AChoreographer_postFrameCallbackDelayed(mChoreographer, frameCallback, this, 1);
+                return false;
+            }
+            return true;
+        });
+
         *pRefreshDuration = mRefreshDur;
+        ALOGI("Returning refresh duration of %llu nsec", mRefreshDur);
         return true;
     }
+
     virtual VkResult doQueuePresent(VkQueue                 queue,
                                     const VkPresentInfoKHR* pPresentInfo) override
     {
-        // TODO: replace this with a better implementation that waits before
-        // calling vkQueuePresentKHR
+        {
+            const long target = mFrameID + mInterval;
+            std::unique_lock<std::mutex> lock(mWaitingMutex);
+
+
+            mWaitingCondition.wait(lock, [&]() {
+                if (mFrameID < target) {
+                    // wait for the next frame as this frame is too soon
+                    AChoreographer_postFrameCallbackDelayed(mChoreographer, frameCallback, this, 1);
+                    return false;
+                }
+                return true;
+            });
+        }
         return mpfnQueuePresentKHR(queue, pPresentInfo);
     }
-};
 
+private:
+    static void *looperThreadWrapper(void *data) {
+        SwappyVkAndroidFallback *me = reinterpret_cast<SwappyVkAndroidFallback *>(data);
+        return me->looperThread();
+    }
+
+    void *looperThread() {
+        int outFd, outEvents;
+        void *outData;
+
+        mLooper = ALooper_prepare(0);
+        if (!mLooper) {
+            ALOGE("ALooper_prepare failed");
+            return NULL;
+        }
+
+        mChoreographer = AChoreographer_getInstance();
+        if (!mChoreographer) {
+            ALOGE("AChoreographer_getInstance failed");
+            return NULL;
+        }
+        mWaitingCondition.notify_all();
+
+        while (mTreadRunning) {
+            ALooper_pollAll(-1, &outFd, &outEvents, &outData);
+        }
+
+        return NULL;
+    }
+
+    static void frameCallback(long frameTimeNanos, void *data) {
+        SwappyVkAndroidFallback *me = reinterpret_cast<SwappyVkAndroidFallback *>(data);
+        me->onDisplayRefresh(frameTimeNanos);
+    }
+
+    void onDisplayRefresh(long frameTimeNanos) {
+        std::lock_guard<std::mutex> lock(mWaitingMutex);
+
+        // ignore back-to-back callbacks
+        if (mLastframeTimeNanos != 0 && frameTimeNanos - mLastframeTimeNanos < CHOREOGRAPHER_THRESH)
+            return;
+
+        if (mRefreshDur == 0 && mLastframeTimeNanos != 0) {
+            // prevent wraparound
+            if (mLastframeTimeNanos < frameTimeNanos) {
+                calcRefreshRate(frameTimeNanos);
+            }
+        }
+
+        mLastframeTimeNanos = frameTimeNanos;
+        mFrameID++;
+        mWaitingCondition.notify_all();
+    }
+
+    void calcRefreshRate(long frameTimeNanos) {
+        long refresh_nano = frameTimeNanos - mLastframeTimeNanos;
+        const int step = 30;
+        int fps = 0;
+        long rate, delta;
+
+        do {
+            fps += step;
+            rate = (double) 1.0 / fps * kBillion;
+            delta = (rate > refresh_nano) ? rate - refresh_nano : refresh_nano - rate;
+        } while (delta > 1000000);
+
+        mRefreshDur = ((double)1.0 / fps) * kBillion;
+    }
+
+    pthread_t mThread = 0;
+    ALooper *mLooper = nullptr;
+    bool mTreadRunning = false;
+    AChoreographer *mChoreographer = nullptr;
+    std::mutex mWaitingMutex;
+    std::condition_variable mWaitingCondition;
+    long mFrameID = 0;
+    long mLastframeTimeNanos = 0;
+};
+#endif
 
 /***************************************************************************************************
  *
@@ -464,6 +597,7 @@ bool SwappyVk::GetRefreshCycleDuration(VkPhysicalDevice physicalDevice,
                 return false;
             }
         }
+
         // First, based on whether VK_GOOGLE_display_timing is available
         // (determined and cached by swappyVkDetermineDeviceExtensions),
         // determine which derived class to use to implement the rest of the API
