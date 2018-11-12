@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "c43ac0fd_d376678d",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-12T18:21:06Z",
+      "side": 1,
+      "message": "I ended up changing the include path.  Is that okay?",
+      "parentUuid": "98f8199a_b6323e2f",
+      "revId": "d2500f7a6ae3a1c05c2b9a4da239c717967ed0e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "7a700f60_2265d0f2",
         "filename": "third_party/cube/app/src/main/cpp/cube.c",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2018-11-09T23:42:51Z",
       "side": 1,
       "message": "I guess this is going to be removed ?",
+      "revId": "d2500f7a6ae3a1c05c2b9a4da239c717967ed0e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8af5f092_7227d4d4",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 1239,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-12T18:21:06Z",
+      "side": 1,
+      "message": "I\u0027d like to.  That\u0027s why I did the Vulkan-only (non-Android) implementation of SwappyVk--so that I can remove the old line and still upstream this.",
+      "parentUuid": "7a700f60_2265d0f2",
       "revId": "d2500f7a6ae3a1c05c2b9a4da239c717967ed0e0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "6e7d4734_e1df337a",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 1479,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-12T18:21:06Z",
+      "side": 1,
+      "message": "Not sure what we want the macro to abstract.  Do you have suggestions?  If it just has \"2\" or \"two\" in the name, it doesn\u0027t seem like we abstracted anything.",
+      "parentUuid": "76a8708d_0e30203c",
+      "revId": "d2500f7a6ae3a1c05c2b9a4da239c717967ed0e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "76033a69_04dec815",
         "filename": "third_party/cube/app/src/main/cpp/cube.c",
         "patchSetId": 1
@@ -64,6 +118,24 @@
       "writtenOn": "2018-11-09T23:42:51Z",
       "side": 1,
       "message": "Instead of calling the swappyVkDetermineDeviceExtensions() twice we can just allocate an array size of device_extension_count which is \u003e\u003d swappy_required_extension_count",
+      "revId": "d2500f7a6ae3a1c05c2b9a4da239c717967ed0e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e82ae9c6_6ecc21d0",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 3332,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-12T18:21:06Z",
+      "side": 1,
+      "message": "We could.  However, I\u0027m demonstrating the Vulkan way of doing things, which the API implements.",
+      "parentUuid": "76033a69_04dec815",
       "revId": "d2500f7a6ae3a1c05c2b9a4da239c717967ed0e0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
