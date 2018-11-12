@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "06154eba_00cbc2b3",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 12
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-12T21:48:04Z",
+      "side": 1,
+      "message": "This should be a const method.",
+      "revId": "a0425c3a0b396473b7d23d8f8287a684e81ebc9a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "30c13aaf_ec744025",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 12
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-12T21:48:04Z",
+      "side": 1,
+      "message": "If it\u0027s only returning true, do we really need to return anything?",
+      "revId": "a0425c3a0b396473b7d23d8f8287a684e81ebc9a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
