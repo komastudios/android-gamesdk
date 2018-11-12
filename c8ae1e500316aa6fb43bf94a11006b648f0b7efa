@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "02cf6457_92097258",
+        "filename": "performance-utils/Android.bp",
+        "patchSetId": 9
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-11-12T14:47:56Z",
+      "side": 1,
+      "message": "Why is /data/local/tmp necessary? What happens if you omit this?",
+      "revId": "c8ae1e500316aa6fb43bf94a11006b648f0b7efa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
