@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7c63fad4_88716e5c",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-12T19:54:41Z",
+      "side": 1,
+      "message": "Can we make this private?",
+      "revId": "787f1a1b56b470a8366400d9ef3737eba01b38fb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dd4abc8b_a117424f",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-12T19:54:41Z",
+      "side": 1,
+      "message": "This is a getter with a side effect, which is why it\u0027s not const. I find it confusing. Can we move the code that set mRefreshDur(ation) somewhere else non-const (at present time for example if it makes sense there)? It would also remove the need for making doGetRefreshCycleDuration polymorphic.",
+      "revId": "787f1a1b56b470a8366400d9ef3737eba01b38fb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d46e37cd_56da3118",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-12T19:54:41Z",
+      "side": 1,
+      "message": "Can we make rcDur more descriptive?",
+      "revId": "787f1a1b56b470a8366400d9ef3737eba01b38fb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6c78ab89_a948e5f1",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-12T19:54:41Z",
+      "side": 1,
+      "message": "If initialize() is made private, the flag is not needed and we can also remove this check.",
+      "revId": "787f1a1b56b470a8366400d9ef3737eba01b38fb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ff1cc77c_ba3ee2f2",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-12T19:54:41Z",
+      "side": 1,
+      "message": "doSetSwapInterval implementation is identical in both concrete classes.\nI would promote this method to the base class, implement it only once, remove virtual.\nIf polymorphic behavior is needed in the future, we can add a call to a virtual method (eg apply) that gives an entry point.",
+      "revId": "787f1a1b56b470a8366400d9ef3737eba01b38fb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "168abdd6_ffdac0a8",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-12T19:54:41Z",
+      "side": 1,
+      "message": "This should be removed if not needed.",
+      "revId": "787f1a1b56b470a8366400d9ef3737eba01b38fb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
