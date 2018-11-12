@@ -19,6 +19,12 @@
 
 #include <dlfcn.h>
 
+#ifdef ANDROID
+#include <mutex>
+#include <pthread.h>
+#include <android/looper.h>
+#include <android/choreographer.h>
+
 #include <android/log.h>
 #define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, "SwappyVk", __VA_ARGS__)
 #define ALOGW(...) __android_log_print(ANDROID_LOG_WARN, "SwappyVk", __VA_ARGS__)
@@ -29,6 +35,14 @@
 #else
 #define ALOGV(...) ((void)0)
 #endif
+#else
+#define ALOGE(...)
+#define ALOGW(...)
+#define ALOGI(...)
+#define ALOGD(...)
+#define ALOGV(...)
+#endif
+
 
 
 constexpr uint32_t kThousand = 1000;
@@ -298,6 +312,7 @@ public:
 /**
  * Concrete/derived class that sits on top of the Vulkan API
  */
+#ifdef ANDROID
 class SwappyVkAndroidFallback : public SwappyVkBase
 {
 public:
@@ -305,24 +320,107 @@ public:
                             VkDevice         device,
                             SwappyVk         &swappyVk,
                             void             *libVulkan) :
-            SwappyVkBase(physicalDevice, device, k16_6msec, 1, swappyVk, libVulkan) {}
+            SwappyVkBase(physicalDevice, device, k16_6msec, 1, swappyVk, libVulkan) {
+        // create a new ALooper thread to get Choreographer events
+        mTreadRunning = true;
+        pthread_create(&mThread, NULL, looperThreadWrapper, this);
+
+    }
+
+        ~SwappyVkAndroidFallback() {
+        if (mLooper) {
+            ALooper_acquire(mLooper);
+            mTreadRunning = false;
+            ALooper_wake(mLooper);
+            ALooper_release(mLooper);
+            pthread_join(mThread, NULL);
+        }
+    }
+
     virtual bool doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
-                                           uint64_t*      pRefreshDuration) override
+                                               uint64_t*      pRefreshDuration) override
     {
-        // TODO: replace this with a better implementation, if there's another
-        // Android API that can provide this value
         *pRefreshDuration = mRefreshDur;
         return true;
     }
+
     virtual VkResult doQueuePresent(VkQueue                 queue,
                                     const VkPresentInfoKHR* pPresentInfo) override
     {
-        // TODO: replace this with a better implementation that waits before
-        // calling vkQueuePresentKHR
+        // register for a callback when next frame is presented
+        AChoreographer_postFrameCallbackDelayed(mChoreographer, frameCallback, this, 1);
+        {
+            const long target = mFrameID + mInterval;
+            std::unique_lock<std::mutex> lock(mWaitingMutex);
+
+
+            mWaitingCondition.wait(lock, [&]() {
+                if (mFrameID < target) {
+                    // wait for the next frame as this frame is too soon
+                    AChoreographer_postFrameCallbackDelayed(mChoreographer, frameCallback, this, 1);
+                    return false;
+                }
+                return true;
+            });
+        }
         return mpfnQueuePresentKHR(queue, pPresentInfo);
     }
-};
 
+private:
+    static void *looperThreadWrapper(void *data) {
+        SwappyVkAndroidFallback *me = reinterpret_cast<SwappyVkAndroidFallback *>(data);
+        return me->looperThread();
+    }
+
+    void *looperThread() {
+        int outFd, outEvents;
+        void *outData;
+
+        mLooper = ALooper_prepare(0);
+        if (!mLooper) {
+            ALOGE("ALooper_prepare failed");
+            return NULL;
+        }
+
+        mChoreographer = AChoreographer_getInstance();
+        if (!mChoreographer) {
+            ALOGE("AChoreographer_getInstance failed");
+            return NULL;
+        }
+
+        while (mTreadRunning) {
+            ALooper_pollAll(-1, &outFd, &outEvents, &outData);
+        }
+
+        return NULL;
+    }
+
+    static void frameCallback(long frameTimeNanos, void *data) {
+        SwappyVkAndroidFallback *me = reinterpret_cast<SwappyVkAndroidFallback *>(data);
+        me->onDisplayRefresh(frameTimeNanos);
+    }
+
+    void onDisplayRefresh(long frameTimeNanos) {
+        std::lock_guard<std::mutex> lock(mWaitingMutex);
+        // TODO: define some threshold
+        if (mLastframeTimeNanos != 0 && frameTimeNanos - mLastframeTimeNanos < 1000)
+            return;
+
+        mLastframeTimeNanos = frameTimeNanos;
+        mFrameID++;
+        mWaitingCondition.notify_all();
+    }
+
+    pthread_t mThread = 0;
+    ALooper *mLooper = nullptr;
+    bool mTreadRunning = false;
+    AChoreographer *mChoreographer = nullptr;
+    std::mutex mWaitingMutex;
+    std::condition_variable mWaitingCondition;
+    long mFrameID = 0;
+    long mLastframeTimeNanos = 0;
+};
+#endif
 
 /***************************************************************************************************
  *
