@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "0e06dd39_3087c923",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-12T18:15:00Z",
+      "side": 1,
+      "message": "Yes, that seems reasonable to be able to return an error.  I\u0027ll do that soon (requires an API change).",
+      "parentUuid": "e9f0c885_9d7adff2",
+      "range": {
+        "startLine": 141,
+        "startChar": 15,
+        "endLine": 141,
+        "endChar": 19
+      },
+      "revId": "e7fafbd7adf64866f443039d3422fe4ddc148c5f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f7e6748a_4840eaee",
         "filename": "src/swappyVk/SwappyVk.cpp",
         "patchSetId": 1
@@ -42,6 +66,24 @@
     },
     {
       "key": {
+        "uuid": "5a0c0b53_272afdc1",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-12T18:15:00Z",
+      "side": 1,
+      "message": "The one is for Android systems (that will use Choreographer) and the other is a stub for non-Android systems.  That will allow me to push some of these changes upstream and get feedback from some who develop on desktop systems (e.g. VK_GOOGLE_display_timing is on the open-source AMD driver).",
+      "parentUuid": "f7e6748a_4840eaee",
+      "revId": "e7fafbd7adf64866f443039d3422fe4ddc148c5f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "15009e62_48b177da",
         "filename": "src/swappyVk/SwappyVk.cpp",
         "patchSetId": 1
@@ -53,6 +95,24 @@
       "writtenOn": "2018-11-09T23:36:39Z",
       "side": 1,
       "message": "we should just use the \u003ddelete.",
+      "revId": "e7fafbd7adf64866f443039d3422fe4ddc148c5f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "839c9dd7_5d9527c9",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 403,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-12T18:15:00Z",
+      "side": 1,
+      "message": "Okay, I\u0027ll come back to this a little later.  I\u0027m trying to get the main functionality done first.",
+      "parentUuid": "15009e62_48b177da",
       "revId": "e7fafbd7adf64866f443039d3422fe4ddc148c5f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
