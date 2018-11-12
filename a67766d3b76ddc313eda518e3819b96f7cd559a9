@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8a8ee71b_78f1a01c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 8
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-12T18:36:07Z",
+      "side": 1,
+      "message": "This isn\u0027t true anymore.",
+      "revId": "a67766d3b76ddc313eda518e3819b96f7cd559a9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "87ad61a8_2f3ee60f",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-12T18:36:07Z",
+      "side": 1,
+      "message": "We should do this as a separate CL",
+      "revId": "a67766d3b76ddc313eda518e3819b96f7cd559a9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e7bc4d4a_98d45900",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-12T18:36:07Z",
+      "side": 1,
+      "message": "Please remove before we merge this CL.",
+      "revId": "a67766d3b76ddc313eda518e3819b96f7cd559a9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "17bd470b_df45aa80",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-12T18:36:07Z",
+      "side": 1,
+      "message": "This is just setting a default.",
+      "revId": "a67766d3b76ddc313eda518e3819b96f7cd559a9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "36b27018_afe76d7d",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 637,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-12T18:36:07Z",
+      "side": 1,
+      "message": "Nit: Remove the trailing whitespace.",
+      "revId": "a67766d3b76ddc313eda518e3819b96f7cd559a9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
