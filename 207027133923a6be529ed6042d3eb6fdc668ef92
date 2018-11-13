@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "aa6d72bf_03304ac0",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-13T01:56:24Z",
+      "side": 1,
+      "message": "@fcarucci: This should be a const method.",
+      "revId": "207027133923a6be529ed6042d3eb6fdc668ef92",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
