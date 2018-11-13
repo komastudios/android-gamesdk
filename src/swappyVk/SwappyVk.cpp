@@ -110,9 +110,9 @@ public:
  *
  ***************************************************************************************************/
 
-#ifdef NOT_NEEDED
-class SwappyVkGoogleDisplayTimingSwapchain;
-#endif // NOT_NEEDED
+constexpr uint32_t kTooCloseToVsyncBoundary     = 3000000;
+constexpr uint32_t kTooFarAwayFromVsyncBoundary = 7000000;
+constexpr uint32_t kNudgeWithinVsyncBoundaries  = 2000000;
 
 /**
  * Concrete/derived class that sits on top of VK_GOOGLE_display_timing
@@ -125,7 +125,7 @@ public:
                                 SwappyVk         &swappyVk,
                                 void             *libVulkan) :
             SwappyVkBase(physicalDevice, device, k16_6msec, 1, swappyVk, libVulkan),
-            mNextPresentID(0), mNextDesiredPresentTime(0)
+            mNextPresentID(0), mNextDesiredPresentTime(0), mNextPresentIDToCheck(2)
     {
         initialize();
     }
@@ -169,12 +169,10 @@ private:
     uint32_t mNextPresentID;
     uint64_t mNextDesiredPresentTime;
 
+    uint32_t mNextPresentIDToCheck;
+
     PFN_vkGetRefreshCycleDurationGOOGLE mpfnGetRefreshCycleDurationGOOGLE = nullptr;
     PFN_vkGetPastPresentationTimingGOOGLE mpfnGetPastPresentationTimingGOOGLE = nullptr;
-
-#ifdef NOT_NEEDED
-    std::map<VkSwapchainKHR, SwappyVkGoogleDisplayTimingSwapchain> swapchains;
-#endif // NOT_NEEDED
 };
 
 VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(VkQueue                 queue,
@@ -232,6 +230,84 @@ VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(VkQueue                 que
 #endif
     VkResult ret = VK_SUCCESS;
 
+    // Check the timing of past presents to see if we need to adjust mNextDesiredPresentTime:
+    uint32_t pastPresentationTimingCount = 0;
+// TODO: Move the following check back here: if (mNextPresentID > mNextPresentIDToCheck) {
+    {
+        ALOGI("Calling vkGetPastPresentationTimingGOOGLE() at QP for mNextPresentID = %u",
+              mNextPresentID);
+        VkResult err = mpfnGetPastPresentationTimingGOOGLE(mDevice, pPresentInfo->pSwapchains[0],
+                                                           &pastPresentationTimingCount, NULL);
+        if (pastPresentationTimingCount) {
+            VkPastPresentationTimingGOOGLE *past =
+                    reinterpret_cast<VkPastPresentationTimingGOOGLE*>(
+                        malloc(sizeof(VkPastPresentationTimingGOOGLE) *
+                               pastPresentationTimingCount));
+            err = mpfnGetPastPresentationTimingGOOGLE(mDevice, pPresentInfo->pSwapchains[0],
+                                                      &pastPresentationTimingCount, past);
+            static int64_t previousActualPresentTime = 0;
+            for (uint32_t i = 0; i < pastPresentationTimingCount; i++) {
+                if (!previousActualPresentTime) {
+                    // In order to make the stats not look bad, fudge a previous value:
+                    previousActualPresentTime =
+                            past[i].actualPresentTime - (mRefreshDur * mInterval);
+                }
+                // Note: On Android, actualPresentTime can actually be before
+                // desiredPresentTime (which shouldn't be possible.
+                int64_t amountAfterLast =
+                        (int64_t) past[i].actualPresentTime - previousActualPresentTime;
+                int64_t amountEarlyBy =
+                        (int64_t) past[i].actualPresentTime - (int64_t)past[i].desiredPresentTime;
+                int64_t differenceFromEarliest =
+                        (int64_t) past[i].actualPresentTime - (int64_t)past[i].earliestPresentTime;
+                float amtAfterLast = (float) amountAfterLast / (float) kMillion;
+                float amtEarlyBy = (float) amountEarlyBy / (float) kMillion;
+                float diffFromEarliest = (float) differenceFromEarliest / (float) kMillion;
+                ALOGI("  Presentid %4u: desiredPresentTime=%llu, actualPresentTime=%llu, "
+                      "earliestPresentTime=%llu, presentMargin=%llu, afterLast=%6.3f, earlyBy=%6.3f, "
+                      "diffFromEarliest=%6.3f",
+                      mNextPresentID, past[i].desiredPresentTime, past[i].actualPresentTime,
+                      past[i].earliestPresentTime, past[i].presentMargin,
+                      amtAfterLast, amtEarlyBy, diffFromEarliest);
+                if (amountAfterLast < (16*kMillion)) {
+                    ALOGI("\n\n\t  PRESENTED 1 VSYNC EARLY!!!\n\n");
+                }
+                if (amountAfterLast > (40*kMillion)) {
+                    ALOGI("\n\n\t  PRESENTED 1 VSYNC LATE!!!\n\n");
+                }
+                previousActualPresentTime = (int64_t) past[i].actualPresentTime;
+// TODO: Move this check back up earlier (it's here so that all of the ALOGI()'s give good data:
+if (mNextPresentID > mNextPresentIDToCheck) {
+                if (amountEarlyBy < kTooCloseToVsyncBoundary) {
+                    // We're getting too close to vsync.  Subtract 2 msec from the next
+                    // present, and check back after a few more presents:
+                    ALOGI("\t  SUBING 2 msec to mNextDesiredPresentTime (which is currently %llu)",
+                          mNextDesiredPresentTime);
+                    mNextDesiredPresentTime -= kNudgeWithinVsyncBoundaries;
+                    ALOGI("\t  After subing 2 msec to mNextDesiredPresentTime, it is now    %llu)",
+                          mNextDesiredPresentTime);
+                    mNextPresentIDToCheck = mNextPresentID + 7;
+                    previousActualPresentTime = 0;
+                    break;
+                }
+                if (amountEarlyBy > kTooFarAwayFromVsyncBoundary) {
+                    // We're getting too far away from vsync.  Add 2 msec to the next
+                    // present, and check back after a few more presents:
+                    ALOGI("\t  ADDING 2 msec to mNextDesiredPresentTime (which is currently %llu)",
+                          mNextDesiredPresentTime);
+                    mNextDesiredPresentTime += kNudgeWithinVsyncBoundaries;
+                    ALOGI("\t  After adding 2 msec to mNextDesiredPresentTime, it is now    %llu)",
+                          mNextDesiredPresentTime);
+                    mNextPresentIDToCheck = mNextPresentID + 7;
+                    previousActualPresentTime = 0;
+                    break;
+                }
+}
+            }
+            free(past);
+        }
+    }
+
     // Determine the desiredPresentTime:
     if (!mNextDesiredPresentTime) {
         struct timespec currTime;
@@ -266,27 +342,6 @@ VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(VkQueue                 que
     free(pPresentTimes);
     return ret;
 };
-
-
-#ifdef NOT_NEEDED
-/**
- * Per-VkSwapchainKHR helper class for using VK_GOOGLE_display_timing
- */
-class SwappyVkGoogleDisplayTimingSwapchain
-{
-public:
-    SwappyVkGoogleDisplayTimingSwapchain(SwappyVkGoogleDisplayTiming *pGoogle,
-                                         VkSwapchainKHR swapchain) :
-            mpGoogle(pGoogle), mSwapchain(swapchain), mNextPresentID(0), mNextDesiredPresentTime(0),
-            mReceivedPastData(false) {}
-public:
-    SwappyVkGoogleDisplayTiming *mpGoogle;
-    VkSwapchainKHR mSwapchain;
-    uint32_t mNextPresentID;
-    uint64_t mNextDesiredPresentTime;
-    bool mReceivedPastData;
-};
-#endif // NOT_NEEDED
 
 
 /***************************************************************************************************
