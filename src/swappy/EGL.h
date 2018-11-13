@@ -29,8 +29,7 @@ class EGL {
     };
 
   public:
-    explicit EGL(std::chrono::nanoseconds refreshPeriod, ConstructorTag)
-        : mRefreshPeriod(refreshPeriod) {}
+    explicit EGL(std::chrono::nanoseconds, ConstructorTag) {}
 
     static std::unique_ptr<EGL> create(std::chrono::nanoseconds refreshPeriod);
 
@@ -41,8 +40,6 @@ class EGL {
                              std::chrono::steady_clock::time_point time);
 
   private:
-    const std::chrono::nanoseconds mRefreshPeriod;
-
     using eglPresentationTimeANDROID_type = EGLBoolean (*)(EGLDisplay, EGLSurface, EGLnsecsANDROID);
     eglPresentationTimeANDROID_type eglPresentationTimeANDROID = nullptr;
     using eglCreateSyncKHR_type = EGLSyncKHR (*)(EGLDisplay, EGLenum, const EGLint *);

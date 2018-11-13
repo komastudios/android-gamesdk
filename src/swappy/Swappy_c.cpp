@@ -21,8 +21,6 @@
 #include "Settings.h"
 #include "Thread.h"
 
-#include <chrono>
-
 extern "C" {
 
 void Swappy_init(JNIEnv *env, jobject jactivity) {

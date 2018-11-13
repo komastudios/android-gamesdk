@@ -13,7 +13,11 @@ cc_defaults {
   static_libs: [
     "libprotobuf-cpp-lite-ndk",
   ],
-  cppflags: ["-Wno-conversion-null"],
+  cppflags: [
+    "-Wno-conversion-null",
+    "-Wno-unused-parameter",
+    "-Wno-reorder",
+  ],
   cpp_std: "c++17",
   compile_multilib: "both",
   target: {
@@ -31,6 +35,7 @@ cc_library_static {
   ],
   srcs: [
     "src/device_info/*.cpp",
+    "src/swappy/*.cpp",
     "include/**/*.proto",
   ],
   proto: {
