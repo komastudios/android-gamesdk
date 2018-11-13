@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9f7d4fc3_dfbb0ff0",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-13T20:55:29Z",
+      "side": 1,
+      "message": "we can bail out if (!pastPresentationTimingCount) to reduce the overall indentation",
+      "revId": "e14167617520ebb54be12397adb8770a591bac01",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
