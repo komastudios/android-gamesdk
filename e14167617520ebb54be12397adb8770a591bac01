@@ -16,6 +16,24 @@
       "revId": "e14167617520ebb54be12397adb8770a591bac01",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "af0806cb_8f533232",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-13T20:57:58Z",
+      "side": 1,
+      "message": "Only if I put the timing stuff into its own method.  We still need to execute the bottom part of this method (actually presenting the image).  Do you recommend splitting the timing stuff out?",
+      "parentUuid": "9f7d4fc3_dfbb0ff0",
+      "revId": "e14167617520ebb54be12397adb8770a591bac01",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
