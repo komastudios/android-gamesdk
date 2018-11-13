@@ -1,0 +1,29 @@
+cc_defaults {
+    name: "gamesdk-defaults",
+    sdk_version: "27",
+    cflags: [
+        "-Wall",
+        "-Werror",
+    ],
+    include_dirs: [
+        "frameworks/opt/gamesdk/include",
+    ],
+    shared_libs: [
+        "libEGL",
+        "liblog",
+    ],
+    cppflags: ["-Wno-conversion-null"],
+    cpp_std: "c++17",
+    stl: "libc++_static"   // must be one of "libc++", "libc++_static", "libstdc++", or "none": might need to iterate over all of these in the future
+}
+
+cc_library_static {
+    name: "androidgamesdk",
+    defaults: ["gamesdk-defaults"],
+    local_include_dirs: [
+        "include/",
+    ],
+    srcs: [
+        "src/**/*.cpp",
+    ],
+}

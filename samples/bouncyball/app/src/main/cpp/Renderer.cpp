@@ -63,7 +63,7 @@ void Renderer::start() {
         requestDraw();
     });
 
-    mHotPocketThread.run([this](HotPocketState *hotPocketState) {
+    mHotPocketThread.run([](HotPocketState *hotPocketState) {
         hotPocketState->isStarted = true;
     });
     spin();
@@ -97,7 +97,7 @@ Renderer::ThreadState::ThreadState() {
 
     // Choose a config, either a match if possible or the first config otherwise
 
-    const auto configMatches = [&](EGLConfig config) {
+    const auto configMatches = [&](EGLConfig) {
         if (!configHasAttribute(EGL_RED_SIZE, 8)) return false;
         if (!configHasAttribute(EGL_GREEN_SIZE, 8)) return false;
         if (!configHasAttribute(EGL_BLUE_SIZE, 8)) return false;
