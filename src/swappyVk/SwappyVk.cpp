@@ -108,6 +108,38 @@ public:
  *
  * Per-Device concrete/derived class for using VK_GOOGLE_display_timing.
  *
+ * This class uses the VK_GOOGLE_display_timing in order to present frames at a muliple (the "swap
+ * interval") of a fixed refresh-cycle duration (i.e. the time between successive vsync's).
+ *
+ * In order to reduce complexity, some simplifying assumptions are made:
+ *
+ * - We assume a fixed refresh-rate (FRR) display that's between 60 Hz and 120 Hz.
+ *
+ * - While Vulkan allows applications to create and use multiple VkSwapchainKHR's per VkDevice, and
+ *   to re-create VkSwapchainKHR's, we assume that the application uses a single VkSwapchainKHR,
+ *   and never re-creates it.
+ *
+ * - The values reported back by the VK_GOOGLE_display_timing extension (which comes from
+ *   lower-level Android interfaces) are not precise, and that values can drift over time.  For
+ *   example, the refresh-cycle duration for a 60 Hz display should be 16,666,666 nsec; but the
+ *   value reported back by the extension won't be precisely this.  Also, the differences betweeen
+ *   the times of two successive frames won't be an exact multiple of 16,666,666 nsec.  This can
+ *   make it difficult to precisely predict when a future vsync will be (it can appear to drift
+ *   overtime).  Therefore, we try to give a desiredPresentTime for each image that is between 3
+ *   and 7 msec before vsync.  We look at the actualPresentTime for previously-presented images,
+ *   and nudge the future desiredPresentTime back within those 3-7 msec boundaries.
+ *
+ * - There can be a few frames of latency between when an image is presented and when the
+ *   actualPresentTime is available for that image.  Therefore, we initially just pick times based
+ *   upon CLOCK_MONOTONIC (which is the time domain for VK_GOOGLE_display_timing).  After we get
+ *   past-present times, we nudge the desiredPresentTime, we wait for a few presents before looking
+ *   again to see whether we need to nudge again.
+ *
+ * - If, for some reason, an application can't keep up with its chosen swap interval (e.g. it's
+ *   designed for 30FPS on a premium device and is now running on a slow device; or it's running on
+ *   a 120Hz display), this algorithm may not be able to make up for this (i.e. smooth rendering at
+ *   a targetted frame rate may not be possible with an application that can't render fast enough).
+ *
  ***************************************************************************************************/
 
 constexpr uint32_t kTooCloseToVsyncBoundary     = 3000000;
@@ -132,8 +164,6 @@ public:
     virtual bool doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
                                            uint64_t*      pRefreshDuration) override
     {
-        // FIXME/TODO: NEED TO CACHE THIS SWAPCHAIN, SO THAT WE KNOW ALL SWAPCHAINS FOR THIS DEVICE
-
         VkRefreshCycleDurationGOOGLE refreshCycleDuration;
         VkResult res = mpfnGetRefreshCycleDurationGOOGLE(mDevice, swapchain, &refreshCycleDuration);
         if (res != VK_SUCCESS) {
@@ -146,7 +176,7 @@ public:
         // TEMP CODE: LOG REFRESH DURATION AND RATE:
         double refreshRate = mRefreshDur;
         refreshRate = 1.0 / (refreshRate / 1000000000.0);
-        ALOGI("Returning refresh duration of %llu nsec (approx %f Hz)", mRefreshDur, refreshRate);
+        ALOGD("Returning refresh duration of %llu nsec (approx %f Hz)", mRefreshDur, refreshRate);
 
         *pRefreshDuration = mRefreshDur;
         return true;
@@ -178,131 +208,40 @@ private:
 VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(VkQueue                 queue,
                                                      const VkPresentInfoKHR* pPresentInfo)
 {
-#if 1
-    // FIXME/TODO: ALLOCATE (CHUNK ALLOC?) MEMORY
-
-    // FIXME/TODO: Look at any previous presents and come up with values that pPresentTimes points to.
-    // FIXME/TODO: Look at any previous presents and come up with values that pPresentTimes points to.
-    // FIXME/TODO: Look at any previous presents and come up with values that pPresentTimes points to.
-
-
-    // Ideas:
-    //
-    // - At first (before any feedback), get the current time and pick a
-    //   desiredPresentTime that's in the future.
-    //
-    // - Keep track of the next presentID to use.
-    //
-    // - When we get feedback, we do calibration.  We want desiredPresentTime to
-    //   be between 1 and 3 msec before when we think vsync will be.  There is
-    //   variability in the timestamps that come back.  If we tried to have
-    //   desiredPresentTime be when we think vsync will occur, we will sometimes
-    //   be early and sometimes be late (i.e. not truly be at the desired
-    //   framerate).  It's better to be a little early than late.  Since the
-    //   highest display refresh-rate immaginable is 120Hz (or vsync every 4+
-    //   msec), I'll arbitrarily consider an acceptable desiredPresentTime to be
-    //   between 1 and 3 msec earlier than when I think vsync will be.
-    //
-    // - When we do calibration, if there's more than one frame's worth of
-    //   feedback, look at the highest presentID that comes back.
-    //
-    // - Rather than do malloc/free for getting feedback (when we do
-    //   calibration), let's just have an array on the stack (i.e. a local
-    //   variable) that gets passed to vkGetPastPresentationTimingGOOGLE().
-    //
-    // - We shouldn't do calibration too often.  In particular, an application
-    //   may be several frames ahead of getting feedback.  Therefore, once we do
-    //   calibration, we should not do calibration again until after the next
-    //   presentID to use.
-    //
-    // - Oh yeah, all swapchains in this call are on the same VkDevice.  In most
-    //   cases, there will only be one swapchain.  In most cases, a swapchain
-    //   won't be re-created.  Perhaps it's best to assume that it's best to use
-    //   the first swapchain for doing calibration, and then apply the
-    //   desiredPresentTime to all swapchains.  That way, I won't need the
-    //   SwappyVkGoogleDisplayTimingSwapchain class.
-    //
-    // - There's an outside chance that an application won't be able to keep up
-    //   with its swap interval (e.g. it's designed for 30FPS on a premium
-    //   device and is running on a slow device, or it's running on a 120Hz
-    //   display).
-#else
-#endif
     VkResult ret = VK_SUCCESS;
 
-    // Check the timing of past presents to see if we need to adjust mNextDesiredPresentTime:
-    uint32_t pastPresentationTimingCount = 0;
-// TODO: Move the following check back here: if (mNextPresentID > mNextPresentIDToCheck) {
-    {
-        ALOGI("Calling vkGetPastPresentationTimingGOOGLE() at QP for mNextPresentID = %u",
-              mNextPresentID);
+    if (mNextPresentID > mNextPresentIDToCheck) {
+        // Check the timing of past presents to see if we need to adjust mNextDesiredPresentTime:
+        uint32_t pastPresentationTimingCount = 0;
         VkResult err = mpfnGetPastPresentationTimingGOOGLE(mDevice, pPresentInfo->pSwapchains[0],
                                                            &pastPresentationTimingCount, NULL);
         if (pastPresentationTimingCount) {
+            // TODO: don't allocate memory for the timestamps every time.
             VkPastPresentationTimingGOOGLE *past =
                     reinterpret_cast<VkPastPresentationTimingGOOGLE*>(
                         malloc(sizeof(VkPastPresentationTimingGOOGLE) *
                                pastPresentationTimingCount));
             err = mpfnGetPastPresentationTimingGOOGLE(mDevice, pPresentInfo->pSwapchains[0],
                                                       &pastPresentationTimingCount, past);
-            static int64_t previousActualPresentTime = 0;
             for (uint32_t i = 0; i < pastPresentationTimingCount; i++) {
-                if (!previousActualPresentTime) {
-                    // In order to make the stats not look bad, fudge a previous value:
-                    previousActualPresentTime =
-                            past[i].actualPresentTime - (mRefreshDur * mInterval);
-                }
-                // Note: On Android, actualPresentTime can actually be before
-                // desiredPresentTime (which shouldn't be possible.
-                int64_t amountAfterLast =
-                        (int64_t) past[i].actualPresentTime - previousActualPresentTime;
+                // Note: On Android, actualPresentTime can actually be before desiredPresentTime
+                // (which shouldn't be possible.  Therefore, this must be a signed integer.
                 int64_t amountEarlyBy =
                         (int64_t) past[i].actualPresentTime - (int64_t)past[i].desiredPresentTime;
-                int64_t differenceFromEarliest =
-                        (int64_t) past[i].actualPresentTime - (int64_t)past[i].earliestPresentTime;
-                float amtAfterLast = (float) amountAfterLast / (float) kMillion;
-                float amtEarlyBy = (float) amountEarlyBy / (float) kMillion;
-                float diffFromEarliest = (float) differenceFromEarliest / (float) kMillion;
-                ALOGI("  Presentid %4u: desiredPresentTime=%llu, actualPresentTime=%llu, "
-                      "earliestPresentTime=%llu, presentMargin=%llu, afterLast=%6.3f, earlyBy=%6.3f, "
-                      "diffFromEarliest=%6.3f",
-                      mNextPresentID, past[i].desiredPresentTime, past[i].actualPresentTime,
-                      past[i].earliestPresentTime, past[i].presentMargin,
-                      amtAfterLast, amtEarlyBy, diffFromEarliest);
-                if (amountAfterLast < (16*kMillion)) {
-                    ALOGI("\n\n\t  PRESENTED 1 VSYNC EARLY!!!\n\n");
-                }
-                if (amountAfterLast > (40*kMillion)) {
-                    ALOGI("\n\n\t  PRESENTED 1 VSYNC LATE!!!\n\n");
-                }
-                previousActualPresentTime = (int64_t) past[i].actualPresentTime;
-// TODO: Move this check back up earlier (it's here so that all of the ALOGI()'s give good data:
-if (mNextPresentID > mNextPresentIDToCheck) {
                 if (amountEarlyBy < kTooCloseToVsyncBoundary) {
-                    // We're getting too close to vsync.  Subtract 2 msec from the next
-                    // present, and check back after a few more presents:
-                    ALOGI("\t  SUBING 2 msec to mNextDesiredPresentTime (which is currently %llu)",
-                          mNextDesiredPresentTime);
+                    // We're getting too close to vsync.  Nudge the next present back
+                    // towards/in the boundaries, and check back after a few more presents:
                     mNextDesiredPresentTime -= kNudgeWithinVsyncBoundaries;
-                    ALOGI("\t  After subing 2 msec to mNextDesiredPresentTime, it is now    %llu)",
-                          mNextDesiredPresentTime);
                     mNextPresentIDToCheck = mNextPresentID + 7;
-                    previousActualPresentTime = 0;
                     break;
                 }
                 if (amountEarlyBy > kTooFarAwayFromVsyncBoundary) {
-                    // We're getting too far away from vsync.  Add 2 msec to the next
-                    // present, and check back after a few more presents:
-                    ALOGI("\t  ADDING 2 msec to mNextDesiredPresentTime (which is currently %llu)",
-                          mNextDesiredPresentTime);
+                    // We're getting too far away from vsync.  Nudge the next present back
+                    // towards/in the boundaries, and check back after a few more presents:
                     mNextDesiredPresentTime += kNudgeWithinVsyncBoundaries;
-                    ALOGI("\t  After adding 2 msec to mNextDesiredPresentTime, it is now    %llu)",
-                          mNextDesiredPresentTime);
                     mNextPresentIDToCheck = mNextPresentID + 7;
-                    previousActualPresentTime = 0;
                     break;
                 }
-}
             }
             free(past);
         }
@@ -341,7 +280,7 @@ if (mNextPresentID > mNextPresentIDToCheck) {
     ret = mpfnQueuePresentKHR(queue, &replacementPresentInfo);
     free(pPresentTimes);
     return ret;
-};
+}
 
 
 /***************************************************************************************************
@@ -526,17 +465,17 @@ bool SwappyVk::GetRefreshCycleDuration(VkPhysicalDevice physicalDevice,
             // Instantiate the class that sits on top of VK_GOOGLE_display_timing
             pImplementation = new SwappyVkGoogleDisplayTiming(physicalDevice, device,
                                                               getInstance(), mLibVulkan);
-            ALOGD("SwappyVk initialized for VkDevice %p using VK_GOOGLE_display_timing", device);
+            ALOGV("SwappyVk initialized for VkDevice %p using VK_GOOGLE_display_timing", device);
         } else {
             // Instantiate the class that sits on top of the basic Vulkan APIs
 #ifdef ANDROID
             pImplementation = new SwappyVkAndroidFallback(physicalDevice, device, getInstance(),
                                                           mLibVulkan);
-            ALOGD("SwappyVk initialized for VkDevice %p using Android fallback", device);
+            ALOGV("SwappyVk initialized for VkDevice %p using Android fallback", device);
 #else  // ANDROID
             pImplementation = new SwappyVkVulkanFallback(physicalDevice, device, getInstance(),
                                                          mLibVulkan);
-            ALOGD("SwappyVk initialized for VkDevice %p using Vulkan-only fallback", device);
+            ALOGV("SwappyVk initialized for VkDevice %p using Vulkan-only fallback", device);
 #endif // ANDROID
         }
 
