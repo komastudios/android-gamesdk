@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a39645e6_5f6cc24a",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 7
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-13T21:01:38Z",
+      "side": 1,
+      "message": "we should have this line commented by default (i.e. no log)",
+      "revId": "98a2e4afbcedc9828641ba8efe7dfba1cd7c2fe0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
