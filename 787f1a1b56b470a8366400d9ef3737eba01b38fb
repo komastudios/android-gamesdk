@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "09cb410e_ba81a6ee",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-13T18:26:00Z",
+      "side": 1,
+      "message": "Okay.  Done.",
+      "parentUuid": "7c63fad4_88716e5c",
+      "revId": "787f1a1b56b470a8366400d9ef3737eba01b38fb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dd4abc8b_a117424f",
         "filename": "src/swappyVk/SwappyVk.cpp",
         "patchSetId": 3
@@ -33,6 +51,24 @@
       "revId": "787f1a1b56b470a8366400d9ef3737eba01b38fb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2773c151_31609fa3",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-13T18:26:00Z",
+      "side": 1,
+      "message": "Sorry it is confusing.  Actually, this is a query that saves some state.  It\u0027s modeled after other Vulkan queries, including the one being called below.  It needs to be polymorphic, because it will do different things depending on the underlying capabilities of the device.  On top of VK_GOOGLE_display_timing, it calls the similarly-named query in that extension.  In the future VK_KHR_present_timing, it will call that extension\u0027s query.  For the fallback, it will simply return a fixed value because the real value can\u0027t be queried via native APIs.",
+      "parentUuid": "dd4abc8b_a117424f",
+      "revId": "787f1a1b56b470a8366400d9ef3737eba01b38fb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "3d23db47_80d082b3",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-13T18:26:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d46e37cd_56da3118",
+      "revId": "787f1a1b56b470a8366400d9ef3737eba01b38fb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6c78ab89_a948e5f1",
         "filename": "src/swappyVk/SwappyVk.cpp",
         "patchSetId": 3
@@ -67,6 +121,24 @@
       "revId": "787f1a1b56b470a8366400d9ef3737eba01b38fb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "536be19b_cfd3792c",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-13T18:26:00Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "6c78ab89_a948e5f1",
+      "revId": "787f1a1b56b470a8366400d9ef3737eba01b38fb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "f1a0b4dd_d62e49c5",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-13T18:26:00Z",
+      "side": 1,
+      "message": "Agreed/done.  I was initially thinking of doing some work here, but it didn\u0027t turn out that way.",
+      "parentUuid": "ff1cc77c_ba3ee2f2",
+      "revId": "787f1a1b56b470a8366400d9ef3737eba01b38fb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "168abdd6_ffdac0a8",
         "filename": "src/swappyVk/SwappyVk.cpp",
         "patchSetId": 3
@@ -101,6 +191,24 @@
       "revId": "787f1a1b56b470a8366400d9ef3737eba01b38fb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a44fab6c_29f3b044",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-13T18:26:00Z",
+      "side": 1,
+      "message": "Will do.  I was going to put some smarts in this code, but haven\u0027t gotten to that.  Once I get time to finish putting in the smarts, I will remove anything not needed.",
+      "parentUuid": "168abdd6_ffdac0a8",
+      "revId": "787f1a1b56b470a8366400d9ef3737eba01b38fb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }

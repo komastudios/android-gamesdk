@@ -16,6 +16,24 @@
       "revId": "207027133923a6be529ed6042d3eb6fdc668ef92",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0002d946_146ba115",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-13T18:26:00Z",
+      "side": 1,
+      "message": "Why do you think that?  The description for the API function (that this implements) is:\n\nInitialize SwappyVk for a given device and swapchain, and obtain the approximate time duration between vertical-blanking periods.",
+      "parentUuid": "aa6d72bf_03304ac0",
+      "revId": "207027133923a6be529ed6042d3eb6fdc668ef92",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
