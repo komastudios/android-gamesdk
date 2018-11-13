@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "5a11d944_95552319",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 12
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-13T01:56:21Z",
+      "side": 1,
+      "message": "Added this comment to aosp/822243",
+      "parentUuid": "06154eba_00cbc2b3",
+      "revId": "a0425c3a0b396473b7d23d8f8287a684e81ebc9a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "30c13aaf_ec744025",
         "filename": "src/swappyVk/SwappyVk.cpp",
         "patchSetId": 12
