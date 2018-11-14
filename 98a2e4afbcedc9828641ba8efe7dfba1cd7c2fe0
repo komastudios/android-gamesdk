@@ -16,6 +16,24 @@
       "revId": "98a2e4afbcedc9828641ba8efe7dfba1cd7c2fe0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2ebbf4a8_e61844ec",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 7
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-14T20:55:20Z",
+      "side": 1,
+      "message": "Agreed.  Done.  Unfortunately, it (and another change) mean that you\u0027ll need to rebase again.",
+      "parentUuid": "a39645e6_5f6cc24a",
+      "revId": "98a2e4afbcedc9828641ba8efe7dfba1cd7c2fe0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
