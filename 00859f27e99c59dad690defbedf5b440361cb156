@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a58e630b_89ef55b5",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-14T20:55:33Z",
+      "side": 1,
+      "message": "Good idea, but not the best implementation (I learned from ANGLE).  I just moved this into my CL, so that it will be there from day 1 (I fixed another problem in the same area--lines 34 and 36-38 shouldn\u0027t be there).\n\nSorry, but I\u0027ll ask you to rebase this again.",
+      "revId": "00859f27e99c59dad690defbedf5b440361cb156",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
