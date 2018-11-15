@@ -1,0 +1,13 @@
+cc_binary {
+  name: "device_info_test",
+  defaults: ["gamesdk-defaults"],
+  srcs: [
+    "*.cpp",
+  ],
+  proto: {
+    type: "lite",
+  },
+  static_libs: [
+    "androidgamesdk",
+  ],
+}
