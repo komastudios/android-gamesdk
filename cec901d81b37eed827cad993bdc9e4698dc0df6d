@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d01ba598_a0e95825",
+        "filename": "src/performance-utils/device_info.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 599,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-11-15T17:32:52Z",
+      "side": 1,
+      "message": "Why is this header here?",
+      "revId": "cec901d81b37eed827cad993bdc9e4698dc0df6d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
