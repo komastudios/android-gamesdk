@@ -1,0 +1,28 @@
+cc_library_shared {
+  name: "libdevice_info_sample",
+  defaults: ["gamesdk-defaults"],
+  srcs: [
+    "device_info_test.cpp",
+  ],
+  static_libs: [
+    "androidgamesdk",
+  ],
+}
+
+android_app {
+  name: "device_info_sample",
+  manifest: "AndroidManifest.xml",
+  srcs: [
+    "*.java"
+  ],
+  resource_dirs: [
+    "res",
+  ],
+  jni_libs: [
+    "libdevice_info_sample",
+  ],
+  static_libs: [
+    "android-support-constraint-layout",
+  ],
+  sdk_version: "27",
+}

@@ -1,0 +1,12 @@
+cc_binary {
+  name: "device_info_exe",
+  srcs: [
+    "*.cpp",
+  ],
+  proto: {
+    type: "lite",
+  },
+  static_libs: [
+    "androidgamesdk",
+  ],
+}
