@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "a204c046_095b93b0",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-15T04:25:50Z",
+      "side": 1,
+      "message": "Resolving now, so the CL will be merged.",
+      "parentUuid": "ca2a9d43_1be1a6aa",
+      "revId": "d2500f7a6ae3a1c05c2b9a4da239c717967ed0e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a700f60_2265d0f2",
         "filename": "third_party/cube/app/src/main/cpp/cube.c",
         "patchSetId": 1
@@ -87,6 +105,24 @@
       "revId": "d2500f7a6ae3a1c05c2b9a4da239c717967ed0e0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "04aba0d6_68834f7c",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 1239,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-15T04:25:50Z",
+      "side": 1,
+      "message": "Resolving now, so the CL will be merged.",
+      "parentUuid": "8af5f092_7227d4d4",
+      "revId": "d2500f7a6ae3a1c05c2b9a4da239c717967ed0e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -143,6 +179,24 @@
     },
     {
       "key": {
+        "uuid": "814356a1_bd454f15",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 1479,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-15T04:25:50Z",
+      "side": 1,
+      "message": "Resolving now, so the CL will be merged.",
+      "parentUuid": "281b687e_5868696c",
+      "revId": "d2500f7a6ae3a1c05c2b9a4da239c717967ed0e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "76033a69_04dec815",
         "filename": "third_party/cube/app/src/main/cpp/cube.c",
         "patchSetId": 1
@@ -193,6 +247,24 @@
       "revId": "d2500f7a6ae3a1c05c2b9a4da239c717967ed0e0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8cafe859_02bc01dc",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 3332,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-15T04:25:50Z",
+      "side": 1,
+      "message": "Resolving now, so the CL will be merged.",
+      "parentUuid": "fcd7f371_679b85fa",
+      "revId": "d2500f7a6ae3a1c05c2b9a4da239c717967ed0e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
