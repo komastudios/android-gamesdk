@@ -12,15 +12,17 @@
  * limitations under the License.
  */
 
-#include "device_info.h"
+#include <jni.h>
+#include <string>
 
-int main(){
-  device_info::root proto = device_info::createProto();
+#include "../../src/performance-utils/device_info_debug.h"
 
-  std::cout << "*Proto debug begin:" << std::endl;
-  proto.PrintDebugString();
-  std::cout << "*Proto debug end." << std::endl;
+extern "C" {
+JNIEXPORT jstring
 
-  std::cout << "fin." << std::endl;
-  return 0;
+JNICALL
+Java_com_google_performanceutilstest_MainActivity_jniGetDevicePerformanceDebugString(
+                                                              JNIEnv *env, jobject) {
+  return env->NewStringUTF(device_info::getDebugString().c_str());
 }
+}  // extern "C"

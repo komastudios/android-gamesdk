@@ -12,15 +12,8 @@
  * limitations under the License.
  */
 
-#include "device_info.h"
+#include <string>
 
-int main(){
-  device_info::root proto = device_info::createProto();
-
-  std::cout << "*Proto debug begin:" << std::endl;
-  proto.PrintDebugString();
-  std::cout << "*Proto debug end." << std::endl;
-
-  std::cout << "fin." << std::endl;
-  return 0;
-}
+namespace device_info {
+std::string getDebugString();
+}  // namespace device_info
