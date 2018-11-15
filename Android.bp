@@ -1,0 +1,36 @@
+cc_defaults {
+    name: "gamesdk-defaults",
+    sdk_version: "27",
+    cflags: [
+        "-Wall",
+        "-Werror",
+    ],
+    shared_libs: [
+        "libEGL",
+        "liblog",
+        "libGLESv2",
+    ],
+    static_libs: [
+      "libprotobuf-cpp-lite-ndk",
+    ],
+    cppflags: ["-Wno-conversion-null"],
+    cpp_std: "c++17",
+    stl: "libc++_static",   // must be one of "libc++", "libc++_static", "libstdc++", or "none": might need to iterate over all of these in the future
+    compile_multilib: "both",
+}
+
+cc_library_static {
+    name: "androidgamesdk",
+    defaults: ["gamesdk-defaults"],
+    export_include_dirs: [
+      "include/",
+    ],
+    srcs: [
+      "src/device_info/*.cc",
+      "include/**/*.proto",
+    ],
+    proto: {
+      export_proto_headers: true,
+      type: "lite",
+    },
+}
