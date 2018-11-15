@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2e352aba_dd1e0767",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 275,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-15T20:52:38Z",
+      "side": 1,
+      "message": "I believe that you don\u0027t want to add mRefreshDur here.  I\u0027m concerned that might defeat the tuning/nudging that\u0027s done by checkPastPresentTiming() (see my comment on line 282).",
+      "revId": "8ad0dcfe97bbf48e99df37547366cbc9fd5e98ee",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e164f939_7f3a1249",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-15T20:52:38Z",
+      "side": 1,
+      "message": "Please add mRefreshDur here.",
+      "revId": "8ad0dcfe97bbf48e99df37547366cbc9fd5e98ee",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7e14757b_a498fff1",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 282,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-15T20:52:38Z",
+      "side": 1,
+      "message": "Note: In the steady-state, I\u0027m concerned that this function can nudge the time to be sooner than \"currentTime + mRefreshDur\".  For example, if mRefreshDur is 16,800,000 nsec, and if mInterval is 1, the nudge could result in line 238 coming up with a time before \"currentTime + mRefreshDur\".",
+      "revId": "8ad0dcfe97bbf48e99df37547366cbc9fd5e98ee",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6bef58d4_1d332bd8",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 287,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-15T20:52:38Z",
+      "side": 1,
+      "message": "If you get to here (line 287), please add mRefreshDur to nextPresentTimeFromCurrent.",
+      "revId": "8ad0dcfe97bbf48e99df37547366cbc9fd5e98ee",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
