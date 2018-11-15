@@ -1,0 +1,40 @@
+cc_library_shared {
+    name: "libperformanceutilstest",
+
+    srcs: [
+        "**/*.cpp",
+    ],
+
+    shared_libs: [
+        "libdeviceinfo",
+        "libEGL",
+        "libGLESv2",
+    ],
+}
+
+android_app {
+    name: "performance_utils_test",
+    manifest: "AndroidManifest.xml",
+    owner: "google",
+
+    srcs: [
+        "**/*.java"
+    ],
+    resource_dirs: [
+        "res",
+    ],
+
+    jni_libs: [
+        "libperformanceutilstest",
+        "libdeviceinfo",
+        "libprotobuf-cpp-full",
+        "libc++",
+    ],
+
+    static_libs: [
+        "android-support-constraint-layout",
+    ],
+
+    sdk_version: "27",
+}
+

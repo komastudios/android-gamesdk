@@ -14,7 +14,7 @@ cc_library_shared {
     "libEGL",
     "libGLESv2",
   ],
-  compile_multilib: "64",
+  //compile_multilib: "64",
 }
 
 cc_binary{
@@ -32,5 +32,5 @@ cc_binary{
   ldflags:[
     "-Wl,--rpath,/data/local/tmp",
   ],
-  compile_multilib: "64",
+  //compile_multilib: "64",
 }

@@ -13,4 +13,5 @@
 
 namespace device_info {
 device_info::root createProto();
+std::string debug();
 }  // namespace device_info

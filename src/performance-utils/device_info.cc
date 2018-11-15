@@ -58,9 +58,9 @@ void splitAdd(const std::string& toSplit, char delimeter,
 }  // namespace string_util
 
 std::vector<std::string> readHardware() {
-  std::vector<std::string> result;
   std::ifstream f("/proc/cpuinfo");
-  if (f.fail()) return result;
+  if (f.fail()) return std::vector<std::string>{"ERROR"};
+  std::vector<std::string> result;
   const std::string FIELD_KEY = "Hardware\t: ";
   std::string line;
   while (std::getline(f, line)) {
@@ -634,4 +634,9 @@ device_info::root createProto() {
 
   return proto;
 }
+
+std::string debug(){
+  return createProto().DebugString();
+}
+
 }  // namespace device_info
