@@ -1,0 +1,140 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2a213710_b6ef3b10",
+        "filename": "samples/performance-utils/MainActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-11-15T11:07:30Z",
+      "side": 1,
+      "message": "There are redundant imports here (I don\u0027t think Menu is needed at all, but it\u0027s imported twice).",
+      "revId": "39767f951732a1f2dd2ed778be83091493a4b7f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ce4c6390_9c75b8e8",
+        "filename": "samples/performance-utils/MainActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-11-15T11:07:30Z",
+      "side": 1,
+      "message": "Should give this a better name.",
+      "revId": "39767f951732a1f2dd2ed778be83091493a4b7f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f1ccc158_c620849d",
+        "filename": "samples/performance-utils/performance_utils_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-11-15T11:07:30Z",
+      "side": 1,
+      "message": "Can you add a license header to this file (and others - I think we might be missing a lot).",
+      "revId": "39767f951732a1f2dd2ed778be83091493a4b7f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d5a2d56b_426cf7ed",
+        "filename": "samples/performance-utils/performance_utils_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-11-15T11:07:30Z",
+      "side": 1,
+      "message": "Probably better to #include the header here.",
+      "revId": "39767f951732a1f2dd2ed778be83091493a4b7f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "81c7210f_f1d94b5b",
+        "filename": "samples/performance-utils/performance_utils_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-11-15T11:07:30Z",
+      "side": 1,
+      "message": "Might be clearer if you have curly brackets around the \"C\" part of the file.",
+      "revId": "39767f951732a1f2dd2ed778be83091493a4b7f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b92dda7f_505575a4",
+        "filename": "src/performance-utils/Android.bp",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-11-15T11:07:30Z",
+      "side": 1,
+      "message": "Should delete these instead of just commenting.",
+      "revId": "39767f951732a1f2dd2ed778be83091493a4b7f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4466ba02_b4ccccf5",
+        "filename": "src/performance-utils/Android.bp",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-11-15T11:07:30Z",
+      "side": 1,
+      "message": "same",
+      "revId": "39767f951732a1f2dd2ed778be83091493a4b7f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "29796b85_b4fe733f",
+        "filename": "src/performance-utils/device_info.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 638,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-11-15T11:07:30Z",
+      "side": 1,
+      "message": "Should rename this \"get debug test string\" or similar.",
+      "revId": "39767f951732a1f2dd2ed778be83091493a4b7f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
