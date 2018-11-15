@@ -1,0 +1,71 @@
+cc_library_shared {
+  name: "libdeviceinfo",
+  srcs: [
+    "src/device_info/device_info.cc",
+    "src/device_info/device_info.proto",
+  ],
+  proto: {
+    type: "full",
+  },
+  shared_libs: [
+    "libEGL",
+    "libGLESv2",
+  ],
+}
+
+cc_binary{
+  name: "device_info_test_exe",
+  srcs: [
+    "test/device_info/main.cc",
+    "src/device_info/device_info.proto",
+  ],
+  proto: {
+    type: "full",
+  },
+  shared_libs: [
+    "libdeviceinfo",
+  ],
+  ldflags:[
+    "-Wl,--rpath,/data/local/tmp",
+  ],
+}
+
+cc_library_shared {
+  name: "libdeviceinfotest",
+  srcs: [
+    "samples/device_info/device_info_test.cpp",
+    "src/device_info/device_info.proto",
+  ],
+  proto: {
+    type: "full",
+  },
+  shared_libs: [
+    "libdeviceinfo",
+    "libEGL",
+    "libGLESv2",
+  ],
+}
+
+android_app {
+  name: "device_info_sample",
+  manifest: "samples/device_info/AndroidManifest.xml",
+
+  srcs: [
+    "samples/device_info/**/*.java"
+  ],
+  resource_dirs: [
+    "samples/device_info/res",
+  ],
+  jni_libs: [
+    "libdeviceinfotest",
+    "libdeviceinfo",
+    "libprotobuf-cpp-full",
+    "libc++",
+  ],
+
+  static_libs: [
+    "android-support-constraint-layout",
+  ],
+
+  sdk_version: "27",
+}
