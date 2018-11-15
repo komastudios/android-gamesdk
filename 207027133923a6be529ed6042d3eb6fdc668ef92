@@ -34,6 +34,24 @@
       "revId": "207027133923a6be529ed6042d3eb6fdc668ef92",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "370c5bfb_70b9db1b",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-15T04:15:43Z",
+      "side": 1,
+      "message": "Resolving this, so it can be merged.",
+      "parentUuid": "0002d946_146ba115",
+      "revId": "207027133923a6be529ed6042d3eb6fdc668ef92",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
