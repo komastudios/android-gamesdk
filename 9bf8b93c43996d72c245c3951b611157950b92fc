@@ -16,6 +16,24 @@
       "revId": "9bf8b93c43996d72c245c3951b611157950b92fc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cc108eed_d400b89b",
+        "filename": "Android.bp",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-11-16T10:21:23Z",
+      "side": 1,
+      "message": "I can do it if someone answers this:\nhttps://yaqs.googleplex.com/eng/q/6239302305185792",
+      "parentUuid": "fb173bc2_ec363345",
+      "revId": "9bf8b93c43996d72c245c3951b611157950b92fc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }

@@ -16,6 +16,24 @@
       "revId": "cec901d81b37eed827cad993bdc9e4698dc0df6d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "24450a1f_52692159",
+        "filename": "src/performance-utils/device_info.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 599,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-11-16T10:21:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d01ba598_a0e95825",
+      "revId": "cec901d81b37eed827cad993bdc9e4698dc0df6d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
