@@ -19,6 +19,23 @@
     },
     {
       "key": {
+        "uuid": "dbb5f257_4e5acc1f",
+        "filename": "src/swappy/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-11-16T02:44:53Z",
+      "side": 1,
+      "message": "If we only call this at the rate of swap, doesn\u0027t that mean that we only request one every other frame? I\u0027d think we\u0027d also risk getting them at weird rates if the work between swap calls varied. It might be a little cleaner to have the Choreographer stuff off on its own, only synchronizing with swap at the point of waitForNextFrame (except when we\u0027re using Swappy as a glorified timer at :121).",
+      "revId": "d665aa0a82cb67dc39d2a37843e85e4915e1ca57",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0d7008e4_9aef69cd",
         "filename": "src/swappy/Swappy.cpp",
         "patchSetId": 1
@@ -30,6 +47,81 @@
       "writtenOn": "2018-11-16T00:52:37Z",
       "side": 1,
       "message": "Are we also stopping the thread?",
+      "revId": "d665aa0a82cb67dc39d2a37843e85e4915e1ca57",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d77ab422_6c0b150e",
+        "filename": "src/swappy/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-11-16T02:44:53Z",
+      "side": 1,
+      "message": "Separate question: instead of startChoreographerThread and some specific work in the Swappy d\u0027tor, could we instead create a class for the Choreographer thread and move the Choreographer specific stuff from the Swappy d\u0027tor into that class\u0027s d\u0027tor?",
+      "parentUuid": "0d7008e4_9aef69cd",
+      "revId": "d665aa0a82cb67dc39d2a37843e85e4915e1ca57",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b43465a6_4d787196",
+        "filename": "src/swappy/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-11-16T02:44:53Z",
+      "side": 1,
+      "message": "Does this need to be fully qualified? We use std::lock_guard and friends elsewhere without any real issues (e.g., see :176). Separately, I\u0027m not familiar with the t* prefix; maybe just \u0027lock\u0027?",
+      "revId": "d665aa0a82cb67dc39d2a37843e85e4915e1ca57",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cde085ed_12bc1628",
+        "filename": "src/swappy/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-11-16T02:44:53Z",
+      "side": 1,
+      "message": "mThreadRunning",
+      "range": {
+        "startLine": 190,
+        "startChar": 4,
+        "endLine": 190,
+        "endChar": 17
+      },
+      "revId": "d665aa0a82cb67dc39d2a37843e85e4915e1ca57",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1530a8ac_fca162e0",
+        "filename": "src/swappy/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-11-16T02:44:53Z",
+      "side": 1,
+      "message": "Given that we\u0027re using C++isms through the rest of this code, could we reframe this in terms of std::thread?",
       "revId": "d665aa0a82cb67dc39d2a37843e85e4915e1ca57",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
