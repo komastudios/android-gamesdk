@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9c352285_07cc79fe",
+        "filename": "src/swappy/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-16T00:52:37Z",
+      "side": 1,
+      "message": "super nit: reinterpret_cast\u003cSwappy *\u003edata",
+      "revId": "d665aa0a82cb67dc39d2a37843e85e4915e1ca57",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0d7008e4_9aef69cd",
+        "filename": "src/swappy/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-16T00:52:37Z",
+      "side": 1,
+      "message": "Are we also stopping the thread?",
+      "revId": "d665aa0a82cb67dc39d2a37843e85e4915e1ca57",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
