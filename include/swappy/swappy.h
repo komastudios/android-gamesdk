@@ -28,7 +28,7 @@ extern "C" {
 #endif
 
 // Initialize Swappy, getting the required Android parameters from the display subsystem via JNI
-void Swappy_init(JNIEnv *env, jobject jactivity);
+void Swappy_init(JNIEnv *env, jobject jactivity, bool useJavaChoreographer);
 
 // Destroy resources and stop all threads that swappy has created
 void Swappy_destroy();

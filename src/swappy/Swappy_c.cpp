@@ -25,8 +25,8 @@
 
 extern "C" {
 
-void Swappy_init(JNIEnv *env, jobject jactivity) {
-    Swappy::init(env, jactivity);
+void Swappy_init(JNIEnv *env, jobject jactivity, bool useJavaChoreographer) {
+    Swappy::init(env, jactivity, useJavaChoreographer);
 }
 
 void Swappy_destroy() {
@@ -35,6 +35,10 @@ void Swappy_destroy() {
 
 bool Swappy_swap(EGLDisplay display, EGLSurface surface) {
     return Swappy::swap(display, surface);
+}
+
+void Swappy_onChoreographer(int64_t frameTimeNanos) {
+    Swappy::onChoreographer(frameTimeNanos);
 }
 
 void Swappy_setRefreshPeriod(uint64_t period_ns) {

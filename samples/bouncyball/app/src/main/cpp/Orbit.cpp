@@ -43,11 +43,11 @@ std::string to_string(jstring jstr, JNIEnv *env) {
 extern "C" {
 
 JNIEXPORT void JNICALL
-Java_com_prefabulated_bouncyball_OrbitActivity_nInit(JNIEnv *env, jobject activity) {
+Java_com_prefabulated_bouncyball_OrbitActivity_nInit(JNIEnv *env, jobject activity, bool useJavaChoreographer) {
     // Get the Renderer instance to create it
     Renderer::getInstance();
 
-    Swappy_init(env, activity);
+    Swappy_init(env, activity, useJavaChoreographer);
 }
 
 JNIEXPORT void JNICALL
@@ -74,6 +74,12 @@ JNIEXPORT void JNICALL
 Java_com_prefabulated_bouncyball_OrbitActivity_nStop(JNIEnv * /* env */, jobject /* this */) {
     ALOGI("stop");
     Renderer::getInstance()->stop();
+}
+
+JNIEXPORT void JNICALL
+Java_com_prefabulated_bouncyball_OrbitActivity_nOnChoreographer(JNIEnv * /* env */, jobject /* this */,
+                                                         jlong frameTimeNanos) {
+    Swappy_onChoreographer(frameTimeNanos);
 }
 
 JNIEXPORT void JNICALL

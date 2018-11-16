@@ -164,8 +164,13 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
         sfOffsetView.setText(String.format(Locale.US, "SF Offset: %.1f ms", sfVsyncOffsetNanos / (float) ONE_MS_IN_NS));
 
         // Initialize the native renderer
+        if (android.os.Build.VERSION.SDK_INT >= 24) {
+            mUseJavaChoreographer = false;
+        } else {
+            mUseJavaChoreographer = true;
+        }
 
-        nInit();
+        nInit(mUseJavaChoreographer);
 
         nSetPreference("refresh_period", String.valueOf(refreshPeriodNanos));
     }
@@ -317,6 +322,20 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
 
         long now = System.nanoTime();
 
+        if (mUseJavaChoreographer) {
+            // Call down to the engine first to avoid delays
+            mChoreographerExecutor.execute(() -> {
+                nOnChoreographer(frameTimeNanos);
+                mUIThreadHandler.postAtFrontOfQueue(() -> {
+                    if (mIsRunning) {
+                        Trace.beginSection("Requesting callback");
+                        Choreographer.getInstance().postFrameCallback(this);
+                        Trace.endSection();
+                    }
+                });
+            });
+        }
+
         long arrivalDelta = now - mLastArrivalTime;
         long timestampDelta = now - mLastFrameTimestamp;
         mLastArrivalTime = now;
@@ -350,11 +369,12 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
         nClearSurface();
     }
 
-    public native void nInit();
+    public native void nInit(boolean useJavaChoreographer);
     public native void nSetSurface(Surface surface, int width, int height);
     public native void nClearSurface();
     public native void nStart();
     public native void nStop();
+    public native void nOnChoreographer(long frameTimeNanos);
     public native void nSetPreference(String key, String value);
 
     private MenuItem mInfoOverlayButton;
@@ -364,6 +384,7 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
     private final int[][] mLastChoreographerInfoValues = new int[4][6];
 
     private boolean mIsRunning;
+    private boolean mUseJavaChoreographer;
     private boolean mInfoOverlayEnabled = false;
 
     private final ExecutorService mChoreographerExecutor = Executors.newSingleThreadExecutor();
