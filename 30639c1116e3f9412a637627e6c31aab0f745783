@@ -1,0 +1,233 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e76d70ec_35563a2c",
+        "filename": "src/swappy/ChoreographerThread.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-11-16T20:08:56Z",
+      "side": 1,
+      "message": "I think you might be able to do this with an inline lambda instead:\n\n  [this]() { looperThread(); }",
+      "range": {
+        "startLine": 30,
+        "startChar": 12,
+        "endLine": 30,
+        "endChar": 37
+      },
+      "revId": "30639c1116e3f9412a637627e6c31aab0f745783",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "24208ccf_b8a55cc6",
+        "filename": "src/swappy/ChoreographerThread.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-11-16T20:08:56Z",
+      "side": 1,
+      "message": "Is this guaranteed to be called on the same thread as the c\u0027tor?",
+      "range": {
+        "startLine": 38,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 43
+      },
+      "revId": "30639c1116e3f9412a637627e6c31aab0f745783",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b23d3891_d5c38f30",
+        "filename": "src/swappy/ChoreographerThread.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-11-16T20:08:56Z",
+      "side": 1,
+      "message": "I\u0027d probably phrase this as an early return:\n\n  if (!mLooper) {\n      return;\n  }\n  ALooper_acquire(mLooper);\n  // ...",
+      "revId": "30639c1116e3f9412a637627e6c31aab0f745783",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8b55c43f_d91ad49d",
+        "filename": "src/swappy/ChoreographerThread.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-11-16T20:08:56Z",
+      "side": 1,
+      "message": "Don\u0027t we need to wrap this in a lock to guarantee that the value is propagated out to the main thread waiting for it in the c\u0027tor? That said, I\u0027m not sure the c\u0027tor actually needs to wait for the thread to fully spin up anyway, so maybe we can just get rid of :35?",
+      "range": {
+        "startLine": 67,
+        "startChar": 4,
+        "endLine": 67,
+        "endChar": 18
+      },
+      "revId": "30639c1116e3f9412a637627e6c31aab0f745783",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6d482e5b_2ed55ac1",
+        "filename": "src/swappy/ChoreographerThread.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-11-16T20:08:56Z",
+      "side": 1,
+      "message": "Might add a comment `// __ANDROID_API__ \u003e\u003d 24` so it\u0027s clear what we\u0027re ending (also maybe at :111)",
+      "revId": "30639c1116e3f9412a637627e6c31aab0f745783",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "837974e1_21ea6d21",
+        "filename": "src/swappy/ChoreographerThread.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-11-16T20:08:56Z",
+      "side": 1,
+      "message": "Nit: alphabetize",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 34
+      },
+      "revId": "30639c1116e3f9412a637627e6c31aab0f745783",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "71952fb7_872a3fc7",
+        "filename": "src/swappy/ChoreographerThread.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-11-16T20:08:56Z",
+      "side": 1,
+      "message": "I might add a using declaration to make this type a little easier to read:\n\n  using ChoreographerCallback \u003d void(*)(void*);",
+      "revId": "30639c1116e3f9412a637627e6c31aab0f745783",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d716858b_2b42828f",
+        "filename": "src/swappy/ChoreographerThread.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-11-16T20:08:56Z",
+      "side": 1,
+      "message": "It doesn\u0027t have to be in this initial change, but we might want to consider using the clang threadsafety annotations, as in https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/refs/changes/82/828382/3/samples/bouncyball/app/src/main/cpp/WorkerThread.h#109",
+      "revId": "30639c1116e3f9412a637627e6c31aab0f745783",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4f4aa352_abc52941",
+        "filename": "src/swappy/ChoreographerThread.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-11-16T20:08:56Z",
+      "side": 1,
+      "message": "Since these aren\u0027t the ones being called directly by Choreographer, could this instead just be a std::function\u003cvoid()\u003e? If the caller wants to pass data back to itself, it can use a lambda or std::bind",
+      "range": {
+        "startLine": 40,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 24
+      },
+      "revId": "30639c1116e3f9412a637627e6c31aab0f745783",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "edd8782e_61320b44",
+        "filename": "src/swappy/ChoreographerThread.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-11-16T20:08:56Z",
+      "side": 1,
+      "message": "For static const, I\u0027d spell this MAX_CALLBACKS_BEFORE_IDLE",
+      "range": {
+        "startLine": 49,
+        "startChar": 25,
+        "endLine": 49,
+        "endChar": 47
+      },
+      "revId": "30639c1116e3f9412a637627e6c31aab0f745783",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fff9932c_61e1900f",
+        "filename": "src/swappy/Swappy.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-11-16T20:08:56Z",
+      "side": 1,
+      "message": "If this took a std::function\u003cvoid()\u003e per my previous comment, this could just be [this]() { handleChoreographer(); } instead, and you could eliminate onChoreographer altogether",
+      "range": {
+        "startLine": 168,
+        "startChar": 27,
+        "endLine": 168,
+        "endChar": 87
+      },
+      "revId": "30639c1116e3f9412a637627e6c31aab0f745783",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
