@@ -26,6 +26,9 @@
 
 #include <jni.h>
 
+#include <android/looper.h>
+#include <android/choreographer.h>
+
 class ChoreographerFilter;
 class EGL;
 
@@ -44,9 +47,9 @@ class Swappy {
            std::chrono::nanoseconds sfOffset,
            ConstructorTag tag);
 
-    static void init(JNIEnv *env, jobject jactivity);
+    ~Swappy();
 
-    static void onChoreographer(int64_t frameTimeNanos);
+    static void init(JNIEnv *env, jobject jactivity);
 
     static bool swap(EGLDisplay display, EGLSurface surface);
 
@@ -85,6 +88,11 @@ private:
     void updateSwapDuration(std::chrono::nanoseconds duration);
     std::atomic<std::chrono::nanoseconds> mSwapDuration;
 
+    void startChoreographerThread();
+    static void onChoreographer(long frameTimeNanos, void* data);
+    static void *looperThreadWrapper(void *data);
+    void *looperThread();
+
     static std::mutex sInstanceMutex;
     static std::unique_ptr<Swappy> sInstance;
 
@@ -94,6 +102,11 @@ private:
     std::condition_variable mWaitingCondition;
     std::chrono::steady_clock::time_point mCurrentFrameTimestamp = std::chrono::steady_clock::now();
     int32_t mCurrentFrame = 0;
+
+    pthread_t mThread = 0;
+    ALooper *mLooper = nullptr;
+    bool mTreadRunning = false;
+    AChoreographer *mChoreographer = nullptr;
 
     std::mutex mEglMutex;
     std::unique_ptr<EGL> mEgl;

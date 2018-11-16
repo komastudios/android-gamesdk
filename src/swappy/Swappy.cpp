@@ -97,8 +97,8 @@ void Swappy::init(nanoseconds refreshPeriod, nanoseconds appOffset, nanoseconds 
     sInstance = std::make_unique<Swappy>(refreshPeriod, appOffset, sfOffset, ConstructorTag{});
 }
 
-void Swappy::onChoreographer(int64_t /*frameTimeNanos*/) {
-    Swappy *swappy = getInstance();
+void Swappy::onChoreographer(long /* frameTimeNanos*/, void* data) {
+    Swappy *swappy = (Swappy *)data;
     if (!swappy) {
         ALOGE("Failed to get Swappy instance in onChoreographer");
         return;
@@ -114,6 +114,12 @@ bool Swappy::swap(EGLDisplay display, EGLSurface surface) {
         ALOGE("Failed to get Swappy instance in swap");
         return EGL_FALSE;
     }
+
+#if __ANDROID_API__ >= 24
+    AChoreographer_postFrameCallbackDelayed(swappy->mChoreographer, onChoreographer, swappy, 1);
+#else
+    swappy->onChoreographer(0, swappy);
+#endif
 
     swappy->waitForNextFrame(display);
 
@@ -173,7 +179,61 @@ Swappy::Swappy(nanoseconds refreshPeriod,
         ALOGE("Failed to load EGL functions");
         exit(0);
     }
+
+    startChoreographerThread();
 }
+
+void Swappy::startChoreographerThread() {
+#if __ANDROID_API__ >= 24
+    std::__ndk1::unique_lock<std::__ndk1::mutex> tLock(mWaitingMutex);
+    // create a new ALooper thread to get Choreographer events
+    mTreadRunning = true;
+    pthread_create(&mThread, NULL, looperThreadWrapper, this);
+    mWaitingCondition.wait(tLock, [&]() { return mChoreographer != nullptr; });
+#endif
+}
+
+Swappy::~Swappy() {
+    if (mLooper) {
+        ALooper_acquire(mLooper);
+        mTreadRunning = false;
+        ALooper_wake(mLooper);
+        ALooper_release(mLooper);
+        pthread_join(mThread, NULL);
+    }
+}
+
+#if __ANDROID_API__ >= 24
+void *Swappy::looperThreadWrapper(void *data) {
+    Swappy *me = reinterpret_cast<Swappy *>(data);
+    return me->looperThread();
+}
+
+void *Swappy::looperThread() {
+    int outFd, outEvents;
+    void *outData;
+
+    mLooper = ALooper_prepare(0);
+    if (!mLooper) {
+        ALOGE("ALooper_prepare failed");
+        return NULL;
+    }
+
+    // TODO: for older APIs we need to ifdef on __ANDROID_API__ >= 24
+    mChoreographer = AChoreographer_getInstance();
+    if (!mChoreographer) {
+        ALOGE("AChoreographer_getInstance failed");
+        return NULL;
+    }
+    mWaitingCondition.notify_all();
+
+    while (mTreadRunning) {
+        ALooper_pollAll(-1, &outFd, &outEvents, &outData);
+    }
+
+    return NULL;
+}
+#endif
 
 void Swappy::onSettingsChanged() {
     mSwapInterval = Settings::getInstance()->getSwapInterval();
