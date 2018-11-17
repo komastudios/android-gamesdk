@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8f1958f2_6e044715",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-11-17T00:38:39Z",
+      "side": 1,
+      "message": "I\u0027d usually try to avoid whitespace-only changes in a non-cleanup CL, but it\u0027s not a huge deal",
+      "revId": "89a6b4d67ee89fbca792aac0e0b922d410049f62",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
