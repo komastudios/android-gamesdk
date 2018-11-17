@@ -1,0 +1,78 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5ccefc2f_f838073f",
+        "filename": "src/swappy/ChoreographerThread.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-17T23:20:44Z",
+      "side": 1,
+      "message": "Very much nit: \nreinterpret_cast\u003cChoreographerThread*\u003e(data)-\u003eonChoreographer();",
+      "revId": "27f9404ed15145f3e179e4b31be9c01189283397",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "677b1655_ca9ec672",
+        "filename": "src/swappy/ChoreographerThread.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-17T23:20:44Z",
+      "side": 1,
+      "message": "I would remove the comment, it doesn\u0027t say much.",
+      "revId": "27f9404ed15145f3e179e4b31be9c01189283397",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "59d3879d_b4251e31",
+        "filename": "src/swappy/ChoreographerThread.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-17T23:20:44Z",
+      "side": 1,
+      "message": "This is neat :)",
+      "range": {
+        "startLine": 35,
+        "startChar": 37,
+        "endLine": 35,
+        "endChar": 45
+      },
+      "revId": "27f9404ed15145f3e179e4b31be9c01189283397",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2d2dbb09_431e6106",
+        "filename": "src/swappy/ChoreographerThread.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-17T23:20:44Z",
+      "side": 1,
+      "message": "Just a thought: would it make sense to group these member variables in a struct, then have only one variable that is guarded by the mutex? Or is it too verbose?",
+      "revId": "27f9404ed15145f3e179e4b31be9c01189283397",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
