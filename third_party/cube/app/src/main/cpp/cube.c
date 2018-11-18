@@ -46,13 +46,20 @@
 
 #ifdef ANDROID
 #include "vulkan_wrapper.h"
+#include <android/trace.h>
 #else
 #include <vulkan/vulkan.h>
+
+// The following 2 macros stub-out the Android systrace interface:
+#define ATrace_beginSection(...) ((void)0)
+#define ATrace_endSection(...) ((void)0)
 #endif
 
 #include <vulkan/vk_platform.h>
 #include "linmath.h"
 #include "object_type_string_helper.h"
+
+#include <SwappyVk.h>
 
 #include "gettime.h"
 #include "inttypes.h"
@@ -130,6 +137,79 @@ void DbgMsg(char *fmt, ...) {
     va_end(va);
 }
 #endif
+
+// Uncomment the following line in order to log events for the first 10 frames:
+//#define ANDROID_LOG_PRESENT_EVENTS
+typedef enum TimingEvent {
+    EVENT_CALLING_ANI = 1,
+    EVENT_CALLED_ANI  = 2,
+    EVENT_CALLING_QS  = 3,
+    EVENT_CALLED_QS   = 4,
+    EVENT_CALLING_QP  = 5,
+    EVENT_CALLED_QP   = 6,
+    EVENT_CALLING_WFF = 7,
+    EVENT_CALLED_WFF  = 8,
+} TimingEvent;
+struct TrackTiming {
+    uint64_t now;
+    uint64_t lastEvent;
+    uint64_t lastANI;
+    uint32_t frame;
+};
+struct TrackTiming timing;
+void InitializeTrackTiming() {
+    timing.now = 0;
+    timing.lastEvent = 0;
+    timing.lastANI = 0;
+    timing.frame = 0;
+}
+void logEvent(TimingEvent event)
+{
+#ifdef ANDROID_LOG_PRESENT_EVENTS
+    timing.now = getTimeInNanoseconds();
+    uint64_t delta = timing.now - timing.lastEvent;
+    uint64_t deltaANI = timing.now - timing.lastANI;
+    if (timing.frame > 30) return;
+    switch (event) {
+        case EVENT_CALLING_ANI:
+            DbgMsg("About to call vkAcquireNextImageKHR at %llu nsec"
+                   " (delta %llu)", timing.now, delta);
+            break;
+        case EVENT_CALLED_ANI:
+            DbgMsg("After calling vkAcquireNextImageKHR at %llu nsec"
+                   " (delta %llu) (delta from last ANI: %llu)",
+                   timing.now, delta, deltaANI);
+            timing.lastANI = timing.now;
+            timing.frame++;
+            break;
+        case EVENT_CALLING_QS:
+            DbgMsg("About to call vkQueueSubmit at         %llu nsec"
+                   " (delta %llu)", timing.now, delta);
+            break;
+        case EVENT_CALLED_QS:
+            DbgMsg("After calling vkQueueSubmit at         %llu nsec"
+                   " (delta %llu)", timing.now, delta);
+            break;
+        case EVENT_CALLING_QP:
+            DbgMsg("About to call vkQueuePresentKHR at     %llu nsec"
+                   " (delta %llu)", timing.now, delta);
+            break;
+        case EVENT_CALLED_QP:
+            DbgMsg("After calling vkQueuePresentKHR at     %llu nsec"
+                   " (delta %llu)", timing.now, delta);
+            break;
+        case EVENT_CALLING_WFF:
+            DbgMsg("About to call vkWaitForFences at       %llu nsec"
+                   " (delta %llu)", timing.now, delta);
+            break;
+        case EVENT_CALLED_WFF:
+            DbgMsg("After calling vkWaitForFences at       %llu nsec"
+                   " (delta %llu)", timing.now, delta);
+            break;
+    }
+    timing.lastEvent = timing.now;
+#endif // ANDROID_LOG_PRESENT_EVENTS
+}
 
 #define GET_INSTANCE_PROC_ADDR(inst, entrypoint)                                                              \
     {                                                                                                         \
@@ -1000,14 +1080,22 @@ static void demo_draw(struct demo *demo) {
     VkResult U_ASSERT_ONLY err;
 
     // Ensure no more than FRAME_LAG renderings are outstanding
+    logEvent(EVENT_CALLING_WFF);
+    ATrace_beginSection("cube_WaitForFences");
     vkWaitForFences(demo->device, 1, &demo->fences[demo->frame_index], VK_TRUE, UINT64_MAX);
+    ATrace_endSection();
+    logEvent(EVENT_CALLED_WFF);
+
     vkResetFences(demo->device, 1, &demo->fences[demo->frame_index]);
 
     do {
         // Get the index of the next available swapchain image:
-        err =
-            demo->fpAcquireNextImageKHR(demo->device, demo->swapchain, UINT64_MAX,
-                                        demo->image_acquired_semaphores[demo->frame_index], VK_NULL_HANDLE, &demo->current_buffer);
+        logEvent(EVENT_CALLING_ANI);
+        ATrace_beginSection("cube_AcquireNextImage");
+        err = demo->fpAcquireNextImageKHR(demo->device, demo->swapchain, UINT64_MAX,
+                                      demo->image_acquired_semaphores[demo->frame_index], VK_NULL_HANDLE, &demo->current_buffer);
+        ATrace_endSection();
+        logEvent(EVENT_CALLED_ANI);
 
         if (err == VK_ERROR_OUT_OF_DATE_KHR) {
             // demo->swapchain is out of date (e.g. the window was resized) and
@@ -1052,8 +1140,10 @@ static void demo_draw(struct demo *demo) {
     submit_info.pCommandBuffers = &demo->swapchain_image_resources[demo->current_buffer].cmd;
     submit_info.signalSemaphoreCount = 1;
     submit_info.pSignalSemaphores = &demo->draw_complete_semaphores[demo->frame_index];
+    ATrace_beginSection("cube_QueueSubmit");
     err = vkQueueSubmit(demo->graphics_queue, 1, &submit_info, demo->fences[demo->frame_index]);
     assert(!err);
+    ATrace_endSection();
 
     if (demo->separate_present_queue) {
         // If we are using separate queues, change image ownership to the
@@ -1148,7 +1238,13 @@ static void demo_draw(struct demo *demo) {
         }
     }
 
-    err = demo->fpQueuePresentKHR(demo->present_queue, &present);
+    logEvent(EVENT_CALLING_QP);
+    ATrace_beginSection("cube_QueuePresent");
+    //err = demo->fpQueuePresentKHR(demo->present_queue, &present);
+    err = swappyVkQueuePresent(demo->present_queue, &present);
+    ATrace_endSection();
+    logEvent(EVENT_CALLED_QP);
+
     demo->frame_index += 1;
     demo->frame_index %= FRAME_LAG;
 
@@ -1379,6 +1475,19 @@ static void demo_prepare_buffers(struct demo *demo) {
         demo->refresh_duration_multiplier = 1;
         demo->prev_desired_present_time = 0;
         demo->next_present_id = 1;
+    }
+
+    assert(swappyVkGetRefreshCycleDuration(demo->gpu, demo->device, demo->swapchain,
+                                           &demo->refresh_duration));
+    if (demo->refresh_duration > (16 * MILLION)) {
+        // Likely a 60Hz display--need a swap interval of 2 for 30FPS:
+        swappyVkSetSwapInterval(demo->device, demo->swapchain, 2);
+    } else if (demo->refresh_duration > (10 * MILLION)) {
+        // Likely a 90Hz display--need a swap interval of 3 for 30FPS:
+        swappyVkSetSwapInterval(demo->device, demo->swapchain, 3);
+    } else {
+        // Likely a 120Hz display--need a swap interval of 4 for 30FPS:
+        swappyVkSetSwapInterval(demo->device, demo->swapchain, 4);
     }
 
     if (NULL != presentModes) {
@@ -3220,6 +3329,23 @@ static void demo_init_vk(struct demo *demo) {
             if (!demo->VK_GOOGLE_display_timing_enabled) {
                 DbgMsg("VK_GOOGLE_display_timing extension NOT AVAILABLE\n");
             }
+        }
+
+        // Add any extensions that SwappyVk requires:
+        uint32_t swappy_required_extension_count = 0;
+        char **swappy_required_extension_names;
+        swappyVkDetermineDeviceExtensions(demo->gpu, device_extension_count, device_extensions,
+                                          &swappy_required_extension_count, NULL);
+        swappy_required_extension_names = malloc(swappy_required_extension_count);
+        for (uint32_t i = 0; i < swappy_required_extension_count; i++) {
+            swappy_required_extension_names[i] = malloc(VK_MAX_EXTENSION_NAME_SIZE + 1);
+        }
+        swappyVkDetermineDeviceExtensions(demo->gpu, device_extension_count, device_extensions,
+                                          &swappy_required_extension_count,
+                                          swappy_required_extension_names);
+        for (uint32_t i = 0; i < swappy_required_extension_count; i++) {
+            demo->extension_names[demo->enabled_extension_count++] = swappy_required_extension_names[i];
+            DbgMsg("SwappyVk requires the following extension: %s\n", swappy_required_extension_names[i]);
         }
 
         free(device_extensions);
