@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "5d4e954b_17407751",
+        "filename": "src/swappy/ChoreographerThread.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-19T18:51:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5ccefc2f_f838073f",
+      "revId": "27f9404ed15145f3e179e4b31be9c01189283397",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "677b1655_ca9ec672",
         "filename": "src/swappy/ChoreographerThread.cpp",
         "patchSetId": 5
@@ -33,6 +51,24 @@
       "revId": "27f9404ed15145f3e179e4b31be9c01189283397",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ce357182_44b2146e",
+        "filename": "src/swappy/ChoreographerThread.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-19T18:51:13Z",
+      "side": 1,
+      "message": "Updated the comment with some more info",
+      "parentUuid": "677b1655_ca9ec672",
+      "revId": "27f9404ed15145f3e179e4b31be9c01189283397",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -59,6 +95,30 @@
     },
     {
       "key": {
+        "uuid": "16bcc04b_f5d0e866",
+        "filename": "src/swappy/ChoreographerThread.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-19T18:51:13Z",
+      "side": 1,
+      "message": "Yep, thanks Dan for introducing me to clang thread safety analysis :)",
+      "parentUuid": "59d3879d_b4251e31",
+      "range": {
+        "startLine": 35,
+        "startChar": 37,
+        "endLine": 35,
+        "endChar": 45
+      },
+      "revId": "27f9404ed15145f3e179e4b31be9c01189283397",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2d2dbb09_431e6106",
         "filename": "src/swappy/ChoreographerThread.h",
         "patchSetId": 5
@@ -73,6 +133,24 @@
       "revId": "27f9404ed15145f3e179e4b31be9c01189283397",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5de64d03_8e2b8224",
+        "filename": "src/swappy/ChoreographerThread.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-19T18:51:13Z",
+      "side": 1,
+      "message": "I would just leave it as is. having another struct might just complicate things...",
+      "parentUuid": "2d2dbb09_431e6106",
+      "revId": "27f9404ed15145f3e179e4b31be9c01189283397",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
