@@ -151,10 +151,14 @@ void swappyVkSetSwapInterval(
  *  (IN)  pPresentInfo - A pointer to the VkPresentInfoKHR containing the
  *                    information about what image(s) to present on which
  *                    swapchain(s).
+ *  (IN) fenceCount        - Number of elements in fences array
+ *  (IN) fences (optional) - Array of fences corresponding to previous frame
  */
 VkResult swappyVkQueuePresent(
         VkQueue                 queue,
-        const VkPresentInfoKHR* pPresentInfo);
+        const VkPresentInfoKHR* pPresentInfo,
+        uint32_t                fenceCount,
+        VkFence*                fences);
 
 #ifdef __cplusplus
 }  // extern "C"
