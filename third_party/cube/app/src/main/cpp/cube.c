@@ -1243,7 +1243,7 @@ static void demo_draw(struct demo *demo) {
     logEvent(EVENT_CALLING_QP);
     ATrace_beginSection("cube_QueuePresent");
     //err = demo->fpQueuePresentKHR(demo->present_queue, &present);
-    err = swappyVkQueuePresent(demo->present_queue, &present);
+    err = swappyVkQueuePresent(demo->present_queue, &present, 1,&demo->fences[((demo->frame_index - 1) + FRAME_LAG) % FRAME_LAG]);
     ATrace_endSection();
     logEvent(EVENT_CALLED_QP);
 

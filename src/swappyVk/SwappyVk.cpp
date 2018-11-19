@@ -121,6 +121,9 @@ public:
         mpfnQueuePresentKHR =
                 reinterpret_cast<PFN_vkQueuePresentKHR>(
                     mpfnGetDeviceProcAddr(mDevice, "vkQueuePresentKHR"));
+        mpfnWaitForFences =
+                reinterpret_cast<PFN_vkWaitForFences>(
+                        mpfnGetDeviceProcAddr(mDevice, "vkWaitForFences"));
     }
     virtual bool doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
                                            uint64_t*      pRefreshDuration) = 0;
@@ -130,7 +133,9 @@ public:
         mInterval = interval;
     }
     virtual VkResult doQueuePresent(VkQueue                 queue,
-                                    const VkPresentInfoKHR* pPresentInfo) = 0;
+                                    const VkPresentInfoKHR* pPresentInfo,
+                                    uint32_t                fenceCount,
+                                    VkFence*                fences) = 0;
 protected:
     VkPhysicalDevice mPhysicalDevice;
     VkDevice         mDevice;
@@ -151,6 +156,7 @@ protected:
 
     PFN_vkGetDeviceProcAddr mpfnGetDeviceProcAddr = nullptr;
     PFN_vkQueuePresentKHR   mpfnQueuePresentKHR = nullptr;
+    PFN_vkWaitForFences     mpfnWaitForFences = nullptr;
     PFN_vkGetRefreshCycleDurationGOOGLE mpfnGetRefreshCycleDurationGOOGLE = nullptr;
     PFN_vkGetPastPresentationTimingGOOGLE mpfnGetPastPresentationTimingGOOGLE = nullptr;
 
@@ -335,7 +341,9 @@ public:
         return true;
     }
     virtual VkResult doQueuePresent(VkQueue                 queue,
-                                    const VkPresentInfoKHR* pPresentInfo) override;
+                                    const VkPresentInfoKHR* pPresentInfo,
+                                    uint32_t                fenceCount,
+                                    VkFence*                fences) override;
 
 private:
     void calculateNextDesiredPresentTime(VkSwapchainKHR swapchain);
@@ -343,7 +351,9 @@ private:
 };
 
 VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(VkQueue                 queue,
-                                                     const VkPresentInfoKHR* pPresentInfo)
+                                                     const VkPresentInfoKHR* pPresentInfo,
+                                                     uint32_t                fenceCount,
+                                                     VkFence*                fences)
 {
     VkResult ret = VK_SUCCESS;
 
@@ -459,12 +469,16 @@ public:
     }
 
     virtual VkResult doQueuePresent(VkQueue                 queue,
-                                    const VkPresentInfoKHR* pPresentInfo) override;
+                                    const VkPresentInfoKHR* pPresentInfo,
+                                    uint32_t                fenceCount,
+                                    VkFence*                fences) override;
 
 };
 
 VkResult SwappyVkGoogleDisplayTimingAndroid::doQueuePresent(VkQueue                 queue,
-                                                     const VkPresentInfoKHR* pPresentInfo)
+                                                     const VkPresentInfoKHR* pPresentInfo,
+                                                     uint32_t                fenceCount,
+                                                     VkFence*                fences)
 {
     VkResult ret = VK_SUCCESS;
     struct timespec currTime;
@@ -490,6 +504,13 @@ VkResult SwappyVkGoogleDisplayTimingAndroid::doQueuePresent(VkQueue             
             ((uint64_t) currTime.tv_sec * kBillion) + (uint64_t) currTime.tv_nsec;
     mNextDesiredPresentTime = currentTime + mRefreshDur * mInterval;
 
+    // If previous frame fence hasn't fired yet, postpone this frame as well
+    if (fenceCount > 0) {
+        VkResult err = mpfnWaitForFences(mDevice, fenceCount, fences, VK_TRUE, 0);
+        if (err == VK_TIMEOUT) {
+            mNextDesiredPresentTime += (mRefreshDur * mInterval) / 2;
+        }
+    }
 
     // Setup the new structures to pass:
     VkPresentTimeGOOGLE pPresentTimes[pPresentInfo->swapchainCount];
@@ -560,7 +581,9 @@ public:
     }
 
     virtual VkResult doQueuePresent(VkQueue                 queue,
-                                    const VkPresentInfoKHR* pPresentInfo) override
+                                    const VkPresentInfoKHR* pPresentInfo,
+                                    uint32_t                fenceCount,
+                                    VkFence*                fences) override
     {
         {
             const long target = mFrameID + mInterval;
@@ -606,7 +629,9 @@ public:
         return true;
     }
     virtual VkResult doQueuePresent(VkQueue                 queue,
-                                    const VkPresentInfoKHR* pPresentInfo) override
+                                    const VkPresentInfoKHR* pPresentInfo,
+                                    uint32_t                fenceCount,
+                                    VkFence*                fences) override
     {
         return mpfnQueuePresentKHR(queue, pPresentInfo);
     }
@@ -649,7 +674,9 @@ public:
                          VkSwapchainKHR swapchain,
                          uint32_t       interval);
     VkResult QueuePresent(VkQueue                 queue,
-                          const VkPresentInfoKHR* pPresentInfo);
+                          const VkPresentInfoKHR* pPresentInfo,
+                          uint32_t                fenceCount,
+                          VkFence*                fences);
 
 private:
     std::map<VkPhysicalDevice, bool> doesPhysicalDeviceHaveGoogleDisplayTiming;
@@ -782,7 +809,9 @@ void SwappyVk::SetSwapInterval(VkDevice       device,
  * Generic/Singleton implementation of swappyVkQueuePresent.
  */
 VkResult SwappyVk::QueuePresent(VkQueue                 queue,
-                                const VkPresentInfoKHR* pPresentInfo)
+                                const VkPresentInfoKHR* pPresentInfo,
+                                uint32_t                fenceCount,
+                                VkFence*                fences)
 {
     // This command doesn't have a VkDevice.  It should have at least one VkSwapchainKHR's.  For
     // this command, all VkSwapchainKHR's will have the same VkDevice and VkQueue.
@@ -792,7 +821,7 @@ VkResult SwappyVk::QueuePresent(VkQueue                 queue,
     }
     SwappyVkBase *pImplementation = perSwapchainImplementation[*pPresentInfo->pSwapchains];
     if (pImplementation) {
-        return pImplementation->doQueuePresent(queue, pPresentInfo);
+        return pImplementation->doQueuePresent(queue, pPresentInfo, fenceCount, fences);
     } else {
         // This should only happen if the API was used wrong (e.g. they never
         // called swappyVkGetRefreshCycleDuration).
@@ -848,11 +877,13 @@ void swappyVkSetSwapInterval(
 
 VkResult swappyVkQueuePresent(
         VkQueue                 queue,
-        const VkPresentInfoKHR* pPresentInfo)
+        const VkPresentInfoKHR* pPresentInfo,
+        uint32_t                fenceCount,
+        VkFence*                fences)
 {
     ATRACE_CALL();
     SwappyVk& swappy = SwappyVk::getInstance();
-    return swappy.QueuePresent(queue, pPresentInfo);
+    return swappy.QueuePresent(queue, pPresentInfo, fenceCount, fences);
 }
 
 }  // extern "C"
