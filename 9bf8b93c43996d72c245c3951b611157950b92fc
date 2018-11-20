@@ -34,6 +34,24 @@
       "revId": "9bf8b93c43996d72c245c3951b611157950b92fc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cb4f4f6d_bbf9f875",
+        "filename": "Android.bp",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-11-20T18:54:26Z",
+      "side": 1,
+      "message": "I think I have addressed this (and a few other issues) with PS6. Additionally I have refactored this file to fit with the changes incoming in \n\nhttps://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/825064",
+      "parentUuid": "cc108eed_d400b89b",
+      "revId": "9bf8b93c43996d72c245c3951b611157950b92fc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
