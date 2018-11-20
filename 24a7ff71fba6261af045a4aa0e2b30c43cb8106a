@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2ca3b790_fc0da2f7",
+        "filename": "src/swappy/Swappy_c.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-11-20T12:41:00Z",
+      "side": 0,
+      "message": "Don\u0027t we want to keep this for people who are on API level \u003c 24 and need the Java choreographer? It could do nothing for API\u003e\u003d24.",
+      "revId": "24a7ff71fba6261af045a4aa0e2b30c43cb8106a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}

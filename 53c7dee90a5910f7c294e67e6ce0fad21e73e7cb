@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "43dd708a_2057126b",
+        "filename": "src/swappy/ChoreographerThread.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-11-20T12:41:00Z",
+      "side": 1,
+      "message": "If API\u003c24, we get linkage failures. Are we ok with that?",
+      "revId": "53c7dee90a5910f7c294e67e6ce0fad21e73e7cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
