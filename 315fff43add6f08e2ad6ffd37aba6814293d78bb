@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d43858a6_7e8b001f",
+        "filename": "include/device_info/device_info.proto",
+        "patchSetId": 6
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-11-21T11:25:39Z",
+      "side": 1,
+      "message": "Did we consider com.google.device_info or com.google.gamesdk.device_info to avoid naming clashes?",
+      "revId": "315fff43add6f08e2ad6ffd37aba6814293d78bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
