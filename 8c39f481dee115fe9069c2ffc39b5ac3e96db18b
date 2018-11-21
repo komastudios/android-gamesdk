@@ -16,6 +16,24 @@
       "revId": "8c39f481dee115fe9069c2ffc39b5ac3e96db18b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "005f7ca4_c3935cdb",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/tftestapp.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-11-21T14:17:04Z",
+      "side": 1,
+      "message": "Done, and added one to TFTestActivity.java",
+      "parentUuid": "b2bd3eb9_5bb3d462",
+      "revId": "8c39f481dee115fe9069c2ffc39b5ac3e96db18b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
