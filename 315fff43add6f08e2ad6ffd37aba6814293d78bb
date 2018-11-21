@@ -16,6 +16,24 @@
       "revId": "315fff43add6f08e2ad6ffd37aba6814293d78bb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e6cce0de_f52b4c6b",
+        "filename": "include/device_info/device_info.proto",
+        "patchSetId": 6
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-11-21T12:21:01Z",
+      "side": 1,
+      "message": "That is a good idea, but should address in a separate change. Created b/119858889 to track this and assigned to Tarik.",
+      "parentUuid": "d43858a6_7e8b001f",
+      "revId": "315fff43add6f08e2ad6ffd37aba6814293d78bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
