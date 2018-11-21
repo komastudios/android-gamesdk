@@ -1,6 +1,12 @@
 TUNINGFORK {
     global:
+<<<<<<< Updated upstream
         *TF*;
+=======
+        *tuningfork*;
+        *tuningfork_test*;
+        *histogram_test*;
+>>>>>>> Stashed changes
     local:
         *;
 };

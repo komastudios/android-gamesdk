@@ -18,19 +18,18 @@
 #include "tuningfork.h"
 #include "histogram.h"
 
+#ifdef PROTOBUF_NANO
+#include "pb_encode.h"
+#endif
+
 #include <inttypes.h>
 #include <vector>
 #include <android/log.h>
 #include <map>
 #include <string>
 
-namespace tuningfork {
 
-using ::com::google::tuningfork::FidelityParams;
-using ::com::google::tuningfork::Settings;
-using ::com::google::tuningfork::Annotation;
-using ::logs::proto::tuningfork::TuningForkLogEvent;
-using ::logs::proto::tuningfork::TuningForkHistogram;
+namespace tuningfork {
 
 typedef ProtobufSerialization SerializedAnnotation;
 
@@ -70,7 +69,7 @@ public:
         return histogram_.Count();
     }
 
-    void Fill(TuningForkHistogram *h) const;
+    friend class ClearcutSerializer;
 };
 
 // Simple fixed-size cache
@@ -85,7 +84,7 @@ public:
 
     void Clear();
 
-    void FillHistograms(TuningForkLogEvent &evt) const;
+    friend class ClearcutSerializer;
 
 };
 

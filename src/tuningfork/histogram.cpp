@@ -13,6 +13,7 @@
  */
 
 #include "histogram.h"
+#include "clearcutserializer.h"
 
 #include <android/log.h>
 
@@ -36,7 +37,7 @@ Histogram::Histogram(float start_ms, float end_ms, int num_buckets_between)
 }
 
 Histogram::Histogram(const Settings::Histogram &hs)
-    : Histogram(hs.bucket_min(), hs.bucket_max(), hs.n_buckets()) {
+    : Histogram(hs.bucket_min, hs.bucket_max, hs.n_buckets) {
 }
 
 void Histogram::Add(Sample dt_ms) {
@@ -110,12 +111,6 @@ std::string Histogram::ToJSON() const {
         str << "]}";
     }
     return str.str();
-}
-
-void Histogram::Fill(TuningForkHistogram *h) const {
-    for (int i = 0; i < num_buckets_; ++i) {
-        h->add_counts(buckets_[i]);
-    }
 }
 
 void Histogram::Clear(bool autorange) {
