@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "9089c322_5cc1152c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-11-27T10:13:59Z",
+      "side": 1,
+      "message": "Can you expand a bit on your test? I assume it\u0027s something like \u0027build bouncy ball with gradle, take a systrace and make sure swappy still works\u0027?",
+      "revId": "20defff47035c7ad5964ab5b90da95b818606813",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d93d7f1f_461225f7",
         "filename": "include/swappy/swappy.h",
         "patchSetId": 1
