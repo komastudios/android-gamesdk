@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d93d7f1f_461225f7",
+        "filename": "include/swappy/swappy.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-11-27T10:05:20Z",
+      "side": 1,
+      "message": "Comment that this is only necessary if useJavaChoreographer\u003d\u003dtrue ?",
+      "revId": "20defff47035c7ad5964ab5b90da95b818606813",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
