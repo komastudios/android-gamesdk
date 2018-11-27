@@ -107,6 +107,24 @@
     },
     {
       "key": {
+        "uuid": "df055492_8be59a4d",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 437,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-27T20:24:39Z",
+      "side": 1,
+      "message": "Sure.\n\nSo that I don\u0027t forget, I\u0027ll note that those functions make up for two things: 1) current time might be close enough to a vsync that desiredPresentTime might sometimes trigger on one side of a vsync and other times on the other; 2) SF/HWC2 don\u0027t provide accurate values (both refresh cycle duration and timestamps).  Without those, it can be easy to drift past a vsync every now and then, causing stutters.  When I wrote the code, I ran cube over and over, logging all of the times for every frame.  Sometimes, good data came back, but other times, watched a large number of different runs of cube.\n\nPerhaps Choreographer is putting current time squarely in a good place all of the time, and so perhaps you only need that.  You\u0027ve looked at the data, and that\u0027s what the decision should be based on.  In this case, I\u0027m just an overly-busy reviewer:-).",
+      "parentUuid": "0c0d0ef9_77f7e5b8",
+      "revId": "f71fc6738199d2c201882cf40d26b4dbba83f114",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6e0e8a28_2ae35465",
         "filename": "src/swappyVk/SwappyVk.cpp",
         "patchSetId": 2
@@ -209,6 +227,24 @@
       "revId": "f71fc6738199d2c201882cf40d26b4dbba83f114",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "25219bb1_1b9c9a57",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 484,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-27T20:24:39Z",
+      "side": 1,
+      "message": "Okay, that makes sense.  I also got tripped up by the Choreographer/lambda function stuff up above.  Thanks for explaining.",
+      "parentUuid": "276cfa0f_08e4e335",
+      "revId": "f71fc6738199d2c201882cf40d26b4dbba83f114",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
