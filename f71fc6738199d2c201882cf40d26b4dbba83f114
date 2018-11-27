@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1ede100b_7a147d0a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-27T03:58:12Z",
+      "side": 1,
+      "message": "Typo: Choreographer",
+      "revId": "f71fc6738199d2c201882cf40d26b4dbba83f114",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dabaf682_ec4eae8a",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-27T03:58:12Z",
+      "side": 1,
+      "message": "Thinking out loud ... these new members are for a subset of the subclasses.  Does it make sense to document that?  I don\u0027t believe in lots of extra work, but it might be help future maintainers.",
+      "revId": "f71fc6738199d2c201882cf40d26b4dbba83f114",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9fa10ac3_50706398",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 437,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-27T03:58:12Z",
+      "side": 1,
+      "message": "I like that you inherited from one of the existing classes!\n\nHowever, I\u0027m not sure that you\u0027re reusing enough of this class (e.g. calculateNextDesiredPresentTime and checkPastPresentTiming).  I realize that I may be missing things though.",
+      "revId": "f71fc6738199d2c201882cf40d26b4dbba83f114",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6e0e8a28_2ae35465",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 476,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-27T03:58:12Z",
+      "side": 1,
+      "message": "See the comments I put in the old code.  To summarize:\n\n1) The return type is VkResult, not bool\n\n2) Tou should not return here without calling vkQueuePresentKHR",
+      "revId": "f71fc6738199d2c201882cf40d26b4dbba83f114",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f0605e71_f845ca43",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 478,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-27T03:58:12Z",
+      "side": 1,
+      "message": "Ditto",
+      "revId": "f71fc6738199d2c201882cf40d26b4dbba83f114",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4a2043e9_8feb4cb8",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 484,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-27T03:58:12Z",
+      "side": 1,
+      "message": "Perhaps I\u0027m not understanding how this works, but I\u0027m concerned that you\u0027re getting the current time again (after potentially waiting) and then incrementing mNextDesiredPresentTime.  Seems like you could end up scheduling way out into the future.  Am I missing something?",
+      "revId": "f71fc6738199d2c201882cf40d26b4dbba83f114",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}

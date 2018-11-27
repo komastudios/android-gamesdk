@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "14240aa6_a2709fd4",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 405,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-27T03:58:12Z",
+      "side": 0,
+      "message": "Since I don\u0027t know Choreographer very well, I didn\u0027t review this very well, and therefore didn\u0027t notice before that you are returning the wrong values.  The return type is VkResult, and the valid return values for vkQueuePresentKHR are in the spec.\n\nWhy are you wanting to bail-out here, which will result in presentable-images being tossed (and not displayed)?  Even if there\u0027s a problem, the correct action isn\u0027t to drop frames.",
+      "revId": "f648b36ab20bfda35bf4800b86f1e6cd03d4c82c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4b9f35f9_bd66a4a5",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 407,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-11-27T03:58:12Z",
+      "side": 0,
+      "message": "Pretty similar point(s) as above.",
+      "revId": "f648b36ab20bfda35bf4800b86f1e6cd03d4c82c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
