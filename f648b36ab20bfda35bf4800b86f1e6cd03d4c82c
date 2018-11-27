@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "ce25135d_be9fc68a",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 405,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-27T18:29:32Z",
+      "side": 0,
+      "message": "This is a lambda function. See the above comment.",
+      "parentUuid": "14240aa6_a2709fd4",
+      "revId": "f648b36ab20bfda35bf4800b86f1e6cd03d4c82c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4b9f35f9_bd66a4a5",
         "filename": "src/swappyVk/SwappyVk.cpp",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "f648b36ab20bfda35bf4800b86f1e6cd03d4c82c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c24552cd_a290c5ab",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 407,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-27T18:29:32Z",
+      "side": 0,
+      "message": "same",
+      "parentUuid": "4b9f35f9_bd66a4a5",
+      "revId": "f648b36ab20bfda35bf4800b86f1e6cd03d4c82c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }

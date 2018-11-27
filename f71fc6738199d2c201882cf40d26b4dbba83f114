@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "6460ed19_dd4d0ab3",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-27T18:29:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1ede100b_7a147d0a",
+      "revId": "f71fc6738199d2c201882cf40d26b4dbba83f114",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dabaf682_ec4eae8a",
         "filename": "src/swappyVk/SwappyVk.cpp",
         "patchSetId": 2
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "b4de0ac3_71c1b567",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-27T18:29:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dabaf682_ec4eae8a",
+      "revId": "f71fc6738199d2c201882cf40d26b4dbba83f114",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9fa10ac3_50706398",
         "filename": "src/swappyVk/SwappyVk.cpp",
         "patchSetId": 2
@@ -47,6 +83,24 @@
       "writtenOn": "2018-11-27T03:58:12Z",
       "side": 1,
       "message": "I like that you inherited from one of the existing classes!\n\nHowever, I\u0027m not sure that you\u0027re reusing enough of this class (e.g. calculateNextDesiredPresentTime and checkPastPresentTiming).  I realize that I may be missing things though.",
+      "revId": "f71fc6738199d2c201882cf40d26b4dbba83f114",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0c0d0ef9_77f7e5b8",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 437,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-27T18:29:32Z",
+      "side": 1,
+      "message": "Let\u0027s discuss this.",
+      "parentUuid": "9fa10ac3_50706398",
       "revId": "f71fc6738199d2c201882cf40d26b4dbba83f114",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
@@ -70,6 +124,24 @@
     },
     {
       "key": {
+        "uuid": "2bb2a42c_91aacc59",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 476,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-27T18:29:32Z",
+      "side": 1,
+      "message": "This is the lambda function given to std::condition_variable and the return indicates whether the condition to wait for has met. \nThe function will never exit without calling vkQueuePresentKHR.",
+      "parentUuid": "6e0e8a28_2ae35465",
+      "revId": "f71fc6738199d2c201882cf40d26b4dbba83f114",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f0605e71_f845ca43",
         "filename": "src/swappyVk/SwappyVk.cpp",
         "patchSetId": 2
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "80297874_e76532a7",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 478,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-27T18:29:32Z",
+      "side": 1,
+      "message": "same here",
+      "parentUuid": "f0605e71_f845ca43",
+      "revId": "f71fc6738199d2c201882cf40d26b4dbba83f114",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4a2043e9_8feb4cb8",
         "filename": "src/swappyVk/SwappyVk.cpp",
         "patchSetId": 2
@@ -98,6 +188,24 @@
       "writtenOn": "2018-11-27T03:58:12Z",
       "side": 1,
       "message": "Perhaps I\u0027m not understanding how this works, but I\u0027m concerned that you\u0027re getting the current time again (after potentially waiting) and then incrementing mNextDesiredPresentTime.  Seems like you could end up scheduling way out into the future.  Am I missing something?",
+      "revId": "f71fc6738199d2c201882cf40d26b4dbba83f114",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "276cfa0f_08e4e335",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 484,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-27T18:29:32Z",
+      "side": 1,
+      "message": "If previous mNextDesiredPresentTime is in the future, we sleep for the next frame (we \"skip the number of frames based on the interval).\nAt this point, we want to present the next frame (we already have 1 in the queue) in the next period.",
+      "parentUuid": "4a2043e9_8feb4cb8",
       "revId": "f71fc6738199d2c201882cf40d26b4dbba83f114",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
