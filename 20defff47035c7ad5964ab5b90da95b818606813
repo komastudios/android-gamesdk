@@ -16,6 +16,40 @@
       "revId": "20defff47035c7ad5964ab5b90da95b818606813",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "59c5a4c1_00e10879",
+        "filename": "samples/bouncyball/app/src/main/cpp/Orbit.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-11-27T10:12:56Z",
+      "side": 1,
+      "message": "This looks like it violates: https://google.github.io/styleguide/cppguide.html#Line_Length",
+      "revId": "20defff47035c7ad5964ab5b90da95b818606813",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ca013bf9_957340f9",
+        "filename": "samples/bouncyball/app/src/main/java/com/prefabulated/bouncyball/OrbitActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-11-27T10:12:56Z",
+      "side": 1,
+      "message": "Is this what we expect game developers to do? From the discussion with Fran I felt like developers were either going to use the Java Choreographer or not, rather than decide at runtime based on API version. Is there any advantage to the Native path other than it being less code?",
+      "revId": "20defff47035c7ad5964ab5b90da95b818606813",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
