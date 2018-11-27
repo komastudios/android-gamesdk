@@ -19,6 +19,23 @@
     },
     {
       "key": {
+        "uuid": "03ae5db9_3e6fbd27",
+        "filename": "include/swappy/swappy.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-27T16:45:25Z",
+      "side": 1,
+      "message": "I\u0027d prefer to see something different than a book, because the calling site tells nothing about what true/false means:\nSwappy_init(env, jactivity, true); // what is true?\n\nI would recommend two possible alternatives:\n1) A bitfield option that defaults to \"no choreographer\". The call site looks like:\nSwappy_init(env, jactivity, SWAPPY_INIT_USE_JAVA_CHOREOGRAPHER);\n\n2) No parameter, create the choreographer thread lazily the first time Swappy_onChoreographer is called. It\u0027s cleaner and if the client calls Swappy_onChoreographer, the intention is clear\n\nI strongly prefer option 2.",
+      "revId": "20defff47035c7ad5964ab5b90da95b818606813",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d93d7f1f_461225f7",
         "filename": "include/swappy/swappy.h",
         "patchSetId": 1
@@ -30,6 +47,23 @@
       "writtenOn": "2018-11-27T10:05:20Z",
       "side": 1,
       "message": "Comment that this is only necessary if useJavaChoreographer\u003d\u003dtrue ?",
+      "revId": "20defff47035c7ad5964ab5b90da95b818606813",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "97858481_a0bbf91b",
+        "filename": "include/swappy/swappy.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-27T16:45:25Z",
+      "side": 1,
+      "message": "If frameTimeNanos is not called, it must go from the interface.",
       "revId": "20defff47035c7ad5964ab5b90da95b818606813",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -64,6 +98,23 @@
       "writtenOn": "2018-11-27T10:12:56Z",
       "side": 1,
       "message": "Is this what we expect game developers to do? From the discussion with Fran I felt like developers were either going to use the Java Choreographer or not, rather than decide at runtime based on API version. Is there any advantage to the Native path other than it being less code?",
+      "revId": "20defff47035c7ad5964ab5b90da95b818606813",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "21baa2b9_f44ef6e0",
+        "filename": "src/swappy/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-27T16:45:25Z",
+      "side": 1,
+      "message": "if (swappy-\u003emChoreographerThread \u003d\u003d nullptr) {\n  // create thread\n}",
       "revId": "20defff47035c7ad5964ab5b90da95b818606813",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
