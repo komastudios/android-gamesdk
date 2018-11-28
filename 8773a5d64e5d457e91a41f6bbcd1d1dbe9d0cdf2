@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d99571e2_38165965",
+        "filename": "src/swappy/src/main/java/com/google/swappy/ChoreographerManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-28T05:08:40Z",
+      "side": 1,
+      "message": "nit: I\u0027d change the name to ChoreographerCallback.",
+      "revId": "8773a5d64e5d457e91a41f6bbcd1d1dbe9d0cdf2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
