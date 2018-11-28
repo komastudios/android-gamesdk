@@ -23,9 +23,11 @@
 #include <vector>
 #include <set>
 
-namespace device_info {
+namespace androidgamesdk_deviceinfo {
 class root;
-void createProto(device_info::root& proto);
+void createProto(root& proto);
 
-std::string getDebugString();
+// returns the buffer size needed/written
+size_t getProtoSerialized(void* buffer, const size_t bufferSizeAllocated);
+
 }  // namespace device_info
