@@ -23,9 +23,13 @@
 #include <vector>
 #include <set>
 
-namespace device_info {
+namespace androidgamesdk_deviceinfo {
 class root;
-void createProto(device_info::root& proto);
+void createProto(root& proto);
 
-std::string getDebugString();
+struct ProtoByteArray{
+  void* data;
+  int size;
+};
+ProtoByteArray getProtoSerialized();
 }  // namespace device_info

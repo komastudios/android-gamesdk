@@ -18,11 +18,15 @@
 #include "device_info/device_info.h"
 
 extern "C" {
-JNIEXPORT jstring
-
-JNICALL
-Java_com_google_deviceinfotest_MainActivity_jniGetDeviceInfoDebugString(
-                                                 	    JNIEnv *env, jobject) {
-  return env->NewStringUTF(device_info::getDebugString().c_str());
+JNIEXPORT jbyteArray JNICALL
+Java_com_google_deviceinfotest_MainActivity_jniGetProtoSerialized(
+                                          JNIEnv *env, jobject) {
+  androidgamesdk_deviceinfo::ProtoByteArray protoByteArray =
+    androidgamesdk_deviceinfo::getProtoSerialized();
+  jbyteArray result = env->NewByteArray(protoByteArray.size);
+  env->SetByteArrayRegion(result, 0,
+    protoByteArray.size, (jbyte*)protoByteArray.data);
+  free(protoByteArray.data);
+  return result;
 }
 }  // extern "C"
