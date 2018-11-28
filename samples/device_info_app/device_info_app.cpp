@@ -14,15 +14,27 @@
 
 #include <jni.h>
 #include <string>
+#include <cassert>
 
 #include "device_info/device_info.h"
 
-extern "C" {
-JNIEXPORT jstring
+#define GAMESDK_SUPRESS_UNUSED(x) ((void)(x))
 
-JNICALL
-Java_com_google_deviceinfotest_MainActivity_jniGetDeviceInfoDebugString(
-                                                 	    JNIEnv *env, jobject) {
-  return env->NewStringUTF(device_info::getDebugString().c_str());
+extern "C" {
+JNIEXPORT jbyteArray JNICALL
+Java_com_google_deviceinfotest_MainActivity_jniGetProtoSerialized(
+                                          JNIEnv *env, jobject) {
+  size_t bufferSize = androidgamesdk_deviceinfo::getProtoSerialized(0, 0);
+  void* bufferData = malloc(bufferSize);
+  {
+    size_t bufferSizeWritten =
+      androidgamesdk_deviceinfo::getProtoSerialized(bufferData, bufferSize);
+    assert(bufferSizeWritten == bufferSize);
+    GAMESDK_SUPRESS_UNUSED(bufferSizeWritten);
+  }
+  jbyteArray result = env->NewByteArray(bufferSize);
+  env->SetByteArrayRegion(result, 0, bufferSize, static_cast<jbyte*>(bufferData));
+  free(bufferData);
+  return result;
 }
 }  // extern "C"

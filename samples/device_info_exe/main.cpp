@@ -16,7 +16,9 @@
 
 int main(){
   std::cout << "*Proto debug begin:" << std::endl;
-  std::cout << device_info::getDebugString()  << std::endl;
+  std::cout <<
+  	androidgamesdk_deviceinfo::getProtoSerialized(0, 0) <<
+  	std::endl;
   std::cout << "*Proto debug end." << std::endl;
   std::cout << "fin." << std::endl;
   return 0;
