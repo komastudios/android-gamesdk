@@ -16,14 +16,14 @@ add_library( swappy_static
 
              STATIC
 
-             ChoreographerFilter.cpp
-             ChoreographerThread.cpp
-             EGL.cpp
-             Swappy.cpp
-             Settings.cpp
-             Thread.cpp
-             Swappy.cpp
-             Swappy_c.cpp
+             src/main/cpp/ChoreographerFilter.cpp
+             src/main/cpp/ChoreographerThread.cpp
+             src/main/cpp/EGL.cpp
+             src/main/cpp/Swappy.cpp
+             src/main/cpp/Settings.cpp
+             src/main/cpp/Thread.cpp
+             src/main/cpp/Swappy.cpp
+             src/main/cpp/Swappy_c.cpp
 
              # Add new source files here
              )
@@ -35,7 +35,8 @@ add_library( swappy
 
              SHARED
 
-             Swappy_c.cpp)  # Looks like I need to specify at least one file to build,
+             src/main/cpp/Swappy_c.cpp)
+                            # Looks like I need to specify at least one file to build,
                             # the result .so size suggests it's including the rest of the
                             # source files from the library
                             # also, removing the target_link to the static library
