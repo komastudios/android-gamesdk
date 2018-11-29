@@ -3,6 +3,7 @@ package com.google.swappy;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Choreographer;
+import android.util.Log;
 
 
 public class ChoreographerCallback implements Choreographer.FrameCallback {
@@ -15,11 +16,13 @@ public class ChoreographerCallback implements Choreographer.FrameCallback {
         public Handler mHandler;
 
         public void run() {
+            Log.i(LOG_TAG, "Staring looper thread");
             Looper.prepare();
 
             mHandler = new Handler();
 
             Looper.loop();
+            Log.i(LOG_TAG, "Terminating looper thread");
         }
     }
 

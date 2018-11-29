@@ -23,6 +23,24 @@
 #include "Thread.h"
 #include "Trace.h"
 
+// AChoreographer is supported from API 24. To allow compilation for minSDK < 24
+// and still use AChoreographer for SDK >= 24 we need runtime support to call
+// AChoreographer APIs.
+
+typedef AChoreographer* (*PFN_AChoreographer_getInstance)();
+typedef void (*PFN_AChoreographer_postFrameCallback)(AChoreographer* choreographer,
+                                                  AChoreographer_frameCallback callback,
+                                                  void* data);
+typedef void (*PFN_AChoreographer_postFrameCallbackDelayed)(AChoreographer* choreographer,
+                                                        AChoreographer_frameCallback callback,
+                                                        void* data,
+                                                        long delayMillis);
+
+ChoreographerThread::ChoreographerThread(std::function<void()> onChoreographer):
+        mCallback(onChoreographer) {}
+
+ChoreographerThread::~ChoreographerThread() {};
+
 void ChoreographerThread::postFrameCallbacks()
 {
     // This method is called before calling to swap buffers
@@ -48,22 +66,61 @@ void ChoreographerThread::onChoreographer()
     mCallback();
 }
 
-#if __ANDROID_API__ >= 24
-ChoreographerThread::ChoreographerThread(JavaVM *vm,
-                                         std::function<void()> onChoreographer) :
-   mCallback(onChoreographer),
-   mThread([this]() {looperThread();})
+class NDKChoreographerThread : public ChoreographerThread {
+public:
+    NDKChoreographerThread(std::function<void()> onChoreographer);
+    virtual ~NDKChoreographerThread() override;
+
+private:
+    void looperThread();
+    virtual void scheduleNextFrameCallback() override REQUIRES(mWaitingMutex);
+
+    PFN_AChoreographer_getInstance mAChoreographer_getInstance;
+    PFN_AChoreographer_postFrameCallback mAChoreographer_postFrameCallback;
+    PFN_AChoreographer_postFrameCallbackDelayed mAChoreographer_postFrameCallbackDelayed;
+
+    void *mLibAndroid;
+    std::thread mThread;
+    std::condition_variable mWaitingCondition;
+    ALooper *mLooper GUARDED_BY(mWaitingMutex) = nullptr;
+    bool mThreadRunning GUARDED_BY(mWaitingMutex) = false;
+    AChoreographer *mChoreographer GUARDED_BY(mWaitingMutex) = nullptr;
+};
+
+NDKChoreographerThread::NDKChoreographerThread(std::function<void()> onChoreographer) :
+    ChoreographerThread(onChoreographer)
 {
+    mLibAndroid = dlopen("libandroid.so", RTLD_NOW | RTLD_LOCAL);
+    if (mLibAndroid == nullptr) {
+        ALOGE("cannot open libandroid.so: %s", strerror(errno));
+        return;
+    }
+
+    mAChoreographer_getInstance =
+            reinterpret_cast<PFN_AChoreographer_getInstance >(
+                dlsym(mLibAndroid, "AChoreographer_getInstance"));
+
+    mAChoreographer_postFrameCallback =
+            reinterpret_cast<PFN_AChoreographer_postFrameCallback >(
+                    dlsym(mLibAndroid, "AChoreographer_postFrameCallback"));
+
+    mAChoreographer_postFrameCallbackDelayed =
+            reinterpret_cast<PFN_AChoreographer_postFrameCallbackDelayed >(
+                    dlsym(mLibAndroid, "AChoreographer_postFrameCallbackDelayed"));
+
     std::unique_lock<std::mutex> lock(mWaitingMutex);
     // create a new ALooper thread to get Choreographer events
     mThreadRunning = true;
+    mThread = std::thread([this]() { looperThread(); });
     mWaitingCondition.wait(lock, [&]() REQUIRES(mWaitingMutex) {
         return mChoreographer != nullptr;
     });
 }
 
-ChoreographerThread::~ChoreographerThread()
+NDKChoreographerThread::~NDKChoreographerThread()
 {
+    ALOGI("Destroying NDKChoreographerThread");
+
     if (!mLooper) {
         return;
     }
@@ -75,7 +132,7 @@ ChoreographerThread::~ChoreographerThread()
     mThread.join();
 }
 
-void ChoreographerThread::looperThread()
+void NDKChoreographerThread::looperThread()
 {
     int outFd, outEvents;
     void *outData;
@@ -87,38 +144,58 @@ void ChoreographerThread::looperThread()
         return;
     }
 
-    mChoreographer = AChoreographer_getInstance();
+    mChoreographer = mAChoreographer_getInstance();
     if (!mChoreographer) {
         ALOGE("AChoreographer_getInstance failed");
         return;
     }
     mWaitingCondition.notify_all();
 
+    ALOGI("Staring Looper thread");
     while (mThreadRunning) {
-        // mutex should be unlock before sleeping on pollAll
+        // mutex should be unlocked before sleeping on pollAll
         mWaitingMutex.unlock();
         ALooper_pollAll(-1, &outFd, &outEvents, &outData);
         mWaitingMutex.lock();
     }
+    ALOGI("Terminating Looper thread");
 
     return;
 }
 
-void ChoreographerThread::scheduleNextFrameCallback()
+void NDKChoreographerThread::scheduleNextFrameCallback()
 {
     AChoreographer_frameCallback frameCallback =
             [](long frameTimeNanos, void *data) {
-                reinterpret_cast<ChoreographerThread*>(data)->onChoreographer();
+                reinterpret_cast<NDKChoreographerThread*>(data)->onChoreographer();
             };
 
-    AChoreographer_postFrameCallbackDelayed(mChoreographer, frameCallback, this, 1);
+    mAChoreographer_postFrameCallbackDelayed(mChoreographer, frameCallback, this, 1);
 }
 
-#else // __ANDROID_API__ >= 24
-ChoreographerThread::ChoreographerThread(JavaVM *vm,
-                                         std::function<void()> onChoreographer) :
-        mJVM(vm),
-        mCallback(onChoreographer) {
+class JavaChoreographerThread : public ChoreographerThread {
+public:
+    JavaChoreographerThread(JavaVM *vm, std::function<void()> onChoreographer);
+    virtual ~JavaChoreographerThread() override;
+    static void onChoreographer(jlong cookie);
+    virtual void onChoreographer() override {ChoreographerThread::onChoreographer();};
+
+private:
+    virtual void scheduleNextFrameCallback() override REQUIRES(mWaitingMutex);
+
+    JavaVM *mJVM;
+    JNIEnv *mEnv = nullptr;
+    jobject mChorMan = nullptr;
+    jmethodID mChorMan_postFrameCallback = nullptr;
+    jmethodID mChorMan_Terminate = nullptr;
+
+};
+
+JavaChoreographerThread::JavaChoreographerThread(JavaVM *vm,
+                                                 std::function<void()> onChoreographer) :
+        ChoreographerThread(onChoreographer),
+        mJVM(vm)
+{
 
     JNIEnv *env;
     mJVM->AttachCurrentThread(&env, nullptr);
@@ -145,8 +222,10 @@ ChoreographerThread::ChoreographerThread(JavaVM *vm,
     mChorMan = env->NewGlobalRef(choreographerCallback);
 }
 
-ChoreographerThread::~ChoreographerThread()
+JavaChoreographerThread::~JavaChoreographerThread()
 {
+    ALOGI("Destroying JavaChoreographerThread");
+
     if (!mChorMan) {
         return;
     }
@@ -158,29 +237,109 @@ ChoreographerThread::~ChoreographerThread()
     mJVM->DetachCurrentThread();
 }
 
-void ChoreographerThread::scheduleNextFrameCallback()
+void JavaChoreographerThread::scheduleNextFrameCallback()
 {
     JNIEnv *env;
     mJVM->AttachCurrentThread(&env, nullptr);
     env->CallVoidMethod(mChorMan, mChorMan_postFrameCallback);
 }
 
-// JNI interface
-class ChoreographerCallback {
-public:
-    static void onChoreographer(jlong cookie) {
-        reinterpret_cast<ChoreographerThread*>(cookie)->onChoreographer();
-    }
-};
+void JavaChoreographerThread::onChoreographer(jlong cookie) {
+    JavaChoreographerThread *me = reinterpret_cast<JavaChoreographerThread*>(cookie);
+    me->onChoreographer();
+}
 
 extern "C" {
 
 JNIEXPORT void JNICALL
 Java_com_google_swappy_ChoreographerCallback_nOnChoreographer(JNIEnv * /* env */, jobject /* this */,
-                                                                jlong cookie, jlong frameTimeNanos) {
-    ChoreographerCallback::onChoreographer(cookie);
+                                                              jlong cookie, jlong frameTimeNanos) {
+    JavaChoreographerThread::onChoreographer(cookie);
 }
 
 } // extern "C"
 
-#endif // __ANDROID_API__ >= 24
+class NoChoreographerThread : public ChoreographerThread {
+public:
+    NoChoreographerThread(std::function<void()> onChoreographer);
+
+private:
+    virtual void postFrameCallbacks() override;
+    virtual void scheduleNextFrameCallback() override REQUIRES(mWaitingMutex);
+};
+
+NoChoreographerThread::NoChoreographerThread(std::function<void()> onChoreographer) :
+    ChoreographerThread(onChoreographer) {}
+
+
+void NoChoreographerThread::postFrameCallbacks() {
+    mCallback();
+}
+
+void NoChoreographerThread::scheduleNextFrameCallback() {}
+
+int ChoreographerThreadFactory::getSDKVersion(JavaVM *vm)
+{
+    JNIEnv *env;
+    vm->AttachCurrentThread(&env, nullptr);
+
+    jclass buildClass = env->FindClass("android/os/Build$VERSION");
+    if (env->ExceptionCheck()) {
+        env->ExceptionClear();
+        ALOGE("Failed to get Build.VERSION class");
+        return 0;
+    }
+
+    jfieldID sdk_int = env->GetStaticFieldID(buildClass, "SDK_INT", "I");
+    if (env->ExceptionCheck()) {
+        env->ExceptionClear();
+        ALOGE("Failed to get Build.VERSION.SDK_INT field");
+        return 0;
+    }
+
+    jint sdk = env->GetStaticIntField(buildClass, sdk_int);
+    if (env->ExceptionCheck()) {
+        env->ExceptionClear();
+        ALOGE("Failed to get SDK version");
+        return 0;
+    }
+
+    ALOGI("SDK version = %d", sdk);
+    return sdk;
+}
+
+bool ChoreographerThreadFactory::isChoreographerCallbackClassLoaded(JavaVM *vm)
+{
+    JNIEnv *env;
+    vm->AttachCurrentThread(&env, nullptr);
+
+    env->FindClass("com/google/swappy/ChoreographerCallback");
+    if (env->ExceptionCheck()) {
+        env->ExceptionClear();
+        return false;
+    }
+
+    return true;
+}
+
+std::unique_ptr<ChoreographerThread>
+        ChoreographerThreadFactory::createChoreographerThread(
+                ChoreographerType type, JavaVM *vm, std::function<void()> onChoreographer) {
+    if (type == APP_CHOREOGRAPHER) {
+        ALOGI("Using Application's Choreographer");
+        return std::make_unique<NoChoreographerThread>(onChoreographer);
+    }
+
+    if (getSDKVersion(vm) >= 24) {
+        ALOGI("Using NDK Choreographer");
+        return std::make_unique<NDKChoreographerThread>(onChoreographer);
+    }
+
+    if (isChoreographerCallbackClassLoaded(vm)){
+        ALOGI("Using Java Choreographer");
+        return std::make_unique<JavaChoreographerThread>(vm, onChoreographer);
+    }
+
+    ALOGI("Using no Choreographer (Best Effort)");
+    return std::make_unique<NoChoreographerThread>(onChoreographer);
+}
