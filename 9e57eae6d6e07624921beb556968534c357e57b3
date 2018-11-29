@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d647e262_37ffd7b7",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-11-29T12:52:42Z",
+      "side": 1,
+      "message": "s/nadive/native/ ?",
+      "revId": "9e57eae6d6e07624921beb556968534c357e57b3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "42f97373_a89943bd",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-11-29T12:52:42Z",
+      "side": 1,
+      "message": "s/Tesing/Test/g",
+      "revId": "9e57eae6d6e07624921beb556968534c357e57b3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "99012a60_282b5c2c",
+        "filename": "samples/bouncyball/app/src/main/cpp/Circle.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-11-29T12:52:42Z",
+      "side": 1,
+      "message": "If these files are part of the public interface (i.e. the interface we expect developers to call) then we should move them to /include. Otherwise we should not include them from the samples.",
+      "revId": "9e57eae6d6e07624921beb556968534c357e57b3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
