@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "a1f800e6_015fafc1",
+        "filename": "settings.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-29T00:50:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7af47c66_41effe2b",
+      "revId": "e9d5d4d7ac49d3adc450a8a04afd8935daeabf57",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "44efcf04_41a50214",
         "filename": "src/swappy/CMakeLists.txt",
         "patchSetId": 3
@@ -33,6 +51,24 @@
       "revId": "e9d5d4d7ac49d3adc450a8a04afd8935daeabf57",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "965be62c_489846bc",
+        "filename": "src/swappy/CMakeLists.txt",
+        "patchSetId": 3
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-29T00:50:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "44efcf04_41a50214",
+      "revId": "e9d5d4d7ac49d3adc450a8a04afd8935daeabf57",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
