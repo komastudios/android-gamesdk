@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "d76bf538_239a68f5",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-29T23:54:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0a93cc50_ae4620c7",
+      "revId": "ce1c001825a9de3248f68f2c3cb12f56260f7d0e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "acaf78c9_e1244ee6",
         "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "ce1c001825a9de3248f68f2c3cb12f56260f7d0e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6e1acab9_7b2355e0",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-29T23:54:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "acaf78c9_e1244ee6",
+      "revId": "ce1c001825a9de3248f68f2c3cb12f56260f7d0e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "e7528401_c7fd726a",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-29T23:54:13Z",
+      "side": 1,
+      "message": "We always use choreo thread class even when app is providing choreograph callbacks.\nThe reason for this is to exercise the same code path for all options.\n\nswappy always gets choreographs callbacks from ChoreographThread. In the case where app is calling Swappy_onChoreograph, this call will go to ChoreographThread and then back to swappy using the common path.\n\nswappy-\u003emChoreographerThread is never nullptr. It is initialized first in swappy_init, and then if Swappy_onChoreograph is called, we reinitialize it with the correct parameters. There is a limitation on JNI side that we have to initialize on swappy_init() (else the ChoreographCallback class will not be loaded).",
+      "parentUuid": "8687d776_6b22e05e",
+      "revId": "ce1c001825a9de3248f68f2c3cb12f56260f7d0e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d4e276f7_79552bce",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 1
@@ -70,6 +124,24 @@
     },
     {
       "key": {
+        "uuid": "c003f220_5ea8d1f4",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-29T23:54:13Z",
+      "side": 1,
+      "message": "This would be better, but since we may use Java choreographer, we must first call to env-\u003eFindClass(ChoreographCallback) from the main thread.\nIf we do it from the swap, we cannot load the class (even if app is linked to it).",
+      "parentUuid": "d4e276f7_79552bce",
+      "revId": "ce1c001825a9de3248f68f2c3cb12f56260f7d0e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0c6645e0_6ebb6371",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 1
@@ -84,6 +156,24 @@
       "revId": "ce1c001825a9de3248f68f2c3cb12f56260f7d0e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9baa3224_e65a3530",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-29T23:54:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0c6645e0_6ebb6371",
+      "revId": "ce1c001825a9de3248f68f2c3cb12f56260f7d0e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
