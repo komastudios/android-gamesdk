@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7af47c66_41effe2b",
+        "filename": "settings.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-29T00:43:59Z",
+      "side": 1,
+      "message": "super nit :)\nspace before \u003d",
+      "revId": "e9d5d4d7ac49d3adc450a8a04afd8935daeabf57",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "44efcf04_41a50214",
+        "filename": "src/swappy/CMakeLists.txt",
+        "patchSetId": 3
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-29T00:43:59Z",
+      "side": 1,
+      "message": "can src/main/cpp be extracted?",
+      "revId": "e9d5d4d7ac49d3adc450a8a04afd8935daeabf57",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
