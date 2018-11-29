@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0a93cc50_ae4620c7",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-29T23:18:16Z",
+      "side": 1,
+      "message": "nit: spaces after and before the brackers",
+      "revId": "ce1c001825a9de3248f68f2c3cb12f56260f7d0e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "acaf78c9_e1244ee6",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-29T23:18:16Z",
+      "side": 1,
+      "message": "\"should be unlocked\"",
+      "revId": "ce1c001825a9de3248f68f2c3cb12f56260f7d0e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8687d776_6b22e05e",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-29T23:18:16Z",
+      "side": 1,
+      "message": "This is confusing: mUsingExternalChoreographer is true but we are creating our own choreo thread, not using an external one?\nI would remove the boolean and just do:\nif (swappy-\u003emChoreographerThread \u003d\u003d nullptr) {\n..\n}",
+      "revId": "ce1c001825a9de3248f68f2c3cb12f56260f7d0e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d4e276f7_79552bce",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-29T23:18:16Z",
+      "side": 1,
+      "message": "I would just create the thread lazily in one place (in ::swap) instead of creating it potentially twice.",
+      "revId": "ce1c001825a9de3248f68f2c3cb12f56260f7d0e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0c6645e0_6ebb6371",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-29T23:18:16Z",
+      "side": 1,
+      "message": "nit: spaces",
+      "revId": "ce1c001825a9de3248f68f2c3cb12f56260f7d0e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
