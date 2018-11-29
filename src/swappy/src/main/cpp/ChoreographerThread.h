@@ -22,36 +22,54 @@
 #include <thread>
 #include "Thread.h"
 
+using ChoreographerThreadCallback = std::function<void()>;
+
 class ChoreographerThread {
 public:
-    ChoreographerThread(JavaVM *vm, std::function<void()> onChoreographer);
-    ~ChoreographerThread();
+    enum class Type {
+        // choreographer ticks are provided by application
+        App,
 
-    void postFrameCallbacks();
+        // register internally with choreographer
+        Swappy,
+    };
 
-private:
-    void looperThread();
-    void onChoreographer();
-    void scheduleNextFrameCallback() REQUIRES(mWaitingMutex);
-    void initializeChoreographer();
+    static std::unique_ptr<ChoreographerThread> createChoreographerThread(
+            Type type, JavaVM *vm, ChoreographerThreadCallback onChoreographer);
 
-private:
-    JavaVM *mJVM = nullptr;
-    JNIEnv *mEnv = nullptr;
-    jobject mChorMan = nullptr;
-    jmethodID mChorMan_postFrameCallback = nullptr;
-    jmethodID mChorMan_Terminate = nullptr;
-    std::thread mThread;
+    virtual ~ChoreographerThread() = 0;
+
+    virtual void postFrameCallbacks();
+
+protected:
+    ChoreographerThread(ChoreographerThreadCallback onChoreographer);
+    virtual void scheduleNextFrameCallback() REQUIRES(mWaitingMutex) = 0;
+    virtual void onChoreographer();
+
     std::mutex mWaitingMutex;
-    std::condition_variable mWaitingCondition;
-    ALooper *mLooper GUARDED_BY(mWaitingMutex) = nullptr;
-    bool mThreadRunning GUARDED_BY(mWaitingMutex) = false;
-    AChoreographer *mChoreographer GUARDED_BY(mWaitingMutex) = nullptr;
-    std::function<void()> mCallback;
-    int callbacksBeforeIdle GUARDED_BY(mWaitingMutex) = 0;
+    int mCallbacksBeforeIdle GUARDED_BY(mWaitingMutex) = 0;
+    ChoreographerThreadCallback mCallback;
+
     static constexpr int MAX_CALLBACKS_BEFORE_IDLE = 10;
 
-    friend class ChoreographerCallback;
+private:
+    static int getSDKVersion(JavaVM *vm);
+    static bool isChoreographerCallbackClassLoaded(JavaVM *vm);
+};
+
+class ChoreographerThreadFactory {
+public:
+    enum class ChoreographerType {
+        // choreographer ticks are provided by application
+        APP_CHOREOGRAPHER,
+
+        // register internally with choreographer
+        SWAPPY_CHOREOGRAPHER,
+    };
+
+
+
+private:
 
 };
 
