@@ -24,34 +24,37 @@
 
 class ChoreographerThread {
 public:
-    ChoreographerThread(JavaVM *vm, std::function<void()> onChoreographer);
-    ~ChoreographerThread();
+    virtual ~ChoreographerThread() = 0;
 
-    void postFrameCallbacks();
+    virtual void postFrameCallbacks();
 
-private:
-    void looperThread();
-    void onChoreographer();
-    void scheduleNextFrameCallback() REQUIRES(mWaitingMutex);
-    void initializeChoreographer();
+protected:
+    ChoreographerThread(std::function<void()> onChoreographer);
+    virtual void scheduleNextFrameCallback() REQUIRES(mWaitingMutex) = 0;
+    virtual void onChoreographer();
 
-private:
-    JavaVM *mJVM = nullptr;
-    JNIEnv *mEnv = nullptr;
-    jobject mChorMan = nullptr;
-    jmethodID mChorMan_postFrameCallback = nullptr;
-    jmethodID mChorMan_Terminate = nullptr;
-    std::thread mThread;
     std::mutex mWaitingMutex;
-    std::condition_variable mWaitingCondition;
-    ALooper *mLooper GUARDED_BY(mWaitingMutex) = nullptr;
-    bool mThreadRunning GUARDED_BY(mWaitingMutex) = false;
-    AChoreographer *mChoreographer GUARDED_BY(mWaitingMutex) = nullptr;
-    std::function<void()> mCallback;
     int callbacksBeforeIdle GUARDED_BY(mWaitingMutex) = 0;
+    std::function<void()> mCallback;
+
     static constexpr int MAX_CALLBACKS_BEFORE_IDLE = 10;
+};
 
-    friend class ChoreographerCallback;
+class ChoreographerThreadFactory {
+public:
+    enum ChoreographerType {
+        // choreographer ticks are provided by application
+        APP_CHOREOGRAPHER,
 
+        // register internally with choreographer
+        SWAPPY_CHOREOGRAPHER,
+    };
+
+    static std::unique_ptr<ChoreographerThread> createChoreographerThread(
+            ChoreographerType type, JavaVM *vm, std::function<void()> onChoreographer);
+
+private:
+    static int getSDKVersion(JavaVM *vm);
+    static bool isChoreographerCallbackClassLoaded(JavaVM *vm);
 };
 
