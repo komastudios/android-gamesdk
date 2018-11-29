@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "09705ef9_c651f9b2",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-29T17:25:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d647e262_37ffd7b7",
+      "revId": "9e57eae6d6e07624921beb556968534c357e57b3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "42f97373_a89943bd",
         "filename": "/COMMIT_MSG",
         "patchSetId": 4
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "3e6fe954_ba1a4a71",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-29T17:25:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "42f97373_a89943bd",
+      "revId": "9e57eae6d6e07624921beb556968534c357e57b3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "99012a60_282b5c2c",
         "filename": "samples/bouncyball/app/src/main/cpp/Circle.cpp",
         "patchSetId": 4
@@ -47,6 +83,24 @@
       "writtenOn": "2018-11-29T12:52:42Z",
       "side": 1,
       "message": "If these files are part of the public interface (i.e. the interface we expect developers to call) then we should move them to /include. Otherwise we should not include them from the samples.",
+      "revId": "9e57eae6d6e07624921beb556968534c357e57b3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "841a329a_aa54f5f6",
+        "filename": "samples/bouncyball/app/src/main/cpp/Circle.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-29T17:25:46Z",
+      "side": 1,
+      "message": "Agree. This should be address in a different CL though. This CL just moves the src files to a different path.\n\nI think that these files should be internal to swappy. We can define similar files in samples (as these are not providing any swappy functionality).\nDan, what do you think ?",
+      "parentUuid": "99012a60_282b5c2c",
       "revId": "9e57eae6d6e07624921beb556968534c357e57b3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
