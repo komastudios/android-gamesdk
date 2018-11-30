@@ -143,6 +143,24 @@
     },
     {
       "key": {
+        "uuid": "23497f11_fa988098",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-30T00:14:43Z",
+      "side": 1,
+      "message": "Yeah, I was looking at that bit now. It\u0027s ok, I see if I can find a way to get away without the bool in the next few days. Thanks!",
+      "parentUuid": "462b21f5_c7f12017",
+      "revId": "ce1c001825a9de3248f68f2c3cb12f56260f7d0e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e438e9d3_04f507b4",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 1
