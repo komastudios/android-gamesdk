@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "941bb25a_f0e87c0f",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-30T18:50:05Z",
+      "side": 1,
+      "message": "We could, but I wanted it to take the same code path. Since we don\u0027t have all the modes implemented in bouncyball, I wanted to reduce the number of code paths possible. We could just call swappy-\u003ehandleChoreographer() here, but this seems cleaner to me.",
+      "parentUuid": "9c40d153_b376309e",
+      "revId": "67272f203e773b017af0ea0759d130a081b48dfc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7399c157_dfae6a54",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "67272f203e773b017af0ea0759d130a081b48dfc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dfe02ebc_720476ce",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-30T18:50:05Z",
+      "side": 1,
+      "message": "same as above",
+      "parentUuid": "7399c157_dfae6a54",
+      "revId": "67272f203e773b017af0ea0759d130a081b48dfc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
