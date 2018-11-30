@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9c40d153_b376309e",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-11-30T13:35:06Z",
+      "side": 1,
+      "message": "Why are we creating a choreographer thread? Don\u0027t we just need to call swappy-\u003ehandleChoreographer() below?",
+      "revId": "67272f203e773b017af0ea0759d130a081b48dfc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7399c157_dfae6a54",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-11-30T13:35:06Z",
+      "side": 1,
+      "message": "Should be swappy-\u003ehandleChoreographer() ?",
+      "revId": "67272f203e773b017af0ea0759d130a081b48dfc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
