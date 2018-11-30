@@ -88,6 +88,24 @@
     },
     {
       "key": {
+        "uuid": "cca0d757_aa7e06e8",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-30T20:53:32Z",
+      "side": 1,
+      "message": "And maybe fallback to \"best effort\".",
+      "parentUuid": "b6d6c53f_848415f0",
+      "revId": "67272f203e773b017af0ea0759d130a081b48dfc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "cf8be11d_d3d9d086",
         "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
         "patchSetId": 2
