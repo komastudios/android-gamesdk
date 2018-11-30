@@ -125,6 +125,41 @@
     },
     {
       "key": {
+        "uuid": "462b21f5_c7f12017",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-30T00:12:31Z",
+      "side": 1,
+      "message": "Even if we could initialize from OnChoreo, we still need to know whether to call swappy-\u003emChoreographerThread-\u003epostFrameCallbacks(); from swappy::swapy",
+      "parentUuid": "4fbb107c_8ea1911d",
+      "revId": "ce1c001825a9de3248f68f2c3cb12f56260f7d0e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e438e9d3_04f507b4",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-30T00:12:31Z",
+      "side": 1,
+      "message": "here",
+      "revId": "ce1c001825a9de3248f68f2c3cb12f56260f7d0e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d4e276f7_79552bce",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 1
@@ -172,6 +207,24 @@
       "side": 1,
       "message": "Can we do it lazily from OnChoreo?",
       "parentUuid": "c003f220_5ea8d1f4",
+      "revId": "ce1c001825a9de3248f68f2c3cb12f56260f7d0e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "571e950c_b19d2d75",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-11-30T00:12:31Z",
+      "side": 1,
+      "message": "No, we have to call env-\u003eFindClass from the main thread.",
+      "parentUuid": "5f5defe3_361513e6",
       "revId": "ce1c001825a9de3248f68f2c3cb12f56260f7d0e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
