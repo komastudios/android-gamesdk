@@ -107,6 +107,24 @@
     },
     {
       "key": {
+        "uuid": "4fbb107c_8ea1911d",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-30T00:09:57Z",
+      "side": 1,
+      "message": "Yes, that\u0027s my point (if I understand the code correctly).\nIf we don\u0027t create the thread class in the constructor, but lazily either the first time OnChoreo is called or on the first swap, we can also use it as flag and remove the boolean because the name is confusing.",
+      "parentUuid": "e7528401_c7fd726a",
+      "revId": "ce1c001825a9de3248f68f2c3cb12f56260f7d0e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d4e276f7_79552bce",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 1
@@ -142,6 +160,24 @@
     },
     {
       "key": {
+        "uuid": "5f5defe3_361513e6",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-30T00:09:57Z",
+      "side": 1,
+      "message": "Can we do it lazily from OnChoreo?",
+      "parentUuid": "c003f220_5ea8d1f4",
+      "revId": "ce1c001825a9de3248f68f2c3cb12f56260f7d0e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0c6645e0_6ebb6371",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 1
@@ -171,6 +207,24 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "0c6645e0_6ebb6371",
+      "revId": "ce1c001825a9de3248f68f2c3cb12f56260f7d0e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a0883feb_a303b9c3",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-11-30T00:09:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9baa3224_e65a3530",
       "revId": "ce1c001825a9de3248f68f2c3cb12f56260f7d0e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
