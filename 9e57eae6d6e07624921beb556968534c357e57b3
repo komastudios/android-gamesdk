@@ -104,6 +104,24 @@
       "revId": "9e57eae6d6e07624921beb556968534c357e57b3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "13a81c4d_eb0dd211",
+        "filename": "samples/bouncyball/app/src/main/cpp/Circle.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-12-01T00:14:30Z",
+      "side": 1,
+      "message": "Yeah, let\u0027s do it in a follow-up. I chatted with Ady about this offline and I think it shouldn\u0027t take him too long to refactor this",
+      "parentUuid": "841a329a_aa54f5f6",
+      "revId": "9e57eae6d6e07624921beb556968534c357e57b3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
