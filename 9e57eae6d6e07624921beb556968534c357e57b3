@@ -122,6 +122,24 @@
       "revId": "9e57eae6d6e07624921beb556968534c357e57b3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "840a7c38_02aaf4f1",
+        "filename": "samples/bouncyball/app/src/main/cpp/Circle.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-01T05:15:55Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "13a81c4d_eb0dd211",
+      "revId": "9e57eae6d6e07624921beb556968534c357e57b3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
