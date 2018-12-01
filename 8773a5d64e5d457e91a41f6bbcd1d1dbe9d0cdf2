@@ -16,6 +16,24 @@
       "revId": "8773a5d64e5d457e91a41f6bbcd1d1dbe9d0cdf2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6a595e48_7e532c2a",
+        "filename": "src/swappy/src/main/java/com/google/swappy/ChoreographerManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-01T05:16:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d99571e2_38165965",
+      "revId": "8773a5d64e5d457e91a41f6bbcd1d1dbe9d0cdf2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
