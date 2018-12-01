@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "28ede15d_175c96cb",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-01T00:08:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "81deacd1_706360cf",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 37,
+        "endChar": 74
+      },
+      "revId": "67272f203e773b017af0ea0759d130a081b48dfc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b450a565_89c4fac5",
         "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
         "patchSetId": 2
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "f5c06cb9_280e2840",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-01T00:08:57Z",
+      "side": 1,
+      "message": "Done, what is the difference ?",
+      "parentUuid": "b450a565_89c4fac5",
+      "range": {
+        "startLine": 42,
+        "startChar": 44,
+        "endLine": 42,
+        "endChar": 47
+      },
+      "revId": "67272f203e773b017af0ea0759d130a081b48dfc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d0abda53_71330da6",
         "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
         "patchSetId": 2
@@ -68,6 +116,30 @@
       "revId": "67272f203e773b017af0ea0759d130a081b48dfc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "41897979_64d82b40",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-01T00:08:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d0abda53_71330da6",
+      "range": {
+        "startLine": 72,
+        "startChar": 4,
+        "endLine": 72,
+        "endChar": 11
+      },
+      "revId": "67272f203e773b017af0ea0759d130a081b48dfc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -106,6 +178,24 @@
     },
     {
       "key": {
+        "uuid": "ffaf23c7_a57f5b45",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-01T00:08:57Z",
+      "side": 1,
+      "message": "Done. Fran, I would prefer no to fallback to best effort bit rather crash right away. This is not expected and it indicates we have a bug somewhere (that we need to fix).",
+      "parentUuid": "cca0d757_aa7e06e8",
+      "revId": "67272f203e773b017af0ea0759d130a081b48dfc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cf8be11d_d3d9d086",
         "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
         "patchSetId": 2
@@ -120,6 +210,24 @@
       "revId": "67272f203e773b017af0ea0759d130a081b48dfc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9cdcdb27_c0412116",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-01T00:08:57Z",
+      "side": 1,
+      "message": "I think we should. This helps us to determine whether we use the class implementation we intended to (the destroy will happen if we switch to app choreographer).",
+      "parentUuid": "cf8be11d_d3d9d086",
+      "revId": "67272f203e773b017af0ea0759d130a081b48dfc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -146,6 +254,30 @@
     },
     {
       "key": {
+        "uuid": "534d96bf_1ffffde3",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-01T00:08:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b65e9de8_b7ce0d90",
+      "range": {
+        "startLine": 181,
+        "startChar": 45,
+        "endLine": 181,
+        "endChar": 84
+      },
+      "revId": "67272f203e773b017af0ea0759d130a081b48dfc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "30f3c5d2_9ac3d2db",
         "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
         "patchSetId": 2
@@ -166,6 +298,30 @@
       "revId": "67272f203e773b017af0ea0759d130a081b48dfc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c4e9caf6_ad253f9a",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-01T00:08:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "30f3c5d2_9ac3d2db",
+      "range": {
+        "startLine": 188,
+        "startChar": 12,
+        "endLine": 188,
+        "endChar": 20
+      },
+      "revId": "67272f203e773b017af0ea0759d130a081b48dfc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -192,6 +348,30 @@
     },
     {
       "key": {
+        "uuid": "6665bcf1_cb95d096",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 286,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-01T00:08:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6a2842be_36f3303c",
+      "range": {
+        "startLine": 286,
+        "startChar": 4,
+        "endLine": 286,
+        "endChar": 10
+      },
+      "revId": "67272f203e773b017af0ea0759d130a081b48dfc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0eb18538_b516782b",
         "filename": "src/swappy/src/main/cpp/ChoreographerThread.h",
         "patchSetId": 2
@@ -212,6 +392,30 @@
       "revId": "67272f203e773b017af0ea0759d130a081b48dfc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "21bdbe2f_4cc3a655",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-01T00:08:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0eb18538_b516782b",
+      "range": {
+        "startLine": 32,
+        "startChar": 24,
+        "endLine": 32,
+        "endChar": 45
+      },
+      "revId": "67272f203e773b017af0ea0759d130a081b48dfc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -238,6 +442,30 @@
     },
     {
       "key": {
+        "uuid": "75f7ebd8_d4fb21fd",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-01T00:08:57Z",
+      "side": 1,
+      "message": "Sure, that makes perfect sense!",
+      "parentUuid": "1a3b284f_79da8506",
+      "range": {
+        "startLine": 43,
+        "startChar": 6,
+        "endLine": 43,
+        "endChar": 32
+      },
+      "revId": "67272f203e773b017af0ea0759d130a081b48dfc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0c6ad64d_03bce7ad",
         "filename": "src/swappy/src/main/cpp/ChoreographerThread.h",
         "patchSetId": 2
@@ -258,6 +486,30 @@
       "revId": "67272f203e773b017af0ea0759d130a081b48dfc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c52b080d_bcdbd662",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-01T00:08:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0c6ad64d_03bce7ad",
+      "range": {
+        "startLine": 45,
+        "startChar": 4,
+        "endLine": 45,
+        "endChar": 8
+      },
+      "revId": "67272f203e773b017af0ea0759d130a081b48dfc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -351,6 +603,30 @@
       "revId": "67272f203e773b017af0ea0759d130a081b48dfc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d7c5010c_ec7670a8",
+        "filename": "src/swappy/src/main/java/com/google/swappy/ChoreographerCallback.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-01T00:08:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "88330381_a94dbc57",
+      "range": {
+        "startLine": 19,
+        "startChar": 28,
+        "endLine": 19,
+        "endChar": 35
+      },
+      "revId": "67272f203e773b017af0ea0759d130a081b48dfc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
