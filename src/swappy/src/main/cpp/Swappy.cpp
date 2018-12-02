@@ -83,28 +83,43 @@ void Swappy::init(JNIEnv *env, jobject jactivity) {
             vsyncPeriodNanos - (vsyncPresentationDeadlineNanos - ONE_MS_IN_NS);
 
     using std::chrono::nanoseconds;
+    JavaVM *vm;
+    env->GetJavaVM(&vm);
     Swappy::init(
+            vm,
             nanoseconds(vsyncPeriodNanos),
             nanoseconds(appVsyncOffsetNanos),
             nanoseconds(sfVsyncOffsetNanos));
 }
 
-void Swappy::init(nanoseconds refreshPeriod, nanoseconds appOffset, nanoseconds sfOffset) {
+void Swappy::init(JavaVM *vm, nanoseconds refreshPeriod, nanoseconds appOffset, nanoseconds sfOffset) {
     std::lock_guard<std::mutex> lock(sInstanceMutex);
     if (sInstance) {
         ALOGE("Attempted to initialize Swappy twice");
         return;
     }
-    sInstance = std::make_unique<Swappy>(refreshPeriod, appOffset, sfOffset, ConstructorTag{});
+    sInstance = std::make_unique<Swappy>(vm, refreshPeriod, appOffset, sfOffset, ConstructorTag{});
 }
 
-void Swappy::onChoreographer(void* data) {
-    Swappy *swappy = reinterpret_cast<Swappy *>(data);
+void Swappy::onChoreographer(int64_t frameTimeNanos) {
+    TRACE_CALL();
+
+    Swappy *swappy = getInstance();
     if (!swappy) {
-        ALOGE("Failed to get Swappy instance in onChoreographer");
+        ALOGE("Failed to get Swappy instance in swap");
         return;
     }
-    swappy->handleChoreographer();
+
+    if (!swappy->mUsingExternalChoreographer) {
+        swappy->mUsingExternalChoreographer = true;
+        swappy->mChoreographerThread =
+                ChoreographerThread::createChoreographerThread(
+                        ChoreographerThread::Type::App,
+                        nullptr,
+                        [swappy] { swappy->handleChoreographer(); });
+    }
+
+    swappy->mChoreographerThread->postFrameCallbacks();
 }
 
 bool Swappy::swap(EGLDisplay display, EGLSurface surface) {
@@ -116,7 +131,10 @@ bool Swappy::swap(EGLDisplay display, EGLSurface surface) {
         return EGL_FALSE;
     }
 
-    swappy->mChoreographerThread->postFrameCallbacks();
+    if (!swappy->mUsingExternalChoreographer) {
+        swappy->mChoreographerThread->postFrameCallbacks();
+    }
+
     swappy->waitForNextFrame(display);
 
     const auto swapStart = std::chrono::steady_clock::now();
@@ -157,7 +175,8 @@ EGL *Swappy::getEgl() {
     return egl;
 }
 
-Swappy::Swappy(nanoseconds refreshPeriod,
+Swappy::Swappy(JavaVM *vm,
+               nanoseconds refreshPeriod,
                nanoseconds appOffset,
                nanoseconds sfOffset,
                ConstructorTag /*tag*/)
@@ -165,7 +184,11 @@ Swappy::Swappy(nanoseconds refreshPeriod,
       mChoreographerFilter(std::make_unique<ChoreographerFilter>(refreshPeriod,
                                                                  sfOffset - appOffset,
                                                                  [this]() { return wakeClient(); })),
-      mChoreographerThread(std::make_unique<ChoreographerThread>(std::bind(onChoreographer, this))) {
+      mChoreographerThread(ChoreographerThread::createChoreographerThread(
+              ChoreographerThread::Type::Swappy,
+              vm,
+              [this]{ handleChoreographer(); }))
+{
 
     Settings::getInstance()->addListener([this]() { onSettingsChanged(); });
 
