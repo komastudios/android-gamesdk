@@ -19,6 +19,8 @@
 #include "full/tuningfork_extensions.pb.h"
 #include <android/log.h>
 #include <jni.h>
+#include <tuningfork/clearcutBackend.h>
+
 
 using ::com::google::tuningfork::FidelityParams;
 using ::com::google::tuningfork::Settings;
@@ -72,6 +74,7 @@ public:
     }
 };
 LogcatBackend myBackend;
+tuningfork::ClearcutBackend ccBackend;
 
 static int sLevel = Level_MIN;
 void SetAnnotations() {
@@ -88,7 +91,8 @@ void SetAnnotations() {
 extern "C" {
 
 JNIEXPORT void JNICALL
-Java_com_google_tuningfork_TFTestActivity_nInit(JNIEnv */*env*/, jobject /*activity*/) {
+Java_com_google_tuningfork_TFTestActivity_nInit(JNIEnv *env, jobject activity) {
+
     Settings s = TestSettings(Settings::AggregationStrategy::TIME_BASED,
                               1000, // Time in ms between events
                               1, // Number of instrumentation keys (we only use SYSCPU)
@@ -98,7 +102,15 @@ Java_com_google_tuningfork_TFTestActivity_nInit(JNIEnv */*env*/, jobject /*activ
                                 10} // number of buckets between the max and min (there will be
                                   //   2 more for out-of-bounds ticks, too)
                               });
-    tf::Init(tf::Serialize(s),&myBackend);
+
+    bool isClearcutInited =  ccBackend.Init(env, activity);
+
+    // Clearcut will not be inited if gms is not available
+    if(isClearcutInited)
+        tf::Init(tf::Serialize(s),&ccBackend);
+    else
+        tf::Init(tf::Serialize(s), &myBackend);
+
     tf::ProtobufSerialization params;
     if(!tf::GetFidelityParameters(params, 1000)) {
         __android_log_print(ANDROID_LOG_WARN, "TuningFork", "Could not get FidelityParams");
