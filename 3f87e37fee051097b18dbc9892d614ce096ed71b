@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f1bd6bcf_0842e815",
+        "filename": "include/device_info/device_info.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-03T11:51:45Z",
+      "side": 1,
+      "message": "Given we\u0027re carrying the weight of STL in the SDK anyway, in general I would recommend we return an std::array (or similar) here. However I\u0027ve also recommended changing the prototype of getProtoSerialized in a subsequent comment so this can probably just be removed.",
+      "revId": "3f87e37fee051097b18dbc9892d614ce096ed71b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "db9008c8_b54d279a",
+        "filename": "samples/device_info_app/MainActivity.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-03T11:51:45Z",
+      "side": 1,
+      "message": "If the log message is this specific then the try should only be around .setText. Suggest you make the message a little more generic (i.e. keep the try where it is).",
+      "revId": "3f87e37fee051097b18dbc9892d614ce096ed71b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "169cd832_13f1e8f4",
+        "filename": "src/device_info/device_info.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 649,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-03T11:51:45Z",
+      "side": 1,
+      "message": "I think that this should be changed such that:\n - The interface changes to take a void* output buffer pointer and the size of the output buffer\n - ... and the return value is an int which should be proto.ByteSize()\n\nThis means that the memory should be allocated and freed by the callsite (rather than allocated here but needing to be freed at the callsite). \n\nSome careful handling of the output buffer will be required:\n - If the buffer specified is null then the function should not write any data, but it should still return proto.ByteSize(). In this way the caller can determine how large an output buffer to allocate (and then call the function again).\n - If the buffer specified is not large enough to accommodate the proto then the function should not write any data. But again in this case it should return proto.ByteSize(). The caller should also check for the return value being larger than the output buffer.\n - Only if the buffer specified IS large enough should it be written to.\n\nWDYT?",
+      "revId": "3f87e37fee051097b18dbc9892d614ce096ed71b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
