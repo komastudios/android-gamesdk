@@ -83,7 +83,7 @@ def cmake(projectFolder, cmakeFolder, arch, ndkVersion) {
   }
 }
 
-def buildGameSDK(arch, ndkVersion) {
+def buildSwappy(arch, ndkVersion) {
   def cmakeFolder = project.property('tempFolder') + '/' + arch + '/.cmake'
   def buildFolder = project.property('buildFolder') + '/libs/' + arch
 
@@ -104,11 +104,11 @@ def buildGameSDK(arch, ndkVersion) {
 
   copy {
     from file(cmakeFolder + "/libswappy_static.a")
-    into file(buildFolder + "/libswappy_static.a")
+    into file(buildFolder)
   }
   copy {
     from file(cmakeFolder + "/libswappy.so")
-    into file(buildFolder + "/libswappy.so")
+    into file(buildFolder)
   }
 }
 
@@ -117,7 +117,7 @@ task clean(type: Delete) {
   delete project.property('buildFolder')
 }
 
-task buildGameSDKJavaLibs() {
+task buildSwappyJavaLibs() {
   def buildFolder = project.property('buildFolder') + '/aar'
   def outputFolder = 'src/swappy/build/outputs/aar'
 
@@ -130,21 +130,22 @@ task buildGameSDKJavaLibs() {
   }
 }
 
-task build(dependsOn: 'buildGameSDKJavaLibs') {
+task build(dependsOn: 'buildSwappyJavaLibs') {
   def includeFolder = project.property('buildFolder') + '/include'
+  def buildFolder = project.property('buildFolder') + '/libs'
   doFirst {
     delete includeFolder
     mkdir includeFolder
   }
 
   def ndkVersion = project.property('androidNDKVersion')
-  buildGameSDK("armeabi-v7a", ndkVersion)
-  buildGameSDK("arm64-v8a", ndkVersion)
+  buildSwappy("armeabi-v7a", ndkVersion)
+  buildSwappy("arm64-v8a", ndkVersion)
 
   doLast {
     copy {
-      from "$projectDir/include"
-      into includeFolder
+      from "$projectDir/include/swappy"
+      into includeFolder+"/swappy"
     }
   }
 }
@@ -154,7 +155,8 @@ task archiveZip(type: Zip, dependsOn: 'build') {
 
   from fileTree(project.property('buildFolder'))
   exclude "*.zip"
-
+  exclude "*/x86/*"
+  exclude "*/x86_64/*"
   into 'gamesdk'
 
   doLast {
@@ -163,5 +165,80 @@ task archiveZip(type: Zip, dependsOn: 'build') {
     out.style(Style.Identifier).text('\nGameSDK zip is in ')
       .style(Style.ProgressStatus)
       .println(project.property('buildFolder') + '/gamesdk.zip' );
+  }
+}
+
+ext.tfTempFolder = '.temp_tf'
+ext.tfBuildFolder = 'build_tf'
+def buildTuningFork(arch, ndkVersion) {
+  def tfcmakeFolder = project.property('tfTempFolder') + '/' + arch + '/.cmake'
+  def tfbuildFolder = project.property('tfBuildFolder') + '/libs/' + arch
+
+  mkdir tfcmakeFolder
+  mkdir tfbuildFolder
+
+  // Tuning fork
+
+  cmake("$projectDir/src/tuningfork/", tfcmakeFolder, arch, ndkVersion)
+  exec {
+    workingDir tfcmakeFolder
+
+    commandLine "make"
+  }
+
+  copy {
+    from file(tfcmakeFolder + "/libtuningfork-static.a")
+    into file(tfbuildFolder)
+  }
+  copy {
+    from file(tfcmakeFolder + "/libtuningfork.so")
+    into file(tfbuildFolder)
+  }
+}
+
+task cleanTuningFork(type: Delete) {
+  delete project.property('tfTempFolder')
+  delete project.property('tfBuildFolder')
+}
+
+task buildForUnity(dependsOn: 'buildSwappyJavaLibs') {
+  def includeFolder = project.property('tfBuildFolder') + '/include'
+  doFirst {
+    delete includeFolder
+    mkdir includeFolder
+  }
+
+  def ndkVersion = project.property('androidNDKVersion')
+  buildSwappy("armeabi-v7a", ndkVersion)
+  buildSwappy("arm64-v8a", ndkVersion)
+  buildSwappy("x86", ndkVersion)
+  buildSwappy("x86_64", ndkVersion)
+  buildTuningFork("armeabi-v7a", ndkVersion)
+  buildTuningFork("arm64-v8a", ndkVersion)
+  buildTuningFork("x86", ndkVersion)
+  buildTuningFork("x86_64", ndkVersion)
+
+  doLast {
+    copy {
+      from "$projectDir/include/tuningfork"
+      into includeFolder+"/tuningfork"
+    }
+  }
+}
+
+task unityZip(type: Zip, dependsOn: 'buildForUnity') {
+  baseName = project.property('buildFolder') + '/builds'
+
+  from fileTree(project.property('buildFolder'))
+  exclude "*.zip"
+  from fileTree(project.property('tfBuildFolder'))
+  exclude "*.zip"
+
+  doLast {
+    def out = services.get(StyledTextOutputFactory).create("ouput")
+
+    out.style(Style.Identifier).text('\nUnity zip is in ')
+      .style(Style.ProgressStatus)
+      .println(project.property('buildFolder') + '/builds.zip' );
   }
 }

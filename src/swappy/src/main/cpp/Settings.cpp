@@ -20,7 +20,7 @@
 
 #include <memory>
 
-#include "Log.h"
+#include "common/Log.h"
 
 Settings *Settings::getInstance() {
     static auto settings = std::make_unique<Settings>(ConstructorTag{});
