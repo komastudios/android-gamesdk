@@ -19,7 +19,6 @@
 #include "Swappy.h"
 
 #include "Settings.h"
-#include "Thread.h"
 
 #include <chrono>
 
