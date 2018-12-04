@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ef788b22_68320ef1",
+        "filename": "src/swappy/src/main/cpp/Thread.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-04T19:47:53Z",
+      "side": 1,
+      "message": "I\u0027ll remove this change.",
+      "revId": "d5166b6839bc4509bafde227bf7c7b7c15616f19",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
