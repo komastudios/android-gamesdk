@@ -189,7 +189,6 @@ Swappy::Swappy(JavaVM *vm,
               vm,
               [this]{ handleChoreographer(); }))
 {
-
     Settings::getInstance()->addListener([this]() { onSettingsChanged(); });
 
     ALOGI("Initialized Swappy with refreshPeriod=%lld, appOffset=%lld, sfOffset=%lld",

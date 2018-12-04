@@ -160,12 +160,9 @@ void ChoreographerFilter::onSettingsChanged() {
 void ChoreographerFilter::threadMain(bool useAffinity, int32_t thread) {
     Timer timer(mRefreshPeriod, mAppToSfDelay);
 
-    if (useAffinity) {
-        ALOGI("Using affinity");
-
-        // Set filter threads to run on the last CPU(s)
-        setAffinity(getNumCpus() - 1 - thread);
-    }
+    int cpu = getNumCpus() - 1 - thread;
+    if (cpu >= 0)
+        setAffinity(cpu);
 
     std::string threadName = "Filter";
     threadName += std::to_string(thread);
