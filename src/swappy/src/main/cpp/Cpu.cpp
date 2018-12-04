@@ -1,0 +1,154 @@
+/*
+ * Copyright 2018 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#define LOG_TAG "Swappy"
+
+#include "Cpu.h"
+
+#include <limits>
+#include <bitset>
+
+#include "Log.h"
+
+bool startsWith(std::string mainStr, std::string toMatch) {
+    // std::string::find returns 0 if toMatch is found at starting
+    if(mainStr.find(toMatch) == 0)
+        return true;
+    else
+        return false;
+}
+
+void eraseSubStr(std::string & mainStr, const std::string & toErase) {
+    // Search for the substring in string
+    size_t pos = mainStr.find(toErase);
+
+    if (pos != std::string::npos) {
+        // If found then erase it from string
+        mainStr.erase(pos, toErase.length());
+    }
+}
+
+std::vector<std::string> split(const std::string& s, char c) {
+    std::vector<std::string> v;
+    std::string::size_type i = 0;
+    std::string::size_type j = s.find(c);
+
+    while (j != std::string::npos) {
+        v.push_back(s.substr(i, j-i));
+        i = ++j;
+        j = s.find(c, j);
+
+        if (j == std::string::npos)
+            v.push_back(s.substr(i, s.length()));
+    }
+    return v;
+}
+
+std::string ReadFile(const std::string& path) {
+    char buf[10240];
+    FILE *fp = fopen(path.c_str(), "r");
+    if (fp == nullptr)
+        return std::string();
+
+    fgets(buf, 10240, fp);
+    fclose(fp);
+    return std::string(buf);
+}
+
+Cpu::Cpu() {
+    char buf[10240];
+    FILE *fp = fopen("/proc/cpuinfo", "r");
+
+    if (!fp) {
+        return;
+    }
+
+    long mMaxFrequency = 0;
+    long mMinFrequency = std::numeric_limits<long>::max();
+
+    while (fgets(buf, 10240, fp) != NULL) {
+        buf[strlen(buf) - 1] = '\0'; // eat the newline fgets() stores
+        std::string line = buf;
+
+        if (startsWith(line, "processor")) {
+            Core core;
+            core.id = mCores.size();
+
+            auto core_path = std::string("/sys/devices/system/cpu/cpu") + std::to_string(core.id);
+
+            auto package_id = ReadFile(core_path + "/topology/physical_package_id");
+            auto frequency = ReadFile(core_path + "/cpufreq/cpuinfo_max_freq");
+
+            core.package_id = std::atol(package_id.c_str());
+            core.frequency = std::atol(frequency.c_str());
+
+            if (core.frequency < mMinFrequency)
+                mMinFrequency = core.frequency;
+            if (core.frequency > mMaxFrequency)
+                mMaxFrequency = core.frequency;
+
+            mCores.push_back(core);
+        }
+        if (startsWith(line, "Hardware")) {
+            mHardware = split(line, ':')[1];
+        }
+    }
+    fclose(fp);
+
+    CPU_ZERO(&mLittleCoresMask);
+    CPU_ZERO(&mBigCoresMask);
+
+    for (auto core : mCores) {
+        if (core.frequency == mMinFrequency) {
+            core.type = Core::Type::Little;
+            CPU_SET(core.id, &mLittleCoresMask);
+        }
+        else {
+            core.type = Core::Type::Big;
+            CPU_SET(core.id, &mBigCoresMask);
+        }
+    }
+}
+
+unsigned int Cpu::getNumberOfCores() const {
+    return mCores.size();
+}
+
+const std::vector<Cpu::Core>& Cpu::cores() const {
+    return mCores;
+}
+
+const std::string Cpu::hardware() const {
+    return mHardware;
+}
+
+cpu_set_t Cpu::littleCoresMask() const {
+    return mLittleCoresMask;
+}
+
+cpu_set_t Cpu::bigCoresMask() const {
+    return mBigCoresMask;
+}
+
+unsigned int to_mask(cpu_set_t cpu_set) {
+    std::bitset<32> mask;
+
+    for (int i = 0; i < CPU_SETSIZE; ++i) {
+        if (CPU_ISSET(i, &cpu_set))
+            mask[i] = 1;
+    }
+    return (int) mask.to_ulong();
+}

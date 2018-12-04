@@ -39,5 +39,6 @@ enum class Affinity {
 };
 
 int32_t getNumCpus();
+
 void setAffinity(int32_t cpu);
 void setAffinity(Affinity affinity);
