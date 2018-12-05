@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "ace5258b_f77e1ed3",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-05T15:23:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "606f2ecc_ede3fecf",
+      "revId": "8c7be82b4f45f3a71cb8c93d22fb1bde7f1789ad",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5c5a712a_db83acf9",
         "filename": "include/swappy/swappy_extra.h",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "8c7be82b4f45f3a71cb8c93d22fb1bde7f1789ad",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "69ae9ebe_ce41e879",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-05T15:23:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5c5a712a_db83acf9",
+      "revId": "8c7be82b4f45f3a71cb8c93d22fb1bde7f1789ad",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "6d880630_2ccf439a",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-05T15:23:03Z",
+      "side": 1,
+      "message": "The neatest I could do it was with a macro. LMK if this is acceptable",
+      "parentUuid": "5be8ebef_1a7cda1a",
+      "revId": "8c7be82b4f45f3a71cb8c93d22fb1bde7f1789ad",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "87564bee_8a62d469",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 1
@@ -67,6 +121,24 @@
       "revId": "8c7be82b4f45f3a71cb8c93d22fb1bde7f1789ad",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e1b5ce5c_c29339f2",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-05T15:23:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "87564bee_8a62d469",
+      "revId": "8c7be82b4f45f3a71cb8c93d22fb1bde7f1789ad",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
