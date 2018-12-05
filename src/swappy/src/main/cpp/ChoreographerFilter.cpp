@@ -24,10 +24,11 @@
 #include <deque>
 #include <string>
 
-#include "Log.h"
 #include "Settings.h"
 #include "Thread.h"
-#include "Trace.h"
+
+#include "common/Log.h"
+#include "common/Trace.h"
 
 using namespace std::chrono_literals;
 using time_point = std::chrono::steady_clock::time_point;
