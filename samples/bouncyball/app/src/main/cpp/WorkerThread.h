@@ -21,20 +21,25 @@
 #include <queue>
 #include <thread>
 
-#include "swappy/src/main/cpp/Settings.h"
-#include "swappy/src/main/cpp/Thread.h"
+#include "Settings.h"
+#include "Thread.h"
 
-template <class ThreadState>
+namespace bouncyball {
+
+namespace sa = samples;
+
+template<class ThreadState>
 class WorkerThread {
-  public:
+public:
     using Work = std::function<void(ThreadState *)>;
 
-    WorkerThread(const char* name, Affinity affinity)
+    WorkerThread(const char *name, sa::Affinity affinity)
         : mName(name),
           mAffinity(affinity) {
         launchThread();
         auto settingsChanged = [this](ThreadState *threadState) { onSettingsChanged(threadState); };
-        Settings::getInstance()->addListener([this, work = std::move(settingsChanged)]() { run(work); });
+        Settings::getInstance()->addListener(
+            [this, work = std::move(settingsChanged)]() { run(work); });
     }
 
     ~WorkerThread() {
@@ -52,7 +57,7 @@ class WorkerThread {
         launchThread();
     }
 
-  private:
+private:
     void launchThread() {
         std::lock_guard threadLock(mThreadMutex);
         if (mThread.joinable()) {
@@ -73,11 +78,11 @@ class WorkerThread {
     void onSettingsChanged(ThreadState *threadState) {
         const Settings *settings = Settings::getInstance();
         threadState->onSettingsChanged(settings);
-        setAffinity(settings->getUseAffinity() ? mAffinity : Affinity::None);
+        sa::setAffinity(settings->getUseAffinity() ? mAffinity : sa::Affinity::None);
     }
 
     void threadMain() {
-        setAffinity(Settings::getInstance()->getUseAffinity() ? mAffinity : Affinity::None);
+        sa::setAffinity(Settings::getInstance()->getUseAffinity() ? mAffinity : sa::Affinity::None);
         pthread_setname_np(pthread_self(), mName.c_str());
 
         ThreadState threadState;
@@ -85,9 +90,9 @@ class WorkerThread {
         std::lock_guard lock(mWorkMutex);
         while (mIsActive) {
             mWorkCondition.wait(mWorkMutex,
-                                  [this]() REQUIRES(mWorkMutex) {
-                                      return !mWorkQueue.empty() || !mIsActive;
-                                  });
+                                [this]() REQUIRES(mWorkMutex) {
+                                    return !mWorkQueue.empty() || !mIsActive;
+                                });
             if (!mWorkQueue.empty()) {
                 auto head = mWorkQueue.front();
                 mWorkQueue.pop();
@@ -101,7 +106,7 @@ class WorkerThread {
     }
 
     const std::string mName;
-    const Affinity mAffinity;
+    const sa::Affinity mAffinity;
 
     std::mutex mThreadMutex;
     std::thread mThread GUARDED_BY(mThreadMutex);
@@ -111,3 +116,5 @@ class WorkerThread {
     std::queue<std::function<void(ThreadState *)>> mWorkQueue GUARDED_BY(mWorkMutex);
     std::condition_variable_any mWorkCondition;
 };
+
+} // namespace bouncyball {

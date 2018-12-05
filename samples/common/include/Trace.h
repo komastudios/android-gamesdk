@@ -22,8 +22,10 @@
 #include <android/log.h>
 #include <android/trace.h>
 
+namespace samples {
+
 class Trace {
-  public:
+public:
     using ATrace_beginSection_type = void (*)(const char *sectionName);
     using ATrace_endSection_type = void (*)();
     using ATrace_isEnabled_type = bool (*)();
@@ -95,7 +97,7 @@ class Trace {
         return trace.get();
     };
 
-  private:
+private:
     const ATrace_beginSection_type ATrace_beginSection = nullptr;
     const ATrace_endSection_type ATrace_endSection = nullptr;
     const ATrace_isEnabled_type ATrace_isEnabled = nullptr;
@@ -121,10 +123,12 @@ struct ScopedTrace {
         trace->endSection();
     }
 
-  private:
+private:
     bool mIsTracing = false;
 };
 
+} // namespace samples {
+
 #define PASTE_HELPER_HELPER(a, b) a ## b
 #define PASTE_HELPER(a, b) PASTE_HELPER_HELPER(a, b)
-#define TRACE_CALL() ScopedTrace PASTE_HELPER(scopedTrace, __LINE__)(__PRETTY_FUNCTION__)
+#define SAMPLES_TRACE_CALL() samples::ScopedTrace PASTE_HELPER(scopedTrace, __LINE__)(__PRETTY_FUNCTION__)
