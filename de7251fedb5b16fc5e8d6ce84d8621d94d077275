@@ -25,6 +25,23 @@
     },
     {
       "key": {
+        "uuid": "81dc1b0c_2986138b",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-05T21:50:35Z",
+      "side": 1,
+      "message": "I\u0027d much prefer extracting a method here, over the use of a macro.",
+      "revId": "de7251fedb5b16fc5e8d6ce84d8621d94d077275",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "9807ce75_0a141547",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 4
@@ -36,6 +53,24 @@
       "writtenOn": "2018-12-05T17:56:24Z",
       "side": 1,
       "message": "I think we should copy SwapyTracer instead of holding a pointer to it. Caller is most likely to allocate this struct on the stack and call setTracer() function with it, and we\u0027ll end up with a dangling pointer.\nThe other option is to use std::shared_ptr",
+      "revId": "de7251fedb5b16fc5e8d6ce84d8621d94d077275",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2eeac97b_19ab9ba7",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-05T21:50:35Z",
+      "side": 1,
+      "message": "To expand on this, we should have a list of pointers for every event, so callbacks can be chained. This doesn\u0027t prevent someone using SwappyTracer from using TuningFork and viceversa.",
+      "parentUuid": "9807ce75_0a141547",
       "revId": "de7251fedb5b16fc5e8d6ce84d8621d94d077275",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
