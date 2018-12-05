@@ -107,6 +107,41 @@
     },
     {
       "key": {
+        "uuid": "80625c54_c6e5cf1e",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-05T16:12:05Z",
+      "side": 1,
+      "message": "Something like:\nif (swappy-\u003eCanDoXXX()) {\n\nbool Swappy::CanDoXX() const {\n  return mInjectedTracer \u0026\u0026 swappy-\u003emInjectedTracer-\u003epreSwapBuffers;\n}",
+      "parentUuid": "6d880630_2ccf439a",
+      "revId": "8c7be82b4f45f3a71cb8c93d22fb1bde7f1789ad",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cff3f9d9_d9cd0940",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-05T16:12:05Z",
+      "side": 1,
+      "message": "i\u0027d extract this code in a new method Swappy::postSwapBuffers().\n\nvoid Swappy::PostSwapBuffers() {\n  if(mInjectedTracer \u0026\u0026 mInjectedTracer-\u003epostSwapBuffers)\n      mInjectedTracer-\u003epostSwapBuffers(mInjectedTracer-\u003euserData);\n}\n\nhttps://en.wikipedia.org/wiki/Law_of_Demeter",
+      "revId": "8c7be82b4f45f3a71cb8c93d22fb1bde7f1789ad",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "87564bee_8a62d469",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 1
@@ -139,6 +174,57 @@
       "revId": "8c7be82b4f45f3a71cb8c93d22fb1bde7f1789ad",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8e60b79b_be315021",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-05T16:12:05Z",
+      "side": 1,
+      "message": "extract to Swappy::startFrame()",
+      "revId": "8c7be82b4f45f3a71cb8c93d22fb1bde7f1789ad",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b65c89a5_f8f5948e",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 272,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-05T16:12:05Z",
+      "side": 1,
+      "message": "Swappy::preWait();",
+      "revId": "8c7be82b4f45f3a71cb8c93d22fb1bde7f1789ad",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6d07797c_7beba963",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 281,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-05T16:12:05Z",
+      "side": 1,
+      "message": "Swappy::postWait();",
+      "revId": "8c7be82b4f45f3a71cb8c93d22fb1bde7f1789ad",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
