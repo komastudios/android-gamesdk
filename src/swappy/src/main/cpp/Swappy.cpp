@@ -146,7 +146,11 @@ bool Swappy::swap(EGLDisplay display, EGLSurface surface) {
 
     swappy->resetSyncFence(display);
 
+    swappy->preSwapBuffers();
+
     result = (eglSwapBuffers(display, surface) == EGL_TRUE);
+
+    swappy->postSwapBuffers();
 
     swappy->updateSwapDuration(std::chrono::steady_clock::now() - swapStart);
 
@@ -156,6 +160,14 @@ bool Swappy::swap(EGLDisplay display, EGLSurface surface) {
     return result;
 }
 
+void Swappy::setTracer(const SwappyTracer* tracer) {
+    Swappy *swappy = getInstance();
+    if (!swappy) {
+        ALOGE("Failed to get Swappy instance in setTracer");
+        return;
+    }
+    swappy->mInjectedTracer  = tracer;
+}
 Swappy *Swappy::getInstance() {
     std::lock_guard<std::mutex> lock(sInstanceMutex);
     return sInstance.get();
@@ -164,6 +176,26 @@ Swappy *Swappy::getInstance() {
 void Swappy::destroyInstance() {
     std::lock_guard<std::mutex> lock(sInstanceMutex);
     sInstance.reset();
+}
+
+void Swappy::preSwapBuffers() {
+    if (mInjectedTracer && mInjectedTracer->preSwapBuffers)
+        mInjectedTracer->preSwapBuffers(mInjectedTracer->userData);
+}
+
+void Swappy::postSwapBuffers() {
+    if (mInjectedTracer && mInjectedTracer->postSwapBuffers)
+        mInjectedTracer->postSwapBuffers(mInjectedTracer->userData);
+}
+
+void Swappy::preWait() {
+    if (mInjectedTracer && mInjectedTracer->preWait)
+        mInjectedTracer->preWait(mInjectedTracer->userData);
+}
+
+void Swappy::postWait() {
+    if (mInjectedTracer && mInjectedTracer->postWait)
+        mInjectedTracer->postWait(mInjectedTracer->userData);
 }
 
 EGL *Swappy::getEgl() {
@@ -187,7 +219,8 @@ Swappy::Swappy(JavaVM *vm,
       mChoreographerThread(ChoreographerThread::createChoreographerThread(
               ChoreographerThread::Type::Swappy,
               vm,
-              [this]{ handleChoreographer(); }))
+              [this]{ handleChoreographer(); })),
+      mInjectedTracer(nullptr)
 {
 
     Settings::getInstance()->addListener([this]() { onSettingsChanged(); });
@@ -224,6 +257,9 @@ std::chrono::nanoseconds Swappy::wakeClient() {
 
 void Swappy::startFrame() {
     TRACE_CALL();
+
+    startFrame();
+
     const auto [currentFrame, currentFrameTimestamp] = [this] {
         std::unique_lock<std::mutex> lock(mWaitingMutex);
         return std::make_tuple(mCurrentFrame, mCurrentFrameTimestamp);
@@ -250,6 +286,8 @@ void Swappy::waitOneFrame() {
 }
 
 void Swappy::waitForNextFrame(EGLDisplay display) {
+    preWait();
+
     waitUntil(mTargetFrame);
 
     // If the frame hasn't completed yet, go into frame-by-frame slip until it completes
@@ -257,6 +295,8 @@ void Swappy::waitForNextFrame(EGLDisplay display) {
         ScopedTrace trace("lastFrameIncomplete");
         waitOneFrame();
     }
+
+    postWait();
 }
 
 void Swappy::resetSyncFence(EGLDisplay display) {
