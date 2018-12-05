@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "606f2ecc_ede3fecf",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-05T13:52:52Z",
+      "side": 1,
+      "message": "#pragma once",
+      "revId": "8c7be82b4f45f3a71cb8c93d22fb1bde7f1789ad",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5c5a712a_db83acf9",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-05T13:52:52Z",
+      "side": 1,
+      "message": "I think that you should remove \u0027public:\u0027 from here. This is in an extern \"C\" which should compile in a C compiler (I think public: will not compile in C mode?). Also public is redundant in this context because struct defaults to public.",
+      "revId": "8c7be82b4f45f3a71cb8c93d22fb1bde7f1789ad",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5be8ebef_1a7cda1a",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-05T13:52:52Z",
+      "side": 1,
+      "message": "There\u0027s a lot of boiler plate of this kind. Is there some way to neaten it up? (i.e. have a function which takes a member function pointer and then wraps up getting the swappy instance, checking for an injected tracer and passing the userdata?",
+      "revId": "8c7be82b4f45f3a71cb8c93d22fb1bde7f1789ad",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "87564bee_8a62d469",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-05T13:52:52Z",
+      "side": 1,
+      "message": "I\u0027m not sure that\u0027s the correct message, we are in setTracer not swap?",
+      "revId": "8c7be82b4f45f3a71cb8c93d22fb1bde7f1789ad",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
