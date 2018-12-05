@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "be725939_9b88248c",
+        "filename": "src/device_info/device_info.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 651,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-05T21:51:52Z",
+      "side": 1,
+      "message": "Can you also get device fingerprint this way?",
+      "revId": "ad61c78e1ae0c75c226a82c5fac1420f81d9c9f0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
