@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "53ffd25f_97fd8ee2",
+        "filename": "src/swappy/src/main/cpp/Cpu.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-05T03:41:35Z",
+      "side": 1,
+      "message": "I couldn\u0027t find a syscall. I know of various companies using this technique.",
+      "parentUuid": "c52afbd4_700e5b1c",
+      "revId": "42d4e6df5d645da93900e3072f7166c4ced8667a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a64c6ffd_b2e6c9e0",
         "filename": "src/swappy/src/main/cpp/Cpu.h",
         "patchSetId": 2
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "e09bbc9b_cedc0664",
+        "filename": "src/swappy/src/main/cpp/Cpu.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-05T03:41:35Z",
+      "side": 1,
+      "message": "Yes, will do.",
+      "parentUuid": "a64c6ffd_b2e6c9e0",
+      "revId": "42d4e6df5d645da93900e3072f7166c4ced8667a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "21b87666_1d4d7ece",
         "filename": "src/swappy/src/main/cpp/Cpu.h",
         "patchSetId": 2
@@ -47,6 +83,24 @@
       "writtenOn": "2018-12-05T02:56:43Z",
       "side": 1,
       "message": "should it be a singleton ?",
+      "revId": "42d4e6df5d645da93900e3072f7166c4ced8667a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6deab9f3_2b35fcea",
+        "filename": "src/swappy/src/main/cpp/Cpu.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-05T03:41:35Z",
+      "side": 1,
+      "message": "Singletons are evil :)",
+      "parentUuid": "21b87666_1d4d7ece",
       "revId": "42d4e6df5d645da93900e3072f7166c4ced8667a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true

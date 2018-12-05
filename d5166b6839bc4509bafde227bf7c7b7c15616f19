@@ -42,6 +42,30 @@
     },
     {
       "key": {
+        "uuid": "f6471d93_d8e01cb0",
+        "filename": "src/swappy/src/main/cpp/Cpu.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-05T03:41:35Z",
+      "side": 1,
+      "message": "Will do.",
+      "parentUuid": "c9e2873f_40bcd64b",
+      "range": {
+        "startLine": 61,
+        "startChar": 19,
+        "endLine": 61,
+        "endChar": 20
+      },
+      "revId": "d5166b6839bc4509bafde227bf7c7b7c15616f19",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "25ef7761_faf78ba6",
         "filename": "src/swappy/src/main/cpp/Cpu.cpp",
         "patchSetId": 1
@@ -53,6 +77,24 @@
       "writtenOn": "2018-12-05T02:56:43Z",
       "side": 1,
       "message": "what if the output is longer than 10240 ?",
+      "revId": "d5166b6839bc4509bafde227bf7c7b7c15616f19",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "de8961db_b0119fbf",
+        "filename": "src/swappy/src/main/cpp/Cpu.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-05T03:41:35Z",
+      "side": 1,
+      "message": "I\u0027ll change to a safer call.",
+      "parentUuid": "25ef7761_faf78ba6",
       "revId": "d5166b6839bc4509bafde227bf7c7b7c15616f19",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
