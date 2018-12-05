@@ -146,7 +146,13 @@ bool Swappy::swap(EGLDisplay display, EGLSurface surface) {
 
     swappy->resetSyncFence(display);
 
+    if(swappy->mInjectedTracer && swappy->mInjectedTracer->preSwapBuffers)
+      swappy->mInjectedTracer->preSwapBuffers(swappy->mInjectedTracer->userData);
+
     result = (eglSwapBuffers(display, surface) == EGL_TRUE);
+
+    if(swappy->mInjectedTracer && swappy->mInjectedTracer->postSwapBuffers)
+      swappy->mInjectedTracer->postSwapBuffers(swappy->mInjectedTracer->userData);
 
     swappy->updateSwapDuration(std::chrono::steady_clock::now() - swapStart);
 
@@ -156,6 +162,14 @@ bool Swappy::swap(EGLDisplay display, EGLSurface surface) {
     return result;
 }
 
+void Swappy::setTracer(const SwappyTracer* tracer) {
+    Swappy *swappy = getInstance();
+    if (!swappy) {
+        ALOGE("Failed to get Swappy instance in swap");
+        return;
+    }
+    swappy->mInjectedTracer  = tracer;
+}
 Swappy *Swappy::getInstance() {
     std::lock_guard<std::mutex> lock(sInstanceMutex);
     return sInstance.get();
@@ -187,7 +201,8 @@ Swappy::Swappy(JavaVM *vm,
       mChoreographerThread(ChoreographerThread::createChoreographerThread(
               ChoreographerThread::Type::Swappy,
               vm,
-              [this]{ handleChoreographer(); }))
+              [this]{ handleChoreographer(); })),
+      mInjectedTracer(nullptr)
 {
 
     Settings::getInstance()->addListener([this]() { onSettingsChanged(); });
@@ -224,6 +239,10 @@ std::chrono::nanoseconds Swappy::wakeClient() {
 
 void Swappy::startFrame() {
     TRACE_CALL();
+
+    if(mInjectedTracer && mInjectedTracer->startFrame)
+      mInjectedTracer->startFrame(mInjectedTracer->userData);
+
     const auto [currentFrame, currentFrameTimestamp] = [this] {
         std::unique_lock<std::mutex> lock(mWaitingMutex);
         return std::make_tuple(mCurrentFrame, mCurrentFrameTimestamp);
@@ -250,6 +269,8 @@ void Swappy::waitOneFrame() {
 }
 
 void Swappy::waitForNextFrame(EGLDisplay display) {
+    if(mInjectedTracer && mInjectedTracer->preWait)
+      mInjectedTracer->preWait(mInjectedTracer->userData);
     waitUntil(mTargetFrame);
 
     // If the frame hasn't completed yet, go into frame-by-frame slip until it completes
@@ -257,6 +278,8 @@ void Swappy::waitForNextFrame(EGLDisplay display) {
         ScopedTrace trace("lastFrameIncomplete");
         waitOneFrame();
     }
+    if(mInjectedTracer && mInjectedTracer->postWait)
+      mInjectedTracer->postWait(mInjectedTracer->userData);
 }
 
 void Swappy::resetSyncFence(EGLDisplay display) {
