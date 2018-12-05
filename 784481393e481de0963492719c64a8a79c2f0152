@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ea82e70f_f70b7a37",
+        "filename": "src/tuningfork/tuningfork_c.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-05T13:03:53Z",
+      "side": 1,
+      "message": "Having 2 files called tuningfork.h is bound to lead to confusion at some point. Can we call the second one tuningfork_internal.h or something? \n\n(going to +2 this change as I think it should go in regardless, but let\u0027s try to address in a future cl).",
+      "revId": "784481393e481de0963492719c64a8a79c2f0152",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
