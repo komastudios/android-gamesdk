@@ -35,6 +35,11 @@ using namespace std::chrono_literals;
 std::mutex Swappy::sInstanceMutex;
 std::unique_ptr<Swappy> Swappy::sInstance;
 
+#define CALL_TRACER_FUNCTION(SWAPPY, FN) { \
+if((SWAPPY)->mInjectedTracer && (SWAPPY)->mInjectedTracer->FN) \
+    (SWAPPY)->mInjectedTracer->FN((SWAPPY)->mInjectedTracer->userData); \
+}
+
 void Swappy::init(JNIEnv *env, jobject jactivity) {
     jclass activityClass = env->FindClass("android/app/NativeActivity");
     jclass windowManagerClass = env->FindClass("android/view/WindowManager");
@@ -146,7 +151,11 @@ bool Swappy::swap(EGLDisplay display, EGLSurface surface) {
 
     swappy->resetSyncFence(display);
 
+    CALL_TRACER_FUNCTION(swappy, preSwapBuffers);
+
     result = (eglSwapBuffers(display, surface) == EGL_TRUE);
+
+    CALL_TRACER_FUNCTION(swappy, postSwapBuffers);
 
     swappy->updateSwapDuration(std::chrono::steady_clock::now() - swapStart);
 
@@ -156,6 +165,14 @@ bool Swappy::swap(EGLDisplay display, EGLSurface surface) {
     return result;
 }
 
+void Swappy::setTracer(const SwappyTracer* tracer) {
+    Swappy *swappy = getInstance();
+    if (!swappy) {
+        ALOGE("Failed to get Swappy instance in setTracer");
+        return;
+    }
+    swappy->mInjectedTracer  = tracer;
+}
 Swappy *Swappy::getInstance() {
     std::lock_guard<std::mutex> lock(sInstanceMutex);
     return sInstance.get();
@@ -187,7 +204,8 @@ Swappy::Swappy(JavaVM *vm,
       mChoreographerThread(ChoreographerThread::createChoreographerThread(
               ChoreographerThread::Type::Swappy,
               vm,
-              [this]{ handleChoreographer(); }))
+              [this]{ handleChoreographer(); })),
+      mInjectedTracer(nullptr)
 {
 
     Settings::getInstance()->addListener([this]() { onSettingsChanged(); });
@@ -224,6 +242,9 @@ std::chrono::nanoseconds Swappy::wakeClient() {
 
 void Swappy::startFrame() {
     TRACE_CALL();
+
+    CALL_TRACER_FUNCTION(this, startFrame);
+
     const auto [currentFrame, currentFrameTimestamp] = [this] {
         std::unique_lock<std::mutex> lock(mWaitingMutex);
         return std::make_tuple(mCurrentFrame, mCurrentFrameTimestamp);
@@ -250,6 +271,8 @@ void Swappy::waitOneFrame() {
 }
 
 void Swappy::waitForNextFrame(EGLDisplay display) {
+    CALL_TRACER_FUNCTION(this, preWait);
+
     waitUntil(mTargetFrame);
 
     // If the frame hasn't completed yet, go into frame-by-frame slip until it completes
@@ -257,6 +280,7 @@ void Swappy::waitForNextFrame(EGLDisplay display) {
         ScopedTrace trace("lastFrameIncomplete");
         waitOneFrame();
     }
+    CALL_TRACER_FUNCTION(this, postWait);
 }
 
 void Swappy::resetSyncFence(EGLDisplay display) {

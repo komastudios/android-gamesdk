@@ -26,6 +26,9 @@
 
 #include <jni.h>
 
+#include "swappy/swappy.h"
+#include "swappy/swappy_extra.h"
+
 class ChoreographerFilter;
 class ChoreographerThread;
 class EGL;
@@ -56,6 +59,9 @@ class Swappy {
                      std::chrono::nanoseconds refreshPeriod,
                      std::chrono::nanoseconds appOffset,
                      std::chrono::nanoseconds sfOffset);
+
+    // Pass callbacks for tracing within the swap function
+    static void setTracer(const SwappyTracer* tracer);
 
     static void destroyInstance();
 
@@ -109,4 +115,6 @@ private:
 
     bool mUsingExternalChoreographer = false;
     std::unique_ptr<ChoreographerThread> mChoreographerThread;
+
+    const SwappyTracer* mInjectedTracer;
 };
