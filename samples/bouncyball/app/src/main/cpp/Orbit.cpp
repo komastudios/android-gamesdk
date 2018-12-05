@@ -22,7 +22,7 @@
 
 #include <android/native_window_jni.h>
 
-#include "swappy/src/main/cpp/Log.h"
+#include "common/Log.h"
 #include "swappy/src/main/cpp/Settings.h"
 
 #include "swappy/swappy.h"
