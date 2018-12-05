@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6f3c9083_cd7a4e69",
+        "filename": "samples/bouncyball/app/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-05T18:02:50Z",
+      "side": 1,
+      "message": "Why do we need to change minSDK ? Now ACoreographer is called by checking the sdk version in runtime.",
+      "revId": "a49102a9713026b20cf161b4ff23c7cce069a32c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eeb104a5_d2603050",
+        "filename": "src/swappy/CMakeLists.txt",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-05T18:02:50Z",
+      "side": 1,
+      "message": "usually the current dir is already part of the include path. Do we need this line ?",
+      "revId": "a49102a9713026b20cf161b4ff23c7cce069a32c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
