@@ -125,6 +125,24 @@
     },
     {
       "key": {
+        "uuid": "eae058d6_e6264cee",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-05T16:23:06Z",
+      "side": 1,
+      "message": "Did you look at the macro solution in patchset 3?",
+      "parentUuid": "80625c54_c6e5cf1e",
+      "revId": "8c7be82b4f45f3a71cb8c93d22fb1bde7f1789ad",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "cff3f9d9_d9cd0940",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 1
