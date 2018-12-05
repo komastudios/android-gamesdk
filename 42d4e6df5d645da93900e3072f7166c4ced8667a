@@ -104,6 +104,24 @@
       "revId": "42d4e6df5d645da93900e3072f7166c4ced8667a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "242b5e17_8655db0a",
+        "filename": "src/swappy/src/main/cpp/Cpu.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-05T03:46:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6deab9f3_2b35fcea",
+      "revId": "42d4e6df5d645da93900e3072f7166c4ced8667a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
