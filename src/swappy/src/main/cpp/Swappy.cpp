@@ -20,13 +20,13 @@
 
 #include <thread>
 
-#include "Log.h"
 #include "Settings.h"
-#include "Trace.h"
-
 #include "ChoreographerFilter.h"
 #include "ChoreographerThread.h"
 #include "EGL.h"
+
+#include "common/Log.h"
+#include "common/Trace.h"
 
 using std::chrono::milliseconds;
 using std::chrono::nanoseconds;

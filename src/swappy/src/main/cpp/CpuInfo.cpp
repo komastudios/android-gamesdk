@@ -21,7 +21,7 @@
 #include <limits>
 #include <bitset>
 
-#include "Log.h"
+#include "common/Log.h"
 
 bool startsWith(std::string &mainStr, const char *toMatch) {
     // std::string::find returns 0 if toMatch is found at beginning

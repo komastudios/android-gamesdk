@@ -19,14 +19,15 @@
 #include <jni.h>
 
 #include "ChoreographerThread.h"
-#include "Log.h"
 #include "Thread.h"
-#include "Trace.h"
 #include "CpuInfo.h"
 
 #include <sched.h>
 #include <pthread.h>
 #include <unistd.h>
+
+#include "common/Log.h"
+#include "common/Trace.h"
 
 // AChoreographer is supported from API 24. To allow compilation for minSDK < 24
 // and still use AChoreographer for SDK >= 24 we need runtime support to call
