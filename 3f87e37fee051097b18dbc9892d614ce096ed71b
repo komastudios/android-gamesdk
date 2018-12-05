@@ -104,6 +104,24 @@
       "revId": "3f87e37fee051097b18dbc9892d614ce096ed71b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fae4411c_5cda6279",
+        "filename": "src/device_info/device_info.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 649,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-12-05T14:09:33Z",
+      "side": 1,
+      "message": "I redesigned the API:\n\nThere is only a single androidgamesdk_deviceinfo function, which creates the proto.\n\nIt solved all the problems, as far as I can see.",
+      "parentUuid": "6999b67e_8a09372d",
+      "revId": "3f87e37fee051097b18dbc9892d614ce096ed71b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
