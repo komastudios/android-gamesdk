@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c52afbd4_700e5b1c",
+        "filename": "src/swappy/src/main/cpp/Cpu.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-05T02:56:43Z",
+      "side": 1,
+      "message": "I wonder if there is a way to use a syscall instead of parsing the string output to get the information we need.",
+      "revId": "42d4e6df5d645da93900e3072f7166c4ced8667a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a64c6ffd_b2e6c9e0",
+        "filename": "src/swappy/src/main/cpp/Cpu.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-05T02:56:43Z",
+      "side": 1,
+      "message": "CpuInfo maybe ?",
+      "revId": "42d4e6df5d645da93900e3072f7166c4ced8667a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "21b87666_1d4d7ece",
+        "filename": "src/swappy/src/main/cpp/Cpu.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-05T02:56:43Z",
+      "side": 1,
+      "message": "should it be a singleton ?",
+      "revId": "42d4e6df5d645da93900e3072f7166c4ced8667a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
