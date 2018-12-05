@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6d9fb9a9_5340ae65",
+        "filename": "include/swappy/swappy.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-05T17:56:24Z",
+      "side": 1,
+      "message": "Why removing #ifndef, #define, #endif ?\nIdeally every header should have that (or #pragma once) to avoid redefining the header definitions multiple times for the same file.",
+      "range": {
+        "startLine": 17,
+        "startChar": 1,
+        "endLine": 17,
+        "endChar": 8
+      },
+      "revId": "de7251fedb5b16fc5e8d6ce84d8621d94d077275",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9807ce75_0a141547",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-05T17:56:24Z",
+      "side": 1,
+      "message": "I think we should copy SwapyTracer instead of holding a pointer to it. Caller is most likely to allocate this struct on the stack and call setTracer() function with it, and we\u0027ll end up with a dangling pointer.\nThe other option is to use std::shared_ptr",
+      "revId": "de7251fedb5b16fc5e8d6ce84d8621d94d077275",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
