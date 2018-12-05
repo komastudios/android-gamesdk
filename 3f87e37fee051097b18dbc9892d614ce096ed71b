@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "5b7b2fd5_4c44531d",
+        "filename": "include/device_info/device_info.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-12-05T13:40:34Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f1bd6bcf_0842e815",
+      "revId": "3f87e37fee051097b18dbc9892d614ce096ed71b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "db9008c8_b54d279a",
         "filename": "samples/device_info_app/MainActivity.java",
         "patchSetId": 3
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "6f845a1b_98ab96d2",
+        "filename": "samples/device_info_app/MainActivity.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-12-05T13:40:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "db9008c8_b54d279a",
+      "revId": "3f87e37fee051097b18dbc9892d614ce096ed71b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "169cd832_13f1e8f4",
         "filename": "src/device_info/device_info.cpp",
         "patchSetId": 3
@@ -47,6 +83,24 @@
       "writtenOn": "2018-12-03T11:51:45Z",
       "side": 1,
       "message": "I think that this should be changed such that:\n - The interface changes to take a void* output buffer pointer and the size of the output buffer\n - ... and the return value is an int which should be proto.ByteSize()\n\nThis means that the memory should be allocated and freed by the callsite (rather than allocated here but needing to be freed at the callsite). \n\nSome careful handling of the output buffer will be required:\n - If the buffer specified is null then the function should not write any data, but it should still return proto.ByteSize(). In this way the caller can determine how large an output buffer to allocate (and then call the function again).\n - If the buffer specified is not large enough to accommodate the proto then the function should not write any data. But again in this case it should return proto.ByteSize(). The caller should also check for the return value being larger than the output buffer.\n - Only if the buffer specified IS large enough should it be written to.\n\nWDYT?",
+      "revId": "3f87e37fee051097b18dbc9892d614ce096ed71b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6999b67e_8a09372d",
+        "filename": "src/device_info/device_info.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 649,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-12-05T13:40:34Z",
+      "side": 1,
+      "message": "I believe it is a much better interface to have memory alloc and dealloc at the same side, so I have implemented and pushed it.\n\nThe down-side is that now, we are creating the proto 2 times. Once to determine the size, and second time to write the data.\n\nI will try to redesign around this problem and create another patch.",
+      "parentUuid": "169cd832_13f1e8f4",
       "revId": "3f87e37fee051097b18dbc9892d614ce096ed71b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
