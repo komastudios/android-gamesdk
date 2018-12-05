@@ -20,13 +20,15 @@
 
 #include <thread>
 
-#include "Log.h"
 #include "Settings.h"
-#include "Trace.h"
-
 #include "ChoreographerFilter.h"
 #include "ChoreographerThread.h"
 #include "EGL.h"
+
+#include "Log.h"
+#include "Trace.h"
+
+namespace swappy {
 
 using std::chrono::milliseconds;
 using std::chrono::nanoseconds;
@@ -315,7 +317,7 @@ void Swappy::waitForNextFrame(EGLDisplay display) {
 
     // If the frame hasn't completed yet, go into frame-by-frame slip until it completes
     while (!getEgl()->lastFrameIsComplete(display)) {
-        ScopedTrace trace("lastFrameIncomplete");
+        gamesdk::ScopedTrace trace("lastFrameIncomplete");
         waitOneFrame();
     }
 
@@ -342,3 +344,5 @@ void Swappy::updateSwapDuration(std::chrono::nanoseconds duration) {
     // clamping, we reduce the maximum error which reduces the calibration time.
     if (mSwapDuration.load() > (mRefreshPeriod / 2)) mSwapDuration = mRefreshPeriod / 2;
 }
+
+} // namespace swappy

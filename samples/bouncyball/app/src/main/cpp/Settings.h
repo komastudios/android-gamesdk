@@ -24,40 +24,40 @@
 #include <vector>
 #include <chrono>
 
-namespace swappy {
+namespace samples {
 
 class Settings {
-  private:
+private:
     // Allows construction with std::unique_ptr from a static method, but disallows construction
     // outside of the class since no one else can construct a ConstructorTag
     struct ConstructorTag {
     };
-  public:
+public:
     explicit Settings(ConstructorTag) {};
 
     static Settings *getInstance();
 
     using Listener = std::function<void()>;
+
     void addListener(Listener listener);
 
-    void setRefreshPeriod(std::chrono::nanoseconds period);
-    void setSwapInterval(uint32_t num_frames);
-    void setUseAffinity(bool);
+    void setPreference(std::string key, std::string value);
 
     std::chrono::nanoseconds getRefreshPeriod() const;
+
     int32_t getSwapInterval() const;
+
     bool getUseAffinity() const;
 
-  private:
+    bool getHotPocket() const;
+
+private:
     void notifyListeners();
 
     mutable std::mutex mMutex;
     std::vector<Listener> mListeners GUARDED_BY(mMutex);
 
-    std::chrono::nanoseconds
-        mRefreshPeriod GUARDED_BY(mMutex) = std::chrono::nanoseconds{12'345'678};
-    int32_t mSwapInterval GUARDED_BY(mMutex) = 1;
-    bool mUseAffinity GUARDED_BY(mMutex) = true;
+    std::atomic<bool> mHotPocket = false;
 };
 
-} // namespace swappy
+} // namespace samples

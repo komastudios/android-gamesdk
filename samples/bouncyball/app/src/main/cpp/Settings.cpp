@@ -20,9 +20,10 @@
 
 #include <memory>
 
+#include "swappy/swappy.h"
 #include "Log.h"
 
-namespace swappy {
+namespace samples {
 
 Settings *Settings::getInstance() {
     static auto settings = std::make_unique<Settings>(ConstructorTag{});
@@ -34,45 +35,38 @@ void Settings::addListener(Listener listener) {
     mListeners.emplace_back(std::move(listener));
 }
 
-void Settings::setRefreshPeriod(std::chrono::nanoseconds period) {
-    {
-        std::lock_guard lock(mMutex);
-        mRefreshPeriod = period;
+void Settings::setPreference(std::string key, std::string value) {
+    if (key == "refresh_period") {
+        Swappy_setRefreshPeriod(std::stoll(value));
+    } else if (key == "swap_interval") {
+        Swappy_setSwapInterval(std::stoi(value));
+    } else if (key == "use_affinity") {
+        Swappy_setUseAffinity(value == "true");
+    } else if (key == "hot_pocket") {
+        mHotPocket = (value == "true");
+    } else {
+        ALOGI("Can't find matching preference for %s", key.c_str());
+        return;
     }
-    // Notify the listeners without the lock held
-    notifyListeners();
-}
-void Settings::setSwapInterval(uint32_t num_frames) {
-    {
-        std::lock_guard lock(mMutex);
-        mSwapInterval = num_frames;
-    }
-    // Notify the listeners without the lock held
-    notifyListeners();
-}
-void Settings::setUseAffinity(bool tf) {
-    {
-        std::lock_guard lock(mMutex);
-        mUseAffinity = tf;
-    }
-    // Notify the listeners without the lock held
-    notifyListeners();
-}
 
+    // Notify the listeners without the lock held
+    notifyListeners();
+}
 
 std::chrono::nanoseconds Settings::getRefreshPeriod() const {
-    std::lock_guard lock(mMutex);
-    return mRefreshPeriod;
+    return std::chrono::nanoseconds(Swappy_getRefreshPeriodNanos());
 }
 
 int32_t Settings::getSwapInterval() const {
-    std::lock_guard lock(mMutex);
-    return mSwapInterval;
+    return Swappy_getSwapInterval();
 }
 
 bool Settings::getUseAffinity() const {
-    std::lock_guard lock(mMutex);
-    return mUseAffinity;
+    return Swappy_getUseAffinity();
+}
+
+bool Settings::getHotPocket() const {
+    return mHotPocket;
 }
 
 void Settings::notifyListeners() {
@@ -89,4 +83,4 @@ void Settings::notifyListeners() {
     }
 }
 
-} // namespace swappy
+} // namespace samples

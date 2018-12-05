@@ -24,13 +24,15 @@
 
 #include <android/native_window.h>
 
-#include "swappy/src/main/cpp/Log.h"
+#include "Log.h"
 
 #include "swappy/swappy.h"
 
 #include "Circle.h"
 
 using namespace std::chrono_literals;
+
+namespace samples {
 
 Renderer *Renderer::getInstance() {
     static std::unique_ptr<Renderer> sRenderer = std::make_unique<Renderer>(ConstructorTag{});
@@ -77,7 +79,8 @@ void Renderer::stop() {
 }
 
 void Renderer::requestDraw() {
-    mWorkerThread.run([=](ThreadState *threadState) { if (threadState->isStarted) draw(threadState); });
+    mWorkerThread.run(
+        [=](ThreadState *threadState) { if (threadState->isStarted) draw(threadState); });
 }
 
 Renderer::ThreadState::ThreadState() {
@@ -128,7 +131,7 @@ Renderer::ThreadState::~ThreadState() {
     if (display != EGL_NO_DISPLAY) eglTerminate(display);
 }
 
-void Renderer::ThreadState::onSettingsChanged(const Settings * settings) {
+void Renderer::ThreadState::onSettingsChanged(const Settings *settings) {
     refreshPeriod = settings->getRefreshPeriod();
     swapInterval = settings->getSwapInterval();
 }
@@ -151,7 +154,7 @@ EGLBoolean Renderer::ThreadState::makeCurrent(EGLSurface surface) {
     return eglMakeCurrent(display, surface, surface, context);
 }
 
-void Renderer::HotPocketState::onSettingsChanged(const Settings * settings) {
+void Renderer::HotPocketState::onSettingsChanged(const Settings *settings) {
     isEnabled = settings->getHotPocket();
 }
 
@@ -184,7 +187,8 @@ void Renderer::draw(ThreadState *threadState) {
         return;
     }
 
-    const float deltaSeconds = (threadState->refreshPeriod * threadState->swapInterval).count() / 1e9f;
+    const float deltaSeconds =
+        (threadState->refreshPeriod * threadState->swapInterval).count() / 1e9f;
 
     threadState->x += threadState->velocity * deltaSeconds;
 
@@ -212,3 +216,5 @@ void Renderer::draw(ThreadState *threadState) {
     // If we're still started, request another frame
     requestDraw();
 }
+
+} // namespace samples
