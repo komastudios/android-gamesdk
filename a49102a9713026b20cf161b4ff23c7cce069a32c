@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "c2035055_63b82a56",
+        "filename": "samples/bouncyball/app/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-06T07:11:16Z",
+      "side": 1,
+      "message": "ChoreographerThread.cpp, which refers to AChoreographer, doesn\u0027t compile for me without this. I can remove the change from this CL if you want to review it.",
+      "parentUuid": "6f3c9083_cd7a4e69",
+      "revId": "a49102a9713026b20cf161b4ff23c7cce069a32c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "eeb104a5_d2603050",
         "filename": "src/swappy/CMakeLists.txt",
         "patchSetId": 3
@@ -30,6 +48,24 @@
       "writtenOn": "2018-12-05T18:02:50Z",
       "side": 1,
       "message": "usually the current dir is already part of the include path. Do we need this line ?",
+      "revId": "a49102a9713026b20cf161b4ff23c7cce069a32c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "473897ef_63ce08f5",
+        "filename": "src/swappy/CMakeLists.txt",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-06T07:11:16Z",
+      "side": 1,
+      "message": "This is the parent dir. It doesn\u0027t compile for me without this added.",
+      "parentUuid": "eeb104a5_d2603050",
       "revId": "a49102a9713026b20cf161b4ff23c7cce069a32c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
