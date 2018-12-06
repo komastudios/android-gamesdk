@@ -16,6 +16,24 @@
       "revId": "ad61c78e1ae0c75c226a82c5fac1420f81d9c9f0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dce8cc49_2b17c363",
+        "filename": "src/device_info/device_info.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 651,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-12-06T10:01:06Z",
+      "side": 1,
+      "message": "Yes, it looks like we also have \"ro.build.fingerprint\"\n\nThanks, I will give it a go.",
+      "parentUuid": "be725939_9b88248c",
+      "revId": "ad61c78e1ae0c75c226a82c5fac1420f81d9c9f0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
