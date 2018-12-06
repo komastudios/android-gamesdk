@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "87046f20_2a564677",
+        "filename": "include/swappy/swappy.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-06T18:34:13Z",
+      "side": 1,
+      "message": "#pragma once",
+      "revId": "fa0af22d19991e12b4a3f011c5fe4d786788411d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1cdbc153_d5b0a554",
+        "filename": "src/swappy/src/main/cpp/Swappy.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-06T18:34:13Z",
+      "side": 1,
+      "message": "maybe just maybe std::list\u003cSwappyTracer\u003e ?",
+      "revId": "fa0af22d19991e12b4a3f011c5fe4d786788411d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
