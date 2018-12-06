@@ -69,6 +69,24 @@
       "revId": "fa0af22d19991e12b4a3f011c5fe4d786788411d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ea5a352b_084e223a",
+        "filename": "src/swappy/src/main/cpp/Swappy.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-06T19:04:10Z",
+      "side": 1,
+      "message": "Not following. Why an is if needed ? we simply store all callbacks from caller",
+      "parentUuid": "ee384c89_4ad4143a",
+      "revId": "fa0af22d19991e12b4a3f011c5fe4d786788411d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
