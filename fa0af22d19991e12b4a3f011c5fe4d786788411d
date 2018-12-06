@@ -37,6 +37,23 @@
     },
     {
       "key": {
+        "uuid": "11a5a892_0ed39dab",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-06T19:11:01Z",
+      "side": 1,
+      "message": "you can also use here std::bind(func, userData) instead of lambda function.",
+      "revId": "fa0af22d19991e12b4a3f011c5fe4d786788411d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1cdbc153_d5b0a554",
         "filename": "src/swappy/src/main/cpp/Swappy.h",
         "patchSetId": 8
