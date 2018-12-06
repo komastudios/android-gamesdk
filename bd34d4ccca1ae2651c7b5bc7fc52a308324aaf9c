@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "699c903f_19d2c3f8",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-06T10:25:04Z",
+      "side": 1,
+      "message": "Change this to be \u0027add\u0027 rather than \u0027set\u0027?",
+      "revId": "bd34d4ccca1ae2651c7b5bc7fc52a308324aaf9c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e4258764_df6e1ed1",
+        "filename": "src/swappy/src/main/cpp/Swappy.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-06T10:25:04Z",
+      "side": 1,
+      "message": "Change this to be \u0027add\u0027 rather than \u0027set\u0027?\nDo we need a \u0027clear\u0027 function too, to clear all tracers?",
+      "revId": "bd34d4ccca1ae2651c7b5bc7fc52a308324aaf9c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "30d0b080_a8750c0c",
+        "filename": "src/swappy/src/main/cpp/Swappy_c.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-06T10:25:04Z",
+      "side": 1,
+      "message": "Just \u0027inject\u0027, not \u0027setInject\u0027?",
+      "revId": "bd34d4ccca1ae2651c7b5bc7fc52a308324aaf9c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
