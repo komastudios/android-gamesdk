@@ -87,6 +87,24 @@
       "revId": "fa0af22d19991e12b4a3f011c5fe4d786788411d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e9e0441b_42cefb5d",
+        "filename": "src/swappy/src/main/cpp/Swappy.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-06T19:06:21Z",
+      "side": 1,
+      "message": "It\u0027s not guaranteed that every callback is set (in general it is not), so you have to check if the callback is not nullptr before calling it, which is something i\u0027d rather avoid if i can.",
+      "parentUuid": "ea5a352b_084e223a",
+      "revId": "fa0af22d19991e12b4a3f011c5fe4d786788411d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
