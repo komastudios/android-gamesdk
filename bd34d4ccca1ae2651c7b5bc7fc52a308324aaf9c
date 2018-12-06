@@ -50,6 +50,24 @@
       "revId": "bd34d4ccca1ae2651c7b5bc7fc52a308324aaf9c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "08761282_00dff9cc",
+        "filename": "src/swappy/src/main/cpp/Swappy_c.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-06T13:42:42Z",
+      "side": 1,
+      "message": "It needs to match the function name in include/swappy_extra.h :)",
+      "parentUuid": "30d0b080_a8750c0c",
+      "revId": "bd34d4ccca1ae2651c7b5bc7fc52a308324aaf9c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
