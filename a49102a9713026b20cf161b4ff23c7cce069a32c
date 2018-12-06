@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "21e63e33_006f687b",
+        "filename": "samples/bouncyball/app/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-06T17:45:15Z",
+      "side": 1,
+      "message": "I don\u0027t see the same issue. Are you compiling with AS ?\nTry to sync to tip",
+      "parentUuid": "c2035055_63b82a56",
+      "revId": "a49102a9713026b20cf161b4ff23c7cce069a32c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "eeb104a5_d2603050",
         "filename": "src/swappy/CMakeLists.txt",
         "patchSetId": 3
@@ -69,6 +87,24 @@
       "revId": "a49102a9713026b20cf161b4ff23c7cce069a32c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c6fa659c_2a2f7933",
+        "filename": "src/swappy/CMakeLists.txt",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-06T17:45:15Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "473897ef_63ce08f5",
+      "revId": "a49102a9713026b20cf161b4ff23c7cce069a32c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
