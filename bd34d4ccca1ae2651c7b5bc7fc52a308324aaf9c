@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "ad81d9ef_dc0b54e8",
+        "filename": "src/swappy/src/main/cpp/Swappy.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-06T15:30:44Z",
+      "side": 1,
+      "message": "Changed to add.\nLet\u0027s see what the EAP says, a simple clear function is dangerous, cause it\u0027d clear tunefork\u0027s tracers. I\u0027m not inclined to have it.",
+      "parentUuid": "e4258764_df6e1ed1",
+      "revId": "bd34d4ccca1ae2651c7b5bc7fc52a308324aaf9c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "30d0b080_a8750c0c",
         "filename": "src/swappy/src/main/cpp/Swappy_c.cpp",
         "patchSetId": 2
@@ -68,6 +86,24 @@
       "revId": "bd34d4ccca1ae2651c7b5bc7fc52a308324aaf9c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "16ff280e_2ee15ec6",
+        "filename": "src/swappy/src/main/cpp/Swappy_c.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-06T15:30:44Z",
+      "side": 1,
+      "message": "done",
+      "parentUuid": "08761282_00dff9cc",
+      "revId": "bd34d4ccca1ae2651c7b5bc7fc52a308324aaf9c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
