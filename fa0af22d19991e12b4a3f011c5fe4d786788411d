@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "8183e426_a4226725",
+        "filename": "include/swappy/swappy.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-06T18:44:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "87046f20_2a564677",
+      "revId": "fa0af22d19991e12b4a3f011c5fe4d786788411d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1cdbc153_d5b0a554",
         "filename": "src/swappy/src/main/cpp/Swappy.h",
         "patchSetId": 8
@@ -30,6 +48,24 @@
       "writtenOn": "2018-12-06T18:34:13Z",
       "side": 1,
       "message": "maybe just maybe std::list\u003cSwappyTracer\u003e ?",
+      "revId": "fa0af22d19991e12b4a3f011c5fe4d786788411d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ee384c89_4ad4143a",
+        "filename": "src/swappy/src/main/cpp/Swappy.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-06T18:44:14Z",
+      "side": 1,
+      "message": "Problem with this approach is that it needs an if for every callback later on in the code, so I went with this solution that doesn\u0027t need any branching.",
+      "parentUuid": "1cdbc153_d5b0a554",
       "revId": "fa0af22d19991e12b4a3f011c5fe4d786788411d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
