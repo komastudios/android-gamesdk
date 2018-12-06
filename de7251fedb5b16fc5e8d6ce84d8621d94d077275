@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "5d59b22c_ed10e795",
+        "filename": "include/swappy/swappy.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-06T10:36:36Z",
+      "side": 1,
+      "message": "Yes, there is obviously a \u0027#pragma once\u0027 missing here",
+      "parentUuid": "6d9fb9a9_5340ae65",
+      "range": {
+        "startLine": 17,
+        "startChar": 1,
+        "endLine": 17,
+        "endChar": 8
+      },
+      "revId": "de7251fedb5b16fc5e8d6ce84d8621d94d077275",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "81dc1b0c_2986138b",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 4
@@ -39,6 +63,24 @@
       "revId": "de7251fedb5b16fc5e8d6ce84d8621d94d077275",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e48fdd93_f7b9d04e",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-06T10:36:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "81dc1b0c_2986138b",
+      "revId": "de7251fedb5b16fc5e8d6ce84d8621d94d077275",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -74,6 +116,24 @@
       "revId": "de7251fedb5b16fc5e8d6ce84d8621d94d077275",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f58ec8b9_691a7d93",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-06T10:36:36Z",
+      "side": 1,
+      "message": "Yes, agreed. I see your other CL.",
+      "parentUuid": "2eeac97b_19ab9ba7",
+      "revId": "de7251fedb5b16fc5e8d6ce84d8621d94d077275",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }

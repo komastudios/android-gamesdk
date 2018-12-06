@@ -278,6 +278,24 @@
       "revId": "8c7be82b4f45f3a71cb8c93d22fb1bde7f1789ad",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "07729c4b_5fe0dbb2",
+        "filename": "src/swappy/src/main/cpp/Swappy.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-06T10:36:36Z",
+      "side": 1,
+      "message": "Yep, good point",
+      "parentUuid": "24b7586b_a897f522",
+      "revId": "8c7be82b4f45f3a71cb8c93d22fb1bde7f1789ad",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
