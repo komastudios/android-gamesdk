@@ -131,43 +131,47 @@ bool Swappy::swap(EGLDisplay display, EGLSurface surface) {
         return EGL_FALSE;
     }
 
-    if (!swappy->mUsingExternalChoreographer) {
-        swappy->mChoreographerThread->postFrameCallbacks();
+    return swappy->swapInternal(display, surface);
+}
+
+bool Swappy::swapInternal(EGLDisplay display, EGLSurface surface) {
+    if (!mUsingExternalChoreographer) {
+        mChoreographerThread->postFrameCallbacks();
     }
 
-    swappy->waitForNextFrame(display);
+    waitForNextFrame(display);
 
     const auto swapStart = std::chrono::steady_clock::now();
 
-    bool result = swappy->setPresentationTime(display, surface);
+    bool result = setPresentationTime(display, surface);
     if (!result) {
         return result;
     }
 
-    swappy->resetSyncFence(display);
+    resetSyncFence(display);
 
-    swappy->preSwapBuffers();
+    preSwapBuffersCallbacks();
 
     result = (eglSwapBuffers(display, surface) == EGL_TRUE);
 
-    swappy->postSwapBuffers();
+    postSwapBuffersCallbacks();
 
-    swappy->updateSwapDuration(std::chrono::steady_clock::now() - swapStart);
+    updateSwapDuration(std::chrono::steady_clock::now() - swapStart);
 
-    // This is the start of the next frame
-    swappy->startFrame();
+    startFrame();
 
     return result;
 }
 
-void Swappy::setTracer(const SwappyTracer* tracer) {
+void Swappy::addTracer(const SwappyTracer *tracer) {
     Swappy *swappy = getInstance();
     if (!swappy) {
-        ALOGE("Failed to get Swappy instance in setTracer");
+        ALOGE("Failed to get Swappy instance in addTracer");
         return;
     }
-    swappy->mInjectedTracer  = tracer;
+    swappy->addTracerCallbacks(*tracer);
 }
+
 Swappy *Swappy::getInstance() {
     std::lock_guard<std::mutex> lock(sInstanceMutex);
     return sInstance.get();
@@ -178,24 +182,44 @@ void Swappy::destroyInstance() {
     sInstance.reset();
 }
 
-void Swappy::preSwapBuffers() {
-    if (mInjectedTracer && mInjectedTracer->preSwapBuffers)
-        mInjectedTracer->preSwapBuffers(mInjectedTracer->userData);
+template<typename Tracers, typename Func> void addToTracers(Tracers& tracers, Func func, void *userData) {
+    if (func != nullptr) {
+        tracers.push_back([func, userData] { func(userData); });
+    }
 }
 
-void Swappy::postSwapBuffers() {
-    if (mInjectedTracer && mInjectedTracer->postSwapBuffers)
-        mInjectedTracer->postSwapBuffers(mInjectedTracer->userData);
+void Swappy::addTracerCallbacks(SwappyTracer tracer) {
+    addToTracers(mInjectedTracers.preWait, tracer.preWait, tracer.userData);
+    addToTracers(mInjectedTracers.postWait, tracer.postWait, tracer.userData);
+    addToTracers(mInjectedTracers.preSwapBuffers, tracer.preSwapBuffers, tracer.userData);
+    addToTracers(mInjectedTracers.postSwapBuffers, tracer.postSwapBuffers, tracer.userData);
+    addToTracers(mInjectedTracers.startFrame, tracer.startFrame, tracer.userData);
 }
 
-void Swappy::preWait() {
-    if (mInjectedTracer && mInjectedTracer->preWait)
-        mInjectedTracer->preWait(mInjectedTracer->userData);
+template<typename T> void executeTracers(T& tracers) {
+    for (auto tracer : tracers) {
+        tracer();
+    }
 }
 
-void Swappy::postWait() {
-    if (mInjectedTracer && mInjectedTracer->postWait)
-        mInjectedTracer->postWait(mInjectedTracer->userData);
+void Swappy::preSwapBuffersCallbacks() {
+    executeTracers(mInjectedTracers.preSwapBuffers);
+}
+
+void Swappy::postSwapBuffersCallbacks() {
+    executeTracers(mInjectedTracers.postSwapBuffers);
+}
+
+void Swappy::preWaitCallbacks() {
+    executeTracers(mInjectedTracers.preWait);
+}
+
+void Swappy::postWaitCallbacks() {
+    executeTracers(mInjectedTracers.postWait);
+}
+
+void Swappy::startFrameCallbacks() {
+    executeTracers(mInjectedTracers.startFrame);
 }
 
 EGL *Swappy::getEgl() {
@@ -219,8 +243,7 @@ Swappy::Swappy(JavaVM *vm,
       mChoreographerThread(ChoreographerThread::createChoreographerThread(
               ChoreographerThread::Type::Swappy,
               vm,
-              [this]{ handleChoreographer(); })),
-      mInjectedTracer(nullptr)
+              [this]{ handleChoreographer(); }))
 {
 
     Settings::getInstance()->addListener([this]() { onSettingsChanged(); });
@@ -258,7 +281,7 @@ std::chrono::nanoseconds Swappy::wakeClient() {
 void Swappy::startFrame() {
     TRACE_CALL();
 
-    startFrame();
+    startFrameCallbacks();
 
     const auto [currentFrame, currentFrameTimestamp] = [this] {
         std::unique_lock<std::mutex> lock(mWaitingMutex);
@@ -286,7 +309,7 @@ void Swappy::waitOneFrame() {
 }
 
 void Swappy::waitForNextFrame(EGLDisplay display) {
-    preWait();
+    preWaitCallbacks();
 
     waitUntil(mTargetFrame);
 
@@ -296,7 +319,7 @@ void Swappy::waitForNextFrame(EGLDisplay display) {
         waitOneFrame();
     }
 
-    postWait();
+    postWaitCallbacks();
 }
 
 void Swappy::resetSyncFence(EGLDisplay display) {

@@ -66,8 +66,8 @@ int32_t Swappy_getSwapInterval() {
     return Settings::getInstance()->getSwapInterval();
 }
 
-void Swappy_setDynamicTrace(const SwappyTracer* t) {
-  Swappy::setTracer(t);
+void Swappy_injectTracer(const SwappyTracer *t) {
+    Swappy::addTracer(t);
 }
 
 }

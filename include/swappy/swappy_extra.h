@@ -39,7 +39,7 @@ struct SwappyTracer {
     void (*startFrame)(void*);
     void* userData;
 };
-void Swappy_setInjectTracer(const SwappyTracer* t);
+void Swappy_injectTracer(const SwappyTracer *t);
 
 #ifdef __cplusplus
 };
