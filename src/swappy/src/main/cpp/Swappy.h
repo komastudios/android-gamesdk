@@ -19,7 +19,7 @@
 #include <chrono>
 #include <memory>
 #include <mutex>
-#include <optional>
+#include <list>
 
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
@@ -65,15 +65,20 @@ class Swappy {
 
     static void destroyInstance();
 
-    void preSwapBuffers();
-    void postSwapBuffers();
-    void preWait();
-    void postWait();
-
 private:
     static Swappy *getInstance();
 
     EGL *getEgl();
+
+    bool swapInternal(EGLDisplay display, EGLSurface surface);
+
+    void setTracerCallbacks(SwappyTracer tracer);
+
+    void preSwapBuffersCallbacks();
+    void postSwapBuffersCallbacks();
+    void preWaitCallbacks();
+    void postWaitCallbacks();
+    void startFrameCallbacks();
 
     void onSettingsChanged();
 
@@ -121,5 +126,15 @@ private:
     bool mUsingExternalChoreographer = false;
     std::unique_ptr<ChoreographerThread> mChoreographerThread;
 
-    const SwappyTracer* mInjectedTracer;
+    typedef std::function<void ()> Tracer;
+
+    struct SwappyTracerCallbacks {
+        std::list<Tracer> preWait;
+        std::list<Tracer> postWait;
+        std::list<Tracer> preSwapBuffers;
+        std::list<Tracer> postSwapBuffers;
+        std::list<Tracer> startFrame;
+    };
+
+    SwappyTracerCallbacks mInjectedTracers;
 };
