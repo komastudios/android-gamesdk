@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a734f47_cd61fc75",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 677,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-12-07T21:54:36Z",
+      "side": 1,
+      "message": "There might be danger with this approach.  I haven\u0027t fully thought through this, and so I may be wrong.\n\nOne of the problems with QP is that the application doesn\u0027t really know when it\u0027s safe to delete the semaphore(s) given to QP (there\u0027s currently no feedback mechanism).  There\u0027s a proposed extension to provide a fence that will say when its safe for the application to delete them.  Either way, the application **might** delete the semaphore(s) before your code waits for them.  I **think** in that case, the application would crash because of what SwappyVk does.\n\nPut differently, Vulkan allows applications to crash, when the API is used improperly.  In this case, you are re-using an application object(s) without its knowledge, in a potentially-dangerous way.\n\nThinking more, I think you\u0027re okay.  You\u0027re creating/submitting a fence that will be signaled after the semaphore is signaled.  You\u0027re not relying on the semaphore living until you check the fence; you\u0027re only relying on your fence continuing to live until then.\n\nSorry for all of the \"thinking out loud\", but I wanted to get you thinking through these things, in case you already haven\u0027t.",
+      "revId": "9f31ddf9d7db141dccc83bbc894764f8fdee7b6d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
