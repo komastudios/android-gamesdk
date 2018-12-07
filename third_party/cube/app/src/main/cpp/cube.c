@@ -3579,12 +3579,14 @@ static void demo_init_vk_swapchain(struct demo *demo) {
         GET_DEVICE_PROC_ADDR(demo->device, GetPastPresentationTimingGOOGLE);
     }
 
-    vkGetDeviceQueue(demo->device, demo->graphics_queue_family_index, 0, &demo->graphics_queue);
+    //vkGetDeviceQueue(demo->device, demo->graphics_queue_family_index, 0, &demo->graphics_queue);
+    SwappyVkGetDeviceQueue(demo->device, demo->graphics_queue_family_index, 0, &demo->graphics_queue);
 
     if (!demo->separate_present_queue) {
         demo->present_queue = demo->graphics_queue;
     } else {
-        vkGetDeviceQueue(demo->device, demo->present_queue_family_index, 0, &demo->present_queue);
+        //vkGetDeviceQueue(demo->device, demo->present_queue_family_index, 0, &demo->present_queue);
+        SwappyVkGetDeviceQueue(demo->device, demo->present_queue_family_index, 0, &demo->present_queue);
     }
 
     // Get the list of VkFormat's that are supported:
