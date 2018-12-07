@@ -73,6 +73,28 @@ void swappyVkDetermineDeviceExtensions(
     uint32_t*              pRequiredExtensionCount,
     char**                 pRequiredExtensions);
 
+/**
+ * Tell Swappy to get the device queue.
+ *
+ * Swappy will call to vkGetDeviceQueue() to the device queue , and cache some
+ * of the parameters used to be used by swappy at a later point in time.
+ *
+ * Parameters:
+ *
+ *  (IN)  device            - The VkDevice associated with queue family
+ *  (IN)  queueFamilyIndex  - The queue family index normally passed by application to create the
+ *                            queue.
+ *  (IN)  queueIndex        - The queue index normally passed by application to create the
+ *                            queue.
+ *  (OUT) pQueue            - The device queue.
+ */
+void SwappyVkGetDeviceQueue(
+        VkDevice    device,
+        uint32_t    queueFamilyIndex,
+        uint32_t    queueIndex,
+        VkQueue*    pQueue);
+
+
 
 // TBD: For now, SwappyVk assumes only one VkSwapchainKHR per VkDevice, and that
 // applications don't re-create swapchains.  Is this long-term sufficient?
