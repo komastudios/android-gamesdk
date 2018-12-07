@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9c71e913_eb4c9cfa",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-07T03:19:50Z",
+      "side": 1,
+      "message": "why shared_ptr and not unique_ptr?",
+      "revId": "e0f2b600d5306f239d6ed739b7b93df39e61a5b4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
