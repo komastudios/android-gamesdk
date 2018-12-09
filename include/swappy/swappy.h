@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-
-#ifndef SWAPPY_SWAPPY_C_H
-#define SWAPPY_SWAPPY_C_H
+#pragma once
 
 #include <stdint.h>
 #include <EGL/egl.h>
@@ -50,5 +48,3 @@ bool Swappy_getUseAffinity();
 #ifdef __cplusplus
 };
 #endif
-
-#endif //SWAPPY_SWAPPY_C_H
