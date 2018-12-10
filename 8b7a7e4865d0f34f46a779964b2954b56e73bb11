@@ -22,6 +22,30 @@
       "revId": "8b7a7e4865d0f34f46a779964b2954b56e73bb11",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f65b1904_fe0f8466",
+        "filename": "src/swappy/src/main/cpp/CpuInfo.cpp",
+        "patchSetId": 12
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-10T20:17:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1af7cf45_94ef0eeb",
+      "range": {
+        "startLine": 26,
+        "startChar": 16,
+        "endLine": 26,
+        "endChar": 64
+      },
+      "revId": "8b7a7e4865d0f34f46a779964b2954b56e73bb11",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }

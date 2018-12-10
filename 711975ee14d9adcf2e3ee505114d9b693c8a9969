@@ -529,6 +529,30 @@
     },
     {
       "key": {
+        "uuid": "62ecffab_eb0a0d1d",
+        "filename": "src/swappy/src/main/cpp/CpuInfo.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-10T20:17:38Z",
+      "side": 1,
+      "message": "On code that is executed once per game session. If it were an inner loop, I\u0027d be ok with it. As is, it\u0027s purely stylistic.",
+      "parentUuid": "d2875667_a96243ec",
+      "range": {
+        "startLine": 107,
+        "startChar": 8,
+        "endLine": 107,
+        "endChar": 10
+      },
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1b875074_90a6309d",
         "filename": "src/swappy/src/main/cpp/CpuInfo.cpp",
         "patchSetId": 9
