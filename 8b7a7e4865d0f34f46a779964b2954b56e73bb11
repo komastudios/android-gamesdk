@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1af7cf45_94ef0eeb",
+        "filename": "src/swappy/src/main/cpp/CpuInfo.cpp",
+        "patchSetId": 12
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-12-10T20:08:57Z",
+      "side": 1,
+      "message": "mainStr can be const, and toMatch is unnecessarily creating a new string object (since this is only called with const char* literals)",
+      "range": {
+        "startLine": 26,
+        "startChar": 16,
+        "endLine": 26,
+        "endChar": 64
+      },
+      "revId": "8b7a7e4865d0f34f46a779964b2954b56e73bb11",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
