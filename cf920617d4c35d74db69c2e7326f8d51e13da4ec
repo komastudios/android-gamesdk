@@ -16,6 +16,23 @@
       "revId": "cf920617d4c35d74db69c2e7326f8d51e13da4ec",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "46d58548_2ee413fe",
+        "filename": "src/common/Log.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-10T19:06:11Z",
+      "side": 1,
+      "message": "As this file (and trace.h) are reasonably small, I wonder if we should just copy then to bouncyball and not have them as common.\nThe issue I see with those being common is that if we want to change something on swappy side we need to threat those files a public API.\nThe less public API we have, the better. What do you think ?",
+      "revId": "cf920617d4c35d74db69c2e7326f8d51e13da4ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
