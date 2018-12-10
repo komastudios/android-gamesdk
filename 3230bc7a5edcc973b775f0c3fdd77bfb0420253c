@@ -22,6 +22,30 @@
       "revId": "3230bc7a5edcc973b775f0c3fdd77bfb0420253c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f6e5b28c_a838041e",
+        "filename": "src/device_info/device_info.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-12-10T13:48:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c2c560cd_6280a93f",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 22
+      },
+      "revId": "3230bc7a5edcc973b775f0c3fdd77bfb0420253c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
