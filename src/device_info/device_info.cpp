@@ -12,14 +12,22 @@
  * limitations under the License.
  */
 
- #include "device_info/device_info.h"
+#include "device_info/device_info.h"
 
 #include <sys/system_properties.h>
+#include <EGL/egl.h>
+#include <GLES3/gl32.h>
+
+#include <cstdint>
+#include <string>
+#include <sstream>
+#include <fstream>
+#include <vector>
+#include <set>
 
 namespace {
-typedef int64_t int64;
-typedef uint32_t uint32;
-typedef uint8_t uint8;
+using Proto = androidgamesdk_deviceinfo::root;
+using ProtoGl = androidgamesdk_deviceinfo::gl;
 
 // size of GL view and texture in future
 constexpr int VIEW_WIDTH = 8;
@@ -44,15 +52,15 @@ std::string readCpuPossible() {
   return readFile("/sys/devices/system/cpu/possible", ERROR);
 }
 int readCpuIndexMax() {
-  const int ERROR = -1;
+  constexpr int ERROR = -1;
   return readFile("/sys/devices/system/cpu/kernel_max", ERROR);
 }
-int64 readCpuFreqMax(int cpuIndex) {
+int64_t readCpuFreqMax(int cpuIndex) {
   const std::string fileName =
     "/sys/devices/system/cpu/cpu" +
     std::to_string(cpuIndex) +
     "/cpufreq/cpuinfo_max_freq";
-  const int64 ERROR = -1;
+  constexpr int64_t ERROR = -1;
   return readFile(fileName, ERROR);
 }
 
@@ -103,31 +111,29 @@ std::set<std::string> readFeatures() {
   return result;
 }
 
-// TODO: fail more gracefully
-void assertEGl(const char* title) {
+bool checkEglError(const char* title, ::Proto& proto) {
   EGLint error = eglGetError();
-  if (error != EGL_SUCCESS) {
-    std::cerr << "*EGL Error: " << title << ": "
-              << std::hex << (int)error << std::dec;
-    exit(1);
+  if (error == EGL_SUCCESS) return false;
+  std::stringstream ss;
+  ss << "EGL Error: " << title << ": 0x" << std::hex << (int)error << std::dec;
+  proto.add_error(ss.str());
+  return true;
+}
+
+void flushGlErrors(::Proto& proto) {
+  while (GLenum e = glGetError() != GL_NO_ERROR) {
+    std::stringstream ss;
+    ss << "GL error: 0x" << std::hex << (int)e << std::dec;
+    proto.add_error(ss.str());
   }
 }
 
-void flushGlErrors(const std::string& at = "") {
-  while (auto e = glGetError()) {
-    if (e == GL_NO_ERROR) break;
-    std::cerr << "*GL error: " <<
-              std::hex << (int)e << std::dec << at <<
-              std::endl;
-  }
-}
-
-void setupEGl() {
+bool setupEGl(::Proto& proto) {
   EGLDisplay display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
-  assertEGl("eglGetDisplay");
+  if (checkEglError("eglGetDisplay", proto)) return false;
 
   eglInitialize(display, nullptr, nullptr);  // do not care about egl version
-  assertEGl("eglInitialize");
+  if (checkEglError("eglInitialize", proto)) return false;
 
   EGLint configAttribs[] = {
     EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
@@ -141,7 +147,7 @@ void setupEGl() {
   EGLConfig config;
   EGLint numConfigs = -1;
   eglChooseConfig(display, configAttribs, &config, 1, &numConfigs);
-  assertEGl("eglChooseConfig");
+  if (checkEglError("eglChooseConfig", proto)) return false;
 
   EGLint contextAttribs[] = {
     EGL_CONTEXT_CLIENT_VERSION, 2,
@@ -149,7 +155,7 @@ void setupEGl() {
   };
   EGLContext context =
     eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs);
-  assertEGl("eglCreateContext");
+  if (checkEglError("eglCreateContext", proto)) return false;
 
   EGLint pbufferAttribs[] = {
     EGL_WIDTH,  VIEW_WIDTH,
@@ -157,16 +163,21 @@ void setupEGl() {
     EGL_NONE
   };
   EGLSurface surface = eglCreatePbufferSurface(display, config, pbufferAttribs);
-  assertEGl("eglCreatePbufferSurface");
+  if ( checkEglError("eglCreatePbufferSurface", proto)) return false;
 
   eglMakeCurrent(display, surface, surface, context);
-  assertEGl("eglMakeCurrent");
+  if (checkEglError("eglMakeCurrent", proto)) return false;
+
+  return true;
 }
 
 namespace gl_util {
 typedef const GLubyte* GlStr;
 typedef GlStr(*FuncTypeGlGetstringi)(GLenum, GLint);
 FuncTypeGlGetstringi glGetStringi = 0;
+const char* getStringIndexed(GLenum e, GLuint index){
+  return reinterpret_cast<const char*>(::gl_util::glGetStringi(e, index));
+}
 
 typedef void(*FuncTypeGlGetInteger64v)(GLenum, GLint64*);
 FuncTypeGlGetInteger64v glGetInteger64v = 0;
@@ -182,6 +193,10 @@ GLint getIntIndexed(GLenum e, GLuint index) {
   GLint result = -1;
   glGetIntegeri_v(e, index, &result);
   return result;
+}
+
+const char* getString(GLenum e){
+  return reinterpret_cast<const char*>(glGetString(e));
 }
 
 GLfloat getFloat(GLenum e) {
@@ -201,7 +216,30 @@ GLboolean getBool(GLenum e) {
 }
 }  // namespace gl_util
 
-void addGlConstsV2_0(androidgamesdk_deviceinfo::gl& gl) {
+void addSystemProperties(::Proto& proto) {
+  char buffer[PROP_VALUE_MAX];
+  int buffer_len = -1;
+
+  buffer_len = __system_property_get("ro.chipname", buffer);
+  proto.set_ro_chipname(std::string(buffer, buffer_len));
+
+  buffer_len = __system_property_get("ro.board.platform", buffer);
+  proto.set_ro_board_platform(std::string(buffer, buffer_len));
+
+  buffer_len = __system_property_get("ro.product.board", buffer);
+  proto.set_ro_product_board(std::string(buffer, buffer_len));
+
+  buffer_len = __system_property_get("ro.mediatek.platform", buffer);
+  proto.set_ro_mediatek_platform(std::string(buffer, buffer_len));
+
+  buffer_len = __system_property_get("ro.arch", buffer);
+  proto.set_ro_arch(std::string(buffer, buffer_len));
+
+  buffer_len = __system_property_get("ro.build.fingerprint", buffer);
+  proto.set_ro_build_fingerprint(std::string(buffer, buffer_len));
+}
+
+void addGlConstsV2_0(::ProtoGl& gl) {
   gl.set_gl_aliased_line_width_range(
     ::gl_util::getFloat(GL_ALIASED_LINE_WIDTH_RANGE));
   gl.set_gl_aliased_point_size_range(
@@ -290,7 +328,7 @@ void addGlConstsV2_0(androidgamesdk_deviceinfo::gl& gl) {
   gl.set_spf_fragment_int_hig_range(spfr);
   gl.set_spf_fragment_int_hig_prec(spfp);
 }
-void addGlConstsV3_0(androidgamesdk_deviceinfo::gl& gl) {
+void addGlConstsV3_0(::ProtoGl& gl) {
   gl.set_gl_max_3d_texture_size(
     ::gl_util::getInt(GL_MAX_3D_TEXTURE_SIZE));
   gl.set_gl_max_array_texture_layers(
@@ -453,7 +491,7 @@ void addGlConstsV3_1(androidgamesdk_deviceinfo::gl& gl) {
   gl.set_gl_max_compute_work_group_size_2(
     ::gl_util::getIntIndexed(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2));
 }
-void addGlConstsV3_2(androidgamesdk_deviceinfo::gl& gl) {
+void addGlConstsV3_2(::ProtoGl& gl) {
   gl.set_gl_context_flags(
     ::gl_util::getInt(GL_CONTEXT_FLAGS));
   gl.set_gl_fragment_interpolation_offset_bits(
@@ -562,39 +600,17 @@ void addGlConstsV3_2(androidgamesdk_deviceinfo::gl& gl) {
   gl.set_gl_primitive_restart_for_patches_supported(
     ::gl_util::getBool(GL_PRIMITIVE_RESTART_FOR_PATCHES_SUPPORTED));
 }
-}  // namespace
 
-namespace androidgamesdk_deviceinfo {
-void createProto(root& proto) {
-  int cpuIndexMax = readCpuIndexMax();
-  proto.set_cpu_max_index(cpuIndexMax);
+void addGl(::Proto& proto) {
+  ::ProtoGl& gl = *proto.mutable_gl();
 
-  for (int cpuIndex = 0; cpuIndex <= cpuIndexMax; cpuIndex++) {
-    cpu_core* newCore = proto.add_cpu_core();
-    int64 freqMax = readCpuFreqMax(cpuIndex);
-    if (freqMax > 0) {
-      newCore->set_freq_max(freqMax);
-    }
-  }
-
-  proto.set_cpu_present(readCpuPresent());
-  proto.set_cpu_possible(readCpuPossible());
-
-  for (const std::string& s : readHardware()) {
-    proto.add_hardware(s);
-  }
-  for (const std::string& s : readFeatures()) {
-    proto.add_cpu_extension(s);
-  }
-
-  setupEGl();
-
-  gl& gl = *proto.mutable_gl();
-  gl.set_renderer(reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
-  gl.set_vendor(reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
-  gl.set_version(reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+  gl.set_renderer(::gl_util::getString(GL_RENDERER));
+  gl.set_vendor(::gl_util::getString(GL_VENDOR));
+  gl.set_version(::gl_util::getString(GL_VERSION));
   gl.set_shading_language_version(
-    reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+    ::gl_util::getString(GL_SHADING_LANGUAGE_VERSION));
+
+  flushGlErrors(proto);
 
   GLint glVerMajor = -1;
   GLint glVerMinor = -1;
@@ -616,14 +632,11 @@ void createProto(root& proto) {
     ::gl_util::glGetStringi = reinterpret_cast<::gl_util::FuncTypeGlGetstringi>(
                                 eglGetProcAddress("glGetStringi"));
     for (int i = 0; i < numExts; i++) {
-      std::string s =
-        reinterpret_cast<const char*>(
-          ::gl_util::glGetStringi(GL_EXTENSIONS, i));
+      std::string s = ::gl_util::getStringIndexed(GL_EXTENSIONS, i);
       gl.add_extension(s);
     }
   } else {
-    std::string exts =
-      reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
+    std::string exts = ::gl_util::getString(GL_EXTENSIONS);
     std::set<std::string> split;
     ::string_util::splitAdd(exts, ' ', &split);
     for (const std::string& s : split) {
@@ -644,26 +657,39 @@ void createProto(root& proto) {
     addGlConstsV3_2(gl);
   }
 
-  flushGlErrors();
-
-  char buffer[PROP_VALUE_MAX];
-  int buffer_len = -1;
-  buffer_len =__system_property_get("ro.chipname", buffer);
-  proto.set_ro_chipname(std::string(buffer, buffer_len));
-
-  buffer_len =__system_property_get("ro.board.platform", buffer);
-  proto.set_ro_board_platform(std::string(buffer, buffer_len));
-
-  buffer_len =__system_property_get("ro.product.board", buffer);
-  proto.set_ro_product_board(std::string(buffer, buffer_len));
-
-  buffer_len =__system_property_get("ro.mediatek.platform", buffer);
-  proto.set_ro_mediatek_platform(std::string(buffer, buffer_len));
-
-  buffer_len =__system_property_get("ro.arch", buffer);
-  proto.set_ro_arch(std::string(buffer, buffer_len));
-
-  buffer_len =__system_property_get("ro.build.fingerprint", buffer);
-  proto.set_ro_build_fingerprint(std::string(buffer, buffer_len));
+  flushGlErrors(proto);
 }
-}  // namespace device_info
+}  // namespace
+
+namespace androidgamesdk_deviceinfo {
+void createProto(::Proto& proto) {
+  proto.set_version(1);
+
+  int cpuIndexMax = readCpuIndexMax();
+  proto.set_cpu_max_index(cpuIndexMax);
+
+  for (int cpuIndex = 0; cpuIndex <= cpuIndexMax; cpuIndex++) {
+    cpu_core* newCore = proto.add_cpu_core();
+    int64_t freqMax = readCpuFreqMax(cpuIndex);
+    if (freqMax > 0) {
+      newCore->set_freq_max(freqMax);
+    }
+  }
+
+  proto.set_cpu_present(readCpuPresent());
+  proto.set_cpu_possible(readCpuPossible());
+
+  for (const std::string& s : readHardware()) {
+    proto.add_hardware(s);
+  }
+  for (const std::string& s : readFeatures()) {
+    proto.add_cpu_extension(s);
+  }
+
+  addSystemProperties(proto);
+
+  if (setupEGl(proto)) {
+    addGl(proto);
+  }
+}
+}  // namespace androidgamesdk_deviceinfo
