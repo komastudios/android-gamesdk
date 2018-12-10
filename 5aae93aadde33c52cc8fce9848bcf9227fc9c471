@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "2534003d_31ea11bc",
+        "filename": "samples/tuningfork/tftestapp/app/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2018-12-10T18:09:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4c2d9760_42c4ec47",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "845fd254_61e18a7c",
         "filename": "samples/tuningfork/tftestapp/app/CMakeLists.txt",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "efff1f11_000458b8",
+        "filename": "samples/tuningfork/tftestapp/app/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2018-12-10T18:09:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "845fd254_61e18a7c",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "72bad4d9_dbe1fbe1",
+        "filename": "src/tuningfork/clearcutBackend.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2018-12-10T18:09:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a393b2d7_0877db0c",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d53f10e8_2f02b25f",
         "filename": "src/tuningfork/clearcutBackend.cpp",
         "patchSetId": 2
@@ -67,6 +121,24 @@
       "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d7af2612_32de5701",
+        "filename": "src/tuningfork/clearcutBackend.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2018-12-10T18:09:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d53f10e8_2f02b25f",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "78294997_a5f611b7",
+        "filename": "src/tuningfork/clearcutBackend.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2018-12-10T18:09:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fd8dd356_15097e05",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "43955e2c_721d883c",
         "filename": "src/tuningfork/clearcutBackend.cpp",
         "patchSetId": 2
@@ -98,6 +188,24 @@
       "writtenOn": "2018-12-10T13:29:40Z",
       "side": 1,
       "message": "I\u0027m confused about the env and vm variables. They are both declared as data members but:\n\nvm is set from external state in ::Init and only accessed in ClearcutBackend::GetEnv. Can\u0027t you just call GetJavaVM inside ClearcutBackend::GetEnv and avoid having the variable altogether? \n\nenv is passed into this function and stored as a member variable but it seems to hardly be used. Almost every other function takes it as a parameter. Does it need to be a member variable at all?",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7aa22a47_2ef1d376",
+        "filename": "src/tuningfork/clearcutBackend.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2018-12-10T18:09:15Z",
+      "side": 1,
+      "message": "will send together with next env changes",
+      "parentUuid": "43955e2c_721d883c",
       "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -121,6 +229,24 @@
     },
     {
       "key": {
+        "uuid": "677349da_9f9d865e",
+        "filename": "src/tuningfork/clearcutBackend.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2018-12-10T18:09:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "686d357a_53c59ad0",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "785eb348_0925f960",
         "filename": "src/tuningfork/clearcutBackend.cpp",
         "patchSetId": 2
@@ -132,6 +258,24 @@
       "writtenOn": "2018-12-10T13:29:40Z",
       "side": 1,
       "message": "Does this mean that \u0027env\u0027 is only valid if used from within the current thread? If we\u0027re saving this value perhaps we need to check the current thread between accesses to \u0027env\u0027... or maybe store \u0027env\u0027 in a map of some kind with a thread id as the key (so we have to call \u0027attachthread\u0027 again if we get called from a different thread to the thread with initialized us)?",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7fccc4aa_0d699bfa",
+        "filename": "src/tuningfork/clearcutBackend.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2018-12-10T18:09:15Z",
+      "side": 1,
+      "message": "Testing that one currently",
+      "parentUuid": "785eb348_0925f960",
       "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -155,6 +299,24 @@
     },
     {
       "key": {
+        "uuid": "5cf73e53_953a4b54",
+        "filename": "src/tuningfork/clearcutBackend.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2018-12-10T18:09:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a6aa8baa_e4afec18",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "62e202ab_65e430a7",
         "filename": "src/tuningfork/clearcutBackend.cpp",
         "patchSetId": 2
@@ -169,6 +331,24 @@
       "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "46058d5c_9c9010d4",
+        "filename": "src/tuningfork/clearcutBackend.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2018-12-10T18:09:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "62e202ab_65e430a7",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -189,6 +369,24 @@
     },
     {
       "key": {
+        "uuid": "0fce347b_fdfe6473",
+        "filename": "src/tuningfork/clearcutBackend.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2018-12-10T18:09:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7db1fe45_a99df2f6",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "60f7be68_4cc8eeea",
         "filename": "src/tuningfork/clearcutBackend.h",
         "patchSetId": 2
@@ -203,6 +401,24 @@
       "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "db8707b8_18a0b603",
+        "filename": "src/tuningfork/clearcutBackend.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2018-12-10T18:09:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "60f7be68_4cc8eeea",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
