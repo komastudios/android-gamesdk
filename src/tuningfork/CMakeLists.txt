@@ -256,7 +256,8 @@ extra_pb_nano_link_options(protobuf-nano)
 
 protobuf_generate_nano_c( ${CMAKE_CURRENT_SOURCE_DIR}/proto
   proto/tuningfork.proto
-  proto/tuningfork_clearcut_log.proto )
+  proto/tuningfork_clearcut_log.proto
+  proto/eng_tuningfork.proto)
 
 set( TUNINGFORK_SRCS
   histogram.cpp
@@ -267,7 +268,8 @@ set( TUNINGFORK_SRCS
   clearcutserializer.cpp
   protobuf_util.cpp
   ${_PROTO_GENS_DIR}/nano/tuningfork.pb.c
-  ${_PROTO_GENS_DIR}/nano/tuningfork_clearcut_log.pb.c)
+  ${_PROTO_GENS_DIR}/nano/tuningfork_clearcut_log.pb.c
+  ${_PROTO_GENS_DIR}/nano/eng_tuningfork.pb.c)
 
 add_library( tuningfork-static
   STATIC ${TUNINGFORK_SRCS} ${PROTOBUF_NANO_SRCS})

@@ -12,21 +12,80 @@
  * limitations under the License.
  */
 
+#include <sstream>
 #include "uploadthread.h"
 #include "clearcutserializer.h"
 
 namespace tuningfork {
 
+std::string base64_encode(const uint8_t *a, size_t n) {
+    static const std::string base64_chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      "abcdefghijklmnopqrstuvwxyz"
+      "0123456789+/";
+    std::string ret;
+    int i = 0;
+    int j = 0;
+    uint8_t c3[3];
+    uint8_t c4[4];
+
+    if (n > 0) {
+        const uint8_t *p = a;
+        while (n--) {
+            c3[i++] = *(p++);
+            if (i == 3) {
+                c4[0] = (c3[0] & 0xfc) >> 2;
+                c4[1] = ((c3[0] & 0x03) << 4) + ((c3[1] & 0xf0) >> 4);
+                c4[2] = ((c3[1] & 0x0f) << 2) + ((c3[2] & 0xc0) >> 6);
+                c4[3] = c3[2] & 0x3f;
+
+                for (i = 0; (i < 4); i++)
+                    ret += base64_chars[c4[i]];
+                i = 0;
+            }
+        }
+
+        if (i) {
+            for (j = i; j < 3; j++)
+                c3[j] = '\0';
+
+            c4[0] = (c3[0] & 0xfc) >> 2;
+            c4[1] = ((c3[0] & 0x03) << 4) + ((c3[1] & 0xf0) >> 4);
+            c4[2] = ((c3[1] & 0x0f) << 2) + ((c3[2] & 0xc0) >> 6);
+
+            for (j = 0; (j < i + 1); j++)
+                ret += base64_chars[c4[j]];
+
+            while ((i++ < 3))
+                ret += '=';
+
+        }
+    }
+    return ret;
+}
+
 DebugBackend::~DebugBackend() {}
 
 bool DebugBackend::Process(const ProtobufSerialization &evt_ser) {
-    std::string s;
-    s = "<nano/>"; // TODO: pb_decode and output
-    __android_log_print(ANDROID_LOG_INFO, "TuningFork", "%s", s.c_str());
+    std::string s = base64_encode(&evt_ser[0], evt_ser.size());
+    // Split the serialization into <128-byte chunks to avoid logcat line
+    //  truncation.
+    constexpr size_t maxStrLen = 128;
+    int n = (s.size() + maxStrLen - 1)/maxStrLen; // Round up
+    for(int i=0, j=0; i<n ;++i) {
+        std::stringstream str;
+        str << "(TCL" << (i+1) << "/" << n << ")";
+        int m = std::min(s.size() - j, maxStrLen);
+        str << s.substr(j,m);
+        j += m;
+        __android_log_print(ANDROID_LOG_INFO, "TuningFork", "%s",
+                            str.str().c_str());
+    }
     return true;
 }
 
-bool DebugBackend::GetFidelityParams(ProtobufSerialization &fp_ser, size_t timeout_ms) {
+bool DebugBackend::GetFidelityParams(ProtobufSerialization &fp_ser,
+                                     size_t timeout_ms) {
     FidelityParams fpDefault;
     // TODO: put some dummy params here for testing
     fp_ser.clear();
@@ -36,7 +95,7 @@ bool DebugBackend::GetFidelityParams(ProtobufSerialization &fp_ser, size_t timeo
 std::unique_ptr<DebugBackend> s_debug_backend = std::make_unique<DebugBackend>();
 
 UploadThread::UploadThread(Backend *backend) : backend_(backend),
-                                                                  current_fidelity_params_(0) {
+                                               current_fidelity_params_(0) {
     if (backend_ == nullptr)
         backend_ = s_debug_backend.get();
     Start();
