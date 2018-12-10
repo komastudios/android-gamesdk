@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cdddcf1f_13bbaa4f",
+        "filename": "src/tuningfork/tuningfork.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-10T16:55:48Z",
+      "side": 1,
+      "message": "Perhaps this should be more explicit than just a logged warning? Can\u0027t we return an error code here? I feel like the data is near-worthless if it gets uploaded in this state...",
+      "revId": "7d367b6200a7a27e5ca6c9292c5bae8e08ce8e8b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "09faa4e8_b7894009",
+        "filename": "src/tuningfork/uploadthread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-10T16:55:48Z",
+      "side": 1,
+      "message": "Surely there\u0027s an existing implementation of this in /external somewhere?",
+      "revId": "7d367b6200a7a27e5ca6c9292c5bae8e08ce8e8b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
