@@ -16,6 +16,24 @@
       "revId": "e0f2b600d5306f239d6ed739b7b93df39e61a5b4",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "79652bc1_305f82d1",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-10T18:12:55Z",
+      "side": 1,
+      "message": "This pointer is shared between SwappyVk and SwappyVkBase.",
+      "parentUuid": "9c71e913_eb4c9cfa",
+      "revId": "e0f2b600d5306f239d6ed739b7b93df39e61a5b4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
