@@ -16,6 +16,24 @@
       "revId": "9f31ddf9d7db141dccc83bbc894764f8fdee7b6d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c1619cbc_644b797f",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 677,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-10T18:10:10Z",
+      "side": 1,
+      "message": "The way I see this is that now we are using the app semaphore earlier that what the application would normally use it (we use it in the QueueSubmit before QueuePresent is called), so as long as there was no problem with this semaphore so far, we are not introducing a new one.\n\nThis is an interesting issue though, how the app can do cleanup for this semaphore if it might be in use by the presentation layer. I guess that most applications would create bunch of semaphores, associate then with the swapchain, and never delete them until the swapchain is deleted. This looks safe to me as app uses vkDeviceWaitIdle() that suppose to make sure there is nothing pending in the queues.",
+      "parentUuid": "7a734f47_cd61fc75",
+      "revId": "9f31ddf9d7db141dccc83bbc894764f8fdee7b6d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
