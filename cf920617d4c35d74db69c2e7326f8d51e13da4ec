@@ -51,6 +51,24 @@
       "revId": "cf920617d4c35d74db69c2e7326f8d51e13da4ec",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ea41f074_56a2c960",
+        "filename": "src/common/Log.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-10T19:14:40Z",
+      "side": 1,
+      "message": "+1\n\nWith the caveat that we should give them different file names and/or different macro names/prefixes.",
+      "parentUuid": "3a27cb77_8ed4ddde",
+      "revId": "cf920617d4c35d74db69c2e7326f8d51e13da4ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
