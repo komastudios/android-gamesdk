@@ -65,6 +65,24 @@
     },
     {
       "key": {
+        "uuid": "7a9df1be_a3510044",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-10T19:35:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e642ed33_031a5252",
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7508bbe7_610a66b1",
         "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
         "patchSetId": 9
@@ -79,6 +97,24 @@
       "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b69cde4a_68aedb60",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-10T19:35:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7508bbe7_610a66b1",
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -105,6 +141,30 @@
     },
     {
       "key": {
+        "uuid": "46af9965_e922616d",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-10T19:35:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bfb56eb0_3e314b52",
+      "range": {
+        "startLine": 153,
+        "startChar": 0,
+        "endLine": 153,
+        "endChar": 108
+      },
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5be7f09c_ab9db1d4",
         "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
         "patchSetId": 9
@@ -119,6 +179,24 @@
       "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3e22e78f_cafc9b11",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-10T19:35:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5be7f09c_ab9db1d4",
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -145,6 +223,30 @@
     },
     {
       "key": {
+        "uuid": "5bf49902_0c505c84",
+        "filename": "src/swappy/src/main/cpp/CpuInfo.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-10T19:35:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c71a8576_7d072cf9",
+      "range": {
+        "startLine": 26,
+        "startChar": 16,
+        "endLine": 26,
+        "endChar": 56
+      },
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d05645d3_80788076",
         "filename": "src/swappy/src/main/cpp/CpuInfo.cpp",
         "patchSetId": 9
@@ -165,6 +267,30 @@
       "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "00ecec3a_d4446b73",
+        "filename": "src/swappy/src/main/cpp/CpuInfo.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-10T19:35:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d05645d3_80788076",
+      "range": {
+        "startLine": 27,
+        "startChar": 58,
+        "endLine": 27,
+        "endChar": 66
+      },
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -191,6 +317,30 @@
     },
     {
       "key": {
+        "uuid": "f3d1a19b_a3f07afc",
+        "filename": "src/swappy/src/main/cpp/CpuInfo.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-10T19:35:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4fd1e774_42db56ff",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 21
+      },
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9937a4d5_07d87a6d",
         "filename": "src/swappy/src/main/cpp/CpuInfo.cpp",
         "patchSetId": 9
@@ -211,6 +361,30 @@
       "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cc84b8ab_0ef949ae",
+        "filename": "src/swappy/src/main/cpp/CpuInfo.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-10T19:35:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9937a4d5_07d87a6d",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 42,
+        "endChar": 1
+      },
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -260,6 +434,30 @@
     },
     {
       "key": {
+        "uuid": "fdf86bd6_8253e24a",
+        "filename": "src/swappy/src/main/cpp/CpuInfo.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-10T19:35:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d290ca4e_46eec00c",
+      "range": {
+        "startLine": 99,
+        "startChar": 0,
+        "endLine": 103,
+        "endChar": 47
+      },
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0f21de9f_40d86558",
         "filename": "src/swappy/src/main/cpp/CpuInfo.cpp",
         "patchSetId": 9
@@ -283,6 +481,30 @@
     },
     {
       "key": {
+        "uuid": "37d893f8_306f2498",
+        "filename": "src/swappy/src/main/cpp/CpuInfo.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-10T19:35:34Z",
+      "side": 1,
+      "message": "My hate of else if is unending :)",
+      "parentUuid": "0f21de9f_40d86558",
+      "range": {
+        "startLine": 107,
+        "startChar": 8,
+        "endLine": 107,
+        "endChar": 10
+      },
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1b875074_90a6309d",
         "filename": "src/swappy/src/main/cpp/CpuInfo.cpp",
         "patchSetId": 9
@@ -294,6 +516,30 @@
       "writtenOn": "2018-12-10T19:15:50Z",
       "side": 1,
       "message": "If \u0027cores\u0027 returns a \u0026, should this as well?",
+      "range": {
+        "startLine": 136,
+        "startChar": 6,
+        "endLine": 136,
+        "endChar": 17
+      },
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e614a6ff_45422ed2",
+        "filename": "src/swappy/src/main/cpp/CpuInfo.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-10T19:35:34Z",
+      "side": 1,
+      "message": "I\u0027d rather not grab a pointer to an internal member unless very very very necessary.",
+      "parentUuid": "1b875074_90a6309d",
       "range": {
         "startLine": 136,
         "startChar": 6,
@@ -343,6 +589,24 @@
       "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "436c2929_0fb1eb2d",
+        "filename": "src/swappy/src/main/cpp/Thread.h",
+        "patchSetId": 9
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-10T19:35:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "558ec8fb_f1864982",
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
