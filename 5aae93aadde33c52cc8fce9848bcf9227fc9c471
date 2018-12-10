@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "4c2d9760_42c4ec47",
+        "filename": "samples/tuningfork/tftestapp/app/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-10T13:58:01Z",
+      "side": 1,
+      "message": "This should be left commented out. It\u0027s personal to your set up",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "845fd254_61e18a7c",
         "filename": "samples/tuningfork/tftestapp/app/CMakeLists.txt",
         "patchSetId": 2
