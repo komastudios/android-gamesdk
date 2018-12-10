@@ -1,0 +1,191 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "845fd254_61e18a7c",
+        "filename": "samples/tuningfork/tftestapp/app/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-10T13:29:40Z",
+      "side": 1,
+      "message": "Should not check this in commented out (it can be retrieved from git if needed in the future).",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a393b2d7_0877db0c",
+        "filename": "src/tuningfork/clearcutBackend.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-10T13:29:40Z",
+      "side": 1,
+      "message": "https://google.github.io/styleguide/cppguide.html#Vertical_Whitespace",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d53f10e8_2f02b25f",
+        "filename": "src/tuningfork/clearcutBackend.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-10T13:29:40Z",
+      "side": 1,
+      "message": "What is the meaning of \u0027value\u0027 here? Does the %s need to be used at all?\n\nAlso - there should probably be some code here to early out? If the env that it returned is null then I think the code below will crash?",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fd8dd356_15097e05",
+        "filename": "src/tuningfork/clearcutBackend.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-10T13:29:40Z",
+      "side": 1,
+      "message": "Once you add the underscores, \u0027this-\u003e\u0027 in this context will be redundant.",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "43955e2c_721d883c",
+        "filename": "src/tuningfork/clearcutBackend.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-10T13:29:40Z",
+      "side": 1,
+      "message": "I\u0027m confused about the env and vm variables. They are both declared as data members but:\n\nvm is set from external state in ::Init and only accessed in ClearcutBackend::GetEnv. Can\u0027t you just call GetJavaVM inside ClearcutBackend::GetEnv and avoid having the variable altogether? \n\nenv is passed into this function and stored as a member variable but it seems to hardly be used. Almost every other function takes it as a parameter. Does it need to be a member variable at all?",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "686d357a_53c59ad0",
+        "filename": "src/tuningfork/clearcutBackend.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-10T13:29:40Z",
+      "side": 1,
+      "message": "Should include (or check) the value of inited in this log output.",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "785eb348_0925f960",
+        "filename": "src/tuningfork/clearcutBackend.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-10T13:29:40Z",
+      "side": 1,
+      "message": "Does this mean that \u0027env\u0027 is only valid if used from within the current thread? If we\u0027re saving this value perhaps we need to check the current thread between accesses to \u0027env\u0027... or maybe store \u0027env\u0027 in a map of some kind with a thread id as the key (so we have to call \u0027attachthread\u0027 again if we get called from a different thread to the thread with initialized us)?",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a6aa8baa_e4afec18",
+        "filename": "src/tuningfork/clearcutBackend.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-10T13:29:40Z",
+      "side": 1,
+      "message": "Line too long",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "62e202ab_65e430a7",
+        "filename": "src/tuningfork/clearcutBackend.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-10T13:29:40Z",
+      "side": 1,
+      "message": "https://google.github.io/styleguide/cppguide.html#Horizontal_Whitespace",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7db1fe45_a99df2f6",
+        "filename": "src/tuningfork/clearcutBackend.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-10T13:29:40Z",
+      "side": 1,
+      "message": "Line too long",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "60f7be68_4cc8eeea",
+        "filename": "src/tuningfork/clearcutBackend.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-10T13:29:40Z",
+      "side": 1,
+      "message": "https://google.github.io/styleguide/cppguide.html#Variable_Names\n\nNews to me - but apparently member names should have a trailing \u0027_\u0027 and use \u0027_\u0027 between words.",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
