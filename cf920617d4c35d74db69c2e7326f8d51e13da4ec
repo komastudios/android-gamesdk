@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0c2ff5e4_b31f0385",
+        "filename": "samples/bouncyball/app/src/main/cpp/Orbit.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-10T13:19:32Z",
+      "side": 1,
+      "message": "We need to refactor this out as well (so we\u0027re not including from src/) - but I assume you\u0027ll take a different approach for that (i.e. make the settings API public instead of using /common)?",
+      "revId": "cf920617d4c35d74db69c2e7326f8d51e13da4ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
