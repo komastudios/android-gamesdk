@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "25b3a3e6_eea1bbdf",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-12-10T19:15:50Z",
+      "side": 0,
+      "message": "I\u0027d avoid changing this",
+      "revId": "729fd5dfd5796b300167b4b1e55c3aea9e6c45ae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}

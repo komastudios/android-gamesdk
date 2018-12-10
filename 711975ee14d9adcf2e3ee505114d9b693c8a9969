@@ -1,0 +1,348 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f589f7b5_a706e426",
+        "filename": "src/swappy/src/main/cpp/ChoreographerFilter.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-12-10T19:15:50Z",
+      "side": 1,
+      "message": "I might rewrite this (to keep cpu from leaking from the scope we care about):\n\n  if (const int cpu \u003d getNumCpus() - 1 - thread; cpu \u003e\u003d 0) {\n      setAffinity(cpu);\n  }",
+      "range": {
+        "startLine": 163,
+        "startChar": 0,
+        "endLine": 165,
+        "endChar": 25
+      },
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "70665462_2f45a374",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-12-10T19:15:50Z",
+      "side": 1,
+      "message": "Nit: alphabetize (within each block)",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 19
+      },
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e642ed33_031a5252",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-12-10T19:15:50Z",
+      "side": 1,
+      "message": "If we\u0027re only ever using this as a c_str, I might just define it as a const char* literal and save the string construction",
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7508bbe7_610a66b1",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-12-10T19:15:50Z",
+      "side": 1,
+      "message": "Nit: const, and I\u0027d move this to right before :153, since we don\u0027t need it before then",
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bfb56eb0_3e314b52",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-12-10T19:15:50Z",
+      "side": 1,
+      "message": "Wrap to 100",
+      "range": {
+        "startLine": 153,
+        "startChar": 0,
+        "endLine": 153,
+        "endChar": 108
+      },
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5be7f09c_ab9db1d4",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-12-10T19:15:50Z",
+      "side": 1,
+      "message": "I\u0027d probably prefer to try to find a way to not reset the thread name every frame",
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c71a8576_7d072cf9",
+        "filename": "src/swappy/src/main/cpp/CpuInfo.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-12-10T19:15:50Z",
+      "side": 1,
+      "message": "Given the usage, I\u0027d make this:\n\n  const std::string \u0026str, const char *toMatch\n\n(Note also throughout that the local convention is to group \u0026 and * to the right)",
+      "range": {
+        "startLine": 26,
+        "startChar": 16,
+        "endLine": 26,
+        "endChar": 56
+      },
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d05645d3_80788076",
+        "filename": "src/swappy/src/main/cpp/CpuInfo.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-12-10T19:15:50Z",
+      "side": 1,
+      "message": "Nit: beginning",
+      "range": {
+        "startLine": 27,
+        "startChar": 58,
+        "endLine": 27,
+        "endChar": 66
+      },
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4fd1e774_42db56ff",
+        "filename": "src/swappy/src/main/cpp/CpuInfo.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-12-10T19:15:50Z",
+      "side": 1,
+      "message": "I\u0027d just write this as:\n\n  return mainStr.find(toMatch) \u003d\u003d 0;",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 21
+      },
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9937a4d5_07d87a6d",
+        "filename": "src/swappy/src/main/cpp/CpuInfo.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-12-10T19:15:50Z",
+      "side": 1,
+      "message": "Unused?",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 42,
+        "endChar": 1
+      },
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "32b615c7_bc6d52d0",
+        "filename": "src/swappy/src/main/cpp/CpuInfo.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-12-10T19:15:50Z",
+      "side": 1,
+      "message": "Nit: I\u0027d use {} here (and throughout)",
+      "range": {
+        "startLine": 54,
+        "startChar": 0,
+        "endLine": 55,
+        "endChar": 49
+      },
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d290ca4e_46eec00c",
+        "filename": "src/swappy/src/main/cpp/CpuInfo.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-12-10T19:15:50Z",
+      "side": 1,
+      "message": "I might do:\n\n  mMinFrequency \u003d std::min(mMinFrequency, core.frequency);\n  mMaxFrequency \u003d std::max(mMaxFrequency, core.frequency);",
+      "range": {
+        "startLine": 99,
+        "startChar": 0,
+        "endLine": 103,
+        "endChar": 47
+      },
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0f21de9f_40d86558",
+        "filename": "src/swappy/src/main/cpp/CpuInfo.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-12-10T19:15:50Z",
+      "side": 1,
+      "message": "else if?",
+      "range": {
+        "startLine": 107,
+        "startChar": 8,
+        "endLine": 107,
+        "endChar": 10
+      },
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1b875074_90a6309d",
+        "filename": "src/swappy/src/main/cpp/CpuInfo.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-12-10T19:15:50Z",
+      "side": 1,
+      "message": "If \u0027cores\u0027 returns a \u0026, should this as well?",
+      "range": {
+        "startLine": 136,
+        "startChar": 6,
+        "endLine": 136,
+        "endChar": 17
+      },
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "857a73d9_695a97c7",
+        "filename": "src/swappy/src/main/cpp/CpuInfo.h",
+        "patchSetId": 9
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-12-10T19:15:50Z",
+      "side": 1,
+      "message": "I might prefer \u0027get\u0027 prefixes for these",
+      "range": {
+        "startLine": 45,
+        "startChar": 0,
+        "endLine": 49,
+        "endChar": 35
+      },
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "558ec8fb_f1864982",
+        "filename": "src/swappy/src/main/cpp/Thread.h",
+        "patchSetId": 9
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-12-10T19:15:50Z",
+      "side": 1,
+      "message": "I\u0027d also avoid these unnecessary changes",
+      "revId": "711975ee14d9adcf2e3ee505114d9b693c8a9969",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
