@@ -157,6 +157,24 @@
       "revId": "1c9d9c337b7c138106655b7f723a1956e617cba1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "00733f2b_0c35fdee",
+        "filename": "src/device_info/device_info.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-12-11T22:08:44Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "fb7935f4_ef1e1878",
+      "revId": "1c9d9c337b7c138106655b7f723a1956e617cba1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
