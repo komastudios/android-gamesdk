@@ -212,6 +212,24 @@
     },
     {
       "key": {
+        "uuid": "2f950c6b_5cba1e1a",
+        "filename": "src/tuningfork/clearcutBackend.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2018-12-11T16:01:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7aa22a47_2ef1d376",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "686d357a_53c59ad0",
         "filename": "src/tuningfork/clearcutBackend.cpp",
         "patchSetId": 2
@@ -279,6 +297,24 @@
       "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "482f6a8e_d1326675",
+        "filename": "src/tuningfork/clearcutBackend.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2018-12-11T16:01:39Z",
+      "side": 1,
+      "message": "Done\nThread is attaching at the beginning and detaching at the end.",
+      "parentUuid": "7fccc4aa_0d699bfa",
+      "revId": "5aae93aadde33c52cc8fce9848bcf9227fc9c471",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
