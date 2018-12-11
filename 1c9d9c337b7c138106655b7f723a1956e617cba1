@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5067a95f_57b4f1d4",
+        "filename": "include/device_info/device_info.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-11T17:38:06Z",
+      "side": 1,
+      "message": "https://google.github.io/styleguide/cppguide.html#Horizontal_Whitespace",
+      "revId": "1c9d9c337b7c138106655b7f723a1956e617cba1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5d861a00_4d34bea6",
+        "filename": "include/device_info/device_info.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-11T17:38:06Z",
+      "side": 1,
+      "message": "https://google.github.io/styleguide/cppguide.html#Horizontal_Whitespace",
+      "revId": "1c9d9c337b7c138106655b7f723a1956e617cba1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "85777e04_4605c359",
+        "filename": "include/device_info/device_info.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-11T17:38:06Z",
+      "side": 1,
+      "message": "https://google.github.io/styleguide/cppguide.html#Horizontal_Whitespace",
+      "revId": "1c9d9c337b7c138106655b7f723a1956e617cba1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "11b8f058_021c3dd0",
+        "filename": "src/device_info/device_info.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-11T17:38:06Z",
+      "side": 1,
+      "message": "Is it possible to make this dynamically sized? I know that nothing is supposed to be larger than PRO_VALUE_MAX but it might not hurt to handle this...",
+      "revId": "1c9d9c337b7c138106655b7f723a1956e617cba1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
