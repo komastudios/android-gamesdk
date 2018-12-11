@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "c6e3dd0d_90297151",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-12-11T20:20:12Z",
+      "side": 1,
+      "message": "What is this?",
+      "revId": "9f31ddf9d7db141dccc83bbc894764f8fdee7b6d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "7a734f47_cd61fc75",
         "filename": "src/swappyVk/SwappyVk.cpp",
         "patchSetId": 3
