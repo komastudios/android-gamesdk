@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "80c1ef6f_690743d1",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/tftestapp.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-11T17:32:45Z",
+      "side": 1,
+      "message": "https://google.github.io/styleguide/cppguide.html#Vertical_Whitespace",
+      "revId": "b93792e83e8324e2d08b841c251a57eec83f67c9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "34c670d4_39830b5d",
+        "filename": "src/tuningfork/clearcut_backend.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-11T17:32:45Z",
+      "side": 1,
+      "message": "https://google.github.io/styleguide/cppguide.html#Horizontal_Whitespace",
+      "revId": "b93792e83e8324e2d08b841c251a57eec83f67c9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3208ded7_21d1c751",
+        "filename": "src/tuningfork/clearcut_backend.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-11T17:32:45Z",
+      "side": 1,
+      "message": "you should check for envStatus \u003d\u003d JNI_OK and only proceed if that is the case (meaning that we\u0027ll also fail if some other, unanticipated error occurs).",
+      "revId": "b93792e83e8324e2d08b841c251a57eec83f67c9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0dfa3c76_3d47a715",
+        "filename": "src/tuningfork/clearcut_backend.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-11T17:32:45Z",
+      "side": 1,
+      "message": "Return false?",
+      "revId": "b93792e83e8324e2d08b841c251a57eec83f67c9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e7dff8a0_6b0a1a1e",
+        "filename": "src/tuningfork/clearcut_backend.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-11T17:32:45Z",
+      "side": 1,
+      "message": "Giving there is a log statement for starting this process and it failing, there should also be a log statement for success.",
+      "revId": "b93792e83e8324e2d08b841c251a57eec83f67c9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
