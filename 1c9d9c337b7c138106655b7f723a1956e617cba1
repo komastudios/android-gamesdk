@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "6391bbf9_99b2eea1",
+        "filename": "include/device_info/device_info.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-12-11T17:53:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5067a95f_57b4f1d4",
+      "revId": "1c9d9c337b7c138106655b7f723a1956e617cba1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5d861a00_4d34bea6",
         "filename": "include/device_info/device_info.proto",
         "patchSetId": 4
@@ -33,6 +51,24 @@
       "revId": "1c9d9c337b7c138106655b7f723a1956e617cba1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cd9e95e2_4c6835fc",
+        "filename": "include/device_info/device_info.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-12-11T17:53:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5d861a00_4d34bea6",
+      "revId": "1c9d9c337b7c138106655b7f723a1956e617cba1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "227b197f_c7094e2c",
+        "filename": "include/device_info/device_info.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-12-11T17:53:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "85777e04_4605c359",
+      "revId": "1c9d9c337b7c138106655b7f723a1956e617cba1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "11b8f058_021c3dd0",
         "filename": "src/device_info/device_info.cpp",
         "patchSetId": 4
@@ -64,6 +118,24 @@
       "writtenOn": "2018-12-11T17:38:06Z",
       "side": 1,
       "message": "Is it possible to make this dynamically sized? I know that nothing is supposed to be larger than PRO_VALUE_MAX but it might not hurt to handle this...",
+      "revId": "1c9d9c337b7c138106655b7f723a1956e617cba1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "312e8460_71786881",
+        "filename": "src/device_info/device_info.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-12-11T17:53:56Z",
+      "side": 1,
+      "message": "I have looked into the implementation and there does not seem to be a way to do this with dynamic allocation. The code simply assumes that there is enough memory already allocated.\n\nConsidering the small size of PROP_VALUE_MAX, which is 92, I believe any kind of dynamic memory allocation would be less efficient than our current approach, which uses a small memory on stack.",
+      "parentUuid": "11b8f058_021c3dd0",
       "revId": "1c9d9c337b7c138106655b7f723a1956e617cba1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
