@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "38f80a81_73c945b6",
+        "filename": "src/tuningfork/clearcut_backend.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-11T18:26:17Z",
+      "side": 1,
+      "message": "should probably log envStatus here.",
+      "revId": "da8779351e0d5b15e87d02e14c76b7723df7e29b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
