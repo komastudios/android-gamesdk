@@ -52,6 +52,23 @@
       "revId": "e0f2b600d5306f239d6ed739b7b93df39e61a5b4",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ad2474b1_b606ac1a",
+        "filename": "src/swappyVk/SwappyVk.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2018-12-11T20:19:21Z",
+      "side": 1,
+      "message": "Hmm.  Do we really want Swappy to take this over for the app?  I think it would be better for the app to call vkGetDeviceQueue(), and then give this to Swappy.",
+      "revId": "e0f2b600d5306f239d6ed739b7b93df39e61a5b4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
