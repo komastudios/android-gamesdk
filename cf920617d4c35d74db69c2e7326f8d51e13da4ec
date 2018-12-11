@@ -69,6 +69,24 @@
       "revId": "cf920617d4c35d74db69c2e7326f8d51e13da4ec",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0c6451c0_6f7f4cba",
+        "filename": "src/common/Log.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-11T10:41:29Z",
+      "side": 1,
+      "message": "Yes, agreed",
+      "parentUuid": "ea41f074_56a2c960",
+      "revId": "cf920617d4c35d74db69c2e7326f8d51e13da4ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
