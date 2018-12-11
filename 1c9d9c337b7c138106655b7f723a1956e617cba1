@@ -139,6 +139,24 @@
       "revId": "1c9d9c337b7c138106655b7f723a1956e617cba1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fb7935f4_ef1e1878",
+        "filename": "src/device_info/device_info.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-11T18:24:24Z",
+      "side": 1,
+      "message": "My concern was really more that I could imagine some of these functions not actually following the max size rule on non-GTS devices... probably not all that likely but in general I think we should try to be as defensive as possible in this code.\n\nYour call though. I am providing +2 regardless.",
+      "parentUuid": "312e8460_71786881",
+      "revId": "1c9d9c337b7c138106655b7f723a1956e617cba1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
