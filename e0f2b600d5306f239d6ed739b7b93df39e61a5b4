@@ -69,6 +69,24 @@
       "revId": "e0f2b600d5306f239d6ed739b7b93df39e61a5b4",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "45f2cf5d_c08050e2",
+        "filename": "src/swappyVk/SwappyVk.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-12T00:26:07Z",
+      "side": 1,
+      "message": "In which API should we do that ?\nTo me it seems that exposing SwappyVkGetDeviceQueue may be the easiest way for an app to integrate Swappy (as it replaces one API with another of the exact same signature). If we\u0027ll add a new parameter to an existing API (say to SwappyVkQueuePresent), app may not have stored this parameter and now we expect some more changes from the app. Or you suggest a new API to be called right after vkGetDeviceQueue ?\n\nWhat is the concern you see with exposing this API ?",
+      "parentUuid": "ad2474b1_b606ac1a",
+      "revId": "e0f2b600d5306f239d6ed739b7b93df39e61a5b4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
