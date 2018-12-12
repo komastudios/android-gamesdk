@@ -72,9 +72,10 @@ bool ClearcutBackend::Process(const ProtobufSerialization &evt_ser) {
 
 bool ClearcutBackend::Init(JNIEnv *env, jobject activity) {
     env->GetJavaVM(&vm_);
-    if(vm_ == nullptr)
+    if(vm_ == nullptr) {
         __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "%s", "JavaVM is null...");
         return false;
+    }
 
     try {
         bool inited = InitWithClearcut(env, activity, false);
