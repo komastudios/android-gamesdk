@@ -16,6 +16,24 @@
       "revId": "84386a0bf37304c8b6b707999593f2d216def9b5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "164b3947_07038caf",
+        "filename": "src/tuningfork/clearcut_backend.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2018-12-12T12:17:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "677f06bd_456ca87c",
+      "revId": "84386a0bf37304c8b6b707999593f2d216def9b5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
