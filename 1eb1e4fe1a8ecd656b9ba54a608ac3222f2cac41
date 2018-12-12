@@ -51,6 +51,24 @@
       "revId": "1eb1e4fe1a8ecd656b9ba54a608ac3222f2cac41",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fc68534e_3c32f471",
+        "filename": "src/tuningfork/tuningfork_internal.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-12T17:20:10Z",
+      "side": 1,
+      "message": "That sounds better to me, but how about if they attempt to change the parameters while there\u0027s still data in the buffer we return an error code (and stop recording)? \n\nEither way I think that should be a separate CL so I\u0027ll +2 this now.",
+      "parentUuid": "5e5b4f40_b094e3c0",
+      "revId": "1eb1e4fe1a8ecd656b9ba54a608ac3222f2cac41",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
