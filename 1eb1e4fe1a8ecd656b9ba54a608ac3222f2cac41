@@ -33,6 +33,24 @@
       "revId": "1eb1e4fe1a8ecd656b9ba54a608ac3222f2cac41",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5e5b4f40_b094e3c0",
+        "filename": "src/tuningfork/tuningfork_internal.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-12T16:41:49Z",
+      "side": 1,
+      "message": "Once the fidelity parameters have been changed, any new data will need to be collected in a new set of histograms, so the previous set need to either be discarded or uploaded.\nWe could mandate that people call the \u0027upload everything now\u0027 function before calling this, I guess, and if they don\u0027t, any previous data will be lost.",
+      "parentUuid": "d15d0a82_0fea1809",
+      "revId": "1eb1e4fe1a8ecd656b9ba54a608ac3222f2cac41",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
