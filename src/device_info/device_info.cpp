@@ -24,6 +24,7 @@
 #include <fstream>
 #include <vector>
 #include <set>
+#include <functional>
 
 namespace {
 using ProtoRoot   = androidgamesdk_deviceinfo::root;
@@ -119,27 +120,55 @@ int readFeatures(std::set<std::string>& result, ProtoErrors& errors) {
   return 0;
 }
 
-void addSystemProperties(::ProtoData& proto) {
+void addSystemProperty(const char* key,
+  std::function<void(const std::string&)> writeData, ::ProtoErrors& errors){
+#if __ANDROID_API__ >= 26
+  const prop_info* pi = __system_property_find(key);
+  if (pi == nullptr) {
+    writeData("");
+  }
+  else{
+    std::string result;
+    __system_property_read_callback(pi,
+      [](void* cookie, const char*, const char* value, unsigned) {
+        auto sysOut = reinterpret_cast<std::string*>(cookie);
+        *sysOut = value;
+      },
+      &result
+    );
+    writeData(result);
+  }
+#else
   char buffer[PROP_VALUE_MAX];
-  int buffer_len = -1;
+  int bufferLen = __system_property_get(key, buffer);
+  if (bufferLen > PROP_VALUE_MAX){
+    const std::string HEADER = "Overflow: ";
+    errors.add_system_props(HEADER + key);
+  } else{
+    writeData(std::string(buffer, bufferLen));
+  }
+#endif
+}
 
-  buffer_len = __system_property_get("ro.chipname", buffer);
-  proto.set_ro_chipname(std::string(buffer, buffer_len));
-
-  buffer_len = __system_property_get("ro.board.platform", buffer);
-  proto.set_ro_board_platform(std::string(buffer, buffer_len));
-
-  buffer_len = __system_property_get("ro.product.board", buffer);
-  proto.set_ro_product_board(std::string(buffer, buffer_len));
-
-  buffer_len = __system_property_get("ro.mediatek.platform", buffer);
-  proto.set_ro_mediatek_platform(std::string(buffer, buffer_len));
-
-  buffer_len = __system_property_get("ro.arch", buffer);
-  proto.set_ro_arch(std::string(buffer, buffer_len));
-
-  buffer_len = __system_property_get("ro.build.fingerprint", buffer);
-  proto.set_ro_build_fingerprint(std::string(buffer, buffer_len));
+void addSystemProperties(::ProtoData& data, ::ProtoErrors& errors) {
+  addSystemProperty("ro.chipname", [&](const std::string& s){
+    data.set_ro_chipname(s);
+  }, errors);
+  addSystemProperty("ro.board.platform", [&](const std::string& s){
+    data.set_ro_board_platform(s);
+  }, errors);
+  addSystemProperty("ro.product.board", [&](const std::string& s){
+    data.set_ro_product_board(s);
+  }, errors);
+  addSystemProperty("ro.mediatek.platform", [&](const std::string& s){
+    data.set_ro_mediatek_platform(s);
+  }, errors);
+  addSystemProperty("ro.arch", [&](const std::string& s){
+    data.set_ro_arch(s);
+  }, errors);
+  addSystemProperty("ro.build.fingerprint", [&](const std::string& s){
+    data.set_ro_build_fingerprint(s);
+  }, errors);
 }
 
 // returns number of errors
@@ -729,7 +758,7 @@ int createProto(::ProtoRoot& proto) {
     data.add_cpu_extension(s);
   }
 
-  addSystemProperties(data);
+  addSystemProperties(data, errors);
 
   int numErrorsEgl = setupEGl(proto);
   numErrors += numErrorsEgl;

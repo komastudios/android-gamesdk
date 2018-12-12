@@ -226,10 +226,11 @@ message data {
 }
 
 message errors {
-  optional string hardware = 1;
-  optional string features = 2;
-  optional string egl = 3;
-  repeated string gl  = 4;
+  optional string hardware      = 1;
+  optional string features      = 2;
+  repeated string system_props  = 3;
+  optional string egl           = 4;
+  repeated string gl            = 5;
 }
 
 message root {
