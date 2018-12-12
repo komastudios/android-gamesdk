@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1167836e_e531f083",
+        "filename": "src/tuningfork/tuningfork_c.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-12T14:58:03Z",
+      "side": 1,
+      "message": "I think this would be clearer as params !\u003d nullptr",
+      "revId": "1eb1e4fe1a8ecd656b9ba54a608ac3222f2cac41",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d15d0a82_0fea1809",
+        "filename": "src/tuningfork/tuningfork_internal.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-12T14:58:03Z",
+      "side": 1,
+      "message": "Two points here:\n1 - s/If you subsequently call/Subsequent calls to/\n2 - ideally the functionality of \u0027upload everything now\u0027 should be in a separate function rather than a side-effect of this function. Is there a reason it has to be this way that I\u0027m missing?",
+      "revId": "1eb1e4fe1a8ecd656b9ba54a608ac3222f2cac41",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
