@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "7a27949f_90c77e35",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-12T00:33:49Z",
+      "side": 1,
+      "message": "See https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/master/third_party/cube/app/src/main/cpp/common/vulkan_wrapper.cpp#24\n\nThis is where vk* function pointer are assigned from dlopen",
+      "parentUuid": "c6e3dd0d_90297151",
+      "revId": "9f31ddf9d7db141dccc83bbc894764f8fdee7b6d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "7a734f47_cd61fc75",
         "filename": "src/swappyVk/SwappyVk.cpp",
         "patchSetId": 3
