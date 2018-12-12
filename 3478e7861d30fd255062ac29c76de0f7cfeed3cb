@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4c61a74d_093d9440",
+        "filename": "src/tuningfork/clearcut_backend.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2018-12-12T13:23:15Z",
+      "side": 1,
+      "message": "This is subtle due to the indentation (especially if you\u0027re used to Python), but the \"return false;\" path is always executed here, due to a lack of braces around this conditional.\n\nI\u0027ve put up a follow-up CL to fix this: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/848612\n\nBut I haven\u0027t tested it, and presumably this code hasn\u0027t gotten a lot of testing since Init() would always be returning false up until now.",
+      "range": {
+        "startLine": 75,
+        "startChar": 0,
+        "endLine": 78,
+        "endChar": 0
+      },
+      "revId": "3478e7861d30fd255062ac29c76de0f7cfeed3cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
