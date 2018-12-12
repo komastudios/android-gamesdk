@@ -16,6 +16,24 @@
       "revId": "f72abfb8a6642b0ea317ca6eca40d81c599a836a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c5e4ef44_6bf02f83",
+        "filename": "src/device_info/device_info.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-12-12T11:26:44Z",
+      "side": 1,
+      "message": "Thanks for pointing out, because I realized I have been looking into an old version of the library.\n\n__system_property_read_callback function looks dreadful.\n\nThe situation is even worse actually, as answered by our good old friend Dan Albert:\nhttps://stackoverflow.com/questions/28413530/api-to-get-android-system-properties-is-removed-in-arm64-platforms\n\nRight now I am looking into reading the /system/build.prop file directly.",
+      "parentUuid": "2663d643_5b37b2e6",
+      "revId": "f72abfb8a6642b0ea317ca6eca40d81c599a836a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
