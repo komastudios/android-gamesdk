@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2663d643_5b37b2e6",
+        "filename": "src/device_info/device_info.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-12T11:06:37Z",
+      "side": 1,
+      "message": "This system properties API is really yukky. It looks like you could still copy beyond the range of your statically allocated buffer if you call __system_property_get like this. Well, if this source is to be believed: https://android.googlesource.com/platform/bionic/+/7b4d77e/libc/bionic/system_properties.c\nLooking at the header, __system_property_get is now deprecated and you should use __system_property_read_callback instead. This gives you a null-terminated string, by the looks of it, which you can use to initialize your proto strings.",
+      "revId": "f72abfb8a6642b0ea317ca6eca40d81c599a836a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
