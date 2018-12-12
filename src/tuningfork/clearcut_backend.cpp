@@ -38,10 +38,9 @@ bool ClearcutBackend::Process(const ProtobufSerialization &evt_ser) {
                 LOG_TAG, "JNI Version is not supported, status : %d", envStatus);
         return false;
     }
-
-    if(envStatus == JNI_EDETACHED) {
+    else if(envStatus == JNI_EDETACHED) {
         int attachStatus = vm_->AttachCurrentThread(&env, (void*)NULL);
-        if(attachStatus!= 0) {
+        if(attachStatus!= JNI_OK) {
             __android_log_print(
                     ANDROID_LOG_WARN,
                     LOG_TAG,
@@ -49,8 +48,7 @@ bool ClearcutBackend::Process(const ProtobufSerialization &evt_ser) {
             return false;
         }
     }
-
-    if(envStatus != JNI_OK) {
+    else if(envStatus != JNI_OK) {
         __android_log_print(ANDROID_LOG_WARN, LOG_TAG, "JNIEnv is not OK, status : %d", envStatus);
         return false;
     }
@@ -67,14 +65,19 @@ bool ClearcutBackend::Process(const ProtobufSerialization &evt_ser) {
 
     // Detach thread.
     vm_->DetachCurrentThread();
+    __android_log_print(
+            ANDROID_LOG_INFO,
+            LOG_TAG,
+            "Message was sent to clearcut");
     return !hasException;
 }
 
 bool ClearcutBackend::Init(JNIEnv *env, jobject activity) {
     env->GetJavaVM(&vm_);
-    if(vm_ == nullptr)
+    if(vm_ == nullptr) {
         __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "%s", "JavaVM is null...");
         return false;
+    }
 
     try {
         bool inited = InitWithClearcut(env, activity, false);
