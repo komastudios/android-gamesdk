@@ -34,6 +34,24 @@
       "revId": "f72abfb8a6642b0ea317ca6eca40d81c599a836a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5f34f812_62e73ba6",
+        "filename": "src/device_info/device_info.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-12T13:18:22Z",
+      "side": 1,
+      "message": "OK.\n__system_property_read_callback is only available for API\u003e\u003d26, anyway.",
+      "parentUuid": "c5e4ef44_6bf02f83",
+      "revId": "f72abfb8a6642b0ea317ca6eca40d81c599a836a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
