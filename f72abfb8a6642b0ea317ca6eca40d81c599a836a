@@ -52,6 +52,24 @@
       "revId": "f72abfb8a6642b0ea317ca6eca40d81c599a836a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8a819813_a077d100",
+        "filename": "src/device_info/device_info.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-12-13T14:23:54Z",
+      "side": 1,
+      "message": "I have done some research to use something other than system properties API. The ones I came across all use system properties API underneath. So I have used __system_property_read_callback whenever available.\n\nThe reason  __system_property_get is deprecated is the 92 char limit, as Idries was worried about:\nhttps://groups.google.com/forum/#!topic/android-ndk/yaOW7iG7jOE\n\nI have also looked into parsing the /system/build.prop file directly, but it is missing some properties. Also it advises against parsing it for some attributes.\n\nI think the implementation is in a good state now, unless we find a better alternative to system properties API.",
+      "parentUuid": "5f34f812_62e73ba6",
+      "revId": "f72abfb8a6642b0ea317ca6eca40d81c599a836a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
