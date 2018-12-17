@@ -23,6 +23,7 @@
 
 #include "Log.h"
 #include "Settings.h"
+#include "Thread.h"
 #include "Trace.h"
 
 #include "ChoreographerFilter.h"
@@ -157,6 +158,10 @@ bool Swappy::swapInternal(EGLDisplay display, EGLSurface surface) {
 
     postSwapBuffersCallbacks();
 
+    if (updateSwapInterval()) {
+        swapIntervalChangedCallbacks();
+    }
+
     updateSwapDuration(std::chrono::steady_clock::now() - swapStart);
 
     startFrame();
@@ -171,6 +176,28 @@ void Swappy::addTracer(const SwappyTracer *tracer) {
         return;
     }
     swappy->addTracerCallbacks(*tracer);
+}
+
+uint64_t Swappy::getSwapIntervalNS() {
+    Swappy *swappy = getInstance();
+    if (!swappy) {
+        ALOGE("Failed to get Swappy instance in getSwapIntervalNS");
+        return 0;
+    }
+
+    std::lock_guard lock(swappy->mFrameDurationsMutex);
+    return swappy->mAutoSwapInterval.load() * swappy->mRefreshPeriod.count();
+};
+
+void Swappy::setAutoSwapInterval(bool enabled) {
+    Swappy *swappy = getInstance();
+    if (!swappy) {
+        ALOGE("Failed to get Swappy instance in setAutoSwapInterval");
+        return;
+    }
+
+    std::lock_guard<std::mutex> lock(swappy->mFrameDurationsMutex);
+    swappy->mAutoSwapIntervalEnabled = enabled;
 }
 
 Swappy *Swappy::getInstance() {
@@ -195,6 +222,7 @@ void Swappy::addTracerCallbacks(SwappyTracer tracer) {
     addToTracers(mInjectedTracers.preSwapBuffers, tracer.preSwapBuffers, tracer.userData);
     addToTracers(mInjectedTracers.postSwapBuffers, tracer.postSwapBuffers, tracer.userData);
     addToTracers(mInjectedTracers.startFrame, tracer.startFrame, tracer.userData);
+    addToTracers(mInjectedTracers.swapIntervalChanged, tracer.swapIntervalChanged, tracer.userData);
 }
 
 template<typename T> void executeTracers(T& tracers) {
@@ -221,6 +249,10 @@ void Swappy::postWaitCallbacks() {
 
 void Swappy::startFrameCallbacks() {
     executeTracers(mInjectedTracers.startFrame);
+}
+
+void Swappy::swapIntervalChangedCallbacks() {
+    executeTracers(mInjectedTracers.swapIntervalChanged);
 }
 
 EGL *Swappy::getEgl() {
@@ -257,12 +289,19 @@ Swappy::Swappy(JavaVM *vm,
         ALOGE("Failed to load EGL functions");
         exit(0);
     }
+
+    mFrameDurationSamples = 1e9f / mRefreshPeriod.count(); // 1 second
+    mFrameDurations.reserve(mFrameDurationSamples);
 }
 
 void Swappy::onSettingsChanged() {
-    mSwapInterval = Settings::getInstance()->getSwapIntervalNS();
+    std::lock_guard<std::mutex> lock(mFrameDurationsMutex);
     mSwapInterval = std::round(float(Settings::getInstance()->getSwapIntervalNS()) /
                                float(mRefreshPeriod.count()));
+
+    mAutoSwapInterval = mSwapInterval.load();
+    mFrameDurations.clear();
+    mFrameDurationsSum = 0;
 }
 
 void Swappy::handleChoreographer() {
@@ -290,12 +329,12 @@ void Swappy::startFrame() {
         std::unique_lock<std::mutex> lock(mWaitingMutex);
         return std::make_tuple(mCurrentFrame, mCurrentFrameTimestamp);
     }();
-    mTargetFrame = currentFrame + mSwapInterval;
+    mTargetFrame = currentFrame + mAutoSwapInterval;
 
     // We compute the target time as now
     //   + the presumed time generating the frame on the CPU (1 swap period)
     //   + the time the buffer will be on the GPU and in the queue to the compositor (1 swap period)
-    mPresentationTime = currentFrameTimestamp + (mSwapInterval * 2) * mRefreshPeriod;
+    mPresentationTime = currentFrameTimestamp + (mAutoSwapInterval * 2) * mRefreshPeriod;
 }
 
 void Swappy::waitUntil(int32_t frameNumber) {
@@ -311,18 +350,72 @@ void Swappy::waitOneFrame() {
     mWaitingCondition.wait(lock, [&]() { return mCurrentFrame >= target; });
 }
 
+void Swappy::recordFrameTime(int frames) {
+
+    std::lock_guard<std::mutex> lock(mFrameDurationsMutex);
+
+    // keep a sliding window of mFrameDurationSamples
+    if (mFrameDurations.size() == mFrameDurationSamples) {
+        mFrameDurationsSum -= mFrameDurations.front();
+        mFrameDurations.erase(mFrameDurations.begin());
+    }
+
+    mFrameDurations.push_back(frames);
+    mFrameDurationsSum += frames;
+}
+
 void Swappy::waitForNextFrame(EGLDisplay display) {
     preWaitCallbacks();
 
-    waitUntil(mTargetFrame);
+    int lateFrames = 0;
 
-    // If the frame hasn't completed yet, go into frame-by-frame slip until it completes
-    while (!getEgl()->lastFrameIsComplete(display)) {
-        ScopedTrace trace("lastFrameIncomplete");
+    // while we wait for the target frame, the previous frame might have finished rendering early
+    while (mCurrentFrame < mTargetFrame) {
+        if (getEgl()->lastFrameIsComplete(display)) {
+            lateFrames--;
+        }
         waitOneFrame();
     }
 
+    // we reached the target frame, now we wait for rendering to be done for late frames
+    while (!getEgl()->lastFrameIsComplete(display)) {
+        waitOneFrame();
+    }
+
+    // adjust presentation time if needed
+    int32_t frameDiff = mCurrentFrame - mTargetFrame;
+    frameDiff = (frameDiff / mAutoSwapInterval.load());
+    mPresentationTime += frameDiff * mRefreshPeriod;
+
+    lateFrames += frameDiff;
+    recordFrameTime(mAutoSwapInterval + lateFrames);
+
     postWaitCallbacks();
+}
+
+bool Swappy::updateSwapInterval() {
+
+    std::lock_guard<std::mutex> lock(mFrameDurationsMutex);
+    if (!mAutoSwapIntervalEnabled)
+        return false;
+
+    if (mFrameDurations.size() < mFrameDurationSamples)
+        return false;
+
+    float averageFrameTime = float(mFrameDurationsSum) / mFrameDurations.size();
+
+    // apply hysteresis of 20%
+    if (averageFrameTime > mAutoSwapInterval * 1.2) {
+        mAutoSwapInterval++;
+        return true;
+    }
+
+    if (mSwapInterval < mAutoSwapInterval && averageFrameTime < (mAutoSwapInterval - 1) * 0.8) {
+        mAutoSwapInterval--;
+        return true;
+    }
+
+    return false;
 }
 
 void Swappy::resetSyncFence(EGLDisplay display) {
