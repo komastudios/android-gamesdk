@@ -33,8 +33,7 @@ void Swappy_destroy() {
     Swappy::destroyInstance();
 }
 
-void Swappy_onChoreographer(int64_t frameTimeNanos)
-{
+void Swappy_onChoreographer(int64_t frameTimeNanos) {
     Swappy::onChoreographer(frameTimeNanos);
 }
 
@@ -63,11 +62,19 @@ bool Swappy_getUseAffinity() {
 }
 
 uint64_t Swappy_getSwapIntervalNS() {
-    return Settings::getInstance()->getSwapIntervalNS();
+    return Swappy::getSwapIntervalNS();
 }
 
 void Swappy_injectTracer(const SwappyTracer *t) {
     Swappy::addTracer(t);
+}
+
+void Swappy_setAutoSwapInterval(bool enabled) {
+    Swappy::setAutoSwapInterval(enabled);
+}
+
+void Swappy_overrideAutoSwapInterval(uint64_t swap_ns) {
+    Swappy::overrideAutoSwapInterval(swap_ns);
 }
 
 }
