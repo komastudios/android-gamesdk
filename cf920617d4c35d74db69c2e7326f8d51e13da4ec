@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "13ab461e_e809836e",
+        "filename": "samples/bouncyball/app/src/main/cpp/Orbit.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-17T14:26:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0c2ff5e4_b31f0385",
+      "revId": "cf920617d4c35d74db69c2e7326f8d51e13da4ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "46d58548_2ee413fe",
         "filename": "src/common/Log.h",
         "patchSetId": 4
