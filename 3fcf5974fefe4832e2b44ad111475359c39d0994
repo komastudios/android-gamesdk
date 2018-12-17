@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5fc439ff_b1409b60",
+        "filename": "samples/bouncyball/app/src/main/cpp/Circle.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-12-17T18:45:53Z",
+      "side": 1,
+      "message": "Nit: for all of these, I\u0027d kill the trailing {",
+      "range": {
+        "startLine": 55,
+        "startChar": 25,
+        "endLine": 55,
+        "endChar": 27
+      },
+      "revId": "3fcf5974fefe4832e2b44ad111475359c39d0994",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "99a04f11_c697a811",
+        "filename": "samples/bouncyball/app/src/main/cpp/Renderer.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-12-17T18:45:53Z",
+      "side": 1,
+      "message": "Not sure this is worth it, TBH (here and in WorkerThread.h)",
+      "revId": "3fcf5974fefe4832e2b44ad111475359c39d0994",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "23f645df_5b5bc5b4",
+        "filename": "samples/bouncyball/app/src/main/cpp/WorkerThread.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2018-12-17T18:45:53Z",
+      "side": 1,
+      "message": "(General question, placed here at random) Why isn\u0027t bouncyball in the samples namespace? It seems like it might make things a little cleaner",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 22
+      },
+      "revId": "3fcf5974fefe4832e2b44ad111475359c39d0994",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
