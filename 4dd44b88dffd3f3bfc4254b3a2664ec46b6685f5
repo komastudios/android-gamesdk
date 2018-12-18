@@ -102,6 +102,24 @@
       "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "559b6e0f_59691318",
+        "filename": "src/swappy/src/main/cpp/Swappy.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-18T17:47:42Z",
+      "side": 1,
+      "message": "We discussed with Dan and Ady and I flipped few times, then I settled on having it on by default, so devs can try it and if there are issues we can default it to false on release. Our only EAP requested it in the first place.",
+      "parentUuid": "c51b2f05_0a8cb3fc",
+      "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
