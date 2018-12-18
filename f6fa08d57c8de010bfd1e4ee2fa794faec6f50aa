@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "1861976e_03dde92d",
+        "filename": "samples/bouncyball/app/src/main/cpp/Circle.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-18T22:39:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1bd86850_3646b36c",
+      "revId": "f6fa08d57c8de010bfd1e4ee2fa794faec6f50aa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bbdc1272_8292c99c",
         "filename": "samples/bouncyball/app/src/main/res/xml/preferences.xml",
         "patchSetId": 1
