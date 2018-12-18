@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "e1ca17b9_06ac9f4f",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-18T12:23:56Z",
+      "side": 1,
+      "message": "This is clearly a personal style thing, but I\u0027m with Ady on this one.",
+      "parentUuid": "ac9b6591_5355d495",
+      "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e1ceffc4_e7d20819",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 1
@@ -64,6 +82,23 @@
       "writtenOn": "2018-12-18T01:24:14Z",
       "side": 1,
       "message": "Same constant as above instead of 0.8：（1.0 - HYSTERESIS_PERCENTAGE)",
+      "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c51b2f05_0a8cb3fc",
+        "filename": "src/swappy/src/main/cpp/Swappy.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-18T12:23:56Z",
+      "side": 1,
+      "message": "I have mixed feelings about this default value. I think that during the EAP we should have it default to false and then ask people to try it out. I\u0027m slightly concerned that this code will interfere with other dynamic framerate implementations which have been rolled by developers in their own higher level code. If there are no such problems during the EAP then we could re-visit having it default to true.\n\nI\u0027m very nearly on the fence on this one tho. WDYT?",
       "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
