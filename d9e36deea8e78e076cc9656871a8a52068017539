@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "c2ab9e91_3a779a26",
+        "filename": "src/device_info/device_info.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-12-18T14:39:59Z",
+      "side": 1,
+      "message": "\"ro.build.version.release\" returns Q.\nI used \"ro.build.version.sdk\" instead, which returns 28.",
+      "parentUuid": "4f3a97e9_b96345eb",
+      "revId": "d9e36deea8e78e076cc9656871a8a52068017539",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dcdf52b9_ac67a41d",
         "filename": "src/device_info/device_info.cpp",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "d9e36deea8e78e076cc9656871a8a52068017539",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0966b54d_baa9239f",
+        "filename": "src/device_info/device_info.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-12-18T14:39:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dcdf52b9_ac67a41d",
+      "revId": "d9e36deea8e78e076cc9656871a8a52068017539",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
