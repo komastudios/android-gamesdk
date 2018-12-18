@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ac9b6591_5355d495",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-18T01:24:14Z",
+      "side": 1,
+      "message": "Dan suggested to not have a new function, but use the existing swappy_SwapInterval.",
+      "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e1ceffc4_e7d20819",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 322,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-18T01:24:14Z",
+      "side": 1,
+      "message": "Reserve the the sliding window size of elements in the vector so you don\u0027t have to malloc every few frames.",
+      "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "75ac8328_52450bfc",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 427,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-18T01:24:14Z",
+      "side": 1,
+      "message": "Can we use a constant instead of 1.2?\nLike: mAutoSwapInterval * (1.0 + HYSTERESIS_PERCENTAGE);",
+      "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c42fdf16_ab8d8cd6",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 432,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-18T01:24:14Z",
+      "side": 1,
+      "message": "Same constant as above instead of 0.8：（1.0 - HYSTERESIS_PERCENTAGE)",
+      "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
