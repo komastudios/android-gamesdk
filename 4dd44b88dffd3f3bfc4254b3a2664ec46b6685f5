@@ -109,6 +109,24 @@
     },
     {
       "key": {
+        "uuid": "020575ed_c8c482c5",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-18T22:44:20Z",
+      "side": 1,
+      "message": "Well, app would need to call Swappy_setSwapInterval with different parameters, meaning that when the apps want to go \"back\" it needs now to call Swappy_setSwapInterval explicitly with the \"back\" value.",
+      "parentUuid": "544749ea_c05434ee",
+      "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e1ceffc4_e7d20819",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 1
