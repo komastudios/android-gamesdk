@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bbdc1272_8292c99c",
+        "filename": "samples/bouncyball/app/src/main/res/xml/preferences.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-18T09:56:27Z",
+      "side": 1,
+      "message": "What values of this parameter make sense? Can we suggest a range or at least comment in the code what values work on the hardware you\u0027ve tested?",
+      "revId": "f6fa08d57c8de010bfd1e4ee2fa794faec6f50aa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
