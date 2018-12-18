@@ -91,6 +91,24 @@
     },
     {
       "key": {
+        "uuid": "544749ea_c05434ee",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-18T22:39:19Z",
+      "side": 1,
+      "message": "Can we seamlessly support the case in which the app would change it to a different value? \nI\u0027m thinking of a scenario where, for example, the app would change to 20fps in menus to save battery and back to 30fps in game. Another use case is cutscenes where I might want to go down to 24fps to have a cinematic effect on screens that support it.\n\nI personally used this trick few times in the past, last time, for example, on the Apple Watch to save battery.",
+      "parentUuid": "fa49e91c_0628b8cc",
+      "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e1ceffc4_e7d20819",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 1
