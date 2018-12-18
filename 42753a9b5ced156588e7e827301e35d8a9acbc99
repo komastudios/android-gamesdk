@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "049d3ec6_5b60b721",
+        "filename": "src/device_info/device_info.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-12-18T14:54:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8bd7e5e5_25c3f728",
+      "revId": "42753a9b5ced156588e7e827301e35d8a9acbc99",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "01f33c1b_c77fe61f",
         "filename": "src/device_info/device_info.cpp",
         "patchSetId": 3
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "3988e3fe_be6c2ff7",
+        "filename": "src/device_info/device_info.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-12-18T14:54:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "01f33c1b_c77fe61f",
+      "revId": "42753a9b5ced156588e7e827301e35d8a9acbc99",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a8ee20a0_7a44cabd",
         "filename": "src/device_info/device_info.cpp",
         "patchSetId": 3
@@ -50,6 +86,24 @@
       "revId": "42753a9b5ced156588e7e827301e35d8a9acbc99",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a80f960a_d8a02161",
+        "filename": "src/device_info/device_info.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-12-18T14:54:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a8ee20a0_7a44cabd",
+      "revId": "42753a9b5ced156588e7e827301e35d8a9acbc99",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
