@@ -226,6 +226,9 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
             } else if (key.equals("use_auto_swap_interval")) {
                 nSetAutoSwapInterval(sharedPreferences.getBoolean(key, true));
                 continue;
+            } else if (key.equals("workload")) {
+                nSetWorkload(sharedPreferences.getInt(key, 0));
+                continue;
             }
             nSetPreference(key, sharedPreferences.getString(key, null));
         }
@@ -369,6 +372,7 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
     public native void nStop();
     public native void nSetPreference(String key, String value);
     public native void nSetAutoSwapInterval(boolean enabled);
+    public native void nSetWorkload(int load);
     public native float nGetAverageFps();
 
     private MenuItem mInfoOverlayButton;
