@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4f3a97e9_b96345eb",
+        "filename": "src/device_info/device_info.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-18T12:08:52Z",
+      "side": 1,
+      "message": "Using preprocessor logic to detect API version does not do what we want here. This approach will decide which path to follow at compile time, but in this case I think you want to make the decision at runtime. This is accessible as \"ro.build.version.release\", obviously that creates something of a chicken and egg problem but I think it\u0027s ok to rely on that particular parameter never returning more than 3 characters (which can be safely parsed with atoi).",
+      "revId": "d9e36deea8e78e076cc9656871a8a52068017539",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dcdf52b9_ac67a41d",
+        "filename": "src/device_info/device_info.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-18T12:08:52Z",
+      "side": 1,
+      "message": "Should be \u003e\u003d because in the case where the entire buffer is filled with the property value there will not be enough space for a terminator and the buffer is still technically \u0027overflowed\u0027.",
+      "revId": "d9e36deea8e78e076cc9656871a8a52068017539",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
