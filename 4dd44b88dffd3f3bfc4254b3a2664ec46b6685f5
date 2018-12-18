@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "7d19c6f4_50efd93d",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-18T18:34:12Z",
+      "side": 1,
+      "message": "Here\u0027s my logic: the user shouldn\u0027t have to know about the internal working of Swappy and auto-mode should \"just\" work. But when it doesn\u0027t, there is a way to reset it by stating again your intention to swap at a certain interval.\nSo the function would be: \n- Swappy_setSwapInterval - sets the swap interval swappy must use now and never cross",
+      "parentUuid": "94234479_416e992a",
+      "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e1ceffc4_e7d20819",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 1
