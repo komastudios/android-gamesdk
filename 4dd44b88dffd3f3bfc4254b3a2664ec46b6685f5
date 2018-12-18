@@ -73,6 +73,24 @@
     },
     {
       "key": {
+        "uuid": "fa49e91c_0628b8cc",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-18T22:35:53Z",
+      "side": 1,
+      "message": "Hmm that might work, assuming that the app always want to reset swappy to the value provided in Swappy_setSwapInterval(), which makes sense.\nI\u0027ll change this.",
+      "parentUuid": "7d19c6f4_50efd93d",
+      "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e1ceffc4_e7d20819",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 1
@@ -123,6 +141,24 @@
       "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a0568b29_ae2c966b",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 322,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-18T22:35:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2628f301_c1233c7f",
+      "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
