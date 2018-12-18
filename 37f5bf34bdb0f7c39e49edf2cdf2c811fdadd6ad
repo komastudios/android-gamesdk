@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "ca39e462_e061ca27",
+        "filename": "samples/bouncyball/app/src/main/cpp/Renderer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-18T17:36:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e01d03fa_cc11d026",
+      "revId": "37f5bf34bdb0f7c39e49edf2cdf2c811fdadd6ad",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1f0d1cd7_c07510cb",
         "filename": "samples/bouncyball/app/src/main/cpp/Renderer.h",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "37f5bf34bdb0f7c39e49edf2cdf2c811fdadd6ad",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6f5c9a7c_9c3590fd",
+        "filename": "samples/bouncyball/app/src/main/cpp/Renderer.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-18T17:36:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1f0d1cd7_c07510cb",
+      "revId": "37f5bf34bdb0f7c39e49edf2cdf2c811fdadd6ad",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
