@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8bd7e5e5_25c3f728",
+        "filename": "src/device_info/device_info.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-18T14:42:16Z",
+      "side": 1,
+      "message": "Need a space before \u0027{\u0027",
+      "revId": "42753a9b5ced156588e7e827301e35d8a9acbc99",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "01f33c1b_c77fe61f",
+        "filename": "src/device_info/device_info.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-18T14:42:16Z",
+      "side": 1,
+      "message": "Ditto",
+      "revId": "42753a9b5ced156588e7e827301e35d8a9acbc99",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8ee20a0_7a44cabd",
+        "filename": "src/device_info/device_info.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-18T14:42:16Z",
+      "side": 1,
+      "message": "I think this would be neater if you had getSystemProperty(const char* key, proto\u0026 errors, bool useCallbackApi)\n\nThat way you could set a variable like useCallbackApi in the caller and pass that through to each call, rather than duplicating all the callsites and thus all the hardcoded key names.",
+      "revId": "42753a9b5ced156588e7e827301e35d8a9acbc99",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
