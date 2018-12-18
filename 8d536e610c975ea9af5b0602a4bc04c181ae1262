@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "15688362_3fbff0b0",
+        "filename": "include/swappy/swappy.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-18T01:13:15Z",
+      "side": 1,
+      "message": "We should specify that this assumes a 60hz display",
+      "revId": "8d536e610c975ea9af5b0602a4bc04c181ae1262",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
