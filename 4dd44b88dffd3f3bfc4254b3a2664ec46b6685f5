@@ -90,6 +90,24 @@
     },
     {
       "key": {
+        "uuid": "2628f301_c1233c7f",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 322,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-18T18:27:47Z",
+      "side": 1,
+      "message": "I\u0027m not referring to algorithmic complexity. I\u0027m more concerned about the per-frame allocations/deallocations rather then complexity here. For such a small set of data, I\u0027m happy to take a complexity hit to avoid any memory allocation in a game engine.\nMemory allocations are very much frowned upon by gamedevs (among various other issues, memory fragmentation is a big problem) and we should not add any, especially for something as basic as swappy.",
+      "parentUuid": "4878a468_10a4c6f4",
+      "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "75ac8328_52450bfc",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 1
