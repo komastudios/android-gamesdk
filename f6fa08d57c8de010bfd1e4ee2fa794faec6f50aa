@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "1bd86850_3646b36c",
+        "filename": "samples/bouncyball/app/src/main/cpp/Circle.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-18T19:24:37Z",
+      "side": 1,
+      "message": "True. I guess the technically correct version of the warning I was proposing is that the value of the segments parameter should be invariant within the scope of a single frame.",
+      "parentUuid": "63e370cd_60675412",
+      "revId": "f6fa08d57c8de010bfd1e4ee2fa794faec6f50aa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "bbdc1272_8292c99c",
         "filename": "samples/bouncyball/app/src/main/res/xml/preferences.xml",
         "patchSetId": 1
