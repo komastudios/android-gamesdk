@@ -26,11 +26,10 @@
 #include "swappy/src/main/cpp/Log.h"
 
 namespace {
-    template<size_t NUM_SEGMENTS>
-    std::array<GLfloat, 2 * (NUM_SEGMENTS + 2)> initializeVertices() {
-        std::array<GLfloat, 2 * (NUM_SEGMENTS + 2)> vertices = {};
-        const float dTheta = static_cast<float>(2 * M_PI / NUM_SEGMENTS);
-        for (size_t i = 0; i < NUM_SEGMENTS + 1; i++) {
+    std::vector<GLfloat> initializeVertices(int segments) {
+        std::vector<GLfloat> vertices = std::vector<GLfloat>(2 * segments + 2);
+        const float dTheta = static_cast<float>(2 * M_PI / segments);
+        for (size_t i = 0; i < segments + 1; i++) {
             vertices[(i + 1) * 2] = cos(dTheta * i);
             vertices[(i + 1) * 2 + 1] = sin(dTheta * i);
         }
@@ -159,14 +158,16 @@ namespace {
     };
 }
 
-void Circle::draw(float aspectRatio, const std::vector<Circle> &circles) {
+void Circle::draw(float aspectRatio, const std::vector<Circle> &circles, int workload) {
     static ProgramState state;
+
+    int segments = getSegmentsForWorkload(workload);
 
     glUseProgram(state.program);
     checkGlError("glUseProgram");
 
     glVertexAttribPointer(static_cast<GLuint>(state.vPositionHandle), 2, GL_FLOAT, GL_FALSE, 0,
-                          getVertices().data());
+                          getVertices(segments).data());
     checkGlError("glVertexAttribPointer");
 
     glEnableVertexAttribArray(static_cast<GLuint>(state.vPositionHandle));
@@ -183,12 +184,20 @@ void Circle::draw(float aspectRatio, const std::vector<Circle> &circles) {
         glUniformMatrix4fv(state.mvpMatrixHandle, 1, GL_FALSE, mvpMatrix.data());
         checkGlError("glUniformMatrix4fv(mvpMatrix)");
 
-        glDrawArrays(GL_TRIANGLE_FAN, 0, NUM_SEGMENTS + 2);
+
+        glDrawArrays(GL_TRIANGLE_FAN, 0, segments + 2);
         checkGlError("glDrawArrays");
     }
 }
 
-std::array<GLfloat, Circle::NUM_VERTICES> &Circle::getVertices() {
-    static auto vertices = initializeVertices<NUM_SEGMENTS>();
+// getVertices will return the corresponding based on segments parameter.
+// This function needs to be called with the same segments number in the same frame
+std::vector<GLfloat> &Circle::getVertices(int segments) {
+    static auto vertices = initializeVertices(segments);
+    static int prev = segments;
+    if (prev != segments) {
+        vertices = initializeVertices(segments);
+        prev = segments;
+    }
     return vertices;
 }
