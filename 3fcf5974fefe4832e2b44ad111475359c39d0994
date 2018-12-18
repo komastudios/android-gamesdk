@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "0a355f84_566aef15",
+        "filename": "samples/bouncyball/app/src/main/cpp/Circle.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-18T15:01:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5fc439ff_b1409b60",
+      "range": {
+        "startLine": 55,
+        "startChar": 25,
+        "endLine": 55,
+        "endChar": 27
+      },
+      "revId": "3fcf5974fefe4832e2b44ad111475359c39d0994",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "99a04f11_c697a811",
         "filename": "samples/bouncyball/app/src/main/cpp/Renderer.h",
         "patchSetId": 6
@@ -39,6 +63,24 @@
       "revId": "3fcf5974fefe4832e2b44ad111475359c39d0994",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "14875a75_12f9a4f9",
+        "filename": "samples/bouncyball/app/src/main/cpp/Renderer.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-18T15:01:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "99a04f11_c697a811",
+      "revId": "3fcf5974fefe4832e2b44ad111475359c39d0994",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -62,6 +104,30 @@
       "revId": "3fcf5974fefe4832e2b44ad111475359c39d0994",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "19e9b475_f89ec806",
+        "filename": "samples/bouncyball/app/src/main/cpp/WorkerThread.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-18T15:01:11Z",
+      "side": 1,
+      "message": "Yes, agreed. I\u0027ve moved it.",
+      "parentUuid": "23f645df_5b5bc5b4",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 22
+      },
+      "revId": "3fcf5974fefe4832e2b44ad111475359c39d0994",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
