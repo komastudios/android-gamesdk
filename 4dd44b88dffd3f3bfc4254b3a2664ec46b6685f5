@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "94234479_416e992a",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-18T18:09:00Z",
+      "side": 1,
+      "message": "These functions have a different meaning:\n - Swappy_setSwapInterval - sets the minimal swap interval that swappy should not cross\n - Swappy_overrideAutoSwapInterval - overrides a decision made by swappy.\n\nSo if we still want to let the app to set a minimal swap interval we need 2 APIs",
+      "parentUuid": "e1ca17b9_06ac9f4f",
+      "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e1ceffc4_e7d20819",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 1
@@ -48,6 +66,24 @@
       "writtenOn": "2018-12-18T01:24:14Z",
       "side": 1,
       "message": "Reserve the the sliding window size of elements in the vector so you don\u0027t have to malloc every few frames.",
+      "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4878a468_10a4c6f4",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 322,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-18T18:09:00Z",
+      "side": 1,
+      "message": "It is an std::list and not std::vector.\nSince I need to add to the end and pop from the beginning (fifo queue), vector may not be the right fit\n\nstd::vector:\nThe complexity (efficiency) of common operations on vectors is as follows:\n\nRandom access - constant O(1)\nInsertion or removal of elements at the end - amortized constant O(1)\nInsertion or removal of elements - linear in the distance to the end of the vector O(n)",
+      "parentUuid": "e1ceffc4_e7d20819",
       "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -71,6 +107,24 @@
     },
     {
       "key": {
+        "uuid": "9c91a13b_5604873c",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 427,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-18T18:09:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "75ac8328_52450bfc",
+      "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c42fdf16_ab8d8cd6",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 1
@@ -85,6 +139,24 @@
       "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "35fdd50b_df29be55",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 432,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-18T18:09:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c42fdf16_ab8d8cd6",
+      "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -116,6 +188,24 @@
       "writtenOn": "2018-12-18T17:47:42Z",
       "side": 1,
       "message": "We discussed with Dan and Ady and I flipped few times, then I settled on having it on by default, so devs can try it and if there are issues we can default it to false on release. Our only EAP requested it in the first place.",
+      "parentUuid": "c51b2f05_0a8cb3fc",
+      "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4aca6cee_f5667afe",
+        "filename": "src/swappy/src/main/cpp/Swappy.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-18T18:09:00Z",
+      "side": 1,
+      "message": "My opinion is to keep it on by default. If the frames are slower than what swappy thinks it is, swappy doesn\u0027t add much value, so for swappy to work better this value is needed.\n\nIf there are any issues with the auto mode we should fix that rather than having it disabled.",
       "parentUuid": "c51b2f05_0a8cb3fc",
       "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
