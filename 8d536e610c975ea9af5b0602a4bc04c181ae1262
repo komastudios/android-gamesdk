@@ -34,6 +34,24 @@
       "revId": "8d536e610c975ea9af5b0602a4bc04c181ae1262",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cca3b9ed_51504475",
+        "filename": "include/swappy/swappy.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-18T02:57:05Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "7d84849d_c940da6c",
+      "revId": "8d536e610c975ea9af5b0602a4bc04c181ae1262",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
