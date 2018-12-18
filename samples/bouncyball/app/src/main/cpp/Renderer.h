@@ -50,6 +50,8 @@ class Renderer {
 
     void requestDraw();
 
+    void setWorkload(int load);
+
   private:
     class ThreadState {
       public:
@@ -96,4 +98,6 @@ class Renderer {
     void spin();
 
     float averageFps = -1.0f;
+
+    int mWorkload = 0;
 };
