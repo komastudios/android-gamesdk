@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "63e370cd_60675412",
+        "filename": "samples/bouncyball/app/src/main/cpp/Circle.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-18T18:19:11Z",
+      "side": 1,
+      "message": "calling getVertices() multiple times with the same segments value should just return the static std::vector calculated already - there is no memcpy or calculation involved",
+      "parentUuid": "0297aa40_205e0834",
+      "revId": "f6fa08d57c8de010bfd1e4ee2fa794faec6f50aa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "bbdc1272_8292c99c",
         "filename": "samples/bouncyball/app/src/main/res/xml/preferences.xml",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2018-12-18T09:56:27Z",
       "side": 1,
       "message": "What values of this parameter make sense? Can we suggest a range or at least comment in the code what values work on the hardware you\u0027ve tested?",
+      "revId": "f6fa08d57c8de010bfd1e4ee2fa794faec6f50aa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "55095a5d_c2a834c1",
+        "filename": "samples/bouncyball/app/src/main/res/xml/preferences.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-18T18:19:11Z",
+      "side": 1,
+      "message": "The values exposed to UI are 0 - 100 and bouncyball threats is as percentages. we have a tested min/max in Circle and we choose a value in the range of [min, max]\nThe idea is that \"0\" represent what we had so far, and we can increase gradually the workload and observe what happens.",
+      "parentUuid": "bbdc1272_8292c99c",
       "revId": "f6fa08d57c8de010bfd1e4ee2fa794faec6f50aa",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
