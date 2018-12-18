@@ -127,6 +127,24 @@
     },
     {
       "key": {
+        "uuid": "43da4d22_b044ff9a",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2018-12-18T22:51:35Z",
+      "side": 1,
+      "message": "If I understand it correctly, for the sake of argument, can I have the following sequence?\n\n// game play\nswappy_setSwapInterval(SWAPPY_30FPS);\n\n...\n(Swappy decide to go down to 20fps here)\n...\n\n// menu\n\nswappy_setSwapInterval(SWAPPY_20FPS);\n\n...\n...\n\n// Back to gameplay\nswappy_setSwapInterval(SWAPPY_30FPS);\n\n...\n(Swappy is reset back to 30fps)\n...",
+      "parentUuid": "020575ed_c8c482c5",
+      "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e1ceffc4_e7d20819",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 1
