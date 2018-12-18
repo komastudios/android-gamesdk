@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "28651003_5e4861e6",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-18T22:57:13Z",
+      "side": 1,
+      "message": "Resolved",
+      "parentUuid": "7a27949f_90c77e35",
+      "revId": "9f31ddf9d7db141dccc83bbc894764f8fdee7b6d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a734f47_cd61fc75",
         "filename": "src/swappyVk/SwappyVk.cpp",
         "patchSetId": 3
@@ -69,6 +87,24 @@
       "revId": "9f31ddf9d7db141dccc83bbc894764f8fdee7b6d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bf380d7d_ea13fe9f",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 677,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-18T22:57:13Z",
+      "side": 1,
+      "message": "Resolved",
+      "parentUuid": "c1619cbc_644b797f",
+      "revId": "9f31ddf9d7db141dccc83bbc894764f8fdee7b6d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
