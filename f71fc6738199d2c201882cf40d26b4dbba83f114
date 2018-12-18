@@ -125,6 +125,24 @@
     },
     {
       "key": {
+        "uuid": "e8de7b6a_f6e793fe",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 437,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-18T22:56:27Z",
+      "side": 1,
+      "message": "Resolved this to get the change merged.",
+      "parentUuid": "df055492_8be59a4d",
+      "revId": "f71fc6738199d2c201882cf40d26b4dbba83f114",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6e0e8a28_2ae35465",
         "filename": "src/swappyVk/SwappyVk.cpp",
         "patchSetId": 2
