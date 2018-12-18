@@ -87,6 +87,24 @@
       "revId": "e0f2b600d5306f239d6ed739b7b93df39e61a5b4",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b8ceb0b6_1e94c4ad",
+        "filename": "src/swappyVk/SwappyVk.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-18T22:57:40Z",
+      "side": 1,
+      "message": "Resolved",
+      "parentUuid": "45f2cf5d_c08050e2",
+      "revId": "e0f2b600d5306f239d6ed739b7b93df39e61a5b4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
