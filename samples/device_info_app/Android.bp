@@ -1,8 +1,8 @@
 cc_library_shared {
-  name: "libdevice_info_app",
+  name: "libdevice_info_app_jni",
   defaults: ["gamesdk-defaults"],
   srcs: [
-    "device_info_app.cpp",
+    ":device_info_jni_cpp",
   ],
   static_libs: [
     "androidgamesdk",
@@ -15,13 +15,14 @@ android_app {
   sdk_version: "27",
   srcs: [
     "*.java",
+    ":device_info_jni_java",
     ":device_info_proto",
   ],
   resource_dirs: [
     "res",
   ],
   jni_libs: [
-    "libdevice_info_app",
+    "libdevice_info_app_jni",
   ],
   static_libs: [
     "android-support-constraint-layout",
