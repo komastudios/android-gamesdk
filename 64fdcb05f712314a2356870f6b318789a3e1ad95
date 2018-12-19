@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a3a4e404_28080fc2",
+        "filename": "src/device_info_jni/device_info_jni.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-19T09:41:24Z",
+      "side": 1,
+      "message": "Why has this been moved to src from samples? From its name it sounds like it\u0027s specific to the test app. If this is code you want to make public in the SDK, you probably should rename the function and call it from the JNI function. It should be included in the public header, too.",
+      "revId": "64fdcb05f712314a2356870f6b318789a3e1ad95",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
