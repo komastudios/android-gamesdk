@@ -46,6 +46,8 @@ class Renderer {
     void start();
     void stop();
 
+    float getAverageFps();
+
     void requestDraw();
 
   private:
@@ -72,12 +74,13 @@ class Renderer {
         float velocity = 1.6f;
 
         std::chrono::nanoseconds refreshPeriod = std::chrono::nanoseconds{0};
-        int32_t swapInterval = 1;
+        int64_t swapIntervalNS = 0;
         int32_t width = 0;
         int32_t height = 0;
     };
 
     void draw(ThreadState *threadState);
+    void calculateFps();
 
     WorkerThread<ThreadState> mWorkerThread = {"Renderer", Affinity::Odd};
 
@@ -91,4 +94,6 @@ class Renderer {
     WorkerThread<HotPocketState> mHotPocketThread = {"HotPocket", Affinity::Even};
 
     void spin();
+
+    float averageFps = -1.0f;
 };

@@ -76,6 +76,10 @@ void Renderer::stop() {
     mHotPocketThread.run([](HotPocketState *hotPocketState) { hotPocketState->isStarted = false; });
 }
 
+float Renderer::getAverageFps() {
+    return averageFps;
+}
+
 void Renderer::requestDraw() {
     mWorkerThread.run([=](ThreadState *threadState) { if (threadState->isStarted) draw(threadState); });
 }
@@ -130,7 +134,7 @@ Renderer::ThreadState::~ThreadState() {
 
 void Renderer::ThreadState::onSettingsChanged(const Settings * settings) {
     refreshPeriod = settings->getRefreshPeriod();
-    swapInterval = settings->getSwapInterval();
+    swapIntervalNS = settings->getSwapIntervalNS();
 }
 
 void Renderer::ThreadState::clearSurface() {
@@ -175,6 +179,25 @@ void Renderer::spin() {
     });
 }
 
+// should be called once per draw as this function maintains the time delta between calls
+void Renderer::calculateFps() {
+    static constexpr int FPS_SAMPLES = 10;
+    static std::chrono::steady_clock::time_point prev = std::chrono::steady_clock::now();
+    static float fpsSum = 0;
+    static int fpsCount = 0;
+
+
+    std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+    fpsSum += 1.0f / ((now - prev).count() / 1e9f);
+    fpsCount++;
+    if (fpsCount == FPS_SAMPLES) {
+        averageFps = fpsSum / fpsCount;
+        fpsSum = 0;
+        fpsCount = 0;
+    }
+    prev = now;
+}
+
 void Renderer::draw(ThreadState *threadState) {
     // Don't render if we have no surface
     if (threadState->surface == EGL_NO_SURFACE) {
@@ -184,8 +207,9 @@ void Renderer::draw(ThreadState *threadState) {
         return;
     }
 
-    const float deltaSeconds = (threadState->refreshPeriod * threadState->swapInterval).count() / 1e9f;
+    calculateFps();
 
+    float deltaSeconds = threadState->swapIntervalNS / 1e9f;
     threadState->x += threadState->velocity * deltaSeconds;
 
     if (threadState->x > 0.8f) {
