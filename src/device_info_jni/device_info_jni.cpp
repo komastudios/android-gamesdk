@@ -13,8 +13,6 @@
  */
 
 #include <jni.h>
-#include <string>
-#include <cassert>
 
 #include "device_info/device_info.h"
 

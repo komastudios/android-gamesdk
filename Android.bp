@@ -50,3 +50,8 @@ filegroup {
     name: "device_info_proto",
     srcs: [ "include/device_info/device_info.proto" ],
 }
+
+filegroup {
+    name: "device_info_jni",
+    srcs: [ "src/device_info_jni/device_info_jni.cpp" ],
+}
