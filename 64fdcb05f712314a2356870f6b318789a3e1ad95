@@ -16,6 +16,24 @@
       "revId": "64fdcb05f712314a2356870f6b318789a3e1ad95",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "948cdeb9_88868a0b",
+        "filename": "src/device_info_jni/device_info_jni.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-12-19T11:07:18Z",
+      "side": 1,
+      "message": "Good spot! I will refactor once more and will ping you then.",
+      "parentUuid": "a3a4e404_28080fc2",
+      "revId": "64fdcb05f712314a2356870f6b318789a3e1ad95",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
