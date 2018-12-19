@@ -52,6 +52,24 @@
       "revId": "64fdcb05f712314a2356870f6b318789a3e1ad95",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "13a97645_8183099d",
+        "filename": "src/device_info_jni/device_info_jni.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-19T14:13:37Z",
+      "side": 1,
+      "message": "Agreed",
+      "parentUuid": "5a22eae7_1b2f9ba8",
+      "revId": "64fdcb05f712314a2356870f6b318789a3e1ad95",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
