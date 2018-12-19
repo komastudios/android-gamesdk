@@ -34,6 +34,24 @@
       "revId": "64fdcb05f712314a2356870f6b318789a3e1ad95",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5a22eae7_1b2f9ba8",
+        "filename": "src/device_info_jni/device_info_jni.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2018-12-19T11:43:13Z",
+      "side": 1,
+      "message": "I think it is much better now with patch#3",
+      "parentUuid": "948cdeb9_88868a0b",
+      "revId": "64fdcb05f712314a2356870f6b318789a3e1ad95",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
