@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "c8a7bec1_de14fb9d",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-20T20:39:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6840ee83_6731cd4e",
+      "revId": "4f63113dc1b6b78a350dba8643dacca0bace6da6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8c8bbe72_067e6113",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 7
@@ -33,6 +51,24 @@
       "revId": "4f63113dc1b6b78a350dba8643dacca0bace6da6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "677e7d74_7961afc2",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 357,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-20T20:39:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8c8bbe72_067e6113",
+      "revId": "4f63113dc1b6b78a350dba8643dacca0bace6da6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "9072c438_cd1a458a",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 378,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-20T20:39:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "890507b1_90b40da2",
+      "revId": "4f63113dc1b6b78a350dba8643dacca0bace6da6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fb17da8b_8e363e3f",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 7
@@ -64,6 +118,24 @@
       "writtenOn": "2018-12-20T09:33:33Z",
       "side": 1,
       "message": "Ultra-nit style feedback (feel free to ignore): I find code like this hard to come back to later because of the number of return cases. If I were writing it I\u0027d have a separate function called \"calculate frame durations\" which returned the required interval. Then I\u0027d have this function compare the return value to mAutoSwapInterval and only update mAutoSwapInterval and return true if they were different. Having said that the need to handle cases where there\u0027s no calculation to be done (i.e. no durations recorded since last call) means this might actually end up being just as hard to follow...",
+      "revId": "4f63113dc1b6b78a350dba8643dacca0bace6da6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b7f917cf_adcb3fa6",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 403,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-20T20:39:39Z",
+      "side": 1,
+      "message": "I would prefer to leave this as is",
+      "parentUuid": "fb17da8b_8e363e3f",
       "revId": "4f63113dc1b6b78a350dba8643dacca0bace6da6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -84,6 +156,24 @@
       "revId": "4f63113dc1b6b78a350dba8643dacca0bace6da6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a77133de_1e015e2d",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 404,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-20T20:39:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b9178bc2_5ba0f571",
+      "revId": "4f63113dc1b6b78a350dba8643dacca0bace6da6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -118,6 +208,24 @@
       "revId": "4f63113dc1b6b78a350dba8643dacca0bace6da6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "643e759a_19f3b1b7",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 422,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-20T20:39:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a9a4baf6_35981cee",
+      "revId": "4f63113dc1b6b78a350dba8643dacca0bace6da6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
