@@ -35,8 +35,8 @@ struct SwappyTracer {
     void (*preWait)(void*);
     void (*postWait)(void*);
     void (*preSwapBuffers)(void*);
-    void (*postSwapBuffers)(void*);
-    void (*startFrame)(void*);
+    void (*postSwapBuffers)(void*, long desiredPresentationTimeMS);
+    void (*startFrame)(void*, int currentFrame, long currentFrameTimeStampMS);
     void* userData;
     void (*swapIntervalChanged)(void*);
 
