@@ -39,6 +39,8 @@ class EGL;
 using EGLDisplay = void *;
 using EGLSurface = void *;
 
+using namespace std::chrono_literals;
+
 class Swappy {
   private:
     // Allows construction with std::unique_ptr from a static method, but disallows construction
@@ -113,7 +115,7 @@ private:
 
     void updateSwapDuration(std::chrono::nanoseconds duration);
 
-    void recordFrameTime(int frames);
+    void recordFrameTime(std::chrono::nanoseconds frames);
 
     bool updateSwapInterval();
 
@@ -157,8 +159,8 @@ private:
     SwappyTracerCallbacks mInjectedTracers;
 
     std::mutex mFrameDurationsMutex;
-    std::vector<int> mFrameDurations GUARDED_BY(mFrameDurationsMutex);
-    int mFrameDurationsSum GUARDED_BY(mFrameDurationsMutex) = 0;
+    std::vector<std::chrono::nanoseconds> mFrameDurations GUARDED_BY(mFrameDurationsMutex);
+    std::chrono::nanoseconds mFrameDurationsSum GUARDED_BY(mFrameDurationsMutex) = 0ns;
     int mFrameDurationSamples GUARDED_BY(mFrameDurationsMutex);
     bool mAutoSwapIntervalEnabled GUARDED_BY(mFrameDurationsMutex) = true;
     static constexpr float FRAME_AVERAGE_HYSTERESIS = 0.1;

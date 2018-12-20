@@ -353,7 +353,7 @@ void Swappy::waitOneFrame() {
     mWaitingCondition.wait(lock, [&]() { return mCurrentFrame >= target; });
 }
 
-void Swappy::recordFrameTime(int frames) {
+void Swappy::recordFrameTime(std::chrono::nanoseconds frames) {
 
     std::lock_guard<std::mutex> lock(mFrameDurationsMutex);
 
@@ -363,6 +363,7 @@ void Swappy::recordFrameTime(int frames) {
         mFrameDurations.erase(mFrameDurations.begin());
     }
 
+    //ALOGE("This frame = %f", frames.count() / 1e6f);
     mFrameDurations.push_back(frames);
     mFrameDurationsSum += frames;
 }
@@ -387,15 +388,18 @@ void Swappy::waitForNextFrame(EGLDisplay display) {
         while (!getEgl()->lastFrameIsComplete(display)) {
             waitOneFrame();
         }
+    } else {
+        ALOGE("not sleeping");
     }
 
     // adjust presentation time if needed
     int32_t frameDiff = mCurrentFrame - mTargetFrame;
     frameDiff = (frameDiff / mAutoSwapInterval.load());
     mPresentationTime += frameDiff * mRefreshPeriod;
-
     lateFrames += frameDiff;
-    recordFrameTime(mAutoSwapInterval + lateFrames);
+
+    //recordFrameTime((mAutoSwapInterval + lateFrames) * mRefreshPeriod);
+
 
     postWaitCallbacks();
 }
@@ -405,21 +409,35 @@ bool Swappy::updateSwapInterval() {
     std::lock_guard<std::mutex> lock(mFrameDurationsMutex);
     if (!mAutoSwapIntervalEnabled)
         return false;
+#if 1
+    // keep a sliding window of mFrameDurationSamples
+    if (mFrameDurations.size() == mFrameDurationSamples) {
+        mFrameDurationsSum -= mFrameDurations.front();
+        mFrameDurations.erase(mFrameDurations.begin());
+    }
 
-    if (mFrameDurations.size() < mFrameDurationSamples)
+    auto fenceTime = getEgl()->getFencePendingTime();
+    mFrameDurations.push_back(fenceTime);
+    mFrameDurationsSum += fenceTime;
+#endif
+    if (mFrameDurations.size() < mFrameDurationSamples) {
+        // wait for more samples to check the average
         return false;
+    }
 
-    float averageFrameTime = float(mFrameDurationsSum) / mFrameDurations.size();
+    std::chrono::nanoseconds averageFrameTime = std::chrono::nanoseconds(mFrameDurationsSum.count() / mFrameDurations.size());
+    float averageFrameTimeMilli = averageFrameTime.count() / 1e6f;
 
     // apply hysteresis when checking the average to avoid going back and forth when frames
     // are exactly at the edge
-    if (averageFrameTime > mAutoSwapInterval * (1 + FRAME_AVERAGE_HYSTERESIS)) {
+    if (averageFrameTimeMilli > mAutoSwapInterval * (mRefreshPeriod.count() / 1e6f) * (1.0f + FRAME_AVERAGE_HYSTERESIS)) {
+        ALOGE("LAAAAGGGG averageFrameTimeMilli=%f", averageFrameTimeMilli);
         mAutoSwapInterval++;
         return true;
     }
 
-    if (mSwapInterval < mAutoSwapInterval && averageFrameTime <
-                                             (mAutoSwapInterval - 1) * (1 - FRAME_AVERAGE_HYSTERESIS)) {
+    if (mSwapInterval < mAutoSwapInterval && averageFrameTimeMilli < (mAutoSwapInterval - 1) * (mRefreshPeriod.count() / 1e6f) * (1.0f - FRAME_AVERAGE_HYSTERESIS)) {
+        ALOGE("idle averageFrameTimeMilli=%f", averageFrameTimeMilli);
         mAutoSwapInterval--;
         return true;
     }

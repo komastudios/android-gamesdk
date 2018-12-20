@@ -16,7 +16,7 @@
 
 #include "EGL.h"
 
-#define LOG_TAG "Swappy::EGL"
+#define LOG_TAG "EGL"
 
 #include "Log.h"
 
@@ -51,16 +51,25 @@ std::unique_ptr<EGL> EGL::create(std::chrono::nanoseconds refreshPeriod) {
         return nullptr;
     }
 
+    auto eglClientWaitSyncKHR = reinterpret_cast<eglClientWaitSyncKHR_type>(
+            eglGetProcAddress("eglClientWaitSyncKHR"));
+    if (eglClientWaitSyncKHR == nullptr) {
+        ALOGE("Failed to load eglClientWaitSyncKHR");
+        return nullptr;
+    }
+
     auto egl = std::make_unique<EGL>(refreshPeriod, ConstructorTag{});
     egl->eglPresentationTimeANDROID = eglPresentationTimeANDROID;
     egl->eglCreateSyncKHR = eglCreateSyncKHR;
     egl->eglDestroySyncKHR = eglDestroySyncKHR;
     egl->eglGetSyncAttribKHR = eglGetSyncAttribKHR;
+    egl->eglClientWaitSyncKHR = eglClientWaitSyncKHR;
     return egl;
 }
 
 void EGL::resetSyncFence(EGLDisplay display) {
-    std::lock_guard<std::mutex> lock(mSyncFenceMutex);
+    std::unique_lock lock(mWaitingMutex);
+    std::unique_lock wlock(mSyncFenceMutex);
 
     if (mSyncFence != EGL_NO_SYNC_KHR) {
         EGLBoolean result = eglDestroySyncKHR(display, mSyncFence);
@@ -70,10 +79,12 @@ void EGL::resetSyncFence(EGLDisplay display) {
     }
 
     mSyncFence = eglCreateSyncKHR(display, EGL_SYNC_FENCE_KHR, nullptr);
+    mDisplay = display;
+    mWaitingCondition.notify_all();
 }
 
 bool EGL::lastFrameIsComplete(EGLDisplay display) {
-    std::lock_guard<std::mutex> lock(mSyncFenceMutex);
+    std::shared_lock rlock(mSyncFenceMutex);
 
     // This will be the case on the first frame
     if (mSyncFence == EGL_NO_SYNC_KHR) {
@@ -102,4 +113,24 @@ bool EGL::setPresentationTime(EGLDisplay display,
                               std::chrono::steady_clock::time_point time) {
     eglPresentationTimeANDROID(display, surface, time.time_since_epoch().count());
     return EGL_TRUE;
+}
+
+void EGL::threadMain() {
+    while (mThreadRunning) {
+        //ALOGE("Thread start, waiting for work");
+        std::unique_lock lock(mWaitingMutex);
+        mWaitingCondition.wait(lock);
+        //ALOGE("work available");
+
+        { // scope for read lock
+            std::shared_lock rlock(mSyncFenceMutex);
+            auto startTime = std::chrono::steady_clock::now();
+            EGLBoolean result = eglClientWaitSyncKHR(mDisplay, mSyncFence, 0, EGL_FOREVER_KHR);
+            if (result == EGL_FALSE) {
+                ALOGE("Failed to wait sync");
+            }
+            mFencePendingTime = std::chrono::steady_clock::now() - startTime;
+            //ALOGE("mFencePendingTime=%f", mFencePendingTime.count() / 1e6f);
+        }
+     }
 }

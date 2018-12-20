@@ -16,7 +16,10 @@
 
 #pragma once
 
+#include <chrono>
 #include <mutex>
+#include <shared_mutex>
+#include <thread>
 
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
@@ -30,7 +33,17 @@ class EGL {
 
   public:
     explicit EGL(std::chrono::nanoseconds refreshPeriod, ConstructorTag)
-        : mRefreshPeriod(refreshPeriod) {}
+        : mRefreshPeriod(refreshPeriod),
+          mThread([this](){threadMain();}) {}
+
+    ~EGL() {
+        mThreadRunning = false;
+        mThread.join();
+
+        if (mSyncFence != EGL_NO_SYNC_KHR) {
+            eglDestroySyncKHR(mDisplay, mSyncFence);
+        }
+    }
 
     static std::unique_ptr<EGL> create(std::chrono::nanoseconds refreshPeriod);
 
@@ -39,8 +52,11 @@ class EGL {
     bool setPresentationTime(EGLDisplay display,
                              EGLSurface surface,
                              std::chrono::steady_clock::time_point time);
+    std::chrono::nanoseconds getFencePendingTime() {return mFencePendingTime; }
 
   private:
+    void threadMain();
+
     const std::chrono::nanoseconds mRefreshPeriod;
 
     using eglPresentationTimeANDROID_type = EGLBoolean (*)(EGLDisplay, EGLSurface, EGLnsecsANDROID);
@@ -51,7 +67,17 @@ class EGL {
     eglDestroySyncKHR_type eglDestroySyncKHR = nullptr;
     using eglGetSyncAttribKHR_type = EGLBoolean (*)(EGLDisplay, EGLSyncKHR, EGLint, EGLint *);
     eglGetSyncAttribKHR_type eglGetSyncAttribKHR = nullptr;
+    using eglClientWaitSyncKHR_type = EGLBoolean (*)(EGLDisplay, EGLSyncKHR, EGLint, EGLTimeKHR);
+    eglClientWaitSyncKHR_type eglClientWaitSyncKHR = nullptr;
 
-    std::mutex mSyncFenceMutex;
+
+
+    std::shared_mutex mSyncFenceMutex;
     EGLSyncKHR mSyncFence = EGL_NO_SYNC_KHR;
+    EGLDisplay mDisplay;
+    std::mutex mWaitingMutex;
+    std::condition_variable mWaitingCondition;
+    std::chrono::nanoseconds mFencePendingTime;
+    std::thread mThread;
+    bool mThreadRunning = true;
 };
