@@ -43,7 +43,7 @@ std::string to_string(jstring jstr, JNIEnv *env) {
 
 extern "C" {
 
-void startFrameCallback(void *) {
+void startFrameCallback(void *, int, long) {
 }
 
 JNIEXPORT void JNICALL
