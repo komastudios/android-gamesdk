@@ -1,0 +1,123 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6840ee83_6731cd4e",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-20T09:33:33Z",
+      "side": 1,
+      "message": "This should return a more obviously wrong value (i.e. 0xFFFFFFFFFFFFFFFF).",
+      "revId": "4f63113dc1b6b78a350dba8643dacca0bace6da6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8c8bbe72_067e6113",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 357,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-20T09:33:33Z",
+      "side": 1,
+      "message": "https://google.github.io/styleguide/cppguide.html#Vertical_Whitespace",
+      "revId": "4f63113dc1b6b78a350dba8643dacca0bace6da6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "890507b1_90b40da2",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 378,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-20T09:33:33Z",
+      "side": 1,
+      "message": "Line too long.",
+      "revId": "4f63113dc1b6b78a350dba8643dacca0bace6da6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fb17da8b_8e363e3f",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 403,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-20T09:33:33Z",
+      "side": 1,
+      "message": "Ultra-nit style feedback (feel free to ignore): I find code like this hard to come back to later because of the number of return cases. If I were writing it I\u0027d have a separate function called \"calculate frame durations\" which returned the required interval. Then I\u0027d have this function compare the return value to mAutoSwapInterval and only update mAutoSwapInterval and return true if they were different. Having said that the need to handle cases where there\u0027s no calculation to be done (i.e. no durations recorded since last call) means this might actually end up being just as hard to follow...",
+      "revId": "4f63113dc1b6b78a350dba8643dacca0bace6da6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b9178bc2_5ba0f571",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 404,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-20T09:33:33Z",
+      "side": 1,
+      "message": "https://google.github.io/styleguide/cppguide.html#Vertical_Whitespace",
+      "revId": "4f63113dc1b6b78a350dba8643dacca0bace6da6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9c0ca5b8_59a7e453",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 405,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-20T09:33:33Z",
+      "side": 1,
+      "message": "This should be moved down one line to avoid taking the lock when mAutoSwapIntervalEnabled is false.",
+      "revId": "4f63113dc1b6b78a350dba8643dacca0bace6da6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a9a4baf6_35981cee",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 422,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-20T09:33:33Z",
+      "side": 1,
+      "message": "Line too long",
+      "revId": "4f63113dc1b6b78a350dba8643dacca0bace6da6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
