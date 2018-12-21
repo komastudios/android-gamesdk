@@ -26,6 +26,7 @@
 #include "ChoreographerFilter.h"
 #include "ChoreographerThread.h"
 #include "EGL.h"
+#include "FrameStatistics.h"
 
 #include "Log.h"
 #include "Trace.h"
@@ -154,6 +155,8 @@ bool Swappy::swapInternal(EGLDisplay display, EGLSurface surface) {
 
     resetSyncFence(display);
 
+    mFramestats->capture(display, surface);
+
     preSwapBuffersCallbacks();
 
     result = (eglSwapBuffers(display, surface) == EGL_TRUE);
@@ -200,6 +203,16 @@ void Swappy::setAutoSwapInterval(bool enabled) {
 
     std::lock_guard<std::mutex> lock(swappy->mFrameDurationsMutex);
     swappy->mAutoSwapIntervalEnabled = enabled;
+}
+
+void Swappy::getStats(Swappy_Stats *stats) {
+    Swappy *swappy = getInstance();
+    if (!swappy) {
+        ALOGE("Failed to get Swappy instance in getStats");
+        return;
+    }
+
+    *stats = swappy->mFramestats->getStats();
 }
 
 Swappy *Swappy::getInstance() {
@@ -292,6 +305,7 @@ Swappy::Swappy(JavaVM *vm,
         exit(0);
     }
 
+    mFramestats = std::make_unique<FrameStatistics>(mEgl, mRefreshPeriod);
     mAutoSwapIntervalThreshold = (1e9f / mRefreshPeriod.count()) / 20; // 20FPS
     mFrameDurationSamples = 1e9f / mRefreshPeriod.count(); // 1 second
     mFrameDurations.reserve(mFrameDurationSamples);
