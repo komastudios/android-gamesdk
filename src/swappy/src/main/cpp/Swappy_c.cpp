@@ -74,4 +74,12 @@ void Swappy_setAutoSwapInterval(bool enabled) {
     Swappy::setAutoSwapInterval(enabled);
 }
 
+void Swappy_setStatsMode(bool enabled) {
+    Swappy::setStatsMode(enabled);
+}
+
+void Swappy_getStats(Swappy_Stats *stats) {
+    Swappy::getStats(stats);
+}
+
 } // extern "C" {
