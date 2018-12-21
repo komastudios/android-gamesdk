@@ -354,6 +354,24 @@
       "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ab830327_ad8e2ce2",
+        "filename": "src/swappy/src/main/cpp/Swappy.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-21T19:26:34Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "4aca6cee_f5667afe",
+      "revId": "4dd44b88dffd3f3bfc4254b3a2664ec46b6685f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
