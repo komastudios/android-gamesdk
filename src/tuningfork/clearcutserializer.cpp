@@ -84,6 +84,20 @@ bool ClearcutSerializer::writeHistograms(pb_ostream_t* stream, const pb_field_t 
     return true;
 }
 
+bool ClearcutSerializer::writeExperimentId(pb_ostream_t* stream, const pb_field_t *field,
+                                           void *const *arg) {
+
+    const std::string* experiment_id = static_cast<std::string*>(*arg);
+    if(!pb_encode_tag_for_field(stream, field)) return false;
+    return pb_encode_string(stream, (uint8_t*) experiment_id, experiment_id->size());
+}
+
+
+void ClearcutSerializer::FillExperimentID(const std::string& experimentId, TuningForkLogEvent& evt) {
+    evt.experiment_id.funcs.encode = writeExperimentId;
+    evt.experiment_id.arg = (void*)&experimentId;
+}
+
 void ClearcutSerializer::FillHistograms(const ProngCache& pc, TuningForkLogEvent &evt) {
     evt.histograms.funcs.encode = writeHistograms;
     evt.histograms.arg = (void*)&pc;
@@ -107,6 +121,7 @@ void ClearcutSerializer::SerializeEvent(const ProngCache& pc,
     ext2_type_.encode = writeFidelityParams;
     ext2_type_.arg = &fidelity_params;
     ClearcutSerializer::FillHistograms(pc,evt);
+    ClearcutSerializer::FillExperimentID("cc_backend", evt);
     VectorStream str {&evt_ser, 0};
     pb_ostream_t stream = {VectorStream::Write, &str, SIZE_MAX, 0};
     pb_encode(&stream, logs_proto_tuningfork_TuningForkLogEvent_fields, &evt);
