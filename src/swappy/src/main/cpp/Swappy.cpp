@@ -26,6 +26,7 @@
 #include "ChoreographerFilter.h"
 #include "ChoreographerThread.h"
 #include "EGL.h"
+#include "FrameStatistics.h"
 
 #include "Log.h"
 #include "Trace.h"
@@ -204,6 +205,50 @@ void Swappy::setAutoSwapInterval(bool enabled) {
     swappy->mAutoSwapIntervalEnabled = enabled;
 }
 
+void Swappy::enableStats(bool enabled) {
+    Swappy *swappy = getInstance();
+    if (!swappy) {
+        ALOGE("Failed to get Swappy instance in enableStats");
+            return;
+    }
+
+    if (enabled && !swappy->mFramestats) {
+        swappy->mFramestats = std::make_unique<FrameStatistics>(
+                swappy->mEgl, swappy->mRefreshPeriod);
+        ALOGI("Enabling stats");
+    } else {
+        swappy->mFramestats = nullptr;
+        ALOGI("Disabling stats");
+    }
+}
+
+void Swappy::recordFrameStart(EGLDisplay display, EGLSurface surface) {
+    TRACE_CALL();
+    Swappy *swappy = getInstance();
+    if (!swappy) {
+        ALOGE("Failed to get Swappy instance in recordFrameStart");
+        return;
+    }
+
+    if (swappy->mFramestats)
+        swappy->mFramestats->capture(display, surface);
+    else
+        ALOGE("stats are not enabled");
+}
+
+void Swappy::getStats(Swappy_Stats *stats) {
+    Swappy *swappy = getInstance();
+    if (!swappy) {
+        ALOGE("Failed to get Swappy instance in getStats");
+        return;
+    }
+
+    if (swappy->mFramestats)
+        *stats = swappy->mFramestats->getStats();
+    else
+        ALOGE("stats are not enabled");
+}
+
 Swappy *Swappy::getInstance() {
     std::lock_guard<std::mutex> lock(sInstanceMutex);
     return sInstance.get();
@@ -279,6 +324,7 @@ Swappy::Swappy(JavaVM *vm,
                nanoseconds sfOffset,
                ConstructorTag /*tag*/)
     : mRefreshPeriod(refreshPeriod),
+      mFramestats(nullptr),
       mChoreographerFilter(std::make_unique<ChoreographerFilter>(refreshPeriod,
                                                                  sfOffset - appOffset,
                                                                  [this]() { return wakeClient(); })),
