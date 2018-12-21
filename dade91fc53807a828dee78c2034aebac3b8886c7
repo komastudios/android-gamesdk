@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2f2c3c74_177df7e6",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 401,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2018-12-21T11:43:30Z",
+      "side": 1,
+      "message": "Trailing whitespace at the end of this line.",
+      "revId": "dade91fc53807a828dee78c2034aebac3b8886c7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
