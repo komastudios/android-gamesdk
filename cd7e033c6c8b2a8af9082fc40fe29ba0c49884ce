@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c04fbcb3_1e0f2b14",
+        "filename": "src/tuningfork/clearcutserializer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-21T11:47:05Z",
+      "side": 1,
+      "message": "This isn\u0027t called from anywhere. Did you test it?",
+      "revId": "cd7e033c6c8b2a8af9082fc40fe29ba0c49884ce",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "26b06228_52dd9c91",
+        "filename": "src/tuningfork/proto/tuningfork_clearcut_log.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2018-12-21T11:47:05Z",
+      "side": 1,
+      "message": "I\u0027m still not convinced we need this. It\u0027s a \u0027for future expansion\u0027 parameter. Anyway, let\u0027s leave it for now. It\u0027s optional so won\u0027t have any impact on message size.",
+      "revId": "cd7e033c6c8b2a8af9082fc40fe29ba0c49884ce",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
