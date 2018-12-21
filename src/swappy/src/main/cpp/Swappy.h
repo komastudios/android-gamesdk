@@ -37,6 +37,7 @@ namespace swappy {
 class ChoreographerFilter;
 class ChoreographerThread;
 class EGL;
+class FrameStatistics;
 
 using EGLDisplay = void *;
 using EGLSurface = void *;
@@ -74,6 +75,7 @@ class Swappy {
 
     static void overrideAutoSwapInterval(uint64_t swap_ns);
 
+    static void getStats(Swappy_Stats *stats);
     static void destroyInstance();
 
 private:
@@ -136,7 +138,7 @@ private:
     int32_t mCurrentFrame = 0;
 
     std::mutex mEglMutex;
-    std::unique_ptr<EGL> mEgl;
+    std::shared_ptr<EGL> mEgl;
 
     int32_t mTargetFrame = 0;
     std::chrono::steady_clock::time_point mPresentationTime = std::chrono::steady_clock::now();
@@ -167,6 +169,7 @@ private:
     bool mAutoSwapIntervalEnabled GUARDED_BY(mFrameDurationsMutex) = true;
     static constexpr float FRAME_AVERAGE_HYSTERESIS = 0.1;
     std::chrono::steady_clock::time_point mSwapTime;
+    std::unique_ptr<FrameStatistics> mFramestats;
 };
 
 } //namespace swappy

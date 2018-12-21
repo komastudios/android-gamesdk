@@ -21,6 +21,9 @@
 #include <EGL/eglext.h>
 #include <jni.h>
 
+#define MAX_FRAME_BUCKETS 6
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -52,6 +55,19 @@ void Swappy_injectTracer(const SwappyTracer *t);
 // NOTE: Swappy may still change this value based on new frames rendering time. To completely
 // override auto swap interval value app needs to call first to Swappy_setAutoSwapInterval(false);
 void Swappy_setAutoSwapInterval(bool enabled);
+
+// toggle stats on/off
+// adyabr TODO: doc
+void Swappy_setStatsMode(bool enabled);
+
+struct Swappy_Stats {
+    uint64_t totalFrames;
+    uint64_t idleFrames[MAX_FRAME_BUCKETS];
+    uint64_t lateFrames[MAX_FRAME_BUCKETS];
+    uint64_t offsetFromPrevFrame[MAX_FRAME_BUCKETS];
+};
+
+void Swappy_getStats(Swappy_Stats *);
 
 #ifdef __cplusplus
 };
