@@ -105,6 +105,24 @@
       "revId": "f6fa08d57c8de010bfd1e4ee2fa794faec6f50aa",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "91d50343_ca0a160c",
+        "filename": "samples/bouncyball/app/src/main/res/xml/preferences.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2018-12-21T18:46:12Z",
+      "side": 1,
+      "message": "Resolving it to be able to merge this CL. @willosborn, let me know if you still think we should add some documentation on this.",
+      "parentUuid": "55095a5d_c2a834c1",
+      "revId": "f6fa08d57c8de010bfd1e4ee2fa794faec6f50aa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
