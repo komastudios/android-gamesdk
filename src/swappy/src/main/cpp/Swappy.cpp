@@ -140,6 +140,12 @@ bool Swappy::swapInternal(EGLDisplay display, EGLSurface surface) {
         mChoreographerThread->postFrameCallbacks();
     }
 
+    if (Trace::getInstance()->isEnabled()) {
+        ALOGI("Swapping frame #%d, last requested presentation time: %ld",
+              mCurrentFrame,
+              (long) mPresentationTime.time_since_epoch().count());
+    }
+
     waitForNextFrame(display);
 
     const auto swapStart = std::chrono::steady_clock::now();
