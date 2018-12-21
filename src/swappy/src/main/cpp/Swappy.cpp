@@ -26,6 +26,7 @@
 #include "ChoreographerFilter.h"
 #include "ChoreographerThread.h"
 #include "EGL.h"
+#include "FrameStatistics.h"
 
 #include "Log.h"
 #include "Trace.h"
@@ -139,6 +140,8 @@ bool Swappy::swap(EGLDisplay display, EGLSurface surface) {
 }
 
 bool Swappy::swapInternal(EGLDisplay display, EGLSurface surface) {
+    if (mFramestats)
+        mFramestats->capture(display, surface, std::chrono::steady_clock::now());
     if (!mUsingExternalChoreographer) {
         mChoreographerThread->postFrameCallbacks();
     }
@@ -202,6 +205,36 @@ void Swappy::setAutoSwapInterval(bool enabled) {
 
     std::lock_guard<std::mutex> lock(swappy->mFrameDurationsMutex);
     swappy->mAutoSwapIntervalEnabled = enabled;
+}
+
+void Swappy::setStatsMode(bool enabled) {
+    Swappy *swappy = getInstance();
+    if (!swappy) {
+        ALOGE("Failed to get Swappy instance in setStatsMode");
+            return;
+    }
+
+    if (enabled && !swappy->mFramestats) {
+        swappy->mFramestats = std::make_unique<FrameStatistics>(
+                swappy->mEgl, swappy->mRefreshPeriod);
+        ALOGE("Enabling stats");
+    } else {
+        swappy->mFramestats = nullptr;
+        ALOGE("Disabling stats");
+    }
+}
+
+void Swappy::getStats(Swappy_Stats *stats) {
+    Swappy *swappy = getInstance();
+    if (!swappy) {
+        ALOGE("Failed to get Swappy instance in getStats");
+        return;
+    }
+
+    if (swappy->mFramestats)
+        *stats = swappy->mFramestats->getStats();
+    else
+        ALOGE("stats are not enabled");
 }
 
 Swappy *Swappy::getInstance() {
@@ -274,6 +307,7 @@ Swappy::Swappy(JavaVM *vm,
                nanoseconds sfOffset,
                ConstructorTag /*tag*/)
     : mRefreshPeriod(refreshPeriod),
+      mFramestats(nullptr),
       mChoreographerFilter(std::make_unique<ChoreographerFilter>(refreshPeriod,
                                                                  sfOffset - appOffset,
                                                                  [this]() { return wakeClient(); })),
