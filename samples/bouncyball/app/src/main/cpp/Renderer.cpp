@@ -24,13 +24,15 @@
 
 #include <android/native_window.h>
 
-#include "swappy/src/main/cpp/Log.h"
+#include "Log.h"
 
 #include "swappy/swappy.h"
+#include "swappy/swappy_extra.h"
 
 #include "Circle.h"
-
 using namespace std::chrono_literals;
+
+namespace samples {
 
 Renderer *Renderer::getInstance() {
     static std::unique_ptr<Renderer> sRenderer = std::make_unique<Renderer>(ConstructorTag{});
@@ -81,7 +83,8 @@ float Renderer::getAverageFps() {
 }
 
 void Renderer::requestDraw() {
-    mWorkerThread.run([=](ThreadState *threadState) { if (threadState->isStarted) draw(threadState); });
+    mWorkerThread.run(
+        [=](ThreadState *threadState) { if (threadState->isStarted) draw(threadState); });
 }
 
 Renderer::ThreadState::ThreadState() {
@@ -132,7 +135,7 @@ Renderer::ThreadState::~ThreadState() {
     if (display != EGL_NO_DISPLAY) eglTerminate(display);
 }
 
-void Renderer::ThreadState::onSettingsChanged(const Settings * settings) {
+void Renderer::ThreadState::onSettingsChanged(const Settings *settings) {
     refreshPeriod = settings->getRefreshPeriod();
     swapIntervalNS = settings->getSwapIntervalNS();
 }
@@ -155,7 +158,7 @@ EGLBoolean Renderer::ThreadState::makeCurrent(EGLSurface surface) {
     return eglMakeCurrent(display, surface, surface, context);
 }
 
-void Renderer::HotPocketState::onSettingsChanged(const Settings * settings) {
+void Renderer::HotPocketState::onSettingsChanged(const Settings *settings) {
     isEnabled = settings->getHotPocket();
 }
 
@@ -198,6 +201,10 @@ void Renderer::calculateFps() {
     prev = now;
 }
 
+void Renderer::setWorkload(int load) {
+    mWorkload = load;
+}
+
 void Renderer::draw(ThreadState *threadState) {
     // Don't render if we have no surface
     if (threadState->surface == EGL_NO_SURFACE) {
@@ -210,6 +217,11 @@ void Renderer::draw(ThreadState *threadState) {
     calculateFps();
 
     float deltaSeconds = threadState->swapIntervalNS / 1e9f;
+    if (threadState->lastUpdate - std::chrono::steady_clock::now() <= 100ms) {
+        deltaSeconds = (threadState->lastUpdate - std::chrono::steady_clock::now()).count() / 1e9f;
+    }
+    threadState->lastUpdate = std::chrono::steady_clock::now();
+
     threadState->x += threadState->velocity * deltaSeconds;
 
     if (threadState->x > 0.8f) {
@@ -229,10 +241,12 @@ void Renderer::draw(ThreadState *threadState) {
     const std::vector<Circle>
         circles = {{Circle::Color{0.0f, 1.0f, 1.0f}, 0.1f, threadState->x, 0.0f}};
 
-    Circle::draw(aspectRatio, circles);
+    Circle::draw(aspectRatio, circles, mWorkload);
 
     Swappy_swap(threadState->display, threadState->surface);
 
     // If we're still started, request another frame
     requestDraw();
 }
+
+} // namespace samples

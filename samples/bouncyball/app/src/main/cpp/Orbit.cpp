@@ -22,8 +22,8 @@
 
 #include <android/native_window_jni.h>
 
-#include "swappy/src/main/cpp/Log.h"
-#include "swappy/src/main/cpp/Settings.h"
+#include "Log.h"
+#include "Settings.h"
 
 #include "swappy/swappy.h"
 #include "swappy/swappy_extra.h"
@@ -31,19 +31,27 @@
 #include "Renderer.h"
 
 using std::chrono::nanoseconds;
+using namespace samples;
 
 namespace {
+
 std::string to_string(jstring jstr, JNIEnv *env) {
     const char *utf = env->GetStringUTFChars(jstr, nullptr);
     std::string str(utf);
     env->ReleaseStringUTFChars(jstr, utf);
     return str;
 }
+
 } // anonymous namespace
 
 extern "C" {
 
 void startFrameCallback(void *) {
+}
+
+void swapIntervalChangedCallback(void *) {
+    uint64_t swap_ns = Swappy_getSwapIntervalNS();
+    ALOGI("Swappy changed swap interval to %.2fms", swap_ns / 1e6f);
 }
 
 JNIEXPORT void JNICALL
@@ -60,6 +68,7 @@ Java_com_prefabulated_bouncyball_OrbitActivity_nInit(JNIEnv *env, jobject activi
     tracers.postSwapBuffers = nullptr;
     tracers.startFrame = startFrameCallback;
     tracers.userData = nullptr;
+    tracers.swapIntervalChanged = swapIntervalChangedCallback;
 
     Swappy_injectTracer(&tracers);
 }
@@ -96,9 +105,21 @@ Java_com_prefabulated_bouncyball_OrbitActivity_nSetPreference(JNIEnv *env, jobje
     Settings::getInstance()->setPreference(to_string(key, env), to_string(value, env));
 }
 
+JNIEXPORT void JNICALL
+Java_com_prefabulated_bouncyball_OrbitActivity_nSetAutoSwapInterval(JNIEnv *env, jobject /* this */,
+                                                              jboolean enabled) {
+    Swappy_setAutoSwapInterval(enabled);
+}
+
 JNIEXPORT float JNICALL
 Java_com_prefabulated_bouncyball_OrbitActivity_nGetAverageFps(JNIEnv * /* env */, jobject /* this */) {
     return Renderer::getInstance()->getAverageFps();
+}
+
+JNIEXPORT void JNICALL
+Java_com_prefabulated_bouncyball_OrbitActivity_nSetWorkload(JNIEnv * /* env */, jobject /* this */,
+                                                            jint load) {
+    Renderer::getInstance()->setWorkload(load);
 }
 
 } // extern "C"

@@ -2,13 +2,13 @@ cc_defaults {
   name: "gamesdk-defaults",
   sdk_version: "27",
   cflags: [
-      "-Wall",
-      "-Werror",
+    "-Wall",
+    "-Werror",
   ],
   shared_libs: [
-      "libEGL",
-      "liblog",
-      "libGLESv2",
+    "libEGL",
+    "liblog",
+    "libGLESv2",
   ],
   static_libs: [
     "libprotobuf-cpp-lite-ndk",
@@ -34,6 +34,7 @@ cc_library_static {
   defaults: ["gamesdk-defaults"],
   export_include_dirs: [
     "include/",
+    "src/common",
   ],
   srcs: [
     "src/device_info/*.cpp",
@@ -47,6 +48,11 @@ cc_library_static {
 }
 
 filegroup {
-    name: "device_info_proto",
-    srcs: [ "include/device_info/device_info.proto" ],
+  name: "device_info_proto",
+  srcs: [ "include/device_info/device_info.proto" ],
+}
+
+filegroup {
+  name: "device_info_jni_java",
+  srcs: [ "src/device_info_jni/DeviceInfoJni.java" ],
 }
