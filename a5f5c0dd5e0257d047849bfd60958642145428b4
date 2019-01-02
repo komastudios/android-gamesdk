@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "be5cab79_241b91db",
+        "filename": "include/device_info/device_info.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-01-02T10:25:28Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f9c90398_af756b2d",
+      "revId": "a5f5c0dd5e0257d047849bfd60958642145428b4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8179a797_010fc266",
         "filename": "include/device_info/device_info.proto",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "a5f5c0dd5e0257d047849bfd60958642145428b4",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5f09ac61_c1a6d1b3",
+        "filename": "include/device_info/device_info.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-01-02T10:25:28Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "8179a797_010fc266",
+      "revId": "a5f5c0dd5e0257d047849bfd60958642145428b4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
