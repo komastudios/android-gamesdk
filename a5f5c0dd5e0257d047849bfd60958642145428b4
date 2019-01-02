@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f9c90398_af756b2d",
+        "filename": "include/device_info/device_info.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-02T10:21:34Z",
+      "side": 1,
+      "message": "nit: s/Gl/Gl_info/ (don\u0027t hold this CL to address this, just put it into a future one).",
+      "revId": "a5f5c0dd5e0257d047849bfd60958642145428b4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8179a797_010fc266",
+        "filename": "include/device_info/device_info.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-02T10:21:34Z",
+      "side": 1,
+      "message": "nit: \ns/Root/DeviceInfo/\ns/Data/Info/\n\n(again don\u0027t hold this CL to address this)\n\nnames like Root and Data are typically highly overloaded.",
+      "revId": "a5f5c0dd5e0257d047849bfd60958642145428b4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
