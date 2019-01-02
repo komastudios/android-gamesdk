@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "aabe8d68_54bd5906",
+        "filename": "include/device_info/device_info.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-01-02T11:49:13Z",
+      "side": 1,
+      "message": "After renaming Data to Info and nest Gl into Info, it is now Info.Gl\n\nI find this enough without renaming to Gl_info.",
+      "parentUuid": "be5cab79_241b91db",
+      "revId": "a5f5c0dd5e0257d047849bfd60958642145428b4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8179a797_010fc266",
         "filename": "include/device_info/device_info.proto",
         "patchSetId": 2
@@ -66,6 +84,24 @@
       "side": 1,
       "message": "Ack",
       "parentUuid": "8179a797_010fc266",
+      "revId": "a5f5c0dd5e0257d047849bfd60958642145428b4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6e2827eb_90b797f8",
+        "filename": "include/device_info/device_info.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-01-02T11:49:13Z",
+      "side": 1,
+      "message": "Data \u003d\u003e Info done.\nRoot \u003d\u003e InfoWithErrors. I found this one more descriptive.",
+      "parentUuid": "5f09ac61_c1a6d1b3",
       "revId": "a5f5c0dd5e0257d047849bfd60958642145428b4",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
