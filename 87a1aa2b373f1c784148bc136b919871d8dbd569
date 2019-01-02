@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7972673a_d7506a5e",
+        "filename": "samples/bouncyball/app/src/main/java/com/prefabulated/bouncyball/SettingsFragment.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-02T10:26:38Z",
+      "side": 1,
+      "message": "nit: As the size of these can be determined before they are allocated, it might be slightly neater to create fixed size arrays here and then not have to jump through hoops to turn them into Arrays before passing them to mSwapIntervalPreference.set*.",
+      "revId": "87a1aa2b373f1c784148bc136b919871d8dbd569",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "153ca123_9d02aac8",
+        "filename": "samples/bouncyball/app/src/main/java/com/prefabulated/bouncyball/SettingsFragment.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-02T10:26:38Z",
+      "side": 1,
+      "message": "nit: \u0027dev\u0027 could do with being a bit more descriptive.",
+      "revId": "87a1aa2b373f1c784148bc136b919871d8dbd569",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
