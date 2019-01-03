@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "28498a28_56c732a9",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2019-01-03T18:25:51Z",
+      "side": 1,
+      "message": "I\u0027d put units on the time/timestamp fields",
+      "revId": "d5d5002b7e0ab79b9a25116a093152730a4f4bb4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
