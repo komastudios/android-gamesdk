@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "610e5ab1_d2d4b171",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-01-04T17:30:53Z",
+      "side": 1,
+      "message": "This should renamed, it\u0027s not really setting a mode, but it\u0027s an enable/disable",
+      "revId": "371c7664910226d797f4464d2dd085cf47cafb49",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5f95cfb1_d0fe36fe",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-01-04T17:30:53Z",
+      "side": 1,
+      "message": "can we add comments to describe the meaning of each field?",
+      "revId": "371c7664910226d797f4464d2dd085cf47cafb49",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f7fe26d8_3eff9d7b",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-01-04T17:30:53Z",
+      "side": 1,
+      "message": "Add brackets for consistency.",
+      "revId": "371c7664910226d797f4464d2dd085cf47cafb49",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
