@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "809b4267_9e6b0b34",
+        "filename": "src/tuningfork/clearcutserializer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-04T14:45:19Z",
+      "side": 1,
+      "message": "Can we not add this directory to the include dirs on the command line? That would allow the build scripts to switch us between debug and release code gen...",
+      "revId": "7780728ad11f8ed74dbf58cabb052f555c88e7da",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b050b488_27deb4af",
+        "filename": "src/tuningfork/proto/tuningfork_clearcut_log.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-04T14:45:19Z",
+      "side": 1,
+      "message": "Suggestion: comment explaining that these are defined by the developer.",
+      "revId": "7780728ad11f8ed74dbf58cabb052f555c88e7da",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
