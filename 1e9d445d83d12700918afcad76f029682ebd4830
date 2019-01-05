@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e4bca772_83011c27",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-05T01:05:08Z",
+      "side": 1,
+      "message": "we should use here \"%\" PRIu64 instead of %llu",
+      "revId": "1e9d445d83d12700918afcad76f029682ebd4830",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
