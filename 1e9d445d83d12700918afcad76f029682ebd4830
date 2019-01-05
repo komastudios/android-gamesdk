@@ -16,6 +16,24 @@
       "revId": "1e9d445d83d12700918afcad76f029682ebd4830",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "697c29fb_d2112fab",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-01-05T01:47:38Z",
+      "side": 1,
+      "message": "What\u0027s the syntax?\nI tried this:\nALOGI(\"Returning refresh duration of %\\\" PRIu64 \\\" nsec (approx %f Hz)\", mRefreshDur, refreshRate);\n                                                                        ~~       ^~~~~~~~~~~\n                                                                        %llu",
+      "parentUuid": "e4bca772_83011c27",
+      "revId": "1e9d445d83d12700918afcad76f029682ebd4830",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
