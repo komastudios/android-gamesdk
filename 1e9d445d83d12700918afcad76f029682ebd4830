@@ -34,6 +34,24 @@
       "revId": "1e9d445d83d12700918afcad76f029682ebd4830",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d2af8f3f_802f676e",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-05T01:55:14Z",
+      "side": 1,
+      "message": "ALOGD(\"Returning refresh duration of %\" PRIu64 \" nsec (approx %f Hz)\", (unsigned long long) mRefreshDur, refreshRate);",
+      "parentUuid": "697c29fb_d2112fab",
+      "revId": "1e9d445d83d12700918afcad76f029682ebd4830",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
