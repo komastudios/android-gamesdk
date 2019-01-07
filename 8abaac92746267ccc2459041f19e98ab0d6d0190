@@ -22,6 +22,30 @@
       "revId": "8abaac92746267ccc2459041f19e98ab0d6d0190",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4c10ed21_b4c539ca",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-01-07T21:14:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d591747b_3c382f7c",
+      "range": {
+        "startLine": 38,
+        "startChar": 63,
+        "endLine": 38,
+        "endChar": 65
+      },
+      "revId": "8abaac92746267ccc2459041f19e98ab0d6d0190",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
