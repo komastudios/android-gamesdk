@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "89ae797a_0aa18e8e",
+        "filename": "samples/tuningfork/tfvalidate/apk_validator.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-07T16:41:56Z",
+      "side": 1,
+      "message": "nit: I know it\u0027s not required by the style guide but I think that one blank line between functions is more readable (and used almost everywhere else)?",
+      "revId": "e8c90a61a139edb8fc20df668f1443fd07b94dba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f8f481ad_c6b93257",
+        "filename": "samples/tuningfork/tfvalidate/apk_validator.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-07T16:41:56Z",
+      "side": 1,
+      "message": "https://google.github.io/styleguide/cppguide.html#Horizontal_Whitespace\n\n(quite a few places with this issue).",
+      "revId": "e8c90a61a139edb8fc20df668f1443fd07b94dba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dad6cd61_5430edf1",
+        "filename": "samples/tuningfork/tfvalidate/main.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-07T16:41:56Z",
+      "side": 1,
+      "message": "Return value of \u0027int\u0027 but no return statement for the case where everything works. I know the compiler is lenient on this kind of thing for \u0027main\u0027 but I think it\u0027s best to explicitly return 0 on success here.",
+      "revId": "e8c90a61a139edb8fc20df668f1443fd07b94dba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
