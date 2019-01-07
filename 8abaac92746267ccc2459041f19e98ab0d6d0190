@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d591747b_3c382f7c",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2019-01-07T21:01:13Z",
+      "side": 1,
+      "message": "Nit: I might go with \u0027Millis\u0027 to align with \u0027Nanos\u0027 at :31",
+      "range": {
+        "startLine": 38,
+        "startChar": 63,
+        "endLine": 38,
+        "endChar": 65
+      },
+      "revId": "8abaac92746267ccc2459041f19e98ab0d6d0190",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
