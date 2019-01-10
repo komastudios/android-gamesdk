@@ -73,8 +73,6 @@ constexpr uint32_t kTooCloseToVsyncBoundary     = 3000000;
 constexpr uint32_t kTooFarAwayFromVsyncBoundary = 7000000;
 constexpr uint32_t kNudgeWithinVsyncBoundaries  = 2000000;
 
-using QueueFamiliyMap = std::shared_ptr<std::map<VkQueue, uint32_t>>;
-
 // Note: The API functions is at the botton of the file.  Those functions call methods of the
 // singleton SwappyVk class.  Those methods call virtual methods of the abstract SwappyVkBase
 // class, which is actually implemented by one of the derived/concrete classes:
@@ -116,11 +114,10 @@ public:
                  uint64_t         refreshDur,
                  uint32_t         interval,
                  SwappyVk         &swappyVk,
-                 void             *libVulkan,
-                 QueueFamiliyMap  pPerQueueFamiliyIndex) :
+                 void             *libVulkan) :
             mPhysicalDevice(physicalDevice), mDevice(device), mRefreshDur(refreshDur),
             mInterval(interval), mSwappyVk(swappyVk), mLibVulkan(libVulkan),
-            mpPerQueueFamiliyIndex(pPerQueueFamiliyIndex), mInitialized(false)
+            mInitialized(false)
     {
 #ifdef ANDROID
         InitVulkan();
@@ -140,6 +137,7 @@ public:
         mInterval = interval;
     }
     virtual VkResult doQueuePresent(VkQueue                 queue,
+                                    uint32_t                queueFamilyIndex,
                                     const VkPresentInfoKHR* pPresentInfo) = 0;
 protected:
     VkPhysicalDevice mPhysicalDevice;
@@ -148,7 +146,6 @@ protected:
     uint32_t         mInterval;
     SwappyVk         &mSwappyVk;
     void             *mLibVulkan;
-    QueueFamiliyMap mpPerQueueFamiliyIndex = nullptr;
     bool             mInitialized;
     pthread_t mThread = 0;
     ALooper *mLooper = nullptr;
@@ -320,9 +317,8 @@ public:
     SwappyVkGoogleDisplayTiming(VkPhysicalDevice physicalDevice,
                                 VkDevice         device,
                                 SwappyVk         &swappyVk,
-                                void             *libVulkan,
-                                QueueFamiliyMap  pPerQueueFamiliyIndex) :
-            SwappyVkBase(physicalDevice, device, k16_6msec, 1, swappyVk, libVulkan, pPerQueueFamiliyIndex)
+                                void             *libVulkan) :
+            SwappyVkBase(physicalDevice, device, k16_6msec, 1, swappyVk, libVulkan)
     {
         initGoogExtention();
     }
@@ -348,6 +344,7 @@ public:
         return true;
     }
     virtual VkResult doQueuePresent(VkQueue                 queue,
+                                    uint32_t                queueFamilyIndex,
                                     const VkPresentInfoKHR* pPresentInfo) override;
 
 private:
@@ -356,6 +353,7 @@ private:
 };
 
 VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(VkQueue                 queue,
+                                                     uint32_t                queueFamilyIndex,
                                                      const VkPresentInfoKHR* pPresentInfo)
 {
     VkResult ret = VK_SUCCESS;
@@ -462,9 +460,8 @@ public:
     SwappyVkGoogleDisplayTimingAndroid(VkPhysicalDevice physicalDevice,
                                 VkDevice         device,
                                 SwappyVk         &swappyVk,
-                                void             *libVulkan,
-                                QueueFamiliyMap  pPerQueueFamiliyIndex) :
-            SwappyVkGoogleDisplayTiming(physicalDevice, device, swappyVk,libVulkan, pPerQueueFamiliyIndex) {
+                                void             *libVulkan) :
+            SwappyVkGoogleDisplayTiming(physicalDevice, device, swappyVk,libVulkan) {
         startChoreographerThread();
     }
 
@@ -482,10 +479,11 @@ public:
 
 
     virtual VkResult doQueuePresent(VkQueue queue,
+                                    uint32_t queueFamilyIndex,
                                     const VkPresentInfoKHR *pPresentInfo) override;
 
 private:
-    VkResult initializeVkSyncObjects(VkQueue queue);
+    VkResult initializeVkSyncObjects(VkQueue queue, uint32_t queueFamilyIndex);
     void destroyVkSyncObjects();
 
     void waitForFenceChoreographer(VkQueue queue);
@@ -504,16 +502,11 @@ private:
     static constexpr int MAX_PENDING_FENCES = 1;
 };
 
-VkResult SwappyVkGoogleDisplayTimingAndroid::initializeVkSyncObjects(VkQueue queue)
+VkResult SwappyVkGoogleDisplayTimingAndroid::initializeVkSyncObjects(VkQueue   queue,
+                                                                     uint32_t  queueFamilyIndex)
 {
     if (mCommandPool.find(queue) != mCommandPool.end()) {
         return VK_SUCCESS;
-    }
-
-    if (mpPerQueueFamiliyIndex == nullptr ||
-        mpPerQueueFamiliyIndex->find(queue) == mpPerQueueFamiliyIndex->end()) {
-        ALOGE("Unknown queue %p. Did you call SwappyVkSetQueueFamiliyIndex ?", queue);
-        return VK_INCOMPLETE;
     }
 
     VkSync sync;
@@ -521,7 +514,7 @@ VkResult SwappyVkGoogleDisplayTimingAndroid::initializeVkSyncObjects(VkQueue que
     const VkCommandPoolCreateInfo cmd_pool_info = {
             .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
             .pNext = NULL,
-            .queueFamilyIndex = (*mpPerQueueFamiliyIndex)[queue],
+            .queueFamilyIndex = queueFamilyIndex,
             .flags = 0,
     };
 
@@ -609,12 +602,13 @@ void SwappyVkGoogleDisplayTimingAndroid::destroyVkSyncObjects() {
             VkSync sync = mPendingSync[it->first].front();
             mPendingSync[it->first].pop_front();
             vkWaitForFences(mDevice, 1, &sync.fence, VK_TRUE, UINT64_MAX);
+            vkResetFences(mDevice, 1, &sync.fence);
             mFreeSync[it->first].push_back(sync);
         }
 
         while (mFreeSync[it->first].size() > 0) {
-            VkSync sync = mPendingSync[it->first].front();
-            mPendingSync[it->first].pop_front();
+            VkSync sync = mFreeSync[it->first].front();
+            mFreeSync[it->first].pop_front();
             vkFreeCommandBuffers(mDevice, mCommandPool[it->first], 1, &sync.command);
             vkDestroyEvent(mDevice, sync.event, NULL);
             vkDestroySemaphore(mDevice, sync.semaphore, NULL);
@@ -643,9 +637,10 @@ void SwappyVkGoogleDisplayTimingAndroid::waitForFenceChoreographer(VkQueue queue
 }
 
 VkResult SwappyVkGoogleDisplayTimingAndroid::doQueuePresent(VkQueue                 queue,
+                                                     uint32_t                queueFamilyIndex,
                                                      const VkPresentInfoKHR* pPresentInfo)
 {
-    VkResult ret = initializeVkSyncObjects(queue);
+    VkResult ret = initializeVkSyncObjects(queue, queueFamilyIndex);
     if (ret) {
         return ret;
     }
@@ -739,9 +734,8 @@ public:
     SwappyVkAndroidFallback(VkPhysicalDevice physicalDevice,
                             VkDevice         device,
                             SwappyVk         &swappyVk,
-                            void             *libVulkan,
-                            QueueFamiliyMap  pPerQueueFamiliyIndex) :
-            SwappyVkBase(physicalDevice, device, 0, 1, swappyVk, libVulkan, pPerQueueFamiliyIndex) {
+                            void             *libVulkan) :
+            SwappyVkBase(physicalDevice, device, 0, 1, swappyVk, libVulkan) {
         startChoreographerThread();
     }
 
@@ -770,6 +764,7 @@ public:
     }
 
     virtual VkResult doQueuePresent(VkQueue                 queue,
+                                    uint32_t                queueFamilyIndex,
                                     const VkPresentInfoKHR* pPresentInfo) override
     {
         {
@@ -807,9 +802,8 @@ public:
     SwappyVkVulkanFallback(VkPhysicalDevice physicalDevice,
                             VkDevice         device,
                             SwappyVk         &swappyVk,
-                            void             *libVulkan,
-                           QueueFamiliyMap   pPerQueueFamiliyIndex) :
-            SwappyVkBase(physicalDevice, device, k16_6msec, 1, swappyVk, libVulkan, pPerQueueFamiliyIndex) {}
+                            void             *libVulkan) :
+            SwappyVkBase(physicalDevice, device, k16_6msec, 1, swappyVk, libVulkan) {}
     virtual bool doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
                                            uint64_t*      pRefreshDuration) override
     {
@@ -817,6 +811,7 @@ public:
         return true;
     }
     virtual VkResult doQueuePresent(VkQueue                 queue,
+                                    uint32_t                queueFamilyIndex,
                                     const VkPresentInfoKHR* pPresentInfo) override
     {
         return mpfnQueuePresentKHR(queue, pPresentInfo);
@@ -852,7 +847,8 @@ public:
                                            VkExtensionProperties* pAvailableExtensions,
                                            uint32_t*              pRequiredExtensionCount,
                                            char**                 pRequiredExtensions);
-    void SetQueueFamiliyIndex(VkQueue    queue,
+    void SetQueueFamiliyIndex(VkDevice   device,
+                              VkQueue    queue,
                               uint32_t   queueFamilyIndex);
     bool GetRefreshCycleDuration(VkPhysicalDevice physicalDevice,
                                  VkDevice         device,
@@ -863,12 +859,19 @@ public:
                          uint32_t       interval);
     VkResult QueuePresent(VkQueue                 queue,
                           const VkPresentInfoKHR* pPresentInfo);
+    void DestroySwapchain(VkDevice                device,
+                          VkSwapchainKHR          swapchain);
 
 private:
     std::map<VkPhysicalDevice, bool> doesPhysicalDeviceHaveGoogleDisplayTiming;
-    std::map<VkDevice, SwappyVkBase*> perDeviceImplementation;
-    std::map<VkSwapchainKHR, SwappyVkBase*> perSwapchainImplementation;
-    QueueFamiliyMap pPerQueueFamiliyIndex;
+    std::map<VkDevice, std::shared_ptr<SwappyVkBase>> perDeviceImplementation;
+    std::map<VkSwapchainKHR, std::shared_ptr<SwappyVkBase>> perSwapchainImplementation;
+
+    struct QueueFamiliyIndex {
+        VkDevice device;
+        uint32_t queueFamiliyIndex;
+    };
+    std::map<VkQueue, QueueFamiliyIndex> perQueueFamiliyIndex;
 
     void *mLibVulkan     = nullptr;
 
@@ -910,13 +913,11 @@ void SwappyVk::swappyVkDetermineDeviceExtensions(
     }
 }
 
-void SwappyVk::SetQueueFamiliyIndex(VkQueue    queue,
+void SwappyVk::SetQueueFamiliyIndex(VkDevice   device,
+                                    VkQueue    queue,
                                     uint32_t   queueFamilyIndex)
 {
-    if (!pPerQueueFamiliyIndex) {
-        pPerQueueFamiliyIndex = std::make_shared<std::map<VkQueue, uint32_t>>();
-    }
-    (*pPerQueueFamiliyIndex)[queue] = queueFamilyIndex;
+    perQueueFamiliyIndex[queue] = {device, queueFamilyIndex};
 }
 
 
@@ -928,7 +929,7 @@ bool SwappyVk::GetRefreshCycleDuration(VkPhysicalDevice physicalDevice,
                                        VkSwapchainKHR   swapchain,
                                        uint64_t*        pRefreshDuration)
 {
-    SwappyVkBase *pImplementation = perDeviceImplementation[device];
+    auto& pImplementation = perDeviceImplementation[device];
     if (!pImplementation) {
         // We have not seen this device yet.
         if (!mLibVulkan) {
@@ -946,34 +947,29 @@ bool SwappyVk::GetRefreshCycleDuration(VkPhysicalDevice physicalDevice,
         // determine which derived class to use to implement the rest of the API
         if (doesPhysicalDeviceHaveGoogleDisplayTiming[physicalDevice]) {
 #ifdef ANDROID
-            pImplementation = new SwappyVkGoogleDisplayTimingAndroid(physicalDevice, device,
-                                                              getInstance(), mLibVulkan,
-                                                              pPerQueueFamiliyIndex);
+            pImplementation = std::make_shared<SwappyVkGoogleDisplayTimingAndroid>
+                    (physicalDevice, device, getInstance(), mLibVulkan);
             ALOGV("SwappyVk initialized for VkDevice %p using VK_GOOGLE_display_timing on Android", device);
 #else
             // Instantiate the class that sits on top of VK_GOOGLE_display_timing
-            pImplementation = new SwappyVkGoogleDisplayTiming(physicalDevice, device,
-                                                              getInstance(), mLibVulkan,
-                                                              pPerQueueFamiliyIndex);
+            pImplementation = std::make_shared<SwappyVkGoogleDisplayTiming>
+                    (physicalDevice, device, getInstance(), mLibVulkan);
             ALOGV("SwappyVk initialized for VkDevice %p using VK_GOOGLE_display_timing", device);
 #endif
         } else {
             // Instantiate the class that sits on top of the basic Vulkan APIs
 #ifdef ANDROID
-            pImplementation = new SwappyVkAndroidFallback(physicalDevice, device, getInstance(),
-                                                          mLibVulkan, pPerQueueFamiliyIndex);
+            pImplementation = std::make_shared<SwappyVkAndroidFallback>
+                    (physicalDevice, device, getInstance(), mLibVulkan);
             ALOGV("SwappyVk initialized for VkDevice %p using Android fallback", device);
 #else  // ANDROID
-            pImplementation = new SwappyVkVulkanFallback(physicalDevice, device, getInstance(),
-                                                         mLibVulkan, pPerQueueFamiliyIndex);
+            pImplementation = std::make_shared<SwappyVkVulkanFallback>
+                    (physicalDevice, device, getInstance(), mLibVulkan);
             ALOGV("SwappyVk initialized for VkDevice %p using Vulkan-only fallback", device);
 #endif // ANDROID
         }
 
-        // Second, cache the per-device pointer to the derived class:
-        if (pImplementation) {
-            perDeviceImplementation[device] = pImplementation;
-        } else {
+        if (!pImplementation) {
             // This shouldn't happen, but if it does, something is really wrong.
             return false;
         }
@@ -994,7 +990,7 @@ void SwappyVk::SetSwapInterval(VkDevice       device,
                                VkSwapchainKHR swapchain,
                                uint32_t       interval)
 {
-    SwappyVkBase *pImplementation = perDeviceImplementation[device];
+    auto& pImplementation = perDeviceImplementation[device];
     if (!pImplementation) {
         return;
     }
@@ -1008,15 +1004,22 @@ void SwappyVk::SetSwapInterval(VkDevice       device,
 VkResult SwappyVk::QueuePresent(VkQueue                 queue,
                                 const VkPresentInfoKHR* pPresentInfo)
 {
+    if (perQueueFamiliyIndex.find(queue) == perQueueFamiliyIndex.end()) {
+        ALOGE("Unknown queue %p. Did you call SwappyVkSetQueueFamiliyIndex ?", queue);
+        return VK_INCOMPLETE;
+    }
+
     // This command doesn't have a VkDevice.  It should have at least one VkSwapchainKHR's.  For
     // this command, all VkSwapchainKHR's will have the same VkDevice and VkQueue.
     if ((pPresentInfo->swapchainCount == 0) || (!pPresentInfo->pSwapchains)) {
         // This shouldn't happen, but if it does, something is really wrong.
         return VK_ERROR_DEVICE_LOST;
     }
-    SwappyVkBase *pImplementation = perSwapchainImplementation[*pPresentInfo->pSwapchains];
+    auto& pImplementation = perSwapchainImplementation[*pPresentInfo->pSwapchains];
     if (pImplementation) {
-        return pImplementation->doQueuePresent(queue, pPresentInfo);
+        return pImplementation->doQueuePresent(queue,
+                                               perQueueFamiliyIndex[queue].queueFamiliyIndex,
+                                               pPresentInfo);
     } else {
         // This should only happen if the API was used wrong (e.g. they never
         // called swappyVkGetRefreshCycleDuration).
@@ -1024,6 +1027,21 @@ VkResult SwappyVk::QueuePresent(VkQueue                 queue,
         // themselves, but we'll be friendlier
         return VK_ERROR_DEVICE_LOST;
     }
+}
+
+void SwappyVk::DestroySwapchain(VkDevice                device,
+                                        VkSwapchainKHR          swapchain) {
+    auto it = perQueueFamiliyIndex.begin();
+    while (it != perQueueFamiliyIndex.end()) {
+        if (it->second.device == device) {
+            it = perQueueFamiliyIndex.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    perDeviceImplementation[device] = nullptr;
+    perSwapchainImplementation[swapchain] = nullptr;
 }
 
 
@@ -1050,12 +1068,13 @@ void swappyVkDetermineDeviceExtensions(
 }
 
 void SwappyVkSetQueueFamiliyIndex(
+        VkDevice    device,
         VkQueue     queue,
         uint32_t    queueFamilyIndex)
 {
     ATRACE_CALL();
     SwappyVk& swappy = SwappyVk::getInstance();
-    swappy.SetQueueFamiliyIndex(queue, queueFamilyIndex);
+    swappy.SetQueueFamiliyIndex(device, queue, queueFamilyIndex);
 }
 
 bool swappyVkGetRefreshCycleDuration(
@@ -1086,6 +1105,15 @@ VkResult swappyVkQueuePresent(
     ATRACE_CALL();
     SwappyVk& swappy = SwappyVk::getInstance();
     return swappy.QueuePresent(queue, pPresentInfo);
+}
+
+void SwappyVkDestroySwapchain(
+        VkDevice                device,
+        VkSwapchainKHR          swapchain)
+{
+    ATRACE_CALL();
+    SwappyVk& swappy = SwappyVk::getInstance();
+    swappy.DestroySwapchain(device, swapchain);
 }
 
 }  // extern "C"
