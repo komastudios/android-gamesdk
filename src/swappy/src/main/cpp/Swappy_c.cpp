@@ -74,8 +74,10 @@ void Swappy_setAutoSwapInterval(bool enabled) {
     Swappy::setAutoSwapInterval(enabled);
 }
 
-void Swappy_setStatsMode(bool enabled) {
-    Swappy::setStatsMode(enabled);
+void Swappy_setAutoPipelineMode(bool enabled) {
+    Swappy::setAutoPipelineMode(enabled);
+}
+
 void Swappy_enableStats(bool enabled) {
     Swappy::enableStats(enabled);
 }
