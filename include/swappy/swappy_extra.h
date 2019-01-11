@@ -56,6 +56,12 @@ void Swappy_injectTracer(const SwappyTracer *t);
 // override auto swap interval value app needs to call first to Swappy_setAutoSwapInterval(false);
 void Swappy_setAutoSwapInterval(bool enabled);
 
+// toggle auto pipeline mode on/off
+// by default, swappy will try to reduce latency by scheduling cpu and gpu work in the same
+// pipeline stage, if it fits (the priority is first to reduce swap interval and then to reduce
+// latency by turning pipelining off).
+void Swappy_setAutoPipelineMode(bool enabled);
+
 // toggle statistics collection on/off
 // by default, stats collection if off (and there is no overhead related to stats).
 // App can turn on stats collection by calling Swappy_setStatsMode(true).
