@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "ee02a1da_dcec8c8e",
+        "filename": "src/swappy/src/main/cpp/FrameStatistics.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-01-11T23:57:25Z",
+      "side": 1,
+      "message": "It is :)\nIt\u0027s just good practice to go ++expr and never think about it.",
+      "parentUuid": "f7af8ac7_4c8a9b6d",
+      "revId": "9bf06d08b8cdf99374a07eb14934a6918fcdbde0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d3a08f08_c0dcf84e",
         "filename": "src/swappy/src/main/cpp/Swappy_c.cpp",
         "patchSetId": 6
@@ -66,6 +84,24 @@
       "side": 1,
       "message": "Sorry, rebase error",
       "parentUuid": "d3a08f08_c0dcf84e",
+      "revId": "9bf06d08b8cdf99374a07eb14934a6918fcdbde0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "195252a3_dbcbfd6c",
+        "filename": "src/swappy/src/main/cpp/Swappy_c.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-01-11T23:57:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f1ad5c3b_a95411ff",
       "revId": "9bf06d08b8cdf99374a07eb14934a6918fcdbde0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
