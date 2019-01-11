@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "072ada60_3dd49bf0",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-11T18:41:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "610e5ab1_d2d4b171",
+      "revId": "371c7664910226d797f4464d2dd085cf47cafb49",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5f95cfb1_d0fe36fe",
         "filename": "include/swappy/swappy_extra.h",
         "patchSetId": 4
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "5036dfe1_a4873b45",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-11T18:41:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5f95cfb1_d0fe36fe",
+      "revId": "371c7664910226d797f4464d2dd085cf47cafb49",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f7fe26d8_3eff9d7b",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 4
@@ -50,6 +86,24 @@
       "revId": "371c7664910226d797f4464d2dd085cf47cafb49",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "594a7cf8_f8e9874d",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-11T18:41:20Z",
+      "side": 1,
+      "message": "Removed this code",
+      "parentUuid": "f7fe26d8_3eff9d7b",
+      "revId": "371c7664910226d797f4464d2dd085cf47cafb49",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
