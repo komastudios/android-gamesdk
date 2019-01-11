@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2348dade_b57645d6",
+        "filename": "src/swappy/src/main/cpp/FrameStatistics.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-01-11T22:21:57Z",
+      "side": 1,
+      "message": "Super nitpicking: +stat[numFrames];",
+      "revId": "9bf06d08b8cdf99374a07eb14934a6918fcdbde0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d3a08f08_c0dcf84e",
+        "filename": "src/swappy/src/main/cpp/Swappy_c.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-01-11T22:21:57Z",
+      "side": 1,
+      "message": "Is this ok?",
+      "revId": "9bf06d08b8cdf99374a07eb14934a6918fcdbde0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
