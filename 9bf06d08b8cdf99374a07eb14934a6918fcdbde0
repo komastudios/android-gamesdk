@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "f7af8ac7_4c8a9b6d",
+        "filename": "src/swappy/src/main/cpp/FrameStatistics.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-11T23:27:59Z",
+      "side": 1,
+      "message": "Since this is a simple type and not a composite type, it should be exactly same, isn\u0027t it ?",
+      "parentUuid": "2348dade_b57645d6",
+      "revId": "9bf06d08b8cdf99374a07eb14934a6918fcdbde0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d3a08f08_c0dcf84e",
         "filename": "src/swappy/src/main/cpp/Swappy_c.cpp",
         "patchSetId": 6
@@ -33,6 +51,24 @@
       "revId": "9bf06d08b8cdf99374a07eb14934a6918fcdbde0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f1ad5c3b_a95411ff",
+        "filename": "src/swappy/src/main/cpp/Swappy_c.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-11T23:27:59Z",
+      "side": 1,
+      "message": "Sorry, rebase error",
+      "parentUuid": "d3a08f08_c0dcf84e",
+      "revId": "9bf06d08b8cdf99374a07eb14934a6918fcdbde0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
