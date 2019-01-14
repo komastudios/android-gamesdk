@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e85d0c98_3b9a5a8e",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 539,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-01-14T21:52:55Z",
+      "side": 1,
+      "message": "This method is getting long, can we extract the two branches in two separate methods?\n\nif (...) {\n  DoSomething();\n} else if (...) {\n  DoSomethingElse();\n}",
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
