@@ -1,0 +1,441 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c0461b28_791666db",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 9
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2019-01-14T22:17:43Z",
+      "side": 1,
+      "message": "Nit: these comments look a bit different than the above (e.g., I\u0027d capitalize the first word)",
+      "range": {
+        "startLine": 68,
+        "startChar": 7,
+        "endLine": 68,
+        "endChar": 37
+      },
+      "revId": "37d168ffd04df0693fd32a265dd849813f811bfa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "984bd168_a636686c",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 9
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2019-01-14T22:17:43Z",
+      "side": 1,
+      "message": "Nit: I\u0027d spell out Previous here (doesn\u0027t cost us much)",
+      "range": {
+        "startLine": 89,
+        "startChar": 23,
+        "endLine": 89,
+        "endChar": 27
+      },
+      "revId": "37d168ffd04df0693fd32a265dd849813f811bfa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a17e64ef_3e251e06",
+        "filename": "samples/bouncyball/app/src/main/cpp/Orbit.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2019-01-14T22:17:43Z",
+      "side": 1,
+      "message": "and then, if you use parens for the first part, this should be implicitly converted to double (I think)",
+      "range": {
+        "startLine": 163,
+        "startChar": 52,
+        "endLine": 163,
+        "endChar": 77
+      },
+      "revId": "37d168ffd04df0693fd32a265dd849813f811bfa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b7f75938_ae8c1628",
+        "filename": "samples/bouncyball/app/src/main/cpp/Orbit.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2019-01-14T22:17:43Z",
+      "side": 1,
+      "message": "(value * 100.0) should be equivalent to the cast here",
+      "range": {
+        "startLine": 163,
+        "startChar": 35,
+        "endLine": 163,
+        "endChar": 49
+      },
+      "revId": "37d168ffd04df0693fd32a265dd849813f811bfa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8cb6daa6_600dc622",
+        "filename": "src/swappy/src/main/cpp/EGL.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2019-01-14T22:17:43Z",
+      "side": 1,
+      "message": "I think this only goes back to ~N. Is that okay?",
+      "range": {
+        "startLine": 72,
+        "startChar": 0,
+        "endLine": 77,
+        "endChar": 5
+      },
+      "revId": "37d168ffd04df0693fd32a265dd849813f811bfa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "854eced4_3cf21ec5",
+        "filename": "src/swappy/src/main/cpp/EGL.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2019-01-14T22:17:43Z",
+      "side": 1,
+      "message": "This definitely doesn\u0027t exist until more recent OS versions, so we should probably gracefully handle its nonexistence",
+      "range": {
+        "startLine": 79,
+        "startChar": 0,
+        "endLine": 84,
+        "endChar": 5
+      },
+      "revId": "37d168ffd04df0693fd32a265dd849813f811bfa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "89f27e65_c43a28df",
+        "filename": "src/swappy/src/main/cpp/EGL.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2019-01-14T22:17:43Z",
+      "side": 1,
+      "message": "Nit: pending",
+      "range": {
+        "startLine": 179,
+        "startChar": 32,
+        "endLine": 179,
+        "endChar": 40
+      },
+      "revId": "37d168ffd04df0693fd32a265dd849813f811bfa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c1c065bb_295dc4a0",
+        "filename": "src/swappy/src/main/cpp/EGL.h",
+        "patchSetId": 9
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2019-01-14T22:17:43Z",
+      "side": 1,
+      "message": "Nit: This file seems to be wrapped to 100 char",
+      "range": {
+        "startLine": 55,
+        "startChar": 91,
+        "endLine": 55,
+        "endChar": 114
+      },
+      "revId": "37d168ffd04df0693fd32a265dd849813f811bfa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "79d31a08_3d0ad8b9",
+        "filename": "src/swappy/src/main/cpp/FrameStatistics.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2019-01-14T22:17:43Z",
+      "side": 1,
+      "message": "It\u0027s not clear how this helps smooth. Maybe expand the comment a bit?",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 36
+      },
+      "revId": "37d168ffd04df0693fd32a265dd849813f811bfa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5fb62253_da02e106",
+        "filename": "src/swappy/src/main/cpp/FrameStatistics.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2019-01-14T22:17:43Z",
+      "side": 1,
+      "message": "Nit: Prefer {} for multiline ifs/whiles (here and throughout)\n\nThis could also be\n\n  numFrames \u003d std::min(numFrames, MAX_FRAME_BUCKETS - 1);",
+      "range": {
+        "startLine": 38,
+        "startChar": 0,
+        "endLine": 40,
+        "endChar": 42
+      },
+      "revId": "37d168ffd04df0693fd32a265dd849813f811bfa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2db9297a_ed244623",
+        "filename": "src/swappy/src/main/cpp/FrameStatistics.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2019-01-14T22:17:43Z",
+      "side": 1,
+      "message": "100 char?",
+      "range": {
+        "startLine": 51,
+        "startChar": 0,
+        "endLine": 51,
+        "endChar": 104
+      },
+      "revId": "37d168ffd04df0693fd32a265dd849813f811bfa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "883f4a37_5b7bad6b",
+        "filename": "src/swappy/src/main/cpp/FrameStatistics.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2019-01-14T22:17:43Z",
+      "side": 1,
+      "message": "const?",
+      "range": {
+        "startLine": 67,
+        "startChar": 4,
+        "endLine": 67,
+        "endChar": 13
+      },
+      "revId": "37d168ffd04df0693fd32a265dd849813f811bfa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "19466736_bd232fc7",
+        "filename": "src/swappy/src/main/cpp/FrameStatistics.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2019-01-14T22:17:43Z",
+      "side": 1,
+      "message": "I\u0027d flip the condition:\n\n  if (mPendingFrames.empty()) {\n      return;\n  }\n\n  // etc.",
+      "range": {
+        "startLine": 75,
+        "startChar": 0,
+        "endLine": 75,
+        "endChar": 36
+      },
+      "revId": "37d168ffd04df0693fd32a265dd849813f811bfa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a82ee4d1_a358a2f0",
+        "filename": "src/swappy/src/main/cpp/FrameStatistics.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2019-01-14T22:17:43Z",
+      "side": 1,
+      "message": "Another place you could do an early return to reduce nesting",
+      "range": {
+        "startLine": 88,
+        "startChar": 0,
+        "endLine": 88,
+        "endChar": 25
+      },
+      "revId": "37d168ffd04df0693fd32a265dd849813f811bfa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8fcaae6a_2e27b9ca",
+        "filename": "src/swappy/src/main/cpp/FrameStatistics.h",
+        "patchSetId": 9
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2019-01-14T22:17:43Z",
+      "side": 1,
+      "message": "I think new files should technically be 2019 at this point",
+      "range": {
+        "startLine": 2,
+        "startChar": 13,
+        "endLine": 2,
+        "endChar": 17
+      },
+      "revId": "37d168ffd04df0693fd32a265dd849813f811bfa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1ed7d83f_d6c66cf1",
+        "filename": "src/swappy/src/main/cpp/FrameStatistics.h",
+        "patchSetId": 9
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2019-01-14T22:17:43Z",
+      "side": 1,
+      "message": "I might add a little whitespace between these",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 28,
+        "endChar": 18
+      },
+      "revId": "37d168ffd04df0693fd32a265dd849813f811bfa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "222d1424_ce8dbf4c",
+        "filename": "src/swappy/src/main/cpp/FrameStatistics.h",
+        "patchSetId": 9
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2019-01-14T22:17:43Z",
+      "side": 1,
+      "message": "It\u0027s slightly more code, but we could do this in terms of a timestamp so it just logs every 1 second or whatever",
+      "range": {
+        "startLine": 44,
+        "startChar": 25,
+        "endLine": 44,
+        "endChar": 43
+      },
+      "revId": "37d168ffd04df0693fd32a265dd849813f811bfa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "00b5881a_00b003e0",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2019-01-14T22:17:43Z",
+      "side": 1,
+      "message": "{} here and below",
+      "range": {
+        "startLine": 233,
+        "startChar": 0,
+        "endLine": 236,
+        "endChar": 39
+      },
+      "revId": "37d168ffd04df0693fd32a265dd849813f811bfa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e412c5df_2052184c",
+        "filename": "src/swappy/src/main/cpp/Swappy.h",
+        "patchSetId": 9
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2019-01-14T22:17:43Z",
+      "side": 1,
+      "message": "Nit: mFrameStats (or even mFrameStatistics; we don\u0027t pay by the character ;-) )",
+      "range": {
+        "startLine": 175,
+        "startChar": 37,
+        "endLine": 175,
+        "endChar": 48
+      },
+      "revId": "37d168ffd04df0693fd32a265dd849813f811bfa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
