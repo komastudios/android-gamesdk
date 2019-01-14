@@ -67,7 +67,7 @@ private:
     EGLnsecsANDROID mPrevFrameTime = 0;
 
     std::mutex mMutex;
-    Swappy_Stats mStats GUARDED_BY(mMutex)= {0};
+    Swappy_Stats mStats GUARDED_BY(mMutex) = {};
 };
 
 } //namespace swappy
