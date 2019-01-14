@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9e59c23d_19fa61df",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-01-14T09:07:09Z",
+      "side": 1,
+      "message": "// If an app wishes to use the Android choreographer to provide ticks to Swappy, it can\n// call the function below.\n// This function *must* be called before the first Swappy_swap() call.\n// Afterwards, call this function every choreographer tick.",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 69
+      },
+      "revId": "60d7650c89020d339969b7d266befa36c8063136",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "90f5b71b_02d3c775",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-01-14T09:07:09Z",
+      "side": 1,
+      "message": "// Toggle auto-swap interval detection on/off\n// By default, Swappy will adjust the swap interval based on actual frame rendering time.\n// If an app wants to override the swap interval calculated by Swappy, it can call\n// Swappy_setSwapIntervalNS. This will temporarily override Swappy\u0027s frame timings but, unless\n// Swappy_setAutoSwapInterval(false) is called, the timings will continue to be be updated\n// dynamically, so the swap interval may change.",
+      "range": {
+        "startLine": 49,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 98
+      },
+      "revId": "60d7650c89020d339969b7d266befa36c8063136",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "031d7935_ea469c0e",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-01-14T09:07:09Z",
+      "side": 1,
+      "message": "// Toggle auto-pipeline mode on/off\n// By default, if auto-swap interval is on, auto-pipelining is on and Swappy will try to reduce\n// latency by scheduling cpu and gpu work in the same pipeline stage, if it fits.\n\nI\u0027m not sure I understand the bit in brackets. How does it relate to when the user should switch auto-pipelining on or off?",
+      "range": {
+        "startLine": 59,
+        "startChar": 0,
+        "endLine": 62,
+        "endChar": 38
+      },
+      "revId": "60d7650c89020d339969b7d266befa36c8063136",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9cb91f2c_5878a202",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-01-14T09:07:09Z",
+      "side": 1,
+      "message": "// Toggle statistics collection on/off\n// By default, stats collection is off and there is no overhead related to stats.\n// An app can turn on stats collection by calling Swappy_setStatsMode(true).\n// Then, the app is expected to call Swappy_recordFrameStart for each frame before starting to\n// do any CPU related work.\n// Stats will be logged to logcat with a \u0027FrameStatistics\u0027 tag.\n// An app can get the stats by calling Swappy_getStats.",
+      "range": {
+        "startLine": 65,
+        "startChar": 0,
+        "endLine": 71,
+        "endChar": 18
+      },
+      "revId": "60d7650c89020d339969b7d266befa36c8063136",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
