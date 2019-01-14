@@ -30,11 +30,11 @@
 namespace swappy {
 
 void FrameStatistics::updateFrames(EGLnsecsANDROID start, EGLnsecsANDROID end, uint64_t stat[]) {
-    int64_t deltaTimeNano = end - start;
+    uint64_t deltaTimeNano = end - start;
     // add 1ms to smooth the results
     deltaTimeNano += 1000000;
 
-    int64_t numFrames = deltaTimeNano / mRefreshPeriod.count();
+    uint64_t numFrames = deltaTimeNano / mRefreshPeriod.count();
 
     if (numFrames >= MAX_FRAME_BUCKETS)
         numFrames = MAX_FRAME_BUCKETS - 1;
