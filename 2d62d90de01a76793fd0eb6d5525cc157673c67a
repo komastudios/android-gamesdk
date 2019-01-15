@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "3664f22d_cb87ea35",
+        "filename": "src/common/Log.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cab6a180_910b7ff2",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 6
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d18cc182_1acc73dd",
         "filename": "src/swappy/src/main/cpp/EGL.cpp",
         "patchSetId": 3
@@ -39,6 +63,24 @@
       "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9e3e569f_9f7ff56c",
+        "filename": "src/swappy/src/main/cpp/EGL.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d18cc182_1acc73dd",
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -65,6 +107,30 @@
     },
     {
       "key": {
+        "uuid": "b112744e_fee6a6b1",
+        "filename": "src/swappy/src/main/cpp/EGL.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 240,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b2ea3ccb_485ff6f7",
+      "range": {
+        "startLine": 240,
+        "startChar": 8,
+        "endLine": 240,
+        "endChar": 12
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "03b398b7_698ac4eb",
         "filename": "src/swappy/src/main/cpp/EGL.cpp",
         "patchSetId": 3
@@ -88,6 +154,30 @@
     },
     {
       "key": {
+        "uuid": "e3be4dab_42fac84a",
+        "filename": "src/swappy/src/main/cpp/EGL.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "03b398b7_698ac4eb",
+      "range": {
+        "startLine": 242,
+        "startChar": 0,
+        "endLine": 243,
+        "endChar": 41
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b80a8218_8b3406b9",
         "filename": "src/swappy/src/main/cpp/EGL.cpp",
         "patchSetId": 3
@@ -99,6 +189,30 @@
       "writtenOn": "2019-01-14T22:48:47Z",
       "side": 1,
       "message": "Could we use a timed_mutex for this and return an nullopt_t if it times out?",
+      "range": {
+        "startLine": 253,
+        "startChar": 0,
+        "endLine": 255,
+        "endChar": 29
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "49ef42e5_510dab06",
+        "filename": "src/swappy/src/main/cpp/EGL.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Why ? we would still block for the timeout period",
+      "parentUuid": "b80a8218_8b3406b9",
       "range": {
         "startLine": 253,
         "startChar": 0,
@@ -134,6 +248,30 @@
     },
     {
       "key": {
+        "uuid": "36adbaf8_d3059efd",
+        "filename": "src/swappy/src/main/cpp/EGL.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4cc78bcc_35761c0d",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 31
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4a0fe5e7_bbe48e35",
         "filename": "src/swappy/src/main/cpp/EGL.h",
         "patchSetId": 3
@@ -151,6 +289,24 @@
     },
     {
       "key": {
+        "uuid": "71a210e7_f3e43464",
+        "filename": "src/swappy/src/main/cpp/EGL.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4a0fe5e7_bbe48e35",
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7985e611_ac62b6b0",
         "filename": "src/swappy/src/main/cpp/EGL.h",
         "patchSetId": 3
@@ -162,6 +318,30 @@
       "writtenOn": "2019-01-14T22:48:47Z",
       "side": 1,
       "message": "Should/can we be using thread safety annotations here?",
+      "range": {
+        "startLine": 103,
+        "startChar": 0,
+        "endLine": 104,
+        "endChar": 54
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "12055a6c_25e943bc",
+        "filename": "src/swappy/src/main/cpp/EGL.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Couldn\u0027t find a way to use that with std::unique_lock (required by std::condition_variable).\nAny ideas ?",
+      "parentUuid": "7985e611_ac62b6b0",
       "range": {
         "startLine": 103,
         "startChar": 0,
@@ -197,6 +377,30 @@
     },
     {
       "key": {
+        "uuid": "d84295e4_ed060bef",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b7dc65b1_1d8d8e61",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 23,
+        "endChar": 19
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "935f85f5_b36f7c5d",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 3
@@ -217,6 +421,30 @@
       "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c31cba45_6fe4c5a7",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "935f85f5_b36f7c5d",
+      "range": {
+        "startLine": 150,
+        "startChar": 4,
+        "endLine": 150,
+        "endChar": 8
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -243,6 +471,30 @@
     },
     {
       "key": {
+        "uuid": "1e29a005_82160471",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6f3a9186_b8919acb",
+      "range": {
+        "startLine": 181,
+        "startChar": 0,
+        "endLine": 183,
+        "endChar": 34
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "27fe7a14_bd1587a3",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 3
@@ -263,6 +515,30 @@
       "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "11fb5f63_d5028f25",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "We do, what is missing is the annotation around mPipelineModeAutoMode (added).",
+      "parentUuid": "27fe7a14_bd1587a3",
+      "range": {
+        "startLine": 232,
+        "startChar": 0,
+        "endLine": 232,
+        "endChar": 67
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -289,6 +565,30 @@
     },
     {
       "key": {
+        "uuid": "49e03eae_8b26e990",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 392,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c18d1652_54636a59",
+      "range": {
+        "startLine": 392,
+        "startChar": 29,
+        "endLine": 392,
+        "endChar": 40
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0b4e7825_42abb5f9",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 3
@@ -309,6 +609,30 @@
       "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a12ec170_206f2e17",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 424,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0b4e7825_42abb5f9",
+      "range": {
+        "startLine": 424,
+        "startChar": 4,
+        "endLine": 424,
+        "endChar": 7
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -358,6 +682,30 @@
     },
     {
       "key": {
+        "uuid": "7a8cece8_fdcc2287",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 525,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fc6d8164_406c4d85",
+      "range": {
+        "startLine": 521,
+        "startChar": 0,
+        "endLine": 525,
+        "endChar": 41
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "421d9487_90beef6b",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 3
@@ -404,6 +752,30 @@
     },
     {
       "key": {
+        "uuid": "65cb1e65_400ff01a",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 529,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Nice!",
+      "parentUuid": "f030680c_f3f342bd",
+      "range": {
+        "startLine": 529,
+        "startChar": 0,
+        "endLine": 529,
+        "endChar": 79
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e85d0c98_3b9a5a8e",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 3
@@ -439,6 +811,24 @@
     },
     {
       "key": {
+        "uuid": "527406df_899de0ac",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 539,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "15390cfb_6ebf541d",
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8880a4c0_c7f2b862",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 3
@@ -459,6 +849,30 @@
       "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "969c30e8_fa100552",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 541,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8880a4c0_c7f2b862",
+      "range": {
+        "startLine": 541,
+        "startChar": 19,
+        "endLine": 541,
+        "endChar": 40
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -485,6 +899,30 @@
     },
     {
       "key": {
+        "uuid": "f1b4e21f_a0cdaa7e",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 578,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1b873ba0_d28e9e4b",
+      "range": {
+        "startLine": 578,
+        "startChar": 69,
+        "endLine": 578,
+        "endChar": 78
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "486be185_a5a3ea9b",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 3
@@ -508,6 +946,30 @@
     },
     {
       "key": {
+        "uuid": "e9394fc4_73c87d2d",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 584,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "486be185_a5a3ea9b",
+      "range": {
+        "startLine": 584,
+        "startChar": 29,
+        "endLine": 584,
+        "endChar": 39
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a2e11239_0f15af0f",
         "filename": "src/swappy/src/main/cpp/Swappy.cpp",
         "patchSetId": 3
@@ -519,6 +981,30 @@
       "writtenOn": "2019-01-14T22:48:47Z",
       "side": 1,
       "message": "Does doing so harm anything?",
+      "range": {
+        "startLine": 597,
+        "startChar": 0,
+        "endLine": 597,
+        "endChar": 82
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6f88a5b7_60b228ab",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 597,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Yes, see b/121004752",
+      "parentUuid": "a2e11239_0f15af0f",
       "range": {
         "startLine": 597,
         "startChar": 0,
@@ -554,6 +1040,30 @@
     },
     {
       "key": {
+        "uuid": "e2b22f2c_d2202712",
+        "filename": "src/swappy/src/main/cpp/Swappy.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "83e1a248_5e728f21",
+      "range": {
+        "startLine": 92,
+        "startChar": 0,
+        "endLine": 94,
+        "endChar": 13
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ccbf4414_601cc3c2",
         "filename": "src/swappy/src/main/cpp/Swappy.h",
         "patchSetId": 3
@@ -574,6 +1084,30 @@
       "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b63e067c_934b48cc",
+        "filename": "src/swappy/src/main/cpp/Swappy.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ccbf4414_601cc3c2",
+      "range": {
+        "startLine": 101,
+        "startChar": 0,
+        "endLine": 103,
+        "endChar": 57
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -600,6 +1134,30 @@
     },
     {
       "key": {
+        "uuid": "57823f4a_422586e7",
+        "filename": "src/swappy/src/main/cpp/Swappy.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c135c7f2_56e0d463",
+      "range": {
+        "startLine": 109,
+        "startChar": 9,
+        "endLine": 109,
+        "endChar": 10
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "815e81a0_f7f8dd98",
         "filename": "src/swappy/src/main/cpp/Swappy.h",
         "patchSetId": 3
@@ -623,6 +1181,30 @@
     },
     {
       "key": {
+        "uuid": "f3695a51_a7ae2690",
+        "filename": "src/swappy/src/main/cpp/Swappy.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "815e81a0_f7f8dd98",
+      "range": {
+        "startLine": 123,
+        "startChar": 58,
+        "endLine": 123,
+        "endChar": 68
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dc3b158a_52e140d5",
         "filename": "src/swappy/src/main/cpp/Swappy.h",
         "patchSetId": 3
@@ -643,6 +1225,30 @@
       "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "67bf8d82_30d99f4b",
+        "filename": "src/swappy/src/main/cpp/Swappy.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 225,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-15T23:50:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dc3b158a_52e140d5",
+      "range": {
+        "startLine": 225,
+        "startChar": 12,
+        "endLine": 225,
+        "endChar": 73
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
