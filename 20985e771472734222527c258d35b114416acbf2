@@ -16,6 +16,24 @@
       "revId": "20985e771472734222527c258d35b114416acbf2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8df6d721_150b804a",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 398,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-01-16T21:48:35Z",
+      "side": 1,
+      "message": "It\u0027s initialised to zero in the Swappy header, isn\u0027t it?",
+      "parentUuid": "56f8001d_1495a912",
+      "revId": "20985e771472734222527c258d35b114416acbf2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
