@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "9196831d_061f3ec4",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 10
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-16T18:37:30Z",
+      "side": 1,
+      "message": "This is not suppose to be tunable (at least not by the app). Do you have a suggestion how to avoid the #define in the header ?",
+      "parentUuid": "acbedefd_1ae1a13d",
+      "revId": "f393e21a2486feb920cd9534bf03698a93714212",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6b82a663_f0231d5b",
         "filename": "samples/bouncyball/app/src/main/cpp/Orbit.cpp",
         "patchSetId": 10
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "a32b5089_70b1752c",
+        "filename": "samples/bouncyball/app/src/main/cpp/Orbit.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-16T18:37:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6b82a663_f0231d5b",
+      "revId": "f393e21a2486feb920cd9534bf03698a93714212",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "54972a6e_3eaa8f20",
         "filename": "src/swappy/src/main/cpp/EGL.cpp",
         "patchSetId": 10
@@ -50,6 +86,24 @@
       "revId": "f393e21a2486feb920cd9534bf03698a93714212",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0900698c_0d92ca72",
+        "filename": "src/swappy/src/main/cpp/EGL.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-16T18:37:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "54972a6e_3eaa8f20",
+      "revId": "f393e21a2486feb920cd9534bf03698a93714212",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
