@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7ca68ebe_e7b7bc8a",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 581,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2019-01-16T00:13:31Z",
+      "side": 1,
+      "message": "Remainder",
+      "range": {
+        "startLine": 581,
+        "startChar": 50,
+        "endLine": 581,
+        "endChar": 58
+      },
+      "revId": "236003504bf859901e74f4b81ef3cdde3adc2f1b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b79910b2_01a9b640",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 584,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2019-01-16T00:13:31Z",
+      "side": 1,
+      "message": "Nit: add a space",
+      "range": {
+        "startLine": 584,
+        "startChar": 83,
+        "endLine": 584,
+        "endChar": 85
+      },
+      "revId": "236003504bf859901e74f4b81ef3cdde3adc2f1b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
