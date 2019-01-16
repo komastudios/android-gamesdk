@@ -395,7 +395,7 @@ bool Swappy::waitForNextFrame(EGLDisplay display) {
 
     // if we are running slower than the threshold there is no point to sleep, just let the
     // app run as fast as it can
-    if (mAutoSwapInterval <= mAutoSwapIntervalThreshold) {
+    if (mAutoSwapInterval>0 && mAutoSwapInterval <= mAutoSwapIntervalThreshold) {
         // while we wait for the target frame,
         // the previous frame might have finished rendering early
         while (mCurrentFrame < mTargetFrame) {
