@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "acbedefd_1ae1a13d",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 10
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-16T14:46:44Z",
+      "side": 1,
+      "message": "Should we not make this a tunable parameter?",
+      "revId": "f393e21a2486feb920cd9534bf03698a93714212",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6b82a663_f0231d5b",
+        "filename": "samples/bouncyball/app/src/main/cpp/Orbit.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-16T14:46:44Z",
+      "side": 1,
+      "message": "Line too long",
+      "revId": "f393e21a2486feb920cd9534bf03698a93714212",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "54972a6e_3eaa8f20",
+        "filename": "src/swappy/src/main/cpp/EGL.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-16T14:46:44Z",
+      "side": 1,
+      "message": "Line too long.",
+      "revId": "f393e21a2486feb920cd9534bf03698a93714212",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
