@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "56f8001d_1495a912",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 398,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-16T18:57:35Z",
+      "side": 1,
+      "message": "mAutoSwapInterval is always \u003e 0 (unless we have a bug). How did it get to 0 ?",
+      "revId": "20985e771472734222527c258d35b114416acbf2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
