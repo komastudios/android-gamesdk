@@ -225,6 +225,30 @@
     },
     {
       "key": {
+        "uuid": "94e14bd8_61143e47",
+        "filename": "src/swappy/src/main/cpp/EGL.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-17T17:18:18Z",
+      "side": 1,
+      "message": "Resolved offline",
+      "parentUuid": "49ef42e5_510dab06",
+      "range": {
+        "startLine": 253,
+        "startChar": 0,
+        "endLine": 255,
+        "endChar": 29
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4cc78bcc_35761c0d",
         "filename": "src/swappy/src/main/cpp/EGL.h",
         "patchSetId": 3
@@ -351,6 +375,30 @@
       "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1616a90c_856b7187",
+        "filename": "src/swappy/src/main/cpp/EGL.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-17T17:18:18Z",
+      "side": 1,
+      "message": "Yes! use std::condition_variable_any",
+      "parentUuid": "12055a6c_25e943bc",
+      "range": {
+        "startLine": 103,
+        "startChar": 0,
+        "endLine": 104,
+        "endChar": 54
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -530,6 +578,30 @@
       "side": 1,
       "message": "We do, what is missing is the annotation around mPipelineModeAutoMode (added).",
       "parentUuid": "27fe7a14_bd1587a3",
+      "range": {
+        "startLine": 232,
+        "startChar": 0,
+        "endLine": 232,
+        "endChar": 67
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a8a364dd_decab980",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-17T17:18:18Z",
+      "side": 1,
+      "message": "Resolved",
+      "parentUuid": "11fb5f63_d5028f25",
       "range": {
         "startLine": 232,
         "startChar": 0,
@@ -726,6 +798,30 @@
       "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b7a70906_ea266c04",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 527,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-17T17:18:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "421d9487_90beef6b",
+      "range": {
+        "startLine": 527,
+        "startChar": 4,
+        "endLine": 527,
+        "endChar": 15
+      },
+      "revId": "2d62d90de01a76793fd0eb6d5525cc157673c67a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
