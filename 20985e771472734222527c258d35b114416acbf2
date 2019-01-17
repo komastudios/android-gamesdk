@@ -34,6 +34,24 @@
       "revId": "20985e771472734222527c258d35b114416acbf2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9edde701_3b4b9c8e",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 398,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-17T00:27:11Z",
+      "side": 1,
+      "message": "right, but it is set to the real value by Swappy_setSwapIntervalNS which is called before Swappy_swap()",
+      "parentUuid": "8df6d721_150b804a",
+      "revId": "20985e771472734222527c258d35b114416acbf2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
