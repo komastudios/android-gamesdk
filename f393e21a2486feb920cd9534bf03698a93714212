@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "6f8d21d3_76f15112",
+        "filename": "include/swappy/swappy_extra.h",
+        "patchSetId": 10
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-17T09:47:00Z",
+      "side": 1,
+      "message": "If we\u0027re set on keeping it at 6 then I\u0027d just leave it here.\n\nI was thinking that it might be worth allowing it to be tuned *down* from 6. The point of that would be that it would allow the developer to reduce our memory footprint slightly (in return for some stats not working anymore). \n\nHowever looking more I think that the memory involved probably does not justify the added complexity.",
+      "parentUuid": "9196831d_061f3ec4",
+      "revId": "f393e21a2486feb920cd9534bf03698a93714212",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6b82a663_f0231d5b",
         "filename": "samples/bouncyball/app/src/main/cpp/Orbit.cpp",
         "patchSetId": 10
