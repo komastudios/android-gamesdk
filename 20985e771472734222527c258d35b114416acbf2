@@ -52,6 +52,24 @@
       "revId": "20985e771472734222527c258d35b114416acbf2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b7ea69b7_cfc36227",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 398,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-01-23T13:18:29Z",
+      "side": 1,
+      "message": "I don\u0027t think it\u0027s documented anywhere that Swappy_setSwapIntervalNS needs to be called before Swappy_swap. We should have a comment in swappy.h to recommend this but still cannot rely on the user doing it.",
+      "parentUuid": "9edde701_3b4b9c8e",
+      "revId": "20985e771472734222527c258d35b114416acbf2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
