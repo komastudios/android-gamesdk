@@ -70,6 +70,24 @@
       "revId": "20985e771472734222527c258d35b114416acbf2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ee30f52b_4e165b70",
+        "filename": "src/swappy/src/main/cpp/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 398,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-23T17:11:52Z",
+      "side": 1,
+      "message": "Sure, let\u0027s add a comment regarding this in swappy.h.\nFor anycase, we should initialize mAutoSwapInterval to 1 in case that app did not call setSwapInterval. It doesn\u0027t really make sense to keep it as 0.",
+      "parentUuid": "b7ea69b7_cfc36227",
+      "revId": "20985e771472734222527c258d35b114416acbf2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
