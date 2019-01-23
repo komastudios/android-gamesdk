@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "07f8f00c_ea9fafa2",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-23T17:16:00Z",
+      "side": 1,
+      "message": "if we always define SWAPPYVK_USE_WRAPPER if ANDROID is defined, why do we need it ?",
+      "revId": "14440c44ebd5f0cacac4518e92b8affce70dd961",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
