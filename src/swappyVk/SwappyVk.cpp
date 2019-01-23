@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+#ifdef ANDROID
+#define SWAPPYVK_USE_WRAPPER
+#endif
 #include <swappyVk/SwappyVk.h>
 
 #include <map>
@@ -847,9 +850,9 @@ public:
                                            VkExtensionProperties* pAvailableExtensions,
                                            uint32_t*              pRequiredExtensionCount,
                                            char**                 pRequiredExtensions);
-    void SetQueueFamiliyIndex(VkDevice   device,
-                              VkQueue    queue,
-                              uint32_t   queueFamilyIndex);
+    void SetQueueFamilyIndex(VkDevice   device,
+                             VkQueue    queue,
+                             uint32_t   queueFamilyIndex);
     bool GetRefreshCycleDuration(VkPhysicalDevice physicalDevice,
                                  VkDevice         device,
                                  VkSwapchainKHR   swapchain,
@@ -867,11 +870,11 @@ private:
     std::map<VkDevice, std::shared_ptr<SwappyVkBase>> perDeviceImplementation;
     std::map<VkSwapchainKHR, std::shared_ptr<SwappyVkBase>> perSwapchainImplementation;
 
-    struct QueueFamiliyIndex {
+    struct QueueFamilyIndex {
         VkDevice device;
-        uint32_t queueFamiliyIndex;
+        uint32_t queueFamilyIndex;
     };
-    std::map<VkQueue, QueueFamiliyIndex> perQueueFamiliyIndex;
+    std::map<VkQueue, QueueFamilyIndex> perQueueFamilyIndex;
 
     void *mLibVulkan     = nullptr;
 
@@ -913,11 +916,11 @@ void SwappyVk::swappyVkDetermineDeviceExtensions(
     }
 }
 
-void SwappyVk::SetQueueFamiliyIndex(VkDevice   device,
+void SwappyVk::SetQueueFamilyIndex(VkDevice   device,
                                     VkQueue    queue,
                                     uint32_t   queueFamilyIndex)
 {
-    perQueueFamiliyIndex[queue] = {device, queueFamilyIndex};
+    perQueueFamilyIndex[queue] = {device, queueFamilyIndex};
 }
 
 
@@ -1004,8 +1007,8 @@ void SwappyVk::SetSwapInterval(VkDevice       device,
 VkResult SwappyVk::QueuePresent(VkQueue                 queue,
                                 const VkPresentInfoKHR* pPresentInfo)
 {
-    if (perQueueFamiliyIndex.find(queue) == perQueueFamiliyIndex.end()) {
-        ALOGE("Unknown queue %p. Did you call SwappyVkSetQueueFamiliyIndex ?", queue);
+    if (perQueueFamilyIndex.find(queue) == perQueueFamilyIndex.end()) {
+        ALOGE("Unknown queue %p. Did you call SwappyVkSetQueueFamilyIndex ?", queue);
         return VK_INCOMPLETE;
     }
 
@@ -1018,7 +1021,7 @@ VkResult SwappyVk::QueuePresent(VkQueue                 queue,
     auto& pImplementation = perSwapchainImplementation[*pPresentInfo->pSwapchains];
     if (pImplementation) {
         return pImplementation->doQueuePresent(queue,
-                                               perQueueFamiliyIndex[queue].queueFamiliyIndex,
+                                               perQueueFamilyIndex[queue].queueFamilyIndex,
                                                pPresentInfo);
     } else {
         // This should only happen if the API was used wrong (e.g. they never
@@ -1031,10 +1034,10 @@ VkResult SwappyVk::QueuePresent(VkQueue                 queue,
 
 void SwappyVk::DestroySwapchain(VkDevice                device,
                                         VkSwapchainKHR          swapchain) {
-    auto it = perQueueFamiliyIndex.begin();
-    while (it != perQueueFamiliyIndex.end()) {
+    auto it = perQueueFamilyIndex.begin();
+    while (it != perQueueFamilyIndex.end()) {
         if (it->second.device == device) {
-            it = perQueueFamiliyIndex.erase(it);
+            it = perQueueFamilyIndex.erase(it);
         } else {
             ++it;
         }
@@ -1053,7 +1056,7 @@ void SwappyVk::DestroySwapchain(VkDevice                device,
 
 extern "C" {
 
-void swappyVkDetermineDeviceExtensions(
+void SwappyVk_determineDeviceExtensions(
     VkPhysicalDevice       physicalDevice,
     uint32_t               availableExtensionCount,
     VkExtensionProperties* pAvailableExtensions,
@@ -1067,17 +1070,17 @@ void swappyVkDetermineDeviceExtensions(
                                              pRequiredExtensionCount, pRequiredExtensions);
 }
 
-void SwappyVkSetQueueFamiliyIndex(
+void SwappyVk_setQueueFamilyIndex(
         VkDevice    device,
         VkQueue     queue,
         uint32_t    queueFamilyIndex)
 {
     ATRACE_CALL();
     SwappyVk& swappy = SwappyVk::getInstance();
-    swappy.SetQueueFamiliyIndex(device, queue, queueFamilyIndex);
+    swappy.SetQueueFamilyIndex(device, queue, queueFamilyIndex);
 }
 
-bool swappyVkGetRefreshCycleDuration(
+bool SwappyVk_initAndGetRefreshCycleDuration(
         VkPhysicalDevice physicalDevice,
         VkDevice         device,
         VkSwapchainKHR   swapchain,
@@ -1088,7 +1091,7 @@ bool swappyVkGetRefreshCycleDuration(
     return swappy.GetRefreshCycleDuration(physicalDevice, device, swapchain, pRefreshDuration);
 }
 
-void swappyVkSetSwapInterval(
+void SwappyVk_setSwapInterval(
         VkDevice       device,
         VkSwapchainKHR swapchain,
         uint32_t       interval)
@@ -1098,7 +1101,7 @@ void swappyVkSetSwapInterval(
     swappy.SetSwapInterval(device, swapchain, interval);
 }
 
-VkResult swappyVkQueuePresent(
+VkResult SwappyVk_queuePresent(
         VkQueue                 queue,
         const VkPresentInfoKHR* pPresentInfo)
 {
@@ -1107,7 +1110,7 @@ VkResult swappyVkQueuePresent(
     return swappy.QueuePresent(queue, pPresentInfo);
 }
 
-void SwappyVkDestroySwapchain(
+void SwappyVk_destroySwapchain(
         VkDevice                device,
         VkSwapchainKHR          swapchain)
 {
