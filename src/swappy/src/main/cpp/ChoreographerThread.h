@@ -22,6 +22,13 @@
 #include "Thread.h"
 
 #include <thread>
+#include <mutex>
+
+#if __ANDROID_API__ < 24
+struct AChoreographer;
+typedef struct AChoreographer AChoreographer;
+typedef void (*AChoreographer_frameCallback)(long frameTimeNanos, void* data);
+#endif
 
 namespace swappy {
 
