@@ -72,6 +72,24 @@
     },
     {
       "key": {
+        "uuid": "a01e6322_a6302bc8",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-24T23:33:26Z",
+      "side": 1,
+      "message": "Oh I see the problem now.\nHow about this: remove #inlcude \u003cvulkan\u003e from SwappyVk.h and add it to SwappyVk.cpp.\nWe just need to make sure SwappyVk.h is included after the applicaiton included the vulkan headers.",
+      "parentUuid": "4d2fdfd7_ca013ce6",
+      "revId": "14440c44ebd5f0cacac4518e92b8affce70dd961",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "710e5baa_0d249e12",
         "filename": "src/swappyVk/SwappyVk.cpp",
         "patchSetId": 1
