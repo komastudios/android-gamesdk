@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "44a9cc92_65d96c8d",
+        "filename": "include/swappyVk/SwappyVk.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2019-01-24T00:17:46Z",
+      "side": 1,
+      "message": "I don\u0027t understand the motivation for this type of change (add underscore and change case).  It\u0027s not very Vulkan like.  What is this trying to accomplish?",
+      "revId": "14440c44ebd5f0cacac4518e92b8affce70dd961",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "07f8f00c_ea9fafa2",
         "filename": "src/swappyVk/SwappyVk.cpp",
         "patchSetId": 1
@@ -13,6 +30,23 @@
       "writtenOn": "2019-01-23T17:16:00Z",
       "side": 1,
       "message": "if we always define SWAPPYVK_USE_WRAPPER if ANDROID is defined, why do we need it ?",
+      "revId": "14440c44ebd5f0cacac4518e92b8affce70dd961",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "710e5baa_0d249e12",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 855,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2019-01-24T00:17:46Z",
+      "side": 1,
+      "message": "Nit: please remove one space from the start of the previous two lines (to line up the parameters).",
       "revId": "14440c44ebd5f0cacac4518e92b8affce70dd961",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
