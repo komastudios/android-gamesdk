@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "831953d8_86f2fa3b",
+        "filename": "include/swappyVk/SwappyVk.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-01-24T09:34:42Z",
+      "side": 1,
+      "message": "True, it\u0027s not Vulkan like, but it\u0027s the naming convention of the AndroidGameSDK. We have Swappy_* and TuningFork_*. We can discuss at the meeting today - I guess the vulkan names don\u0027t absolutely need to match.",
+      "parentUuid": "44a9cc92_65d96c8d",
+      "revId": "14440c44ebd5f0cacac4518e92b8affce70dd961",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "07f8f00c_ea9fafa2",
         "filename": "src/swappyVk/SwappyVk.cpp",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2019-01-23T17:16:00Z",
       "side": 1,
       "message": "if we always define SWAPPYVK_USE_WRAPPER if ANDROID is defined, why do we need it ?",
+      "revId": "14440c44ebd5f0cacac4518e92b8affce70dd961",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4d2fdfd7_ca013ce6",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-01-24T09:34:42Z",
+      "side": 1,
+      "message": "We define it, but users of the library don\u0027t need to. Without SWAPPYVK_USE_WRAPPER, we are forcing everyone who uses the library on android to have vulkan_wrapper.h available. Unity, for instance, do not use it. Will it cause problems like this?",
+      "parentUuid": "07f8f00c_ea9fafa2",
       "revId": "14440c44ebd5f0cacac4518e92b8affce70dd961",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -50,6 +86,24 @@
       "revId": "14440c44ebd5f0cacac4518e92b8affce70dd961",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6afd2464_02f6089e",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 855,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-01-24T09:34:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "710e5baa_0d249e12",
+      "revId": "14440c44ebd5f0cacac4518e92b8affce70dd961",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
