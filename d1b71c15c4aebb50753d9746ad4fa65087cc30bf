@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0d5bf7d9_ec7785a9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2019-01-24T16:25:06Z",
+      "side": 1,
+      "message": "Both mma and gradlew work, each one does a different thing. Maybe specify the build commands here?",
+      "range": {
+        "startLine": 10,
+        "startChar": 6,
+        "endLine": 10,
+        "endChar": 11
+      },
+      "revId": "d1b71c15c4aebb50753d9746ad4fa65087cc30bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "17874646_151ffdf7",
+        "filename": "src/swappy/src/main/cpp/ChoreographerFilter.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2019-01-24T16:25:06Z",
+      "side": 1,
+      "message": "Nit 1: I don\u0027t think you need to include condition_variable anywhere",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 23,
+        "endChar": 29
+      },
+      "revId": "d1b71c15c4aebb50753d9746ad4fa65087cc30bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "de70eede_7c975533",
+        "filename": "src/swappy/src/main/cpp/ChoreographerThread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2019-01-24T16:25:06Z",
+      "side": 1,
+      "message": "See nit 1",
+      "range": {
+        "startLine": 24,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 29
+      },
+      "revId": "d1b71c15c4aebb50753d9746ad4fa65087cc30bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "75de92a0_7ec6534c",
+        "filename": "src/swappy/src/main/cpp/EGL.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2019-01-24T16:25:06Z",
+      "side": 1,
+      "message": "Nit 2: I think you don\u0027t need this either",
+      "range": {
+        "startLine": 24,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 17
+      },
+      "revId": "d1b71c15c4aebb50753d9746ad4fa65087cc30bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f7d06d3d_3a13ec78",
+        "filename": "src/swappy/src/main/cpp/Swappy.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2019-01-24T16:25:06Z",
+      "side": 1,
+      "message": "See nit 1",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 29
+      },
+      "revId": "d1b71c15c4aebb50753d9746ad4fa65087cc30bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
