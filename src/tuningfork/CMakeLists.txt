@@ -38,14 +38,14 @@ function(set_link_options libname versionscript)
 endfunction()
 
 function(extra_tf_link_options libname)
-  set_link_options(${libname} version.script)
+  set_link_options(${libname} "tuningfork/version.script")
 endfunction()
 function(extra_pb_link_options libname)
-  set_link_options(${libname} protobuf_version.script)
+  set_link_options(${libname} "tuningfork/protobuf_version.script")
 endfunction()
 
 function(extra_pb_nano_link_options libname)
-  set_link_options(${libname} protobuf_nano_version.script)
+  set_link_options(${libname} "tuningfork/protobuf_nano_version.script")
 endfunction()
 
 include_directories(${PROTOBUF_SRC_DIR})
