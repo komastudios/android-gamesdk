@@ -1,0 +1,191 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9924799d_fd0dc717",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-28T17:57:14Z",
+      "side": 1,
+      "message": "Need to change description to stop referring to sdkGlue",
+      "revId": "cea18666976dd280bc34ed6236168d266664b14b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0f0fddb1_e459935f",
+        "filename": "src/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-28T17:57:14Z",
+      "side": 1,
+      "message": "Let\u0027s remove these commented out lines",
+      "revId": "cea18666976dd280bc34ed6236168d266664b14b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "642f9528_1e131651",
+        "filename": "src/device_info/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-28T17:57:14Z",
+      "side": 1,
+      "message": "There\u0027s a tab here which should be a space.",
+      "revId": "cea18666976dd280bc34ed6236168d266664b14b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "99dc2640_a4ac568e",
+        "filename": "src/protobuf/full/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-28T17:57:14Z",
+      "side": 1,
+      "message": "Unneeded whitespace",
+      "revId": "cea18666976dd280bc34ed6236168d266664b14b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "05fdbd36_ac7831a9",
+        "filename": "src/protobuf/full/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-28T17:57:14Z",
+      "side": 1,
+      "message": "Unneeded whitespace",
+      "revId": "cea18666976dd280bc34ed6236168d266664b14b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3961dea4_05610d90",
+        "filename": "src/protobuf/lite/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-28T17:57:14Z",
+      "side": 1,
+      "message": "Unneeded whitespace",
+      "revId": "cea18666976dd280bc34ed6236168d266664b14b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e1ebe798_8e76f1cd",
+        "filename": "src/protobuf/lite/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-28T17:57:14Z",
+      "side": 1,
+      "message": "Unneeded whitespace",
+      "revId": "cea18666976dd280bc34ed6236168d266664b14b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "31e95c15_38a6f339",
+        "filename": "src/protobuf/protobuf.cmake",
+        "patchSetId": 2
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-28T17:57:14Z",
+      "side": 1,
+      "message": "Remove commented out lines",
+      "revId": "cea18666976dd280bc34ed6236168d266664b14b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ad38d4e8_088bde95",
+        "filename": "src/protobuf/protobuf.cmake",
+        "patchSetId": 2
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-28T17:57:14Z",
+      "side": 1,
+      "message": "For a future cl perhaps we should standardize on either .cc or .cpp?",
+      "revId": "cea18666976dd280bc34ed6236168d266664b14b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e2160d05_a8c13ac5",
+        "filename": "src/protobuf/protobuf.cmake",
+        "patchSetId": 2
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-28T17:57:14Z",
+      "side": 1,
+      "message": "Unneeded whitespace",
+      "revId": "cea18666976dd280bc34ed6236168d266664b14b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dd48d8e3_329e908d",
+        "filename": "src/protobuf/protobuf.cmake",
+        "patchSetId": 2
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-28T17:57:14Z",
+      "side": 1,
+      "message": "Unneeded whitespace",
+      "revId": "cea18666976dd280bc34ed6236168d266664b14b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
