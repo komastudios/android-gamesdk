@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "8f4547d9_e01acd9d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-01-29T10:26:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9924799d_fd0dc717",
+      "revId": "cea18666976dd280bc34ed6236168d266664b14b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0f0fddb1_e459935f",
         "filename": "src/CMakeLists.txt",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "cea18666976dd280bc34ed6236168d266664b14b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6a712e49_575ad39a",
+        "filename": "src/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-01-29T10:26:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0f0fddb1_e459935f",
+      "revId": "cea18666976dd280bc34ed6236168d266664b14b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "3b129929_2a440a32",
+        "filename": "src/device_info/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-01-29T10:26:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "642f9528_1e131651",
+      "revId": "cea18666976dd280bc34ed6236168d266664b14b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "99dc2640_a4ac568e",
         "filename": "src/protobuf/full/CMakeLists.txt",
         "patchSetId": 2
@@ -67,6 +121,24 @@
       "revId": "cea18666976dd280bc34ed6236168d266664b14b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "42279ae3_5540ea70",
+        "filename": "src/protobuf/full/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-01-29T10:26:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "99dc2640_a4ac568e",
+      "revId": "cea18666976dd280bc34ed6236168d266664b14b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "39e57f59_c30504a5",
+        "filename": "src/protobuf/full/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-01-29T10:26:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "05fdbd36_ac7831a9",
+      "revId": "cea18666976dd280bc34ed6236168d266664b14b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3961dea4_05610d90",
         "filename": "src/protobuf/lite/CMakeLists.txt",
         "patchSetId": 2
@@ -101,6 +191,24 @@
       "revId": "cea18666976dd280bc34ed6236168d266664b14b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a1be12fe_48f76a7b",
+        "filename": "src/protobuf/lite/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-01-29T10:26:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3961dea4_05610d90",
+      "revId": "cea18666976dd280bc34ed6236168d266664b14b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -121,6 +229,24 @@
     },
     {
       "key": {
+        "uuid": "50605e27_dc4814cb",
+        "filename": "src/protobuf/lite/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-01-29T10:26:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e1ebe798_8e76f1cd",
+      "revId": "cea18666976dd280bc34ed6236168d266664b14b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "31e95c15_38a6f339",
         "filename": "src/protobuf/protobuf.cmake",
         "patchSetId": 2
@@ -132,6 +258,24 @@
       "writtenOn": "2019-01-28T17:57:14Z",
       "side": 1,
       "message": "Remove commented out lines",
+      "revId": "cea18666976dd280bc34ed6236168d266664b14b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8abfe1d2_23f81ebc",
+        "filename": "src/protobuf/protobuf.cmake",
+        "patchSetId": 2
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-01-29T10:26:51Z",
+      "side": 1,
+      "message": "I\u0027ve removed some and kept others + improved the message since it\u0027s impossible to understand CMake errors in the protobuf compilation without them.",
+      "parentUuid": "31e95c15_38a6f339",
       "revId": "cea18666976dd280bc34ed6236168d266664b14b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -155,6 +299,24 @@
     },
     {
       "key": {
+        "uuid": "90678380_5b1b7429",
+        "filename": "src/protobuf/protobuf.cmake",
+        "patchSetId": 2
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-01-29T10:26:51Z",
+      "side": 1,
+      "message": "It would need to be .cc if we want to standardize with Android source like these protobuf files.",
+      "parentUuid": "ad38d4e8_088bde95",
+      "revId": "cea18666976dd280bc34ed6236168d266664b14b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e2160d05_a8c13ac5",
         "filename": "src/protobuf/protobuf.cmake",
         "patchSetId": 2
@@ -172,6 +334,24 @@
     },
     {
       "key": {
+        "uuid": "7fed2630_aeeb6730",
+        "filename": "src/protobuf/protobuf.cmake",
+        "patchSetId": 2
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-01-29T10:26:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e2160d05_a8c13ac5",
+      "revId": "cea18666976dd280bc34ed6236168d266664b14b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dd48d8e3_329e908d",
         "filename": "src/protobuf/protobuf.cmake",
         "patchSetId": 2
@@ -186,6 +366,24 @@
       "revId": "cea18666976dd280bc34ed6236168d266664b14b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "16d0c6d4_844e0180",
+        "filename": "src/protobuf/protobuf.cmake",
+        "patchSetId": 2
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-01-29T10:26:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dd48d8e3_329e908d",
+      "revId": "cea18666976dd280bc34ed6236168d266664b14b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
