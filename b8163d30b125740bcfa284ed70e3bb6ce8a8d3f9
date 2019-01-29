@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a00f8110_2e408d14",
+        "filename": "src/protobuf/protobuf.cmake",
+        "patchSetId": 5
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-29T11:06:04Z",
+      "side": 1,
+      "message": "nit: probably want to get rid of this at some point (although I can see the argument for leaving it in until the multiple NDK migration is completed.",
+      "revId": "b8163d30b125740bcfa284ed70e3bb6ce8a8d3f9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
