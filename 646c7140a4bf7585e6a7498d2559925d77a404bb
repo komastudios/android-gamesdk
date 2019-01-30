@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "01baa2e3_48da382f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-30T23:51:36Z",
+      "side": 1,
+      "message": "You should add \n\nBug: 123018328\n\n(this will associate the CL with the bug in buganizer)",
+      "revId": "646c7140a4bf7585e6a7498d2559925d77a404bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5eb58a6f_aac3fd2b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-30T23:51:36Z",
+      "side": 1,
+      "message": "Can you include details of which devices you tested this on? IIUC there\u0027s some differences between the behaviour of __system_property_get on 32-bit vs. 64-bit devices. It would be good to know if both ABI\u0027s have been tested in the development of this patch.",
+      "revId": "646c7140a4bf7585e6a7498d2559925d77a404bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
