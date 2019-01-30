@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "f1d5780b_e46b8c80",
+        "filename": "src/swappy/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-01-30T21:23:31Z",
+      "side": 1,
+      "message": "Want to call the static method from within the object?",
+      "parentUuid": "7ee218b5_95369637",
+      "revId": "d546cdda584cb3f220346c405c65fa565811d259",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5963d4df_801888c4",
         "filename": "src/swappy/Swappy.h",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "d546cdda584cb3f220346c405c65fa565811d259",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fa0c9d2a_7308dc10",
+        "filename": "src/swappy/Swappy.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-01-30T21:23:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5963d4df_801888c4",
+      "revId": "d546cdda584cb3f220346c405c65fa565811d259",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
