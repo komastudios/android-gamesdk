@@ -134,6 +134,8 @@ private:
 
     static Swappy *getInstance();
 
+    bool enabled() const { return !disableSwappy; }
+
     EGL *getEgl();
 
     bool swapInternal(EGLDisplay display, EGLSurface surface);
@@ -183,6 +185,8 @@ private:
                       const std::chrono::nanoseconds& upperBound,
                       const std::chrono::nanoseconds& lowerBound,
                       const int32_t& newSwapInterval) REQUIRES(mFrameDurationsMutex);
+
+    bool disableSwappy = false;
 
     int32_t nanoToSwapInterval(std::chrono::nanoseconds);
 
