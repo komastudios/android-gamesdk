@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7ee218b5_95369637",
+        "filename": "src/swappy/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-30T21:20:32Z",
+      "side": 1,
+      "message": "I am thinking to add this to the static function instead of this",
+      "revId": "d546cdda584cb3f220346c405c65fa565811d259",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5963d4df_801888c4",
+        "filename": "src/swappy/Swappy.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-30T21:20:32Z",
+      "side": 1,
+      "message": "Nit: add \u0027m\u0027 prefix",
+      "revId": "d546cdda584cb3f220346c405c65fa565811d259",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
