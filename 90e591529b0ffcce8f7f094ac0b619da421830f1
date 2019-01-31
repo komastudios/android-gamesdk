@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9ae01d61_3313c5e6",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-01-31T08:16:06Z",
+      "side": 1,
+      "message": "Can you test a 64-bit build as well please? The addition of system_get_property means we really should check both in this instance.",
+      "revId": "90e591529b0ffcce8f7f094ac0b619da421830f1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
