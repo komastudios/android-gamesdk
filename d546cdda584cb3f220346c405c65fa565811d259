@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "69d94499_33af8a49",
+        "filename": "src/swappy/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-01-31T17:23:32Z",
+      "side": 1,
+      "message": "No, what I was trying to say is that we should check this flag in swappy::swap() before calling to swapInternal()",
+      "parentUuid": "f1d5780b_e46b8c80",
+      "revId": "d546cdda584cb3f220346c405c65fa565811d259",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5963d4df_801888c4",
         "filename": "src/swappy/Swappy.h",
         "patchSetId": 1
