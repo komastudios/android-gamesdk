@@ -21,6 +21,7 @@
 #include <cmath>
 #include <thread>
 #include <cstdlib>
+#include <cinttypes>
 
 #include "Settings.h"
 #include "Thread.h"
@@ -304,6 +305,15 @@ Swappy *Swappy::getInstance() {
     return sInstance.get();
 }
 
+bool Swappy::isEnabled() {
+    Swappy *swappy = getInstance();
+    if (!swappy) {
+        ALOGE("Failed to get Swappy instance in getStats");
+        return false;
+    }
+    return swappy->enabled();
+}
+
 void Swappy::destroyInstance() {
     std::lock_guard<std::mutex> lock(sInstanceMutex);
     sInstance.reset();
@@ -386,28 +396,27 @@ Swappy::Swappy(JavaVM *vm,
         return;
     }
 
-    mChoreographerFilter = std::make_unique<ChoreographerFilter>(refreshPeriod,
-                                                               sfOffset - appOffset,
-                                                               [this]() { return wakeClient(); });
-
-    mChoreographerThread = ChoreographerThread::createChoreographerThread(
-                    ChoreographerThread::Type::Swappy,
-                    vm,
-                    [this]{ handleChoreographer(); });
-
-    Settings::getInstance()->addListener([this]() { onSettingsChanged(); });
-
-    ALOGI("Initialized Swappy with refreshPeriod=%lld, appOffset=%lld, sfOffset=%lld",
-          (long long)refreshPeriod.count(), (long long)appOffset.count(), (long long)sfOffset.count());
     std::lock_guard<std::mutex> lock(mEglMutex);
     mEgl = EGL::create(refreshPeriod);
     if (!mEgl) {
         ALOGE("Failed to load EGL functions");
-        exit(0);
+        mDisableSwappy = true;
+        return;
     }
+    mChoreographerFilter = std::make_unique<ChoreographerFilter>(refreshPeriod,
+                                                                 sfOffset - appOffset,
+                                                                 [this]() { return wakeClient(); });
 
+    mChoreographerThread = ChoreographerThread::createChoreographerThread(
+        ChoreographerThread::Type::Swappy,
+        vm,
+        [this]{ handleChoreographer(); });
+    Settings::getInstance()->addListener([this]() { onSettingsChanged(); });
     mAutoSwapIntervalThreshold = (1e9f / mRefreshPeriod.count()) / 20; // 20FPS
     mFrameDurations.reserve(mFrameDurationSamples);
+    ALOGI("Initialized Swappy with refreshPeriod=%lld, appOffset=%lld, sfOffset=%lld" ,
+          (long long)refreshPeriod.count(), (long long)appOffset.count(),
+          (long long)sfOffset.count());
 }
 
 void Swappy::onSettingsChanged() {

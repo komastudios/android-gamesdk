@@ -245,7 +245,10 @@ void Renderer::draw(ThreadState *threadState) {
 
     Circle::draw(aspectRatio, circles, mWorkload);
 
-    Swappy_swap(threadState->display, threadState->surface);
+    if(Swappy_isEnabled())
+        Swappy_swap(threadState->display, threadState->surface);
+    else
+        eglSwapBuffers(threadState->display, threadState->surface);
 
     // If we're still started, request another frame
     requestDraw();
