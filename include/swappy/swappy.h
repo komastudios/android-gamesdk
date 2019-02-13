@@ -31,7 +31,8 @@ extern "C" {
 #define SWAPPY_SWAP_20FPS (50000000L)
 
 // Initialize Swappy, getting the required Android parameters from the display subsystem via JNI
-void Swappy_init(JNIEnv *env, jobject jactivity);
+// Returns TRUE, if successful, FALSE, if not, due to missing OpenGL functionality
+bool Swappy_init(JNIEnv *env, jobject jactivity);
 
 // Destroy resources and stop all threads that swappy has created
 void Swappy_destroy();

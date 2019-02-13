@@ -21,6 +21,7 @@
 #include <cmath>
 #include <thread>
 #include <cstdlib>
+#include <cinttypes>
 
 #include "Settings.h"
 #include "Thread.h"
@@ -48,7 +49,7 @@ std::unique_ptr<Swappy> Swappy::sInstance;
 constexpr std::chrono::nanoseconds Swappy::FrameDuration::MAX_DURATION;
 constexpr std::chrono::nanoseconds Swappy::FRAME_HYSTERESIS;
 
-void Swappy::init(JNIEnv *env, jobject jactivity) {
+bool Swappy::init(JNIEnv *env, jobject jactivity) {
     jclass activityClass = env->FindClass("android/app/NativeActivity");
     jclass windowManagerClass = env->FindClass("android/view/WindowManager");
     jclass displayClass = env->FindClass("android/view/Display");
@@ -98,20 +99,27 @@ void Swappy::init(JNIEnv *env, jobject jactivity) {
     using std::chrono::nanoseconds;
     JavaVM *vm;
     env->GetJavaVM(&vm);
-    Swappy::init(
+    return Swappy::init(
             vm,
             nanoseconds(vsyncPeriodNanos),
             nanoseconds(appVsyncOffsetNanos),
             nanoseconds(sfVsyncOffsetNanos));
 }
 
-void Swappy::init(JavaVM *vm, nanoseconds refreshPeriod, nanoseconds appOffset, nanoseconds sfOffset) {
+bool Swappy::init(JavaVM *vm, nanoseconds refreshPeriod, nanoseconds appOffset, nanoseconds sfOffset) {
     std::lock_guard<std::mutex> lock(sInstanceMutex);
     if (sInstance) {
         ALOGE("Attempted to initialize Swappy twice");
-        return;
+        return true;
     }
     sInstance = std::make_unique<Swappy>(vm, refreshPeriod, appOffset, sfOffset, ConstructorTag{});
+    if (!sInstance->isValid()) {
+        sInstance.reset();
+        return false;
+    }
+    else {
+        return true;
+    }
 }
 
 void Swappy::onChoreographer(int64_t frameTimeNanos) {
@@ -386,30 +394,32 @@ Swappy::Swappy(JavaVM *vm,
         return;
     }
 
-    mChoreographerFilter = std::make_unique<ChoreographerFilter>(refreshPeriod,
-                                                               sfOffset - appOffset,
-                                                               [this]() { return wakeClient(); });
-
-    mChoreographerThread = ChoreographerThread::createChoreographerThread(
-                    ChoreographerThread::Type::Swappy,
-                    vm,
-                    [this]{ handleChoreographer(); });
-
-    Settings::getInstance()->addListener([this]() { onSettingsChanged(); });
-
-    ALOGI("Initialized Swappy with refreshPeriod=%lld, appOffset=%lld, sfOffset=%lld",
-          (long long)refreshPeriod.count(), (long long)appOffset.count(), (long long)sfOffset.count());
     std::lock_guard<std::mutex> lock(mEglMutex);
     mEgl = EGL::create(refreshPeriod);
     if (!mEgl) {
         ALOGE("Failed to load EGL functions");
-        exit(0);
     }
+    else {
+        mChoreographerFilter = std::make_unique<ChoreographerFilter>(refreshPeriod,
+                                                                     sfOffset - appOffset,
+                                                                     [this]() { return wakeClient(); });
 
-    mAutoSwapIntervalThreshold = (1e9f / mRefreshPeriod.count()) / 20; // 20FPS
-    mFrameDurations.reserve(mFrameDurationSamples);
+        mChoreographerThread = ChoreographerThread::createChoreographerThread(
+            ChoreographerThread::Type::Swappy,
+            vm,
+            [this]{ handleChoreographer(); });
+        Settings::getInstance()->addListener([this]() { onSettingsChanged(); });
+        mAutoSwapIntervalThreshold = (1e9f / mRefreshPeriod.count()) / 20; // 20FPS
+        mFrameDurations.reserve(mFrameDurationSamples);
+        ALOGI("Initialized Swappy with refreshPeriod=%lld, appOffset=%lld, sfOffset=%lld" ,
+              (long long)refreshPeriod.count(), (long long)appOffset.count(),
+              (long long)sfOffset.count());
+    }
 }
 
+bool Swappy::isValid() const {
+    return mEgl.get()!=nullptr;
+}
 void Swappy::onSettingsChanged() {
     std::lock_guard<std::mutex> lock(mFrameDurationsMutex);
     int32_t newSwapInterval = ::round(float(Settings::getInstance()->getSwapIntervalNS()) /

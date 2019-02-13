@@ -59,13 +59,15 @@ class Swappy {
            std::chrono::nanoseconds sfOffset,
            ConstructorTag tag);
 
-    static void init(JNIEnv *env, jobject jactivity);
+    bool isValid() const;
+
+    static bool init(JNIEnv *env, jobject jactivity);
 
     static void onChoreographer(int64_t frameTimeNanos);
 
     static bool swap(EGLDisplay display, EGLSurface surface);
 
-    static void init(JavaVM *vm,
+    static bool init(JavaVM *vm,
                      std::chrono::nanoseconds refreshPeriod,
                      std::chrono::nanoseconds appOffset,
                      std::chrono::nanoseconds sfOffset);

@@ -26,8 +26,8 @@ using namespace swappy;
 
 extern "C" {
 
-void Swappy_init(JNIEnv *env, jobject jactivity) {
-    Swappy::init(env, jactivity);
+bool Swappy_init(JNIEnv *env, jobject jactivity) {
+    return Swappy::init(env, jactivity);
 }
 
 void Swappy_destroy() {
