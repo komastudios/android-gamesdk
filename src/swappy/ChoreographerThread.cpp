@@ -159,6 +159,7 @@ void NDKChoreographerThread::looperThread()
         }
     }
 
+#if __ANDROID_API__ >= 21
     const auto tid = pthread_gettid_np(pthread_self());
 
     ALOGI("Setting '%s' thread [%d-0x%x] affinity mask to 0x%x.",
@@ -166,6 +167,7 @@ void NDKChoreographerThread::looperThread()
     sched_setaffinity(tid, sizeof(cpu_set), &cpu_set);
 
     pthread_setname_np(pthread_self(), name);
+#endif
 
     while (mThreadRunning) {
         // mutex should be unlocked before sleeping on pollAll
