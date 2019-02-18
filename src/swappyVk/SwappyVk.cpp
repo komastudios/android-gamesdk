@@ -17,8 +17,6 @@
 #include <swappyVk/SwappyVk.h>
 
 #include <map>
-#include <condition_variable>
-#include <cstring>
 #include <unistd.h>
 
 #include <dlfcn.h>
@@ -252,7 +250,7 @@ void SwappyVkBase::onDisplayRefresh(long frameTimeNanos) {
 }
 
 void SwappyVkBase::calcRefreshRate(long frameTimeNanos) {
-  long refresh_nano = std::abs(frameTimeNanos - mLastframeTimeNanos);
+    long refresh_nano = abs(frameTimeNanos - mLastframeTimeNanos);
 
     if (mRefreshDur != 0 || mLastframeTimeNanos == 0) {
         return;

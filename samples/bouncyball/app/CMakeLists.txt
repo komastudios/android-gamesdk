@@ -4,14 +4,9 @@ set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Werror -Wthread-safety -D _
 
 # ============== Games SDK
 
-# This will include and build swappy from the gamesdk
-#add_subdirectory(../../../src/swappy ./swappy-output)   # Swappy Library
-#include_directories( "../../../include" ) # Games SDK Public Includes
+add_subdirectory(../../../src/swappy ./swappy-output)   # Swappy Library
 
-# This will use swappy from a packaged version
-include("../../gamesdk.cmake")
-add_gamesdk_target()
-
+include_directories( ../../../include ) # Games SDK Public Includes
 include_directories( ../../common/include ) # Samples Includes
 
 # ============== Bouncy Ball
@@ -26,8 +21,9 @@ add_library( native-lib
              src/main/cpp/Orbit.cpp
              src/main/cpp/Renderer.cpp
              src/main/cpp/Settings.cpp
-             ../../../samples/common/src/Thread.cpp
+             ../../common/src/Thread.cpp
         )
+
 
 target_link_libraries( native-lib
 
@@ -35,5 +31,5 @@ target_link_libraries( native-lib
                        EGL
                        GLESv2
                        log
-                       gamesdk
+                       swappy
                        )
