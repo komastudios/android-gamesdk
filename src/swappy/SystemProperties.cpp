@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-#include <cstdlib>
 #include <string>
 
 #include "Log.h"
@@ -38,7 +37,7 @@ int getSystemPropViaGetAsInt(const char* key, int default_value = 0) {
     if (bufferLen > PROP_VALUE_MAX || bufferLen == 0) {
         return default_value;
     }
-    return ::atoi(buffer);
+    return atoi(buffer);
 }
 
 int getSystemPropViaGetAsBool(const char* key, bool default_value = false) {

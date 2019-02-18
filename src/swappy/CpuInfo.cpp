@@ -20,8 +20,6 @@
 
 #include <limits>
 #include <bitset>
-#include <cstdlib>
-#include <cstring>
 
 #include "Log.h"
 
@@ -64,13 +62,6 @@ std::string ReadFile(const std::string& path) {
 
 namespace swappy {
 
-std::string to_string(int n) {
-  constexpr int kBufSize = 12; // strlen("−2147483648")+1
-  static char buf[kBufSize];
-  snprintf(buf, kBufSize, "%d", n);
-  return buf;
-}
-
 CpuInfo::CpuInfo() {
     const auto BUFFER_LENGTH = 10240;
 
@@ -93,13 +84,13 @@ CpuInfo::CpuInfo() {
             core.id = mCpus.size();
 
             auto core_path = std::string("/sys/devices/system/cpu/cpu")
-                             + to_string(core.id);
+                             + std::to_string(core.id);
 
             auto package_id = ReadFile(core_path + "/topology/physical_package_id");
             auto frequency = ReadFile(core_path + "/cpufreq/cpuinfo_max_freq");
 
-            core.package_id = atol(package_id.c_str());
-            core.frequency = atol(frequency.c_str());
+            core.package_id = std::atol(package_id.c_str());
+            core.frequency = std::atol(frequency.c_str());
 
             mMinFrequency = std::min(mMinFrequency, core.frequency);
             mMaxFrequency = std::max(mMaxFrequency, core.frequency);

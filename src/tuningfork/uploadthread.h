@@ -18,7 +18,6 @@
 #include <thread>
 #include <mutex>
 #include <map>
-#include <condition_variable>
 #include "prong.h"
 
 namespace tuningfork {
