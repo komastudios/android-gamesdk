@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d8036838_70bfd98a",
+        "filename": "samples/bouncyball/app/src/main/cpp/Renderer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-02-18T21:53:57Z",
+      "side": 1,
+      "message": "Do we want to publicize this use? It makes sense to call eglSwap only if the app is doing at least come kind of frame pacing.",
+      "revId": "b0682f536a948bb3239cde3f56d5899b1926bbe4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "830b8fb3_5c2904fb",
+        "filename": "src/swappy/Swappy.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 311,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-02-18T21:53:57Z",
+      "side": 1,
+      "message": "This will spam the log when swappy is not initialized.",
+      "revId": "b0682f536a948bb3239cde3f56d5899b1926bbe4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
