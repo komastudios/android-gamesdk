@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e29e83a2_200ee95f",
+        "filename": "src/swappy/ChoreographerThread.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-02-19T11:19:58Z",
+      "side": 1,
+      "message": "Don\u0027t we still want to set the name, even if we can\u0027t set the affinity?\nAlso, maybe log a warning for API\u003c21 saying we couldn\u0027t set the affinity.",
+      "revId": "861c8c76a99d60031f2012e1ff182e7c212a46bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
