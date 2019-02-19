@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "5298a13c_28ab1b87",
+        "filename": "samples/bouncyball/app/src/main/cpp/Renderer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-02-19T15:20:14Z",
+      "side": 1,
+      "message": "Definitely, yes, since it\u0027s supported explicitly.",
+      "parentUuid": "95d75e69_7376ccb3",
+      "revId": "b0682f536a948bb3239cde3f56d5899b1926bbe4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "830b8fb3_5c2904fb",
         "filename": "src/swappy/Swappy.cpp",
         "patchSetId": 2
