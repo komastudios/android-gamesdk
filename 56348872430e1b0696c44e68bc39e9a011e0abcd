@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "42d8bf59_7a62ea59",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-02-19T14:54:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "998b9354_386ce0a4",
+      "revId": "56348872430e1b0696c44e68bc39e9a011e0abcd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2300258a_415d42c8",
         "filename": "build.gradle",
         "patchSetId": 1
@@ -50,6 +68,24 @@
       "revId": "56348872430e1b0696c44e68bc39e9a011e0abcd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aea27e1e_1d17e410",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 324,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-02-19T14:54:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2300258a_415d42c8",
+      "revId": "56348872430e1b0696c44e68bc39e9a011e0abcd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
