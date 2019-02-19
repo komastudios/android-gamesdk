@@ -16,6 +16,24 @@
       "revId": "861c8c76a99d60031f2012e1ff182e7c212a46bb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e8a21cfe_1b7bd5a3",
+        "filename": "src/swappy/ChoreographerThread.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-02-19T16:35:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e29e83a2_200ee95f",
+      "revId": "861c8c76a99d60031f2012e1ff182e7c212a46bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
