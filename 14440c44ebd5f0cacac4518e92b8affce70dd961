@@ -90,6 +90,24 @@
     },
     {
       "key": {
+        "uuid": "f70e8f7f_ef2799d2",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-02-19T15:15:39Z",
+      "side": 1,
+      "message": "https://engdoc.corp.google.com/eng/doc/devguide/cpp/styleguide.md?cl\u003dhead#Header_Files\n\u0027\u0027You should include all the headers that define the symbols you rely upon, except in the unusual case of forward declaration\u0027\u0027",
+      "parentUuid": "a01e6322_a6302bc8",
+      "revId": "14440c44ebd5f0cacac4518e92b8affce70dd961",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "710e5baa_0d249e12",
         "filename": "src/swappyVk/SwappyVk.cpp",
         "patchSetId": 1
