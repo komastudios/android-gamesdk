@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "998b9354_386ce0a4",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-02-19T13:45:33Z",
+      "side": 1,
+      "message": "IIUC we don\u0027t rely on the default value for buildTuningFork at the moment, so let\u0027s remove it until a scenario arises where it\u0027s needed?",
+      "revId": "56348872430e1b0696c44e68bc39e9a011e0abcd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2300258a_415d42c8",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 324,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-02-19T13:45:33Z",
+      "side": 1,
+      "message": "needs to be spaces, not tabs.",
+      "revId": "56348872430e1b0696c44e68bc39e9a011e0abcd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
