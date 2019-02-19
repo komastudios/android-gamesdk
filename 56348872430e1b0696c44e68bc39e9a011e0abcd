@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "e1122ed5_0f4d707a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-02-19T13:59:06Z",
+      "side": 1,
+      "message": "Also\n\nBug: 124645775",
+      "revId": "56348872430e1b0696c44e68bc39e9a011e0abcd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "998b9354_386ce0a4",
         "filename": "build.gradle",
         "patchSetId": 1
