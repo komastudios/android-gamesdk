@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8c509049_ee25a289",
+        "filename": "src/tuningfork/tuningfork.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-02-20T16:37:36Z",
+      "side": 1,
+      "message": "Can we put the functions that rely on these headers in a different file, e.g. clearcut_backend.cpp?",
+      "revId": "c92fe207b70ff1c9992b54dcf91c81b8067f872c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8fb64890_0a85bc5b",
+        "filename": "src/tuningfork/tuningfork.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-02-20T16:37:36Z",
+      "side": 1,
+      "message": "Name these sBackend, etc. to clarify they are statics.",
+      "revId": "c92fe207b70ff1c9992b54dcf91c81b8067f872c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
