@@ -1,0 +1,7 @@
+Code-Review+2: Idries Hamadi <idries@google.com>
+Presubmit-Ready+1: Treehugger Robot <treehugger-gerrit@google.com>
+Submitted-by: Francesco Carucci <fcarucci@google.com>
+Submitted-at: Wed, 20 Feb 2019 15:02:51 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/907109
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
