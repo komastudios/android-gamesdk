@@ -30,9 +30,13 @@
 #include "uploadthread.h"
 #include "clearcutserializer.h"
 #include "protobuf_util.h"
+#include "clearcut_backend.h"
+#include "modp_b64.h"
+#include "gens/nano/tuningfork_clearcut_log.pb.h"
 
 
 typedef com_google_tuningfork_Settings PBSettings;
+using ::logs_proto_tuningfork_TuningForkLogEvent;
 
 #define LOG_INFO(MSG) __android_log_print(ANDROID_LOG_INFO, "TuningFork", MSG )
 #define LOG_DEBUG(MSG) __android_log_print(ANDROID_LOG_DEBUG, "TuningFork", MSG )
@@ -90,6 +94,7 @@ private:
     std::unique_ptr<gamesdk::Trace> trace_;
     std::vector<TimePoint> live_traces_;
     Backend *backend_;
+    ParamsLoader *loader_;
     UploadThread upload_thread_;
     SerializedAnnotation current_annotation_;
     std::vector<int> annotation_radix_mult_;
@@ -98,9 +103,11 @@ private:
 public:
     TuningForkImpl(const Settings &settings,
                    Backend *backend,
+                   ParamsLoader *loader,
                    ITimeProvider *time_provider) : settings_(settings),
                                                     trace_(gamesdk::Trace::create()),
                                                     backend_(backend),
+                                                    loader_(loader),
                                                     upload_thread_(backend),
                                                     current_annotation_id_(0),
                                                     time_provider_(time_provider) {
@@ -178,6 +185,35 @@ private:
 
 std::unique_ptr<TuningForkImpl> s_impl;
 
+void ProtoPrint::Print(const ProtobufSerialization &evt_ser) {
+    if (evt_ser.size() == 0) return;
+    auto encode_len = modp_b64_encode_len(evt_ser.size());
+    std::vector<char> dest_buf(encode_len);
+    // This fills the dest buffer with a null-terminated string. It returns the length of
+    //  the string, not including the null char
+    auto n_encoded = modp_b64_encode(&dest_buf[0], reinterpret_cast<const char*>(&evt_ser[0]),
+                                     evt_ser.size());
+    if (n_encoded == -1 || encode_len != n_encoded+1) {
+        __android_log_print(ANDROID_LOG_WARN, "TuningFork Print", "Could not b64 encode protobuf");
+        return;
+    }
+    std::string s(&dest_buf[0], n_encoded);
+    // Split the serialization into <128-byte chunks to avoid logcat line
+    //  truncation.
+    constexpr size_t maxStrLen = 128;
+    int n = (s.size() + maxStrLen - 1) / maxStrLen; // Round up
+    for (int i = 0, j = 0; i < n; ++i) {
+        std::stringstream str;
+        str << "(TCL" << (i + 1) << "/" << n << ")";
+        int m = std::min(s.size() - j, maxStrLen);
+        str << s.substr(j, m);
+        j += m;
+        __android_log_print(ANDROID_LOG_INFO, "TuningFork Print", "%s",
+                            str.str().c_str());
+    }
+    return;
+}
+
 bool decodeAnnotationEnumSizes(pb_istream_t* stream, const pb_field_t *field, void** arg) {
     Settings* settings = static_cast<Settings*>(*arg);
     uint64_t a;
@@ -196,6 +232,7 @@ bool decodeHistograms(pb_istream_t* stream, const pb_field_t *field, void** arg)
 
 void Init(const ProtobufSerialization &settings_ser,
           Backend *backend,
+          ParamsLoader *loader,
           ITimeProvider *time_provider) {
     Settings settings;
     PBSettings pbsettings = com_google_tuningfork_Settings_init_zero;
@@ -215,8 +252,25 @@ void Init(const ProtobufSerialization &settings_ser,
       = pbsettings.aggregation_strategy.intervalms_or_count;
     settings.aggregation_strategy.max_instrumentation_keys
       = pbsettings.aggregation_strategy.max_instrumentation_keys;
-    s_impl = std::make_unique<TuningForkImpl>(settings, backend,
+    s_impl = std::make_unique<TuningForkImpl>(settings, backend, loader,
                                               time_provider);
+}
+
+ClearcutBackend backend;
+ProtoPrint protoPrint;
+ParamsLoader loader;
+
+void Init(const ProtobufSerialization &settings_ser, JNIEnv* env, jobject activity) {
+    backend.Init(env, activity, &protoPrint);
+
+    if(backend.Init(env, activity, &protoPrint)) {
+        __android_log_print(ANDROID_LOG_DEBUG, "TuningFork.Clearcut", ": OK");
+        Init(settings_ser, &backend, &loader);
+    }
+    else {
+        __android_log_print(ANDROID_LOG_DEBUG, "TuningFork.Clearcut", ": FAILED");
+        Init(settings_ser);
+    }
 }
 
 bool GetFidelityParameters(const ProtobufSerialization &defaultParams,
@@ -372,7 +426,7 @@ SerializedAnnotation TuningForkImpl::SerializeAnnotationId(uint64_t id) {
 
 bool TuningForkImpl::GetFidelityParameters(const ProtobufSerialization& defaultParams,
                                            ProtobufSerialization &params_ser, size_t timeout_ms) {
-    auto result = backend_->GetFidelityParams(params_ser, timeout_ms);
+    auto result = loader_->GetFidelityParams(params_ser, timeout_ms);
     if (result) {
         upload_thread_.SetCurrentFidelityParams(params_ser);
     } else {

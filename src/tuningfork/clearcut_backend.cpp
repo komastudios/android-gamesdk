@@ -20,6 +20,11 @@
 #include "clearcutserializer.h"
 #include "uploadthread.h"
 
+#include "protobuf_util.h"
+#include "tuningfork_internal.h"
+#include <android/log.h>
+#include <jni.h>
+
 namespace tuningfork {
 
 ClearcutBackend::~ClearcutBackend() {}
@@ -28,6 +33,12 @@ const std::string ClearcutBackend::LOG_SOURCE = "TUNING_FORK";
 const char* ClearcutBackend::LOG_TAG = "TuningFork.Clearcut";
 
 bool ClearcutBackend::Process(const ProtobufSerialization &evt_ser) {
+
+    __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "Process log");
+
+    if(proto_print_ != nullptr)
+        proto_print_->Print(evt_ser);
+
     JNIEnv* env;
     //Attach thread
     int envStatus  = vm_->GetEnv((void**)&env, JNI_VERSION_1_6);
@@ -75,7 +86,10 @@ bool ClearcutBackend::Process(const ProtobufSerialization &evt_ser) {
     return !hasException;
 }
 
-bool ClearcutBackend::Init(JNIEnv *env, jobject activity) {
+bool ClearcutBackend::Init(JNIEnv *env, jobject activity, ProtoPrint* proto_print) {
+    __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "%s", "Start clearcut initialization...");
+
+    proto_print_ = proto_print;
     env->GetJavaVM(&vm_);
     if(vm_ == nullptr) {
         __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "%s", "JavaVM is null...");
@@ -95,10 +109,6 @@ bool ClearcutBackend::Init(JNIEnv *env, jobject activity) {
         return false;
     }
 
-}
-
-bool ClearcutBackend::GetFidelityParams(ProtobufSerialization &fp_ser, size_t timeout_ms) {
-    return true;
 }
 
 bool ClearcutBackend::IsGooglePlayServiceAvailable(JNIEnv* env, jobject context) {
