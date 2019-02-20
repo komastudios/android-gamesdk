@@ -1,3 +1,4 @@
+import com.sun.java.swing.plaf.windows.TMSchema
 
 import java.nio.file.Paths
 import org.gradle.internal.logging.text.StyledTextOutput;
@@ -6,7 +7,7 @@ import static org.gradle.internal.logging.text.StyledTextOutput.Style;
 import org.gradle.internal.os.OperatingSystem;
 import org.gradle.api.Project;
 
-defaultTasks 'clean', 'archiveZip'
+defaultTasks 'cleanPath', 'archiveZip'
 
 task get_protoc_version(type: Exec) {
     commandLine "protoc"
@@ -88,8 +89,14 @@ class LocalToolchain extends Toolchain {
         project_ = project
         androidVersion_ = androidVersion
         sdkPath_ = System.getenv("ANDROID_HOME")
+        if(sdkPath_ == null) {
+            Properties properties = new Properties()
+            properties.load(project.rootProject.file('local.properties').newDataInputStream())
+            sdkPath_ = properties.getProperty('sdk.dir')
+        }
         if(sdkPath_ == null)
-            throw new GradleException('Must set ANDROID_HOME')
+            throw new GradleException('Must set ANDROID_HOME or sdk.dir in local.properties')
+
         ndkPath_ = System.getenv("ANDROID_NDK")
         if(ndkPath_ == null) {
             ndkPath_ = Paths.get(sdkPath_,'ndk-bundle').toString()
@@ -207,7 +214,7 @@ def buildNativeModules(arch, androidVersion, ndkVersion, stl, threadChecks) {
                               new SpecificToolchain(androidVersion, ndkVersion),
                               stl, threadChecks)
 }
-task clean(type: Delete) {
+task cleanPath(type: Delete) {
     doLast {
         delete getOutPath(), getPackagePath(), getTempPath()
     }
