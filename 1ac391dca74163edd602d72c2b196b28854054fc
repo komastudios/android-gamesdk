@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5f95000e_856f2cf1",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-02-21T18:04:57Z",
+      "side": 1,
+      "message": "We need to add dlclose on the destructor",
+      "revId": "1ac391dca74163edd602d72c2b196b28854054fc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "54dea35b_5fcba8b3",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 993,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-02-21T18:04:57Z",
+      "side": 1,
+      "message": "Vulkan is not supported for API \u003c 24 so we should be ok: https://developer.android.com/ndk/guides/graphics/getting-started",
+      "revId": "1ac391dca74163edd602d72c2b196b28854054fc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
