@@ -36,24 +36,7 @@
 #include <android/looper.h>
 #include <android/choreographer.h>
 #include <android/log.h>
-#include <android/trace.h>
-
-#define ATRACE_NAME(name) ScopedTrace ___tracer(name)
-
-// ATRACE_CALL is an ATRACE_NAME that uses the current function name.
-#define ATRACE_CALL() ATRACE_NAME(__FUNCTION__)
-
-class ScopedTrace {
-public:
-    inline ScopedTrace(const char *name) {
-        ATrace_beginSection(name);
-    }
-
-    inline ~ScopedTrace() {
-        ATrace_endSection();
-    }
-};
-
+#include "Trace.h"
 
 #define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, "SwappyVk", __VA_ARGS__)
 #define ALOGW(...) __android_log_print(ANDROID_LOG_WARN, "SwappyVk", __VA_ARGS__)
@@ -88,6 +71,21 @@ constexpr uint32_t kNudgeWithinVsyncBoundaries  = 2000000;
 
 // Forward declarations:
 class SwappyVk;
+
+// AChoreographer is supported from API 24. To allow compilation for minSDK < 24
+// and still use AChoreographer for SDK >= 24 we need runtime support to call
+// AChoreographer APIs.
+
+using PFN_AChoreographer_getInstance = AChoreographer* (*)();
+
+using PFN_AChoreographer_postFrameCallback = void (*)(AChoreographer* choreographer,
+                                                  AChoreographer_frameCallback callback,
+                                                  void* data);
+
+using PFN_AChoreographer_postFrameCallbackDelayed = void (*)(AChoreographer* choreographer,
+                                                        AChoreographer_frameCallback callback,
+                                                        void* data,
+                                                        long delayMillis);
 
 /***************************************************************************************************
  *
@@ -133,6 +131,29 @@ public:
         mpfnQueuePresentKHR =
                 reinterpret_cast<PFN_vkQueuePresentKHR>(
                     mpfnGetDeviceProcAddr(mDevice, "vkQueuePresentKHR"));
+        mLibAndroid = dlopen("libandroid.so", RTLD_NOW | RTLD_LOCAL);
+        if (mLibAndroid == nullptr) {
+            ALOGE("FATAL: cannot open libandroid.so: %s", strerror(errno));
+            abort();
+        }
+
+        mAChoreographer_getInstance =
+                reinterpret_cast<PFN_AChoreographer_getInstance >(
+                    dlsym(mLibAndroid, "AChoreographer_getInstance"));
+
+        mAChoreographer_postFrameCallback =
+                reinterpret_cast<PFN_AChoreographer_postFrameCallback >(
+                        dlsym(mLibAndroid, "AChoreographer_postFrameCallback"));
+
+        mAChoreographer_postFrameCallbackDelayed =
+                reinterpret_cast<PFN_AChoreographer_postFrameCallbackDelayed >(
+                        dlsym(mLibAndroid, "AChoreographer_postFrameCallbackDelayed"));
+        if (!mAChoreographer_getInstance ||
+            !mAChoreographer_postFrameCallback ||
+            !mAChoreographer_postFrameCallbackDelayed) {
+            ALOGE("FATAL: cannot get AChoreographer symbols");
+            abort();
+        }
     }
     virtual bool doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
                                            uint64_t*      pRefreshDuration) = 0;
@@ -166,6 +187,11 @@ protected:
     PFN_vkQueuePresentKHR   mpfnQueuePresentKHR = nullptr;
     PFN_vkGetRefreshCycleDurationGOOGLE mpfnGetRefreshCycleDurationGOOGLE = nullptr;
     PFN_vkGetPastPresentationTimingGOOGLE mpfnGetPastPresentationTimingGOOGLE = nullptr;
+
+    void *mLibAndroid;
+    PFN_AChoreographer_getInstance mAChoreographer_getInstance;
+    PFN_AChoreographer_postFrameCallback mAChoreographer_postFrameCallback;
+    PFN_AChoreographer_postFrameCallbackDelayed mAChoreographer_postFrameCallbackDelayed;
 
     long mFrameID = 0;
     long mLastframeTimeNanos = 0;
@@ -227,7 +253,7 @@ void *SwappyVkBase::looperThread() {
         return NULL;
     }
 
-    mChoreographer = AChoreographer_getInstance();
+    mChoreographer = mAChoreographer_getInstance();
     if (!mChoreographer) {
         ALOGE("AChoreographer_getInstance failed");
         return NULL;
@@ -631,7 +657,7 @@ void SwappyVkGoogleDisplayTimingAndroid::waitForFenceChoreographer(VkQueue queue
     mPendingSync[queue].pop_front();
     mWaitingCondition.wait(lock, [&]() {
         if (vkWaitForFences(mDevice, 1, &sync.fence, VK_TRUE, 0) == VK_TIMEOUT) {
-            AChoreographer_postFrameCallbackDelayed(mChoreographer, frameCallback, this, 1);
+            mAChoreographer_postFrameCallbackDelayed(mChoreographer, frameCallback, this, 1);
             return false;
         }
         return true;
@@ -662,7 +688,7 @@ VkResult SwappyVkGoogleDisplayTimingAndroid::doQueuePresent(VkQueue             
         mWaitingCondition.wait(lock, [&]() {
             if (mFrameID < target) {
                 // wait for the next frame as this frame is too soon
-                AChoreographer_postFrameCallbackDelayed(mChoreographer, frameCallback, this, 1);
+                mAChoreographer_postFrameCallbackDelayed(mChoreographer, frameCallback, this, 1);
                 return false;
             }
             return true;
@@ -754,7 +780,7 @@ public:
         std::unique_lock<std::mutex> lock(mWaitingMutex);
         mWaitingCondition.wait(lock, [&]() {
             if (mRefreshDur == 0) {
-                AChoreographer_postFrameCallbackDelayed(mChoreographer, frameCallback, this, 1);
+                mAChoreographer_postFrameCallbackDelayed(mChoreographer, frameCallback, this, 1);
                 return false;
             }
             return true;
@@ -780,7 +806,7 @@ public:
             mWaitingCondition.wait(lock, [&]() {
                 if (mFrameID < target) {
                     // wait for the next frame as this frame is too soon
-                    AChoreographer_postFrameCallbackDelayed(mChoreographer, frameCallback, this, 1);
+                    mAChoreographer_postFrameCallbackDelayed(mChoreographer, frameCallback, this, 1);
                     return false;
                 }
                 return true;
@@ -964,6 +990,8 @@ bool SwappyVk::GetRefreshCycleDuration(VkPhysicalDevice physicalDevice,
         } else {
             // Instantiate the class that sits on top of the basic Vulkan APIs
 #ifdef ANDROID
+            // TODO: We need to dynamically check the Android API version here
+            // and use the vulkan fallback if it's <24, I think
             pImplementation = std::make_shared<SwappyVkAndroidFallback>
                     (physicalDevice, device, getInstance(), mLibVulkan);
             ALOGV("SwappyVk initialized for VkDevice %p using Android fallback", device);
@@ -1065,7 +1093,7 @@ void SwappyVk_determineDeviceExtensions(
     uint32_t*              pRequiredExtensionCount,
     char**                 pRequiredExtensions)
 {
-    ATRACE_CALL();
+    TRACE_CALL();
     SwappyVk& swappy = SwappyVk::getInstance();
     swappy.swappyVkDetermineDeviceExtensions(physicalDevice,
                                              availableExtensionCount, pAvailableExtensions,
@@ -1077,7 +1105,7 @@ void SwappyVk_setQueueFamilyIndex(
         VkQueue     queue,
         uint32_t    queueFamilyIndex)
 {
-    ATRACE_CALL();
+    TRACE_CALL();
     SwappyVk& swappy = SwappyVk::getInstance();
     swappy.SetQueueFamilyIndex(device, queue, queueFamilyIndex);
 }
@@ -1088,7 +1116,7 @@ bool SwappyVk_initAndGetRefreshCycleDuration(
         VkSwapchainKHR   swapchain,
         uint64_t*        pRefreshDuration)
 {
-    ATRACE_CALL();
+    TRACE_CALL();
     SwappyVk& swappy = SwappyVk::getInstance();
     return swappy.GetRefreshCycleDuration(physicalDevice, device, swapchain, pRefreshDuration);
 }
@@ -1098,7 +1126,7 @@ void SwappyVk_setSwapInterval(
         VkSwapchainKHR swapchain,
         uint32_t       interval)
 {
-    ATRACE_CALL();
+    TRACE_CALL();
     SwappyVk& swappy = SwappyVk::getInstance();
     swappy.SetSwapInterval(device, swapchain, interval);
 }
@@ -1107,7 +1135,7 @@ VkResult SwappyVk_queuePresent(
         VkQueue                 queue,
         const VkPresentInfoKHR* pPresentInfo)
 {
-    ATRACE_CALL();
+    TRACE_CALL();
     SwappyVk& swappy = SwappyVk::getInstance();
     return swappy.QueuePresent(queue, pPresentInfo);
 }
@@ -1116,7 +1144,7 @@ void SwappyVk_destroySwapchain(
         VkDevice                device,
         VkSwapchainKHR          swapchain)
 {
-    ATRACE_CALL();
+    TRACE_CALL();
     SwappyVk& swappy = SwappyVk::getInstance();
     swappy.DestroySwapchain(device, swapchain);
 }
