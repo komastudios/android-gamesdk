@@ -52,6 +52,24 @@
       "revId": "a97a150970a0cbb0629f091378e576db275e060e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f93cf9e3_74b839b5",
+        "filename": "src/swappy/ChoreographerThread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-02-22T17:00:15Z",
+      "side": 1,
+      "message": "I was thinking that we should set it to nullptr right after dlclose. It\u0027s not strictly necessary and I would often not bother in a destructor, but there\u0027s quite a bit of logic in the remainder of this destructor and destruction of these kinds of classes is often only tested sporadically.\n\nLeaving it as a dangling pointer in this instance could lead to a situation where a future change introduces a call that depends on the lib in some way and that will be easier to diagnose if mLibAndroid is null, rather than a valid-looking address.\n\nThis is somewhat nitty feedback though, so I\u0027m giving +2 anyway.",
+      "parentUuid": "e8e56049_1d57d23c",
+      "revId": "a97a150970a0cbb0629f091378e576db275e060e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
