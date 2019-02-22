@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ad4226e8_27594cbd",
+        "filename": "src/swappy/ChoreographerThread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-02-22T13:43:37Z",
+      "side": 1,
+      "message": "mLibAndroid \u003d NULL;  ?",
+      "revId": "a97a150970a0cbb0629f091378e576db275e060e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
