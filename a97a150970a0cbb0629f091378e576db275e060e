@@ -34,6 +34,24 @@
       "revId": "a97a150970a0cbb0629f091378e576db275e060e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e8e56049_1d57d23c",
+        "filename": "src/swappy/ChoreographerThread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-02-22T14:07:14Z",
+      "side": 1,
+      "message": "I added the initialization and changed the condition to if(mLibAndroid!\u003dnullptr)",
+      "parentUuid": "2061810f_0e400d56",
+      "revId": "a97a150970a0cbb0629f091378e576db275e060e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
