@@ -64,7 +64,6 @@ private:
     PFN_AChoreographer_getInstance mAChoreographer_getInstance;
     PFN_AChoreographer_postFrameCallback mAChoreographer_postFrameCallback;
     PFN_AChoreographer_postFrameCallbackDelayed mAChoreographer_postFrameCallbackDelayed;
-
     void *mLibAndroid;
     std::thread mThread;
     std::condition_variable mWaitingCondition;
@@ -114,6 +113,9 @@ NDKChoreographerThread::~NDKChoreographerThread()
 {
     ALOGI("Destroying NDKChoreographerThread");
 
+    if(mLibAndroid)
+      dlclose(mLibAndroid);
+
     if (!mLooper) {
         return;
     }
@@ -159,13 +161,10 @@ void NDKChoreographerThread::looperThread()
         }
     }
 
-#if __ANDROID_API__ >= 21
-    const auto tid = pthread_gettid_np(pthread_self());
-
+    const auto tid = gettid();
     ALOGI("Setting '%s' thread [%d-0x%x] affinity mask to 0x%x.",
           name, tid, tid, to_mask(cpu_set));
     sched_setaffinity(tid, sizeof(cpu_set), &cpu_set);
-#endif
 
     pthread_setname_np(pthread_self(), name);
 
