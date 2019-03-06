@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e855a439_6b494179",
+        "filename": "samples/bouncyball/app/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-03-06T11:21:09Z",
+      "side": 1,
+      "message": "It would be good to have a comment here explaining that GAMESDK_SDK_VERSION is the version of the Android SDK that the Games SDK is built with (rather than being the version of the Games SDK).\n\nProbably good to do the same think for GAMES_NDK_VERSION here too, for completeness.",
+      "revId": "d0a7e84d587e4fb1e1c78b805ee72ff0a95720dc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5724d7c7_e434652a",
+        "filename": "src/tuningfork/annotation_util.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-03-06T11:21:09Z",
+      "side": 1,
+      "message": "This (and a few other functions in this file) should probably be marked as static?",
+      "revId": "d0a7e84d587e4fb1e1c78b805ee72ff0a95720dc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
