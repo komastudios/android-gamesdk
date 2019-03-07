@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "775cd303_017e716f",
+        "filename": "samples/cube/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-03-07T16:34:08Z",
+      "side": 1,
+      "message": "I suggest you make this into a global value that\u0027s shared between all these files in the future.",
+      "revId": "aed4a5e5a8a5879fd67aee7302c783fce318fc97",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d3aaf7c7_50a01468",
+        "filename": "samples/tuningfork/tftestapp/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-03-07T16:34:08Z",
+      "side": 1,
+      "message": "nit: Whitespace",
+      "revId": "aed4a5e5a8a5879fd67aee7302c783fce318fc97",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
