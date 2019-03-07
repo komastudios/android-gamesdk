@@ -33,6 +33,24 @@
       "revId": "aed4a5e5a8a5879fd67aee7302c783fce318fc97",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a44bc08b_37d85dbb",
+        "filename": "samples/tuningfork/tftestapp/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-03-07T16:39:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d3aaf7c7_50a01468",
+      "revId": "aed4a5e5a8a5879fd67aee7302c783fce318fc97",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
