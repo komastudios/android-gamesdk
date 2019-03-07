@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9ef7ff44_6b4d5b0b",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/proto/tuningfork_extensions.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-03-07T15:56:56Z",
+      "side": 1,
+      "message": "I would say \nEnums must not contain 0. I think if it starts from 2, that s fine too.",
+      "range": {
+        "startLine": 6,
+        "startChar": 2,
+        "endLine": 6,
+        "endChar": 26
+      },
+      "revId": "b91eeb9f42b082de654c0f631a1dbb9b1afedaf7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
