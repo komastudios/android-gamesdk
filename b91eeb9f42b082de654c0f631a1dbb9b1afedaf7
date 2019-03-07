@@ -22,6 +22,30 @@
       "revId": "b91eeb9f42b082de654c0f631a1dbb9b1afedaf7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "147fc374_2f32da59",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/proto/tuningfork_extensions.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-03-07T16:11:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9ef7ff44_6b4d5b0b",
+      "range": {
+        "startLine": 6,
+        "startChar": 2,
+        "endLine": 6,
+        "endChar": 26
+      },
+      "revId": "b91eeb9f42b082de654c0f631a1dbb9b1afedaf7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
