@@ -1,0 +1,7 @@
+Presubmit-Ready+1: Will Osborn <willosborn@google.com>
+Code-Review+2: Idries Hamadi <idries@google.com>
+Submitted-by: Will Osborn <willosborn@google.com>
+Submitted-at: Thu, 07 Mar 2019 17:00:16 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/921753
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
