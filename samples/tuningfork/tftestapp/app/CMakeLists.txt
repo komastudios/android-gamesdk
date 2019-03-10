@@ -2,18 +2,13 @@ cmake_minimum_required(VERSION 3.4.1)
 
 # If you have protobuf installed from a different directory, set it here. The source version
 #  must match the protoc version.
-set(PROTOBUF_SRC_DIR ~/3rdParty/protobuf-3.0.2/src)
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Werror -Wthread-safety" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D _LIBCPP_ENABLE_THREAD_SAFETY_ANNOTATIONS -Os -fPIC" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGOOGLE_PROTOBUF_NO_RTTI -DHAVE_PTHREAD")
 
-#set( BUILD_PROTOBUF_FULL_AND_LITE "True")
-#add_subdirectory(../../../../src/tuningfork ./tuningfork_output)
-
-# This will use tuningfork from a packaged version
+# This builds and uses tuningfork as a static library from a gamesdk package
 set( GAMESDK_BUILD_TUNINGFORK ON)
-set(GAMESDK_SDK_VERSION "28") # Latest version from prebuilts
 include("../../../gamesdk.cmake")
 add_gamesdk_target()
 include("../../../../src/protobuf/protobuf.cmake")
