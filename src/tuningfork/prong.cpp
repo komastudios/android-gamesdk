@@ -34,7 +34,7 @@ ProngCache::ProngCache(size_t size, int max_num_instrumentation_keys,
     for (int i = 0; i < size; ++i) {
         auto &p = prongs_[i];
         SerializedAnnotation annotation = seralizeId(i);
-        p = std::make_unique<Prong>(ikey, annotation, histogram_settings[ikey]);
+        p = std::make_unique<Prong>(ikey, annotation, histogram_settings[ikey<histogram_settings.size()?ikey:0]);
         ++ikey;
         if (ikey >= max_num_instrumentation_keys)
             ikey = 0;

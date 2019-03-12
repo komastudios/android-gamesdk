@@ -34,6 +34,7 @@ private:
     const ProngCache *ready_;
     Backend *backend_;
     ProtobufSerialization current_fidelity_params_;
+    void (*upload_callback_)(const CProtobufSerialization*);
 public:
     UploadThread(Backend *backend);
 
@@ -50,6 +51,10 @@ public:
 
     void SetCurrentFidelityParams(const ProtobufSerialization &fp) {
         current_fidelity_params_ = fp;
+    }
+
+    void SetUploadCallback(void (*upload_callback)(const CProtobufSerialization*)) {
+        upload_callback_ = upload_callback;
     }
 
     friend class ClearcutSerializer;
