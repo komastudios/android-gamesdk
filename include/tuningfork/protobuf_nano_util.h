@@ -19,35 +19,15 @@
 #include <vector>
 #include <cstdint>
 
-#ifdef PROTOBUF_NANO
 #include <pb.h>
-#endif
 
 namespace tuningfork {
 
-#ifdef PROTOBUF_NANO
 struct VectorStream {
-    std::vector<uint8_t>* vec;
-    size_t it;
-    static bool Read(pb_istream_t *stream, uint8_t *buf, size_t count);
-    static bool Write(pb_ostream_t *stream, const uint8_t *buf, size_t count);
+  std::vector<uint8_t>* vec;
+  size_t it;
+  static bool Read(pb_istream_t *stream, uint8_t *buf, size_t count);
+  static bool Write(pb_ostream_t *stream, const uint8_t *buf, size_t count);
 };
-#else
-template <typename T>
-bool Deserialize(const std::vector<uint8_t> &ser, T &pb) {
-    return pb.ParseFromArray(ser.data(), ser.size());
-}
-template <typename T>
-bool Serialize(const T &pb, std::vector<uint8_t> &ser) {
-    ser.resize(pb.ByteSize());
-    return pb.SerializeToArray(ser.data(), ser.size());
-}
-template <typename T>
-std::vector<uint8_t> Serialize(const T &pb) {
-    std::vector<uint8_t> ser(pb.ByteSize());
-    pb.SerializeToArray(ser.data(), ser.size());
-    return ser;
-}
-#endif
 
 } // namespace tuningfork {

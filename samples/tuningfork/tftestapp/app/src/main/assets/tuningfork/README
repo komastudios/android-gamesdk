@@ -1,0 +1,2 @@
+The bin files were created using:
+protoc --encode=com.google.tuningfork.Settings -I../../proto ../../proto/tuningfork.proto < tuningfork_settings.txt > tuningfork_settings.bin
