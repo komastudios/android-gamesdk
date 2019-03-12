@@ -21,6 +21,8 @@ include_directories(${PROTO_GENS_DIR})
 include_directories(${PROTOBUF_SRC_DIR})
 include_directories(${PROTOBUF_NANO_SRC_DIR})
 include_directories(../../../../src)
+include_directories(../../../common/include)
+include_directories(../../../../include)
 
 add_library( protobuf-static
         STATIC ${PROTOBUF_LITE_SRCS} ${PROTOBUF_SRCS}
@@ -40,13 +42,19 @@ add_library( tuningfork_test
 target_link_libraries( tuningfork_test
         gamesdk
         protobuf-static
+        android
+        EGL
+        GLESv2
         log
+
 )
 set_target_properties( tuningfork_test PROPERTIES COMPILE_OPTIONS "-DPROTOBUF_FULL" )
 
 add_library( native-lib
              SHARED
-             src/main/cpp/tftestapp.cpp)
+             src/main/cpp/tftestapp.cpp
+             src/main/cpp/Renderer.cpp
+             src/main/cpp/Scene.cpp)
 
 target_link_libraries( native-lib
 		       tuningfork_test)

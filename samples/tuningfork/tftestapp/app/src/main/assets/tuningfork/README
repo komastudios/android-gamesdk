@@ -1,0 +1,2 @@
+Create a bin file using:
+protoc --encode=com.google.tuningfork.Settings -I../../proto ../../proto/tuningfork.proto < tuningfork_settings.txt > tuningfork_settings.bin
