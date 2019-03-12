@@ -27,6 +27,10 @@ task prepare_proto {
 	    environment 'PATH', "$protocBinDir:${environment.PATH}"
 	    commandLine 'make'
 	}
+	exec {
+	    workingDir getExternalPath() + '/nanopb-c/generator/proto'
+	    commandLine 'ls'
+	}
     }
 }
 
