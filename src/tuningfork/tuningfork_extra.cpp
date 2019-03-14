@@ -1,6 +1,7 @@
 
 #include "tuningfork/tuningfork_extra.h"
 #include "tuningfork_internal.h"
+#include "tuningfork/protobuf_util.h"
 
 #include <cinttypes>
 #include <dlfcn.h>
@@ -8,13 +9,19 @@
 #include <vector>
 #include <cstdlib>
 #include <sstream>
+#include <thread>
+#include <fstream>
+#include "sys/stat.h"
 
 #define LOG_TAG "TuningFork"
 #include "Log.h"
 #include "swappy/swappy_extra.h"
 
-#include <android/asset_manager.h> 
+#include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
+#include <jni.h>
+
+namespace tf = tuningfork;
 
 namespace {
 
@@ -36,11 +43,18 @@ public:
             lib_ = dlopen(libName, RTLD_NOW);
             if( lib_ ) {
                 inject_tracer_ = (PFN_Swappy_initTracer)dlsym(lib_, "Swappy_injectTracer");
-                if(inject_tracer_) return;
+                if(inject_tracer_) {
+                    return;
+                } else {
+                    dlclose(lib_);
+                }
             }
         }
         ALOGW("Couldn't find Swappy_injectTracer");
         lib_ = nullptr;
+    }
+    ~DynamicSwappy() {
+        if(lib_) dlclose(lib_);
     }
     void injectTracer(const SwappyTracer* tracer) const {
         if(inject_tracer_)
@@ -104,6 +118,18 @@ public:
     // Static methods
     static std::unique_ptr<SwappyTuningFork> s_instance_;
 
+    static bool Init(const CProtobufSerialization* settings, JNIEnv* env,
+                     jobject activity, const char* libName, void (*annotation_callback)()) {
+        s_instance_ = std::unique_ptr<SwappyTuningFork>(
+            new SwappyTuningFork(*settings, env, activity, annotation_callback, libName));
+        return s_instance_->valid();
+    }
+};
+
+std::unique_ptr<SwappyTuningFork> SwappyTuningFork::s_instance_;
+
+class APKUtils {
+public:
     static AAsset* GetAsset(JNIEnv* env, jobject activity, const char* name) {
         jclass cls = env->FindClass("android/content/Context");
         jmethodID get_assets = env->GetMethodID(cls, "getAssets",
@@ -135,7 +161,7 @@ public:
         auto asset = GetAsset(env, activity, "tuningfork/tuningfork_settings.bin");
         if (asset == nullptr )
             return false;
-        ALOGI("Using settings from tuningfork/tuningfork_settings.bin");
+        ALOGI("Got settings from tuningfork/tuningfork_settings.bin");
         // Get serialized settings from assets
         uint64_t size = AAsset_getLength64(asset);
         settings_ser.bytes = (uint8_t*)::malloc(size);
@@ -171,40 +197,191 @@ public:
             AAsset_close(asset);
         }
     }
-    static bool Init(const CProtobufSerialization* settings, JNIEnv* env,
-                     jobject activity, const char* libName, void (*annotation_callback)()) {
-        s_instance_ = std::unique_ptr<SwappyTuningFork>(
-            new SwappyTuningFork(*settings, env, activity, annotation_callback, libName));
-        return s_instance_->valid();
+};
+
+class FileUtils {
+public:
+    static int GetVersionCode(JNIEnv *env, jobject context) {
+        jstring packageName;
+        jobject packageManagerObj;
+        jobject packageInfoObj;
+        jclass contextClass =  env->GetObjectClass( context);
+        jmethodID getPackageNameMid = env->GetMethodID( contextClass, "getPackageName",
+                                                        "()Ljava/lang/String;");
+        jmethodID getPackageManager =  env->GetMethodID( contextClass, "getPackageManager",
+                                                         "()Landroid/content/pm/PackageManager;");
+
+        jclass packageManagerClass = env->FindClass("android/content/pm/PackageManager");
+        jmethodID getPackageInfo = env->GetMethodID( packageManagerClass, "getPackageInfo",
+                                                     "(Ljava/lang/String;I)Landroid/content/pm/PackageInfo;");
+
+        jclass packageInfoClass = env->FindClass("android/content/pm/PackageInfo");
+        jfieldID versionCodeFid = env->GetFieldID( packageInfoClass, "versionCode", "I");
+
+        packageName =  (jstring)env->CallObjectMethod(context, getPackageNameMid);
+
+        packageManagerObj = env->CallObjectMethod(context, getPackageManager);
+
+        packageInfoObj = env->CallObjectMethod(packageManagerObj,getPackageInfo,
+                                               packageName, 0x0);
+        int versionCode = env->GetIntField( packageInfoObj, versionCodeFid);
+
+        return versionCode;
+    }
+    static bool GetSaveFileName(JNIEnv* env, jobject activity, std::string& name) {
+        jclass activityClass = env->FindClass( "android/app/NativeActivity" );
+        jmethodID getCacheDir = env->GetMethodID( activityClass, "getCacheDir", "()Ljava/io/File;" );
+        jobject cache_dir = env->CallObjectMethod( activity, getCacheDir );
+
+        jclass fileClass = env->FindClass( "java/io/File" );
+        jmethodID getPath = env->GetMethodID( fileClass, "getPath", "()Ljava/lang/String;" );
+        jstring path_string = (jstring)env->CallObjectMethod( cache_dir, getPath );
+
+        const char *path_chars = env->GetStringUTFChars( path_string, NULL );
+        std::string temp_folder( path_chars );
+        env->ReleaseStringUTFChars( path_string, path_chars );
+
+        // Create tuningfork/version folder if it doesn't exist
+        std::stringstream tf_path_str;
+        tf_path_str << temp_folder << "/tuningfork/V" << GetVersionCode(env, activity);
+        std::string tf_path = tf_path_str.str();
+        tf_path_str << "/saved_fp.bin";
+        name = tf_path_str.str();
+        struct stat sb;
+        int32_t res = stat(tf_path.c_str(), &sb);
+        if (0 == res && sb.st_mode & S_IFDIR) {
+            return true;
+        } else if (ENOENT == errno) {
+            res = mkdir(tf_path.c_str(), 0770);
+            return true;
+        }
+        return false;
+    }
+    static bool GetSavedFidelityParams(JNIEnv* env, jobject activity, CProtobufSerialization* params) {
+        std::string save_filename;
+        if (GetSaveFileName(env, activity, save_filename)) {
+            std::ifstream save_file(save_filename, std::ios::binary);
+            if (save_file.good()) {
+                params->size = save_file.tellg();
+                params->bytes = (uint8_t*)::malloc(params->size);
+                params->dealloc = ::free;
+                save_file.seekg(0, std::ios::beg);
+                save_file.read((char*)params->bytes, params->size);
+                return true;
+            }
+        }
+        return false;
+    }
+    static bool SaveFidelityParams(JNIEnv* env, jobject activity, const CProtobufSerialization* params) {
+        std::string save_filename;
+        if (GetSaveFileName(env, activity, save_filename)) {
+            std::ofstream save_file(save_filename, std::ios::binary);
+            if (save_file.good()) {
+                save_file.write((const char*)params->bytes, params->size);
+                return true;
+            }
+        }
+        return false;
     }
 };
 
-std::unique_ptr<SwappyTuningFork> SwappyTuningFork::s_instance_;
-
 } // anonymous namespace
 
-extern "C"
+extern "C" {
+
 bool TuningFork_findSettingsInAPK(JNIEnv* env, jobject activity,
                                   CProtobufSerialization* settings_ser) {
-    if(settings_ser)
-        return SwappyTuningFork::GetSettingsSerialization(env, activity, *settings_ser);
-    else
+    if(settings_ser) {
+        return APKUtils::GetSettingsSerialization(env, activity, *settings_ser);
+    } else {
         return false;
+    }
 }
-extern "C"
 void TuningFork_findFidelityParamsInAPK(JNIEnv* env, jobject activity,
                                         CProtobufSerialization* fps, int* fp_count) {
-    SwappyTuningFork::GetFidelityParamsSerialization(env, activity, fps, fp_count);
+    APKUtils::GetFidelityParamsSerialization(env, activity, fps, fp_count);
 }
 
-extern "C"
 bool TuningFork_initWithSwappy(const CProtobufSerialization* settings, JNIEnv* env,
                                jobject activity, const char* libraryName,
                                void (*annotation_callback)()) {
     return SwappyTuningFork::Init(settings, env, activity, libraryName, annotation_callback);
 }
 
-extern "C"
 void TuningFork_setUploadCallback(void(*cbk)(const CProtobufSerialization*)) {
     tuningfork::SetUploadCallback(cbk);
 }
+
+TFErrorCode TuningFork_initFromAssetsWithSwappy(JNIEnv* env, jobject activity, const char* libraryName,
+                                        void (*annotation_callback)(), int fpFileNum,
+                                        void (*fidelity_params_callback)(const CProtobufSerialization*),
+                                        int initialTimeoutMs, int ultimateTimeoutMs) {
+    CProtobufSerialization ser;
+    if (!TuningFork_findSettingsInAPK(env, activity, &ser))
+        return TFERROR_NO_SETTINGS;
+    if (!TuningFork_initWithSwappy(&ser, env, activity, libraryName, annotation_callback))
+        return TFERROR_NO_SWAPPY;
+    int nfps=0;
+    CProtobufSerialization defaultParams = {};
+    TuningFork_findFidelityParamsInAPK(env, activity, NULL, &nfps);
+    if (nfps>0) {
+        std::vector<CProtobufSerialization> fps(nfps);
+        TuningFork_findFidelityParamsInAPK(env, activity, fps.data(), &nfps);
+        for (int i=0;i<nfps;++i) {
+          if (i==fpFileNum) {
+              defaultParams = fps[i];
+          } else {
+              tf::FreeProto(&fps[i]);
+          }
+        }
+        if (fpFileNum>=0 && fpFileNum<nfps) {
+            ALOGI("Using params from dev_tuningfork_fidelityparams_%d.bin as default", fpFileNum);
+        } else {
+            return TFERROR_INVALID_DEFAULT_FIDELITY_PARAMS;
+        }
+    } else {
+        return TFERROR_NO_FIDELITY_PARAMS;
+    }
+    // Download FPs on a separate thread
+    static std::thread fpThread;
+    JavaVM* vm;
+    env->GetJavaVM(&vm);
+    auto newActivity = env->NewGlobalRef(activity);
+    fpThread = std::thread([=](CProtobufSerialization defaultParams) {
+                             CProtobufSerialization params = {};
+                             int waitTimeMs = initialTimeoutMs;
+                             bool first_time = true;
+                             JNIEnv* newEnv;
+                             if (vm->AttachCurrentThread(&newEnv, NULL)==0) {
+                                 while(true) {
+                                     if (TuningFork_getFidelityParameters(&defaultParams,
+                                                                          &params, waitTimeMs) ||
+                                         FileUtils::GetSavedFidelityParams(newEnv, newActivity, &params)) {
+                                         tf::FreeProto(&defaultParams);
+                                         FileUtils::SaveFidelityParams(newEnv, newActivity, &params);
+                                         fidelity_params_callback(&params);
+                                         tf::FreeProto(&params);
+                                         break;
+                                     }
+                                     else {
+                                         ALOGW("Could not get fidelity params from server");
+                                         if (first_time) {
+                                             fidelity_params_callback(&defaultParams);
+                                             first_time = false;
+                                         }
+                                         if (waitTimeMs>ultimateTimeoutMs) {
+                                             ALOGW("Not waiting any longer for fidelity params");
+                                             tf::FreeProto(&defaultParams);
+                                             break;
+                                         }
+                                         waitTimeMs*=2; // back off
+                                     }
+                                 }
+                                 newEnv->DeleteGlobalRef(newActivity);
+                                 vm->DetachCurrentThread();
+                             }}, defaultParams);
+
+    return TFERROR_OK;
+}
+
+} // extern "C"
