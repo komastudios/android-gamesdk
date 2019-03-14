@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "314104e5_09a369dc",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/Renderer.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-03-14T09:09:53Z",
+      "side": 1,
+      "message": "Maybe this should be \"TestAppRender\"?",
+      "revId": "627dd230a1ad4d511804df4217cc0a5a532f5c16",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8b33458b_09f43cc5",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/tftestapp.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-03-14T09:09:53Z",
+      "side": 1,
+      "message": "https://google.github.io/styleguide/cppguide.html#Conditionals",
+      "revId": "627dd230a1ad4d511804df4217cc0a5a532f5c16",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b2762b3a_f12e2bf7",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/tftestapp.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-03-14T09:09:53Z",
+      "side": 1,
+      "message": "https://google.github.io/styleguide/cppguide.html#Conditionals",
+      "revId": "627dd230a1ad4d511804df4217cc0a5a532f5c16",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "69030e03_3221f0a1",
+        "filename": "src/tuningfork/tuningfork.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 294,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-03-14T09:09:53Z",
+      "side": 1,
+      "message": "https://google.github.io/styleguide/cppguide.html#Conditionals",
+      "revId": "627dd230a1ad4d511804df4217cc0a5a532f5c16",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2bd7a719_ffacb1f2",
+        "filename": "src/tuningfork/tuningfork_extra.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-03-14T09:09:53Z",
+      "side": 1,
+      "message": "Unneeded trailing whitespace",
+      "revId": "627dd230a1ad4d511804df4217cc0a5a532f5c16",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "643b2672_6deaaf05",
+        "filename": "src/tuningfork/tuningfork_extra.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-03-14T09:09:53Z",
+      "side": 1,
+      "message": "https://google.github.io/styleguide/cppguide.html#Conditionals",
+      "revId": "627dd230a1ad4d511804df4217cc0a5a532f5c16",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
