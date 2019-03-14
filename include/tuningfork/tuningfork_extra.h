@@ -58,6 +58,36 @@ bool TuningFork_initWithSwappy(const CProtobufSerialization* settings,
 // For internal diagnostic purposes only.
 void TuningFork_setUploadCallback(void(*cbk)(const CProtobufSerialization*));
 
+// This function calls initWithSwappy and performs extra utility functionality:
+// 1) Settings and default fidelity params are retrieved from the APK.
+// 2) A download thread is activated to retrieve params and retries are
+//    performed until a download is successful or a timeout occurs.
+// 3) Downloaded params are stored locally and used in preference of default
+//    params when the app is started in future.
+// fpDefaultFileNum is the index of the dev_tuningfork_fidelityparams_#.bin file you
+//  wish to use when there is no download connection and no saved params. It has a
+//  special meaning if it is negative: in this case, saved params are reset to
+//  dev_tuningfork_fidelity_params_(-$fpDefaultFileNum).bin
+// fidelity_params_callback is called with any downloaded params or with default /
+//  saved params.
+// initialTimeoutMs is the time to wait for an initial download. The fidelity_params_callback
+//  will be called after this time with the default / saved params if no params
+//  could be downloaded..
+// ultimateTimeoutMs is the time after which to stop retrying the download.
+// The following error codes may be returned:
+enum TFErrorCode {
+  TFERROR_OK = 0,
+  TFERROR_NO_SETTINGS = 1, // No tuningfork_settings.bin found in assets/tuningfork
+  TFERROR_NO_SWAPPY = 2, // Not able to find Swappy
+  TFERROR_INVALID_DEFAULT_FIDELITY_PARAMS = 3, // fpDefaultFileNum is out of range
+  TFERROR_NO_FIDELITY_PARAMS = 4 // No dev_tuningfork_fidelityparams_#.bin found in assets/tuningfork
+};
+TFErrorCode TuningFork_initFromAssetsWithSwappy(JNIEnv* env, jobject activity,
+                             const char* libraryName,
+                             void (*annotation_callback)(), int fpDefaultFileNum,
+                             void (*fidelity_params_callback)(const CProtobufSerialization*),
+                             int initialTimeoutMs, int ultimateTimeoutMs);
+
 #ifdef __cplusplus
 }
 #endif
