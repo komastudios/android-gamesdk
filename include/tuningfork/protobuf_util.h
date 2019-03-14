@@ -49,4 +49,6 @@ CProtobufSerialization CSerialize(const T &pb) {
     return cser;
 }
 
+void FreeProto(CProtobufSerialization* ser);
+
 } // namespace tuningfork {
