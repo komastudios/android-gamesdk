@@ -12,7 +12,7 @@ def protobufInstallDir() {
     return new File("./third_party/protobuf-3.0.0/install/linux-x86").getCanonicalPath()
 }
 
-task prepare_proto {
+task prepare_proto_before {
     def protocBinDir = protobufInstallDir() + "/bin"
     doLast {
 	// Install python-protobuf
@@ -27,6 +27,21 @@ task prepare_proto {
 	    environment 'PATH', "$protocBinDir:${environment.PATH}"
 	    commandLine 'make'
 	}
+    }
+}
+
+task get_pb_ver(type: Exec, dependsOn: prepare_proto_before) {
+    commandLine "python"
+    args = ["-c", "import google.protobuf as pb; print(pb.__version__)"]
+    standardOutput = new ByteArrayOutputStream()
+    ext.output = {
+        return standardOutput.toString().trim()
+    }
+}
+
+task prepare_proto(dependsOn: get_pb_ver) {
+    doLast {
+        println 'python protobuf version is: ' + tasks.get_pb_ver.output()
     }
 }
 
