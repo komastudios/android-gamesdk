@@ -16,6 +16,24 @@
       "revId": "384b89c7b13a6427f5d9651313d28d81ecf48fde",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "795f21b4_7755b526",
+        "filename": "src/tuningfork/tuningfork_extra.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-03-19T16:54:43Z",
+      "side": 1,
+      "message": "Yes, it\u0027s the API v1 version. There is another getPackageInfo call that was added in API 26.\nhttps://developer.android.com/reference/android/content/pm/PackageManager#getPackageInfo(java.lang.String,%20int)",
+      "parentUuid": "cff5e095_eee37b03",
+      "revId": "384b89c7b13a6427f5d9651313d28d81ecf48fde",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
