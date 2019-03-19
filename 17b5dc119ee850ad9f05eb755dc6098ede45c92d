@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b847636b_371ea449",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-03-19T14:58:56Z",
+      "side": 1,
+      "message": "Can we make this message a bit more informative? i.e. \"Updated validation tool code from g3 \u003c//path/to/g3/\u003e#\u003ccl number\u003e\" or something?",
+      "revId": "17b5dc119ee850ad9f05eb755dc6098ede45c92d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
