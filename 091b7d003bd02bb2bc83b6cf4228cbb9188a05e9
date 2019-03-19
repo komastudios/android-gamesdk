@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ea537263_67a5afce",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ErrorType.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-03-19T15:55:15Z",
+      "side": 1,
+      "message": "Need to indent here?",
+      "revId": "091b7d003bd02bb2bc83b6cf4228cbb9188a05e9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
