@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d3adb18f_a242dad0",
+        "filename": "src/tuningfork/proto/tuningfork_clearcut_log.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-03-20T17:41:55Z",
+      "side": 1,
+      "message": "Can we not encode the entire device info proto from the device info module (i.e. Tarik\u0027s code)?",
+      "revId": "821ee72134f9b387f9e5039a2b59dbc706f3f078",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6ddadd05_9dff3d24",
+        "filename": "src/tuningfork/tuningfork_extra.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-03-20T17:41:55Z",
+      "side": 1,
+      "message": "nit: is there any need for this namespace at all? Given nearly everything in the file is in this namespace and the namespace is not used in any external headers maybe the code is cleaner if we just remove it entirely (for this file)?",
+      "revId": "821ee72134f9b387f9e5039a2b59dbc706f3f078",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e69063ae_71bc2c5e",
+        "filename": "src/tuningfork/tuningfork_internal.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-03-20T17:41:55Z",
+      "side": 1,
+      "message": "Does all of this need to be in the external interface? Even the file utils stuff?\n\nIf so, maybe let\u0027s break them out into separate .h files?",
+      "revId": "821ee72134f9b387f9e5039a2b59dbc706f3f078",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
