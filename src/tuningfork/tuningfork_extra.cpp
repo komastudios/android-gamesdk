@@ -25,7 +25,7 @@
 
 namespace tf = tuningfork;
 
-namespace {
+namespace tuningfork {
 
 using PFN_Swappy_initTracer = void (*)(const SwappyTracer* tracer);
 
@@ -199,10 +199,7 @@ namespace apk_utils {
             AAsset_close(asset);
         }
     }
-}
-
-namespace file_utils {
-    int GetVersionCode(JNIEnv *env, jobject context) {
+    int GetVersionCode(JNIEnv *env, jobject context, std::string* packageNameStr) {
         jstring packageName;
         jobject packageManagerObj;
         jobject packageInfoObj;
@@ -221,15 +218,23 @@ namespace file_utils {
 
         packageName =  (jstring)env->CallObjectMethod(context, getPackageNameMid);
 
+        if (packageNameStr != nullptr) {
+            // Fill packageNameStr with the package name
+            const char* packageName_cstr = env->GetStringUTFChars(packageName, NULL);
+            *packageNameStr = std::string(packageName_cstr);
+            env->ReleaseStringUTFChars(packageName, packageName_cstr);
+        }
+        // Get version code from package info
         packageManagerObj = env->CallObjectMethod(context, getPackageManager);
-
         packageInfoObj = env->CallObjectMethod(packageManagerObj,getPackageInfo,
                                                packageName, 0x0);
         int versionCode = env->GetIntField( packageInfoObj, versionCodeFid);
-
         return versionCode;
     }
-    bool CheckDir(const std::string& path) {
+}
+
+namespace file_utils {
+    bool CheckAndCreateDir(const std::string& path) {
         struct stat sb;
         int32_t res = stat(path.c_str(), &sb);
         if (0 == res && sb.st_mode & S_IFDIR) {
@@ -261,11 +266,11 @@ namespace file_utils {
         // Create tuningfork/version folder if it doesn't exist
         std::stringstream tf_path_str;
         tf_path_str << temp_folder << "/tuningfork";
-        if (!CheckDir(tf_path_str.str())) {
+        if (!CheckAndCreateDir(tf_path_str.str())) {
             return false;
         }
-        tf_path_str << "/V" << GetVersionCode(env, activity);
-        if (!CheckDir(tf_path_str.str())) {
+        tf_path_str << "/V" << apk_utils::GetVersionCode(env, activity);
+        if (!CheckAndCreateDir(tf_path_str.str())) {
             return false;
         }
         tf_path_str << "/saved_fp.bin";
@@ -362,9 +367,11 @@ void StartFidelityParamDownloadThread(JNIEnv* env, jobject activity,
         }
     }, defaultParams);
 }
-} // anonymous namespace
+} // namespace tuningfork
 
 extern "C" {
+
+using namespace tuningfork;
 
 bool TuningFork_findSettingsInAPK(JNIEnv* env, jobject activity,
                                   CProtobufSerialization* settings_ser) {
