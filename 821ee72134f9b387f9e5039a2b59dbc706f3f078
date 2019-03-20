@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "7f785444_ed35d804",
+        "filename": "src/tuningfork/proto/tuningfork_clearcut_log.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-03-20T20:44:56Z",
+      "side": 1,
+      "message": "We need the changes from G3 and even then, the info we need is a small subset of it. Decoding the proto would require more work given we have to use nanopb.",
+      "parentUuid": "d3adb18f_a242dad0",
+      "revId": "821ee72134f9b387f9e5039a2b59dbc706f3f078",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6ddadd05_9dff3d24",
         "filename": "src/tuningfork/tuningfork_extra.cpp",
         "patchSetId": 2
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "bd3ea92c_74f34ed1",
+        "filename": "src/tuningfork/tuningfork_extra.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-03-20T20:44:56Z",
+      "side": 1,
+      "message": "Yes, we could do. We only use one of these functions elsewhere: GetVersionCode. I\u0027ll change it in the next CL.",
+      "parentUuid": "6ddadd05_9dff3d24",
+      "revId": "821ee72134f9b387f9e5039a2b59dbc706f3f078",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e69063ae_71bc2c5e",
         "filename": "src/tuningfork/tuningfork_internal.h",
         "patchSetId": 2
@@ -50,6 +86,24 @@
       "revId": "821ee72134f9b387f9e5039a2b59dbc706f3f078",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5f519fa2_30679864",
+        "filename": "src/tuningfork/tuningfork_internal.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-03-20T20:44:56Z",
+      "side": 1,
+      "message": "We only need one function. I\u0027ll remove the rest in the next CL",
+      "parentUuid": "e69063ae_71bc2c5e",
+      "revId": "821ee72134f9b387f9e5039a2b59dbc706f3f078",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
