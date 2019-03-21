@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6fcd8823_6438a4a0",
+        "filename": "OWNERS",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1098333
+      },
+      "writtenOn": "2019-03-21T20:52:51Z",
+      "side": 0,
+      "message": "I\u0027m fine being removed, but I\u0027ll note that there have been times that I\u0027ve been Ady\u0027s +2.",
+      "revId": "bf96094758b821415a150c6c25cb8960ec81e7d9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
