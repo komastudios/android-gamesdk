@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0701b7e8_2acd1b01",
+        "filename": "src/tuningfork/uploadthread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-03-27T15:35:15Z",
+      "side": 1,
+      "message": "I think it would be better if you moved this into a macro in the header, like: \n\n#define TUNING_FORK_PACKED_VERSION (TUNINGFORK_MAJOR_VERSON\u003c\u003c16)|(TUNING_FORK_MINOR_VERSION)",
+      "revId": "0b4e5e7fef851cf680ce3c0153b0a630a8ded241",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
