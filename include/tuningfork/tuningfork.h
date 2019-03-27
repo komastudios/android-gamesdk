@@ -19,6 +19,9 @@
 #include <stdint.h>
 #include <jni.h>
 
+#define TUNINGFORK_MAJOR_VERSION 0
+#define TUNINGFORK_MINOR_VERSION 1
+
 // These are reserved instrumentation keys
 enum {
     TFTICK_SYSCPU = 0,
