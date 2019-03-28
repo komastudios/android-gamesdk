@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c4d77606_8870660e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-03-28T09:34:08Z",
+      "side": 1,
+      "message": "Is there a bug or something to explain why we\u0027re changing from an assert to a log? Was it because the assert didn\u0027t build in some config or was it actually firing? Or was it not firing when you wanted it to because we don\u0027t have asserts turned on?",
+      "revId": "9a9e61b292bd025af2994fdda437dc14a268c235",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "51a08e5e_0961cd73",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-03-28T09:34:08Z",
+      "side": 1,
+      "message": "If the reason for the change was anything other than a build error then you should also note that you ran the test app.",
+      "revId": "9a9e61b292bd025af2994fdda437dc14a268c235",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
