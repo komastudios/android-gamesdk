@@ -16,6 +16,23 @@
       "revId": "41d9eb1bde181f6285e3e49de546f0be9017468a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4f04f308_a2e144f3",
+        "filename": "src/swappy/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-03-29T17:28:52Z",
+      "side": 1,
+      "message": "What should the app do in this case ?\nWe would need to return some error code to the app so that it will know not to use swappy.",
+      "revId": "41d9eb1bde181f6285e3e49de546f0be9017468a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
