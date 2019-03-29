@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "84603562_f2e849fc",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/Renderer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-03-29T14:38:47Z",
+      "side": 1,
+      "message": "Should probably create a header for this at some point in the future (NBD because this is just a sample).",
+      "revId": "41d9eb1bde181f6285e3e49de546f0be9017468a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
