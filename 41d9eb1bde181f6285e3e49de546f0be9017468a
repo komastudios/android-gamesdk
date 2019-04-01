@@ -51,6 +51,24 @@
       "revId": "41d9eb1bde181f6285e3e49de546f0be9017468a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4a50760e_90cbe5e9",
+        "filename": "src/swappy/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-04-01T18:16:08Z",
+      "side": 1,
+      "message": "Will Swappy_isEnabled() return false in this case ?",
+      "parentUuid": "db37a37d_9b26933b",
+      "revId": "41d9eb1bde181f6285e3e49de546f0be9017468a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
