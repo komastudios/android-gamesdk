@@ -33,6 +33,24 @@
       "revId": "41d9eb1bde181f6285e3e49de546f0be9017468a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "db37a37d_9b26933b",
+        "filename": "src/swappy/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-01T10:59:20Z",
+      "side": 1,
+      "message": "IIRC, we decided with Fran not to return an error code but to expect devs to call Swappy_isEnabled instead.",
+      "parentUuid": "4f04f308_a2e144f3",
+      "revId": "41d9eb1bde181f6285e3e49de546f0be9017468a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
