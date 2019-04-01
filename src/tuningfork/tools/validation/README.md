@@ -2,6 +2,14 @@
 
 This tool validates Tuning Fork proto and settings files in an APK.
 
+To create jar file:
+`./gradlew createJar`
+
+To run validation:
+`java -jar TuningforkApkValidationTool.jar \
+  --tuningforkPath $PATH_TO_FOLDER \
+  --protoCompiler $PATH_TO_PROTO_BINARY`
+
 ## tuningfork_settings
 
 The APK must contain *assets/tuningfork/tuningfork_settings.bin* file with
