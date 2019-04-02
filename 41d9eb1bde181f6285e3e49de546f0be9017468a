@@ -69,6 +69,24 @@
       "revId": "41d9eb1bde181f6285e3e49de546f0be9017468a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8bf45857_4c583e80",
+        "filename": "src/swappy/Swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-02T08:58:46Z",
+      "side": 1,
+      "message": "Yes - the tuningfork sample shows this. I ran it on an API 19 device and it worked correctly.",
+      "parentUuid": "4a50760e_90cbe5e9",
+      "revId": "41d9eb1bde181f6285e3e49de546f0be9017468a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
