@@ -1,0 +1,174 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f8266ae5_75dadec1",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-04-04T13:30:11Z",
+      "side": 1,
+      "message": "Was there not a notes doc which we could include a link to? (can be rough notes)",
+      "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "df812eac_2637c90b",
+        "filename": "include/tuningfork/protobuf_nano_util.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-04-04T13:30:11Z",
+      "side": 1,
+      "message": "s/you provide/provided/",
+      "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "feb1de87_fcd6298b",
+        "filename": "include/tuningfork/protobuf_nano_util.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-04-04T13:30:11Z",
+      "side": 1,
+      "message": "s/you provide/provided/\ns/you Write/the caller Writes/ etc.",
+      "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "85fbcec5_351a1549",
+        "filename": "include/tuningfork/protobuf_util.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-04-04T13:30:11Z",
+      "side": 1,
+      "message": "Does this need to be in the public header at all? I don\u0027t see it being referenced by the sample app and if the only reason to put it here is so that it can be referenced by CProtobufSerialization_Alloc then perhaps we could move the implementation of CProtobufSerialization_Alloc into the cpp and then put this function into a private header?",
+      "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2c6b7c60_927b8366",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-04-04T13:30:11Z",
+      "side": 1,
+      "message": "s/TODO/TODO(willosborne@google.com)/\n\nhttps://google.github.io/styleguide/cppguide.html#TODO_Comments",
+      "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9faebdf4_428b404f",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/tftestapp.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-04-04T13:30:11Z",
+      "side": 1,
+      "message": "Can we pull these magic numbers into consts at the top of the file?",
+      "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "91ec0b24_731566c6",
+        "filename": "src/tuningfork/annotation_util.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-04-04T13:30:11Z",
+      "side": 1,
+      "message": "Is this capitalization intentional?",
+      "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f588e850_f1186517",
+        "filename": "src/tuningfork/clearcut_backend.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-04-04T13:30:11Z",
+      "side": 1,
+      "message": "Line too long",
+      "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "292d7237_af51cccb",
+        "filename": "src/tuningfork/tuningfork_extra.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-04-04T13:30:11Z",
+      "side": 1,
+      "message": "s/newcontext/newContextRef/ ?",
+      "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dc840b2a_94c1e3ec",
+        "filename": "src/tuningfork/uploadthread.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-04-04T13:30:11Z",
+      "side": 1,
+      "message": "line too long",
+      "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
