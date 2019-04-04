@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "433c46eb_9e0d12b3",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-04T16:50:22Z",
+      "side": 1,
+      "message": "I\u0027ve put the notes in a doc.",
+      "parentUuid": "f8266ae5_75dadec1",
+      "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "df812eac_2637c90b",
         "filename": "include/tuningfork/protobuf_nano_util.h",
         "patchSetId": 5
@@ -33,6 +51,24 @@
       "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5807d41c_ad87778c",
+        "filename": "include/tuningfork/protobuf_nano_util.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-04T16:50:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "df812eac_2637c90b",
+      "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "8f66d4db_c385e611",
+        "filename": "include/tuningfork/protobuf_nano_util.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-04T16:50:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "feb1de87_fcd6298b",
+      "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "85fbcec5_351a1549",
         "filename": "include/tuningfork/protobuf_util.h",
         "patchSetId": 5
@@ -67,6 +121,24 @@
       "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d6e7cf69_e15ee95e",
+        "filename": "include/tuningfork/protobuf_util.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-04T16:50:22Z",
+      "side": 1,
+      "message": "CProtobufSerialization_Alloc is a templated function so needs to be in the header.",
+      "parentUuid": "85fbcec5_351a1549",
+      "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "6719d480_7ffe2884",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-04T16:50:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2c6b7c60_927b8366",
+      "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9faebdf4_428b404f",
         "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/tftestapp.cpp",
         "patchSetId": 5
@@ -101,6 +191,24 @@
       "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "639562d6_8cc8ba5c",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/tftestapp.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-04T16:50:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9faebdf4_428b404f",
+      "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -121,6 +229,24 @@
     },
     {
       "key": {
+        "uuid": "d29950a1_27bbc267",
+        "filename": "src/tuningfork/annotation_util.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-04T16:50:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "91ec0b24_731566c6",
+      "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f588e850_f1186517",
         "filename": "src/tuningfork/clearcut_backend.cpp",
         "patchSetId": 5
@@ -135,6 +261,24 @@
       "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d0bb3a25_e83ffd08",
+        "filename": "src/tuningfork/clearcut_backend.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-04T16:50:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f588e850_f1186517",
+      "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -155,6 +299,24 @@
     },
     {
       "key": {
+        "uuid": "28b51d04_881c8060",
+        "filename": "src/tuningfork/tuningfork_extra.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-04T16:50:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "292d7237_af51cccb",
+      "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dc840b2a_94c1e3ec",
         "filename": "src/tuningfork/uploadthread.cpp",
         "patchSetId": 5
@@ -169,6 +331,24 @@
       "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "77152a12_caeedf09",
+        "filename": "src/tuningfork/uploadthread.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-04T16:50:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dc840b2a_94c1e3ec",
+      "revId": "6889b2a38a22bffe32d86808642f9beaa6ac0b1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
