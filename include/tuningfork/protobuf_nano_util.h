@@ -23,8 +23,25 @@
 
 namespace tuningfork {
 
+// These structures are useful when serializing and deserializing either vectors of bytes or
+//  malloc'd byte streams, using pb_encode and pb_decode.
+
+// VectorStream is a view on the vector you provide in vec: it takes no ownership.
+// vec must be valid while you call Read or Write. It will be resized as needed by Write.
 struct VectorStream {
     std::vector<uint8_t>* vec;
+    size_t it;
+    static bool Read(pb_istream_t *stream, uint8_t *buf, size_t count);
+    static bool Write(pb_ostream_t *stream, const uint8_t *buf, size_t count);
+};
+
+// ByteStream is a view on the bytes you provide in vec. It will call realloc
+// if you Write beyond 'size' and it is up to you to free the data allocated.
+// You can set vec=nullptr and size=0, in which case vec will be allocated using
+//  malloc.
+struct ByteStream {
+    uint8_t* vec;
+    size_t size;
     size_t it;
     static bool Read(pb_istream_t *stream, uint8_t *buf, size_t count);
     static bool Write(pb_ostream_t *stream, const uint8_t *buf, size_t count);
