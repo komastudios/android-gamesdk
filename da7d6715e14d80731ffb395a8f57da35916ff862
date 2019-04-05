@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c28666a3_f83233b0",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-04-05T15:08:35Z",
+      "side": 1,
+      "message": "can we add TFTICK_USERDEFINED_BASE \u003d 0 ?",
+      "revId": "da7d6715e14d80731ffb395a8f57da35916ff862",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "69400052_50bb40f2",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/tftestapp.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-04-05T15:08:35Z",
+      "side": 1,
+      "message": "TFTICK_USERDEFINED_BASE",
+      "revId": "da7d6715e14d80731ffb395a8f57da35916ff862",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e45be841_58ebddca",
+        "filename": "src/tuningfork/tuningfork.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 358,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-04-05T15:08:35Z",
+      "side": 1,
+      "message": "Where do we mandate this? Is it documented in a comment or something?",
+      "revId": "da7d6715e14d80731ffb395a8f57da35916ff862",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
