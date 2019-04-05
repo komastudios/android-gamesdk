@@ -32,9 +32,6 @@ namespace {
 
 using PFN_Swappy_initTracer = void (*)(const SwappyTracer* tracer);
 
-constexpr TFInstrumentKey TFTICK_WAIT_TIME = 2;
-constexpr TFInstrumentKey TFTICK_SWAP_TIME = 3;
-
 class DynamicSwappy {
     typedef void* Handle;
     Handle lib_;
@@ -98,11 +95,17 @@ public:
                                          long /*currentFrameTimeStampMs*/) {
         SwappyTuningFork* _this = (SwappyTuningFork*)userPtr;
         _this->frame_callback_();
-        TuningFork_frameTick(TFTICK_SYSCPU);
+        auto err=TuningFork_frameTick(TFTICK_SYSCPU);
+        if (err!=TFERROR_OK) {
+            ALOGE("Error ticking %d : %d", TFTICK_SYSCPU, err);
+        }
     }
     static void swappyPreWaitCallback(void* userPtr) {
         SwappyTuningFork* _this = (SwappyTuningFork*)userPtr;
-        TuningFork_startTrace(TFTICK_WAIT_TIME, &_this->waitTraceHandle_);
+        auto err = TuningFork_startTrace(TFTICK_SWAPPY_WAIT_TIME, &_this->waitTraceHandle_);
+        if (err!=TFERROR_OK) {
+            ALOGE("Error tracing %d : %d", TFTICK_SWAPPY_WAIT_TIME, err);
+        }
     }
     static void swappyPostWaitCallback(void* userPtr) {
         SwappyTuningFork *_this = (SwappyTuningFork *) userPtr;
@@ -110,11 +113,17 @@ public:
             TuningFork_endTrace(_this->waitTraceHandle_);
             _this->waitTraceHandle_ = 0;
         }
-        TuningFork_frameTick(TFTICK_SYSGPU);
+        auto err=TuningFork_frameTick(TFTICK_SYSGPU);
+        if (err!=TFERROR_OK) {
+            ALOGE("Error ticking %d : %d", TFTICK_SYSGPU, err);
+        }
     }
     static void swappyPreSwapBuffersCallback(void* userPtr) {
         SwappyTuningFork* _this = (SwappyTuningFork*)userPtr;
-        TuningFork_startTrace(TFTICK_SWAP_TIME, &_this->swapTraceHandle_);
+        auto err = TuningFork_startTrace(TFTICK_SWAPPY_SWAP_TIME, &_this->swapTraceHandle_);
+        if (err!=TFERROR_OK) {
+            ALOGE("Error tracing %d : %d", TFTICK_SWAPPY_SWAP_TIME, err);
+        }
     }
     static void swappyPostSwapBuffersCallback(void* userPtr, long /*desiredPresentationTimeMs*/) {
         SwappyTuningFork *_this = (SwappyTuningFork *) userPtr;
