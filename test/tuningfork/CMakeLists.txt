@@ -58,5 +58,4 @@ target_link_libraries(tuningfork_test
   tuningfork_static
   protobuf-static
   log
-  GLESv2
 )

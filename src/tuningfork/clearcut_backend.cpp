@@ -82,7 +82,7 @@ bool ClearcutBackend::Process(const ProtobufSerialization &evt_ser) {
     return !hasException;
 }
 
-bool ClearcutBackend::Init(JNIEnv *env, jobject context, ProtoPrint* proto_print) {
+bool ClearcutBackend::Init(JNIEnv *env, jobject activity, ProtoPrint* proto_print) {
     ALOGI("%s", "Start clearcut initialization...");
 
     proto_print_ = proto_print;
@@ -93,7 +93,7 @@ bool ClearcutBackend::Init(JNIEnv *env, jobject context, ProtoPrint* proto_print
     }
 
     try {
-        bool inited = InitWithClearcut(env, context, false);
+        bool inited = InitWithClearcut(env, activity, false);
         ALOGI("Clearcut status: %s available", inited ? "" : "not");
         return  inited;
     } catch (const std::exception& e) {
@@ -155,21 +155,21 @@ bool ClearcutBackend::CheckException(JNIEnv *env) {
     return false;
 }
 
-bool ClearcutBackend::InitWithClearcut(JNIEnv* env, jobject context, bool anonymousLogging) {
+bool ClearcutBackend::InitWithClearcut(JNIEnv* env, jobject activity, bool anonymousLogging) {
     ALOGI("Start searching for clearcut...");
 
     // Get Application Context
-    jclass contextClass = env->GetObjectClass(context);
+    jclass activityClass = env->GetObjectClass(activity);
     if (CheckException(env)) return false;
-    jmethodID getAppContext = env->GetMethodID(
-            contextClass,
+    jmethodID getContext = env->GetMethodID(
+            activityClass,
             "getApplicationContext",
             "()Landroid/content/Context;");
     if (CheckException(env)) return false;
-    jobject appContext = env->CallObjectMethod(context, getAppContext);
+    jobject context = env->CallObjectMethod(activity, getContext);
 
     //Check if Google Play Services are available
-    bool available = IsGooglePlayServiceAvailable(env, appContext);
+    bool available = IsGooglePlayServiceAvailable(env, context);
     if (!available) {
         ALOGW("Google Play Service is not available");
         return false;
@@ -217,11 +217,10 @@ bool ClearcutBackend::InitWithClearcut(JNIEnv* env, jobject context, bool anonym
     //Create logger instance
     jobject localClearcutLogger;
     if (anonymousLogging) {
-        localClearcutLogger = env->CallStaticObjectMethod(loggerClass, anonymousLogger,
-                                                          appContext, ccName);
+        localClearcutLogger = env->CallStaticObjectMethod(loggerClass, anonymousLogger, context,
+                                                          ccName);
     } else {
-        localClearcutLogger = env->NewObject(loggerClass, loggerConstructor, appContext,
-                                             ccName, NULL);
+        localClearcutLogger = env->NewObject(loggerClass, loggerConstructor, context, ccName, NULL);
     }
     if (CheckException(env)) return false;
 
