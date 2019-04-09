@@ -15,7 +15,6 @@
 #include "tuningfork/protobuf_util.h"
 #include "tuningfork/tuningfork_extra.h"
 #include "swappy/swappy.h"
-#include "swappy/swappy_extra.h"
 #include "full/tuningfork.pb.h"
 #include "full/tuningfork_clearcut_log.pb.h"
 #include "full/dev_tuningfork.pb.h"
@@ -194,8 +193,7 @@ Java_com_google_tuningfork_TFTestActivity_initTuningFork(JNIEnv *env, jobject ac
     Swappy_init(env, activity);
     swappy_enabled = Swappy_isEnabled();
     if (swappy_enabled) {
-        TFErrorCode err = TuningFork_initFromAssetsWithSwappy(env, activity,
-                                                    &Swappy_injectTracer, 0,
+        TFErrorCode err = TuningFork_initFromAssetsWithSwappy(env, activity, "libnative-lib.so",
                                                     SetAnnotations, defaultFPIndex,
                                                     SetFidelityParams,
                                                     initialTimeoutMs, ultimateTimeoutMs);
