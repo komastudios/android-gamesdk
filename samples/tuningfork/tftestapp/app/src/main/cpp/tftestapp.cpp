@@ -40,11 +40,6 @@ bool swappy_enabled = false;
 
 namespace {
 
-// Parameters used in Tuning Fork initialization using TuningFork_initFromAssetsWithSwappy.
-const int defaultFPIndex = -3; // i.e. dev_tuningfork_fidelityparams_3.bin
-const int initialTimeoutMs = 1000;
-const int ultimateTimeoutMs = 100000;
-
 constexpr TFInstrumentKey TFTICK_CHOREOGRAPHER = 4;
 
 struct HistogramSettings {
@@ -166,7 +161,7 @@ void SetAnnotations() {
         a.set_next_level((proto_tf::Level)(next_level>proto_tf::Level_MAX?1:next_level));
         auto ser = tf::CProtobufSerialization_Alloc(a);
         TuningFork_setCurrentAnnotation(&ser);
-        CProtobufSerialization_Free(&ser);
+        tf::CProtobufSerialization_Free(&ser);
     }
 }
 
@@ -193,48 +188,40 @@ Java_com_google_tuningfork_TFTestActivity_initTuningFork(JNIEnv *env, jobject ac
     Swappy_init(env, activity);
     swappy_enabled = Swappy_isEnabled();
     if (swappy_enabled) {
-        TFErrorCode err = TuningFork_initFromAssetsWithSwappy(env, activity, "libnative-lib.so",
+        int defaultFPIndex = 3; // i.e. dev_tuningfork_fidelityparams_3.bin
+        int initialTimeoutMs = 1000;
+        int ultimateTimeoutMs = 100000;
+        TFErrorCode c = TuningFork_initFromAssetsWithSwappy(env, activity, "libnative-lib.so",
                                                     SetAnnotations, defaultFPIndex,
                                                     SetFidelityParams,
                                                     initialTimeoutMs, ultimateTimeoutMs);
-        if (err==TFERROR_OK) {
+        if (c==TFERROR_OK) {
             TuningFork_setUploadCallback(UploadCallback);
             SetAnnotations();
         } else {
-            ALOGW("Error initializing TuningFork: %d", err);
+            ALOGW("Error initializing TuningFork: %d", c);
         }
     } else {
         ALOGW("Couldn't enable Swappy.");
-        // Passing a null value for settings will cause them to be loaded from the APK
-        auto err = TuningFork_init(nullptr, env, activity);
-        if (err!=TFERROR_OK) {
-            ALOGE("Error initializing Tuning Fork : err = %d", err);
-            return;
-        }
+        CProtobufSerialization settings = {};
+        TuningFork_findSettingsInAPK(env, activity, &settings);
+        TuningFork_init(&settings, env, activity);
+        tuningfork::CProtobufSerialization_Free(&settings);
         int fp_count;
-        err = TuningFork_findFidelityParamsInApk(env, activity, nullptr, &fp_count);
-        if (err!=TFERROR_OK) {
-            ALOGE("Error finding fidelity params : err = %d", err);
-            return;
-        }
+        TuningFork_findFidelityParamsInAPK(env, activity, NULL, &fp_count);
         CProtobufSerialization fps = {};
         std::vector<CProtobufSerialization> defaultFPs(fp_count);
-        err = TuningFork_findFidelityParamsInApk(env, activity, defaultFPs.data(), &fp_count);
-        if (err!=TFERROR_OK) {
-            ALOGE("Error finding fidelity params : err = %d", err);
-            return;
-        }
+        TuningFork_findFidelityParamsInAPK(env, activity, defaultFPs.data(), &fp_count);
         CProtobufSerialization* defaultFP = &defaultFPs[fp_count/2-1]; // Middle settings level
-        err = TuningFork_getFidelityParameters(defaultFP, &fps, 1000);
-        if (err == TFERROR_OK) {
+        if (TuningFork_getFidelityParameters(defaultFP, &fps, 1000)) {
             SetFidelityParams(&fps);
-            CProtobufSerialization_Free(&fps);
+            tuningfork::CProtobufSerialization_Free(&fps);
         }
         else {
             SetFidelityParams(defaultFP);
         }
         for(auto& a: defaultFPs) {
-            CProtobufSerialization_Free(&a);
+            tuningfork::CProtobufSerialization_Free(&a);
         }
         TuningFork_setUploadCallback(UploadCallback);
         SetAnnotations();
