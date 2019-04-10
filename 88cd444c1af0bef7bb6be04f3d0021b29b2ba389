@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "62b908ea_ee0f88cb",
+        "filename": "src/tuningfork/tuningfork_extra.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 379,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-04-10T16:06:35Z",
+      "side": 1,
+      "message": "I think that reset_saved_fps could do with some explanation. I get that in the .h file there\u0027s an explanation of what it does, but looking at the code below it\u0027s not clear why the first code path does not reset the saved fps and the second code path does.",
+      "revId": "88cd444c1af0bef7bb6be04f3d0021b29b2ba389",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b5d5cb12_6ab77072",
+        "filename": "src/tuningfork/tuningfork_utils.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-04-10T16:06:35Z",
+      "side": 1,
+      "message": "line too long",
+      "revId": "88cd444c1af0bef7bb6be04f3d0021b29b2ba389",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
