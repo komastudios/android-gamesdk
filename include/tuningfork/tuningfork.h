@@ -49,15 +49,23 @@ enum TFErrorCode {
     TFERROR_NO_SETTINGS = 1, // No tuningfork_settings.bin found in assets/tuningfork.
     TFERROR_NO_SWAPPY = 2, // Not able to find Swappy.
     TFERROR_INVALID_DEFAULT_FIDELITY_PARAMS = 3, // fpDefaultFileNum is out of range.
-    TFERROR_NO_FIDELITY_PARAMS = 4, // No dev_tuningfork_fidelityparams_#.bin found
-                                   //  in assets/tuningfork.
+    TFERROR_NO_FIDELITY_PARAMS = 4,
     TFERROR_TUNINGFORK_NOT_INITIALIZED = 5,
     TFERROR_INVALID_ANNOTATION = 6,
     TFERROR_INVALID_INSTRUMENT_KEY = 7,
     TFERROR_INVALID_TRACE_HANDLE = 8,
     TFERROR_TIMEOUT = 9,
     TFERROR_BAD_PARAMETER = 10,
-    TFERROR_COULDNT_SAVE_OR_DELETE_FPS = 11
+    TFERROR_B64_ENCODE_FAILED = 11,
+    TFERROR_JNI_BAD_VERSION = 12,
+    TFERROR_JNI_BAD_THREAD = 13,
+    TFERROR_JNI_BAD_ENV = 14,
+    TFERROR_JNI_EXCEPTION = 15,
+    TFERROR_JNI_BAD_JVM = 16,
+    TFERROR_NO_CLEARCUT = 17,
+    TFERROR_NO_FIDELITY_PARAMS_IN_APK = 18, // No dev_tuningfork_fidelityparams_#.bin found
+                                           //  in assets/tuningfork.
+    TFERROR_COULDNT_SAVE_OR_DELETE_FPS = 19
 };
 
 struct TFHistogram {
@@ -109,7 +117,9 @@ TFErrorCode TuningFork_init(const TFSettings *settings, JNIEnv* env, jobject con
 // when they are done with it.
 // Returns TFERROR_TIMEOUT if there was a timeout before params could be downloaded.
 // Returns TFERROR_OK on success.
-TFErrorCode TuningFork_getFidelityParameters(const CProtobufSerialization *defaultParams,
+TFErrorCode TuningFork_getFidelityParameters(JNIEnv* env, jobject context,
+                             const char* api_key,
+                             const CProtobufSerialization *defaultParams,
                              CProtobufSerialization *params, uint32_t timeout_ms);
 
 // Protobuf serialization of the current annotation.
