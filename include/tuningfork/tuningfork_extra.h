@@ -81,6 +81,7 @@ TFErrorCode TuningFork_initFromAssetsWithSwappy(JNIEnv* env, jobject context,
                              SwappyTracerFn swappy_tracer_fn,
                              uint32_t swappy_lib_version,
                              VoidCallback frame_callback,
+                             const char* api_key,
                              int fpDefaultFileNum,
                              ProtoCallback fidelity_params_callback,
                              int initialTimeoutMs, int ultimateTimeoutMs);
