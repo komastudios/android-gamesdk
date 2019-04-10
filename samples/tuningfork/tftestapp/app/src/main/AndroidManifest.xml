@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.google.tuningfork">
+    package="com.google.tfdemoapp">
 
     <application
         android:allowBackup="true"
@@ -12,7 +12,7 @@
         tools:ignore="GoogleAppIndexingWarning"
         tools:targetApi="28">
     <activity
-        android:name=".TFTestActivity"
+        android:name="com.google.tfdemoapp.TFTestActivity"
         android:screenOrientation="portrait">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
@@ -21,4 +21,5 @@
         </intent-filter>
     </activity>
     </application>
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

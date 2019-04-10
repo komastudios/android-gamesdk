@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.google.tuningfork"
+        applicationId "com.google.tfdemoapp"
         minSdkVersion 16
         targetSdkVersion 28
         versionCode 1
