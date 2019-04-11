@@ -31,8 +31,8 @@
 #include "FrameStatistics.h"
 #include "SystemProperties.h"
 
-// uncomment below line to enable ALOGV messages
-//#define SWAPPY_DEBUG
+// comment below line to enable ALOGV messages
+#define NDEBUG
 
 #include "Log.h"
 #include "Trace.h"
