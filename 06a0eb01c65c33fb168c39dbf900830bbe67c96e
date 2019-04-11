@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "72ca0b06_c480fcc2",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-04-11T09:38:19Z",
+      "side": 1,
+      "message": "You should add a note that the package name of the demo app is also changed by this CL.",
+      "revId": "06a0eb01c65c33fb168c39dbf900830bbe67c96e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ff784115_0d9f9f3a",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/AndroidManifest.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-04-11T09:38:19Z",
+      "side": 1,
+      "message": "Perhaps we should go with \"tfdemoapp\" or similar? After all we\u0027re probably going to add other demo apps for the other APIs?",
+      "revId": "06a0eb01c65c33fb168c39dbf900830bbe67c96e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "335956d3_de123ff1",
+        "filename": "src/tuningfork/fpdownload.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-04-11T09:38:19Z",
+      "side": 1,
+      "message": "I assume we\u0027re going to allow the app to set this in a subsequent CL? Is it ok for us to publish this demo key into Open Source?",
+      "revId": "06a0eb01c65c33fb168c39dbf900830bbe67c96e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "72d1fe0f_22c7ce12",
+        "filename": "src/tuningfork/tuningfork.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 351,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-04-11T09:38:19Z",
+      "side": 1,
+      "message": "Perhaps we can pull this out of the innermost if/else (return result; is equally valid for the if block as the else block).",
+      "revId": "06a0eb01c65c33fb168c39dbf900830bbe67c96e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "63bf7f62_b7339a6f",
+        "filename": "src/tuningfork/tuningfork_extra.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 325,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-04-11T09:38:19Z",
+      "side": 1,
+      "message": "line too long",
+      "revId": "06a0eb01c65c33fb168c39dbf900830bbe67c96e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b9ac3d72_ba211bc3",
+        "filename": "src/tuningfork/uploadthread.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-04-11T09:38:19Z",
+      "side": 1,
+      "message": "line too long",
+      "revId": "06a0eb01c65c33fb168c39dbf900830bbe67c96e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
