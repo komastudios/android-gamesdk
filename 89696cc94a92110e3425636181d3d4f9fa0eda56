@@ -34,6 +34,24 @@
       "revId": "89696cc94a92110e3425636181d3d4f9fa0eda56",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "05e6ab1b_5767eb7f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-04-11T10:06:59Z",
+      "side": 1,
+      "message": "I do not know what happened to hooks. Resolving this to submit.",
+      "parentUuid": "ec05292a_c8d9b904",
+      "revId": "89696cc94a92110e3425636181d3d4f9fa0eda56",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
