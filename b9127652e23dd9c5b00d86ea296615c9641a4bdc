@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "eeee77ab_f81d9fca",
+        "filename": "src/swappy/SwappyCommon.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-04-11T22:46:58Z",
+      "side": 1,
+      "message": "There is a change for that in the pipeline (aosp/942522)",
+      "revId": "b9127652e23dd9c5b00d86ea296615c9641a4bdc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ce9059cb_e88cfee0",
+        "filename": "src/swappy/SwappyCommon.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-04-11T22:46:58Z",
+      "side": 1,
+      "message": "remove second #pragma once",
+      "revId": "b9127652e23dd9c5b00d86ea296615c9641a4bdc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "206e335e_9b2f2325",
+        "filename": "src/swappy/SwappyCommon.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-04-11T22:46:58Z",
+      "side": 1,
+      "message": "remove extra lines",
+      "revId": "b9127652e23dd9c5b00d86ea296615c9641a4bdc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "79484763_113c0730",
+        "filename": "src/swappy/Swappy.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-04-11T22:46:58Z",
+      "side": 0,
+      "message": "There is a change for that in the pipeline (aosp/942522)",
+      "revId": "688d9b8d2bd77fef5af3d6f67d10d7fd15f6dcc2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
