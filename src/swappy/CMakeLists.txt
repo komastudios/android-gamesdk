@@ -33,6 +33,7 @@ add_library( swappy_static
              ${SOURCE_LOCATION}/Thread.cpp
              ${SOURCE_LOCATION}/Swappy.cpp
              ${SOURCE_LOCATION}/Swappy_c.cpp
+             ${SOURCE_LOCATION}/SwappyCommon.cpp
 
              # Add new source files here
              )
