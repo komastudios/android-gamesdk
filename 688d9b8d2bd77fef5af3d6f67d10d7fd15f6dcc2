@@ -16,6 +16,24 @@
       "revId": "688d9b8d2bd77fef5af3d6f67d10d7fd15f6dcc2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "649bfeac_2b17620e",
+        "filename": "src/swappy/Swappy.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-04-12T08:55:07Z",
+      "side": 0,
+      "message": "I am leaving this unchanged so that there will be no merge conflict. I have deleted the one on the SwappyCommon.cpp",
+      "parentUuid": "79484763_113c0730",
+      "revId": "688d9b8d2bd77fef5af3d6f67d10d7fd15f6dcc2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }

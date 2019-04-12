@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "8b3561aa_7ead7bd8",
+        "filename": "src/swappy/SwappyCommon.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-04-12T08:55:07Z",
+      "side": 1,
+      "message": "Deleted, done.",
+      "parentUuid": "eeee77ab_f81d9fca",
+      "revId": "b9127652e23dd9c5b00d86ea296615c9641a4bdc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ce9059cb_e88cfee0",
         "filename": "src/swappy/SwappyCommon.h",
         "patchSetId": 5
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "8445b1a7_01b65732",
+        "filename": "src/swappy/SwappyCommon.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-04-12T08:55:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ce9059cb_e88cfee0",
+      "revId": "b9127652e23dd9c5b00d86ea296615c9641a4bdc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "206e335e_9b2f2325",
         "filename": "src/swappy/SwappyCommon.h",
         "patchSetId": 5
@@ -50,6 +86,24 @@
       "revId": "b9127652e23dd9c5b00d86ea296615c9641a4bdc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fc790002_8541d700",
+        "filename": "src/swappy/SwappyCommon.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-04-12T08:55:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "206e335e_9b2f2325",
+      "revId": "b9127652e23dd9c5b00d86ea296615c9641a4bdc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
