@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f19097f3_a2f06d0e",
+        "filename": "src/tuningfork/tuningfork_utils.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2019-04-12T13:49:02Z",
+      "side": 1,
+      "message": "FYI, these members are initialized in the order they are listed in the class.  How we have them listed here is not the order they get initialized in.  While it doesn\u0027t cause any issue in the current code, it could create confusion if in the future we wanted to make the initializers for \u0027mgr_\u0027 or \u0027jmgr_\u0027 use \u0027env\u0027.  To avoid any potential confusion (and fix a Wreorder compiler warning), I\u0027ve put up a trivial follow-up: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/943688",
+      "range": {
+        "startLine": 38,
+        "startChar": 0,
+        "endLine": 40,
+        "endChar": 0
+      },
+      "revId": "27d8eb8e110f163b2eed4e7d43d4074f63704ee4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
