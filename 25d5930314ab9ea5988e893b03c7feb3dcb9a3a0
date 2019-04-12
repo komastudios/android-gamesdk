@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2c5b0810_b6c87598",
+        "filename": "src/tuningfork/fpdownload.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-04-12T13:13:06Z",
+      "side": 1,
+      "message": "perhaps all of these should live outside the SDK itself? I think that in the end we want people to be able to use an alternative back end if they so choose. That\u0027s not going to actually be possible while CC is still the upstream path, but if we make everything else app-defined then when we move away from CC we should be set up to allow alternative backends. WDYT?",
+      "revId": "25d5930314ab9ea5988e893b03c7feb3dcb9a3a0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4b93bc3_e8d60e1b",
+        "filename": "src/tuningfork/fpdownload.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-04-12T13:13:06Z",
+      "side": 1,
+      "message": "s/play_//g",
+      "revId": "25d5930314ab9ea5988e893b03c7feb3dcb9a3a0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
