@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5f808fd0_34f73c65",
+        "filename": "src/tuningfork/tools/validation/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-15T16:34:25Z",
+      "side": 1,
+      "message": "Why is this necessary?",
+      "revId": "7798cdedbeaadfb8c3451abe37aea0dc1571554c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
