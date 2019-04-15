@@ -13,11 +13,6 @@ sourceSets {
             include '../../proto/tuningfork.proto'
         }
     }
-    test {
-        java {
-            exclude '**'
-        }
-    }
 }
 
 buildscript {
@@ -31,7 +26,7 @@ buildscript {
 
 dependencies {
     compile 'com.google.guava:guava:26.0-jre'
-    compile 'com.google.protobuf:protobuf-java:3.5.1'
+    compile 'com.google.protobuf:protobuf-java:3.0.0'
     compile 'com.google.flogger:flogger:0.3.1'
     compile 'com.google.flogger:flogger-system-backend:0.3.1'
     compile 'com.beust:jcommander:1.7'
@@ -41,6 +36,7 @@ dependencies {
     testCompile 'org.junit.jupiter:junit-jupiter:5.4.1'
 
     protobuf files('../../proto/tuningfork.proto')
+    protobuf files('src/test/resources/testdata/dev_tuningfork.proto') //for tests
 }
 
 protobuf {
@@ -64,3 +60,10 @@ task createJar(type: Jar) {
     }
     with jar
 }
+
+task beforeTest(type: Copy) {
+    from file("../../../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc")
+    into file("build/resources/test")
+}
+
+tasks.test.dependsOn("beforeTest")
