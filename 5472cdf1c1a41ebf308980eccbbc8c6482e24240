@@ -16,6 +16,24 @@
       "revId": "5472cdf1c1a41ebf308980eccbbc8c6482e24240",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9815ae67_efdfa0b9",
+        "filename": "test/tuningfork/serialization_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-16T14:14:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8bb14867_2d0dc80f",
+      "revId": "5472cdf1c1a41ebf308980eccbbc8c6482e24240",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
