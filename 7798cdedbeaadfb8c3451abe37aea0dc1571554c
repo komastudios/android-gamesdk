@@ -16,6 +16,24 @@
       "revId": "7798cdedbeaadfb8c3451abe37aea0dc1571554c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "96289e79_38801057",
+        "filename": "src/tuningfork/tools/validation/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-04-16T09:56:09Z",
+      "side": 1,
+      "message": "I\u0027ve made a link instead",
+      "parentUuid": "5f808fd0_34f73c65",
+      "revId": "7798cdedbeaadfb8c3451abe37aea0dc1571554c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
