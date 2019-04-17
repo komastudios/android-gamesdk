@@ -22,11 +22,18 @@
 
 #include <chrono>
 
+#include "Log.h"
+#define LOG_TAG "Swappy"
+
 using namespace swappy;
 
 extern "C" {
 
-void Swappy_init(JNIEnv *env, jobject jactivity) {
+void Swappy_init_internal(JNIEnv *env, jobject jactivity, int version) {
+    if (version != SWAPPY_API_VERSION) {
+        ALOGE("Swappy version mistmach. Make sure swappy.h and .so are taken from the same place");
+        abort();
+    }
     Swappy::init(env, jactivity);
 }
 
