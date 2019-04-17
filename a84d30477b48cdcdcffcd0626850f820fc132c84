@@ -69,6 +69,24 @@
       "revId": "a84d30477b48cdcdcffcd0626850f820fc132c84",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ee458285_b537e52d",
+        "filename": "src/swappy/Swappy.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-04-17T16:33:39Z",
+      "side": 1,
+      "message": "We can leave it as is",
+      "parentUuid": "20c82c75_9dd1faa1",
+      "revId": "a84d30477b48cdcdcffcd0626850f820fc132c84",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
