@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "57eec20a_35ec603a",
+        "filename": "src/swappy/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-04-17T12:04:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0103ad6d_9c41c9d4",
+      "revId": "a84d30477b48cdcdcffcd0626850f820fc132c84",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2583aa17_e2eb1e5d",
         "filename": "src/swappy/Swappy.h",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2019-04-16T16:49:27Z",
       "side": 1,
       "message": "Nit: std::unique_ptr\u003cSwappyCommon\u003e mCommonBase;\n\nDefining a unique pointer allows you to avoid including SwappyCommon.h and just have \u0027class SwappyCommon;\u0027 as forward declaration (SwappyCommon.h will be included in Swappy.cpp). This is useful to avoid circular include dependencies.\n\nChoreographerFilter and ChoreographerThread are done in the same manner.",
+      "revId": "a84d30477b48cdcdcffcd0626850f820fc132c84",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "20c82c75_9dd1faa1",
+        "filename": "src/swappy/Swappy.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-04-17T12:04:44Z",
+      "side": 1,
+      "message": "I understand the trick to solve the circular dependency issue. However I do not understand why we would have a circular dependency in the first place.\n\nIn this particular case, why would SwappyCommon need to reference Swappy or SwappyVk? The premise is that this is the common part of the logic. If it requires something specific for different graphics API\u0027s, it should not be in the SwappyCommon anyway, right? In the rare cases where we need code execution order, we can use callback functions, as we are already doing.\n\nI think avoiding circular dependencies leads to more simple and elegant solutions.\n\nSo my proposition is to leave it as a data member, not a pointer. However, you will probably spend more time with this code than me, so I am leaving the decision up to you.",
+      "parentUuid": "2583aa17_e2eb1e5d",
       "revId": "a84d30477b48cdcdcffcd0626850f820fc132c84",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
