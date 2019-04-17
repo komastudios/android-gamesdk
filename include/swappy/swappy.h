@@ -25,13 +25,23 @@
 extern "C" {
 #endif
 
+/**************************************************************************************************
+ ******** MAKE SURE TO UPDATE THE VERSION FOR EVERY API CHANGE THAT BREAKS ABI COMPATIBILITY ******
+ **************************************************************************************************/
+#define SWAPPY_API_VERSION (1)
+
 // swap interval constant helpers
 #define SWAPPY_SWAP_60FPS (16666667L)
 #define SWAPPY_SWAP_30FPS (33333333L)
 #define SWAPPY_SWAP_20FPS (50000000L)
 
+// Internal init function. Do not call directly
+void Swappy_init_internal(JNIEnv *env, jobject jactivity, int version);
+
 // Initialize Swappy, getting the required Android parameters from the display subsystem via JNI
-void Swappy_init(JNIEnv *env, jobject jactivity);
+static inline void Swappy_init(JNIEnv *env, jobject jactivity) {
+    Swappy_init_internal(env, jactivity, SWAPPY_API_VERSION);
+}
 
 // Returns true if Swappy was successfully initialized.
 // Returns false if either the 'swappy.disable' system property is not 'false'
