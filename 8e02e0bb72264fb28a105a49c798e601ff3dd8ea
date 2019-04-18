@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2078071c_a61c3652",
+        "filename": "include/swappy/swappy.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-04-18T10:04:12Z",
+      "side": 1,
+      "message": "I could not understand the reason for \"static inline\".",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 42,
+        "endChar": 13
+      },
+      "revId": "8e02e0bb72264fb28a105a49c798e601ff3dd8ea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
