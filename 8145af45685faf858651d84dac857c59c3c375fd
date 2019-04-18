@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "37ceb16f_e81a58dc",
+        "filename": "src/swappy/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2019-04-18T13:16:59Z",
+      "side": 1,
+      "message": "FYI: This field is out of order in terms of when it will actually be initialized.  This doesn\u0027t currently cause any problems, because we used \u0027refreshPeriod\u0027 for the \u0027mChoreographerFilter\u0027 constructor, but out of paranoia I put up a follow-up CL to put this field in its initialization order: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/947348",
+      "revId": "8145af45685faf858651d84dac857c59c3c375fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
