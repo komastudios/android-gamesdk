@@ -1,0 +1,123 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "aa028571_309c7014",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-24T13:39:28Z",
+      "side": 1,
+      "message": "This will crash the game (well, it shouldn\u0027t ever happen, but in theory). We should return false instead.",
+      "revId": "8e21d14828d0de7590d9b4e152459c8755fcb22c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fdc9db89_b4dc91ab",
+        "filename": "src/swappyVk/SwappyVkBase.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-24T13:39:28Z",
+      "side": 1,
+      "message": "2019? Same for all new files.",
+      "revId": "8e21d14828d0de7590d9b4e152459c8755fcb22c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f795d8b4_9181e8d0",
+        "filename": "src/swappyVk/SwappyVkBase.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-24T13:39:28Z",
+      "side": 1,
+      "message": "You have a circular dependency here: SwappyVkIncludeAll.h includes this file. Move the common stuff in SwappyVkIncludeAll.h into another header, SwappyVkCommon.h, maybe, and include that here.",
+      "revId": "8e21d14828d0de7590d9b4e152459c8755fcb22c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cf74f14e_6d5df991",
+        "filename": "src/swappyVk/SwappyVkFallback.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-24T13:39:28Z",
+      "side": 1,
+      "message": "Circular dependency. Include SwappyVkCommon.h and SwappyVkBase.h.",
+      "revId": "8e21d14828d0de7590d9b4e152459c8755fcb22c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "978827b1_fee0ab40",
+        "filename": "src/swappyVk/SwappyVkGoogleDisplayTiming.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-24T13:39:28Z",
+      "side": 1,
+      "message": "Line too long",
+      "revId": "8e21d14828d0de7590d9b4e152459c8755fcb22c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "75d78ef8_10b9ac99",
+        "filename": "src/swappyVk/SwappyVkGoogleDisplayTiming.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-24T13:39:28Z",
+      "side": 1,
+      "message": "Circular dependency. Include SwappyVkCommon.h and SwappyVkBase.h.",
+      "revId": "8e21d14828d0de7590d9b4e152459c8755fcb22c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3d296628_f1021a7a",
+        "filename": "src/swappyVk/SwappyVkIncludeAll.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-24T13:39:28Z",
+      "side": 1,
+      "message": "If I were you, I\u0027d remove these includes, rename this file to SwappyVkCommon.h and include the headers you need in the cpp files directly.",
+      "revId": "8e21d14828d0de7590d9b4e152459c8755fcb22c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
