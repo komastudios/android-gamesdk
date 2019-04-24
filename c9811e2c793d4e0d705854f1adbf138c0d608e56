@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3261c1e6_60d54c9a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-24T14:58:48Z",
+      "side": 1,
+      "message": "How is this change tested?\nTest: ...",
+      "revId": "c9811e2c793d4e0d705854f1adbf138c0d608e56",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8923de1_083d3ca1",
+        "filename": "src/swappyVk/SwappyVkBase.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-24T14:58:48Z",
+      "side": 1,
+      "message": "SwappyVkBase.h already includes this, so you don\u0027t need it here.",
+      "revId": "c9811e2c793d4e0d705854f1adbf138c0d608e56",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3b74f3b6_33d01b12",
+        "filename": "src/swappyVk/SwappyVkFallback.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-24T14:58:48Z",
+      "side": 1,
+      "message": "SwappyVkFallback.h already includes this, so you don\u0027t need it here.",
+      "revId": "c9811e2c793d4e0d705854f1adbf138c0d608e56",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "abaf3f8f_f059adde",
+        "filename": "src/swappyVk/SwappyVkGoogleDisplayTiming.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-04-24T14:58:48Z",
+      "side": 1,
+      "message": "SwappyVkGoogleDisplayTiming.h already includes this, so you don\u0027t need it here.",
+      "revId": "c9811e2c793d4e0d705854f1adbf138c0d608e56",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
