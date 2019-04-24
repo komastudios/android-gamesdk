@@ -22,6 +22,11 @@ add_library( swappyVk_static
              ${ANDROID_NDK}/sources/third_party/vulkan/src/common/vulkan_wrapper.cpp
 
              # Add new source files here
+             SwappyVkBase.cpp
+             SwappyVkVulkanFallback.cpp
+             SwappyVkAndroidFallback.cpp
+             SwappyVkGoogleDisplayTiming.cpp
+             SwappyVkGoogleDisplayTimingAndroid.cpp
              )
 
 set_target_properties( swappyVk_static PROPERTIES
