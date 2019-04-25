@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "90c4e02e_98e4ed07",
+        "filename": "src/swappy/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-04-25T20:46:33Z",
+      "side": 1,
+      "message": "Thinking out loud: should we create a folder hierarchy ? i.e.\nswappy/\n├── common/\n├── OpenGL/\n├── Vulkan/",
+      "revId": "50095061ce42dae3fcdee20cc280a2d61eb91c75",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
