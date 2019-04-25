@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "671e8f08_43404afb",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-04-25T09:39:01Z",
+      "side": 1,
+      "message": "I do not find it obvious that the two lines below are disabling copy operations, especially for someone with little C++ experience. I would argue that the comment should stay.",
+      "parentUuid": "d791f54d_6ffc23cf",
+      "revId": "4c746e4c4360d7ea6ce6de95a61cbd1d665e5978",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6cb87688_2dd09cc8",
         "filename": "src/swappyVk/SwappyVk.cpp",
         "patchSetId": 6
@@ -33,6 +51,24 @@
       "revId": "4c746e4c4360d7ea6ce6de95a61cbd1d665e5978",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d87530f0_95f4faba",
+        "filename": "src/swappyVk/SwappyVk.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-04-25T09:39:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6cb87688_2dd09cc8",
+      "revId": "4c746e4c4360d7ea6ce6de95a61cbd1d665e5978",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "94a4bc65_c1385591",
+        "filename": "src/swappyVk/SwappyVkCommon.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-04-25T09:39:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "916b8739_37952c82",
+      "revId": "4c746e4c4360d7ea6ce6de95a61cbd1d665e5978",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3b89902f_c4569f2b",
         "filename": "src/swappyVk/SwappyVkGoogleDisplayTiming.cpp",
         "patchSetId": 6
@@ -67,6 +121,24 @@
       "revId": "4c746e4c4360d7ea6ce6de95a61cbd1d665e5978",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a135a0d1_d8956ad7",
+        "filename": "src/swappyVk/SwappyVkGoogleDisplayTiming.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-04-25T09:39:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3b89902f_c4569f2b",
+      "revId": "4c746e4c4360d7ea6ce6de95a61cbd1d665e5978",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
