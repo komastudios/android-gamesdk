@@ -16,6 +16,24 @@
       "revId": "50095061ce42dae3fcdee20cc280a2d61eb91c75",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d84a3d71_58fa9d29",
+        "filename": "src/swappy/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-04-26T09:28:26Z",
+      "side": 1,
+      "message": "I think this is a great idea, I will prepare another change for this.",
+      "parentUuid": "90c4e02e_98e4ed07",
+      "revId": "50095061ce42dae3fcdee20cc280a2d61eb91c75",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
