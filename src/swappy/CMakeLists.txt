@@ -16,6 +16,9 @@ set ( SOURCE_LOCATION .)
 
 include_directories( ../../include )
 include_directories( ../common )
+include_directories( common )
+include_directories( opengl )
+include_directories( vulkan )
 include_directories( ${ANDROID_NDK}/sources/third_party/vulkan/src/common )
 
 message( STATUS "Building swappy_static to ${CMAKE_CURRENT_BINARY_DIR}/build" )
@@ -23,22 +26,22 @@ add_library( swappy_static
 
              STATIC
 
-             ${SOURCE_LOCATION}/ChoreographerFilter.cpp
-             ${SOURCE_LOCATION}/ChoreographerThread.cpp
-             ${SOURCE_LOCATION}/EGL.cpp
-             ${SOURCE_LOCATION}/FrameStatistics.cpp
-             ${SOURCE_LOCATION}/CpuInfo.cpp
-             ${SOURCE_LOCATION}/SystemProperties.cpp
-             ${SOURCE_LOCATION}/Settings.cpp
-             ${SOURCE_LOCATION}/Thread.cpp
-             ${SOURCE_LOCATION}/Swappy_c.cpp
-             ${SOURCE_LOCATION}/Swappy.cpp
-             ${SOURCE_LOCATION}/SwappyCommon.cpp
+             ${SOURCE_LOCATION}/common/ChoreographerFilter.cpp
+             ${SOURCE_LOCATION}/common/ChoreographerThread.cpp
+             ${SOURCE_LOCATION}/common/FrameStatistics.cpp
+             ${SOURCE_LOCATION}/common/CpuInfo.cpp
+             ${SOURCE_LOCATION}/common/SystemProperties.cpp
+             ${SOURCE_LOCATION}/common/Settings.cpp
+             ${SOURCE_LOCATION}/common/Thread.cpp
+             ${SOURCE_LOCATION}/common/SwappyCommon.cpp
+             ${SOURCE_LOCATION}/opengl/EGL.cpp
+             ${SOURCE_LOCATION}/opengl/Swappy_c.cpp
+             ${SOURCE_LOCATION}/opengl/Swappy.cpp
              ${ANDROID_NDK}/sources/third_party/vulkan/src/common/vulkan_wrapper.cpp
-             ${SOURCE_LOCATION}/SwappyVk.cpp
-             ${SOURCE_LOCATION}/SwappyVkBase.cpp
-             ${SOURCE_LOCATION}/SwappyVkFallback.cpp
-             ${SOURCE_LOCATION}/SwappyVkGoogleDisplayTiming.cpp
+             ${SOURCE_LOCATION}/vulkan/SwappyVk.cpp
+             ${SOURCE_LOCATION}/vulkan/SwappyVkBase.cpp
+             ${SOURCE_LOCATION}/vulkan/SwappyVkFallback.cpp
+             ${SOURCE_LOCATION}/vulkan/SwappyVkGoogleDisplayTiming.cpp
 
              # Add new source files here
              )
@@ -50,7 +53,7 @@ add_library( swappy
 
              SHARED
 
-             ${SOURCE_LOCATION}/Swappy_c.cpp)
+             ${SOURCE_LOCATION}/opengl/Swappy_c.cpp)
                             # Looks like I need to specify at least one file to build,
                             # the result .so size suggests it's including the rest of the
                             # source files from the library
