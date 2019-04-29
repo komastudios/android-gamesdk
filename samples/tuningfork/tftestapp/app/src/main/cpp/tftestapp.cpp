@@ -23,10 +23,13 @@
 #include <condition_variable>
 #include <jni.h>
 #include <android/native_window_jni.h>
+#include <set>
+#include <string>
 
 #define LOG_TAG "tftestapp"
 #include "Log.h"
 #include "Renderer.h"
+#include <unistd.h>
 
 using ::com::google::tuningfork::FidelityParams;
 using ::com::google::tuningfork::Settings;
@@ -277,4 +280,12 @@ Java_com_tuningfork_demoapp_TFTestActivity_stop(JNIEnv */*env*/, jclass /*clz*/ 
     ALOGI("TuningFork_flush returned %d", ret);
 }
 
+JNIEXPORT void JNICALL
+Java_com_tuningfork_demoapp_TFTestActivity_raiseSignal(JNIEnv * env, jclass clz, jint signal) {
+    std::stringstream ss;
+    ss << std::this_thread::get_id();
+    ALOGI("raiseSignal %d: [pid: %d], [tid: %d], [thread_id: %s])",
+            signal, getpid(), gettid(), ss.str().c_str());
+    raise(signal);
+}
 }
