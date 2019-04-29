@@ -27,6 +27,7 @@
 #define LOG_TAG "tftestapp"
 #include "Log.h"
 #include "Renderer.h"
+#include <unistd.h>
 
 using ::com::google::tuningfork::FidelityParams;
 using ::com::google::tuningfork::Settings;
@@ -275,6 +276,15 @@ Java_com_tuningfork_demoapp_TFTestActivity_stop(JNIEnv */*env*/, jclass /*clz*/ 
     // Call flush here to upload any histograms when the app goes to the background.
     auto ret = TuningFork_flush();
     ALOGI("TuningFork_flush returned %d", ret);
+}
+
+JNIEXPORT void JNICALL
+Java_com_tuningfork_demoapp_TFTestActivity_raiseSignal(JNIEnv * env, jclass clz) {
+    std::stringstream ss;
+    ss << std::this_thread::get_id();
+    ALOGI("raiseSignal: [pid: %d], [tid: %d], [thread_id: %s])",
+            getpid(), gettid(), ss.str().c_str());
+    raise(SIGSEGV);
 }
 
 }
