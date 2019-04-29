@@ -4,6 +4,9 @@ include("../protobuf/protobuf.cmake")
 set( MODPB64_DIR "${EXTERNAL_ROOT}/modp_b64")
 set( JSON11_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/json11")
 
+# funwind-tables flag is needed for crash_handler
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -funwind-tables")
+
 if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
 set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--gc-sections,-s")
 endif (${CMAKE_BUILD_TYPE} STREQUAL "Release")
@@ -27,6 +30,7 @@ include_directories(${PROTO_GENS_DIR})
 
 set( TUNINGFORK_SRCS
   clearcut_backend.cpp
+  crash_handler.cpp
   histogram.cpp
   prong.cpp
   uploadthread.cpp
