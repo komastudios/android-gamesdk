@@ -16,6 +16,24 @@
       "revId": "ac7db7d752aced0bfd858da9c21021c994071763",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3b7e8a79_f0d07655",
+        "filename": "src/swappy/vulkan/SwappyVkBase.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-04-30T17:23:57Z",
+      "side": 1,
+      "message": "Agreed.",
+      "parentUuid": "dcf3eff3_51ac85d2",
+      "revId": "ac7db7d752aced0bfd858da9c21021c994071763",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
