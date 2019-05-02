@@ -87,6 +87,19 @@ void Renderer::requestDraw() {
         [=](ThreadState *threadState) { if (threadState->isStarted) draw(threadState); });
 }
 
+void Renderer::setX(float newX) {
+    mWorkerThread.run(
+        [=](ThreadState *threadState) {
+            threadState->x = (newX / threadState->width) * 2 - 1;
+            threadState->touched = true;
+        });
+}
+
+void Renderer::clearTouch() {
+    mWorkerThread.run(
+        [=](ThreadState *threadState) { threadState->touched = false; });
+}
+
 Renderer::ThreadState::ThreadState() {
     display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     eglInitialize(display, 0, 0);
@@ -224,7 +237,7 @@ void Renderer::draw(ThreadState *threadState) {
     }
     threadState->lastUpdate = std::chrono::steady_clock::now();
 
-    threadState->x += threadState->velocity * deltaSeconds;
+    /* threadState->x += threadState->velocity * deltaSeconds;
 
     if (threadState->x > 0.8f) {
         threadState->velocity *= -1.0f;
@@ -232,7 +245,9 @@ void Renderer::draw(ThreadState *threadState) {
     } else if (threadState->x < -0.8f) {
         threadState->velocity *= -1.0f;
         threadState->x = -1.6f - threadState->x;
-    }
+    } */
+
+
 
     // Just fill the screen with a color.
     glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
@@ -241,7 +256,8 @@ void Renderer::draw(ThreadState *threadState) {
     const float aspectRatio = static_cast<float>(threadState->width) / threadState->height;
 
     const std::vector<Circle>
-        circles = {{Circle::Color{0.0f, 1.0f, 1.0f}, 0.1f, threadState->x, 0.0f}};
+        circles = {{Circle::Color{float(threadState->touched), 1.0f, float(!threadState->touched)}, 0.1f, threadState->x, .55f}};
+
 
     Circle::draw(aspectRatio, circles, mWorkload);
 

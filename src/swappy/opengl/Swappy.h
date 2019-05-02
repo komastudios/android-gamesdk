@@ -66,6 +66,7 @@ class Swappy {
     static void getStats(Swappy_Stats *stats);
     static bool isEnabled();
     static void destroyInstance();
+    static void resetStats();
 
 private:
     static void init(JavaVM *vm,

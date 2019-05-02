@@ -51,8 +51,8 @@ public class SettingsActivity
     protected void onDestroy() {
         super.onDestroy();
 
-        PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
-                .unregisterOnSharedPreferenceChangeListener(this);
+//        PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+//                .unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override

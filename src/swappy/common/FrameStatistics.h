@@ -41,6 +41,7 @@ public:
     void capture(EGLDisplay dpy, EGLSurface surface);
 
     Swappy_Stats getStats();
+    void resetStats();
 
 private:
     static constexpr int MAX_FRAME_LAG = 10;

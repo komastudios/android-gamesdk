@@ -15,6 +15,8 @@
     <string name="late_frames">Late</string>
     <string name="offset_frames">Offset</string>
     <string name="latency_frames">Latency</string>
+    <string name="pacing_toggle_on">Pacing ON</string>
+    <string name="pacing_toggle_off">Pacing OFF</string>
 
     <!-- Preference strings -->
 

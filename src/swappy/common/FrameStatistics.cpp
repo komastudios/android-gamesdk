@@ -32,6 +32,17 @@ namespace swappy {
 // NB This is only needed for C++14
 constexpr std::chrono::nanoseconds FrameStatistics::LOG_EVERY_N_NS;
 
+void FrameStatistics::resetStats() {
+    std::lock_guard<std::mutex> lock(mMutex);
+    mStats.totalFrames = 0;
+    for (size_t bucket_idx = 0; bucket_idx < MAX_FRAME_BUCKETS; bucket_idx++) {
+        mStats.idleFrames[bucket_idx] = 0;
+        mStats.lateFrames[bucket_idx] = 0;
+        mStats.offsetFromPreviousFrame[bucket_idx] = 0;
+        mStats.latencyFrames[bucket_idx] = 0;
+    }
+}
+
 void FrameStatistics::updateFrames(EGLnsecsANDROID start, EGLnsecsANDROID end, uint64_t stat[]) {
     const uint64_t deltaTimeNano = end - start;
 

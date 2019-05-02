@@ -329,4 +329,9 @@ bool Swappy::setPresentationTime(EGLDisplay display, EGLSurface surface) {
     return getEgl()->setPresentationTime(display, surface, mCommonBase.getPresentationTime());
 }
 
+void Swappy::resetStats() {
+    Swappy *swappy = getInstance();
+    swappy->mFrameStatistics->resetStats();
+}
+
 } // namespace swappy

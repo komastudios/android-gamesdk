@@ -94,4 +94,8 @@ bool Swappy_isEnabled() {
     return Swappy::isEnabled();
 }
 
+void Swappy_resetStats() {
+    Swappy::resetStats();
+}
+
 } // extern "C" {

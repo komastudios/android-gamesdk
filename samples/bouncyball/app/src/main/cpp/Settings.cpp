@@ -38,8 +38,10 @@ void Settings::addListener(Listener listener) {
 void Settings::setPreference(std::string key, std::string value) {
     if (key == "refresh_period") {
         Swappy_setRefreshPeriod(std::stoll(value));
+        ALOGI("Refresh/Interval: refresh set to %s", value.c_str());
     } else if (key == "swap_interval") {
         Swappy_setSwapIntervalNS(std::stoi(value) * 1e6);
+        ALOGI("Refresh/Interval: interval set to %s", value.c_str());
     } else if (key == "use_affinity") {
         Swappy_setUseAffinity(value == "true");
     } else if (key == "hot_pocket") {

@@ -104,6 +104,8 @@ void Swappy_recordFrameStart(EGLDisplay display, EGLSurface surface);
 
 void Swappy_getStats(Swappy_Stats *);
 
+void Swappy_resetStats();
+
 #ifdef __cplusplus
 };
 #endif

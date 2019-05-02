@@ -31,6 +31,7 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -196,6 +197,18 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
     }
 
     @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN
+                || event.getAction() == MotionEvent.ACTION_MOVE) {
+            // Log.i(LOG_TAG, String.format("X coord is %f", event.getX(0)));
+            nSetX(event.getX(0));
+        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+            nClearTouch();
+        }
+        return false;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_orbit);
@@ -216,7 +229,7 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
         surfaceView.getHolder().addCallback(this);
 
         mInfoOverlay = findViewById(R.id.info_overlay);
-        mInfoOverlay.setBackgroundColor(0x80000000);
+        mInfoOverlay.setBackgroundColor(0x00000000);
 
         buildChoreographerInfoGrid();
         buildSwappyStatsGrid();
@@ -234,24 +247,58 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
     }
 
     private void infoOverlayToggle() {
-        if (mInfoOverlay == null) {
-            return;
-        }
-
-        mInfoOverlayEnabled = !mInfoOverlayEnabled;
-        if (mInfoOverlayEnabled) {
-            mInfoOverlay.setVisibility(View.VISIBLE);
-            mInfoOverlayButton.setIcon(R.drawable.ic_info_solid_white_24dp);
-        } else {
-            mInfoOverlay.setVisibility(View.INVISIBLE);
-            mInfoOverlayButton.setIcon(R.drawable.ic_info_outline_white_24dp);
-        }
+        nResetStats();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_orbit, menu);
+
+        mToggleButton = menu.findItem(R.id.pacing_toggle_button);
+        if (mToggleButton != null) {
+            // Set correct text at start
+            if (mToggleButton != null) {
+                SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                String mSwapIntKey = getResources().getString(R.string.swap_interval_key);
+                for (String key : sharedPrefs.getAll().keySet()) {
+                    if (key.equals(mSwapIntKey)) {
+                        String interval = sharedPrefs.getString(key, null);
+                        if ((int) Float.parseFloat(interval) == 100) {
+                            mToggleButton.setTitle(R.string.pacing_toggle_off);
+                        } else {
+                            mToggleButton.setTitle(R.string.pacing_toggle_on);
+                        }
+                        break;
+                    }
+                }
+            }
+
+            // Set listener
+            mToggleButton.setOnMenuItemClickListener((MenuItem item) -> {
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                String mSwapIntervalKey = getResources().getString(R.string.swap_interval_key);
+                for (String key : sharedPreferences.getAll().keySet()) {
+                    if (key.equals(mSwapIntervalKey)) {
+                        String interval = sharedPreferences.getString(key, null);
+                        String value = null;
+                        if ((int) Float.parseFloat(interval) == 100) {
+                            mToggleButton.setTitle(R.string.pacing_toggle_on);
+                            value = "16.666666";
+                        } else {
+                            mToggleButton.setTitle(R.string.pacing_toggle_off);
+                            value = "100.0";
+                        }
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        nSetPreference(key, value);
+                        editor.putString(key, value);
+                        editor.commit();
+                        break;
+                    }
+                }
+                return true;
+            });
+        }
 
         mInfoOverlayButton = menu.findItem(R.id.info_overlay_button);
         if (mInfoOverlayButton != null) {
@@ -294,6 +341,23 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
                 continue;
             }
             nSetPreference(key, sharedPreferences.getString(key, null));
+        }
+
+        // Set correct text after preferences change
+        if (mToggleButton != null) {
+            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            String mSwapIntKey = getResources().getString(R.string.swap_interval_key);
+            for (String key : sharedPrefs.getAll().keySet()) {
+                if (key.equals(mSwapIntKey)) {
+                    String interval = sharedPrefs.getString(key, null);
+                    if ((int) Float.parseFloat(interval) == 100) {
+                        mToggleButton.setTitle(R.string.pacing_toggle_off);
+                    } else {
+                        mToggleButton.setTitle(R.string.pacing_toggle_on);
+                    }
+                    break;
+                }
+            }
         }
 
         mIsRunning = true;
@@ -454,11 +518,15 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
     public native void nStop();
     public native void nSetPreference(String key, String value);
     public native void nSetWorkload(int load);
+    public native void nSetX(float newX);
+    public native void nClearTouch();
+    public native void nResetStats();
     public native void nSetAutoSwapInterval(boolean enabled);
     public native float nGetAverageFps();
     public native int nGetSwappyStats(int stat, int bin);
 
     private MenuItem mInfoOverlayButton;
+    private MenuItem mToggleButton = null;
 
     private LinearLayout mInfoOverlay;
     private final TextView[][] mChoreographerInfoGrid = new TextView[5][7];

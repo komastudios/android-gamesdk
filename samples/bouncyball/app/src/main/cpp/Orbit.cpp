@@ -123,6 +123,22 @@ Java_com_prefabulated_bouncyball_OrbitActivity_nSetWorkload(JNIEnv * /* env */, 
     Renderer::getInstance()->setWorkload(load);
 }
 
+JNIEXPORT void JNICALL
+Java_com_prefabulated_bouncyball_OrbitActivity_nSetX(JNIEnv * /* env */, jobject /* this */,
+                                                            jfloat newX) {
+    Renderer::getInstance()->setX(newX);
+}
+
+JNIEXPORT void JNICALL
+Java_com_prefabulated_bouncyball_OrbitActivity_nClearTouch(JNIEnv * /* env */, jobject /* this */) {
+    Renderer::getInstance()->clearTouch();
+}
+
+JNIEXPORT void JNICALL
+Java_com_prefabulated_bouncyball_OrbitActivity_nResetStats(JNIEnv * /* env */, jobject /* this */) {
+    Swappy_resetStats();
+}
+
 JNIEXPORT int JNICALL
 Java_com_prefabulated_bouncyball_OrbitActivity_nGetSwappyStats(JNIEnv * /* env */,
                                                                jobject /* this */,
