@@ -2,6 +2,40 @@
   "comments": [
     {
       "key": {
+        "uuid": "7c8bd210_86e78f8e",
+        "filename": "include/swappyVk/SwappyVk.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-05-02T12:34:33Z",
+      "side": 1,
+      "message": "I think that elsewhere we have used static const int (or similar) for this kind of thing, so perhaps we should stay consistent with that?",
+      "revId": "ac7db7d752aced0bfd858da9c21021c994071763",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a64db5c0_17fa6c37",
+        "filename": "src/swappy/vulkan/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 318,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-05-02T12:34:33Z",
+      "side": 1,
+      "message": "Is this still accurate? It seems weird to have extern \"C\" inside a namespace to me. But perhaps I am just old-fashioned :)",
+      "revId": "ac7db7d752aced0bfd858da9c21021c994071763",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "dcf3eff3_51ac85d2",
         "filename": "src/swappy/vulkan/SwappyVkBase.cpp",
         "patchSetId": 2
@@ -34,6 +68,23 @@
       "revId": "ac7db7d752aced0bfd858da9c21021c994071763",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d50d4e56_0d6b66d1",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 1483,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-05-02T12:34:33Z",
+      "side": 1,
+      "message": "This looks like demo-\u003erefresh_duration is no longer being respected? Is that accurate? Is that intentional? \n\nAssuming that this is handled somewhere else now there should be a comment reconciling that the demo has a parameter to set the interval, but it\u0027s being set explicitly here.",
+      "revId": "ac7db7d752aced0bfd858da9c21021c994071763",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
