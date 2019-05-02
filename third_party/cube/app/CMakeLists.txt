@@ -7,6 +7,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99  -Werror -DVK_USE_PLATFORM_ANDROID_
 # This will use swappy from a packaged version
 include("../../../samples/gamesdk.cmake")
 add_gamesdk_target("package/local" "localBuild")
+add_subdirectory(../../../src/swappy ./out)
 
 # ============== cube
 
@@ -69,7 +70,7 @@ target_include_directories(native-lib
 
 target_link_libraries( native-lib
 
-                       gamesdk
+                       swappy
                        android
                        log
                        )

@@ -7,6 +7,7 @@ set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Werror -Wthread-safety -D _
 # This builds and uses swappy as a static library from a gamesdk package
 include("../../gamesdk.cmake")
 add_gamesdk_target("package/local" "localBuild")
+add_subdirectory(../../../src/swappy ./out)
 
 include_directories( ../../common/include ) # Samples Includes
 
@@ -31,5 +32,5 @@ target_link_libraries( native-lib
                        EGL
                        GLESv2
                        log
-                       gamesdk
+                       swappy
                        )
