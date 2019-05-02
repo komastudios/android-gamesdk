@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6161e4fb_8f82b44e",
+        "filename": "samples/cube/app/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1044651
+      },
+      "writtenOn": "2019-05-02T21:48:44Z",
+      "side": 1,
+      "message": "What\u0027s the reason for such a big change in the build file?",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 1
+      },
+      "revId": "9f6ebec5b1aa9f5ee6ad1ec2c10c313df4ae38e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aeeae249_de134c6a",
+        "filename": "samples/cube/app/proguard-rules.pro",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1044651
+      },
+      "writtenOn": "2019-05-02T21:48:44Z",
+      "side": 1,
+      "message": "This file is not needed",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 43
+      },
+      "revId": "9f6ebec5b1aa9f5ee6ad1ec2c10c313df4ae38e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e126e11f_1ec58c74",
+        "filename": "samples/cube/app/src/main/AndroidManifest.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1044651
+      },
+      "writtenOn": "2019-05-02T21:48:44Z",
+      "side": 1,
+      "message": "These doesn\u0027t seem necessary",
+      "range": {
+        "startLine": 4,
+        "startChar": 0,
+        "endLine": 6,
+        "endChar": 65
+      },
+      "revId": "9f6ebec5b1aa9f5ee6ad1ec2c10c313df4ae38e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ccd31110_ef2eb663",
+        "filename": "samples/cube/app/src/main/cpp/native-lib.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1044651
+      },
+      "writtenOn": "2019-05-02T21:48:44Z",
+      "side": 1,
+      "message": "Ability to change number of threads is fairly major feature and should be on a different CL.  \n\nAlso, instead of having a configurable number of busy thread, the more important feature is to change the CPU workload on the render thread.  That would be what allow us to experiment with different frame timing.",
+      "range": {
+        "startLine": 72,
+        "startChar": 0,
+        "endLine": 72,
+        "endChar": 56
+      },
+      "revId": "9f6ebec5b1aa9f5ee6ad1ec2c10c313df4ae38e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8b743102_3297919d",
+        "filename": "samples/cube/app/src/main/java/com/samples/cube/CubeActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1044651
+      },
+      "writtenOn": "2019-05-02T21:48:44Z",
+      "side": 1,
+      "message": "I am not sure how much work this is, but it should be possible to not display the seek bar.  We should have a way start the app such that there is no change in the app behavior.",
+      "range": {
+        "startLine": 40,
+        "startChar": 8,
+        "endLine": 40,
+        "endChar": 24
+      },
+      "revId": "9f6ebec5b1aa9f5ee6ad1ec2c10c313df4ae38e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a430f42b_6ffbddd1",
+        "filename": "samples/cube/settings.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1044651
+      },
+      "writtenOn": "2019-05-02T21:48:44Z",
+      "side": 1,
+      "message": "Why did you create a new app instead of modifying existing one?",
+      "range": {
+        "startLine": 1,
+        "startChar": 13,
+        "endLine": 1,
+        "endChar": 14
+      },
+      "revId": "9f6ebec5b1aa9f5ee6ad1ec2c10c313df4ae38e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9fb26a5d_5074d70f",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 1301,
+      "author": {
+        "id": 1044651
+      },
+      "writtenOn": "2019-05-02T21:48:44Z",
+      "side": 1,
+      "message": "This should still be using Swappy.",
+      "range": {
+        "startLine": 1300,
+        "startChar": 0,
+        "endLine": 1301,
+        "endChar": 65
+      },
+      "revId": "9f6ebec5b1aa9f5ee6ad1ec2c10c313df4ae38e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "204a2b0b_35278caa",
+        "filename": "third_party/cube/app/src/main/cpp/include/cube.frag.inc",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1044651
+      },
+      "writtenOn": "2019-05-02T21:48:44Z",
+      "side": 1,
+      "message": "What does this change do?",
+      "range": {
+        "startLine": 1,
+        "startChar": 31,
+        "endLine": 1,
+        "endChar": 32
+      },
+      "revId": "9f6ebec5b1aa9f5ee6ad1ec2c10c313df4ae38e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
