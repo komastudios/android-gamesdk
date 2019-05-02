@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "d0803e7e_07a80eef",
+        "filename": "include/swappyVk/SwappyVk.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-05-02T13:20:38Z",
+      "side": 1,
+      "message": "Yes you are right. They should be merged with the constants at include/swappy.h\n\nAdded a TODO, as there will be a header refactoring soon anyway.",
+      "parentUuid": "7c8bd210_86e78f8e",
+      "revId": "ac7db7d752aced0bfd858da9c21021c994071763",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a64db5c0_17fa6c37",
         "filename": "src/swappy/vulkan/SwappyVk.cpp",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "ac7db7d752aced0bfd858da9c21021c994071763",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ffdf3f7f_37e40d5c",
+        "filename": "src/swappy/vulkan/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 318,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-05-02T13:20:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a64db5c0_17fa6c37",
+      "revId": "ac7db7d752aced0bfd858da9c21021c994071763",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -82,6 +118,24 @@
       "writtenOn": "2019-05-02T12:34:33Z",
       "side": 1,
       "message": "This looks like demo-\u003erefresh_duration is no longer being respected? Is that accurate? Is that intentional? \n\nAssuming that this is handled somewhere else now there should be a comment reconciling that the demo has a parameter to set the interval, but it\u0027s being set explicitly here.",
+      "revId": "ac7db7d752aced0bfd858da9c21021c994071763",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "da1e2fee_2b3bb69d",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 1483,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-05-02T13:20:38Z",
+      "side": 1,
+      "message": "I do not know the reason behind this change. It is part of the original CL:\nhttp://ag/6242024\n\nPerhaps adyabr@ can explain?",
+      "parentUuid": "d50d4e56_0d6b66d1",
       "revId": "ac7db7d752aced0bfd858da9c21021c994071763",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
