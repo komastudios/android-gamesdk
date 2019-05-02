@@ -139,6 +139,24 @@
       "revId": "ac7db7d752aced0bfd858da9c21021c994071763",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e7c29a01_6bc73334",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 1483,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-02T17:09:04Z",
+      "side": 1,
+      "message": "Cube wants to render at 30FPS. The calculation of the swap interval is done now in swappy. The code is essentially doing the same thing",
+      "parentUuid": "da1e2fee_2b3bb69d",
+      "revId": "ac7db7d752aced0bfd858da9c21021c994071763",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
