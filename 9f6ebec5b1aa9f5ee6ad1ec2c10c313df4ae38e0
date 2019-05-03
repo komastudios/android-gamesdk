@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "fd406c21_132394f1",
+        "filename": "samples/cube/app/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-05-03T18:29:02Z",
+      "side": 1,
+      "message": "There wasn\u0027t one before, and I wasn\u0027t sure what it needed, so I copied the build file over from bouncyball. A lot of things were unnecessary. Paired it down to something more minimal now.",
+      "parentUuid": "6161e4fb_8f82b44e",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 1
+      },
+      "revId": "9f6ebec5b1aa9f5ee6ad1ec2c10c313df4ae38e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "aeeae249_de134c6a",
         "filename": "samples/cube/app/proguard-rules.pro",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "9f6ebec5b1aa9f5ee6ad1ec2c10c313df4ae38e0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3b20c9ed_73cc9fb3",
+        "filename": "samples/cube/app/proguard-rules.pro",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-05-03T18:29:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aeeae249_de134c6a",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 43
+      },
+      "revId": "9f6ebec5b1aa9f5ee6ad1ec2c10c313df4ae38e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "95ebbaca_f02dd89f",
+        "filename": "samples/cube/app/src/main/AndroidManifest.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-05-03T18:29:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e126e11f_1ec58c74",
+      "range": {
+        "startLine": 4,
+        "startChar": 0,
+        "endLine": 6,
+        "endChar": 65
+      },
+      "revId": "9f6ebec5b1aa9f5ee6ad1ec2c10c313df4ae38e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ccd31110_ef2eb663",
         "filename": "samples/cube/app/src/main/cpp/native-lib.cpp",
         "patchSetId": 1
@@ -91,6 +163,30 @@
       "revId": "9f6ebec5b1aa9f5ee6ad1ec2c10c313df4ae38e0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "71130326_2f89cf5a",
+        "filename": "samples/cube/app/src/main/cpp/native-lib.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-05-03T18:29:02Z",
+      "side": 1,
+      "message": "Noted. Moving the CPU stuff to a later CL.",
+      "parentUuid": "ccd31110_ef2eb663",
+      "range": {
+        "startLine": 72,
+        "startChar": 0,
+        "endLine": 72,
+        "endChar": 56
+      },
+      "revId": "9f6ebec5b1aa9f5ee6ad1ec2c10c313df4ae38e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "e66cdf86_3cccada0",
+        "filename": "samples/cube/app/src/main/java/com/samples/cube/CubeActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-05-03T18:29:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8b743102_3297919d",
+      "range": {
+        "startLine": 40,
+        "startChar": 8,
+        "endLine": 40,
+        "endChar": 24
+      },
+      "revId": "9f6ebec5b1aa9f5ee6ad1ec2c10c313df4ae38e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a430f42b_6ffbddd1",
         "filename": "samples/cube/settings.gradle",
         "patchSetId": 1
@@ -137,6 +257,30 @@
       "revId": "9f6ebec5b1aa9f5ee6ad1ec2c10c313df4ae38e0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9434af8c_a20346db",
+        "filename": "samples/cube/settings.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-05-03T18:29:02Z",
+      "side": 1,
+      "message": "Mostly I just wanted to limit the amount of code I put in the third party directory. And since this directory was already here loading in the third party code I just put it here.",
+      "parentUuid": "a430f42b_6ffbddd1",
+      "range": {
+        "startLine": 1,
+        "startChar": 13,
+        "endLine": 1,
+        "endChar": 14
+      },
+      "revId": "9f6ebec5b1aa9f5ee6ad1ec2c10c313df4ae38e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -163,6 +307,30 @@
     },
     {
       "key": {
+        "uuid": "799f6d5f_5c769511",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 1301,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-05-03T18:29:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9fb26a5d_5074d70f",
+      "range": {
+        "startLine": 1300,
+        "startChar": 0,
+        "endLine": 1301,
+        "endChar": 65
+      },
+      "revId": "9f6ebec5b1aa9f5ee6ad1ec2c10c313df4ae38e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "204a2b0b_35278caa",
         "filename": "third_party/cube/app/src/main/cpp/include/cube.frag.inc",
         "patchSetId": 1
@@ -183,6 +351,30 @@
       "revId": "9f6ebec5b1aa9f5ee6ad1ec2c10c313df4ae38e0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bf3127fd_57b29a6d",
+        "filename": "third_party/cube/app/src/main/cpp/include/cube.frag.inc",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-05-03T18:29:02Z",
+      "side": 1,
+      "message": "I don\u0027t know. Didn\u0027t make any changes to the frag file, but recompilation made this change anyway.",
+      "parentUuid": "204a2b0b_35278caa",
+      "range": {
+        "startLine": 1,
+        "startChar": 31,
+        "endLine": 1,
+        "endChar": 32
+      },
+      "revId": "9f6ebec5b1aa9f5ee6ad1ec2c10c313df4ae38e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
