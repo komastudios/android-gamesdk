@@ -175,6 +175,24 @@
       "revId": "ac7db7d752aced0bfd858da9c21021c994071763",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4fc2cb5b_e7593a57",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 1483,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-05-03T09:39:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0fe370c0_a336a12a",
+      "revId": "ac7db7d752aced0bfd858da9c21021c994071763",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
