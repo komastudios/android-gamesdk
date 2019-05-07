@@ -16,6 +16,24 @@
       "revId": "910870b3465d356f7dc6a9fd1379671aa4a4cd00",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "01161b49_71f4aea8",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-07T23:32:07Z",
+      "side": 1,
+      "message": "We can add final to the class definition.",
+      "parentUuid": "93d2caa2_769553b9",
+      "revId": "910870b3465d356f7dc6a9fd1379671aa4a4cd00",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
