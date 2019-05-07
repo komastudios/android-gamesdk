@@ -48,6 +48,8 @@ public:
                 std::chrono::nanoseconds appOffset,
                 std::chrono::nanoseconds sfOffset);
 
+    ~SwappyCommon();
+
     uint64_t getSwapIntervalNS();
 
     void onChoreographer(int64_t frameTimeNanos);
