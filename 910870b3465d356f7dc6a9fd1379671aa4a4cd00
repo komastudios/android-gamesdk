@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "93d2caa2_769553b9",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-07T15:43:30Z",
+      "side": 1,
+      "message": "Maybe add a comment that you don\u0027t need virtual here because SwappyCommon is not designed to be inherited from (and put a comment to that effect above the class declaration).",
+      "revId": "910870b3465d356f7dc6a9fd1379671aa4a4cd00",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
