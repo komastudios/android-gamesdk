@@ -34,6 +34,24 @@
       "revId": "910870b3465d356f7dc6a9fd1379671aa4a4cd00",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8f97f24e_1040bf2e",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-08T08:48:01Z",
+      "side": 1,
+      "message": "Good point. I\u0027d forgotten that exists in C++ now!",
+      "parentUuid": "01161b49_71f4aea8",
+      "revId": "910870b3465d356f7dc6a9fd1379671aa4a4cd00",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
