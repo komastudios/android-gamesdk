@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a1119a23_2861de90",
+        "filename": "src/swappy/vulkan/SwappyVkBase.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-08T23:34:30Z",
+      "side": 1,
+      "message": "log-\u003elock",
+      "revId": "0be374d71697d9e8d2cd4d42aeab90f54ed5eca5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c46f59e2_14e62271",
+        "filename": "src/swappy/vulkan/SwappyVkFallback.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-08T23:34:30Z",
+      "side": 1,
+      "message": "semaphore is created in SwappyVkBase::initializeVkSyncObjects and we recycle them",
+      "revId": "0be374d71697d9e8d2cd4d42aeab90f54ed5eca5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e59694d7_0d024eaa",
+        "filename": "src/swappy/vulkan/SwappyVkGoogleDisplayTiming.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-08T23:34:30Z",
+      "side": 1,
+      "message": "same here",
+      "revId": "0be374d71697d9e8d2cd4d42aeab90f54ed5eca5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
