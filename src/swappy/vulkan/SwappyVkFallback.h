@@ -37,8 +37,6 @@ public:
                      VkDevice         device,
                      void             *libVulkan);
 
-    ~SwappyVkFallback();
-
     virtual bool doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
                                            uint64_t*      pRefreshDuration) override;
 
