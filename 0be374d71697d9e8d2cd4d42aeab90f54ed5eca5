@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "9a531b4e_60725b32",
+        "filename": "src/swappy/vulkan/SwappyVkBase.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-05-09T11:52:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a1119a23_2861de90",
+      "revId": "0be374d71697d9e8d2cd4d42aeab90f54ed5eca5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c46f59e2_14e62271",
         "filename": "src/swappy/vulkan/SwappyVkFallback.cpp",
         "patchSetId": 1
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "a0c0d60a_a47a82a9",
+        "filename": "src/swappy/vulkan/SwappyVkFallback.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-05-09T11:52:46Z",
+      "side": 1,
+      "message": "Thanks for the explanation.",
+      "parentUuid": "c46f59e2_14e62271",
+      "revId": "0be374d71697d9e8d2cd4d42aeab90f54ed5eca5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e59694d7_0d024eaa",
         "filename": "src/swappy/vulkan/SwappyVkGoogleDisplayTiming.cpp",
         "patchSetId": 1
@@ -50,6 +86,24 @@
       "revId": "0be374d71697d9e8d2cd4d42aeab90f54ed5eca5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f95d5994_d96bc00d",
+        "filename": "src/swappy/vulkan/SwappyVkGoogleDisplayTiming.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-05-09T11:52:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e59694d7_0d024eaa",
+      "revId": "0be374d71697d9e8d2cd4d42aeab90f54ed5eca5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
