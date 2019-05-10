@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "44e90e75_09545483",
+        "filename": "src/swappy/vulkan/SwappyVkBase.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-10T09:18:29Z",
+      "side": 1,
+      "message": "We shouldn\u0027t need these here, should we?",
+      "revId": "476fcf989dc53a758428ab123a8b4ada5ae6e1f1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "738fe880_5b95e386",
+        "filename": "src/swappy/vulkan/SwappyVkFallback.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-10T09:18:29Z",
+      "side": 1,
+      "message": "What does the fallback do now we don\u0027t use the choreographer?",
+      "revId": "476fcf989dc53a758428ab123a8b4ada5ae6e1f1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
