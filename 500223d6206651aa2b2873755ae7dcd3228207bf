@@ -1,0 +1,140 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "57812300_89ca751c",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/tftestapp.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 287,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-10T10:34:12Z",
+      "side": 1,
+      "message": "Pass in the signal to raise, so we can check other signals, too?",
+      "revId": "500223d6206651aa2b2873755ae7dcd3228207bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fe5b709e_8562a9b9",
+        "filename": "src/tuningfork/crash_handler.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-10T10:34:12Z",
+      "side": 1,
+      "message": "Can you make this shorter and remove spaces (TFCrashHandler?). Tags have a 23 char limit and it would be easier to search for.",
+      "revId": "500223d6206651aa2b2873755ae7dcd3228207bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "151a1f63_00f496d3",
+        "filename": "src/tuningfork/crash_handler.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-10T10:34:12Z",
+      "side": 1,
+      "message": "Things that aren\u0027t part of the public interface defined in crash_handler.h should be put in an anonymous namespace to avoid polluting the tuningfork namespace. Lots of examples below, too.",
+      "revId": "500223d6206651aa2b2873755ae7dcd3228207bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ae6bb38e_c85c6a24",
+        "filename": "src/tuningfork/crash_handler.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-10T10:34:12Z",
+      "side": 1,
+      "message": "Any others we need? Comment how this list was decided?",
+      "revId": "500223d6206651aa2b2873755ae7dcd3228207bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b34599c1_fa776c6c",
+        "filename": "src/tuningfork/crash_handler.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 245,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-10T10:34:12Z",
+      "side": 1,
+      "message": "} // namespace tuningfork",
+      "revId": "500223d6206651aa2b2873755ae7dcd3228207bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bf0c4b44_b9613115",
+        "filename": "src/tuningfork/crash_handler.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-10T10:34:12Z",
+      "side": 1,
+      "message": "Add _ at end of member variable for consistency",
+      "revId": "500223d6206651aa2b2873755ae7dcd3228207bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "76f9ec59_f4ba7236",
+        "filename": "src/tuningfork/tuningfork.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-10T10:34:12Z",
+      "side": 1,
+      "message": "Do we need these new headers?",
+      "revId": "500223d6206651aa2b2873755ae7dcd3228207bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8eb8a031_a33f9bff",
+        "filename": "src/tuningfork/tuningfork.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-10T10:34:12Z",
+      "side": 1,
+      "message": "We probably need to remove the crash handler when we destroy the Impl here?",
+      "revId": "500223d6206651aa2b2873755ae7dcd3228207bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
