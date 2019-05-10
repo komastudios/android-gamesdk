@@ -70,6 +70,23 @@
     },
     {
       "key": {
+        "uuid": "e729276a_ff74dcde",
+        "filename": "src/tuningfork/crash_handler.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 231,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2019-05-10T11:35:16Z",
+      "side": 1,
+      "message": "Remove the empty scope.",
+      "revId": "500223d6206651aa2b2873755ae7dcd3228207bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b34599c1_fa776c6c",
         "filename": "src/tuningfork/crash_handler.cpp",
         "patchSetId": 6
@@ -81,6 +98,23 @@
       "writtenOn": "2019-05-10T10:34:12Z",
       "side": 1,
       "message": "} // namespace tuningfork",
+      "revId": "500223d6206651aa2b2873755ae7dcd3228207bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4a613e8a_74d1238d",
+        "filename": "src/tuningfork/crash_handler.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2019-05-10T11:35:16Z",
+      "side": 1,
+      "message": "Nit: just one blank line at the end of the file.",
       "revId": "500223d6206651aa2b2873755ae7dcd3228207bf",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
