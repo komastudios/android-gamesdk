@@ -313,6 +313,24 @@
       "revId": "500223d6206651aa2b2873755ae7dcd3228207bf",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aadfce0e_4e23ea01",
+        "filename": "src/tuningfork/tuningfork.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-05-10T13:25:06Z",
+      "side": 1,
+      "message": "It is in crash handler destructor",
+      "parentUuid": "8eb8a031_a33f9bff",
+      "revId": "500223d6206651aa2b2873755ae7dcd3228207bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
