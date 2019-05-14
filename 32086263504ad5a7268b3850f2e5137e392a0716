@@ -16,6 +16,24 @@
       "revId": "32086263504ad5a7268b3850f2e5137e392a0716",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e8f45bdd_54a5ac8d",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/tftestapp.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-05-14T10:21:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b1b50895_4e1bf2c8",
+      "revId": "32086263504ad5a7268b3850f2e5137e392a0716",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
