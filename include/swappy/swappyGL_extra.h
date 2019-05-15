@@ -23,7 +23,6 @@
 
 #define MAX_FRAME_BUCKETS 6
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif

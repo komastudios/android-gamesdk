@@ -23,7 +23,7 @@
 #include <map>
 #include <vector>
 
-#include <swappy/swappy_extra.h>
+#include <swappy/swappyGL_extra.h>
 
 using TimePoint = std::chrono::steady_clock::time_point;
 using namespace std::chrono_literals;

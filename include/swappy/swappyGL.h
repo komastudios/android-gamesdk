@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
+// OpenGL part of swappy
+
 #pragma once
+
+#include "swappy_common.h"
 
 #include <stdint.h>
 #include <EGL/egl.h>
@@ -24,11 +28,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-// swap interval constant helpers
-#define SWAPPY_SWAP_60FPS (16666667L)
-#define SWAPPY_SWAP_30FPS (33333333L)
-#define SWAPPY_SWAP_20FPS (50000000L)
 
 // Initialize Swappy, getting the required Android parameters from the display subsystem via JNI
 void Swappy_init(JNIEnv *env, jobject jactivity);
