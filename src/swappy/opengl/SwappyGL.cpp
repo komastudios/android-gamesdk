@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-#include "Swappy.h"
+#include "SwappyGL.h"
 
 #include <cmath>
 #include <thread>
 #include <cstdlib>
 #include <cinttypes>
 
+#include "Log.h"
+#include "Trace.h"
+
 #include "Thread.h"
 #include "SystemProperties.h"
 
 #define LOG_TAG "Swappy"
-
-#include "Log.h"
-#include "Trace.h"
 
 namespace swappy {
 

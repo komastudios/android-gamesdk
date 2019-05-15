@@ -20,8 +20,8 @@
 #include <chrono>
 #include <mutex>
 
-#include "swappy/swappy.h"
-#include "swappy/swappy_extra.h"
+#include "swappy/swappyGL.h"
+#include "swappy/swappyGL_extra.h"
 
 #include "SwappyCommon.h"
 #include "EGL.h"

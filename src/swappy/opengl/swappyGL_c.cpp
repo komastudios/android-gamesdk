@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-#include "swappy/swappy.h"
+// API entry points
 
-#include "Swappy.h"
+#include "swappy/swappyGL.h"
+
+#include "SwappyGL.h"
 
 #include "Settings.h"
 

@@ -20,7 +20,7 @@
 
 #include <memory>
 
-#include "swappy/swappy.h"
+#include "swappy/swappyGL.h"
 #include "Log.h"
 
 namespace samples {
