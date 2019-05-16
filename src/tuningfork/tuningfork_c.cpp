@@ -42,6 +42,7 @@ extern "C" {
 
 // TuningFork_init must be called before any other functions
 TFErrorCode TuningFork_init(const TFSettings *settings, JNIEnv* env, jobject context) {
+    TUNINGFORK_VERSION_SYMBOL(); // "Useless" call to avoid dead code strip
     if (settings) {
         return tuningfork::Init(*settings, env, context);
     } else {
@@ -105,6 +106,10 @@ TFErrorCode TuningFork_endTrace(TFTraceHandle h) {
 
 TFErrorCode TuningFork_flush() {
     return tuningfork::Flush();
+}
+
+void TUNINGFORK_VERSION_SYMBOL() {
+    // Intentionally empty
 }
 
 } // extern "C" {

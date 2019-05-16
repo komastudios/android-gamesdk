@@ -23,6 +23,11 @@
 #define TUNINGFORK_MINOR_VERSION 2
 #define TUNINGFORK_PACKED_VERSION ((TUNINGFORK_MAJOR_VERSION<<16)|(TUNINGFORK_MINOR_VERSION))
 
+// Macros to generate a symbol to track TuningFork version
+#define TUNINGFORK_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR) PREFIX ## _ ## MAJOR ## _ ## MINOR
+#define TUNINGFORK_VERSION_CONCAT(PREFIX, MAJOR, MINOR) TUNINGFORK_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR)
+#define TUNINGFORK_VERSION_SYMBOL TUNINGFORK_VERSION_CONCAT(TuningFork_version, TUNINGFORK_MAJOR_VERSION, TUNINGFORK_MINOR_VERSION)
+
 // Instrument keys 64000-65535 are reserved
 enum {
     TFTICK_USERDEFINED_BASE = 0,
@@ -164,6 +169,9 @@ TFErrorCode TuningFork_endTrace(TFTraceHandle h);
 //  one.
 // Returns TFERROR_UPLOAD_TOO_FREQUENT if less than a minute has elapsed since the previous upload.
 TFErrorCode TuningFork_flush();
+
+// Allow to track TuningFork version bundled in a binary
+void TUNINGFORK_VERSION_SYMBOL();
 
 #ifdef __cplusplus
 }
