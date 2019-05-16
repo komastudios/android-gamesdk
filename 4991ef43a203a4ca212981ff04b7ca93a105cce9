@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "17872765_d35fe228",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-05-16T13:32:41Z",
+      "side": 1,
+      "message": "This is a very basic approach to track usage and versioning of TF. \n\n* There is a more sophisticated approach for Swappy in https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/947000, so I\u0027ve not added anything for Swappy yet.\n* The approach for Swappy does not export a symbol with the version number, so it\u0027s harder to do analytics. I can work to add a symbol for Swappy with the version number later once the changes are merged?\n* I can also rework this to add in another CL (or in this CL as you prefer) a similar check for .so/.h mismatch (although I\u0027m not sure if the .so will be used at all according to Idries comment?) and a single #define with the version number (but I wanted to start simple :))",
+      "revId": "4991ef43a203a4ca212981ff04b7ca93a105cce9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
