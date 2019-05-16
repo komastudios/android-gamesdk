@@ -165,6 +165,9 @@ TFErrorCode TuningFork_endTrace(TFTraceHandle h);
 // Returns TFERROR_UPLOAD_TOO_FREQUENT if less than a minute has elapsed since the previous upload.
 TFErrorCode TuningFork_flush();
 
+// Allow to track TuningFork version bundled in a binary
+void TuningFork_version_1();
+
 #ifdef __cplusplus
 }
 #endif
