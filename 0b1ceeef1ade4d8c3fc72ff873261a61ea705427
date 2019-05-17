@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2a4a734e_014d9751",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-17T21:26:43Z",
+      "side": 1,
+      "message": "Why this is a static ?",
+      "revId": "0b1ceeef1ade4d8c3fc72ff873261a61ea705427",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4e4c0e8_d15efedb",
+        "filename": "src/swappy/opengl/SwappyGL.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-17T21:26:43Z",
+      "side": 1,
+      "message": "I don\u0027t think we need all these parameters here. Those should be consumed directly bu SwappyCommon. In case we need them we should get them from SwappyCommon and not store them in Swappy.",
+      "revId": "0b1ceeef1ade4d8c3fc72ff873261a61ea705427",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f0aa4611_79cdfa46",
+        "filename": "src/swappy/vulkan/SwappyVk.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-17T21:26:43Z",
+      "side": 1,
+      "message": "same here. Those needs to be part of SwappyCommon",
+      "revId": "0b1ceeef1ade4d8c3fc72ff873261a61ea705427",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "25f23861_49460ea1",
+        "filename": "src/swappy/vulkan/SwappyVkGoogleDisplayTiming.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-17T21:26:43Z",
+      "side": 1,
+      "message": "so here we should pass only the vm (and jobject) and SwappyCommon will query vsyncPeriod, appVsyncOffset, sfVsyncOffset and store them internally.",
+      "revId": "0b1ceeef1ade4d8c3fc72ff873261a61ea705427",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
