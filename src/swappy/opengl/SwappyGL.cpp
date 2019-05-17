@@ -38,79 +38,12 @@ std::mutex SwappyGL::sInstanceMutex;
 std::unique_ptr<SwappyGL> SwappyGL::sInstance;
 
 void SwappyGL::init(JNIEnv *env, jobject jactivity) {
-    jclass activityClass = env->FindClass("android/app/NativeActivity");
-    jclass windowManagerClass = env->FindClass("android/view/WindowManager");
-    jclass displayClass = env->FindClass("android/view/Display");
-
-    jmethodID getWindowManager = env->GetMethodID(
-            activityClass,
-            "getWindowManager",
-            "()Landroid/view/WindowManager;");
-
-    jmethodID getDefaultDisplay = env->GetMethodID(
-            windowManagerClass,
-            "getDefaultDisplay",
-            "()Landroid/view/Display;");
-
-    jobject wm = env->CallObjectMethod(jactivity, getWindowManager);
-    jobject display = env->CallObjectMethod(wm, getDefaultDisplay);
-
-    jmethodID getRefreshRate = env->GetMethodID(
-            displayClass,
-            "getRefreshRate",
-            "()F");
-
-    const float refreshRateHz = env->CallFloatMethod(display, getRefreshRate);
-
-    jmethodID getAppVsyncOffsetNanos = env->GetMethodID(
-            displayClass,
-            "getAppVsyncOffsetNanos", "()J");
-
-    // getAppVsyncOffsetNanos was only added in API 21.
-    // Return gracefully if this device doesn't support it.
-    if (getAppVsyncOffsetNanos == 0 || env->ExceptionOccurred()) {
-        env->ExceptionClear();
-        return;
-    }
-    const long appVsyncOffsetNanos = env->CallLongMethod(display, getAppVsyncOffsetNanos);
-
-    jmethodID getPresentationDeadlineNanos = env->GetMethodID(
-            displayClass,
-            "getPresentationDeadlineNanos",
-            "()J");
-
-    const long vsyncPresentationDeadlineNanos = env->CallLongMethod(
-            display,
-            getPresentationDeadlineNanos);
-
-    const long ONE_MS_IN_NS = 1000000;
-    const long ONE_S_IN_NS = ONE_MS_IN_NS * 1000;
-
-    const long vsyncPeriodNanos = static_cast<long>(ONE_S_IN_NS / refreshRateHz);
-    const long sfVsyncOffsetNanos =
-            vsyncPeriodNanos - (vsyncPresentationDeadlineNanos - ONE_MS_IN_NS);
-
-    using std::chrono::nanoseconds;
-    JavaVM *vm;
-    env->GetJavaVM(&vm);
-    SwappyGL::init(
-            vm,
-            nanoseconds(vsyncPeriodNanos),
-            nanoseconds(appVsyncOffsetNanos),
-            nanoseconds(sfVsyncOffsetNanos));
-}
-
-void SwappyGL::init(JavaVM *vm,
-                    nanoseconds refreshPeriod,
-                    nanoseconds appOffset,
-                    nanoseconds sfOffset) {
     std::lock_guard<std::mutex> lock(sInstanceMutex);
     if (sInstance) {
         ALOGE("Attempted to initialize SwappyGL twice");
         return;
     }
-    sInstance =
-        std::make_unique<SwappyGL>(vm, refreshPeriod, appOffset, sfOffset, ConstructorTag{});
+    sInstance = std::make_unique<SwappyGL>(env, jactivity, ConstructorTag{});
 }
 
 void SwappyGL::onChoreographer(int64_t frameTimeNanos) {
@@ -230,7 +163,7 @@ void SwappyGL::enableStats(bool enabled) {
 
     if (enabled && swappy->mFrameStatistics == nullptr) {
         swappy->mFrameStatistics = std::make_unique<FrameStatistics>(
-                swappy->mEgl, swappy->mCommonBase.getRefreshPeriod());
+                swappy->mEgl, swappy->mCommonBase.getVsyncPeriod());
         ALOGI("Enabling stats");
     } else {
         swappy->mFrameStatistics = nullptr;
@@ -289,14 +222,9 @@ EGL *SwappyGL::getEgl() {
     return egl;
 }
 
-SwappyGL::SwappyGL(JavaVM *vm,
-               nanoseconds refreshPeriod,
-               nanoseconds appOffset,
-               nanoseconds sfOffset,
-               ConstructorTag)
+SwappyGL::SwappyGL(JNIEnv *env, jobject jactivity, ConstructorTag)
     : mFrameStatistics(nullptr),
-      mSfOffset(sfOffset),
-      mCommonBase(vm, refreshPeriod, appOffset, sfOffset)
+      mCommonBase(env, jactivity)
 {
     mDisableSwappy = getSystemPropViaGetAsBool("swappy.disable", false);
     if (!enabled()) {
@@ -305,16 +233,18 @@ SwappyGL::SwappyGL(JavaVM *vm,
     }
 
     std::lock_guard<std::mutex> lock(mEglMutex);
-    mEgl = EGL::create(refreshPeriod);
+    mEgl = EGL::create(mCommonBase.getVsyncPeriod());
     if (!mEgl) {
         ALOGE("Failed to load EGL functions");
         mDisableSwappy = true;
         return;
     }
 
-    ALOGI("Initialized Swappy with refreshPeriod=%lld, appOffset=%lld, sfOffset=%lld" ,
-          (long long)refreshPeriod.count(), (long long)appOffset.count(),
-          (long long)sfOffset.count());
+    ALOGI("Initialized Swappy with vsyncPeriod=%lld, appOffset=%lld, sfOffset=%lld",
+          (long long)mCommonBase.getVsyncPeriod().count(),
+          (long long)mCommonBase.getAppVsyncOffset().count(),
+          (long long)mCommonBase.getSfVsyncOffset().count()
+    );
 }
 
 void SwappyGL::resetSyncFence(EGLDisplay display) {
@@ -326,7 +256,7 @@ bool SwappyGL::setPresentationTime(EGLDisplay display, EGLSurface surface) {
 
     // if we are too close to the vsync, there is no need to set presentation time
     if ((mCommonBase.getPresentationTime() - std::chrono::steady_clock::now()) <
-            (mCommonBase.getRefreshPeriod() - mSfOffset)) {
+            (mCommonBase.getVsyncPeriod() - mCommonBase.getSfVsyncOffset())) {
         return EGL_TRUE;
     }
 

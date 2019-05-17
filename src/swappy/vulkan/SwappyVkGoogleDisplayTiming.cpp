@@ -22,17 +22,19 @@ using std::chrono::nanoseconds;
 
 namespace swappy {
 
-SwappyVkGoogleDisplayTiming::SwappyVkGoogleDisplayTiming(VkPhysicalDevice physicalDevice,
+SwappyVkGoogleDisplayTiming::SwappyVkGoogleDisplayTiming(JNIEnv           *env,
+                                                         jobject          jactivity,
+                                                         VkPhysicalDevice physicalDevice,
                                                          VkDevice         device,
                                                          void             *libVulkan) :
-    SwappyVkBase(physicalDevice, device, libVulkan) {}
+    SwappyVkBase(env, jactivity, physicalDevice, device, libVulkan) {}
 
 SwappyVkGoogleDisplayTiming::~SwappyVkGoogleDisplayTiming() {
     destroyVkSyncObjects();
 }
 
 bool SwappyVkGoogleDisplayTiming::doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
-                                                            uint64_t*      pRefreshDuration)  {
+                                                            uint64_t*      pRefreshDuration) {
     VkRefreshCycleDurationGOOGLE refreshCycleDuration;
     VkResult res = mpfnGetRefreshCycleDurationGOOGLE(mDevice, swapchain, &refreshCycleDuration);
     if (res != VK_SUCCESS) {
@@ -40,13 +42,7 @@ bool SwappyVkGoogleDisplayTiming::doGetRefreshCycleDuration(VkSwapchainKHR swapc
         return false;
     }
 
-    // TODO(adyabr): get appOffset and sfOffset
-    mCommonBase = std::make_unique<SwappyCommon>(nullptr,
-                                                nanoseconds(refreshCycleDuration.refreshDuration),
-                                                0ns,
-                                                0ns);
-
-    *pRefreshDuration = mCommonBase->getRefreshPeriod().count();
+    *pRefreshDuration = mCommonBase.getVsyncPeriod().count();
 
     double refreshRate = 1000000000.0 / *pRefreshDuration;
     ALOGI("Returning refresh duration of %" PRIu64 " nsec (approx %f Hz)",
@@ -69,7 +65,7 @@ VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(VkQueue                 que
         .getPrevFrameGpuTime =
             std::bind(&SwappyVkGoogleDisplayTiming::getLastFenceTime, this, queue),
     };
-    mCommonBase->onPreSwap(handlers);
+    mCommonBase.onPreSwap(handlers);
 
     VkSemaphore semaphore;
     res = injectFence(queue, pPresentInfo, &semaphore);
@@ -81,11 +77,11 @@ VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(VkQueue                 que
     VkPresentTimeGOOGLE pPresentTimes[pPresentInfo->swapchainCount];
     VkPresentInfoKHR replacementPresentInfo;
     VkPresentTimesInfoGOOGLE presentTimesInfo;
-    if (mCommonBase->needToSetPresentationTime()) {
+    if (mCommonBase.needToSetPresentationTime()) {
         // Setup the new structures to pass:
         for (uint32_t i = 0; i < pPresentInfo->swapchainCount; i++) {
             pPresentTimes[i].presentID = mNextPresentID;
-            pPresentTimes[i].desiredPresentTime = mCommonBase->getPresentationTime().time_since_epoch().count();
+            pPresentTimes[i].desiredPresentTime = mCommonBase.getPresentationTime().time_since_epoch().count();
         }
 
         presentTimesInfo = {
@@ -121,7 +117,7 @@ VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(VkQueue                 que
     mNextPresentID++;
 
     res = mpfnQueuePresentKHR(queue, &replacementPresentInfo);
-    mCommonBase->onPostSwap(handlers);
+    mCommonBase.onPostSwap(handlers);
 
     return res;
 }
