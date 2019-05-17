@@ -20,9 +20,12 @@
 
 namespace swappy {
 
-SwappyVkBase::SwappyVkBase(VkPhysicalDevice physicalDevice,
+SwappyVkBase::SwappyVkBase(JNIEnv           *env,
+                           jobject          jactivity,
+                           VkPhysicalDevice physicalDevice,
                            VkDevice         device,
                            void             *libVulkan) :
+    mCommonBase(env, jactivity),
     mPhysicalDevice(physicalDevice),
     mDevice(device),
     mLibVulkan(libVulkan),

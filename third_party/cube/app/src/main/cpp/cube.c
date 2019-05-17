@@ -138,6 +138,11 @@ void DbgMsg(char *fmt, ...) {
 }
 #endif
 
+struct {
+  JavaVM* vm;
+  jobject jactivity;
+} swappy_init_data;
+
 // Uncomment the following line in order to log events for the first 10 frames:
 //#define ANDROID_LOG_PRESENT_EVENTS
 typedef enum TimingEvent {
@@ -1478,8 +1483,13 @@ static void demo_prepare_buffers(struct demo *demo) {
         demo->next_present_id = 1;
     }
 
-    assert(SwappyVk_initAndGetRefreshCycleDuration(demo->gpu, demo->device, demo->swapchain,
-                                           &demo->refresh_duration));
+    JavaVM* vm = swappy_init_data.vm;
+    JNIEnv *env;
+    (*vm)->AttachCurrentThread(vm, &env, NULL);
+    assert(SwappyVk_initAndGetRefreshCycleDuration(env,
+                                                   swappy_init_data.jactivity,
+                                                   demo->gpu, demo->device, demo->swapchain,
+                                                   &demo->refresh_duration));
 
     // Refresh rate of this demo is locked to 30 FPS.
     SwappyVk_setSwapIntervalNS(demo->device, demo->swapchain, SWAPPY_SWAP_30FPS);
@@ -4024,6 +4034,9 @@ static void processCommand(struct android_app *app, int32_t cmd) {
 }
 
 void android_main(struct android_app *app) {
+    swappy_init_data.vm         = app->activity->vm;
+    swappy_init_data.jactivity  = app->activity->clazz;
+
 #ifdef ANDROID
     int vulkanSupport = InitVulkan();
     if (vulkanSupport == 0) return;

@@ -20,6 +20,8 @@
 
 #include "swappy_common.h"
 
+#include "jni.h"
+
 #if (defined ANDROID) && (defined SWAPPYVK_USE_WRAPPER)
 #include <vulkan_wrapper.h>
 #else
@@ -127,6 +129,8 @@ void SwappyVk_setQueueFamilyIndex(
  *                    otherwise false if an error.
  */
 bool SwappyVk_initAndGetRefreshCycleDuration(
+        JNIEnv*          env,
+        jobject          jactivity,
         VkPhysicalDevice physicalDevice,
         VkDevice         device,
         VkSwapchainKHR   swapchain,

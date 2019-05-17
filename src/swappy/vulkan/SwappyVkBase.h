@@ -94,7 +94,9 @@ using PFN_AChoreographer_postFrameCallbackDelayed = void (*)(AChoreographer* cho
 class SwappyVkBase
 {
 public:
-    SwappyVkBase(VkPhysicalDevice physicalDevice,
+    SwappyVkBase(JNIEnv           *env,
+                 jobject          jactivity,
+                 VkPhysicalDevice physicalDevice,
                  VkDevice         device,
                  void             *libVulkan);
 
@@ -131,6 +133,7 @@ protected:
         std::condition_variable_any condition;
     };
 
+    SwappyCommon     mCommonBase;
     VkPhysicalDevice mPhysicalDevice;
     VkDevice         mDevice;
     void*            mLibVulkan;
@@ -148,8 +151,6 @@ protected:
     std::map<VkQueue, std::list<VkSync>>              mPendingSync;
     std::map<VkQueue, VkCommandPool>                  mCommandPool;
     std::map<VkQueue, std::unique_ptr<ThreadContext>> mThreads;
-
-    std::unique_ptr<SwappyCommon> mCommonBase;
 
     static constexpr int MAX_PENDING_FENCES = 1;
 

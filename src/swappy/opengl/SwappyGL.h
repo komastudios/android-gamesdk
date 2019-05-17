@@ -40,12 +40,7 @@ class SwappyGL {
     // outside of the class since no one else can construct a ConstructorTag
     struct ConstructorTag {};
   public:
-    SwappyGL(JavaVM *vm,
-             std::chrono::nanoseconds refreshPeriod,
-             std::chrono::nanoseconds appOffset,
-             std::chrono::nanoseconds sfOffset,
-             ConstructorTag);
-
+    SwappyGL(JNIEnv *env, jobject jactivity, ConstructorTag);
     static void init(JNIEnv *env, jobject jactivity);
 
     static void onChoreographer(int64_t frameTimeNanos);
@@ -68,11 +63,6 @@ class SwappyGL {
     static void destroyInstance();
 
 private:
-    static void init(JavaVM *vm,
-                     std::chrono::nanoseconds refreshPeriod,
-                     std::chrono::nanoseconds appOffset,
-                     std::chrono::nanoseconds sfOffset);
-
     static SwappyGL *getInstance();
 
     bool enabled() const { return !mDisableSwappy; }
@@ -99,8 +89,6 @@ private:
     std::shared_ptr<EGL> mEgl;
 
     std::unique_ptr<FrameStatistics> mFrameStatistics;
-
-    const std::chrono::nanoseconds mSfOffset;
 
     SwappyCommon mCommonBase;
 };
