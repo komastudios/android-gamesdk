@@ -20,21 +20,19 @@
 
 namespace swappy {
 
-SwappyVkFallback::SwappyVkFallback(VkPhysicalDevice physicalDevice,
+SwappyVkFallback::SwappyVkFallback(JNIEnv           *env,
+                                   jobject          jactivity,
+                                   VkPhysicalDevice physicalDevice,
                                    VkDevice         device,
                                    void             *libVulkan) :
-    SwappyVkBase(physicalDevice, device, libVulkan) {}
+    SwappyVkBase(env, jactivity, physicalDevice, device, libVulkan) {}
 
 bool SwappyVkFallback::doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
                                                  uint64_t*      pRefreshDuration) {
-    // TODO(adyabr): get the app/sf offsets
-    // TODO(adyabr): how to get the refresh duration here ?
-    mCommonBase = std::make_unique<SwappyCommon>(nullptr, 16600000ns, 0ns, 0ns);
-
     // Since we don't have presentation timing, we cannot achieve pipelining.
-    mCommonBase->setAutoPipelineMode(false);
+    mCommonBase.setAutoPipelineMode(false);
 
-    *pRefreshDuration = mCommonBase->getRefreshPeriod().count();
+    *pRefreshDuration = mCommonBase.getRefreshPeriod().count();
 
     double refreshRate = 1000000000.0 / *pRefreshDuration;
     ALOGI("Returning refresh duration of %" PRIu64 " nsec (approx %f Hz)",
@@ -65,7 +63,7 @@ VkResult SwappyVkFallback::doQueuePresent(VkQueue                 queue,
         return result;
     }
 
-    mCommonBase->onPreSwap(handlers);
+    mCommonBase.onPreSwap(handlers);
 
     VkPresentInfoKHR replacementPresentInfo = {
         pPresentInfo->sType,
@@ -80,7 +78,7 @@ VkResult SwappyVkFallback::doQueuePresent(VkQueue                 queue,
 
     result = mpfnQueuePresentKHR(queue, pPresentInfo);
 
-    mCommonBase->onPostSwap(handlers);
+    mCommonBase.onPostSwap(handlers);
 
     return result;
 }
