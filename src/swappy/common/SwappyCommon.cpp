@@ -416,5 +416,70 @@ void SwappyCommon::waitOneFrame() {
     mWaitingCondition.wait(lock, [&]() { return mCurrentFrame >= target; });
 }
 
+bool SwappyCommon::initJNI(JNIEnv *env, jobject jactivity,
+                           JavaVM **vm,
+                           std::chrono::nanoseconds *vsyncPeriod,
+                           std::chrono::nanoseconds *appVsyncOffset,
+                           std::chrono::nanoseconds *sfVsyncOffset) {
+    jclass activityClass = env->FindClass("android/app/NativeActivity");
+    jclass windowManagerClass = env->FindClass("android/view/WindowManager");
+    jclass displayClass = env->FindClass("android/view/Display");
+
+    jmethodID getWindowManager = env->GetMethodID(
+            activityClass,
+            "getWindowManager",
+            "()Landroid/view/WindowManager;");
+
+    jmethodID getDefaultDisplay = env->GetMethodID(
+            windowManagerClass,
+            "getDefaultDisplay",
+            "()Landroid/view/Display;");
+
+    jobject wm = env->CallObjectMethod(jactivity, getWindowManager);
+    jobject display = env->CallObjectMethod(wm, getDefaultDisplay);
+
+    jmethodID getRefreshRate = env->GetMethodID(
+            displayClass,
+            "getRefreshRate",
+            "()F");
+
+    const float refreshRateHz = env->CallFloatMethod(display, getRefreshRate);
+
+    jmethodID getAppVsyncOffsetNanos = env->GetMethodID(
+            displayClass,
+            "getAppVsyncOffsetNanos", "()J");
+
+    // getAppVsyncOffsetNanos was only added in API 21.
+    // Return gracefully if this device doesn't support it.
+    if (getAppVsyncOffsetNanos == 0 || env->ExceptionOccurred()) {
+        env->ExceptionClear();
+        return false;
+    }
+    const long appVsyncOffsetNanos = env->CallLongMethod(display, getAppVsyncOffsetNanos);
+
+    jmethodID getPresentationDeadlineNanos = env->GetMethodID(
+        displayClass,
+        "getPresentationDeadlineNanos",
+        "()J");
+
+    const long vsyncPresentationDeadlineNanos = env->CallLongMethod(
+        display, getPresentationDeadlineNanos);
+
+    const long ONE_MS_IN_NS = 1000000;
+    const long ONE_S_IN_NS = ONE_MS_IN_NS * 1000;
+
+    const long vsyncPeriodNanos = static_cast<long>(ONE_S_IN_NS / refreshRateHz);
+    const long sfVsyncOffsetNanos =
+        vsyncPeriodNanos - (vsyncPresentationDeadlineNanos - ONE_MS_IN_NS);
+
+    env->GetJavaVM(vm);
+
+    using std::chrono::nanoseconds;
+    *vsyncPeriod    = nanoseconds(vsyncPeriodNanos);
+    *appVsyncOffset = nanoseconds(appVsyncOffsetNanos);
+    *sfVsyncOffset  = nanoseconds(sfVsyncOffsetNanos);
+
+    return true;
+}
 
 } // namespace swappy

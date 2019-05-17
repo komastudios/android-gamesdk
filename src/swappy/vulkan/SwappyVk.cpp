@@ -18,6 +18,19 @@
 
 namespace swappy {
 
+JavaVM *SwappyVk::vm = nullptr;
+std::chrono::nanoseconds SwappyVk::vsyncPeriod    = 16600000ns;
+std::chrono::nanoseconds SwappyVk::appVsyncOffset = 0ns;
+std::chrono::nanoseconds SwappyVk::sfVsyncOffset  = 0ns;
+
+bool SwappyVk::initJNI(JNIEnv *env, jobject jactivity) {
+    return SwappyCommon::initJNI(env, jactivity,
+                                 &vm,
+                                 &vsyncPeriod,
+                                 &appVsyncOffset,
+                                 &sfVsyncOffset);
+}
+
 /**
  * Generic/Singleton implementation of swappyVkDetermineDeviceExtensions.
  */
@@ -103,7 +116,12 @@ bool SwappyVk::GetRefreshCycleDuration(VkPhysicalDevice physicalDevice,
     perSwapchainImplementation[swapchain] = pImplementation;
 
     // Now, call that derived class to get the refresh duration to return
-    return pImplementation->doGetRefreshCycleDuration(swapchain, pRefreshDuration);
+    return pImplementation->doGetRefreshCycleDuration(swapchain,
+                                                      vm,
+                                                      vsyncPeriod,
+                                                      appVsyncOffset,
+                                                      sfVsyncOffset,
+                                                      pRefreshDuration);
 }
 
 

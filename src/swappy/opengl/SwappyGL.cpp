@@ -38,66 +38,19 @@ std::mutex SwappyGL::sInstanceMutex;
 std::unique_ptr<SwappyGL> SwappyGL::sInstance;
 
 void SwappyGL::init(JNIEnv *env, jobject jactivity) {
-    jclass activityClass = env->FindClass("android/app/NativeActivity");
-    jclass windowManagerClass = env->FindClass("android/view/WindowManager");
-    jclass displayClass = env->FindClass("android/view/Display");
-
-    jmethodID getWindowManager = env->GetMethodID(
-            activityClass,
-            "getWindowManager",
-            "()Landroid/view/WindowManager;");
-
-    jmethodID getDefaultDisplay = env->GetMethodID(
-            windowManagerClass,
-            "getDefaultDisplay",
-            "()Landroid/view/Display;");
-
-    jobject wm = env->CallObjectMethod(jactivity, getWindowManager);
-    jobject display = env->CallObjectMethod(wm, getDefaultDisplay);
-
-    jmethodID getRefreshRate = env->GetMethodID(
-            displayClass,
-            "getRefreshRate",
-            "()F");
-
-    const float refreshRateHz = env->CallFloatMethod(display, getRefreshRate);
-
-    jmethodID getAppVsyncOffsetNanos = env->GetMethodID(
-            displayClass,
-            "getAppVsyncOffsetNanos", "()J");
-
-    // getAppVsyncOffsetNanos was only added in API 21.
-    // Return gracefully if this device doesn't support it.
-    if (getAppVsyncOffsetNanos == 0 || env->ExceptionOccurred()) {
-        env->ExceptionClear();
-        return;
-    }
-    const long appVsyncOffsetNanos = env->CallLongMethod(display, getAppVsyncOffsetNanos);
-
-    jmethodID getPresentationDeadlineNanos = env->GetMethodID(
-            displayClass,
-            "getPresentationDeadlineNanos",
-            "()J");
-
-    const long vsyncPresentationDeadlineNanos = env->CallLongMethod(
-            display,
-            getPresentationDeadlineNanos);
-
-    const long ONE_MS_IN_NS = 1000000;
-    const long ONE_S_IN_NS = ONE_MS_IN_NS * 1000;
-
-    const long vsyncPeriodNanos = static_cast<long>(ONE_S_IN_NS / refreshRateHz);
-    const long sfVsyncOffsetNanos =
-            vsyncPeriodNanos - (vsyncPresentationDeadlineNanos - ONE_MS_IN_NS);
-
-    using std::chrono::nanoseconds;
     JavaVM *vm;
-    env->GetJavaVM(&vm);
-    SwappyGL::init(
-            vm,
-            nanoseconds(vsyncPeriodNanos),
-            nanoseconds(appVsyncOffsetNanos),
-            nanoseconds(sfVsyncOffsetNanos));
+    std::chrono::nanoseconds vsyncPeriod;
+    std::chrono::nanoseconds appVsyncOffset;
+    std::chrono::nanoseconds sfVsyncOffset;
+    SwappyCommon::initJNI(env, jactivity,
+                          &vm,
+                          &vsyncPeriod,
+                          &appVsyncOffset,
+                          &sfVsyncOffset);
+    SwappyGL::init(vm,
+                   vsyncPeriod,
+                   appVsyncOffset,
+                   sfVsyncOffset);
 }
 
 void SwappyGL::init(JavaVM *vm,

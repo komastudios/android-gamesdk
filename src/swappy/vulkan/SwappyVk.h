@@ -43,6 +43,8 @@ namespace swappy {
 class SwappyVk
 {
 public:
+    static bool initJNI(JNIEnv *env, jobject jactivity);
+
     static SwappyVk& getInstance() {
         static SwappyVk instance;
         return instance;
@@ -85,6 +87,11 @@ private:
     std::map<VkQueue, QueueFamilyIndex> perQueueFamilyIndex;
 
     void *mLibVulkan     = nullptr;
+
+    static JavaVM *vm;
+    static std::chrono::nanoseconds vsyncPeriod;
+    static std::chrono::nanoseconds appVsyncOffset;
+    static std::chrono::nanoseconds sfVsyncOffset;
 
 private:
     SwappyVk() {} // Need to implement this constructor

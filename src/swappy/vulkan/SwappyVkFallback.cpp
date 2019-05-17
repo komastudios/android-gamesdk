@@ -26,10 +26,12 @@ SwappyVkFallback::SwappyVkFallback(VkPhysicalDevice physicalDevice,
     SwappyVkBase(physicalDevice, device, libVulkan) {}
 
 bool SwappyVkFallback::doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
+                                                 JavaVM *vm,
+                                                 std::chrono::nanoseconds vsyncPeriod,
+                                                 std::chrono::nanoseconds appVsyncOffset,
+                                                 std::chrono::nanoseconds sfVsyncOffset,
                                                  uint64_t*      pRefreshDuration) {
-    // TODO(adyabr): get the app/sf offsets
-    // TODO(adyabr): how to get the refresh duration here ?
-    mCommonBase = std::make_unique<SwappyCommon>(nullptr, 16600000ns, 0ns, 0ns);
+    mCommonBase = std::make_unique<SwappyCommon>(vm, vsyncPeriod, appVsyncOffset, sfVsyncOffset);
 
     // Since we don't have presentation timing, we cannot achieve pipelining.
     mCommonBase->setAutoPipelineMode(false);

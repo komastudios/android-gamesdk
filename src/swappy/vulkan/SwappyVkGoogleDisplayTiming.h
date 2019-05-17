@@ -67,6 +67,10 @@ public:
     ~SwappyVkGoogleDisplayTiming();
 
     virtual bool doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
+                                           JavaVM *vm,
+                                           std::chrono::nanoseconds vsyncPeriod,
+                                           std::chrono::nanoseconds appVsyncOffset,
+                                           std::chrono::nanoseconds sfVsyncOffset,
                                            uint64_t*      pRefreshDuration) override;
 
     virtual VkResult doQueuePresent(VkQueue queue,

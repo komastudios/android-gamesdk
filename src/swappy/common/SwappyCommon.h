@@ -70,6 +70,12 @@ public:
     std::chrono::nanoseconds getRefreshPeriod() { return mRefreshPeriod; }
     std::chrono::steady_clock::time_point getPresentationTime() { return mPresentationTime; }
 
+    static bool initJNI(JNIEnv *env, jobject jactivity,
+                        JavaVM **vm,
+                        std::chrono::nanoseconds *vsyncPeriod,
+                        std::chrono::nanoseconds *appVsyncOffset,
+                        std::chrono::nanoseconds *sfVsyncOffset);
+
 private:
     class FrameDuration {
     public:

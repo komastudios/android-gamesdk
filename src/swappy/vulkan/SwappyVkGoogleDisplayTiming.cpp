@@ -31,8 +31,13 @@ SwappyVkGoogleDisplayTiming::~SwappyVkGoogleDisplayTiming() {
     destroyVkSyncObjects();
 }
 
-bool SwappyVkGoogleDisplayTiming::doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
-                                                            uint64_t*      pRefreshDuration)  {
+bool SwappyVkGoogleDisplayTiming::doGetRefreshCycleDuration(
+                                                 VkSwapchainKHR swapchain,
+                                                 JavaVM *vm,
+                                                 std::chrono::nanoseconds vsyncPeriod,
+                                                 std::chrono::nanoseconds appVsyncOffset,
+                                                 std::chrono::nanoseconds sfVsyncOffset,
+                                                 uint64_t*      pRefreshDuration)  {
     VkRefreshCycleDurationGOOGLE refreshCycleDuration;
     VkResult res = mpfnGetRefreshCycleDurationGOOGLE(mDevice, swapchain, &refreshCycleDuration);
     if (res != VK_SUCCESS) {
@@ -40,11 +45,7 @@ bool SwappyVkGoogleDisplayTiming::doGetRefreshCycleDuration(VkSwapchainKHR swapc
         return false;
     }
 
-    // TODO(adyabr): get appOffset and sfOffset
-    mCommonBase = std::make_unique<SwappyCommon>(nullptr,
-                                                nanoseconds(refreshCycleDuration.refreshDuration),
-                                                0ns,
-                                                0ns);
+    mCommonBase = std::make_unique<SwappyCommon>(vm, vsyncPeriod, appVsyncOffset, sfVsyncOffset);
 
     *pRefreshDuration = mCommonBase->getRefreshPeriod().count();
 

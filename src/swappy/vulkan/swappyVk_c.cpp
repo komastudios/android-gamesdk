@@ -20,9 +20,13 @@
 
 #include "SwappyVk.h"
 
-using namespace swappy;
-
 extern "C" {
+
+bool SwappyVk_initJNI(JNIEnv *env, jobject jactivity)
+{
+    TRACE_CALL();
+    return swappy::SwappyVk::initJNI(env, jactivity);
+}
 
 void SwappyVk_determineDeviceExtensions(
     VkPhysicalDevice       physicalDevice,
