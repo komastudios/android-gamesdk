@@ -20,14 +20,23 @@
 
 namespace swappy {
 
-SwappyVkBase::SwappyVkBase(VkPhysicalDevice physicalDevice,
+SwappyVkBase::SwappyVkBase(JNIEnv           *env,
+                           jobject          jactivity,
+                           VkPhysicalDevice physicalDevice,
                            VkDevice         device,
                            void             *libVulkan) :
+    mCommonBase(env, jactivity),
     mPhysicalDevice(physicalDevice),
     mDevice(device),
     mLibVulkan(libVulkan),
-    mInitialized(false)
+    mInitialized(false),
+    mEnabled(false)
 {
+    if (!mCommonBase.isValid()) {
+        ALOGE("SwappyCommon could not initialize correctly.");
+        return;
+    }
+
     InitVulkan();
 
     mpfnGetDeviceProcAddr =
@@ -38,6 +47,8 @@ SwappyVkBase::SwappyVkBase(VkPhysicalDevice physicalDevice,
                 mpfnGetDeviceProcAddr(mDevice, "vkQueuePresentKHR"));
 
     initGoogExtension();
+
+    mEnabled = true;
 }
 
 void SwappyVkBase::initGoogExtension() {
@@ -204,8 +215,8 @@ bool SwappyVkBase::lastFrameIsCompleted(VkQueue queue) {
 }
 
 VkResult SwappyVkBase::injectFence(VkQueue                 queue,
-                                          const VkPresentInfoKHR* pPresentInfo,
-                                          VkSemaphore*            pSemaphore) {
+                                   const VkPresentInfoKHR* pPresentInfo,
+                                   VkSemaphore*            pSemaphore) {
     // If we cross the swap interval threshold, we don't pace at all.
     // In this case we might not have a free fence, so just don't use the fence.
     if (mFreeSync[queue].size() == 0) {
