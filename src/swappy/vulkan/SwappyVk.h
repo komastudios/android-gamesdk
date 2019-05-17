@@ -61,7 +61,9 @@ public:
     void SetQueueFamilyIndex(VkDevice   device,
                              VkQueue    queue,
                              uint32_t   queueFamilyIndex);
-    bool GetRefreshCycleDuration(VkPhysicalDevice physicalDevice,
+    bool GetRefreshCycleDuration(JNIEnv           *env,
+                                 jobject          jactivity,
+                                 VkPhysicalDevice physicalDevice,
                                  VkDevice         device,
                                  VkSwapchainKHR   swapchain,
                                  uint64_t*        pRefreshDuration);
@@ -72,6 +74,8 @@ public:
                           const VkPresentInfoKHR* pPresentInfo);
     void DestroySwapchain(VkDevice                device,
                           VkSwapchainKHR          swapchain);
+
+
 
 private:
     std::map<VkPhysicalDevice, bool> doesPhysicalDeviceHaveGoogleDisplayTiming;
