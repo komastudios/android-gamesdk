@@ -34,6 +34,24 @@
       "revId": "af639977de1fb7aa5e739ebbdf5a547c841c18d2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "170ee94c_fc0132db",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-20T09:00:06Z",
+      "side": 1,
+      "message": "Like Florian says, we wouldn\u0027t get link-time checking of header/library compatibility without some header shenanigans. Maybe we\u0027re over-thinking it though and we shouldn\u0027t worry too much about this check? Most libraries don\u0027t do it explicitly.",
+      "parentUuid": "4f2c4125_ab942a00",
+      "revId": "af639977de1fb7aa5e739ebbdf5a547c841c18d2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
