@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4f2c4125_ab942a00",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-05-20T08:36:28Z",
+      "side": 1,
+      "message": "Is inlining required to make this work? (i.e. does it prevent deadstripping or something?)\n\nIf not then I\u0027d still be inclined to move the implementation of this call into the .cpp file (along with the macros and _internal call).",
+      "revId": "af639977de1fb7aa5e739ebbdf5a547c841c18d2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
