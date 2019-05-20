@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "43682cb9_124861f2",
+        "filename": "include/swappy/swappyVk.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-20T20:04:57Z",
+      "side": 1,
+      "message": "Documentation missing",
+      "revId": "2552a61f61b4646c50f8f64fb48f4ddca69ecfc4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e9091621_2a61addd",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-20T20:04:57Z",
+      "side": 1,
+      "message": "keep the name mRefreshPeriod to avoid all these changes",
+      "revId": "2552a61f61b4646c50f8f64fb48f4ddca69ecfc4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9fdbb711_1baa8b1a",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-20T20:04:57Z",
+      "side": 1,
+      "message": "Let\u0027s keep the name RefreshPeriod instead of VsyncPeriod as it is used as refresh period in all other places",
+      "revId": "2552a61f61b4646c50f8f64fb48f4ddca69ecfc4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e1b77728_ae739703",
+        "filename": "src/swappy/vulkan/SwappyVkFallback.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-20T20:04:57Z",
+      "side": 1,
+      "message": "We still need this one:\n// Since we don\u0027t have presentation timing, we cannot achieve pipelining.\n    mCommonBase-\u003esetAutoPipelineMode(false);",
+      "revId": "2552a61f61b4646c50f8f64fb48f4ddca69ecfc4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1ba087c9_7ada25cf",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-20T20:04:57Z",
+      "side": 1,
+      "message": "let\u0027s add it to struct demo to avoid having another global variable.",
+      "revId": "2552a61f61b4646c50f8f64fb48f4ddca69ecfc4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
