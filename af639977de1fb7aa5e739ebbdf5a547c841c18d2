@@ -16,6 +16,24 @@
       "revId": "af639977de1fb7aa5e739ebbdf5a547c841c18d2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "998fbcfd_2dac515a",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-05-20T08:52:21Z",
+      "side": 1,
+      "message": "Having this in the header is required because it forces the compiler consuming the header (the \"consumer\") to generate code that is calling TUNINGFORK_VERSION_SYMBOL, which will resolve to TuningFork_version_x_y (x, y being the version numbers as seen by the \"consumer\"). If these are different from the version numbers used during the compilation of the .a (or .so) (let\u0027s call it the \"vendor\" compiler :)), it will generate a linker error (because the symbol called by the consumer will be undefined).\n\nIf this is moved to the .cpp, both the definition of TuningFork_version_x_y AND the call to TuningFork_version_x_y will be in the same file, compiled at the same time. So no more linker error if you mistmatch the .a and the header file.\n\nI\u0027m not sure there is a cleaner solution - at the end we are forced to have all the needed macros and the call to TUNINGFORK_VERSION_SYMBOL entirely in the header if we want to trigger linker errors in case of mismatch.\nIf it\u0027s too much, the alternative would be to remove all of this and go back to just exporting a symbol which will be enough for analytics.",
+      "parentUuid": "4f2c4125_ab942a00",
+      "revId": "af639977de1fb7aa5e739ebbdf5a547c841c18d2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
