@@ -52,6 +52,7 @@ set( TUNINGFORK_SRCS
   tuningfork_utils.cpp
   tuningfork_settings.cpp
   tuningfork_swappy.cpp
+  unity_tuningfork.cpp
   fpdownload.cpp
   ge_backend.cpp
   ge_serializer.cpp
