@@ -42,6 +42,7 @@ set( TUNINGFORK_SRCS
   annotation_util.cpp
   tuningfork_extra.cpp
   tuningfork_utils.cpp
+  unity_tuningfork.cpp
   fpdownload.cpp
   ge_backend.cpp
   ge_serializer.cpp

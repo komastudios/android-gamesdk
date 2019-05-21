@@ -21,6 +21,9 @@
 #include <pb_encode.h>
 #include <pb_decode.h>
 
+#define LOG_TAG "TuningFork"
+#include "Log.h"
+
 namespace tuningfork {
 
 bool VectorStream::Read(pb_istream_t *stream, uint8_t *buf, size_t count) {
@@ -88,8 +91,11 @@ bool ByteStream::Write(pb_ostream_t *stream, const uint8_t *buf, size_t count) {
 
 extern "C" void CProtobufSerialization_Dealloc(CProtobufSerialization* c) {
     if(c->bytes) {
+        ALOGI("CProtobufSerialization_Dealloc size %d", c->size);
         ::free(c->bytes);
         c->bytes = nullptr;
         c->size = 0;
+    } else {
+        ALOGI("CProtobufSerialization_Dealloc empty");
     }
 }
