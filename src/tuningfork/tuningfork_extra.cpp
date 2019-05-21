@@ -72,7 +72,7 @@ bool GetSavedFidelityParams(const JniCtx& jni, CProtobufSerialization* params) {
   std::string save_filename;
   if (GetSavedFileName(jni, save_filename)) {
     if (file_utils::LoadBytesFromFile(save_filename, params)) {
-      ALOGI("Loaded fps from %s (%zu bytes)", save_filename.c_str(), params->size);
+      ALOGI("Loaded fps from %s (%u bytes)", save_filename.c_str(), params->size);
       return true;
     }
     ALOGI("Couldn't load fps from %s", save_filename.c_str());
@@ -87,7 +87,7 @@ bool SaveFidelityParams(const JniCtx& jni, const CProtobufSerialization* params)
         std::ofstream save_file(save_filename, std::ios::binary);
         if (save_file.good()) {
             save_file.write((const char*)params->bytes, params->size);
-            ALOGI("Saved fps to %s (%zu bytes)", save_filename.c_str(), params->size);
+            ALOGI("Saved fps to %s (%u bytes)", save_filename.c_str(), params->size);
             return true;
         }
         ALOGI("Couldn't save fps to %s", save_filename.c_str());
