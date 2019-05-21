@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c41cb5b1_d97a63d0",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-21T11:19:10Z",
+      "side": 1,
+      "message": "Add a log of the error here, so we know why we exited. We also need to have an \u0027isValid\u0027 call which is used by classes that contain this one so users can detect if initialization failed.",
+      "revId": "f87506ee4fbc80b1802948d521e433e2ab4ad4d2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dac661ef_85399e4d",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-21T11:19:10Z",
+      "side": 1,
+      "message": "Check if getPresentationDeadlineNanos is null?",
+      "revId": "f87506ee4fbc80b1802948d521e433e2ab4ad4d2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "796fb164_4c1e1f2e",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-21T11:19:10Z",
+      "side": 1,
+      "message": "Why do we need to cache the VM? I don\u0027t think we use it outside the constructor.",
+      "revId": "f87506ee4fbc80b1802948d521e433e2ab4ad4d2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
