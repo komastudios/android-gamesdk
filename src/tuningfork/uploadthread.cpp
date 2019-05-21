@@ -107,6 +107,7 @@ void UploadThread::Run() {
             if(upload_callback_) {
                 CProtobufSerialization cser = { evt_ser.data(),
                                           static_cast<uint32_t>(evt_ser.size()), nullptr};
+                ALOGW("CProtobufSerialization size %d", cser.size);
                 upload_callback_(&cser);
             }
             backend_->Process(evt_ser);

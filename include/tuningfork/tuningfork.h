@@ -39,7 +39,7 @@ enum {
 
 struct CProtobufSerialization {
     uint8_t* bytes;
-    size_t size;
+    uint32_t size;
     void (*dealloc)(struct CProtobufSerialization*);
 };
 

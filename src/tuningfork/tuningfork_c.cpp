@@ -23,6 +23,10 @@
 #include <cstdlib>
 #include <cstring>
 
+
+#define LOG_TAG "TuningFork_c"
+#include "Log.h"
+
 namespace {
 
 tuningfork::ProtobufSerialization ToProtobufSerialization(const CProtobufSerialization& cpbs) {
@@ -60,6 +64,7 @@ TFErrorCode TuningFork_getFidelityParameters(JNIEnv* env, jobject context,
                                       const char* api_key,
                                       const CProtobufSerialization *defaultParams,
                                       CProtobufSerialization *params, uint32_t timeout_ms) {
+    ALOGW("TuningFork_getFidelityParameters.Url base %s", url_base);
     tuningfork::ProtobufSerialization defaults;
     if(defaultParams)
         defaults = ToProtobufSerialization(*defaultParams);
