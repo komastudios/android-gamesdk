@@ -20,6 +20,10 @@ function(extra_tf_link_options libname)
   set_link_options(${libname} "tuningfork/version.script")
 endfunction()
 
+function(extra_unity_tf_link_options libname)
+  set_link_options(${libname} "tuningfork/unity_version.script")
+endfunction()
+
 protobuf_generate_nano_c( ${CMAKE_CURRENT_SOURCE_DIR}/proto
   proto/tuningfork.proto)
 
@@ -52,6 +56,7 @@ set( TUNINGFORK_SRCS
   tuningfork_utils.cpp
   tuningfork_settings.cpp
   tuningfork_swappy.cpp
+  unity_tuningfork.cpp
   fpdownload.cpp
   ge_backend.cpp
   ge_serializer.cpp
@@ -70,11 +75,16 @@ add_library( tuningfork_static
 set_target_properties( tuningfork_static PROPERTIES
   COMPILE_OPTIONS "-DPROTOBUF_NANO" )
 
-add_library( tuningfork
-  SHARED ${TUNINGFORK_SRCS} ${PROTOBUF_NANO_SRCS})
-set_target_properties( tuningfork PROPERTIES COMPILE_OPTIONS "-DPROTOBUF_NANO" )
-target_link_libraries( tuningfork
-  android
-  GLESv2
-  log)
-extra_tf_link_options( tuningfork )
+function(build_shared libname version)
+  add_library( ${libname}
+    SHARED ${TUNINGFORK_SRCS} ${PROTOBUF_NANO_SRCS})
+  set_target_properties( ${libname}  PROPERTIES COMPILE_OPTIONS "-DPROTOBUF_NANO" )
+  target_link_libraries( ${libname}
+    android
+    GLESv2
+    log)
+  set_link_options(${libname} ${version})
+endfunction()
+
+build_shared( tuningfork "tuningfork/version.script")
+build_shared( unitytuningfork "tuningfork/unity_version.script")
