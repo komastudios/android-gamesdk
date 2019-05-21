@@ -13,6 +13,7 @@
  */
 
 #include "tuningfork/protobuf_util.h"
+#include "tuningfork/unity_tuningfork.h"
 #include "tuningfork/tuningfork_extra.h"
 #include "swappy/swappyGL.h"
 #include "swappy/swappyGL_extra.h"
@@ -152,7 +153,7 @@ void SetAnnotations() {
         auto next_level = sLevel + 1;
         a.set_next_level((proto_tf::Level)(next_level>proto_tf::Level_MAX?1:next_level));
         auto ser = tf::CProtobufSerialization_Alloc(a);
-        TuningFork_setCurrentAnnotation(&ser);
+        Unity_TuningFork_setCurrentAnnotation(&ser);
         CProtobufSerialization_Free(&ser);
     }
 }
@@ -192,25 +193,25 @@ void InitTf(JNIEnv* env, jobject activity) {
     bool resetDefaultFPs = false;
     if (overrideDefaultFPs) {
         CProtobufSerialization fps;
-        TuningFork_findFidelityParamsInApk(env, activity, "dev_tuningfork_fidelityparams_6.bin",
+        Unity_TuningFork_findFidelityParamsInApk("dev_tuningfork_fidelityparams_6.bin",
                                            &fps);
-        if (TuningFork_saveOrDeleteFidelityParamsFile(env, activity, &fps) != TFERROR_OK)
+        if (Unity_TuningFork_saveOrDeleteFidelityParamsFile(&fps) != TFERROR_OK)
             ALOGW("Couldn't override defaults file");
     }
     if (resetDefaultFPs) {
-        if (TuningFork_saveOrDeleteFidelityParamsFile(env, activity, NULL) != TFERROR_OK)
+        if (Unity_TuningFork_saveOrDeleteFidelityParamsFile(NULL) != TFERROR_OK)
             ALOGW("Couldn't delete defaults file");
     }
     // end of test
     if (swappy_enabled) {
-        TFErrorCode err = TuningFork_initFromAssetsWithSwappy(env, activity,
+        TFErrorCode err = Unity_TuningFork_initFromAssetsWithSwappy(
                                                               &SwappyGL_injectTracer, 0,
                                                               SetAnnotations, url_base,
                                                               api_key, defaultFPName,
                                                               SetFidelityParams,
                                                               initialTimeoutMs, ultimateTimeoutMs);
         if (err==TFERROR_OK) {
-            TuningFork_setUploadCallback(UploadCallback);
+            Unity_TuningFork_setUploadCallback(UploadCallback);
             SetAnnotations();
         } else {
             ALOGW("Error initializing TuningFork: %d", err);
@@ -218,20 +219,20 @@ void InitTf(JNIEnv* env, jobject activity) {
     } else {
         ALOGW("Couldn't enable Swappy.");
         // Passing a null value for settings will cause them to be loaded from the APK
-        auto err = TuningFork_init(nullptr, env, activity);
+        auto err = Unity_TuningFork_init(nullptr);
         if (err!=TFERROR_OK) {
             ALOGE("Error initializing Tuning Fork : err = %d", err);
             return;
         }
         CProtobufSerialization defaultFP = {};
-        err = TuningFork_findFidelityParamsInApk(env, activity, defaultFPName, &defaultFP);
+        err = Unity_TuningFork_findFidelityParamsInApk(defaultFPName, &defaultFP);
         if (err!=TFERROR_OK) {
             ALOGE("Error finding fidelity params : err = %d", err);
             return;
         }
-        TuningFork_startFidelityParamDownloadThread(env, activity, url_base, api_key, &defaultFP,
-            SetFidelityParams, 1000, 10000);
-        TuningFork_setUploadCallback(UploadCallback);
+        Unity_TuningFork_startFidelityParamDownloadThread(
+                                                    url_base, api_key, &defaultFP, SetFidelityParams, 1000, 10000);
+        Unity_TuningFork_setUploadCallback(UploadCallback);
         SetAnnotations();
     }
     // If we don't wait for fidelity params here, the download thread will set the them after we
@@ -266,7 +267,7 @@ Java_com_tuningfork_demoapp_TFTestActivity_initTuningFork(
 
 JNIEXPORT void JNICALL
 Java_com_tuningfork_demoapp_TFTestActivity_onChoreographer(JNIEnv */*env*/, jclass clz, jlong /*frameTimeNanos*/) {
-    TuningFork_frameTick(TFTICK_CHOREOGRAPHER);
+    Unity_TuningFork_frameTick(TFTICK_CHOREOGRAPHER);
     // After 600 ticks, switch to the next level
     static int tick_count = 0;
     ++tick_count;
@@ -296,7 +297,7 @@ JNIEXPORT void JNICALL
 Java_com_tuningfork_demoapp_TFTestActivity_stop(JNIEnv */*env*/, jclass /*clz*/ ) {
     Renderer::getInstance()->stop();
     // Call flush here to upload any histograms when the app goes to the background.
-    auto ret = TuningFork_flush();
+    auto ret = Unity_TuningFork_flush();
     ALOGI("TuningFork_flush returned %d", ret);
 }
 
