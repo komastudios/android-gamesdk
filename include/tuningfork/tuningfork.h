@@ -39,7 +39,7 @@ enum {
 
 struct CProtobufSerialization {
     uint8_t* bytes;
-    size_t size;
+    uint32_t size;
     void (*dealloc)(struct CProtobufSerialization*);
 };
 
@@ -88,6 +88,10 @@ struct TFCache {
   PFnTFCacheSet set;
   PFnTFCacheGet get;
   PFnTFCacheRemove remove;
+};
+
+enum SwappyBackend {
+   Swappy_None=0, Swappy_OpenGL=1, Swappy_Vulkan=2
 };
 
 struct TFHistogram {
