@@ -365,6 +365,8 @@ TFErrorCode TuningForkImpl::GetFidelityParameters(JNIEnv* env, jobject context,
                                            const std::string& api_key,
                                            const ProtobufSerialization& defaultParams,
                                            ProtobufSerialization &params_ser, uint32_t timeout_ms) {
+    ALOGW("TuningForkImpl::GetFidelityParameters.Url base %s", url_base.c_str());
+
     if(loader_) {
         std::string experiment_id;
         auto result = loader_->GetFidelityParams(env, context,

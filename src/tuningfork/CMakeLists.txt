@@ -15,7 +15,7 @@ set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--gc-sections,-
 endif (${CMAKE_BUILD_TYPE} STREQUAL "Release")
 
 function(extra_tf_link_options libname)
-  set_link_options(${libname} "tuningfork/version.script")
+  # set_link_options(${libname} "tuningfork/version.script")
 endfunction()
 
 protobuf_generate_nano_c( ${CMAKE_CURRENT_SOURCE_DIR}/proto
@@ -44,6 +44,7 @@ set( TUNINGFORK_SRCS
   annotation_util.cpp
   tuningfork_extra.cpp
   tuningfork_utils.cpp
+  unity_tuningfork.cpp
   fpdownload.cpp
   ${JSON11_DIR}/json11.cpp
   ${MODPB64_DIR}/modp_b64.cc

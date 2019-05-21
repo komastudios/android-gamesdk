@@ -168,7 +168,7 @@ bool GetSavedFidelityParams(JNIEnv* env, jobject context, CProtobufSerialization
             params->dealloc = CProtobufSerialization_Dealloc;
             save_file.seekg(0, std::ios::beg);
             save_file.read((char*)params->bytes, params->size);
-            ALOGI("Loaded fps from %s (%zu bytes)", save_filename.c_str(), params->size);
+            ALOGI("Loaded fps from %s (%u bytes)", save_filename.c_str(), params->size);
             return true;
         }
         ALOGI("Couldn't load fps from %s", save_filename.c_str());
@@ -183,7 +183,7 @@ bool SaveFidelityParams(JNIEnv* env, jobject context, const CProtobufSerializati
         std::ofstream save_file(save_filename, std::ios::binary);
         if (save_file.good()) {
             save_file.write((const char*)params->bytes, params->size);
-            ALOGI("Saved fps to %s (%zu bytes)", save_filename.c_str(), params->size);
+            ALOGI("Saved fps to %s (%u bytes)", save_filename.c_str(), params->size);
             return true;
         }
         ALOGI("Couldn't save fps to %s", save_filename.c_str());
@@ -251,6 +251,7 @@ void TuningFork_startFidelityParamDownloadThread(JNIEnv* env, jobject context,
                                       const CProtobufSerialization* defaultParams_in,
                                       ProtoCallback fidelity_params_callback,
                                       int initialTimeoutMs, int ultimateTimeoutMs) {
+    ALOGW("TuningFork_startFidelityParamDownloadThread.Url base %s", url_base);
     static std::mutex threadMutex;
     std::lock_guard<std::mutex> lock(threadMutex);
     static std::thread fpThread;
@@ -390,6 +391,7 @@ TFErrorCode TuningFork_initFromAssetsWithSwappy(JNIEnv* env, jobject context,
                                                 const char* fp_file_name,
                                                 ProtoCallback fidelity_params_callback,
                                                 int initialTimeoutMs, int ultimateTimeoutMs) {
+    ALOGW("TuningFork_initFromAssetsWithSwappy.Url base %s", url_base);
     TFSettings settings;
     auto err = TuningFork_findSettingsInApk(env, context, &settings);
     if (err!=TFERROR_OK)
