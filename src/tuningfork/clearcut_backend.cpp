@@ -79,7 +79,7 @@ TFErrorCode ClearcutBackend::Process(const ProtobufSerialization &evt_ser) {
 
     // Detach thread.
     vm_->DetachCurrentThread();
-    ALOGI("Message was sent to clearcut");
+    ALOGI("Message with size %d was sent to clearcut", length);
     if (hasException)
         return TFERROR_JNI_EXCEPTION;
     return TFERROR_OK;
