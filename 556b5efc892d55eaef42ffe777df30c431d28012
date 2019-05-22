@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "feb0b9ca_7bc1c693",
+        "filename": "src/tuningfork/jni_helper.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-05-22T15:52:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e22605ce_16ec3f10",
+      "revId": "556b5efc892d55eaef42ffe777df30c431d28012",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3fe6c0cb_2a8c9fc6",
         "filename": "src/tuningfork/jni_helper.h",
         "patchSetId": 2
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "f71184ac_9d38ac96",
+        "filename": "src/tuningfork/jni_helper.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-05-22T15:52:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3fe6c0cb_2a8c9fc6",
+      "revId": "556b5efc892d55eaef42ffe777df30c431d28012",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7d423541_5dc18565",
         "filename": "src/tuningfork/jni_helper.h",
         "patchSetId": 2
@@ -50,6 +86,24 @@
       "revId": "556b5efc892d55eaef42ffe777df30c431d28012",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c2b6df75_792b139e",
+        "filename": "src/tuningfork/jni_helper.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-05-22T15:52:58Z",
+      "side": 1,
+      "message": "All default classes will be found at this step already",
+      "parentUuid": "7d423541_5dc18565",
+      "revId": "556b5efc892d55eaef42ffe777df30c431d28012",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
