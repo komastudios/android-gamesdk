@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e22605ce_16ec3f10",
+        "filename": "src/tuningfork/jni_helper.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-22T10:32:20Z",
+      "side": 1,
+      "message": "Rename to something more readable: class_loader_",
+      "revId": "556b5efc892d55eaef42ffe777df30c431d28012",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3fe6c0cb_2a8c9fc6",
+        "filename": "src/tuningfork/jni_helper.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-22T10:32:20Z",
+      "side": 1,
+      "message": "We have env_ in the helper already, so no need to pass in to function.",
+      "revId": "556b5efc892d55eaef42ffe777df30c431d28012",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7d423541_5dc18565",
+        "filename": "src/tuningfork/jni_helper.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-22T10:32:20Z",
+      "side": 1,
+      "message": "Is there any point in doing this? We could always use the ClassLoader?",
+      "revId": "556b5efc892d55eaef42ffe777df30c431d28012",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
