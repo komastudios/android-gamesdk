@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "17c6cfa3_6aceee2f",
+        "filename": "src/swappy/opengl/SwappyGL.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-05-22T14:14:02Z",
+      "side": 1,
+      "message": "Deleted log.",
+      "parentUuid": "bc149325_95c4372f",
+      "revId": "62ce5b3c973b6723872d3cef32398671803d3fd8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e43904c2_f798d74f",
         "filename": "src/swappy/vulkan/SwappyVkBase.cpp",
         "patchSetId": 7
@@ -33,6 +51,24 @@
       "revId": "62ce5b3c973b6723872d3cef32398671803d3fd8",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7f685cbf_f1603663",
+        "filename": "src/swappy/vulkan/SwappyVkBase.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1376637
+      },
+      "writtenOn": "2019-05-22T14:14:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e43904c2_f798d74f",
+      "revId": "62ce5b3c973b6723872d3cef32398671803d3fd8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
