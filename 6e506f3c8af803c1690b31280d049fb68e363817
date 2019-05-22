@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "93d56cb2_6e76135b",
+        "filename": "src/swappy/opengl/SwappyGL.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-22T17:00:54Z",
+      "side": 1,
+      "message": "why removing the error ?",
+      "revId": "6e506f3c8af803c1690b31280d049fb68e363817",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fb226f3f_00ee7947",
+        "filename": "src/swappy/vulkan/SwappyVkBase.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-22T17:00:54Z",
+      "side": 1,
+      "message": "In SwappyGL we have DisableSwappy and here we use Enabled. I don\u0027t have a strong preference on either but those needs to be consistent.",
+      "revId": "6e506f3c8af803c1690b31280d049fb68e363817",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "838fcda3_3811c58c",
+        "filename": "src/swappy/vulkan/SwappyVkFallback.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-22T17:00:54Z",
+      "side": 1,
+      "message": "VK_INCOMPLETE has a different meaning: \"VK_INCOMPLETE A return array was too small for the result\"\n\nWe should use here: VK_ERROR_INITIALIZATION_FAILED",
+      "revId": "6e506f3c8af803c1690b31280d049fb68e363817",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b2eeb979_1c5db58a",
+        "filename": "src/swappy/vulkan/SwappyVkGoogleDisplayTiming.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-22T17:00:54Z",
+      "side": 1,
+      "message": "ditto",
+      "revId": "6e506f3c8af803c1690b31280d049fb68e363817",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
