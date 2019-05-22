@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bc149325_95c4372f",
+        "filename": "src/swappy/opengl/SwappyGL.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-22T13:53:10Z",
+      "side": 1,
+      "message": "This will spam logcat if swappy is not initialized, e.g. on a low-end device, and a dev is using Swappy_isEnabled() to check each frame.",
+      "revId": "62ce5b3c973b6723872d3cef32398671803d3fd8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e43904c2_f798d74f",
+        "filename": "src/swappy/vulkan/SwappyVkBase.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-22T13:53:10Z",
+      "side": 1,
+      "message": "We need to check if swappy.disable is set here. See the Swappy constructor at Swappy.cpp:297.",
+      "revId": "62ce5b3c973b6723872d3cef32398671803d3fd8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
