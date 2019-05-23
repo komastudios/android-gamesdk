@@ -22,6 +22,8 @@
 
 #include "Log.h"
 
+#define SWAPPY_FENCE_TIMEOUT_NS 100000000
+
 using namespace std::chrono_literals;
 
 namespace swappy {
@@ -214,6 +216,10 @@ EGL::FenceWaiter::FenceWaiter(): mFenceWaiter(&FenceWaiter::threadMain, this) {
             eglGetProcAddress("eglClientWaitSyncKHR"));
     if (eglClientWaitSyncKHR == nullptr)
         ALOGE("Failed to load eglClientWaitSyncKHR");
+    eglDestroySyncKHR = reinterpret_cast<eglDestroySyncKHR_type>(
+            eglGetProcAddress("eglDestroySyncKHR"));
+    if (eglDestroySyncKHR == nullptr)
+        ALOGE("Failed to load eglDestroySyncKHR");
 }
 
 EGL::FenceWaiter::~FenceWaiter() {
@@ -254,9 +260,18 @@ void EGL::FenceWaiter::threadMain() {
         }
 
         const auto startTime = std::chrono::steady_clock::now();
-        EGLBoolean result = eglClientWaitSyncKHR(mDisplay, mSyncFence, 0, EGL_FOREVER_KHR);
-        if (result == EGL_FALSE) {
-            ALOGE("Failed to wait sync");
+        EGLBoolean result = eglClientWaitSyncKHR(mDisplay, mSyncFence, 0, SWAPPY_FENCE_TIMEOUT_NS);
+        switch (result) {
+            case EGL_FALSE:
+                ALOGE("Failed to wait sync");
+                break;
+            case EGL_TIMEOUT_EXPIRED_KHR:
+                ALOGE("Timeout waiting for fence");
+                break;
+        }
+        if (result != EGL_CONDITION_SATISFIED_KHR) {
+            eglDestroySyncKHR(mDisplay, mSyncFence);
+            mSyncFence = EGL_NO_SYNC_KHR;
         }
 
         mFencePendingTime = std::chrono::steady_clock::now() - startTime;
