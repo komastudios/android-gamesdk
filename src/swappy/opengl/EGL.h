@@ -102,6 +102,8 @@ class EGL {
     private:
         using eglClientWaitSyncKHR_type = EGLBoolean (*)(EGLDisplay, EGLSyncKHR, EGLint, EGLTimeKHR);
         eglClientWaitSyncKHR_type eglClientWaitSyncKHR = nullptr;
+        using eglDestroySyncKHR_type = EGLBoolean (*)(EGLDisplay, EGLSyncKHR);
+        eglDestroySyncKHR_type eglDestroySyncKHR = nullptr;
 
         void threadMain();
         std::thread mFenceWaiter GUARDED_BY(mFenceWaiterLock);
