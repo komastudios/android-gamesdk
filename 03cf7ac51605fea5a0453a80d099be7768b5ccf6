@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6b395c54_de4aab4f",
+        "filename": "src/swappy/opengl/EGL.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-05-23T15:45:44Z",
+      "side": 1,
+      "message": "Should probably be a static const?",
+      "revId": "03cf7ac51605fea5a0453a80d099be7768b5ccf6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0d3dcef6_10d71a61",
+        "filename": "src/swappy/opengl/EGL.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-05-23T15:45:44Z",
+      "side": 1,
+      "message": "I think that this should be a value that the developer can pass in via init (so those that are not building from source can override without a re-build). Thoughts?",
+      "revId": "03cf7ac51605fea5a0453a80d099be7768b5ccf6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
