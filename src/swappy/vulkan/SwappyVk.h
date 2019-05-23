@@ -75,6 +75,9 @@ public:
     void DestroySwapchain(VkDevice                device,
                           VkSwapchainKHR          swapchain);
 
+    void SetFenceTimeout(std::chrono::nanoseconds duration);
+    std::chrono::nanoseconds GetFenceTimeout() const;
+
 private:
     std::map<VkPhysicalDevice, bool> doesPhysicalDeviceHaveGoogleDisplayTiming;
     std::map<VkDevice, std::shared_ptr<SwappyVkBase>> perDeviceImplementation;

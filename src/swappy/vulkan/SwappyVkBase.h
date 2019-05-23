@@ -115,6 +115,7 @@ public:
                          VkSemaphore*            pSemaphore);
 
     bool isEnabled() { return mEnabled; }
+    SwappyCommon& common() { return mCommonBase; }
 protected:
     struct VkSync {
         VkFence fence;
