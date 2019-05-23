@@ -198,6 +198,14 @@ void SwappyVk_destroySwapchain(
         VkDevice                device,
         VkSwapchainKHR          swapchain);
 
+
+/**
+ * The fence timeout parameter can be set for devices with faulty
+ * drivers. Its default value is 100,000,000.
+ */
+void SwappyVk_setFenceTimeoutNS(uint64_t fence_timeout_ns);
+uint64_t SwappyVk_getFenceTimeoutNS();
+
 #ifdef __cplusplus
 }  // extern "C"
 #endif
