@@ -119,6 +119,8 @@ public:
     void setAutoSwapInterval(bool enabled);
     void setAutoPipelineMode(bool enabled);
 
+    SwappyCommon& common() { return mCommonBase; }
+
 protected:
     struct VkSync {
         VkFence fence;
