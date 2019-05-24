@@ -29,8 +29,14 @@
 extern "C" {
 #endif
 
+// Internal init function. Do not call directly.
+void SwappyGL_init_internal(JNIEnv *env, jobject jactivity);
+
 // Initialize Swappy, getting the required Android parameters from the display subsystem via JNI
-void SwappyGL_init(JNIEnv *env, jobject jactivity);
+static inline void SwappyGL_init(JNIEnv *env, jobject jactivity)  {
+  SWAPPY_VERSION_SYMBOL(); // "Useless" call to avoid dead code strip
+  return SwappyGL_init_internal(env, jactivity);
+}
 
 // Returns true if Swappy was successfully initialized.
 // Returns false if either the 'swappy.disable' system property is not 'false'
