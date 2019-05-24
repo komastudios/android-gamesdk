@@ -284,6 +284,30 @@
     },
     {
       "key": {
+        "uuid": "ac2ed77c_5a21e988",
+        "filename": "samples/cube/settings.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1044651
+      },
+      "writtenOn": "2019-05-24T00:53:47Z",
+      "side": 1,
+      "message": "I don\u0027t think you should avoid changing the third party directory.  You are doing that already.  It would be strange to have a build file there that isn\u0027t used.  It would make more sense to change that instead.",
+      "parentUuid": "9434af8c_a20346db",
+      "range": {
+        "startLine": 1,
+        "startChar": 13,
+        "endLine": 1,
+        "endChar": 14
+      },
+      "revId": "9f6ebec5b1aa9f5ee6ad1ec2c10c313df4ae38e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "9fb26a5d_5074d70f",
         "filename": "third_party/cube/app/src/main/cpp/cube.c",
         "patchSetId": 1

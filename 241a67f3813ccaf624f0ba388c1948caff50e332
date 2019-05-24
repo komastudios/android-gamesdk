@@ -1,0 +1,257 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "58e5a337_a38d82ad",
+        "filename": "samples/cube/app/src/main/java/com/samples/cube/CubeActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1044651
+      },
+      "writtenOn": "2019-05-24T00:53:47Z",
+      "side": 1,
+      "message": "Remove for this CL",
+      "range": {
+        "startLine": 21,
+        "startChar": 4,
+        "endLine": 22,
+        "endChar": 4
+      },
+      "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8e8dade1_4d10f4b2",
+        "filename": "samples/cube/app/src/main/java/com/samples/cube/CubeActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1044651
+      },
+      "writtenOn": "2019-05-24T00:53:47Z",
+      "side": 1,
+      "message": "switch would be clearer here.",
+      "range": {
+        "startLine": 62,
+        "startChar": 8,
+        "endLine": 63,
+        "endChar": 7
+      },
+      "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "daaf59d7_10647cf1",
+        "filename": "samples/cube/app/src/main/java/com/samples/cube/CubeActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1044651
+      },
+      "writtenOn": "2019-05-24T00:53:47Z",
+      "side": 1,
+      "message": "Remove",
+      "range": {
+        "startLine": 84,
+        "startChar": 9,
+        "endLine": 86,
+        "endChar": 9
+      },
+      "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "740db798_38e51717",
+        "filename": "samples/cube/app/src/main/java/com/samples/cube/CubeActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1044651
+      },
+      "writtenOn": "2019-05-24T00:53:47Z",
+      "side": 1,
+      "message": "Remove for this CL",
+      "range": {
+        "startLine": 162,
+        "startChar": 0,
+        "endLine": 162,
+        "endChar": 64
+      },
+      "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b4570a04_771cac5f",
+        "filename": "samples/cube/settings.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1044651
+      },
+      "writtenOn": "2019-05-24T00:53:47Z",
+      "side": 1,
+      "message": "This is a pretty big change to the build structure of the app and should be avoided.  Let me know if you would like some help with gradle build files.",
+      "range": {
+        "startLine": 1,
+        "startChar": 13,
+        "endLine": 1,
+        "endChar": 14
+      },
+      "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fe3d3093_3b9e85f4",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1044651
+      },
+      "writtenOn": "2019-05-24T00:53:47Z",
+      "side": 1,
+      "message": "It looks like you are compiling the c code with c++ compiler?",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 6
+      },
+      "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "51b64699_bce96f4f",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1044651
+      },
+      "writtenOn": "2019-05-24T00:53:47Z",
+      "side": 1,
+      "message": "It seems like the way you are compiling the code is different from before?",
+      "range": {
+        "startLine": 255,
+        "startChar": 7,
+        "endLine": 255,
+        "endChar": 12
+      },
+      "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5eda6e4e_f0409add",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 509,
+      "author": {
+        "id": 1044651
+      },
+      "writtenOn": "2019-05-24T00:53:47Z",
+      "side": 1,
+      "message": "indent",
+      "range": {
+        "startLine": 507,
+        "startChar": 0,
+        "endLine": 509,
+        "endChar": 28
+      },
+      "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f596c978_a1805b61",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 973,
+      "author": {
+        "id": 1044651
+      },
+      "writtenOn": "2019-05-24T00:53:47Z",
+      "side": 1,
+      "message": "What is this #ifdef for?",
+      "range": {
+        "startLine": 973,
+        "startChar": 0,
+        "endLine": 973,
+        "endChar": 34
+      },
+      "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a2a2c4dc_db0c2af1",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 4098,
+      "author": {
+        "id": 1044651
+      },
+      "writtenOn": "2019-05-24T00:53:47Z",
+      "side": 1,
+      "message": "Will this be used anymore?",
+      "range": {
+        "startLine": 4098,
+        "startChar": 1,
+        "endLine": 4098,
+        "endChar": 44
+      },
+      "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "16feb456_25a20689",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 4134,
+      "author": {
+        "id": 1044651
+      },
+      "writtenOn": "2019-05-24T00:53:47Z",
+      "side": 1,
+      "message": "Don\u0027t call this android_main2.  In general, we should avoid using number in a function name if we can help it.  Also, it\u0027s no longer a main function.",
+      "range": {
+        "startLine": 4134,
+        "startChar": 5,
+        "endLine": 4134,
+        "endChar": 18
+      },
+      "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
