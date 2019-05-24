@@ -198,6 +198,25 @@ void SwappyVk_destroySwapchain(
         VkDevice                device,
         VkSwapchainKHR          swapchain);
 
+/**
+ * Enabled Auto-Swap-Interval feature for all instances.
+ *
+ * Parameters:
+ *
+ *  (IN)  enabled - True means enable, false means disable
+ */
+void SwappyVk_setAutoSwapInterval(bool enabled);
+
+
+/**
+ * Enabled Auto-Pipeline-Mode feature for all instances.
+ *
+ * Parameters:
+ *
+ *  (IN)  enabled - True means enable, false means disable
+ */
+void SwappyVk_setAutoPipelineMode(bool enabled);
+
 #ifdef __cplusplus
 }  // extern "C"
 #endif
