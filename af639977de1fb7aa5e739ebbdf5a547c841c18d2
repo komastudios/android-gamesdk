@@ -52,6 +52,24 @@
       "revId": "af639977de1fb7aa5e739ebbdf5a547c841c18d2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c32a68ec_f53341b9",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-24T10:12:26Z",
+      "side": 1,
+      "message": "We decided to keep the macros and inline function in the header in the end. They do provide some utility to developers.",
+      "parentUuid": "170ee94c_fc0132db",
+      "revId": "af639977de1fb7aa5e739ebbdf5a547c841c18d2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
