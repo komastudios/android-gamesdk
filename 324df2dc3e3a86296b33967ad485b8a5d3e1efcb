@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bee5dfd4_c323a475",
+        "filename": "include/swappy/swappyVk.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-24T19:08:30Z",
+      "side": 1,
+      "message": "Let\u0027s add few comments above these functions that those are optional global configs for swappy to override the default ones",
+      "revId": "324df2dc3e3a86296b33967ad485b8a5d3e1efcb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
