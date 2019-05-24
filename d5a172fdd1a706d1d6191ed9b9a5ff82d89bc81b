@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1368cdaa_8eb5b283",
+        "filename": "include/swappy/swappyGL.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-24T19:14:13Z",
+      "side": 1,
+      "message": "This will fail on linkage if we use a static library. What about dynamic library ?",
+      "revId": "d5a172fdd1a706d1d6191ed9b9a5ff82d89bc81b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fa814190_c8d35d8e",
+        "filename": "include/swappy/swappyVk.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-24T19:14:13Z",
+      "side": 1,
+      "message": "The comment is confusing. We actually call this function to make sure there is no mismatch between the header and the library, isn\u0027t it ?",
+      "revId": "d5a172fdd1a706d1d6191ed9b9a5ff82d89bc81b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fb997ece_f77ce375",
+        "filename": "include/swappy/swappy_common.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-24T19:14:13Z",
+      "side": 1,
+      "message": "Can we add a comment that those macros should not be called by applications, but they are used internally ?",
+      "revId": "d5a172fdd1a706d1d6191ed9b9a5ff82d89bc81b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5518282a_ad5dfeaf",
+        "filename": "src/swappy/common/swappy_c.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-24T19:14:13Z",
+      "side": 1,
+      "message": "Why do we need a new file for this ? Just add it to SwappyGL_c.cpp",
+      "revId": "d5a172fdd1a706d1d6191ed9b9a5ff82d89bc81b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "df9344c1_dacb39c7",
+        "filename": "src/swappy/common/swappy_c.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-24T19:14:13Z",
+      "side": 1,
+      "message": "add a comment of *why* it is empty and what is the purpose of this funciton",
+      "revId": "d5a172fdd1a706d1d6191ed9b9a5ff82d89bc81b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
