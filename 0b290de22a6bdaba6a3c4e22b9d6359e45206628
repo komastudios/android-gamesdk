@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c2084462_8e7f5499",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/tftestapp.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 233,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-28T14:58:30Z",
+      "side": 1,
+      "message": "Line too long",
+      "revId": "0b290de22a6bdaba6a3c4e22b9d6359e45206628",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b26cd77a_ed57164c",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/tftestapp.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 253,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-28T14:58:30Z",
+      "side": 1,
+      "message": "Maybe comment what the initFromNewThread parameter is there for, i.e. for testing?",
+      "revId": "0b290de22a6bdaba6a3c4e22b9d6359e45206628",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
