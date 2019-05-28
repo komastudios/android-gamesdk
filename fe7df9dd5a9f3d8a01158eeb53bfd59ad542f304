@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ef6abb2f_564e465a",
+        "filename": "include/swappy/swappyGL.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-28T12:40:36Z",
+      "side": 1,
+      "message": "nit: we\u0027re using 4-space tabs in the Game SDK",
+      "revId": "fe7df9dd5a9f3d8a01158eeb53bfd59ad542f304",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f2e2c436_6d1fe72f",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-28T12:40:36Z",
+      "side": 1,
+      "message": "nit: we\u0027re using 4-space tabs in the Game SDK",
+      "revId": "fe7df9dd5a9f3d8a01158eeb53bfd59ad542f304",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
