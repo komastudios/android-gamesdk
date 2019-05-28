@@ -52,6 +52,24 @@
       "revId": "6a1e51d55a13a7bec89ab6b5a87539b7c2292a44",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "03a345f8_666b7c0d",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 392,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-28T15:31:05Z",
+      "side": 1,
+      "message": "They only need one platform and their zip file needs to be called \u0027builds.zip\u0027, but yes, in principal it doesn\u0027t make much difference.",
+      "parentUuid": "2aae1e20_26a6429a",
+      "revId": "6a1e51d55a13a7bec89ab6b5a87539b7c2292a44",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
