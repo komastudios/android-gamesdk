@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "e79ecf11_e7998bca",
+        "filename": "include/swappy/swappyGL.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-05-28T10:13:09Z",
+      "side": 1,
+      "message": "My assumption was that shared library is going away so we\u0027re only adding this check that will work for static library. \nIn the case of TuningFork (see aosp/962960), at the end we did not add any runtime check (I can add it, but in this case this should be done for both Swappy and TuningFork for consistency, though I\u0027m not sure if this will be useful to anyone if we only use static libraries).",
+      "parentUuid": "1368cdaa_8eb5b283",
+      "revId": "d5a172fdd1a706d1d6191ed9b9a5ff82d89bc81b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "fa814190_c8d35d8e",
         "filename": "include/swappy/swappyVk.h",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "d5a172fdd1a706d1d6191ed9b9a5ff82d89bc81b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bdda2387_84c3b14b",
+        "filename": "include/swappy/swappyVk.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-05-28T10:13:09Z",
+      "side": 1,
+      "message": "It\u0027s true that it was confusing - I\u0027ve updated it to explain that this is about triggering linker error in case of mismatch.",
+      "parentUuid": "fa814190_c8d35d8e",
+      "revId": "d5a172fdd1a706d1d6191ed9b9a5ff82d89bc81b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "4929b85f_80d67d2c",
+        "filename": "include/swappy/swappy_common.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-05-28T10:13:09Z",
+      "side": 1,
+      "message": "Sure, done.",
+      "parentUuid": "fb997ece_f77ce375",
+      "revId": "d5a172fdd1a706d1d6191ed9b9a5ff82d89bc81b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5518282a_ad5dfeaf",
         "filename": "src/swappy/common/swappy_c.cpp",
         "patchSetId": 1
@@ -64,6 +118,24 @@
       "writtenOn": "2019-05-24T19:14:13Z",
       "side": 1,
       "message": "Why do we need a new file for this ? Just add it to SwappyGL_c.cpp",
+      "revId": "d5a172fdd1a706d1d6191ed9b9a5ff82d89bc81b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "54296aa6_68e1b47f",
+        "filename": "src/swappy/common/swappy_c.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-05-28T10:13:09Z",
+      "side": 1,
+      "message": "The SWAPPY_VERSION_SYMBOL can actually be used with the Vulkan version of Swappy. It\u0027s true that this could be put anywhere, including SwappyGL_c.cpp, but in theory as we\u0027re separating common code, GL code and Vulkan code, it should be better to have it in a common file.",
+      "parentUuid": "5518282a_ad5dfeaf",
       "revId": "d5a172fdd1a706d1d6191ed9b9a5ff82d89bc81b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -84,6 +156,24 @@
       "revId": "d5a172fdd1a706d1d6191ed9b9a5ff82d89bc81b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "539c4406_edf9d580",
+        "filename": "src/swappy/common/swappy_c.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-05-28T10:13:09Z",
+      "side": 1,
+      "message": "Done, I\u0027ve explained why we need the function.",
+      "parentUuid": "df9344c1_dacb39c7",
+      "revId": "d5a172fdd1a706d1d6191ed9b9a5ff82d89bc81b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
