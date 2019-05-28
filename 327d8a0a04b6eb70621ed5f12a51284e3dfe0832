@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1f9f32b6_c621bff4",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-28T17:46:48Z",
+      "side": 1,
+      "message": "use std::chrono_literals - i.e. \nstd::chrono::nanoseconds mFenceTimeout \u003d std::chrono::nanoseconds(50ms);",
+      "revId": "327d8a0a04b6eb70621ed5f12a51284e3dfe0832",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e03f15b9_88006a20",
+        "filename": "src/swappy/opengl/EGL.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-28T17:46:48Z",
+      "side": 1,
+      "message": "not used",
+      "revId": "327d8a0a04b6eb70621ed5f12a51284e3dfe0832",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e6851311_c0ea06b9",
+        "filename": "src/swappy/opengl/EGL.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 276,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-28T17:46:48Z",
+      "side": 1,
+      "message": "Why do we need to destroy the fence here ? It will get destroyed in EGL::resetSyncFence",
+      "revId": "327d8a0a04b6eb70621ed5f12a51284e3dfe0832",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b1a3bfde_88981f8b",
+        "filename": "src/swappy/vulkan/SwappyVkBase.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-05-28T17:46:48Z",
+      "side": 1,
+      "message": "Nit: I would expose dedicated function here for setting the timeout instead of exposing SwappyCommon.",
+      "revId": "327d8a0a04b6eb70621ed5f12a51284e3dfe0832",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
