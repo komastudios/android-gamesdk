@@ -16,6 +16,24 @@
       "revId": "324df2dc3e3a86296b33967ad485b8a5d3e1efcb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "762135cf_4236f0ad",
+        "filename": "include/swappy/swappyVk.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-28T10:53:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bee5dfd4_c323a475",
+      "revId": "324df2dc3e3a86296b33967ad485b8a5d3e1efcb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
