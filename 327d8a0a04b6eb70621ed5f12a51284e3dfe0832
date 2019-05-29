@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "667b87c6_2ee5d879",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-29T19:07:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1f9f32b6_c621bff4",
+      "revId": "327d8a0a04b6eb70621ed5f12a51284e3dfe0832",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e03f15b9_88006a20",
         "filename": "src/swappy/opengl/EGL.cpp",
         "patchSetId": 6
@@ -33,6 +51,24 @@
       "revId": "327d8a0a04b6eb70621ed5f12a51284e3dfe0832",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "24b2d579_90dc7bea",
+        "filename": "src/swappy/opengl/EGL.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-29T19:07:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e03f15b9_88006a20",
+      "revId": "327d8a0a04b6eb70621ed5f12a51284e3dfe0832",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "e49b98ee_fe595f43",
+        "filename": "src/swappy/opengl/EGL.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 276,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-29T19:07:46Z",
+      "side": 1,
+      "message": "Gameloft were getting lastFrameIsComplete always returning false, so I put this in here for safety. It immediately signals the fence if it\u0027s active and resets mSyncFence so that lastFrameIsComplete returns true.",
+      "parentUuid": "e6851311_c0ea06b9",
+      "revId": "327d8a0a04b6eb70621ed5f12a51284e3dfe0832",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b1a3bfde_88981f8b",
         "filename": "src/swappy/vulkan/SwappyVkBase.h",
         "patchSetId": 6
@@ -67,6 +121,24 @@
       "revId": "327d8a0a04b6eb70621ed5f12a51284e3dfe0832",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ef7fbb55_64885b64",
+        "filename": "src/swappy/vulkan/SwappyVkBase.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-05-29T19:07:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b1a3bfde_88981f8b",
+      "revId": "327d8a0a04b6eb70621ed5f12a51284e3dfe0832",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
