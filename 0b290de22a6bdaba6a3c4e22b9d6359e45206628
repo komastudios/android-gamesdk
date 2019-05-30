@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "8ef3263f_6a4ec168",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/tftestapp.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 233,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-05-30T15:26:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c2084462_8e7f5499",
+      "revId": "0b290de22a6bdaba6a3c4e22b9d6359e45206628",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b26cd77a_ed57164c",
         "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/tftestapp.cpp",
         "patchSetId": 4
@@ -33,6 +51,24 @@
       "revId": "0b290de22a6bdaba6a3c4e22b9d6359e45206628",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eda84f6d_6df4d089",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/tftestapp.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 253,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-05-30T15:26:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b26cd77a_ed57164c",
+      "revId": "0b290de22a6bdaba6a3c4e22b9d6359e45206628",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
