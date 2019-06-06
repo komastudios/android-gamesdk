@@ -89,7 +89,7 @@ private:
     static std::unique_ptr<SwappyGL> sInstance;
 
     std::mutex mEglMutex;
-    std::shared_ptr<EGL> mEgl;
+    std::unique_ptr<EGL> mEgl;
 
     std::unique_ptr<FrameStatistics> mFrameStatistics;
 

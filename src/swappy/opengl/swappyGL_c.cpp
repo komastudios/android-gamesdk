@@ -44,10 +44,6 @@ bool SwappyGL_swap(EGLDisplay display, EGLSurface surface) {
     return SwappyGL::swap(display, surface);
 }
 
-void SwappyGL_setRefreshPeriod(uint64_t period_ns) {
-    Settings::getInstance()->setRefreshPeriod(std::chrono::nanoseconds(period_ns));
-}
-
 void SwappyGL_setUseAffinity(bool tf) {
     Settings::getInstance()->setUseAffinity(tf);
 }
@@ -57,7 +53,7 @@ void SwappyGL_setSwapIntervalNS(uint64_t swap_ns) {
 }
 
 uint64_t SwappyGL_getRefreshPeriodNanos() {
-    return Settings::getInstance()->getRefreshPeriod().count();
+    return Settings::getInstance()->getDisplayTimings().refreshPeriod.count();
 }
 
 bool SwappyGL_getUseAffinity() {

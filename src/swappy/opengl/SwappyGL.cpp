@@ -163,7 +163,7 @@ void SwappyGL::enableStats(bool enabled) {
 
     if (enabled && swappy->mFrameStatistics == nullptr) {
         swappy->mFrameStatistics = std::make_unique<FrameStatistics>(
-                swappy->mEgl, swappy->mCommonBase.getRefreshPeriod());
+                *swappy->mEgl, swappy->mCommonBase);
         ALOGI("Enabling stats");
     } else {
         swappy->mFrameStatistics = nullptr;
@@ -259,18 +259,14 @@ SwappyGL::SwappyGL(JNIEnv *env, jobject jactivity, ConstructorTag)
     }
 
     std::lock_guard<std::mutex> lock(mEglMutex);
-    mEgl = EGL::create(mCommonBase.getRefreshPeriod(), mCommonBase.getFenceTimeout());
+    mEgl = EGL::create(mCommonBase.getFenceTimeout());
     if (!mEgl) {
         ALOGE("Failed to load EGL functions");
         mEnableSwappy = false;
         return;
     }
 
-    ALOGI("Initialized Swappy with vsyncPeriod=%lld, appOffset=%lld, sfOffset=%lld",
-        (long long)mCommonBase.getRefreshPeriod().count(),
-        (long long)mCommonBase.getAppVsyncOffset().count(),
-        (long long)mCommonBase.getSfVsyncOffset().count()
-    );
+    ALOGI("SwappyGL initialized successfully");
 }
 
 void SwappyGL::resetSyncFence(EGLDisplay display) {
@@ -280,9 +276,11 @@ void SwappyGL::resetSyncFence(EGLDisplay display) {
 bool SwappyGL::setPresentationTime(EGLDisplay display, EGLSurface surface) {
     TRACE_CALL();
 
+    auto displayTimings = Settings::getInstance()->getDisplayTimings();
+
     // if we are too close to the vsync, there is no need to set presentation time
     if ((mCommonBase.getPresentationTime() - std::chrono::steady_clock::now()) <
-            (mCommonBase.getRefreshPeriod() - mCommonBase.getSfVsyncOffset())) {
+            (mCommonBase.getRefreshPeriod() - displayTimings.sfOffset)) {
         return EGL_TRUE;
     }
 

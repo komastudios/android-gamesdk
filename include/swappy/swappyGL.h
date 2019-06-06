@@ -53,7 +53,6 @@ void SwappyGL_destroy();
 bool SwappyGL_swap(EGLDisplay display, EGLSurface surface);
 
 // Parameter setters
-void SwappyGL_setRefreshPeriod(uint64_t period_ns);
 void SwappyGL_setUseAffinity(bool tf);
 void SwappyGL_setSwapIntervalNS(uint64_t swap_ns);
 void SwappyGL_setFenceTimeoutNS(uint64_t fence_timeout_ns);
