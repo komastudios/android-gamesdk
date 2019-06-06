@@ -29,6 +29,7 @@
 #include "Thread.h"
 #include "ChoreographerFilter.h"
 #include "ChoreographerThread.h"
+#include "SwappyDisplayManager.h"
 
 namespace swappy {
 
@@ -64,9 +65,7 @@ public:
     void setAutoPipelineMode(bool enabled);
 
     std::chrono::steady_clock::time_point getPresentationTime() { return mPresentationTime; }
-    std::chrono::nanoseconds getRefreshPeriod()    { return mRefreshPeriod; }
-    std::chrono::nanoseconds getAppVsyncOffset() { return mAppVsyncOffset; }
-    std::chrono::nanoseconds getSfVsyncOffset()  { return mSfVsyncOffset; }
+    std::chrono::nanoseconds getRefreshPeriod() const { return mRefreshPeriod; }
 
     bool isValid() { return mValid; }
 
@@ -85,8 +84,11 @@ private:
 
         std::chrono::nanoseconds getCpuTime() const { return mCpuTime; }
         std::chrono::nanoseconds getGpuTime() const { return mGpuTime; }
-        std::chrono::nanoseconds getTime(bool pipeline) const {
-            if (pipeline) {
+
+        enum class PipelineMode { Off, On };
+
+        std::chrono::nanoseconds getTime(PipelineMode pipeline) const {
+            if (pipeline == PipelineMode::On) {
                 return std::max(mCpuTime, mGpuTime);
             }
 
@@ -122,13 +124,11 @@ private:
     std::chrono::nanoseconds wakeClient();
 
     void swapFaster(const FrameDuration& averageFrameTime,
-                    const std::chrono::nanoseconds& upperBound,
                     const std::chrono::nanoseconds& lowerBound,
                     const int32_t& newSwapInterval) REQUIRES(mFrameDurationsMutex);
 
     void swapSlower(const FrameDuration& averageFrameTime,
                     const std::chrono::nanoseconds& upperBound,
-                    const std::chrono::nanoseconds& lowerBound,
                     const int32_t& newSwapInterval) REQUIRES(mFrameDurationsMutex);
     bool updateSwapInterval();
     void preSwapBuffersCallbacks();
@@ -142,6 +142,14 @@ private:
     void startFrame();
     void waitUntilTargetFrame();
     void waitOneFrame();
+    void setPreferredRefreshRate(int index);
+    void setPreferredRefreshRate(std::chrono::nanoseconds swapIntervalNS);
+    int calculateSwapInterval(std::chrono::nanoseconds frameTime,
+                              std::chrono::nanoseconds refreshPeriod);
+    bool pipelineModeNotNeeded(const std::chrono::nanoseconds& averageFrameTime,
+                               const std::chrono::nanoseconds& upperBound)
+                               REQUIRES(mFrameDurationsMutex);
+    void updateDisplayTimings();
 
     // Waits for the next frame, considering both Choreographer and the prior frame's completion
     bool waitForNextFrame(const SwapHandlers& h);
@@ -160,8 +168,6 @@ private:
     std::chrono::steady_clock::time_point mSwapTime;
 
     std::chrono::nanoseconds mRefreshPeriod;
-    std::chrono::nanoseconds mAppVsyncOffset;
-    std::chrono::nanoseconds mSfVsyncOffset;
 
     std::mutex mFrameDurationsMutex;
     std::vector<FrameDuration> mFrameDurations GUARDED_BY(mFrameDurationsMutex);
@@ -171,9 +177,10 @@ private:
     bool mPipelineModeAutoMode GUARDED_BY(mFrameDurationsMutex) = true;
     static constexpr std::chrono::nanoseconds FRAME_HYSTERESIS = 3ms;
 
-    std::atomic<int32_t> mSwapInterval;
-    std::atomic<int32_t> mAutoSwapInterval;
+    std::chrono::nanoseconds mSwapIntervalNS;
+    int32_t mAutoSwapInterval;
     int mAutoSwapIntervalThreshold = 0;
+    static constexpr std::chrono::nanoseconds REFRESH_RATE_MARGIN = 500ns;
 
     std::chrono::steady_clock::time_point mStartFrameTime;
 
@@ -191,11 +198,42 @@ private:
     int32_t mTargetFrame = 0;
     std::chrono::steady_clock::time_point mPresentationTime = std::chrono::steady_clock::now();
     bool mPresentationTimeNeeded;
-    bool mPipelineMode = false;
+    FrameDuration::PipelineMode mPipelineMode = FrameDuration::PipelineMode::Off;
 
     bool mValid;
 
     std::chrono::nanoseconds mFenceTimeout = std::chrono::nanoseconds(50ms);
+
+    constexpr static bool USE_DISPLAY_MANAGER = true;
+    std::unique_ptr<SwappyDisplayManager> mDisplayManager;
+    int mNextModeId = -1;
+
+    std::shared_ptr<SwappyDisplayManager::RefreshRateMap> mSupportedRefreshRates;
+
+    struct TimingSettings {
+        std::chrono::nanoseconds refreshPeriod = {};
+        std::chrono::nanoseconds swapIntervalNS = {};
+
+        static TimingSettings from(const Settings& settings) {
+            TimingSettings timingSettings;
+
+            timingSettings.refreshPeriod = settings.getDisplayTimings().refreshPeriod;
+            timingSettings.swapIntervalNS =
+                    std::chrono::nanoseconds(settings.getSwapIntervalNS());
+            return timingSettings;
+        }
+
+        bool operator != (const TimingSettings& other) const {
+            return (refreshPeriod  != other.refreshPeriod)  ||
+                   (swapIntervalNS != other.swapIntervalNS);
+        }
+
+        bool operator == (const TimingSettings& other) const {
+            return !(*this != other);
+        }
+    };
+    TimingSettings mNextTimingSettings GUARDED_BY(mFrameDurationsMutex) = {};
+    bool mTimingSettingsNeedUpdate GUARDED_BY(mFrameDurationsMutex) = false;
 };
 
 } //namespace swappy
