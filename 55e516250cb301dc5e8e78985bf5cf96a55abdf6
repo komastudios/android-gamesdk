@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4fd65c4d_24868bf0",
+        "filename": "hooks/check_swappy_abi_version.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-06-06T13:32:35Z",
+      "side": 1,
+      "message": "This file doesn\u0027t exist (yet?)",
+      "revId": "55e516250cb301dc5e8e78985bf5cf96a55abdf6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4ab775a5_46f4a282",
+        "filename": "hooks/check_swappy_abi_version.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-06-06T13:32:35Z",
+      "side": 1,
+      "message": "nit: whitespace",
+      "revId": "55e516250cb301dc5e8e78985bf5cf96a55abdf6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
