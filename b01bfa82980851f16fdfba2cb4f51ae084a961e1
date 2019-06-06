@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "d0d3cd05_e12e5124",
+        "filename": "src/extras/src/main/java/com/google/androidgamesdk/SwappyDisplayManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-06-06T16:37:44Z",
+      "side": 1,
+      "message": "This was already done in aosp/978247",
+      "parentUuid": "37a91150_36c7568c",
+      "revId": "b01bfa82980851f16fdfba2cb4f51ae084a961e1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cfd4c2f1_c866c053",
         "filename": "src/extras/src/main/java/com/google/androidgamesdk/SwappyDisplayManager.java",
         "patchSetId": 1
@@ -53,6 +71,24 @@
       "writtenOn": "2019-06-06T14:41:30Z",
       "side": 1,
       "message": "You can\u0027t call abort in library code. We either need a fallback for when the SwappyDisplayManager class is not available or we need to disable swappy.",
+      "revId": "b01bfa82980851f16fdfba2cb4f51ae084a961e1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5afaee29_a9e13893",
+        "filename": "src/swappy/common/SwappyDisplayManager.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-06-06T16:37:44Z",
+      "side": 1,
+      "message": "I wanted to abort to make sure extras is integrated. We can easily continue without SwappyDisplayManager, but then it will be hard to catch integration issues around extras. \nFrom Swappy perspective, this is a fatal error due to integration issues.",
+      "parentUuid": "654901a9_99a611f4",
       "revId": "b01bfa82980851f16fdfba2cb4f51ae084a961e1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
