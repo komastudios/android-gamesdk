@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fea76b41_32e2978d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-06-08T06:50:43Z",
+      "side": 1,
+      "message": "Can you explain the details of the ABI check that you have added in the commit message? \n\nBy my (poor) reading of the shell script it\u0027s going to fire a message when the public headers change and neither MAJOR/MINOR get updated? But I\u0027m guessing that can have a false positive (i.e. adding a comment) and I am not savvy enough to understand whether the intention is that this case is an error or a warning.",
+      "revId": "511847ff2950ec4aaa24e4cc54508e6f5f9c4edb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
