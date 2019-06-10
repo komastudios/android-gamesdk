@@ -16,6 +16,24 @@
       "revId": "511847ff2950ec4aaa24e4cc54508e6f5f9c4edb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bfd0dc11_7c6fc43c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-06-10T18:56:29Z",
+      "side": 1,
+      "message": "Added details in the commit message.\n\nYes we might have a false positive, and in that case we can just bypass the script. The purpose of the script is to make sure we never upload an ABI breaking change without changing the version macros.",
+      "parentUuid": "fea76b41_32e2978d",
+      "revId": "511847ff2950ec4aaa24e4cc54508e6f5f9c4edb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
