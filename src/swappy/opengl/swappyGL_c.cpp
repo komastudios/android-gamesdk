@@ -30,6 +30,8 @@ extern "C" {
 
 void SwappyGL_init_internal(JNIEnv *env, jobject jactivity) {
     SwappyGL::init(env, jactivity);
+    // Call injectTracer to make sure the symbol is always active
+    SwappyGL_injectTracer(nullptr);
 }
 
 void SwappyGL_destroy() {
