@@ -110,6 +110,24 @@
       "revId": "b01bfa82980851f16fdfba2cb4f51ae084a961e1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cdcad23f_3fcbbd79",
+        "filename": "src/swappy/common/SwappyDisplayManager.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-06-11T14:02:52Z",
+      "side": 1,
+      "message": "IMO returning an error code from the init functions and strongly encouraging devs to check that error code should be sufficient. Adding another error reporting mechanism seems redundant.",
+      "parentUuid": "7f49cb73_d19ff8be",
+      "revId": "b01bfa82980851f16fdfba2cb4f51ae084a961e1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
