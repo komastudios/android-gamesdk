@@ -115,7 +115,9 @@ void SwappyGL::addTracer(const SwappyTracer *tracer) {
         ALOGE("Failed to get SwappyGL instance in addTracer");
         return;
     }
-    swappy->mCommonBase.addTracerCallbacks(*tracer);
+    if (tracer != nullptr) {
+        swappy->mCommonBase.addTracerCallbacks(*tracer);
+    }
 }
 
 uint64_t SwappyGL::getSwapIntervalNS() {

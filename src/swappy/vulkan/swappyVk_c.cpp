@@ -56,6 +56,8 @@ bool SwappyVk_initAndGetRefreshCycleDuration_internal(
 {
     TRACE_CALL();
     swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
+    // Call injectTracer to make sure the symbol is always active
+    SwappyVk_injectTracer(nullptr);
     return swappy.GetRefreshCycleDuration(env, jactivity,
                                           physicalDevice, device, swapchain,
                                           pRefreshDuration);
