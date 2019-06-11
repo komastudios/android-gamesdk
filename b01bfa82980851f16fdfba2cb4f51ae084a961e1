@@ -92,6 +92,24 @@
       "revId": "b01bfa82980851f16fdfba2cb4f51ae084a961e1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7f49cb73_d19ff8be",
+        "filename": "src/swappy/common/SwappyDisplayManager.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-06-11T13:35:38Z",
+      "side": 1,
+      "message": "I would hate to have this occur in a user-facing context, and given the weirdnesses that can occur in the wild (i.e. classloader behaviour getting messed with by OEMs or copy protection vendors) I don\u0027t think we should go with \u0027abort\u0027. \n\nHowever I also agree that we need something stronger than TTY. Perhaps we can have an \u0027unrecoverable error\u0027 callback which has the default behaviour of calling abort but which the developer can override with handling of their choosing?",
+      "parentUuid": "5afaee29_a9e13893",
+      "revId": "b01bfa82980851f16fdfba2cb4f51ae084a961e1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
