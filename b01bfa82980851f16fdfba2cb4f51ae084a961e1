@@ -60,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "b6f5b2cc_9b6e491f",
+        "filename": "src/extras/src/main/java/com/google/androidgamesdk/SwappyDisplayManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-06-12T00:01:56Z",
+      "side": 1,
+      "message": "This is the same as it is done in DeviceInfoJni to load the native code",
+      "parentUuid": "cfd4c2f1_c866c053",
+      "range": {
+        "startLine": 141,
+        "startChar": 0,
+        "endLine": 143,
+        "endChar": 5
+      },
+      "revId": "b01bfa82980851f16fdfba2cb4f51ae084a961e1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "654901a9_99a611f4",
         "filename": "src/swappy/common/SwappyDisplayManager.cpp",
         "patchSetId": 1
@@ -128,6 +152,24 @@
       "revId": "b01bfa82980851f16fdfba2cb4f51ae084a961e1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f4aeb7fd_039e024a",
+        "filename": "src/swappy/common/SwappyDisplayManager.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-06-12T00:01:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cdcad23f_3fcbbd79",
+      "revId": "b01bfa82980851f16fdfba2cb4f51ae084a961e1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
