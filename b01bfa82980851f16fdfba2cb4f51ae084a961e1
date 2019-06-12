@@ -84,6 +84,30 @@
     },
     {
       "key": {
+        "uuid": "92519925_5ff69aba",
+        "filename": "src/extras/src/main/java/com/google/androidgamesdk/SwappyDisplayManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-06-12T09:19:36Z",
+      "side": 1,
+      "message": "Here, the native code lives in Swappy though, so it will be statically linked into the game or game engine .so. The dev needs to make sure that the library is available to Java, which it will be if they are using any other JNI calls. We can just remove this.",
+      "parentUuid": "b6f5b2cc_9b6e491f",
+      "range": {
+        "startLine": 141,
+        "startChar": 0,
+        "endLine": 143,
+        "endChar": 5
+      },
+      "revId": "b01bfa82980851f16fdfba2cb4f51ae084a961e1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "654901a9_99a611f4",
         "filename": "src/swappy/common/SwappyDisplayManager.cpp",
         "patchSetId": 1
