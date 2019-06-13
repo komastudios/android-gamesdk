@@ -108,6 +108,30 @@
     },
     {
       "key": {
+        "uuid": "6e328cf9_62323c68",
+        "filename": "src/extras/src/main/java/com/google/androidgamesdk/SwappyDisplayManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-06-13T00:35:08Z",
+      "side": 1,
+      "message": "cube sample doesn\u0027t work without it as it doesn\u0027t have any Java...",
+      "parentUuid": "92519925_5ff69aba",
+      "range": {
+        "startLine": 141,
+        "startChar": 0,
+        "endLine": 143,
+        "endChar": 5
+      },
+      "revId": "b01bfa82980851f16fdfba2cb4f51ae084a961e1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "654901a9_99a611f4",
         "filename": "src/swappy/common/SwappyDisplayManager.cpp",
         "patchSetId": 1
