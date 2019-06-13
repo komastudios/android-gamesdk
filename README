@@ -1,5 +1,6 @@
 
 In order to build using prebuild NDK versions, this project must be initialized from a custom repo using:
+
 mkdir android-games-sdk
 cd android-games-sdk
 Corp -> repo init -u persistent-https://googleplex-android.git.corp.google.com/platform/manifest -b android-games-sdk
