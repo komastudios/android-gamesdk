@@ -132,6 +132,30 @@
     },
     {
       "key": {
+        "uuid": "941fd118_9fbebd87",
+        "filename": "src/extras/src/main/java/com/google/androidgamesdk/SwappyDisplayManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-06-14T10:38:54Z",
+      "side": 1,
+      "message": "I think we need to do this step from JNI within the cube app then or within the gamesdk if it finds that the native functions are not available already,",
+      "parentUuid": "6e328cf9_62323c68",
+      "range": {
+        "startLine": 141,
+        "startChar": 0,
+        "endLine": 143,
+        "endChar": 5
+      },
+      "revId": "b01bfa82980851f16fdfba2cb4f51ae084a961e1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "654901a9_99a611f4",
         "filename": "src/swappy/common/SwappyDisplayManager.cpp",
         "patchSetId": 1
