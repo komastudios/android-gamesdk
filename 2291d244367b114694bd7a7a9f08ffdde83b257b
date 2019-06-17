@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7b602ba0_6412da7b",
+        "filename": "src/swappy/common/SwappyDisplayManager.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-06-17T11:15:36Z",
+      "side": 1,
+      "message": "This needs a #include \u003cmemory\u003e for NDK 16",
+      "revId": "2291d244367b114694bd7a7a9f08ffdde83b257b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "31187b74_de87d8d6",
+        "filename": "src/swappy/common/SwappyDisplayManager.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-06-17T11:15:36Z",
+      "side": 1,
+      "message": "This needs #include \u003ccondition_variable\u003e for NDK 16",
+      "revId": "2291d244367b114694bd7a7a9f08ffdde83b257b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
