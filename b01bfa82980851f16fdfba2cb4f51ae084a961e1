@@ -204,6 +204,30 @@
     },
     {
       "key": {
+        "uuid": "1ece7cc5_5a792094",
+        "filename": "src/extras/src/main/java/com/google/androidgamesdk/SwappyDisplayManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-06-17T18:28:53Z",
+      "side": 1,
+      "message": "Oh I get it now! Sorry it took me so long :(\nI have uploaded a new patchset that addresses this, PTAL.",
+      "parentUuid": "d2830de6_8d49a99a",
+      "range": {
+        "startLine": 141,
+        "startChar": 0,
+        "endLine": 143,
+        "endChar": 5
+      },
+      "revId": "b01bfa82980851f16fdfba2cb4f51ae084a961e1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "654901a9_99a611f4",
         "filename": "src/swappy/common/SwappyDisplayManager.cpp",
         "patchSetId": 1
