@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1bbdb3c2_21b2bad2",
+        "filename": "src/extras/src/main/java/com/google/androidgamesdk/SwappyDisplayManager.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-06-18T08:05:22Z",
+      "side": 1,
+      "message": "I don\u0027t know if we want to return here. Can we carry on and only fail if we can\u0027t find the native functions?",
+      "revId": "33d5f742d641c898c6984cf7f92712bdcf9cee7e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
