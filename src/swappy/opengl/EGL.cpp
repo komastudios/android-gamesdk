@@ -16,6 +16,7 @@
 
 #include "EGL.h"
 
+#include <dlfcn.h>
 #include <vector>
 
 #define LOG_TAG "Swappy::EGL"
@@ -27,6 +28,25 @@ using namespace std::chrono_literals;
 namespace swappy {
 
 std::unique_ptr<EGL> EGL::create(std::chrono::nanoseconds fenceTimeout) {
+    auto eglLib = dlopen("libEGL.so", RTLD_LAZY | RTLD_LOCAL);
+    if (eglLib == nullptr) {
+        ALOGE("Can't load libEGL");
+        return nullptr;
+    }
+    auto eglGetProcAddress = reinterpret_cast<eglGetProcAddress_type>(
+        dlsym(eglLib, "eglGetProcAddress"));
+    if (eglGetProcAddress == nullptr) {
+        ALOGE("Failed to load eglGetProcAddress");
+        return nullptr;
+    }
+
+    auto eglSwapBuffers = reinterpret_cast<eglSwapBuffers_type>(
+        dlsym(eglLib, "eglSwapBuffers"));
+    if (eglSwapBuffers == nullptr) {
+        ALOGE("Failed to load eglSwapBuffers");
+        return nullptr;
+    }
+
     auto eglPresentationTimeANDROID = reinterpret_cast<eglPresentationTimeANDROID_type>(
         eglGetProcAddress("eglPresentationTimeANDROID"));
     if (eglPresentationTimeANDROID == nullptr) {
@@ -82,7 +102,10 @@ std::unique_ptr<EGL> EGL::create(std::chrono::nanoseconds fenceTimeout) {
         ALOGI("Failed to load eglGetFrameTimestampsANDROID");
     }
 
-    auto egl = std::make_unique<EGL>(fenceTimeout, ConstructorTag{});
+    auto egl = std::make_unique<EGL>(fenceTimeout, eglGetProcAddress, ConstructorTag{});
+    egl->eglLib = eglLib;
+    egl->eglSwapBuffers = eglSwapBuffers;
+    egl->eglGetProcAddress = eglGetProcAddress;
     egl->eglPresentationTimeANDROID = eglPresentationTimeANDROID;
     egl->eglCreateSyncKHR = eglCreateSyncKHR;
     egl->eglDestroySyncKHR = eglDestroySyncKHR;
@@ -94,6 +117,11 @@ std::unique_ptr<EGL> EGL::create(std::chrono::nanoseconds fenceTimeout) {
     return egl;
 }
 
+EGL::~EGL() {
+    if(eglLib) {
+        dlclose(eglLib);
+    }
+}
 void EGL::resetSyncFence(EGLDisplay display) {
     std::lock_guard<std::mutex> lock(mSyncFenceMutex);
     mFenceWaiter.waitForIdle();
@@ -207,16 +235,17 @@ std::unique_ptr<EGL::FrameTimestamps> EGL::getFrameTimestamps(EGLDisplay dpy,
     return frameTimestamps;
 }
 
-EGL::FenceWaiter::FenceWaiter(std::chrono::nanoseconds fenceTimeout)
+EGL::FenceWaiter::FenceWaiter(std::chrono::nanoseconds fenceTimeout,
+                              eglGetProcAddress_type getProcAddress)
     : mFenceWaiter(&FenceWaiter::threadMain, this), mFenceTimeout(fenceTimeout) {
     std::unique_lock<std::mutex> lock(mFenceWaiterLock);
 
     eglClientWaitSyncKHR = reinterpret_cast<eglClientWaitSyncKHR_type>(
-            eglGetProcAddress("eglClientWaitSyncKHR"));
+            getProcAddress("eglClientWaitSyncKHR"));
     if (eglClientWaitSyncKHR == nullptr)
         ALOGE("Failed to load eglClientWaitSyncKHR");
     eglDestroySyncKHR = reinterpret_cast<eglDestroySyncKHR_type>(
-            eglGetProcAddress("eglDestroySyncKHR"));
+            getProcAddress("eglDestroySyncKHR"));
     if (eglDestroySyncKHR == nullptr)
         ALOGE("Failed to load eglDestroySyncKHR");
 }

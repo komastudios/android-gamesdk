@@ -68,6 +68,5 @@ add_library( swappy
 
                         swappy_static
                         android
-                        EGL
                         GLESv2
                         log )
