@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8056b406_c8a5e799",
+        "filename": "src/swappy/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-06-24T18:25:33Z",
+      "side": 1,
+      "message": "Do we still need GLESv2 ?",
+      "revId": "02f50a72f1c98831443837693c710bafc7839470",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
