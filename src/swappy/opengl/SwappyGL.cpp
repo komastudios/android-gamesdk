@@ -77,7 +77,7 @@ bool SwappyGL::swap(EGLDisplay display, EGLSurface surface) {
     if (swappy->enabled()) {
         return swappy->swapInternal(display, surface);
     } else {
-        return eglSwapBuffers(display, surface) == EGL_TRUE;
+        return swappy->getEgl()->swapBuffers(display, surface) == EGL_TRUE;
     }
 }
 
@@ -109,7 +109,7 @@ bool SwappyGL::swapInternal(EGLDisplay display, EGLSurface surface) {
 
     resetSyncFence(display);
 
-    bool swapBuffersResult = (eglSwapBuffers(display, surface) == EGL_TRUE);
+    bool swapBuffersResult = (getEgl()->swapBuffers(display, surface) == EGL_TRUE);
 
     mCommonBase.onPostSwap(handlers);
 

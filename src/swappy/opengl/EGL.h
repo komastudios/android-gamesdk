@@ -45,9 +45,12 @@ class EGL {
         EGLnsecsANDROID presented;
     };
 
-    explicit EGL(std::chrono::nanoseconds fenceTimeout, ConstructorTag)
-        : mFenceWaiter(fenceTimeout) {}
+    using eglGetProcAddress_type = void (*(*)(const char*))(void);
 
+    explicit EGL(std::chrono::nanoseconds fenceTimeout, eglGetProcAddress_type getProcAddress,
+                 ConstructorTag)
+        : mFenceWaiter(fenceTimeout, getProcAddress) {}
+    ~EGL();
     static std::unique_ptr<EGL> create(std::chrono::nanoseconds fenceTimeout);
 
     void resetSyncFence(EGLDisplay display);
@@ -65,8 +68,14 @@ class EGL {
     std::unique_ptr<FrameTimestamps> getFrameTimestamps(EGLDisplay dpy,
                                                         EGLSurface surface,
                                                         EGLuint64KHR frameId) const;
-
+    EGLBoolean swapBuffers(EGLDisplay dpy, EGLSurface surface) {
+        return this->eglSwapBuffers(dpy, surface);
+    }
   private:
+    void* eglLib = nullptr;
+    eglGetProcAddress_type eglGetProcAddress = nullptr;
+    using eglSwapBuffers_type = EGLBoolean (*)(EGLDisplay, EGLSurface);
+    eglSwapBuffers_type eglSwapBuffers = nullptr;
     using eglPresentationTimeANDROID_type = EGLBoolean (*)(EGLDisplay, EGLSurface, EGLnsecsANDROID);
     eglPresentationTimeANDROID_type eglPresentationTimeANDROID = nullptr;
     using eglCreateSyncKHR_type = EGLSyncKHR (*)(EGLDisplay, EGLenum, const EGLint *);
@@ -91,7 +100,7 @@ class EGL {
 
     class FenceWaiter {
     public:
-        FenceWaiter(std::chrono::nanoseconds fenceTimeout);
+        FenceWaiter(std::chrono::nanoseconds fenceTimeout, EGL::eglGetProcAddress_type getProcAddress);
         ~FenceWaiter();
 
         void onFenceCreation(EGLDisplay display, EGLSyncKHR syncFence);
