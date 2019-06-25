@@ -36,8 +36,8 @@ endforeach()
 
 # Force export ANativeActivity_onCreate(),
 # Refer to: https://github.com/android-ndk/ndk/issues/381.
-set(CMAKE_SHARED_LINKER_FLAGS
-    "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate")
+#set(CMAKE_SHARED_LINKER_FLAGS
+ #   "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate")
 
 include_directories( src/main/cpp )
 
@@ -50,8 +50,7 @@ add_library( native-lib
 
              cube.vert.inc
              cube.frag.inc
-             ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c
-             src/main/cpp/cube.c
+             src/main/cpp/native-lib.c
              src/main/cpp/common/android_util.cpp
              src/main/cpp/common/vulkan_wrapper.cpp
         )
