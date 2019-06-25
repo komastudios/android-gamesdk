@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "85d013e0_0ca23359",
+        "filename": "third_party/cube/app/src/main/java/com/samples/cube/CubeActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-06-25T23:14:57Z",
+      "side": 1,
+      "message": "We should change \"Num cubes\" to \"GPU workload\" or something",
+      "revId": "e142bb8b8c2345581b075c732625c794de648817",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
