@@ -308,6 +308,30 @@
     },
     {
       "key": {
+        "uuid": "ff9ed6a0_7099e853",
+        "filename": "samples/cube/settings.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-06-25T21:00:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ac2ed77c_5a21e988",
+      "range": {
+        "startLine": 1,
+        "startChar": 13,
+        "endLine": 1,
+        "endChar": 14
+      },
+      "revId": "9f6ebec5b1aa9f5ee6ad1ec2c10c313df4ae38e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9fb26a5d_5074d70f",
         "filename": "third_party/cube/app/src/main/cpp/cube.c",
         "patchSetId": 1

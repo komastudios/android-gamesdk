@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "1e4d3670_95923ed0",
+        "filename": "samples/cube/app/src/main/java/com/samples/cube/CubeActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-06-25T21:00:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "58e5a337_a38d82ad",
+      "range": {
+        "startLine": 21,
+        "startChar": 4,
+        "endLine": 22,
+        "endChar": 4
+      },
+      "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8e8dade1_4d10f4b2",
         "filename": "samples/cube/app/src/main/java/com/samples/cube/CubeActivity.java",
         "patchSetId": 2
@@ -45,6 +69,30 @@
       "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fc4ee8ff_409b438b",
+        "filename": "samples/cube/app/src/main/java/com/samples/cube/CubeActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-06-25T21:00:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8e8dade1_4d10f4b2",
+      "range": {
+        "startLine": 62,
+        "startChar": 8,
+        "endLine": 63,
+        "endChar": 7
+      },
+      "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "92bdaa30_d16dc310",
+        "filename": "samples/cube/app/src/main/java/com/samples/cube/CubeActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-06-25T21:00:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "daaf59d7_10647cf1",
+      "range": {
+        "startLine": 84,
+        "startChar": 9,
+        "endLine": 86,
+        "endChar": 9
+      },
+      "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "740db798_38e51717",
         "filename": "samples/cube/app/src/main/java/com/samples/cube/CubeActivity.java",
         "patchSetId": 2
@@ -91,6 +163,30 @@
       "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "862dc0f3_411cb819",
+        "filename": "samples/cube/app/src/main/java/com/samples/cube/CubeActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-06-25T21:00:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "740db798_38e51717",
+      "range": {
+        "startLine": 162,
+        "startChar": 0,
+        "endLine": 162,
+        "endChar": 64
+      },
+      "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "8bfd323d_3930d07e",
+        "filename": "samples/cube/settings.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-06-25T21:00:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b4570a04_771cac5f",
+      "range": {
+        "startLine": 1,
+        "startChar": 13,
+        "endLine": 1,
+        "endChar": 14
+      },
+      "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fe3d3093_3b9e85f4",
         "filename": "third_party/cube/app/src/main/cpp/cube.c",
         "patchSetId": 2
@@ -137,6 +257,30 @@
       "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e51a1834_2cb9b741",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-06-25T21:00:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fe3d3093_3b9e85f4",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 6
+      },
+      "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -163,6 +307,30 @@
     },
     {
       "key": {
+        "uuid": "58d25753_11047dc4",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-06-25T21:00:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "51b64699_bce96f4f",
+      "range": {
+        "startLine": 255,
+        "startChar": 7,
+        "endLine": 255,
+        "endChar": 12
+      },
+      "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5eda6e4e_f0409add",
         "filename": "third_party/cube/app/src/main/cpp/cube.c",
         "patchSetId": 2
@@ -183,6 +351,30 @@
       "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4a2b3b4_658880e4",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 509,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-06-25T21:00:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5eda6e4e_f0409add",
+      "range": {
+        "startLine": 507,
+        "startChar": 0,
+        "endLine": 509,
+        "endChar": 28
+      },
+      "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -209,6 +401,30 @@
     },
     {
       "key": {
+        "uuid": "6d15f3c3_b5e10475",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 973,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-06-25T21:00:20Z",
+      "side": 1,
+      "message": "Was there to maintain the current pattern. But since this will only be used for android, and is untested anyway, I removed it.",
+      "parentUuid": "f596c978_a1805b61",
+      "range": {
+        "startLine": 973,
+        "startChar": 0,
+        "endLine": 973,
+        "endChar": 34
+      },
+      "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a2a2c4dc_db0c2af1",
         "filename": "third_party/cube/app/src/main/cpp/cube.c",
         "patchSetId": 2
@@ -232,6 +448,30 @@
     },
     {
       "key": {
+        "uuid": "c05ffc64_fd9b3d01",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 4098,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-06-25T21:00:20Z",
+      "side": 1,
+      "message": "Nope. Removed it now. Which also forced me to remove the dependency android_native_app_glue.",
+      "parentUuid": "a2a2c4dc_db0c2af1",
+      "range": {
+        "startLine": 4098,
+        "startChar": 1,
+        "endLine": 4098,
+        "endChar": 44
+      },
+      "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "16feb456_25a20689",
         "filename": "third_party/cube/app/src/main/cpp/cube.c",
         "patchSetId": 2
@@ -252,6 +492,30 @@
       "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "648c87b2_6314b797",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 4134,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-06-25T21:00:20Z",
+      "side": 1,
+      "message": "Changed to main_loop(). Sound good enough?",
+      "parentUuid": "16feb456_25a20689",
+      "range": {
+        "startLine": 4134,
+        "startChar": 5,
+        "endLine": 4134,
+        "endChar": 18
+      },
+      "revId": "241a67f3813ccaf624f0ba388c1948caff50e332",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
