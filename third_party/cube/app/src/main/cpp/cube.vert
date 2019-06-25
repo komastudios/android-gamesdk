@@ -31,6 +31,7 @@ layout(std140, binding = 0) uniform buf {
 
 layout (location = 0) out vec4 texcoord;
 layout (location = 1) out vec3 frag_pos;
+layout (location = 2) out int counter;
 
 const int verticesPerModel = 12 * 3;
 
@@ -40,10 +41,12 @@ void main()
    texcoord = ubuf.attr[vertexIndex];
    gl_Position = ubuf.MVP * ubuf.position[vertexIndex];
 
+   counter = ubuf.numPerRow*ubuf.numRows;
+
    const int modelIndex = gl_VertexIndex / verticesPerModel;
    const float gridIndexX = (modelIndex % ubuf.numPerRow) - (ubuf.numPerRow >> 1);
    const float gridIndexY = (modelIndex / ubuf.numPerRow) - (ubuf.numRows >> 1);
-   const float distance = 10.0 / ubuf.numPerRow;
+   const float distance = 0.0;//10.0 / ubuf.numPerRow;
    gl_Position.xy += vec2(gridIndexX, gridIndexY) * distance;
    frag_pos = gl_Position.xyz;
 }
