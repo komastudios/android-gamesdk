@@ -45,3 +45,8 @@ JNIEXPORT void JNICALL
 Java_com_samples_cube_CubeActivity_nChangeNumCubes(JNIEnv *env, jobject clazz, jint new_num_cubes) {
     update_cube_count(new_num_cubes);
 }
+
+JNIEXPORT void JNICALL
+Java_com_samples_cube_CubeActivity_nUpdateCpuWorkload(JNIEnv *env, jobject clazz, jint new_workload) {
+    update_cpu_workload(new_workload);
+}

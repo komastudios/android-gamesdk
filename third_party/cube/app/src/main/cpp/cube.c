@@ -501,6 +501,7 @@ struct demo {
     uint32_t num_cubes;
     uint32_t num_rows;
     uint32_t cubes_per_row;
+    uint64_t cpu_busywork;
 
     float scale;
     float spin_angle;
@@ -888,7 +889,8 @@ static void demo_draw_build_cmd(struct demo *demo, VkCommandBuffer cmd_buf) {
         demo->CmdBeginDebugUtilsLabelEXT(cmd_buf, &label);
     }
 
-    vkCmdDraw(cmd_buf, demo->num_cubes * 12 * 3, 1, 0, 0);
+    //vkCmdDraw(cmd_buf, demo->num_cubes * 12 * 3, 1, 0, 0);
+    vkCmdDraw(cmd_buf, 12 * 3, 1, 0, 0);
     if (demo->validate) {
         demo->CmdEndDebugUtilsLabelEXT(cmd_buf);
     }
@@ -1110,7 +1112,7 @@ static void update_draw_parameters(struct demo *demo, uint32_t num_cubes) {
     uint32_t root = sqrt(demo->num_cubes);
     demo->num_rows = root > 0 ? root : 1;
     demo->cubes_per_row = demo->num_cubes / demo->num_rows;
-    demo->scale = 1.0f / demo->cubes_per_row;
+    demo->scale = 1.0f;// / demo->cubes_per_row;
 }
 
 static void update_draw_cmd(struct demo *demo) {
@@ -1879,9 +1881,9 @@ static void demo_prepare_textures(struct demo *demo) {
             .magFilter = VK_FILTER_NEAREST,
             .minFilter = VK_FILTER_NEAREST,
             .mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST,
-            .addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-            .addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-            .addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+            .addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+            .addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+            .addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT,
             .mipLodBias = 0.0f,
             .anisotropyEnable = VK_FALSE,
             .maxAnisotropy = 1,
@@ -4076,8 +4078,12 @@ static bool active = false;
 struct demo demo_;
 
 void update_cube_count(int32_t new_num_cubes) {
-  demo_.new_num_cubes = new_num_cubes;
-  demo_.draw_cmd_dirty = true;
+    demo_.new_num_cubes = new_num_cubes;
+    demo_.draw_cmd_dirty = true;
+}
+
+void update_cpu_workload(int32_t new_workload) {
+    demo_.cpu_busywork = (uint64_t)100*(uint64_t)new_workload;
 }
 
 void main_loop(struct android_app_state *app) {
@@ -4114,6 +4120,9 @@ void main_loop(struct android_app_state *app) {
         if (initialized && active) {
             demo_run(&demo_);
         }
+
+        uint64_t count = 0;
+        while(count++ < demo_.cpu_busywork) {}
   }
 }
 
