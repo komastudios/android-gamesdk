@@ -25,7 +25,13 @@
  * Author: Bill Hollings <bill.hollings@brenwill.com>
  */
 
- #define _GNU_SOURCE
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -243,10 +249,10 @@ struct texture_object {
     VkMemoryAllocateInfo mem_alloc;
     VkDeviceMemory mem;
     VkImageView view;
-    int32_t tex_width, tex_height;
+    uint32_t tex_width, tex_height;
 };
 
-static char *tex_files[] = {"lunarg.ppm"};
+static const char *tex_files[] = {"lunarg.ppm"};
 
 static int validation_error = 0;
 
@@ -255,6 +261,8 @@ struct vktexcube_vs_uniform {
     float mvp[4][4];
     float position[12 * 3][4];
     float attr[12 * 3][4];
+    uint32_t num_per_row;
+    uint32_t num_rows;
 };
 
 //--------------------------------------------------------------------------------------
@@ -445,10 +453,10 @@ struct demo {
 
     uint32_t enabled_extension_count;
     uint32_t enabled_layer_count;
-    char *extension_names[64];
-    char *enabled_layers[64];
+    const char *extension_names[64];
+    const char *enabled_layers[64];
 
-    int width, height;
+    uint32_t width, height;
     VkFormat format;
     VkColorSpaceKHR color_space;
 
@@ -496,9 +504,20 @@ struct demo {
     mat4x4 view_matrix;
     mat4x4 model_matrix;
 
+     uint32_t num_cubes;
+     uint32_t num_rows;
+     uint32_t cubes_per_row;
+
+    float scale;
     float spin_angle;
     float spin_increment;
+    float spin_speed;
     bool pause;
+
+    bool draw_cmd_dirty;
+    uint32_t new_num_cubes;
+
+    struct vktexcube_vs_uniform uniform;
 
     VkShaderModule vert_shader_module;
     VkShaderModule frag_shader_module;
@@ -858,8 +877,8 @@ static void demo_draw_build_cmd(struct demo *demo, VkCommandBuffer cmd_buf) {
 
     VkRect2D scissor;
     memset(&scissor, 0, sizeof(scissor));
-    scissor.extent.width = demo->width;
-    scissor.extent.height = demo->height;
+    scissor.extent.width = (float)demo->width;
+    scissor.extent.height = (float)demo->height;
     scissor.offset.x = 0;
     scissor.offset.y = 0;
     vkCmdSetScissor(cmd_buf, 0, 1, &scissor);
@@ -875,7 +894,7 @@ static void demo_draw_build_cmd(struct demo *demo, VkCommandBuffer cmd_buf) {
         demo->CmdBeginDebugUtilsLabelEXT(cmd_buf, &label);
     }
 
-    vkCmdDraw(cmd_buf, 12 * 3, 1, 0, 0);
+    vkCmdDraw(cmd_buf, demo->num_cubes * 12 * 3, 1, 0, 0);
     if (demo->validate) {
         demo->CmdEndDebugUtilsLabelEXT(cmd_buf);
     }
@@ -944,23 +963,36 @@ void demo_build_image_ownership_cmd(struct demo *demo, int i) {
 }
 
 void demo_update_data_buffer(struct demo *demo) {
-    mat4x4 MVP, Model, VP;
-    int matrixSize = sizeof(MVP);
+    mat4x4 Model, VP;
     uint8_t *pData;
     VkResult U_ASSERT_ONLY err;
 
     mat4x4_mul(VP, demo->projection_matrix, demo->view_matrix);
 
-    // Rotate around the Y axis
+    // Set scale.
+    mat4x4_identity(demo->model_matrix);
+    demo->model_matrix[0][0] = demo->scale;
+    demo->model_matrix[1][1] = demo->scale;
+    demo->model_matrix[2][2] = demo->scale;
+
+#ifdef VK_USE_PLATFORM_ANDROID_KHR
+    uint64_t long_time = getTimeInNanoseconds();
+    long_time = ((long_time << 16) >> 16) >> 18; // Keep only middle bits.
+    demo->spin_angle = long_time * demo->spin_speed;
+#endif
+
+    // Rotate around the Y axis.
     mat4x4_dup(Model, demo->model_matrix);
-    mat4x4_rotate(demo->model_matrix, Model, 0.0f, 1.0f, 0.0f, (float)degreesToRadians(demo->spin_angle));
-    mat4x4_mul(MVP, VP, demo->model_matrix);
+    mat4x4_rotate(demo->model_matrix, Model, 0.0f, 1.0f, 0.0f, demo->spin_angle);
+    mat4x4_mul(demo->uniform.mvp, VP, demo->model_matrix);
+
+    demo->uniform.num_per_row = demo->cubes_per_row;
+    demo->uniform.num_rows = demo->num_rows;
 
     err = vkMapMemory(demo->device, demo->swapchain_image_resources[demo->current_buffer].uniform_memory, 0, VK_WHOLE_SIZE, 0,
                       (void **)&pData);
     assert(!err);
-
-    memcpy(pData, (const void *)&MVP[0][0], matrixSize);
+    memcpy(pData, &demo->uniform, sizeof(demo->uniform));
 
     vkUnmapMemory(demo->device, demo->swapchain_image_resources[demo->current_buffer].uniform_memory);
 }
@@ -1081,6 +1113,25 @@ void DemoUpdateTargetIPD(struct demo *demo) {
     }
 }
 
+static void update_draw_parameters(struct demo *demo, uint32_t num_cubes) {
+    demo->num_cubes = num_cubes;
+    uint32_t root = sqrt(demo->num_cubes);
+    demo->num_rows = root > 0 ? root : 1;
+    demo->cubes_per_row = demo->num_cubes / demo->num_rows;
+    demo->scale = 1.0f / demo->cubes_per_row;
+}
+
+static void update_draw_cmd(struct demo *demo) {
+    // Rerecord draw cmds.
+    vkDeviceWaitIdle(demo->device);
+    uint32_t current_buffer = demo->current_buffer;
+    for (uint32_t i = 0; i < demo->swapchainImageCount; i++) {
+      demo->current_buffer = i;
+      demo_draw_build_cmd(demo, demo->swapchain_image_resources[i].cmd);
+    }
+    demo->current_buffer = current_buffer;
+}
+
 static void demo_draw(struct demo *demo) {
     VkResult U_ASSERT_ONLY err;
 
@@ -1092,6 +1143,12 @@ static void demo_draw(struct demo *demo) {
     logEvent(EVENT_CALLED_WFF);
 
     vkResetFences(demo->device, 1, &demo->fences[demo->frame_index]);
+
+    if (demo->draw_cmd_dirty) {
+        update_draw_parameters(demo, demo->new_num_cubes);
+        update_draw_cmd(demo);
+        demo->draw_cmd_dirty = false;
+    }
 
     do {
         // Get the index of the next available swapchain image:
@@ -1189,8 +1246,8 @@ static void demo_draw(struct demo *demo) {
         uint32_t eighthOfWidth = demo->width / 8;
         uint32_t eighthOfHeight = demo->height / 8;
         VkRectLayerKHR rect = {
-            .offset.x = eighthOfWidth,
-            .offset.y = eighthOfHeight,
+            .offset.x = (int32_t)eighthOfWidth,
+            .offset.y = (int32_t)eighthOfHeight,
             .extent.width = eighthOfWidth * 6,
             .extent.height = eighthOfHeight * 6,
             .layer = 0,
@@ -1392,7 +1449,7 @@ static void demo_prepare_buffers(struct demo *demo) {
         desiredNumOfSwapchainImages = surfCapabilities.maxImageCount;
     }
 
-    VkSurfaceTransformFlagsKHR preTransform;
+    VkSurfaceTransformFlagBitsKHR preTransform;
     if (surfCapabilities.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR) {
         preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
     } else {
@@ -1505,7 +1562,9 @@ static void demo_prepare_buffers(struct demo *demo) {
     JavaVM* vm = demo->swappy_init_data.vm;
     assert(vm);
     JNIEnv *env;
-    (*vm)->AttachCurrentThread(vm, &env, NULL);
+    vm->GetEnv((void**)&env, JNI_VERSION_1_6);
+    vm->AttachCurrentThread(&env, NULL);
+    //(*vm)->AttachCurrentThread(vm, &env, NULL);
     assert(SwappyVk_initAndGetRefreshCycleDuration(env,
                                                    demo->swappy_init_data.jactivity,
                                                    demo->gpu, demo->device, demo->swapchain,
@@ -1642,7 +1701,7 @@ static void demo_prepare_texture_buffer(struct demo *demo, const char *filename,
     const VkBufferCreateInfo buffer_create_info = {.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
                                                    .pNext = NULL,
                                                    .flags = 0,
-                                                   .size = tex_width * tex_height * 4,
+                                                   .size = (VkDeviceSize) tex_width * tex_height * 4,
                                                    .usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                                                    .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
                                                    .queueFamilyIndexCount = 0,
@@ -1678,7 +1737,7 @@ static void demo_prepare_texture_buffer(struct demo *demo, const char *filename,
     err = vkMapMemory(demo->device, tex_obj->mem, 0, tex_obj->mem_alloc.allocationSize, 0, &data);
     assert(!err);
 
-    if (!loadTexture(filename, data, &layout, &tex_width, &tex_height)) {
+    if (!loadTexture(filename, (uint8_t*)data, &layout, &tex_width, &tex_height)) {
         fprintf(stderr, "Error loading texture: %s\n", filename);
     }
 
@@ -1705,7 +1764,7 @@ static void demo_prepare_texture_image(struct demo *demo, const char *filename, 
         .pNext = NULL,
         .imageType = VK_IMAGE_TYPE_2D,
         .format = tex_format,
-        .extent = {tex_width, tex_height, 1},
+        .extent = {(uint32_t)tex_width, (uint32_t)tex_height, 1},
         .mipLevels = 1,
         .arrayLayers = 1,
         .samples = VK_SAMPLE_COUNT_1_BIT,
@@ -1752,7 +1811,7 @@ static void demo_prepare_texture_image(struct demo *demo, const char *filename, 
         err = vkMapMemory(demo->device, tex_obj->mem, 0, tex_obj->mem_alloc.allocationSize, 0, &data);
         assert(!err);
 
-        if (!loadTexture(filename, data, &layout, &tex_width, &tex_height)) {
+        if (!loadTexture(filename, (uint8_t*)data, &layout, &tex_width, &tex_height)) {
             fprintf(stderr, "Error loading texture: %s\n", filename);
         }
 
@@ -1786,7 +1845,7 @@ static void demo_prepare_textures(struct demo *demo) {
             // Nothing in the pipeline needs to be complete to start, and don't allow fragment
             // shader to run until layout transition completes
             demo_set_image_layout(demo, demo->textures[i].image, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_PREINITIALIZED,
-                                  demo->textures[i].imageLayout, 0, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+                                  demo->textures[i].imageLayout, (VkAccessFlagBits)0, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
                                   VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
             demo->staging_texture.image = 0;
         } else if (props.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT) {
@@ -1800,7 +1859,7 @@ static void demo_prepare_textures(struct demo *demo) {
                                        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
             demo_set_image_layout(demo, demo->textures[i].image, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_PREINITIALIZED,
-                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 0, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, (VkAccessFlagBits)0, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
                                   VK_PIPELINE_STAGE_TRANSFER_BIT);
 
             VkBufferImageCopy copy_region = {
@@ -1876,31 +1935,32 @@ void demo_prepare_cube_data_buffers(struct demo *demo) {
     VkMemoryRequirements mem_reqs;
     VkMemoryAllocateInfo mem_alloc;
     uint8_t *pData;
-    mat4x4 MVP, VP;
+    mat4x4 VP;
     VkResult U_ASSERT_ONLY err;
     bool U_ASSERT_ONLY pass;
-    struct vktexcube_vs_uniform data;
 
     mat4x4_mul(VP, demo->projection_matrix, demo->view_matrix);
-    mat4x4_mul(MVP, VP, demo->model_matrix);
-    memcpy(data.mvp, MVP, sizeof(MVP));
-    //    dumpMatrix("MVP", MVP);
+    mat4x4_mul(demo->uniform.mvp, VP, demo->model_matrix);
+    //    dumpMatrix("MVP", demo->uniform.mvp);
 
     for (unsigned int i = 0; i < 12 * 3; i++) {
-        data.position[i][0] = g_vertex_buffer_data[i * 3];
-        data.position[i][1] = g_vertex_buffer_data[i * 3 + 1];
-        data.position[i][2] = g_vertex_buffer_data[i * 3 + 2];
-        data.position[i][3] = 1.0f;
-        data.attr[i][0] = g_uv_buffer_data[2 * i];
-        data.attr[i][1] = g_uv_buffer_data[2 * i + 1];
-        data.attr[i][2] = 0;
-        data.attr[i][3] = 0;
+        demo->uniform.position[i][0] = g_vertex_buffer_data[i * 3];
+        demo->uniform.position[i][1] = g_vertex_buffer_data[i * 3 + 1];
+        demo->uniform.position[i][2] = g_vertex_buffer_data[i * 3 + 2];
+        demo->uniform.position[i][3] = 1.0f;
+        demo->uniform.attr[i][0] = g_uv_buffer_data[2 * i];
+        demo->uniform.attr[i][1] = g_uv_buffer_data[2 * i + 1];
+        demo->uniform.attr[i][2] = 0;
+        demo->uniform.attr[i][3] = 0;
     }
+
+    demo->uniform.num_per_row = demo->cubes_per_row;
+    demo->uniform.num_rows = demo->num_rows;
 
     memset(&buf_info, 0, sizeof(buf_info));
     buf_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     buf_info.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-    buf_info.size = sizeof(data);
+    buf_info.size = sizeof(demo->uniform);
 
     for (unsigned int i = 0; i < demo->swapchainImageCount; i++) {
         err = vkCreateBuffer(demo->device, &buf_info, NULL, &demo->swapchain_image_resources[i].uniform_buffer);
@@ -1924,7 +1984,7 @@ void demo_prepare_cube_data_buffers(struct demo *demo) {
         err = vkMapMemory(demo->device, demo->swapchain_image_resources[i].uniform_memory, 0, VK_WHOLE_SIZE, 0, (void **)&pData);
         assert(!err);
 
-        memcpy(pData, &data, sizeof data);
+        memcpy(pData, &demo->uniform, sizeof(demo->uniform));
 
         vkUnmapMemory(demo->device, demo->swapchain_image_resources[i].uniform_memory);
 
@@ -2533,10 +2593,11 @@ static void demo_resize(struct demo *demo) {
     demo_prepare(demo);
 }
 
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+
 // On MS-Windows, make this a global, so it's available to WndProc()
 struct demo demo;
 
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
 static void demo_run(struct demo *demo) {
     if (!demo->prepared) return;
 
@@ -3048,17 +3109,17 @@ static void demo_init_vk(struct demo *demo) {
     uint32_t instance_extension_count = 0;
     uint32_t instance_layer_count = 0;
     uint32_t validation_layer_count = 0;
-    char **instance_validation_layers = NULL;
+    const char **instance_validation_layers = NULL;
     demo->enabled_extension_count = 0;
     demo->enabled_layer_count = 0;
     demo->is_minimized = false;
     demo->cmd_pool = VK_NULL_HANDLE;
 
-    char *instance_validation_layers_alt1[] = {"VK_LAYER_LUNARG_standard_validation"};
+    const char *instance_validation_layers_alt1[] = {"VK_LAYER_LUNARG_standard_validation"};
 
-    char *instance_validation_layers_alt2[] = {"VK_LAYER_GOOGLE_threading", "VK_LAYER_LUNARG_parameter_validation",
-                                               "VK_LAYER_LUNARG_object_tracker", "VK_LAYER_LUNARG_core_validation",
-                                               "VK_LAYER_GOOGLE_unique_objects"};
+    const char *instance_validation_layers_alt2[] = {"VK_LAYER_GOOGLE_threading", "VK_LAYER_LUNARG_parameter_validation",
+                                                     "VK_LAYER_LUNARG_object_tracker", "VK_LAYER_LUNARG_core_validation",
+                                                     "VK_LAYER_GOOGLE_unique_objects"};
 
     /* Look for validation layers */
     VkBool32 validation_found = 0;
@@ -3068,11 +3129,11 @@ static void demo_init_vk(struct demo *demo) {
 
         instance_validation_layers = instance_validation_layers_alt1;
         if (instance_layer_count > 0) {
-            VkLayerProperties *instance_layers = malloc(sizeof(VkLayerProperties) * instance_layer_count);
+            VkLayerProperties *instance_layers = (VkLayerProperties *)malloc(sizeof(VkLayerProperties) * instance_layer_count);
             err = vkEnumerateInstanceLayerProperties(&instance_layer_count, instance_layers);
             assert(!err);
 
-            validation_found = demo_check_layers(ARRAY_SIZE(instance_validation_layers_alt1), instance_validation_layers,
+            validation_found = demo_check_layers(ARRAY_SIZE(instance_validation_layers_alt1), (char**)instance_validation_layers,
                                                  instance_layer_count, instance_layers);
             if (validation_found) {
                 demo->enabled_layer_count = ARRAY_SIZE(instance_validation_layers_alt1);
@@ -3082,7 +3143,7 @@ static void demo_init_vk(struct demo *demo) {
                 // use alternative set of validation layers
                 instance_validation_layers = instance_validation_layers_alt2;
                 demo->enabled_layer_count = ARRAY_SIZE(instance_validation_layers_alt2);
-                validation_found = demo_check_layers(ARRAY_SIZE(instance_validation_layers_alt2), instance_validation_layers,
+                validation_found = demo_check_layers(ARRAY_SIZE(instance_validation_layers_alt2), (char**)instance_validation_layers,
                                                      instance_layer_count, instance_layers);
                 validation_layer_count = ARRAY_SIZE(instance_validation_layers_alt2);
                 for (uint32_t i = 0; i < validation_layer_count; i++) {
@@ -3109,7 +3170,7 @@ static void demo_init_vk(struct demo *demo) {
     assert(!err);
 
     if (instance_extension_count > 0) {
-        VkExtensionProperties *instance_extensions = malloc(sizeof(VkExtensionProperties) * instance_extension_count);
+        VkExtensionProperties *instance_extensions = (VkExtensionProperties *)malloc(sizeof(VkExtensionProperties) * instance_extension_count);
         err = vkEnumerateInstanceExtensionProperties(NULL, &instance_extension_count, instance_extensions);
         assert(!err);
         for (uint32_t i = 0; i < instance_extension_count; i++) {
@@ -3293,7 +3354,7 @@ static void demo_init_vk(struct demo *demo) {
     assert(!err);
 
     if (gpu_count > 0) {
-        VkPhysicalDevice *physical_devices = malloc(sizeof(VkPhysicalDevice) * gpu_count);
+        VkPhysicalDevice *physical_devices = (VkPhysicalDevice *)malloc(sizeof(VkPhysicalDevice) * gpu_count);
         err = vkEnumeratePhysicalDevices(demo->inst, &gpu_count, physical_devices);
         assert(!err);
         /* For cube demo we just grab the first physical device */
@@ -3317,7 +3378,7 @@ static void demo_init_vk(struct demo *demo) {
     assert(!err);
 
     if (device_extension_count > 0) {
-        VkExtensionProperties *device_extensions = malloc(sizeof(VkExtensionProperties) * device_extension_count);
+        VkExtensionProperties *device_extensions = (VkExtensionProperties *)malloc(sizeof(VkExtensionProperties) * device_extension_count);
         err = vkEnumerateDeviceExtensionProperties(demo->gpu, NULL, &device_extension_count, device_extensions);
         assert(!err);
 
@@ -3372,9 +3433,9 @@ static void demo_init_vk(struct demo *demo) {
         char **swappy_required_extension_names;
         SwappyVk_determineDeviceExtensions(demo->gpu, device_extension_count, device_extensions,
                                           &swappy_required_extension_count, NULL);
-        swappy_required_extension_names = malloc(swappy_required_extension_count * sizeof(char*));
+        swappy_required_extension_names = (char**)malloc(swappy_required_extension_count * sizeof(char*));
         for (uint32_t i = 0; i < swappy_required_extension_count; i++) {
-            swappy_required_extension_names[i] = malloc(VK_MAX_EXTENSION_NAME_SIZE + 1);
+            swappy_required_extension_names[i] = (char*)malloc(VK_MAX_EXTENSION_NAME_SIZE + 1);
         }
         SwappyVk_determineDeviceExtensions(demo->gpu, device_extension_count, device_extensions,
                                           &swappy_required_extension_count,
@@ -3821,7 +3882,7 @@ static void demo_init(struct demo *demo, int argc, char **argv) {
     vec3 origin = {0, 0, 0};
     vec3 up = {0.0f, 1.0f, 0.0};
 
-    memset(demo, 0, sizeof(*demo));
+    //memset(demo, 0, sizeof(*demo));
     demo->presentMode = VK_PRESENT_MODE_FIFO_KHR;
     demo->frameCount = INT32_MAX;
 
@@ -3831,7 +3892,7 @@ static void demo_init(struct demo *demo, int argc, char **argv) {
             continue;
         }
         if ((strcmp(argv[i], "--present_mode") == 0) && (i < argc - 1)) {
-            demo->presentMode = atoi(argv[i + 1]);
+            demo->presentMode = (VkPresentModeKHR)atoi(argv[i + 1]);
             i++;
             continue;
         }
@@ -3897,7 +3958,10 @@ static void demo_init(struct demo *demo, int argc, char **argv) {
 
     demo->spin_angle = 4.0f;
     demo->spin_increment = 0.2f;
+    demo->spin_speed = 0.0005f;
     demo->pause = false;
+
+    demo->draw_cmd_dirty = true;
 
     mat4x4_perspective(demo->projection_matrix, (float)degreesToRadians(45.0f), 1.0f, 0.1f, 100.0f);
     mat4x4_look_at(demo->view_matrix, eye, origin, up);
@@ -4006,7 +4070,7 @@ static void demo_main(struct demo *demo, void *view, int argc, const char *argv[
 
 static bool initialized = false;
 static bool active = false;
-struct demo demo;
+struct demo demo_;
 
 static int32_t processInput(struct android_app *app, AInputEvent *event) { return 0; }
 
@@ -4024,8 +4088,8 @@ static void processCommand(struct android_app *app, int32_t cmd) {
                 // is tied to the swapchain, it's easiest to simply cleanup and
                 // start over (i.e. use a brute-force approach of re-starting
                 // the app)
-                if (demo.prepared) {
-                    demo_cleanup(&demo);
+                if (demo_.prepared) {
+                    demo_cleanup(&demo_);
                 }
 
                 // Parse Intents into argc, argv
@@ -4039,16 +4103,16 @@ static void processCommand(struct android_app *app, int32_t cmd) {
                 __android_log_print(ANDROID_LOG_INFO, appTag, "argc = %i", argc);
                 for (int i = 0; i < argc; i++) __android_log_print(ANDROID_LOG_INFO, appTag, "argv[%i] = %s", i, argv[i]);
 
-                demo_init(&demo, argc, argv);
-                demo.swappy_init_data.vm        = app->activity->vm;
-                demo.swappy_init_data.jactivity = app->activity->clazz;
+                demo_init(&demo_, argc, argv);
+                demo_.swappy_init_data.vm        = app->activity->vm;
+                demo_.swappy_init_data.jactivity = app->activity->clazz;
 
                 // Free the argv malloc'd by get_args
                 for (int i = 0; i < argc; i++) free(argv[i]);
 
-                demo.window = (void *)app->window;
-                demo_init_vk_swapchain(&demo);
-                demo_prepare(&demo);
+                demo_.window = app->window;
+                demo_init_vk_swapchain(&demo_);
+                demo_prepare(&demo_);
                 initialized = true;
             }
             break;
@@ -4070,7 +4134,9 @@ void android_main(struct android_app *app) {
     if (vulkanSupport == 0) return;
 #endif
 
-    demo.prepared = false;
+    demo_.prepared = false;
+    demo_init(&demo_,0,NULL);
+
 
     app->onAppCmd = processCommand;
     app->onInputEvent = processInput;
@@ -4084,15 +4150,55 @@ void android_main(struct android_app *app) {
             }
 
             if (app->destroyRequested != 0) {
-                demo_cleanup(&demo);
+                demo_cleanup(&demo_);
                 return;
             }
         }
         if (initialized && active) {
-            demo_run(&demo);
+            demo_run(&demo_);
         }
     }
 }
+
+void update_cube_count(int32_t new_num_cubes) {
+  demo_.new_num_cubes = new_num_cubes;
+  demo_.draw_cmd_dirty = true;
+}
+
+// Used when started from java activity.
+void android_main2(struct android_app *app) {
+#ifdef ANDROID
+    int vulkanSupport = InitVulkan();
+    if (vulkanSupport == 0) return;
+#endif
+
+    demo_.prepared = false;
+
+  while(true) {
+        if (!initialized) {
+            demo_init(&demo_, 0, NULL);
+            demo_.window = app->window;
+            demo_.swappy_init_data.vm        = app->activity->vm;
+            demo_.swappy_init_data.jactivity = app->activity->clazz;
+            demo_init_vk_swapchain(&demo_);
+            demo_prepare(&demo_);
+            initialized = true;
+            active = true;
+        }
+
+        if (app->destroyRequested != 0) {
+            demo_cleanup(&demo_);
+            initialized = false;
+            active = false;
+            return;
+        }
+
+        if (initialized && active) {
+            demo_run(&demo_);
+        }
+  }
+}
+
 #else
 int main(int argc, char **argv) {
     struct demo demo;
@@ -4124,4 +4230,8 @@ int main(int argc, char **argv) {
 
     return validation_error;
 }
+#endif
+
+#ifdef __cplusplus
+} // extern "C"
 #endif
