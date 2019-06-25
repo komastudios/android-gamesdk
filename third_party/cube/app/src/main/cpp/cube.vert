@@ -25,14 +25,25 @@ layout(std140, binding = 0) uniform buf {
         mat4 MVP;
         vec4 position[12*3];
         vec4 attr[12*3];
+        highp int numPerRow;
+        highp int numRows;
 } ubuf;
 
 layout (location = 0) out vec4 texcoord;
 layout (location = 1) out vec3 frag_pos;
 
-void main() 
+const int verticesPerModel = 12 * 3;
+
+void main()
 {
-   texcoord = ubuf.attr[gl_VertexIndex];
-   gl_Position = ubuf.MVP * ubuf.position[gl_VertexIndex];
+   const int vertexIndex = gl_VertexIndex % verticesPerModel;
+   texcoord = ubuf.attr[vertexIndex];
+   gl_Position = ubuf.MVP * ubuf.position[vertexIndex];
+
+   const int modelIndex = gl_VertexIndex / verticesPerModel;
+   const float gridIndexX = (modelIndex % ubuf.numPerRow) - (ubuf.numPerRow >> 1);
+   const float gridIndexY = (modelIndex / ubuf.numPerRow) - (ubuf.numRows >> 1);
+   const float distance = 10.0 / ubuf.numPerRow;
+   gl_Position.xy += vec2(gridIndexX, gridIndexY) * distance;
    frag_pos = gl_Position.xyz;
 }
