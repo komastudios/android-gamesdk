@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "66e6c39f_5d485a5c",
+        "filename": "src/swappy/common/ChoreographerThread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 363,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-06-25T21:51:38Z",
+      "side": 1,
+      "message": "Maybe want to make this into a const at the top of the file instead of a hardcoded value?",
+      "revId": "565755f6297419c4b0b7a41e3fe4344bd5ff685f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
