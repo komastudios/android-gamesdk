@@ -22,6 +22,30 @@
       "revId": "5ab7d0c8e8c696adc6a2cc0be200b4a65fe068cc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ae834823_0bbcc7b6",
+        "filename": "third_party/cube/app/CMakeLists.txt",
+        "patchSetId": 8
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-06-26T00:33:08Z",
+      "side": 0,
+      "message": "Done",
+      "parentUuid": "62aa4bb9_f8ca468d",
+      "range": {
+        "startLine": 54,
+        "startChar": 13,
+        "endLine": 54,
+        "endChar": 32
+      },
+      "revId": "5ab7d0c8e8c696adc6a2cc0be200b4a65fe068cc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }

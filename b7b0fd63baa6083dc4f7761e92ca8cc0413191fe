@@ -25,6 +25,54 @@
     },
     {
       "key": {
+        "uuid": "042322d7_30b0c371",
+        "filename": "third_party/cube/app/src/main/AndroidManifest.xml",
+        "patchSetId": 8
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-06-26T00:33:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6fe4c917_53813b2f",
+      "range": {
+        "startLine": 5,
+        "startChar": 32,
+        "endLine": 5,
+        "endChar": 36
+      },
+      "revId": "b7b0fd63baa6083dc4f7761e92ca8cc0413191fe",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5b82d8b2_84053db3",
+        "filename": "third_party/cube/app/src/main/AndroidManifest.xml",
+        "patchSetId": 8
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-06-26T00:33:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6fe4c917_53813b2f",
+      "range": {
+        "startLine": 5,
+        "startChar": 32,
+        "endLine": 5,
+        "endChar": 36
+      },
+      "revId": "b7b0fd63baa6083dc4f7761e92ca8cc0413191fe",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b47930be_5bf6db96",
         "filename": "third_party/cube/app/src/main/cpp/native-lib.c",
         "patchSetId": 8
@@ -45,6 +93,54 @@
       "revId": "b7b0fd63baa6083dc4f7761e92ca8cc0413191fe",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0d2159ba_4f37b6f5",
+        "filename": "third_party/cube/app/src/main/cpp/native-lib.c",
+        "patchSetId": 8
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-06-26T00:33:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b47930be_5bf6db96",
+      "range": {
+        "startLine": 5,
+        "startChar": 9,
+        "endLine": 5,
+        "endChar": 17
+      },
+      "revId": "b7b0fd63baa6083dc4f7761e92ca8cc0413191fe",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fc7ea470_86553227",
+        "filename": "third_party/cube/app/src/main/cpp/native-lib.c",
+        "patchSetId": 8
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-06-26T00:33:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b47930be_5bf6db96",
+      "range": {
+        "startLine": 5,
+        "startChar": 9,
+        "endLine": 5,
+        "endChar": 17
+      },
+      "revId": "b7b0fd63baa6083dc4f7761e92ca8cc0413191fe",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
