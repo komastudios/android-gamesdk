@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6fe4c917_53813b2f",
+        "filename": "third_party/cube/app/src/main/AndroidManifest.xml",
+        "patchSetId": 8
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1044651
+      },
+      "writtenOn": "2019-06-26T00:03:07Z",
+      "side": 1,
+      "message": "Better to keep strings.xml and use @string/app_name instead.",
+      "range": {
+        "startLine": 5,
+        "startChar": 32,
+        "endLine": 5,
+        "endChar": 36
+      },
+      "revId": "b7b0fd63baa6083dc4f7761e92ca8cc0413191fe",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b47930be_5bf6db96",
+        "filename": "third_party/cube/app/src/main/cpp/native-lib.c",
+        "patchSetId": 8
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1044651
+      },
+      "writtenOn": "2019-06-26T00:03:07Z",
+      "side": 1,
+      "message": "Don\u0027t do this...make a header if necessary.",
+      "range": {
+        "startLine": 5,
+        "startChar": 9,
+        "endLine": 5,
+        "endChar": 17
+      },
+      "revId": "b7b0fd63baa6083dc4f7761e92ca8cc0413191fe",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
