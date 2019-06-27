@@ -16,6 +16,24 @@
       "revId": "02f50a72f1c98831443837693c710bafc7839470",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c9ee6976_50820a3f",
+        "filename": "src/swappy/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-06-27T09:50:49Z",
+      "side": 1,
+      "message": "Let\u0027s look into removing that (if possible) as a separate cl?",
+      "parentUuid": "8056b406_c8a5e799",
+      "revId": "02f50a72f1c98831443837693c710bafc7839470",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
