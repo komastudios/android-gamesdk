@@ -16,6 +16,24 @@
       "revId": "a2aeb8667c99113c34df362fbb1af41e874dabab",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3dcb826a_767b4f67",
+        "filename": "README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-06-27T08:45:52Z",
+      "side": 1,
+      "message": "No need for this ;)\n\nThe source explorers (like android.googlesource.com, or GitHub, etc...) will usually automatically detect a markdown file and render it. See a nice example:\nhttps://android.googlesource.com/platform/frameworks/support/+/refs/heads/androidx-master-dev/ui/README.md\nor https://android.googlesource.com/platform/tools/apksig/+/refs/heads/master",
+      "parentUuid": "f7ac0773_87d18ce1",
+      "revId": "a2aeb8667c99113c34df362fbb1af41e874dabab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
