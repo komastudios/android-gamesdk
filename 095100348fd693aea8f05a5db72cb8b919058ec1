@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1e214a83_bcb23179",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 10
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-07-01T17:36:34Z",
+      "side": 1,
+      "message": "Do we need need num_per_rpw and num_rows since we are drawing only one cube ?",
+      "revId": "095100348fd693aea8f05a5db72cb8b919058ec1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "90940beb_d6640a8f",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 10
+      },
+      "lineNbr": 506,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-07-01T17:36:34Z",
+      "side": 1,
+      "message": "Looks like cpu_workload is not set by anything. In the previous change I tested aosp/993642 both GPU and CPU workload were tunable were here I can inly change GPU workload from the UI.",
+      "revId": "095100348fd693aea8f05a5db72cb8b919058ec1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "44d10c1c_3ea93ba5",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 10
+      },
+      "lineNbr": 894,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-07-01T17:36:34Z",
+      "side": 1,
+      "message": "We need to have some cleanup with the code that handled multiple cubes since we have now only one cube.",
+      "revId": "095100348fd693aea8f05a5db72cb8b919058ec1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "433834f7_965d0de3",
+        "filename": "third_party/cube/app/src/main/cpp/cube.frag",
+        "patchSetId": 10
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-07-01T17:36:34Z",
+      "side": 1,
+      "message": "Change the name to match the .c code (gpu_workload). This makes searching easier.",
+      "revId": "095100348fd693aea8f05a5db72cb8b919058ec1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
