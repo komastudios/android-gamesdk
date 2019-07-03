@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a76a82a3_67803662",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-07-03T12:29:10Z",
+      "side": 1,
+      "message": "The weird way that the gradle script was finding the external path was added in https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/a23f1253030ae0ec5921fa4b6e021b7929273c28%5E%21/\n\nCan you also perform the tests which are documented in that cl? If they work then please add them here. If not then we should fix those before submitting as I believe that there are still some external partners using that approach (or we should get them migrated).",
+      "revId": "9c9e0ae6dd05f1f13cb812a3ea479667eeadf13f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
