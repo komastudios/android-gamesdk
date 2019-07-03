@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "41f19f65_08bb03e1",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 10
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-07-03T00:33:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1e214a83_bcb23179",
+      "revId": "095100348fd693aea8f05a5db72cb8b919058ec1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "90940beb_d6640a8f",
         "filename": "third_party/cube/app/src/main/cpp/cube.c",
         "patchSetId": 10
@@ -33,6 +51,24 @@
       "revId": "095100348fd693aea8f05a5db72cb8b919058ec1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bc60a33f_b952917a",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 10
+      },
+      "lineNbr": 506,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-07-03T00:33:19Z",
+      "side": 1,
+      "message": "Adding the CPU stuff in subsequent CL. Removed entirely from this CL.",
+      "parentUuid": "90940beb_d6640a8f",
+      "revId": "095100348fd693aea8f05a5db72cb8b919058ec1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "036ef428_9a38e6b2",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 10
+      },
+      "lineNbr": 894,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-07-03T00:33:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "44d10c1c_3ea93ba5",
+      "revId": "095100348fd693aea8f05a5db72cb8b919058ec1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "433834f7_965d0de3",
         "filename": "third_party/cube/app/src/main/cpp/cube.frag",
         "patchSetId": 10
@@ -67,6 +121,24 @@
       "revId": "095100348fd693aea8f05a5db72cb8b919058ec1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8c176120_fdcd13df",
+        "filename": "third_party/cube/app/src/main/cpp/cube.frag",
+        "patchSetId": 10
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1491351
+      },
+      "writtenOn": "2019-07-03T00:33:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "433834f7_965d0de3",
+      "revId": "095100348fd693aea8f05a5db72cb8b919058ec1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
