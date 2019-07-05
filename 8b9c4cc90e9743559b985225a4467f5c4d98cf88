@@ -1,0 +1,7 @@
+Code-Review+2: Idries Hamadi <idries@google.com>
+Presubmit-Verified+1: Treehugger Robot <treehugger-gerrit@google.com>
+Submitted-by: Florian Rival <florianrival@google.com>
+Submitted-at: Fri, 05 Jul 2019 13:26:25 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1000494
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
