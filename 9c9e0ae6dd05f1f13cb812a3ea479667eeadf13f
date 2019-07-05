@@ -16,6 +16,24 @@
       "revId": "9c9e0ae6dd05f1f13cb812a3ea479667eeadf13f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e8d13f34_6e7c64d5",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-07-05T13:55:45Z",
+      "side": 1,
+      "message": "I tested the 2 ./gradlew invocations in this CL as well as different combinations for building zips using prebuilts SDKs (see CL description), everything seems to work.\nExternal path is resolved the same way as third_party folder, so that should work in all cases.",
+      "parentUuid": "a76a82a3_67803662",
+      "revId": "9c9e0ae6dd05f1f13cb812a3ea479667eeadf13f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
