@@ -7,6 +7,8 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Display;
 import android.view.Window;
@@ -24,6 +26,20 @@ public class SwappyDisplayManager implements DisplayManager.DisplayListener {
     private Activity mActivity;
     private WindowManager mWindowManager;
     private Display.Mode mCurrentMode;
+
+    private LooperThread mLooper;
+
+    private class LooperThread extends Thread {
+        public Handler mHandler;
+
+        public void run() {
+            Log.i(LOG_TAG, "Starting looper thread");
+            Looper.prepare();
+            mHandler = new Handler();
+            Looper.loop();
+            Log.i(LOG_TAG, "Terminating looper thread");
+        }
+    }
 
     @TargetApi(Build.VERSION_CODES.M)
     private boolean modeMatchesCurrentResolution(Display.Mode mode) {
@@ -60,7 +76,9 @@ public class SwappyDisplayManager implements DisplayManager.DisplayListener {
         DisplayManager dm = mActivity.getSystemService(DisplayManager.class);
 
         synchronized(this) {
-            dm.registerDisplayListener(this, null);
+            mLooper = new LooperThread();
+            mLooper.start();
+            dm.registerDisplayListener(this, mLooper.mHandler);
         }
     }
 
@@ -106,6 +124,10 @@ public class SwappyDisplayManager implements DisplayManager.DisplayListener {
                 w.setAttributes(l);
             }
         });
+    }
+
+    public void terminate() {
+        mLooper.mHandler.getLooper().quit();
     }
 
     @Override
