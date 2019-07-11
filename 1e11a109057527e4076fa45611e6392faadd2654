@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "449242ae_7037c638",
+        "filename": "samples/bouncyball/app/CMakeLists.txt",
+        "patchSetId": 4
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-07-11T01:22:27Z",
+      "side": 1,
+      "message": "\u0027gamesdk\u0027 -\u003e \u0027swappy\u0027 so that the app would link to the correct library. Without that compiling from Android Studio doesn\u0027t take affect.",
+      "revId": "1e11a109057527e4076fa45611e6392faadd2654",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0d4e7c5f_a48dcd04",
+        "filename": "third_party/cube/app/CMakeLists.txt",
+        "patchSetId": 4
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-07-11T01:22:27Z",
+      "side": 1,
+      "message": "\u0027gamesdk\u0027 -\u003e \u0027swappy\u0027 so that the app would link to the correct library. Without that compiling from Android Studio doesn\u0027t take affect.",
+      "revId": "1e11a109057527e4076fa45611e6392faadd2654",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
