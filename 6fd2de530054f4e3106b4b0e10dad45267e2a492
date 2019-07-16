@@ -34,6 +34,24 @@
       "revId": "6fd2de530054f4e3106b4b0e10dad45267e2a492",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1c5ca26e_64a76f22",
+        "filename": "src/extras/src/main/java/com/google/androidgamesdk/SwappyDisplayManager.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-07-16T17:18:29Z",
+      "side": 1,
+      "message": "Make sense, I overlooked the fact that await will unlock the lock",
+      "parentUuid": "8cfd2a62_7b910ea8",
+      "revId": "6fd2de530054f4e3106b4b0e10dad45267e2a492",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
