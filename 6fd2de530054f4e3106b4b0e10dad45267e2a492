@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "456060e8_2334e6b0",
+        "filename": "src/extras/src/main/java/com/google/androidgamesdk/SwappyDisplayManager.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-07-16T09:14:25Z",
+      "side": 1,
+      "message": "We\u0027re using this condition to ensure that mHandler is constructed before passing it to registerDisplayListener right?\n\nI\u0027m not sure why it\u0027s needed to use a lock in this method \"run\" - by reading the code I would assume that when mLock.lock is called in \"run\", it\u0027s blocked because it\u0027s locked by the thread that called start, which is now waiting because of mCondition.await (which will never be resolved, because mCondition.signal is called inside \"run\" after mLock.lock).",
+      "revId": "6fd2de530054f4e3106b4b0e10dad45267e2a492",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
