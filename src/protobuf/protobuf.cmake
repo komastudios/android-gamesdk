@@ -85,6 +85,7 @@ function(protobuf_generate_base)
            ${_protobuf_include_path}
            ${REL_FIL}
       WORKING_DIRECTORY ${_working_dir}
+      MAIN_DEPENDENCY ${FIL}
       COMMENT "Running C++ protocol buffer compiler on ${FIL}"
       VERBATIM)
 
