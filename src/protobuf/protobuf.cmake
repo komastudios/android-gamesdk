@@ -112,6 +112,10 @@ function(protobuf_generate_lite_cpp)
   protobuf_generate_base("cc" "--cpp_out" "" "/lite" ${ARGN})
 endfunction()
 
+function(protobuf_generate_lite_java)
+  protobuf_generate_base("java" "--java_out" "" "/java-lite" ${ARGN})
+endfunction()
+
 set(GP_SRC_DIR ${PROTOBUF_SRC_DIR}/google/protobuf)
 
 set(PROTOBUF_LITE_SRCS
