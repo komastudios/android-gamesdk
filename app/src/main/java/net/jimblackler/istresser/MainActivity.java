@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,19 +20,27 @@ public class MainActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    TextView freeMemory = findViewById(R.id.freeMemory);
-    freeMemory.setText(memoryString(Runtime.getRuntime().freeMemory()));
+    new Timer().schedule(new TimerTask() {
+      @Override
+      public void run() {
 
-    TextView totalMemory = findViewById(R.id.totalMemory);
-    totalMemory.setText(memoryString(Runtime.getRuntime().totalMemory()));
+        runOnUiThread(() -> {
+          TextView freeMemory = findViewById(R.id.freeMemory);
+          freeMemory.setText(memoryString(Runtime.getRuntime().freeMemory()));
 
-    TextView maxMemory = findViewById(R.id.maxMemory);
-    maxMemory.setText(memoryString(Runtime.getRuntime().maxMemory()));
+          TextView totalMemory = findViewById(R.id.totalMemory);
+          totalMemory.setText(memoryString(Runtime.getRuntime().totalMemory()));
 
-    TextView nativeHeap = findViewById(R.id.nativeHeap);
-    nativeHeap.setText(memoryString(Debug.getNativeHeapSize()));
+          TextView maxMemory = findViewById(R.id.maxMemory);
+          maxMemory.setText(memoryString(Runtime.getRuntime().maxMemory()));
 
-    TextView nativeAllocated = findViewById(R.id.nativeAllocated);
-    nativeAllocated.setText(memoryString(Debug.getNativeHeapAllocatedSize()));
+          TextView nativeHeap = findViewById(R.id.nativeHeap);
+          nativeHeap.setText(memoryString(Debug.getNativeHeapSize()));
+
+          TextView nativeAllocated = findViewById(R.id.nativeAllocated);
+          nativeAllocated.setText(memoryString(Debug.getNativeHeapAllocatedSize()));
+        });
+      }
+    }, 0, 1000);
   }
 }
