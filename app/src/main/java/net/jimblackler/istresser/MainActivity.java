@@ -11,6 +11,10 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
+  static {
+    System.loadLibrary("native-lib");
+  }
+
   private static String memoryString(long bytes) {
     return String.format(Locale.getDefault(), "%.1f MB", (float) bytes / (1024 * 1024));
   }
@@ -19,6 +23,10 @@ public class MainActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+
+    String test = stringFromJNI();
+    System.out.println("test");
+    System.out.println(test);
 
     new Timer().schedule(new TimerTask() {
       @Override
@@ -43,4 +51,6 @@ public class MainActivity extends AppCompatActivity {
       }
     }, 0, 1000);
   }
+
+  public native String stringFromJNI();
 }
