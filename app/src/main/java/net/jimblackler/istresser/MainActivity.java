@@ -32,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
       @Override
       public void run() {
 
+        nativeConsume(1024 * 512);
+
         runOnUiThread(() -> {
           TextView freeMemory = findViewById(R.id.freeMemory);
           freeMemory.setText(memoryString(Runtime.getRuntime().freeMemory()));
@@ -49,8 +51,9 @@ public class MainActivity extends AppCompatActivity {
           nativeAllocated.setText(memoryString(Debug.getNativeHeapAllocatedSize()));
         });
       }
-    }, 0, 1000);
+    }, 0, 1000 / 50);
   }
 
+  public native void nativeConsume(int bytes);
   public native String stringFromJNI();
 }
