@@ -91,4 +91,125 @@
             android:layout_height="wrap_content" />
     </TableRow>
 
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TRIM MEMORY COMPLETE" />
+
+        <TextView
+            android:id="@+id/trimMemoryComplete"
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TRIM MEMORY MODERATE" />
+
+        <TextView
+            android:id="@+id/trimMemoryModerate"
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TRIM MEMORY BACKGROUND" />
+
+        <TextView
+            android:id="@+id/trimMemoryBackground"
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TRIM MEMORY UI HIDDEN" />
+
+        <TextView
+            android:id="@+id/trimMemoryUiHidden"
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TRIM MEMORY RUNNING CRITICAL" />
+
+        <TextView
+            android:id="@+id/trimMemoryRunningCritical"
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TRIM MEMORY RUNNING LOW" />
+
+        <TextView
+            android:id="@+id/trimMemoryRunningLow"
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TRIM MEMORY RUNNING MODERATE" />
+
+        <TextView
+            android:id="@+id/trimMemoryRunningModerate"
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
 </TableLayout>
