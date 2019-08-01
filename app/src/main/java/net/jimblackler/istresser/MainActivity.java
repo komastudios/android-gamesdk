@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
   private ArrayList<byte[]> data = Lists.newArrayList();
 
   private Multiset<Integer> onTrims = HashMultiset.create();
+  private long recordNativeHeapAllocatedSize;
 
   private static String memoryString(long bytes) {
     return String.format(Locale.getDefault(), "%.1f MB", (float) bytes / (1024 * 1024));
@@ -72,7 +73,14 @@ public class MainActivity extends AppCompatActivity {
       nativeHeap.setText(memoryString(Debug.getNativeHeapSize()));
 
       TextView nativeAllocated = findViewById(R.id.nativeAllocated);
-      nativeAllocated.setText(memoryString(Debug.getNativeHeapAllocatedSize()));
+      long nativeHeapAllocatedSize = Debug.getNativeHeapAllocatedSize();
+      nativeAllocated.setText(memoryString(nativeHeapAllocatedSize));
+      if (nativeHeapAllocatedSize > recordNativeHeapAllocatedSize) {
+        recordNativeHeapAllocatedSize = nativeHeapAllocatedSize;
+      }
+
+      TextView recordNativeAllocated = findViewById(R.id.recordNativeAllocated);
+      recordNativeAllocated.setText(memoryString(recordNativeHeapAllocatedSize));
 
       TextView trimMemoryComplete = findViewById(R.id.trimMemoryComplete);
       trimMemoryComplete.setText(
