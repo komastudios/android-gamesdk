@@ -101,8 +101,6 @@ public class MainActivity extends AppCompatActivity {
       TextView trimMemoryRunningModerate = findViewById(R.id.trimMemoryRunningModerate);
       trimMemoryRunningModerate.setText(
           String.format(Locale.getDefault(), "%d", onTrims.count(TRIM_MEMORY_RUNNING_MODERATE)));
-
-
     });
   }
 
@@ -112,7 +110,6 @@ public class MainActivity extends AppCompatActivity {
       for (int count = 0; count < array.length; count++) {
         array[count] = (byte) count;
       }
-
       data.add(array);
     } catch (OutOfMemoryError e) {
       e.printStackTrace();
