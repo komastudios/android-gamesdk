@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
   private ArrayList<byte[]> data = Lists.newArrayList();
 
   private Multiset<Integer> onTrims = HashMultiset.create();
+  private int nativeAllocatedByTest;
 
   private static String memoryString(long bytes) {
     return String.format(Locale.getDefault(), "%.1f MB", (float) bytes / (1024 * 1024));
@@ -40,8 +41,9 @@ public class MainActivity extends AppCompatActivity {
     new Timer().schedule(new TimerTask() {
       @Override
       public void run() {
-
-        nativeConsume(1024 * 512);
+        int bytes = 1024 * 512;
+        nativeAllocatedByTest += bytes;
+        nativeConsume(bytes);
         //jvmConsume(1024 * 512);
 
         updateInfo();
@@ -71,6 +73,9 @@ public class MainActivity extends AppCompatActivity {
 
       TextView nativeAllocated = findViewById(R.id.nativeAllocated);
       nativeAllocated.setText(memoryString(Debug.getNativeHeapAllocatedSize()));
+
+      TextView nativeAllocatedByTestTextView = findViewById(R.id.nativeAllocatedByTest);
+      nativeAllocatedByTestTextView.setText(memoryString(nativeAllocatedByTest));
 
       TextView trimMemoryComplete = findViewById(R.id.trimMemoryComplete);
       trimMemoryComplete.setText(
@@ -118,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
   public void onTrimMemory(int level) {
     Log.i(TAG, String.format("onTrimMemory %d", level));
 
+    nativeAllocatedByTest = 0;
     freeAll();
     data.clear();
     System.gc();

@@ -99,6 +99,23 @@
             style="@style/TableCell"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Native Allocated By Test" />
+
+        <TextView
+            android:id="@+id/nativeAllocatedByTest"
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="TRIM MEMORY COMPLETE" />
 
         <TextView
