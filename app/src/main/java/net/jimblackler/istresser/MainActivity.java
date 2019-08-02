@@ -25,7 +25,11 @@ public class MainActivity extends AppCompatActivity {
   private ArrayList<byte[]> data = Lists.newArrayList();
 
   private Multiset<Integer> onTrims = HashMultiset.create();
+<<<<<<< HEAD   (bef160 Keep track of sums allocated by the app.)
   private int nativeAllocatedByTest;
+=======
+  private long recordNativeHeapAllocatedSize;
+>>>>>>> BRANCH (e6d769 Stores record native allocation to date.)
 
   private static String memoryString(long bytes) {
     return String.format(Locale.getDefault(), "%.1f MB", (float) bytes / (1024 * 1024));
@@ -72,7 +76,14 @@ public class MainActivity extends AppCompatActivity {
       nativeHeap.setText(memoryString(Debug.getNativeHeapSize()));
 
       TextView nativeAllocated = findViewById(R.id.nativeAllocated);
-      nativeAllocated.setText(memoryString(Debug.getNativeHeapAllocatedSize()));
+      long nativeHeapAllocatedSize = Debug.getNativeHeapAllocatedSize();
+      nativeAllocated.setText(memoryString(nativeHeapAllocatedSize));
+      if (nativeHeapAllocatedSize > recordNativeHeapAllocatedSize) {
+        recordNativeHeapAllocatedSize = nativeHeapAllocatedSize;
+      }
+
+      TextView recordNativeAllocated = findViewById(R.id.recordNativeAllocated);
+      recordNativeAllocated.setText(memoryString(recordNativeHeapAllocatedSize));
 
       TextView nativeAllocatedByTestTextView = findViewById(R.id.nativeAllocatedByTest);
       nativeAllocatedByTestTextView.setText(memoryString(nativeAllocatedByTest));

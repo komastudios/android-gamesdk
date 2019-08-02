@@ -99,10 +99,17 @@
             style="@style/TableCell"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+<<<<<<< HEAD   (bef160 Keep track of sums allocated by the app.)
             android:text="Native Allocated By Test" />
 
         <TextView
             android:id="@+id/nativeAllocatedByTest"
+=======
+            android:text="Record Native Allocated" />
+
+        <TextView
+            android:id="@+id/recordNativeAllocated"
+>>>>>>> BRANCH (e6d769 Stores record native allocation to date.)
             style="@style/TableCell"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
