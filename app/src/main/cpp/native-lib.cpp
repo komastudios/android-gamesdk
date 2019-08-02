@@ -9,14 +9,6 @@ constexpr auto appname = "istresser";
 std::list<char *> allocated;
 std::mutex mtx;
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_net_jimblackler_istresser_MainActivity_stringFromJNI(
-    JNIEnv *env,
-    jobject /* this */) {
-  std::string hello = "Hello from C++";
-  return env->NewStringUTF(hello.c_str());
-}
-
 extern "C" JNIEXPORT void JNICALL
 Java_net_jimblackler_istresser_MainActivity_nativeConsume(JNIEnv *env, jobject instance,
                                                           jint bytes) {
@@ -35,6 +27,7 @@ Java_net_jimblackler_istresser_MainActivity_nativeConsume(JNIEnv *env, jobject i
   }
   mtx.unlock();
 }
+
 extern "C" JNIEXPORT void JNICALL
 Java_net_jimblackler_istresser_MainActivity_freeAll(JNIEnv *env, jobject instance) {
   mtx.lock();
