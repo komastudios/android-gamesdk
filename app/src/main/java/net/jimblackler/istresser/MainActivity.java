@@ -1,5 +1,7 @@
 package net.jimblackler.istresser;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Debug;
 import android.support.v7.app.AppCompatActivity;
@@ -38,7 +40,15 @@ public class MainActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    System.out.println("test");
+    Intent launchIntent = getIntent();
+    if("com.google.intent.action.TEST_LOOP".equals(launchIntent.getAction())) {
+      int scenario = launchIntent.getIntExtra("scenario", 0);
+      // Code to handle your game loop here
+      Uri logFile = launchIntent.getData();
+      if (logFile != null) {
+        Log.i(TAG, "Log file " + logFile.getEncodedPath());
+      }
+    }
 
     new Timer().schedule(new TimerTask() {
       @Override
