@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
   private Multiset<Integer> onTrims = HashMultiset.create();
   private long nativeAllocatedByTest;
   private long recordNativeHeapAllocatedSize;
+  private int totalTrims = 0;
 
   private static String memoryString(long bytes) {
     return String.format(Locale.getDefault(), "%.1f MB", (float) bytes / (1024 * 1024));
@@ -140,6 +141,10 @@ public class MainActivity extends AppCompatActivity {
 
     updateInfo();
     super.onTrimMemory(level);
+    totalTrims++;
+    if (totalTrims == 6) {
+      finish();
+    }
   }
 
   public native void freeAll();
