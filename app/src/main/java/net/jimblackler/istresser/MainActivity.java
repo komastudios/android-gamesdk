@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
   private ArrayList<byte[]> data = Lists.newArrayList();
 
   private Multiset<Integer> onTrims = HashMultiset.create();
-  private int nativeAllocatedByTest;
+  private long nativeAllocatedByTest;
   private long recordNativeHeapAllocatedSize;
 
   private static String memoryString(long bytes) {
