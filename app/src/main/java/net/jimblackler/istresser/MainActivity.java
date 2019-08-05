@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     new Timer().schedule(new TimerTask() {
       @Override
       public void run() {
-        int bytes = 1024 * 1024 * 2;
+        int bytes = 1024 * 1024 * 8;
         nativeAllocatedByTest += bytes;
         nativeConsume(bytes);
         //jvmConsume(1024 * 512);
