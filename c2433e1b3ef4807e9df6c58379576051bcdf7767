@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "919e5d20_bf8babbe",
+        "filename": "test/devicefarm/OWNERS",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-08-06T16:22:55Z",
+      "side": 1,
+      "message": "Let\u0027s not have an owners file here. I\u0027m happy for you get owners at a higher level (say test/)?",
+      "revId": "c2433e1b3ef4807e9df6c58379576051bcdf7767",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "98322acf_d924d231",
+        "filename": "test/devicefarm/hello/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-08-06T16:22:55Z",
+      "side": 1,
+      "message": "Pls remove tab",
+      "revId": "c2433e1b3ef4807e9df6c58379576051bcdf7767",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "44f7291c_487fa7ac",
+        "filename": "test/devicefarm/hello/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-08-06T16:22:55Z",
+      "side": 1,
+      "message": "Pls remove tab",
+      "revId": "c2433e1b3ef4807e9df6c58379576051bcdf7767",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
