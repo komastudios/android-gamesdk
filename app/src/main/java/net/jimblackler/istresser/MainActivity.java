@@ -9,11 +9,18 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.google.common.collect.HashMultiset;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -30,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
   private long nativeAllocatedByTest;
   private long recordNativeHeapAllocatedSize;
   private int totalTrims = 0;
+  private PrintStream resultsStream = System.out;
+  private boolean pauseAllocation = false;
 
   private static String memoryString(long bytes) {
     return String.format(Locale.getDefault(), "%.1f MB", (float) bytes / (1024 * 1024));
@@ -41,18 +50,33 @@ public class MainActivity extends AppCompatActivity {
     setContentView(R.layout.activity_main);
 
     Intent launchIntent = getIntent();
-    if("com.google.intent.action.TEST_LOOP".equals(launchIntent.getAction())) {
-      int scenario = launchIntent.getIntExtra("scenario", 0);
-      // Code to handle your game loop here
+    if ("com.google.intent.action.TEST_LOOP".equals(launchIntent.getAction())) {
       Uri logFile = launchIntent.getData();
       if (logFile != null) {
-        Log.i(TAG, "Log file " + logFile.getEncodedPath());
+        String logPath = logFile.getEncodedPath();
+        if (logPath != null) {
+          Log.i(TAG, "Log file " + logPath);
+          try {
+            resultsStream = new PrintStream(
+                Objects.requireNonNull(getContentResolver().openOutputStream(logFile)));
+          } catch (FileNotFoundException e) {
+            e.printStackTrace();
+          }
+        }
       }
+      int scenario = launchIntent.getIntExtra("scenario", 0);
+      resultsStream.println(new JSONObject(ImmutableMap.of(
+          "version", 1,
+          "scenario", scenario
+      )));
     }
 
     new Timer().schedule(new TimerTask() {
       @Override
       public void run() {
+        if (pauseAllocation) {
+          return;
+        }
         int bytes = 1024 * 1024 * 8;
         nativeAllocatedByTest += bytes;
         nativeConsume(bytes);
@@ -140,23 +164,66 @@ public class MainActivity extends AppCompatActivity {
 
   @Override
   public void onTrimMemory(int level) {
-    Log.i(TAG, String.format("onTrimMemory %d", level));
+
+    try {
+      JSONObject report = new JSONObject();
+      report.put("onTrimMemory", level);
+      report.put("totalTrims", totalTrims);
+      report.put("freeMemory", Runtime.getRuntime().freeMemory());
+      report.put("totalMemory", Runtime.getRuntime().totalMemory());
+      report.put("maxMemory", Runtime.getRuntime().maxMemory());
+      report.put("nativeHeap", Debug.getNativeHeapSize());
+      report.put("nativeAllocated", Debug.getNativeHeapAllocatedSize());
+      report.put("recordNativeAllocated", recordNativeHeapAllocatedSize);
+      report.put("paused", pauseAllocation);
+      resultsStream.println(report);
+    } catch (JSONException e) {
+      throw new RuntimeException(e);
+    }
 
     nativeAllocatedByTest = 0;
-    freeAll();
-    data.clear();
-    System.gc();
 
+    if (!pauseAllocation) {
+      pauseAllocation = true;
+      new Timer().schedule(
+          new TimerTask() {
+            @Override
+            public void run() {
+              resultsStream.println(new JSONObject(ImmutableMap.of(
+                  "freeing", true
+              )));
+              freeAll();
+              data.clear();
+              System.gc();
+              new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                  resultsStream.println(new JSONObject(ImmutableMap.of(
+                      "resuming", true
+                  )));
+                  pauseAllocation = false;
+                }
+              }, 1000);
+            }
+          },
+          500 * totalTrims
+      );
+    }
     onTrims.add(level);
 
     updateInfo();
     super.onTrimMemory(level);
     totalTrims++;
-    if (totalTrims == 6) {
+    if (totalTrims == 50) {
+      resultsStream.println(new JSONObject(ImmutableMap.of(
+          "record", recordNativeHeapAllocatedSize
+      )));
+      resultsStream.close();
       finish();
     }
   }
 
   public native void freeAll();
+
   public native void nativeConsume(int bytes);
 }

@@ -12,8 +12,6 @@ std::mutex mtx;
 extern "C" JNIEXPORT void JNICALL
 Java_net_jimblackler_istresser_MainActivity_nativeConsume(JNIEnv *env, jobject instance,
                                                           jint bytes) {
-  __android_log_print(ANDROID_LOG_INFO, appname, "Allocating %d", bytes);
-
   mtx.lock();
   auto byte_count = (size_t) bytes;
   char *data = (char *) malloc(byte_count);
