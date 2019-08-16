@@ -2,6 +2,7 @@ package net.jimblackler.istresser;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Debug;
 import android.support.v7.app.AppCompatActivity;
@@ -9,7 +10,6 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.google.common.collect.HashMultiset;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
 
@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
   private int totalTrims = 0;
   private PrintStream resultsStream = System.out;
   private boolean pauseAllocation = false;
+  private long startTime;
 
   private static String memoryString(long bytes) {
     return String.format(Locale.getDefault(), "%.1f MB", (float) bytes / (1024 * 1024));
@@ -48,28 +49,47 @@ public class MainActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-
-    Intent launchIntent = getIntent();
-    if ("com.google.intent.action.TEST_LOOP".equals(launchIntent.getAction())) {
-      Uri logFile = launchIntent.getData();
-      if (logFile != null) {
-        String logPath = logFile.getEncodedPath();
-        if (logPath != null) {
-          Log.i(TAG, "Log file " + logPath);
-          try {
-            resultsStream = new PrintStream(
-                Objects.requireNonNull(getContentResolver().openOutputStream(logFile)));
-          } catch (FileNotFoundException e) {
-            e.printStackTrace();
+    try {
+      JSONObject report = new JSONObject();
+      report.put("version", 3);
+      Intent launchIntent = getIntent();
+      if ("com.google.intent.action.TEST_LOOP".equals(launchIntent.getAction())) {
+        Uri logFile = launchIntent.getData();
+        if (logFile != null) {
+          String logPath = logFile.getEncodedPath();
+          if (logPath != null) {
+            Log.i(TAG, "Log file " + logPath);
+            try {
+              resultsStream = new PrintStream(
+                  Objects.requireNonNull(getContentResolver().openOutputStream(logFile)));
+            } catch (FileNotFoundException e) {
+              e.printStackTrace();
+            }
           }
         }
+        int scenario = launchIntent.getIntExtra("scenario", 0);
+        report.put("scenario", scenario);
       }
-      int scenario = launchIntent.getIntExtra("scenario", 0);
-      resultsStream.println(new JSONObject(ImmutableMap.of(
-          "version", 1,
-          "scenario", scenario
-      )));
+      JSONObject build = new JSONObject();
+
+      build.put("ID", Build.ID);
+      build.put("DISPLAY", Build.DISPLAY);
+      build.put("PRODUCT", Build.PRODUCT);
+      build.put("DEVICE", Build.DEVICE);
+      build.put("BOARD", Build.BOARD);
+      build.put("MANUFACTURER", Build.MANUFACTURER);
+      build.put("BRAND", Build.BRAND);
+      build.put("MODEL", Build.MODEL);
+      build.put("BOOTLOADER", Build.BOOTLOADER);
+      build.put("HARDWARE", Build.HARDWARE);
+      report.put("build", build);
+
+      resultsStream.println(report);
+    } catch (JSONException e) {
+      e.printStackTrace();
     }
+
+    this.startTime = System.currentTimeMillis();
 
     new Timer().schedule(new TimerTask() {
       @Override
@@ -82,7 +102,14 @@ public class MainActivity extends AppCompatActivity {
         nativeConsume(bytes);
         //jvmConsume(1024 * 512);
 
-        updateInfo();
+        try {
+          JSONObject report = standardInfo();
+          report.put("freeing", true);
+          resultsStream.println(report);
+          updateInfo();
+        } catch (JSONException e) {
+          e.printStackTrace();
+        }
       }
     }, 0, 1000 / 50);
   }
@@ -164,63 +191,87 @@ public class MainActivity extends AppCompatActivity {
 
   @Override
   public void onTrimMemory(int level) {
-
     try {
-      JSONObject report = new JSONObject();
+      JSONObject report = standardInfo();
       report.put("onTrimMemory", level);
-      report.put("totalTrims", totalTrims);
-      report.put("freeMemory", Runtime.getRuntime().freeMemory());
-      report.put("totalMemory", Runtime.getRuntime().totalMemory());
-      report.put("maxMemory", Runtime.getRuntime().maxMemory());
-      report.put("nativeHeap", Debug.getNativeHeapSize());
-      report.put("nativeAllocated", Debug.getNativeHeapAllocatedSize());
-      report.put("recordNativeAllocated", recordNativeHeapAllocatedSize);
-      report.put("paused", pauseAllocation);
+      nativeAllocatedByTest = 0;
+
+      if (!pauseAllocation) {
+        pauseAllocation = true;
+        int delay = 500 * totalTrims;
+        report.put("delay", delay);
+        new Timer().schedule(
+            new TimerTask() {
+              @Override
+              public void run() {
+                try {
+                  JSONObject report = standardInfo();
+                  report.put("freeing", true);
+                  resultsStream.println(report);
+                  freeAll();
+                  data.clear();
+                  System.gc();
+                  new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+
+
+                      try {
+                        JSONObject report = standardInfo();
+                        report.put("resuming", true);
+                        resultsStream.println(report);
+
+                        pauseAllocation = false;
+                      } catch (JSONException e) {
+                        e.printStackTrace();
+                      }
+
+                    }
+                  }, 1000);
+                } catch (JSONException e) {
+                  e.printStackTrace();
+                }
+              }
+            },
+            delay
+        );
+      }
       resultsStream.println(report);
+
+      onTrims.add(level);
+
+      updateInfo();
+      super.onTrimMemory(level);
+      totalTrims++;
+      if (totalTrims == 50) {
+        try {
+          report = standardInfo();
+          report.put("exiting", true);
+          resultsStream.println(report);
+        } catch (JSONException e) {
+          e.printStackTrace();
+        }
+        resultsStream.close();
+        finish();
+      }
     } catch (JSONException e) {
       throw new RuntimeException(e);
     }
 
-    nativeAllocatedByTest = 0;
+  }
 
-    if (!pauseAllocation) {
-      pauseAllocation = true;
-      new Timer().schedule(
-          new TimerTask() {
-            @Override
-            public void run() {
-              resultsStream.println(new JSONObject(ImmutableMap.of(
-                  "freeing", true
-              )));
-              freeAll();
-              data.clear();
-              System.gc();
-              new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                  resultsStream.println(new JSONObject(ImmutableMap.of(
-                      "resuming", true
-                  )));
-                  pauseAllocation = false;
-                }
-              }, 1000);
-            }
-          },
-          500 * totalTrims
-      );
-    }
-    onTrims.add(level);
-
-    updateInfo();
-    super.onTrimMemory(level);
-    totalTrims++;
-    if (totalTrims == 50) {
-      resultsStream.println(new JSONObject(ImmutableMap.of(
-          "record", recordNativeHeapAllocatedSize
-      )));
-      resultsStream.close();
-      finish();
-    }
+  private JSONObject standardInfo() throws JSONException {
+    JSONObject report = new JSONObject();
+    report.put("time", System.currentTimeMillis() - this.startTime);
+    report.put("totalTrims", totalTrims);
+    report.put("freeMemory", Runtime.getRuntime().freeMemory());
+    report.put("totalMemory", Runtime.getRuntime().totalMemory());
+    report.put("maxMemory", Runtime.getRuntime().maxMemory());
+    report.put("nativeHeap", Debug.getNativeHeapSize());
+    report.put("nativeAllocated", Debug.getNativeHeapAllocatedSize());
+    report.put("recordNativeAllocated", recordNativeHeapAllocatedSize);
+    report.put("paused", pauseAllocation);
+    return report;
   }
 
   public native void freeAll();
