@@ -17,7 +17,6 @@
 #include "swappy/swappyGL.h"
 #include "swappy/swappyGL_extra.h"
 #include "full/tuningfork.pb.h"
-#include "full/tuningfork_clearcut_log.pb.h"
 #include "full/dev_tuningfork.pb.h"
 #include <sstream>
 #include <condition_variable>
@@ -32,8 +31,6 @@
 using ::com::google::tuningfork::FidelityParams;
 using ::com::google::tuningfork::Settings;
 using ::com::google::tuningfork::Annotation;
-using ::logs::proto::tuningfork::TuningForkLogEvent;
-using ::logs::proto::tuningfork::TuningForkHistogram;
 
 namespace proto_tf = com::google::tuningfork;
 namespace tf = tuningfork;
@@ -68,78 +65,34 @@ std::string ReplaceReturns(const std::string& s) {
     return r;
 }
 
-std::string PrettyPrintTuningForkLogEvent(const TuningForkLogEvent& evt) {
-    std::stringstream eventStr;
-    eventStr << "TuningForkLogEvent {\n";
-    if (evt.has_fidelityparams()) {
-        FidelityParams p;
-        p.ParseFromArray(evt.fidelityparams().c_str(), evt.fidelityparams().length());
-        eventStr << "  fidelityparams : " << ReplaceReturns(p.DebugString()) << "\n";
-    }
-    for (int i=0; i<evt.histograms_size(); ++i) {
-        auto &h = evt.histograms(i);
-        Annotation ann;
-        ann.ParseFromArray(h.annotation().c_str(), h.annotation().length());
-        bool first = true;
-        eventStr << "  histogram {\n";
-        eventStr << "    instrument_id : " << h.instrument_id() << "\n";
-        eventStr << "    annotation : " << ReplaceReturns(ann.DebugString()) << "\n    counts : ";
-        eventStr << "[";
-        for (int j=0; j<h.counts_size(); ++j) {
-            if (first) {
-                first = false;
-            } else {
-                eventStr << ",";
-            }
-            eventStr << h.counts(j);
-        }
-        eventStr << "]\n  }\n";
-    }
-    if (evt.has_experiment_id()) {
-        eventStr << "  experiment_id : " << evt.experiment_id() << "\n";
-    }
-    if (evt.has_session_id()) {
-        eventStr << "  session_id : " << evt.session_id() << "\n";
-    }
-    if (evt.has_device_info()) {
-        eventStr << "  device_info : {" << ReplaceReturns(evt.device_info().DebugString()) << "}\n";
-    }
-    if (evt.has_apk_package_name()) {
-        eventStr << "  apk_package_name : " << evt.apk_package_name() << "\n";
-    }
-    if (evt.has_apk_version_code()) {
-        eventStr << "  apk_version_code : " << evt.apk_version_code() << "\n";
-    }
-    if (evt.has_tuningfork_version()) {
-        eventStr << "  tuningfork_version : " << evt.tuningfork_version() << "\n";
-    }
-    eventStr << "}";
-    return eventStr.str();
-}
 void SplitAndLog(const std::string& s) {
     std::istringstream str(s);
     std::string line;
     std::stringstream to_log;
-    const int nlines_per_log = 16;
+    const int nlines_per_log = 8;
+    const int max_line_len = 200;
     int l = nlines_per_log;
     while (std::getline(str, line, '\n')) {
-        to_log << line << '\n';
-        if(--l<=0) {
-            ALOGI("%s", to_log.str().c_str());
-            l = nlines_per_log;
-            to_log.str("");
-        }
+        int offset = 0;
+        do {
+            auto subline = line.substr(offset, max_line_len);
+            offset += subline.length();
+            to_log << subline << '\n';
+            if(--l<=0) {
+                ALOGI("%s", to_log.str().c_str());
+                l = nlines_per_log;
+                to_log.str("");
+            }
+        } while(line.length() - offset > 0);
     }
     if (to_log.str().length()>0)
         ALOGI("%s", to_log.str().c_str());
 }
 
-void UploadCallback(const CProtobufSerialization *tuningfork_log_event) {
+void UploadCallback(const char *tuningfork_log_event, size_t n) {
     if(tuningfork_log_event) {
-        TuningForkLogEvent evt;
-        evt.ParseFromArray(tuningfork_log_event->bytes, tuningfork_log_event->size);
-        auto pp = PrettyPrintTuningForkLogEvent(evt);
-        SplitAndLog(pp);
+        std::string evt(tuningfork_log_event, n);
+        SplitAndLog(evt);
     }
 }
 

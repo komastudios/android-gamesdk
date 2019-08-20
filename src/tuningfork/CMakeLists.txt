@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.4.1)
 
 include("../protobuf/protobuf.cmake")
 set( MODPB64_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../external/modp_b64")
-set( JSON11_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/json11")
+set( THIRDPARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../third_party")
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Werror -Wthread-safety" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D _LIBCPP_ENABLE_THREAD_SAFETY_ANNOTATIONS -O3 -fPIC" )
@@ -28,24 +28,25 @@ include_directories( ../../include )
 include_directories( ../../src/swappy )
 include_directories( ../common )
 include_directories( ${MODPB64_DIR}/modp_b64)
+include_directories( ${THIRDPARTY_DIR} )
 
 include_directories(${PROTO_GENS_DIR})
 
 set( TUNINGFORK_SRCS
-  clearcut_backend.cpp
   crash_handler.cpp
   histogram.cpp
   prong.cpp
   uploadthread.cpp
   tuningfork.cpp
   tuningfork_c.cpp
-  clearcutserializer.cpp
   protobuf_util.cpp
   annotation_util.cpp
   tuningfork_extra.cpp
   tuningfork_utils.cpp
   fpdownload.cpp
-  ${JSON11_DIR}/json11.cpp
+  ge_backend.cpp
+  ge_serializer.cpp
+  ${THIRDPARTY_DIR}/json11/json11.cpp
   ${MODPB64_DIR}/modp_b64.cc
   ${PROTO_GENS_DIR}/nano/tuningfork.pb.c
   ${PROTO_GENS_DIR}/nano/tuningfork_clearcut_log.pb.c

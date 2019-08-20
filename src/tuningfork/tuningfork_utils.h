@@ -16,8 +16,14 @@
 
 #pragma once
 
+#include "tuningfork/tuningfork.h"
+
+#include "tuningfork_internal.h"
+
 #include <string>
 #include <jni.h>
+
+#include "json11/json11.hpp"
 
 class AAsset;
 
@@ -46,10 +52,25 @@ namespace file_utils {
 
     bool DeleteFile(const std::string& path);
 
+    bool LoadBytesFromFile(std::string file_name, CProtobufSerialization* params);
+
+    bool SaveBytesToFile(std::string file_name, const CProtobufSerialization* params);
+
     // Call NativeContext.getCacheDir via JNI
     std::string GetAppCacheDir(JNIEnv* env, jobject context);
 
 } // namespace file_utils
+
+namespace json_utils {
+
+    // Resource name for the tuning parameters of an apk, identified by package
+    // name and version code.
+    std::string GetResourceName(const ExtraUploadInfo& request_info);
+
+    // See DeviceSpec in proto/performanceparameters.proto
+    json11::Json::object DeviceSpecJson(const ExtraUploadInfo& request_info);
+
+} // namespace json_utils
 
 // Get a unique identifier using java.util.UUID
 std::string UniqueId(JNIEnv* env);

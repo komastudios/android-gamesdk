@@ -24,6 +24,38 @@
 
 namespace tuningfork {
 
+Prong::Prong(InstrumentationKey instrumentation_key,
+             const SerializedAnnotation &annotation,
+             const TFHistogram& histogram_settings)
+        : instrumentation_key_(instrumentation_key), annotation_(annotation),
+          last_time_ns_(std::chrono::steady_clock::time_point::min()),
+          histogram_(histogram_settings) {}
+
+void Prong::Tick(TimePoint t_ns) {
+    if (last_time_ns_ != std::chrono::steady_clock::time_point::min())
+        Trace(t_ns - last_time_ns_);
+    last_time_ns_ = t_ns;
+}
+
+void Prong::Trace(Duration dt_ns) {
+    // The histogram stores millisecond values as doubles
+    histogram_.Add(
+        double(std::chrono::duration_cast<std::chrono::nanoseconds>(dt_ns).count()) / 1000000);
+}
+
+void Prong::Clear() {
+    last_time_ns_ = std::chrono::steady_clock::time_point::min();
+    histogram_.Clear();
+}
+
+size_t Prong::Count() const {
+    return histogram_.Count();
+}
+
+void Prong::SetInstrumentKey(InstrumentationKey key) {
+    instrumentation_key_ = key;
+}
+
 // Allocate all the prongs up front
 ProngCache::ProngCache(size_t size, int max_num_instrumentation_keys,
                        const std::vector<TFHistogram> &histogram_settings,
