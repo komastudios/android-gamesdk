@@ -18,7 +18,6 @@
 #include "tuningfork/tuningfork_internal.h"
 
 #include "full/tuningfork.pb.h"
-#include "full/tuningfork_clearcut_log.pb.h"
 #include "full/dev_tuningfork.pb.h"
 
 #include "gtest/gtest.h"
@@ -35,25 +34,24 @@ namespace tuningfork_test {
 
 using ::com::google::tuningfork::FidelityParams;
 using ::com::google::tuningfork::Annotation;
-using ::logs::proto::tuningfork::TuningForkLogEvent;
-using ::logs::proto::tuningfork::TuningForkHistogram;
+typedef std::string TuningForkLogEvent;
 
 class TestBackend : public DebugBackend {
 public:
     TestBackend(std::shared_ptr<std::condition_variable> cv_,
                       std::shared_ptr<std::mutex> mutex_) : cv(cv_), mutex(mutex_) {}
 
-    TFErrorCode Process(const ProtobufSerialization &evt_ser) override {
+    TFErrorCode Process(const TuningForkLogEvent &evt_ser) override {
         ALOGI("Process");
         {
             std::lock_guard<std::mutex> lock(*mutex);
-            Deserialize(evt_ser, result);
+            result = evt_ser;
         }
         cv->notify_all();
         return TFERROR_OK;
     }
 
-    void clear() { result = {}; }
+    void clear() { result = ""; }
 
     TuningForkLogEvent result;
     std::shared_ptr<std::condition_variable> cv;
@@ -160,52 +158,53 @@ const TuningForkLogEvent& TestEndToEndTimeBased() {
 
 void CheckEvent(const std::string& name, const TuningForkLogEvent& result,
                 const TuningForkLogEvent& expected) {
-    EXPECT_EQ(result.histograms_size(), expected.histograms_size()) << name << ": N histograms";
-    auto n_hist = result.histograms_size();
-    for(int i=0;i<n_hist;++i) {
-        auto& a = result.histograms(i);
-        auto& b = expected.histograms(i);
-        EXPECT_EQ(a.instrument_id(), b.instrument_id()) << name << ": histogram " << i << " id";
-        ASSERT_EQ(a.counts_size(), b.counts_size()) << name << ": histogram " << i << " counts";
-        for(int c=0;c<a.counts_size(); ++c) {
-            EXPECT_EQ(a.counts(c), b.counts(c)) << name << ": histogram " << i << " count " << c;
-        }
-        ASSERT_EQ(a.has_annotation(), b.has_annotation()) << name << ": annotation";
-        if(a.has_annotation()) {
-            EXPECT_EQ(a.annotation(), b.annotation()) << name << ": annotation value";
-        }
-    }
+    EXPECT_EQ(result, expected) << "Result";
 }
+
+static std::string ReplaceReturns(std::string in) {
+    std::replace( in.begin(), in.end(), '\n', ' ');
+    return in;
+}
+
+static const std::string session_context = R"TF({"device":
+{"build_version": "", "cpu_core_freqs_hz": [], "fingerprint": "",
+"gles_version": {"major": 2, "minor": 0}, "total_memory_bytes": 0},
+"game_sdk_info": {"session_id": "", "version": "0.3"},
+"time_period": {"end_time": "1970-01-01T00:00:00.000000Z",
+"start_time": "1970-01-01T00:00:00.000000Z"}})TF";
 
 TEST(TuningForkTest, EndToEnd) {
     auto& result = TestEndToEnd();
-    TuningForkLogEvent expected = {};
-    auto h = expected.add_histograms();
-    h->set_instrument_id(TFTICK_SYSCPU);
-    for(int i=0;i<32;++i)
-        h->add_counts(i==11?100:0);
+    TuningForkLogEvent expected = "{\"name\": \"applications//apks/0\", \"session_context\": "
+      + ReplaceReturns(session_context+ R"TF(,
+"telemetry": [{"context": {"annotations": "", "duration": "0s",
+"tuning_parameters": {"experiment_id": "", "serialized_fidelity_parameters": ""}},
+"report": {"rendering": {"render_time_histogram":
+[{"counts": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0], "instrument_id": 64000}]}}}]})TF");
     CheckEvent("Base", result, expected);
 }
 
 TEST(TuningForkTest, TestEndToEndWithAnnotation) {
     auto& result = TestEndToEndWithAnnotation();
-    TuningForkLogEvent expected = {};
-    auto h = expected.add_histograms();
-    h->set_instrument_id(TFTICK_SYSGPU);
-    for(int i=0;i<32;++i)
-        h->add_counts(i==11?100:0);
-    char ann[] = "\010\001";
-    h->set_annotation(ann);
+    TuningForkLogEvent expected = "{\"name\": \"applications//apks/0\", \"session_context\": "
+      + ReplaceReturns(session_context+ R"TF(,
+"telemetry": [{"context": {"annotations": "CAE=", "duration": "0s",
+"tuning_parameters": {"experiment_id": "", "serialized_fidelity_parameters": ""}},
+"report": {"rendering": {"render_time_histogram":
+[{"counts": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0], "instrument_id": 64001}]}}}]})TF");
     CheckEvent("Annotation", result, expected);
 }
 
 TEST(TuningForkTest, TestEndToEndTimeBased) {
     auto& result = TestEndToEndTimeBased();
-    TuningForkLogEvent expected = {};
-    auto h = expected.add_histograms();
-    h->set_instrument_id(TFTICK_SYSCPU);
-    for(int i=0;i<12;++i)
-        h->add_counts(i==6?100:0);
+    TuningForkLogEvent expected = "{\"name\": \"applications//apks/0\", \"session_context\": "
+      + ReplaceReturns(session_context+ R"TF(,
+"telemetry": [{"context": {"annotations": "", "duration": "0s",
+"tuning_parameters": {"experiment_id": "", "serialized_fidelity_parameters": ""}},
+"report": {"rendering": {"render_time_histogram":
+[{"counts": [0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0], "instrument_id": 64000}]}}}]})TF");
     CheckEvent("TimeBased", result, expected);
 }
 

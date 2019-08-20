@@ -22,8 +22,6 @@
 #define LOG_TAG "TuningFork"
 #include "Log.h"
 
-#include "clearcutserializer.h"
-
 namespace tuningfork {
 
 Histogram::Histogram(float start_ms, float end_ms, int num_buckets_between)

@@ -31,8 +31,7 @@
 #include "histogram.h"
 #include "prong.h"
 #include "uploadthread.h"
-#include "clearcutserializer.h"
-#include "clearcut_backend.h"
+#include "ge_backend.h"
 #include "annotation_util.h"
 #include "crash_handler.h"
 
@@ -171,7 +170,7 @@ public:
 
     TFErrorCode EndTrace(TraceHandle);
 
-    void SetUploadCallback(void(*cbk)(const CProtobufSerialization*));
+    void SetUploadCallback(UploadCallback cbk);
 
     TFErrorCode Flush();
 
@@ -236,23 +235,22 @@ TFErrorCode Init(const TFSettings &c_settings,
     return TFERROR_OK;
 }
 
-ClearcutBackend sBackend;
-ProtoPrint sProtoPrint;
+GEBackend sBackend;
 ParamsLoader sLoader;
 
 TFErrorCode Init(const TFSettings &c_settings, JNIEnv* env, jobject context) {
-    bool backendInited = sBackend.Init(env, context, &sProtoPrint)==TFERROR_OK;
+    bool backendInited = sBackend.Init(env, context)==TFERROR_OK;
 
     ExtraUploadInfo extra_upload_info = UploadThread::GetExtraUploadInfo(env, context);
     Backend* backend = nullptr;
     ParamsLoader* loader = nullptr;
     if(backendInited) {
-        ALOGV("TuningFork.Clearcut: OK");
+        ALOGV("TuningFork.GoogleEndpoint: OK");
         backend = &sBackend;
         loader = &sLoader;
     }
     else {
-        ALOGV("TuningFork.Clearcut: FAILED");
+        ALOGV("TuningFork.GoogleEndpoint: FAILED");
     }
     return Init(c_settings, extra_upload_info, backend, loader);
 }
@@ -314,7 +312,7 @@ TFErrorCode SetCurrentAnnotation(const ProtobufSerialization &ann) {
     }
 }
 
-TFErrorCode SetUploadCallback(void(*cbk)(const CProtobufSerialization*)) {
+TFErrorCode SetUploadCallback(UploadCallback cbk) {
     if (!s_impl) {
         return TFERROR_TUNINGFORK_NOT_INITIALIZED;
     } else {
@@ -462,7 +460,7 @@ Prong *TuningForkImpl::TraceNanos(uint64_t compound_id, Duration dt) {
     return h;
 }
 
-void TuningForkImpl::SetUploadCallback(void(*cbk)(const CProtobufSerialization*)) {
+void TuningForkImpl::SetUploadCallback(UploadCallback cbk) {
     upload_thread_.SetUploadCallback(cbk);
 }
 

@@ -33,7 +33,7 @@ private:
     const ProngCache *ready_;
     Backend *backend_;
     ProtobufSerialization current_fidelity_params_;
-    ProtoCallback upload_callback_;
+    UploadCallback upload_callback_;
     ExtraUploadInfo extra_info_;
  public:
     UploadThread(Backend *backend, const ExtraUploadInfo& extraInfo);
@@ -55,7 +55,7 @@ private:
         extra_info_.experiment_id = experiment_id;
     }
 
-    void SetUploadCallback(ProtoCallback upload_callback) {
+    void SetUploadCallback(UploadCallback upload_callback) {
         upload_callback_ = upload_callback;
     }
 

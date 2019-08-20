@@ -20,7 +20,7 @@
 #include <jni.h>
 
 #define TUNINGFORK_MAJOR_VERSION 0
-#define TUNINGFORK_MINOR_VERSION 2
+#define TUNINGFORK_MINOR_VERSION 3
 #define TUNINGFORK_PACKED_VERSION ((TUNINGFORK_MAJOR_VERSION<<16)|(TUNINGFORK_MINOR_VERSION))
 
 // Internal macros to generate a symbol to track TuningFork version, do not use directly.

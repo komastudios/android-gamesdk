@@ -61,6 +61,8 @@ public:
         buckets_ = counts;
     }
 
+    const std::vector<uint32_t>& buckets() const { return buckets_;}
+
     friend class ClearcutSerializer;
 };
 

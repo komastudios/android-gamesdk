@@ -69,13 +69,20 @@ public:
         instrumentation_key_ = key;
     }
 
-    friend class ClearcutSerializer;
+};
+
+struct TimeInterval {
+    std::chrono::system_clock::time_point start, end;
 };
 
 // Simple fixed-size cache
 class ProngCache {
     std::vector<std::unique_ptr<Prong>> prongs_;
     int max_num_instrumentation_keys_;
+    // TODO(willosborn): Update in these times and durations when we tick
+    TimeInterval time_;
+    Duration duration_; // May include the sum of disjoint intervals, so will be
+                        // less than time_.end - time_.start.
 public:
     ProngCache(size_t size, int max_num_instrumentation_keys,
                const std::vector<TFHistogram>& histogram_settings,
@@ -87,7 +94,9 @@ public:
 
     void SetInstrumentKeys(const std::vector<InstrumentationKey>& instrument_keys);
 
-    friend class ClearcutSerializer;
+    Duration duration() const { return duration_; }
+    TimeInterval time() const { return time_; }
+    const std::vector<std::unique_ptr<Prong>>& prongs() const { return prongs_; }
 
 };
 

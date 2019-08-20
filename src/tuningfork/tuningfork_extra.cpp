@@ -158,22 +158,15 @@ bool GetSavedFileName(JNIEnv* env, jobject context, std::string& name) {
 
 // Get a previously save fidelity param serialization.
 bool GetSavedFidelityParams(JNIEnv* env, jobject context, CProtobufSerialization* params) {
-    std::string save_filename;
-    if (GetSavedFileName(env, context, save_filename)) {
-        std::ifstream save_file(save_filename, std::ios::binary);
-        if (save_file.good()) {
-            save_file.seekg(0, std::ios::end);
-            params->size = save_file.tellg();
-            params->bytes = (uint8_t*)::malloc(params->size);
-            params->dealloc = CProtobufSerialization_Dealloc;
-            save_file.seekg(0, std::ios::beg);
-            save_file.read((char*)params->bytes, params->size);
-            ALOGI("Loaded fps from %s (%zu bytes)", save_filename.c_str(), params->size);
-            return true;
-        }
-        ALOGI("Couldn't load fps from %s", save_filename.c_str());
+  std::string save_filename;
+  if (GetSavedFileName(env, context, save_filename)) {
+    if (file_utils::LoadBytesFromFile(save_filename, params)) {
+      ALOGI("Loaded fps from %s (%zu bytes)", save_filename.c_str(), params->size);
+      return true;
     }
-    return false;
+    ALOGI("Couldn't load fps from %s", save_filename.c_str());
+  }
+  return false;
 }
 
 // Save fidelity params to the save file.
@@ -377,7 +370,7 @@ TFErrorCode TuningFork_initWithSwappy(const TFSettings* settings, JNIEnv* env,
         return TFERROR_NO_SWAPPY;
 }
 
-TFErrorCode TuningFork_setUploadCallback(void(*cbk)(const CProtobufSerialization*)) {
+TFErrorCode TuningFork_setUploadCallback(UploadCallback cbk) {
     return tuningfork::SetUploadCallback(cbk);
 }
 

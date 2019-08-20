@@ -15,10 +15,13 @@
  */
 
 #include "tuningfork_utils.h"
+#include "tuningfork/protobuf_util.h"
 
 #include <cstdio>
 #include <sys/stat.h>
 #include <errno.h>
+#include <fstream>
+#include <sstream>
 
 #define LOG_TAG "TuningFork"
 #include "Log.h"
@@ -161,7 +164,57 @@ namespace file_utils {
         return false;
     }
 
+    bool LoadBytesFromFile(std::string file_name, CProtobufSerialization* params) {
+      std::ifstream f(file_name, std::ios::binary);
+      if (f.good()) {
+        f.seekg(0, std::ios::end);
+        params->size = f.tellg();
+        params->bytes = (uint8_t*)::malloc(params->size);
+        params->dealloc = CProtobufSerialization_Dealloc;
+        f.seekg(0, std::ios::beg);
+        f.read((char*)params->bytes, params->size);
+        return true;
+      }
+      return false;
+    }
+
+    bool SaveBytesToFile(std::string file_name, const CProtobufSerialization* params) {
+        std::ofstream save_file(file_name, std::ios::binary);
+        if (save_file.good()) {
+            save_file.write((const char*)params->bytes, params->size);
+            return true;
+        }
+        return false;
+    }
+
 } // namespace file_utils
+
+namespace json_utils {
+
+using namespace json11;
+
+std::string GetResourceName(const ExtraUploadInfo& request_info) {
+    std::stringstream str;
+    str << "applications/"<< request_info.apk_package_name<<"/apks/";
+    str << request_info.apk_version_code;
+    return str.str();
+}
+
+Json::object DeviceSpecJson(const ExtraUploadInfo& request_info) {
+    Json gles_version = Json::object {
+        {"major", static_cast<int>(request_info.gl_es_version>>16)},
+        {"minor", static_cast<int>(request_info.gl_es_version&0xffff)}};
+    std::vector<double> freqs(request_info.cpu_max_freq_hz.begin(),
+                              request_info.cpu_max_freq_hz.end());
+    return Json::object {
+        {"fingerprint", request_info.build_fingerprint},
+        {"total_memory_bytes", static_cast<double>(request_info.total_memory_bytes)},
+        {"build_version", request_info.build_version_sdk},
+        {"gles_version", gles_version},
+        {"cpu_core_freqs_hz", freqs}};
+}
+
+} // namespace json_utils
 
 std::string UniqueId(JNIEnv* env) {
     jclass uuid_class = env->FindClass("java/util/UUID");
