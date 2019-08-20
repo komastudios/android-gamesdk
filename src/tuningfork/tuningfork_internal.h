@@ -37,6 +37,10 @@ typedef uint64_t TraceHandle;
 typedef std::chrono::steady_clock::time_point TimePoint;
 typedef std::chrono::steady_clock::duration Duration;
 
+struct TimeInterval {
+    std::chrono::system_clock::time_point start, end;
+};
+
 struct Settings {
     struct AggregationStrategy {
         enum Submission {
@@ -69,7 +73,7 @@ struct ExtraUploadInfo {
 class Backend {
 public:
     virtual ~Backend() {};
-    virtual TFErrorCode Process(const ProtobufSerialization &tuningfork_log_event) = 0;
+    virtual TFErrorCode Process(const std::string& tuningfork_log_event) = 0;
 };
 
 class ParamsLoader {
@@ -93,7 +97,7 @@ public:
 class DebugBackend : public Backend {
 public:
     ~DebugBackend() override;
-    TFErrorCode Process(const ProtobufSerialization &tuningfork_log_event) override;
+    TFErrorCode Process(const std::string& tuningfork_log_event) override;
 };
 
 // You can provide your own time source rather than steady_clock by inheriting this and passing
@@ -139,7 +143,7 @@ TFErrorCode StartTrace(InstrumentationKey key, TraceHandle& handle);
 // Record a trace with the key and annotation set using startTrace
 TFErrorCode EndTrace(TraceHandle h);
 
-TFErrorCode SetUploadCallback(ProtoCallback cbk);
+TFErrorCode SetUploadCallback(UploadCallback cbk);
 
 TFErrorCode Flush();
 

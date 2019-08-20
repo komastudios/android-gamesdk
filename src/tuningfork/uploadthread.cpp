@@ -22,7 +22,7 @@
 #include <fstream>
 #include <sstream>
 #include <cmath>
-#include "clearcutserializer.h"
+#include "ge_serializer.h"
 #include "modp_b64.h"
 
 #define LOG_TAG "TuningFork"
@@ -32,26 +32,15 @@ namespace tuningfork {
 
 DebugBackend::~DebugBackend() {}
 
-TFErrorCode DebugBackend::Process(const ProtobufSerialization &evt_ser) {
-    if (evt_ser.size() == 0) return TFERROR_BAD_PARAMETER;
-    auto encode_len = modp_b64_encode_len(evt_ser.size());
-    std::vector<char> dest_buf(encode_len);
-    // This fills the dest buffer with a null-terminated string. It returns the length of
-    //  the string, not including the null char
-    auto n_encoded = modp_b64_encode(&dest_buf[0], reinterpret_cast<const char*>(&evt_ser[0]),
-        evt_ser.size());
-    if (n_encoded == -1 || encode_len != n_encoded+1) {
-        ALOGW("Could not b64 encode protobuf");
-        return TFERROR_B64_ENCODE_FAILED;
-    }
-    std::string s(&dest_buf[0], n_encoded);
+TFErrorCode DebugBackend::Process(const std::string &s) {
+    if (s.size() == 0) return TFERROR_BAD_PARAMETER;
     // Split the serialization into <128-byte chunks to avoid logcat line
     //  truncation.
     constexpr size_t maxStrLen = 128;
     int n = (s.size() + maxStrLen - 1) / maxStrLen; // Round up
     for (int i = 0, j = 0; i < n; ++i) {
         std::stringstream str;
-        str << "(TCL" << (i + 1) << "/" << n << ")";
+        str << "(TJS" << (i + 1) << "/" << n << ")";
         int m = std::min(s.size() - j, maxStrLen);
         str << s.substr(j, m);
         j += m;
@@ -99,17 +88,15 @@ void UploadThread::Run() {
     while (!do_quit_) {
         std::unique_lock<std::mutex> lock(mutex_);
         if (ready_) {
-            ProtobufSerialization evt_ser;
             UpdateGLVersion(); // Needs to be done with an active gl context
-            ClearcutSerializer::SerializeEvent(*ready_, current_fidelity_params_,
-                                               extra_info_,
-                                               evt_ser);
+            std::string evt_ser_json;
+            GESerializer::SerializeEvent(*ready_, current_fidelity_params_,
+                                         extra_info_,
+                                         evt_ser_json);
             if(upload_callback_) {
-                CProtobufSerialization cser = { evt_ser.data(),
-                                          static_cast<uint32_t>(evt_ser.size()), nullptr};
-                upload_callback_(&cser);
+                upload_callback_(evt_ser_json.c_str(), evt_ser_json.size());
             }
-            backend_->Process(evt_ser);
+            backend_->Process(evt_ser_json);
             ready_ = nullptr;
         }
         cv_.wait_for(lock, std::chrono::milliseconds(1000));

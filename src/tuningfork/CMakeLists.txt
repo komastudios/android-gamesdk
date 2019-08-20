@@ -28,23 +28,24 @@ include_directories( ../../include )
 include_directories( ../../src/swappy )
 include_directories( ../common )
 include_directories( ${MODPB64_DIR}/modp_b64)
+include_directories( ${JSON11_DIR} )
 
 include_directories(${PROTO_GENS_DIR})
 
 set( TUNINGFORK_SRCS
-  clearcut_backend.cpp
   crash_handler.cpp
   histogram.cpp
   prong.cpp
   uploadthread.cpp
   tuningfork.cpp
   tuningfork_c.cpp
-  clearcutserializer.cpp
   protobuf_util.cpp
   annotation_util.cpp
   tuningfork_extra.cpp
   tuningfork_utils.cpp
   fpdownload.cpp
+  ge_backend.cpp
+  ge_serializer.cpp
   ${JSON11_DIR}/json11.cpp
   ${MODPB64_DIR}/modp_b64.cc
   ${PROTO_GENS_DIR}/nano/tuningfork.pb.c

@@ -24,6 +24,7 @@ extern "C" {
 
 typedef void (*VoidCallback)();
 typedef void (*ProtoCallback)(const CProtobufSerialization*);
+typedef void (*UploadCallback)(const char*, size_t n);
 struct SwappyTracer;
 typedef void (*SwappyTracerFn)(const SwappyTracer*);
 
@@ -56,7 +57,7 @@ TFErrorCode TuningFork_initWithSwappy(const TFSettings* settings,
 
 // Set a callback to be called on a separate thread every time TuningFork
 //  performs an upload.
-TFErrorCode TuningFork_setUploadCallback(ProtoCallback cbk);
+TFErrorCode TuningFork_setUploadCallback(UploadCallback cbk);
 
 // Download fidelity parameters on a separate thread.
 // A download thread is activated to retrieve fidelity params and retries are

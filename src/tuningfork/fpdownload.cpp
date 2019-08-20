@@ -21,6 +21,7 @@
 
 #define LOG_TAG "FPDownload"
 #include "Log.h"
+#include "tuningfork_utils.h"
 
 #include "jni_helper.h"
 #include "../../third_party/json11/json11.hpp"
@@ -28,36 +29,18 @@
 
 namespace tuningfork {
 
+using namespace json11;
+
 const char url_rpcname[] = ":generateTuningParameters";
 
-std::string GetPartialURL(const ExtraUploadInfo& requestInfo) {
-    std::stringstream str;
-    str << "applications/"<< requestInfo.apk_package_name<<"/apks/";
-    str << requestInfo.apk_version_code;
-    return str.str();
-}
-
-std::string RequestJson(const ExtraUploadInfo& requestInfo) {
-    using namespace json11;
-    Json gles_version = Json::object {
-        {"major", static_cast<int>(requestInfo.gl_es_version>>16)},
-        {"minor", static_cast<int>(requestInfo.gl_es_version&0xffff)}};
-    std::vector<double> freqs(requestInfo.cpu_max_freq_hz.begin(),
-                              requestInfo.cpu_max_freq_hz.end());
-    Json device_spec = Json::object {
-        {"fingerprint", requestInfo.build_fingerprint},
-        {"total_memory_bytes", static_cast<double>(requestInfo.total_memory_bytes)},
-        {"build_version", requestInfo.build_version_sdk},
-        {"gles_version", gles_version},
-        {"cpu_core_freqs_hz", freqs}};
+std::string RequestJson(const ExtraUploadInfo& request_info) {
     Json request = Json::object {
-        {"name", GetPartialURL(requestInfo)},
-        {"device_spec", device_spec}};
+        {"name", json_utils::GetResourceName(request_info)},
+        {"device_spec", json_utils::DeviceSpecJson(request_info)}};
     auto result = request.dump();
     ALOGI("Request body: %s", result.c_str());
     return result;
 }
-
 TFErrorCode DecodeResponse(const std::string& response, std::vector<uint8_t>& fps,
                            std::string& experiment_id) {
     using namespace json11;
@@ -117,7 +100,7 @@ TFErrorCode DecodeResponse(const std::string& response, std::vector<uint8_t>& fp
       ALOGW("%s", exception_msg.c_str()); return TFERROR_JNI_EXCEPTION; }
 
 TFErrorCode DownloadFidelityParams(JNIEnv* env, jobject context, const std::string& uri,
-                                   const std::string& api_key, const ExtraUploadInfo& requestInfo,
+                                   const std::string& api_key, const ExtraUploadInfo& request_info,
                                    int timeout_ms, std::vector<uint8_t>& fps,
                                    std::string& experiment_id) {
     ALOGI("Connecting to: %s", uri.c_str());
@@ -167,7 +150,7 @@ TFErrorCode DownloadFidelityParams(JNIEnv* env, jobject context, const std::stri
     auto writer = jni.NewObject("java/io/BufferedWriter", "(Ljava/io/Writer;)V", osw.second);
     // writer.write(json)
     jni.CallVoidMethod(writer, "write", "(Ljava/lang/String;)V",
-                       jni.NewString(RequestJson(requestInfo)));
+                       jni.NewString(RequestJson(request_info)));
     CHECK_FOR_EXCEPTION;// IOException
     // writer.flush()
     jni.CallVoidMethod(writer, "flush", "()V");
@@ -239,7 +222,7 @@ TFErrorCode ParamsLoader::GetFidelityParams(JNIEnv* env, jobject context,
                                             uint32_t timeout_ms) {
     std::stringstream url;
     url << base_url;
-    url << GetPartialURL(info);
+    url << json_utils::GetResourceName(info);
     url << url_rpcname;
     return DownloadFidelityParams(env, context, url.str(), api_key, info, timeout_ms,
                                   fidelity_params, experiment_id);

@@ -1,0 +1,230 @@
+syntax = "proto3";
+
+package google.android.performanceparameters.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option java_package = "com.google.android.performanceparameters.v1";
+option java_outer_classname = "PerformanceParameters";
+
+// Assigns parameters to apks using the Android Game SDK and enables telemetry
+// upstreaming with annotated contexts.
+service ParametersService {
+  // If no device specification is provided, the API will return an empty
+  // tuning configuration.
+  rpc GenerateTuningParameters(GenerateTuningParametersRequest)
+      returns (GenerateTuningParametersResponse) {
+    option (google.api.http) = {
+      post: "/v1/{name=applications/*/apks/*}:generateTuningParameters"
+      body: "*"
+    };
+  }
+
+  // Uploads telemetry data associated with one/many gameplay/usage sessions.
+  // The uploaded data is expected to be aware of the current tuning
+  // configuration on the requester.
+  rpc UploadTelemetry(UploadTelemetryRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/{name=applications/*/apks/*}:uploadTelemetry"
+      body: "*"
+    };
+  }
+}
+
+// Request message of 'UploadTelemetry'.
+message UploadTelemetryRequest {
+  // Resource name for the tuning parameters of an apk, identified by package
+  // name and version code.
+  string name = 1;
+
+  // Context that do not change as a game session progresses.
+  SessionContext session_context = 2;
+
+  // Series of telemetry to be logged.
+  // Each member of this list is associated with a different telemetry context.
+  repeated Telemetry telemetry = 3;
+}
+
+// Request message of 'GetTuningParameters'.
+message GenerateTuningParametersRequest {
+  // Resource name for the tuning parameters of an apk, identified by package
+  // name and version code.
+  string name = 1;
+
+  // The specs for the device requesting tuning parameters.
+  // This field is used by Play to determine which set of parameters should be
+  // returned.
+  // If not provided, the response will always be the default set of
+  // parameters configured in the Play Console for the apk.
+  // If there are no defaults configured, the return message will be empty.
+  DeviceSpec device_spec = 2;
+}
+
+// Response message of 'GetTuningParameters'.
+message GenerateTuningParametersResponse {
+  // The parameters assigned to the request by Play based on the request.
+  // Will be empty if there are no tuning parameters available for the apk.
+  TuningParameters parameters = 1;
+}
+
+// Message defining tunable parameters returned to the caller.
+message TuningParameters {
+  // The Play Console experiment id from which this set of parameters belongs
+  // to.
+  // Required.
+  string experiment_id = 1;
+
+  // The serialized protocol buffer representing the parameters requested.
+  // The format for this data is defined in APK upload time by 'FidelityParams'
+  // message found in the following location in the APK:
+  //   * assets/tuningfork/dev_tuningfork.proto.
+  // Serialization should be done either through the Protocol Buffer method
+  // "toBytes()" or through the procol buffer compiler (protoc).
+  // See: https://developers.google.com/protocol-buffers/docs/encoding
+  // Required.
+  bytes serialized_fidelity_parameters = 2;
+}
+
+// All context coming from the requesting device that is immutable during a
+// gameplay session.
+message SessionContext {
+  // The specs of the device doing the request.
+  // Required.
+  DeviceSpec device = 1;
+
+  // Details specific to the Android Game SDK.
+  // Required.
+  GameSdkInfo game_sdk_info = 2;
+
+  // The period of time of this collection.
+  // Required.
+  TimePeriod time_period = 3;
+}
+
+// Telemetry report, containing a context and the associated metrics.
+message Telemetry {
+  // The context of the device at the time of this telemetry collection.
+  // Required.
+  TelemetryContext context = 1;
+
+  // The collection of telemetry data for this capture.
+  // Required.
+  TelemetryReport report = 2;
+}
+
+// Metrics collected from a gameplay/usage session in a particular context.
+message TelemetryReport {
+  // Render time data collected in the time period of the report.
+  RenderingReport rendering = 4;
+}
+
+// Self reported context from a device requesting telemetry logging.
+message TelemetryContext {
+  // Serialized protocol buffer including metadata associated with the capture
+  // time.
+  // Required.
+  bytes annotations = 1;
+
+  // The tuning parameters in use at the time of the capture.
+  // Required.
+  TuningParameters tuning_parameters = 2;
+
+  // The total time spent on this context during the collection. Can represent
+  // disjoint period of time. For example, if the context was active in between
+  // [10, 100] ms and [200, 220] ms, the duration would be 110ms.
+  google.protobuf.Duration duration = 3;
+}
+
+// A message representing performance characteristics of a requesting device.
+message DeviceSpec {
+  // Public build fingerprint of the device making this request.
+  // See:
+  // https://developer.android.com/reference/android/os/Build.html#FINGERPRINT
+  // Required.
+  string fingerprint = 1;
+
+  // The total accessible memory in bytes.
+  // API >=16 devices can look at
+  // http://developer.android.com/reference/android/app/ActivityManager.MemoryInfo.html#totalMem
+  // Required.
+  int64 total_memory_bytes = 2;
+
+  // Value of build property "ro.build.version.codename".
+  // The current development codename, or the string "REL" if this is a
+  // release build.
+  // See: https://developer.android.com/reference/android/os/Build.VERSION
+  // Required.
+  string build_version = 3;
+
+  // The GLES version on the device.
+  // Required.
+  GlesVersion gles_version = 4;
+
+  // The maximum clock speed of all the CPUs cores on the device, in Hz.
+  // Read from: /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq
+  // Example: [ 1400, 3600 ]
+  repeated int64 cpu_core_freqs_hz = 5;
+}
+
+// Message representing a version of OpenGL ES.
+// For further information on OpenGL ES and Android
+// See: https://developer.android.com/guide/topics/graphics/opengl
+message GlesVersion {
+  // The major GL ES version.
+  // For example, for GL ES 3.1, this field would be 3.
+  // Required.
+  int32 major = 1;
+
+  // The minor GL ES version.
+  // For example, for GL ES 3.1, this field would be 1.
+  // Required.
+  int32 minor = 2;
+}
+
+// Log info specific to the Android Game SDK.
+// See more at:
+// https://android.googlesource.com/platform/frameworks/opt/gamesdk/
+message GameSdkInfo {
+  // The version of the Game SDK.
+  // Required.
+  string version = 1;
+
+  // A unique id generated by the Game SDK during a gameplay session.
+  // Required.
+  string session_id = 2;
+}
+
+// A report of the rendering for a period of gameplay/usage.
+message RenderingReport {
+  // Distribution of render times, distributed into buckets.
+  repeated RenderTimeHistogram render_time_histogram = 1;
+}
+
+// Representation of a histogram with pre-defined buckets, representing render
+// time.
+message RenderTimeHistogram {
+  // ID of the frame capture point of the frame, if this is coming from the
+  // Android Game SDK. The capture point refers to the point in the rendering
+  // pipeline the frame is recorded.
+  // Required.
+  int32 instrument_id = 1;
+
+  // Bucket counts.
+  // Assumes the buckets are defined elsewhere per apk;
+  // only the counts are logged. Buckets correspond to render time (ms).
+  repeated int32 counts = 2 [packed = true];
+}
+
+// A message describing a period of time.
+message TimePeriod {
+  // Time at the start of the period.
+  // Required.
+  google.protobuf.Timestamp start_time = 5;
+
+  // Time at the end of the period.
+  // Required.
+  google.protobuf.Timestamp end_time = 6;
+}
