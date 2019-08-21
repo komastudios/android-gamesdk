@@ -35,7 +35,8 @@ public:
     InstrumentationKey instrumentation_key_;
     SerializedAnnotation annotation_;
     Histogram histogram_;
-    TimePoint last_time_ns_;
+    TimePoint last_time_;
+    Duration duration_;
 
     Prong(InstrumentationKey instrumentation_key = 0,
           const SerializedAnnotation &annotation = {},
@@ -57,10 +58,7 @@ public:
 class ProngCache {
     std::vector<std::unique_ptr<Prong>> prongs_;
     int max_num_instrumentation_keys_;
-    // TODO(willosborn): Update in these times and durations when we tick
     TimeInterval time_;
-    Duration duration_; // May include the sum of disjoint intervals, so will be
-                        // less than time_.end - time_.start.
 public:
     ProngCache(size_t size, int max_num_instrumentation_keys,
                const std::vector<TFHistogram>& histogram_settings,
@@ -72,7 +70,9 @@ public:
 
     void SetInstrumentKeys(const std::vector<InstrumentationKey>& instrument_keys);
 
-    Duration duration() const { return duration_; }
+    // Update times
+    void Ping(std::chrono::system_clock::time_point t);
+
     TimeInterval time() const { return time_; }
     const std::vector<std::unique_ptr<Prong>>& prongs() const { return prongs_; }
 
