@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     setContentView(R.layout.activity_main);
     try {
       JSONObject report = new JSONObject();
-      report.put("version", 3);
+      report.put("version", 5);
       Intent launchIntent = getIntent();
       if ("com.google.intent.action.TEST_LOOP".equals(launchIntent.getAction())) {
         Uri logFile = launchIntent.getData();
@@ -82,6 +82,13 @@ public class MainActivity extends AppCompatActivity {
       build.put("MODEL", Build.MODEL);
       build.put("BOOTLOADER", Build.BOOTLOADER);
       build.put("HARDWARE", Build.HARDWARE);
+      build.put("BASE_OS", Build.VERSION.BASE_OS);
+      build.put("CODENAME", Build.VERSION.CODENAME);
+      build.put("INCREMENTAL", Build.VERSION.INCREMENTAL);
+      build.put("RELEASE", Build.VERSION.RELEASE);
+      build.put("SDK_INT", Build.VERSION.SDK_INT);
+      build.put("PREVIEW_SDK_INT", Build.VERSION.PREVIEW_SDK_INT);
+      build.put("SECURITY_PATCH", Build.VERSION.SECURITY_PATCH);
       report.put("build", build);
 
       resultsStream.println(report);
@@ -94,13 +101,12 @@ public class MainActivity extends AppCompatActivity {
     new Timer().schedule(new TimerTask() {
       @Override
       public void run() {
-        if (pauseAllocation) {
-          return;
+        if (!pauseAllocation) {
+          int bytes = 1024 * 1024 * 8;
+          nativeAllocatedByTest += bytes;
+          nativeConsume(bytes);
+          //jvmConsume(1024 * 512);
         }
-        int bytes = 1024 * 1024 * 8;
-        nativeAllocatedByTest += bytes;
-        nativeConsume(bytes);
-        //jvmConsume(1024 * 512);
 
         try {
           JSONObject report = standardInfo();
@@ -120,8 +126,16 @@ public class MainActivity extends AppCompatActivity {
     Log.i(TAG, "onDestroy");
   }
 
+  private void updateRecords() {
+    long nativeHeapAllocatedSize = Debug.getNativeHeapAllocatedSize();
+    if (nativeHeapAllocatedSize > recordNativeHeapAllocatedSize) {
+      recordNativeHeapAllocatedSize = nativeHeapAllocatedSize;
+    }
+  }
+
   private void updateInfo() {
     runOnUiThread(() -> {
+      updateRecords();
       TextView freeMemory = findViewById(R.id.freeMemory);
       freeMemory.setText(memoryString(Runtime.getRuntime().freeMemory()));
 
@@ -137,9 +151,6 @@ public class MainActivity extends AppCompatActivity {
       TextView nativeAllocated = findViewById(R.id.nativeAllocated);
       long nativeHeapAllocatedSize = Debug.getNativeHeapAllocatedSize();
       nativeAllocated.setText(memoryString(nativeHeapAllocatedSize));
-      if (nativeHeapAllocatedSize > recordNativeHeapAllocatedSize) {
-        recordNativeHeapAllocatedSize = nativeHeapAllocatedSize;
-      }
 
       TextView recordNativeAllocated = findViewById(R.id.recordNativeAllocated);
       recordNativeAllocated.setText(memoryString(recordNativeHeapAllocatedSize));
@@ -198,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
 
       if (!pauseAllocation) {
         pauseAllocation = true;
-        int delay = 500 * totalTrims;
+        int delay = 1000;///500 * totalTrims;
         report.put("delay", delay);
         new Timer().schedule(
             new TimerTask() {
@@ -214,8 +225,6 @@ public class MainActivity extends AppCompatActivity {
                   new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-
-
                       try {
                         JSONObject report = standardInfo();
                         report.put("resuming", true);
@@ -257,10 +266,10 @@ public class MainActivity extends AppCompatActivity {
     } catch (JSONException e) {
       throw new RuntimeException(e);
     }
-
   }
 
   private JSONObject standardInfo() throws JSONException {
+    updateRecords();
     JSONObject report = new JSONObject();
     report.put("time", System.currentTimeMillis() - this.startTime);
     report.put("totalTrims", totalTrims);
