@@ -1,0 +1,191 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a871b8af_969c3310",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-08-21T23:25:41Z",
+      "side": 1,
+      "message": "spaces not tabs pls.",
+      "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5ae5cdba_29bfbc5a",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/tftestapp.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-08-21T23:25:41Z",
+      "side": 1,
+      "message": "s/#error/TODO/ ?",
+      "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "83f1a2e2_cf8151f3",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/tftestapp.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-08-21T23:25:41Z",
+      "side": 1,
+      "message": "s/max_line_len/string::npos/",
+      "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "064894d0_f2f91a5f",
+        "filename": "src/tuningfork/ge_serializer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-08-21T23:25:41Z",
+      "side": 1,
+      "message": "I think this should be in another file.",
+      "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0f5227ad_5a5af161",
+        "filename": "src/tuningfork/prong.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-08-21T23:25:41Z",
+      "side": 1,
+      "message": "This file is getting a bit long. Can we look at either splitting it (so the cache has it\u0027s own header) and/or moving some of the in-lined implementations into the .cpp?\n\n(can be in a follow up cl).",
+      "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "92666d0c_18461886",
+        "filename": "src/tuningfork/prong.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-08-21T23:25:41Z",
+      "side": 1,
+      "message": "This is somewhat generic. Can it be moved to one of the util headers?",
+      "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d94ee702_b3415be2",
+        "filename": "src/tuningfork/proto/performanceparameters.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-08-21T23:25:41Z",
+      "side": 1,
+      "message": "s/google.android/google.android.gamessdk/ ?",
+      "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "87613fb6_607e0b36",
+        "filename": "src/tuningfork/tuningfork_utils.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-08-21T23:25:41Z",
+      "side": 1,
+      "message": "Can we fix the include paths so that this doesn\u0027t need ../../third_party ?",
+      "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5ea80a30_c29f3f9d",
+        "filename": "test/tuningfork/serialization_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-08-21T23:25:41Z",
+      "side": 1,
+      "message": "I think this can just be in-lined? There\u0027s no need for a whole function to do this (which is only called in one place).",
+      "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "99465e92_f22095f0",
+        "filename": "test/tuningfork/tuningfork_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-08-21T23:25:41Z",
+      "side": 1,
+      "message": "OR... if you\u0027re using this function in a few places then let\u0027s move it to a util header rather than duplicating it?",
+      "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e0c9f02c_a278fead",
+        "filename": "test/tuningfork/tuningfork_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-08-21T23:25:41Z",
+      "side": 1,
+      "message": "This (and all the other hardcoded json below) is quite hard to read. Can we move these into separate files and/or format them a bit better?",
+      "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
