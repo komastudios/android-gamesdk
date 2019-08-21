@@ -53,9 +53,10 @@ Prong *ProngCache::Get(uint64_t compound_id) {
 
 void ProngCache::Clear() {
     for (auto &p: prongs_) {
-        if (p->histogram_.Count() > 0)
-            p->histogram_.Clear();
+        p->Clear();
     }
+    time_.start = SystemTimePoint();
+    time_.end = SystemTimePoint();
 }
 
 void ProngCache::SetInstrumentKeys(const std::vector<InstrumentationKey>& instrument_keys) {
@@ -67,6 +68,13 @@ void ProngCache::SetInstrumentKeys(const std::vector<InstrumentationKey>& instru
             p->SetInstrumentKey(k);
         }
     }
+}
+
+void ProngCache::Ping(std::chrono::system_clock::time_point t) {
+    if(time_.start==std::chrono::system_clock::time_point()) {
+        time_.start = t;
+    }
+    time_.end = t;
 }
 
 }

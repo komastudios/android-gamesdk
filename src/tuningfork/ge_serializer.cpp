@@ -22,7 +22,7 @@
 #include <sstream>
 
 #ifdef ANDROID_GNUSTL
-// This is needed for date.h when using gnustl in the NDK
+// This is needed for date.h when using gnustl in old versions of the NDK
 namespace std {
 
 template <typename T>
@@ -81,7 +81,7 @@ std::string TimeToRFC3339(system_clock::time_point tp) {
 
 std::string DurationToSecondsString(Duration d) {
     std::stringstream str;
-    str << duration_cast<seconds>(d);
+    str << (duration_cast<nanoseconds>(d).count()/1000000000.0) << 's';
     return str.str();
 }
 
@@ -97,7 +97,8 @@ std::string B64Encode(const std::vector<uint8_t>& bytes) {
 Json::object TelemetryContextJson(const ProngCache& prong_cache,
                                   const SerializedAnnotation& annotation,
                                   const ProtobufSerialization& fidelity_params,
-                                  const ExtraUploadInfo& device_info) {
+                                  const ExtraUploadInfo& device_info,
+                                  const Duration& duration) {
     return Json::object {
         {"annotations", B64Encode(annotation)},
         {"tuning_parameters", Json::object {
@@ -105,15 +106,15 @@ Json::object TelemetryContextJson(const ProngCache& prong_cache,
                 {"serialized_fidelity_parameters", B64Encode(fidelity_params)}
             }
         },
-        {"duration", DurationToSecondsString(prong_cache.duration())}
+        {"duration", DurationToSecondsString(duration)}
     };
 }
 
 Json::object TelemetryReportJson(const ProngCache& prong_cache,
                                  const SerializedAnnotation& annotation,
-                                 bool& empty) {
+                                 bool& empty, Duration& duration) {
     std::vector<Json::object> histograms;
-
+    duration = Duration::zero();
     for(auto& p: prong_cache.prongs()) {
         if (p->Count()>0 && p->annotation_==annotation) {
             std::vector<int32_t> counts;
@@ -123,9 +124,13 @@ Json::object TelemetryReportJson(const ProngCache& prong_cache,
                     {"instrument_id", p->instrumentation_key_},
                     {"counts", counts}
                 });
+            duration += p->duration_;
         }
     }
     empty = (histograms.size()==0);
+    // Use the average duration for this annotation
+    if (!empty)
+        duration /= histograms.size();
     return Json::object {
         {"rendering", Json::object {
                 {"render_time_histogram", histograms }
@@ -140,11 +145,12 @@ Json::object TelemetryJson(const ProngCache& prong_cache,
                            const ExtraUploadInfo& device_info,
                            bool& empty)
 {
-
+    Duration duration;
+    auto report = TelemetryReportJson(prong_cache, annotation, empty, duration);
     return Json::object {
         {"context", TelemetryContextJson(prong_cache, annotation,
-                                         fidelity_params, device_info)},
-        {"report", TelemetryReportJson(prong_cache, annotation, empty)}
+                                         fidelity_params, device_info, duration)},
+        {"report", report}
     };
 
 }

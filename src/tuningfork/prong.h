@@ -35,30 +35,35 @@ public:
     InstrumentationKey instrumentation_key_;
     SerializedAnnotation annotation_;
     Histogram histogram_;
-    TimePoint last_time_ns_;
+    TimePoint last_time_;
+    Duration duration_;
 
     Prong(InstrumentationKey instrumentation_key = 0,
           const SerializedAnnotation &annotation = {},
           const TFHistogram& histogram_settings = {})
         : instrumentation_key_(instrumentation_key), annotation_(annotation),
-          last_time_ns_(std::chrono::steady_clock::time_point::min()),
-          histogram_(histogram_settings) {}
+          histogram_(histogram_settings),
+          last_time_(TimePoint::min()),
+          duration_(Duration::zero()) {}
 
-    void Tick(TimePoint t_ns) {
-        if (last_time_ns_ != std::chrono::steady_clock::time_point::min())
-            Trace(t_ns - last_time_ns_);
-        last_time_ns_ = t_ns;
+    void Tick(TimePoint t) {
+        if (last_time_ != TimePoint::min())
+            Trace(t - last_time_);
+        last_time_ = t;
     }
 
-    void Trace(Duration dt_ns) {
+    void Trace(Duration dt) {
         // The histogram stores millisecond values as doubles
-        histogram_.Add(
-            double(std::chrono::duration_cast<std::chrono::nanoseconds>(dt_ns).count()) / 1000000);
+        double dt_ms = std::chrono::duration_cast<std::chrono::nanoseconds>(dt).count() / 1000000.0;
+        histogram_.Add(dt_ms);
+        duration_ += dt;
     }
 
     void Clear() {
-        last_time_ns_ = std::chrono::steady_clock::time_point::min();
-        histogram_.Clear();
+        if (histogram_.Count() > 0)
+            histogram_.Clear();
+        last_time_ = TimePoint::min();
+        duration_ = Duration::zero();
     }
 
     size_t Count() const {
@@ -79,10 +84,7 @@ struct TimeInterval {
 class ProngCache {
     std::vector<std::unique_ptr<Prong>> prongs_;
     int max_num_instrumentation_keys_;
-    // TODO(willosborn): Update in these times and durations when we tick
     TimeInterval time_;
-    Duration duration_; // May include the sum of disjoint intervals, so will be
-                        // less than time_.end - time_.start.
 public:
     ProngCache(size_t size, int max_num_instrumentation_keys,
                const std::vector<TFHistogram>& histogram_settings,
@@ -94,7 +96,9 @@ public:
 
     void SetInstrumentKeys(const std::vector<InstrumentationKey>& instrument_keys);
 
-    Duration duration() const { return duration_; }
+    // Update times
+    void Ping(std::chrono::system_clock::time_point t);
+
     TimeInterval time() const { return time_; }
     const std::vector<std::unique_ptr<Prong>>& prongs() const { return prongs_; }
 

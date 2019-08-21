@@ -51,7 +51,7 @@ public:
         return TFERROR_OK;
     }
 
-    void clear() { result = ""; }
+    void Clear() { result = ""; }
 
     TuningForkLogEvent result;
     std::shared_ptr<std::condition_variable> cv;
@@ -73,15 +73,26 @@ public:
 // Increment time with a known tick size
 class TestTimeProvider : public ITimeProvider {
 public:
-    TestTimeProvider(Duration tickSizeNs_ = std::chrono::milliseconds(20))
-        : tickSizeNs(tickSizeNs_) {}
+    TestTimeProvider(Duration tickSize_ = std::chrono::milliseconds(20),
+                     SystemDuration systemTickSize_ = std::chrono::milliseconds(20))
+        : tickSize(tickSize_), systemTickSize(systemTickSize_) {}
 
     TimePoint t;
-    Duration tickSizeNs;
+    SystemTimePoint st;
+    Duration tickSize;
+    SystemDuration systemTickSize;
 
-    TimePoint NowNs() override {
-        t += tickSizeNs;
+    TimePoint Now() override {
+        t += tickSize;
         return t;
+    }
+    SystemTimePoint SystemNow() override {
+        st += systemTickSize;
+        return st;
+    }
+    void Reset() {
+        t = TimePoint();
+        st = SystemTimePoint();
     }
 };
 
@@ -112,6 +123,8 @@ TFSettings TestSettings(TFAggregationStrategy::TFSubmissionPolicy method, int n_
 }
 const Duration test_wait_time = std::chrono::seconds(1);
 const TuningForkLogEvent& TestEndToEnd() {
+    testBackend.Clear();
+    timeProvider.Reset();
     const int NTICKS = 101; // note the first tick doesn't add anything to the histogram
     auto settings = TestSettings(TFAggregationStrategy::TICK_BASED, NTICKS - 1, 1, {});
     tuningfork::Init(settings, extra_upload_info, &testBackend, &paramsLoader, &timeProvider);
@@ -125,7 +138,8 @@ const TuningForkLogEvent& TestEndToEnd() {
 }
 
 const TuningForkLogEvent& TestEndToEndWithAnnotation() {
-    testBackend.clear();
+    testBackend.Clear();
+    timeProvider.Reset();
     const int NTICKS = 101; // note the first tick doesn't add anything to the histogram
     // {3} is the number of values in the Level enum in tuningfork_extensions.proto
     auto settings = TestSettings(TFAggregationStrategy::TICK_BASED, NTICKS - 1, 2, {3});
@@ -142,7 +156,8 @@ const TuningForkLogEvent& TestEndToEndWithAnnotation() {
 }
 
 const TuningForkLogEvent& TestEndToEndTimeBased() {
-    testBackend.clear();
+    testBackend.Clear();
+    timeProvider.Reset();
     const int NTICKS = 101; // note the first tick doesn't add anything to the histogram
     TestTimeProvider timeProvider(std::chrono::milliseconds(100)); // Tick in 100ms intervals
     auto settings = TestSettings(TFAggregationStrategy::TIME_BASED, 10100, 1, {},
@@ -170,14 +185,14 @@ static const std::string session_context = R"TF({"device":
 {"build_version": "", "cpu_core_freqs_hz": [], "fingerprint": "",
 "gles_version": {"major": 2, "minor": 0}, "total_memory_bytes": 0},
 "game_sdk_info": {"session_id": "", "version": "0.3"},
-"time_period": {"end_time": "1970-01-01T00:00:00.000000Z",
-"start_time": "1970-01-01T00:00:00.000000Z"}})TF";
+"time_period": {"end_time": "1970-01-01T00:00:02.020000Z",
+"start_time": "1970-01-01T00:00:00.020000Z"}})TF";
 
 TEST(TuningForkTest, EndToEnd) {
     auto& result = TestEndToEnd();
     TuningForkLogEvent expected = "{\"name\": \"applications//apks/0\", \"session_context\": "
       + ReplaceReturns(session_context+ R"TF(,
-"telemetry": [{"context": {"annotations": "", "duration": "0s",
+"telemetry": [{"context": {"annotations": "", "duration": "2s",
 "tuning_parameters": {"experiment_id": "", "serialized_fidelity_parameters": ""}},
 "report": {"rendering": {"render_time_histogram":
 [{"counts": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -189,7 +204,7 @@ TEST(TuningForkTest, TestEndToEndWithAnnotation) {
     auto& result = TestEndToEndWithAnnotation();
     TuningForkLogEvent expected = "{\"name\": \"applications//apks/0\", \"session_context\": "
       + ReplaceReturns(session_context+ R"TF(,
-"telemetry": [{"context": {"annotations": "CAE=", "duration": "0s",
+"telemetry": [{"context": {"annotations": "CAE=", "duration": "2s",
 "tuning_parameters": {"experiment_id": "", "serialized_fidelity_parameters": ""}},
 "report": {"rendering": {"render_time_histogram":
 [{"counts": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -201,7 +216,7 @@ TEST(TuningForkTest, TestEndToEndTimeBased) {
     auto& result = TestEndToEndTimeBased();
     TuningForkLogEvent expected = "{\"name\": \"applications//apks/0\", \"session_context\": "
       + ReplaceReturns(session_context+ R"TF(,
-"telemetry": [{"context": {"annotations": "", "duration": "0s",
+"telemetry": [{"context": {"annotations": "", "duration": "10s",
 "tuning_parameters": {"experiment_id": "", "serialized_fidelity_parameters": ""}},
 "report": {"rendering": {"render_time_histogram":
 [{"counts": [0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0], "instrument_id": 64000}]}}}]})TF");
