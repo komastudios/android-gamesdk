@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "38b9df28_05710c5a",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-08-23T15:47:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a871b8af_969c3310",
+      "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5ae5cdba_29bfbc5a",
         "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/tftestapp.cpp",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cd5ea6d9_51132417",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/tftestapp.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-08-23T15:47:22Z",
+      "side": 1,
+      "message": "This was changed by mistake.",
+      "parentUuid": "5ae5cdba_29bfbc5a",
+      "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "54adb419_71a2d604",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/tftestapp.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-08-23T15:47:22Z",
+      "side": 1,
+      "message": "No, this is to avoid truncation of logcat lines. 200 is a reasonable number to make the messages readable.",
+      "parentUuid": "83f1a2e2_cf8151f3",
+      "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "064894d0_f2f91a5f",
         "filename": "src/tuningfork/ge_serializer.cpp",
         "patchSetId": 1
@@ -67,6 +121,24 @@
       "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0364e3a7_18552189",
+        "filename": "src/tuningfork/ge_serializer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-08-23T15:47:22Z",
+      "side": 1,
+      "message": "I removed it from this CL and will put it somewhere else when I put the date library back.",
+      "parentUuid": "064894d0_f2f91a5f",
+      "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "f415fd16_18d5f32d",
+        "filename": "src/tuningfork/prong.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-08-23T15:47:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0f5227ad_5a5af161",
+      "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "92666d0c_18461886",
         "filename": "src/tuningfork/prong.h",
         "patchSetId": 1
@@ -101,6 +191,24 @@
       "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "af8790ce_f153fcb3",
+        "filename": "src/tuningfork/prong.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-08-23T15:47:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "92666d0c_18461886",
+      "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -121,6 +229,24 @@
     },
     {
       "key": {
+        "uuid": "8aa2580a_a8e73872",
+        "filename": "src/tuningfork/proto/performanceparameters.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-08-23T15:47:22Z",
+      "side": 1,
+      "message": "This is a copy of Luis\u0027 proto file.",
+      "parentUuid": "d94ee702_b3415be2",
+      "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "87613fb6_607e0b36",
         "filename": "src/tuningfork/tuningfork_utils.h",
         "patchSetId": 1
@@ -135,6 +261,24 @@
       "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5ee4e06b_4bdf4da8",
+        "filename": "src/tuningfork/tuningfork_utils.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-08-23T15:47:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "87613fb6_607e0b36",
+      "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -155,6 +299,24 @@
     },
     {
       "key": {
+        "uuid": "3f8d27bf_612305ae",
+        "filename": "test/tuningfork/serialization_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-08-23T15:47:22Z",
+      "side": 1,
+      "message": "Removed in favour of whitespace agnostic comparison",
+      "parentUuid": "5ea80a30_c29f3f9d",
+      "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "99465e92_f22095f0",
         "filename": "test/tuningfork/tuningfork_test.cpp",
         "patchSetId": 1
@@ -172,6 +334,24 @@
     },
     {
       "key": {
+        "uuid": "5ab87c1e_9b44504b",
+        "filename": "test/tuningfork/tuningfork_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-08-23T15:47:22Z",
+      "side": 1,
+      "message": "Removed in favour of whitespace agnostic comparison",
+      "parentUuid": "99465e92_f22095f0",
+      "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e0c9f02c_a278fead",
         "filename": "test/tuningfork/tuningfork_test.cpp",
         "patchSetId": 1
@@ -186,6 +366,24 @@
       "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0168c3ff_aa9461dc",
+        "filename": "test/tuningfork/tuningfork_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-08-23T15:47:22Z",
+      "side": 1,
+      "message": "I\u0027ve added whitespace agnostic comparison and formatted them better.",
+      "parentUuid": "e0c9f02c_a278fead",
+      "revId": "885bff6342f79a585bf5ae0d26755c7df373db91",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
