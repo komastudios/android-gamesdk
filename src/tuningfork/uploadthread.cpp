@@ -16,9 +16,12 @@
 
 #include "uploadthread.h"
 #include "tuningfork_utils.h"
+#include "tuningfork/protobuf_util.h"
+#include "ge_serializer.h"
 
 #include <sys/system_properties.h>
 #include <GLES3/gl32.h>
+#include <cstring>
 #include <fstream>
 #include <sstream>
 #include <cmath>
@@ -29,6 +32,9 @@
 #include "Log.h"
 
 namespace tuningfork {
+
+const uint64_t HISTOGRAMS_PAUSED = 0;
+const uint64_t HISTOGRAMS_UPLOADING = 1;
 
 DebugBackend::~DebugBackend() {}
 
@@ -51,10 +57,63 @@ TFErrorCode DebugBackend::Process(const std::string &s) {
 
 std::unique_ptr<DebugBackend> s_debug_backend = std::make_unique<DebugBackend>();
 
-UploadThread::UploadThread(Backend *backend, const ExtraUploadInfo& extraInfo) : backend_(backend),
+void Runnable::Start() {
+    if (thread_) {
+        ALOGW("Can't start an already running thread");
+        return;
+    }
+    do_quit_ = false;
+    thread_ = std::make_unique<std::thread>([&] { Run(); });
+}
+void Runnable::Run() {
+    while (!do_quit_) {
+        std::unique_lock<std::mutex> lock(mutex_);
+        DoWork();
+        cv_.wait_for(lock, std::chrono::milliseconds(wait_time_ms_));
+    }
+}
+void Runnable::Stop() {
+    if (!thread_->joinable()) {
+        ALOGW("Can't stop a thread that's not started");
+        return;
+    }
+    do_quit_ = true;
+    cv_.notify_one();
+    thread_->join();
+}
+
+class UltimateUploader : public Runnable {
+    const TFCache* persister_;
+    std::unique_ptr<std::thread> thread_;
+    std::mutex mutex_;
+    std::condition_variable cv_;
+    bool do_quit_;
+public:
+    UltimateUploader(const TFCache* persister) : Runnable(1000),
+                                                 persister_(persister) {}
+    void DoWork() override {
+        CheckUploadPending();
+    }
+    void CheckUploadPending() {
+        CProtobufSerialization uploading_hists_ser;
+        if (persister_->get(HISTOGRAMS_UPLOADING, &uploading_hists_ser,
+                persister_->user_data)==TFERROR_OK) {
+            // TODO(willosborn): Do something
+            ALOGI("Upload pending");
+            CProtobufSerialization_Free(&uploading_hists_ser);
+        }
+        else {
+            ALOGI("No upload pending");
+        }
+    }
+};
+
+UploadThread::UploadThread(Backend *backend, const ExtraUploadInfo& extraInfo) : Runnable(1000),
+                                               backend_(backend),
                                                current_fidelity_params_(0),
                                                upload_callback_(nullptr),
-                                               extra_info_(extraInfo) {
+                                               extra_info_(extraInfo),
+                                               persister_(nullptr) {
     if (backend_ == nullptr)
         backend_ = s_debug_backend.get();
     Start();
@@ -65,49 +124,57 @@ UploadThread::~UploadThread() {
 }
 
 void UploadThread::Start() {
-    if (thread_) {
-        ALOGW("Can't start an already running thread");
-        return;
-    }
-    do_quit_ = false;
     ready_ = nullptr;
-    thread_ = std::make_unique<std::thread>([&] { return Run(); });
+    Runnable::Start();
 }
 
 void UploadThread::Stop() {
-    if (!thread_->joinable()) {
-        ALOGW("Can't stop a thread that's not started");
-        return;
-    }
-    do_quit_ = true;
-    cv_.notify_one();
-    thread_->join();
+    if (ultimate_uploader_)
+        ultimate_uploader_->Stop();
+    Runnable::Stop();
 }
 
-void UploadThread::Run() {
-    while (!do_quit_) {
-        std::unique_lock<std::mutex> lock(mutex_);
-        if (ready_) {
-            UpdateGLVersion(); // Needs to be done with an active gl context
-            std::string evt_ser_json;
-            GESerializer::SerializeEvent(*ready_, current_fidelity_params_,
-                                         extra_info_,
-                                         evt_ser_json);
-            if(upload_callback_) {
-                upload_callback_(evt_ser_json.c_str(), evt_ser_json.size());
-            }
-            backend_->Process(evt_ser_json);
-            ready_ = nullptr;
+void ToCProtobufSerialization(const std::string& s,
+                              CProtobufSerialization& cpbs) {
+    cpbs.bytes = (uint8_t*)::malloc(s.size());
+    memcpy(cpbs.bytes, s.data(), s.size());
+    cpbs.size = s.size();
+    cpbs.dealloc = CProtobufSerialization_Dealloc;
+}
+void FromCProtobufSerialization(const CProtobufSerialization& cpbs,
+                                std::string& s) {
+    s = std::string((const char*)cpbs.bytes, cpbs.size);
+}
+
+void UploadThread::DoWork() {
+    if (ready_) {
+        UpdateGLVersion(); // Needs to be done with an active gl context
+        std::string evt_ser_json;
+        GESerializer::SerializeEvent(*ready_, current_fidelity_params_,
+                                     extra_info_,
+                                     evt_ser_json);
+        if(upload_callback_) {
+            upload_callback_(evt_ser_json.c_str(), evt_ser_json.size());
         }
-        cv_.wait_for(lock, std::chrono::milliseconds(1000));
+        if (upload_)
+            backend_->Process(evt_ser_json);
+        else {
+            CProtobufSerialization cser;
+            ToCProtobufSerialization(evt_ser_json, cser);
+            if (persister_)
+                persister_->set(HISTOGRAMS_PAUSED, &cser, persister_->user_data);
+            CProtobufSerialization_Free(&cser);
+        }
+        ready_ = nullptr;
     }
 }
 
 // Returns true if we submitted, false if we are waiting for a previous submit to complete
-bool UploadThread::Submit(const ProngCache *prongs) {
+bool UploadThread::Submit(const ProngCache *prongs, bool upload) {
     if (ready_ == nullptr) {
         {
             std::lock_guard<std::mutex> lock(mutex_);
+            upload_ = upload;
             ready_ = prongs;
         }
         cv_.notify_one();
@@ -118,7 +185,7 @@ bool UploadThread::Submit(const ProngCache *prongs) {
 
 namespace {
 
-// TODO: replace these with device_info library calls once they are available
+// TODO(willosborn): replace these with device_info library calls once they are available
 
 std::string slurpFile(const char* fname) {
     std::ifstream f(fname);
@@ -210,5 +277,36 @@ void UploadThread::UpdateGLVersion() {
     }
     extra_info_.gl_es_version = (glVerMajor<<16) + glVerMinor;
 }
+
+void UploadThread::InitialChecks(ProngCache& prongs,
+                                 IdProvider& id_provider,
+                                 const TFCache* persister) {
+    persister_ = persister;
+    if (!persister_) {
+        ALOGE("No persistence mechanism given");
+        return;
+    }
+    // Check for PAUSED prong cache
+    CProtobufSerialization paused_hists_ser;
+    if (persister->get(HISTOGRAMS_PAUSED, &paused_hists_ser,
+                       persister_->user_data)==TFERROR_OK) {
+        std::string paused_hists_str;
+        FromCProtobufSerialization(paused_hists_ser, paused_hists_str);
+        ALOGI("Got PAUSED histrograms: %s", paused_hists_str.c_str());
+        GESerializer::DeserializeAndMerge(paused_hists_str,
+                                          id_provider,
+                                          prongs);
+        CProtobufSerialization_Free(&paused_hists_ser);
+    }
+    else {
+        ALOGI("No PAUSED histograms");
+    }
+    std::unique_lock<std::mutex> lock(mutex_);
+    if( ultimate_uploader_.get() == nullptr) {
+        ultimate_uploader_ = std::make_unique<UltimateUploader>(persister);
+        ultimate_uploader_->Start();
+    }
+}
+
 
 } // namespace tuningfork

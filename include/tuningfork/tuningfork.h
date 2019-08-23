@@ -72,7 +72,21 @@ enum TFErrorCode {
                                            //  in assets/tuningfork.
     TFERROR_COULDNT_SAVE_OR_DELETE_FPS = 19,
     TFERROR_PREVIOUS_UPLOAD_PENDING = 20,
-    TFERROR_UPLOAD_TOO_FREQUENT = 21
+    TFERROR_UPLOAD_TOO_FREQUENT = 21,
+    TFERROR_NO_SUCH_KEY = 22
+};
+
+typedef TFErrorCode (*PFnTFCacheGet)(uint64_t key, CProtobufSerialization* value,
+                                     void* user_data);
+typedef TFErrorCode (*PFnTFCacheSet)(uint64_t key, const CProtobufSerialization* value,
+                                     void* user_data);
+typedef TFErrorCode (*PFnTFCacheRemove)(uint64_t key, void* user_data);
+
+struct TFCache {
+  void* user_data;
+  PFnTFCacheSet set;
+  PFnTFCacheGet get;
+  PFnTFCacheRemove remove;
 };
 
 struct TFHistogram {
@@ -96,6 +110,7 @@ struct TFSettings {
   TFAggregationStrategy aggregation_strategy;
   uint32_t n_histograms;
   TFHistogram* histograms;
+  TFCache* persistent_cache;
   void (*dealloc)(TFSettings*);
 };
 

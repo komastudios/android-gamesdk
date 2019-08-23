@@ -124,6 +124,7 @@ namespace file_utils {
     // Creates the directory if it does not exist. Returns true if the directory
     //  already existed or could be created.
     bool CheckAndCreateDir(const std::string& path) {
+        ALOGV("CheckAndCreateDir:%s",path.c_str());
         struct stat sb;
         int32_t res = stat(path.c_str(), &sb);
         if (0 == res && sb.st_mode & S_IFDIR) {
@@ -139,6 +140,7 @@ namespace file_utils {
         return false;
     }
     bool FileExists(const std::string& fname) {
+        ALOGV("FileExists:%s",fname.c_str());
         struct stat buffer;
         return (stat(fname.c_str(), &buffer)==0);
     }
@@ -165,20 +167,22 @@ namespace file_utils {
     }
 
     bool LoadBytesFromFile(std::string file_name, CProtobufSerialization* params) {
-      std::ifstream f(file_name, std::ios::binary);
-      if (f.good()) {
-        f.seekg(0, std::ios::end);
-        params->size = f.tellg();
-        params->bytes = (uint8_t*)::malloc(params->size);
-        params->dealloc = CProtobufSerialization_Dealloc;
-        f.seekg(0, std::ios::beg);
-        f.read((char*)params->bytes, params->size);
-        return true;
-      }
-      return false;
+        ALOGV("LoadBytesFromFile:%s",file_name.c_str());
+        std::ifstream f(file_name, std::ios::binary);
+        if (f.good()) {
+            f.seekg(0, std::ios::end);
+            params->size = f.tellg();
+            params->bytes = (uint8_t*)::malloc(params->size);
+            params->dealloc = CProtobufSerialization_Dealloc;
+            f.seekg(0, std::ios::beg);
+            f.read((char*)params->bytes, params->size);
+            return true;
+        }
+        return false;
     }
 
     bool SaveBytesToFile(std::string file_name, const CProtobufSerialization* params) {
+        ALOGV("SaveBytesToFile:%s",file_name.c_str());
         std::ofstream save_file(file_name, std::ios::binary);
         if (save_file.good()) {
             save_file.write((const char*)params->bytes, params->size);

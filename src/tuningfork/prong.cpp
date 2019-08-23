@@ -38,10 +38,11 @@ void Prong::Tick(TimePoint t) {
     last_time_ = t;
 }
 
-void Prong::Trace(Duration dt_ns) {
+void Prong::Trace(Duration dt) {
     // The histogram stores millisecond values as doubles
     histogram_.Add(
-        double(std::chrono::duration_cast<std::chrono::nanoseconds>(dt_ns).count()) / 1000000);
+        double(std::chrono::duration_cast<std::chrono::nanoseconds>(dt).count()) / 1000000);
+    duration_ += dt;
 }
 
 void Prong::Clear() {
@@ -75,7 +76,7 @@ ProngCache::ProngCache(size_t size, int max_num_instrumentation_keys,
     }
 }
 
-Prong *ProngCache::Get(uint64_t compound_id) {
+Prong *ProngCache::Get(uint64_t compound_id) const {
     if (compound_id >= prongs_.size()) {
         ALOGW("You have overrun the number of histograms (are your "
               "Settings correct?)");
