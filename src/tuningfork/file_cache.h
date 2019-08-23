@@ -16,22 +16,28 @@
 
 #pragma once
 
-#include "uploadthread.h"
-#include "prong.h"
-#include "histogram.h"
+#include "tuningfork/tuningfork.h"
+#include "tuningfork_internal.h"
 
+#include <string>
+#include <mutex>
+
+// Implementation of a TFCache that persists to local storage
 namespace tuningfork {
 
-class GESerializer {
-public:
-    static void SerializeEvent(const ProngCache& t,
-                               const ProtobufSerialization& fidelity_params,
-                               const ExtraUploadInfo& device_info,
-                               std::string& evt_json_ser);
+class FileCache {
+    std::string path_;
+    TFCache c_cache_;
+    std::mutex mutex_;
+  public:
+    FileCache(const std::string& path);
+    const TFCache* GetCCache() const { return &c_cache_;}
 
-    static TFErrorCode DeserializeAndMerge(const std::string& evt_json_ser,
-                                           IdProvider& id_provider,
-                                           ProngCache& pc);
+    TFErrorCode Get(uint64_t key, CProtobufSerialization* value);
+    TFErrorCode Set(uint64_t key, const CProtobufSerialization* value);
+    TFErrorCode Remove(uint64_t key);
+
+    TFErrorCode Clear();
 };
 
 } // namespace tuningfork

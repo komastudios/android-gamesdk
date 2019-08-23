@@ -18,6 +18,7 @@
 
 #include "tuningfork/tuningfork.h"
 #include "tuningfork/tuningfork_extra.h"
+#include "tuningfork/protobuf_util.h"
 
 #include <stdint.h>
 #include <string>
@@ -28,8 +29,6 @@
 class AAsset;
 
 namespace tuningfork {
-
-typedef std::vector<uint8_t> ProtobufSerialization;
 
 // The instrumentation key identifies a tick point within a frame or a trace segment
 typedef uint16_t InstrumentationKey;
@@ -56,6 +55,7 @@ struct Settings {
     };
     AggregationStrategy aggregation_strategy;
     std::vector<TFHistogram> histograms;
+    const TFCache* persistent_cache;
 };
 
 // Extra information that is uploaded with the ClearCut proto.
@@ -70,6 +70,14 @@ struct ExtraUploadInfo {
     std::string apk_package_name;
     uint32_t apk_version_code;
     uint32_t tuningfork_version;
+};
+
+class IdProvider {
+  public:
+    virtual uint64_t DecodeAnnotationSerialization(const ProtobufSerialization& ser) const = 0;
+    virtual TFErrorCode MakeCompoundId(InstrumentationKey k,
+                                       uint64_t annotation_id,
+                                       uint64_t& id);
 };
 
 class Backend {
@@ -114,7 +122,8 @@ public:
 // and outputs histograms in protobuf text format to logcat.
 // If no timeProvider is passed, std::chrono::steady_clock is used.
 TFErrorCode Init(const TFSettings &settings, const ExtraUploadInfo& extra_info,
-          Backend *backend = 0, ParamsLoader *loader = 0, ITimeProvider *time_provider = 0);
+                 Backend *backend = 0, ParamsLoader *loader = 0, ITimeProvider *time_provider = 0,
+                 std::string save_path = "/data/local/tmp/tuningfork");
 
 TFErrorCode Init(const TFSettings &settings, JNIEnv* env, jobject context);
 
@@ -149,5 +158,8 @@ TFErrorCode EndTrace(TraceHandle h);
 TFErrorCode SetUploadCallback(UploadCallback cbk);
 
 TFErrorCode Flush();
+
+// The default histogram that is used if the user doesn't specify one in Settings
+TFHistogram DefaultHistogram();
 
 } // namespace tuningfork

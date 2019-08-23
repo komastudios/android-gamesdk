@@ -64,7 +64,7 @@ public:
                const std::vector<TFHistogram>& histogram_settings,
                const std::function<SerializedAnnotation(uint64_t)>& seralizeId);
 
-    Prong *Get(uint64_t compound_id);
+    Prong *Get(uint64_t compound_id) const;
 
     void Clear();
 

@@ -46,6 +46,7 @@ set( TUNINGFORK_SRCS
   fpdownload.cpp
   ge_backend.cpp
   ge_serializer.cpp
+  file_cache.cpp
   ${THIRDPARTY_DIR}/json11/json11.cpp
   ${MODPB64_DIR}/modp_b64.cc
   ${PROTO_GENS_DIR}/nano/tuningfork.pb.c

@@ -20,17 +20,17 @@
 #include "tuningfork/ge_serializer.h"
 #include "tuningfork/tuningfork_utils.h"
 
+#include <chrono>
+
 namespace serialization_test {
 
 using namespace tuningfork;
 using namespace json11;
 using namespace test;
+using namespace std::chrono;
 
-void CheckDeviceInfo(const ExtraUploadInfo& info) {
-    EXPECT_EQ(json_utils::GetResourceName(info),
-              "applications/packname/apks/0") << "GetResourceName";
-    EXPECT_TRUE(CompareIgnoringWhitespace(Json(json_utils::DeviceSpecJson(info)).dump(),
-R"TF({
+ExtraUploadInfo test_device_info {"expt", "sess", 2387, 349587, "fing", "6.3", {1,2,3}, "packname"};
+std::string test_device_info_ser = R"TF({
   "build_version": "6.3",
   "cpu_core_freqs_hz": [1, 2, 3],
   "fingerprint": "fing",
@@ -38,18 +38,106 @@ R"TF({
     "major": 5, "minor": 21907
   },
   "total_memory_bytes": 2387
-})TF")) << "DeviceSpecJson";
-}
-void CheckFull(const ProngCache& pc,
-               const ProtobufSerialization& fps,
-               const ExtraUploadInfo& device_info) {
-    std::string evt_json_ser;
-    GESerializer::SerializeEvent(pc, fps, device_info, evt_json_ser);
-    EXPECT_EQ(evt_json_ser, "") << "SerializeEvent";
+})TF";
+
+void CheckDeviceInfo(const ExtraUploadInfo& info) {
+    EXPECT_EQ(json_utils::GetResourceName(info),
+              "applications/packname/apks/0") << "GetResourceName";
+    EXPECT_TRUE(CompareIgnoringWhitespace(Json(json_utils::DeviceSpecJson(info)).dump(),
+                                          test_device_info_ser))<< "DeviceSpecJson";
 }
 
 TEST(SerializationTest, DeviceInfo) {
-    CheckDeviceInfo({"expt", "sess", 2387, 349587, "fing", "6.3", {1,2,3}, "packname"});
+    CheckDeviceInfo(test_device_info);
+}
+
+std::string report_start = R"TF({
+  "name": "applications/packname/apks/0",
+  "session_context": {
+    "device": {
+      "build_version": "6.3",
+      "cpu_core_freqs_hz": [1, 2, 3],
+      "fingerprint": "fing",
+      "gles_version": {
+        "major": 5,
+        "minor": 21907
+      },
+      "total_memory_bytes": 2387
+    },
+    "game_sdk_info": {
+      "session_id": "sess",
+      "version": "0.3"
+    },
+    "time_period": {
+      "end_time": "",
+      "start_time": ""
+    }
+  },
+  "telemetry": [)TF";
+std::string report_end = "]}";
+
+std::string single_tick = R"TF({
+  "context": {
+    "annotations": "",
+    "duration": "0.03s",
+    "tuning_parameters": {
+      "experiment_id": "expt",
+      "serialized_fidelity_parameters": ""
+    }
+  },
+  "report": {
+    "rendering": {
+      "render_time_histogram": [{
+        "counts": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0,
+                   0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        "instrument_id": 0
+      }]
+    }
+  }
+})TF";
+
+class TestIdProvider : public IdProvider{
+  public:
+    uint64_t DecodeAnnotationSerialization(const ProtobufSerialization& ser) const override {
+        return 0;
+    }
+    TFErrorCode MakeCompoundId(InstrumentationKey k,
+                               uint64_t annotation_id,
+                               uint64_t& id) override {
+        id = k;
+        return TFERROR_OK;
+    }
+};
+
+
+void CheckProngCaches(const ProngCache& pc0, const ProngCache& pc1) {
+    Prong* p0 = pc0.Get(0);
+    Prong* p1 = pc1.Get(0);
+    EXPECT_TRUE(p0!=nullptr && p1!=nullptr);
+    EXPECT_EQ(p0->histogram_, p1->histogram_);
+}
+
+TEST(SerializationTest, GEDeserialization) {
+    ProngCache prong_cache(1/*size*/, 1/*max_instrumentation_keys*/, {DefaultHistogram()},
+                           [](uint64_t){ return SerializedAnnotation(); });
+    ProtobufSerialization fidelity_params;
+    ExtraUploadInfo device_info;
+    std::string evt_ser;
+    GESerializer::SerializeEvent(prong_cache, fidelity_params, test_device_info, evt_ser);
+    auto empty_report = report_start + report_end;
+    EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, empty_report)) << "EmptyReport";
+    // Fill in some data
+    auto p = prong_cache.Get(0);
+    p->Trace(milliseconds(30));
+    GESerializer::SerializeEvent(prong_cache, fidelity_params, test_device_info, evt_ser);
+    auto report = report_start + single_tick + report_end;
+    EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, report)) << "Single tick";
+    ProngCache pc(1/*size*/, 1/*max_instrumentation_keys*/, {DefaultHistogram()},
+                           [](uint64_t){ return SerializedAnnotation(); });
+    TestIdProvider id_provider;
+    EXPECT_EQ(GESerializer::DeserializeAndMerge(evt_ser, id_provider, pc), TFERROR_OK)
+            << "Deserialize single";
+    CheckProngCaches(pc, prong_cache);
 }
 
 } // namespace serialization_test

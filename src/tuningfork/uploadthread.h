@@ -24,30 +24,48 @@
 
 namespace tuningfork {
 
-class UploadThread {
-private:
+class Runnable {
+protected:
     std::unique_ptr<std::thread> thread_;
     std::mutex mutex_;
     std::condition_variable cv_;
     bool do_quit_;
+    int wait_time_ms_;
+public:
+    Runnable(int wait_time_ms) : wait_time_ms_(wait_time_ms) {}
+    virtual void Start();
+    virtual void Run();
+    virtual void Stop();
+    virtual void DoWork() = 0;
+};
+
+class UltimateUploader;
+
+class UploadThread : protected Runnable {
+private:
     const ProngCache *ready_;
+    bool upload_;
     Backend *backend_;
     ProtobufSerialization current_fidelity_params_;
     UploadCallback upload_callback_;
     ExtraUploadInfo extra_info_;
+    std::unique_ptr<UltimateUploader> ultimate_uploader_;
+    const TFCache* persister_;
  public:
     UploadThread(Backend *backend, const ExtraUploadInfo& extraInfo);
-
     ~UploadThread();
 
-    void Start();
+    void InitialChecks(ProngCache& prongs,
+                       IdProvider& id_provider,
+                       const TFCache* persister);
 
-    void Stop();
-
-    void Run();
+    void Start() override;
+    void Stop() override;
+    void DoWork() override;
 
     // Returns true if we submitted, false if we are waiting for a previous submit to complete
-    bool Submit(const ProngCache *prongs);
+    // If upload is false, the cache is serialized and saved, not uploaded.
+    bool Submit(const ProngCache *prongs, bool upload);
 
     void SetCurrentFidelityParams(const ProtobufSerialization &fp,
                                   const std::string& experiment_id) {
@@ -64,7 +82,6 @@ private:
  private:
     void UpdateGLVersion();
 
-    friend class ClearcutSerializer;
 };
 
 } // namespace tuningfork {
