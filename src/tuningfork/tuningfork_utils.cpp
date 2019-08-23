@@ -22,6 +22,8 @@
 #include <errno.h>
 #include <fstream>
 #include <sstream>
+// Unfortunately we can't use std::filesystem until we move to C++17
+#include <dirent.h>
 
 #define LOG_TAG "TuningFork"
 #include "Log.h"
@@ -124,6 +126,7 @@ namespace file_utils {
     // Creates the directory if it does not exist. Returns true if the directory
     //  already existed or could be created.
     bool CheckAndCreateDir(const std::string& path) {
+        ALOGV("CheckAndCreateDir:%s",path.c_str());
         struct stat sb;
         int32_t res = stat(path.c_str(), &sb);
         if (0 == res && sb.st_mode & S_IFDIR) {
@@ -139,6 +142,7 @@ namespace file_utils {
         return false;
     }
     bool FileExists(const std::string& fname) {
+        ALOGV("FileExists:%s",fname.c_str());
         struct stat buffer;
         return (stat(fname.c_str(), &buffer)==0);
     }
@@ -161,24 +165,41 @@ namespace file_utils {
     bool DeleteFile(const std::string& path) {
         if (FileExists(path))
             return remove(path.c_str())==0;
-        return false;
+        return true;
+    }
+    bool DeleteDir(const std::string& path) {
+        // TODO(willosborn): It would be much better to use std::filesystem::remove_all here
+        //  if we were on C++17 or experimental/filesystem was supported on Android.
+        ALOGI("DeleteDir %s", path.c_str());
+        struct dirent* entry;
+        auto dir = opendir(path.c_str());
+        if (dir==nullptr)
+            return DeleteFile(path);
+        while ((entry = readdir(dir))) {
+            if (entry->d_name[0]!='\0' && entry->d_name[0]!='.')
+                DeleteDir(path + "/" + entry->d_name);
+        }
+        closedir(dir);
+        return true;
     }
 
     bool LoadBytesFromFile(std::string file_name, CProtobufSerialization* params) {
-      std::ifstream f(file_name, std::ios::binary);
-      if (f.good()) {
-        f.seekg(0, std::ios::end);
-        params->size = f.tellg();
-        params->bytes = (uint8_t*)::malloc(params->size);
-        params->dealloc = CProtobufSerialization_Dealloc;
-        f.seekg(0, std::ios::beg);
-        f.read((char*)params->bytes, params->size);
-        return true;
-      }
-      return false;
+        ALOGV("LoadBytesFromFile:%s",file_name.c_str());
+        std::ifstream f(file_name, std::ios::binary);
+        if (f.good()) {
+            f.seekg(0, std::ios::end);
+            params->size = f.tellg();
+            params->bytes = (uint8_t*)::malloc(params->size);
+            params->dealloc = CProtobufSerialization_Dealloc;
+            f.seekg(0, std::ios::beg);
+            f.read((char*)params->bytes, params->size);
+            return true;
+        }
+        return false;
     }
 
     bool SaveBytesToFile(std::string file_name, const CProtobufSerialization* params) {
+        ALOGV("SaveBytesToFile:%s",file_name.c_str());
         std::ofstream save_file(file_name, std::ios::binary);
         if (save_file.good()) {
             save_file.write((const char*)params->bytes, params->size);

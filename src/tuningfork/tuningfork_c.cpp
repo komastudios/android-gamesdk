@@ -23,30 +23,17 @@
 #include <cstdlib>
 #include <cstring>
 
-namespace {
-
-tuningfork::ProtobufSerialization ToProtobufSerialization(const CProtobufSerialization& cpbs) {
-    return tuningfork::ProtobufSerialization(cpbs.bytes, cpbs.bytes + cpbs.size);
-}
-void ToCProtobufSerialization(const tuningfork::ProtobufSerialization& pbs,
-                              CProtobufSerialization* cpbs) {
-    cpbs->bytes = (uint8_t*)::malloc(pbs.size());
-    memcpy(cpbs->bytes, pbs.data(), pbs.size());
-    cpbs->size = pbs.size();
-    cpbs->dealloc = CProtobufSerialization_Dealloc;
-}
-
-} // anonymous namespace
-
 extern "C" {
+
+namespace tf = tuningfork;
 
 TFErrorCode TuningFork_init_internal(const TFSettings *settings, JNIEnv* env, jobject context) {
     if (settings) {
-        return tuningfork::Init(*settings, env, context);
+        return tf::Init(*settings, env, context);
     } else {
         TFSettings apk_settings;
         if (TuningFork_findSettingsInApk(env, context, &apk_settings)==TFERROR_OK)
-            return tuningfork::Init(apk_settings, env, context);
+            return tf::Init(apk_settings, env, context);
         else
             return TFERROR_NO_SETTINGS;
     }
@@ -60,22 +47,22 @@ TFErrorCode TuningFork_getFidelityParameters(JNIEnv* env, jobject context,
                                       const char* api_key,
                                       const CProtobufSerialization *defaultParams,
                                       CProtobufSerialization *params, uint32_t timeout_ms) {
-    tuningfork::ProtobufSerialization defaults;
+    tf::ProtobufSerialization defaults;
     if(defaultParams)
-        defaults = ToProtobufSerialization(*defaultParams);
-    tuningfork::ProtobufSerialization s;
-    TFErrorCode result = tuningfork::GetFidelityParameters(env, context, url_base,
+        defaults = tf::ToProtobufSerialization(*defaultParams);
+    tf::ProtobufSerialization s;
+    TFErrorCode result = tf::GetFidelityParameters(env, context, url_base,
                                                            api_key?api_key:"",
                                                            defaults, s, timeout_ms);
     if (result==TFERROR_OK && params)
-        ToCProtobufSerialization(s, params);
+        tf::ToCProtobufSerialization(s, params);
     return result;
 }
 
 // Protobuf serialization of the current annotation
 TFErrorCode TuningFork_setCurrentAnnotation(const CProtobufSerialization *annotation) {
     if(annotation)
-        return tuningfork::SetCurrentAnnotation(ToProtobufSerialization(*annotation));
+        return tf::SetCurrentAnnotation(tf::ToProtobufSerialization(*annotation));
     else
         return TFERROR_INVALID_ANNOTATION;
 }
@@ -83,27 +70,27 @@ TFErrorCode TuningFork_setCurrentAnnotation(const CProtobufSerialization *annota
 // Record a frame tick that will be associated with the instrumentation key and the current
 //   annotation
 TFErrorCode TuningFork_frameTick(TFInstrumentKey id) {
-    return tuningfork::FrameTick(id);
+    return tf::FrameTick(id);
 }
 
 // Record a frame tick using an external time, rather than system time
 TFErrorCode TuningFork_frameDeltaTimeNanos(TFInstrumentKey id, TFDuration dt) {
-    return tuningfork::FrameDeltaTimeNanos(id, std::chrono::nanoseconds(dt));
+    return tf::FrameDeltaTimeNanos(id, std::chrono::nanoseconds(dt));
 }
 
 // Start a trace segment
 TFErrorCode  TuningFork_startTrace(TFInstrumentKey key, TFTraceHandle* handle) {
     if (handle==nullptr) return TFERROR_INVALID_TRACE_HANDLE;
-    return tuningfork::StartTrace(key, *handle);
+    return tf::StartTrace(key, *handle);
 }
 
 // Record a trace with the key and annotation set using startTrace
 TFErrorCode TuningFork_endTrace(TFTraceHandle h) {
-    return tuningfork::EndTrace(h);
+    return tf::EndTrace(h);
 }
 
 TFErrorCode TuningFork_flush() {
-    return tuningfork::Flush();
+    return tf::Flush();
 }
 
 void TUNINGFORK_VERSION_SYMBOL() {

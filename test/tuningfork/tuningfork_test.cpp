@@ -111,6 +111,7 @@ TFSettings TestSettings(TFAggregationStrategy::TFSubmissionPolicy method, int n_
                       const std::vector<TFHistogram>& hists = {}) {
     // Make sure we set all required fields
     TFSettings s;
+    memset(&s, 0, sizeof(TFSettings));
     s.aggregation_strategy.method = method;
     s.aggregation_strategy.intervalms_or_count = n_ticks;
     s.aggregation_strategy.max_instrumentation_keys = n_keys;
@@ -125,12 +126,13 @@ TFSettings TestSettings(TFAggregationStrategy::TFSubmissionPolicy method, int n_
     return s;
 }
 const Duration test_wait_time = std::chrono::seconds(1);
+static const std::string kCacheDir = "/data/local/tmp/tuningfork_test";
 const TuningForkLogEvent& TestEndToEnd() {
     testBackend.Clear();
     timeProvider.Reset();
     const int NTICKS = 101; // note the first tick doesn't add anything to the histogram
     auto settings = TestSettings(TFAggregationStrategy::TICK_BASED, NTICKS - 1, 1, {});
-    tuningfork::Init(settings, extra_upload_info, &testBackend, &paramsLoader, &timeProvider);
+    tuningfork::Init(settings, extra_upload_info, &testBackend, &paramsLoader, &timeProvider, kCacheDir);
     std::unique_lock<std::mutex> lock(*rmutex);
     for (int i = 0; i < NTICKS; ++i)
         tuningfork::FrameTick(TFTICK_SYSCPU);
@@ -146,7 +148,7 @@ const TuningForkLogEvent& TestEndToEndWithAnnotation() {
     const int NTICKS = 101; // note the first tick doesn't add anything to the histogram
     // {3} is the number of values in the Level enum in tuningfork_extensions.proto
     auto settings = TestSettings(TFAggregationStrategy::TICK_BASED, NTICKS - 1, 2, {3});
-    tuningfork::Init(settings, extra_upload_info, &testBackend, &paramsLoader, &timeProvider);
+    tuningfork::Init(settings, extra_upload_info, &testBackend, &paramsLoader, &timeProvider, kCacheDir);
     Annotation ann;
     ann.set_level(com::google::tuningfork::LEVEL_1);
     tuningfork::SetCurrentAnnotation(Serialize(ann));
@@ -165,7 +167,7 @@ const TuningForkLogEvent& TestEndToEndTimeBased() {
     TestTimeProvider timeProvider(std::chrono::milliseconds(100)); // Tick in 100ms intervals
     auto settings = TestSettings(TFAggregationStrategy::TIME_BASED, 10100, 1, {},
                                  {{TFTICK_SYSCPU, 50,150,10}});
-    tuningfork::Init(settings, extra_upload_info, &testBackend, &paramsLoader, &timeProvider);
+    tuningfork::Init(settings, extra_upload_info, &testBackend, &paramsLoader, &timeProvider, kCacheDir);
     std::unique_lock<std::mutex> lock(*rmutex);
     for (int i = 0; i < NTICKS; ++i)
         tuningfork::FrameTick(TFTICK_SYSCPU);

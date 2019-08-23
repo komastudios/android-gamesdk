@@ -44,6 +44,7 @@ include_directories(
 
 add_executable(tuningfork_test
   main.cpp
+  file_cache_test.cpp
   histogram_test.cpp
   tuningfork_test.cpp
   annotation_test.cpp

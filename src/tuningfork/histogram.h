@@ -61,6 +61,10 @@ public:
         buckets_ = counts;
     }
 
+    TFErrorCode AddCounts(const std::vector<uint32_t>& counts);
+
+    bool operator==(const Histogram& h) const;
+
     const std::vector<uint32_t>& buckets() const { return buckets_;}
 
     friend class ClearcutSerializer;
