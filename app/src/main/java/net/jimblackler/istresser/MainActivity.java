@@ -22,10 +22,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
   private static final String TAG = MainActivity.class.getSimpleName();
@@ -61,6 +65,18 @@ public class MainActivity extends AppCompatActivity {
       }
       return output.toString();
     }
+  }
+
+  private static Map<String, Integer> processMeminfo(String meminfoText) {
+    Map<String, Integer> output = new HashMap<>();
+    Pattern pattern = Pattern.compile("([^:]+)[^\\d]*(\\d+).*\n");
+
+    Matcher matcher = pattern.matcher(meminfoText);
+
+    while (matcher.find()) {
+      output.put(matcher.group(1), Integer.parseInt(matcher.group(2)));
+    }
+    return output;
   }
 
   @Override
@@ -150,12 +166,7 @@ public class MainActivity extends AppCompatActivity {
       recordNativeHeapAllocatedSize = nativeHeapAllocatedSize;
     }
 
-    try {
-      String result = execute("cat", "/proc/meminfo");
-      System.out.println(result);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+
   }
 
   private void updateInfo() {
@@ -305,6 +316,19 @@ public class MainActivity extends AppCompatActivity {
     report.put("nativeAllocated", Debug.getNativeHeapAllocatedSize());
     report.put("recordNativeAllocated", recordNativeHeapAllocatedSize);
     report.put("paused", pauseAllocation);
+
+    try {
+      JSONObject meminfoOut = new JSONObject();
+      Map<String, Integer> meminfo = processMeminfo(execute("cat", "/proc/meminfo"));
+      for (Map.Entry<String, Integer> entry : meminfo.entrySet()) {
+        meminfoOut.put(entry.getKey(), entry.getValue());
+      }
+      report.put("meminfo", meminfoOut);
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
     return report;
   }
 
