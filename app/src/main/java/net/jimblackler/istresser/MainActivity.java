@@ -16,7 +16,10 @@ import com.google.common.collect.Multiset;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -45,13 +48,28 @@ public class MainActivity extends AppCompatActivity {
     return String.format(Locale.getDefault(), "%.1f MB", (float) bytes / (1024 * 1024));
   }
 
+  private static String execute(String... args) throws IOException {
+    try(
+        InputStreamReader inputStreamReader =
+            new InputStreamReader(new ProcessBuilder(args).start().getInputStream());
+        BufferedReader reader = new BufferedReader(inputStreamReader);) {
+      String newline = System.getProperty("line.separator");
+      StringBuilder output = new StringBuilder();
+      String line;
+      while ((line = reader.readLine()) != null) {
+        output.append(line).append(newline);
+      }
+      return output.toString();
+    }
+  }
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     try {
       JSONObject report = new JSONObject();
-      report.put("version", 5);
+      report.put("version", 6);
       Intent launchIntent = getIntent();
       if ("com.google.intent.action.TEST_LOOP".equals(launchIntent.getAction())) {
         Uri logFile = launchIntent.getData();
@@ -102,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
       @Override
       public void run() {
         if (!pauseAllocation) {
-          int bytes = 1024 * 1024 * 8;
+          int bytes = 1024 * 1024 * 2;
           nativeAllocatedByTest += bytes;
           nativeConsume(bytes);
           //jvmConsume(1024 * 512);
@@ -130,6 +148,13 @@ public class MainActivity extends AppCompatActivity {
     long nativeHeapAllocatedSize = Debug.getNativeHeapAllocatedSize();
     if (nativeHeapAllocatedSize > recordNativeHeapAllocatedSize) {
       recordNativeHeapAllocatedSize = nativeHeapAllocatedSize;
+    }
+
+    try {
+      String result = execute("cat", "/proc/meminfo");
+      System.out.println(result);
+    } catch (IOException e) {
+      e.printStackTrace();
     }
   }
 
