@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "b20318c0_49228b79",
+        "filename": "src/swappy/opengl/EGL.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-08-28T15:54:26Z",
+      "side": 1,
+      "message": "TBH, it\u0027s pointless even if we do that since we can only construct EGL objects using the function above, where eglLib is guaranteed to be set.",
+      "parentUuid": "a1a18b39_3b6985de",
+      "revId": "add3c1e12886cd544257f98061ef5684dd7802d2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "bbc40cce_50626a27",
         "filename": "src/swappy/opengl/SwappyGL.cpp",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "add3c1e12886cd544257f98061ef5684dd7802d2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3eea3961_4f4fa5a3",
+        "filename": "src/swappy/opengl/SwappyGL.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-08-28T15:54:26Z",
+      "side": 1,
+      "message": "We don\u0027t want asserts or exceptions being thrown in library code, do we? It\u0027s better to use pointers and return an error code if the pointer is null, like above, together with logging an error, I\u0027d have thought.",
+      "parentUuid": "bbc40cce_50626a27",
+      "revId": "add3c1e12886cd544257f98061ef5684dd7802d2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
