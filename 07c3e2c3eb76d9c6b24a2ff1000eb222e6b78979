@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c341050f_cbd6ccc6",
+        "filename": "src/tuningfork/ge_serializer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-08-28T20:35:13Z",
+      "side": 1,
+      "message": "Let\u0027s move this to a separate file (in a different cl to this one)",
+      "revId": "07c3e2c3eb76d9c6b24a2ff1000eb222e6b78979",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
