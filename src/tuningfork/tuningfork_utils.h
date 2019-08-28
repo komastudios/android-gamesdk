@@ -52,6 +52,8 @@ namespace file_utils {
 
     bool DeleteFile(const std::string& path);
 
+    bool DeleteDir(const std::string& path);
+
     bool LoadBytesFromFile(std::string file_name, CProtobufSerialization* params);
 
     bool SaveBytesToFile(std::string file_name, const CProtobufSerialization* params);

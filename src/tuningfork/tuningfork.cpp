@@ -34,6 +34,8 @@
 #include "ge_backend.h"
 #include "annotation_util.h"
 #include "crash_handler.h"
+#include "tuningfork_utils.h"
+#include "file_cache.h"
 
 /* Annotations come into tuning fork as a serialized protobuf. The protobuf can only have
  * enums in it. We form an integer annotation id from the annotation interpreted as a mixed-radix
@@ -81,7 +83,7 @@ public:
 
 std::unique_ptr<ChronoTimeProvider> s_chrono_time_provider = std::make_unique<ChronoTimeProvider>();
 
-class TuningForkImpl {
+class TuningForkImpl : public IdProvider {
 private:
     CrashHandler crash_handler_;
     Settings settings_;
@@ -99,12 +101,14 @@ private:
     ITimeProvider *time_provider_;
     std::vector<InstrumentationKey> ikeys_;
     std::atomic<int> next_ikey_;
+    FileCache file_cache_;
 public:
     TuningForkImpl(const Settings& settings,
                    const ExtraUploadInfo& extra_upload_info,
                    Backend *backend,
                    ParamsLoader *loader,
-                   ITimeProvider *time_provider) : settings_(settings),
+                   ITimeProvider *time_provider,
+                   std::string tuningfork_save_dir) : settings_(settings),
                                 trace_(gamesdk::Trace::create()),
                                 backend_(backend),
                                 loader_(loader),
@@ -112,7 +116,8 @@ public:
                                 current_annotation_id_(0),
                                 time_provider_(time_provider),
                                 ikeys_(settings.aggregation_strategy.max_instrumentation_keys),
-                                next_ikey_(0) {
+                                next_ikey_(0),
+                                file_cache_(tuningfork_save_dir) {
         if (time_provider_ == nullptr) {
             time_provider_ = s_chrono_time_provider.get();
         }
@@ -143,7 +148,20 @@ public:
             ALOGI("Flush result : %d", ret);
             return true;
         };
+
         crash_handler_.Init(crash_callback);
+
+        if (settings_.persistent_cache == nullptr) {
+            ALOGI("Using local file cache at %s", tuningfork_save_dir.c_str());
+            settings_.persistent_cache = file_cache_.GetCCache();
+        }
+
+        // Check if there are any files waiting to be uploaded
+        // + merge any histograms that are persisted.
+        upload_thread_.InitialChecks(*current_prong_cache_,
+                                     *this,
+                                     settings_.persistent_cache);
+
         ALOGI("TuningFork initialized");
     }
 
@@ -177,7 +195,7 @@ public:
 
     TFErrorCode Flush();
 
-    TFErrorCode Flush(TimePoint t);
+    TFErrorCode Flush(TimePoint t, bool upload);
 
 private:
     Prong *TickNanos(uint64_t compound_id, TimePoint t);
@@ -188,13 +206,13 @@ private:
 
     bool ShouldSubmit(TimePoint t, Prong *prong);
 
-    AnnotationId DecodeAnnotationSerialization(const SerializedAnnotation &ser);
+    AnnotationId DecodeAnnotationSerialization(const SerializedAnnotation &ser) const override;
 
     uint32_t GetInstrumentationKey(uint64_t compoundId) {
         return compoundId % settings_.aggregation_strategy.max_instrumentation_keys;
     }
 
-    TFErrorCode MakeCompoundId(InstrumentationKey k, AnnotationId a, uint64_t& id) {
+    TFErrorCode MakeCompoundId(InstrumentationKey k, AnnotationId a, uint64_t& id) override {
         int key_index;
         auto err = GetOrCreateInstrumentKeyIndex(k, key_index);
         if (err!=TFERROR_OK) return err;
@@ -224,17 +242,19 @@ void CopySettings(const TFSettings &c_settings, Settings &settings) {
                                         ca.annotation_enum_size + ca.n_annotation_enum_size);
     settings.histograms = std::vector<TFHistogram>(c_settings.histograms,
                                         c_settings.histograms + c_settings.n_histograms);
+    settings.persistent_cache = c_settings.persistent_cache;
 }
 
 TFErrorCode Init(const TFSettings &c_settings,
           const ExtraUploadInfo& extra_upload_info,
           Backend *backend,
           ParamsLoader *loader,
-          ITimeProvider *time_provider) {
+          ITimeProvider *time_provider,
+          std::string save_dir) {
     Settings settings;
     CopySettings(c_settings, settings);
-    s_impl = std::make_unique<TuningForkImpl>(settings, extra_upload_info, backend, loader,
-                                              time_provider);
+    s_impl = std::make_unique<TuningForkImpl>(settings, extra_upload_info, backend,
+                                              loader, time_provider, save_dir);
     return TFERROR_OK;
 }
 
@@ -255,7 +275,8 @@ TFErrorCode Init(const TFSettings &c_settings, JNIEnv* env, jobject context) {
     else {
         ALOGV("TuningFork.GoogleEndpoint: FAILED");
     }
-    return Init(c_settings, extra_upload_info, backend, loader);
+    std::string save_dir = file_utils::GetAppCacheDir(env, context) + "/tuningfork";
+    return Init(c_settings, extra_upload_info, backend, loader, nullptr, save_dir);
 }
 
 TFErrorCode GetFidelityParameters(JNIEnv* env, jobject context,
@@ -348,7 +369,7 @@ uint64_t TuningForkImpl::SetCurrentAnnotation(const ProtobufSerialization &annot
     }
 }
 
-AnnotationId TuningForkImpl::DecodeAnnotationSerialization(const SerializedAnnotation &ser) {
+AnnotationId TuningForkImpl::DecodeAnnotationSerialization(const SerializedAnnotation &ser) const {
     auto id = annotation_util::DecodeAnnotationSerialization(ser, annotation_radix_mult_);
      // Shift over to leave room for the instrument id
     return id * settings_.aggregation_strategy.max_instrumentation_keys;
@@ -486,17 +507,22 @@ bool TuningForkImpl::ShouldSubmit(TimePoint t, Prong *prong) {
 TFErrorCode TuningForkImpl::CheckForSubmit(TimePoint t, Prong *prong) {
     TFErrorCode ret_code = TFERROR_OK;
     if (ShouldSubmit(t, prong)) {
-        ret_code = Flush(t);
+        ret_code = Flush(t, true);
     }
     return ret_code;
 }
 
-void TuningForkImpl::InitHistogramSettings() {
+TFHistogram DefaultHistogram() {
     TFHistogram default_histogram;
     default_histogram.instrument_key = -1;
     default_histogram.bucket_min = 10;
     default_histogram.bucket_max = 40;
     default_histogram.n_buckets = Histogram::kDefaultNumBuckets;
+    return default_histogram;
+}
+
+void TuningForkImpl::InitHistogramSettings() {
+    TFHistogram default_histogram = DefaultHistogram();
     for(uint32_t i=0; i<settings_.aggregation_strategy.max_instrumentation_keys; ++i) {
         if(settings_.histograms.size()<=i) {
             ALOGW("Couldn't get histogram for key index %d. Using default histogram", i);
@@ -521,19 +547,15 @@ void TuningForkImpl::InitAnnotationRadixes() {
 }
 
 TFErrorCode TuningForkImpl::Flush() {
-    auto t = time_provider_->Now();
-    // Only allow manual submission a maximum of once per minute
-    auto dt = t - last_submit_time_;
-    if (dt > std::chrono::seconds(60))
-        return Flush(t);
-    else
-        return TFERROR_UPLOAD_TOO_FREQUENT;
+    auto t = std::chrono::steady_clock::now();
+    return Flush(t, false);
 }
 
-TFErrorCode TuningForkImpl::Flush(TimePoint t) {
+TFErrorCode TuningForkImpl::Flush(TimePoint t, bool upload) {
+    ALOGI("Flush %d", upload);
     TFErrorCode ret_code;
     current_prong_cache_->SetInstrumentKeys(ikeys_);
-    if (upload_thread_.Submit(current_prong_cache_)) {
+    if (upload_thread_.Submit(current_prong_cache_, upload)) {
         if (current_prong_cache_ == prong_caches_[0].get()) {
             prong_caches_[1]->Clear();
             current_prong_cache_ = prong_caches_[1].get();
@@ -545,7 +567,8 @@ TFErrorCode TuningForkImpl::Flush(TimePoint t) {
     } else {
         ret_code = TFERROR_PREVIOUS_UPLOAD_PENDING;
     }
-    last_submit_time_ = t;
+    if (upload)
+        last_submit_time_ = t;
     return ret_code;
 }
 

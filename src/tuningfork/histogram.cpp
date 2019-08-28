@@ -120,4 +120,18 @@ void Histogram::Clear(bool autorange) {
     count_ = 0;
 }
 
+bool Histogram::operator==(const Histogram& h) const {
+    return buckets_==h.buckets_ && samples_==h.samples_;
+}
+
+TFErrorCode Histogram::AddCounts(const std::vector<uint32_t>& counts) {
+    if (counts.size()!=buckets_.size())
+        return TFERROR_BAD_PARAMETER;
+    auto c = counts.begin();
+    for(auto& c_orig: buckets_) {
+        c_orig += *c++;
+    }
+    return TFERROR_OK;
+}
+
 } // namespace tuningfork

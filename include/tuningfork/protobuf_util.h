@@ -21,11 +21,26 @@
 #include <vector>
 #include <cstdint>
 #include <cstdlib>
+#include <cstring>
 
 // Deallocate the bytes using stdlib's 'free'
 extern "C" void CProtobufSerialization_Dealloc(CProtobufSerialization* c);
 
 namespace tuningfork {
+
+typedef std::vector<uint8_t> ProtobufSerialization;
+
+inline ProtobufSerialization ToProtobufSerialization(const CProtobufSerialization& cpbs) {
+    return ProtobufSerialization(cpbs.bytes, cpbs.bytes + cpbs.size);
+}
+
+inline void ToCProtobufSerialization(const ProtobufSerialization& pbs,
+                                     CProtobufSerialization* cpbs) {
+    cpbs->bytes = (uint8_t*)::malloc(pbs.size());
+    memcpy(cpbs->bytes, pbs.data(), pbs.size());
+    cpbs->size = pbs.size();
+    cpbs->dealloc = CProtobufSerialization_Dealloc;
+}
 
 template <typename T>
 bool Deserialize(const std::vector<uint8_t> &ser, T &pb) {
