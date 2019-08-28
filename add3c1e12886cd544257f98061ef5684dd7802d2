@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a1a18b39_3b6985de",
+        "filename": "src/swappy/opengl/EGL.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-08-28T13:57:28Z",
+      "side": 1,
+      "message": "nit: This check is pointless unless we also do eglLib \u003d NULL; (which I think we should do)",
+      "revId": "add3c1e12886cd544257f98061ef5684dd7802d2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bbc40cce_50626a27",
+        "filename": "src/swappy/opengl/SwappyGL.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-08-28T13:57:28Z",
+      "side": 1,
+      "message": "Note for later: I think one of the items we should cover in the design review is the use of singletons here. The code here obviously works but it\u0027s pretty unsafe. We should think about maybe returning a reference and asserting the pointer is not null within the accessor? \n\nNot really feedback for this cl, but if I don\u0027t write this down somewhere then I am likely to forget about it before the design review happens :)",
+      "revId": "add3c1e12886cd544257f98061ef5684dd7802d2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
