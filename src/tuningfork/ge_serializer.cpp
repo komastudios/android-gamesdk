@@ -27,10 +27,45 @@
 
 #include "modp_b64.h"
 
+#ifdef ANDROID_GNUSTL
+// This is needed for date.h when using gnustl in the NDK
+namespace std {
+
+template <typename T>
+std::string to_string(T value)
+{
+    std::stringstream os;
+    os << value;
+    return os.str();
+}
+template <typename T>
+std::wstring to_wstring(T value)
+{
+    std::wstringstream os;
+    os << value;
+    return os.str();
+}
+long double stold( const std::string& str, std::size_t* pos = 0 ) {
+    long double d;
+    std::stringstream is(str);
+    auto p0 = is.tellg();
+    is >> d;
+    if (pos != nullptr) {
+        *pos = is.tellg() - p0;
+    }
+    return d;
+    }
+
+} // namespace std
+#endif
+// TODO(b/140155101): Move the date library into aosp/external
+#include "date/date.h"
+
 namespace tuningfork {
 
 using namespace json11;
 using namespace std::chrono;
+using namespace date;
 
 Json::object GameSdkInfoJson(const ExtraUploadInfo& device_info) {
     std::stringstream version_str;
@@ -43,13 +78,22 @@ Json::object GameSdkInfoJson(const ExtraUploadInfo& device_info) {
 
 std::string TimeToRFC3339(system_clock::time_point tp) {
     std::stringstream str;
-    // TODO(b/139924411): date serialization
+    //"{year}-{month}-{day}T{hour}:{min}:{sec}[.{frac_sec}]Z"
+    auto const dp = date::floor<days>(tp);
+    str << year_month_day(dp) << 'T' << make_time(tp-dp) << 'Z';
     return str.str();
 }
 
 system_clock::time_point RFC3339ToTime(const std::string& s) {
-    // TODO(b/139924411): date deserialization
-    return {};
+    std::istringstream str(s);
+    int y, m, d;
+    char delim;
+    str >> y >> delim >> m >> delim >> d >> delim;
+    int hours, mins;
+    double secs;
+    str >> hours >> delim >> mins >> secs;
+    return sys_days(year_month_day(year(y), month(m), day(d)))
+            + microseconds(static_cast<uint64_t>((hours*3600 + mins*60 + secs)*1000000.0));
 }
 
 std::string DurationToSecondsString(Duration d) {

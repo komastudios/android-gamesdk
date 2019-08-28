@@ -29,6 +29,7 @@ include_directories( ../../src/swappy )
 include_directories( ../common )
 include_directories( ${MODPB64_DIR}/modp_b64)
 include_directories( ${THIRDPARTY_DIR} )
+include_directories( ${THIRDPARTY_DIR}/date/include )
 
 include_directories(${PROTO_GENS_DIR})
 

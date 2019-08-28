@@ -69,8 +69,8 @@ std::string report_start = R"TF({
       "version": "0.3"
     },
     "time_period": {
-      "end_time": "",
-      "start_time": ""
+      "end_time": "1970-01-01T00:00:00.000000Z",
+      "start_time": "1970-01-01T00:00:00.000000Z"
     }
   },
   "telemetry": [)TF";
@@ -125,13 +125,13 @@ TEST(SerializationTest, GEDeserialization) {
     std::string evt_ser;
     GESerializer::SerializeEvent(prong_cache, fidelity_params, test_device_info, evt_ser);
     auto empty_report = report_start + report_end;
-    EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, empty_report)) << "EmptyReport";
+    EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, empty_report)) << evt_ser << "\n!=\n" << empty_report;
     // Fill in some data
     auto p = prong_cache.Get(0);
     p->Trace(milliseconds(30));
     GESerializer::SerializeEvent(prong_cache, fidelity_params, test_device_info, evt_ser);
     auto report = report_start + single_tick + report_end;
-    EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, report)) << "Single tick";
+    EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, report)) << evt_ser << "\n!=\n" << report;
     ProngCache pc(1/*size*/, 1/*max_instrumentation_keys*/, {DefaultHistogram()},
                            [](uint64_t){ return SerializedAnnotation(); });
     TestIdProvider id_provider;

@@ -223,6 +223,10 @@ def cmake(projectFolder, workingFolder, outputFolder, arch, toolchain, stl,
         threadFlags = "-DGAMESDK_THREAD_CHECKS=0"
     }
 
+    def cxx_flags = ""
+    if (stl=="gnustl_static")
+	cxx_flags = "-DANDROID_GNUSTL"
+
     def cmdLine = [toolchain.getCMakePath(),
                    "$projectFolder",
                    "-DCMAKE_BUILD_TYPE=$buildType",
@@ -230,11 +234,12 @@ def cmake(projectFolder, workingFolder, outputFolder, arch, toolchain, stl,
                    "-DANDROID_NDK=$ndkPath",
                    "-DANDROID_STL=$stl",
                    "-DANDROID_ABI=$arch",
-                   "-DCMAKE_CXX_FLAGS=",
+                   "-DCMAKE_CXX_FLAGS=$cxx_flags",
                    "-DCMAKE_TOOLCHAIN_FILE=$toolchainFilePath",
                    "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=$outputFolder",
                    "-DGAMESDK_BUILD_TUNINGFORK=$buildtfval",
                    threadFlags]
+
     if (useNinja()) {
         cmdLine += ["-DCMAKE_MAKE_PROGRAM=" + "$ninjaPath",
                     "-GNinja"]
