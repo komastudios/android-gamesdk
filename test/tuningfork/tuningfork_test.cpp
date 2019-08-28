@@ -54,7 +54,7 @@ public:
         return TFERROR_OK;
     }
 
-    void clear() { result = ""; }
+    void Clear() { result = ""; }
 
     TuningForkLogEvent result;
     std::shared_ptr<std::condition_variable> cv;
@@ -76,15 +76,26 @@ public:
 // Increment time with a known tick size
 class TestTimeProvider : public ITimeProvider {
 public:
-    TestTimeProvider(Duration tickSizeNs_ = std::chrono::milliseconds(20))
-        : tickSizeNs(tickSizeNs_) {}
+    TestTimeProvider(Duration tickSize_ = std::chrono::milliseconds(20),
+                     SystemDuration systemTickSize_ = std::chrono::milliseconds(20))
+        : tickSize(tickSize_), systemTickSize(systemTickSize_) {}
 
     TimePoint t;
-    Duration tickSizeNs;
+    SystemTimePoint st;
+    Duration tickSize;
+    SystemDuration systemTickSize;
 
-    TimePoint NowNs() override {
-        t += tickSizeNs;
+    TimePoint Now() override {
+        t += tickSize;
         return t;
+    }
+    SystemTimePoint SystemNow() override {
+        st += systemTickSize;
+        return st;
+    }
+    void Reset() {
+        t = TimePoint();
+        st = SystemTimePoint();
     }
 };
 
@@ -115,6 +126,8 @@ TFSettings TestSettings(TFAggregationStrategy::TFSubmissionPolicy method, int n_
 }
 const Duration test_wait_time = std::chrono::seconds(1);
 const TuningForkLogEvent& TestEndToEnd() {
+    testBackend.Clear();
+    timeProvider.Reset();
     const int NTICKS = 101; // note the first tick doesn't add anything to the histogram
     auto settings = TestSettings(TFAggregationStrategy::TICK_BASED, NTICKS - 1, 1, {});
     tuningfork::Init(settings, extra_upload_info, &testBackend, &paramsLoader, &timeProvider);
@@ -128,7 +141,8 @@ const TuningForkLogEvent& TestEndToEnd() {
 }
 
 const TuningForkLogEvent& TestEndToEndWithAnnotation() {
-    testBackend.clear();
+    testBackend.Clear();
+    timeProvider.Reset();
     const int NTICKS = 101; // note the first tick doesn't add anything to the histogram
     // {3} is the number of values in the Level enum in tuningfork_extensions.proto
     auto settings = TestSettings(TFAggregationStrategy::TICK_BASED, NTICKS - 1, 2, {3});
@@ -145,7 +159,8 @@ const TuningForkLogEvent& TestEndToEndWithAnnotation() {
 }
 
 const TuningForkLogEvent& TestEndToEndTimeBased() {
-    testBackend.clear();
+    testBackend.Clear();
+    timeProvider.Reset();
     const int NTICKS = 101; // note the first tick doesn't add anything to the histogram
     TestTimeProvider timeProvider(std::chrono::milliseconds(100)); // Tick in 100ms intervals
     auto settings = TestSettings(TFAggregationStrategy::TIME_BASED, 10100, 1, {},
@@ -201,7 +216,7 @@ TEST(TuningForkTest, EndToEnd) {
   "telemetry": [{
     "context": {
       "annotations": "",
-      "duration": "0s",
+      "duration": "2s",
       "tuning_parameters": {
         "experiment_id": "",
         "serialized_fidelity_parameters": ""
@@ -232,7 +247,7 @@ TEST(TuningForkTest, TestEndToEndWithAnnotation) {
   "telemetry": [{
     "context": {
       "annotations": "CAE=",
-      "duration": "0s",
+      "duration": "2s",
       "tuning_parameters": {
         "experiment_id": "",
         "serialized_fidelity_parameters": ""
@@ -263,7 +278,7 @@ TEST(TuningForkTest, TestEndToEndTimeBased) {
   "telemetry": [{
     "context": {
       "annotations": "",
-      "duration": "0s",
+      "duration": "10s",
       "tuning_parameters": {
         "experiment_id": "",
         "serialized_fidelity_parameters": ""

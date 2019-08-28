@@ -69,14 +69,17 @@ namespace tuningfork {
 
 typedef uint64_t AnnotationId;
 
-class MonoTimeProvider : public ITimeProvider {
+class ChronoTimeProvider : public ITimeProvider {
 public:
-    virtual TimePoint NowNs() {
+    virtual TimePoint Now() {
         return std::chrono::steady_clock::now();
+    }
+    virtual SystemTimePoint SystemNow() {
+        return std::chrono::system_clock::now();
     }
 };
 
-std::unique_ptr<MonoTimeProvider> s_mono_time_provider = std::make_unique<MonoTimeProvider>();
+std::unique_ptr<ChronoTimeProvider> s_chrono_time_provider = std::make_unique<ChronoTimeProvider>();
 
 class TuningForkImpl {
 private:
@@ -84,7 +87,7 @@ private:
     Settings settings_;
     std::unique_ptr<ProngCache> prong_caches_[2];
     ProngCache *current_prong_cache_;
-    TimePoint last_submit_time_ns_;
+    TimePoint last_submit_time_;
     std::unique_ptr<gamesdk::Trace> trace_;
     std::vector<TimePoint> live_traces_;
     Backend *backend_;
@@ -111,9 +114,9 @@ public:
                                 ikeys_(settings.aggregation_strategy.max_instrumentation_keys),
                                 next_ikey_(0) {
         if (time_provider_ == nullptr) {
-            time_provider_ = s_mono_time_provider.get();
+            time_provider_ = s_chrono_time_provider.get();
         }
-        last_submit_time_ns_ = time_provider_->NowNs();
+        last_submit_time_ = time_provider_->Now();
 
         InitHistogramSettings();
         InitAnnotationRadixes();
@@ -174,16 +177,16 @@ public:
 
     TFErrorCode Flush();
 
-    TFErrorCode Flush(TimePoint t_ns);
+    TFErrorCode Flush(TimePoint t);
 
 private:
     Prong *TickNanos(uint64_t compound_id, TimePoint t);
 
     Prong *TraceNanos(uint64_t compound_id, Duration dt);
 
-    TFErrorCode CheckForSubmit(TimePoint t_ns, Prong *prong);
+    TFErrorCode CheckForSubmit(TimePoint t, Prong *prong);
 
-    bool ShouldSubmit(TimePoint t_ns, Prong *prong);
+    bool ShouldSubmit(TimePoint t, Prong *prong);
 
     AnnotationId DecodeAnnotationSerialization(const SerializedAnnotation &ser);
 
@@ -400,7 +403,7 @@ TFErrorCode TuningForkImpl::StartTrace(InstrumentationKey key, TraceHandle& hand
     auto err = MakeCompoundId(key, current_annotation_id_, handle);
     if (err!=TFERROR_OK) return err;
     trace_->beginSection("TFTrace");
-    live_traces_[handle] = time_provider_->NowNs();
+    live_traces_[handle] = time_provider_->Now();
     return TFERROR_OK;
 }
 
@@ -409,7 +412,7 @@ TFErrorCode TuningForkImpl::EndTrace(TraceHandle h) {
     auto i = live_traces_[h];
     if (i != TimePoint::min()) {
         trace_->endSection();
-        TraceNanos(h, time_provider_->NowNs() - i);
+        TraceNanos(h, time_provider_->Now() - i);
         live_traces_[h] = TimePoint::min();
         return TFERROR_OK;
     } else {
@@ -422,7 +425,8 @@ TFErrorCode TuningForkImpl::FrameTick(InstrumentationKey key) {
     auto err = MakeCompoundId(key, current_annotation_id_, compound_id);
     if (err!=TFERROR_OK) return err;
     trace_->beginSection("TFTick");
-    auto t = time_provider_->NowNs();
+    current_prong_cache_->Ping(time_provider_->SystemNow());
+    auto t = time_provider_->Now();
     auto p = TickNanos(compound_id, t);
     if (p)
         CheckForSubmit(t, p);
@@ -436,7 +440,7 @@ TFErrorCode TuningForkImpl::FrameDeltaTimeNanos(InstrumentationKey key, Duration
     if (err!=TFERROR_OK) return err;
     auto p = TraceNanos(compound_id, dt);
     if (p)
-        CheckForSubmit(time_provider_->NowNs(), p);
+        CheckForSubmit(time_provider_->Now(), p);
     return TFERROR_OK;
 }
 
@@ -465,12 +469,12 @@ void TuningForkImpl::SetUploadCallback(UploadCallback cbk) {
 }
 
 
-bool TuningForkImpl::ShouldSubmit(TimePoint t_ns, Prong *prong) {
+bool TuningForkImpl::ShouldSubmit(TimePoint t, Prong *prong) {
     auto method = settings_.aggregation_strategy.method;
     auto count = settings_.aggregation_strategy.intervalms_or_count;
     switch (settings_.aggregation_strategy.method) {
         case Settings::AggregationStrategy::TIME_BASED:
-            return (t_ns - last_submit_time_ns_) >=
+            return (t - last_submit_time_) >=
                    std::chrono::milliseconds(count);
         case Settings::AggregationStrategy::TICK_BASED:
             if (prong)
@@ -479,10 +483,10 @@ bool TuningForkImpl::ShouldSubmit(TimePoint t_ns, Prong *prong) {
     return false;
 }
 
-TFErrorCode TuningForkImpl::CheckForSubmit(TimePoint t_ns, Prong *prong) {
+TFErrorCode TuningForkImpl::CheckForSubmit(TimePoint t, Prong *prong) {
     TFErrorCode ret_code = TFERROR_OK;
-    if (ShouldSubmit(t_ns, prong)) {
-        ret_code = Flush(t_ns);
+    if (ShouldSubmit(t, prong)) {
+        ret_code = Flush(t);
     }
     return ret_code;
 }
@@ -517,16 +521,16 @@ void TuningForkImpl::InitAnnotationRadixes() {
 }
 
 TFErrorCode TuningForkImpl::Flush() {
-    auto t = time_provider_->NowNs();
+    auto t = time_provider_->Now();
     // Only allow manual submission a maximum of once per minute
-    auto dt = t - last_submit_time_ns_;
+    auto dt = t - last_submit_time_;
     if (dt > std::chrono::seconds(60))
         return Flush(t);
     else
         return TFERROR_UPLOAD_TOO_FREQUENT;
 }
 
-TFErrorCode TuningForkImpl::Flush(TimePoint t_ns) {
+TFErrorCode TuningForkImpl::Flush(TimePoint t) {
     TFErrorCode ret_code;
     current_prong_cache_->SetInstrumentKeys(ikeys_);
     if (upload_thread_.Submit(current_prong_cache_)) {
@@ -541,7 +545,7 @@ TFErrorCode TuningForkImpl::Flush(TimePoint t_ns) {
     } else {
         ret_code = TFERROR_PREVIOUS_UPLOAD_PENDING;
     }
-    last_submit_time_ns_ = t_ns;
+    last_submit_time_ = t;
     return ret_code;
 }
 

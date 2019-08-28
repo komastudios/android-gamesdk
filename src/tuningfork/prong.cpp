@@ -28,13 +28,14 @@ Prong::Prong(InstrumentationKey instrumentation_key,
              const SerializedAnnotation &annotation,
              const TFHistogram& histogram_settings)
         : instrumentation_key_(instrumentation_key), annotation_(annotation),
-          last_time_ns_(std::chrono::steady_clock::time_point::min()),
-          histogram_(histogram_settings) {}
+          histogram_(histogram_settings),
+          last_time_(TimePoint::min()),
+          duration_(Duration::zero()) {}
 
-void Prong::Tick(TimePoint t_ns) {
-    if (last_time_ns_ != std::chrono::steady_clock::time_point::min())
-        Trace(t_ns - last_time_ns_);
-    last_time_ns_ = t_ns;
+void Prong::Tick(TimePoint t) {
+    if (last_time_ != std::chrono::steady_clock::time_point::min())
+        Trace(t - last_time_);
+    last_time_ = t;
 }
 
 void Prong::Trace(Duration dt_ns) {
@@ -44,7 +45,7 @@ void Prong::Trace(Duration dt_ns) {
 }
 
 void Prong::Clear() {
-    last_time_ns_ = std::chrono::steady_clock::time_point::min();
+    last_time_ = std::chrono::steady_clock::time_point::min();
     histogram_.Clear();
 }
 
@@ -85,9 +86,10 @@ Prong *ProngCache::Get(uint64_t compound_id) {
 
 void ProngCache::Clear() {
     for (auto &p: prongs_) {
-        if (p->histogram_.Count() > 0)
-            p->histogram_.Clear();
+        p->Clear();
     }
+    time_.start = SystemTimePoint();
+    time_.end = SystemTimePoint();
 }
 
 void ProngCache::SetInstrumentKeys(const std::vector<InstrumentationKey>& instrument_keys) {
@@ -99,6 +101,13 @@ void ProngCache::SetInstrumentKeys(const std::vector<InstrumentationKey>& instru
             p->SetInstrumentKey(k);
         }
     }
+}
+
+void ProngCache::Ping(std::chrono::system_clock::time_point t) {
+    if(time_.start==std::chrono::system_clock::time_point()) {
+        time_.start = t;
+    }
+    time_.end = t;
 }
 
 }
