@@ -18,7 +18,7 @@
 #include "tuningfork_utils.h"
 #include "tuningfork/protobuf_util.h"
 #include "ge_serializer.h"
-
+#include "web.h"
 #include <sys/system_properties.h>
 #include <GLES3/gl32.h>
 #include <cstring>
@@ -32,9 +32,6 @@
 #include "Log.h"
 
 namespace tuningfork {
-
-const uint64_t HISTOGRAMS_PAUSED = 0;
-const uint64_t HISTOGRAMS_UPLOADING = 1;
 
 DebugBackend::~DebugBackend() {}
 
@@ -82,32 +79,6 @@ void Runnable::Stop() {
     thread_->join();
 }
 
-class UltimateUploader : public Runnable {
-    const TFCache* persister_;
-    std::unique_ptr<std::thread> thread_;
-    std::mutex mutex_;
-    std::condition_variable cv_;
-    bool do_quit_;
-public:
-    UltimateUploader(const TFCache* persister) : Runnable(1000),
-                                                 persister_(persister) {}
-    void DoWork() override {
-        CheckUploadPending();
-    }
-    void CheckUploadPending() {
-        CProtobufSerialization uploading_hists_ser;
-        if (persister_->get(HISTOGRAMS_UPLOADING, &uploading_hists_ser,
-                persister_->user_data)==TFERROR_OK) {
-            // TODO(willosborn): Upload to play endpoint
-            ALOGI("Upload pending");
-            CProtobufSerialization_Free(&uploading_hists_ser);
-        }
-        else {
-            ALOGI("No upload pending");
-        }
-    }
-};
-
 UploadThread::UploadThread(Backend *backend, const ExtraUploadInfo& extraInfo) : Runnable(1000),
                                                backend_(backend),
                                                current_fidelity_params_(0),
@@ -126,24 +97,6 @@ UploadThread::~UploadThread() {
 void UploadThread::Start() {
     ready_ = nullptr;
     Runnable::Start();
-}
-
-void UploadThread::Stop() {
-    if (ultimate_uploader_)
-        ultimate_uploader_->Stop();
-    Runnable::Stop();
-}
-
-void ToCProtobufSerialization(const std::string& s,
-                              CProtobufSerialization& cpbs) {
-    cpbs.bytes = (uint8_t*)::malloc(s.size());
-    memcpy(cpbs.bytes, s.data(), s.size());
-    cpbs.size = s.size();
-    cpbs.dealloc = CProtobufSerialization_Dealloc;
-}
-void FromCProtobufSerialization(const CProtobufSerialization& cpbs,
-                                std::string& s) {
-    s = std::string((const char*)cpbs.bytes, cpbs.size);
 }
 
 void UploadThread::DoWork() {
@@ -290,9 +243,8 @@ void UploadThread::InitialChecks(ProngCache& prongs,
     CProtobufSerialization paused_hists_ser;
     if (persister->get(HISTOGRAMS_PAUSED, &paused_hists_ser,
                        persister_->user_data)==TFERROR_OK) {
-        std::string paused_hists_str;
-        FromCProtobufSerialization(paused_hists_ser, paused_hists_str);
-        ALOGI("Got PAUSED histrograms: %s", paused_hists_str.c_str());
+        std::string paused_hists_str = ToString(paused_hists_ser);
+        ALOGI("Got PAUSED histograms: %s", paused_hists_str.c_str());
         GESerializer::DeserializeAndMerge(paused_hists_str,
                                           id_provider,
                                           prongs);
@@ -301,12 +253,6 @@ void UploadThread::InitialChecks(ProngCache& prongs,
     else {
         ALOGI("No PAUSED histograms");
     }
-    std::unique_lock<std::mutex> lock(mutex_);
-    if( ultimate_uploader_.get() == nullptr) {
-        ultimate_uploader_ = std::make_unique<UltimateUploader>(persister);
-        ultimate_uploader_->Start();
-    }
 }
-
 
 } // namespace tuningfork

@@ -55,7 +55,7 @@ TFErrorCode TuningFork_getFidelityParameters(JNIEnv* env, jobject context,
                                                            api_key?api_key:"",
                                                            defaults, s, timeout_ms);
     if (result==TFERROR_OK && params)
-        tf::ToCProtobufSerialization(s, params);
+        tf::ToCProtobufSerialization(s, *params);
     return result;
 }
 

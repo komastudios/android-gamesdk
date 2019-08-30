@@ -111,8 +111,10 @@ struct TFSettings {
   TFAggregationStrategy aggregation_strategy;
   uint32_t n_histograms;
   TFHistogram* histograms;
-  TFCache* persistent_cache;
   void (*dealloc)(TFSettings*);
+  const TFCache* persistent_cache;
+  const char* base_uri;
+  const char* api_key;
 };
 
 #ifdef __cplusplus

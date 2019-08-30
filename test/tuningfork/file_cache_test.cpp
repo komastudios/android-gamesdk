@@ -37,7 +37,7 @@ class FileCacheTest {
     }
     void Save(uint64_t key, const ProtobufSerialization& value) {
         CProtobufSerialization cvalue;
-        ToCProtobufSerialization(value, &cvalue);
+        ToCProtobufSerialization(value, cvalue);
         cache_.Set(key, &cvalue);
         CProtobufSerialization_Free(&cvalue);
     }

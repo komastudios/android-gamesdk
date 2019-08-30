@@ -16,30 +16,12 @@
 
 #pragma once
 
-#include <thread>
-#include <mutex>
 #include <map>
-#include <condition_variable>
+
 #include "prong.h"
+#include "runnable.h"
 
 namespace tuningfork {
-
-class Runnable {
-protected:
-    std::unique_ptr<std::thread> thread_;
-    std::mutex mutex_;
-    std::condition_variable cv_;
-    bool do_quit_;
-    int wait_time_ms_;
-public:
-    Runnable(int wait_time_ms) : wait_time_ms_(wait_time_ms) {}
-    virtual void Start();
-    virtual void Run();
-    virtual void Stop();
-    virtual void DoWork() = 0;
-};
-
-class UltimateUploader;
 
 class UploadThread : protected Runnable {
 private:
@@ -49,7 +31,6 @@ private:
     ProtobufSerialization current_fidelity_params_;
     UploadCallback upload_callback_;
     ExtraUploadInfo extra_info_;
-    std::unique_ptr<UltimateUploader> ultimate_uploader_;
     const TFCache* persister_;
  public:
     UploadThread(Backend *backend, const ExtraUploadInfo& extraInfo);
@@ -60,7 +41,6 @@ private:
                        const TFCache* persister);
 
     void Start() override;
-    void Stop() override;
     void DoWork() override;
 
     // Returns true if we submitted, false if we are waiting for a previous submit to complete
