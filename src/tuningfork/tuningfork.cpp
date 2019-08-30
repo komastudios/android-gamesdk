@@ -83,6 +83,8 @@ public:
 
 std::unique_ptr<ChronoTimeProvider> s_chrono_time_provider = std::make_unique<ChronoTimeProvider>();
 
+FileCache sFileCache;
+
 class TuningForkImpl : public IdProvider {
 private:
     CrashHandler crash_handler_;
@@ -101,14 +103,12 @@ private:
     ITimeProvider *time_provider_;
     std::vector<InstrumentationKey> ikeys_;
     std::atomic<int> next_ikey_;
-    FileCache file_cache_;
 public:
     TuningForkImpl(const Settings& settings,
                    const ExtraUploadInfo& extra_upload_info,
                    Backend *backend,
                    ParamsLoader *loader,
-                   ITimeProvider *time_provider,
-                   std::string tuningfork_save_dir) : settings_(settings),
+                   ITimeProvider *time_provider) : settings_(settings),
                                 trace_(gamesdk::Trace::create()),
                                 backend_(backend),
                                 loader_(loader),
@@ -116,8 +116,7 @@ public:
                                 current_annotation_id_(0),
                                 time_provider_(time_provider),
                                 ikeys_(settings.aggregation_strategy.max_instrumentation_keys),
-                                next_ikey_(0),
-                                file_cache_(tuningfork_save_dir) {
+                                next_ikey_(0) {
         if (time_provider_ == nullptr) {
             time_provider_ = s_chrono_time_provider.get();
         }
@@ -150,11 +149,6 @@ public:
         };
 
         crash_handler_.Init(crash_callback);
-
-        if (settings_.persistent_cache == nullptr) {
-            ALOGI("Using local file cache at %s", tuningfork_save_dir.c_str());
-            settings_.persistent_cache = file_cache_.GetCCache();
-        }
 
         // Check if there are any files waiting to be uploaded
         // + merge any histograms that are persisted.
@@ -230,8 +224,20 @@ private:
 
 std::unique_ptr<TuningForkImpl> s_impl;
 
-void CopySettings(const TFSettings &c_settings, Settings &settings) {
-    auto& a = settings.aggregation_strategy;
+// Use the default persister if the one passed in is null
+void CheckPersister(const TFCache*& persister, std::string save_dir) {
+    if (persister == nullptr) {
+        if (save_dir.empty())
+            save_dir = "/data/local/tmp/tuningfork";
+        ALOGI("Using local file cache at %s", save_dir.c_str());
+        sFileCache.SetDir(save_dir);
+        persister = sFileCache.GetCCache();
+    }
+}
+
+void CopySettings(const TFSettings &c_settings, const std::string& save_dir,
+                  Settings &settings_out) {
+    auto& a = settings_out.aggregation_strategy;
     auto& ca = c_settings.aggregation_strategy;
     a.intervalms_or_count = ca.intervalms_or_count;
     a.max_instrumentation_keys = ca.max_instrumentation_keys;
@@ -240,21 +246,21 @@ void CopySettings(const TFSettings &c_settings, Settings &settings) {
                  Settings::AggregationStrategy::TIME_BASED;
     a.annotation_enum_size = std::vector<uint32_t>(ca.annotation_enum_size,
                                         ca.annotation_enum_size + ca.n_annotation_enum_size);
-    settings.histograms = std::vector<TFHistogram>(c_settings.histograms,
+    settings_out.histograms = std::vector<TFHistogram>(c_settings.histograms,
                                         c_settings.histograms + c_settings.n_histograms);
-    settings.persistent_cache = c_settings.persistent_cache;
+    settings_out.persistent_cache = c_settings.persistent_cache;
+    CheckPersister(settings_out.persistent_cache, save_dir);
+    settings_out.base_uri = std::string(c_settings.base_uri?c_settings.base_uri:"");
+    settings_out.api_key = std::string(c_settings.api_key?c_settings.api_key:"");
 }
 
-TFErrorCode Init(const TFSettings &c_settings,
+TFErrorCode Init(const Settings &settings,
           const ExtraUploadInfo& extra_upload_info,
           Backend *backend,
           ParamsLoader *loader,
-          ITimeProvider *time_provider,
-          std::string save_dir) {
-    Settings settings;
-    CopySettings(c_settings, settings);
+          ITimeProvider *time_provider) {
     s_impl = std::make_unique<TuningForkImpl>(settings, extra_upload_info, backend,
-                                              loader, time_provider, save_dir);
+                                              loader, time_provider);
     return TFERROR_OK;
 }
 
@@ -262,21 +268,23 @@ GEBackend sBackend;
 ParamsLoader sLoader;
 
 TFErrorCode Init(const TFSettings &c_settings, JNIEnv* env, jobject context) {
-    bool backendInited = sBackend.Init(env, context)==TFERROR_OK;
-
     ExtraUploadInfo extra_upload_info = UploadThread::GetExtraUploadInfo(env, context);
+    std::string default_save_dir = file_utils::GetAppCacheDir(env, context) + "/tuningfork";
+    Settings settings;
+    CopySettings(c_settings, default_save_dir, settings);
+    bool backendInited = sBackend.Init(env, context, settings, extra_upload_info)==TFERROR_OK;
+
     Backend* backend = nullptr;
     ParamsLoader* loader = nullptr;
     if(backendInited) {
-        ALOGV("TuningFork.GoogleEndpoint: OK");
+        ALOGI("TuningFork.GoogleEndpoint: OK");
         backend = &sBackend;
         loader = &sLoader;
     }
     else {
-        ALOGV("TuningFork.GoogleEndpoint: FAILED");
+        ALOGW("TuningFork.GoogleEndpoint: FAILED");
     }
-    std::string save_dir = file_utils::GetAppCacheDir(env, context) + "/tuningfork";
-    return Init(c_settings, extra_upload_info, backend, loader, nullptr, save_dir);
+    return Init(settings, extra_upload_info, backend, loader);
 }
 
 TFErrorCode GetFidelityParameters(JNIEnv* env, jobject context,

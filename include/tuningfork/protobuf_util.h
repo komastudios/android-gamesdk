@@ -22,6 +22,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <string>
 
 // Deallocate the bytes using stdlib's 'free'
 extern "C" void CProtobufSerialization_Dealloc(CProtobufSerialization* c);
@@ -35,11 +36,23 @@ inline ProtobufSerialization ToProtobufSerialization(const CProtobufSerializatio
 }
 
 inline void ToCProtobufSerialization(const ProtobufSerialization& pbs,
-                                     CProtobufSerialization* cpbs) {
-    cpbs->bytes = (uint8_t*)::malloc(pbs.size());
-    memcpy(cpbs->bytes, pbs.data(), pbs.size());
-    cpbs->size = pbs.size();
-    cpbs->dealloc = CProtobufSerialization_Dealloc;
+                                     CProtobufSerialization& cpbs) {
+    cpbs.bytes = (uint8_t*)::malloc(pbs.size());
+    memcpy(cpbs.bytes, pbs.data(), pbs.size());
+    cpbs.size = pbs.size();
+    cpbs.dealloc = CProtobufSerialization_Dealloc;
+}
+
+inline void ToCProtobufSerialization(const std::string& s,
+                                     CProtobufSerialization& cpbs) {
+    cpbs.bytes = (uint8_t*)::malloc(s.size());
+    memcpy(cpbs.bytes, s.data(), s.size());
+    cpbs.size = s.size();
+    cpbs.dealloc = CProtobufSerialization_Dealloc;
+}
+
+inline std::string ToString(const CProtobufSerialization& cpbs) {
+    return std::string((const char*)cpbs.bytes, cpbs.size);
 }
 
 template <typename T>
