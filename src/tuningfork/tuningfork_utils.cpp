@@ -27,11 +27,44 @@
 
 #define LOG_TAG "TuningFork"
 #include "Log.h"
+#include "file_cache.h"
 
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 
 namespace tuningfork {
+
+static FileCache sFileCache;
+
+// Use the default persister if the one passed in is null
+static void CheckPersister(const TFCache*& persister, std::string save_dir) {
+    if (persister == nullptr) {
+        if (save_dir.empty())
+            save_dir = "/data/local/tmp/tuningfork";
+        ALOGI("Using local file cache at %s", save_dir.c_str());
+        sFileCache.SetDir(save_dir);
+        persister = sFileCache.GetCCache();
+    }
+}
+
+void CopySettings(const TFSettings &c_settings, const std::string& save_dir,
+                  Settings &settings_out) {
+    auto& a = settings_out.aggregation_strategy;
+    auto& ca = c_settings.aggregation_strategy;
+    a.intervalms_or_count = ca.intervalms_or_count;
+    a.max_instrumentation_keys = ca.max_instrumentation_keys;
+    a.method = ca.method==TFAggregationStrategy::TICK_BASED?
+                 Settings::AggregationStrategy::TICK_BASED:
+                 Settings::AggregationStrategy::TIME_BASED;
+    a.annotation_enum_size = std::vector<uint32_t>(ca.annotation_enum_size,
+                                        ca.annotation_enum_size + ca.n_annotation_enum_size);
+    settings_out.histograms = std::vector<TFHistogram>(c_settings.histograms,
+                                        c_settings.histograms + c_settings.n_histograms);
+    settings_out.persistent_cache = c_settings.persistent_cache;
+    CheckPersister(settings_out.persistent_cache, save_dir);
+    settings_out.base_uri = std::string(c_settings.base_uri?c_settings.base_uri:"");
+    settings_out.api_key = std::string(c_settings.api_key?c_settings.api_key:"");
+}
 
 namespace apk_utils {
 

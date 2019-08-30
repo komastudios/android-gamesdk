@@ -19,22 +19,26 @@
 #include <sstream>
 #include <jni.h>
 #include <string>
+#include <memory>
 
 #include "tuningfork_internal.h"
+#include "web.h"
 
 namespace tuningfork {
+
+class UltimateUploader;
 
 // Google Endpoint backend
 class GEBackend : public Backend {
 public:
-    TFErrorCode Init(JNIEnv* env, jobject context);
+    TFErrorCode Init(JNIEnv* env, jobject context, const Settings& settings,
+                     const ExtraUploadInfo& extra_upload_info);
     ~GEBackend() override;
     TFErrorCode Process(const std::string &json_event) override;
 
 private:
-    JavaVM* vm_;
-    jobject uploader_;
-    jmethodID schedule_method_;
+    std::shared_ptr<UltimateUploader> ultimate_uploader_;
+    const TFCache* persister_;
 };
 
 } //namespace tuningfork {

@@ -19,11 +19,11 @@
 #include <sstream>
 #include <string>
 
-#define LOG_TAG "FPDownload"
+#define LOG_TAG "TuningFork:FPDownload"
 #include "Log.h"
 #include "tuningfork_utils.h"
+#include "web.h"
 
-#include "jni_helper.h"
 #include "../../third_party/json11/json11.hpp"
 #include "modp_b64.h"
 
@@ -96,119 +96,21 @@ TFErrorCode DecodeResponse(const std::string& response, std::vector<uint8_t>& fp
     return TFERROR_OK;
 }
 
-#define CHECK_FOR_EXCEPTION if (jni.CheckForException(exception_msg)) { \
-      ALOGW("%s", exception_msg.c_str()); return TFERROR_JNI_EXCEPTION; }
-
 TFErrorCode DownloadFidelityParams(JNIEnv* env, jobject context, const std::string& uri,
                                    const std::string& api_key, const ExtraUploadInfo& request_info,
                                    int timeout_ms, std::vector<uint8_t>& fps,
                                    std::string& experiment_id) {
-    ALOGI("Connecting to: %s", uri.c_str());
-    JNIHelper jni(env, context);
-    std::string exception_msg;
-    // url = new URL(uri)
-    jstring jurlStr = jni.NewString(uri);
-    auto url = jni.NewObject("java/net/URL", "(Ljava/lang/String;)V", jurlStr);
-    CHECK_FOR_EXCEPTION; // Malformed URL
+    WebRequest wq(env, context, uri, api_key, timeout_ms);
+    int response_code;
+    std::string body;
+    TFErrorCode ret =wq.Send(RequestJson(request_info), response_code, body);
+    if (ret!=TFERROR_OK)
+        return ret;
 
-    // Open connection and set properties
-    // connection = url.openConnection()
-    jobject connectionObj = jni.CallObjectMethod(url, "openConnection",
-                                                 "()Ljava/net/URLConnection;");
-    CHECK_FOR_EXCEPTION;// IOException
-    auto connection = jni.Cast(connectionObj, "java/net/HttpURLConnection");
-    // connection.setRequestMethod("POST")
-    jni.CallVoidMethod(connection, "setRequestMethod", "(Ljava/lang/String;)V",
-                       jni.NewString("POST"));
-    // connection.setConnectionTimeout(timeout)
-    jni.CallVoidMethod(connection, "setConnectTimeout", "(I)V", timeout_ms);
-    // connection.setReadTimeout(timeout)
-    jni.CallVoidMethod(connection, "setReadTimeout", "(I)V", timeout_ms);
-    // connection.setDoOutput(true)
-    jni.CallVoidMethod(connection, "setDoOutput", "(Z)V", true);
-    // connection.setDoInput(true)
-    jni.CallVoidMethod(connection, "setDoInput", "(Z)V", true);
-    // connection.setUseCaches(false)
-    jni.CallVoidMethod(connection, "setUseCaches", "(Z)V", false);
-    // connection.setRequestProperty( name, value)
-    if (!api_key.empty()) {
-        jni.CallVoidMethod(connection, "setRequestProperty",
-                           "(Ljava/lang/String;Ljava/lang/String;)V",
-                           jni.NewString("X-Goog-Api-Key"), jni.NewString(api_key));
-    }
-    jni.CallVoidMethod(connection, "setRequestProperty", "(Ljava/lang/String;Ljava/lang/String;)V",
-                       jni.NewString("Content-Type"), jni.NewString("application/json"));
-
-    // Write json request body
-    // os = connection.getOutputStream()
-    jobject os = jni.CallObjectMethod(connection, "getOutputStream", "()Ljava/io/OutputStream;");
-    CHECK_FOR_EXCEPTION; // IOException
-    // writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"))
-    auto osw = jni.NewObject("java/io/OutputStreamWriter",
-                             "(Ljava/io/OutputStream;Ljava/lang/String;)V",
-                             os, jni.NewString("UTF-8"));
-    auto writer = jni.NewObject("java/io/BufferedWriter", "(Ljava/io/Writer;)V", osw.second);
-    // writer.write(json)
-    jni.CallVoidMethod(writer, "write", "(Ljava/lang/String;)V",
-                       jni.NewString(RequestJson(request_info)));
-    CHECK_FOR_EXCEPTION;// IOException
-    // writer.flush()
-    jni.CallVoidMethod(writer, "flush", "()V");
-    CHECK_FOR_EXCEPTION;// IOException
-    // writer.close()
-    jni.CallVoidMethod(writer, "close", "()V");
-    CHECK_FOR_EXCEPTION;// IOException
-    // os.close()
-    jni.CallVoidMethod(jni.Cast(os), "close", "()V");
-    CHECK_FOR_EXCEPTION;// IOException
-
-    // connection.connect()
-    jni.CallVoidMethod(connection, "connect", "()V");
-    CHECK_FOR_EXCEPTION;// IOException
-
-    // connection.getResponseCode()
-    int code = jni.CallIntMethod(connection, "getResponseCode", "()I");
-    ALOGI("Response code: %d", code);
-    CHECK_FOR_EXCEPTION;// IOException
-
-    // connection.getResponseMessage()
-    jstring jresp = (jstring)jni.CallObjectMethod(connection, "getResponseMessage",
-                                                  "()Ljava/lang/String;");
-    const char* resp = env->GetStringUTFChars(jresp, nullptr);
-    ALOGI("Response message: %s", resp);
-    CHECK_FOR_EXCEPTION;// IOException
-
-    // Read body from input stream
-    jobject is = jni.CallObjectMethod(connection, "getInputStream", "()Ljava/io/InputStream;");
-    CHECK_FOR_EXCEPTION;// IOException
-    auto isr = jni.NewObject("java/io/InputStreamReader",
-                             "(Ljava/io/InputStream;Ljava/lang/String;)V",
-                             is, jni.NewString("UTF-8"));
-    auto reader = jni.NewObject("java/io/BufferedReader", "(Ljava/io/Reader;)V", isr.second);
-    std::stringstream body;
-    jstring jline;
-    while ((jline=(jstring)jni.CallObjectMethod(reader, "readLine",
-                                                "()Ljava/lang/String;"))!=nullptr) {
-        const char* line = env->GetStringUTFChars(jline, nullptr);
-        body << line << "\n";
-        env->ReleaseStringUTFChars(jline, line);
-    }
-
-    // reader.close()
-    jni.CallVoidMethod(reader, "close", "()V");
-    // is.close()
-    jni.CallVoidMethod(jni.Cast(is), "close", "()V");
-
-    // connection.disconnect()
-    jni.CallVoidMethod(connection, "disconnect", "()V");
-
-    TFErrorCode ret;
-    if (code==200)
-        ret = DecodeResponse(body.str(), fps, experiment_id);
+    if (response_code==200)
+        ret = DecodeResponse(body, fps, experiment_id);
     else
         ret = TFERROR_NO_FIDELITY_PARAMS;
-
-    env->ReleaseStringUTFChars(jresp, resp);
 
     return ret;
 }

@@ -51,8 +51,10 @@ const char play_url_base_staging[] =
     "https://staging-performanceparameters.sandbox.googleapis.com/v1/";
 const char play_url_base_preprod[] =
     "https://preprod-performanceparameters.sandbox.googleapis.com/v1/";
+const char play_url_base_prod[] =
+    "https://performanceparameters.googleapis.com/v1/";
 
-const char * url_base = play_url_base_staging;
+const char * url_base = play_url_base_prod;
 
 constexpr TFInstrumentKey TFTICK_CHOREOGRAPHER = TFTICK_USERDEFINED_BASE;
 

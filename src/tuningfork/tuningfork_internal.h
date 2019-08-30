@@ -56,6 +56,8 @@ struct Settings {
     AggregationStrategy aggregation_strategy;
     std::vector<TFHistogram> histograms;
     const TFCache* persistent_cache;
+    std::string base_uri;
+    std::string api_key;
 };
 
 // Extra information that is uploaded with the ClearCut proto.
@@ -121,11 +123,14 @@ public:
 // If no backend is passed, a debug version is used which returns empty fidelity params
 // and outputs histograms in protobuf text format to logcat.
 // If no timeProvider is passed, std::chrono::steady_clock is used.
-TFErrorCode Init(const TFSettings &settings, const ExtraUploadInfo& extra_info,
-                 Backend *backend = 0, ParamsLoader *loader = 0, ITimeProvider *time_provider = 0,
-                 std::string save_path = "/data/local/tmp/tuningfork");
+TFErrorCode Init(const Settings &settings, const ExtraUploadInfo& extra_info,
+                 Backend *backend = 0, ParamsLoader *loader = 0, ITimeProvider *time_provider = 0);
 
 TFErrorCode Init(const TFSettings &settings, JNIEnv* env, jobject context);
+
+// Use save_dir to initialize the persister if it's not already set
+void CopySettings(const TFSettings &c_settings, const std::string& save_dir,
+                  Settings &settings_out);
 
 // Blocking call to get fidelity parameters from the server.
 // Returns true if parameters could be downloaded within the timeout, false otherwise.
