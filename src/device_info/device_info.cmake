@@ -7,9 +7,11 @@ protobuf_generate_nano_c( ${_MY_DIR}/../../include/device_info
   ${_MY_DIR}/../../include/device_info/device_info.proto)
 
 set ( SOURCE_LOCATION "${_MY_DIR}")
+set ( THIRD_PARTY_LOCATION "${_MY_DIR}/../../third_party")
 
 include_directories( ${_MY_DIR}/../../include )
 include_directories( ${_MY_DIR}/../../include/third_party/nanopb )
+include_directories( ${THIRD_PARTY_LOCATION}/stream_util/include )
 include_directories( ${_MY_DIR}/../common )
 
 include_directories( ${PROTO_GENS_DIR} )
@@ -21,6 +23,7 @@ add_library( device_info_static
 
              STATIC
 
+             ${THIRD_PARTY_LOCATION}/stream_util/src/getdelim.cpp
              ${SOURCE_LOCATION}/core/basic_texture_renderer.cpp
              ${SOURCE_LOCATION}/core/device_info.cpp
              ${SOURCE_LOCATION}/core/texture_test_cases.cpp
