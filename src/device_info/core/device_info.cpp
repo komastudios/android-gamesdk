@@ -16,6 +16,7 @@
 
 #include "device_info/device_info.h"
 #include "basic_texture_renderer.h"
+#include "stream_util.h"
 #include "texture_test_cases.h"
 
 #include <EGL/egl.h>
@@ -83,7 +84,14 @@ char* readFileLine(FILE* file) {
   // So we copy the buffer and return the new[] result.
   char* mallocBuffer = nullptr;
   size_t mallocBufferSize = 0;
+
+#if __ANDROID_API__ < 18
+  // Use our own implementation of getline if the C library is missing it.
+  int resultLen = androidgamesdk_deviceinfo::stream_util::getline(
+      &mallocBuffer, &mallocBufferSize, file);
+#else
   int resultLen = getline(&mallocBuffer, &mallocBufferSize, file);
+#endif
 
   if (resultLen < 0) {  // Error.
     free(mallocBuffer);
