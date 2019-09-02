@@ -19,6 +19,23 @@
     },
     {
       "key": {
+        "uuid": "ead93c52_648808eb",
+        "filename": "include/device_info/device_info.h",
+        "patchSetId": 11
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-09-02T16:37:03Z",
+      "side": 1,
+      "message": "s/2018/2019/",
+      "revId": "41048631f5267a375bae941e5f1e024a7e899ae2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1bb80433_27bf0b81",
         "filename": "include/device_info/texture_test_cases.h",
         "patchSetId": 11
@@ -81,6 +98,23 @@
       "writtenOn": "2019-09-02T15:54:59Z",
       "side": 1,
       "message": "WS",
+      "revId": "41048631f5267a375bae941e5f1e024a7e899ae2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5ada3694_ba1c3ab5",
+        "filename": "src/device_info/core/texture_test_cases.cpp",
+        "patchSetId": 11
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-09-02T16:37:03Z",
+      "side": 1,
+      "message": "s/2018/2019/",
       "revId": "41048631f5267a375bae941e5f1e024a7e899ae2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
