@@ -23,6 +23,7 @@ add_library( device_info_static
 
              ${SOURCE_LOCATION}/core/basic_texture_renderer.cpp
              ${SOURCE_LOCATION}/core/device_info.cpp
+             ${SOURCE_LOCATION}/core/stream_util.cpp
              ${SOURCE_LOCATION}/core/texture_test_cases.cpp
              ${Texture_test_cases_SOURCES}
              ${PROTO_GENS_DIR}/nano/device_info.pb.c
