@@ -1,0 +1,123 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b752c62b_fc2530b7",
+        "filename": "include/device_info/basic_texture_renderer.h",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-09-02T15:54:59Z",
+      "side": 1,
+      "message": "You have a lot of code in a header here and it looks specific to tests rather than core device_info functionality. Can we\n1) move the implementation into a cpp file\n2) put the header and cpp in src/ rather than include/",
+      "revId": "41048631f5267a375bae941e5f1e024a7e899ae2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1bb80433_27bf0b81",
+        "filename": "include/device_info/texture_test_cases.h",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-09-02T15:54:59Z",
+      "side": 1,
+      "message": "Do we expect users of the gamesdk to use these test cases or are they purely for our own internal tests? Move this file to src/?",
+      "revId": "41048631f5267a375bae941e5f1e024a7e899ae2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dba71d1a_35425805",
+        "filename": "samples/device_info_app/app/src/main/java/com/google/deviceinfotest/MainActivity.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-09-02T15:54:59Z",
+      "side": 1,
+      "message": "Line too long + others below",
+      "revId": "41048631f5267a375bae941e5f1e024a7e899ae2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "52bf566d_81143f6b",
+        "filename": "samples/device_info_app/build.gradle",
+        "patchSetId": 11
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-09-02T15:54:59Z",
+      "side": 1,
+      "message": "WS",
+      "revId": "41048631f5267a375bae941e5f1e024a7e899ae2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6c9685a9_35d34449",
+        "filename": "samples/device_info_app/build.gradle",
+        "patchSetId": 11
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-09-02T15:54:59Z",
+      "side": 1,
+      "message": "WS",
+      "revId": "41048631f5267a375bae941e5f1e024a7e899ae2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "509ed5c7_0cb55969",
+        "filename": "src/device_info/jni/device_info_jni.cpp",
+        "patchSetId": 11
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-09-02T15:54:59Z",
+      "side": 1,
+      "message": "We should return an error code, not assert, if we can.",
+      "revId": "41048631f5267a375bae941e5f1e024a7e899ae2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b0984278_558f4bff",
+        "filename": "src/device_info/jni/device_info_jni.cpp",
+        "patchSetId": 11
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-09-02T15:54:59Z",
+      "side": 1,
+      "message": "Ditto",
+      "revId": "41048631f5267a375bae941e5f1e024a7e899ae2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
