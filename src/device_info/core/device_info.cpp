@@ -15,9 +15,8 @@
  */
 
 #include "device_info/device_info.h"
-#include "basic_texture_renderer.h"
-#include "stream_util/getdelim.h"
-#include "texture_test_cases.h"
+#include "device_info/basic_texture_renderer.h"
+#include "device_info/texture_test_cases.h"
 
 #include <EGL/egl.h>
 // clang-format off
@@ -84,9 +83,7 @@ char* readFileLine(FILE* file) {
   // So we copy the buffer and return the new[] result.
   char* mallocBuffer = nullptr;
   size_t mallocBufferSize = 0;
-
-  // Use our own implementation of getline as some C libraries are missing it.
-  int resultLen = stream_util::getline(&mallocBuffer, &mallocBufferSize, file);
+  int resultLen = getline(&mallocBuffer, &mallocBufferSize, file);
 
   if (resultLen < 0) {  // Error.
     free(mallocBuffer);

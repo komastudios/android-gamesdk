@@ -1,4 +1,0 @@
-include ':app'
-
-include ':gamesdk_extras'
-project(':gamesdk_extras').projectDir = new File(settingsDir, '../../src/extras')
