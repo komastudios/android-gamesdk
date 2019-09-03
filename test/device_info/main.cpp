@@ -13,22 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <stdio.h>
 
-namespace androidgamesdk_deviceinfo {
+#include "gtest/gtest.h"
 
-namespace stream_util {
-
-/**
- * Implementation of getdelim(3)
- */
-ssize_t getdelim(char **buf, size_t *bufsiz, int delimiter, FILE *fp);
-
-/**
- * Implementation of getline(3)
- */
-ssize_t getline(char **buf, size_t *bufsiz, FILE *fp);
-
-}  // namespace stream_util
-
-}  // namespace androidgamesdk_deviceinfo
+int main(int argc, char * argv[]) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}

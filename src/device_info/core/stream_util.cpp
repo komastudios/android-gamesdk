@@ -22,8 +22,6 @@ namespace androidgamesdk_deviceinfo {
 
 namespace stream_util {
 
-#if __ANDROID_API__ < 18
-
 // getdelim adapted from NetBSD getdelim.c:
 
 /*-
@@ -97,8 +95,6 @@ ssize_t getdelim(char **buf, size_t *bufsiz, int delimiter, FILE *fp) {
 ssize_t getline(char **buf, size_t *bufsiz, FILE *fp) {
   return stream_util::getdelim(buf, bufsiz, '\n', fp);
 }
-
-#endif
 
 }  // namespace stream_util
 }  // namespace androidgamesdk_deviceinfo

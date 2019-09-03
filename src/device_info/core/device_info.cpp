@@ -85,13 +85,9 @@ char* readFileLine(FILE* file) {
   char* mallocBuffer = nullptr;
   size_t mallocBufferSize = 0;
 
-#if __ANDROID_API__ < 18
-  // Use our own implementation of getline if the C library is missing it.
+  // Use our own implementation of getline as some C libraries are missing it.
   int resultLen = androidgamesdk_deviceinfo::stream_util::getline(
       &mallocBuffer, &mallocBufferSize, file);
-#else
-  int resultLen = getline(&mallocBuffer, &mallocBufferSize, file);
-#endif
 
   if (resultLen < 0) {  // Error.
     free(mallocBuffer);
