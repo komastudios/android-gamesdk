@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2e349eb9_c82f75f3",
+        "filename": "src/device_info/core/device_info.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-09-03T13:10:32Z",
+      "side": 1,
+      "message": "Can\u0027t we just use our wrapper on all API versions? The code would be simpler.",
+      "revId": "7d3ae0f559c3135c96916a1e694e699cae66074f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
