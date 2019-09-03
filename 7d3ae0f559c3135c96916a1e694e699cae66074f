@@ -16,6 +16,24 @@
       "revId": "7d3ae0f559c3135c96916a1e694e699cae66074f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fef3bc48_71331ce2",
+        "filename": "src/device_info/core/device_info.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-09-03T14:27:20Z",
+      "side": 1,
+      "message": "We surely can. Let me add unit tests for device_info before doing this.",
+      "parentUuid": "2e349eb9_c82f75f3",
+      "revId": "7d3ae0f559c3135c96916a1e694e699cae66074f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
