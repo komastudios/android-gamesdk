@@ -246,6 +246,39 @@ def cmake(projectFolder, workingFolder, outputFolder, arch, toolchain, stl,
     }
 }
 
+def hostCmake(projectFolder, workingFolder, outputFolder, toolchain, buildType) {
+    mkdir workingFolder
+    mkdir outputFolder
+
+    def cmdLine = [toolchain.getCMakePath(),
+                   "$projectFolder",
+                   "-DCMAKE_BUILD_TYPE=$buildType",
+                   "-DCMAKE_CXX_FLAGS=",
+                   "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=$outputFolder"
+                   ]
+    exec {
+        workingDir workingFolder
+        commandLine cmdLine
+    }
+}
+
+def buildHostModule(subdir, buildType) {
+    def toolchain = getLocalToolchain();
+    def buildKey = "host"
+    def workingFolder = joinPath(getTempPath(), buildKey, '.cmake')
+    def outputFolder = joinPath(getOutPath(), buildKey)
+    def cmakeProjectLocation = joinPath("$projectDir", subdir)
+
+    hostCmake(cmakeProjectLocation, workingFolder, outputFolder, toolchain, buildType)
+
+    def cmdLine = ["make", "-j"]
+    exec {
+        workingDir workingFolder
+        commandLine cmdLine
+    }
+    return [buildKey: buildKey, outputFolder: outputFolder]
+}
+
 def buildNativeModules(arch, Toolchain toolchain, stl, threadChecks, buildtf, subdir = "src", buildType = "Release") {
     def buildKey = toolchain.getBuildKey(arch, stl)
     def workingFolder = joinPath(getTempPath(), buildKey, '.cmake')
@@ -485,6 +518,16 @@ task localUnitTests {
         exec {
             workingDir cmakeFolder
             commandLine adb, "shell", "/data/local/tmp/tuningfork_test"
+        }
+    }
+}
+
+task localDeviceInfoUnitTests {
+    doLast {
+        def buildInfo = buildHostModule("test/device_info", "Release")
+        exec {
+            workingDir buildInfo.outputFolder
+            commandLine "./device_info_test"
         }
     }
 }
