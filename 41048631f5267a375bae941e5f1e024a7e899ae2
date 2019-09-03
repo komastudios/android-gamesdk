@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "4b0029cd_5a508c4e",
+        "filename": "include/device_info/basic_texture_renderer.h",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-09-03T12:04:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b752c62b_fc2530b7",
+      "revId": "41048631f5267a375bae941e5f1e024a7e899ae2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ead93c52_648808eb",
         "filename": "include/device_info/device_info.h",
         "patchSetId": 11
@@ -33,6 +51,24 @@
       "revId": "41048631f5267a375bae941e5f1e024a7e899ae2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "29e030c0_10e1554d",
+        "filename": "include/device_info/device_info.h",
+        "patchSetId": 11
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-09-03T12:04:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ead93c52_648808eb",
+      "revId": "41048631f5267a375bae941e5f1e024a7e899ae2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "d19bbd5d_bfbc39e1",
+        "filename": "include/device_info/texture_test_cases.h",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-09-03T12:04:50Z",
+      "side": 1,
+      "message": "These tests are implementation details, moved them to src",
+      "parentUuid": "1bb80433_27bf0b81",
+      "revId": "41048631f5267a375bae941e5f1e024a7e899ae2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dba71d1a_35425805",
         "filename": "samples/device_info_app/app/src/main/java/com/google/deviceinfotest/MainActivity.java",
         "patchSetId": 11
@@ -67,6 +121,24 @@
       "revId": "41048631f5267a375bae941e5f1e024a7e899ae2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ddad2840_37a4ba9c",
+        "filename": "samples/device_info_app/app/src/main/java/com/google/deviceinfotest/MainActivity.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-09-03T12:04:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dba71d1a_35425805",
+      "revId": "41048631f5267a375bae941e5f1e024a7e899ae2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "5c8a44eb_631d3f0f",
+        "filename": "samples/device_info_app/build.gradle",
+        "patchSetId": 11
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-09-03T12:04:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "52bf566d_81143f6b",
+      "revId": "41048631f5267a375bae941e5f1e024a7e899ae2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6c9685a9_35d34449",
         "filename": "samples/device_info_app/build.gradle",
         "patchSetId": 11
@@ -101,6 +191,24 @@
       "revId": "41048631f5267a375bae941e5f1e024a7e899ae2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "99a80432_d507564b",
+        "filename": "samples/device_info_app/build.gradle",
+        "patchSetId": 11
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-09-03T12:04:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6c9685a9_35d34449",
+      "revId": "41048631f5267a375bae941e5f1e024a7e899ae2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -121,6 +229,24 @@
     },
     {
       "key": {
+        "uuid": "f5899ea4_9817dc9d",
+        "filename": "src/device_info/core/texture_test_cases.cpp",
+        "patchSetId": 11
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-09-03T12:04:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5ada3694_ba1c3ab5",
+      "revId": "41048631f5267a375bae941e5f1e024a7e899ae2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "509ed5c7_0cb55969",
         "filename": "src/device_info/jni/device_info_jni.cpp",
         "patchSetId": 11
@@ -138,6 +264,24 @@
     },
     {
       "key": {
+        "uuid": "a3391143_feeb1c21",
+        "filename": "src/device_info/jni/device_info_jni.cpp",
+        "patchSetId": 11
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-09-03T12:04:50Z",
+      "side": 1,
+      "message": "Done by avoiding the assert and returning nullptr in case of a serialization failure.",
+      "parentUuid": "509ed5c7_0cb55969",
+      "revId": "41048631f5267a375bae941e5f1e024a7e899ae2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b0984278_558f4bff",
         "filename": "src/device_info/jni/device_info_jni.cpp",
         "patchSetId": 11
@@ -152,6 +296,24 @@
       "revId": "41048631f5267a375bae941e5f1e024a7e899ae2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cf916755_d3c358ed",
+        "filename": "src/device_info/jni/device_info_jni.cpp",
+        "patchSetId": 11
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-09-03T12:04:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b0984278_558f4bff",
+      "revId": "41048631f5267a375bae941e5f1e024a7e899ae2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }

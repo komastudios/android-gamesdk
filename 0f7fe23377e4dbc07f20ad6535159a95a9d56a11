@@ -16,6 +16,24 @@
       "revId": "0f7fe23377e4dbc07f20ad6535159a95a9d56a11",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c402a0cd_419b8368",
+        "filename": "src/device_info/CMakeLists.txt",
+        "patchSetId": 11
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-09-03T12:04:50Z",
+      "side": 0,
+      "message": "So device_info is using nano for size reasons but the test app (or anything that reads the serialized proto returned by device_info) can indeed be using any flavour of pb - lite right now.\nWhile there seems to be a java nano version of pb, I think it\u0027s fine to keep using the lite version for the test app as it seems a bit more convenient to use (and we verify that the serialized proto is readable by another library)",
+      "parentUuid": "4c4c2e57_deb9b23f",
+      "revId": "0f7fe23377e4dbc07f20ad6535159a95a9d56a11",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
