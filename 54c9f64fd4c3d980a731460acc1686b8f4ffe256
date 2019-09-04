@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "94782a89_65b787bc",
+        "filename": "src/device_info/core/stream_util.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-09-04T08:59:24Z",
+      "side": 1,
+      "message": "Does this mean we need to add the NetBSD license to our overall gamesdk license?\nhttps://g3doc.corp.google.com/company/thirdparty/licenses.md",
+      "range": {
+        "startLine": 29,
+        "startChar": 1,
+        "endLine": 57,
+        "endChar": 0
+      },
+      "revId": "54c9f64fd4c3d980a731460acc1686b8f4ffe256",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
