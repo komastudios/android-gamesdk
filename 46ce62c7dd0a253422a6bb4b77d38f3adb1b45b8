@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "eb54eece_99aa991c",
+        "filename": "samples/device_info_app/app/src/main/java/com/google/deviceinfotest/MainActivity.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-09-04T08:52:26Z",
+      "side": 1,
+      "message": "Copyright notice needed, too:\n\nCopyright 2019 The Android Open Source Project",
+      "revId": "46ce62c7dd0a253422a6bb4b77d38f3adb1b45b8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
