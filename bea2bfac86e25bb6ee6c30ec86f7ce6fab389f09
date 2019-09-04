@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "7fd3661b_8cdd5382",
+        "filename": "src/tuningfork/tuningfork.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-09-04T10:43:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5abbad0d_1d7a1726",
+      "revId": "bea2bfac86e25bb6ee6c30ec86f7ce6fab389f09",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "452d335a_8f0815d7",
         "filename": "src/tuningfork/tuningfork.cpp",
         "patchSetId": 2
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "fd00c98d_39b50f9a",
+        "filename": "src/tuningfork/tuningfork.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-09-04T10:43:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "452d335a_8f0815d7",
+      "revId": "bea2bfac86e25bb6ee6c30ec86f7ce6fab389f09",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "24d2c5a8_b5826a34",
         "filename": "src/tuningfork/tuningfork_extra.cpp",
         "patchSetId": 2
@@ -50,6 +86,24 @@
       "revId": "bea2bfac86e25bb6ee6c30ec86f7ce6fab389f09",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b7438bf1_3226dabd",
+        "filename": "src/tuningfork/tuningfork_extra.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 301,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-09-04T10:43:56Z",
+      "side": 1,
+      "message": "There is a Settings class that mirrors this for our internal use but this function and the function below are part of the external C interface, so TFSettings is a C struct. We\u0027ll revisit whether these are necessary as part of the review.",
+      "parentUuid": "24d2c5a8_b5826a34",
+      "revId": "bea2bfac86e25bb6ee6c30ec86f7ce6fab389f09",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
