@@ -1,6 +1,9 @@
 package net.jimblackler.istresser;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,6 +13,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.google.common.collect.HashMultiset;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
 
@@ -26,6 +30,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
@@ -47,16 +52,17 @@ public class MainActivity extends AppCompatActivity {
   private PrintStream resultsStream = System.out;
   private boolean pauseAllocation = false;
   private long startTime;
+  private Set<String> memInfoWhitelist = ImmutableSet.of("MemTotal", "CommitLimit");
 
   private static String memoryString(long bytes) {
     return String.format(Locale.getDefault(), "%.1f MB", (float) bytes / (1024 * 1024));
   }
 
   private static String execute(String... args) throws IOException {
-    try(
+    try (
         InputStreamReader inputStreamReader =
             new InputStreamReader(new ProcessBuilder(args).start().getInputStream());
-        BufferedReader reader = new BufferedReader(inputStreamReader);) {
+        BufferedReader reader = new BufferedReader(inputStreamReader)) {
       String newline = System.getProperty("line.separator");
       StringBuilder output = new StringBuilder();
       String line;
@@ -85,7 +91,8 @@ public class MainActivity extends AppCompatActivity {
     setContentView(R.layout.activity_main);
     try {
       JSONObject report = new JSONObject();
-      report.put("version", 6);
+
+      report.put("version", getPackageManager().getPackageInfo(getPackageName(), 0).versionCode);
       Intent launchIntent = getIntent();
       if ("com.google.intent.action.TEST_LOOP".equals(launchIntent.getAction())) {
         Uri logFile = launchIntent.getData();
@@ -126,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
       report.put("build", build);
 
       resultsStream.println(report);
-    } catch (JSONException e) {
+    } catch (JSONException | PackageManager.NameNotFoundException e) {
       e.printStackTrace();
     }
 
@@ -165,8 +172,6 @@ public class MainActivity extends AppCompatActivity {
     if (nativeHeapAllocatedSize > recordNativeHeapAllocatedSize) {
       recordNativeHeapAllocatedSize = nativeHeapAllocatedSize;
     }
-
-
   }
 
   private void updateInfo() {
@@ -245,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
 
       if (!pauseAllocation) {
         pauseAllocation = true;
-        int delay = 1000;///500 * totalTrims;
+        int delay = 1000;
         report.put("delay", delay);
         new Timer().schedule(
             new TimerTask() {
@@ -308,26 +313,30 @@ public class MainActivity extends AppCompatActivity {
     updateRecords();
     JSONObject report = new JSONObject();
     report.put("time", System.currentTimeMillis() - this.startTime);
-    report.put("totalTrims", totalTrims);
     report.put("freeMemory", Runtime.getRuntime().freeMemory());
     report.put("totalMemory", Runtime.getRuntime().totalMemory());
-    report.put("maxMemory", Runtime.getRuntime().maxMemory());
     report.put("nativeHeap", Debug.getNativeHeapSize());
-    report.put("nativeAllocated", Debug.getNativeHeapAllocatedSize());
-    report.put("recordNativeAllocated", recordNativeHeapAllocatedSize);
     report.put("paused", pauseAllocation);
 
     try {
-      JSONObject meminfoOut = new JSONObject();
       Map<String, Integer> meminfo = processMeminfo(execute("cat", "/proc/meminfo"));
       for (Map.Entry<String, Integer> entry : meminfo.entrySet()) {
-        meminfoOut.put(entry.getKey(), entry.getValue());
+        if (memInfoWhitelist.contains(entry.getKey())) {
+          report.put(entry.getKey(), entry.getValue());
+        }
       }
-      report.put("meminfo", meminfoOut);
-
     } catch (IOException e) {
       e.printStackTrace();
     }
+
+    ActivityManager activityManager =
+        (ActivityManager) Objects.requireNonNull(getSystemService(Context.ACTIVITY_SERVICE));
+    ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+    activityManager.getMemoryInfo(memoryInfo);
+    report.put("availMem", memoryInfo.availMem);
+    report.put("totalMem", memoryInfo.totalMem);
+    report.put("threshold", memoryInfo.threshold);
+    report.put("lowMemory", memoryInfo.lowMemory);
 
     return report;
   }
