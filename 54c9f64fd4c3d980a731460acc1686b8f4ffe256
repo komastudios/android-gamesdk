@@ -22,6 +22,30 @@
       "revId": "54c9f64fd4c3d980a731460acc1686b8f4ffe256",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "744f77d9_463d8f34",
+        "filename": "src/device_info/core/stream_util.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-09-05T10:24:26Z",
+      "side": 1,
+      "message": "As seen with opensource-licensing, I\u0027ve moved this to the third_party subdirectory of the project, together with a LICENSE file.\nI\u0027ve removed the Apache 2 header for this file and only using the BSD header.",
+      "parentUuid": "94782a89_65b787bc",
+      "range": {
+        "startLine": 29,
+        "startChar": 1,
+        "endLine": 57,
+        "endChar": 0
+      },
+      "revId": "54c9f64fd4c3d980a731460acc1686b8f4ffe256",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
