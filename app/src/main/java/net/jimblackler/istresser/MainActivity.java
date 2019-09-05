@@ -313,7 +313,6 @@ public class MainActivity extends AppCompatActivity {
     updateRecords();
     JSONObject report = new JSONObject();
     report.put("time", System.currentTimeMillis() - this.startTime);
-    report.put("freeMemory", Runtime.getRuntime().freeMemory());
     report.put("totalMemory", Runtime.getRuntime().totalMemory());
     report.put("nativeHeap", Debug.getNativeHeapSize());
     report.put("paused", pauseAllocation);
