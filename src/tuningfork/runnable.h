@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 The Android Open Source Project
+ * Copyright 2018 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,31 +16,26 @@
 
 #pragma once
 
-#include "tuningfork/tuningfork.h"
-#include "tuningfork_internal.h"
-
-#include <string>
+#include <thread>
 #include <mutex>
+#include <condition_variable>
 
-// Implementation of a TFCache that persists to local storage
 namespace tuningfork {
 
-class FileCache {
-    std::string path_;
-    TFCache c_cache_;
+class Runnable {
+protected:
+    std::unique_ptr<std::thread> thread_;
     std::mutex mutex_;
-  public:
-    FileCache(const std::string& path  = "");
-
-    void SetDir(const std::string& path  = "") { path_ = path; }
-
-    const TFCache* GetCCache() const { return &c_cache_;}
-
-    TFErrorCode Get(uint64_t key, CProtobufSerialization* value);
-    TFErrorCode Set(uint64_t key, const CProtobufSerialization* value);
-    TFErrorCode Remove(uint64_t key);
-
-    TFErrorCode Clear();
+    std::condition_variable cv_;
+    bool do_quit_;
+    int wait_time_ms_;
+public:
+    Runnable(int wait_time_ms) : wait_time_ms_(wait_time_ms) {}
+    virtual ~Runnable() {}
+    virtual void Start();
+    virtual void Run();
+    virtual void Stop();
+    virtual void DoWork() = 0;
 };
 
 } // namespace tuningfork

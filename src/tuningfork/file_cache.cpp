@@ -47,19 +47,19 @@ FileCache::FileCache(const std::string& path) : path_(path) {
 
 TFErrorCode FileCache::Get(uint64_t key, CProtobufSerialization* value) {
     std::lock_guard<std::mutex> lock(mutex_);
-    ALOGI("FileCache::Get %" PRIu64, key);
+    ALOGV("FileCache::Get %" PRIu64, key);
     if (CheckAndCreateDir(path_)) {
         auto key_path = PathToKey(path_, key);
         if (FileExists(key_path)) {
-            ALOGI("File exists");
+            ALOGV("File exists");
             if (LoadBytesFromFile(key_path, value)) {
-                ALOGI("Loaded key %" PRId64 " from %s (%zu bytes)", key,
+                ALOGV("Loaded key %" PRId64 " from %s (%zu bytes)", key,
                       key_path.c_str(), value->size);
                 return TFERROR_OK;
             }
         }
         else {
-            ALOGI("File does not exist");
+            ALOGV("File does not exist");
         }
     }
     return TFERROR_NO_SUCH_KEY;
@@ -67,11 +67,11 @@ TFErrorCode FileCache::Get(uint64_t key, CProtobufSerialization* value) {
 
 TFErrorCode FileCache::Set(uint64_t key, const CProtobufSerialization* value) {
     std::lock_guard<std::mutex> lock(mutex_);
-    ALOGI("FileCache::Set %" PRIu64, key);
+    ALOGV("FileCache::Set %" PRIu64, key);
     if (CheckAndCreateDir(path_)) {
         auto key_path = PathToKey(path_, key);
         if (SaveBytesToFile(key_path, value)) {
-            ALOGI("Saved key %" PRId64 " to %s (%zu bytes)", key, key_path.c_str(), value->size);
+            ALOGV("Saved key %" PRId64 " to %s (%zu bytes)", key, key_path.c_str(), value->size);
             return TFERROR_OK;
         }
     }
@@ -80,11 +80,11 @@ TFErrorCode FileCache::Set(uint64_t key, const CProtobufSerialization* value) {
 
 TFErrorCode FileCache::Remove(uint64_t key) {
     std::lock_guard<std::mutex> lock(mutex_);
-    ALOGI("FileCache::Remove %" PRIu64, key);
+    ALOGV("FileCache::Remove %" PRIu64, key);
     if (CheckAndCreateDir(path_)) {
         auto key_path = PathToKey(path_, key);
         if (DeleteFile(key_path)) {
-            ALOGI("Deleted key %" PRId64 " (%s)", key, key_path.c_str());
+            ALOGV("Deleted key %" PRId64 " (%s)", key, key_path.c_str());
             return TFERROR_OK;
         }
     }
@@ -93,7 +93,7 @@ TFErrorCode FileCache::Remove(uint64_t key) {
 
 TFErrorCode FileCache::Clear() {
     std::lock_guard<std::mutex> lock(mutex_);
-    ALOGI("FileCache::Clear");
+    ALOGV("FileCache::Clear");
     if (DeleteDir(path_))
         return TFERROR_OK;
     else

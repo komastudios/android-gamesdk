@@ -298,10 +298,7 @@ void TuningFork_startFidelityParamDownloadThread(JNIEnv* env, jobject context,
 
 TFErrorCode TuningFork_deserializeSettings(const CProtobufSerialization* settings_ser,
                                            TFSettings* settings) {
-    settings->n_histograms = 0;
-    settings->histograms = nullptr;
-    settings->aggregation_strategy.n_annotation_enum_size = 0;
-    settings->aggregation_strategy.annotation_enum_size = nullptr;
+    memset(settings, 0, sizeof(TFSettings));
     settings->dealloc = TFSettings_Dealloc;
     PBSettings pbsettings = com_google_tuningfork_Settings_init_zero;
     pbsettings.aggregation_strategy.annotation_enum_size.funcs.decode = decodeAnnotationEnumSizes;
@@ -324,7 +321,7 @@ TFErrorCode TuningFork_deserializeSettings(const CProtobufSerialization* setting
 }
 
 TFErrorCode TuningFork_findSettingsInApk(JNIEnv* env, jobject context,
-                                  TFSettings* settings) {
+                                         TFSettings* settings) {
     if (settings) {
         CProtobufSerialization settings_ser;
         if (GetSettingsSerialization(env, context, settings_ser)) {
@@ -387,6 +384,7 @@ TFErrorCode TuningFork_initFromAssetsWithSwappy(JNIEnv* env, jobject context,
     auto err = TuningFork_findSettingsInApk(env, context, &settings);
     if (err!=TFERROR_OK)
         return err;
+    settings.api_key = api_key;
     err = TuningFork_initWithSwappy(&settings, env, context, swappy_tracer_fn, swappy_lib_version,
                                     frame_callback);
     settings.dealloc(&settings);
