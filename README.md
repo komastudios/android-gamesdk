@@ -33,6 +33,13 @@ By default, the gradle script builds target `archiveZip`.
 
 This will use a locally installed SDK/NDK pointed to by `ANDROID_HOME` (and `ANDROID_NDK`, if the ndk isn't in `ANDROID_HOME/ndk-bundle`).
 
+## Tests
+
+```bash
+./gradlew localUnitTests # Requires a connected ARM64 device to run
+./gradlew localDeviceInfoUnitTests # No device required, tests are running on host
+```
+
 ## Samples
 
 Samples are classic Android projects, using CMake to build the native code. They are also all triggering the build of the Game SDK.
