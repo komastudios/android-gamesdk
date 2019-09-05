@@ -16,6 +16,24 @@
       "revId": "46ce62c7dd0a253422a6bb4b77d38f3adb1b45b8",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "afa70f12_a8ca250f",
+        "filename": "samples/device_info_app/app/src/main/java/com/google/deviceinfotest/MainActivity.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-09-05T10:12:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "eb54eece_99aa991c",
+      "revId": "46ce62c7dd0a253422a6bb4b77d38f3adb1b45b8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
