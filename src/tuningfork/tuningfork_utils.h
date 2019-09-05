@@ -29,6 +29,9 @@ class AAsset;
 
 namespace tuningfork {
 
+    // Convert an array of bytes into a string hex representation
+    std::string Base16(const std::vector<char>& bytes);
+
 namespace apk_utils {
 
     // Get an asset from this APK's asset directory.
@@ -39,6 +42,9 @@ namespace apk_utils {
     // Get the app's version code. Also fills packageNameStr, if not null, with
     // the package name.
     int GetVersionCode(JNIEnv *env, jobject context, std::string* packageNameStr = nullptr);
+
+    // Get the app's SHA1 signature
+    std::string GetSignature(JNIEnv *env, jobject context);
 
 } // namespace apk_utils
 
