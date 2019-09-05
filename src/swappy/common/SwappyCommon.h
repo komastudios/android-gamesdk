@@ -147,6 +147,7 @@ private:
     void onSettingsChanged();
     void updateSwapDuration(std::chrono::nanoseconds duration);
     void startFrame();
+    void waitUntil(int32_t target);
     void waitUntilTargetFrame();
     void waitOneFrame();
     void setPreferredRefreshRate(int index);
@@ -197,7 +198,7 @@ private:
 
     std::chrono::nanoseconds mSwapIntervalNS;
     int32_t mAutoSwapInterval;
-    std::atomic<std::chrono::nanoseconds> mAutoSwapIntervalThresholdNS = {50ms}; // 20FPS
+    std::atomic<std::chrono::nanoseconds> mAutoSwapIntervalThresholdNS = {1s};
     int mSwapIntervalForNewRefresh = 0;
     PipelineMode mPipelineModeForNewRefresh;
     static constexpr std::chrono::nanoseconds REFRESH_RATE_MARGIN = 500ns;
