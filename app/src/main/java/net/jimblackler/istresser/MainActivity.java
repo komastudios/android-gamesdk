@@ -3,6 +3,7 @@ package net.jimblackler.istresser;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
   private Set<String> memInfoWhitelist = ImmutableSet.of("MemTotal", "CommitLimit");
   private int scenario;
   private long availMemAtLastOnTrimMemory;
+  private int pid;
 
   private static String memoryString(long bytes) {
     return String.format(Locale.getDefault(), "%.1f MB", (float) bytes / (1024 * 1024));
@@ -69,7 +71,10 @@ public class MainActivity extends AppCompatActivity {
       StringBuilder output = new StringBuilder();
       String line;
       while ((line = reader.readLine()) != null) {
-        output.append(line).append(newline);
+        if (output.length() > 0) {
+          output.append(newline);
+        }
+        output.append(line);
       }
       return output.toString();
     }
@@ -94,7 +99,10 @@ public class MainActivity extends AppCompatActivity {
     try {
       JSONObject report = new JSONObject();
 
-      report.put("version", getPackageManager().getPackageInfo(getPackageName(), 0).versionCode);
+      PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+      String result = execute("pidof", packageInfo.packageName);
+      this.pid = Integer.parseInt(result);
+      report.put("version", packageInfo.versionCode);
       Intent launchIntent = getIntent();
       if ("com.google.intent.action.TEST_LOOP".equals(launchIntent.getAction())) {
         Uri logFile = launchIntent.getData();
@@ -136,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
       report.put("build", build);
 
       resultsStream.println(report);
-    } catch (JSONException | PackageManager.NameNotFoundException e) {
+    } catch (JSONException | PackageManager.NameNotFoundException | IOException e) {
       e.printStackTrace();
     }
 
@@ -332,16 +340,22 @@ public class MainActivity extends AppCompatActivity {
           report.put(entry.getKey(), entry.getValue());
         }
       }
+
+
+      ActivityManager.MemoryInfo memoryInfo = getMemoryInfo();
+      report.put("availMem", memoryInfo.availMem);
+      report.put("totalMem", memoryInfo.totalMem);
+      report.put("threshold", memoryInfo.threshold);
+      report.put("lowMemory", memoryInfo.lowMemory);
+
+      String proc_dir = "/proc/" + this.pid;
+      report.put("oom_score", Integer.parseInt(execute("cat", proc_dir + "/oom_score")));
+
+      String results = execute("ls", "/proc");
+      System.out.println(results);
     } catch (IOException e) {
       e.printStackTrace();
     }
-
-    ActivityManager.MemoryInfo memoryInfo = getMemoryInfo();
-    report.put("availMem", memoryInfo.availMem);
-    report.put("totalMem", memoryInfo.totalMem);
-    report.put("threshold", memoryInfo.threshold);
-    report.put("lowMemory", memoryInfo.lowMemory);
-
     return report;
   }
 
