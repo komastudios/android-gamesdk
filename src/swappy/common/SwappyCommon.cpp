@@ -683,17 +683,26 @@ void SwappyCommon::startFrame() {
     mCPUTracer.startTrace();
 }
 
-void SwappyCommon::waitUntilTargetFrame() {
+void SwappyCommon::waitUntil(int32_t target) {
     TRACE_CALL();
     std::unique_lock<std::mutex> lock(mWaitingMutex);
-    mWaitingCondition.wait(lock, [&]() { return mCurrentFrame >= mTargetFrame; });
+    mWaitingCondition.wait(lock, [&]() {
+        if (mCurrentFrame < target) {
+            if (!mUsingExternalChoreographer) {
+                mChoreographerThread->postFrameCallbacks();
+            }
+            return false;
+        }
+        return true;
+    });
+}
+
+void SwappyCommon::waitUntilTargetFrame() {
+    waitUntil(mTargetFrame);
 }
 
 void SwappyCommon::waitOneFrame() {
-    TRACE_CALL();
-    std::unique_lock<std::mutex> lock(mWaitingMutex);
-    const int32_t target = mCurrentFrame + 1;
-    mWaitingCondition.wait(lock, [&]() { return mCurrentFrame >= target; });
+    waitUntil(mCurrentFrame + 1);
 }
 
 int SwappyCommon::getSDKVersion(JNIEnv *env)
