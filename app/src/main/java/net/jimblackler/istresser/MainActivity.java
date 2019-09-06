@@ -53,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
   private boolean pauseAllocation = false;
   private long startTime;
   private Set<String> memInfoWhitelist = ImmutableSet.of("MemTotal", "CommitLimit");
+  private int scenario;
+  private long availMemAtLastOnTrimMemory;
 
   private static String memoryString(long bytes) {
     return String.format(Locale.getDefault(), "%.1f MB", (float) bytes / (1024 * 1024));
@@ -109,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
           }
         }
         int scenario = launchIntent.getIntExtra("scenario", 0);
+        this.scenario = scenario;
         report.put("scenario", scenario);
       }
       JSONObject build = new JSONObject();
@@ -138,20 +141,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     this.startTime = System.currentTimeMillis();
-
+    MainActivity outer = this;
     new Timer().schedule(new TimerTask() {
       @Override
       public void run() {
-        if (!pauseAllocation) {
-          int bytes = 1024 * 1024 * 2;
-          nativeAllocatedByTest += bytes;
-          nativeConsume(bytes);
-          //jvmConsume(1024 * 512);
-        }
-
         try {
           JSONObject report = standardInfo();
-          report.put("freeing", true);
+          ActivityManager.MemoryInfo memoryInfo = getMemoryInfo();
+          if (!pauseAllocation) {
+            if (outer.scenario == 2 && memoryInfo.availMem <= outer.availMemAtLastOnTrimMemory) {
+              releaseMemory(report);
+            } else if (outer.scenario == 3 && memoryInfo.lowMemory) {
+              releaseMemory(report);
+            } else {
+              int bytes = 1024 * 1024 * 2;
+              nativeAllocatedByTest += bytes;
+              nativeConsume(bytes);
+              //jvmConsume(1024 * 512);
+            }
+          }
           resultsStream.println(report);
           updateInfo();
         } catch (JSONException e) {
@@ -246,45 +254,11 @@ public class MainActivity extends AppCompatActivity {
     try {
       JSONObject report = standardInfo();
       report.put("onTrimMemory", level);
-      nativeAllocatedByTest = 0;
 
       if (!pauseAllocation) {
-        pauseAllocation = true;
-        int delay = 1000;
-        report.put("delay", delay);
-        new Timer().schedule(
-            new TimerTask() {
-              @Override
-              public void run() {
-                try {
-                  JSONObject report = standardInfo();
-                  report.put("freeing", true);
-                  resultsStream.println(report);
-                  freeAll();
-                  data.clear();
-                  System.gc();
-                  new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                      try {
-                        JSONObject report = standardInfo();
-                        report.put("resuming", true);
-                        resultsStream.println(report);
-
-                        pauseAllocation = false;
-                      } catch (JSONException e) {
-                        e.printStackTrace();
-                      }
-
-                    }
-                  }, 1000);
-                } catch (JSONException e) {
-                  e.printStackTrace();
-                }
-              }
-            },
-            delay
-        );
+        ActivityManager.MemoryInfo memoryInfo = getMemoryInfo();
+        this.availMemAtLastOnTrimMemory = memoryInfo.availMem;
+        releaseMemory(report);
       }
       resultsStream.println(report);
 
@@ -309,6 +283,40 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
+  private void releaseMemory(JSONObject report) throws JSONException {
+    nativeAllocatedByTest = 0;
+    pauseAllocation = true;
+    new Timer().schedule(
+        new TimerTask() {
+          @Override
+          public void run() {
+            try {
+              JSONObject report = standardInfo();
+              resultsStream.println(report);
+              freeAll();
+              data.clear();
+              System.gc();
+              new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                  try {
+                    JSONObject report = standardInfo();
+                    resultsStream.println(report);
+                    pauseAllocation = false;
+                  } catch (JSONException e) {
+                    e.printStackTrace();
+                  }
+                }
+              }, 1000);
+            } catch (JSONException e) {
+              e.printStackTrace();
+            }
+          }
+        },
+        1000
+    );
+  }
+
   private JSONObject standardInfo() throws JSONException {
     updateRecords();
     JSONObject report = new JSONObject();
@@ -328,16 +336,21 @@ public class MainActivity extends AppCompatActivity {
       e.printStackTrace();
     }
 
-    ActivityManager activityManager =
-        (ActivityManager) Objects.requireNonNull(getSystemService(Context.ACTIVITY_SERVICE));
-    ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
-    activityManager.getMemoryInfo(memoryInfo);
+    ActivityManager.MemoryInfo memoryInfo = getMemoryInfo();
     report.put("availMem", memoryInfo.availMem);
     report.put("totalMem", memoryInfo.totalMem);
     report.put("threshold", memoryInfo.threshold);
     report.put("lowMemory", memoryInfo.lowMemory);
 
     return report;
+  }
+
+  private ActivityManager.MemoryInfo getMemoryInfo() {
+    ActivityManager activityManager =
+        (ActivityManager) Objects.requireNonNull(getSystemService(Context.ACTIVITY_SERVICE));
+    ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+    activityManager.getMemoryInfo(memoryInfo);
+    return memoryInfo;
   }
 
   public native void freeAll();
