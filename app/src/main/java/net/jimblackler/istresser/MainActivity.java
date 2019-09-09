@@ -350,9 +350,6 @@ public class MainActivity extends AppCompatActivity {
 
       String proc_dir = "/proc/" + this.pid;
       report.put("oom_score", Integer.parseInt(execute("cat", proc_dir + "/oom_score")));
-
-      String results = execute("ls", "/proc");
-      System.out.println(results);
     } catch (IOException e) {
       e.printStackTrace();
     }
