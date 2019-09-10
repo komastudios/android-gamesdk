@@ -111,8 +111,6 @@ public:
 
     // Returns true if the fidelity params were retrieved
     TFErrorCode GetFidelityParameters(JNIEnv* env, jobject context,
-                               const std::string& url_base,
-                               const std::string& api_key,
                                const ProtobufSerialization& defaultParams,
                                ProtobufSerialization &fidelityParams, uint32_t timeout_ms);
 
@@ -202,14 +200,12 @@ TFErrorCode Init(const TFSettings &c_settings, JNIEnv* env, jobject context) {
 }
 
 TFErrorCode GetFidelityParameters(JNIEnv* env, jobject context,
-                           const std::string& url_base,
-                           const std::string& api_key,
                            const ProtobufSerialization &defaultParams,
                            ProtobufSerialization &params, uint32_t timeout_ms) {
     if (!s_impl) {
         return TFERROR_TUNINGFORK_NOT_INITIALIZED;
     } else {
-        return s_impl->GetFidelityParameters(env, context, url_base, api_key, defaultParams,
+        return s_impl->GetFidelityParameters(env, context, defaultParams,
                                              params, timeout_ms);
     }
 }
@@ -360,15 +356,20 @@ SerializedAnnotation TuningForkImpl::SerializeAnnotationId(AnnotationId id) {
 }
 
 TFErrorCode TuningForkImpl::GetFidelityParameters(JNIEnv* env, jobject context,
-                                           const std::string& url_base,
-                                           const std::string& api_key,
                                            const ProtobufSerialization& defaultParams,
                                            ProtobufSerialization &params_ser, uint32_t timeout_ms) {
     if(loader_) {
         std::string experiment_id;
+        std::string base_uri = settings_.base_uri;
+        if (base_uri.empty())
+          base_uri = "https://performanceparameters.googleapis.com/v1/";
+        if (settings_.api_key.empty()) {
+          ALOGE("The API key in Tuning Fork TFSettings is invalid");
+          return TFERROR_BAD_PARAMETER;
+        }
         auto result = loader_->GetFidelityParams(env, context,
-                                 upload_thread_.GetExtraUploadInfo(env, context), url_base,
-                                 api_key, params_ser, experiment_id, timeout_ms);
+                                 upload_thread_.GetExtraUploadInfo(env, context), base_uri,
+                                 settings_.api_key, params_ser, experiment_id, timeout_ms);
         upload_thread_.SetCurrentFidelityParams(params_ser, experiment_id);
         return result;
     }

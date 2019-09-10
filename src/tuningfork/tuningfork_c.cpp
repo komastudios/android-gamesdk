@@ -43,17 +43,14 @@ TFErrorCode TuningFork_init_internal(const TFSettings *settings, JNIEnv* env, jo
 // Note that once fidelity parameters are downloaded, any timing information is recorded
 //  as being associated with those parameters.
 TFErrorCode TuningFork_getFidelityParameters(JNIEnv* env, jobject context,
-                                      const char* url_base,
-                                      const char* api_key,
                                       const CProtobufSerialization *defaultParams,
                                       CProtobufSerialization *params, uint32_t timeout_ms) {
     tf::ProtobufSerialization defaults;
     if(defaultParams)
         defaults = tf::ToProtobufSerialization(*defaultParams);
     tf::ProtobufSerialization s;
-    TFErrorCode result = tf::GetFidelityParameters(env, context, url_base,
-                                                           api_key?api_key:"",
-                                                           defaults, s, timeout_ms);
+    TFErrorCode result = tf::GetFidelityParameters(env, context,
+                                                   defaults, s, timeout_ms);
     if (result==TFERROR_OK && params)
         tf::ToCProtobufSerialization(s, *params);
     return result;

@@ -45,17 +45,6 @@ const char defaultFPName[] = "dev_tuningfork_fidelityparams_3.bin";
 const int initialTimeoutMs = 1000;
 const int ultimateTimeoutMs = 100000;
 
-#error "Enter your app's api key here"
-const char api_key[] = "";
-const char play_url_base_staging[] =
-    "https://staging-performanceparameters.sandbox.googleapis.com/v1/";
-const char play_url_base_preprod[] =
-    "https://preprod-performanceparameters.sandbox.googleapis.com/v1/";
-const char play_url_base_prod[] =
-    "https://performanceparameters.googleapis.com/v1/";
-
-const char * url_base = play_url_base_prod;
-
 constexpr TFInstrumentKey TFTICK_CHOREOGRAPHER = TFTICK_USERDEFINED_BASE;
 
 std::string ReplaceReturns(const std::string& s) {
@@ -160,8 +149,7 @@ void InitTf(JNIEnv* env, jobject activity) {
     if (swappy_enabled) {
         TFErrorCode err = TuningFork_initFromAssetsWithSwappy(env, activity,
                                                               &SwappyGL_injectTracer, 0,
-                                                              SetAnnotations, url_base,
-                                                              api_key, defaultFPName,
+                                                              SetAnnotations, defaultFPName,
                                                               SetFidelityParams,
                                                               initialTimeoutMs, ultimateTimeoutMs);
         if (err==TFERROR_OK) {
@@ -184,7 +172,7 @@ void InitTf(JNIEnv* env, jobject activity) {
             ALOGE("Error finding fidelity params : err = %d", err);
             return;
         }
-        TuningFork_startFidelityParamDownloadThread(env, activity, url_base, api_key, &defaultFP,
+        TuningFork_startFidelityParamDownloadThread(env, activity, &defaultFP,
             SetFidelityParams, 1000, 10000);
         TuningFork_setUploadCallback(UploadCallback);
         SetAnnotations();
