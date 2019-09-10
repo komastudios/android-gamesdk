@@ -45,17 +45,6 @@ const char defaultFPName[] = "dev_tuningfork_fidelityparams_3.bin";
 const int initialTimeoutMs = 1000;
 const int ultimateTimeoutMs = 100000;
 
-#error "Enter your app's api key here"
-const char api_key[] = "";
-const char play_url_base_staging[] =
-    "https://staging-performanceparameters.sandbox.googleapis.com/v1/";
-const char play_url_base_preprod[] =
-    "https://preprod-performanceparameters.sandbox.googleapis.com/v1/";
-const char play_url_base_prod[] =
-    "https://performanceparameters.googleapis.com/v1/";
-
-const char * url_base = play_url_base_prod;
-
 constexpr TFInstrumentKey TFTICK_CHOREOGRAPHER = TFTICK_USERDEFINED_BASE;
 
 std::string ReplaceReturns(const std::string& s) {
@@ -68,27 +57,15 @@ std::string ReplaceReturns(const std::string& s) {
 }
 
 void SplitAndLog(const std::string& s) {
-    std::istringstream str(s);
-    std::string line;
     std::stringstream to_log;
-    const int nlines_per_log = 8;
-    const int max_line_len = 200;
-    int l = nlines_per_log;
-    while (std::getline(str, line, '\n')) {
-        int offset = 0;
-        do {
-            auto subline = line.substr(offset, max_line_len);
-            offset += subline.length();
-            to_log << subline << '\n';
-            if(--l<=0) {
-                ALOGI("%s", to_log.str().c_str());
-                l = nlines_per_log;
-                to_log.str("");
-            }
-        } while(line.length() - offset > 0);
+    const int max_line_len = 300;
+    int nparts = s.length()/max_line_len+1;
+    for (int i=0;i<nparts;++i) {
+        std::stringstream msg;
+        msg << "(TGE" << (i+1) << '/' << nparts << ')';
+        msg << s.substr(i*max_line_len, max_line_len);
+        ALOGI("%s", msg.str().c_str());
     }
-    if (to_log.str().length()>0)
-        ALOGI("%s", to_log.str().c_str());
 }
 
 void UploadCallback(const char *tuningfork_log_event, size_t n) {
@@ -160,8 +137,7 @@ void InitTf(JNIEnv* env, jobject activity) {
     if (swappy_enabled) {
         TFErrorCode err = TuningFork_initFromAssetsWithSwappy(env, activity,
                                                               &SwappyGL_injectTracer, 0,
-                                                              SetAnnotations, url_base,
-                                                              api_key, defaultFPName,
+                                                              SetAnnotations, defaultFPName,
                                                               SetFidelityParams,
                                                               initialTimeoutMs, ultimateTimeoutMs);
         if (err==TFERROR_OK) {
@@ -184,7 +160,7 @@ void InitTf(JNIEnv* env, jobject activity) {
             ALOGE("Error finding fidelity params : err = %d", err);
             return;
         }
-        TuningFork_startFidelityParamDownloadThread(env, activity, url_base, api_key, &defaultFP,
+        TuningFork_startFidelityParamDownloadThread(env, activity, &defaultFP,
             SetFidelityParams, 1000, 10000);
         TuningFork_setUploadCallback(UploadCallback);
         SetAnnotations();

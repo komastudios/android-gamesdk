@@ -24,7 +24,7 @@
 namespace tuningfork {
 
 class UploadThread : protected Runnable {
-private:
+  private:
     const ProngCache *ready_;
     bool upload_;
     Backend *backend_;
@@ -57,9 +57,10 @@ private:
         upload_callback_ = upload_callback;
     }
 
-    static ExtraUploadInfo GetExtraUploadInfo(JNIEnv* env, jobject context);
+    // Note that this won't include a valid experiment_id
+    static ExtraUploadInfo ConstructExtraUploadInfo(JNIEnv* env, jobject context);
 
- private:
+  private:
     void UpdateGLVersion();
 
 };
