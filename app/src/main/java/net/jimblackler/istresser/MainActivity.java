@@ -164,7 +164,10 @@ public class MainActivity extends AppCompatActivity {
             } else {
               int bytes = 1024 * 1024 * 2;
               nativeAllocatedByTest += bytes;
-              nativeConsume(bytes);
+              boolean succeeded = nativeConsume(bytes);
+              if (!succeeded) {
+                report.put("allocFailed", true);
+              }
               //jvmConsume(1024 * 512);
             }
           }
@@ -341,7 +344,6 @@ public class MainActivity extends AppCompatActivity {
         }
       }
 
-
       ActivityManager.MemoryInfo memoryInfo = getMemoryInfo();
       report.put("availMem", memoryInfo.availMem);
       report.put("totalMem", memoryInfo.totalMem);
@@ -370,5 +372,5 @@ public class MainActivity extends AppCompatActivity {
 
   public native void freeAll();
 
-  public native void nativeConsume(int bytes);
+  public native boolean nativeConsume(int bytes);
 }
