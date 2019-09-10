@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
       PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
       String result = execute("pidof", packageInfo.packageName);
-      this.pid = Integer.parseInt(result);
+      this.pid = Integer.parseInt(result.split(" ")[0]);
       report.put("version", packageInfo.versionCode);
       Intent launchIntent = getIntent();
       if ("com.google.intent.action.TEST_LOOP".equals(launchIntent.getAction())) {
@@ -349,7 +349,11 @@ public class MainActivity extends AppCompatActivity {
       report.put("lowMemory", memoryInfo.lowMemory);
 
       String proc_dir = "/proc/" + this.pid;
-      report.put("oom_score", Integer.parseInt(execute("cat", proc_dir + "/oom_score")));
+      try {
+        report.put("oom_score", Integer.parseInt(execute("cat", proc_dir + "/oom_score")));
+      } catch (NumberFormatException ex) {
+        // Intentionally ignored
+      }
     } catch (IOException e) {
       e.printStackTrace();
     }
