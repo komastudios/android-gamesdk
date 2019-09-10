@@ -36,6 +36,9 @@
 
 namespace tuningfork {
 
+constexpr char kPerformanceParametersBaseUri[] =
+        "https://performanceparameters.googleapis.com/v1/";
+
 static FileCache sFileCache;
 
 
@@ -78,6 +81,10 @@ void CopySettings(const TFSettings &c_settings, const std::string& save_dir,
     CheckPersister(settings_out.persistent_cache, save_dir);
     settings_out.base_uri = std::string(c_settings.base_uri?c_settings.base_uri:"");
     settings_out.api_key = std::string(c_settings.api_key?c_settings.api_key:"");
+    if (settings_out.base_uri.empty())
+        settings_out.base_uri = kPerformanceParametersBaseUri;
+    if (settings_out.base_uri.back()!='/')
+        settings_out.base_uri += '/';
 }
 
 namespace apk_utils {

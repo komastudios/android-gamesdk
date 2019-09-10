@@ -100,6 +100,7 @@ public:
                                           uint32_t timeout_ms);
 };
 
+// TODO(willosborn): remove this
 class ProtoPrint {
 public:
     virtual ~ProtoPrint() {};
@@ -139,8 +140,6 @@ void CopySettings(const TFSettings &c_settings, const std::string& save_dir,
 // If you subsequently call GetFidelityParameters, any data that is already collected will be
 // submitted to the backend.
 TFErrorCode GetFidelityParameters(JNIEnv* env, jobject context,
-                           const std::string& url_base,
-                           const std::string& api_key,
                            const ProtobufSerialization& defaultParams,
                            ProtobufSerialization &params, uint32_t timeout_ms);
 

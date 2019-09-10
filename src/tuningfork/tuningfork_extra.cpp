@@ -219,28 +219,47 @@ bool decodeHistograms(pb_istream_t* stream, const pb_field_t *field, void** arg)
               {hist.instrument_key, hist.bucket_min, hist.bucket_max, hist.n_buckets});
     return true;
 }
+bool decode_string(pb_istream_t* stream, const pb_field_t *field, void** arg) {
+    const char **out_str = static_cast<const char**>(*arg);
+    // NB These are freed below in TFSettings_Dealloc
+    char* out = (char*)malloc(stream->bytes_left+1);
+    *out_str = out;
+    while(stream->bytes_left) {
+        uint64_t x;
+        pb_decode_varint(stream, &x);
+        *out++ = (char)x;
+    }
+    *out = 0;
+    return true;
+}
 
 } // anonymous namespace
 
 extern "C" {
 
 void TFSettings_Dealloc(TFSettings* s) {
-    if(s->histograms) {
+    if (s->histograms) {
         free(s->histograms);
         s->histograms = nullptr;
         s->n_histograms = 0;
     }
-    if(s->aggregation_strategy.annotation_enum_size) {
+    if (s->aggregation_strategy.annotation_enum_size) {
         free(s->aggregation_strategy.annotation_enum_size);
         s->aggregation_strategy.annotation_enum_size = nullptr;
         s->aggregation_strategy.n_annotation_enum_size = 0;
+    }
+    if (s->base_uri) {
+      free((void*)s->base_uri);
+      s->base_uri = nullptr;
+    }
+    if (s->api_key) {
+      free((void*)s->api_key);
+      s->api_key = nullptr;
     }
 }
 
 // Download FPs on a separate thread
 void TuningFork_startFidelityParamDownloadThread(JNIEnv* env, jobject context,
-                                      const char* url_base,
-                                      const char* api_key,
                                       const CProtobufSerialization* defaultParams_in,
                                       ProtoCallback fidelity_params_callback,
                                       int initialTimeoutMs, int ultimateTimeoutMs) {
@@ -263,7 +282,6 @@ void TuningFork_startFidelityParamDownloadThread(JNIEnv* env, jobject context,
             while (true) {
                 auto startTime = std::chrono::steady_clock::now();
                 auto err = TuningFork_getFidelityParameters(newEnv, newContextRef,
-                                                            url_base, api_key,
                                                             &defaultParams,
                                                             &params, waitTime.count());
                 if (err==TFERROR_OK) {
@@ -305,6 +323,10 @@ TFErrorCode TuningFork_deserializeSettings(const CProtobufSerialization* setting
     pbsettings.aggregation_strategy.annotation_enum_size.arg = settings;
     pbsettings.histograms.funcs.decode = decodeHistograms;
     pbsettings.histograms.arg = settings;
+    pbsettings.base_uri.funcs.decode = decode_string;
+    pbsettings.base_uri.arg = (void*)&settings->base_uri;
+    pbsettings.api_key.funcs.decode = decode_string;
+    pbsettings.api_key.arg = (void*)&settings->api_key;
     ByteStream str {settings_ser->bytes, settings_ser->size, 0};
     pb_istream_t stream = {ByteStream::Read, &str, settings_ser->size};
     pb_decode(&stream, com_google_tuningfork_Settings_fields, &pbsettings);
@@ -375,8 +397,6 @@ TFErrorCode TuningFork_initFromAssetsWithSwappy(JNIEnv* env, jobject context,
                                                 SwappyTracerFn swappy_tracer_fn,
                                                 uint32_t swappy_lib_version,
                                                 VoidCallback frame_callback,
-                                                const char* url_base,
-                                                const char* api_key,
                                                 const char* fp_file_name,
                                                 ProtoCallback fidelity_params_callback,
                                                 int initialTimeoutMs, int ultimateTimeoutMs) {
@@ -384,7 +404,6 @@ TFErrorCode TuningFork_initFromAssetsWithSwappy(JNIEnv* env, jobject context,
     auto err = TuningFork_findSettingsInApk(env, context, &settings);
     if (err!=TFERROR_OK)
         return err;
-    settings.api_key = api_key;
     err = TuningFork_initWithSwappy(&settings, env, context, swappy_tracer_fn, swappy_lib_version,
                                     frame_callback);
     settings.dealloc(&settings);
@@ -402,7 +421,7 @@ TFErrorCode TuningFork_initFromAssetsWithSwappy(JNIEnv* env, jobject context,
         if (err!=TFERROR_OK)
             return err;
     }
-    TuningFork_startFidelityParamDownloadThread(env, context, url_base, api_key, &defaultParams,
+    TuningFork_startFidelityParamDownloadThread(env, context, &defaultParams,
        fidelity_params_callback, initialTimeoutMs, ultimateTimeoutMs);
     return TFERROR_OK;
 }

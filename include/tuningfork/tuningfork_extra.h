@@ -74,8 +74,6 @@ TFErrorCode TuningFork_setUploadCallback(UploadCallback cbk);
 //  could be downloaded..
 // ultimateTimeoutMs is the time after which to stop retrying the download.
 void TuningFork_startFidelityParamDownloadThread(JNIEnv* env, jobject context,
-                                      const char* url_base,
-                                      const char* api_key,
                                       const CProtobufSerialization* defaultParams,
                                       ProtoCallback fidelity_params_callback,
                                       int initialTimeoutMs, int ultimateTimeoutMs);
@@ -99,8 +97,6 @@ TFErrorCode TuningFork_initFromAssetsWithSwappy(JNIEnv* env, jobject context,
                              SwappyTracerFn swappy_tracer_fn,
                              uint32_t swappy_lib_version,
                              VoidCallback frame_callback,
-                             const char* url_base,
-                             const char* api_key,
                              const char* fp_default_file_name,
                              ProtoCallback fidelity_params_callback,
                              int initialTimeoutMs, int ultimateTimeoutMs);

@@ -166,7 +166,7 @@ std::string getSystemPropViaGet(const char* key) {
 }
 
 /* static */
-ExtraUploadInfo UploadThread::GetExtraUploadInfo(JNIEnv* env, jobject context) {
+ExtraUploadInfo UploadThread::BuildExtraUploadInfo(JNIEnv* env, jobject context) {
     ExtraUploadInfo extra_info;
     // Total memory
     std::string s = slurpFile("/proc/meminfo");

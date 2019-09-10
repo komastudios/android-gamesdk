@@ -22,4 +22,6 @@ message Settings {
   }
   optional AggregationStrategy aggregation_strategy = 1;
   repeated Histogram histograms = 2;
+  optional string base_uri = 3;
+  optional string api_key = 4;
 }
