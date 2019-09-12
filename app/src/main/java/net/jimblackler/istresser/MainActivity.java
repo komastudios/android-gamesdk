@@ -80,14 +80,14 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
-  private static Map<String, Integer> processMeminfo(String meminfoText) {
-    Map<String, Integer> output = new HashMap<>();
+  private static Map<String, Long> processMeminfo(String meminfoText) {
+    Map<String, Long> output = new HashMap<>();
     Pattern pattern = Pattern.compile("([^:]+)[^\\d]*(\\d+).*\n");
 
     Matcher matcher = pattern.matcher(meminfoText);
 
     while (matcher.find()) {
-      output.put(matcher.group(1), Integer.parseInt(matcher.group(2)));
+      output.put(matcher.group(1), Long.parseLong(matcher.group(2)));
     }
     return output;
   }
@@ -334,8 +334,8 @@ public class MainActivity extends AppCompatActivity {
     report.put("paused", pauseAllocation);
 
     try {
-      Map<String, Integer> meminfo = processMeminfo(execute("cat", "/proc/meminfo"));
-      for (Map.Entry<String, Integer> entry : meminfo.entrySet()) {
+      Map<String, Long> meminfo = processMeminfo(execute("cat", "/proc/meminfo"));
+      for (Map.Entry<String, Long> entry : meminfo.entrySet()) {
         if (memInfoWhitelist.contains(entry.getKey())) {
           report.put(entry.getKey(), entry.getValue());
         }
