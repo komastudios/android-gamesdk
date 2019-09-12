@@ -147,6 +147,7 @@ private:
     void onSettingsChanged();
     void updateSwapDuration(std::chrono::nanoseconds duration);
     void startFrame();
+    void waitUntil(int32_t target);
     void waitUntilTargetFrame();
     void waitOneFrame();
     void setPreferredRefreshRate(int index);
