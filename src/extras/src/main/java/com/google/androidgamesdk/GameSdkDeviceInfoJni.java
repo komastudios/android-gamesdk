@@ -2,13 +2,19 @@ package com.google.androidgamesdk;
 
 /** JNI api for getting device information */
 public class GameSdkDeviceInfoJni {
-  private static Exception initializationException;
+  private static Throwable initializationExceptionOrError;
 
   static {
     try {
       System.loadLibrary("game_sdk_device_info_jni");
     } catch(Exception exception) {
-      initializationException = exception;
+      // Catch SecurityException, NullPointerException (or any potential unchecked exception)
+      // as we don't want to crash the app if the library failed to load.
+      initializationExceptionOrError = exception;
+    } catch(Error error) {
+      // Catch UnsatisfiedLinkError (or any potential unchecked error)
+      // as we don't want to crash the app if the library failed to load.
+      initializationExceptionOrError = error;
     }
   }
 
@@ -20,7 +26,7 @@ public class GameSdkDeviceInfoJni {
    * or null.
    */
   public static byte[] tryGetProtoSerialized() {
-    if (initializationException != null) {
+    if (initializationExceptionOrError != null) {
       return null;
     }
 
@@ -29,13 +35,13 @@ public class GameSdkDeviceInfoJni {
 
 
   /**
-   * Returns the exception that was caught when trying to load the library, if any.
+   * Returns the exception or error that was caught when trying to load the library, if any.
    * Otherwise, returns null.
    *
-   * @return The caught Exception or null.
+   * @return The caught Throwable or null.
    */
-  public static Exception getInitializationException() {
-    return initializationException;
+  public static Throwable getInitializationExceptionOrError() {
+    return initializationExceptionOrError;
   }
 
   /**
