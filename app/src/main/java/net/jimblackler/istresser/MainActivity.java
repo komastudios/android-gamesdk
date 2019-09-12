@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
     Matcher matcher = pattern.matcher(meminfoText);
 
     while (matcher.find()) {
-      output.put(matcher.group(1), Long.parseLong(matcher.group(2)));
+      output.put(matcher.group(1), Long.parseLong(Objects.requireNonNull(matcher.group(2))));
     }
     return output;
   }
