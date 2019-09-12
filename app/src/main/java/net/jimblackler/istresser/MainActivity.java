@@ -28,9 +28,11 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -56,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
   private Set<String> memInfoWhitelist = ImmutableSet.of("MemTotal", "CommitLimit");
   private int scenario;
   private long availMemAtLastOnTrimMemory;
-  private int pid;
+  private List<Integer> pids;
 
   private static String memoryString(long bytes) {
     return String.format(Locale.getDefault(), "%.1f MB", (float) bytes / (1024 * 1024));
@@ -87,9 +89,29 @@ public class MainActivity extends AppCompatActivity {
     Matcher matcher = pattern.matcher(meminfoText);
 
     while (matcher.find()) {
+<<<<<<< HEAD   (c0731c MemInfo can contain > 32 bit values on an emulator.)
       output.put(matcher.group(1), Long.parseLong(matcher.group(2)));
+=======
+      output.put(matcher.group(1), Integer.parseInt(Objects.requireNonNull(matcher.group(2))));
+>>>>>>> BRANCH (4ea077 Number of test loops set in manifest.)
     }
     return output;
+  }
+
+  private static List<Integer> parseList(String string) {
+    Scanner scanner = new Scanner(string);
+    List<Integer> list = new ArrayList<>();
+    while (scanner.hasNextInt()) {
+      list.add(scanner.nextInt());
+    }
+    return list;
+  }
+
+  private static int[] toIntArray(List<Integer> list) {
+    int[] ints = new int[list.size()];
+    for (int i = 0; i < ints.length; i++)
+      ints[i] = list.get(i);
+    return ints;
   }
 
   @Override
@@ -101,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
 
       PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
       String result = execute("pidof", packageInfo.packageName);
-      this.pid = Integer.parseInt(result);
+      this.pids = parseList(result);
       report.put("version", packageInfo.versionCode);
       Intent launchIntent = getIntent();
       if ("com.google.intent.action.TEST_LOOP".equals(launchIntent.getAction())) {
@@ -164,7 +186,10 @@ public class MainActivity extends AppCompatActivity {
             } else {
               int bytes = 1024 * 1024 * 2;
               nativeAllocatedByTest += bytes;
-              nativeConsume(bytes);
+              boolean succeeded = nativeConsume(bytes);
+              if (!succeeded) {
+                report.put("allocFailed", true);
+              }
               //jvmConsume(1024 * 512);
             }
           }
@@ -179,8 +204,14 @@ public class MainActivity extends AppCompatActivity {
 
   @Override
   protected void onDestroy() {
+    try {
+      JSONObject report = standardInfo();
+      report.put("onDestroy", true);
+      resultsStream.println(report);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
     super.onDestroy();
-    Log.i(TAG, "onDestroy");
   }
 
   private void updateRecords() {
@@ -341,18 +372,38 @@ public class MainActivity extends AppCompatActivity {
         }
       }
 
-
       ActivityManager.MemoryInfo memoryInfo = getMemoryInfo();
       report.put("availMem", memoryInfo.availMem);
       report.put("totalMem", memoryInfo.totalMem);
       report.put("threshold", memoryInfo.threshold);
       report.put("lowMemory", memoryInfo.lowMemory);
 
-      String proc_dir = "/proc/" + this.pid;
-      report.put("oom_score", Integer.parseInt(execute("cat", proc_dir + "/oom_score")));
+      ActivityManager activityManager =
+          (ActivityManager) Objects.requireNonNull(getSystemService(Context.ACTIVITY_SERVICE));
 
-      String results = execute("ls", "/proc");
-      System.out.println(results);
+      if (this.pids != null && !this.pids.isEmpty()) {
+        int totalPss = 0;
+        int totalPrivateDirty = 0;
+        int totalSharedDirty = 0;
+        for (Debug.MemoryInfo memoryInfo2 :
+            activityManager.getProcessMemoryInfo(toIntArray(this.pids))) {
+
+          totalPss += memoryInfo2.getTotalPss();
+          totalPrivateDirty += memoryInfo2.getTotalPrivateDirty();
+          totalSharedDirty += memoryInfo2.getTotalSharedDirty();
+        }
+
+        report.put("totalPss", totalPss);
+        report.put("totalPrivateDirty", totalPrivateDirty);
+        report.put("totalSharedDirty", totalSharedDirty);
+
+        String proc_dir = "/proc/" + this.pids.get(0);
+        try {
+          report.put("oom_score", Integer.parseInt(execute("cat", proc_dir + "/oom_score")));
+        } catch (NumberFormatException ex) {
+          // Intentionally ignored
+        }
+      }
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -369,5 +420,5 @@ public class MainActivity extends AppCompatActivity {
 
   public native void freeAll();
 
-  public native void nativeConsume(int bytes);
+  public native boolean nativeConsume(int bytes);
 }
