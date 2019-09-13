@@ -22,8 +22,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -65,9 +67,13 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private static String execute(String... args) throws IOException {
+    return readStream(new ProcessBuilder(args).start().getInputStream());
+  }
+
+  private static String readStream(InputStream inputStream) throws IOException {
     try (
         InputStreamReader inputStreamReader =
-            new InputStreamReader(new ProcessBuilder(args).start().getInputStream());
+            new InputStreamReader(inputStream);
         BufferedReader reader = new BufferedReader(inputStreamReader)) {
       String newline = System.getProperty("line.separator");
       StringBuilder output = new StringBuilder();
@@ -108,6 +114,10 @@ public class MainActivity extends AppCompatActivity {
     for (int i = 0; i < ints.length; i++)
       ints[i] = list.get(i);
     return ints;
+  }
+
+  private static String readFile(String filename) throws IOException {
+    return readStream(new FileInputStream(filename));
   }
 
   @Override
@@ -378,7 +388,7 @@ public class MainActivity extends AppCompatActivity {
     report.put("paused", allocationStartedAt == -1);
 
     try {
-      Map<String, Long> meminfo = processMeminfo(execute("cat", "/proc/meminfo"));
+      Map<String, Long> meminfo = processMeminfo(readFile("/proc/meminfo"));
       for (Map.Entry<String, Long> entry : meminfo.entrySet()) {
         if (memInfoWhitelist.contains(entry.getKey())) {
           report.put(entry.getKey(), entry.getValue());
@@ -412,7 +422,7 @@ public class MainActivity extends AppCompatActivity {
 
         String proc_dir = "/proc/" + this.pids.get(0);
         try {
-          report.put("oom_score", Integer.parseInt(execute("cat", proc_dir + "/oom_score")));
+          report.put("oom_score", Integer.parseInt(readFile(proc_dir + "/oom_score")));
         } catch (NumberFormatException ex) {
           // Intentionally ignored
         }
