@@ -401,24 +401,15 @@ public class MainActivity extends AppCompatActivity {
       report.put("threshold", memoryInfo.threshold);
       report.put("lowMemory", memoryInfo.lowMemory);
 
-      ActivityManager activityManager =
-          (ActivityManager) Objects.requireNonNull(getSystemService(Context.ACTIVITY_SERVICE));
+
 
       if (this.pids != null && !this.pids.isEmpty()) {
-        int totalPss = 0;
-        int totalPrivateDirty = 0;
-        int totalSharedDirty = 0;
-        for (Debug.MemoryInfo memoryInfo2 :
-            activityManager.getProcessMemoryInfo(toIntArray(this.pids))) {
-
-          totalPss += memoryInfo2.getTotalPss();
-          totalPrivateDirty += memoryInfo2.getTotalPrivateDirty();
-          totalSharedDirty += memoryInfo2.getTotalSharedDirty();
+        if (false) {
+          // Getting this info can make the app unresponsive for seconds.
+          // Most of the values are strongly correlated with other info we can get more cheaply
+          // anyway.
+          getProcessMemoryInfo(report);
         }
-
-        report.put("totalPss", totalPss);
-        report.put("totalPrivateDirty", totalPrivateDirty);
-        report.put("totalSharedDirty", totalSharedDirty);
 
         String proc_dir = "/proc/" + this.pids.get(0);
         try {
@@ -431,6 +422,25 @@ public class MainActivity extends AppCompatActivity {
       e.printStackTrace();
     }
     return report;
+  }
+
+  private void getProcessMemoryInfo(JSONObject report) throws JSONException {
+    ActivityManager activityManager =
+        (ActivityManager) Objects.requireNonNull(getSystemService(Context.ACTIVITY_SERVICE));
+    int totalPss = 0;
+    int totalPrivateDirty = 0;
+    int totalSharedDirty = 0;
+    for (Debug.MemoryInfo memoryInfo2 :
+        activityManager.getProcessMemoryInfo(toIntArray(this.pids))) {
+
+      totalPss += memoryInfo2.getTotalPss();
+      totalPrivateDirty += memoryInfo2.getTotalPrivateDirty();
+      totalSharedDirty += memoryInfo2.getTotalSharedDirty();
+    }
+
+    report.put("totalPss", totalPss);
+    report.put("totalPrivateDirty", totalPrivateDirty);
+    report.put("totalSharedDirty", totalSharedDirty);
   }
 
   private ActivityManager.MemoryInfo getMemoryInfo() {
