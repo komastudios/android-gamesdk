@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
   private int scenario;
   private long availMemAtLastOnTrimMemory;
   private List<Integer> pids;
+  private ActivityManager activityManager;
 
   private static String memoryString(long bytes) {
     return String.format(Locale.getDefault(), "%.1f MB", (float) bytes / (1024 * 1024));
@@ -123,13 +124,25 @@ public class MainActivity extends AppCompatActivity {
   @Override
   protected void onStart() {
     super.onStart();
+    activityManager =
+        (ActivityManager) Objects.requireNonNull(getSystemService(Context.ACTIVITY_SERVICE));
 
     try {
       JSONObject report = new JSONObject();
 
       PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-      String result = execute("pidof", packageInfo.packageName);
-      this.pids = parseList(result);
+      // Two methods of getting the app's pids.
+      if (false) {
+        this.pids = parseList(execute("pidof", packageInfo.packageName));
+      } else {
+        List<Integer> pids = new ArrayList<>();
+        List<ActivityManager.RunningAppProcessInfo> runningAppProcesses =
+            activityManager.getRunningAppProcesses();
+        for (ActivityManager.RunningAppProcessInfo runningAppProcessInfo : runningAppProcesses) {
+          pids.add(runningAppProcessInfo.pid);
+        }
+        this.pids = pids;
+      }
       report.put("version", packageInfo.versionCode);
       Intent launchIntent = getIntent();
       if ("com.google.intent.action.TEST_LOOP".equals(launchIntent.getAction())) {
@@ -188,22 +201,24 @@ public class MainActivity extends AppCompatActivity {
       public void run() {
         try {
           JSONObject report = standardInfo();
-          ActivityManager.MemoryInfo memoryInfo = getMemoryInfo();
           if (allocationStartedAt != -1) {
+            ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
             if (outer.scenario == 2 && memoryInfo.availMem <= outer.availMemAtLastOnTrimMemory) {
-              releaseMemory(report);
+              releaseMemory();
             } else if (outer.scenario == 3 && memoryInfo.lowMemory) {
-              releaseMemory(report);
+              releaseMemory();
             } else {
               int bytesPerMillisecond = 50 * 1024;
               long sinceStart = System.currentTimeMillis() - allocationStartedAt;
               int owed = (int) ((sinceStart * bytesPerMillisecond) - nativeAllocatedByTest);
 
-              boolean succeeded = nativeConsume(owed);
-              if (succeeded) {
-                nativeAllocatedByTest += owed;
-              } else {
-                report.put("allocFailed", true);
+              if (owed > 0) {
+                boolean succeeded = nativeConsume(owed);
+                if (succeeded) {
+                  nativeAllocatedByTest += owed;
+                } else {
+                  report.put("allocFailed", true);
+                }
               }
             }
           }
@@ -213,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
           e.printStackTrace();
         }
       }
-    }, 0, 1000 / 50);
+    }, 0, 1000 / 20);
 
   }
 
@@ -318,9 +333,11 @@ public class MainActivity extends AppCompatActivity {
       report.put("onTrimMemory", level);
 
       if (!wasPaused) {
-        ActivityManager.MemoryInfo memoryInfo = getMemoryInfo();
+        ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
         this.availMemAtLastOnTrimMemory = memoryInfo.availMem;
-        releaseMemory(report);
+      }
+      if (nativeAllocatedByTest > 0) {
+        releaseMemory();
       }
       resultsStream.println(report);
 
@@ -345,9 +362,10 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
-  private void releaseMemory(JSONObject report) throws JSONException {
-    nativeAllocatedByTest = 0;
-
+  private void releaseMemory() throws JSONException {
+    if (allocationStartedAt != -1) {
+      throw new RuntimeException("Should only be called when allocation is paused");
+    }
     new Timer().schedule(
         new TimerTask() {
           @Override
@@ -355,6 +373,7 @@ public class MainActivity extends AppCompatActivity {
             try {
               JSONObject report = standardInfo();
               resultsStream.println(report);
+              nativeAllocatedByTest = 0;
               freeAll();
               data.clear();
               System.gc();
@@ -395,13 +414,13 @@ public class MainActivity extends AppCompatActivity {
         }
       }
 
-      ActivityManager.MemoryInfo memoryInfo = getMemoryInfo();
+      ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
       report.put("availMem", memoryInfo.availMem);
       report.put("totalMem", memoryInfo.totalMem);
       report.put("threshold", memoryInfo.threshold);
       report.put("lowMemory", memoryInfo.lowMemory);
 
-
+      report.put("memoryClass", activityManager.getMemoryClass() * 1024 * 1024);
 
       if (this.pids != null && !this.pids.isEmpty()) {
         if (false) {
@@ -443,9 +462,7 @@ public class MainActivity extends AppCompatActivity {
     report.put("totalSharedDirty", totalSharedDirty);
   }
 
-  private ActivityManager.MemoryInfo getMemoryInfo() {
-    ActivityManager activityManager =
-        (ActivityManager) Objects.requireNonNull(getSystemService(Context.ACTIVITY_SERVICE));
+  private static ActivityManager.MemoryInfo getMemoryInfo(ActivityManager activityManager) {
     ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
     activityManager.getMemoryInfo(memoryInfo);
     return memoryInfo;
