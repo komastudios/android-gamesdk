@@ -48,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     System.loadLibrary("native-lib");
   }
 
+  private final Timer timer = new Timer();
+
   private ArrayList<byte[]> data = Lists.newArrayList();
 
   private Multiset<Integer> onTrims = HashMultiset.create();
@@ -119,6 +121,12 @@ public class MainActivity extends AppCompatActivity {
 
   private static String readFile(String filename) throws IOException {
     return readStream(new FileInputStream(filename));
+  }
+
+  private static ActivityManager.MemoryInfo getMemoryInfo(ActivityManager activityManager) {
+    ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+    activityManager.getMemoryInfo(memoryInfo);
+    return memoryInfo;
   }
 
   @Override
@@ -196,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
     startTime = System.currentTimeMillis();
     allocationStartedAt = startTime;
     MainActivity outer = this;
-    new Timer().schedule(new TimerTask() {
+    timer.schedule(new TimerTask() {
       @Override
       public void run() {
         try {
@@ -362,40 +370,42 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
-  private void releaseMemory() throws JSONException {
+  private void releaseMemory() {
     if (allocationStartedAt != -1) {
       throw new RuntimeException("Should only be called when allocation is paused");
     }
-    new Timer().schedule(
+    runAfterDelay(() -> {
+      JSONObject report = null;
+      try {
+        report = standardInfo();
+      } catch (JSONException e) {
+        throw new RuntimeException(e);
+      }
+      resultsStream.println(report);
+      nativeAllocatedByTest = 0;
+      freeAll();
+      data.clear();
+      System.gc();
+      runAfterDelay(() -> {
+        try {
+          resultsStream.println(standardInfo());
+          allocationStartedAt = System.currentTimeMillis();
+        } catch (JSONException e) {
+          throw new RuntimeException(e);
+        }
+      }, 1000);
+    }, 1000);
+  }
+
+  private void runAfterDelay(Runnable runnable, int delay) {
+
+    timer.schedule(
         new TimerTask() {
           @Override
           public void run() {
-            try {
-              JSONObject report = standardInfo();
-              resultsStream.println(report);
-              nativeAllocatedByTest = 0;
-              freeAll();
-              data.clear();
-              System.gc();
-              new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                  try {
-                    JSONObject report = standardInfo();
-                    resultsStream.println(report);
-                    allocationStartedAt = System.currentTimeMillis();
-                  } catch (JSONException e) {
-                    e.printStackTrace();
-                  }
-                }
-              }, 1000);
-            } catch (JSONException e) {
-              e.printStackTrace();
-            }
+            runnable.run();
           }
-        },
-        1000
-    );
+        }, delay);
   }
 
   private JSONObject standardInfo() throws JSONException {
@@ -460,12 +470,6 @@ public class MainActivity extends AppCompatActivity {
     report.put("totalPss", totalPss);
     report.put("totalPrivateDirty", totalPrivateDirty);
     report.put("totalSharedDirty", totalSharedDirty);
-  }
-
-  private static ActivityManager.MemoryInfo getMemoryInfo(ActivityManager activityManager) {
-    ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
-    activityManager.getMemoryInfo(memoryInfo);
-    return memoryInfo;
   }
 
   public native void freeAll();
