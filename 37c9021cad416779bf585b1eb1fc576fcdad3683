@@ -1,0 +1,157 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "00ccde1e_cea6157d",
+        "filename": "src/swappy/common/RefreshRate.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-09-16T22:12:29Z",
+      "side": 1,
+      "message": "These are already defined in Trace.h",
+      "revId": "37c9021cad416779bf585b1eb1fc576fcdad3683",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "655f1d8e_da6328d2",
+        "filename": "src/swappy/common/RefreshRate.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-09-16T22:12:29Z",
+      "side": 1,
+      "message": "Looks like not used",
+      "revId": "37c9021cad416779bf585b1eb1fc576fcdad3683",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "52fb48a0_aea94222",
+        "filename": "src/swappy/common/RefreshRate.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-09-16T22:12:29Z",
+      "side": 1,
+      "message": "The name is slightly confusing as calling to forCurrentThread() twice will create ywo different instances of NativeHandler. We should either call this createNativeHandler or return the same one.",
+      "revId": "37c9021cad416779bf585b1eb1fc576fcdad3683",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "93de06ba_d3f1f8ac",
+        "filename": "src/swappy/common/RefreshRate.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-09-16T22:12:29Z",
+      "side": 1,
+      "message": "Nit: get std::function\u003cvoid()\u003e directly and expect the caller to bind the parameters",
+      "revId": "37c9021cad416779bf585b1eb1fc576fcdad3683",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1aa8a0ae_fd449cb1",
+        "filename": "src/swappy/common/RefreshRate.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-09-16T22:12:29Z",
+      "side": 1,
+      "message": "use std::unique_ptr instead of regular pointers to auto manage the lifecycle of this object",
+      "revId": "37c9021cad416779bf585b1eb1fc576fcdad3683",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "624826a7_a3aa13b9",
+        "filename": "src/swappy/common/RefreshRate.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-09-16T22:12:29Z",
+      "side": 1,
+      "message": "Nit: same here, we can just use std::function instead of creating the Callable class",
+      "revId": "37c9021cad416779bf585b1eb1fc576fcdad3683",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6c901ed2_456ffa02",
+        "filename": "src/swappy/common/RefreshRate.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-09-16T22:12:29Z",
+      "side": 1,
+      "message": "It may be just a coincidence that refresh rate is the same as what the game wants but can change later by the platform as it doesn\u0027t know what the game wants. The game should vote at least once to indicate its desired refresh rate. Voting twice to the same refresh rate is not necessary.",
+      "revId": "37c9021cad416779bf585b1eb1fc576fcdad3683",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f0375b00_67774243",
+        "filename": "src/swappy/common/RefreshRate.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 225,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-09-16T22:12:29Z",
+      "side": 1,
+      "message": "env-\u003eReleaseObjectArrayElement() needs to be called to free the resources used by env-\u003eGetObjectArrayElement()",
+      "revId": "37c9021cad416779bf585b1eb1fc576fcdad3683",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "58454824_64850c9c",
+        "filename": "src/swappy/common/RefreshRate.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 245,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-09-16T22:12:29Z",
+      "side": 1,
+      "message": "~NativeHandler() will be called here destroying the looper instance. This needs to be synchronized with the work given to handler-\u003epost() to avoid a race condition between the two",
+      "revId": "37c9021cad416779bf585b1eb1fc576fcdad3683",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
