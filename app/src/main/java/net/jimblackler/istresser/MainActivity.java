@@ -210,21 +210,21 @@ public class MainActivity extends AppCompatActivity {
       public void run() {
         try {
           JSONObject report = standardInfo();
-          if (allocationStartedAt != -1) {
+          final long _allocationStartedAt = allocationStartedAt;
+          if (_allocationStartedAt != -1) {
             ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
-            if (outer.scenario == 2 && memoryInfo.availMem <= outer.availMemAtLastOnTrimMemory) {
+            if (MainActivity.this.scenario == 2 && getOomScore() > 700) {
               releaseMemory();
-            } else if (outer.scenario == 3 && memoryInfo.lowMemory) {
+            } else if (MainActivity.this.scenario == 3 && memoryInfo.lowMemory) {
               releaseMemory();
             } else {
               int bytesPerMillisecond = 50 * 1024;
-              long sinceStart = System.currentTimeMillis() - allocationStartedAt;
+              long sinceStart = System.currentTimeMillis() - _allocationStartedAt;
               int owed = (int) ((sinceStart * bytesPerMillisecond) - nativeAllocatedByTest);
-
               if (owed > 0) {
                 boolean succeeded = nativeConsume(owed);
                 if (succeeded) {
-                  nativeAllocatedByTest += owed;
+                  nativeAllocatedByTest = _allocationStartedAt + owed;
                 } else {
                   report.put("allocFailed", true);
                 }
