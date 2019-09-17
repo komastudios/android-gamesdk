@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-// Vulkan part of swappy
+/** @file
+ * Vulkan part of Swappy
+ */
 
 #pragma once
 
@@ -33,7 +35,7 @@ extern "C" {
 #endif
 
 /**
- * Determine any Vulkan device extensions that must be enabled for a new
+ * @brief Determine any Vulkan device extensions that must be enabled for a new
  * VkDevice.
  *
  * Swappy-for-Vulkan (SwappyVk) benefits from certain Vulkan device extensions
@@ -52,20 +54,18 @@ extern "C" {
  * can be called twice, once to identify the number of required extensions, and
  * again with application-allocated memory that the function can write into.
  *
- * Parameters:
- *
- *  (IN)    physicalDevice          - The VkPhysicalDevice associated with the
+ * @param[in]    physicalDevice          - The VkPhysicalDevice associated with the
  *                    available extensions.
- *  (IN)    availableExtensionCount - This is the returned value of
+ * @param[in]    availableExtensionCount - This is the returned value of
  *                    pPropertyCount from vkEnumerateDeviceExtensionProperties.
- *  (IN)    pAvailableExtensions    - This is the returned value of
+ * @param[in]    pAvailableExtensions    - This is the returned value of
  *                    pProperties from vkEnumerateDeviceExtensionProperties.
- *  (INOUT) pRequiredExtensionCount - If pRequiredExtensions is nullptr, the
+ * @param[inout] pRequiredExtensionCount - If pRequiredExtensions is nullptr, the
  *                    function sets this to the number of extensions that are
  *                    required.  If pRequiredExtensions is non-nullptr, this
  *                    is the number of required extensions that the function
  *                    should write into pRequiredExtensions.
- *  (INOUT) pRequiredExtensions - If non-nullptr, this is application-allocated
+ * @param[inout] pRequiredExtensions - If non-nullptr, this is application-allocated
  *                    memory into which the function will write the names of
  *                    required extensions.  It is a pointer to an array of
  *                    char* strings (i.e. the same as
@@ -79,16 +79,14 @@ void SwappyVk_determineDeviceExtensions(
     char**                 pRequiredExtensions);
 
 /**
- * Tell Swappy The queueFamilyIndex used to create a specific VkQueue
+ * @brief Tell Swappy the queueFamilyIndex used to create a specific VkQueue
  *
  * Swappy needs to know the queueFamilyIndex used for creating a specific VkQueue
  * so it can use it when presenting.
  *
- * Parameters:
- *
- *  (IN)  device            - The VkDevice associated with the queue
- *  (IN)  queue             - A device queue.
- *  (IN)  queueFamilyIndex  - The queue family index used to create the VkQueue.
+ * @param[in]  device            - The VkDevice associated with the queue
+ * @param[in]  queue             - A device queue.
+ * @param[in]  queueFamilyIndex  - The queue family index used to create the VkQueue.
  *
  */
 void SwappyVk_setQueueFamilyIndex(
@@ -96,13 +94,13 @@ void SwappyVk_setQueueFamilyIndex(
         VkQueue     queue,
         uint32_t    queueFamilyIndex);
 
-
 // TBD: For now, SwappyVk assumes only one VkSwapchainKHR per VkDevice, and that
 // applications don't re-create swapchains.  Is this long-term sufficient?
 
 /**
  * Internal init function. Do not call directly.
  * See SwappyVk_initAndGetRefreshCycleDuration instead.
+ * @private
  */
 bool SwappyVk_initAndGetRefreshCycleDuration_internal(
         JNIEnv*          env,
@@ -113,7 +111,7 @@ bool SwappyVk_initAndGetRefreshCycleDuration_internal(
         uint64_t*        pRefreshDuration);
 
 /**
- * Initialize SwappyVk for a given device and swapchain, and obtain the
+ * @brief Initialize SwappyVk for a given device and swapchain, and obtain the
  * approximate time duration between vertical-blanking periods.
  *
  * Uses JNI to query AppVsyncOffset and PresentationDeadline.
@@ -130,18 +128,14 @@ bool SwappyVk_initAndGetRefreshCycleDuration_internal(
  * refresh rate of the display (e.g. 16,666,666 nanoseconds corresponds to a
  * 60Hz display, 11,111,111 nsec corresponds to a 90Hz display).
  *
- * Parameters:
+ * @param[in]  env - JNIEnv that is assumed to be from AttachCurrentThread function
+ * @param[in]  jactivity - NativeActivity object handle, used for JNI
+ * @param[in]  physicalDevice   - The VkPhysicalDevice associated with the swapchain
+ * @param[in]  device    - The VkDevice associated with the swapchain
+ * @param[in]  swapchain - The VkSwapchainKHR the application wants Swappy to swap
+ * @param[out] pRefreshDuration - The returned refresh cycle duration
  *
- *  (IN)  env - JNIEnv that is assumed to be from AttachCurrentThread function
- *  (IN)  jactivity - NativeActivity object handle, used for JNI
- *  (IN)  physicalDevice   - The VkPhysicalDevice associated with the swapchain
- *  (IN)  device    - The VkDevice associated with the swapchain
- *  (IN)  swapchain - The VkSwapchainKHR the application wants Swappy to swap
- *  (OUT) pRefreshDuration - The returned refresh cycle duration
- *
- * Return value:
- *
- *  bool            - true if the value returned by pRefreshDuration is valid,
+ * @return bool            - true if the value returned by pRefreshDuration is valid,
  *                    otherwise false if an error.
  */
 static inline bool SwappyVk_initAndGetRefreshCycleDuration(
@@ -157,18 +151,15 @@ static inline bool SwappyVk_initAndGetRefreshCycleDuration(
     return SwappyVk_initAndGetRefreshCycleDuration_internal(env, jactivity, physicalDevice, device, swapchain, pRefreshDuration);
 }
 
-
 /**
-  * Tell Swappy the duration of that each presented image should be visible.
+ * @brief Tell Swappy the duration of that each presented image should be visible.
  *
  * If your application presents to more than one swapchain at a time, you must
  * call this for each swapchain before presenting to it.
  *
- * Parameters:
- *
- *  (IN)  device    - The VkDevice associated with the swapchain
- *  (IN)  swapchain - The VkSwapchainKHR the application wants Swappy to swap
- *  (IN)  swap_ns   - The duration of that each presented image should be
+ * @param[in]  device    - The VkDevice associated with the swapchain
+ * @param[in]  swapchain - The VkSwapchainKHR the application wants Swappy to swap
+ * @param[in]  swap_ns   - The duration of that each presented image should be
  *                    visible in nanoseconds
  */
 void SwappyVk_setSwapIntervalNS(
@@ -177,22 +168,20 @@ void SwappyVk_setSwapIntervalNS(
         uint64_t       swap_ns);
 
 /**
- * Tell Swappy to present one or more images to corresponding swapchains.
+ * @brief Tell Swappy to present one or more images to corresponding swapchains.
  *
  * Swappy will call vkQueuePresentKHR for your application.  Swappy may insert a
  * struct to the pNext-chain of VkPresentInfoKHR, or it may insert other Vulkan
  * commands in order to attempt to honor the desired swap interval.
  *
- * Note: If your application presents to more than one swapchain at a time, and
+ * @note If your application presents to more than one swapchain at a time, and
  * if you use a different swap interval for each swapchain, Swappy will attempt
  * to honor the swap interval for each swapchain (being more successful on
  * devices that support an underlying presentation-timing extension, such as
  * VK_GOOGLE_display_timing).
  *
- * Parameters:
- *
- *  (IN)  queue     - The VkQueue associated with the device and swapchain
- *  (IN)  pPresentInfo - A pointer to the VkPresentInfoKHR containing the
+ * @param[in]  queue     - The VkQueue associated with the device and swapchain
+ * @param[in]  pPresentInfo - A pointer to the VkPresentInfoKHR containing the
  *                    information about what image(s) to present on which
  *                    swapchain(s).
  */
@@ -200,73 +189,67 @@ VkResult SwappyVk_queuePresent(
         VkQueue                 queue,
         const VkPresentInfoKHR* pPresentInfo);
 
-
 /**
- * Destroy SwappyVk instance associated to the swapchain
+ * @brief Destroy SwappyVk instance associated to the swapchain
  *
  * This API is expected to be called before calling to vkDestroySwapchainKHR()
  * so Swappy could cleanup its internal state.
  *
- * Parameters:
- *
- *  (IN)  device     - The VkDevice associated with SwappyVk
+ * @param[in]  device     - The VkDevice associated with SwappyVk
+ * @param[in]  swapchain - The VkSwapchainKHR the application wants Swappy to swap
  */
 void SwappyVk_destroySwapchain(
         VkDevice                device,
         VkSwapchainKHR          swapchain);
 
 /**
- * Enables Auto-Swap-Interval feature for all instances.
+ * @brief Enables Auto-Swap-Interval feature for all instances.
  *
  * By default this feature is enabled. Changing it is completely
  * optional for fine-tuning swappy behaviour.
  *
- * Parameters:
- *
- *  (IN)  enabled - True means enable, false means disable
+ * @param[in]  enabled - True means enable, false means disable
  */
 void SwappyVk_setAutoSwapInterval(bool enabled);
 
-
 /**
- * Enables Auto-Pipeline-Mode feature for all instances.
+ * @brief Enables Auto-Pipeline-Mode feature for all instances.
  *
  * By default this feature is enabled. Changing it is completely
  * optional for fine-tuning swappy behaviour.
  *
- * Parameters:
- *
- *  (IN)  enabled - True means enable, false means disable
+ * @param[in]  enabled - True means enable, false means disable
  */
 void SwappyVk_setAutoPipelineMode(bool enabled);
 
 /**
- * Sets the maximal swap duration for all instances.
+ * @brief Sets the maximal swap duration for all instances.
  *
  * Sets the maximal duration for Auto-Swap-Interval in milliseconds.
  * If SwappyVk is operating in Auto-Swap-Interval and the frame duration is longer
  * than the provided duration, SwappyVk will not do any pacing and just submit the
  * frame as soon as possible.
- * Parameters:
  *
- *  (IN)  max_swap_ns - maximal swap duration in milliseconds.
+ * @param[in]  max_swap_ns - maximal swap duration in milliseconds.
  */
 void SwappyVk_setMaxAutoSwapIntervalNS(uint64_t max_swap_ns);
 
 /**
- * The fence timeout parameter can be set for devices with faulty
+ * @brief The fence timeout parameter can be set for devices with faulty
  * drivers. Its default value is 50,000,000.
  */
 void SwappyVk_setFenceTimeoutNS(uint64_t fence_timeout_ns);
-uint64_t SwappyVk_getFenceTimeoutNS();
-
 
 /**
- * Inject callback functions to be called each frame.
+ * @brief Get the fence timeout parameter, for devices with faulty
+ * drivers. Its default value is 50,000,000.
+ */
+uint64_t SwappyVk_getFenceTimeoutNS();
+
+/**
+ * @brief Inject callback functions to be called each frame.
  *
- * Parameters:
- *
- *  (IN)  tracer - Collection of callback functions
+ * @param[in]  tracer - Collection of callback functions
  */
 void SwappyVk_injectTracer(const SwappyTracer *tracer);
 

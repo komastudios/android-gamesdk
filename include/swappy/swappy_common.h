@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-// Common part between swappyGL.h and swappyVk.h
+/** @file
+ * Common part between swappyGL.h and swappyVk.h
+ */
 
 #pragma once
 
@@ -48,8 +50,11 @@ void SWAPPY_VERSION_SYMBOL();
 }  // extern "C"
 #endif
 
-// Collection of callbacks to be called each frame to trace execution.
-// Injection of these is optional.
+/**
+ * @brief Collection of callbacks to be called each frame to trace execution.
+ *
+ * Injection of these is optional.
+ */
 typedef struct SwappyTracer {
     void (*preWait)(void*);
     void (*postWait)(void*);
