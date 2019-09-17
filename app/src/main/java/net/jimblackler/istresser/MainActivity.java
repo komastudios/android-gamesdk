@@ -335,19 +335,12 @@ public class MainActivity extends AppCompatActivity {
 
   @Override
   public void onTrimMemory(int level) {
-    boolean wasPaused = allocationStartedAt == -1;
-    allocationStartedAt = -1;
+
     try {
       JSONObject report = standardInfo();
       report.put("onTrimMemory", level);
 
-      if (!wasPaused) {
-        ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
-        this.availMemAtLastOnTrimMemory = memoryInfo.availMem;
-      }
-      if (nativeAllocatedByTest > 0) {
-        releaseMemory();
-      }
+      releaseMemory();
       resultsStream.println(report);
 
       onTrims.add(level);
@@ -372,9 +365,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void releaseMemory() {
-    if (allocationStartedAt != -1) {
-      throw new RuntimeException("Should only be called when allocation is paused");
-    }
+    allocationStartedAt = -1;
     runAfterDelay(() -> {
       JSONObject report = null;
       try {
@@ -383,8 +374,10 @@ public class MainActivity extends AppCompatActivity {
         throw new RuntimeException(e);
       }
       resultsStream.println(report);
-      nativeAllocatedByTest = 0;
-      freeAll();
+      if (nativeAllocatedByTest > 0) {
+        nativeAllocatedByTest = 0;
+        freeAll();
+      }
       data.clear();
       System.gc();
       runAfterDelay(() -> {
