@@ -114,8 +114,9 @@ public class MainActivity extends AppCompatActivity {
 
   private static int[] toIntArray(List<Integer> list) {
     int[] ints = new int[list.size()];
-    for (int i = 0; i < ints.length; i++)
+    for (int i = 0; i < ints.length; i++) {
       ints[i] = list.get(i);
+    }
     return ints;
   }
 
