@@ -441,17 +441,22 @@ public class MainActivity extends AppCompatActivity {
           getProcessMemoryInfo(report);
         }
 
-        String proc_dir = "/proc/" + this.pids.get(0);
-        try {
-          report.put("oom_score", Integer.parseInt(readFile(proc_dir + "/oom_score")));
-        } catch (NumberFormatException ex) {
-          // Intentionally ignored
-        }
+
+        report.put("oom_score", getOomScore());
+
       }
     } catch (IOException e) {
       e.printStackTrace();
     }
     return report;
+  }
+
+  private int getOomScore()  {
+    try {
+      return Integer.parseInt(readFile(("/proc/" + this.pids.get(0)) + "/oom_score"));
+    } catch (IOException | NumberFormatException e) {
+      return 0;
+    }
   }
 
   private void getProcessMemoryInfo(JSONObject report) throws JSONException {
