@@ -237,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
           e.printStackTrace();
         }
       }
-    }, 0, 1000 / 20);
+    }, 0, 1000 / 10);
 
   }
 
