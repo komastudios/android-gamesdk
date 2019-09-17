@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-// Common part between swappyGL.h and swappyVk.h
+/**
+ * @defgroup swappy_common Swappy common tools
+ * Tools to be used with Swappy for OpenGL or Swappy for Vulkan.
+ * @{
+ */
 
 #pragma once
 
@@ -48,8 +52,11 @@ void SWAPPY_VERSION_SYMBOL();
 }  // extern "C"
 #endif
 
-// Collection of callbacks to be called each frame to trace execution.
-// Injection of these is optional.
+/**
+ * @brief Collection of callbacks to be called each frame to trace execution.
+ *
+ * Injection of these is optional.
+ */
 typedef struct SwappyTracer {
     void (*preWait)(void*);
     void (*postWait)(void*);
@@ -59,3 +66,5 @@ typedef struct SwappyTracer {
     void* userData;
     void (*swapIntervalChanged)(void*);
 } SwappyTracer;
+
+/** @} */
