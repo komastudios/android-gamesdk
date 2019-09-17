@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c44f3005_f94e4149",
+        "filename": "src/swappy/common/RefreshRate.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-09-17T21:20:09Z",
+      "side": 1,
+      "message": "Need to call env-\u003eReleaseStringUTFChars() before returning",
+      "revId": "68afef1b7faba48dc4a67c01644c0d9a4daaa448",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "38c5f2f0_7932f14d",
+        "filename": "src/swappy/common/RefreshRate.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-09-17T21:20:09Z",
+      "side": 1,
+      "message": "env-\u003eReleaseObjectArrayElement() needs to be called to free the resources used by env-\u003eGetObjectArrayElement()",
+      "revId": "68afef1b7faba48dc4a67c01644c0d9a4daaa448",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d76fe95e_2fa551a3",
+        "filename": "src/swappy/common/RefreshRate.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-09-17T21:20:09Z",
+      "side": 1,
+      "message": "static variables are risky, especially if someone want to call destroy() and then init() again",
+      "revId": "68afef1b7faba48dc4a67c01644c0d9a4daaa448",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6ee48627_71a1f842",
+        "filename": "src/swappy/common/RefreshRate.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-09-17T21:20:09Z",
+      "side": 1,
+      "message": "What if there is no config matching this refresh rate due to resolution mismatch, and then resolution changes ?\nWe should populate currentPreferredRefreshRate after \"setAttributes\" is called",
+      "revId": "68afef1b7faba48dc4a67c01644c0d9a4daaa448",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
