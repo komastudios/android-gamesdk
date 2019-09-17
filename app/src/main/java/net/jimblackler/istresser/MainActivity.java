@@ -61,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
   private long allocationStartedAt = -1;
   private Set<String> memInfoWhitelist = ImmutableSet.of("MemTotal", "CommitLimit");
   private int scenario;
-  private long availMemAtLastOnTrimMemory;
   private List<Integer> pids;
   private ActivityManager activityManager;
 
@@ -204,7 +203,6 @@ public class MainActivity extends AppCompatActivity {
 
     startTime = System.currentTimeMillis();
     allocationStartedAt = startTime;
-    MainActivity outer = this;
     timer.schedule(new TimerTask() {
       @Override
       public void run() {
