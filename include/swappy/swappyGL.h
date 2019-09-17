@@ -32,8 +32,13 @@ extern "C" {
 // Internal init function. Do not call directly.
 bool SwappyGL_init_internal(JNIEnv *env, jobject jactivity);
 
-// Initialize Swappy, getting the required Android parameters from the display subsystem via JNI
-// Returns false if swappy failed to initialize
+/**
+ * @brief Initialize Swappy, getting the required Android parameters from the display subsystem via JNI.
+ * @param env The JNI environment where Swappy is used
+ * @param jactivity The activity where Swappy is used
+ * @return false if Swappy failed to initialize.
+ * @see SwappyGL_destroy
+ */
 static inline bool SwappyGL_init(JNIEnv *env, jobject jactivity)  {
     // This call ensures that the header and the linked library are from the same version
     // (if not, a linker error will be triggered because of an undefined symbolP).
@@ -41,16 +46,23 @@ static inline bool SwappyGL_init(JNIEnv *env, jobject jactivity)  {
     return SwappyGL_init_internal(env, jactivity);
 }
 
-// Returns true if Swappy was successfully initialized.
-// Returns false if either the 'swappy.disable' system property is not 'false'
-//  or the required OpenGL extensions are not available for Swappy to work.
+/**
+ * @brief Check if Swappy was successfully initialized.
+ * @return false if either the 'swappy.disable' system property is not 'false'
+ * or the required OpenGL extensions are not available for Swappy to work.
+ */
 bool SwappyGL_isEnabled();
 
-// Destroy resources and stop all threads that swappy has created
+/**
+ * @brief Destroy resources and stop all threads that Swappy has created.
+ * @see SwappyGL_init
+ */
 void SwappyGL_destroy();
 
-// Replace calls to eglSwapBuffers with this. Swappy will wait for the previous frame's
-// buffer to be processed by the GPU before actually calling eglSwapBuffers.
+/**
+ * @brief Replace calls to eglSwapBuffers with this. Swappy will wait for the previous frame's
+ * buffer to be processed by the GPU before actually calling eglSwapBuffers.
+ */
 bool SwappyGL_swap(EGLDisplay display, EGLSurface surface);
 
 // Parameter setters
