@@ -74,8 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
   private static String readStream(InputStream inputStream) throws IOException {
     try (
-        InputStreamReader inputStreamReader =
-            new InputStreamReader(inputStream);
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         BufferedReader reader = new BufferedReader(inputStreamReader)) {
       String newline = System.getProperty("line.separator");
       StringBuilder output = new StringBuilder();
