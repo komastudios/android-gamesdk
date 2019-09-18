@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
               if (owed > 0) {
                 boolean succeeded = nativeConsume(owed);
                 if (succeeded) {
-                  nativeAllocatedByTest = _allocationStartedAt + owed;
+                  nativeAllocatedByTest += owed;
                 } else {
                   report.put("allocFailed", true);
                 }
