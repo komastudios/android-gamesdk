@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9509ef30_acc813de",
+        "filename": "src/extras/build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-09-19T15:40:21Z",
+      "side": 0,
+      "message": "Much better now!",
+      "revId": "b13dd959ee91578a6f9ce207e3115ec6cf0ce8a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}

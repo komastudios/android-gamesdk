@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "19eb819e_c846ff22",
+        "filename": "samples/device_info_app/app/build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-09-19T15:40:21Z",
+      "side": 1,
+      "message": "Let\u0027s remove this commented line?",
+      "revId": "aa0f561494d6143058435f8c74036ba130e1b330",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "31e3184d_37af56ba",
+        "filename": "samples/device_info_app/app/src/main/java/com/google/deviceinfotest/MainActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-09-19T15:40:21Z",
+      "side": 1,
+      "message": "nit: I would have put this comment inside the function",
+      "revId": "aa0f561494d6143058435f8c74036ba130e1b330",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b1ee0d7b_30a38cc1",
+        "filename": "samples/device_info_app/app/src/main/java/com/google/deviceinfotest/MainActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-09-19T15:40:21Z",
+      "side": 1,
+      "message": "nit: maybe a slightly more verbose name? logCompleteInfoWithErrors\n\"logLongProto\" seems pretty generic (why \"long\", which \"proto\") ;)",
+      "revId": "aa0f561494d6143058435f8c74036ba130e1b330",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
