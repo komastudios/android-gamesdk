@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
           final long _allocationStartedAt = allocationStartedAt;
           if (_allocationStartedAt != -1) {
             ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
-            if (MainActivity.this.scenario == 2 && getOomScore() > 700) {
+            if (MainActivity.this.scenario == 2 && getOomScore() > 650) {
               releaseMemory();
             } else if (MainActivity.this.scenario == 3 && memoryInfo.lowMemory) {
               releaseMemory();
@@ -429,10 +429,7 @@ public class MainActivity extends AppCompatActivity {
           // anyway.
           getProcessMemoryInfo(report);
         }
-
-
         report.put("oom_score", getOomScore());
-
       }
     } catch (IOException e) {
       e.printStackTrace();
