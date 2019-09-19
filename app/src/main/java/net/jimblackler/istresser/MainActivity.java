@@ -42,7 +42,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
+
   private static final String TAG = MainActivity.class.getSimpleName();
+  public static final int MAX_DURATION = 1000 * 60 * 5;
 
   static {
     System.loadLibrary("native-lib");
@@ -55,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
   private Multiset<Integer> onTrims = HashMultiset.create();
   private long nativeAllocatedByTest;
   private long recordNativeHeapAllocatedSize;
-  private int totalTrims = 0;
   private PrintStream resultsStream = System.out;
   private long startTime;
   private long allocationStartedAt = -1;
@@ -217,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (MainActivity.this.scenario == 4 && !tryAlloc(1024 * 1024 * 32)) {
               releaseMemory();
             } else {
-              int bytesPerMillisecond = 50 * 1024;
+              int bytesPerMillisecond = 100 * 1024;
               long sinceStart = System.currentTimeMillis() - _allocationStartedAt;
               int owed = (int) ((sinceStart * bytesPerMillisecond) - nativeAllocatedByTest);
               if (owed > 0) {
@@ -230,7 +231,24 @@ public class MainActivity extends AppCompatActivity {
               }
             }
           }
+          long timeRunning = System.currentTimeMillis() - startTime;
+
+          if (timeRunning > MAX_DURATION) {
+            try {
+              report = standardInfo();
+              report.put("exiting", true);
+              resultsStream.println(report);
+            } catch (JSONException e) {
+              e.printStackTrace();
+            }
+          }
+
           resultsStream.println(report);
+
+          if (timeRunning > MAX_DURATION) {
+            resultsStream.close();
+            finish();
+          }
           updateInfo();
         } catch (JSONException e) {
           e.printStackTrace();
@@ -339,25 +357,15 @@ public class MainActivity extends AppCompatActivity {
       JSONObject report = standardInfo();
       report.put("onTrimMemory", level);
 
-      releaseMemory();
+      if (MainActivity.this.scenario == 1) {
+        releaseMemory();
+      }
       resultsStream.println(report);
 
       onTrims.add(level);
 
       updateInfo();
       super.onTrimMemory(level);
-      totalTrims++;
-      if (totalTrims == 50) {
-        try {
-          report = standardInfo();
-          report.put("exiting", true);
-          resultsStream.println(report);
-        } catch (JSONException e) {
-          e.printStackTrace();
-        }
-        resultsStream.close();
-        finish();
-      }
     } catch (JSONException e) {
       throw new RuntimeException(e);
     }
