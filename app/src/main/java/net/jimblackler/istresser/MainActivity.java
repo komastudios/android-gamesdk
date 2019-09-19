@@ -214,6 +214,8 @@ public class MainActivity extends AppCompatActivity {
               releaseMemory();
             } else if (MainActivity.this.scenario == 3 && memoryInfo.lowMemory) {
               releaseMemory();
+            } else if (MainActivity.this.scenario == 4 && !tryAlloc(1024 * 1024 * 32)) {
+              releaseMemory();
             } else {
               int bytesPerMillisecond = 50 * 1024;
               long sinceStart = System.currentTimeMillis() - _allocationStartedAt;
@@ -467,4 +469,6 @@ public class MainActivity extends AppCompatActivity {
   public native void freeAll();
 
   public native boolean nativeConsume(int bytes);
+
+  public native boolean tryAlloc(int bytes);
 }

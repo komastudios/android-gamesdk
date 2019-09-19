@@ -39,3 +39,15 @@ Java_net_jimblackler_istresser_MainActivity_freeAll(JNIEnv *env, jobject instanc
   }
   mtx.unlock();
 }
+
+extern "C"
+JNIEXPORT bool JNICALL
+Java_net_jimblackler_istresser_MainActivity_tryAlloc(JNIEnv *env, jobject thiz, jint bytes) {
+  auto byte_count = (size_t) bytes;
+  char *data = (char *) malloc(byte_count);
+  if (data) {
+    free(data);
+    return true;
+  }
+  return false;
+}
