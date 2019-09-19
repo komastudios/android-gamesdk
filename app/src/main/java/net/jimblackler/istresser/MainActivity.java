@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
   private long startTime;
   private long allocationStartedAt = -1;
   private Set<String> memInfoWhitelist = ImmutableSet.of("MemTotal", "CommitLimit");
-  private int scenario;
+  private int scenario = 2;
   private List<Integer> pids;
   private ActivityManager activityManager;
 
@@ -211,11 +211,11 @@ public class MainActivity extends AppCompatActivity {
           final long _allocationStartedAt = allocationStartedAt;
           if (_allocationStartedAt != -1) {
             ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
-            if (MainActivity.this.scenario == 2 && getOomScore() > 650) {
+            if (scenarioGroup(1) && getOomScore() > 650) {
               releaseMemory();
-            } else if (MainActivity.this.scenario == 3 && memoryInfo.lowMemory) {
+            } else if (scenarioGroup(2) && memoryInfo.lowMemory) {
               releaseMemory();
-            } else if (MainActivity.this.scenario == 4 && !tryAlloc(1024 * 1024 * 32)) {
+            } else if (scenarioGroup(3) && !tryAlloc(1024 * 1024 * 32)) {
               releaseMemory();
             } else {
               int bytesPerMillisecond = 100 * 1024;
@@ -357,7 +357,7 @@ public class MainActivity extends AppCompatActivity {
       JSONObject report = standardInfo();
       report.put("onTrimMemory", level);
 
-      if (MainActivity.this.scenario == 1) {
+      if (scenarioGroup(0)) {
         releaseMemory();
       }
       resultsStream.println(report);
@@ -369,6 +369,10 @@ public class MainActivity extends AppCompatActivity {
     } catch (JSONException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private boolean scenarioGroup(int i) {
+    return ((scenario - 1 & 1 << i) != 0);
   }
 
   private void releaseMemory() {
