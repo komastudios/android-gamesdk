@@ -419,8 +419,8 @@ public class MainActivity extends AppCompatActivity {
       report.put("totalMem", memoryInfo.totalMem);
       report.put("threshold", memoryInfo.threshold);
       report.put("lowMemory", memoryInfo.lowMemory);
-
       report.put("memoryClass", activityManager.getMemoryClass() * 1024 * 1024);
+      report.put("nativeAllocatedByTest", nativeAllocatedByTest);
 
       if (this.pids != null && !this.pids.isEmpty()) {
         if (false) {
