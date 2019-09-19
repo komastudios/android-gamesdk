@@ -25,6 +25,9 @@ import android.os.Build;
 
 import com.google.androidgamesdk.GameSdkDeviceInfoJni;
 import com.google.androidgamesdk.GameSdkDeviceInfoProto;
+import com.google.protobuf.util.JsonFormat;
+
+import java.lang.Math;
 
 public class MainActivity extends Activity {
     @Override
@@ -43,6 +46,8 @@ public class MainActivity extends Activity {
                     byte[] nativeBytes = GameSdkDeviceInfoJni.tryGetProtoSerialized();
                     proto = GameSdkDeviceInfoProto
                             .GameSdkDeviceInfoWithErrors.parseFrom(nativeBytes);
+
+                    logCompleteInfoWithErrors(proto);
 
                     GameSdkDeviceInfoProto.GameSdkDeviceInfo info = proto.getInfo();
                     msg += "\nFingerprint(ro.build.fingerprint):\n" + info.getRoBuildFingerprint();
@@ -93,5 +98,30 @@ public class MainActivity extends Activity {
                 tv.setText(msg);
             }
         });
+    }
+
+    private void logCompleteInfoWithErrors(
+            GameSdkDeviceInfoProto.GameSdkDeviceInfoWithErrors proto)
+            throws Exception {
+        // There's a limit on logcat line length of around 4 kB (see LOGGER_ENTRY_MAX_PAYLOAD
+        // in system/core/liblog/include/log/log_read.h), so we have to break the proto into
+        // smaller chunks
+        Integer CHUNK_SIZE = 3900;
+        String LOG_TAG = "device_info_json_proto";
+
+        JsonFormat.Printer printer =
+            JsonFormat.printer()
+            .preservingProtoFieldNames()
+            .omittingInsignificantWhitespace();
+        String jsonProto = printer.print(proto);
+
+        Integer chunkCount = (jsonProto.length() / CHUNK_SIZE) + 1;
+        for (int currentChunk = 0; currentChunk < chunkCount; currentChunk++) {
+            Integer startPosition = currentChunk * CHUNK_SIZE;
+            Integer endPosition = Math.min((currentChunk + 1) * CHUNK_SIZE, jsonProto.length());
+            String chunk = jsonProto.substring(startPosition, endPosition);
+            String chunkHeader = String.format("[%d:%d] ", currentChunk + 1, chunkCount);
+            android.util.Log.i(LOG_TAG, chunkHeader + chunk);
+        }
     }
 }
