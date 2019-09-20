@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "20a2f6e7_f0e9917c",
+        "filename": "samples/device_info_app/app/build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2019-09-20T13:48:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "19eb819e_c846ff22",
+      "revId": "aa0f561494d6143058435f8c74036ba130e1b330",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "31e3184d_37af56ba",
         "filename": "samples/device_info_app/app/src/main/java/com/google/deviceinfotest/MainActivity.java",
         "patchSetId": 2
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "466303ed_68e60923",
+        "filename": "samples/device_info_app/app/src/main/java/com/google/deviceinfotest/MainActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2019-09-20T13:48:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "31e3184d_37af56ba",
+      "revId": "aa0f561494d6143058435f8c74036ba130e1b330",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b1ee0d7b_30a38cc1",
         "filename": "samples/device_info_app/app/src/main/java/com/google/deviceinfotest/MainActivity.java",
         "patchSetId": 2
@@ -50,6 +86,24 @@
       "revId": "aa0f561494d6143058435f8c74036ba130e1b330",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ee2e2934_1ca89354",
+        "filename": "samples/device_info_app/app/src/main/java/com/google/deviceinfotest/MainActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2019-09-20T13:48:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b1ee0d7b_30a38cc1",
+      "revId": "aa0f561494d6143058435f8c74036ba130e1b330",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
