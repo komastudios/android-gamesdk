@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+uuid=$(uuidgen)
 for i in `seq 1 16`;
     do
         gcloud firebase test android run --type=game-loop \
@@ -8,6 +9,7 @@ for i in `seq 1 16`;
             --no-performance-metrics \
             --no-record-video \
             --timeout 10m \
+            --results-history-name=$uuid \
             --device model=A0001,version=22 \
             --device model=A1N_sprout,version=26 \
             --device model=FRT,version=27 \
