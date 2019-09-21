@@ -8,7 +8,7 @@ for i in `seq 1 16`;
             --async \
             --no-performance-metrics \
             --no-record-video \
-            --timeout 10m \
+            --timeout 15m \
             --results-history-name=$uuid \
             --device model=A0001,version=22 \
             --device model=A1N_sprout,version=26 \

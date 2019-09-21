@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
 public class MainActivity extends AppCompatActivity {
 
   private static final String TAG = MainActivity.class.getSimpleName();
-  public static final int MAX_DURATION = 1000 * 60 * 5;
+  public static final int MAX_DURATION = 1000 * 60 * 10;
 
   static {
     System.loadLibrary("native-lib");
