@@ -35,7 +35,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
@@ -44,16 +43,26 @@ import java.util.regex.Pattern;
 public class MainActivity extends AppCompatActivity {
 
   private static final String TAG = MainActivity.class.getSimpleName();
-  public static final int MAX_DURATION = 1000 * 60 * 10;
+  private static final int MAX_DURATION = 1000 * 60 * 10;
+
+  static List<List<String>> groups =
+      ImmutableList.<List<String>>builder()
+          .add(ImmutableList.of(""))
+          .add(ImmutableList.of("trim"))
+          .add(ImmutableList.of("oom"))
+          .add(ImmutableList.of("low"))
+          .add(ImmutableList.of("try"))
+          .add(ImmutableList.of("cl"))
+          .add(ImmutableList.of("trim", "oom", "low", "try"))
+          .add(ImmutableList.of("trim", "oom", "low", "try", "cl"))
+          .build();
 
   static {
     System.loadLibrary("native-lib");
   }
 
   private final Timer timer = new Timer();
-
   private ArrayList<byte[]> data = Lists.newArrayList();
-
   private Multiset<Integer> onTrims = HashMultiset.create();
   private long nativeAllocatedByTest;
   private long recordNativeHeapAllocatedSize;
@@ -89,14 +98,18 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
-  private static Map<String, Long> processMeminfo(String meminfoText) {
+  private static Map<String, Long> processMeminfo() {
     Map<String, Long> output = new HashMap<>();
-    Pattern pattern = Pattern.compile("([^:]+)[^\\d]*(\\d+).*\n");
 
-    Matcher matcher = pattern.matcher(meminfoText);
-
-    while (matcher.find()) {
-      output.put(matcher.group(1), Long.parseLong(Objects.requireNonNull(matcher.group(2))));
+    try {
+      String meminfoText = readFile("/proc/meminfo");
+      Pattern pattern = Pattern.compile("([^:]+)[^\\d]*(\\d+).*\n");
+      Matcher matcher = pattern.matcher(meminfoText);
+      while (matcher.find()) {
+        output.put(matcher.group(1), Long.parseLong(Objects.requireNonNull(matcher.group(2))));
+      }
+    } catch (IOException e) {
+      // Intentionally silenced
     }
     return output;
   }
@@ -126,6 +139,14 @@ public class MainActivity extends AppCompatActivity {
     ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
     activityManager.getMemoryInfo(memoryInfo);
     return memoryInfo;
+  }
+
+  private static long getOrDefault(Map<String, Long> map, String key, long def) {
+    Long value = map.get(key);
+    if (value == null) {
+      return def;
+    }
+    return value;
   }
 
   @Override
@@ -220,11 +241,15 @@ public class MainActivity extends AppCompatActivity {
           final long _allocationStartedAt = allocationStartedAt;
           if (_allocationStartedAt != -1) {
             ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
-            if (scenarioGroup(1) && getOomScore() > 650) {
+            if (scenarioGroup("oom") && getOomScore() > 650) {
               releaseMemory();
-            } else if (scenarioGroup(2) && memoryInfo.lowMemory) {
+            } else if (scenarioGroup("low") && memoryInfo.lowMemory) {
               releaseMemory();
-            } else if (scenarioGroup(3) && !tryAlloc(1024 * 1024 * 32)) {
+            } else if (scenarioGroup("try") && !tryAlloc(1024 * 1024 * 32)) {
+              releaseMemory();
+            } else if (scenarioGroup("cl") &&
+                Debug.getNativeHeapAllocatedSize() / 1024 >
+                    getOrDefault(processMeminfo(), "CommitLimit", Long.MAX_VALUE)) {
               releaseMemory();
             } else {
               int bytesPerMillisecond = 100 * 1024;
@@ -366,7 +391,7 @@ public class MainActivity extends AppCompatActivity {
       JSONObject report = standardInfo();
       report.put("onTrimMemory", level);
 
-      if (scenarioGroup(0)) {
+      if (scenarioGroup("trim")) {
         releaseMemory();
       }
       resultsStream.println(report);
@@ -380,8 +405,9 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
-  private boolean scenarioGroup(int i) {
-    return ((scenario - 1 & 1 << i) != 0);
+  private boolean scenarioGroup(String group) {
+    List<String> strings = groups.get(scenario - 1);
+    return strings.contains(group);
   }
 
   private void releaseMemory() {
