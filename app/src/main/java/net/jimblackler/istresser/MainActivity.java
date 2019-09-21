@@ -201,10 +201,8 @@ public class MainActivity extends AppCompatActivity {
       constant.put("threshold", memoryInfo.threshold);
       constant.put("memoryClass", activityManager.getMemoryClass() * 1024 * 1024);
 
-      Map<String, Long> meminfo = processMeminfo(readFile("/proc/meminfo"));
-      for (String key : ImmutableList.of("MemTotal", "CommitLimit")) {
-        constant.put(key, meminfo.get(key));
-      }
+      constant.put("CommitLimit", processMeminfo().get("CommitLimit"));
+
       report.put("constant", constant);
 
       resultsStream.println(report);
