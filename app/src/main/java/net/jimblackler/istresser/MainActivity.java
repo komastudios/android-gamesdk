@@ -14,7 +14,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.google.common.collect.HashMultiset;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
 
@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
   private PrintStream resultsStream = System.out;
   private long startTime;
   private long allocationStartedAt = -1;
-  private Set<String> memInfoWhitelist = ImmutableSet.of("MemTotal", "CommitLimit");
   private int scenario = 2;
   private List<Integer> pids;
   private ActivityManager activityManager;
@@ -195,6 +194,18 @@ public class MainActivity extends AppCompatActivity {
         build.put("SECURITY_PATCH", Build.VERSION.SECURITY_PATCH);
       }
       report.put("build", build);
+
+      JSONObject constant = new JSONObject();
+      ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
+      constant.put("totalMem", memoryInfo.totalMem);
+      constant.put("threshold", memoryInfo.threshold);
+      constant.put("memoryClass", activityManager.getMemoryClass() * 1024 * 1024);
+
+      Map<String, Long> meminfo = processMeminfo(readFile("/proc/meminfo"));
+      for (String key : ImmutableList.of("MemTotal", "CommitLimit")) {
+        constant.put(key, meminfo.get(key));
+      }
+      report.put("constant", constant);
 
       resultsStream.println(report);
     } catch (JSONException | PackageManager.NameNotFoundException | IOException e) {
@@ -418,35 +429,26 @@ public class MainActivity extends AppCompatActivity {
     JSONObject report = new JSONObject();
     report.put("time", System.currentTimeMillis() - this.startTime);
     report.put("nativeAllocated", Debug.getNativeHeapAllocatedSize());
-    report.put("paused", allocationStartedAt == -1);
+    boolean paused = allocationStartedAt == -1;
+    if (paused) {
+      report.put("paused", paused);
+    }
 
-    try {
-      Map<String, Long> meminfo = processMeminfo(readFile("/proc/meminfo"));
-      for (Map.Entry<String, Long> entry : meminfo.entrySet()) {
-        if (memInfoWhitelist.contains(entry.getKey())) {
-          report.put(entry.getKey(), entry.getValue());
-        }
-      }
-
-      ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
-      report.put("availMem", memoryInfo.availMem);
-      report.put("totalMem", memoryInfo.totalMem);
-      report.put("threshold", memoryInfo.threshold);
+    ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
+    report.put("availMem", memoryInfo.availMem);
+    if (memoryInfo.lowMemory) {
       report.put("lowMemory", memoryInfo.lowMemory);
-      report.put("memoryClass", activityManager.getMemoryClass() * 1024 * 1024);
-      report.put("nativeAllocatedByTest", nativeAllocatedByTest);
+    }
+    report.put("nativeAllocatedByTest", nativeAllocatedByTest);
 
-      if (this.pids != null && !this.pids.isEmpty()) {
-        if (false) {
-          // Getting this info can make the app unresponsive for seconds.
-          // Most of the values are strongly correlated with other info we can get more cheaply
-          // anyway.
-          getProcessMemoryInfo(report);
-        }
-        report.put("oom_score", getOomScore());
+    if (this.pids != null && !this.pids.isEmpty()) {
+      if (false) {
+        // Getting this info can make the app unresponsive for seconds.
+        // Most of the values are strongly correlated with other info we can get more cheaply
+        // anyway.
+        getProcessMemoryInfo(report);
       }
-    } catch (IOException e) {
-      e.printStackTrace();
+      report.put("oom_score", getOomScore());
     }
     return report;
   }
