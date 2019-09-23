@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
   private static final String TAG = MainActivity.class.getSimpleName();
   private static final int MAX_DURATION = 1000 * 60 * 10;
 
-  static List<List<String>> groups =
+  private static List<List<String>> groups =
       ImmutableList.<List<String>>builder()
           .add(ImmutableList.of(""))
           .add(ImmutableList.of("trim"))
