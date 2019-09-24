@@ -16,6 +16,24 @@
       "revId": "eb17beb1a370d9a07b6f73af67fb82228a215021",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2d1a350f_cb3554e1",
+        "filename": "build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 337,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-09-24T08:51:38Z",
+      "side": 1,
+      "message": "This was an attempt to get the presubmit build to work with this change, but it may be better to set ANDROID_NDK on the command line. I\u0027ll change it.",
+      "parentUuid": "dbc34af3_36029416",
+      "revId": "eb17beb1a370d9a07b6f73af67fb82228a215021",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
