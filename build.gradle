@@ -104,6 +104,17 @@ abstract class Toolchain {
     private String sanitize(String s) {
 	return s.replaceAll(/[+]/, "p")
     }
+    String findNDKTool(String name) {
+        def tools = project_.fileTree( dir: project_.joinPath(getAndroidNDKPath(), 'toolchains'),
+	    	    		       include: ['**/bin/'+name])
+        if (tools==null || tools.size() == 0) {
+            throw new GradleException('No ' + name + ' found in ' + ndkPath_ + '/toolchains')
+        }
+        return tools.getFiles().last().toString()
+    }
+    String getArPath() {
+	return findNDKTool("ar")
+    }
 }
 class SpecificToolchain extends Toolchain {
     SpecificToolchain(Project project, String androidVersion, String ndkVersion) {
@@ -175,7 +186,7 @@ class LocalToolchain extends Toolchain {
         if (tools==null || tools.size() == 0) {
             throw new GradleException('No ' + osname + ' found in ' + sdkPath_ + '/cmake')
         }
-        return tools.getFiles().last().toString();
+        return tools.getFiles().last().toString()
     }
 }
 
@@ -318,11 +329,12 @@ task cleanPath(type: Delete) {
 // Create outAr from the contents of inArs
 // All files taken/created in dir
 def repackArchives(dir, inArs, outAr) {
+    def arPath = getLocalToolchain().getArPath()
     def cmd = /pushd $dir &&/
     inArs.each {
-        cmd <<= /ar -x $it &&/
+        cmd <<= /$arPath -x $it &&/
     }
-    cmd <<= /ar -rcs $outAr *.o && rm *.o && popd/
+    cmd <<= /$arPath -rcs $outAr *.o && rm *.o && popd/
     ['/bin/bash', '-c', cmd.toString()].execute().waitFor()
 }
 
