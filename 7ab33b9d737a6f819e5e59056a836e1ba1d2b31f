@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0ba46d9e_33e4f80a",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/assets/tuningfork/tuningfork_settings.txt",
+        "patchSetId": 3
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-09-24T09:56:01Z",
+      "side": 1,
+      "message": "Is it a good idea to rename this file to *.default or *.must_be_changed to draw attention to it?",
+      "revId": "7ab33b9d737a6f819e5e59056a836e1ba1d2b31f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "66e7c520_3214ffc5",
+        "filename": "src/tuningfork/ge_backend.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-09-24T09:56:01Z",
+      "side": 1,
+      "message": "Is there a common practice to deal with such values in Android codebase? Maybe use IFDEF/DEFINE to allow modifying it without code change?",
+      "revId": "7ab33b9d737a6f819e5e59056a836e1ba1d2b31f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
