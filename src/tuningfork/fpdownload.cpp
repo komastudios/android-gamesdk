@@ -38,7 +38,7 @@ std::string RequestJson(const ExtraUploadInfo& request_info) {
         {"name", json_utils::GetResourceName(request_info)},
         {"device_spec", json_utils::DeviceSpecJson(request_info)}};
     auto result = request.dump();
-    ALOGI("Request body: %s", result.c_str());
+    ALOGV("Request body: %s", result.c_str());
     return result;
 }
 TFErrorCode DecodeResponse(const std::string& response, std::vector<uint8_t>& fps,
@@ -51,7 +51,7 @@ TFErrorCode DecodeResponse(const std::string& response, std::vector<uint8_t>& fp
         ALOGE("Parsing error: %s", err.c_str());
         return TFERROR_NO_FIDELITY_PARAMS;
     }
-    ALOGI("Response, deserialized: %s", jresponse.dump().c_str());
+    ALOGV("Response, deserialized: %s", jresponse.dump().c_str());
     if (!jresponse.is_object()) {
         ALOGE("Response not object");
         return TFERROR_NO_FIDELITY_PARAMS;

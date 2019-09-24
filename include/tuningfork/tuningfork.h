@@ -108,10 +108,10 @@ struct TFAggregationStrategy {
     uint32_t* annotation_enum_size;
 };
 struct TFSettings {
+  void (*dealloc)(TFSettings*);
   TFAggregationStrategy aggregation_strategy;
   uint32_t n_histograms;
   TFHistogram* histograms;
-  void (*dealloc)(TFSettings*);
   const TFCache* persistent_cache;
   const char* base_uri;
   const char* api_key;
@@ -160,8 +160,6 @@ static inline TFErrorCode TuningFork_init(const TFSettings *settings, JNIEnv* en
 // Returns TFERROR_TIMEOUT if there was a timeout before params could be downloaded.
 // Returns TFERROR_OK on success.
 TFErrorCode TuningFork_getFidelityParameters(JNIEnv* env, jobject context,
-                             const char* url_base,
-                             const char* api_key,
                              const CProtobufSerialization *defaultParams,
                              CProtobufSerialization *params, uint32_t timeout_ms);
 
