@@ -102,7 +102,18 @@ abstract class Toolchain {
         }
     }
     private String sanitize(String s) {
-	return s.replaceAll(/[+]/, "p")
+        return s.replaceAll(/[+]/, "p")
+    }
+    String findNDKTool(String name) {
+        def tools = project_.fileTree( dir: project_.joinPath(getAndroidNDKPath(), 'toolchains'),
+                                       include: ['**/bin/'+name])
+        if (tools==null || tools.size() == 0) {
+            throw new GradleException('No ' + name + ' found in ' + ndkPath_ + '/toolchains')
+        }
+        return tools.getFiles().last().toString()
+    }
+    String getArPath() {
+        return findNDKTool("ar")
     }
 }
 class SpecificToolchain extends Toolchain {
@@ -129,7 +140,7 @@ class LocalToolchain extends Toolchain {
     String cmakePath_;
     String ninjaPath_;
     String adbPath_;
-    LocalToolchain(Project project, String androidVersion) {
+    LocalToolchain(Project project, String androidVersion, String fallbackNdkVersion = null) {
         project_ = project
         androidVersion_ = androidVersion
         sdkPath_ = System.getenv("ANDROID_HOME")
@@ -143,9 +154,14 @@ class LocalToolchain extends Toolchain {
 
         ndkPath_ = System.getenv("ANDROID_NDK")
         if(ndkPath_ == null) {
-            ndkPath_ = project_.joinPath(sdkPath_, 'ndk-bundle')
-            if (!project_.file(ndkPath_).exists())
-                throw new GradleException('No NDK found in SDK: must set ANDROID_NDK')
+            if(fallbackNdkVersion != null) {
+                ndkPath_ = new File("${project_.projectDir}/../prebuilts/ndk/"
+                                    + fallbackNdkVersion).getPath()
+            } else {
+                ndkPath_ = project_.joinPath(sdkPath_, 'ndk-bundle')
+                if (!project_.file(ndkPath_).exists())
+                    throw new GradleException('No NDK found in SDK: must set ANDROID_NDK')
+            }
         }
         ndkVersion_ = getNdkVersionFromPropertiesFile()
         cmakePath_ = findCMakeTool("CMAKE", "cmake")
@@ -175,7 +191,7 @@ class LocalToolchain extends Toolchain {
         if (tools==null || tools.size() == 0) {
             throw new GradleException('No ' + osname + ' found in ' + sdkPath_ + '/cmake')
         }
-        return tools.getFiles().last().toString();
+        return tools.getFiles().last().toString()
     }
 }
 
@@ -318,11 +334,12 @@ task cleanPath(type: Delete) {
 // Create outAr from the contents of inArs
 // All files taken/created in dir
 def repackArchives(dir, inArs, outAr) {
+    def arPath = getLocalToolchain("r17").getArPath()
     def cmd = /pushd $dir &&/
     inArs.each {
-        cmd <<= /ar -x $it &&/
+        cmd <<= /$arPath -x $it &&/
     }
-    cmd <<= /ar -rcs $outAr *.o && rm *.o && popd/
+    cmd <<= /$arPath -rcs $outAr *.o && rm *.o && popd/
     ['/bin/bash', '-c', cmd.toString()].execute().waitFor()
 }
 
@@ -404,10 +421,10 @@ def sdkNativeBuild(withTuningFork = true, buildType="Release") {
     }
 }
 
-def getLocalToolchain() {
+def getLocalToolchain(fallbackNdkVersion = null) {
     def kLocalMinSdk = project.hasProperty("GAMESDK_ANDROID_SDK_VERSION") ?
         project.GAMESDK_ANDROID_SDK_VERSION : "26"
-    return new LocalToolchain(project, kLocalMinSdk)
+    return new LocalToolchain(project, kLocalMinSdk, fallbackNdkVersion)
 }
 
 def localNativeBuild(withTuningFork = false, subdir = "src", buildType="Release") {
