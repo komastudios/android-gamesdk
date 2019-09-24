@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "f508a9ce_602c8325",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/assets/tuningfork/tuningfork_settings.txt",
+        "patchSetId": 3
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-09-24T12:30:29Z",
+      "side": 1,
+      "message": "If we rename it, the validation tool will give an error when someone first opens and syncs the sample project (well, it should do, but looks like we have a bug because it\u0027s failing silently for me - that\u0027s another issue though +kseniia@google.com). The tool will indicate that tuningfork_settings.txt is missing, but it might not be obvious what to do then.\nIf we don\u0027t rename it, there will be a runtime HTTP error upon connecting to the end-point.\nWithout this CL, we have a #error in the code.\nThinking again, maybe the latter is the best solution since there are comments near the #error and there is no hunting through logs to find out what the problem is. But, the compilation error is difficult to find at the end of the CMake output and it\u0027s not exactly ideal that the sample won\u0027t compile without a change.\nWDYT? Any other ideas?",
+      "parentUuid": "0ba46d9e_33e4f80a",
+      "revId": "7ab33b9d737a6f819e5e59056a836e1ba1d2b31f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "66e7c520_3214ffc5",
         "filename": "src/tuningfork/ge_backend.cpp",
         "patchSetId": 3
@@ -30,6 +48,24 @@
       "writtenOn": "2019-09-24T09:56:01Z",
       "side": 1,
       "message": "Is there a common practice to deal with such values in Android codebase? Maybe use IFDEF/DEFINE to allow modifying it without code change?",
+      "revId": "7ab33b9d737a6f819e5e59056a836e1ba1d2b31f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "09c42b1e_b2a4215f",
+        "filename": "src/tuningfork/ge_backend.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-09-24T12:30:29Z",
+      "side": 1,
+      "message": "This code will be compiled into a game, so it\u0027s not really similar to other Android platform code, but yes, we should think about where these values should live.\nWe could pull them out into a separate header along with other constants, but they wouldn\u0027t be modifiable (we\u0027re distributing compiled libraries) and in some ways it\u0027s nicer to have them here, near where they are used.\nIf you\u0027re asking whether they should be settable by a developer, then in that case the simplest thing would be to add them to the TuningFork Settings.",
+      "parentUuid": "66e7c520_3214ffc5",
       "revId": "7ab33b9d737a6f819e5e59056a836e1ba1d2b31f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
