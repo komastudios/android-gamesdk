@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a04ad65c_661eab79",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-09-24T08:12:54Z",
+      "side": 1,
+      "message": "s/tabs/spaces/",
+      "revId": "5b6dd193a077a206e7b0ef850c5381cab501a4e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
