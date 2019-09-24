@@ -32,9 +32,23 @@
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 
+#include "jni_wrap.h"
+
 namespace tuningfork {
 
 static FileCache sFileCache;
+
+
+std::string Base16(const std::vector<char>& bytes) {
+    static char hex_char[] = "0123456789abcdef";
+    std::string s(bytes.size()*2,' ');
+    auto q = s.begin();
+    for(char b: bytes) {
+        *q++ = hex_char[b>>4];
+        *q++ = hex_char[b&0xf];
+    }
+    return s;
+}
 
 // Use the default persister if the one passed in is null
 static void CheckPersister(const TFCache*& persister, std::string save_dir) {
@@ -119,37 +133,45 @@ namespace apk_utils {
 
     // Get the app's version code. Also fills packageNameStr with the package name
     //  if it is non-null.
-    int GetVersionCode(JNIEnv *env, jobject context, std::string* packageNameStr) {
-        jstring packageName;
-        jobject packageManagerObj;
-        jobject packageInfoObj;
-        jclass contextClass =  env->GetObjectClass( context);
-        jmethodID getPackageNameMid = env->GetMethodID( contextClass, "getPackageName",
-            "()Ljava/lang/String;");
-        jmethodID getPackageManager =  env->GetMethodID( contextClass, "getPackageManager",
-            "()Landroid/content/pm/PackageManager;");
-
-        jclass packageManagerClass = env->FindClass("android/content/pm/PackageManager");
-        jmethodID getPackageInfo = env->GetMethodID( packageManagerClass, "getPackageInfo",
-            "(Ljava/lang/String;I)Landroid/content/pm/PackageInfo;");
-
-        jclass packageInfoClass = env->FindClass("android/content/pm/PackageInfo");
-        jfieldID versionCodeFid = env->GetFieldID( packageInfoClass, "versionCode", "I");
-
-        packageName =  (jstring)env->CallObjectMethod(context, getPackageNameMid);
-
+    int GetVersionCode(JNIEnv *env, jobject jcontext, std::string* packageNameStr) {
+        using namespace jni;
+        Helper jni(env, jcontext);
+        android::content::Context context(jcontext, jni);
+        auto pm = context.getPackageManager();
+        CHECK_FOR_JNI_EXCEPTION_AND_RETURN(0);
+        std::string package_name = context.getPackageName().C();
+        CHECK_FOR_JNI_EXCEPTION_AND_RETURN(0);
+        auto package_info = pm.getPackageInfo(package_name, 0x0);
+        CHECK_FOR_JNI_EXCEPTION_AND_RETURN(0);
         if (packageNameStr != nullptr) {
-            // Fill packageNameStr with the package name
-            const char* packageName_cstr = env->GetStringUTFChars(packageName, NULL);
-            *packageNameStr = std::string(packageName_cstr);
-            env->ReleaseStringUTFChars(packageName, packageName_cstr);
+            *packageNameStr = package_name;
         }
-        // Get version code from package info
-        packageManagerObj = env->CallObjectMethod(context, getPackageManager);
-        packageInfoObj = env->CallObjectMethod(packageManagerObj,getPackageInfo,
-                                               packageName, 0x0);
-        int versionCode = env->GetIntField( packageInfoObj, versionCodeFid);
-        return versionCode;
+        auto code = package_info.versionCode();
+        CHECK_FOR_JNI_EXCEPTION_AND_RETURN(0);
+        return code;
+    }
+
+    std::string GetSignature(JNIEnv *env, jobject jcontext) {
+        using namespace jni;
+        Helper jni(env, jcontext);
+        android::content::Context context(jcontext, jni);
+        auto pm = context.getPackageManager();
+        CHECK_FOR_JNI_EXCEPTION_AND_RETURN("");
+        auto package_name = context.getPackageName();
+        CHECK_FOR_JNI_EXCEPTION_AND_RETURN("");
+        auto package_info = pm.getPackageInfo(package_name.C(),
+                                              android::content::pm::PackageManager::GET_SIGNATURES);
+        CHECK_FOR_JNI_EXCEPTION_AND_RETURN("");
+        if (!package_info.valid()) return "";
+        auto sigs = package_info.signatures();
+        CHECK_FOR_JNI_EXCEPTION_AND_RETURN("");
+        if (sigs.size()==0) return "";
+        auto sig = sigs[0];
+        java::security::MessageDigest md("SHA1", jni);
+        CHECK_FOR_JNI_EXCEPTION_AND_RETURN("");
+        auto padded_sig = md.digest(sigs[0]);
+        CHECK_FOR_JNI_EXCEPTION_AND_RETURN("");
+        return Base16(padded_sig);
     }
 
 } // namespace apk_utils

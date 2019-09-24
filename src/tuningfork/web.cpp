@@ -16,15 +16,16 @@
 
 #include "web.h"
 
+#include "jni_wrap.h"
+
 #include <sstream>
 
 #define LOG_TAG "TuningFork:Web"
 #include "Log.h"
 
-namespace tuningfork {
+#include "tuningfork_utils.h"
 
-#define CHECK_FOR_EXCEPTION if (jni.CheckForException(exception_msg)) { \
-      ALOGW("%s", exception_msg.c_str()); return TFERROR_JNI_EXCEPTION; }
+namespace tuningfork {
 
 WebRequest::WebRequest(JNIEnv* env, jobject context, const std::string& uri,
                        const std::string& api_key, int timeout_ms) :
@@ -50,104 +51,81 @@ void WebRequest::DetachFromThread() {
     vm_->DetachCurrentThread();
     thread_env_ = nullptr;
 }
+
 TFErrorCode WebRequest::Send(const std::string& request_json,
                  int& response_code, std::string& response_body) {
     ALOGI("Connecting to: %s", uri_.c_str());
     JNIEnv* env = thread_env_ ? thread_env_ : orig_env_;
-    JNIHelper jni(env, context_);
-    std::string exception_msg;
+
+    using namespace jni;
+
+    Helper jni(env, context_);
+
     // url = new URL(uri)
-    jni::String urlStr = jni.NewString(uri_);
-    auto url = jni.NewObject("java/net/URL", "(Ljava/lang/String;)V", urlStr.J());
-    CHECK_FOR_EXCEPTION; // Malformed URL
+    auto url = java::net::URL(uri_, jni);
+    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(TFERROR_JNI_EXCEPTION); // Malformed URL
 
     // Open connection and set properties
-    // connection = url.openConnection()
-    jobject connectionObj = jni.CallObjectMethod(url, "openConnection",
-                                                 "()Ljava/net/URLConnection;");
-    CHECK_FOR_EXCEPTION;// IOException
-    auto connection = jni.Cast(connectionObj, "java/net/HttpURLConnection");
-    // connection.setRequestMethod("POST")
-    jni.CallVoidMethod(connection, "setRequestMethod", "(Ljava/lang/String;)V",
-                       jni.NewString("POST").J());
-    // connection.setConnectionTimeout(timeout)
-    jni.CallVoidMethod(connection, "setConnectTimeout", "(I)V", timeout_ms_);
-    // connection.setReadTimeout(timeout)
-    jni.CallVoidMethod(connection, "setReadTimeout", "(I)V", timeout_ms_);
-    // connection.setDoOutput(true)
-    jni.CallVoidMethod(connection, "setDoOutput", "(Z)V", true);
-    // connection.setDoInput(true)
-    jni.CallVoidMethod(connection, "setDoInput", "(Z)V", true);
-    // connection.setUseCaches(false)
-    jni.CallVoidMethod(connection, "setUseCaches", "(Z)V", false);
-    // connection.setRequestProperty( name, value)
+    java::net::HttpURLConnection connection(url.openConnection());
+    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(TFERROR_JNI_EXCEPTION);// IOException
+    connection.setRequestMethod("POST");
+    connection.setConnectTimeout(timeout_ms_);
+    connection.setReadTimeout(timeout_ms_);
+    connection.setDoOutput(true);
+    connection.setDoInput(true);
+    connection.setUseCaches(false);
     if (!api_key_.empty()) {
-        jni.CallVoidMethod(connection, "setRequestProperty",
-                           "(Ljava/lang/String;Ljava/lang/String;)V",
-                           jni.NewString("X-Goog-Api-Key").J(), jni.NewString(api_key_).J());
+        connection.setRequestProperty( "X-Goog-Api-Key", api_key_);
     }
-    jni.CallVoidMethod(connection, "setRequestProperty", "(Ljava/lang/String;Ljava/lang/String;)V",
-                       jni.NewString("Content-Type").J(), jni.NewString("application/json").J());
+    connection.setRequestProperty( "Content-Type", "application/json");
+
+    std::string package_name;
+    apk_utils::GetVersionCode(env, context_, &package_name);
+    if (!package_name.empty())
+      connection.setRequestProperty( "X-Android-Package", package_name);
+    auto signature = apk_utils::GetSignature(env, context_);
+    if (!signature.empty())
+      connection.setRequestProperty( "X-Android-Cert", signature);
 
     // Write json request body
-    // os = connection.getOutputStream()
-    jobject os = jni.CallObjectMethod(connection, "getOutputStream", "()Ljava/io/OutputStream;");
-    CHECK_FOR_EXCEPTION; // IOException
-    // writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"))
-    auto osw = jni.NewObject("java/io/OutputStreamWriter",
-                             "(Ljava/io/OutputStream;Ljava/lang/String;)V",
-                             os, jni.NewString("UTF-8").J());
-    auto writer = jni.NewObject("java/io/BufferedWriter", "(Ljava/io/Writer;)V", osw.second);
-    // writer.write(json)
-    jni.CallVoidMethod(writer, "write", "(Ljava/lang/String;)V",
-                       jni.NewString(request_json).J());
-    CHECK_FOR_EXCEPTION;// IOException
-    // writer.flush()
-    jni.CallVoidMethod(writer, "flush", "()V");
-    CHECK_FOR_EXCEPTION;// IOException
-    // writer.close()
-    jni.CallVoidMethod(writer, "close", "()V");
-    CHECK_FOR_EXCEPTION;// IOException
-    // os.close()
-    jni.CallVoidMethod(jni.Cast(os), "close", "()V");
-    CHECK_FOR_EXCEPTION;// IOException
+    auto os = connection.getOutputStream();
+    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(TFERROR_JNI_EXCEPTION); // IOException
+    auto writer = java::io::BufferedWriter(java::io::OutputStreamWriter(os, "UTF-8"));
+    writer.write(request_json);
+    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(TFERROR_JNI_EXCEPTION);// IOException
+    writer.flush();
+    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(TFERROR_JNI_EXCEPTION);// IOException
+    writer.close();
+    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(TFERROR_JNI_EXCEPTION);// IOException
+    os.close();
+    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(TFERROR_JNI_EXCEPTION);// IOException
 
-    // connection.connect()
-    jni.CallVoidMethod(connection, "connect", "()V");
-    CHECK_FOR_EXCEPTION;// IOException
+    // Connect and get response
+    connection.connect();
+    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(TFERROR_JNI_EXCEPTION);// IOException
 
-    // connection.getResponseCode()
-    response_code = jni.CallIntMethod(connection, "getResponseCode", "()I");
+    response_code = connection.getResponseCode();
     ALOGI("Response code: %d", response_code);
-    CHECK_FOR_EXCEPTION;// IOException
+    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(TFERROR_JNI_EXCEPTION);// IOException
 
-    // connection.getResponseMessage()
-    auto resp = jni.CallStringMethod(connection, "getResponseMessage",
-                                                  "()Ljava/lang/String;");
+    auto resp = connection.getResponseMessage();
     ALOGI("Response message: %s", resp.C());
-    CHECK_FOR_EXCEPTION;// IOException
+    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(TFERROR_JNI_EXCEPTION);// IOException
 
     // Read body from input stream
-    jobject is = jni.CallObjectMethod(connection, "getInputStream", "()Ljava/io/InputStream;");
-    CHECK_FOR_EXCEPTION;// IOException
-    auto isr = jni.NewObject("java/io/InputStreamReader",
-                             "(Ljava/io/InputStream;Ljava/lang/String;)V",
-                             is, jni.NewString("UTF-8").J());
-    auto reader = jni.NewObject("java/io/BufferedReader", "(Ljava/io/Reader;)V", isr.second);
+    auto is = connection.getInputStream();
+    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(TFERROR_JNI_EXCEPTION);// IOException
+    auto reader = java::io::BufferedReader(java::io::InputStreamReader(is, "UTF-8"));
     std::stringstream body;
     while (true) {
-        auto line = jni.CallStringMethod(reader, "readLine", "()Ljava/lang/String;");
+        auto line = reader.readLine();
         if (line.J()==nullptr) break;
         body << line.C() << "\n";
     }
 
-    // reader.close()
-    jni.CallVoidMethod(reader, "close", "()V");
-    // is.close()
-    jni.CallVoidMethod(jni.Cast(is), "close", "()V");
-
-    // connection.disconnect()
-    jni.CallVoidMethod(connection, "disconnect", "()V");
+    reader.close();
+    is.close();
+    connection.disconnect();
 
     response_body = body.str();
 
