@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dbc34af3_36029416",
+        "filename": "build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 337,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-09-24T08:33:36Z",
+      "side": 1,
+      "message": "Is there any way to avoid this hard coding? (perhaps with a larger refactor in a different cl)?",
+      "revId": "eb17beb1a370d9a07b6f73af67fb82228a215021",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
