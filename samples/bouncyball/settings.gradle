@@ -1,3 +1,3 @@
 include ':app'
-include ':extras'
-project(':extras').projectDir = new File('../../src/extras')
+//include ':extras'
+//project(':extras').projectDir = new File('../../src/extras')

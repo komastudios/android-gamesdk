@@ -37,7 +37,7 @@ public:
     using Callback = std::function<void()>;
 
     static std::unique_ptr<ChoreographerThread> createChoreographerThread(
-            Type type, JavaVM *vm, Callback onChoreographer, int sdkVersion);
+        Type type, JavaVM *vm, jobject activity, Callback onChoreographer, int sdkVersion);
 
     virtual ~ChoreographerThread() = 0;
 
@@ -57,8 +57,6 @@ protected:
 
     static constexpr int MAX_CALLBACKS_BEFORE_IDLE = 10;
 
-private:
-    static bool isChoreographerCallbackClassLoaded(JavaVM *vm);
 };
 
 } // namespace swappy

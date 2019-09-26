@@ -27,3 +27,21 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 }
 
+task buildDexCFiles(type: Exec) {
+    workingDir 'dex'
+}
+
+android.libraryVariants.all { variant ->
+    variant.assemble.doLast {
+	variant.outputs.each { v ->
+            def sdkPath = System.getenv("ANDROID_HOME")
+            if(sdkPath == null) {
+		Properties properties = new Properties()
+		properties.load(project.rootProject.file('local.properties').newDataInputStream())
+		sdkPath = properties.getProperty('sdk.dir')
+            }
+	    buildDexCFiles.commandLine("./unpack.sh", sdkPath + "/build-tools/"+android.buildToolsVersion, v.outputFile)
+	}
+	buildDexCFiles.execute()
+    }
+}

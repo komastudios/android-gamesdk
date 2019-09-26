@@ -115,7 +115,7 @@ SwappyCommon::SwappyCommon(JNIEnv *env, jobject jactivity)
 
     mChoreographerThread = ChoreographerThread::createChoreographerThread(
                                    ChoreographerThread::Type::Swappy,
-                                   vm,
+                                   vm, jactivity,
                                    [this]{ mChoreographerFilter->onChoreographer(); },
                                    mSdkVersion);
     if (!mChoreographerThread->isInitialized()) {
@@ -174,6 +174,7 @@ void SwappyCommon::onChoreographer(int64_t frameTimeNanos) {
         mChoreographerThread =
                 ChoreographerThread::createChoreographerThread(
                         ChoreographerThread::Type::App,
+                        nullptr,
                         nullptr,
                         [this] { mChoreographerFilter->onChoreographer(); },
                         mSdkVersion);
