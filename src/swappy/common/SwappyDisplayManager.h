@@ -45,9 +45,9 @@ private:
     std::mutex mMutex;
     std::condition_variable mCondition;
     std::shared_ptr<RefreshRateMap> mSupportedRefreshRates;
-    jobject mJthis;
-    jmethodID mSetPreferredRefreshRate;
-    jmethodID mTerminate;
+    jobject mJthis = nullptr;
+    jmethodID mSetPreferredRefreshRate = nullptr;
+    jmethodID mTerminate = nullptr;
     bool mInitialized = false;
 
     friend class SwappyDisplayManagerJNI;

@@ -22,7 +22,83 @@
 
 #define LOG_TAG "SwappyDisplayManager"
 
+
+extern "C" const unsigned char SwappyDisplayManager_bytes[];
+extern "C" unsigned long long SwappyDisplayManager_bytes_len;
+
+extern "C" {
+
+JNIEXPORT void JNICALL
+Java_com_google_androidgamesdk_SwappyDisplayManager_nSetSupportedRefreshRates(
+    JNIEnv *env,
+    jobject /* this */,
+    jlong cookie,
+    jlongArray refreshRates,
+    jintArray modeIds);
+
+JNIEXPORT void JNICALL
+Java_com_google_androidgamesdk_SwappyDisplayManager_nOnRefreshRateChanged(
+    JNIEnv *env,
+    jobject /* this */,
+    jlong cookie,
+    jlong refreshPeriod,
+    jlong appOffset,
+    jlong sfOffset);
+}
+
 namespace swappy {
+
+// Load a Java classes from an in-memory dex file
+// Equivalent Java code:
+// import dalvik.system.InMemoryDexClassLoader;
+// ...
+// Class LoadClassFromDexBytes(ClassLoader parentLoader, String name, java.nio.ByteBuffer bytes) {
+//   InMemoryDexClassLoader dexLoader = new InMemoryDexClassLoader(bytes, classLoader);
+//   return dexLoader.loadClass(name);
+// }
+jclass LoadClassFromDexBytes(JNIEnv* env, jobject parentClassLoaderObj, const char* name,
+                                    const unsigned char* bytes, size_t bytes_len) {
+    jmethodID loadClassMethod = env->GetMethodID(env->FindClass("java/lang/ClassLoader"),
+                                           "loadClass",
+                                           "(Ljava/lang/String;)Ljava/lang/Class;");
+    jstring dexLoaderClassName = env->NewStringUTF("dalvik/system/InMemoryDexClassLoader");
+    jclass imclassloaderClass = static_cast<jclass>(env->CallObjectMethod(parentClassLoaderObj,
+        loadClassMethod, dexLoaderClassName));
+    env->DeleteLocalRef(dexLoaderClassName);
+    if (env->ExceptionCheck()) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        return nullptr;
+    }
+    jmethodID constructor = env->GetMethodID(imclassloaderClass, "<init>",
+                                             "(Ljava/nio/ByteBuffer;Ljava/lang/ClassLoader;)V");
+    auto byteBuffer = env->NewDirectByteBuffer((void*)bytes, bytes_len);
+    jobject imclassloaderObj = env->NewObject(imclassloaderClass, constructor, byteBuffer,
+                                              parentClassLoaderObj);
+    jstring swappyDisplayManagerName = env->NewStringUTF(name);
+    jclass swappyDisplayManagerClass = static_cast<jclass>(
+        env->CallObjectMethod(imclassloaderObj, loadClassMethod, swappyDisplayManagerName));
+    env->DeleteLocalRef(swappyDisplayManagerName);
+    if (env->ExceptionCheck()) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        return nullptr;
+    }
+    return swappyDisplayManagerClass;
+}
+
+static jclass SwappyDisplayManagerFromDexBytes(JNIEnv* env, jobject classLoaderObj) {
+    jclass swappyDisplayManagerClass = LoadClassFromDexBytes(env, classLoaderObj,
+        "com/google/androidgamesdk/SwappyDisplayManager",
+        SwappyDisplayManager_bytes, SwappyDisplayManager_bytes_len);
+    JNINativeMethod SDMNativeMethods[2] = {
+        {"nSetSupportedRefreshRates", "(J[J[I)V",
+         (void*)&Java_com_google_androidgamesdk_SwappyDisplayManager_nSetSupportedRefreshRates},
+        {"nOnRefreshRateChanged", "(JJJJ)V",
+         (void*)&Java_com_google_androidgamesdk_SwappyDisplayManager_nOnRefreshRateChanged}};
+    env->RegisterNatives(swappyDisplayManagerClass, SDMNativeMethods, 2);
+    return swappyDisplayManagerClass;
+}
 
 SwappyDisplayManager::SwappyDisplayManager(JavaVM* vm, jobject mainActivity) : mJVM(vm) {
     JNIEnv *env;
@@ -46,10 +122,16 @@ SwappyDisplayManager::SwappyDisplayManager(JavaVM* vm, jobject mainActivity) : m
             env->CallObjectMethod(classLoaderObj, loadClass, swappyDisplayManagerName));
     env->DeleteLocalRef(swappyDisplayManagerName);
     if (env->ExceptionCheck()) {
-        env->ExceptionDescribe();
-        ALOGE("Unable to find com.google.androidgamesdk.SwappyDisplayManager class");
-        ALOGE("Did you integrate extras ?");
-        return;
+        env->ExceptionClear();
+        swappyDisplayManagerClass = SwappyDisplayManagerFromDexBytes(env,classLoaderObj);
+        if (swappyDisplayManagerClass == nullptr) {
+            ALOGE("Unable to find com.google.androidgamesdk.SwappyDisplayManager class");
+            ALOGE("Did you integrate extras ?");
+            return;
+        }
+        else {
+            ALOGI("Using internal SwappyDisplayManager class from dex bytes.");
+        }
     }
 
     jmethodID constructor = env->GetMethodID(
@@ -77,8 +159,10 @@ SwappyDisplayManager::~SwappyDisplayManager() {
     JNIEnv *env;
     mJVM->AttachCurrentThread(&env, nullptr);
 
-    env->CallVoidMethod(mJthis, mTerminate);
-    env->DeleteGlobalRef(mJthis);
+    if (mJthis) {
+        env->CallVoidMethod(mJthis, mTerminate);
+        env->DeleteGlobalRef(mJthis);
+    }
 }
 
 std::shared_ptr<SwappyDisplayManager::RefreshRateMap>

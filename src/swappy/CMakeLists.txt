@@ -49,6 +49,8 @@ add_library( swappy_static
              ${SOURCE_LOCATION_VULKAN}/SwappyVkBase.cpp
              ${SOURCE_LOCATION_VULKAN}/SwappyVkFallback.cpp
              ${SOURCE_LOCATION_VULKAN}/SwappyVkGoogleDisplayTiming.cpp
+             ${SOURCE_LOCATION_COMMON}/ChoreographerCallback_dex.c
+             ${SOURCE_LOCATION_COMMON}/SwappyDisplayManager_dex.c
 
              # Add new source files here
              )

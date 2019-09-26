@@ -52,6 +52,19 @@ using PFN_AChoreographer_postFrameCallbackDelayed = void (*)(AChoreographer* cho
                                                         void* data,
                                                         long delayMillis);
 
+extern "C" const unsigned char ChoreographerCallback_bytes[];
+extern "C" unsigned long long ChoreographerCallback_bytes_len;
+
+extern "C" {
+
+JNIEXPORT void JNICALL
+Java_com_google_androidgamesdk_ChoreographerCallback_nOnChoreographer(JNIEnv * /*env*/,
+                                                                      jobject /*this*/,
+                                                                      jlong cookie,
+                                                                      jlong /*frameTimeNanos*/);
+
+}
+
 class NDKChoreographerThread : public ChoreographerThread {
 public:
     static constexpr int MIN_SDK_VERSION = 24;
@@ -195,7 +208,7 @@ void NDKChoreographerThread::scheduleNextFrameCallback()
 
 class JavaChoreographerThread : public ChoreographerThread {
 public:
-    JavaChoreographerThread(JavaVM *vm, Callback onChoreographer);
+    JavaChoreographerThread(JNIEnv *env, jobject activity, Callback onChoreographer);
     ~JavaChoreographerThread() override;
     static void onChoreographer(jlong cookie);
     void onChoreographer() override { ChoreographerThread::onChoreographer(); };
@@ -204,24 +217,67 @@ private:
     void scheduleNextFrameCallback() override REQUIRES(mWaitingMutex);
 
     JavaVM *mJVM;
-    JNIEnv *mEnv = nullptr;
     jobject mJobj = nullptr;
     jmethodID mJpostFrameCallback = nullptr;
     jmethodID mJterminate = nullptr;
 
 };
 
-JavaChoreographerThread::JavaChoreographerThread(JavaVM *vm,
+jclass LoadClassFromDexBytes(JNIEnv* env, jobject parentClassLoaderObj, const char* name,
+                             const unsigned char* bytes, size_t bytes_len);
+
+static jclass ChoreographerCallbackFromDexBytes(JNIEnv* env, jobject classLoaderObj) {
+    jclass choreographerCallbackClass = LoadClassFromDexBytes(env, classLoaderObj,
+        "com/google/androidgamesdk/ChoreographerCallback",
+        ChoreographerCallback_bytes, ChoreographerCallback_bytes_len);
+    JNINativeMethod CCNativeMethods[1] = {
+        {"nOnChoreographer", "(JJ)V",
+         (void*)&Java_com_google_androidgamesdk_ChoreographerCallback_nOnChoreographer}};
+    env->RegisterNatives(choreographerCallbackClass, CCNativeMethods, 1);
+    return choreographerCallbackClass;
+}
+
+
+static jclass GetChoreographerCallbackClass(JNIEnv *env, jobject activity) {
+    static jclass sChoreographerCallbackClass = nullptr;
+    if (sChoreographerCallbackClass!=nullptr)
+        return sChoreographerCallbackClass;
+    jclass activityClass = env->GetObjectClass(activity);
+    jclass classLoaderClass = env->FindClass("java/lang/ClassLoader");
+    jmethodID getClassLoader = env->GetMethodID(activityClass,
+                                                "getClassLoader",
+                                                "()Ljava/lang/ClassLoader;");
+    jobject classLoaderObj = env->CallObjectMethod(activity, getClassLoader);
+    jmethodID loadClass = env->GetMethodID(classLoaderClass,
+                                           "loadClass",
+                                           "(Ljava/lang/String;)Ljava/lang/Class;");
+    jstring choreographerCallbackClassName = env->NewStringUTF("com/google/androidgamesdk/ChoreographerCallback");
+    sChoreographerCallbackClass = static_cast<jclass>(
+        env->CallObjectMethod(classLoaderObj, loadClass, choreographerCallbackClassName));
+    if (env->ExceptionCheck()) {
+        env->ExceptionClear();
+        sChoreographerCallbackClass = ChoreographerCallbackFromDexBytes(env,classLoaderObj);
+        if (sChoreographerCallbackClass == nullptr) {
+            ALOGE("Unable to find com.google.androidgamesdk.ChoreographerCallback class");
+            ALOGE("Did you integrate extras ?");
+            return nullptr;
+        }
+        else {
+            ALOGI("Using internal ChoreographerCallback class from dex bytes.");
+        }
+    }
+    return sChoreographerCallbackClass;
+}
+
+JavaChoreographerThread::JavaChoreographerThread(JNIEnv *env,
+                                                 jobject activity,
                                                  Callback onChoreographer) :
-        ChoreographerThread(onChoreographer),
-        mJVM(vm)
+        ChoreographerThread(onChoreographer)
 {
+    env->GetJavaVM(&mJVM);
 
-    JNIEnv *env;
-    mJVM->AttachCurrentThread(&env, nullptr);
-
-    jclass choreographerCallbackClass =
-            env->FindClass("com/google/androidgamesdk/ChoreographerCallback");
+    jclass choreographerCallbackClass = GetChoreographerCallbackClass(env, activity);
+    if (choreographerCallbackClass==nullptr) return;
 
     jmethodID constructor = env->GetMethodID(
             choreographerCallbackClass,
@@ -340,23 +396,9 @@ void ChoreographerThread::onChoreographer()
     mCallback();
 }
 
-bool ChoreographerThread::isChoreographerCallbackClassLoaded(JavaVM *vm)
-{
-    JNIEnv *env;
-    vm->AttachCurrentThread(&env, nullptr);
-
-    env->FindClass("com/google/androidgamesdk/ChoreographerCallback");
-    if (env->ExceptionCheck()) {
-        env->ExceptionClear();
-        return false;
-    }
-
-    return true;
-}
-
 std::unique_ptr<ChoreographerThread>
     ChoreographerThread::createChoreographerThread(
-                Type type, JavaVM *vm, Callback onChoreographer, int sdkVersion) {
+        Type type, JavaVM *vm, jobject activity, Callback onChoreographer, int sdkVersion) {
     if (type == Type::App) {
         ALOGI("Using Application's Choreographer");
         return std::make_unique<NoChoreographerThread>(onChoreographer);
@@ -367,9 +409,11 @@ std::unique_ptr<ChoreographerThread>
         return std::make_unique<NDKChoreographerThread>(onChoreographer);
     }
 
-    if (isChoreographerCallbackClassLoaded(vm)){
+    JNIEnv *env;
+    vm->AttachCurrentThread(&env, nullptr);
+    if (GetChoreographerCallbackClass(env, activity)!=nullptr){
         ALOGI("Using Java Choreographer");
-        return std::make_unique<JavaChoreographerThread>(vm, onChoreographer);
+        return std::make_unique<JavaChoreographerThread>(env, activity, onChoreographer);
     }
 
     ALOGI("Using no Choreographer (Best Effort)");
