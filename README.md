@@ -68,3 +68,4 @@ and run them directly (`Shift + F10` on Linux, `Control + R` on macOS). The loca
 
 After opening a sample project using Android Studio, uncomment the line containing `add_gamesdk_sources()`.
 This will add the Swappy/Tuning Fork sources as part of the project. You can then inspect the source code (with working auto completions) and run the app in debug mode (with working breakpoints and inspectors).
+
