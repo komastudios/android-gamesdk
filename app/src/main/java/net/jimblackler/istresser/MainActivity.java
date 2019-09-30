@@ -343,6 +343,14 @@ public class MainActivity extends AppCompatActivity {
       TextView nativeAllocatedByTestTextView = findViewById(R.id.nativeAllocatedByTest);
       nativeAllocatedByTestTextView.setText(memoryString(nativeAllocatedByTest));
 
+      ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
+
+      TextView availMemTextView = findViewById(R.id.availMem);
+      availMemTextView.setText(memoryString(memoryInfo.availMem));
+
+      TextView lowMemoryTextView = findViewById(R.id.lowMemory);
+      lowMemoryTextView.setText(Boolean.valueOf(memoryInfo.lowMemory).toString());
+
       TextView trimMemoryComplete = findViewById(R.id.trimMemoryComplete);
       trimMemoryComplete.setText(
           String.format(Locale.getDefault(), "%d", onTrims.count(TRIM_MEMORY_COMPLETE)));
