@@ -12,7 +12,6 @@ for i in `seq 1 8`;
             --results-history-name=$uuid \
             --device model=A0001,version=22 \
             --device model=A1N_sprout,version=26 \
-            --device model=F8332,version=26 \
             --device model=FRT,version=27 \
             --device model=G8142,version=25 \
             --device model=G8142,version=26 \
@@ -90,7 +89,6 @@ for i in `seq 1 8`;
             --device model=g3,version=19 \
             --device model=grandpplte,version=23 \
             --device model=greatlte,version=28 \
-            --device model=greatqlte,version=26 \
             --device model=griffin,version=24 \
             --device model=hammerhead,version=21 \
             --device model=hammerhead,version=23 \
@@ -105,7 +103,6 @@ for i in `seq 1 8`;
             --device model=j1acevelte,version=22 \
             --device model=j7xelte,version=23 \
             --device model=james,version=26 \
-            --device model=jeter,version=26 \
             --device model=lt02wifi,version=19 \
             --device model=lucye,version=24 \
             --device model=lv0,version=23 \
