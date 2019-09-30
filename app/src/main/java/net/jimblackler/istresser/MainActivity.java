@@ -62,14 +62,14 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private final Timer timer = new Timer();
-  private ArrayList<byte[]> data = Lists.newArrayList();
-  private Multiset<Integer> onTrims = HashMultiset.create();
+  private final Multiset<Integer> onTrims = HashMultiset.create();
+  private List<byte[]> data = Lists.newArrayList();
   private long nativeAllocatedByTest;
   private long recordNativeHeapAllocatedSize;
   private PrintStream resultsStream = System.out;
   private long startTime;
   private long allocationStartedAt = -1;
-  private int scenario = 2;
+  private int scenario = 1;
   private List<Integer> pids;
   private ActivityManager activityManager;
 
@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
+  @SuppressWarnings({"HardcodedFileSeparator", "HardcodedLineSeparator"})
   private static Map<String, Long> processMeminfo() {
     Map<String, Long> output = new HashMap<>();
 
@@ -115,12 +116,13 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private static List<Integer> parseList(String string) {
-    Scanner scanner = new Scanner(string);
-    List<Integer> list = new ArrayList<>();
-    while (scanner.hasNextInt()) {
-      list.add(scanner.nextInt());
+    try (Scanner scanner = new Scanner(string)) {
+      List<Integer> list = new ArrayList<>();
+      while (scanner.hasNextInt()) {
+        list.add(scanner.nextInt());
+      }
+      return list;
     }
-    return list;
   }
 
   private static int[] toIntArray(List<Integer> list) {
@@ -161,15 +163,15 @@ public class MainActivity extends AppCompatActivity {
       PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
       // Two methods of getting the app's pids.
       if (false) {
-        this.pids = parseList(execute("pidof", packageInfo.packageName));
+        pids = parseList(execute("pidof", packageInfo.packageName));
       } else {
-        List<Integer> pids = new ArrayList<>();
+        List<Integer> _pids = new ArrayList<>();
         List<ActivityManager.RunningAppProcessInfo> runningAppProcesses =
             activityManager.getRunningAppProcesses();
         for (ActivityManager.RunningAppProcessInfo runningAppProcessInfo : runningAppProcesses) {
-          pids.add(runningAppProcessInfo.pid);
+          _pids.add(runningAppProcessInfo.pid);
         }
-        this.pids = pids;
+        pids = _pids;
       }
       report.put("version", packageInfo.versionCode);
       Intent launchIntent = getIntent();
@@ -183,12 +185,11 @@ public class MainActivity extends AppCompatActivity {
               resultsStream = new PrintStream(
                   Objects.requireNonNull(getContentResolver().openOutputStream(logFile)));
             } catch (FileNotFoundException e) {
-              e.printStackTrace();
+              throw new RuntimeException(e);
             }
           }
         }
-        int scenario = launchIntent.getIntExtra("scenario", 0);
-        this.scenario = scenario;
+        scenario = launchIntent.getIntExtra("scenario", 0);
         report.put("scenario", scenario);
       }
       JSONObject build = new JSONObject();
@@ -228,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
 
       resultsStream.println(report);
     } catch (JSONException | PackageManager.NameNotFoundException | IOException e) {
-      e.printStackTrace();
+      throw new RuntimeException(e);
     }
 
     startTime = System.currentTimeMillis();
@@ -238,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
       public void run() {
         try {
           JSONObject report = standardInfo();
-          final long _allocationStartedAt = allocationStartedAt;
+          long _allocationStartedAt = allocationStartedAt;
           if (_allocationStartedAt != -1) {
             ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
             if (scenarioGroup("oom") && getOomScore() > 650) {
@@ -273,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
               report.put("exiting", true);
               resultsStream.println(report);
             } catch (JSONException e) {
-              e.printStackTrace();
+              throw new RuntimeException(e);
             }
           }
 
@@ -285,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
           }
           updateInfo();
         } catch (JSONException e) {
-          e.printStackTrace();
+          throw new RuntimeException(e);
         }
       }
     }, 0, 1000 / 10);
@@ -305,7 +306,7 @@ public class MainActivity extends AppCompatActivity {
       report.put("onDestroy", true);
       resultsStream.println(report);
     } catch (JSONException e) {
-      e.printStackTrace();
+      throw new RuntimeException(e);
     }
     super.onDestroy();
   }
@@ -380,7 +381,7 @@ public class MainActivity extends AppCompatActivity {
       }
       data.add(array);
     } catch (OutOfMemoryError e) {
-      e.printStackTrace();
+      throw new RuntimeException(e);
     }
   }
 
@@ -477,7 +478,7 @@ public class MainActivity extends AppCompatActivity {
     return report;
   }
 
-  private int getOomScore()  {
+  private int getOomScore() {
     try {
       return Integer.parseInt(readFile(("/proc/" + this.pids.get(0)) + "/oom_score"));
     } catch (IOException | NumberFormatException e) {
@@ -486,8 +487,6 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void getProcessMemoryInfo(JSONObject report) throws JSONException {
-    ActivityManager activityManager =
-        (ActivityManager) Objects.requireNonNull(getSystemService(Context.ACTIVITY_SERVICE));
     int totalPss = 0;
     int totalPrivateDirty = 0;
     int totalSharedDirty = 0;
