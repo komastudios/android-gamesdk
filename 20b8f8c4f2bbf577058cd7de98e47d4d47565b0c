@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3f73054a_2ed9953f",
+        "filename": "LICENSE",
+        "patchSetId": 3
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-09-30T12:40:50Z",
+      "side": 1,
+      "message": "I think we should add the template bit for others to have the complete text",
+      "revId": "20b8f8c4f2bbf577058cd7de98e47d4d47565b0c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
