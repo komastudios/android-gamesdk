@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
   private static final String TAG = MainActivity.class.getSimpleName();
   private static final int MAX_DURATION = 1000 * 60 * 10;
 
-  private static List<List<String>> groups =
+  private static final List<List<String>> groups =
       ImmutableList.<List<String>>builder()
           .add(ImmutableList.of(""))
           .add(ImmutableList.of("trim"))
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
   private final Timer timer = new Timer();
   private final Multiset<Integer> onTrims = HashMultiset.create();
-  private List<byte[]> data = Lists.newArrayList();
+  private final List<byte[]> data = Lists.newArrayList();
   private long nativeAllocatedByTest;
   private long recordNativeHeapAllocatedSize;
   private PrintStream resultsStream = System.out;
@@ -466,7 +466,7 @@ public class MainActivity extends AppCompatActivity {
     }
     report.put("nativeAllocatedByTest", nativeAllocatedByTest);
 
-    if (this.pids != null && !this.pids.isEmpty()) {
+    if (pids != null && !pids.isEmpty()) {
       if (false) {
         // Getting this info can make the app unresponsive for seconds.
         // Most of the values are strongly correlated with other info we can get more cheaply
@@ -480,7 +480,7 @@ public class MainActivity extends AppCompatActivity {
 
   private int getOomScore() {
     try {
-      return Integer.parseInt(readFile(("/proc/" + this.pids.get(0)) + "/oom_score"));
+      return Integer.parseInt(readFile(("/proc/" + pids.get(0)) + "/oom_score"));
     } catch (IOException | NumberFormatException e) {
       return 0;
     }
@@ -491,7 +491,7 @@ public class MainActivity extends AppCompatActivity {
     int totalPrivateDirty = 0;
     int totalSharedDirty = 0;
     for (Debug.MemoryInfo memoryInfo2 :
-        activityManager.getProcessMemoryInfo(toIntArray(this.pids))) {
+        activityManager.getProcessMemoryInfo(toIntArray(pids))) {
 
       totalPss += memoryInfo2.getTotalPss();
       totalPrivateDirty += memoryInfo2.getTotalPrivateDirty();
