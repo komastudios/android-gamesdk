@@ -21,24 +21,15 @@ import com.google.common.collect.Multiset;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -70,49 +61,9 @@ public class MainActivity extends AppCompatActivity {
   private long startTime;
   private long allocationStartedAt = -1;
   private int scenario = 1;
-  private List<Integer> pids;
-  private ActivityManager activityManager;
 
   private static String memoryString(long bytes) {
     return String.format(Locale.getDefault(), "%.1f MB", (float) bytes / (1024 * 1024));
-  }
-
-  private static String execute(String... args) throws IOException {
-    return readStream(new ProcessBuilder(args).start().getInputStream());
-  }
-
-  private static String readStream(InputStream inputStream) throws IOException {
-    try (
-        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-        BufferedReader reader = new BufferedReader(inputStreamReader)) {
-      String newline = System.getProperty("line.separator");
-      StringBuilder output = new StringBuilder();
-      String line;
-      while ((line = reader.readLine()) != null) {
-        if (output.length() > 0) {
-          output.append(newline);
-        }
-        output.append(line);
-      }
-      return output.toString();
-    }
-  }
-
-  @SuppressWarnings({"HardcodedFileSeparator", "HardcodedLineSeparator"})
-  private static Map<String, Long> processMeminfo() {
-    Map<String, Long> output = new HashMap<>();
-
-    try {
-      String meminfoText = readFile("/proc/meminfo");
-      Pattern pattern = Pattern.compile("([^:]+)[^\\d]*(\\d+).*\n");
-      Matcher matcher = pattern.matcher(meminfoText);
-      while (matcher.find()) {
-        output.put(matcher.group(1), Long.parseLong(Objects.requireNonNull(matcher.group(2))));
-      }
-    } catch (IOException e) {
-      // Intentionally silenced
-    }
-    return output;
   }
 
   private static List<Integer> parseList(String string) {
@@ -133,46 +84,13 @@ public class MainActivity extends AppCompatActivity {
     return ints;
   }
 
-  private static String readFile(String filename) throws IOException {
-    return readStream(new FileInputStream(filename));
-  }
-
-  private static ActivityManager.MemoryInfo getMemoryInfo(ActivityManager activityManager) {
-    ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
-    activityManager.getMemoryInfo(memoryInfo);
-    return memoryInfo;
-  }
-
-  private static long getOrDefault(Map<String, Long> map, String key, long def) {
-    Long value = map.get(key);
-    if (value == null) {
-      return def;
-    }
-    return value;
-  }
-
   @Override
   protected void onStart() {
     super.onStart();
-    activityManager =
-        (ActivityManager) Objects.requireNonNull(getSystemService(Context.ACTIVITY_SERVICE));
-
     try {
       JSONObject report = new JSONObject();
 
       PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-      // Two methods of getting the app's pids.
-      if (false) {
-        pids = parseList(execute("pidof", packageInfo.packageName));
-      } else {
-        List<Integer> _pids = new ArrayList<>();
-        List<ActivityManager.RunningAppProcessInfo> runningAppProcesses =
-            activityManager.getRunningAppProcesses();
-        for (ActivityManager.RunningAppProcessInfo runningAppProcessInfo : runningAppProcesses) {
-          _pids.add(runningAppProcessInfo.pid);
-        }
-        pids = _pids;
-      }
       report.put("version", packageInfo.versionCode);
       Intent launchIntent = getIntent();
       if ("com.google.intent.action.TEST_LOOP".equals(launchIntent.getAction())) {
@@ -218,17 +136,22 @@ public class MainActivity extends AppCompatActivity {
       report.put("build", build);
 
       JSONObject constant = new JSONObject();
-      ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
+      ActivityManager activityManager = (ActivityManager)
+          Objects.requireNonNull(getSystemService((Context.ACTIVITY_SERVICE)));
+      ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(activityManager);
       constant.put("totalMem", memoryInfo.totalMem);
       constant.put("threshold", memoryInfo.threshold);
       constant.put("memoryClass", activityManager.getMemoryClass() * 1024 * 1024);
 
-      constant.put("CommitLimit", processMeminfo().get("CommitLimit"));
+      Long commitLimit = Heuristics.processMeminfo().get("CommitLimit");
+      if (commitLimit != null) {
+        constant.put("CommitLimit", commitLimit);
+      }
 
       report.put("constant", constant);
 
       resultsStream.println(report);
-    } catch (JSONException | PackageManager.NameNotFoundException | IOException e) {
+    } catch (JSONException | PackageManager.NameNotFoundException e) {
       throw new RuntimeException(e);
     }
 
@@ -241,16 +164,13 @@ public class MainActivity extends AppCompatActivity {
           JSONObject report = standardInfo();
           long _allocationStartedAt = allocationStartedAt;
           if (_allocationStartedAt != -1) {
-            ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
-            if (scenarioGroup("oom") && getOomScore() > 650) {
+            if (scenarioGroup("oom") && Heuristics.oomCheck(MainActivity.this)) {
               releaseMemory();
-            } else if (scenarioGroup("low") && memoryInfo.lowMemory) {
+            } else if (scenarioGroup("low") && Heuristics.lowMemoryCheck(MainActivity.this)) {
               releaseMemory();
             } else if (scenarioGroup("try") && !tryAlloc(1024 * 1024 * 32)) {
               releaseMemory();
-            } else if (scenarioGroup("cl") &&
-                Debug.getNativeHeapAllocatedSize() / 1024 >
-                    getOrDefault(processMeminfo(), "CommitLimit", Long.MAX_VALUE)) {
+            } else if (scenarioGroup("cl") && Heuristics.commitLimitCheck()) {
               releaseMemory();
             } else {
               int bytesPerMillisecond = 100 * 1024;
@@ -343,13 +263,15 @@ public class MainActivity extends AppCompatActivity {
       TextView nativeAllocatedByTestTextView = findViewById(R.id.nativeAllocatedByTest);
       nativeAllocatedByTestTextView.setText(memoryString(nativeAllocatedByTest));
 
-      ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
+      ActivityManager activityManager = (ActivityManager)
+          Objects.requireNonNull(getSystemService((Context.ACTIVITY_SERVICE)));
 
+      ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(activityManager);
       TextView availMemTextView = findViewById(R.id.availMem);
       availMemTextView.setText(memoryString(memoryInfo.availMem));
 
       TextView lowMemoryTextView = findViewById(R.id.lowMemory);
-      lowMemoryTextView.setText(Boolean.valueOf(memoryInfo.lowMemory).toString());
+      lowMemoryTextView.setText(Boolean.valueOf(Heuristics.lowMemoryCheck(this)).toString());
 
       TextView trimMemoryComplete = findViewById(R.id.trimMemoryComplete);
       trimMemoryComplete.setText(
@@ -422,7 +344,7 @@ public class MainActivity extends AppCompatActivity {
   private void releaseMemory() {
     allocationStartedAt = -1;
     runAfterDelay(() -> {
-      JSONObject report = null;
+      JSONObject report;
       try {
         report = standardInfo();
       } catch (JSONException e) {
@@ -464,51 +386,20 @@ public class MainActivity extends AppCompatActivity {
     report.put("nativeAllocated", Debug.getNativeHeapAllocatedSize());
     boolean paused = allocationStartedAt == -1;
     if (paused) {
-      report.put("paused", paused);
+      report.put("paused", true);
     }
 
-    ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
+    ActivityManager activityManager = (ActivityManager)
+        Objects.requireNonNull(getSystemService((Context.ACTIVITY_SERVICE)));
+    ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(activityManager);
     report.put("availMem", memoryInfo.availMem);
-    if (memoryInfo.lowMemory) {
-      report.put("lowMemory", memoryInfo.lowMemory);
+    boolean lowMemory = Heuristics.lowMemoryCheck(this);
+    if (lowMemory) {
+      report.put("lowMemory", true);
     }
     report.put("nativeAllocatedByTest", nativeAllocatedByTest);
-
-    if (pids != null && !pids.isEmpty()) {
-      if (false) {
-        // Getting this info can make the app unresponsive for seconds.
-        // Most of the values are strongly correlated with other info we can get more cheaply
-        // anyway.
-        getProcessMemoryInfo(report);
-      }
-      report.put("oom_score", getOomScore());
-    }
+    report.put("oom_score", Heuristics.getOomScore(this));
     return report;
-  }
-
-  private int getOomScore() {
-    try {
-      return Integer.parseInt(readFile(("/proc/" + pids.get(0)) + "/oom_score"));
-    } catch (IOException | NumberFormatException e) {
-      return 0;
-    }
-  }
-
-  private void getProcessMemoryInfo(JSONObject report) throws JSONException {
-    int totalPss = 0;
-    int totalPrivateDirty = 0;
-    int totalSharedDirty = 0;
-    for (Debug.MemoryInfo memoryInfo2 :
-        activityManager.getProcessMemoryInfo(toIntArray(pids))) {
-
-      totalPss += memoryInfo2.getTotalPss();
-      totalPrivateDirty += memoryInfo2.getTotalPrivateDirty();
-      totalSharedDirty += memoryInfo2.getTotalSharedDirty();
-    }
-
-    report.put("totalPss", totalPss);
-    report.put("totalPrivateDirty", totalPrivateDirty);
-    report.put("totalSharedDirty", totalSharedDirty);
   }
 
   public native void freeAll();
