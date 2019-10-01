@@ -23,11 +23,9 @@ import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -44,8 +42,10 @@ public class MainActivity extends AppCompatActivity {
           .add(ImmutableList.of("low"))
           .add(ImmutableList.of("try"))
           .add(ImmutableList.of("cl"))
+          .add(ImmutableList.of("avail"))
           .add(ImmutableList.of("trim", "oom", "low", "try"))
           .add(ImmutableList.of("trim", "oom", "low", "try", "cl"))
+          .add(ImmutableList.of("trim", "oom", "low", "try", "cl", "avail"))
           .build();
 
   static {
@@ -60,28 +60,21 @@ public class MainActivity extends AppCompatActivity {
   private PrintStream resultsStream = System.out;
   private long startTime;
   private long allocationStartedAt = -1;
-  private int scenario = 1;
+  private int scenario = 10;
 
   private static String memoryString(long bytes) {
     return String.format(Locale.getDefault(), "%.1f MB", (float) bytes / (1024 * 1024));
   }
 
-  private static List<Integer> parseList(String string) {
-    try (Scanner scanner = new Scanner(string)) {
-      List<Integer> list = new ArrayList<>();
-      while (scanner.hasNextInt()) {
-        list.add(scanner.nextInt());
-      }
-      return list;
+  private static String join(Iterable<String> strings, String separator) {
+    StringBuilder stringBuilder = new StringBuilder();
+    String useSeparator = "";
+    for (String string : strings) {
+      stringBuilder.append(useSeparator);
+      stringBuilder.append(string);
+      useSeparator = separator;
     }
-  }
-
-  private static int[] toIntArray(List<Integer> list) {
-    int[] ints = new int[list.size()];
-    for (int i = 0; i < ints.length; i++) {
-      ints[i] = list.get(i);
-    }
-    return ints;
+    return stringBuilder.toString();
   }
 
   @Override
@@ -138,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
       JSONObject constant = new JSONObject();
       ActivityManager activityManager = (ActivityManager)
           Objects.requireNonNull(getSystemService((Context.ACTIVITY_SERVICE)));
-      ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(activityManager);
+      ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(this);
       constant.put("totalMem", memoryInfo.totalMem);
       constant.put("threshold", memoryInfo.threshold);
       constant.put("memoryClass", activityManager.getMemoryClass() * 1024 * 1024);
@@ -171,6 +164,8 @@ public class MainActivity extends AppCompatActivity {
             } else if (scenarioGroup("try") && !tryAlloc(1024 * 1024 * 32)) {
               releaseMemory();
             } else if (scenarioGroup("cl") && Heuristics.commitLimitCheck()) {
+              releaseMemory();
+            } else if (scenarioGroup("avail") && Heuristics.availMemCheck(MainActivity.this)) {
               releaseMemory();
             } else {
               int bytesPerMillisecond = 100 * 1024;
@@ -241,6 +236,15 @@ public class MainActivity extends AppCompatActivity {
   private void updateInfo() {
     runOnUiThread(() -> {
       updateRecords();
+
+      TextView strategies = findViewById(R.id.strategies);
+      List<String> strings = groups.get(scenario - 1);
+      strategies.setText(join(strings, ", "));  // TODO .. move to onCreate()
+
+      TextView uptime = findViewById(R.id.uptime);
+      float timeRunning = (float) (System.currentTimeMillis() - startTime) / 1000;
+      uptime.setText(String.format(Locale.getDefault(), "%.2f", timeRunning));
+
       TextView freeMemory = findViewById(R.id.freeMemory);
       freeMemory.setText(memoryString(Runtime.getRuntime().freeMemory()));
 
@@ -263,10 +267,7 @@ public class MainActivity extends AppCompatActivity {
       TextView nativeAllocatedByTestTextView = findViewById(R.id.nativeAllocatedByTest);
       nativeAllocatedByTestTextView.setText(memoryString(nativeAllocatedByTest));
 
-      ActivityManager activityManager = (ActivityManager)
-          Objects.requireNonNull(getSystemService((Context.ACTIVITY_SERVICE)));
-
-      ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(activityManager);
+      ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(this);
       TextView availMemTextView = findViewById(R.id.availMem);
       availMemTextView.setText(memoryString(memoryInfo.availMem));
 
@@ -389,9 +390,7 @@ public class MainActivity extends AppCompatActivity {
       report.put("paused", true);
     }
 
-    ActivityManager activityManager = (ActivityManager)
-        Objects.requireNonNull(getSystemService((Context.ACTIVITY_SERVICE)));
-    ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(activityManager);
+    ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(this);
     report.put("availMem", memoryInfo.availMem);
     boolean lowMemory = Heuristics.lowMemoryCheck(this);
     if (lowMemory) {

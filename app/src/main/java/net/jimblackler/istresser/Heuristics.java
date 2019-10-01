@@ -61,7 +61,9 @@ public class Heuristics {
     return readStream(new FileInputStream(filename));
   }
 
-  static ActivityManager.MemoryInfo getMemoryInfo(ActivityManager activityManager) {
+  static ActivityManager.MemoryInfo getMemoryInfo(Activity activity) {
+    ActivityManager activityManager = (ActivityManager) Objects.requireNonNull(
+        activity.getSystemService((Context.ACTIVITY_SERVICE)));
     ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
     activityManager.getMemoryInfo(memoryInfo);
     return memoryInfo;
@@ -84,9 +86,7 @@ public class Heuristics {
   }
 
   static boolean lowMemoryCheck(Activity activity) {
-    ActivityManager activityManager = (ActivityManager) Objects.requireNonNull(
-        activity.getSystemService((Context.ACTIVITY_SERVICE)));
-    return getMemoryInfo(activityManager).lowMemory;
+    return getMemoryInfo(activity).lowMemory;
   }
 
   static boolean oomCheck(Activity activity) {
@@ -99,5 +99,10 @@ public class Heuristics {
       return false;
     }
     return Debug.getNativeHeapAllocatedSize() / 1024 > value;
+  }
+
+  static boolean availMemCheck(Activity activity) {
+    ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activity);
+    return memoryInfo.availMem < memoryInfo.threshold * 2;
   }
 }
