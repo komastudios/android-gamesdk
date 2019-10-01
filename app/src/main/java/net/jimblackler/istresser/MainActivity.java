@@ -53,14 +53,14 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private final Timer timer = new Timer();
-  private final Multiset<Integer> onTrims = HashMultiset.create();
   private final List<byte[]> data = Lists.newArrayList();
   private long nativeAllocatedByTest;
   private long recordNativeHeapAllocatedSize;
   private PrintStream resultsStream = System.out;
   private long startTime;
   private long allocationStartedAt = -1;
-  private int scenario = 10;
+  private int releases;
+  private int scenario = 1;
 
   private static String memoryString(long bytes) {
     return String.format(Locale.getDefault(), "%.1f MB", (float) bytes / (1024 * 1024));
@@ -274,33 +274,10 @@ public class MainActivity extends AppCompatActivity {
       TextView lowMemoryTextView = findViewById(R.id.lowMemory);
       lowMemoryTextView.setText(Boolean.valueOf(Heuristics.lowMemoryCheck(this)).toString());
 
-      TextView trimMemoryComplete = findViewById(R.id.trimMemoryComplete);
+      TextView trimMemoryComplete = findViewById(R.id.releases);
       trimMemoryComplete.setText(
-          String.format(Locale.getDefault(), "%d", onTrims.count(TRIM_MEMORY_COMPLETE)));
+          String.format(Locale.getDefault(), "%d", releases));
 
-      TextView trimMemoryModerate = findViewById(R.id.trimMemoryModerate);
-      trimMemoryModerate.setText(
-          String.format(Locale.getDefault(), "%d", onTrims.count(TRIM_MEMORY_MODERATE)));
-
-      TextView trimMemoryBackground = findViewById(R.id.trimMemoryBackground);
-      trimMemoryBackground.setText(
-          String.format(Locale.getDefault(), "%d", onTrims.count(TRIM_MEMORY_BACKGROUND)));
-
-      TextView trimMemoryUiHidden = findViewById(R.id.trimMemoryUiHidden);
-      trimMemoryUiHidden.setText(
-          String.format(Locale.getDefault(), "%d", onTrims.count(TRIM_MEMORY_UI_HIDDEN)));
-
-      TextView trimMemoryRunningCritical = findViewById(R.id.trimMemoryRunningCritical);
-      trimMemoryRunningCritical.setText(
-          String.format(Locale.getDefault(), "%d", onTrims.count(TRIM_MEMORY_RUNNING_CRITICAL)));
-
-      TextView trimMemoryRunningLow = findViewById(R.id.trimMemoryRunningLow);
-      trimMemoryRunningLow.setText(
-          String.format(Locale.getDefault(), "%d", onTrims.count(TRIM_MEMORY_RUNNING_LOW)));
-
-      TextView trimMemoryRunningModerate = findViewById(R.id.trimMemoryRunningModerate);
-      trimMemoryRunningModerate.setText(
-          String.format(Locale.getDefault(), "%d", onTrims.count(TRIM_MEMORY_RUNNING_MODERATE)));
     });
   }
 
@@ -328,8 +305,6 @@ public class MainActivity extends AppCompatActivity {
       }
       resultsStream.println(report);
 
-      onTrims.add(level);
-
       updateInfo();
       super.onTrimMemory(level);
     } catch (JSONException e) {
@@ -354,6 +329,7 @@ public class MainActivity extends AppCompatActivity {
       resultsStream.println(report);
       if (nativeAllocatedByTest > 0) {
         nativeAllocatedByTest = 0;
+        releases++;
         freeAll();
       }
       data.clear();
