@@ -100,7 +100,7 @@ TFErrorCode DownloadFidelityParams(const JniCtx& jni, const std::string& uri,
                                    const std::string& api_key, const ExtraUploadInfo& request_info,
                                    int timeout_ms, std::vector<uint8_t>& fps,
                                    std::string& experiment_id) {
-    WebRequest wq(jni, uri, api_key, timeout_ms);
+    WebRequest wq(jni, uri, api_key, std::chrono::milliseconds(timeout_ms));
     int response_code;
     std::string body;
     TFErrorCode ret =wq.Send(RequestJson(request_info), response_code, body);

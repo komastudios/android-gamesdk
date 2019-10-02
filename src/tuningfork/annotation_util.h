@@ -29,17 +29,22 @@ constexpr uint64_t kStreamError = -1;
 
 enum ErrorCode {
     NO_ERROR = 0,
-    BAD_SERIALIZATION = 1
+    BAD_SERIALIZATION = 1,
+    BAD_INDEX = 2
 };
 
 // Returns kAnnotationError if unsuccessful
 AnnotationId DecodeAnnotationSerialization(const SerializedAnnotation &ser,
-                                           const std::vector<uint32_t>& radix_mult);
+                                           const std::vector<uint32_t>& radix_mult,
+                                           int32_t loading_annotation_index = -1,
+                                           bool* loading = nullptr);
 
 ErrorCode SerializeAnnotationId(uint64_t id, SerializedAnnotation& ser,
                           const std::vector<uint32_t>& radix_mult);
 
 void SetUpAnnotationRadixes( std::vector<uint32_t>& radix_mult,
                              const std::vector<uint32_t>& enum_sizes);
+
+ErrorCode Value(uint64_t id, uint32_t index, const std::vector<uint32_t>& radix_mult, int& value);
 
 } // namespace annotation_util
