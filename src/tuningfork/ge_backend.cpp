@@ -12,22 +12,23 @@
 
 namespace tuningfork {
 
-constexpr int kUploadCheckIntervalMs = 1000;
-constexpr int kRequestTimeoutMs = 10000;
+constexpr Duration kUploadCheckInterval = std::chrono::seconds(10);
+constexpr Duration kRequestTimeout = std::chrono::seconds(10);
 
 class UltimateUploader : public Runnable {
     const TFCache* persister_;
     WebRequest request_;
-public:
+    public:
     UltimateUploader(const TFCache* persister, const WebRequest& request)
-            : Runnable(kUploadCheckIntervalMs), persister_(persister), request_(request) {}
-    void DoWork() override {
+            : Runnable(), persister_(persister), request_(request) {}
+    Duration DoWork() override {
         CheckUploadPending();
+        return kUploadCheckInterval;
     }
     void Run() override {
         Runnable::Run();
     }
-    void CheckUploadPending() {
+    bool CheckUploadPending() {
         CProtobufSerialization uploading_hists_ser;
         if (persister_->get(HISTOGRAMS_UPLOADING, &uploading_hists_ser,
                 persister_->user_data)==TFERROR_OK) {
@@ -39,15 +40,19 @@ public:
             TFErrorCode ret = request_.Send(request_json, response_code, body);
             if (ret==TFERROR_OK) {
                 ALOGI("UPLOAD request returned %d %s", response_code, body.c_str());
-                if (response_code==200)
+                if (response_code==200) {
                     persister_->remove(HISTOGRAMS_UPLOADING, persister_->user_data);
+                    return true;
+                }
             }
             else
                 ALOGW("Error %d when sending UPLOAD request\n%s", ret, request_json.c_str());
         }
         else {
             ALOGV("No upload pending");
+            return true;
         }
+        return false;
     }
 };
 
@@ -67,7 +72,7 @@ TFErrorCode GEBackend::Init(const JniCtx& jni, const Settings& settings,
     upload_uri << settings.base_uri;
     upload_uri << json_utils::GetResourceName(extra_upload_info);
     upload_uri << ":uploadTelemetry";
-    WebRequest rq(jni, upload_uri.str(), settings.api_key, kRequestTimeoutMs);
+    WebRequest rq(jni, upload_uri.str(), settings.api_key, kRequestTimeout);
 
     persister_ = settings.c_settings.persistent_cache;
 

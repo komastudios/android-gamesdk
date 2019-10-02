@@ -28,4 +28,6 @@ message Settings {
   optional string default_fp_filename = 5;
   optional int32 initial_request_timeout_ms = 6;
   optional int32 ultimate_request_timeout_ms = 7;
+  optional int32 loading_annotation_index = 8; // 1-based index
+  optional int32 level_annotation_index = 9; // 1-based index
 }

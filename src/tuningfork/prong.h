@@ -37,10 +37,12 @@ public:
     Histogram histogram_;
     TimePoint last_time_;
     Duration duration_;
+    bool loading_;
 
     Prong(InstrumentationKey instrumentation_key = 0,
           const SerializedAnnotation &annotation = {},
-          const TFHistogram& histogram_settings = {});
+          const TFHistogram& histogram_settings = {},
+          bool loading = false);
 
     void Tick(TimePoint t_ns);
 
@@ -52,6 +54,7 @@ public:
 
     void SetInstrumentKey(InstrumentationKey key);
 
+    bool IsLoading() const { return loading_; }
 };
 
 // Simple fixed-size cache
@@ -62,7 +65,8 @@ class ProngCache {
 public:
     ProngCache(size_t size, int max_num_instrumentation_keys,
                const std::vector<TFHistogram>& histogram_settings,
-               const std::function<SerializedAnnotation(uint64_t)>& seralizeId);
+               const std::function<SerializedAnnotation(uint64_t)>& serializeId,
+               const std::function<bool(uint64_t)>& is_loading_id);
 
     Prong *Get(uint64_t compound_id) const;
 

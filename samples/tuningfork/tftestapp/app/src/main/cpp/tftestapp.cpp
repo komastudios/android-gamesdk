@@ -70,16 +70,18 @@ void UploadCallback(const char *tuningfork_log_event, size_t n) {
     }
 }
 
+static bool sLoading = false;
 static int sLevel = proto_tf::LEVEL_1;
 extern "C"
 void SetAnnotations() {
     if(proto_tf::Level_IsValid(sLevel)) {
         Annotation a;
+        a.set_loading(sLoading?proto_tf::LOADING:proto_tf::NOT_LOADING);
         a.set_level((proto_tf::Level)sLevel);
-        auto next_level = sLevel + 1;
-        a.set_next_level((proto_tf::Level)(next_level>proto_tf::Level_MAX?1:next_level));
         auto ser = tf::CProtobufSerialization_Alloc(a);
-        TuningFork_setCurrentAnnotation(&ser);
+        if (TuningFork_setCurrentAnnotation(&ser)!=TFERROR_OK) {
+            ALOGW("Bad annotation");
+        }
         CProtobufSerialization_Free(&ser);
     }
 }
@@ -162,11 +164,19 @@ Java_com_tuningfork_demoapp_TFTestActivity_onChoreographer(JNIEnv */*env*/, jcla
     // After 600 ticks, switch to the next level
     static int tick_count = 0;
     ++tick_count;
-    if(tick_count>=600) {
-        ++sLevel;
-        if(sLevel>proto_tf::Level_MAX) sLevel = proto_tf::LEVEL_1;
+    if(tick_count>=80) {
+        if(tick_count>=90) {
+            // Loading finished
+            sLoading = false;
+            tick_count = 0;
+        }
+        else {
+            // Loading next level
+            sLoading = true;
+            ++sLevel;
+            if(sLevel>proto_tf::Level_MAX) sLevel = proto_tf::LEVEL_1;
+        }
         SetAnnotations();
-        tick_count = 0;
     }
 }
 JNIEXPORT void JNICALL
