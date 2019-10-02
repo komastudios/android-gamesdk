@@ -25,10 +25,10 @@
 namespace tuningfork {
 
 Histogram::Histogram(float start_ms, float end_ms, int num_buckets_between)
-    : start_ms_(start_ms), end_ms_(end_ms),
-      bucket_dt_ms_((end_ms_ - start_ms_) / num_buckets_between),
-      num_buckets_(num_buckets_between + 2),
-      buckets_(num_buckets_), auto_range_(start_ms_ == 0 && end_ms_ == 0), count_(0) {
+    : auto_range_(start_ms == 0 && end_ms == 0), start_ms_(start_ms), end_ms_(end_ms),
+      bucket_dt_ms_((end_ms_ - start_ms_) / (num_buckets_between<=0?1:num_buckets_between)),
+      num_buckets_(num_buckets_between<=0?kDefaultNumBuckets:(num_buckets_between + 2)),
+      buckets_(num_buckets_), count_(0) {
     std::fill(buckets_.begin(), buckets_.end(), 0);
     if (auto_range_)
         samples_.reserve(num_buckets_);
@@ -54,11 +54,12 @@ void Histogram::Add(Sample dt_ms) {
             buckets_[num_buckets_ - 1]++;
         else
             buckets_[i + 1]++;
-        ++count_;
     }
+    ++count_;
 }
 
 void Histogram::CalcBucketsFromSamples() {
+    if (!auto_range_) return;
     Sample min_dt = std::numeric_limits<Sample>::max();
     Sample max_dt = std::numeric_limits<Sample>::min();
     Sample sum = 0;
@@ -84,6 +85,7 @@ void Histogram::CalcBucketsFromSamples() {
         end_ms_ = mean + w / 2;
     }
     auto_range_ = false;
+    count_ = 0;
     for (Sample d: samples_) {
         Add(d);
     }
@@ -113,10 +115,9 @@ std::string Histogram::ToJSON() const {
     return str.str();
 }
 
-void Histogram::Clear(bool autorange) {
+void Histogram::Clear() {
     std::fill(buckets_.begin(), buckets_.end(), 0);
     samples_.clear();
-    auto_range_ = autorange;
     count_ = 0;
 }
 

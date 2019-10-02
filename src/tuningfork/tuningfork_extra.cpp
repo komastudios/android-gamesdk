@@ -339,6 +339,9 @@ TFErrorCode TuningFork_deserializeSettings(const CProtobufSerialization* setting
       = pbsettings.aggregation_strategy.intervalms_or_count;
     settings->aggregation_strategy.max_instrumentation_keys
       = pbsettings.aggregation_strategy.max_instrumentation_keys;
+    // Convert from 1-based to 0 based indices (-1 = not present)
+    settings->loading_annotation_index = pbsettings.loading_annotation_index - 1;
+    settings->level_annotation_index = pbsettings.level_annotation_index - 1;
     return TFERROR_OK;
 }
 

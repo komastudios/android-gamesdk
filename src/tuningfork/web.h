@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "tuningfork/tuningfork.h"
+#include "tuningfork_internal.h"
 #include "jni_helper.h"
 
 namespace tuningfork {
@@ -31,10 +31,10 @@ class WebRequest {
     JavaVM* vm_;
     std::string uri_;
     std::string api_key_;
-    int timeout_ms_;
+    Duration timeout_;
 public:
     WebRequest(JNIEnv* env, jobject context, const std::string& uri,
-               const std::string& api_key, int timeout_ms);
+               const std::string& api_key, Duration timeout);
     WebRequest(const WebRequest& rq);
     WebRequest(WebRequest&& rq) = delete;
     WebRequest& operator=(const WebRequest& rq) = delete;

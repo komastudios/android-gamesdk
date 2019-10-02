@@ -85,6 +85,8 @@ void CopySettings(const TFSettings &c_settings, const std::string& save_dir,
         settings_out.base_uri = kPerformanceParametersBaseUri;
     if (settings_out.base_uri.back()!='/')
         settings_out.base_uri += '/';
+    settings_out.loading_annotation_index = c_settings.loading_annotation_index;
+    settings_out.level_annotation_index = c_settings.level_annotation_index;
 }
 
 namespace apk_utils {

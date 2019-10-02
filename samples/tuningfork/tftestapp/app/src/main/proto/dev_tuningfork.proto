@@ -10,6 +10,12 @@ enum InstrumentKey {
   CHOREOGRAPHER = 4;
 }
 
+enum LoadingState {
+  LOADING_INVALID = 0;
+  NOT_LOADING = 1;
+  LOADING = 2;
+}
+
 enum Level {
   // 0 is not a valid value
   LEVEL_INVALID = 0;
@@ -19,8 +25,8 @@ enum Level {
 };
 
 message Annotation {
-  Level level = 1;
-  Level next_level = 2;
+  LoadingState loading = 1;
+  Level level = 2;
 }
 
 message FidelityParams {
