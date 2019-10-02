@@ -49,7 +49,7 @@ TEST(HistogramTest, AddOneToAutoSizing) {
     Histogram h(0, 0, 8);
     EXPECT_EQ(h.Count(), 0) << "Initialized auto-sizing Histogram not empty";
     h.Add(1.0);
-    EXPECT_EQ(h.Count(), 0) << "Add 0 should not be counted";
+    EXPECT_EQ(h.Count(), 1) << "Add 0 was not counted";
     EXPECT_EQ(h.ToJSON(), kEmptyHistogramJson) << "Empty histogram bad";
     h.CalcBucketsFromSamples();
     EXPECT_EQ(h.Count(), 1) << "Add 1 was not counted";

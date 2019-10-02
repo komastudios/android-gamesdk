@@ -60,8 +60,13 @@ void WriteBase128IntToStream(uint64_t x, std::vector<uint8_t> &bytes) {
 }
 
 AnnotationId DecodeAnnotationSerialization(const SerializedAnnotation &ser,
-                                           const std::vector<uint32_t>& radix_mult) {
+                                           const std::vector<uint32_t>& radix_mult,
+                                           int loading_annotation_index,
+                                           bool* loading) {
     AnnotationId result = 0;
+    if (loading != nullptr) {
+        *loading = false; // False if annotation not present
+    }
     for (int i = 0; i < ser.size(); ++i) {
         int key = GetKeyIndex(ser[i]);
         if (key == kKeyError)
@@ -82,6 +87,9 @@ AnnotationId DecodeAnnotationSerialization(const SerializedAnnotation &ser,
         // We don't allow enums with more that 255 values
         if (value > 0xff)
             return kAnnotationError;
+        if (loading != nullptr && loading_annotation_index == key) {
+            *loading = value > 1;
+        }
         if (key > 0)
             result += radix_mult[key - 1] * value;
         else
@@ -92,7 +100,6 @@ AnnotationId DecodeAnnotationSerialization(const SerializedAnnotation &ser,
 
 ErrorCode SerializeAnnotationId(uint64_t id, SerializedAnnotation& ser,
                           const std::vector<uint32_t>& radix_mult) {
-    int err = 0;
     uint64_t x = id;
     for (int i = 0; i < radix_mult.size(); ++i) {
         auto r = ::lldiv(x, (uint64_t)radix_mult[i]);
@@ -105,6 +112,21 @@ ErrorCode SerializeAnnotationId(uint64_t id, SerializedAnnotation& ser,
         x = r.quot;
     }
     return NO_ERROR;
+}
+
+ErrorCode Value(uint64_t id, uint32_t index, const std::vector<uint32_t>& radix_mult, int& value) {
+    uint64_t x = id;
+    int ix = index;
+    for (int i = 0; i < radix_mult.size(); ++i) {
+        auto r = ::lldiv(x, (uint64_t)radix_mult[i]);
+        if (ix==0) {
+            value = r.rem;
+            return NO_ERROR;
+        }
+        --ix;
+        x = r.quot;
+    }
+    return BAD_INDEX;
 }
 
 void SetUpAnnotationRadixes( std::vector<uint32_t>& radix_mult,

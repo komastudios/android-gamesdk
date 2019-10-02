@@ -24,4 +24,6 @@ message Settings {
   repeated Histogram histograms = 2;
   optional string base_uri = 3;
   optional string api_key = 4;
+  optional int32 loading_annotation_index = 5; // 1-based index
+  optional int32 level_annotation_index = 6; // 1-based index
 }

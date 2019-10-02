@@ -28,15 +28,15 @@
 namespace tuningfork {
 
 WebRequest::WebRequest(JNIEnv* env, jobject context, const std::string& uri,
-                       const std::string& api_key, int timeout_ms) :
+                       const std::string& api_key, Duration timeout) :
         orig_env_(env), thread_env_(nullptr), context_(context), uri_(uri),
-        api_key_(api_key), timeout_ms_(timeout_ms) {
+        api_key_(api_key), timeout_(timeout) {
     orig_env_->GetJavaVM(&vm_);
     context_ = orig_env_->NewGlobalRef(context_);
 }
 WebRequest::WebRequest(const WebRequest& rq) :  vm_(rq.vm_), orig_env_(rq.orig_env_),
                                                 thread_env_(rq.thread_env_), uri_(rq.uri_),
-                                                api_key_(rq.api_key_), timeout_ms_(rq.timeout_ms_){
+                                                api_key_(rq.api_key_), timeout_(rq.timeout_){
     context_ = orig_env_->NewGlobalRef(rq.context_);
 }
 WebRequest::~WebRequest() {
@@ -69,8 +69,9 @@ TFErrorCode WebRequest::Send(const std::string& request_json,
     java::net::HttpURLConnection connection(url.openConnection());
     CHECK_FOR_JNI_EXCEPTION_AND_RETURN(TFERROR_JNI_EXCEPTION);// IOException
     connection.setRequestMethod("POST");
-    connection.setConnectTimeout(timeout_ms_);
-    connection.setReadTimeout(timeout_ms_);
+    auto timeout_ms = std::chrono::duration_cast<std::chrono::milliseconds>(timeout_).count();
+    connection.setConnectTimeout(timeout_ms);
+    connection.setReadTimeout(timeout_ms);
     connection.setDoOutput(true);
     connection.setDoInput(true);
     connection.setUseCaches(false);

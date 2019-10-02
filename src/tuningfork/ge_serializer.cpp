@@ -143,31 +143,62 @@ Json::object TelemetryContextJson(const ProngCache& prong_cache,
 Json::object TelemetryReportJson(const ProngCache& prong_cache,
                                  const SerializedAnnotation& annotation,
                                  bool& empty, Duration& duration) {
-    std::vector<Json::object> histograms;
+    std::vector<Json::object> render_histograms;
+    std::vector<Json::object> loading_histograms;
+    std::vector<Json::object> loading_events;
     duration = Duration::zero();
     for(auto& p: prong_cache.prongs()) {
-        if (p->Count()>0 && p->annotation_==annotation) {
-            std::vector<int32_t> counts;
-            for(auto& c: p->histogram_.buckets())
-                counts.push_back(static_cast<int32_t>(c));
-            histograms.push_back(Json::object {
-                    {"instrument_id", p->instrumentation_key_},
-                    {"counts", counts}
-                });
+        if (p.get()!=nullptr && p->Count()>0 && p->annotation_==annotation) {
+            if (p->histogram_.IsAutoRanging()) {
+                std::vector<int> events; // Ignore fractional milliseconds
+                for(auto& c: p->histogram_.samples())
+                    events.push_back(static_cast<int>(c));
+                loading_events.push_back(Json::object{{"times/ms", events}});
+            }
+            else {
+                std::vector<int32_t> counts;
+                for (auto &c: p->histogram_.buckets())
+                    counts.push_back(static_cast<int32_t>(c));
+                Json::object o {
+                    {"counts",        counts},
+                    {"range",         Json::object{
+                            {"start/ms", p->histogram_.StartMs()},
+                            {"end/ms",   p->histogram_.EndMs()}
+                        }
+                    }};
+                if (p->IsLoading()) {
+                    loading_histograms.push_back(o);
+                }
+                else {
+                    o["instrument_id"] = p->instrumentation_key_;
+                    render_histograms.push_back(o);
+                }
+            }
             duration += p->duration_;
         }
     }
-    empty = (histograms.size()==0);
+    int total_size = render_histograms.size() + loading_histograms.size() + loading_events.size();
+    empty = (total_size==0);
     // Use the average duration for this annotation
     if (!empty)
-        duration /= histograms.size();
-    return Json::object {
-        {"rendering",
-            Json::object {
-                {"render_time_histogram", histograms }
-            }
+        duration /= total_size;
+    Json::object ret;
+    if (render_histograms.size()>0) {
+        ret["rendering"] = Json::object {
+            {"render_time_histogram", render_histograms }
+        };
+    }
+    if (loading_histograms.size()>0 || loading_events.size()>0) {
+        Json::object loading;
+        if (loading_histograms.size()>0) {
+            loading["loading_time_histogram"] = loading_histograms;
         }
-    };
+        if (loading_events.size()>0) {
+            loading["loading_time_series"] = loading_events;
+        }
+        ret["loading"] = loading;
+    }
+    return ret;
 }
 
 Json::object TelemetryJson(const ProngCache& prong_cache,
@@ -203,8 +234,10 @@ Json::object TelemetryJson(const ProngCache& prong_cache,
     std::vector<Json::object> telemetry;
     // Loop over unique annotations
     std::set<SerializedAnnotation> annotations;
-    for(auto& p: prongs.prongs())
-        annotations.insert(p->annotation_);
+    for(auto& p: prongs.prongs()) {
+        if (p.get() != nullptr)
+            annotations.insert(p->annotation_);
+    }
     for(auto& a: annotations) {
         bool empty;
         auto tel = TelemetryJson(prongs, a, fidelity_params, device_info, empty);
