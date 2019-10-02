@@ -172,7 +172,8 @@ public class MainActivity extends AppCompatActivity {
             } else {
               int bytesPerMillisecond = 100 * 1024;
               long sinceStart = System.currentTimeMillis() - _allocationStartedAt;
-              int owed = (int) (sinceStart * bytesPerMillisecond - nativeAllocatedByTest);
+              long target = sinceStart * bytesPerMillisecond;
+              int owed = (int) (target - nativeAllocatedByTest);
               if (owed > 0) {
                 boolean succeeded = nativeConsume(owed);
                 if (succeeded) {
