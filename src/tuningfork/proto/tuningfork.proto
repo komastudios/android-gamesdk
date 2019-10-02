@@ -61,4 +61,8 @@ message Settings {
 
   // The time after which repeat requests are ceased.
   optional int32 ultimate_request_timeout_ms = 7;
+
+  // Reserve 100-120 for indexes into the annotation array.
+  optional int32 loading_annotation_index = 100; // 1-based index
+  optional int32 level_annotation_index = 101; // 1-based index
 }

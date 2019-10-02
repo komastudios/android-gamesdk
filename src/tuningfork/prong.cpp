@@ -26,11 +26,13 @@ namespace tuningfork {
 
 Prong::Prong(InstrumentationKey instrumentation_key,
              const SerializedAnnotation &annotation,
-             const TFHistogram& histogram_settings)
+             const TFHistogram& histogram_settings,
+             bool loading)
         : instrumentation_key_(instrumentation_key), annotation_(annotation),
-          histogram_(histogram_settings),
+          histogram_(histogram_settings, loading),
           last_time_(TimePoint::min()),
-          duration_(Duration::zero()) {}
+          duration_(Duration::zero()),
+          loading_(loading) {}
 
 void Prong::Tick(TimePoint t) {
     if (last_time_ != std::chrono::steady_clock::time_point::min())
@@ -61,15 +63,24 @@ void Prong::SetInstrumentKey(InstrumentationKey key) {
 // Allocate all the prongs up front
 ProngCache::ProngCache(size_t size, int max_num_instrumentation_keys,
                        const std::vector<TFHistogram> &histogram_settings,
-                       const std::function<SerializedAnnotation(uint64_t)> &seralizeId)
+                       const std::function<SerializedAnnotation(uint64_t)> &seralizeId,
+                       const std::function<bool(uint64_t)>& is_loading_id)
     : prongs_(size), max_num_instrumentation_keys_(max_num_instrumentation_keys) {
     // Allocate all the prongs
     InstrumentationKey ikey = 0;
     for (int i = 0; i < size; ++i) {
         auto &p = prongs_[i];
         SerializedAnnotation annotation = seralizeId(i);
-        auto& h = histogram_settings[ikey<histogram_settings.size()?ikey:0];
-        p = std::make_unique<Prong>(ikey, annotation, h);
+        if (is_loading_id(i)) {
+            if (ikey == 0) {
+                // Use the default, auto-sizing histogram for loading times
+                p = std::make_unique<Prong>(ikey, annotation, TFHistogram{}, true);
+            }
+        }
+        else {
+            auto& h = histogram_settings[ikey<histogram_settings.size()?ikey:0];
+            p = std::make_unique<Prong>(ikey, annotation, h);
+        }
         ++ikey;
         if (ikey >= max_num_instrumentation_keys)
             ikey = 0;
@@ -87,7 +98,8 @@ Prong *ProngCache::Get(uint64_t compound_id) const {
 
 void ProngCache::Clear() {
     for (auto &p: prongs_) {
-        p->Clear();
+        if (p.get() != nullptr)
+            p->Clear();
     }
     time_.start = SystemTimePoint();
     time_.end = SystemTimePoint();
@@ -99,7 +111,8 @@ void ProngCache::SetInstrumentKeys(const std::vector<InstrumentationKey>& instru
         for (int i=0; i<instrument_keys.size(); ++i) {
             auto k = instrument_keys[i];
             auto& p = prongs_[i + j*max_num_instrumentation_keys_];
-            p->SetInstrumentKey(k);
+            if (p.get() != nullptr)
+                p->SetInstrumentKey(k);
         }
     }
 }
