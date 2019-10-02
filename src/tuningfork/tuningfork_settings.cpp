@@ -128,6 +128,9 @@ static TFErrorCode DeserializeSettings(const ProtobufSerialization& settings_ser
       = pbsettings.aggregation_strategy.max_instrumentation_keys;
     settings->initial_request_timeout_ms = pbsettings.initial_request_timeout_ms;
     settings->ultimate_request_timeout_ms = pbsettings.ultimate_request_timeout_ms;
+    // Convert from 1-based to 0 based indices (-1 = not present)
+    settings->loading_annotation_index = pbsettings.loading_annotation_index - 1;
+    settings->level_annotation_index = pbsettings.level_annotation_index - 1;
     return TFERROR_OK;
 }
 

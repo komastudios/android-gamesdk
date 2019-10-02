@@ -28,14 +28,14 @@ protected:
     std::mutex mutex_;
     std::condition_variable cv_;
     bool do_quit_;
-    int wait_time_ms_;
 public:
-    Runnable(int wait_time_ms) : wait_time_ms_(wait_time_ms) {}
+    Runnable() {}
     virtual ~Runnable() {}
     virtual void Start();
     virtual void Run();
     virtual void Stop();
-    virtual void DoWork() = 0;
+    // Return the time to wait before the next call
+    virtual Duration DoWork() = 0;
 };
 
 } // namespace tuningfork
