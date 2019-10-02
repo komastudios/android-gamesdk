@@ -13,10 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
 
-import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multiset;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,6 +23,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -48,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
           .add(ImmutableList.of("trim", "oom", "low", "try", "cl", "avail"))
           .build();
 
+  private static final ImmutableList<String> MEMINFO_FIELDS =
+      ImmutableList.of("Cached", "MemFree", "MemAvailable", "SwapFree");
+
   static {
     System.loadLibrary("native-lib");
   }
@@ -60,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
   private long startTime;
   private long allocationStartedAt = -1;
   private int releases;
-  private int scenario = 1;
+  private int scenario = 7;
 
   private static String memoryString(long bytes) {
     return String.format(Locale.getDefault(), "%.1f MB", (float) bytes / (1024 * 1024));
@@ -374,6 +376,14 @@ public class MainActivity extends AppCompatActivity {
     }
     report.put("nativeAllocatedByTest", nativeAllocatedByTest);
     report.put("oom_score", Heuristics.getOomScore(this));
+
+    Map<String, Long> values = Heuristics.processMeminfo();
+    for (Map.Entry<String, Long> pair : values.entrySet()) {
+      String key = pair.getKey();
+      if (MEMINFO_FIELDS.contains(key)) {
+        report.put(key, pair.getValue());
+      }
+    }
     return report;
   }
 
