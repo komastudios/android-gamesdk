@@ -88,9 +88,10 @@ std::string single_tick = R"TF({
   "report": {
     "rendering": {
       "render_time_histogram": [{
-        "counts": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0,
+        "counts": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                    0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "instrument_id": 0
+        "instrument_id": 0,
+        "range": {"end_ms": 40, "start_ms": 10}
       }]
     }
   }
@@ -98,7 +99,8 @@ std::string single_tick = R"TF({
 
 class TestIdProvider : public IdProvider{
   public:
-    uint64_t DecodeAnnotationSerialization(const ProtobufSerialization& ser) const override {
+    uint64_t DecodeAnnotationSerialization(const ProtobufSerialization& ser,
+                                           bool* loading) const override {
         return 0;
     }
     TFErrorCode MakeCompoundId(InstrumentationKey k,
@@ -119,7 +121,8 @@ void CheckProngCaches(const ProngCache& pc0, const ProngCache& pc1) {
 
 TEST(SerializationTest, GEDeserialization) {
     ProngCache prong_cache(1/*size*/, 1/*max_instrumentation_keys*/, {DefaultHistogram()},
-                           [](uint64_t){ return SerializedAnnotation(); });
+                           [](uint64_t){ return SerializedAnnotation(); },
+                           [](uint64_t){ return false; });
     ProtobufSerialization fidelity_params;
     ExtraUploadInfo device_info;
     std::string evt_ser;
@@ -134,7 +137,8 @@ TEST(SerializationTest, GEDeserialization) {
     auto report = report_start + single_tick + report_end;
     EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, report)) << evt_ser << "\n!=\n" << report;
     ProngCache pc(1/*size*/, 1/*max_instrumentation_keys*/, {DefaultHistogram()},
-                           [](uint64_t){ return SerializedAnnotation(); });
+                  [](uint64_t){ return SerializedAnnotation(); },
+                  [](uint64_t){ return false; });
     TestIdProvider id_provider;
     EXPECT_EQ(GESerializer::DeserializeAndMerge(evt_ser, id_provider, pc), TFERROR_OK)
             << "Deserialize single";

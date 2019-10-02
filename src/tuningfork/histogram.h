@@ -25,32 +25,46 @@
 namespace tuningfork {
 
 class Histogram {
+  public:
+
+    enum class Mode {
+        HISTOGRAM = 0, // Store in the buckets directly
+        AUTO_RANGE = 1, // Store a buffer of events until they fill samples_, then bucket
+        EVENTS_ONLY = 2 // Store a circular buffer of events and never bucket them
+    };
+
+  private:
+
     typedef double Sample;
     static constexpr int kAutoSizeNumStdDev = 3;
     static constexpr double kAutoSizeMinBucketSizeMs = 0.1;
+    Mode mode_;
     Sample start_ms_, end_ms_, bucket_dt_ms_;
     uint32_t num_buckets_;
     std::vector<uint32_t> buckets_;
     std::vector<Sample> samples_;
-    bool auto_range_;
     size_t count_;
-public:
+    size_t next_event_index_;
+
+  public:
+
     static constexpr int kDefaultNumBuckets = 30;
 
-    explicit Histogram(float start_ms = 0, float end_ms = 0, int num_buckets_between = kDefaultNumBuckets);
-    explicit Histogram(const TFHistogram&);
+    explicit Histogram(float start_ms = 0, float end_ms = 0, int num_buckets_between = kDefaultNumBuckets,
+                       bool never_bucket = false);
+    explicit Histogram(const TFHistogram&, bool never_bucket = false);
 
     // Add a sample delta time
     void Add(Sample dt_ms);
 
     // Reset the histogram
-    void Clear(bool autorange = false);
+    void Clear();
 
     // Get the total number of samples added so far
     size_t Count() const { return count_; }
 
     // Get the histogram as a JSON object, for testing
-    std::string ToJSON() const;
+    std::string ToDebugJSON() const;
 
     // Use the data we have to construct the bucket ranges. This is called automatically after
     //  sizeAtWhichToRange samples have been collected, if we are auto-ranging.
@@ -66,6 +80,12 @@ public:
     bool operator==(const Histogram& h) const;
 
     const std::vector<uint32_t>& buckets() const { return buckets_;}
+
+    const std::vector<Sample>& samples() const { return samples_;}
+
+    Mode GetMode() const { return mode_; }
+    Sample StartMs() const { return start_ms_; }
+    Sample EndMs() const { return end_ms_; }
 
     friend class ClearcutSerializer;
 };

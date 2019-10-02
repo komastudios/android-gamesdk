@@ -99,6 +99,7 @@ private:
     std::vector<InstrumentationKey> ikeys_;
     std::atomic<int> next_ikey_;
     JniCtx jni_;
+    TimePoint loading_start_;
 public:
     TuningForkImpl(const Settings& settings,
                    const JniCtx& jni,
@@ -145,7 +146,8 @@ private:
 
     bool ShouldSubmit(TimePoint t, Prong *prong);
 
-    AnnotationId DecodeAnnotationSerialization(const SerializedAnnotation &ser) const override;
+    AnnotationId DecodeAnnotationSerialization(const SerializedAnnotation &ser,
+                                               bool* loading) const override;
 
     uint32_t GetInstrumentationKey(uint64_t compoundId) {
         return compoundId % settings_.aggregation_strategy.max_instrumentation_keys;
@@ -164,6 +166,10 @@ private:
     bool keyIsValid(InstrumentationKey key) const;
 
     TFErrorCode GetOrCreateInstrumentKeyIndex(InstrumentationKey key, int& index);
+
+    bool LoadingNextScene() const { return loading_start_!=TimePoint::min(); }
+
+    bool IsLoadingAnnotationId(uint64_t id) const;
 
 };
 
@@ -321,7 +327,8 @@ TuningForkImpl::TuningForkImpl(const Settings& settings,
                                      time_provider_(time_provider),
                                      ikeys_(settings.aggregation_strategy.max_instrumentation_keys),
                                      next_ikey_(0),
-                                     jni_(jni) {
+                                     jni_(jni),
+                                     loading_start_(TimePoint::min()) {
     ALOGI("TuningFork Settings:\n  method: %d\n  interval: %d\n  n_ikeys: %d\n  n_annotations: %zu\n"
           "  n_histograms: %zu\n  base_uri: %s\n  api_key: %s\n  fp filename: %s\n  itimeout: %d\n  utimeout: %d",
           settings.aggregation_strategy.method,
@@ -335,6 +342,11 @@ TuningForkImpl::TuningForkImpl(const Settings& settings,
           settings.initial_request_timeout_ms,
           settings.ultimate_request_timeout_ms
          );
+
+    if (time_provider_ == nullptr) {
+        time_provider_ = s_chrono_time_provider.get();
+    }
+
     last_submit_time_ = time_provider_->Now();
 
     InitHistogramSettings();
@@ -348,10 +360,13 @@ TuningForkImpl::TuningForkImpl(const Settings& settings,
     else
         max_num_prongs_ = max_ikeys * annotation_radix_mult_.back();
     auto serializeId = [this](uint64_t id) { return SerializeAnnotationId(id); };
+    auto isLoading = [this](uint64_t id) { return IsLoadingAnnotationId(id); };
     prong_caches_[0] = std::make_unique<ProngCache>(max_num_prongs_, max_ikeys,
-                                                    settings_.histograms, serializeId);
+                                                    settings_.histograms, serializeId,
+                                                    isLoading);
     prong_caches_[1] = std::make_unique<ProngCache>(max_num_prongs_, max_ikeys,
-                                                    settings_.histograms, serializeId);
+                                                    settings_.histograms, serializeId,
+                                                    isLoading);
     current_prong_cache_ = prong_caches_[0].get();
     live_traces_.resize(max_num_prongs_);
     for (auto &t: live_traces_) t = TimePoint::min();
@@ -377,21 +392,44 @@ TuningForkImpl::TuningForkImpl(const Settings& settings,
 // Return the set annotation id or -1 if it could not be set
 uint64_t TuningForkImpl::SetCurrentAnnotation(const ProtobufSerialization &annotation) {
     current_annotation_ = annotation;
-    auto id = DecodeAnnotationSerialization(annotation);
+    bool loading;
+    auto id = DecodeAnnotationSerialization(annotation, &loading);
     if (id == annotation_util::kAnnotationError) {
         ALOGW("Error setting annotation of size %zu", annotation.size());
         current_annotation_id_ = 0;
         return annotation_util::kAnnotationError;
     }
     else {
+        // Check if we have started or stopped loading
+        if (LoadingNextScene()) {
+            if (!loading) {
+                // We've stopped loading: record the time
+                auto dt = time_provider_->Now() - loading_start_;
+                TraceNanos(current_annotation_id_, dt);
+                int cnt = (int)std::chrono::duration_cast<std::chrono::milliseconds>(dt).count();
+                bool isLoading = IsLoadingAnnotationId(current_annotation_id_);
+                ALOGI("Scene loading %" PRIu64 " (%s) took %d ms", current_annotation_id_, isLoading?"true":"false", cnt);
+                current_annotation_id_ = id;
+                loading_start_ = TimePoint::min();
+            }
+        }
+        else {
+            if (loading) {
+                // We've just switched to a loading screen
+                loading_start_ = time_provider_->Now();
+            }
+        }
         ALOGV("Set annotation id to %" PRIu64, id);
         current_annotation_id_ = id;
         return current_annotation_id_;
     }
 }
 
-AnnotationId TuningForkImpl::DecodeAnnotationSerialization(const SerializedAnnotation &ser) const {
-    auto id = annotation_util::DecodeAnnotationSerialization(ser, annotation_radix_mult_);
+AnnotationId TuningForkImpl::DecodeAnnotationSerialization(const SerializedAnnotation &ser,
+                                                           bool* loading) const {
+    auto id = annotation_util::DecodeAnnotationSerialization(ser, annotation_radix_mult_,
+                                                             settings_.loading_annotation_index,
+                                                             loading);
      // Shift over to leave room for the instrument id
     return id * settings_.aggregation_strategy.max_instrumentation_keys;
 }
@@ -401,6 +439,19 @@ SerializedAnnotation TuningForkImpl::SerializeAnnotationId(AnnotationId id) {
     AnnotationId a = id / settings_.aggregation_strategy.max_instrumentation_keys;
     annotation_util::SerializeAnnotationId(a, ann, annotation_radix_mult_);
     return ann;
+}
+
+bool TuningForkImpl::IsLoadingAnnotationId(AnnotationId id) const {
+    if (settings_.loading_annotation_index==-1) return false;
+    AnnotationId a = id / settings_.aggregation_strategy.max_instrumentation_keys;
+    int value;
+    if (annotation_util::Value(a, settings_.loading_annotation_index,
+                               annotation_radix_mult_, value) == annotation_util::NO_ERROR) {
+        return value > 1;
+    }
+    else {
+        return false;
+    }
 }
 
 TFErrorCode TuningForkImpl::GetFidelityParameters(
@@ -449,6 +500,7 @@ TFErrorCode TuningForkImpl::GetOrCreateInstrumentKeyIndex(InstrumentationKey key
     return TFERROR_INVALID_INSTRUMENT_KEY;
 }
 TFErrorCode TuningForkImpl::StartTrace(InstrumentationKey key, TraceHandle& handle) {
+    if (LoadingNextScene()) return TFERROR_OK; // No recording when loading
     auto err = MakeCompoundId(key, current_annotation_id_, handle);
     if (err!=TFERROR_OK) return err;
     trace_->beginSection("TFTrace");
@@ -457,6 +509,7 @@ TFErrorCode TuningForkImpl::StartTrace(InstrumentationKey key, TraceHandle& hand
 }
 
 TFErrorCode TuningForkImpl::EndTrace(TraceHandle h) {
+    if (LoadingNextScene()) return TFERROR_OK; // No recording when loading
     if (h>=live_traces_.size()) return TFERROR_INVALID_TRACE_HANDLE;
     auto i = live_traces_[h];
     if (i != TimePoint::min()) {
@@ -470,6 +523,7 @@ TFErrorCode TuningForkImpl::EndTrace(TraceHandle h) {
 }
 
 TFErrorCode TuningForkImpl::FrameTick(InstrumentationKey key) {
+    if (LoadingNextScene()) return TFERROR_OK; // No recording when loading
     uint64_t compound_id;
     auto err = MakeCompoundId(key, current_annotation_id_, compound_id);
     if (err!=TFERROR_OK) return err;
@@ -484,6 +538,7 @@ TFErrorCode TuningForkImpl::FrameTick(InstrumentationKey key) {
 }
 
 TFErrorCode TuningForkImpl::FrameDeltaTimeNanos(InstrumentationKey key, Duration dt) {
+    if (LoadingNextScene()) return TFERROR_OK; // No recording when loading
     uint64_t compound_id;
     auto err = MakeCompoundId(key, current_annotation_id_, compound_id);
     if (err!=TFERROR_OK) return err;
@@ -499,7 +554,7 @@ Prong *TuningForkImpl::TickNanos(uint64_t compound_id, TimePoint t) {
     if (p)
         p->Tick(t);
     else
-       ALOGW("Bad id or limit of number of prongs reached");
+        ALOGW("Bad id or limit of number of prongs reached");
     return p;
 }
 
