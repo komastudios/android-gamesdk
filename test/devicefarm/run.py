@@ -1,21 +1,24 @@
 #!/usr/bin/env python3
 
 from datetime import datetime
+import argparse
 import json
+import os
 import re
 import subprocess
 import sys
 import tempfile
 
-def run_test():
+def run_test(cmdline_tail):
     cmdline = [
         'gcloud',
         'firebase',
         'test',
         'android',
         'run',
+        '--format=json',
         '--flags-file', 'flags.yaml',
-    ] + sys.argv[1:]
+    ] + cmdline_tail
 
     print('Stand by...\n')
     proc = subprocess.run(
@@ -29,6 +32,52 @@ def run_test():
         exit(proc.returncode)
 
     return proc.stdout, proc.stderr
+
+
+def get_cmdline_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--all_physical', action='store_true')
+    parser.add_argument('--ppscript')
+    args, cmdline_tail = parser.parse_known_args()
+    if args.all_physical:
+        cmdline_tail += get_all_physical_args()
+    return (args.ppscript, cmdline_tail)
+
+
+def get_all_physical_args():
+    cmdline = [
+        'gcloud',
+        'firebase',
+        'test',
+        'android',
+        'models',
+        'list',
+        '--filter', 'form=PHYSICAL',
+        '--format', 'json(codename,supportedVersionIds)',
+        '--flags-file', 'flags.yaml',
+    ]
+
+    proc = subprocess.run(
+        cmdline,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        encoding='utf-8'
+    )
+    if proc.returncode != 0:
+        print(proc.stderr)
+        exit(proc.returncode)
+
+    result = []
+    devices = json.loads(proc.stdout)
+    for device in devices:
+        result.append('--device')
+        result.append(
+            'model={},version={}'.format(
+                device['codename'],
+                device['supportedVersionIds'][-1]
+            )
+        )
+    return result
 
 
 def display_test_results(stdout, stderr):
@@ -90,14 +139,26 @@ def download_cloud_artifacts(test_info, file_pattern):
             'gsutil',
             'cp',
             line,
-            '{}/{}'.format(tmpdir, name_suffix.replace('/', '_'))
+            name_suffix.replace('/', '_')
         ]
-        proc = subprocess.run(cmdline)
+        proc = subprocess.run(cmdline, cwd=tmpdir)
+    return tmpdir
+
+
+def postprocess(dir_name, ppscript):
+    if not ppscript:
+        return
+    script = os.path.join(os.getcwd(), 'postprocessing', ppscript)
+    proc = subprocess.run(script, cwd=dir_name, encoding='utf-8')
+    if proc.returncode != 0:
+        exit(proc.returncode)
 
 
 if __name__ == '__main__':
-    stdout, stderr = run_test()
+    ppscript, cmdline_tail = get_cmdline_args()
+    stdout, stderr = run_test(cmdline_tail)
     display_test_results(stdout, stderr)
     test_info = get_test_info(stderr)
     display_test_info(test_info)
-    download_cloud_artifacts(test_info, 'logcat')
+    dir_name = download_cloud_artifacts(test_info, 'logcat')
+    postprocess(dir_name, ppscript)

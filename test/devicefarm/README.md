@@ -26,7 +26,7 @@ Once the SDK is installed login to gCloud with:
 gcloud auth login
 ```
 
-## Running A Test
+## Running a Test
 
 To verify that everything is set up correctly, run the Hello World test on the
 device farm.
@@ -44,7 +44,7 @@ cd ..
 ```
 
 Then use run.py to run it on the device farm. The `flags.yaml` file is provided and
-contains useful defaults. This file should always used but additional (or overriding)
+contains useful defaults. This file is always used but additional (or overriding)
 flags can be specified on the command line. Run:
 
 ```
@@ -96,9 +96,36 @@ gcloud firebase test android models list
 
 returns a table with the available devices and API levels.
 
+### I want to run a test on all available physical devices!
+
+Use the flag `--all_physical`. One caveat is that the used argument group (if
+any) must NOT specify any devices, or you will get a cryptic error. `args.yaml`
+specifies `test-robo-none` which can be used:
+
+
+```
+./run.py args.yaml:test-robo-none --all_physical
+```
+
+When using `--all_physical`, each device will use the latest available API level
+for that specific device. Language and orientation will still be the defaults
+(`en`, `portrait`).
+
+### Post-processing
+
+Use the flag `--ppscript` to specify a post-processing script. The script should
+be located inside the `postprocessing` folder. After test completion, the script
+will be ran from the newly created directory containing the data for the test.
+
+This example generates device info JSON files for all available physical devices:
+
+```
+./run.py args.yaml:test-deviceinfo-none --all_physical --ppscript=get_json.py
+```
+
 ### Troubleshooting
 
-If you recieve an error along the lines of:
+If you receive an error along the lines of:
 
 ```
 ERROR: (gcloud.firebase.test.android.run) Unable to access the test environment catalog: ResponseError 403: Not authorized for project gamesdk-testing
@@ -106,4 +133,3 @@ ERROR: (gcloud.firebase.test.android.run) Unable to access the test environment 
 
 This indicates that you do not have access to the FTL project that is specified
 in `flags.yaml`. Please contact your project administrator to rectify this.
-

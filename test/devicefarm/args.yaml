@@ -1,13 +1,21 @@
-test-robo:
+test-robo-none:
     app: hello/app/build/outputs/apk/debug/app-debug.apk
     type: robo
     timeout: 60
+
+test-robo:
+    include: [test-robo-none]
     device:
         - {model: taimen, version: 27}
         - {model: walleye, version: 28}
         - {model: blueline, version: 28}
 
 test-robo-onlypixel:
-    include: [test-robo]
+    include: [test-robo-none]
     device:
         - {model: sailfish, version: 28}
+
+test-deviceinfo-none:
+    app: ../../samples/device_info_app/app/build/outputs/apk/debug/app-debug.apk
+    type: robo
+    timeout: 60
