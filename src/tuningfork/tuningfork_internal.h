@@ -58,6 +58,8 @@ struct Settings {
     const TFCache* persistent_cache;
     std::string base_uri;
     std::string api_key;
+    int32_t loading_annotation_index;
+    int32_t level_annotation_index;
 };
 
 // Extra information that is uploaded with the ClearCut proto.
@@ -76,7 +78,8 @@ struct ExtraUploadInfo {
 
 class IdProvider {
   public:
-    virtual uint64_t DecodeAnnotationSerialization(const ProtobufSerialization& ser) const = 0;
+    virtual uint64_t DecodeAnnotationSerialization(const ProtobufSerialization& ser,
+                                                   bool* loading = nullptr) const = 0;
     virtual TFErrorCode MakeCompoundId(InstrumentationKey k,
                                        uint64_t annotation_id,
                                        uint64_t& id);

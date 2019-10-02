@@ -65,8 +65,8 @@ void Runnable::Start() {
 void Runnable::Run() {
     while (!do_quit_) {
         std::unique_lock<std::mutex> lock(mutex_);
-        DoWork();
-        cv_.wait_for(lock, std::chrono::milliseconds(wait_time_ms_));
+        auto wait_time = DoWork();
+        cv_.wait_for(lock, wait_time);
     }
 }
 void Runnable::Stop() {
@@ -79,7 +79,7 @@ void Runnable::Stop() {
     thread_->join();
 }
 
-UploadThread::UploadThread(Backend *backend, const ExtraUploadInfo& extraInfo) : Runnable(1000),
+UploadThread::UploadThread(Backend *backend, const ExtraUploadInfo& extraInfo) : Runnable(),
                                                backend_(backend),
                                                current_fidelity_params_(0),
                                                upload_callback_(nullptr),
@@ -99,7 +99,7 @@ void UploadThread::Start() {
     Runnable::Start();
 }
 
-void UploadThread::DoWork() {
+Duration UploadThread::DoWork() {
     if (ready_) {
         UpdateGLVersion(); // Needs to be done with an active gl context
         std::string evt_ser_json;
@@ -120,6 +120,7 @@ void UploadThread::DoWork() {
         }
         ready_ = nullptr;
     }
+    return std::chrono::seconds(1);
 }
 
 // Returns true if we submitted, false if we are waiting for a previous submit to complete

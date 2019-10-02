@@ -115,6 +115,8 @@ struct TFSettings {
   const TFCache* persistent_cache;
   const char* base_uri;
   const char* api_key;
+  int32_t loading_annotation_index; // -1 if not present
+  int32_t level_annotation_index; // -1 if not present
 };
 
 #ifdef __cplusplus

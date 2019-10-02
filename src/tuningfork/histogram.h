@@ -28,11 +28,11 @@ class Histogram {
     typedef double Sample;
     static constexpr int kAutoSizeNumStdDev = 3;
     static constexpr double kAutoSizeMinBucketSizeMs = 0.1;
+    bool auto_range_;
     Sample start_ms_, end_ms_, bucket_dt_ms_;
     uint32_t num_buckets_;
     std::vector<uint32_t> buckets_;
     std::vector<Sample> samples_;
-    bool auto_range_;
     size_t count_;
 public:
     static constexpr int kDefaultNumBuckets = 30;
@@ -44,7 +44,7 @@ public:
     void Add(Sample dt_ms);
 
     // Reset the histogram
-    void Clear(bool autorange = false);
+    void Clear();
 
     // Get the total number of samples added so far
     size_t Count() const { return count_; }
@@ -66,6 +66,12 @@ public:
     bool operator==(const Histogram& h) const;
 
     const std::vector<uint32_t>& buckets() const { return buckets_;}
+
+    const std::vector<Sample>& samples() const { return samples_;}
+
+    bool IsAutoRanging() const { return auto_range_; }
+    Sample StartMs() const { return start_ms_; }
+    Sample EndMs() const { return end_ms_; }
 
     friend class ClearcutSerializer;
 };

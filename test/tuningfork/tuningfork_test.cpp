@@ -232,7 +232,8 @@ TEST(TuningForkTest, EndToEnd) {
          "counts": [
            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0,
            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-         "instrument_id": 64000
+         "instrument_id": 64000,
+         "range": {"end/ms": 40, "start/ms": 10}
         }]
       }
     }
@@ -263,7 +264,8 @@ TEST(TuningForkTest, TestEndToEndWithAnnotation) {
          "counts": [
            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0,
            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-         "instrument_id": 64001
+         "instrument_id": 64001,
+         "range": {"end/ms": 40, "start/ms": 10}
         }]
       }
     }
@@ -293,7 +295,8 @@ TEST(TuningForkTest, TestEndToEndTimeBased) {
         "render_time_histogram": [{
          "counts": [
            0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0],
-         "instrument_id": 64000
+         "instrument_id": 64000,
+         "range": {"end/ms": 150, "start/ms": 50}
         }]
       }
     }
