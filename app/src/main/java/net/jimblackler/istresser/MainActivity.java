@@ -371,7 +371,7 @@ public class MainActivity extends AppCompatActivity {
   private JSONObject standardInfo() throws JSONException {
     updateRecords();
     JSONObject report = new JSONObject();
-    report.put("time", System.currentTimeMillis() - this.startTime);
+    report.put("time", System.currentTimeMillis() - startTime);
     report.put("nativeAllocated", Debug.getNativeHeapAllocatedSize());
     boolean paused = allocationStartedAt == -1;
     if (paused) {
