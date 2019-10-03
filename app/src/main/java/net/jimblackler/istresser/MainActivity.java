@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
           .add(ImmutableList.of("trim", "oom", "low", "try", "cl", "avail"))
           .add(ImmutableList.of("memfree", "cached", "avail2"))
           .add(ImmutableList.of("memfree", "cached", "avail", "avail2"))
+          .add(ImmutableList.of("trim", "oom", "low", "try", "cl", "avail", "cached", "avail2"))
           .build();
 
   private static final ImmutableList<String> MEMINFO_FIELDS =
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
   private long startTime;
   private long allocationStartedAt = -1;
   private int releases;
-  private int scenario = 10;
+  private int scenario = 16;
 
   private static String memoryString(long bytes) {
     return String.format(Locale.getDefault(), "%.1f MB", (float) bytes / (1024 * 1024));
@@ -174,19 +175,19 @@ public class MainActivity extends AppCompatActivity {
           long _allocationStartedAt = allocationStartedAt;
           if (_allocationStartedAt != -1) {
             if (scenarioGroup("oom") && Heuristics.oomCheck(MainActivity.this)) {
-              releaseMemory();
+              releaseMemory(report, "oom");
             } else if (scenarioGroup("low") && Heuristics.lowMemoryCheck(MainActivity.this)) {
-              releaseMemory();
+              releaseMemory(report, "low");
             } else if (scenarioGroup("try") && !tryAlloc(1024 * 1024 * 32)) {
-              releaseMemory();
+              releaseMemory(report, "try");
             } else if (scenarioGroup("cl") && Heuristics.commitLimitCheck()) {
-              releaseMemory();
+              releaseMemory(report, "cl");
             } else if (scenarioGroup("avail") && Heuristics.availMemCheck(MainActivity.this)) {
-              releaseMemory();
+              releaseMemory(report, "avail");
             } else if (scenarioGroup("cached") && Heuristics.cachedCheck(MainActivity.this)) {
-              releaseMemory();
+              releaseMemory(report, "cached");
             } else if (scenarioGroup("avail2") && Heuristics.memAvailableCheck(MainActivity.this)) {
-              releaseMemory();
+              releaseMemory(report, "avail2");
             } else {
               int bytesPerMillisecond = 100 * 1024;
               long sinceStart = System.currentTimeMillis() - _allocationStartedAt;
@@ -322,7 +323,7 @@ public class MainActivity extends AppCompatActivity {
       report.put("onTrimMemory", level);
 
       if (scenarioGroup("trim")) {
-        releaseMemory();
+        releaseMemory(report, "trim");
       }
       resultsStream.println(report);
 
@@ -338,16 +339,21 @@ public class MainActivity extends AppCompatActivity {
     return strings.contains(group);
   }
 
-  private void releaseMemory() {
+  private void releaseMemory(JSONObject report, String trigger) {
+    try {
+      report.put("trigger", trigger);
+    } catch (JSONException e) {
+      throw new RuntimeException(e);
+    }
     allocationStartedAt = -1;
     runAfterDelay(() -> {
-      JSONObject report;
+      JSONObject report2;
       try {
-        report = standardInfo();
+        report2 = standardInfo();
       } catch (JSONException e) {
         throw new RuntimeException(e);
       }
-      resultsStream.println(report);
+      resultsStream.println(report2);
       if (nativeAllocatedByTest > 0) {
         nativeAllocatedByTest = 0;
         releases++;
