@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -108,10 +109,18 @@ public class MainActivity extends AppCompatActivity {
           }
         }
         scenario = launchIntent.getIntExtra("scenario", 0);
-        report.put("scenario", scenario);
-      }
-      JSONObject build = new JSONObject();
 
+      }
+
+      report.put("scenario", scenario);
+
+      JSONArray groupsOut = new JSONArray();
+      for(String group : groups.get(scenario - 1)) {
+        groupsOut.put(group);
+      }
+      report.put("groups", groupsOut);
+
+      JSONObject build = new JSONObject();
       build.put("ID", Build.ID);
       build.put("DISPLAY", Build.DISPLAY);
       build.put("PRODUCT", Build.PRODUCT);
