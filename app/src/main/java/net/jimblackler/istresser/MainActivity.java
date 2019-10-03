@@ -42,9 +42,14 @@ public class MainActivity extends AppCompatActivity {
           .add(ImmutableList.of("try"))
           .add(ImmutableList.of("cl"))
           .add(ImmutableList.of("avail"))
+          .add(ImmutableList.of("memfree"))
+          .add(ImmutableList.of("cached"))
+          .add(ImmutableList.of("avail2"))
           .add(ImmutableList.of("trim", "oom", "low", "try"))
           .add(ImmutableList.of("trim", "oom", "low", "try", "cl"))
           .add(ImmutableList.of("trim", "oom", "low", "try", "cl", "avail"))
+          .add(ImmutableList.of("memfree", "cached", "avail2"))
+          .add(ImmutableList.of("memfree", "cached", "avail", "avail2"))
           .build();
 
   private static final ImmutableList<String> MEMINFO_FIELDS =
@@ -62,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
   private long startTime;
   private long allocationStartedAt = -1;
   private int releases;
-  private int scenario = 7;
+  private int scenario = 10;
 
   private static String memoryString(long bytes) {
     return String.format(Locale.getDefault(), "%.1f MB", (float) bytes / (1024 * 1024));
@@ -168,6 +173,10 @@ public class MainActivity extends AppCompatActivity {
             } else if (scenarioGroup("cl") && Heuristics.commitLimitCheck()) {
               releaseMemory();
             } else if (scenarioGroup("avail") && Heuristics.availMemCheck(MainActivity.this)) {
+              releaseMemory();
+            } else if (scenarioGroup("cached") && Heuristics.cachedCheck(MainActivity.this)) {
+              releaseMemory();
+            } else if (scenarioGroup("avail2") && Heuristics.memAvailableCheck(MainActivity.this)) {
               releaseMemory();
             } else {
               int bytesPerMillisecond = 100 * 1024;

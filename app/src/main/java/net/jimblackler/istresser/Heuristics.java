@@ -105,4 +105,23 @@ public class Heuristics {
     ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activity);
     return memoryInfo.availMem < memoryInfo.threshold * 2;
   }
+
+  static boolean cachedCheck(Activity activity) {
+    Long value = processMeminfo().get("Cached");
+    if (value == null || value == 0) {
+      return false;
+    }
+    ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activity);
+    return value < memoryInfo.threshold / 1024;
+  }
+
+  static boolean memAvailableCheck(Activity activity) {
+    Long value = processMeminfo().get("MemAvailable");
+    if (value == null || value == 0) {
+      return false;
+    }
+    ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activity);
+    return value < memoryInfo.threshold * 2 / 1024;
+  }
+
 }
