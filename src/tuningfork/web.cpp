@@ -27,39 +27,22 @@
 
 namespace tuningfork {
 
-WebRequest::WebRequest(JNIEnv* env, jobject context, const std::string& uri,
+WebRequest::WebRequest(const JniCtx& jni, const std::string& uri,
                        const std::string& api_key, int timeout_ms) :
-        orig_env_(env), thread_env_(nullptr), context_(context), uri_(uri),
-        api_key_(api_key), timeout_ms_(timeout_ms) {
-    orig_env_->GetJavaVM(&vm_);
-    context_ = orig_env_->NewGlobalRef(context_);
+    jni_(jni), uri_(uri), api_key_(api_key), timeout_ms_(timeout_ms) {
 }
-WebRequest::WebRequest(const WebRequest& rq) :  vm_(rq.vm_), orig_env_(rq.orig_env_),
-                                                thread_env_(rq.thread_env_), uri_(rq.uri_),
+WebRequest::WebRequest(const WebRequest& rq) :  jni_(rq.jni_),
+                                                uri_(rq.uri_),
                                                 api_key_(rq.api_key_), timeout_ms_(rq.timeout_ms_){
-    context_ = orig_env_->NewGlobalRef(rq.context_);
-}
-WebRequest::~WebRequest() {
-    orig_env_->DeleteGlobalRef(context_);
-}
-void WebRequest::AttachToThread() {
-    JNIEnv* env;
-    vm_->AttachCurrentThread(&env, NULL);
-    thread_env_ = env;
-}
-void WebRequest::DetachFromThread() {
-    vm_->DetachCurrentThread();
-    thread_env_ = nullptr;
 }
 
 TFErrorCode WebRequest::Send(const std::string& request_json,
                  int& response_code, std::string& response_body) {
     ALOGI("Connecting to: %s", uri_.c_str());
-    JNIEnv* env = thread_env_ ? thread_env_ : orig_env_;
 
     using namespace jni;
 
-    Helper jni(env, context_);
+    Helper jni(jni_.Env(), jni_.Ctx());
 
     // url = new URL(uri)
     auto url = java::net::URL(uri_, jni);
@@ -80,10 +63,10 @@ TFErrorCode WebRequest::Send(const std::string& request_json,
     connection.setRequestProperty( "Content-Type", "application/json");
 
     std::string package_name;
-    apk_utils::GetVersionCode(env, context_, &package_name);
+    apk_utils::GetVersionCode(jni_, &package_name);
     if (!package_name.empty())
       connection.setRequestProperty( "X-Android-Package", package_name);
-    auto signature = apk_utils::GetSignature(env, context_);
+    auto signature = apk_utils::GetSignature(jni_);
     if (!signature.empty())
       connection.setRequestProperty( "X-Android-Cert", signature);
 

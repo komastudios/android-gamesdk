@@ -98,6 +98,7 @@ struct TFHistogram {
 };
 struct TFAggregationStrategy {
     enum TFSubmissionPolicy {
+      INVALID = 0,
       TIME_BASED = 1,
       TICK_BASED = 2
     };
@@ -107,14 +108,79 @@ struct TFAggregationStrategy {
     uint32_t n_annotation_enum_size;
     uint32_t* annotation_enum_size;
 };
+
+typedef void (*ProtoCallback)(const CProtobufSerialization*);
+typedef void (*UploadCallback)(const char*, size_t n);
+struct SwappyTracer;
+typedef void (*SwappyTracerFn)(const SwappyTracer*);
+
+/**
+ * @brief Initialization settings
+ *   Zero any values that are not being used.
+ */
 struct TFSettings {
+  /**
+   * Destructor
+   * Settings returned by TuningFork_findSettingsInAPK will have this set.
+   * Called by TFSettings_Free.
+   */
   void (*dealloc)(TFSettings*);
+  /// How and when to collect data.
   TFAggregationStrategy aggregation_strategy;
+  /// Size of the histograms array
   uint32_t n_histograms;
+  /**
+   * Array of histogram settings, one for each instrument key.
+   * If a histogram is not present for a needed instrument key, a default one with
+   * 30 buckets is used.
+   */
   TFHistogram* histograms;
+  /**
+   * Cache object to be used for upload data persistence.
+   * If unset, data is persisted to /data/local/tmp/tuningfork
+   */
   const TFCache* persistent_cache;
+  /**
+   * Base URI for download and upload
+   * If unset, https://performanceparameters.googleapis.com/v1/ is used.
+   */
   const char* base_uri;
+  /**
+   * API key used in the X-Goog-Api-Key property of all requests.
+   * If unset, this property will not be set.
+   */
   const char* api_key;
+  /**
+   * The address of the Swappy_injectTracers function.
+   * If this is unset, you need to call TuningFork_tick yourself.
+   * If it is set, telemetry for 4 instrument keys is automatically recorded.
+   */
+  SwappyTracerFn swappy_tracer_fn;
+  /// Set to SWAPPY_PACKED_VERSION if you are using Swappy.
+  uint32_t swappy_lib_version;
+  /**
+   * Name of the fidelity parameter file to use by default.
+   * This is used if no parameters could be downloaded and there are no saved parameters
+   *  from a previous download.
+   * The file should be a binary protobuf serialization located in assets/tuningfork
+   * You do not need to prepend assets/tuningfork to the name here.
+   * If set, a fidelity parameter download thread will be started automatically.
+   * If unset, you must call TuningFork_getFidelityParameters manually.
+   */
+  const char* fp_default_file_name;
+  /**
+   * Callback
+   * If set, this is called with the fidelity parameters that are downloaded.
+   */
+  ProtoCallback fidelity_params_callback;
+  /**
+   * Timeout for initial fidelity parameter download.
+   * After this time, the callback is called either with downloaded parameters, if they could be obtained,
+   * or with the defaults.
+   */
+  int initial_timeout_ms;
+  /// Timeout after which no more download attempts are made.
+  int ultimate_timeout_ms;
 };
 
 #ifdef __cplusplus
@@ -137,7 +203,9 @@ TFErrorCode TuningFork_init_internal(const TFSettings *settings, JNIEnv* env, jo
 void TUNINGFORK_VERSION_SYMBOL();
 
 // TuningFork_init must be called before any other functions.
-// If 'settings' is a null pointer, settings are extracted from the app.
+// If @p settings is a null pointer, settings are extracted from the app.
+// Also, if settings.aggregation_strategy.method is invalid, settings are extracted from the
+//  app and merged with the passed-in settings.
 // Ownership of 'settings' remains with the caller.
 // Returns TFERROR_OK if successful, TFERROR_NO_SETTINGS if no settings could be found.
 static inline TFErrorCode TuningFork_init(const TFSettings *settings, JNIEnv* env, jobject context) {
@@ -146,6 +214,9 @@ static inline TFErrorCode TuningFork_init(const TFSettings *settings, JNIEnv* en
     TUNINGFORK_VERSION_SYMBOL();
     return TuningFork_init_internal(settings, env, context);
 }
+
+// The functions below will return TFERROR_TUNINGFORK_NOT_INITIALIZED if TuningFork_init
+//  has not first been called.
 
 // Blocking call to get fidelity parameters from the server.
 // Note that once fidelity parameters are downloaded, any timing information is recorded
@@ -156,12 +227,11 @@ static inline TFErrorCode TuningFork_init(const TFSettings *settings, JNIEnv* en
 // when they are done with it.
 // The parameter request is sent to:
 //  ${url_base}+'applications/'+package_name+'/apks/'+version_number+':generateTuningParameters'.
-// 'api_key', if present, will be passed as an HTTP request property with key 'X-Goog-Api-Key'.
 // Returns TFERROR_TIMEOUT if there was a timeout before params could be downloaded.
 // Returns TFERROR_OK on success.
-TFErrorCode TuningFork_getFidelityParameters(JNIEnv* env, jobject context,
-                             const CProtobufSerialization *defaultParams,
-                             CProtobufSerialization *params, uint32_t timeout_ms);
+TFErrorCode TuningFork_getFidelityParameters(
+    const CProtobufSerialization *defaultParams,
+    CProtobufSerialization *params, uint32_t timeout_ms);
 
 // Protobuf serialization of the current annotation.
 // Returns TFERROR_INVALID_ANNOTATION if annotation is inconsistent with the settings.
@@ -198,6 +268,10 @@ TFErrorCode TuningFork_endTrace(TFTraceHandle h);
 //  one.
 // Returns TFERROR_UPLOAD_TOO_FREQUENT if less than a minute has elapsed since the previous upload.
 TFErrorCode TuningFork_flush();
+
+// Set a callback to be called on a separate thread every time TuningFork
+//  performs an upload.
+TFErrorCode TuningFork_setUploadCallback(UploadCallback cbk);
 
 #ifdef __cplusplus
 }

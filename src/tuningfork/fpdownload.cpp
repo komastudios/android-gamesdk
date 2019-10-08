@@ -96,11 +96,11 @@ TFErrorCode DecodeResponse(const std::string& response, std::vector<uint8_t>& fp
     return TFERROR_OK;
 }
 
-TFErrorCode DownloadFidelityParams(JNIEnv* env, jobject context, const std::string& uri,
+TFErrorCode DownloadFidelityParams(const JniCtx& jni, const std::string& uri,
                                    const std::string& api_key, const ExtraUploadInfo& request_info,
                                    int timeout_ms, std::vector<uint8_t>& fps,
                                    std::string& experiment_id) {
-    WebRequest wq(env, context, uri, api_key, timeout_ms);
+    WebRequest wq(jni, uri, api_key, timeout_ms);
     int response_code;
     std::string body;
     TFErrorCode ret =wq.Send(RequestJson(request_info), response_code, body);
@@ -115,7 +115,7 @@ TFErrorCode DownloadFidelityParams(JNIEnv* env, jobject context, const std::stri
     return ret;
 }
 
-TFErrorCode ParamsLoader::GetFidelityParams(JNIEnv* env, jobject context,
+TFErrorCode ParamsLoader::GetFidelityParams(const JniCtx& jni,
                                             const ExtraUploadInfo& info,
                                             const std::string& base_url,
                                             const std::string& api_key,
@@ -126,7 +126,7 @@ TFErrorCode ParamsLoader::GetFidelityParams(JNIEnv* env, jobject context,
     url << base_url;
     url << json_utils::GetResourceName(info);
     url << url_rpcname;
-    return DownloadFidelityParams(env, context, url.str(), api_key, info, timeout_ms,
+    return DownloadFidelityParams(jni, url.str(), api_key, info, timeout_ms,
                                   fidelity_params, experiment_id);
 }
 
