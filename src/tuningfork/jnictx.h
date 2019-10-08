@@ -16,29 +16,23 @@
 
 #pragma once
 
-#include <sstream>
 #include <jni.h>
-#include <string>
-#include <memory>
-
-#include "tuningfork_internal.h"
-#include "web.h"
 
 namespace tuningfork {
-
-class UltimateUploader;
-
-// Google Endpoint backend
-class GEBackend : public Backend {
-public:
-    TFErrorCode Init(const JniCtx& jni, const Settings& settings,
-                     const ExtraUploadInfo& extra_upload_info);
-    ~GEBackend() override;
-    TFErrorCode Process(const std::string &json_event) override;
-
-private:
-    std::shared_ptr<UltimateUploader> ultimate_uploader_;
-    const TFCache* persister_;
+    
+// a class that stores an app's JVM and context
+class JniCtx {
+    JavaVM* jvm_;
+    jobject jctx_; // Global reference to the app's context
+  public:
+    JniCtx(JNIEnv* env, jobject ctx);
+    JniCtx(const JniCtx& rhs);
+    JniCtx& operator=(const JniCtx& rhs) = delete;
+    ~JniCtx();
+    JavaVM* Jvm() const { return jvm_; }
+    jobject Ctx() const { return jctx_; }
+    // Calling Env() will call AttachCurrentThread automatically.
+    JNIEnv* Env() const;
 };
 
-} //namespace tuningfork {
+} // namespace tuningfork

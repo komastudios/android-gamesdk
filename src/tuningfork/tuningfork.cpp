@@ -98,8 +98,10 @@ private:
     ITimeProvider *time_provider_;
     std::vector<InstrumentationKey> ikeys_;
     std::atomic<int> next_ikey_;
+    JniCtx jni_;
 public:
     TuningForkImpl(const Settings& settings,
+                   const JniCtx& jni,
                    const ExtraUploadInfo& extra_upload_info,
                    Backend *backend,
                    ParamsLoader *loader,
@@ -110,9 +112,8 @@ public:
     void InitAnnotationRadixes();
 
     // Returns true if the fidelity params were retrieved
-    TFErrorCode GetFidelityParameters(JNIEnv* env, jobject context,
-                               const ProtobufSerialization& defaultParams,
-                               ProtobufSerialization &fidelityParams, uint32_t timeout_ms);
+    TFErrorCode GetFidelityParameters(const ProtobufSerialization& defaultParams,
+                    ProtobufSerialization &fidelityParams, uint32_t timeout_ms);
 
     // Returns the set annotation id or -1 if it could not be set
     uint64_t SetCurrentAnnotation(const ProtobufSerialization &annotation);
@@ -132,6 +133,9 @@ public:
 
     TFErrorCode Flush(TimePoint t, bool upload);
 
+    const JniCtx& GetJniCtx() const {
+        return jni_;
+    }
 private:
     Prong *TickNanos(uint64_t compound_id, TimePoint t);
 
@@ -166,46 +170,45 @@ private:
 static std::unique_ptr<TuningForkImpl> s_impl;
 static std::unique_ptr<ChronoTimeProvider> s_chrono_time_provider
         = std::make_unique<ChronoTimeProvider>();
-static GEBackend sBackend;
-static ParamsLoader sLoader;
+static GEBackend s_backend;
+static ParamsLoader s_loader;
+static ExtraUploadInfo s_extra_upload_info;
 
 TFErrorCode Init(const Settings &settings,
-          const ExtraUploadInfo& extra_upload_info,
-          Backend *backend,
-          ParamsLoader *loader,
-          ITimeProvider *time_provider) {
-    s_impl = std::make_unique<TuningForkImpl>(settings, extra_upload_info, backend,
-                                              loader, time_provider);
+                 const JniCtx& jni,
+                 const ExtraUploadInfo* extra_upload_info,
+                 Backend *backend,
+                 ParamsLoader *loader,
+                 ITimeProvider *time_provider) {
+    if (extra_upload_info == nullptr) {
+        s_extra_upload_info = UploadThread::BuildExtraUploadInfo(jni);
+        extra_upload_info = &s_extra_upload_info;
+    }
+    if (backend == nullptr) {
+        bool backend_inited = s_backend.Init(jni, settings, *extra_upload_info)==TFERROR_OK;
+        if(backend_inited) {
+            ALOGI("TuningFork.GoogleEndpoint: OK");
+            backend = &s_backend;
+            loader = &s_loader;
+        }
+        else {
+            ALOGW("TuningFork.GoogleEndpoint: FAILED");
+        }
+    }
+    if (time_provider == nullptr) {
+        time_provider = s_chrono_time_provider.get();
+    }
+    s_impl = std::make_unique<TuningForkImpl>(settings, jni, *extra_upload_info,
+                                              backend, loader, time_provider);
     return TFERROR_OK;
 }
 
-TFErrorCode Init(const TFSettings &c_settings, JNIEnv* env, jobject context) {
-    ExtraUploadInfo extra_upload_info = UploadThread::BuildExtraUploadInfo(env, context);
-    std::string default_save_dir = file_utils::GetAppCacheDir(env, context) + "/tuningfork";
-    Settings settings;
-    CopySettings(c_settings, default_save_dir, settings);
-    bool backendInited = sBackend.Init(env, context, settings, extra_upload_info)==TFERROR_OK;
-
-    Backend* backend = nullptr;
-    ParamsLoader* loader = nullptr;
-    if(backendInited) {
-        ALOGI("TuningFork.GoogleEndpoint: OK");
-        backend = &sBackend;
-        loader = &sLoader;
-    }
-    else {
-        ALOGW("TuningFork.GoogleEndpoint: FAILED");
-    }
-    return Init(settings, extra_upload_info, backend, loader);
-}
-
-TFErrorCode GetFidelityParameters(JNIEnv* env, jobject context,
-                           const ProtobufSerialization &defaultParams,
+TFErrorCode GetFidelityParameters(const ProtobufSerialization &defaultParams,
                            ProtobufSerialization &params, uint32_t timeout_ms) {
     if (!s_impl) {
         return TFERROR_TUNINGFORK_NOT_INITIALIZED;
     } else {
-        return s_impl->GetFidelityParameters(env, context, defaultParams,
+        return s_impl->GetFidelityParameters(defaultParams,
                                              params, timeout_ms);
     }
 }
@@ -271,11 +274,22 @@ TFErrorCode Flush() {
     }
 }
 
+const JniCtx& GetJniCtx() {
+    if (!s_impl) {
+        static JniCtx empty_jni(nullptr, nullptr);
+        return empty_jni;
+    } else {
+        return s_impl->GetJniCtx();
+    }
+}
+
 TuningForkImpl::TuningForkImpl(const Settings& settings,
+                               const JniCtx& jni,
                                const ExtraUploadInfo& extra_upload_info,
                                Backend *backend,
                                ParamsLoader *loader,
-                               ITimeProvider *time_provider) : settings_(settings),
+                               ITimeProvider *time_provider) :
+                                     settings_(settings),
                                      trace_(gamesdk::Trace::create()),
                                      backend_(backend),
                                      loader_(loader),
@@ -283,10 +297,8 @@ TuningForkImpl::TuningForkImpl(const Settings& settings,
                                      current_annotation_id_(0),
                                      time_provider_(time_provider),
                                      ikeys_(settings.aggregation_strategy.max_instrumentation_keys),
-                                     next_ikey_(0) {
-    if (time_provider_ == nullptr) {
-        time_provider_ = s_chrono_time_provider.get();
-    }
+                                     next_ikey_(0),
+                                     jni_(jni) {
     last_submit_time_ = time_provider_->Now();
 
     InitHistogramSettings();
@@ -355,7 +367,7 @@ SerializedAnnotation TuningForkImpl::SerializeAnnotationId(AnnotationId id) {
     return ann;
 }
 
-TFErrorCode TuningForkImpl::GetFidelityParameters(JNIEnv* env, jobject context,
+TFErrorCode TuningForkImpl::GetFidelityParameters(
                                            const ProtobufSerialization& defaultParams,
                                            ProtobufSerialization &params_ser, uint32_t timeout_ms) {
     if(loader_) {
@@ -368,10 +380,10 @@ TFErrorCode TuningForkImpl::GetFidelityParameters(JNIEnv* env, jobject context,
           ALOGE("The API key in Tuning Fork TFSettings is invalid");
           return TFERROR_BAD_PARAMETER;
         }
-        auto result = loader_->GetFidelityParams(env, context,
-                                 UploadThread::BuildExtraUploadInfo(env, context),
-                                 settings_.base_uri, settings_.api_key, params_ser,
-                                 experiment_id, timeout_ms);
+        auto result = loader_->GetFidelityParams(jni_,
+            UploadThread::BuildExtraUploadInfo(jni_),
+            settings_.base_uri, settings_.api_key, params_ser,
+            experiment_id, timeout_ms);
         upload_thread_.SetCurrentFidelityParams(params_ser, experiment_id);
         return result;
     }

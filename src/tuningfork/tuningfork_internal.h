@@ -26,6 +26,8 @@
 #include <vector>
 #include <jni.h>
 
+#include "jnictx.h"
+
 class AAsset;
 
 namespace tuningfork {
@@ -91,7 +93,7 @@ public:
 class ParamsLoader {
 public:
     virtual ~ParamsLoader() {};
-    virtual TFErrorCode GetFidelityParams(JNIEnv* env, jobject context,
+    virtual TFErrorCode GetFidelityParams(const JniCtx& jni,
                                           const ExtraUploadInfo& info,
                                           const std::string& url_base,
                                           const std::string& api_key,
@@ -107,12 +109,6 @@ public:
     virtual void Print(const ProtobufSerialization &tuningfork_log_event);
 };
 
-class DebugBackend : public Backend {
-public:
-    ~DebugBackend() override;
-    TFErrorCode Process(const std::string& tuningfork_log_event) override;
-};
-
 // You can provide your own time source rather than steady_clock by inheriting this and passing
 //   it to init.
 class ITimeProvider {
@@ -121,13 +117,13 @@ public:
     virtual std::chrono::system_clock::time_point SystemNow() = 0;
 };
 
-// If no backend is passed, a debug version is used which returns empty fidelity params
-// and outputs histograms in protobuf text format to logcat.
+// If no backend is passed, the default backend, which uploads to the google endpoint is used.
 // If no timeProvider is passed, std::chrono::steady_clock is used.
-TFErrorCode Init(const Settings &settings, const ExtraUploadInfo& extra_info,
-                 Backend *backend = 0, ParamsLoader *loader = 0, ITimeProvider *time_provider = 0);
-
-TFErrorCode Init(const TFSettings &settings, JNIEnv* env, jobject context);
+// If no env is passed, there can be no upload or download.
+TFErrorCode Init(const Settings &settings, const JniCtx& jni,
+                 const ExtraUploadInfo* extra_info = 0,
+                 Backend *backend = 0, ParamsLoader *loader = 0,
+                 ITimeProvider *time_provider = 0);
 
 // Use save_dir to initialize the persister if it's not already set
 void CopySettings(const TFSettings &c_settings, const std::string& save_dir,
@@ -139,8 +135,7 @@ void CopySettings(const TFSettings &c_settings, const std::string& save_dir,
 //  as being associated with those parameters.
 // If you subsequently call GetFidelityParameters, any data that is already collected will be
 // submitted to the backend.
-TFErrorCode GetFidelityParameters(JNIEnv* env, jobject context,
-                           const ProtobufSerialization& defaultParams,
+TFErrorCode GetFidelityParameters(const ProtobufSerialization& defaultParams,
                            ProtobufSerialization &params, uint32_t timeout_ms);
 
 // Protobuf serialization of the current annotation
@@ -166,4 +161,23 @@ TFErrorCode Flush();
 // The default histogram that is used if the user doesn't specify one in Settings
 TFHistogram DefaultHistogram();
 
+// Get the object that holds JNI env and context.
+// Tuning fork must have been initialized.
+const JniCtx& GetJniCtx();
+
 } // namespace tuningfork
+
+extern "C" {
+
+TFErrorCode CInit(const TFSettings *c_settings, JNIEnv* env, jobject context);
+
+// Initialize tuning fork and automatically inject tracers into Swappy.
+// There will be at least 2 tick points added.
+TFErrorCode TuningFork_initWithSwappy(const TFSettings* settings,
+                                      JNIEnv* env, jobject context);
+
+// Load default fidelity params from either the saved file or the file in settings.fp_default_filename, then
+//  start the download thread.
+TFErrorCode TuningFork_getDefaultsFromAPKAndDownloadFPs(const TFSettings* settings, JNIEnv* env, jobject context);
+
+} // extern "C"

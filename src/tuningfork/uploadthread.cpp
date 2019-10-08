@@ -33,26 +33,27 @@
 
 namespace tuningfork {
 
-DebugBackend::~DebugBackend() {}
-
-TFErrorCode DebugBackend::Process(const std::string &s) {
-    if (s.size() == 0) return TFERROR_BAD_PARAMETER;
-    // Split the serialization into <128-byte chunks to avoid logcat line
-    //  truncation.
-    constexpr size_t maxStrLen = 128;
-    int n = (s.size() + maxStrLen - 1) / maxStrLen; // Round up
-    for (int i = 0, j = 0; i < n; ++i) {
-        std::stringstream str;
-        str << "(TJS" << (i + 1) << "/" << n << ")";
-        int m = std::min(s.size() - j, maxStrLen);
-        str << s.substr(j, m);
-        j += m;
-        ALOGI("%s", str.str().c_str());
+class DebugBackend : public Backend {
+public:
+    TFErrorCode Process(const std::string& s) override {
+        if (s.size() == 0) return TFERROR_BAD_PARAMETER;
+        // Split the serialization into <128-byte chunks to avoid logcat line
+        //  truncation.
+        constexpr size_t maxStrLen = 128;
+        int n = (s.size() + maxStrLen - 1) / maxStrLen; // Round up
+        for (int i = 0, j = 0; i < n; ++i) {
+            std::stringstream str;
+            str << "(TJS" << (i + 1) << "/" << n << ")";
+            int m = std::min(s.size() - j, maxStrLen);
+            str << s.substr(j, m);
+            j += m;
+            ALOGI("%s", str.str().c_str());
+        }
+        return TFERROR_OK;
     }
-    return TFERROR_OK;
-}
+};
 
-std::unique_ptr<DebugBackend> s_debug_backend = std::make_unique<DebugBackend>();
+static std::unique_ptr<DebugBackend> s_debug_backend = std::make_unique<DebugBackend>();
 
 void Runnable::Start() {
     if (thread_) {
@@ -166,7 +167,7 @@ std::string getSystemPropViaGet(const char* key) {
 }
 
 /* static */
-ExtraUploadInfo UploadThread::BuildExtraUploadInfo(JNIEnv* env, jobject context) {
+ExtraUploadInfo UploadThread::BuildExtraUploadInfo(const JniCtx& jni_) {
     ExtraUploadInfo extra_info;
     // Total memory
     std::string s = slurpFile("/proc/meminfo");
@@ -194,7 +195,7 @@ ExtraUploadInfo UploadThread::BuildExtraUploadInfo(JNIEnv* env, jobject context)
     extra_info.build_version_sdk = getSystemPropViaGet("ro.build.version.sdk");
     extra_info.build_fingerprint = getSystemPropViaGet("ro.build.fingerprint");
 
-    extra_info.session_id = UniqueId(env);
+    extra_info.session_id = UniqueId(jni_.Env());
 
     extra_info.cpu_max_freq_hz.clear();
     for(int index = 1;;++index) {
@@ -209,7 +210,7 @@ ExtraUploadInfo UploadThread::BuildExtraUploadInfo(JNIEnv* env, jobject context)
         extra_info.cpu_max_freq_hz.push_back(freq*1000); // File is in kHz
     }
 
-    extra_info.apk_version_code = apk_utils::GetVersionCode(env, context,
+    extra_info.apk_version_code = apk_utils::GetVersionCode(jni_,
         &extra_info.apk_package_name);
 
     extra_info.tuningfork_version = TUNINGFORK_PACKED_VERSION;

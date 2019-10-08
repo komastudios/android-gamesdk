@@ -18,6 +18,7 @@
 #include "tuningfork/tuningfork_extra.h"
 #include "tuningfork/protobuf_util.h"
 #include "tuningfork_internal.h"
+#include "tuningfork_utils.h"
 #include <jni.h>
 
 #include <cstdlib>
@@ -27,30 +28,51 @@ extern "C" {
 
 namespace tf = tuningfork;
 
-TFErrorCode TuningFork_init_internal(const TFSettings *settings, JNIEnv* env, jobject context) {
-    if (settings) {
-        return tf::Init(*settings, env, context);
-    } else {
-        TFSettings apk_settings;
-        if (TuningFork_findSettingsInApk(env, context, &apk_settings)==TFERROR_OK)
-            return tf::Init(apk_settings, env, context);
-        else
+TFErrorCode CInit(const TFSettings *c_settings, JNIEnv* env, jobject context) {
+    tf::JniCtx jni(env, context);
+    std::string default_save_dir = tf::file_utils::GetAppCacheDir(jni) + "/tuningfork";
+    tf::Settings settings;
+    CopySettings(*c_settings, default_save_dir, settings);
+    return tf::Init(settings, jni);
+}
+TFErrorCode TuningFork_init_internal(const TFSettings *c_settings_in, JNIEnv* env, jobject context) {
+    TFSettings c_settings;
+    if (c_settings_in != nullptr) {
+        c_settings = *c_settings_in;
+    }
+    bool get_settings_from_apk = c_settings_in == nullptr ||
+                        c_settings_in->aggregation_strategy.method==TFAggregationStrategy::INVALID ;
+    if (get_settings_from_apk) {
+        if (TuningFork_findSettingsInApk(env, context, &c_settings)!=TFERROR_OK)
             return TFERROR_NO_SETTINGS;
     }
+    TFErrorCode err;
+    if (c_settings.swappy_tracer_fn!=nullptr) {
+        err = TuningFork_initWithSwappy(&c_settings, env, context);
+    } else {
+        err = CInit(&c_settings, env, context);
+    }
+    if (err!=TFERROR_OK)
+        return err;
+    if (c_settings.fp_default_file_name!=nullptr) {
+        err = TuningFork_getDefaultsFromAPKAndDownloadFPs(&c_settings, env, context);
+    }
+    if (get_settings_from_apk) {
+        c_settings.dealloc(&c_settings);
+    }
+    return err;
 }
 
 // Blocking call to get fidelity parameters from the server.
 // Note that once fidelity parameters are downloaded, any timing information is recorded
 //  as being associated with those parameters.
-TFErrorCode TuningFork_getFidelityParameters(JNIEnv* env, jobject context,
-                                      const CProtobufSerialization *defaultParams,
+TFErrorCode TuningFork_getFidelityParameters(const CProtobufSerialization *defaultParams,
                                       CProtobufSerialization *params, uint32_t timeout_ms) {
     tf::ProtobufSerialization defaults;
     if(defaultParams)
         defaults = tf::ToProtobufSerialization(*defaultParams);
     tf::ProtobufSerialization s;
-    TFErrorCode result = tf::GetFidelityParameters(env, context,
-                                                   defaults, s, timeout_ms);
+    TFErrorCode result = tf::GetFidelityParameters(defaults, s, timeout_ms);
     if (result==TFERROR_OK && params)
         tf::ToCProtobufSerialization(s, *params);
     return result;

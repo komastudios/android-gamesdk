@@ -13,7 +13,7 @@
  */
 
 #include "tuningfork/protobuf_util.h"
-#include "tuningfork/tuningfork_extra.h"
+#include "tuningfork/tuningfork.h"
 #include "swappy/swappyGL.h"
 #include "swappy/swappyGL_extra.h"
 #include "full/tuningfork.pb.h"
@@ -40,7 +40,7 @@ bool swappy_enabled = false;
 
 namespace {
 
-// Parameters used in Tuning Fork initialization using TuningFork_initFromAssetsWithSwappy.
+// Parameters used in Tuning Fork initialization
 const char defaultFPName[] = "dev_tuningfork_fidelityparams_3.bin";
 const int initialTimeoutMs = 1000;
 const int ultimateTimeoutMs = 100000;
@@ -119,51 +119,20 @@ jobject tf_activity;
 void InitTf(JNIEnv* env, jobject activity) {
     SwappyGL_init(env, activity);
     swappy_enabled = SwappyGL_isEnabled();
-    // The following tests TuningFork_saveOrDeleteFidelityParamsFile
-    bool overrideDefaultFPs = false;
-    bool resetDefaultFPs = false;
-    if (overrideDefaultFPs) {
-        CProtobufSerialization fps;
-        TuningFork_findFidelityParamsInApk(env, activity, "dev_tuningfork_fidelityparams_6.bin",
-                                           &fps);
-        if (TuningFork_saveOrDeleteFidelityParamsFile(env, activity, &fps) != TFERROR_OK)
-            ALOGW("Couldn't override defaults file");
-    }
-    if (resetDefaultFPs) {
-        if (TuningFork_saveOrDeleteFidelityParamsFile(env, activity, NULL) != TFERROR_OK)
-            ALOGW("Couldn't delete defaults file");
-    }
-    // end of test
+    TFSettings settings {};
     if (swappy_enabled) {
-        TFErrorCode err = TuningFork_initFromAssetsWithSwappy(env, activity,
-                                                              &SwappyGL_injectTracer, 0,
-                                                              SetAnnotations, defaultFPName,
-                                                              SetFidelityParams,
-                                                              initialTimeoutMs, ultimateTimeoutMs);
-        if (err==TFERROR_OK) {
-            TuningFork_setUploadCallback(UploadCallback);
-            SetAnnotations();
-        } else {
-            ALOGW("Error initializing TuningFork: %d", err);
-        }
-    } else {
-        ALOGW("Couldn't enable Swappy.");
-        // Passing a null value for settings will cause them to be loaded from the APK
-        auto err = TuningFork_init(nullptr, env, activity);
-        if (err!=TFERROR_OK) {
-            ALOGE("Error initializing Tuning Fork : err = %d", err);
-            return;
-        }
-        CProtobufSerialization defaultFP = {};
-        err = TuningFork_findFidelityParamsInApk(env, activity, defaultFPName, &defaultFP);
-        if (err!=TFERROR_OK) {
-            ALOGE("Error finding fidelity params : err = %d", err);
-            return;
-        }
-        TuningFork_startFidelityParamDownloadThread(env, activity, &defaultFP,
-            SetFidelityParams, 1000, 10000);
+        settings.swappy_tracer_fn = &SwappyGL_injectTracer;
+    }
+    settings.fp_default_file_name = defaultFPName;
+    settings.fidelity_params_callback = SetFidelityParams;
+    settings.initial_timeout_ms = initialTimeoutMs;
+    settings.ultimate_timeout_ms = ultimateTimeoutMs;
+    TFErrorCode err = TuningFork_init(&settings, env, activity);
+    if (err==TFERROR_OK) {
         TuningFork_setUploadCallback(UploadCallback);
         SetAnnotations();
+    } else {
+        ALOGW("Error initializing TuningFork: %d", err);
     }
     // If we don't wait for fidelity params here, the download thread will set the them after we
     //   have already started rendering with a different set of parameters.
