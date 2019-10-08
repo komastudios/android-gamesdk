@@ -22,86 +22,39 @@
 extern "C" {
 #endif
 
-typedef void (*VoidCallback)();
-typedef void (*ProtoCallback)(const CProtobufSerialization*);
-typedef void (*UploadCallback)(const char*, size_t n);
-struct SwappyTracer;
-typedef void (*SwappyTracerFn)(const SwappyTracer*);
-
 // Load settings from assets/tuningfork/tuningfork_settings.bin.
-// Ownership of settings is passed to the caller: call
-//  CProtobufSerialization_Free to deallocate any memory.
+// Ownership of @p settings is passed to the caller: call
+//  TFSettings_Free to deallocate data stored in the struct.
 // Returns TFERROR_OK and fills 'settings' if the file could be loaded.
 // Returns TFERROR_NO_SETTINGS if the file was not found.
-TFErrorCode TuningFork_findSettingsInApk(JNIEnv* env, jobject context,
-                                         TFSettings* settings);
+TFErrorCode TuningFork_findSettingsInApk(JNIEnv* env, jobject ctx, TFSettings* settings);
 
 // Load fidelity params from assets/tuningfork/<filename>
-// Ownership of serializations is passed to the caller: call
-//  CProtobufSerialization_Free to deallocate any memory.
-TFErrorCode TuningFork_findFidelityParamsInApk(JNIEnv* env, jobject context,
+// Ownership of @p fp is passed to the caller: call
+//  CProtobufSerialization_Free to deallocate data stored in the struct.
+TFErrorCode TuningFork_findFidelityParamsInApk(JNIEnv* env, jobject ctx,
                                                const char* filename,
                                                CProtobufSerialization* fp);
-
-// Initialize tuning fork and automatically inject tracers into Swappy.
-// There will be at least 2 tick points added.
-// Pass a pointer to the Swappy_initTracer function as the 4th argument and
-//  the Swappy version number as the 5th.
-// frame_callback, if non-NULL, is called once per frame during the Swappy
-//  startFrame tracer callback.
-TFErrorCode TuningFork_initWithSwappy(const TFSettings* settings,
-                                      JNIEnv* env, jobject context,
-                                      SwappyTracerFn swappy_tracer_fn,
-                                      uint32_t swappy_lib_version,
-                                      VoidCallback frame_callback);
-
-// Set a callback to be called on a separate thread every time TuningFork
-//  performs an upload.
-TFErrorCode TuningFork_setUploadCallback(UploadCallback cbk);
 
 // Download fidelity parameters on a separate thread.
 // A download thread is activated to retrieve fidelity params and retries are
 //    performed until a download is successful or a timeout occurs.
 // Downloaded params are stored locally and used in preference of default
 //    params when the app is started in future.
-// fp_default_file_name is the name of the binary fidelity params file that
-//  will be used if there is no download connection and there are no saved params.
-//  This file must be in assets/tuningfork (but only use the file name here).
+// default_params is a protobuf serialization containing the fidelity params that
+//  will be used if there is no download connection and there are no saved parameters.
 // fidelity_params_callback is called with any downloaded params or with default /
 //  saved params.
 // initialTimeoutMs is the time to wait for an initial download. The fidelity_params_callback
 //  will be called after this time with the default / saved params if no params
 //  could be downloaded..
 // ultimateTimeoutMs is the time after which to stop retrying the download.
-void TuningFork_startFidelityParamDownloadThread(JNIEnv* env, jobject context,
-                                      const CProtobufSerialization* defaultParams,
+void TuningFork_startFidelityParamDownloadThread(
+                                      const CProtobufSerialization* default_params,
                                       ProtoCallback fidelity_params_callback,
                                       int initialTimeoutMs, int ultimateTimeoutMs);
 
-// This function calls initWithSwappy and also performs the following:
-// 1) Settings and default fidelity params are retrieved from the APK.
-// 2) A download thread is activated to retrieve fidelity params and retries are
-//    performed until a download is successful or a timeout occurs.
-// 3) Downloaded params are stored locally and used in preference of default
-//    params when the app is started in future.
-// fp_default_file_name is the name of the binary fidelity params file that
-//  will be used if there is no download connection and there are no saved params.
-//  This file must be in assets/tuningfork (but only use the file name here).
-// fidelity_params_callback is called with any downloaded params or with default /
-//  saved params.
-// initialTimeoutMs is the time to wait for an initial download. The fidelity_params_callback
-//  will be called after this time with the default / saved params if no params
-//  could be downloaded..
-// ultimateTimeoutMs is the time after which to stop retrying the download.
-TFErrorCode TuningFork_initFromAssetsWithSwappy(JNIEnv* env, jobject context,
-                             SwappyTracerFn swappy_tracer_fn,
-                             uint32_t swappy_lib_version,
-                             VoidCallback frame_callback,
-                             const char* fp_default_file_name,
-                             ProtoCallback fidelity_params_callback,
-                             int initialTimeoutMs, int ultimateTimeoutMs);
-
-// The initFromAssetsWithSwappy function will save fidelity params to a file
+// The TuningFork_init function will save fidelity params to a file
 //  for use when a download connection is not available. With this function,
 //  you can replace or delete any saved file. To delete the file, pass fps=NULL.
 TFErrorCode TuningFork_saveOrDeleteFidelityParamsFile(JNIEnv* env, jobject context,

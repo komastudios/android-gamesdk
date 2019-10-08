@@ -31,7 +31,7 @@ class UltimateUploader;
 // Google Endpoint backend
 class GEBackend : public Backend {
 public:
-    TFErrorCode Init(JNIEnv* env, jobject context, const Settings& settings,
+    TFErrorCode Init(const JniCtx& jni, const Settings& settings,
                      const ExtraUploadInfo& extra_upload_info);
     ~GEBackend() override;
     TFErrorCode Process(const std::string &json_event) override;

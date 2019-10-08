@@ -16,8 +16,6 @@
 
 #pragma once
 
-#include "tuningfork/tuningfork.h"
-
 #include "tuningfork_internal.h"
 
 #include <string>
@@ -37,14 +35,14 @@ namespace apk_utils {
     // Get an asset from this APK's asset directory.
     // Returns NULL if the asset could not be found.
     // Asset_close must be called once the asset is no longer needed.
-    AAsset* GetAsset(JNIEnv* env, jobject context, const char* name);
+    AAsset* GetAsset(const JniCtx& jni, const char* name);
 
     // Get the app's version code. Also fills packageNameStr, if not null, with
     // the package name.
-    int GetVersionCode(JNIEnv *env, jobject context, std::string* packageNameStr = nullptr);
+    int GetVersionCode(const JniCtx& jni, std::string* packageNameStr = nullptr);
 
     // Get the app's SHA1 signature
-    std::string GetSignature(JNIEnv *env, jobject context);
+    std::string GetSignature(const JniCtx& jni);
 
 } // namespace apk_utils
 
@@ -65,7 +63,7 @@ namespace file_utils {
     bool SaveBytesToFile(std::string file_name, const CProtobufSerialization* params);
 
     // Call NativeContext.getCacheDir via JNI
-    std::string GetAppCacheDir(JNIEnv* env, jobject context);
+    std::string GetAppCacheDir(const JniCtx& ctx);
 
 } // namespace file_utils
 
