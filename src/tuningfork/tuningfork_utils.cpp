@@ -128,8 +128,8 @@ namespace apk_utils {
     // Get an asset from this APK's asset directory.
     // Returns NULL if the asset could not be found.
     // Asset_close must be called once the asset is no longer needed.
-    AAsset* GetAsset(JNIEnv* env, jobject context, const char* name) {
-        AssetManagerHelper mgr(env, context);
+    AAsset* GetAsset(const JniCtx& jni, const char* name) {
+        AssetManagerHelper mgr(jni.Env(), jni.Ctx());
         AAsset* asset = mgr.GetAsset(name);
         if (asset == nullptr) {
             ALOGW("Can't find %s in APK", name);
@@ -140,10 +140,10 @@ namespace apk_utils {
 
     // Get the app's version code. Also fills packageNameStr with the package name
     //  if it is non-null.
-    int GetVersionCode(JNIEnv *env, jobject jcontext, std::string* packageNameStr) {
+    int GetVersionCode(const JniCtx& jni_ctx, std::string* packageNameStr) {
         using namespace jni;
-        Helper jni(env, jcontext);
-        android::content::Context context(jcontext, jni);
+        Helper jni(jni_ctx.Env(), jni_ctx.Ctx());
+        android::content::Context context(jni_ctx.Ctx(), jni);
         auto pm = context.getPackageManager();
         CHECK_FOR_JNI_EXCEPTION_AND_RETURN(0);
         std::string package_name = context.getPackageName().C();
@@ -158,10 +158,10 @@ namespace apk_utils {
         return code;
     }
 
-    std::string GetSignature(JNIEnv *env, jobject jcontext) {
+    std::string GetSignature(const JniCtx& jni_ctx) {
         using namespace jni;
-        Helper jni(env, jcontext);
-        android::content::Context context(jcontext, jni);
+        Helper jni(jni_ctx.Env(), jni_ctx.Ctx());
+        android::content::Context context(jni_ctx.Ctx(), jni);
         auto pm = context.getPackageManager();
         CHECK_FOR_JNI_EXCEPTION_AND_RETURN("");
         auto package_name = context.getPackageName();
@@ -208,11 +208,12 @@ namespace file_utils {
         struct stat buffer;
         return (stat(fname.c_str(), &buffer)==0);
     }
-    std::string GetAppCacheDir(JNIEnv* env, jobject context) {
-        jclass contextClass = env->GetObjectClass(context);
+    std::string GetAppCacheDir(const JniCtx& jni_ctx) {
+        JNIEnv* env = jni_ctx.Env();
+        jclass contextClass = env->GetObjectClass(jni_ctx.Ctx());
         jmethodID getCacheDir = env->GetMethodID( contextClass, "getCacheDir",
             "()Ljava/io/File;" );
-        jobject cache_dir = env->CallObjectMethod( context, getCacheDir );
+        jobject cache_dir = env->CallObjectMethod( jni_ctx.Ctx(), getCacheDir );
 
         jclass fileClass = env->FindClass( "java/io/File" );
         jmethodID getPath = env->GetMethodID( fileClass, "getPath", "()Ljava/lang/String;" );

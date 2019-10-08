@@ -25,9 +25,7 @@ public:
         CheckUploadPending();
     }
     void Run() override {
-        request_.AttachToThread();
         Runnable::Run();
-        request_.DetachFromThread();
     }
     void CheckUploadPending() {
         CProtobufSerialization uploading_hists_ser;
@@ -53,7 +51,7 @@ public:
     }
 };
 
-TFErrorCode GEBackend::Init(JNIEnv* env, jobject context, const Settings& settings,
+TFErrorCode GEBackend::Init(const JniCtx& jni, const Settings& settings,
                            const ExtraUploadInfo& extra_upload_info) {
 
     if (settings.base_uri.empty()) {
@@ -69,7 +67,7 @@ TFErrorCode GEBackend::Init(JNIEnv* env, jobject context, const Settings& settin
     upload_uri << settings.base_uri;
     upload_uri << json_utils::GetResourceName(extra_upload_info);
     upload_uri << ":uploadTelemetry";
-    WebRequest rq(env, context, upload_uri.str(), settings.api_key, kRequestTimeoutMs);
+    WebRequest rq(jni, upload_uri.str(), settings.api_key, kRequestTimeoutMs);
 
     persister_ = settings.persistent_cache;
 
