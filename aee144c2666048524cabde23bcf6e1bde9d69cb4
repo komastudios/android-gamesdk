@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1577dd95_b1e8cc05",
+        "filename": "src/tuningfork/clearcut_backend.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-08T15:17:18Z",
+      "side": 0,
+      "message": "Clearcut isn\u0027t used any more. This file is removed in another CL.",
+      "revId": "aee144c2666048524cabde23bcf6e1bde9d69cb4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}

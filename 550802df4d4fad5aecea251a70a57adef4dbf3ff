@@ -1,0 +1,118 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ff2208b3_042ba8e7",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-08T15:17:18Z",
+      "side": 1,
+      "message": "Does this need to be here? Can you put it in unity_tuningfork.h instead?",
+      "revId": "550802df4d4fad5aecea251a70a57adef4dbf3ff",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6321f2ab_dad83dd5",
+        "filename": "src/tuningfork/unity_tuningfork.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-08T15:17:18Z",
+      "side": 1,
+      "message": "You need to be sure that functions using the env are not called from a separate thread, if you want to cache it.\nIt\u0027s safer to cache the vm and call AttachCurrentThread each time you want an env. See JniCtx in https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1136370/1/src/tuningfork/tuningfork_internal.h",
+      "revId": "550802df4d4fad5aecea251a70a57adef4dbf3ff",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5c924e1c_193c016d",
+        "filename": "src/tuningfork/unity_tuningfork.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-08T15:17:18Z",
+      "side": 1,
+      "message": "Variable naming: member variables have a trailing underscore. Statics should be s_*.",
+      "range": {
+        "startLine": 35,
+        "startChar": 0,
+        "endLine": 37,
+        "endChar": 28
+      },
+      "revId": "550802df4d4fad5aecea251a70a57adef4dbf3ff",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a2d05388_f757743c",
+        "filename": "src/tuningfork/unity_tuningfork.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-08T15:17:18Z",
+      "side": 1,
+      "message": "Should be static?",
+      "revId": "550802df4d4fad5aecea251a70a57adef4dbf3ff",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cdeecfc2_5cd514ca",
+        "filename": "src/tuningfork/unity_tuningfork.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-08T15:17:18Z",
+      "side": 1,
+      "message": "We should also check for SwappyVk_injectTracer",
+      "range": {
+        "startLine": 107,
+        "startChar": 0,
+        "endLine": 109,
+        "endChar": 5
+      },
+      "revId": "550802df4d4fad5aecea251a70a57adef4dbf3ff",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d8ce0dfd_6b87d2be",
+        "filename": "src/tuningfork/unity_tuningfork.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-08T15:17:18Z",
+      "side": 1,
+      "message": "If Swappy isn\u0027t available, what do we do on the C# side?",
+      "revId": "550802df4d4fad5aecea251a70a57adef4dbf3ff",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
