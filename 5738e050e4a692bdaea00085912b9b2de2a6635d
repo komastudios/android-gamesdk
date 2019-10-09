@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1b8fe256_755ec0b7",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-10-09T09:27:37Z",
+      "side": 1,
+      "message": "Is there a way now to call tuningfork init with passing swappy tracer only and without passing the rest of settings?",
+      "range": {
+        "startLine": 211,
+        "startChar": 0,
+        "endLine": 211,
+        "endChar": 101
+      },
+      "revId": "5738e050e4a692bdaea00085912b9b2de2a6635d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
