@@ -27,4 +27,8 @@ void SWAPPY_VERSION_SYMBOL() {
     // undefined symbol, as the name of the function depends on the version.
 }
 
+uint32_t Swappy_version() {
+    return SWAPPY_PACKED_VERSION;
+}
+
 } // extern "C"

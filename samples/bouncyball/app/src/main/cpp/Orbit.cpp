@@ -60,6 +60,11 @@ Java_com_prefabulated_bouncyball_OrbitActivity_nInit(JNIEnv *env, jobject activi
     // Get the Renderer instance to create it
     Renderer::getInstance();
 
+    // Should never happen
+    if (Swappy_version() != SWAPPY_PACKED_VERSION) {
+        ALOGE("Inconsistent Swappy versions");
+    }
+
     SwappyGL_init(env, activity);
 
     SwappyTracer tracers;
