@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "9442f705_74d99a5e",
+        "filename": "src/tuningfork/tuningfork.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 291,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-10-09T14:32:06Z",
+      "side": 1,
+      "message": "Is there overhead to keep jnictx in separate .cpp and .h files? If i need to find jnictx implementation i need to go through all files to find it.",
+      "range": {
+        "startLine": 286,
+        "startChar": 1,
+        "endLine": 291,
+        "endChar": 1
+      },
+      "revId": "ca69d69be1d1831c04fe503906f3a9c75bd9bed4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "939a6328_3d405ff6",
         "filename": "src/tuningfork/tuningfork_internal.h",
         "patchSetId": 3
