@@ -74,7 +74,8 @@ enum TFErrorCode {
     TFERROR_PREVIOUS_UPLOAD_PENDING = 20,
     TFERROR_UPLOAD_TOO_FREQUENT = 21,
     TFERROR_NO_SUCH_KEY = 22,
-    TFERROR_BAD_FILE_OPERATION = 23
+    TFERROR_BAD_FILE_OPERATION = 23,
+    TFERROR_BAD_SETTINGS = 24
 };
 
 typedef TFErrorCode (*PFnTFCacheGet)(uint64_t key, CProtobufSerialization* value,
@@ -90,25 +91,6 @@ struct TFCache {
   PFnTFCacheRemove remove;
 };
 
-struct TFHistogram {
-    int32_t instrument_key;
-    float bucket_min;
-    float bucket_max;
-    int32_t n_buckets;
-};
-struct TFAggregationStrategy {
-    enum TFSubmissionPolicy {
-      INVALID = 0,
-      TIME_BASED = 1,
-      TICK_BASED = 2
-    };
-    TFSubmissionPolicy method;
-    uint32_t intervalms_or_count;
-    uint32_t max_instrumentation_keys;
-    uint32_t n_annotation_enum_size;
-    uint32_t* annotation_enum_size;
-};
-
 typedef void (*ProtoCallback)(const CProtobufSerialization*);
 typedef void (*UploadCallback)(const char*, size_t n);
 struct SwappyTracer;
@@ -120,67 +102,21 @@ typedef void (*SwappyTracerFn)(const SwappyTracer*);
  */
 struct TFSettings {
   /**
-   * Destructor
-   * Settings returned by TuningFork_findSettingsInAPK will have this set.
-   * Called by TFSettings_Free.
-   */
-  void (*dealloc)(TFSettings*);
-  /// How and when to collect data.
-  TFAggregationStrategy aggregation_strategy;
-  /// Size of the histograms array
-  uint32_t n_histograms;
-  /**
-   * Array of histogram settings, one for each instrument key.
-   * If a histogram is not present for a needed instrument key, a default one with
-   * 30 buckets is used.
-   */
-  TFHistogram* histograms;
-  /**
    * Cache object to be used for upload data persistence.
    * If unset, data is persisted to /data/local/tmp/tuningfork
    */
   const TFCache* persistent_cache;
-  /**
-   * Base URI for download and upload
-   * If unset, https://performanceparameters.googleapis.com/v1/ is used.
-   */
-  const char* base_uri;
-  /**
-   * API key used in the X-Goog-Api-Key property of all requests.
-   * If unset, this property will not be set.
-   */
-  const char* api_key;
   /**
    * The address of the Swappy_injectTracers function.
    * If this is unset, you need to call TuningFork_tick yourself.
    * If it is set, telemetry for 4 instrument keys is automatically recorded.
    */
   SwappyTracerFn swappy_tracer_fn;
-  /// Set to SWAPPY_PACKED_VERSION if you are using Swappy.
-  uint32_t swappy_lib_version;
-  /**
-   * Name of the fidelity parameter file to use by default.
-   * This is used if no parameters could be downloaded and there are no saved parameters
-   *  from a previous download.
-   * The file should be a binary protobuf serialization located in assets/tuningfork
-   * You do not need to prepend assets/tuningfork to the name here.
-   * If set, a fidelity parameter download thread will be started automatically.
-   * If unset, you must call TuningFork_getFidelityParameters manually.
-   */
-  const char* fp_default_file_name;
   /**
    * Callback
    * If set, this is called with the fidelity parameters that are downloaded.
    */
   ProtoCallback fidelity_params_callback;
-  /**
-   * Timeout for initial fidelity parameter download.
-   * After this time, the callback is called either with downloaded parameters, if they could be obtained,
-   * or with the defaults.
-   */
-  int initial_timeout_ms;
-  /// Timeout after which no more download attempts are made.
-  int ultimate_timeout_ms;
 };
 
 #ifdef __cplusplus
@@ -189,9 +125,6 @@ extern "C" {
 
 inline void CProtobufSerialization_Free(CProtobufSerialization* ser) {
     if(ser->dealloc) ser->dealloc(ser);
-}
-inline void TFSettings_Free(TFSettings* settings) {
-    if(settings->dealloc) settings->dealloc(settings);
 }
 
 // Internal init function. Do not call directly.

@@ -173,6 +173,7 @@ static std::unique_ptr<ChronoTimeProvider> s_chrono_time_provider
 static GEBackend s_backend;
 static ParamsLoader s_loader;
 static ExtraUploadInfo s_extra_upload_info;
+static std::unique_ptr<SwappyTraceWrapper> s_swappy_tracer;
 
 TFErrorCode Init(const Settings &settings,
                  const JniCtx& jni,
@@ -200,6 +201,11 @@ TFErrorCode Init(const Settings &settings,
     }
     s_impl = std::make_unique<TuningForkImpl>(settings, jni, *extra_upload_info,
                                               backend, loader, time_provider);
+    // NB this needs to happen after TuningFork starts
+    if (settings.c_settings.swappy_tracer_fn != nullptr) {
+        s_swappy_tracer = std::unique_ptr<SwappyTraceWrapper>(
+            new SwappyTraceWrapper(settings, jni));
+    }
     return TFERROR_OK;
 }
 
@@ -359,7 +365,7 @@ TuningForkImpl::TuningForkImpl(const Settings& settings,
     // + merge any histograms that are persisted.
     upload_thread_.InitialChecks(*current_prong_cache_,
                                  *this,
-                                 settings_.persistent_cache);
+                                 settings_.c_settings.persistent_cache);
 
     ALOGI("TuningFork initialized");
 }
@@ -512,10 +518,10 @@ bool TuningForkImpl::ShouldSubmit(TimePoint t, Prong *prong) {
     auto method = settings_.aggregation_strategy.method;
     auto count = settings_.aggregation_strategy.intervalms_or_count;
     switch (settings_.aggregation_strategy.method) {
-        case Settings::AggregationStrategy::TIME_BASED:
+        case Settings::AggregationStrategy::Submission::TIME_BASED:
             return (t - last_submit_time_) >=
                    std::chrono::milliseconds(count);
-        case Settings::AggregationStrategy::TICK_BASED:
+        case Settings::AggregationStrategy::Submission::TICK_BASED:
             if (prong)
                 return prong->Count() >= count;
     }
