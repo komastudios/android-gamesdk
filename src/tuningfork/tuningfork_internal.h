@@ -19,6 +19,7 @@
 #include "tuningfork/tuningfork.h"
 #include "tuningfork/tuningfork_extra.h"
 #include "tuningfork/protobuf_util.h"
+#include "swappy/swappyGL_extra.h"
 
 #include <stdint.h>
 #include <string>
@@ -42,9 +43,16 @@ struct TimeInterval {
     std::chrono::system_clock::time_point start, end;
 };
 
+struct TFHistogram {
+    int32_t instrument_key;
+    float bucket_min;
+    float bucket_max;
+    int32_t n_buckets;
+};
+
 struct Settings {
     struct AggregationStrategy {
-        enum Submission {
+        enum class Submission {
             TICK_BASED,
             TIME_BASED
         };
@@ -53,11 +61,14 @@ struct Settings {
         uint32_t max_instrumentation_keys;
         std::vector<uint32_t> annotation_enum_size;
     };
+    TFSettings c_settings;
     AggregationStrategy aggregation_strategy;
     std::vector<TFHistogram> histograms;
-    const TFCache* persistent_cache;
     std::string base_uri;
     std::string api_key;
+    std::string default_fp_filename;
+    uint32_t initial_request_timeout_ms;
+    uint32_t ultimate_request_timeout_ms;
 };
 
 // Extra information that is uploaded with the ClearCut proto.
@@ -128,6 +139,22 @@ public:
     virtual std::chrono::system_clock::time_point SystemNow() = 0;
 };
 
+class SwappyTraceWrapper {
+    SwappyTracerFn swappyTracerFn_;
+    SwappyTracer trace_;
+    TFTraceHandle waitTraceHandle_ = 0;
+    TFTraceHandle swapTraceHandle_ = 0;
+public:
+    SwappyTraceWrapper(const Settings& settings, const JniCtx& jni);
+    // Swappy trace callbacks
+    static void StartFrameCallback(void* userPtr, int /*currentFrame*/,
+                                         long /*currentFrameTimeStampMs*/);
+    static void PreWaitCallback(void* userPtr);
+    static void PostWaitCallback(void* userPtr);
+    static void PreSwapBuffersCallback(void* userPtr);
+    static void PostSwapBuffersCallback(void* userPtr, long /*desiredPresentationTimeMs*/);
+};
+
 // If no backend is passed, the default backend, which uploads to the google endpoint is used.
 // If no timeProvider is passed, std::chrono::steady_clock is used.
 // If no env is passed, there can be no upload or download.
@@ -137,8 +164,7 @@ TFErrorCode Init(const Settings &settings, const JniCtx& jni,
                  ITimeProvider *time_provider = 0);
 
 // Use save_dir to initialize the persister if it's not already set
-void CopySettings(const TFSettings &c_settings, const std::string& save_dir,
-                  Settings &settings_out);
+void CheckSettings(Settings &c_settings, const std::string& save_dir);
 
 // Blocking call to get fidelity parameters from the server.
 // Returns true if parameters could be downloaded within the timeout, false otherwise.
@@ -176,19 +202,15 @@ TFHistogram DefaultHistogram();
 // Tuning fork must have been initialized.
 const JniCtx& GetJniCtx();
 
-} // namespace tuningfork
-
-extern "C" {
-
-TFErrorCode CInit(const TFSettings *c_settings, JNIEnv* env, jobject context);
-
-// Initialize tuning fork and automatically inject tracers into Swappy.
-// There will be at least 2 tick points added.
-TFErrorCode TuningFork_initWithSwappy(const TFSettings* settings,
-                                      JNIEnv* env, jobject context);
-
 // Load default fidelity params from either the saved file or the file in settings.fp_default_filename, then
 //  start the download thread.
-TFErrorCode TuningFork_getDefaultsFromAPKAndDownloadFPs(const TFSettings* settings, JNIEnv* env, jobject context);
+TFErrorCode GetDefaultsFromAPKAndDownloadFPs(const Settings& settings, const JniCtx& jni);
 
-} // extern "C"
+// Load settings from assets/tuningfork/tuningfork_settings.bin.
+// Ownership of @p settings is passed to the caller: call
+//  TFSettings_Free to deallocate data stored in the struct.
+// Returns TFERROR_OK and fills 'settings' if the file could be loaded.
+// Returns TFERROR_NO_SETTINGS if the file was not found.
+TFErrorCode FindSettingsInApk(Settings* settings, const JniCtx& jni);
+
+} // namespace tuningfork

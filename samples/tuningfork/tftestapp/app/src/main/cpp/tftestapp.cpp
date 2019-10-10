@@ -40,11 +40,6 @@ bool swappy_enabled = false;
 
 namespace {
 
-// Parameters used in Tuning Fork initialization
-const char defaultFPName[] = "dev_tuningfork_fidelityparams_3.bin";
-const int initialTimeoutMs = 1000;
-const int ultimateTimeoutMs = 100000;
-
 constexpr TFInstrumentKey TFTICK_CHOREOGRAPHER = TFTICK_USERDEFINED_BASE;
 
 std::string ReplaceReturns(const std::string& s) {
@@ -123,10 +118,7 @@ void InitTf(JNIEnv* env, jobject activity) {
     if (swappy_enabled) {
         settings.swappy_tracer_fn = &SwappyGL_injectTracer;
     }
-    settings.fp_default_file_name = defaultFPName;
     settings.fidelity_params_callback = SetFidelityParams;
-    settings.initial_timeout_ms = initialTimeoutMs;
-    settings.ultimate_timeout_ms = ultimateTimeoutMs;
     TFErrorCode err = TuningFork_init(&settings, env, activity);
     if (err==TFERROR_OK) {
         TuningFork_setUploadCallback(UploadCallback);
@@ -134,7 +126,7 @@ void InitTf(JNIEnv* env, jobject activity) {
     } else {
         ALOGW("Error initializing TuningFork: %d", err);
     }
-    // If we don't wait for fidelity params here, the download thread will set the them after we
+    // If we don't wait for fidelity params here, the download thread will set them after we
     //   have already started rendering with a different set of parameters.
     // In a real game, we'd initialize all the other assets before waiting.
     WaitForFidelityParams();
