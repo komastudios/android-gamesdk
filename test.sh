@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 uuid=$(uuidgen)
-for i in `seq 1 15`;
+for i in `seq 1 13`;
     do
         gcloud firebase test android run --type=game-loop \
             --app=app/build/outputs/apk/debug/app-debug.apk \

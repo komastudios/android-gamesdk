@@ -43,14 +43,11 @@ public class MainActivity extends AppCompatActivity {
           .add(ImmutableList.of("try"))
           .add(ImmutableList.of("cl"))
           .add(ImmutableList.of("avail"))
-          .add(ImmutableList.of("memfree"))
           .add(ImmutableList.of("cached"))
           .add(ImmutableList.of("avail2"))
-          .add(ImmutableList.of("trim", "oom", "low", "try"))
-          .add(ImmutableList.of("trim", "oom", "low", "try", "cl"))
-          .add(ImmutableList.of("trim", "oom", "low", "try", "cl", "avail"))
-          .add(ImmutableList.of("memfree", "cached", "avail2"))
-          .add(ImmutableList.of("memfree", "cached", "avail", "avail2"))
+          .add(ImmutableList.of("oom", "cl", "avail", "avail2"))
+          .add(ImmutableList.of("oom", "cl", "avail", "avail2", "low"))
+          .add(ImmutableList.of("oom", "low", "try", "cl", "avail", "cached", "avail2"))
           .add(ImmutableList.of("trim", "oom", "low", "try", "cl", "avail", "cached", "avail2"))
           .build();
 
