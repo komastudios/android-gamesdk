@@ -69,7 +69,7 @@ TFErrorCode GEBackend::Init(const JniCtx& jni, const Settings& settings,
     upload_uri << ":uploadTelemetry";
     WebRequest rq(jni, upload_uri.str(), settings.api_key, kRequestTimeoutMs);
 
-    persister_ = settings.persistent_cache;
+    persister_ = settings.c_settings.persistent_cache;
 
     // TODO(b/140367226): Initialize a Java JobScheduler if we can
 
@@ -96,6 +96,11 @@ TFErrorCode GEBackend::Process(const std::string &evt_ser) {
     CProtobufSerialization_Free(&uploading_hists_ser);
 
     return ret;
+}
+
+void GEBackend::KillThreads() {
+    if (ultimate_uploader_)
+        ultimate_uploader_->Stop();
 }
 
 } //namespace tuningfork {
