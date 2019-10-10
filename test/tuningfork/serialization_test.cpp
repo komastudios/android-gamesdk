@@ -66,7 +66,7 @@ std::string report_start = R"TF({
     },
     "game_sdk_info": {
       "session_id": "sess",
-      "version": "0.3"
+      "version": "0.4"
     },
     "time_period": {
       "end_time": "1970-01-01T00:00:00.000000Z",

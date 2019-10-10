@@ -12,6 +12,7 @@ message Settings {
   }
   message AggregationStrategy {
     enum Submission {
+      INVALID = 0;
       TIME_BASED = 1;
       TICK_BASED = 2;
     }
@@ -24,4 +25,7 @@ message Settings {
   repeated Histogram histograms = 2;
   optional string base_uri = 3;
   optional string api_key = 4;
+  optional string default_fp_filename = 5;
+  optional int32 initial_request_timeout_ms = 6;
+  optional int32 ultimate_request_timeout_ms = 7;
 }

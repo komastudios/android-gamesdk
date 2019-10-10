@@ -1,3 +1,18 @@
+/*
+ * Copyright 2019 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "tuningfork/tuningfork_extra.h"
 #include "tuningfork/protobuf_util.h"
@@ -17,111 +32,11 @@
 
 #define LOG_TAG "TuningFork"
 #include "Log.h"
-#include "swappy/swappyGL_extra.h"
 
 #include <android/asset_manager_jni.h>
 #include <jni.h>
 
-#include "tuningfork/protobuf_nano_util.h"
-#include "pb_decode.h"
-#include "nano/tuningfork.pb.h"
-using PBSettings = com_google_tuningfork_Settings;
-
-using namespace tuningfork;
-
-namespace {
-
-class TuningForkTraceWrapper {
-    SwappyTracerFn swappyTracerFn_;
-    SwappyTracer trace_;
-    TFTraceHandle waitTraceHandle_ = 0;
-    TFTraceHandle swapTraceHandle_ = 0;
-    TFErrorCode tfInitError;
-public:
-    TuningForkTraceWrapper(const TFSettings& settings, JNIEnv* env, jobject context)
-        : swappyTracerFn_(settings.swappy_tracer_fn), trace_({}), tfInitError(TFERROR_OK) {
-        trace_.startFrame = swappyStartFrameCallback;
-        trace_.preWait =  swappyPreWaitCallback;
-        trace_.postWait = swappyPostWaitCallback;
-        trace_.preSwapBuffers = swappyPreSwapBuffersCallback;
-        trace_.postSwapBuffers = swappyPostSwapBuffersCallback;
-        trace_.userData = this;
-        tfInitError = CInit(&settings, env, context);
-        if (tfInitError==TFERROR_OK)
-            swappyTracerFn_(&trace_);
-    }
-    bool valid() const { return tfInitError==TFERROR_OK; }
-
-    // Swappy trace callbacks
-    static void swappyStartFrameCallback(void* userPtr, int /*currentFrame*/,
-                                         long /*currentFrameTimeStampMs*/) {
-        TuningForkTraceWrapper* _this = (TuningForkTraceWrapper*)userPtr;
-        auto err = TuningFork_frameTick(TFTICK_SYSCPU);
-        if (err!=TFERROR_OK) {
-            ALOGE("Error ticking %d : %d", TFTICK_SYSCPU, err);
-        }
-    }
-    static void swappyPreWaitCallback(void* userPtr) {
-        TuningForkTraceWrapper* _this = (TuningForkTraceWrapper*)userPtr;
-        auto err = TuningFork_startTrace(TFTICK_SWAPPY_WAIT_TIME, &_this->waitTraceHandle_);
-        if (err!=TFERROR_OK) {
-            ALOGE("Error tracing %d : %d", TFTICK_SWAPPY_WAIT_TIME, err);
-        }
-    }
-    static void swappyPostWaitCallback(void* userPtr) {
-        TuningForkTraceWrapper *_this = (TuningForkTraceWrapper *) userPtr;
-        if (_this->waitTraceHandle_) {
-            TuningFork_endTrace(_this->waitTraceHandle_);
-            _this->waitTraceHandle_ = 0;
-        }
-        auto err=TuningFork_frameTick(TFTICK_SYSGPU);
-        if (err!=TFERROR_OK) {
-            ALOGE("Error ticking %d : %d", TFTICK_SYSGPU, err);
-        }
-    }
-    static void swappyPreSwapBuffersCallback(void* userPtr) {
-        TuningForkTraceWrapper* _this = (TuningForkTraceWrapper*)userPtr;
-        auto err = TuningFork_startTrace(TFTICK_SWAPPY_SWAP_TIME, &_this->swapTraceHandle_);
-        if (err!=TFERROR_OK) {
-            ALOGE("Error tracing %d : %d", TFTICK_SWAPPY_SWAP_TIME, err);
-        }
-    }
-    static void swappyPostSwapBuffersCallback(void* userPtr, long /*desiredPresentationTimeMs*/) {
-        TuningForkTraceWrapper *_this = (TuningForkTraceWrapper *) userPtr;
-        if (_this->swapTraceHandle_) {
-            TuningFork_endTrace(_this->swapTraceHandle_);
-            _this->swapTraceHandle_ = 0;
-        }
-    }
-    // Static methods
-    static std::unique_ptr<TuningForkTraceWrapper> s_instance_;
-
-    static bool Init(const TFSettings* settings, JNIEnv* env,
-                     jobject context) {
-        s_instance_ = std::unique_ptr<TuningForkTraceWrapper>(
-            new TuningForkTraceWrapper(*settings, env, context));
-        return s_instance_->valid();
-    }
-};
-
-std::unique_ptr<TuningForkTraceWrapper> TuningForkTraceWrapper::s_instance_;
-
-// Gets the serialized settings from the APK.
-// Returns false if there was an error.
-bool GetSettingsSerialization(const JniCtx& jni, CProtobufSerialization& settings_ser) {
-    auto asset = apk_utils::GetAsset(jni, "tuningfork/tuningfork_settings.bin");
-    if (asset == nullptr )
-        return false;
-    ALOGI("Got settings from tuningfork/tuningfork_settings.bin");
-    // Get serialized settings from assets
-    uint64_t size = AAsset_getLength64(asset);
-    settings_ser.bytes = (uint8_t*)::malloc(size);
-    memcpy(settings_ser.bytes, AAsset_getBuffer(asset), size);
-    settings_ser.size = size;
-    settings_ser.dealloc = CProtobufSerialization_Dealloc;
-    AAsset_close(asset);
-    return true;
-}
+namespace tuningfork {
 
 CProtobufSerialization GetAssetAsSerialization(AAsset* asset) {
     CProtobufSerialization ser;
@@ -189,70 +104,45 @@ bool SavedFidelityParamsFileExists(const JniCtx& jni) {
     return false;
 }
 
-template<typename T>
-void push_back(T*& x, uint32_t& n, const T& val) {
-    if (x) {
-        x = (T*)realloc(x, (n+1)*sizeof(T));
+TFErrorCode GetDefaultsFromAPKAndDownloadFPs(const Settings& settings, const JniCtx& jni) {
+    CProtobufSerialization defaultParams = {};
+    // Use the saved params as default, if they exist
+    if (SavedFidelityParamsFileExists(jni)) {
+        ALOGI("Using saved default params");
+        GetSavedFidelityParams(jni, &defaultParams);
     } else {
-        x = (T*)malloc(sizeof(T));
+        if (settings.default_fp_filename.empty())
+            return TFERROR_INVALID_DEFAULT_FIDELITY_PARAMS;
+        auto err = TuningFork_findFidelityParamsInApk(jni.Env(), jni.Ctx(),
+                                                      settings.default_fp_filename.c_str(),
+                                                      &defaultParams);
+        if (err!=TFERROR_OK)
+            return err;
     }
-    x[n] = val;
-    ++n;
-}
-bool decodeAnnotationEnumSizes(pb_istream_t* stream, const pb_field_t *field, void** arg) {
-    TFSettings* settings = static_cast<TFSettings*>(*arg);
-    uint64_t a;
-    pb_decode_varint(stream, &a);
-    push_back(settings->aggregation_strategy.annotation_enum_size,
-              settings->aggregation_strategy.n_annotation_enum_size, (uint32_t)a);
-    return true;
-}
-bool decodeHistograms(pb_istream_t* stream, const pb_field_t *field, void** arg) {
-    TFSettings* settings = static_cast<TFSettings*>(*arg);
-    com_google_tuningfork_Settings_Histogram hist;
-    pb_decode(stream, com_google_tuningfork_Settings_Histogram_fields, &hist);
-    push_back(settings->histograms, settings->n_histograms,
-              {hist.instrument_key, hist.bucket_min, hist.bucket_max, hist.n_buckets});
-    return true;
-}
-bool decode_string(pb_istream_t* stream, const pb_field_t *field, void** arg) {
-    const char **out_str = static_cast<const char**>(*arg);
-    // NB These are freed below in TFSettings_Dealloc
-    char* out = (char*)malloc(stream->bytes_left+1);
-    *out_str = out;
-    while(stream->bytes_left) {
-        uint64_t x;
-        pb_decode_varint(stream, &x);
-        *out++ = (char)x;
-    }
-    *out = 0;
-    return true;
+    TuningFork_startFidelityParamDownloadThread(&defaultParams,
+                                                settings.c_settings.fidelity_params_callback,
+                                                settings.initial_request_timeout_ms,
+                                                settings.ultimate_request_timeout_ms);
+    return TFERROR_OK;
 }
 
-} // anonymous namespace
+static bool s_kill_thread = false;
+static std::thread s_fp_thread;
+
+TFErrorCode KillDownloadThreads() {
+    if (s_fp_thread.joinable()) {
+        s_kill_thread = true;
+        s_fp_thread.join();
+        return TFERROR_OK;
+    }
+    return TFERROR_TUNINGFORK_NOT_INITIALIZED;
+}
+
+} // namespace tuningfork
 
 extern "C" {
 
-void TFSettings_Dealloc(TFSettings* s) {
-    if (s->histograms) {
-        free(s->histograms);
-        s->histograms = nullptr;
-        s->n_histograms = 0;
-    }
-    if (s->aggregation_strategy.annotation_enum_size) {
-        free(s->aggregation_strategy.annotation_enum_size);
-        s->aggregation_strategy.annotation_enum_size = nullptr;
-        s->aggregation_strategy.n_annotation_enum_size = 0;
-    }
-    if (s->base_uri) {
-      free((void*)s->base_uri);
-      s->base_uri = nullptr;
-    }
-    if (s->api_key) {
-      free((void*)s->api_key);
-      s->api_key = nullptr;
-    }
-}
+using namespace tuningfork;
 
 // Download FPs on a separate thread
 void TuningFork_startFidelityParamDownloadThread(
@@ -261,16 +151,16 @@ void TuningFork_startFidelityParamDownloadThread(
                                       int initialTimeoutMs, int ultimateTimeoutMs) {
     static std::mutex threadMutex;
     std::lock_guard<std::mutex> lock(threadMutex);
-    static std::thread fpThread;
-    if (fpThread.joinable()) {
+    if (s_fp_thread.joinable()) {
         ALOGW("Fidelity param download thread already started");
         return;
     }
-    fpThread = std::thread([=](CProtobufSerialization defaultParams) {
+    s_kill_thread = false;
+    s_fp_thread = std::thread([=](CProtobufSerialization defaultParams) {
         CProtobufSerialization params = {};
         auto waitTime = std::chrono::milliseconds(initialTimeoutMs);
         bool first_time = true;
-        while (true) {
+        while (!s_kill_thread) {
             auto startTime = std::chrono::steady_clock::now();
             auto err = TuningFork_getFidelityParameters(&defaultParams,
                                                         &params, waitTime.count());
@@ -301,51 +191,6 @@ void TuningFork_startFidelityParamDownloadThread(
     }, *defaultParams_in);
 }
 
-TFErrorCode TuningFork_deserializeSettings(const CProtobufSerialization* settings_ser,
-                                           TFSettings* settings) {
-    settings->dealloc = TFSettings_Dealloc;
-    PBSettings pbsettings = com_google_tuningfork_Settings_init_zero;
-    pbsettings.aggregation_strategy.annotation_enum_size.funcs.decode = decodeAnnotationEnumSizes;
-    pbsettings.aggregation_strategy.annotation_enum_size.arg = settings;
-    pbsettings.histograms.funcs.decode = decodeHistograms;
-    pbsettings.histograms.arg = settings;
-    pbsettings.base_uri.funcs.decode = decode_string;
-    pbsettings.base_uri.arg = (void*)&settings->base_uri;
-    pbsettings.api_key.funcs.decode = decode_string;
-    pbsettings.api_key.arg = (void*)&settings->api_key;
-    ByteStream str {settings_ser->bytes, settings_ser->size, 0};
-    pb_istream_t stream = {ByteStream::Read, &str, settings_ser->size};
-    pb_decode(&stream, com_google_tuningfork_Settings_fields, &pbsettings);
-    if(pbsettings.aggregation_strategy.method
-          ==com_google_tuningfork_Settings_AggregationStrategy_Submission_TICK_BASED)
-        settings->aggregation_strategy.method = TFAggregationStrategy::TICK_BASED;
-    else
-        settings->aggregation_strategy.method = TFAggregationStrategy::TIME_BASED;
-    settings->aggregation_strategy.intervalms_or_count
-      = pbsettings.aggregation_strategy.intervalms_or_count;
-    settings->aggregation_strategy.max_instrumentation_keys
-      = pbsettings.aggregation_strategy.max_instrumentation_keys;
-    return TFERROR_OK;
-}
-
-TFErrorCode TuningFork_findSettingsInApk(JNIEnv* env, jobject context,
-                                         TFSettings* settings) {
-    if (settings) {
-        CProtobufSerialization settings_ser;
-        JniCtx jni(env, context);
-        if (GetSettingsSerialization(jni, settings_ser)) {
-            auto r = TuningFork_deserializeSettings(&settings_ser, settings);
-            CProtobufSerialization_Free(&settings_ser);
-            return r;
-        }
-        else {
-            return TFERROR_NO_SETTINGS;
-        }
-    } else {
-        return TFERROR_BAD_PARAMETER;
-    }
-}
-
 // Load fidelity params from assets/tuningfork/<filename>
 // Ownership of serializations is passed to the caller: call
 //  CProtobufSerialization_Free to deallocate any memory.
@@ -366,38 +211,8 @@ TFErrorCode TuningFork_findFidelityParamsInApk(JNIEnv* env, jobject context,
     return TFERROR_OK;
 }
 
-TFErrorCode TuningFork_initWithSwappy(const TFSettings* settings, JNIEnv* env,  jobject context) {
-    // If the definition of the SwappyTracer struct changes, we need to check the Swappy version
-    //  here and act appropriately.
-    if (TuningForkTraceWrapper::Init(settings, env, context))
-        return TFERROR_OK;
-    else
-        return TFERROR_NO_SWAPPY;
-}
-
 TFErrorCode TuningFork_setUploadCallback(UploadCallback cbk) {
     return tuningfork::SetUploadCallback(cbk);
-}
-
-TFErrorCode TuningFork_getDefaultsFromAPKAndDownloadFPs(const TFSettings* settings, JNIEnv* env, jobject context) {
-    CProtobufSerialization defaultParams = {};
-    JniCtx jni(env, context);
-    // Use the saved params as default, if they exist
-    if (SavedFidelityParamsFileExists(jni)) {
-        ALOGI("Using saved default params");
-        GetSavedFidelityParams(jni, &defaultParams);
-    } else {
-        if (settings->fp_default_file_name==nullptr)
-            return TFERROR_INVALID_DEFAULT_FIDELITY_PARAMS;
-        auto err = TuningFork_findFidelityParamsInApk(env, context, settings->fp_default_file_name, &defaultParams);
-        if (err!=TFERROR_OK)
-            return err;
-    }
-    TuningFork_startFidelityParamDownloadThread(&defaultParams,
-                                                settings->fidelity_params_callback,
-                                                settings->initial_timeout_ms,
-                                                settings->ultimate_timeout_ms);
-    return TFERROR_OK;
 }
 
 TFErrorCode TuningFork_saveOrDeleteFidelityParamsFile(JNIEnv* env, jobject context, CProtobufSerialization* fps) {

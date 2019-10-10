@@ -22,13 +22,6 @@
 extern "C" {
 #endif
 
-// Load settings from assets/tuningfork/tuningfork_settings.bin.
-// Ownership of @p settings is passed to the caller: call
-//  TFSettings_Free to deallocate data stored in the struct.
-// Returns TFERROR_OK and fills 'settings' if the file could be loaded.
-// Returns TFERROR_NO_SETTINGS if the file was not found.
-TFErrorCode TuningFork_findSettingsInApk(JNIEnv* env, jobject context, TFSettings* settings);
-
 // Load fidelity params from assets/tuningfork/<filename>
 // Ownership of @p fp is passed to the caller: call
 //  CProtobufSerialization_Free to deallocate data stored in the struct.
