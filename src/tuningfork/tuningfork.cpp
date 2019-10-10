@@ -173,6 +173,7 @@ static std::unique_ptr<ChronoTimeProvider> s_chrono_time_provider
 static GEBackend s_backend;
 static ParamsLoader s_loader;
 static ExtraUploadInfo s_extra_upload_info;
+static std::unique_ptr<SwappyTraceWrapper> s_swappy_tracer;
 
 TFErrorCode Init(const Settings &settings,
                  const JniCtx& jni,
@@ -180,26 +181,38 @@ TFErrorCode Init(const Settings &settings,
                  Backend *backend,
                  ParamsLoader *loader,
                  ITimeProvider *time_provider) {
+
+    if (s_impl.get() != nullptr)
+        return TFERROR_ALREADY_INITIALIZED;
+
     if (extra_upload_info == nullptr) {
         s_extra_upload_info = UploadThread::BuildExtraUploadInfo(jni);
         extra_upload_info = &s_extra_upload_info;
     }
+
     if (backend == nullptr) {
         bool backend_inited = s_backend.Init(jni, settings, *extra_upload_info)==TFERROR_OK;
         if(backend_inited) {
             ALOGI("TuningFork.GoogleEndpoint: OK");
             backend = &s_backend;
             loader = &s_loader;
-        }
-        else {
+        } else {
             ALOGW("TuningFork.GoogleEndpoint: FAILED");
         }
     }
+
     if (time_provider == nullptr) {
         time_provider = s_chrono_time_provider.get();
     }
+
     s_impl = std::make_unique<TuningForkImpl>(settings, jni, *extra_upload_info,
                                               backend, loader, time_provider);
+
+    // Set up the Swappy tracer after TuningFork is initialized
+    if (settings.c_settings.swappy_tracer_fn != nullptr) {
+        s_swappy_tracer = std::unique_ptr<SwappyTraceWrapper>(
+            new SwappyTraceWrapper(settings, jni));
+    }
     return TFERROR_OK;
 }
 
@@ -274,6 +287,16 @@ TFErrorCode Flush() {
     }
 }
 
+TFErrorCode Destroy() {
+    if (!s_impl) {
+        return TFERROR_TUNINGFORK_NOT_INITIALIZED;
+    } else {
+        s_backend.KillThreads();
+        s_impl.reset();
+        return TFERROR_OK;
+    }
+}
+
 const JniCtx& GetJniCtx() {
     if (!s_impl) {
         static JniCtx empty_jni(nullptr, nullptr);
@@ -299,6 +322,19 @@ TuningForkImpl::TuningForkImpl(const Settings& settings,
                                      ikeys_(settings.aggregation_strategy.max_instrumentation_keys),
                                      next_ikey_(0),
                                      jni_(jni) {
+    ALOGI("TuningFork Settings:\n  method: %d\n  interval: %d\n  n_ikeys: %d\n  n_annotations: %zu\n"
+          "  n_histograms: %zu\n  base_uri: %s\n  api_key: %s\n  fp filename: %s\n  itimeout: %d\n  utimeout: %d",
+          settings.aggregation_strategy.method,
+          settings.aggregation_strategy.intervalms_or_count,
+          settings.aggregation_strategy.max_instrumentation_keys,
+          settings.aggregation_strategy.annotation_enum_size.size(),
+          settings.histograms.size(),
+          settings.base_uri.c_str(),
+          settings.api_key.c_str(),
+          settings.default_fp_filename.c_str(),
+          settings.initial_request_timeout_ms,
+          settings.ultimate_request_timeout_ms
+         );
     last_submit_time_ = time_provider_->Now();
 
     InitHistogramSettings();
@@ -333,7 +369,7 @@ TuningForkImpl::TuningForkImpl(const Settings& settings,
     // + merge any histograms that are persisted.
     upload_thread_.InitialChecks(*current_prong_cache_,
                                  *this,
-                                 settings_.persistent_cache);
+                                 settings_.c_settings.persistent_cache);
 
     ALOGI("TuningFork initialized");
 }
@@ -486,10 +522,10 @@ bool TuningForkImpl::ShouldSubmit(TimePoint t, Prong *prong) {
     auto method = settings_.aggregation_strategy.method;
     auto count = settings_.aggregation_strategy.intervalms_or_count;
     switch (settings_.aggregation_strategy.method) {
-        case Settings::AggregationStrategy::TIME_BASED:
+        case Settings::AggregationStrategy::Submission::TIME_BASED:
             return (t - last_submit_time_) >=
                    std::chrono::milliseconds(count);
-        case Settings::AggregationStrategy::TICK_BASED:
+        case Settings::AggregationStrategy::Submission::TICK_BASED:
             if (prong)
                 return prong->Count() >= count;
     }

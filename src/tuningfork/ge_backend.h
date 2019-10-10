@@ -35,7 +35,7 @@ public:
                      const ExtraUploadInfo& extra_upload_info);
     ~GEBackend() override;
     TFErrorCode Process(const std::string &json_event) override;
-
+    void KillThreads();
 private:
     std::shared_ptr<UltimateUploader> ultimate_uploader_;
     const TFCache* persister_;
