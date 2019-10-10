@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <iostream>
+using namespace std;
 
 #include "tf_test_utils.h"
 
@@ -107,26 +109,17 @@ TestTimeProvider timeProvider;
 ExtraUploadInfo extra_upload_info = {};
 static const std::string kCacheDir = "/data/local/tmp/tuningfork_test";
 
-Settings TestSettings(TFAggregationStrategy::TFSubmissionPolicy method, int n_ticks, int n_keys,
-                      std::vector<int> annotation_size,
+Settings TestSettings(Settings::AggregationStrategy::Submission method, int n_ticks, int n_keys,
+                      std::vector<uint32_t> annotation_size,
                       const std::vector<TFHistogram>& hists = {}) {
-    // Make sure we set all required fields
-    TFSettings s;
-    memset(&s, 0, sizeof(TFSettings));
+    Settings s {};
     s.aggregation_strategy.method = method;
     s.aggregation_strategy.intervalms_or_count = n_ticks;
     s.aggregation_strategy.max_instrumentation_keys = n_keys;
-    s.aggregation_strategy.n_annotation_enum_size = annotation_size.size();
-    auto n_ann_bytes = sizeof(uint32_t)*annotation_size.size();
-    s.aggregation_strategy.annotation_enum_size = (uint32_t*)malloc(n_ann_bytes);
-    memcpy(s.aggregation_strategy.annotation_enum_size, annotation_size.data(), n_ann_bytes);
-    s.n_histograms = hists.size();
-    auto n_hist_bytes = sizeof(TFHistogram)*hists.size();
-    s.histograms = (TFHistogram*)malloc(n_hist_bytes);
-    memcpy(s.histograms, hists.data(), n_hist_bytes);
-    Settings s_out;
-    CopySettings(s, kCacheDir, s_out);
-    return s_out;
+    s.aggregation_strategy.annotation_enum_size = annotation_size;
+    s.histograms = hists;
+    CheckSettings(s, kCacheDir);
+    return s;
 }
 const Duration test_wait_time = std::chrono::seconds(1);
 JniCtx jni {NULL, NULL};
@@ -134,7 +127,7 @@ const TuningForkLogEvent& TestEndToEnd() {
     testBackend.Clear();
     timeProvider.Reset();
     const int NTICKS = 101; // note the first tick doesn't add anything to the histogram
-    auto settings = TestSettings(TFAggregationStrategy::TICK_BASED, NTICKS - 1, 1, {});
+    auto settings = TestSettings(Settings::AggregationStrategy::Submission::TICK_BASED, NTICKS - 1, 1, {});
     tuningfork::Init(settings, jni, &extra_upload_info, &testBackend, &paramsLoader, &timeProvider);
     std::unique_lock<std::mutex> lock(*rmutex);
     for (int i = 0; i < NTICKS; ++i)
@@ -150,8 +143,10 @@ const TuningForkLogEvent& TestEndToEndWithAnnotation() {
     timeProvider.Reset();
     const int NTICKS = 101; // note the first tick doesn't add anything to the histogram
     // {3} is the number of values in the Level enum in tuningfork_extensions.proto
-    auto settings = TestSettings(TFAggregationStrategy::TICK_BASED, NTICKS - 1, 2, {3});
+    auto settings = TestSettings(Settings::AggregationStrategy::Submission::TICK_BASED, NTICKS - 1, 2, {3});
+    cout << "Initializing" << endl;
     tuningfork::Init(settings, jni, &extra_upload_info, &testBackend, &paramsLoader, &timeProvider);
+    cout << "Initialized" << endl;
     Annotation ann;
     ann.set_level(com::google::tuningfork::LEVEL_1);
     tuningfork::SetCurrentAnnotation(Serialize(ann));
@@ -168,7 +163,7 @@ const TuningForkLogEvent& TestEndToEndTimeBased() {
     timeProvider.Reset();
     const int NTICKS = 101; // note the first tick doesn't add anything to the histogram
     TestTimeProvider timeProvider(std::chrono::milliseconds(100)); // Tick in 100ms intervals
-    auto settings = TestSettings(TFAggregationStrategy::TIME_BASED, 10100, 1, {},
+    auto settings = TestSettings(Settings::AggregationStrategy::Submission::TIME_BASED, 10100, 1, {},
                                  {{TFTICK_SYSCPU, 50,150,10}});
     tuningfork::Init(settings, jni, &extra_upload_info, &testBackend, &paramsLoader, &timeProvider);
     std::unique_lock<std::mutex> lock(*rmutex);
@@ -203,7 +198,7 @@ static const std::string session_context = R"TF(
     "total_memory_bytes": 0},
   "game_sdk_info": {
     "session_id": "",
-    "version": "0.3"
+    "version": "0.4"
   },
   "time_period": {
     "end_time": "1970-01-01T00:00:02.020000Z",
