@@ -1,0 +1,703 @@
+
+> Task :prepare_proto_before
+running install
+running bdist_egg
+running egg_info
+writing requirements to protobuf.egg-info/requires.txt
+writing protobuf.egg-info/PKG-INFO
+writing namespace_packages to protobuf.egg-info/namespace_packages.txt
+writing top-level names to protobuf.egg-info/top_level.txt
+writing dependency_links to protobuf.egg-info/dependency_links.txt
+reading manifest file 'protobuf.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no previously-included files found matching 'google/protobuf/internal/*.proto'
+warning: no previously-included files matching '*_test.py' found under directory 'google'
+warning: no previously-included files matching '*_test.proto' found under directory 'google'
+warning: no previously-included files matching '*.dll' found anywhere in distribution
+warning: no previously-included files matching '*.pyc' found anywhere in distribution
+warning: no previously-included files matching '*.pyo' found anywhere in distribution
+warning: no previously-included files matching '*.so' found anywhere in distribution
+writing manifest file 'protobuf.egg-info/SOURCES.txt'
+installing library code to build/bdist.linux-x86_64/egg
+running install_lib
+running build_py
+creating build/bdist.linux-x86_64/egg
+creating build/bdist.linux-x86_64/egg/google
+creating build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/any_test_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/empty_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/reflection.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/unittest_no_arena_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/unittest_arena_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf
+creating build/bdist.linux-x86_64/egg/google/protobuf/pyext
+copying build/lib.linux-x86_64-2.7/google/protobuf/pyext/python_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf/pyext
+copying build/lib.linux-x86_64-2.7/google/protobuf/pyext/cpp_message.py -> build/bdist.linux-x86_64/egg/google/protobuf/pyext
+copying build/lib.linux-x86_64-2.7/google/protobuf/pyext/__init__.py -> build/bdist.linux-x86_64/egg/google/protobuf/pyext
+copying build/lib.linux-x86_64-2.7/google/protobuf/field_mask_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/unittest_mset_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/source_context_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/descriptor_pool.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/unittest_no_generic_services_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/descriptor_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/unittest_import_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/api_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf
+creating build/bdist.linux-x86_64/egg/google/protobuf/compiler
+copying build/lib.linux-x86_64-2.7/google/protobuf/compiler/__init__.py -> build/bdist.linux-x86_64/egg/google/protobuf/compiler
+copying build/lib.linux-x86_64-2.7/google/protobuf/compiler/plugin_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf/compiler
+copying build/lib.linux-x86_64-2.7/google/protobuf/json_format.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/symbol_database.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/text_encoding.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/struct_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/text_format.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/duration_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/wrappers_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/service.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/proto_builder.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/descriptor.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/unittest_proto3_arena_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/unittest_no_arena_import_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/any_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/type_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf
+creating build/bdist.linux-x86_64/egg/google/protobuf/util
+copying build/lib.linux-x86_64-2.7/google/protobuf/util/json_format_proto3_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf/util
+copying build/lib.linux-x86_64-2.7/google/protobuf/util/__init__.py -> build/bdist.linux-x86_64/egg/google/protobuf/util
+copying build/lib.linux-x86_64-2.7/google/protobuf/message.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/descriptor_database.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/unittest_custom_options_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/__init__.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/timestamp_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/service_reflection.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/message_factory.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/unittest_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/unittest_import_public_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf
+creating build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/any_test_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/message_listener.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/wire_format.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/proto_builder_test.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/more_extensions_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/enum_type_wrapper.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/_parameterized.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/reflection_test.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/descriptor_database_test.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/text_format_test.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/descriptor_pool_test1_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/descriptor_pool_test2_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/decoder.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/more_extensions_dynamic_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/generator_test.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+creating build/bdist.linux-x86_64/egg/google/protobuf/internal/import_test_package
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/import_test_package/outer_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal/import_test_package
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/import_test_package/inner_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal/import_test_package
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/import_test_package/__init__.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal/import_test_package
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/factory_test1_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/message_test.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/message_factory_test.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/message_set_extensions_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/containers.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/packed_field_test_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/python_message.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/encoder.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/descriptor_pool_test.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/well_known_types.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/more_messages_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/test_bad_identifiers_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/type_checkers.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/service_reflection_test.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/__init__.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/file_options_test_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/wire_format_test.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/api_implementation.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/well_known_types_test.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/unknown_fields_test.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/symbol_database_test.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/descriptor_test.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/missing_enum_values_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/test_util.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/factory_test2_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/json_format_test.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/internal/text_encoding_test.py -> build/bdist.linux-x86_64/egg/google/protobuf/internal
+copying build/lib.linux-x86_64-2.7/google/protobuf/unittest_mset_wire_format_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/protobuf/map_unittest_pb2.py -> build/bdist.linux-x86_64/egg/google/protobuf
+copying build/lib.linux-x86_64-2.7/google/__init__.py -> build/bdist.linux-x86_64/egg/google
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/any_test_pb2.py to any_test_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/empty_pb2.py to empty_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/reflection.py to reflection.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/unittest_no_arena_pb2.py to unittest_no_arena_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/unittest_arena_pb2.py to unittest_arena_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/pyext/python_pb2.py to python_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/pyext/cpp_message.py to cpp_message.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/pyext/__init__.py to __init__.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/field_mask_pb2.py to field_mask_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/unittest_mset_pb2.py to unittest_mset_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/source_context_pb2.py to source_context_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/descriptor_pool.py to descriptor_pool.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/unittest_no_generic_services_pb2.py to unittest_no_generic_services_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/descriptor_pb2.py to descriptor_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/unittest_import_pb2.py to unittest_import_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/api_pb2.py to api_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/compiler/__init__.py to __init__.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/compiler/plugin_pb2.py to plugin_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/json_format.py to json_format.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/symbol_database.py to symbol_database.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/text_encoding.py to text_encoding.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/struct_pb2.py to struct_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/text_format.py to text_format.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/duration_pb2.py to duration_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/wrappers_pb2.py to wrappers_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/service.py to service.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/proto_builder.py to proto_builder.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/descriptor.py to descriptor.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/unittest_proto3_arena_pb2.py to unittest_proto3_arena_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/unittest_no_arena_import_pb2.py to unittest_no_arena_import_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/any_pb2.py to any_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/type_pb2.py to type_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/util/json_format_proto3_pb2.py to json_format_proto3_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/util/__init__.py to __init__.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/message.py to message.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/descriptor_database.py to descriptor_database.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/unittest_custom_options_pb2.py to unittest_custom_options_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/__init__.py to __init__.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/timestamp_pb2.py to timestamp_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/service_reflection.py to service_reflection.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/message_factory.py to message_factory.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/unittest_pb2.py to unittest_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/unittest_import_public_pb2.py to unittest_import_public_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/any_test_pb2.py to any_test_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/message_listener.py to message_listener.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/wire_format.py to wire_format.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/proto_builder_test.py to proto_builder_test.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/more_extensions_pb2.py to more_extensions_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/enum_type_wrapper.py to enum_type_wrapper.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/_parameterized.py to _parameterized.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/reflection_test.py to reflection_test.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/descriptor_database_test.py to descriptor_database_test.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/text_format_test.py to text_format_test.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/descriptor_pool_test1_pb2.py to descriptor_pool_test1_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/descriptor_pool_test2_pb2.py to descriptor_pool_test2_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/decoder.py to decoder.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/more_extensions_dynamic_pb2.py to more_extensions_dynamic_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/generator_test.py to generator_test.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/import_test_package/outer_pb2.py to outer_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/import_test_package/inner_pb2.py to inner_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/import_test_package/__init__.py to __init__.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/factory_test1_pb2.py to factory_test1_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/message_test.py to message_test.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/message_factory_test.py to message_factory_test.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/message_set_extensions_pb2.py to message_set_extensions_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/containers.py to containers.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/packed_field_test_pb2.py to packed_field_test_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/python_message.py to python_message.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/encoder.py to encoder.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/descriptor_pool_test.py to descriptor_pool_test.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/well_known_types.py to well_known_types.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/more_messages_pb2.py to more_messages_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/test_bad_identifiers_pb2.py to test_bad_identifiers_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/type_checkers.py to type_checkers.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/service_reflection_test.py to service_reflection_test.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/__init__.py to __init__.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/file_options_test_pb2.py to file_options_test_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/wire_format_test.py to wire_format_test.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/api_implementation.py to api_implementation.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/well_known_types_test.py to well_known_types_test.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/unknown_fields_test.py to unknown_fields_test.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/symbol_database_test.py to symbol_database_test.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/descriptor_test.py to descriptor_test.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/missing_enum_values_pb2.py to missing_enum_values_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/test_util.py to test_util.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/factory_test2_pb2.py to factory_test2_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/json_format_test.py to json_format_test.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/internal/text_encoding_test.py to text_encoding_test.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/unittest_mset_wire_format_pb2.py to unittest_mset_wire_format_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/protobuf/map_unittest_pb2.py to map_unittest_pb2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/google/__init__.py to __init__.pyc
+creating build/bdist.linux-x86_64/egg/EGG-INFO
+copying protobuf.egg-info/PKG-INFO -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying protobuf.egg-info/SOURCES.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying protobuf.egg-info/dependency_links.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying protobuf.egg-info/namespace_packages.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying protobuf.egg-info/requires.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying protobuf.egg-info/top_level.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+zip_safe flag not set; analyzing archive contents...
+google.__init__: module references __path__
+google.protobuf.__init__: module references __path__
+google.protobuf.pyext.__init__: module references __path__
+creating 'dist/protobuf-3.0.0-py2.7.egg' and adding 'build/bdist.linux-x86_64/egg' to it
+removing 'build/bdist.linux-x86_64/egg' (and everything under it)
+Processing protobuf-3.0.0-py2.7.egg
+removing '/usr/local/google/home/vrepets/.local/lib/python2.7/site-packages/protobuf-3.0.0-py2.7.egg' (and everything under it)
+creating /usr/local/google/home/vrepets/.local/lib/python2.7/site-packages/protobuf-3.0.0-py2.7.egg
+Extracting protobuf-3.0.0-py2.7.egg to /usr/local/google/home/vrepets/.local/lib/python2.7/site-packages
+protobuf 3.0.0 is already the active version in easy-install.pth
+
+Installed /usr/local/google/home/vrepets/.local/lib/python2.7/site-packages/protobuf-3.0.0-py2.7.egg
+Processing dependencies for protobuf==3.0.0
+Searching for six==1.12.0
+Best match: six 1.12.0
+Adding six 1.12.0 to easy-install.pth file
+
+Using /usr/lib/python2.7/dist-packages
+Searching for setuptools==40.8.0
+Best match: setuptools 40.8.0
+Adding setuptools 40.8.0 to easy-install.pth file
+Installing easy_install script to /usr/local/google/home/vrepets/.local/bin
+
+Using /usr/lib/python2.7/dist-packages
+Finished processing dependencies for protobuf==3.0.0
+make: Nothing to be done for 'all'.
+
+> Task :prepare_proto
+python protobuf contents:
+__doc__: None
+__file__: /usr/lib/python2.7/dist-packages/google/protobuf/__init__.pyc
+__name__: google.protobuf
+__package__: None
+__path__: ['/usr/local/google/home/vrepets/.local/lib/python2.7/site-packages/protobuf-3.0.0-py2.7.egg/google/protobuf', '/usr/lib/python2.7/dist-packages/google/protobuf']
+__version__: 3.6.1
+
+> Task :extras:aar:preBuild UP-TO-DATE
+> Task :extras:aar:preReleaseBuild UP-TO-DATE
+> Task :extras:aar:compileReleaseAidl NO-SOURCE
+> Task :extras:aar:compileReleaseRenderscript UP-TO-DATE
+> Task :extras:aar:checkReleaseManifest UP-TO-DATE
+> Task :extras:aar:generateReleaseBuildConfig UP-TO-DATE
+> Task :extras:aar:generateReleaseResValues UP-TO-DATE
+> Task :extras:aar:generateReleaseResources UP-TO-DATE
+> Task :extras:aar:packageReleaseResources UP-TO-DATE
+> Task :extras:aar:processReleaseManifest
+> Task :extras:aar:generateReleaseRFile UP-TO-DATE
+> Task :extras:aar:prepareLintJar UP-TO-DATE
+> Task :extras:aar:generateReleaseSources UP-TO-DATE
+> Task :extras:aar:javaPreCompileRelease UP-TO-DATE
+> Task :extras:aar:compileReleaseJavaWithJavac
+> Task :extras:aar:extractReleaseAnnotations UP-TO-DATE
+> Task :extras:aar:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :extras:aar:mergeReleaseShaders
+> Task :extras:aar:compileReleaseShaders UP-TO-DATE
+> Task :extras:aar:generateReleaseAssets UP-TO-DATE
+> Task :extras:aar:packageReleaseAssets UP-TO-DATE
+> Task :extras:aar:packageReleaseRenderscript NO-SOURCE
+> Task :extras:aar:processReleaseJavaRes NO-SOURCE
+> Task :extras:aar:transformResourcesWithMergeJavaResForRelease
+> Task :extras:aar:transformClassesAndResourcesWithSyncLibJarsForRelease UP-TO-DATE
+> Task :extras:aar:compileReleaseNdk NO-SOURCE
+> Task :extras:aar:mergeReleaseJniLibFolders
+> Task :extras:aar:transformNativeLibsWithMergeJniLibsForRelease
+> Task :extras:aar:transformNativeLibsWithStripDebugSymbolForRelease UP-TO-DATE
+> Task :extras:aar:transformNativeLibsWithSyncJniLibsForRelease UP-TO-DATE
+> Task :extras:aar:bundleReleaseAar UP-TO-DATE
+> Task :extras:aar:compileReleaseSources
+> Task :extras:aar:mergeReleaseResources
+> Task :extras:aar:verifyReleaseResources UP-TO-DATE
+> Task :extras:aar:assembleRelease
+> Task :extras:apk:checkReleaseClasspath UP-TO-DATE
+> Task :extras:apk:preBuild UP-TO-DATE
+> Task :extras:apk:preReleaseBuild UP-TO-DATE
+> Task :extras:apk:compileReleaseAidl NO-SOURCE
+> Task :extras:apk:compileReleaseRenderscript UP-TO-DATE
+> Task :extras:apk:checkReleaseManifest UP-TO-DATE
+> Task :extras:apk:generateReleaseBuildConfig UP-TO-DATE
+> Task :extras:apk:prepareLintJar UP-TO-DATE
+> Task :extras:apk:mainApkListPersistenceRelease UP-TO-DATE
+> Task :extras:apk:generateReleaseResValues UP-TO-DATE
+> Task :extras:apk:generateReleaseResources UP-TO-DATE
+> Task :extras:apk:mergeReleaseResources
+> Task :extras:apk:createReleaseCompatibleScreenManifests UP-TO-DATE
+> Task :extras:apk:processReleaseManifest
+> Task :extras:apk:splitsDiscoveryTaskRelease UP-TO-DATE
+> Task :extras:apk:processReleaseResources UP-TO-DATE
+> Task :extras:apk:generateReleaseSources UP-TO-DATE
+> Task :extras:apk:javaPreCompileRelease UP-TO-DATE
+> Task :extras:apk:compileReleaseJavaWithJavac
+> Task :extras:apk:compileReleaseNdk NO-SOURCE
+> Task :extras:apk:compileReleaseSources
+> Task :extras:apk:lintVitalRelease
+> Task :extras:apk:mergeReleaseShaders
+> Task :extras:apk:compileReleaseShaders UP-TO-DATE
+> Task :extras:apk:generateReleaseAssets UP-TO-DATE
+> Task :extras:apk:mergeReleaseAssets UP-TO-DATE
+> Task :extras:apk:transformClassesWithDexBuilderForRelease UP-TO-DATE
+> Task :extras:apk:transformDexArchiveWithExternalLibsDexMergerForRelease UP-TO-DATE
+> Task :extras:apk:transformDexArchiveWithDexMergerForRelease UP-TO-DATE
+> Task :extras:apk:mergeReleaseJniLibFolders
+> Task :extras:apk:transformNativeLibsWithMergeJniLibsForRelease
+> Task :extras:apk:transformNativeLibsWithStripDebugSymbolForRelease UP-TO-DATE
+> Task :extras:apk:checkReleaseLibraries UP-TO-DATE
+> Task :extras:apk:processReleaseJavaRes NO-SOURCE
+> Task :extras:apk:transformResourcesWithMergeJavaResForRelease
+> Task :extras:apk:packageRelease UP-TO-DATE
+> Task :extras:apk:assembleRelease
+> Task :extras:assembleRelease
+
+> Task :sdkBuild
+CMake Warning at /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/prebuilts/ndk/r16/build/cmake/android.toolchain.cmake:63 (message):
+  Using custom NDK path (ANDROID_NDK is set):
+  /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/../prebuilts/ndk/r16
+Call Stack (most recent call first):
+  /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/armeabi-v7a_SDK14_NDKr16_cpp_static/.cmake/CMakeFiles/3.6.0-rc2/CMakeSystem.cmake:6 (include)
+  CMakeLists.txt
+
+
+-- Building swappy_static to /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/armeabi-v7a_SDK14_NDKr16_cpp_static/.cmake/swappy/build
+-- protobuf_generate_base._working_dir=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/tuningfork/proto
+-- protobuf_generate_base._PROTO_GENS_DIR=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/armeabi-v7a_SDK14_NDKr16_cpp_static/.cmake/gens/nano
+-- protobuf_generate_base._extension=c
+-- protobuf_generate_base.PROTOC_EXE=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc
+-- /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc will generate /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/armeabi-v7a_SDK14_NDKr16_cpp_static/.cmake/gens/nano/tuningfork.pb.*
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/armeabi-v7a_SDK14_NDKr16_cpp_static/.cmake
+[1/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/ChoreographerThread.cpp.o
+[2/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/SwappyDisplayManager.cpp.o
+[3/4] Linking CXX static library /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/out/armeabi-v7a_SDK14_NDKr16_cpp_static/libswappy_static.a
+[4/4] Linking CXX shared library swappy/libswappy.so
+-- Building swappy_static to /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/armeabi-v7a_SDK16_NDKr17_cpp_static/.cmake/swappy/build
+-- protobuf_generate_base._working_dir=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/tuningfork/proto
+-- protobuf_generate_base._PROTO_GENS_DIR=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/armeabi-v7a_SDK16_NDKr17_cpp_static/.cmake/gens/nano
+-- protobuf_generate_base._extension=c
+-- protobuf_generate_base.PROTOC_EXE=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc
+-- /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc will generate /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/armeabi-v7a_SDK16_NDKr17_cpp_static/.cmake/gens/nano/tuningfork.pb.*
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/armeabi-v7a_SDK16_NDKr17_cpp_static/.cmake
+[1/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/ChoreographerThread.cpp.o
+[2/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/SwappyDisplayManager.cpp.o
+[3/4] Linking CXX static library /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/out/armeabi-v7a_SDK16_NDKr17_cpp_static/libswappy_static.a
+[4/4] Linking CXX shared library swappy/libswappy.so
+CMake Warning at /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/prebuilts/ndk/r16/build/cmake/android.toolchain.cmake:63 (message):
+  Using custom NDK path (ANDROID_NDK is set):
+  /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/../prebuilts/ndk/r16
+Call Stack (most recent call first):
+  /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/armeabi-v7a_SDK26_NDKr16_gnustl_static/.cmake/CMakeFiles/3.6.0-rc2/CMakeSystem.cmake:6 (include)
+  CMakeLists.txt
+
+
+-- Building swappy_static to /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/armeabi-v7a_SDK26_NDKr16_gnustl_static/.cmake/swappy/build
+-- protobuf_generate_base._working_dir=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/tuningfork/proto
+-- protobuf_generate_base._PROTO_GENS_DIR=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/armeabi-v7a_SDK26_NDKr16_gnustl_static/.cmake/gens/nano
+-- protobuf_generate_base._extension=c
+-- protobuf_generate_base.PROTOC_EXE=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc
+-- /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc will generate /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/armeabi-v7a_SDK26_NDKr16_gnustl_static/.cmake/gens/nano/tuningfork.pb.*
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/armeabi-v7a_SDK26_NDKr16_gnustl_static/.cmake
+[1/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/ChoreographerThread.cpp.o
+[2/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/SwappyDisplayManager.cpp.o
+[3/4] Linking CXX static library /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/out/armeabi-v7a_SDK26_NDKr16_gnustl_static/libswappy_static.a
+[4/4] Linking CXX shared library swappy/libswappy.so
+CMake Warning at /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/prebuilts/ndk/r17/build/cmake/android.toolchain.cmake:217 (message):
+  gnustl_static is deprecated and will be removed in the next release.
+  Please switch to either c++_shared or c++_static.  See
+  https://developer.android.com/ndk/guides/cpp-support.html for more
+  information.
+Call Stack (most recent call first):
+  /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/armeabi-v7a_SDK28_NDKr17_gnustl_static/.cmake/CMakeFiles/3.6.0-rc2/CMakeSystem.cmake:6 (include)
+  CMakeLists.txt
+
+
+-- Building swappy_static to /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/armeabi-v7a_SDK28_NDKr17_gnustl_static/.cmake/swappy/build
+-- protobuf_generate_base._working_dir=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/tuningfork/proto
+-- protobuf_generate_base._PROTO_GENS_DIR=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/armeabi-v7a_SDK28_NDKr17_gnustl_static/.cmake/gens/nano
+-- protobuf_generate_base._extension=c
+-- protobuf_generate_base.PROTOC_EXE=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc
+-- /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc will generate /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/armeabi-v7a_SDK28_NDKr17_gnustl_static/.cmake/gens/nano/tuningfork.pb.*
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/armeabi-v7a_SDK28_NDKr17_gnustl_static/.cmake
+[1/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/ChoreographerThread.cpp.o
+[2/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/SwappyDisplayManager.cpp.o
+[3/4] Linking CXX static library /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/out/armeabi-v7a_SDK28_NDKr17_gnustl_static/libswappy_static.a
+[4/4] Linking CXX shared library swappy/libswappy.so
+-- Building swappy_static to /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/armeabi-v7a_SDK28_NDKr17_cpp_static/.cmake/swappy/build
+-- protobuf_generate_base._working_dir=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/tuningfork/proto
+-- protobuf_generate_base._PROTO_GENS_DIR=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/armeabi-v7a_SDK28_NDKr17_cpp_static/.cmake/gens/nano
+-- protobuf_generate_base._extension=c
+-- protobuf_generate_base.PROTOC_EXE=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc
+-- /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc will generate /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/armeabi-v7a_SDK28_NDKr17_cpp_static/.cmake/gens/nano/tuningfork.pb.*
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/armeabi-v7a_SDK28_NDKr17_cpp_static/.cmake
+[1/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/ChoreographerThread.cpp.o
+[2/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/SwappyDisplayManager.cpp.o
+[3/4] Linking CXX static library /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/out/armeabi-v7a_SDK28_NDKr17_cpp_static/libswappy_static.a
+[4/4] Linking CXX shared library swappy/libswappy.so
+CMake Warning at /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/prebuilts/ndk/r16/build/cmake/android.toolchain.cmake:63 (message):
+  Using custom NDK path (ANDROID_NDK is set):
+  /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/../prebuilts/ndk/r16
+Call Stack (most recent call first):
+  /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/arm64-v8a_SDK14_NDKr16_cpp_static/.cmake/CMakeFiles/3.6.0-rc2/CMakeSystem.cmake:6 (include)
+  CMakeLists.txt
+
+
+-- Building swappy_static to /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/arm64-v8a_SDK14_NDKr16_cpp_static/.cmake/swappy/build
+-- protobuf_generate_base._working_dir=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/tuningfork/proto
+-- protobuf_generate_base._PROTO_GENS_DIR=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/arm64-v8a_SDK14_NDKr16_cpp_static/.cmake/gens/nano
+-- protobuf_generate_base._extension=c
+-- protobuf_generate_base.PROTOC_EXE=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc
+-- /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc will generate /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/arm64-v8a_SDK14_NDKr16_cpp_static/.cmake/gens/nano/tuningfork.pb.*
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/arm64-v8a_SDK14_NDKr16_cpp_static/.cmake
+[1/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/ChoreographerThread.cpp.o
+[2/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/SwappyDisplayManager.cpp.o
+[3/4] Linking CXX static library /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/out/arm64-v8a_SDK14_NDKr16_cpp_static/libswappy_static.a
+[4/4] Linking CXX shared library swappy/libswappy.so
+-- Building swappy_static to /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/arm64-v8a_SDK16_NDKr17_cpp_static/.cmake/swappy/build
+-- protobuf_generate_base._working_dir=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/tuningfork/proto
+-- protobuf_generate_base._PROTO_GENS_DIR=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/arm64-v8a_SDK16_NDKr17_cpp_static/.cmake/gens/nano
+-- protobuf_generate_base._extension=c
+-- protobuf_generate_base.PROTOC_EXE=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc
+-- /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc will generate /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/arm64-v8a_SDK16_NDKr17_cpp_static/.cmake/gens/nano/tuningfork.pb.*
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/arm64-v8a_SDK16_NDKr17_cpp_static/.cmake
+[1/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/ChoreographerThread.cpp.o
+[2/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/SwappyDisplayManager.cpp.o
+[3/4] Linking CXX static library /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/out/arm64-v8a_SDK16_NDKr17_cpp_static/libswappy_static.a
+[4/4] Linking CXX shared library swappy/libswappy.so
+CMake Warning at /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/prebuilts/ndk/r16/build/cmake/android.toolchain.cmake:63 (message):
+  Using custom NDK path (ANDROID_NDK is set):
+  /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/../prebuilts/ndk/r16
+Call Stack (most recent call first):
+  /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/arm64-v8a_SDK26_NDKr16_gnustl_static/.cmake/CMakeFiles/3.6.0-rc2/CMakeSystem.cmake:6 (include)
+  CMakeLists.txt
+
+
+-- Building swappy_static to /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/arm64-v8a_SDK26_NDKr16_gnustl_static/.cmake/swappy/build
+-- protobuf_generate_base._working_dir=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/tuningfork/proto
+-- protobuf_generate_base._PROTO_GENS_DIR=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/arm64-v8a_SDK26_NDKr16_gnustl_static/.cmake/gens/nano
+-- protobuf_generate_base._extension=c
+-- protobuf_generate_base.PROTOC_EXE=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc
+-- /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc will generate /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/arm64-v8a_SDK26_NDKr16_gnustl_static/.cmake/gens/nano/tuningfork.pb.*
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/arm64-v8a_SDK26_NDKr16_gnustl_static/.cmake
+[1/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/ChoreographerThread.cpp.o
+[2/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/SwappyDisplayManager.cpp.o
+[3/4] Linking CXX static library /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/out/arm64-v8a_SDK26_NDKr16_gnustl_static/libswappy_static.a
+[4/4] Linking CXX shared library swappy/libswappy.so
+CMake Warning at /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/prebuilts/ndk/r17/build/cmake/android.toolchain.cmake:217 (message):
+  gnustl_static is deprecated and will be removed in the next release.
+  Please switch to either c++_shared or c++_static.  See
+  https://developer.android.com/ndk/guides/cpp-support.html for more
+  information.
+Call Stack (most recent call first):
+  /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/arm64-v8a_SDK28_NDKr17_gnustl_static/.cmake/CMakeFiles/3.6.0-rc2/CMakeSystem.cmake:6 (include)
+  CMakeLists.txt
+
+
+-- Building swappy_static to /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/arm64-v8a_SDK28_NDKr17_gnustl_static/.cmake/swappy/build
+-- protobuf_generate_base._working_dir=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/tuningfork/proto
+-- protobuf_generate_base._PROTO_GENS_DIR=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/arm64-v8a_SDK28_NDKr17_gnustl_static/.cmake/gens/nano
+-- protobuf_generate_base._extension=c
+-- protobuf_generate_base.PROTOC_EXE=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc
+-- /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc will generate /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/arm64-v8a_SDK28_NDKr17_gnustl_static/.cmake/gens/nano/tuningfork.pb.*
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/arm64-v8a_SDK28_NDKr17_gnustl_static/.cmake
+[1/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/ChoreographerThread.cpp.o
+[2/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/SwappyDisplayManager.cpp.o
+[3/4] Linking CXX static library /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/out/arm64-v8a_SDK28_NDKr17_gnustl_static/libswappy_static.a
+[4/4] Linking CXX shared library swappy/libswappy.so
+-- Building swappy_static to /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/arm64-v8a_SDK28_NDKr17_cpp_static/.cmake/swappy/build
+-- protobuf_generate_base._working_dir=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/tuningfork/proto
+-- protobuf_generate_base._PROTO_GENS_DIR=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/arm64-v8a_SDK28_NDKr17_cpp_static/.cmake/gens/nano
+-- protobuf_generate_base._extension=c
+-- protobuf_generate_base.PROTOC_EXE=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc
+-- /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc will generate /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/arm64-v8a_SDK28_NDKr17_cpp_static/.cmake/gens/nano/tuningfork.pb.*
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/arm64-v8a_SDK28_NDKr17_cpp_static/.cmake
+[1/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/ChoreographerThread.cpp.o
+[2/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/SwappyDisplayManager.cpp.o
+[3/4] Linking CXX static library /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/out/arm64-v8a_SDK28_NDKr17_cpp_static/libswappy_static.a
+[4/4] Linking CXX shared library swappy/libswappy.so
+CMake Warning at /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/prebuilts/ndk/r16/build/cmake/android.toolchain.cmake:63 (message):
+  Using custom NDK path (ANDROID_NDK is set):
+  /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/../prebuilts/ndk/r16
+Call Stack (most recent call first):
+  /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_SDK14_NDKr16_cpp_static/.cmake/CMakeFiles/3.6.0-rc2/CMakeSystem.cmake:6 (include)
+  CMakeLists.txt
+
+
+-- Building swappy_static to /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_SDK14_NDKr16_cpp_static/.cmake/swappy/build
+-- protobuf_generate_base._working_dir=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/tuningfork/proto
+-- protobuf_generate_base._PROTO_GENS_DIR=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_SDK14_NDKr16_cpp_static/.cmake/gens/nano
+-- protobuf_generate_base._extension=c
+-- protobuf_generate_base.PROTOC_EXE=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc
+-- /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc will generate /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_SDK14_NDKr16_cpp_static/.cmake/gens/nano/tuningfork.pb.*
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_SDK14_NDKr16_cpp_static/.cmake
+[1/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/ChoreographerThread.cpp.o
+[2/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/SwappyDisplayManager.cpp.o
+[3/4] Linking CXX static library /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/out/x86_SDK14_NDKr16_cpp_static/libswappy_static.a
+[4/4] Linking CXX shared library swappy/libswappy.so
+-- Building swappy_static to /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_SDK16_NDKr17_cpp_static/.cmake/swappy/build
+-- protobuf_generate_base._working_dir=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/tuningfork/proto
+-- protobuf_generate_base._PROTO_GENS_DIR=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_SDK16_NDKr17_cpp_static/.cmake/gens/nano
+-- protobuf_generate_base._extension=c
+-- protobuf_generate_base.PROTOC_EXE=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc
+-- /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc will generate /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_SDK16_NDKr17_cpp_static/.cmake/gens/nano/tuningfork.pb.*
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_SDK16_NDKr17_cpp_static/.cmake
+[1/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/ChoreographerThread.cpp.o
+[2/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/SwappyDisplayManager.cpp.o
+[3/4] Linking CXX static library /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/out/x86_SDK16_NDKr17_cpp_static/libswappy_static.a
+[4/4] Linking CXX shared library swappy/libswappy.so
+CMake Warning at /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/prebuilts/ndk/r16/build/cmake/android.toolchain.cmake:63 (message):
+  Using custom NDK path (ANDROID_NDK is set):
+  /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/../prebuilts/ndk/r16
+Call Stack (most recent call first):
+  /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_SDK26_NDKr16_gnustl_static/.cmake/CMakeFiles/3.6.0-rc2/CMakeSystem.cmake:6 (include)
+  CMakeLists.txt
+
+
+-- Building swappy_static to /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_SDK26_NDKr16_gnustl_static/.cmake/swappy/build
+-- protobuf_generate_base._working_dir=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/tuningfork/proto
+-- protobuf_generate_base._PROTO_GENS_DIR=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_SDK26_NDKr16_gnustl_static/.cmake/gens/nano
+-- protobuf_generate_base._extension=c
+-- protobuf_generate_base.PROTOC_EXE=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc
+-- /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc will generate /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_SDK26_NDKr16_gnustl_static/.cmake/gens/nano/tuningfork.pb.*
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_SDK26_NDKr16_gnustl_static/.cmake
+[1/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/ChoreographerThread.cpp.o
+[2/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/SwappyDisplayManager.cpp.o
+[3/4] Linking CXX static library /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/out/x86_SDK26_NDKr16_gnustl_static/libswappy_static.a
+[4/4] Linking CXX shared library swappy/libswappy.so
+CMake Warning at /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/prebuilts/ndk/r17/build/cmake/android.toolchain.cmake:217 (message):
+  gnustl_static is deprecated and will be removed in the next release.
+  Please switch to either c++_shared or c++_static.  See
+  https://developer.android.com/ndk/guides/cpp-support.html for more
+  information.
+Call Stack (most recent call first):
+  /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_SDK28_NDKr17_gnustl_static/.cmake/CMakeFiles/3.6.0-rc2/CMakeSystem.cmake:6 (include)
+  CMakeLists.txt
+
+
+-- Building swappy_static to /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_SDK28_NDKr17_gnustl_static/.cmake/swappy/build
+-- protobuf_generate_base._working_dir=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/tuningfork/proto
+-- protobuf_generate_base._PROTO_GENS_DIR=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_SDK28_NDKr17_gnustl_static/.cmake/gens/nano
+-- protobuf_generate_base._extension=c
+-- protobuf_generate_base.PROTOC_EXE=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc
+-- /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc will generate /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_SDK28_NDKr17_gnustl_static/.cmake/gens/nano/tuningfork.pb.*
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_SDK28_NDKr17_gnustl_static/.cmake
+[1/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/ChoreographerThread.cpp.o
+[2/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/SwappyDisplayManager.cpp.o
+[3/4] Linking CXX static library /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/out/x86_SDK28_NDKr17_gnustl_static/libswappy_static.a
+[4/4] Linking CXX shared library swappy/libswappy.so
+-- Building swappy_static to /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_SDK28_NDKr17_cpp_static/.cmake/swappy/build
+-- protobuf_generate_base._working_dir=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/tuningfork/proto
+-- protobuf_generate_base._PROTO_GENS_DIR=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_SDK28_NDKr17_cpp_static/.cmake/gens/nano
+-- protobuf_generate_base._extension=c
+-- protobuf_generate_base.PROTOC_EXE=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc
+-- /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc will generate /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_SDK28_NDKr17_cpp_static/.cmake/gens/nano/tuningfork.pb.*
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_SDK28_NDKr17_cpp_static/.cmake
+[1/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/ChoreographerThread.cpp.o
+[2/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/SwappyDisplayManager.cpp.o
+[3/4] Linking CXX static library /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/out/x86_SDK28_NDKr17_cpp_static/libswappy_static.a
+[4/4] Linking CXX shared library swappy/libswappy.so
+CMake Warning at /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/prebuilts/ndk/r16/build/cmake/android.toolchain.cmake:63 (message):
+  Using custom NDK path (ANDROID_NDK is set):
+  /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/../prebuilts/ndk/r16
+Call Stack (most recent call first):
+  /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_64_SDK14_NDKr16_cpp_static/.cmake/CMakeFiles/3.6.0-rc2/CMakeSystem.cmake:6 (include)
+  CMakeLists.txt
+
+
+-- Building swappy_static to /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_64_SDK14_NDKr16_cpp_static/.cmake/swappy/build
+-- protobuf_generate_base._working_dir=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/tuningfork/proto
+-- protobuf_generate_base._PROTO_GENS_DIR=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_64_SDK14_NDKr16_cpp_static/.cmake/gens/nano
+-- protobuf_generate_base._extension=c
+-- protobuf_generate_base.PROTOC_EXE=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc
+-- /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc will generate /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_64_SDK14_NDKr16_cpp_static/.cmake/gens/nano/tuningfork.pb.*
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_64_SDK14_NDKr16_cpp_static/.cmake
+[1/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/ChoreographerThread.cpp.o
+[2/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/SwappyDisplayManager.cpp.o
+[3/4] Linking CXX static library /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/out/x86_64_SDK14_NDKr16_cpp_static/libswappy_static.a
+[4/4] Linking CXX shared library swappy/libswappy.so
+-- Building swappy_static to /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_64_SDK16_NDKr17_cpp_static/.cmake/swappy/build
+-- protobuf_generate_base._working_dir=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/tuningfork/proto
+-- protobuf_generate_base._PROTO_GENS_DIR=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_64_SDK16_NDKr17_cpp_static/.cmake/gens/nano
+-- protobuf_generate_base._extension=c
+-- protobuf_generate_base.PROTOC_EXE=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc
+-- /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc will generate /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_64_SDK16_NDKr17_cpp_static/.cmake/gens/nano/tuningfork.pb.*
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_64_SDK16_NDKr17_cpp_static/.cmake
+[1/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/ChoreographerThread.cpp.o
+[2/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/SwappyDisplayManager.cpp.o
+[3/4] Linking CXX static library /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/out/x86_64_SDK16_NDKr17_cpp_static/libswappy_static.a
+[4/4] Linking CXX shared library swappy/libswappy.so
+CMake Warning at /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/prebuilts/ndk/r16/build/cmake/android.toolchain.cmake:63 (message):
+  Using custom NDK path (ANDROID_NDK is set):
+  /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/../prebuilts/ndk/r16
+Call Stack (most recent call first):
+  /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_64_SDK26_NDKr16_gnustl_static/.cmake/CMakeFiles/3.6.0-rc2/CMakeSystem.cmake:6 (include)
+  CMakeLists.txt
+
+
+-- Building swappy_static to /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_64_SDK26_NDKr16_gnustl_static/.cmake/swappy/build
+-- protobuf_generate_base._working_dir=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/tuningfork/proto
+-- protobuf_generate_base._PROTO_GENS_DIR=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_64_SDK26_NDKr16_gnustl_static/.cmake/gens/nano
+-- protobuf_generate_base._extension=c
+-- protobuf_generate_base.PROTOC_EXE=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc
+-- /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc will generate /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_64_SDK26_NDKr16_gnustl_static/.cmake/gens/nano/tuningfork.pb.*
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_64_SDK26_NDKr16_gnustl_static/.cmake
+[1/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/ChoreographerThread.cpp.o
+[2/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/SwappyDisplayManager.cpp.o
+[3/4] Linking CXX static library /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/out/x86_64_SDK26_NDKr16_gnustl_static/libswappy_static.a
+[4/4] Linking CXX shared library swappy/libswappy.so
+CMake Warning at /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/prebuilts/ndk/r17/build/cmake/android.toolchain.cmake:217 (message):
+  gnustl_static is deprecated and will be removed in the next release.
+  Please switch to either c++_shared or c++_static.  See
+  https://developer.android.com/ndk/guides/cpp-support.html for more
+  information.
+Call Stack (most recent call first):
+  /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_64_SDK28_NDKr17_gnustl_static/.cmake/CMakeFiles/3.6.0-rc2/CMakeSystem.cmake:6 (include)
+  CMakeLists.txt
+
+
+-- Building swappy_static to /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_64_SDK28_NDKr17_gnustl_static/.cmake/swappy/build
+-- protobuf_generate_base._working_dir=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/tuningfork/proto
+-- protobuf_generate_base._PROTO_GENS_DIR=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_64_SDK28_NDKr17_gnustl_static/.cmake/gens/nano
+-- protobuf_generate_base._extension=c
+-- protobuf_generate_base.PROTOC_EXE=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc
+-- /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc will generate /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_64_SDK28_NDKr17_gnustl_static/.cmake/gens/nano/tuningfork.pb.*
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_64_SDK28_NDKr17_gnustl_static/.cmake
+[1/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/ChoreographerThread.cpp.o
+[2/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/SwappyDisplayManager.cpp.o
+[3/4] Linking CXX static library /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/out/x86_64_SDK28_NDKr17_gnustl_static/libswappy_static.a
+[4/4] Linking CXX shared library swappy/libswappy.so
+-- Building swappy_static to /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_64_SDK28_NDKr17_cpp_static/.cmake/swappy/build
+-- protobuf_generate_base._working_dir=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/tuningfork/proto
+-- protobuf_generate_base._PROTO_GENS_DIR=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_64_SDK28_NDKr17_cpp_static/.cmake/gens/nano
+-- protobuf_generate_base._extension=c
+-- protobuf_generate_base.PROTOC_EXE=/usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc
+-- /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/src/protobuf/../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc will generate /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_64_SDK28_NDKr17_cpp_static/.cmake/gens/nano/tuningfork.pb.*
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/.temp/x86_64_SDK28_NDKr17_cpp_static/.cmake
+[1/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/ChoreographerThread.cpp.o
+[2/4] Building CXX object swappy/CMakeFiles/swappy_static.dir/common/SwappyDisplayManager.cpp.o
+[3/4] Linking CXX static library /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/out/x86_64_SDK28_NDKr17_cpp_static/libswappy_static.a
+[4/4] Linking CXX shared library swappy/libswappy.so
+
+> Task :gamesdkZip
+
+gamesdk.zip is in /usr/local/google/home/vrepets/temp/2019-10-11/android-games-sdk/gamesdk/../package/gamesdk/gamesdk.zip
+
+BUILD SUCCESSFUL in 34s
+56 actionable tasks: 19 executed, 37 up-to-date
