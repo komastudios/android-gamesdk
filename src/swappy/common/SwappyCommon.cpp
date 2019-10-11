@@ -38,8 +38,12 @@ constexpr nanoseconds SwappyCommon::FRAME_MARGIN;
 constexpr nanoseconds SwappyCommon::EDGE_HYSTERESIS;
 constexpr nanoseconds SwappyCommon::REFRESH_RATE_MARGIN;
 
+extern "C" const char* _binary_classes_dex_start;
+extern "C" int _binary_classes_dex_size;
+
 SwappyCommon::SwappyCommon(JNIEnv *env, jobject jactivity)
-        : mSdkVersion(getSDKVersion(env)),
+        : mEnv(env),
+          mSdkVersion(getSDKVersion()),
           mSwapDuration(nanoseconds(0)),
           mAutoSwapInterval(1),
           mValid(false) {
@@ -113,9 +117,11 @@ SwappyCommon::SwappyCommon(JNIEnv *env, jobject jactivity)
                                                                  sfVsyncOffset - appVsyncOffset,
                                                                  [this]() { return wakeClient(); });
 
+
+    jclass ctClass = loadClass(jactivity, ChoreographerThread::CT_CLASS, (JNINativeMethod*)ChoreographerThread::CTNativeMethods, ChoreographerThread::CTNativeMethodsSize);
     mChoreographerThread = ChoreographerThread::createChoreographerThread(
                                    ChoreographerThread::Type::Swappy,
-                                   vm,
+                                   vm, ctClass,
                                    [this]{ mChoreographerFilter->onChoreographer(); },
                                    mSdkVersion);
     if (!mChoreographerThread->isInitialized()) {
@@ -124,7 +130,8 @@ SwappyCommon::SwappyCommon(JNIEnv *env, jobject jactivity)
     }
 
     if (USE_DISPLAY_MANAGER && mSdkVersion >= SwappyDisplayManager::MIN_SDK_VERSION) {
-        mDisplayManager = std::make_unique<SwappyDisplayManager>(vm, jactivity);
+        jclass ctClass = loadClass(jactivity, SwappyDisplayManager::SDM_CLASS, (JNINativeMethod*)SwappyDisplayManager::SDMNativeMethods, SwappyDisplayManager::SDMNativeMethodsSize);
+        mDisplayManager = std::make_unique<SwappyDisplayManager>(vm,  ctClass, ctClass);
         if (!mDisplayManager->isInitialized()) {
             ALOGE("failed to initialize DisplayManager");
             return;
@@ -174,6 +181,7 @@ void SwappyCommon::onChoreographer(int64_t frameTimeNanos) {
         mChoreographerThread =
                 ChoreographerThread::createChoreographerThread(
                         ChoreographerThread::Type::App,
+                        nullptr, 
                         nullptr,
                         [this] { mChoreographerFilter->onChoreographer(); },
                         mSdkVersion);
@@ -705,25 +713,24 @@ void SwappyCommon::waitOneFrame() {
     waitUntil(mCurrentFrame + 1);
 }
 
-int SwappyCommon::getSDKVersion(JNIEnv *env)
-{
-    const jclass buildClass = env->FindClass("android/os/Build$VERSION");
-    if (env->ExceptionCheck()) {
-        env->ExceptionClear();
+int SwappyCommon::getSDKVersion() {
+    const jclass buildClass = mEnv->FindClass("android/os/Build$VERSION");
+    if (mEnv->ExceptionCheck()) {
+        mEnv->ExceptionClear();
         ALOGE("Failed to get Build.VERSION class");
         return 0;
     }
 
-    const jfieldID sdk_int = env->GetStaticFieldID(buildClass, "SDK_INT", "I");
-    if (env->ExceptionCheck()) {
-        env->ExceptionClear();
+    const jfieldID sdk_int = mEnv->GetStaticFieldID(buildClass, "SDK_INT", "I");
+    if (mEnv->ExceptionCheck()) {
+        mEnv->ExceptionClear();
         ALOGE("Failed to get Build.VERSION.SDK_INT field");
         return 0;
     }
 
-    const jint sdk = env->GetStaticIntField(buildClass, sdk_int);
-    if (env->ExceptionCheck()) {
-        env->ExceptionClear();
+    const jint sdk = mEnv->GetStaticIntField(buildClass, sdk_int);
+    if (mEnv->ExceptionCheck()) {
+        mEnv->ExceptionClear();
         ALOGE("Failed to get SDK version");
         return 0;
     }
@@ -731,5 +738,66 @@ int SwappyCommon::getSDKVersion(JNIEnv *env)
     ALOGI("SDK version = %d", sdk);
     return sdk;
 }
+
+
+jclass SwappyCommon::loadClass(jobject activity, const char* name, JNINativeMethod* nativeMethods, size_t nativeMethodsSize) {
+    /*
+    1. Get classloder from actvity
+    2. Try to create the requested class from the activty classloader
+    3. If step 2 not successful get classloder for dex
+    4. If step 3 is  successful register native methods
+    */
+    jclass activityClass = mEnv->GetObjectClass(activity);
+    jclass classLoaderClass = mEnv->FindClass("java/lang/ClassLoader");
+    jmethodID getClassLoader = mEnv->GetMethodID(activityClass,
+                                                "getClassLoader",
+                                                "()Ljava/lang/ClassLoader;");
+    jobject classLoaderObj = mEnv->CallObjectMethod(activity, getClassLoader);
+    jmethodID loadClass = mEnv->GetMethodID(classLoaderClass,
+                                           "loadClass",
+                                           "(Ljava/lang/String;)Ljava/lang/Class;");
+    jstring className = mEnv->NewStringUTF(name);
+    jclass targetClass = static_cast<jclass>(
+        mEnv->CallObjectMethod(classLoaderObj, loadClass, className));
+    if (mEnv->ExceptionCheck()) {
+        mEnv->ExceptionClear();
+
+        jstring dexLoaderClassName = mEnv->NewStringUTF("dalvik/system/InMemoryDexClassLoader");
+        jclass imclassloaderClass = static_cast<jclass>(mEnv->CallObjectMethod(classLoaderObj,
+            loadClass, dexLoaderClassName));
+        mEnv->DeleteLocalRef(dexLoaderClassName);
+        if (mEnv->ExceptionCheck()) {
+            mEnv->ExceptionDescribe();
+            mEnv->ExceptionClear();
+            targetClass = nullptr;
+        }  else {
+            jmethodID constructor = mEnv->GetMethodID(imclassloaderClass, "<init>",
+                                                     "(Ljava/nio/ByteBuffer;Ljava/lang/ClassLoader;)V");
+
+            auto byteBuffer = mEnv->NewDirectByteBuffer((void*)_binary_classes_dex_start, _binary_classes_dex_size);
+            jobject imclassloaderObj = mEnv->NewObject(imclassloaderClass, constructor, byteBuffer,
+                                                      classLoaderObj);
+
+            targetClass = static_cast<jclass>(
+                mEnv->CallObjectMethod(imclassloaderObj, loadClass, className));
+            if (mEnv->ExceptionCheck()) {
+                mEnv->ExceptionDescribe();
+                mEnv->ExceptionClear();
+
+                if (targetClass == nullptr) {
+                    ALOGE("Unable to find com.google.androidgamesdk.* class");
+                    ALOGE("Did you integrate extras ?");
+                }
+                else {
+                    mEnv->RegisterNatives(targetClass, nativeMethods, nativeMethodsSize);
+                    ALOGI("Using internal * class from dex bytes.");
+                }
+            }
+        }
+    }
+    mEnv->DeleteLocalRef(className);
+    return targetClass;
+}
+
 
 } // namespace swappy

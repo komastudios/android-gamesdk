@@ -28,8 +28,11 @@ namespace swappy {
 class SwappyDisplayManager {
 public:
     static constexpr int MIN_SDK_VERSION = 23;
+    static const char* SDM_CLASS;
+    static const JNINativeMethod SDMNativeMethods[];
+    static constexpr int  SDMNativeMethodsSize = 2;
 
-    SwappyDisplayManager(JavaVM*, jobject);
+    SwappyDisplayManager(JavaVM*, jobject mainActivity, jclass swappyDisplayManagerClass);
     ~SwappyDisplayManager();
 
     bool isInitialized() { return mInitialized; }
@@ -45,9 +48,9 @@ private:
     std::mutex mMutex;
     std::condition_variable mCondition;
     std::shared_ptr<RefreshRateMap> mSupportedRefreshRates;
-    jobject mJthis;
-    jmethodID mSetPreferredRefreshRate;
-    jmethodID mTerminate;
+    jobject mJthis = nullptr;
+    jmethodID mSetPreferredRefreshRate = nullptr;
+    jmethodID mTerminate = nullptr;
     bool mInitialized = false;
 
     friend class SwappyDisplayManagerJNI;
