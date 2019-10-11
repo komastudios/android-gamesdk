@@ -116,6 +116,7 @@ SwappyCommon::SwappyCommon(JNIEnv *env, jobject jactivity)
     mChoreographerThread = ChoreographerThread::createChoreographerThread(
                                    ChoreographerThread::Type::Swappy,
                                    vm,
+                                   jactivity,
                                    [this]{ mChoreographerFilter->onChoreographer(); },
                                    mSdkVersion);
     if (!mChoreographerThread->isInitialized()) {
@@ -125,7 +126,9 @@ SwappyCommon::SwappyCommon(JNIEnv *env, jobject jactivity)
 
     if (USE_DISPLAY_MANAGER && mSdkVersion >= SwappyDisplayManager::MIN_SDK_VERSION) {
         mDisplayManager = std::make_unique<SwappyDisplayManager>(vm, jactivity);
+
         if (!mDisplayManager->isInitialized()) {
+            mDisplayManager = nullptr;
             ALOGE("failed to initialize DisplayManager");
             return;
         }
@@ -174,6 +177,7 @@ void SwappyCommon::onChoreographer(int64_t frameTimeNanos) {
         mChoreographerThread =
                 ChoreographerThread::createChoreographerThread(
                         ChoreographerThread::Type::App,
+                        nullptr,
                         nullptr,
                         [this] { mChoreographerFilter->onChoreographer(); },
                         mSdkVersion);
@@ -705,8 +709,7 @@ void SwappyCommon::waitOneFrame() {
     waitUntil(mCurrentFrame + 1);
 }
 
-int SwappyCommon::getSDKVersion(JNIEnv *env)
-{
+int SwappyCommon::getSDKVersion(JNIEnv *env) {
     const jclass buildClass = env->FindClass("android/os/Build$VERSION");
     if (env->ExceptionCheck()) {
         env->ExceptionClear();
