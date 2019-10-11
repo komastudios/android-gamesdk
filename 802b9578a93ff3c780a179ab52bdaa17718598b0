@@ -1,0 +1,180 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a39365d_b8384669",
+        "filename": "src/swappy/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-11T09:26:41Z",
+      "side": 1,
+      "message": "Extra ws",
+      "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ccfa5a73_9f9c7143",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-11T09:26:41Z",
+      "side": 1,
+      "message": "Line too long",
+      "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f7ab15ba_57572c86",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-11T09:26:41Z",
+      "side": 1,
+      "message": "Line too long",
+      "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8f1dbd60_3071d106",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-11T09:26:41Z",
+      "side": 1,
+      "message": "The 2nd argument should be jactivity, not ctClass",
+      "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "96a63a16_bc2f81c8",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-11T09:26:41Z",
+      "side": 1,
+      "message": "Does this work? You\u0027ve changed createChoreographerThread so that it doesn\u0027t load the java class by itself now. Don\u0027t you need to pass the class created from dex here?",
+      "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f71e1e21_3b5c0e5e",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 743,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-11T09:26:41Z",
+      "side": 1,
+      "message": "Line too long",
+      "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8f311fe_7943c9e7",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 775,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-11T09:26:41Z",
+      "side": 1,
+      "message": "Line too long",
+      "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "75e0ec11_5ad8f8c2",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 777,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-11T09:26:41Z",
+      "side": 1,
+      "message": "Line too long",
+      "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8d4c2b77_c51f8f73",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 800,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-11T09:26:41Z",
+      "side": 1,
+      "message": "Can we put this code in src/common so other projects can use it?",
+      "range": {
+        "startLine": 743,
+        "startChar": 0,
+        "endLine": 800,
+        "endChar": 1
+      },
+      "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f9b69359_c534f60a",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-11T09:26:41Z",
+      "side": 1,
+      "message": "Storing JNIEnvs in objects can be a bad idea because of threading (calling a method on a different thread and using the env will give an error). Why do we need to store it at all? We only use it at initialization, don\u0027t we? Or alternatively, you should store the JavaVM.",
+      "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
