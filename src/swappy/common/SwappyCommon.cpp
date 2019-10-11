@@ -38,6 +38,7 @@ constexpr nanoseconds SwappyCommon::FRAME_MARGIN;
 constexpr nanoseconds SwappyCommon::EDGE_HYSTERESIS;
 constexpr nanoseconds SwappyCommon::REFRESH_RATE_MARGIN;
 
+
 SwappyCommon::SwappyCommon(JNIEnv *env, jobject jactivity)
         : mSdkVersion(getSDKVersion(env)),
           mSwapDuration(nanoseconds(0)),
@@ -113,19 +114,26 @@ SwappyCommon::SwappyCommon(JNIEnv *env, jobject jactivity)
                                                                  sfVsyncOffset - appVsyncOffset,
                                                                  [this]() { return wakeClient(); });
 
+
+
     mChoreographerThread = ChoreographerThread::createChoreographerThread(
                                    ChoreographerThread::Type::Swappy,
                                    vm,
+                                   jactivity,
                                    [this]{ mChoreographerFilter->onChoreographer(); },
                                    mSdkVersion);
+
     if (!mChoreographerThread->isInitialized()) {
         ALOGE("failed to initialize ChoreographerThread");
         return;
     }
 
+    ALOGI("Initializing SwappyDisplayManager");
     if (USE_DISPLAY_MANAGER && mSdkVersion >= SwappyDisplayManager::MIN_SDK_VERSION) {
         mDisplayManager = std::make_unique<SwappyDisplayManager>(vm, jactivity);
+
         if (!mDisplayManager->isInitialized()) {
+            mDisplayManager = nullptr;
             ALOGE("failed to initialize DisplayManager");
             return;
         }
@@ -174,6 +182,7 @@ void SwappyCommon::onChoreographer(int64_t frameTimeNanos) {
         mChoreographerThread =
                 ChoreographerThread::createChoreographerThread(
                         ChoreographerThread::Type::App,
+                        nullptr,
                         nullptr,
                         [this] { mChoreographerFilter->onChoreographer(); },
                         mSdkVersion);
@@ -705,8 +714,7 @@ void SwappyCommon::waitOneFrame() {
     waitUntil(mCurrentFrame + 1);
 }
 
-int SwappyCommon::getSDKVersion(JNIEnv *env)
-{
+int SwappyCommon::getSDKVersion(JNIEnv *env) {
     const jclass buildClass = env->FindClass("android/os/Build$VERSION");
     if (env->ExceptionCheck()) {
         env->ExceptionClear();
@@ -731,5 +739,6 @@ int SwappyCommon::getSDKVersion(JNIEnv *env)
     ALOGI("SDK version = %d", sdk);
     return sdk;
 }
+
 
 } // namespace swappy
