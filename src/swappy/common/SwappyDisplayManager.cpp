@@ -24,33 +24,38 @@
 
 namespace swappy {
 
-SwappyDisplayManager::SwappyDisplayManager(JavaVM* vm, jobject mainActivity) : mJVM(vm) {
+extern "C" {
+
+    JNIEXPORT void JNICALL
+    Java_com_google_androidgamesdk_SwappyDisplayManager_nSetSupportedRefreshRates(
+        JNIEnv *env,
+        jobject /* this */,
+        jlong cookie,
+        jlongArray refreshRates,
+        jintArray modeIds);
+
+    JNIEXPORT void JNICALL
+    Java_com_google_androidgamesdk_SwappyDisplayManager_nOnRefreshRateChanged(
+        JNIEnv *env,
+        jobject /* this */,
+        jlong cookie,
+        jlong refreshPeriod,
+        jlong appOffset,
+        jlong sfOffset);
+
+}
+
+const char* SwappyDisplayManager::SDM_CLASS = "com/google/androidgamesdk/SwappyDisplayManager";
+
+const JNINativeMethod SwappyDisplayManager::SDMNativeMethods[] = {
+        {"nSetSupportedRefreshRates", "(J[J[I)V",
+         (void*)&Java_com_google_androidgamesdk_SwappyDisplayManager_nSetSupportedRefreshRates},
+        {"nOnRefreshRateChanged", "(JJJJ)V",
+         (void*)&Java_com_google_androidgamesdk_SwappyDisplayManager_nOnRefreshRateChanged}};
+
+SwappyDisplayManager::SwappyDisplayManager(JavaVM* vm, jobject mainActivity, jclass swappyDisplayManagerClass) : mJVM(vm) {
     JNIEnv *env;
     mJVM->AttachCurrentThread(&env, nullptr);
-
-    // Since we may call this from ANativeActivity we cannot use env->FindClass as the classpath
-    // will be empty. Instead we need to work a bit harder
-    jclass activity = env->GetObjectClass(mainActivity);
-    jclass classLoader = env->FindClass("java/lang/ClassLoader");
-    jmethodID getClassLoader = env->GetMethodID(activity,
-                                                "getClassLoader",
-                                                "()Ljava/lang/ClassLoader;");
-    jmethodID loadClass = env->GetMethodID(classLoader,
-                                           "loadClass",
-                                           "(Ljava/lang/String;)Ljava/lang/Class;");
-    jobject classLoaderObj = env->CallObjectMethod(mainActivity, getClassLoader);
-    jstring swappyDisplayManagerName =
-            env->NewStringUTF("com/google/androidgamesdk/SwappyDisplayManager");
-
-    jclass swappyDisplayManagerClass = static_cast<jclass>(
-            env->CallObjectMethod(classLoaderObj, loadClass, swappyDisplayManagerName));
-    env->DeleteLocalRef(swappyDisplayManagerName);
-    if (env->ExceptionCheck()) {
-        env->ExceptionDescribe();
-        ALOGE("Unable to find com.google.androidgamesdk.SwappyDisplayManager class");
-        ALOGE("Did you integrate extras ?");
-        return;
-    }
 
     jmethodID constructor = env->GetMethodID(
             swappyDisplayManagerClass,
