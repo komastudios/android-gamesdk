@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "tuningfork/tuningfork.h"
+#include "tuningfork_internal.h"
 #include "jni_helper.h"
 
 namespace tuningfork {
@@ -25,24 +25,18 @@ const uint64_t HISTOGRAMS_PAUSED = 0;
 const uint64_t HISTOGRAMS_UPLOADING = 1;
 
 class WebRequest {
-    JNIEnv* orig_env_;
-    JNIEnv* thread_env_;
-    jobject context_;
-    JavaVM* vm_;
+    JniCtx jni_;
     std::string uri_;
     std::string api_key_;
     int timeout_ms_;
 public:
-    WebRequest(JNIEnv* env, jobject context, const std::string& uri,
+    WebRequest(const JniCtx& jni, const std::string& uri,
                const std::string& api_key, int timeout_ms);
     WebRequest(const WebRequest& rq);
     WebRequest(WebRequest&& rq) = delete;
     WebRequest& operator=(const WebRequest& rq) = delete;
-    ~WebRequest();
     TFErrorCode Send(const std::string& request_json,
                      int& response_code, std::string& response_body);
-    void AttachToThread();
-    void DetachFromThread();
 };
 
 } // namespace tuningfork

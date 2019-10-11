@@ -58,7 +58,7 @@ class UploadThread : protected Runnable {
     }
 
     // Note that this won't include a valid experiment_id
-    static ExtraUploadInfo BuildExtraUploadInfo(JNIEnv* env, jobject context);
+    static ExtraUploadInfo BuildExtraUploadInfo(const JniCtx& jni);
 
   private:
     void UpdateGLVersion();

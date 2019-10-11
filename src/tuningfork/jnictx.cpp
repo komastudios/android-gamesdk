@@ -14,31 +14,34 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#include <sstream>
-#include <jni.h>
-#include <string>
-#include <memory>
-
-#include "tuningfork_internal.h"
-#include "web.h"
+#include "jnictx.h"
 
 namespace tuningfork {
 
-class UltimateUploader;
+JniCtx::JniCtx(JNIEnv* env, jobject ctx) {
+    if (env) {
+        jctx_ = env->NewGlobalRef(ctx);
+        env->GetJavaVM(&jvm_);
+    }
+}
+JniCtx::JniCtx(const JniCtx& rhs) : jvm_(rhs.jvm_) {
+    JNIEnv* env = Env();
+    if (env) {
+        jctx_ = env->NewGlobalRef(rhs.Ctx());
+    }
 
-// Google Endpoint backend
-class GEBackend : public Backend {
-public:
-    TFErrorCode Init(const JniCtx& jni, const Settings& settings,
-                     const ExtraUploadInfo& extra_upload_info);
-    ~GEBackend() override;
-    TFErrorCode Process(const std::string &json_event) override;
+}
+JniCtx::~JniCtx() {
+    if (jctx_) {
+        Env()->DeleteGlobalRef(jctx_);
+    }
+}
+JNIEnv* JniCtx::Env() const {
+    static thread_local JNIEnv* env = nullptr;
+    if (jvm_ != nullptr && env == nullptr) {
+        jvm_->AttachCurrentThread(&env, NULL);
+    }
+    return env;
+}
 
-private:
-    std::shared_ptr<UltimateUploader> ultimate_uploader_;
-    const TFCache* persister_;
-};
-
-} //namespace tuningfork {
+} // namespace tuningfork
