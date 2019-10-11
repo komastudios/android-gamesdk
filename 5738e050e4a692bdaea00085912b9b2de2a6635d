@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "aba75715_2aa23ad8",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-11T10:05:53Z",
+      "side": 1,
+      "message": "There is a follow up CL that resolves this",
+      "parentUuid": "0fca89b3_5ba04835",
+      "range": {
+        "startLine": 181,
+        "startChar": 2,
+        "endLine": 183,
+        "endChar": 26
+      },
+      "revId": "5738e050e4a692bdaea00085912b9b2de2a6635d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1b8fe256_755ec0b7",
         "filename": "include/tuningfork/tuningfork.h",
         "patchSetId": 1
@@ -84,6 +108,30 @@
       "side": 1,
       "message": "Yes, if you just set the swappy_tracer callback, the other settings will be loaded from the APK and merged. I\u0027ll modify the comment to make this clearer.",
       "parentUuid": "1b8fe256_755ec0b7",
+      "range": {
+        "startLine": 211,
+        "startChar": 0,
+        "endLine": 211,
+        "endChar": 101
+      },
+      "revId": "5738e050e4a692bdaea00085912b9b2de2a6635d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5276d51a_de55daed",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-11T10:05:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8c80843e_9aab65d1",
       "range": {
         "startLine": 211,
         "startChar": 0,
