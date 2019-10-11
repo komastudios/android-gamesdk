@@ -34,6 +34,7 @@
 #include "ChoreographerShim.h"
 #include "Log.h"
 #include "Trace.h"
+#include "JNIUtil.h"
 
 namespace swappy {
 
@@ -51,6 +52,17 @@ using PFN_AChoreographer_postFrameCallbackDelayed = void (*)(AChoreographer* cho
                                                         AChoreographer_frameCallback callback,
                                                         void* data,
                                                         long delayMillis);
+
+extern "C" {
+
+    JNIEXPORT void JNICALL
+    Java_com_google_androidgamesdk_ChoreographerCallback_nOnChoreographer(JNIEnv * /*env*/,
+                                                                      jobject /*this*/,
+                                                                      jlong cookie,
+                                                                      jlong /*frameTimeNanos*/);
+
+}
+
 
 class NDKChoreographerThread : public ChoreographerThread {
 public:
@@ -195,7 +207,7 @@ void NDKChoreographerThread::scheduleNextFrameCallback()
 
 class JavaChoreographerThread : public ChoreographerThread {
 public:
-    JavaChoreographerThread(JavaVM *vm, Callback onChoreographer);
+    JavaChoreographerThread(JavaVM *vm, jobject jactivity, Callback onChoreographer);
     ~JavaChoreographerThread() override;
     static void onChoreographer(jlong cookie);
     void onChoreographer() override { ChoreographerThread::onChoreographer(); };
@@ -211,7 +223,8 @@ private:
 
 };
 
-JavaChoreographerThread::JavaChoreographerThread(JavaVM *vm,
+JavaChoreographerThread::JavaChoreographerThread(JavaVM *vm, 
+                                                 jobject jactivity, 
                                                  Callback onChoreographer) :
         ChoreographerThread(onChoreographer),
         mJVM(vm)
@@ -220,8 +233,13 @@ JavaChoreographerThread::JavaChoreographerThread(JavaVM *vm,
     JNIEnv *env;
     mJVM->AttachCurrentThread(&env, nullptr);
 
-    jclass choreographerCallbackClass =
-            env->FindClass("com/google/androidgamesdk/ChoreographerCallback");
+    jclass choreographerCallbackClass = gamesdk::loadClass(env, 
+                                                   jactivity, 
+                                                   ChoreographerThread::CT_CLASS, 
+                                                   (JNINativeMethod*)ChoreographerThread::CTNativeMethods, 
+                                                   ChoreographerThread::CTNativeMethodsSize);
+
+    if (choreographerCallbackClass==nullptr) return;
 
     jmethodID constructor = env->GetMethodID(
             choreographerCallbackClass,
@@ -306,6 +324,12 @@ void NoChoreographerThread::postFrameCallbacks() {
 
 void NoChoreographerThread::scheduleNextFrameCallback() {}
 
+const char* ChoreographerThread::CT_CLASS = "com/google/androidgamesdk/ChoreographerCallback";
+
+const JNINativeMethod ChoreographerThread::CTNativeMethods[] = {
+        {"nOnChoreographer", "(JJ)V",
+         (void*)&Java_com_google_androidgamesdk_ChoreographerCallback_nOnChoreographer}};
+                                                                                         
 ChoreographerThread::ChoreographerThread(Callback onChoreographer):
         mCallback(onChoreographer) {}
 
@@ -340,23 +364,10 @@ void ChoreographerThread::onChoreographer()
     mCallback();
 }
 
-bool ChoreographerThread::isChoreographerCallbackClassLoaded(JavaVM *vm)
-{
-    JNIEnv *env;
-    vm->AttachCurrentThread(&env, nullptr);
-
-    env->FindClass("com/google/androidgamesdk/ChoreographerCallback");
-    if (env->ExceptionCheck()) {
-        env->ExceptionClear();
-        return false;
-    }
-
-    return true;
-}
 
 std::unique_ptr<ChoreographerThread>
     ChoreographerThread::createChoreographerThread(
-                Type type, JavaVM *vm, Callback onChoreographer, int sdkVersion) {
+                Type type, JavaVM *vm, jobject jactivity, Callback onChoreographer, int sdkVersion) {
     if (type == Type::App) {
         ALOGI("Using Application's Choreographer");
         return std::make_unique<NoChoreographerThread>(onChoreographer);
@@ -367,9 +378,13 @@ std::unique_ptr<ChoreographerThread>
         return std::make_unique<NDKChoreographerThread>(onChoreographer);
     }
 
-    if (isChoreographerCallbackClassLoaded(vm)){
+    JNIEnv *env;
+    vm->AttachCurrentThread(&env, nullptr);
+    std::unique_ptr<ChoreographerThread> javaChoreographerThread = 
+        std::make_unique<JavaChoreographerThread>(vm, jactivity, onChoreographer);
+    if (javaChoreographerThread->isInitialized()){
         ALOGI("Using Java Choreographer");
-        return std::make_unique<JavaChoreographerThread>(vm, onChoreographer);
+        return javaChoreographerThread;        
     }
 
     ALOGI("Using no Choreographer (Best Effort)");
