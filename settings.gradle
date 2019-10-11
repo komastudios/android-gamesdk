@@ -1,3 +1,5 @@
 rootProject.name = 'androidgamesdk'
 include ':extras'
 project(':extras').projectDir= new File('src/extras')
+include 'extras:aar'
+include 'extras:apk'
