@@ -412,6 +412,13 @@ def sdkNativeBuild(withTuningFork = true, buildType="Release") {
     }
 }
 
+def specificNativeBuild(sdkVersion, ndkVersion, stlVersion, withTuningFork = false, buildType="Release") {
+    def threadChecks = false
+    return defaultAbis().collect {
+	buildNativeModules(it, sdkVersion, ndkVersion, stlVersion, threadChecks, withTuningFork, buildType)
+    }
+}
+
 def getLocalToolchain() {
     def kLocalMinSdk = project.hasProperty("GAMESDK_ANDROID_SDK_VERSION") ?
         project.GAMESDK_ANDROID_SDK_VERSION : "26"
@@ -506,6 +513,29 @@ task localTfBuild(type: BuildTask) {
     ext.nativeBuild = { tf,bt -> localNativeBuild(tf, "src", bt) }
 }
 
+task specificBuild(type: BuildTask) {
+    dependsOn ':extras:assembleRelease'
+    ext.packageName = "specific"
+    ext.flattenLibs = false
+    ext.withTuningFork = false;
+    ext.withSharedLibs = true
+    ext.withStaticLibs = true;
+    ext.withFullBuildKey = false;
+    ext.buildType = "Release";
+    ext.nativeBuild = { tf,bt ->
+	def sdk = System.getenv("SDK")
+	def ndk = System.getenv("NDK")
+	def stl = System.getenv("STL")
+	if (sdk==null || ndk==null || stl==null) {
+	    throw new GradleException("""
+Must set SDK, NDK and STL for a specific build,
+e.g. SDK=14 NDK=r16 STL='c++_static' ./gradlew specificZip"""
+	    )
+	}
+	specificNativeBuild(sdk, ndk, stl, tf, bt)
+    }
+}
+
 tasks.withType(BuildTask) {
     doLast {
         nativeBuild(withTuningFork, buildType).each {
@@ -582,3 +612,4 @@ addZipTask("unityZip", unityBuild, "builds")
 addZipTask("archiveZip", localBuild, "gamesdk")
 addZipTask("archiveTfZip", localTfBuild, "gamesdk")
 addZipTask("gamesdkZip", sdkBuild, "gamesdk")
+addZipTask("specificZip", specificBuild, "gamesdk")
