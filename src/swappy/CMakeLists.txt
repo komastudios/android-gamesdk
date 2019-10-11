@@ -26,6 +26,18 @@ include_directories( vulkan )
 include_directories( ${ANDROID_NDK}/sources/third_party/vulkan/src/common )
 
 message( STATUS "Building swappy_static to ${CMAKE_CURRENT_BINARY_DIR}/build" )
+
+add_custom_command(OUTPUT classes_dex.o
+     COMMAND cd ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/../intermediates/dex/release/mergeDexRelease/out && ${CMAKE_LINKER} -r -b binary -o ${CMAKE_CURRENT_BINARY_DIR}/classes_dex.o classes.dex
+     )
+
+set_source_files_properties(
+     classes_dex.o
+     PROPERTIES
+     EXTERNAL_OBJECT true
+     GENERATED true
+)
+
 add_library( swappy_static
 
              STATIC
@@ -50,7 +62,7 @@ add_library( swappy_static
              ${SOURCE_LOCATION_VULKAN}/SwappyVkBase.cpp
              ${SOURCE_LOCATION_VULKAN}/SwappyVkFallback.cpp
              ${SOURCE_LOCATION_VULKAN}/SwappyVkGoogleDisplayTiming.cpp
-
+             ${CMAKE_CURRENT_BINARY_DIR}/classes_dex.o
              # Add new source files here
              )
 
@@ -66,9 +78,9 @@ add_library( swappy
              ${SOURCE_LOCATION_VULKAN}/swappyVk_c.cpp)
 
 
- target_link_libraries( swappy
+target_link_libraries( swappy
 
                         swappy_static
                         android
                         GLESv2
-                        log )
+                        log)
