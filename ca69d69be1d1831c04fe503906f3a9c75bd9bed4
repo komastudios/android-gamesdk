@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "0eeb95fd_8906d712",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-11T10:18:41Z",
+      "side": 1,
+      "message": "Resolved in subsequent CL",
+      "parentUuid": "bd9ee897_288717f7",
+      "range": {
+        "startLine": 215,
+        "startChar": 0,
+        "endLine": 215,
+        "endChar": 101
+      },
+      "revId": "ca69d69be1d1831c04fe503906f3a9c75bd9bed4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "01c59541_86b5ab20",
         "filename": "include/tuningfork/tuningfork_extra.h",
         "patchSetId": 3
