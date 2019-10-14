@@ -86,6 +86,16 @@ run `gcloud topic arg-files`.
 The file `flags.yaml` contains flags which, among other things, set the active
 current project. For more information on flags files, run `gcloud topic flags-file`.
 
+### Systrace
+
+By default every run will also download a
+[systrace](https://developer.android.com/studio/profile/systrace) for the first
+10 seconds of the run. If you do not want that, pass `--nosystrace` to the
+`run.py` invocation.
+
+If `run.py` fails for you but it works with `--nosystrace`, contact your project
+administrator to set the correct permissions.
+
 ### Which models/API levels can I specify?
 
 The command
