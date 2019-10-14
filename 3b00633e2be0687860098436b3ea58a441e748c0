@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8973ae89_1905c3bf",
+        "filename": "test/devicefarm/run.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-10-14T11:42:16Z",
+      "side": 1,
+      "message": "Might be a good idea to add a buganizer bug number, could also be a good incentive for the team responsible for the API server to fix this?",
+      "revId": "3b00633e2be0687860098436b3ea58a441e748c0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "12a8f055_76a81007",
+        "filename": "test/devicefarm/run.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-10-14T11:42:16Z",
+      "side": 1,
+      "message": "nit: what about returning a dictionary with named keys instead of a n-uple? If arguments count is growing again with new additions, it will be a bit painful to ensure the proper order of returned items in the n-uple.",
+      "revId": "3b00633e2be0687860098436b3ea58a441e748c0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "09e4083c_18700516",
+        "filename": "test/devicefarm/run.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-10-14T11:42:16Z",
+      "side": 1,
+      "message": "nit: should this be called cwd_dir, or output_dir, or something like this?\nThe fact that it\u0027s a temporary directory is not a concern for download_cloud_artifacts (it\u0027s the concern of the caller to prepare the directory, temporary or not).",
+      "revId": "3b00633e2be0687860098436b3ea58a441e748c0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
