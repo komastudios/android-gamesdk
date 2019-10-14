@@ -72,6 +72,24 @@
     },
     {
       "key": {
+        "uuid": "7825f94b_b5f54898",
+        "filename": "test/devicefarm/run.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2019-10-14T14:29:42Z",
+      "side": 1,
+      "message": "I\u0027ll return a pair with the flags in a dict and the unparsed args (tail) in its own variable -- I think putting everything together in the same dict would be confusing as they are different things.",
+      "parentUuid": "8bd3d207_44cac788",
+      "revId": "3b00633e2be0687860098436b3ea58a441e748c0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "09e4083c_18700516",
         "filename": "test/devicefarm/run.py",
         "patchSetId": 1
