@@ -9,15 +9,24 @@ import subprocess
 import sys
 import tempfile
 
-def run_test(cmdline_tail):
+def run_test(cmdline_tail, systrace_on):
+    gcloud_name = (
+        '/google/bin/releases/android-games/devicefarm/systrace/gcloud.par'
+        if systrace_on
+        else 'gcloud'
+    )
     cmdline = [
-        'gcloud',
+        gcloud_name,
         'firebase',
         'test',
         'android',
         'run',
         '--format=json',
         '--flags-file', 'flags.yaml',
+        # TODO(daitx): disable impersonation when API server stops dropping the
+        # systrace field when authenticating as a person
+        '--impersonate-service-account',
+        'gamesdk-testing@appspot.gserviceaccount.com',
     ] + cmdline_tail
 
     print('Stand by...\n')
@@ -37,11 +46,12 @@ def run_test(cmdline_tail):
 def get_cmdline_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--all_physical', action='store_true')
+    parser.add_argument('--nosystrace', action='store_true')
     parser.add_argument('--ppscript')
     args, cmdline_tail = parser.parse_known_args()
     if args.all_physical:
         cmdline_tail += get_all_physical_args()
-    return (args.ppscript, cmdline_tail)
+    return (args.ppscript, not args.nosystrace, cmdline_tail)
 
 
 def get_all_physical_args():
@@ -113,7 +123,14 @@ def display_test_info(test_info):
     print('Matrix: {}\n'.format(test_info['matrix_id']))
 
 
-def download_cloud_artifacts(test_info, file_pattern):
+def get_tmpdir():
+    return tempfile.mkdtemp(
+        prefix=datetime.now().strftime('%Y%m%d-%H%M%S-'),
+        dir='.'
+    )
+
+
+def download_cloud_artifacts(test_info, file_pattern, tmpdir):
     pattern = r'^.*storage\/browser\/(.*)'
     re_match = re.match(pattern, test_info['url_storage'])
     gs_dir = re_match.group(1)
@@ -129,10 +146,6 @@ def download_cloud_artifacts(test_info, file_pattern):
         print(proc.stderr)
         exit(proc.returncode)
 
-    tmpdir = tempfile.mkdtemp(
-        prefix=datetime.now().strftime('%Y%m%d-%H%M%S-'),
-        dir='.'
-    )
     for line in proc.stdout.splitlines():
         name_suffix = line[5 + len(gs_dir):]
         cmdline = [
@@ -142,7 +155,6 @@ def download_cloud_artifacts(test_info, file_pattern):
             name_suffix.replace('/', '_')
         ]
         proc = subprocess.run(cmdline, cwd=tmpdir)
-    return tmpdir
 
 
 def postprocess(dir_name, ppscript):
@@ -155,10 +167,13 @@ def postprocess(dir_name, ppscript):
 
 
 if __name__ == '__main__':
-    ppscript, cmdline_tail = get_cmdline_args()
-    stdout, stderr = run_test(cmdline_tail)
+    ppscript, systrace_on, cmdline_tail = get_cmdline_args()
+    stdout, stderr = run_test(cmdline_tail, systrace_on)
     display_test_results(stdout, stderr)
     test_info = get_test_info(stderr)
     display_test_info(test_info)
-    dir_name = download_cloud_artifacts(test_info, 'logcat')
-    postprocess(dir_name, ppscript)
+    tmpdir = get_tmpdir()
+    download_cloud_artifacts(test_info, 'logcat', tmpdir)
+    if systrace_on:
+        download_cloud_artifacts(test_info, 'trace.html', tmpdir)
+    postprocess(tmpdir, ppscript)
