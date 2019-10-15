@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "425ed2d4_13d6b25b",
+        "filename": "src/common/JNIUtil.h",
+        "patchSetId": 11
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-15T17:15:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b3124a13_e851d4bd",
+      "revId": "52caa067d4b8e445df6dd69b0b28b8419bc17e9c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "806fe11c_76763f01",
         "filename": "src/common/JNIUtil.h",
         "patchSetId": 11
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "e2f8f4f1_9ef7b0f3",
+        "filename": "src/common/JNIUtil.h",
+        "patchSetId": 11
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-15T17:15:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "806fe11c_76763f01",
+      "revId": "52caa067d4b8e445df6dd69b0b28b8419bc17e9c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "02b28d88_59df9f03",
         "filename": "src/swappy/common/ChoreographerThread.cpp",
         "patchSetId": 11
@@ -47,6 +83,24 @@
       "writtenOn": "2019-10-15T15:23:30Z",
       "side": 1,
       "message": "We only want to do this if vm and jactivity are non-null",
+      "revId": "52caa067d4b8e445df6dd69b0b28b8419bc17e9c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3f38d7d2_52dcdc30",
+        "filename": "src/swappy/common/ChoreographerThread.cpp",
+        "patchSetId": 11
+      },
+      "lineNbr": 384,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-15T17:15:19Z",
+      "side": 1,
+      "message": "vm and jactivity are checked at the constructor level. Added an extra check here.",
+      "parentUuid": "02b28d88_59df9f03",
       "revId": "52caa067d4b8e445df6dd69b0b28b8419bc17e9c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
