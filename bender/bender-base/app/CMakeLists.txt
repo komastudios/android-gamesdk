@@ -7,7 +7,10 @@ add_library(app-glue STATIC ${APP_GLUE_DIR}/android_native_app_glue.c)
 
 # build vulkan app
 set(SRC_DIR src/main/jni)
-set(WRAPPER_DIR ../utils/vulkan_wrapper)
+set(KIT_DIR ../utils/bender_kit)
+set(WRAPPER_DIR ${KIT_DIR}/vulkan_wrapper)
+
+add_library(bender-kit STATIC ${KIT_DIR}/bender_kit.cpp)
 
 add_library(base SHARED
             ${SRC_DIR}/VulkanMain.cpp
