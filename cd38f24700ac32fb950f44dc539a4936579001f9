@@ -1,0 +1,7 @@
+Code-Review+2: Andy Yu <chingtangyu@google.com>
+Presubmit-Verified+1: Treehugger Robot <treehugger-gerrit@google.com>
+Submitted-by: Matt Wang <mattkw@google.com>
+Submitted-at: Tue, 15 Oct 2019 23:23:43 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1143755
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
