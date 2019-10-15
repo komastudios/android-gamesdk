@@ -12,40 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "TutorialUtils.hpp"
-#include "TutorialTextures.hpp"
+#include "BenderHelpers.hpp"
+#include "BenderTextures.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_ONLY_PNG
 #include "stb_image.h"
-#include "TutoWindowManager.hpp"
-#include "TutorialUtils.hpp"
+#include "BenderWindowManager.hpp"
 
 #include <stdexcept>
 
-extern VkDevice tutorialDevice;
-extern AAssetManager* tutorialAssetManager;
-extern VkPhysicalDeviceMemoryProperties tutorialMemoryProperties;
+extern VkDevice benderDevice;
+extern AAssetManager* benderAssetManager;
+extern VkPhysicalDeviceMemoryProperties benderMemoryProperties;
 extern VkCommandPool cmdPool;
-extern VkPhysicalDevice tutorialGpu;
+extern VkPhysicalDevice benderGpu;
 
 // Open texture file from asset, load it into the created texture
 // The supported texture format is in kTexFmt
 //     Skipping memory barriers the next draw command is far out
 //     by then, the blit will way complete ahead
-VkResult tutorialLoadTextureFromFile(const char* filePath,
+VkResult benderLoadTextureFromFile(const char* filePath,
                                      struct texture_object* tex_obj,
                                      VkImageUsageFlags usage,
                                      VkFlags required_props) {
   if (!(usage | required_props)) {
     __android_log_print(ANDROID_LOG_ERROR,
-                        "tutorial texture", "No usage and required_pros");
+                        "bender texture", "No usage and required_pros");
     return VK_ERROR_FORMAT_NOT_SUPPORTED;
   }
 
   // Check for linear supportability
   VkFormatProperties props;
   bool  needBlit = true;
-  vkGetPhysicalDeviceFormatProperties(tutorialGpu, kTexFmt, &props);
+  vkGetPhysicalDeviceFormatProperties(benderGpu, kTexFmt, &props);
   assert((props.linearTilingFeatures | props.optimalTilingFeatures) &
           VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
 
@@ -55,7 +54,7 @@ VkResult tutorialLoadTextureFromFile(const char* filePath,
   }
 
     // Read the file:
-  AAsset* file = AAssetManager_open(tutorialAssetManager, filePath,
+  AAsset* file = AAssetManager_open(benderAssetManager, filePath,
                                     AASSET_MODE_BUFFER);
   size_t fileLength = AAsset_getLength(file);
   stbi_uc* fileContent = new unsigned char[fileLength];
@@ -95,15 +94,15 @@ VkResult tutorialLoadTextureFromFile(const char* filePath,
   };
 
   VkMemoryRequirements mem_reqs;
-  CALL_VK(vkCreateImage(tutorialDevice, &image_create_info,
+  CALL_VK(vkCreateImage(benderDevice, &image_create_info,
                       nullptr, &tex_obj->image));
-  vkGetImageMemoryRequirements(tutorialDevice, tex_obj->image, &mem_reqs);
+  vkGetImageMemoryRequirements(benderDevice, tex_obj->image, &mem_reqs);
   mem_alloc.allocationSize = mem_reqs.size;
   VK_CHECK(memory_type_from_properties(mem_reqs.memoryTypeBits,
                               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
                               &mem_alloc.memoryTypeIndex));
-  CALL_VK(vkAllocateMemory(tutorialDevice, &mem_alloc, nullptr, &tex_obj->mem));
-  CALL_VK(vkBindImageMemory(tutorialDevice, tex_obj->image, tex_obj->mem, 0));
+  CALL_VK(vkAllocateMemory(benderDevice, &mem_alloc, nullptr, &tex_obj->mem));
+  CALL_VK(vkBindImageMemory(benderDevice, tex_obj->image, tex_obj->mem, 0));
 
   if (required_props & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) {
     const VkImageSubresource subres = {
@@ -114,9 +113,9 @@ VkResult tutorialLoadTextureFromFile(const char* filePath,
     VkSubresourceLayout layout;
     void* data;
 
-    vkGetImageSubresourceLayout(tutorialDevice, tex_obj->image, &subres,
+    vkGetImageSubresourceLayout(benderDevice, tex_obj->image, &subres,
                                 &layout);
-    CALL_VK(vkMapMemory(tutorialDevice, tex_obj->mem, 0, mem_alloc.allocationSize,
+    CALL_VK(vkMapMemory(benderDevice, tex_obj->mem, 0, mem_alloc.allocationSize,
                       0, &data));
 
     for (int32_t y = 0; y < imgHeight; y++) {
@@ -129,7 +128,7 @@ VkResult tutorialLoadTextureFromFile(const char* filePath,
       }
     }
 
-    vkUnmapMemory(tutorialDevice, tex_obj->mem);
+    vkUnmapMemory(benderDevice, tex_obj->mem);
     delete[] imageData;
   }
   delete [] fileContent;
@@ -151,16 +150,16 @@ VkResult tutorialLoadTextureFromFile(const char* filePath,
   image_create_info.tiling = VK_IMAGE_TILING_OPTIMAL;
   image_create_info.usage  = VK_IMAGE_USAGE_TRANSFER_DST_BIT |
                              VK_IMAGE_USAGE_SAMPLED_BIT;
-  CALL_VK(vkCreateImage(tutorialDevice, &image_create_info,
+  CALL_VK(vkCreateImage(benderDevice, &image_create_info,
                                     nullptr, &tex_obj->image));
-  vkGetImageMemoryRequirements(tutorialDevice, tex_obj->image, &mem_reqs);
+  vkGetImageMemoryRequirements(benderDevice, tex_obj->image, &mem_reqs);
 
   mem_alloc.allocationSize = mem_reqs.size;
   VK_CHECK(memory_type_from_properties(mem_reqs.memoryTypeBits,
                                      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
                                      &mem_alloc.memoryTypeIndex));
-  CALL_VK(vkAllocateMemory(tutorialDevice, &mem_alloc, nullptr, &tex_obj->mem));
-  CALL_VK(vkBindImageMemory(tutorialDevice, tex_obj->image, tex_obj->mem, 0));
+  CALL_VK(vkAllocateMemory(benderDevice, &mem_alloc, nullptr, &tex_obj->mem));
+  CALL_VK(vkBindImageMemory(benderDevice, tex_obj->image, tex_obj->mem, 0));
 
   VkCommandBuffer gfxCmd;
   const VkCommandBufferAllocateInfo cmd = {
@@ -171,7 +170,7 @@ VkResult tutorialLoadTextureFromFile(const char* filePath,
           .commandBufferCount = 1,
   };
 
-  CALL_VK(vkAllocateCommandBuffers(tutorialDevice, &cmd, &gfxCmd));
+  CALL_VK(vkAllocateCommandBuffers(benderDevice, &cmd, &gfxCmd));
 
   VkCommandBufferBeginInfo cmd_buf_info = {
           .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
@@ -210,7 +209,7 @@ VkResult tutorialLoadTextureFromFile(const char* filePath,
      .flags = 0,
   };
   VkFence  fence;
-  CALL_VK(vkCreateFence(tutorialDevice, &fenceInfo, nullptr, &fence));
+  CALL_VK(vkCreateFence(benderDevice, &fenceInfo, nullptr, &fence));
 
   VkSubmitInfo submitInfo = {
     .pNext = nullptr,
@@ -223,12 +222,12 @@ VkResult tutorialLoadTextureFromFile(const char* filePath,
     .signalSemaphoreCount = 0,
     .pSignalSemaphores = nullptr,
   };
-  CALL_VK(vkQueueSubmit(tutorialGraphicsQueue, 1, &submitInfo, fence) != VK_SUCCESS);
-  CALL_VK(vkWaitForFences(tutorialDevice, 1, &fence, VK_TRUE, 100000000) !=VK_SUCCESS);
-  vkDestroyFence(tutorialDevice, fence, nullptr);
+  CALL_VK(vkQueueSubmit(benderGraphicsQueue, 1, &submitInfo, fence) != VK_SUCCESS);
+  CALL_VK(vkWaitForFences(benderDevice, 1, &fence, VK_TRUE, 100000000) !=VK_SUCCESS);
+  vkDestroyFence(benderDevice, fence, nullptr);
 
-  vkFreeCommandBuffers(tutorialDevice, cmdPool, 1, &gfxCmd);
-  vkDestroyImage(tutorialDevice, stageImage, nullptr);
-  vkFreeMemory(tutorialDevice, stageMem, nullptr);
+  vkFreeCommandBuffers(benderDevice, cmdPool, 1, &gfxCmd);
+  vkDestroyImage(benderDevice, stageImage, nullptr);
+  vkFreeMemory(benderDevice, stageMem, nullptr);
   return VK_SUCCESS;
 }

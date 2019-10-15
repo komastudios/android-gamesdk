@@ -13,30 +13,30 @@
 // limitations under the License.
 
 #include <vector>
-#include "TutoWindowManager.hpp"
-#include "TutorialUtils.hpp"
+#include "BenderWindowManager.hpp"
+#include "BenderHelpers.hpp"
 
 // --------------------------------------------------------------
 // Global variables
-VkInstance tutorialInstance;
-VkPhysicalDevice tutorialGpu;
-VkDevice tutorialDevice;
-VkQueue tutorialGraphicsQueue;
-VkPhysicalDeviceMemoryProperties tutorialMemoryProperties;
+VkInstance benderInstance;
+VkPhysicalDevice benderGpu;
+VkDevice benderDevice;
+VkQueue benderGraphicsQueue;
+VkPhysicalDeviceMemoryProperties benderMemoryProperties;
 
-VkSurfaceKHR tutorialSurface;
-VkSwapchainKHR tutorialSwapchain;
-VkExtent2D tutorialDisplaySize;
-VkFormat tutorialDisplayFormat;
-uint32_t tutorialSwapchainLength;
+VkSurfaceKHR benderSurface;
+VkSwapchainKHR benderSwapchain;
+VkExtent2D benderDisplaySize;
+VkFormat benderDisplayFormat;
+uint32_t benderSwapchainLength;
 
-VkFramebuffer* tutorialFramebuffer;
+VkFramebuffer* benderFramebuffer;
 
 VkImageView* displayViews;
 
-void tutorialInitWindow(ANativeWindow* platformWindow,
+void benderInitWindow(ANativeWindow* platformWindow,
                         VkApplicationInfo* appInfo) {
-  LOGI("->TutoInitWindow()");
+  LOGI("->BenderInitWindow()");
 
   std::vector<const char *> instance_extensions;
   std::vector<const char *> device_extensions;
@@ -57,16 +57,16 @@ void tutorialInitWindow(ANativeWindow* platformWindow,
       .enabledLayerCount = 0,
       .ppEnabledLayerNames = nullptr,
   };
-  CALL_VK(vkCreateInstance(&instanceCreateInfo, nullptr, &tutorialInstance));
+  CALL_VK(vkCreateInstance(&instanceCreateInfo, nullptr, &benderInstance));
   VkAndroidSurfaceCreateInfoKHR createInfo{
       .sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR,
       .pNext = nullptr,
       .flags = 0,
       .window = platformWindow};
 
-  CALL_VK(vkCreateAndroidSurfaceKHR(tutorialInstance, &createInfo, nullptr,
-                                     &tutorialSurface));
-  LOGI("->TutoInitWindow() CreateAndroidSurfaceKHR");
+  CALL_VK(vkCreateAndroidSurfaceKHR(benderInstance, &createInfo, nullptr,
+                                     &benderSurface));
+  LOGI("->BenderInitWindow() CreateAndroidSurfaceKHR");
 
   // **********************************************************
   // We will choose the right physical device to run our app
@@ -78,11 +78,11 @@ void tutorialInitWindow(ANativeWindow* platformWindow,
   uint32_t gpuCount = 0;
 
   // First get the amount of GPU (nullptr as last argument and gpuCount == 0)
-  CALL_VK(vkEnumeratePhysicalDevices(tutorialInstance, &gpuCount, nullptr));
+  CALL_VK(vkEnumeratePhysicalDevices(benderInstance, &gpuCount, nullptr));
 
   // Then get the list of physical devices
   VkPhysicalDevice tmpGpus[gpuCount];
-  CALL_VK(vkEnumeratePhysicalDevices(tutorialInstance, &gpuCount, tmpGpus));
+  CALL_VK(vkEnumeratePhysicalDevices(benderInstance, &gpuCount, tmpGpus));
 
   // On Android, every device supports present; every queue supports graphics
   // operations. we loop to confirm it does support both graphics and compute
@@ -100,11 +100,11 @@ void tutorialInitWindow(ANativeWindow* platformWindow,
         CALL_VK(vkGetPhysicalDeviceSurfaceSupportKHR(
                 tmpGpus[idx],
                 family,
-                tutorialSurface,
+                benderSurface,
                 &supPresent));
         // on Android queue need to support present
         assert(supPresent);
-        tutorialGpu = tmpGpus[idx];
+        benderGpu = tmpGpus[idx];
         // It should be the 1st queue family. the rest of the tutorial will
         // use 0 as family throughout [Android Only feature]
         assert(0 == family);
@@ -115,7 +115,7 @@ void tutorialInitWindow(ANativeWindow* platformWindow,
 
   // confirm that it is the first gpu and the first queue family
   assert(gpuFound);
-  assert(tutorialGpu == tmpGpus[0]);
+  assert(benderGpu == tmpGpus[0]);
 
   // **********************************************************
   // Create a logical device (
@@ -141,17 +141,17 @@ void tutorialInitWindow(ANativeWindow* platformWindow,
       .pEnabledFeatures = nullptr,
   };
 
-  CALL_VK(vkCreateDevice(tutorialGpu, &deviceCreateInfo, nullptr,
-                       &tutorialDevice));
+  CALL_VK(vkCreateDevice(benderGpu, &deviceCreateInfo, nullptr,
+                       &benderDevice));
   // **********************************************************
   // Get the graphic queue (used later to submit command buffer)
-  vkGetDeviceQueue(tutorialDevice, 0, 0, &tutorialGraphicsQueue);
+  vkGetDeviceQueue(benderDevice, 0, 0, &benderGraphicsQueue);
 
-  LOGI("<-TutoInitWindow");
+  LOGI("<-BenderInitWindow");
 }
 
-void tutorialCreateSwapChain() {
-  LOGI("->tutorialCreateSwapChain");
+void benderCreateSwapChain() {
+  LOGI("->benderCreateSwapChain");
 
   // **********************************************************
   // Get the surface capabilities because:
@@ -159,7 +159,7 @@ void tutorialCreateSwapChain() {
   //   - It's necessary to query the supported surface format (R8G8B8A8 for
   //   instance ...)
   VkSurfaceCapabilitiesKHR surfaceCapabilities;
-  vkGetPhysicalDeviceSurfaceCapabilitiesKHR(tutorialGpu, tutorialSurface,
+  vkGetPhysicalDeviceSurfaceCapabilitiesKHR(benderGpu, benderSurface,
                                             &surfaceCapabilities);
 
   LOGI("Capabilities:\n");
@@ -181,10 +181,10 @@ void tutorialCreateSwapChain() {
   // **********************************************************
   // Query the list of supported surface format and choose one we like
   uint32_t formatCount = 0;
-  vkGetPhysicalDeviceSurfaceFormatsKHR(tutorialGpu, tutorialSurface, &formatCount,
+  vkGetPhysicalDeviceSurfaceFormatsKHR(benderGpu, benderSurface, &formatCount,
                             nullptr);
   VkSurfaceFormatKHR *formats = new VkSurfaceFormatKHR [formatCount];
-  vkGetPhysicalDeviceSurfaceFormatsKHR(tutorialGpu, tutorialSurface, &formatCount,
+  vkGetPhysicalDeviceSurfaceFormatsKHR(benderGpu, benderSurface, &formatCount,
                             formats);
   LOGI("Got %d formats", formatCount);
 
@@ -203,7 +203,7 @@ void tutorialCreateSwapChain() {
   VkSwapchainCreateInfoKHR swapchainCreate{
       .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
       .pNext = nullptr,
-      .surface = tutorialSurface,
+      .surface = benderSurface,
       .minImageCount = surfaceCapabilities.minImageCount,
       .imageFormat = formats[chosenFormat].format,
       .imageColorSpace = formats[chosenFormat].colorSpace,
@@ -219,37 +219,37 @@ void tutorialCreateSwapChain() {
       .clipped = VK_FALSE,
   };
 
-  tutorialDisplaySize = surfaceCapabilities.currentExtent;
-  tutorialDisplayFormat = formats[chosenFormat].format;
+  benderDisplaySize = surfaceCapabilities.currentExtent;
+  benderDisplayFormat = formats[chosenFormat].format;
 
-  CALL_VK(vkCreateSwapchainKHR(tutorialDevice, &swapchainCreate, nullptr,
-                                &tutorialSwapchain));
+  CALL_VK(vkCreateSwapchainKHR(benderDevice, &swapchainCreate, nullptr,
+                                &benderSwapchain));
   // **********************************************************
   // Get the length of the created swap chain
   uint32_t displaySwapchainLength;
-  CALL_VK(vkGetSwapchainImagesKHR(tutorialDevice, tutorialSwapchain,
+  CALL_VK(vkGetSwapchainImagesKHR(benderDevice, benderSwapchain,
                                    &displaySwapchainLength,
                                    nullptr));
 
   LOGI("Swapchain length: %u\n", displaySwapchainLength);
-  tutorialSwapchainLength = displaySwapchainLength;
+  benderSwapchainLength = displaySwapchainLength;
   // **********************************************************
 
   // Get Memory information and properties
-  vkGetPhysicalDeviceMemoryProperties(tutorialGpu, &tutorialMemoryProperties);
+  vkGetPhysicalDeviceMemoryProperties(benderGpu, &benderMemoryProperties);
   delete [] formats;
 }
 
-void tutorialCreateFrameBuffers(VkRenderPass& renderPass,
+void benderCreateFrameBuffers(VkRenderPass& renderPass,
                                 VkImageView depthView) {
 
   uint32_t SwapchainImagesCount = 0;
-  CALL_VK(vkGetSwapchainImagesKHR(tutorialDevice, tutorialSwapchain,
+  CALL_VK(vkGetSwapchainImagesKHR(benderDevice, benderSwapchain,
                                    &SwapchainImagesCount,
                                    nullptr));
 
   VkImage* displayImages = new VkImage[SwapchainImagesCount];
-  CALL_VK(vkGetSwapchainImagesKHR(tutorialDevice, tutorialSwapchain,
+  CALL_VK(vkGetSwapchainImagesKHR(benderDevice, benderSwapchain,
                                    &SwapchainImagesCount,
                                    displayImages));
 
@@ -260,7 +260,7 @@ void tutorialCreateFrameBuffers(VkRenderPass& renderPass,
         .pNext = nullptr,
         .image = displayImages[i],
         .viewType = VK_IMAGE_VIEW_TYPE_2D,
-        .format = tutorialDisplayFormat,
+        .format = benderDisplayFormat,
         .components =
             {
                 .r = VK_COMPONENT_SWIZZLE_R,
@@ -280,15 +280,15 @@ void tutorialCreateFrameBuffers(VkRenderPass& renderPass,
 
     };
 
-    CALL_VK(vkCreateImageView(tutorialDevice, &viewCreateInfo, nullptr,
+    CALL_VK(vkCreateImageView(benderDevice, &viewCreateInfo, nullptr,
                             &displayViews[i]));
   }
 
   delete[] displayImages;
 
-  tutorialFramebuffer = new VkFramebuffer[tutorialSwapchainLength];
+  benderFramebuffer = new VkFramebuffer[benderSwapchainLength];
 
-  for (uint32_t i = 0; i < tutorialSwapchainLength; i++) {
+  for (uint32_t i = 0; i < benderSwapchainLength; i++) {
     VkImageView attachments[2] = {
         displayViews[i], depthView,
     };
@@ -299,23 +299,23 @@ void tutorialCreateFrameBuffers(VkRenderPass& renderPass,
         .layers = 1,
         .attachmentCount = 1,  // 2 if using depth
         .pAttachments = attachments,
-        .width = static_cast<uint32_t>(tutorialDisplaySize.width),
-        .height = static_cast<uint32_t>(tutorialDisplaySize.height),
+        .width = static_cast<uint32_t>(benderDisplaySize.width),
+        .height = static_cast<uint32_t>(benderDisplaySize.height),
     };
     fbCreateInfo.attachmentCount = (depthView == VK_NULL_HANDLE ? 1 : 2);
 
-    CALL_VK(vkCreateFramebuffer(tutorialDevice, &fbCreateInfo, nullptr,
-                              &tutorialFramebuffer[i]));
+    CALL_VK(vkCreateFramebuffer(benderDevice, &fbCreateInfo, nullptr,
+                              &benderFramebuffer[i]));
   }
 }
 
-void tutorialCleanup() {
-  for (int i = 0; i < tutorialSwapchainLength; i++) {
-    vkDestroyFramebuffer(tutorialDevice, tutorialFramebuffer[i], nullptr);
-    vkDestroyImageView(tutorialDevice, displayViews[i], nullptr);
+void benderCleanup() {
+  for (int i = 0; i < benderSwapchainLength; i++) {
+    vkDestroyFramebuffer(benderDevice, benderFramebuffer[i], nullptr);
+    vkDestroyImageView(benderDevice, displayViews[i], nullptr);
   }
   delete[] displayViews;
-  delete[] tutorialFramebuffer;
+  delete[] benderFramebuffer;
 
-  vkDestroySwapchainKHR(tutorialDevice, tutorialSwapchain, nullptr);
+  vkDestroySwapchainKHR(benderDevice, benderSwapchain, nullptr);
 }
