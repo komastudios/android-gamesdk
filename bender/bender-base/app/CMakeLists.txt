@@ -7,14 +7,20 @@ add_library(app-glue STATIC ${APP_GLUE_DIR}/android_native_app_glue.c)
 
 # build vulkan app
 set(SRC_DIR src/main/jni)
-set(WRAPPER_DIR ../utils/vulkan_wrapper)
+set(KIT_DIR ../utils/bender_kit)
+set(WRAPPER_DIR ${KIT_DIR}/vulkan_wrapper)
+
+include_directories(${WRAPPER_DIR})
+add_library(bender-kit STATIC
+            ${KIT_DIR}/bender_kit.cpp
+            ${WRAPPER_DIR}/vulkan_wrapper.h
+            ${WRAPPER_DIR}/vulkan_wrapper.cpp)
 
 add_library(base SHARED
             ${SRC_DIR}/VulkanMain.cpp
-            ${SRC_DIR}/AndroidMain.cpp
-            ${WRAPPER_DIR}/vulkan_wrapper.cpp)
+            ${SRC_DIR}/AndroidMain.cpp)
 
-include_directories(${WRAPPER_DIR})
+target_link_libraries(base bender-kit)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Werror \
                      -DVK_USE_PLATFORM_ANDROID_KHR")
