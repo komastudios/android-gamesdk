@@ -9,7 +9,7 @@ add_library(app-glue STATIC ${APP_GLUE_DIR}/android_native_app_glue.c)
 set(SRC_DIR src/main/jni)
 set(WRAPPER_DIR ../utils/vulkan_wrapper)
 
-add_library(vktuts SHARED
+add_library(base SHARED
             ${SRC_DIR}/VulkanMain.cpp
             ${SRC_DIR}/AndroidMain.cpp
             ${WRAPPER_DIR}/vulkan_wrapper.cpp)
@@ -19,4 +19,4 @@ include_directories(${WRAPPER_DIR})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Werror \
                      -DVK_USE_PLATFORM_ANDROID_KHR")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate")
-target_link_libraries(vktuts app-glue log android)
+target_link_libraries(base app-glue log android)

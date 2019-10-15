@@ -21,7 +21,7 @@
 #include "vulkan_wrapper.h"
 
 // Android log function wrappers
-static const char* kTAG = "Vulkan-Tutorial04";
+static const char* kTAG = "Bender";
 #define LOGI(...) \
   ((void)__android_log_print(ANDROID_LOG_INFO, kTAG, __VA_ARGS__))
 #define LOGW(...) \
@@ -32,7 +32,7 @@ static const char* kTAG = "Vulkan-Tutorial04";
 // Vulkan call wrapper
 #define CALL_VK(func)                                                 \
   if (VK_SUCCESS != (func)) {                                         \
-    __android_log_print(ANDROID_LOG_ERROR, "Tutorial ",               \
+    __android_log_print(ANDROID_LOG_ERROR, "Bender ",                 \
                         "Vulkan error. File[%s], line[%d]", __FILE__, \
                         __LINE__);                                    \
     assert(false);                                                    \
@@ -331,8 +331,8 @@ bool InitVulkan(android_app* app) {
       .apiVersion = VK_MAKE_VERSION(1, 0, 0),
       .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
       .engineVersion = VK_MAKE_VERSION(1, 0, 0),
-      .pApplicationName = "tutorial04_first_window",
-      .pEngineName = "tutorial",
+      .pApplicationName = "bender_main_window",
+      .pEngineName = "bender",
   };
 
   // create a device
