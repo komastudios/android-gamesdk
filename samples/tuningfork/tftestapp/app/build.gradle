@@ -14,6 +14,9 @@ android {
             }
         }
     }
+    lintOptions {
+        abortOnError false
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -29,7 +32,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:28.0.0-rc01'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
 
     // GMS Core dependencies
     implementation "com.google.android.gms:play-services-clearcut:16.0.0"

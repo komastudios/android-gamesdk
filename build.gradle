@@ -58,7 +58,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.1'
+        classpath 'com.android.tools.build:gradle:3.3.2'
     }
 }
 
@@ -152,6 +152,9 @@ class LocalToolchain extends Toolchain {
 
         ndkPath_ = System.getenv("ANDROID_NDK")
         if(ndkPath_ == null) {
+            ndkPath_ = System.getenv("ANDROID_NDK_HOME")
+	}
+        if(ndkPath_ == null) {
             ndkPath_ = project_.joinPath(sdkPath_, 'ndk-bundle')
             if (!project_.file(ndkPath_).exists())
                 throw new GradleException('No NDK found in SDK: must set ANDROID_NDK')
@@ -195,13 +198,17 @@ def getOutPath() {
 }
 
 def getPackagePath() {
-    def outputBaseDir = "$projectDir/../package";
+    return new File("$projectDir/../package").getPath();
+}
+
+def getDistPath() {
     def distDir = System.getenv('DIST_DIR');
     if (distDir != null) {
-        // Running in build server, use DIST_DIR for artifacts
-        outputBaseDir = distDir;
+	return new File(distDir).getPath();
     }
-    return new File(outputBaseDir).getPath();
+    else {
+	return getPackagePath();
+    }
 }
 
 def getTempPath() {
@@ -596,6 +603,13 @@ def addZipTask(name, buildTask, zipName, rootName = "gamesdk") {
                 from file(baseName + '.zip')
                 into outFolder
             }
+
+	    if (getDistPath() != getPackagePath()) {
+		copy {
+		    from getPackagePath()
+		    into getDistPath()
+		}
+	    }
 
             def out = services.get(StyledTextOutputFactory).create("output")
             out.style(Style.Identifier).text('\n' + rootName +'.zip is in ')
