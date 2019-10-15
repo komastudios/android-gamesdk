@@ -58,7 +58,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.1'
+        classpath 'com.android.tools.build:gradle:3.3.2'
     }
 }
 
@@ -151,6 +151,9 @@ class LocalToolchain extends Toolchain {
             throw new GradleException('Must set ANDROID_HOME or sdk.dir in local.properties')
 
         ndkPath_ = System.getenv("ANDROID_NDK")
+        if(ndkPath_ == null) {
+            ndkPath_ = System.getenv("ANDROID_NDK_HOME")
+	}
         if(ndkPath_ == null) {
             ndkPath_ = project_.joinPath(sdkPath_, 'ndk-bundle')
             if (!project_.file(ndkPath_).exists())
