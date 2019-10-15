@@ -23,7 +23,7 @@ VkResult memory_type_from_properties(uint32_t typeBits, VkFlags requirements_mas
                                  uint32_t *typeIndex);
 
 // A set of debugging functions
-static const char* TAG = "Vulkan-Tutorial";
+static const char* TAG = "Bender";
 #define LOGI(...) \
   ((void)__android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__))
 #define LOGW(...) \
@@ -35,7 +35,7 @@ static const char* TAG = "Vulkan-Tutorial";
 // A macro to pass call to Vulkan and check for return value for success
 #define CALL_VK(func)                                                 \
   if (VK_SUCCESS != (func)) {                                         \
-    __android_log_print(ANDROID_LOG_ERROR, "Tutorial ",               \
+    __android_log_print(ANDROID_LOG_ERROR, "Bender ",               \
                         "Vulkan error. File[%s], line[%d]", __FILE__, \
                         __LINE__);                                    \
     assert(false);                                                    \

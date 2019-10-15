@@ -4,7 +4,7 @@ android {
     compileSdkVersion 29
 
     defaultConfig {
-        applicationId  "com.google.vulkan.tutorials.four"
+        applicationId  "com.google.bender"
         minSdkVersion     26
         targetSdkVersion  29
         versionCode  1
