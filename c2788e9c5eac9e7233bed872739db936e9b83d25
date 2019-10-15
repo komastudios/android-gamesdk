@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7bcc2639_cd7e10c3",
+        "filename": "bender/bender-base/app/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-15T23:59:20Z",
+      "side": 1,
+      "message": "Move this to bender-kit library",
+      "revId": "c2788e9c5eac9e7233bed872739db936e9b83d25",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
