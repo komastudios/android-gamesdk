@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "52505662_5b31185a",
+        "filename": "samples/bouncyball/app/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-15T14:46:06Z",
+      "side": 1,
+      "message": "Agreed, will be done as a separate CL.",
+      "parentUuid": "e132cef2_17149cda",
+      "revId": "ae93ae14cd24dd9fb65332c41a10dad19ff3d352",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "96a02723_62ad4f93",
         "filename": "src/common/JNIUtil.h",
         "patchSetId": 3
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "d2ca3def_2bff8cc2",
+        "filename": "src/common/JNIUtil.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-15T14:46:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "96a02723_62ad4f93",
+      "revId": "ae93ae14cd24dd9fb65332c41a10dad19ff3d352",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e0f91614_51d0aa4c",
         "filename": "src/common/JNIUtil.h",
         "patchSetId": 3
@@ -47,6 +83,24 @@
       "writtenOn": "2019-10-14T19:55:57Z",
       "side": 1,
       "message": "Nit: wrap steps 1 - 4 in dedicated functions",
+      "revId": "ae93ae14cd24dd9fb65332c41a10dad19ff3d352",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f593975c_01051f7d",
+        "filename": "src/common/JNIUtil.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-15T14:46:06Z",
+      "side": 1,
+      "message": "Agreed, will be done as a separate CL.",
+      "parentUuid": "e0f91614_51d0aa4c",
       "revId": "ae93ae14cd24dd9fb65332c41a10dad19ff3d352",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -70,6 +124,24 @@
     },
     {
       "key": {
+        "uuid": "ea543923_730efe45",
+        "filename": "src/swappy/CMakeLists.txt",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-15T14:46:06Z",
+      "side": 1,
+      "message": "This includes all 3 classes in the extra project:\nChoreographerCallback\nGameSdkDeviceInfoJni\nSwappyDisplayManager",
+      "parentUuid": "a3904857_2c33bb79",
+      "revId": "ae93ae14cd24dd9fb65332c41a10dad19ff3d352",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e41f4c3e_f212eab9",
         "filename": "src/swappy/common/ChoreographerThread.cpp",
         "patchSetId": 3
@@ -84,6 +156,24 @@
       "revId": "ae93ae14cd24dd9fb65332c41a10dad19ff3d352",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "700c80ad_db0e32c5",
+        "filename": "src/swappy/common/ChoreographerThread.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-15T14:46:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e41f4c3e_f212eab9",
+      "revId": "ae93ae14cd24dd9fb65332c41a10dad19ff3d352",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -110,6 +200,30 @@
     },
     {
       "key": {
+        "uuid": "9c149492_9177f80f",
+        "filename": "src/swappy/common/ChoreographerThread.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 382,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-15T14:46:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fbb13a27_4a194455",
+      "range": {
+        "startLine": 381,
+        "startChar": 0,
+        "endLine": 382,
+        "endChar": 43
+      },
+      "revId": "ae93ae14cd24dd9fb65332c41a10dad19ff3d352",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "45048cd6_72ac0cae",
         "filename": "src/swappy/common/ChoreographerThread.cpp",
         "patchSetId": 3
@@ -124,6 +238,24 @@
       "revId": "ae93ae14cd24dd9fb65332c41a10dad19ff3d352",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c5bbeee6_f873133b",
+        "filename": "src/swappy/common/ChoreographerThread.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 383,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-15T14:46:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45048cd6_72ac0cae",
+      "revId": "ae93ae14cd24dd9fb65332c41a10dad19ff3d352",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -150,6 +282,30 @@
     },
     {
       "key": {
+        "uuid": "753e1473_50def73e",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-15T14:46:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8c788549_5cee0522",
+      "range": {
+        "startLine": 121,
+        "startChar": 38,
+        "endLine": 121,
+        "endChar": 39
+      },
+      "revId": "ae93ae14cd24dd9fb65332c41a10dad19ff3d352",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "151c5fa0_2289b462",
         "filename": "src/swappy/common/SwappyDisplayManager.cpp",
         "patchSetId": 3
@@ -164,6 +320,24 @@
       "revId": "ae93ae14cd24dd9fb65332c41a10dad19ff3d352",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3bcb673d_37a389d4",
+        "filename": "src/swappy/common/SwappyDisplayManager.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-15T14:46:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "151c5fa0_2289b462",
+      "revId": "ae93ae14cd24dd9fb65332c41a10dad19ff3d352",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }

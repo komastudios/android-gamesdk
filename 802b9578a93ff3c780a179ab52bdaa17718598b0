@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "da95c2eb_4f530436",
+        "filename": "src/swappy/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-15T14:46:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3a39365d_b8384669",
+      "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ccfa5a73_9f9c7143",
         "filename": "src/swappy/common/SwappyCommon.cpp",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a7034570_5420b67a",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-15T14:46:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ccfa5a73_9f9c7143",
+      "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "f56c70a8_8d1dd8c0",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-15T14:46:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f7ab15ba_57572c86",
+      "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8f1dbd60_3071d106",
         "filename": "src/swappy/common/SwappyCommon.cpp",
         "patchSetId": 2
@@ -67,6 +121,24 @@
       "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c88117b8_0ace7b88",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-15T14:46:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8f1dbd60_3071d106",
+      "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "20230fb0_7d7f808f",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-15T14:46:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "96a63a16_bc2f81c8",
+      "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f71e1e21_3b5c0e5e",
         "filename": "src/swappy/common/SwappyCommon.cpp",
         "patchSetId": 2
@@ -101,6 +191,24 @@
       "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ddedf698_faab3050",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 743,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-15T14:46:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f71e1e21_3b5c0e5e",
+      "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -121,6 +229,24 @@
     },
     {
       "key": {
+        "uuid": "d7b6812f_ef27037d",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 775,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-15T14:46:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a8f311fe_7943c9e7",
+      "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "75e0ec11_5ad8f8c2",
         "filename": "src/swappy/common/SwappyCommon.cpp",
         "patchSetId": 2
@@ -135,6 +261,24 @@
       "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c87f3580_c46070d5",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 777,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-15T14:46:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "75e0ec11_5ad8f8c2",
+      "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -161,6 +305,30 @@
     },
     {
       "key": {
+        "uuid": "46e8152f_0aad9e59",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 800,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-15T14:46:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8d4c2b77_c51f8f73",
+      "range": {
+        "startLine": 743,
+        "startChar": 0,
+        "endLine": 800,
+        "endChar": 1
+      },
+      "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f9b69359_c534f60a",
         "filename": "src/swappy/common/SwappyCommon.h",
         "patchSetId": 2
@@ -175,6 +343,24 @@
       "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ccd15e34_be280de9",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-15T14:46:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f9b69359_c534f60a",
+      "revId": "802b9578a93ff3c780a179ab52bdaa17718598b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
