@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b3124a13_e851d4bd",
+        "filename": "src/common/JNIUtil.h",
+        "patchSetId": 11
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-15T15:23:30Z",
+      "side": 1,
+      "message": "Comment where these come from?",
+      "revId": "52caa067d4b8e445df6dd69b0b28b8419bc17e9c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "806fe11c_76763f01",
+        "filename": "src/common/JNIUtil.h",
+        "patchSetId": 11
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-15T15:23:30Z",
+      "side": 1,
+      "message": "Do we need to have error handling here, in case we can\u0027t create the file?",
+      "revId": "52caa067d4b8e445df6dd69b0b28b8419bc17e9c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "02b28d88_59df9f03",
+        "filename": "src/swappy/common/ChoreographerThread.cpp",
+        "patchSetId": 11
+      },
+      "lineNbr": 384,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-15T15:23:30Z",
+      "side": 1,
+      "message": "We only want to do this if vm and jactivity are non-null",
+      "revId": "52caa067d4b8e445df6dd69b0b28b8419bc17e9c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
