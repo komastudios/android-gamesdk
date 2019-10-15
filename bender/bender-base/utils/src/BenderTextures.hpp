@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef TUTORIAL_TEXTURES_HPP
-#define TUTORIAL_TEXTURES_HPP
+#ifndef BENDER_TEXTURES_HPP
+#define BENDER_TEXTURES_HPP
 
 #include <android/asset_manager.h>
 #include <vulkan_wrapper.h>
@@ -27,11 +27,11 @@ typedef struct texture_object {
   int32_t tex_width, tex_height;
 } texture_object;
 
-VkResult tutorialLoadTextureFromFile(const char* filePath,
+VkResult benderLoadTextureFromFile(const char* filePath,
                                      struct texture_object* tex_obj,
                                      VkImageUsageFlags usage,
                                      VkFlags required_props);
 
 static const VkFormat kTexFmt = VK_FORMAT_R8G8B8A8_UNORM;
 
-#endif  // TUTORIAL_TEXTURES_HPP
+#endif  // BENDER_TEXTURES_HPP

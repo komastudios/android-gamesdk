@@ -12,32 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef TUTO_WINDOW_MANAGER_HPP
-#define TUTO_WINDOW_MANAGER_HPP
+#ifndef BENDER_WINDOW_MANAGER_HPP
+#define BENDER_WINDOW_MANAGER_HPP
 
 #include <vulkan_wrapper.h>
 #include <stdexcept>
 #include <android/native_window.h>
 
-extern VkInstance tutorialInstance;
-extern VkPhysicalDevice tutorialGpu;
-extern VkDevice tutorialDevice;
-extern VkQueue tutorialGraphicsQueue;
-extern VkPhysicalDeviceMemoryProperties tutorialMemoryProperties;
+extern VkInstance benderInstance;
+extern VkPhysicalDevice benderGpu;
+extern VkDevice benderDevice;
+extern VkQueue benderGraphicsQueue;
+extern VkPhysicalDeviceMemoryProperties benderMemoryProperties;
 
-extern VkSurfaceKHR tutorialSurface;
-extern VkSwapchainKHR tutorialSwapchain;
-extern VkExtent2D tutorialDisplaySize;
-extern VkFormat tutorialDisplayFormat;
-extern uint32_t tutorialSwapchainLength;
+extern VkSurfaceKHR benderSurface;
+extern VkSwapchainKHR benderSwapchain;
+extern VkExtent2D benderDisplaySize;
+extern VkFormat benderDisplayFormat;
+extern uint32_t benderSwapchainLength;
 
-extern VkFramebuffer *tutorialFramebuffer;
+extern VkFramebuffer *benderFramebuffer;
 
-void tutorialInitWindow(ANativeWindow *platformWindow,
+void benderInitWindow(ANativeWindow *platformWindow,
                         VkApplicationInfo *appInfo);
-void tutorialCreateSwapChain();
-void tutorialCreateFrameBuffers(VkRenderPass &renderPass,
+void benderCreateSwapChain();
+void benderCreateFrameBuffers(VkRenderPass &renderPass,
                                 VkImageView depthView = VK_NULL_HANDLE);
-void tutorialCleanup();
+void benderCleanup();
 
-#endif  // TUTO_WINDOW_MANAGER_HPP
+#endif  // BENDER_WINDOW_MANAGER_HPP

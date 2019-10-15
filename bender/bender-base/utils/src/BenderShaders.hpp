@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef TUTORIAL_SHADERS_HPP
-#define TUTORIAL_SHADERS_HPP
+#ifndef BENDER_SHADERS_HPP
+#define BENDER_SHADERS_HPP
 
 #include <android/asset_manager.h>
 #include <vulkan_wrapper.h>
@@ -22,4 +22,4 @@ enum ShaderType { VERTEX_SHADER, FRAGMENT_SHADER };
 VkResult loadShaderFromFile(const char* filePath, VkShaderModule* shaderOut,
                             ShaderType type);
 
-#endif  // TUTORIAL_SHADERS_HPP
+#endif  // BENDER_SHADERS_HPP

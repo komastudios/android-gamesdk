@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "TutorialUtils.hpp"
+#include "BenderHelpers.hpp"
 
 
-extern VkPhysicalDeviceMemoryProperties tutorialMemoryProperties;
+extern VkPhysicalDeviceMemoryProperties benderMemoryProperties;
 
 VkResult memory_type_from_properties(uint32_t typeBits, VkFlags requirements_mask,
                                  uint32_t *typeIndex) {
@@ -23,7 +23,7 @@ VkResult memory_type_from_properties(uint32_t typeBits, VkFlags requirements_mas
   for (uint32_t i = 0; i < 32; i++) {
     if ((typeBits & 1) == 1) {
       // Type is available, does it match user properties?
-      if ((tutorialMemoryProperties.memoryTypes[i].propertyFlags &
+      if ((benderMemoryProperties.memoryTypes[i].propertyFlags &
            requirements_mask) == requirements_mask) {
         *typeIndex = i;
         return VK_SUCCESS;
