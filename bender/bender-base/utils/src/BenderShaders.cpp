@@ -11,16 +11,16 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#include "TutorialShaders.hpp"
+#include "BenderShaders.hpp"
 
-extern VkDevice tutorialDevice;
-extern AAssetManager* tutorialAssetManager;
+extern VkDevice benderDevice;
+extern AAssetManager* benderAssetManager;
 
 VkResult loadShaderFromFile(const char* filePath, VkShaderModule* shaderOut,
                             ShaderType type) {
   // Read the file:
   AAsset* file =
-      AAssetManager_open(tutorialAssetManager, filePath, AASSET_MODE_BUFFER);
+      AAssetManager_open(benderAssetManager, filePath, AASSET_MODE_BUFFER);
   size_t fileLength = AAsset_getLength(file);
 
   char* fileContent = new char[fileLength];
@@ -35,7 +35,7 @@ VkResult loadShaderFromFile(const char* filePath, VkShaderModule* shaderOut,
       .flags = 0,
   };
   VkResult result = vkCreateShaderModule(
-      tutorialDevice, &shaderModuleCreateInfo, nullptr, shaderOut);
+      benderDevice, &shaderModuleCreateInfo, nullptr, shaderOut);
 
   delete[] fileContent;
 
