@@ -11,9 +11,10 @@ set(KIT_DIR ../utils/bender_kit)
 set(WRAPPER_DIR ${KIT_DIR}/vulkan_wrapper)
 
 include_directories(${WRAPPER_DIR})
+include_directories(${KIT_DIR})
+
 add_library(bender-kit STATIC
             ${KIT_DIR}/bender_kit.cpp
-            ${WRAPPER_DIR}/vulkan_wrapper.h
             ${WRAPPER_DIR}/vulkan_wrapper.cpp)
 
 add_library(base SHARED
