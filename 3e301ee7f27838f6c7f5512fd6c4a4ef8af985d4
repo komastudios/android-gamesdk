@@ -33,6 +33,24 @@
       "revId": "3e301ee7f27838f6c7f5512fd6c4a4ef8af985d4",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2be3c12f_18d1062d",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-10-16T20:54:50Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "1939ccdd_93f619e8",
+      "revId": "3e301ee7f27838f6c7f5512fd6c4a4ef8af985d4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
