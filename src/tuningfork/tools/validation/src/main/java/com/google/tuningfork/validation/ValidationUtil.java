@@ -26,6 +26,7 @@ import com.google.protobuf.TextFormat;
 import com.google.protobuf.TextFormat.ParseException;
 import com.google.tuningfork.Tuningfork.Settings;
 import com.google.tuningfork.Tuningfork.Settings.AggregationStrategy;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -49,8 +50,7 @@ final class ValidationUtil {
       Settings.Builder builder = Settings.newBuilder();
       TextFormat.merge(settingsTextProto, builder);
       Settings settings = builder.build();
-      validateSettingsAggregation(settings, enumSizes, errors);
-      validateSettingsHistograms(settings, errors);
+      validateSettings(settings, enumSizes, errors);
       return Optional.of(settings);
     } catch (ParseException e) {
       errors.addError(ErrorType.SETTINGS_PARSING, "Parsing tuningfork_settings.txt", e);
@@ -63,11 +63,21 @@ final class ValidationUtil {
       List<Integer> enumSizes, ByteString settingsContent, ErrorCollector errors) {
     try {
       Settings settings = Settings.parseFrom(settingsContent);
-      validateSettingsAggregation(settings, enumSizes, errors);
-      validateSettingsHistograms(settings, errors);
+      validateSettings(settings, enumSizes, errors);
     } catch (InvalidProtocolBufferException e) {
       errors.addError(ErrorType.SETTINGS_PARSING, "Parsing tuningfork_settings.bin", e);
     }
+  }
+
+  /* Validate settings */
+  public static final void validateSettings(
+      Settings settings, List<Integer> enumSizes, ErrorCollector errors) {
+    validateSettingsAggregation(settings, enumSizes, errors);
+    validateSettingsHistograms(settings, errors);
+    validateSettingsBaseUri(settings, errors);
+    validateSettingsApiKey(settings, errors);
+    // We don't validate default_fidelity_parameters_filename
+    validateSettingsRequestTimeouts(settings, errors);
   }
 
   /*
@@ -246,5 +256,48 @@ final class ValidationUtil {
       sizes.add(field.getEnumType().getValues().size());
     }
     return ImmutableList.copyOf(sizes);
+  }
+
+  private static final void validateSettingsBaseUri(Settings settings, ErrorCollector errors) {
+    if (settings.hasBaseUri()) {
+      // Check it's a valid URL
+      final URL url;
+      try {
+        url = new URL(settings.getBaseUri());
+        url.getHost();
+      } catch (Exception e) {
+        errors.addError(ErrorType.BASE_URI_NOT_URL, "base_uri is not a valid URL");
+      }
+    }
+    // Missing is OK
+  }
+
+  private static final void validateSettingsApiKey(Settings settings, ErrorCollector errors) {
+    if (settings.hasApiKey()) {
+      // This checks that someone has changed from the default value in the samples.
+      if (settings.getApiKey().equals("enter-your-api-key-here")) {
+        errors.addError(ErrorType.API_KEY_INVALID, "api_key not set to a valid value");
+      }
+    } else {
+        errors.addError(ErrorType.API_KEY_MISSING, "api_key is missing");
+    }
+  }
+
+  private static final void validateSettingsRequestTimeouts(
+      Settings settings, ErrorCollector errors) {
+    if (settings.hasInitialRequestTimeoutMs()) {
+      int initialRequestTimeoutMs = settings.getInitialRequestTimeoutMs();
+      if (initialRequestTimeoutMs < 0) {
+        errors.addError(ErrorType.INITIAL_REQUEST_TIMEOUT_INVALID,
+            "initial_request_timeout_ms is invalid");
+      }
+    }
+    if (settings.hasUltimateRequestTimeoutMs()) {
+      int ultimateRequestTimeoutMs = settings.getUltimateRequestTimeoutMs();
+      if (ultimateRequestTimeoutMs < 0) {
+        errors.addError(ErrorType.ULTIMATE_REQUEST_TIMEOUT_INVALID,
+            "ultimate_request_timeout_ms is invalid");
+      }
+    }
   }
 }
