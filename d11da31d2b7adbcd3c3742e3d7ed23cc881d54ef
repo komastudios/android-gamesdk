@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3de6c612_c0e4c6f2",
+        "filename": "bender/bender-base/app/src/main/jni/VulkanMain.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-17T22:13:02Z",
+      "side": 1,
+      "message": "A lot of code is accessing the internals of the device to create display views that will end up inside Device anyway. It looks like this code calls for imageViews creation to be inside the device, and the device should expose the imageViews to clients.\n\nIn other words: the code that creates ImageViews should be moved to the Device class.",
+      "revId": "d11da31d2b7adbcd3c3742e3d7ed23cc881d54ef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b19f4912_95b29719",
+        "filename": "bender/bender-base/app/src/main/jni/VulkanMain.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-17T22:13:02Z",
+      "side": 1,
+      "message": "device-\u003egetDisplayImage(i);",
+      "revId": "d11da31d2b7adbcd3c3742e3d7ed23cc881d54ef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e6a09601_502f5eb8",
+        "filename": "bender/bender-base/app/src/main/jni/VulkanMain.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-17T22:13:02Z",
+      "side": 1,
+      "message": "Can you move out the framebuffers array from the device class please? It can be stored somewhere in the global namespace for now, before we can find a good home for it.",
+      "revId": "d11da31d2b7adbcd3c3742e3d7ed23cc881d54ef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8f410da_89dc2cb0",
+        "filename": "bender/bender-base/app/src/main/jni/VulkanMain.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 282,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-17T22:13:02Z",
+      "side": 1,
+      "message": "Remove commented code before commit.",
+      "revId": "d11da31d2b7adbcd3c3742e3d7ed23cc881d54ef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ce8e66bf_5af67410",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-17T22:13:02Z",
+      "side": 1,
+      "message": "Move framebuffers back to VulkanMain.cpp for now.",
+      "revId": "d11da31d2b7adbcd3c3742e3d7ed23cc881d54ef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
