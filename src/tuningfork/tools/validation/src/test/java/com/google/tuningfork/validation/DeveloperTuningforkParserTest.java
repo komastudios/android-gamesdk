@@ -60,6 +60,7 @@ public final class DeveloperTuningforkParserTest {
                   .addAllAnnotationEnumSize(Arrays.asList(2))
                   .setMaxInstrumentationKeys(100))
           .addHistograms(Histogram.getDefaultInstance())
+          .setApiKey("test-api-key")
           .build();
 
   private final FidelityParams devParameters1 =
