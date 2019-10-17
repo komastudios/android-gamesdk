@@ -16,38 +16,60 @@
 
 package com.google.tuningfork.validation;
 
-/** Validation errors */
+/**
+ * Tuning Fork validation and parse errors. Some of these errors are shared between the validation
+ * tool and the Play Console upload flows.
+ */
 public enum ErrorType {
-  // Annotation field is empty
+  // Annotation field is empty.
   ANNOTATION_EMPTY(ErrorGroup.ANNOTATION),
-  // Annotation field is too complex - contains oneofs/nestedtypes/extensions
+  // Annotation field is too complex; contains oneofs/nestedtypes/extensions, etc.
   ANNOTATION_COMPLEX(ErrorGroup.ANNOTATION),
-  // Annotation must contains enums only
+  // Annotation must contains enums only.
   ANNOTATION_TYPE(ErrorGroup.ANNOTATION),
-  // FidelityParams fied is empty
+  // FidelityParams fied is empty.
   FIDELITY_PARAMS_EMPTY(ErrorGroup.FIDELITY),
-  // FidelityParams field is complex - contains  oneof/nestedtypes/extensions
+  // FidelityParams field is complex; contains oneof/nestedtypes/extensions.
   FIDELITY_PARAMS_COMPLEX(ErrorGroup.FIDELITY),
-  // FidelityParams can only contains float, int32 or enum
+  // FidelityParams can only contains float, int32 or enum.
   FIDELITY_PARAMS_TYPE(ErrorGroup.FIDELITY),
-  // Fidelity parameters are empty
+  // Fidelity parameters are empty.
   DEV_FIDELITY_PARAMETERS_EMPTY(ErrorGroup.DEV_FIDELITY),
-  // Fidelity parameters parsing error
+  // Fidelity parameters parse error.
   DEV_FIDELITY_PARAMETERS_PARSING(ErrorGroup.DEV_FIDELITY),
-  // Fidelity parameters encoding textproto file
+  // Fidelity parameters: error encoding textproto file.
   DEV_FIDELITY_PARAMETERS_ENCODING(ErrorGroup.DEV_FIDELITY),
-  // Fidelity parameters reading file
+  // Fidelity parameters: error reading file fidelity parameters file.
   DEV_FIDELITY_PARAMETERS_READING(ErrorGroup.DEV_FIDELITY),
-  // Parsing error
+  // Failed to parse the settings file.
   SETTINGS_PARSING(ErrorGroup.SETTINGS),
-  // Histogram field is empty
+  // Failed to find the settings file.
+  SETTINGS_MISSING(ErrorGroup.SETTINGS),
+  // No histogram specified in the settings.
   HISTOGRAM_EMPTY(ErrorGroup.SETTINGS),
-  // Aggreagtion field is empty
+  // No aggregation strategy specified in the settings.
   AGGREGATION_EMPTY(ErrorGroup.SETTINGS),
-  // Aggregation contains incorrect  max_instrumentation_keys field
+  // Aggregation contains incorrect  max_instrumentation_keys field.
   AGGREGATION_INSTRUMENTATION_KEY(ErrorGroup.SETTINGS),
-  // Aggregation contains incorrect annotation_enum_sizes
-  AGGREGATION_ANNOTATIONS(ErrorGroup.SETTINGS);
+  // Aggregation contains incorrect annotation_enum_sizes.
+  AGGREGATION_ANNOTATIONS(ErrorGroup.SETTINGS),
+  // More than one descriptor file was found during the parse stage.
+  // This should never happen. It is not a user error.
+  TOO_MANY_DESCRIPTORS(ErrorGroup.DEV_FIDELITY),
+  // No descriptor file was found during the parse stage.
+  DESCRIPTOR_MISSING(ErrorGroup.DEV_FIDELITY),
+  // Could not parse the descriptor file from the bundle/apk.
+  DESCRIPTOR_PARSE_ERROR(ErrorGroup.DEV_FIDELITY),
+  // Field base_uri is not a URL
+  BASE_URI_NOT_URL(ErrorGroup.SETTINGS),
+  // Field api_key is wrong
+  API_KEY_INVALID(ErrorGroup.SETTINGS),
+  // Field api_key is missing
+  API_KEY_MISSING(ErrorGroup.SETTINGS),
+  // Field initial_request_timeout_ms < 0
+  INITIAL_REQUEST_TIMEOUT_INVALID(ErrorGroup.SETTINGS),
+  // Field ultimate_request_timeout_ms < 0
+  ULTIMATE_REQUEST_TIMEOUT_INVALID(ErrorGroup.SETTINGS);
 
   private final ErrorGroup group;
 
