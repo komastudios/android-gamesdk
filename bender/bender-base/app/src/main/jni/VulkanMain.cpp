@@ -370,6 +370,7 @@ void DeleteVulkan(void) {
   DeleteSwapChain();
 
   delete device;
+  device = NULL;
 }
 
 // Draw one frame
