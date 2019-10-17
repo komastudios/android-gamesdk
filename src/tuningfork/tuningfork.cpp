@@ -331,7 +331,7 @@ TuningForkImpl::TuningForkImpl(const Settings& settings,
           settings.histograms.size(),
           settings.base_uri.c_str(),
           settings.api_key.c_str(),
-          settings.default_fp_filename.c_str(),
+          settings.default_fidelity_parameters_filename.c_str(),
           settings.initial_request_timeout_ms,
           settings.ultimate_request_timeout_ms
          );

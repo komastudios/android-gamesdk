@@ -104,8 +104,9 @@ static TFErrorCode DeserializeSettings(const ProtobufSerialization& settings_ser
     pbsettings.base_uri.arg = (void*)&settings->base_uri;
     pbsettings.api_key.funcs.decode = decode_string;
     pbsettings.api_key.arg = (void*)&settings->api_key;
-    pbsettings.default_fp_filename.funcs.decode = decode_string;
-    pbsettings.default_fp_filename.arg = (void*)&settings->default_fp_filename;
+    pbsettings.default_fidelity_parameters_filename.funcs.decode = decode_string;
+    pbsettings.default_fidelity_parameters_filename.arg =
+            (void*)&settings->default_fidelity_parameters_filename;
     ByteStream str {const_cast<uint8_t*>(settings_ser.data()), settings_ser.size(), 0};
     pb_istream_t stream = {ByteStream::Read, &str, settings_ser.size()};
     if (!pb_decode(&stream, com_google_tuningfork_Settings_fields, &pbsettings))

@@ -62,8 +62,13 @@ public class ExternalProtoCompiler {
 
   private FileDescriptor buildAndRunCompilerProcess(File file, Optional<File> outFile)
       throws IOException, CompilationException {
-    ImmutableList<String> commandLine = createCommandLine(file);
-    byte[] result = runCommand(new ProcessBuilder(commandLine));
+    // Using temp file to have support for linux/mac/windows
+    // dev/stdout is not working on windows
+    File tempOutFile = File.createTempFile("temp", "txt");
+    ImmutableList<String> commandLine = createCommandLine(file, tempOutFile);
+    runCommand(new ProcessBuilder(commandLine));
+    byte[] result = Files.toByteArray(tempOutFile);
+    tempOutFile.delete();
 
     try {
       FileDescriptorSet fileSet = FileDescriptorSet.parseFrom(result);
@@ -124,11 +129,11 @@ public class ExternalProtoCompiler {
     return textprotoFile;
   }
 
-  private ImmutableList<String> createCommandLine(File file) {
+  private ImmutableList<String> createCommandLine(File file, File outFile) {
     return ImmutableList.of(
         protoPath,
         "-o",
-        "/dev/stdout",
+        outFile.getAbsolutePath(),
         "-I",
         file.getName() + "=" + file.getAbsolutePath(), // That should be one line
         file.getAbsolutePath());
