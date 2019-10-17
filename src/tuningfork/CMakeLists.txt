@@ -23,6 +23,9 @@ endfunction()
 protobuf_generate_nano_c( ${CMAKE_CURRENT_SOURCE_DIR}/proto
   proto/tuningfork.proto)
 
+protobuf_generate_nano_c( ${CMAKE_CURRENT_SOURCE_DIR}/proto
+  proto/descriptor.proto)
+
 include_directories(${PROTOBUF_NANO_SRC_DIR})
 include_directories( ../../include )
 include_directories( ../../src/swappy )
@@ -32,6 +35,9 @@ include_directories( ${THIRDPARTY_DIR} )
 include_directories( ${THIRDPARTY_DIR}/date/include )
 
 include_directories(${PROTO_GENS_DIR})
+
+# Needed for descriptor.pb.cc
+add_definitions(-DPB_FIELD_16BIT)
 
 set( TUNINGFORK_SRCS
   crash_handler.cpp
@@ -56,7 +62,8 @@ set( TUNINGFORK_SRCS
   jnictx.cpp
   ${THIRDPARTY_DIR}/json11/json11.cpp
   ${MODPB64_DIR}/modp_b64.cc
-  ${PROTO_GENS_DIR}/nano/tuningfork.pb.c)
+  ${PROTO_GENS_DIR}/nano/tuningfork.pb.c
+  ${PROTO_GENS_DIR}/nano/descriptor.pb.c)
 
 add_library( tuningfork_static
   STATIC ${TUNINGFORK_SRCS} ${PROTOBUF_NANO_SRCS})
