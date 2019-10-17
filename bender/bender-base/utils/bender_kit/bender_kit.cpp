@@ -24,7 +24,14 @@
 
 using namespace BenderKit;
 
-Device::Device(ANativeWindow* window) { //version number
+Device::Device(ANativeWindow* window) {
+    if (!InitVulkan()) {
+        LOGW("Vulkan is unavailable, install vulkan and re-start");
+        initialized_ = false;
+        return;
+    }
+
+    // parameterize version number?
     VkApplicationInfo appInfo = {
             .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
             .pNext = nullptr,
