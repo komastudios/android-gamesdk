@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f8fa0fd4_5fb40772",
+        "filename": "bender/bender-base/app/src/main/jni/VulkanMain.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 373,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-17T22:03:39Z",
+      "side": 1,
+      "message": "device \u003d nullptr;",
+      "revId": "e67321609946ab3b305c6a105b4e8adbe988abc7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
