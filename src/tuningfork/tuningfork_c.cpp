@@ -28,37 +28,23 @@ extern "C" {
 
 namespace tf = tuningfork;
 
-TFErrorCode CInit(const TFSettings *c_settings, JNIEnv* env, jobject context) {
-    tf::JniCtx jni(env, context);
-    std::string default_save_dir = tf::file_utils::GetAppCacheDir(jni) + "/tuningfork";
-    tf::Settings settings;
-    CopySettings(*c_settings, default_save_dir, settings);
-    return tf::Init(settings, jni);
-}
 TFErrorCode TuningFork_init_internal(const TFSettings *c_settings_in, JNIEnv* env, jobject context) {
-    TFSettings c_settings;
+    tf::Settings settings {};
     if (c_settings_in != nullptr) {
-        c_settings = *c_settings_in;
+        settings.c_settings = *c_settings_in;
     }
-    bool get_settings_from_apk = c_settings_in == nullptr ||
-                        c_settings_in->aggregation_strategy.method==TFAggregationStrategy::INVALID ;
-    if (get_settings_from_apk) {
-        if (TuningFork_findSettingsInApk(env, context, &c_settings)!=TFERROR_OK)
-            return TFERROR_NO_SETTINGS;
-    }
-    TFErrorCode err;
-    if (c_settings.swappy_tracer_fn!=nullptr) {
-        err = TuningFork_initWithSwappy(&c_settings, env, context);
-    } else {
-        err = CInit(&c_settings, env, context);
-    }
+    tf::JniCtx jni {env, context};
+    TFErrorCode err = FindSettingsInApk(&settings, jni);
     if (err!=TFERROR_OK)
         return err;
-    if (c_settings.fp_default_file_name!=nullptr) {
-        err = TuningFork_getDefaultsFromAPKAndDownloadFPs(&c_settings, env, context);
-    }
-    if (get_settings_from_apk) {
-        c_settings.dealloc(&c_settings);
+    std::string default_save_dir = tf::file_utils::GetAppCacheDir(jni) + "/tuningfork";
+    CheckSettings(settings, default_save_dir);
+    err = tf::Init(settings, jni);
+    if (err!=TFERROR_OK)
+        return err;
+    if ( !(settings.default_fp_filename.empty()
+           || settings.c_settings.fidelity_params_callback==nullptr) ) {
+        err = GetDefaultsFromAPKAndDownloadFPs(settings, jni);
     }
     return err;
 }
@@ -110,6 +96,11 @@ TFErrorCode TuningFork_endTrace(TFTraceHandle h) {
 
 TFErrorCode TuningFork_flush() {
     return tf::Flush();
+}
+
+TFErrorCode TuningFork_destroy() {
+    tf::KillDownloadThreads();
+    return tf::Destroy();
 }
 
 void TUNINGFORK_VERSION_SYMBOL() {
