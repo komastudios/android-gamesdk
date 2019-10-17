@@ -22,6 +22,30 @@
       "revId": "adda06b50e8a4d657f69c3325e873737d25c30fd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0afb51c5_9eeda141",
+        "filename": "src/tuningfork/tools/validation/src/test/resources/protoc",
+        "patchSetId": 6
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-17T13:23:38Z",
+      "side": 0,
+      "message": "Done",
+      "parentUuid": "57eb4220_3fb2957d",
+      "range": {
+        "startLine": 1,
+        "startChar": 69,
+        "endLine": 1,
+        "endChar": 70
+      },
+      "revId": "adda06b50e8a4d657f69c3325e873737d25c30fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
