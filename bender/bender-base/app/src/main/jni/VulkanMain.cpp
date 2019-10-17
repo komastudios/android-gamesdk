@@ -13,7 +13,6 @@
 // limitations under the License.
 
 #include "VulkanMain.hpp"
-#include <android/log.h>
 #include <android_native_app_glue.h>
 #include <cassert>
 #include <vector>
@@ -21,23 +20,6 @@
 #include "vulkan_wrapper.h"
 #include "bender_kit.hpp"
 
-// Android log function wrappers
-static const char* kTAG = "Bender";
-#define LOGI(...) \
-  ((void)__android_log_print(ANDROID_LOG_INFO, kTAG, __VA_ARGS__))
-#define LOGW(...) \
-  ((void)__android_log_print(ANDROID_LOG_WARN, kTAG, __VA_ARGS__))
-#define LOGE(...) \
-  ((void)__android_log_print(ANDROID_LOG_ERROR, kTAG, __VA_ARGS__))
-
-// Vulkan call wrapper
-#define CALL_VK(func)                                                 \
-  if (VK_SUCCESS != (func)) {                                         \
-    __android_log_print(ANDROID_LOG_ERROR, "Bender ",                 \
-                        "Vulkan error. File[%s], line[%d]", __FILE__, \
-                        __LINE__);                                    \
-    assert(false);                                                    \
-  }
 
 /// Global Variables ...
 
@@ -219,11 +201,10 @@ void CreateFrameBuffers(VkRenderPass& renderPass,
 bool InitVulkan(android_app* app) {
   androidAppCtx = app;
 
-  if (!InitVulkan()) {
-    LOGW("Vulkan is unavailable, install vulkan and re-start");
-    return false;
-  }
+
   device = new BenderKit::Device(app->window);
+
+
 
 
   CreateSwapChain();
