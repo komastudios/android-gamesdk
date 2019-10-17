@@ -33,6 +33,24 @@
       "revId": "4591b69b5a1b872524d8f98ad26c6ec420caed19",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "439b308a_18a2589c",
+        "filename": "samples/device_info_app/gradle/wrapper/gradle-wrapper.properties",
+        "patchSetId": 2
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2019-10-17T14:44:55Z",
+      "side": 1,
+      "message": "I have not checked either, but I added this just to get the device info app compiling -- the others worked fine as they are",
+      "parentUuid": "5a18f8ec_82de95f0",
+      "revId": "4591b69b5a1b872524d8f98ad26c6ec420caed19",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
