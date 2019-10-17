@@ -16,6 +16,7 @@
 #define BENDER_BASE_BENDER_KIT_HPP
 
 #include <android/log.h>
+#include <vector>
 
 // Android log function wrappers
 static const char* kTAG = "Bender";
@@ -27,42 +28,77 @@ static const char* kTAG = "Bender";
   ((void)__android_log_print(ANDROID_LOG_ERROR, kTAG, __VA_ARGS__))
 
 // Vulkan call wrapper
-#define CALL_VK(func)                                                 \
-  if (VK_SUCCESS != (func)) {                                         \
-    __android_log_print(ANDROID_LOG_ERROR, "Bender ",                 \
-                        "Vulkan error. File[%s], line[%d]", __FILE__, \
-                        __LINE__);                                    \
-    assert(false);                                                    \
-  }
-
+#define CALL_VK(func)                                                     \
+    if (VK_SUCCESS != (func)) {                                           \
+        __android_log_print(ANDROID_LOG_ERROR, "Bender ",                 \
+                            "Vulkan error. File[%s], line[%d]", __FILE__, \
+                            __LINE__);                                    \
+        assert(false);                                                    \
+    }
 
 namespace BenderKit {
-  class Device {
-  public:
-      Device(ANativeWindow *window);
-      ~Device();
+    class Device {
+    public:
+        Device(ANativeWindow *window);
 
-      bool isInitialized() { return initialized_; }
-      void setInitialized(bool flag) { initialized_ = flag; }
-      VkPhysicalDevice& getPhysicalDevice() { return gpuDevice_; }
-      VkDevice& getDevice() { return device_; }
-      uint32_t& getQueueFamilyIndex() { return queueFamilyIndex_; }
-      VkSurfaceKHR& getSurface() { return surface_; }
-      VkQueue& getQueue() { return queue_;}
+        ~Device();
 
-  private:
-      // from VkDeviceInfo
-      bool initialized_;
-      VkInstance instance_;
-      VkPhysicalDevice gpuDevice_;
-      VkDevice device_;
-      uint32_t queueFamilyIndex_;
-      VkSurfaceKHR surface_;
-      VkQueue queue_;
+        bool isInitialized() { return initialized_; }
 
-      void CreateVulkanDevice(ANativeWindow *platformWindow,
-                              VkApplicationInfo *appInfo);
-  };
+        void setInitialized(bool flag) { initialized_ = flag; }
+
+        void CreateImageView();
+
+        VkDevice getDevice() { return device_; }
+
+        uint32_t getQueueFamilyIndex() { return queueFamilyIndex_; }
+
+        VkSurfaceKHR getSurface() { return surface_; }
+
+        VkQueue getQueue() { return queue_; }
+
+        VkSwapchainKHR& getSwapchain() { return swapchain_; }
+
+        uint32_t getSwapchainLength() { return swapchainLength_; }
+
+        VkExtent2D getDisplaySize() { return displaySize_; }
+
+        VkFormat getDisplayFormat() { return displayFormat_; }
+
+        std::vector<VkImage>& getDisplayImages() { return displayImages_; }
+
+        std::vector<VkImageView>& getDisplayViews() { return displayViews_; }
+
+        VkImage& getDisplayImages(int i);
+
+        VkImageView& getDisplayViews(int i);
+
+    private:
+        // from VkDeviceInfo
+        bool initialized_;
+        VkInstance instance_;
+        VkPhysicalDevice gpuDevice_;
+        VkDevice device_;
+        uint32_t queueFamilyIndex_;
+        VkSurfaceKHR surface_;
+        VkQueue queue_;
+
+        // from VulkanSwapchainInfo
+        VkSwapchainKHR swapchain_;
+        uint32_t swapchainLength_;
+
+        VkExtent2D displaySize_;
+        VkFormat displayFormat_;
+
+        // array of display image and views
+        std::vector<VkImage> displayImages_;
+        std::vector<VkImageView> displayViews_;
+
+        void CreateVulkanDevice(ANativeWindow *platformWindow,
+                                VkApplicationInfo *appInfo);
+
+        void CreateSwapChain();
+    };
 }
 
 #endif //BENDER_BASE_BENDER_KIT_HPP
