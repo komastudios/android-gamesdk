@@ -111,11 +111,11 @@ TFErrorCode GetDefaultsFromAPKAndDownloadFPs(const Settings& settings, const Jni
         ALOGI("Using saved default params");
         GetSavedFidelityParams(jni, &defaultParams);
     } else {
-        if (settings.default_fp_filename.empty())
+        if (settings.default_fidelity_parameters_filename.empty())
             return TFERROR_INVALID_DEFAULT_FIDELITY_PARAMS;
         auto err = TuningFork_findFidelityParamsInApk(jni.Env(), jni.Ctx(),
-                                                      settings.default_fp_filename.c_str(),
-                                                      &defaultParams);
+                                        settings.default_fidelity_parameters_filename.c_str(),
+                                        &defaultParams);
         if (err!=TFERROR_OK)
             return err;
     }

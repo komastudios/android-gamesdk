@@ -38,6 +38,11 @@ final class TuningforkApkValidationTool {
         names = {"--protoCompiler"},
         description = "Path to protoc binary")
     public String protoCompiler;
+
+    @Parameter(
+        names = {"--errorOnExit"},
+        description = "Exit with error code if there is an error")
+    public Boolean failOnError;
   }
 
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
@@ -89,9 +94,15 @@ final class TuningforkApkValidationTool {
       } else {
         logger.atWarning().log("Tuning Fork settings are invalid");
         errors.printStatus();
+        if (parameters.failOnError) {
+          System.exit(1);
+        }
       }
     } catch (IOException | CompilationException e) {
-      logger.atSevere().withCause(e).log("Error happen during validation");
+      logger.atSevere().withCause(e).log("An error happened during validation");
+      if (parameters.failOnError) {
+        System.exit(2);
+      }
     }
   }
 }

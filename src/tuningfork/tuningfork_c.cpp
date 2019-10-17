@@ -42,7 +42,7 @@ TFErrorCode TuningFork_init_internal(const TFSettings *c_settings_in, JNIEnv* en
     err = tf::Init(settings, jni);
     if (err!=TFERROR_OK)
         return err;
-    if ( !(settings.default_fp_filename.empty()
+    if ( !(settings.default_fidelity_parameters_filename.empty()
            || settings.c_settings.fidelity_params_callback==nullptr) ) {
         err = GetDefaultsFromAPKAndDownloadFPs(settings, jni);
     }
