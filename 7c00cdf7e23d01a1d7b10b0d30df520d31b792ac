@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "725990c4_a6dc107d",
+        "filename": "src/tuningfork/tuningfork_internal.h",
+        "patchSetId": 7
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-17T10:26:07Z",
+      "side": 1,
+      "message": "Add comment why we need this wrapper?",
+      "revId": "7c00cdf7e23d01a1d7b10b0d30df520d31b792ac",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
