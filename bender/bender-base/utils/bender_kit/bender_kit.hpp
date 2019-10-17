@@ -17,7 +17,14 @@
 
 #include <android/log.h>
 
-
+// Android log function wrappers
+static const char* kTAG = "Bender";
+#define LOGI(...) \
+  ((void)__android_log_print(ANDROID_LOG_INFO, kTAG, __VA_ARGS__))
+#define LOGW(...) \
+  ((void)__android_log_print(ANDROID_LOG_WARN, kTAG, __VA_ARGS__))
+#define LOGE(...) \
+  ((void)__android_log_print(ANDROID_LOG_ERROR, kTAG, __VA_ARGS__))
 
 // Vulkan call wrapper
 #define CALL_VK(func)                                                 \
@@ -56,7 +63,6 @@ namespace BenderKit {
       void CreateVulkanDevice(ANativeWindow *platformWindow,
                               VkApplicationInfo *appInfo);
   };
-
 }
 
 #endif //BENDER_BASE_BENDER_KIT_HPP
