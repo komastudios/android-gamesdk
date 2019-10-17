@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "23b88369_f4bb22be",
+        "filename": "src/tuningfork/tuningfork_settings.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-17T13:43:26Z",
+      "side": 1,
+      "message": "Add some comment why we need these structures?",
+      "revId": "8c67f5d3ef6b345f38fb54ad1b2624a10a401b0a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
