@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "62876538_5c5b4dc5",
+        "filename": "build.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-17T11:36:45Z",
+      "side": 1,
+      "message": "Copy tftestapp too?\nAnd can you get the cube sample building?",
+      "revId": "4591b69b5a1b872524d8f98ad26c6ec420caed19",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5a18f8ec_82de95f0",
+        "filename": "samples/device_info_app/gradle/wrapper/gradle-wrapper.properties",
+        "patchSetId": 2
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-17T11:36:45Z",
+      "side": 1,
+      "message": "Does this mean everything should be on this level? (I\u0027ve not checked that it isn\u0027t...)",
+      "revId": "4591b69b5a1b872524d8f98ad26c6ec420caed19",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
