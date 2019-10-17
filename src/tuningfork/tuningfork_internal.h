@@ -68,7 +68,7 @@ struct Settings {
     std::vector<TFHistogram> histograms;
     std::string base_uri;
     std::string api_key;
-    std::string default_fp_filename;
+    std::string default_fidelity_parameters_filename;
     uint32_t initial_request_timeout_ms;
     uint32_t ultimate_request_timeout_ms;
 };
@@ -195,8 +195,8 @@ TFHistogram DefaultHistogram();
 // Tuning fork must have been initialized.
 const JniCtx& GetJniCtx();
 
-// Load default fidelity params from either the saved file or the file in settings.fp_default_filename, then
-//  start the download thread.
+// Load default fidelity params from either the saved file or the file in
+//  settings.default_fidelity_parameters_filename, then start the download thread.
 TFErrorCode GetDefaultsFromAPKAndDownloadFPs(const Settings& settings, const JniCtx& jni);
 
 TFErrorCode KillDownloadThreads();

@@ -64,6 +64,7 @@ public final class ValidationUtilTest {
         Settings.newBuilder()
             .setAggregationStrategy(aggregation)
             .addHistograms(Histogram.getDefaultInstance())
+            .setApiKey("test-api-key")
             .build();
 
     Optional<Settings> parsedSettings =
@@ -245,4 +246,51 @@ public final class ValidationUtilTest {
         .isEqualTo(Arrays.asList(2, 3, 6, 6));
     assertThat(errors.getErrorCount()).isEqualTo(0);
   }
+
+  @Test
+  public void settingsBaseURIAPIKeyAndTimesInvalid() throws Exception {
+    AggregationStrategy aggregation =
+        AggregationStrategy.newBuilder()
+            .addAllAnnotationEnumSize(Arrays.asList(5, 10))
+            .setMaxInstrumentationKeys(100)
+            .build();
+    Settings settings =
+        Settings.newBuilder()
+            .setAggregationStrategy(aggregation)
+            .addHistograms(Histogram.getDefaultInstance())
+            .setBaseUri("not-a-uri*&")
+            // Missing API key
+            .setInitialRequestTimeoutMs(-1)
+            .setUltimateRequestTimeoutMs(-1)
+            .build();
+
+    ValidationUtil.validateSettings(Arrays.asList(5, 10), settings.toString(), errors);
+
+    assertThat(errors.getErrorCount(ErrorType.BASE_URI_NOT_URL)).isEqualTo(1);
+    assertThat(errors.getErrorCount(ErrorType.API_KEY_MISSING)).isEqualTo(1);
+    assertThat(errors.getErrorCount(ErrorType.API_KEY_INVALID)).isEqualTo(0);
+    assertThat(errors.getErrorCount(ErrorType.INITIAL_REQUEST_TIMEOUT_INVALID)).isEqualTo(1);
+    assertThat(errors.getErrorCount(ErrorType.ULTIMATE_REQUEST_TIMEOUT_INVALID)).isEqualTo(1);
+  }
+
+  @Test
+  public void settingsBadApiKey() throws Exception {
+    AggregationStrategy aggregation =
+        AggregationStrategy.newBuilder()
+            .addAllAnnotationEnumSize(Arrays.asList(5, 10))
+            .setMaxInstrumentationKeys(100)
+            .build();
+    Settings settings2 =
+        Settings.newBuilder()
+            .setAggregationStrategy(aggregation)
+            .addHistograms(Histogram.getDefaultInstance())
+            .setApiKey("enter-your-api-key-here")
+            .build();
+
+    ValidationUtil.validateSettings(Arrays.asList(5, 10), settings2.toString(), errors);
+
+    assertThat(errors.getErrorCount(ErrorType.API_KEY_INVALID)).isEqualTo(1);
+  }
+
+
 }
