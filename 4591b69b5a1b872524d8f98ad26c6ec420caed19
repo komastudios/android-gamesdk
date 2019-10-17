@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "63903204_c5513df3",
+        "filename": "build.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2019-10-17T14:53:45Z",
+      "side": 1,
+      "message": "Added tftestapp.\nCould not get the cube sample building, I don\u0027t quite understand what the error means. Will leave it for now and look again after I submit this",
+      "parentUuid": "62876538_5c5b4dc5",
+      "revId": "4591b69b5a1b872524d8f98ad26c6ec420caed19",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a18f8ec_82de95f0",
         "filename": "samples/device_info_app/gradle/wrapper/gradle-wrapper.properties",
         "patchSetId": 2
