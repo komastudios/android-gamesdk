@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "55bdeb81_3e1c2d84",
+        "filename": "bender/bender-base/app/src/main/jni/VulkanMain.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 249,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-10-17T23:10:05Z",
+      "side": 1,
+      "message": "Given framebuffer is here as global variable, we need the destruction here as well.",
+      "revId": "c393878db8df6fb7f8eaa2e30110d38a1c34900c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6b92e641_f8b00902",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-10-17T23:10:05Z",
+      "side": 1,
+      "message": "Not sure if this is the proper practice. Please let me know if this is okay.",
+      "revId": "c393878db8df6fb7f8eaa2e30110d38a1c34900c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
