@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cfabc6ef_d144cd09",
+        "filename": "bender/bender-base/app/src/main/jni/VulkanMain.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-17T18:02:21Z",
+      "side": 1,
+      "message": "add assert(device-\u003eisInitialized());",
+      "revId": "35953640f22ccecb0201a48b83b98658d7bcef6b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
