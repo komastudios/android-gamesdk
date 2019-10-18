@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "de1b2522_a00b17aa",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/assets/tuningfork/tuningfork_settings.txt",
+        "patchSetId": 4
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-10-18T13:07:37Z",
+      "side": 1,
+      "message": "Should it contain level_annotation_index?",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 24
+      },
+      "revId": "6979c5bbfe8e7e1ae9c45758baf155598951281f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
