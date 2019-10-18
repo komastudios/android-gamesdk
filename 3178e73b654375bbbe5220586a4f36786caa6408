@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3ad1ca16_c4ef4dc7",
+        "filename": "bender/bender-base/app/src/main/jni/VulkanMain.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-18T17:35:19Z",
+      "side": 1,
+      "message": "getDisplayImages(bufferIndex);",
+      "revId": "3178e73b654375bbbe5220586a4f36786caa6408",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "98402367_333e8a53",
+        "filename": "bender/bender-base/app/src/main/jni/VulkanMain.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-18T17:35:19Z",
+      "side": 1,
+      "message": "getDisplayImages(bufferIndex)",
+      "revId": "3178e73b654375bbbe5220586a4f36786caa6408",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "78e111d4_cb948e7c",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-18T17:35:19Z",
+      "side": 1,
+      "message": "make it const",
+      "revId": "3178e73b654375bbbe5220586a4f36786caa6408",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "adf64967_a512352a",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-18T17:35:19Z",
+      "side": 1,
+      "message": "make it const.\n\nDo you strictly need both images and views?",
+      "revId": "3178e73b654375bbbe5220586a4f36786caa6408",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}

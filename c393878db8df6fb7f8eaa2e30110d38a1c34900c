@@ -222,6 +222,23 @@
       "revId": "c393878db8df6fb7f8eaa2e30110d38a1c34900c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f3a4955e_a65fa7e5",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-18T17:35:19Z",
+      "side": 1,
+      "message": "Remove this method.",
+      "revId": "c393878db8df6fb7f8eaa2e30110d38a1c34900c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
