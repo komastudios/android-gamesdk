@@ -1,0 +1,7 @@
+Presubmit-Verified+1: Treehugger Robot <treehugger-gerrit@google.com>
+Code-Review+2: Will Osborn <willosborn@google.com>
+Submitted-by: Victor Repetskyi <vrepets@google.com>
+Submitted-at: Fri, 18 Oct 2019 09:09:47 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1140835
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
