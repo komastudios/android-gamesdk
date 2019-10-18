@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "55952742_bb8f8290",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/assets/tuningfork/tuningfork_settings.txt",
+        "patchSetId": 4
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-18T13:26:50Z",
+      "side": 1,
+      "message": "We don\u0027t actually use that at the moment, but yes, for completeness.",
+      "parentUuid": "de1b2522_a00b17aa",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 24
+      },
+      "revId": "6979c5bbfe8e7e1ae9c45758baf155598951281f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "427c6f42_875cf34e",
         "filename": "src/tuningfork/proto/tuningfork.proto",
         "patchSetId": 4
@@ -45,6 +69,30 @@
       "revId": "6979c5bbfe8e7e1ae9c45758baf155598951281f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b0c1ca9d_ba526a59",
+        "filename": "src/tuningfork/proto/tuningfork.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-18T13:26:50Z",
+      "side": 1,
+      "message": "Good idea",
+      "parentUuid": "427c6f42_875cf34e",
+      "range": {
+        "startLine": 31,
+        "startChar": 1,
+        "endLine": 32,
+        "endChar": 61
+      },
+      "revId": "6979c5bbfe8e7e1ae9c45758baf155598951281f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
