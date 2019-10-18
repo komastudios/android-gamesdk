@@ -55,12 +55,19 @@ Device::~Device() {
 void Device::CreateVulkanDevice(ANativeWindow* platformWindow,
                         VkApplicationInfo* appInfo) {
     std::vector<const char*> instance_extensions;
+    std::vector<const char*> instance_layers;
     std::vector<const char*> device_extensions;
 
     instance_extensions.push_back("VK_KHR_surface");
     instance_extensions.push_back("VK_KHR_android_surface");
 
+    instance_layers.push_back("VK_LAYER_KHRONOS_validation");
+
     device_extensions.push_back("VK_KHR_swapchain");
+
+    // Get layer count using null pointer as last parameter
+    uint32_t instance_layer_count = 0;
+    vkEnumerateInstanceLayerProperties(&instance_layer_count, nullptr);
 
     // **********************************************************
     // Create the Vulkan instance
@@ -71,8 +78,8 @@ void Device::CreateVulkanDevice(ANativeWindow* platformWindow,
             .enabledExtensionCount =
             static_cast<uint32_t>(instance_extensions.size()),
             .ppEnabledExtensionNames = instance_extensions.data(),
-            .enabledLayerCount = 0,
-            .ppEnabledLayerNames = nullptr,
+            .enabledLayerCount = instance_layer_count,
+            .ppEnabledLayerNames = instance_layers.data(),
     };
     CALL_VK(vkCreateInstance(&instanceCreateInfo, nullptr, &instance_));
     VkAndroidSurfaceCreateInfoKHR createInfo{
