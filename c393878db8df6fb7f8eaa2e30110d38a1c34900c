@@ -37,6 +37,159 @@
     },
     {
       "key": {
+        "uuid": "84e63f32_eb4d2d13",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-18T02:19:19Z",
+      "side": 1,
+      "message": "Remove comment.",
+      "revId": "c393878db8df6fb7f8eaa2e30110d38a1c34900c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2979339c_87947baa",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-18T02:19:19Z",
+      "side": 1,
+      "message": "Do we need this accessor?",
+      "revId": "c393878db8df6fb7f8eaa2e30110d38a1c34900c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8a9a2bdb_dd17726d",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-18T02:19:19Z",
+      "side": 1,
+      "message": "Return VkDevice.",
+      "revId": "c393878db8df6fb7f8eaa2e30110d38a1c34900c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "96c65a20_d0a62dd7",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-18T02:19:19Z",
+      "side": 1,
+      "message": "return uint32_t, not a reference.",
+      "revId": "c393878db8df6fb7f8eaa2e30110d38a1c34900c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f768b327_884ed469",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-18T02:19:19Z",
+      "side": 1,
+      "message": "Return VKSurfaceKHR.",
+      "revId": "c393878db8df6fb7f8eaa2e30110d38a1c34900c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "974b9f64_788203a9",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-18T02:19:19Z",
+      "side": 1,
+      "message": "Return VKQueue.",
+      "revId": "c393878db8df6fb7f8eaa2e30110d38a1c34900c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "909297ea_cd928887",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-18T02:19:19Z",
+      "side": 1,
+      "message": "return uint32_t, not a reference.",
+      "revId": "c393878db8df6fb7f8eaa2e30110d38a1c34900c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2354f5b6_44f3aa91",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-18T02:19:19Z",
+      "side": 1,
+      "message": "Either return const VkExtend2D\u0026 or just VkExtend2D.",
+      "revId": "c393878db8df6fb7f8eaa2e30110d38a1c34900c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d9801ab2_d9e5ac11",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-18T02:19:19Z",
+      "side": 1,
+      "message": "Return VkFormat.",
+      "revId": "c393878db8df6fb7f8eaa2e30110d38a1c34900c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6b92e641_f8b00902",
         "filename": "bender/bender-base/utils/bender_kit/bender_kit.hpp",
         "patchSetId": 3
@@ -48,6 +201,24 @@
       "writtenOn": "2019-10-17T23:10:05Z",
       "side": 1,
       "message": "Not sure if this is the proper practice. Please let me know if this is okay.",
+      "revId": "c393878db8df6fb7f8eaa2e30110d38a1c34900c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "54cc9dee_ea9ebfce",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-18T02:19:19Z",
+      "side": 1,
+      "message": "Can you move this method to the cpp?",
+      "parentUuid": "6b92e641_f8b00902",
       "revId": "c393878db8df6fb7f8eaa2e30110d38a1c34900c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
