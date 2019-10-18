@@ -41,7 +41,7 @@ class UploadThread : protected Runnable {
                        const TFCache* persister);
 
     void Start() override;
-    void DoWork() override;
+    Duration DoWork() override;
 
     // Returns true if we submitted, false if we are waiting for a previous submit to complete
     // If upload is false, the cache is serialized and saved, not uploaded.

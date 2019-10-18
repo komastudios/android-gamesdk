@@ -28,11 +28,11 @@ class WebRequest {
     JniCtx jni_;
     std::string uri_;
     std::string api_key_;
-    int timeout_ms_;
+    Duration timeout_;
 public:
     WebRequest(const JniCtx& jni, const std::string& uri,
-               const std::string& api_key, int timeout_ms);
-    WebRequest(const WebRequest& rq);
+               const std::string& api_key, Duration timeout);
+    WebRequest(const WebRequest&);
     WebRequest(WebRequest&& rq) = delete;
     WebRequest& operator=(const WebRequest& rq) = delete;
     TFErrorCode Send(const std::string& request_json,
