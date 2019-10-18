@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "93bcea72_fda6ddaa",
+        "filename": "samples/bouncyball/app/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-18T09:03:56Z",
+      "side": 1,
+      "message": "Done in this CL",
+      "parentUuid": "52505662_5b31185a",
+      "revId": "ae93ae14cd24dd9fb65332c41a10dad19ff3d352",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "96a02723_62ad4f93",
         "filename": "src/common/JNIUtil.h",
         "patchSetId": 3
@@ -107,6 +125,24 @@
     },
     {
       "key": {
+        "uuid": "3376bf84_20eb9161",
+        "filename": "src/common/JNIUtil.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-18T09:03:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f593975c_01051f7d",
+      "revId": "ae93ae14cd24dd9fb65332c41a10dad19ff3d352",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a3904857_2c33bb79",
         "filename": "src/swappy/CMakeLists.txt",
         "patchSetId": 3
@@ -139,6 +175,24 @@
       "revId": "ae93ae14cd24dd9fb65332c41a10dad19ff3d352",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f128ee1d_bb5f399e",
+        "filename": "src/swappy/CMakeLists.txt",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-18T09:03:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ea543923_730efe45",
+      "revId": "ae93ae14cd24dd9fb65332c41a10dad19ff3d352",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
