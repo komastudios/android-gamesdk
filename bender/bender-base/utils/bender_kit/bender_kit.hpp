@@ -17,6 +17,7 @@
 
 #include <android/log.h>
 #include <vector>
+#include <string>
 
 // Android log function wrappers
 static const char* kTAG = "Bender";
@@ -95,4 +96,12 @@ namespace BenderKit {
     };
 }
 
+namespace DebugMarker {
+    void setup(VkDevice device, VkPhysicalDevice physicalDevice);
+    void setObjectName(VkDevice device, uint64_t object, VkDebugReportObjectTypeEXT objectType, const char *name);
+    void setObjectTag(VkDevice device, uint64_t object, VkDebugReportObjectTypeEXT objectType, uint64_t name, size_t tagSize, const void* tag);
+    void beginRegion(VkCommandBuffer cmdbuffer, const char* pMarkerName, float color[4]);
+    void insert(VkCommandBuffer cmdbuffer, std::string markerName, float color[4]);
+    void endRegion(VkCommandBuffer cmdBuffer);
+}
 #endif //BENDER_BASE_BENDER_KIT_HPP
