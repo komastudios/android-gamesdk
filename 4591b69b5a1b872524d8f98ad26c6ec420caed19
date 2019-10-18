@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "479f1a15_9acf2504",
+        "filename": "build.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-18T12:58:50Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "63903204_c5513df3",
+      "revId": "4591b69b5a1b872524d8f98ad26c6ec420caed19",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a18f8ec_82de95f0",
         "filename": "samples/device_info_app/gradle/wrapper/gradle-wrapper.properties",
         "patchSetId": 2
@@ -66,6 +84,24 @@
       "side": 1,
       "message": "I have not checked either, but I added this just to get the device info app compiling -- the others worked fine as they are",
       "parentUuid": "5a18f8ec_82de95f0",
+      "revId": "4591b69b5a1b872524d8f98ad26c6ec420caed19",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4079decb_76c733ee",
+        "filename": "samples/device_info_app/gradle/wrapper/gradle-wrapper.properties",
+        "patchSetId": 2
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-18T12:58:50Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "439b308a_18a2589c",
       "revId": "4591b69b5a1b872524d8f98ad26c6ec420caed19",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
