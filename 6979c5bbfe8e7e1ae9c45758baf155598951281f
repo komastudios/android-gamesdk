@@ -22,6 +22,29 @@
       "revId": "6979c5bbfe8e7e1ae9c45758baf155598951281f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "427c6f42_875cf34e",
+        "filename": "src/tuningfork/proto/tuningfork.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-10-18T13:10:51Z",
+      "side": 1,
+      "message": "Can it be reserved indexes? Like 100-120 are reserved for loading/level/something else.",
+      "range": {
+        "startLine": 31,
+        "startChar": 1,
+        "endLine": 32,
+        "endChar": 61
+      },
+      "revId": "6979c5bbfe8e7e1ae9c45758baf155598951281f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
