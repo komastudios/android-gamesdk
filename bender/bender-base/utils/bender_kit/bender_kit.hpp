@@ -17,6 +17,7 @@
 
 #include <android/log.h>
 #include <vector>
+#include <string>
 
 // Android log function wrappers
 static const char* kTAG = "Bender";
@@ -94,5 +95,4 @@ namespace BenderKit {
         void CreateSwapChain();
     };
 }
-
 #endif //BENDER_BASE_BENDER_KIT_HPP

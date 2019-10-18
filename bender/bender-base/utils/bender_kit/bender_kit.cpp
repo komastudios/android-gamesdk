@@ -17,6 +17,7 @@
 #include <cassert>
 #include "vulkan_wrapper.h"
 #include "bender_kit.hpp"
+#include "debug_marker.hpp"
 
 // #include "BenderHelpers.hpp"
 
@@ -71,12 +72,19 @@ void Device::CreateVulkanDevice(ANativeWindow* platformWindow,
                         VkApplicationInfo* appInfo) {
     LOGI("->CreateVulkanDevice");
     std::vector<const char*> instance_extensions;
+    std::vector<const char*> instance_layers;
     std::vector<const char*> device_extensions;
 
     instance_extensions.push_back("VK_KHR_surface");
     instance_extensions.push_back("VK_KHR_android_surface");
+    instance_extensions.push_back("VK_EXT_debug_report");
+
+#ifdef ENABLE_VALIDATION_LAYERS
+    instance_layers.push_back("VK_LAYER_KHRONOS_validation");
+#endif
 
     device_extensions.push_back("VK_KHR_swapchain");
+    device_extensions.push_back("VK_EXT_debug_marker");
 
     // **********************************************************
     // Create the Vulkan instance
@@ -87,8 +95,8 @@ void Device::CreateVulkanDevice(ANativeWindow* platformWindow,
             .enabledExtensionCount =
             static_cast<uint32_t>(instance_extensions.size()),
             .ppEnabledExtensionNames = instance_extensions.data(),
-            .enabledLayerCount = 0,
-            .ppEnabledLayerNames = nullptr,
+            .enabledLayerCount = static_cast<uint32_t>(instance_layers.size()),
+            .ppEnabledLayerNames = instance_layers.data(),
     };
     CALL_VK(vkCreateInstance(&instanceCreateInfo, nullptr, &instance_));
     VkAndroidSurfaceCreateInfoKHR createInfo{
@@ -158,6 +166,7 @@ void Device::CreateVulkanDevice(ANativeWindow* platformWindow,
     CALL_VK(vkCreateDevice(gpuDevice_, &deviceCreateInfo, nullptr,
                            &device_));
     vkGetDeviceQueue(device_, queueFamilyIndex_, 0, &queue_);
+    DebugMarker::setup(device_, gpuDevice_);
     LOGI("<-CreateVulkanDevice");
 }
 
