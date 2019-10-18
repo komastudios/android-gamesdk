@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0abf4514_6cf4065a",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/tftestapp.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-18T13:38:08Z",
+      "side": 1,
+      "message": "Should it be \u003d\u003d ?",
+      "revId": "b6dbdeee49230d78f914f4c3da24625fdbb14e73",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6d7fc460_57a0e428",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/tftestapp.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-10-18T13:38:08Z",
+      "side": 1,
+      "message": "Create constants for these numbers?",
+      "revId": "b6dbdeee49230d78f914f4c3da24625fdbb14e73",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
