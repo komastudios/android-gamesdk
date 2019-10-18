@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "113f9f4f_76ef496b",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.hpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-18T18:27:02Z",
+      "side": 1,
+      "message": "Remove comment",
+      "revId": "2d1364c02d790e38d3396f76bddaf0ff5614491c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d2d5cfc2_ae9297dc",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.hpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-18T18:27:02Z",
+      "side": 1,
+      "message": "Remove comment",
+      "revId": "2d1364c02d790e38d3396f76bddaf0ff5614491c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "64b7e1c3_7f559eef",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.hpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-18T18:27:02Z",
+      "side": 1,
+      "message": "Remove comment",
+      "revId": "2d1364c02d790e38d3396f76bddaf0ff5614491c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
