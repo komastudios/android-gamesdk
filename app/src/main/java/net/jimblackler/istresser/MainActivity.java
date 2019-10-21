@@ -9,6 +9,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Debug;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
@@ -20,6 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.List;
@@ -33,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
 
   private static final String TAG = MainActivity.class.getSimpleName();
   private static final int MAX_DURATION = 1000 * 60 * 10;
+  private static final int LAUNCH_DURATION = 1000 * 90;
+  private static final int RETURN_DURATION = LAUNCH_DURATION + 1000 * 20;
 
   private static final List<List<String>> groups =
       ImmutableList.<List<String>>builder()
@@ -45,10 +52,10 @@ public class MainActivity extends AppCompatActivity {
           .add(ImmutableList.of("avail"))
           .add(ImmutableList.of("cached"))
           .add(ImmutableList.of("avail2"))
-          .add(ImmutableList.of("oom", "cl", "avail", "avail2"))
-          .add(ImmutableList.of("oom", "cl", "avail", "avail2", "low"))
-          .add(ImmutableList.of("oom", "low", "try", "cl", "avail", "cached", "avail2"))
-          .add(ImmutableList.of("trim", "oom", "low", "try", "cl", "avail", "cached", "avail2"))
+          .add(ImmutableList.of("cl", "avail", "avail2"))
+          .add(ImmutableList.of("cl", "avail", "avail2", "low"))
+          .add(ImmutableList.of("trim", "try", "cl", "avail", "avail2"))
+          .add(ImmutableList.of("trim", "low", "try", "cl", "avail", "avail2"))
           .build();
 
   private static final ImmutableList<String> MEMINFO_FIELDS =
@@ -66,7 +73,10 @@ public class MainActivity extends AppCompatActivity {
   private long startTime;
   private long allocationStartedAt = -1;
   private int releases;
-  private int scenario = 16;
+  private int scenario = 13;
+  private long appSwitchTimerStart;
+  private long lastLaunched;
+
 
   private static String memoryString(long bytes) {
     return String.format(Locale.getDefault(), "%.1f MB", (float) bytes / (1024 * 1024));
@@ -84,8 +94,10 @@ public class MainActivity extends AppCompatActivity {
   }
 
   @Override
-  protected void onStart() {
-    super.onStart();
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+
     try {
       JSONObject report = new JSONObject();
 
@@ -113,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
       report.put("scenario", scenario);
 
       JSONArray groupsOut = new JSONArray();
-      for(String group : groups.get(scenario - 1)) {
+      for (String group : groups.get(scenario - 1)) {
         groupsOut.put(group);
       }
       report.put("groups", groupsOut);
@@ -163,6 +175,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     startTime = System.currentTimeMillis();
+    appSwitchTimerStart = System.currentTimeMillis();
     allocationStartedAt = startTime;
     timer.schedule(new TimerTask() {
       @Override
@@ -200,8 +213,25 @@ public class MainActivity extends AppCompatActivity {
               }
             }
           }
-          long timeRunning = System.currentTimeMillis() - startTime;
 
+          long appSwitchTimeRunning = System.currentTimeMillis() - appSwitchTimerStart;
+          if (appSwitchTimeRunning > LAUNCH_DURATION && lastLaunched < LAUNCH_DURATION) {
+            lastLaunched = appSwitchTimeRunning;
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            File file = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES) + File.separator + "pic.jpg");
+            String authority = getApplicationContext().getPackageName() + ".provider";
+            intent.putExtra(MediaStore.EXTRA_OUTPUT,
+                FileProvider.getUriForFile(MainActivity.this, authority, file));
+            startActivityForResult(intent, 1);
+          }
+          if (appSwitchTimeRunning > RETURN_DURATION && lastLaunched < RETURN_DURATION) {
+            lastLaunched = appSwitchTimeRunning;
+            finishActivity(1);
+            appSwitchTimerStart = System.currentTimeMillis();
+            lastLaunched = 0;
+          }
+          long timeRunning = System.currentTimeMillis() - startTime;
           if (timeRunning > MAX_DURATION) {
             try {
               report = standardInfo();
@@ -228,12 +258,6 @@ public class MainActivity extends AppCompatActivity {
   }
 
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
-  }
-
-  @Override
   protected void onDestroy() {
     try {
       JSONObject report = standardInfo();
@@ -243,6 +267,35 @@ public class MainActivity extends AppCompatActivity {
       throw new RuntimeException(e);
     }
     super.onDestroy();
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+    try {
+      JSONObject report = standardInfo();
+      report.put("activityPaused", true);
+      resultsStream.println(report);
+    } catch (JSONException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    try {
+      JSONObject report = standardInfo();
+      report.put("activityPaused", false);
+      resultsStream.println(report);
+    } catch (JSONException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private void updateRecords() {
