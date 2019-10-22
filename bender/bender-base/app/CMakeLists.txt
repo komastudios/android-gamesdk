@@ -15,6 +15,7 @@ include_directories(${KIT_DIR})
 
 add_library(bender-kit STATIC
             ${KIT_DIR}/bender_kit.cpp
+            ${KIT_DIR}/debug_marker.cpp
             ${WRAPPER_DIR}/vulkan_wrapper.cpp)
 
 add_library(base SHARED
@@ -24,6 +25,6 @@ add_library(base SHARED
 target_link_libraries(base bender-kit)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -Werror \
-                     -DVK_USE_PLATFORM_ANDROID_KHR")
+                     -DVK_USE_PLATFORM_ANDROID_KHR -DENABLE_VALIDATION_LAYERS")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate")
 target_link_libraries(base app-glue log android)

@@ -189,6 +189,13 @@ extern PFN_vkCreateDisplayPlaneSurfaceKHR vkCreateDisplayPlaneSurfaceKHR;
 // VK_KHR_display_swapchain
 extern PFN_vkCreateSharedSwapchainsKHR vkCreateSharedSwapchainsKHR;
 
+// Vulkan Debug Marker Extension Support
+extern PFN_vkDebugMarkerSetObjectTagEXT vkDebugMarkerSetObjectTagEXT;
+extern PFN_vkDebugMarkerSetObjectNameEXT vkDebugMarkerSetObjectNameEXT;
+extern PFN_vkCmdDebugMarkerBeginEXT vkCmdDebugMarkerBeginEXT;
+extern PFN_vkCmdDebugMarkerEndEXT vkCmdDebugMarkerEndEXT;
+extern PFN_vkCmdDebugMarkerInsertEXT vkCmdDebugMarkerInsertEXT;
+
 #ifdef VK_USE_PLATFORM_XLIB_KHR
 // VK_KHR_xlib_surface
 extern PFN_vkCreateXlibSurfaceKHR vkCreateXlibSurfaceKHR;
