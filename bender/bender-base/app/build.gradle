@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 28
 
     defaultConfig {
         applicationId  "com.google.a2g.bender"
         minSdkVersion     26
-        targetSdkVersion  29
+        targetSdkVersion  28
         versionCode  1
         versionName  "0.0.1"
         externalNativeBuild {
