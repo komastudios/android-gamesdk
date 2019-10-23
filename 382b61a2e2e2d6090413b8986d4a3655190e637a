@@ -16,6 +16,41 @@
       "revId": "382b61a2e2e2d6090413b8986d4a3655190e637a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "533e4453_21d9ccee",
+        "filename": "include/swappy/swappyGL.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-10-23T18:59:52Z",
+      "side": 1,
+      "message": "The code doesn\u0027t do anything with this one.\nfcarucci@, this was removed as part of aosp/841189. Do you have more context on why it was removed ? We can remove the API as well if not needed.",
+      "parentUuid": "913fd697_f7c0ac91",
+      "revId": "382b61a2e2e2d6090413b8986d4a3655190e637a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4dcae70f_5be99930",
+        "filename": "include/swappy/swappyGL.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-10-23T18:59:52Z",
+      "side": 1,
+      "message": "This will also set the minimal interval to run (i.e. SwappyGL_setSwapIntervalNS(30FPS) will not allow swappy to swap faster, even if auto mode decides that it can. It can go slower if auto mode is on but not faster.",
+      "revId": "382b61a2e2e2d6090413b8986d4a3655190e637a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
