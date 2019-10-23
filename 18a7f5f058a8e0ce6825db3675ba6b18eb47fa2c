@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "23e13ec5_4eed2e40",
+        "filename": "bender/bender-base/app/src/main/jni/VulkanMain.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-23T23:54:41Z",
+      "side": 1,
+      "message": "Shader type is not used. Can you remove it?",
+      "revId": "18a7f5f058a8e0ce6825db3675ba6b18eb47fa2c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
