@@ -52,7 +52,7 @@ static inline bool SwappyGL_init(JNIEnv *env, jobject jactivity)  {
 
 /**
  * @brief Check if Swappy was successfully initialized.
- * @return false if either the 'swappy.disable' system property is not 'false'
+ * @return false if either the `swappy.disable` system property is not `false`
  * or the required OpenGL extensions are not available for Swappy to work.
  */
 bool SwappyGL_isEnabled();
@@ -69,15 +69,46 @@ void SwappyGL_destroy();
  */
 bool SwappyGL_swap(EGLDisplay display, EGLSurface surface);
 
-// Parameter setters
+// Paramter setters:
+
 void SwappyGL_setUseAffinity(bool tf);
+
+/**
+ * @brief Override the swap interval
+ *
+ * By default, Swappy will adjust the swap interval based on actual frame rendering time.
+ * If an app wants to override the swap interval calculated by Swappy, it can call
+ * this function. This will temporarily override Swappy's frame timings but, unless
+ * `SwappyGL_setAutoSwapInterval(false)` is called, the timings will continue to be be updated
+ * dynamically, so the swap interval may change.
+ *
+ * @param swap_ns The new swap interval value, in nanoseconds.
+ */
 void SwappyGL_setSwapIntervalNS(uint64_t swap_ns);
+
+/**
+ * @brief Set the fence timeout parameter, for devices with faulty
+ * drivers. Its default value is 50,000,000ns (50ms).
+ */
 void SwappyGL_setFenceTimeoutNS(uint64_t fence_timeout_ns);
 
-// Parameter getters
+// Parameter getters:
+
+/**
+ * @brief Get the refresh period value, in nanoseconds.
+ */
 uint64_t SwappyGL_getRefreshPeriodNanos();
+
+/**
+ * @brief Get the swap interval value, in nanoseconds.
+ */
 uint64_t SwappyGL_getSwapIntervalNS();
+
 bool SwappyGL_getUseAffinity();
+
+/**
+ * @brief Get the fence timeout value, in nanoseconds.
+ */
 uint64_t SwappyGL_getFenceTimeoutNS();
 
 #ifdef __cplusplus

@@ -56,8 +56,8 @@ void SwappyGL_injectTracer(const SwappyTracer *t);
  *
  * By default, Swappy will adjust the swap interval based on actual frame rendering time.
  * If an app wants to override the swap interval calculated by Swappy, it can call
- * `Swappy_setSwapIntervalNS`. This will temporarily override Swappy's frame timings but, unless
- * `Swappy_setAutoSwapInterval(false)` is called, the timings will continue to be be updated
+ * `SwappyGL_setSwapIntervalNS`. This will temporarily override Swappy's frame timings but, unless
+ * `SwappyGL_setAutoSwapInterval(false)` is called, the timings will continue to be be updated
  * dynamically, so the swap interval may change.
  */
 void SwappyGL_setAutoSwapInterval(bool enabled);
