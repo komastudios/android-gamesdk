@@ -1,0 +1,11 @@
+Code-Review+1: Andy Yu <chingtangyu@google.com>
+Code-Review+1: Francesco Carucci <fcarucci@google.com>
+Code-Review+2: Matt Wang <mattkw@google.com>
+Verified+1: Francesco Carucci <fcarucci@google.com>
+Autosubmit+1: Francesco Carucci <fcarucci@google.com>
+Presubmit-Verified+1: Treehugger Robot <treehugger-gerrit@google.com>
+Submitted-by: Matt Wang <mattkw@google.com>
+Submitted-at: Wed, 23 Oct 2019 00:07:07 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1148190
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
