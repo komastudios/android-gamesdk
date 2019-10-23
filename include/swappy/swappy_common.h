@@ -24,10 +24,16 @@
 
 #include <stdint.h>
 
-// swap interval constant helpers
+/** @brief Swap interval for 60fps, in nanoseconds. */
 #define SWAPPY_SWAP_60FPS (16666667L)
+
+/** @brief Swap interval for 30fps, in nanoseconds. */
 #define SWAPPY_SWAP_30FPS (33333333L)
+
+/** @brief Swap interval for 20fps, in nanoseconds. */
 #define SWAPPY_SWAP_20FPS (50000000L)
+
+/** @internal */
 
 #define SWAPPY_SYSTEM_PROP_KEY_DISABLE "swappy.disable"
 
@@ -50,7 +56,11 @@ extern "C" {
 // mismatch between the header used at compilation and the actually library used by the linker.
 void SWAPPY_VERSION_SYMBOL();
 
-/// Return the version of the Swappy library at runtime.
+/** @endinternal */
+
+/**
+ * @brief Return the version of the Swappy library at runtime.
+ */
 uint32_t Swappy_version();
 
 #ifdef __cplusplus
@@ -58,18 +68,80 @@ uint32_t Swappy_version();
 #endif
 
 /**
+ * Pointer to a function that can be attached to SwappyTracer::preWait or SwappyTracer::postWait.
+ * @param userData Pointer to arbitrary data, see SwappyTracer::userData.
+ */
+typedef void (*SwappyWaitCallback)(void*);
+
+/**
+ * Pointer to a function that can be attached to SwappyTracer::preSwapBuffers.
+ * @param userData Pointer to arbitrary data, see SwappyTracer::userData.
+ */
+typedef void (*SwappyPreSwapBuffersCallback)(void*);
+
+/**
+ * Pointer to a function that can be attached to SwappyTracer::postSwapBuffers.
+ * @param userData Pointer to arbitrary data, see SwappyTracer::userData.
+ * @param desiredPresentationTimeMillis The target time, in milliseconds, at which the frame
+ * would be presented on screen.
+ */
+typedef void (*SwappyPostSwapBuffersCallback)(void*, long desiredPresentationTimeMillis);
+
+/**
+ * Pointer to a function that can be attached to SwappyTracer::startFrame.
+ * @param userData Pointer to arbitrary data, see SwappyTracer::userData.
+ * @param currentFrameTimeStampMillis The time, in milliseconds, at which the frame is scheduled to be presented.
+ */
+typedef void (*SwappyStartFrameCallback)(void*, int currentFrame, long currentFrameTimeStampMillis);
+
+/**
+ * Pointer to a function that can be attached to SwappyTracer::swapIntervalChanged.
+ * Call ::SwappyGL_getSwapIntervalNS or ::SwappyVk_getSwapIntervalNS to get the latest swapInterval.
+ * @param userData Pointer to arbitrary data, see SwappyTracer::userData.
+ */
+typedef void (*SwappySwapIntervalChangedCallback)(void*);
+
+/**
  * @brief Collection of callbacks to be called each frame to trace execution.
  *
  * Injection of these is optional.
  */
 typedef struct SwappyTracer {
-    void (*preWait)(void*);
-    void (*postWait)(void*);
-    void (*preSwapBuffers)(void*);
-    void (*postSwapBuffers)(void*, long desiredPresentationTimeMillis);
-    void (*startFrame)(void*, int currentFrame, long currentFrameTimeStampMillis);
+    /**
+     * Callback called before waiting to queue the frame to the composer.
+     */
+    SwappyWaitCallback preWait;
+
+    /**
+     * Callback called after wait to queue the frame to the composer is done.
+     */
+    SwappyWaitCallback postWait;
+
+    /**
+     * Callback called before calling the function to queue the frame to the composer.
+     */
+    SwappyPreSwapBuffersCallback preSwapBuffers;
+
+    /**
+     * Callback called after calling the function to queue the frame to the composer.
+     */
+    SwappyPostSwapBuffersCallback postSwapBuffers;
+
+    /**
+     * Callback called at the start of a frame.
+     */
+    SwappyStartFrameCallback startFrame;
+
+    /**
+     * Pointer to some arbitrary data that will be passed as the first argument
+     * of callbacks.
+     */
     void* userData;
-    void (*swapIntervalChanged)(void*);
+
+    /**
+     * Callback called when the swap interval was changed.
+     */
+    SwappySwapIntervalChangedCallback swapIntervalChanged;
 } SwappyTracer;
 
 /** @} */
