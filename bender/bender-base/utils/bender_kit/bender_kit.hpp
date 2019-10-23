@@ -52,6 +52,8 @@ namespace BenderKit {
 
         VkDevice getDevice() { return device_; }
 
+        VkPhysicalDevice getPhysicalDevice() { return gpuDevice_; }
+
         uint32_t getQueueFamilyIndex() { return queueFamilyIndex_; }
 
         VkSurfaceKHR getSurface() { return surface_; }
