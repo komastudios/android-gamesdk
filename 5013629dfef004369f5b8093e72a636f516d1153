@@ -1,0 +1,164 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3121b82e_d3beaf2c",
+        "filename": "include/swappy/swappy_common.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-10-23T17:30:34Z",
+      "side": 1,
+      "message": "SWAPPY_SWAP_*FPS are not internal, clients are expected to use those directly.",
+      "revId": "5013629dfef004369f5b8093e72a636f516d1153",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "903a4add_0ff6e409",
+        "filename": "include/swappy/swappy_common.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-10-23T17:30:34Z",
+      "side": 1,
+      "message": "would be presented",
+      "range": {
+        "startLine": 81,
+        "startChar": 93,
+        "endLine": 81,
+        "endChar": 111
+      },
+      "revId": "5013629dfef004369f5b8093e72a636f516d1153",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7e3c7bff_4a12c586",
+        "filename": "include/swappy/swappy_common.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-10-23T17:30:34Z",
+      "side": 1,
+      "message": "currentFrameTimeStampMillis doesn\u0027t make sense to me the way it is implemented today. \nI think it should be \"the time, in milliseconds, at which the frame is scheduled to be presented.\" used by the app to know to which time to advance the physics engine. fcarucci@ ?",
+      "range": {
+        "startLine": 90,
+        "startChar": 71,
+        "endLine": 90,
+        "endChar": 98
+      },
+      "revId": "5013629dfef004369f5b8093e72a636f516d1153",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0e403048_cd535855",
+        "filename": "include/swappy/swappy_common.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-10-23T17:30:34Z",
+      "side": 1,
+      "message": "Add: call Swappy[GL|Vk]_getSwapIntervalNS to get the latest swapInterval",
+      "revId": "5013629dfef004369f5b8093e72a636f516d1153",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d44a1d2b_9a399466",
+        "filename": "include/swappy/swappy_common.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-10-23T17:30:34Z",
+      "side": 1,
+      "message": "before waiting to queue the frame to the composer",
+      "range": {
+        "startLine": 105,
+        "startChar": 23,
+        "endLine": 105,
+        "endChar": 53
+      },
+      "revId": "5013629dfef004369f5b8093e72a636f516d1153",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6f7a34d8_7bf01669",
+        "filename": "include/swappy/swappy_common.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-10-23T17:30:34Z",
+      "side": 1,
+      "message": "after wait to queue the frame to the composer is done",
+      "range": {
+        "startLine": 110,
+        "startChar": 23,
+        "endLine": 110,
+        "endChar": 60
+      },
+      "revId": "5013629dfef004369f5b8093e72a636f516d1153",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f0b0d618_e420ba3a",
+        "filename": "include/swappy/swappy_common.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-10-23T17:30:34Z",
+      "side": 1,
+      "message": "before calling the function to queue the frame to the composer",
+      "revId": "5013629dfef004369f5b8093e72a636f516d1153",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4c5fe612_08e6228f",
+        "filename": "include/swappy/swappy_common.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-10-23T17:30:34Z",
+      "side": 1,
+      "message": "after calling the function to queue the frame to the composer",
+      "revId": "5013629dfef004369f5b8093e72a636f516d1153",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
