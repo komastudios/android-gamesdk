@@ -29,6 +29,10 @@
 #include <EGL/eglext.h>
 #include <jni.h>
 
+/**
+ * The longest duration, in refresh periods, represented by the statistics.
+ * @see SwappyStats
+ */
 #define MAX_FRAME_BUCKETS 6
 
 #ifdef __cplusplus
@@ -78,14 +82,18 @@ void SwappyGL_setAutoPipelineMode(bool enabled);
  * @brief Toggle statistics collection on/off
  *
  * By default, stats collection is off and there is no overhead related to stats.
- * An app can turn on stats collection by calling `Swappy_setStatsMode(true)`.
- * Then, the app is expected to call `Swappy_recordFrameStart` for each frame before starting to
+ * An app can turn on stats collection by calling `SwappyGL_enableStats(true)`.
+ * Then, the app is expected to call ::SwappyGL_recordFrameStart for each frame before starting to
  * do any CPU related work.
  * Stats will be logged to logcat with a 'FrameStatistics' tag.
- * An app can get the stats by calling Swappy_getStats.
+ * An app can get the stats by calling ::SwappyGL_getStats.
  */
 void SwappyGL_enableStats(bool enabled);
 
+/**
+ * @brief Swappy statistics, collected if toggled on with ::SwappyGL_enableStats.
+ * @see SwappyGL_getStats
+ */
 struct SwappyStats {
     /** @brief Total frames swapped by swappy */
     uint64_t totalFrames;
@@ -126,9 +134,24 @@ struct SwappyStats {
     uint64_t latencyFrames[MAX_FRAME_BUCKETS];
 };
 
+/**
+ * @brief Should be called if stats have been enabled with SwappyGL_enableStats.
+ *
+ * When stats collection is enabled with SwappyGL_enableStats, the app is expected to call this
+ * function for each frame before starting to do any CPU related work.
+ *
+ * @see SwappyGL_enableStats.
+ */
 void SwappyGL_recordFrameStart(EGLDisplay display, EGLSurface surface);
 
-void SwappyGL_getStats(SwappyStats *);
+/**
+ * @brief Returns the stats collected, if statistics collection was toggled on.
+ *
+ * @param swappyStats Pointer to a SwappyStats that will be populated with collected stats.
+ * @see SwappyStats
+ * @see SwappyGL_enableStats
+ */
+void SwappyGL_getStats(SwappyStats * swappyStats);
 
 #ifdef __cplusplus
 };
