@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b30cec4e_c36802e3",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1267775
+      },
+      "writtenOn": "2019-10-23T20:56:21Z",
+      "side": 1,
+      "message": "Driven-by comment: Keep the commit message 72 or 80 characters per line whenever possible.",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 333
+      },
+      "revId": "e1e0b00aeaa89720071977e72ee77ce1bfb8c16f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
