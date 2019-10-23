@@ -28,7 +28,8 @@ include_directories( ${ANDROID_NDK}/sources/third_party/vulkan/src/common )
 message( STATUS "Building swappy_static to ${CMAKE_CURRENT_BINARY_DIR}/build" )
 
 add_custom_command(OUTPUT classes_dex.o
-     COMMAND cd ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/../intermediates/dex/release/mergeDexRelease/out && ${CMAKE_LINKER} -r -b binary -o ${CMAKE_CURRENT_BINARY_DIR}/classes_dex.o classes.dex
+     COMMAND cd ../intermediates/dex/release/mergeDexRelease/out && ${CMAKE_LINKER} -r -b binary -o ${CMAKE_CURRENT_BINARY_DIR}/classes_dex.o classes.dex
+     WORKING_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
      )
 
 set_source_files_properties(
