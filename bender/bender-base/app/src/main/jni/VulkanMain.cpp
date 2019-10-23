@@ -36,6 +36,20 @@ struct VulkanRenderInfo {
 };
 VulkanRenderInfo render;
 
+struct VulkanGfxPipelineInfo {
+    VkPipelineLayout layout_;
+    VkPipelineCache cache_;
+    VkPipeline pipeline_;
+};
+VulkanGfxPipelineInfo gfxPipeline;
+
+struct VulkanBufferInfo {
+    VkBuffer vertexBuf_;
+    VkDeviceMemory bufferDeviceMemory;
+};
+VulkanBufferInfo buffers;
+
+
 // Android Native App pointer...
 android_app* androidAppCtx = nullptr;
 BenderKit::Device *device;
@@ -105,6 +119,288 @@ void CreateFrameBuffers(VkRenderPass& renderPass,
   }
 }
 
+// A helper function for selecting the correct memory type for a buffer
+uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, VkPhysicalDevice gpuDevice) {
+    VkPhysicalDeviceMemoryProperties memProperties;
+    vkGetPhysicalDeviceMemoryProperties(gpuDevice, &memProperties);
+
+    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+        if ((typeFilter & (1 << i)) &&
+            (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+            return i;
+        }
+    }
+
+    LOGE("failed to find suitable memory type!");
+    return -1;
+}
+
+// Generalized helper function for creating different types of buffers
+void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
+                  VkBuffer &buffer, VkDeviceMemory &bufferMemory) {
+    VkBufferCreateInfo bufferInfo = {
+            .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+            .pNext = nullptr,
+            .size = size,
+            .usage = usage,
+            .flags = 0,
+            .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+            .queueFamilyIndexCount = 1,
+    };
+
+    CALL_VK(vkCreateBuffer(device->getDevice(), &bufferInfo, nullptr, &buffer));
+
+    VkMemoryRequirements memRequirements;
+    vkGetBufferMemoryRequirements(device->getDevice(), buffer, &memRequirements);
+
+    VkMemoryAllocateInfo allocInfo = {
+            .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+            .pNext = nullptr,
+            .allocationSize = memRequirements.size,
+            .memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits,
+                                              properties, device->getPhysicalDevice())
+    };
+
+    // Allocate memory for the buffer
+    CALL_VK(vkAllocateMemory(device->getDevice(), &allocInfo, nullptr, &bufferMemory));
+    CALL_VK(vkBindBufferMemory(device->getDevice(), buffer, bufferMemory, 0));
+}
+
+// Create buffers for vertex data
+bool createVertexBuffer(void) {
+    // Vertex positions
+    const float vertexData[] = {
+            -1.0f, -1.0f, 0.0f,
+             1.0f, -1.0f, 0.0f,
+             0.0f, 1.0f, 0.0f,
+    };
+
+    VkDeviceSize bufferSize = sizeof(vertexData);
+    createBuffer(bufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                 buffers.vertexBuf_, buffers.bufferDeviceMemory);
+
+
+    void* data;
+    vkMapMemory(device->getDevice(), buffers.bufferDeviceMemory, 0, bufferSize, 0, &data);
+    memcpy(data, vertexData, sizeof(vertexData));
+    vkUnmapMemory(device->getDevice(), buffers.bufferDeviceMemory);
+
+    return true;
+}
+
+enum ShaderType {
+    VERTEX_SHADER, FRAGMENT_SHADER
+};
+
+//Helper function for loading shader from Android APK
+VkResult loadShaderFromFile(const char *filePath, VkShaderModule *shaderOut,
+                            ShaderType type) {
+    // Read the file
+    assert(androidAppCtx);
+    AAsset *file = AAssetManager_open(androidAppCtx->activity->assetManager,
+                                      filePath, AASSET_MODE_BUFFER);
+    size_t fileLength = AAsset_getLength(file);
+
+    char *fileContent = new char[fileLength];
+
+    AAsset_read(file, fileContent, fileLength);
+    AAsset_close(file);
+
+    VkShaderModuleCreateInfo shaderModuleCreateInfo{
+            .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+            .pNext = nullptr,
+            .codeSize = fileLength,
+            .pCode = (const uint32_t *) fileContent,
+            .flags = 0,
+    };
+    VkResult result = vkCreateShaderModule(
+            device->getDevice(), &shaderModuleCreateInfo, nullptr, shaderOut);
+    assert(result == VK_SUCCESS);
+
+    delete[] fileContent;
+
+    return result;
+}
+
+void createGraphicsPipeline() {
+    VkShaderModule vertexShader, fragmentShader;
+
+    // Android studio automatically compiles the shader code to SPIR-V
+    // with *.spv filename when shader files are placed in src/main/shaders folder
+    loadShaderFromFile("shaders/triangle.vert.spv", &vertexShader, VERTEX_SHADER);
+    loadShaderFromFile("shaders/triangle.frag.spv", &fragmentShader, FRAGMENT_SHADER);
+
+    // Defines which shader applies to which state in the rendering pipeline
+    VkPipelineShaderStageCreateInfo shaderStages[2]{{
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+            .pNext = nullptr,
+            .stage = VK_SHADER_STAGE_VERTEX_BIT,
+            .module = vertexShader,
+            .pSpecializationInfo = nullptr,
+            .flags = 0,
+            .pName = "main",
+    },
+    {
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+            .pNext = nullptr,
+            .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
+            .module = fragmentShader,
+            .pSpecializationInfo = nullptr,
+            .flags = 0,
+            .pName = "main",
+    }};
+
+    // Describes how the vertex input data is organized
+    VkPipelineInputAssemblyStateCreateInfo pipelineInputAssembly{
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
+            .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+            .primitiveRestartEnable = VK_FALSE,
+    };
+
+    // Specify vertex input state
+    VkVertexInputBindingDescription vertex_input_bindings{
+            .binding = 0,
+            .stride = 3 * sizeof(float),
+            .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
+    };
+
+    VkVertexInputAttributeDescription vertex_input_attributes[1]{{
+            .binding = 0,
+            .location = 0,
+            .format = VK_FORMAT_R32G32B32_SFLOAT,
+            .offset = 0,
+    }};
+
+    // Describes the way that vertex attributes/bindings are laid out in memory
+    VkPipelineVertexInputStateCreateInfo vertexInputInfo{
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+            .vertexBindingDescriptionCount = 1,
+            .pVertexBindingDescriptions = &vertex_input_bindings,
+            .vertexAttributeDescriptionCount = 1,
+            .pVertexAttributeDescriptions = &vertex_input_attributes[0],
+    };
+
+    VkViewport viewport{
+            .x = 0.0f,
+            .y = 0.0f,
+            .width = static_cast<float>(device->getDisplaySize().width),
+            .height = static_cast<float>(device->getDisplaySize().height),
+            .minDepth = 0.0f,
+            .maxDepth = 1.0f,
+    };
+
+    VkRect2D scissor{
+            .offset = {0, 0},
+            .extent = device->getDisplaySize(),
+    };
+
+    VkPipelineViewportStateCreateInfo pipelineViewportState{
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
+            .viewportCount = 1,
+            .pViewports = &viewport,
+            .scissorCount = 1,
+            .pScissors = &scissor,
+    };
+
+    // Describes how the GPU should rasterize pixels from polygons
+    VkPipelineRasterizationStateCreateInfo pipelineRasterizationState{
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
+            .depthClampEnable = VK_FALSE,
+            .rasterizerDiscardEnable = VK_FALSE,
+            .polygonMode = VK_POLYGON_MODE_FILL,
+            .lineWidth = 1.0f,
+            .cullMode = VK_CULL_MODE_BACK_BIT,
+            .frontFace = VK_FRONT_FACE_CLOCKWISE,
+            .depthBiasEnable = VK_FALSE,
+            .depthBiasConstantFactor = 0.0f,
+            .depthBiasClamp = 0.0f,
+            .depthBiasSlopeFactor = 0.0f,
+    };
+
+    // Multisample anti-aliasing setup
+    VkPipelineMultisampleStateCreateInfo pipelineMultisampleState{
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
+            .pNext = nullptr,
+            .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
+            .sampleShadingEnable = VK_FALSE,
+            .minSampleShading = 0,
+            .pSampleMask = nullptr,
+            .alphaToCoverageEnable = VK_FALSE,
+            .alphaToOneEnable = VK_FALSE,
+    };
+
+    // Describes how to blend pixels from past framebuffers to current framebuffers
+    // Could be used for transparency or cool screen-space effects
+    VkPipelineColorBlendAttachmentState attachmentStates{
+            .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+                              VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
+            .blendEnable = VK_FALSE,
+    };
+
+    VkPipelineColorBlendStateCreateInfo colorBlendInfo{
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
+            .pNext = nullptr,
+            .logicOpEnable = VK_FALSE,
+            .logicOp = VK_LOGIC_OP_COPY,
+            .attachmentCount = 1,
+            .pAttachments = &attachmentStates,
+            .flags = 0,
+    };
+
+    // Describes the layout of things such as uniforms
+    VkPipelineLayoutCreateInfo pipelineLayoutInfo{
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+            .pNext = nullptr,
+            .setLayoutCount = 0,
+            .pSetLayouts = nullptr,
+            .pushConstantRangeCount = 0,
+            .pPushConstantRanges = nullptr,
+    };
+    CALL_VK(vkCreatePipelineLayout(device->getDevice(), &pipelineLayoutInfo, nullptr,
+                                   &gfxPipeline.layout_))
+
+    // Create the pipeline cache
+    VkPipelineCacheCreateInfo pipelineCacheInfo{
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO,
+            .pNext = nullptr,
+            .initialDataSize = 0,
+            .pInitialData = nullptr,
+            .flags = 0,  // reserved, must be 0
+    };
+
+    CALL_VK(vkCreatePipelineCache(device->getDevice(), &pipelineCacheInfo, nullptr,
+                                  &gfxPipeline.cache_));
+
+    VkGraphicsPipelineCreateInfo pipelineInfo{
+            .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+            .pNext = nullptr,
+            .flags = 0,
+            .stageCount = 2,
+            .pStages = shaderStages,
+            .pVertexInputState = &vertexInputInfo,
+            .pInputAssemblyState = &pipelineInputAssembly,
+            .pTessellationState = nullptr,
+            .pViewportState = &pipelineViewportState,
+            .pRasterizationState = &pipelineRasterizationState,
+            .pMultisampleState = &pipelineMultisampleState,
+            .pDepthStencilState = nullptr,
+            .pColorBlendState = &colorBlendInfo,
+            .pDynamicState = nullptr,
+            .layout = gfxPipeline.layout_,
+            .renderPass = render.renderPass_,
+            .subpass = 0,
+            .basePipelineHandle = VK_NULL_HANDLE,
+            .basePipelineIndex = 0,
+    };
+
+    CALL_VK(vkCreateGraphicsPipelines(device->getDevice(), gfxPipeline.cache_, 1, &pipelineInfo,
+                                      nullptr, &gfxPipeline.pipeline_));
+    LOGI("Setup Graphics Pipeline");
+    vkDestroyShaderModule(device->getDevice(), vertexShader, nullptr);
+    vkDestroyShaderModule(device->getDevice(), fragmentShader, nullptr);
+}
+
 // InitVulkan:
 //   Initialize Vulkan Context when android application window is created
 //   upon return, vulkan is ready to draw frames
@@ -129,7 +425,9 @@ bool InitVulkan(android_app* app) {
   };
 
   VkAttachmentReference colourReference = {
-      .attachment = 0, .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL};
+      .attachment = 0,
+      .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+  };
 
   VkSubpassDescription subpassDescription{
       .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -156,9 +454,17 @@ bool InitVulkan(android_app* app) {
   CALL_VK(vkCreateRenderPass(device->getDevice(), &renderPassCreateInfo, nullptr,
                              &render.renderPass_));
 
+  // ---------------------------------------------
+  // Create the triangle vertex buffer
+  createVertexBuffer();
+
   // -----------------------------------------------------------------
   // Create 2 frame buffers.
   CreateFrameBuffers(render.renderPass_);
+
+  // -----------------------------------------------------------------
+  // Create Graphics Pipeline and layouts
+  createGraphicsPipeline();
 
   // -----------------------------------------------
   // Create a pool of command buffers to allocate command buffer from
@@ -227,6 +533,10 @@ bool InitVulkan(android_app* app) {
     vkCmdBeginRenderPass(render.cmdBuffer_[bufferIndex], &renderPassBeginInfo,
                          VK_SUBPASS_CONTENTS_INLINE);
     // Do more drawing !
+    vkCmdBindPipeline(render.cmdBuffer_[bufferIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, gfxPipeline.pipeline_);
+    VkDeviceSize offset = 0;
+    vkCmdBindVertexBuffers(render.cmdBuffer_[bufferIndex], 0, 1, &buffers.vertexBuf_, &offset);
+    vkCmdDraw(render.cmdBuffer_[bufferIndex], 3, 1, 0, 0);
 
     vkCmdEndRenderPass(render.cmdBuffer_[bufferIndex]);
     // transition back to swapchain image to PRESENT_SRC_KHR
@@ -274,10 +584,18 @@ void DeleteVulkan(void) {
   vkDestroyCommandPool(device->getDevice(), render.cmdPool_, nullptr);
   vkDestroyRenderPass(device->getDevice(), render.renderPass_, nullptr);
 
+  vkDestroyBuffer(device->getDevice(), buffers.vertexBuf_, nullptr);
+  vkFreeMemory(device->getDevice(), buffers.bufferDeviceMemory, nullptr);
+
   for (int i = 0; i < device->getSwapchainLength(); ++i) {
     vkDestroyImageView(device->getDevice(), displayViews_[i], nullptr);
     vkDestroyFramebuffer(device->getDevice(), framebuffers_[i], nullptr);
   }
+
+  vkDestroyPipeline(device->getDevice(), gfxPipeline.pipeline_, nullptr);
+  vkDestroyPipelineCache(device->getDevice(), gfxPipeline.cache_, nullptr);
+  vkDestroyPipelineLayout(device->getDevice(), gfxPipeline.layout_, nullptr);
+  vkDestroyRenderPass(device->getDevice(), render.renderPass_, nullptr);
 
   delete device;
   device = nullptr;
