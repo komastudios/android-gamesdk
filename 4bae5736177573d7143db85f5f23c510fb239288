@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6d4967f3_facba629",
+        "filename": "include/swappy/swappyGL_extra.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-10-23T17:53:04Z",
+      "side": 1,
+      "message": "Maybe: the longest duration, in refresh periods, represented by the statistics ?\nThis value defines how in how many buckets we represent the stats.",
+      "revId": "4bae5736177573d7143db85f5f23c510fb239288",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
