@@ -22,6 +22,30 @@
       "revId": "e1e0b00aeaa89720071977e72ee77ce1bfb8c16f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b16dfca6_c48ee621",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-10-23T21:02:08Z",
+      "side": 1,
+      "message": "Got it; I\u0027ll keep an eye out on future CLs.",
+      "parentUuid": "b30cec4e_c36802e3",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 333
+      },
+      "revId": "e1e0b00aeaa89720071977e72ee77ce1bfb8c16f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
