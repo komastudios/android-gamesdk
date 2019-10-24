@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "c8b27f95_1cfcaac7",
+        "filename": "include/swappy/swappyGL.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-10-24T09:55:44Z",
+      "side": 1,
+      "message": "I\u0027ll let this uncommented so that it does not appear in the public documentation, and I\u0027ll see to make a CL to remove this if it\u0027s not used anymore.",
+      "parentUuid": "533e4453_21d9ccee",
+      "revId": "382b61a2e2e2d6090413b8986d4a3655190e637a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4dcae70f_5be99930",
         "filename": "include/swappy/swappyGL.h",
         "patchSetId": 1
@@ -51,6 +69,24 @@
       "revId": "382b61a2e2e2d6090413b8986d4a3655190e637a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3b51a727_b2309788",
+        "filename": "include/swappy/swappyGL.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-10-24T09:55:44Z",
+      "side": 1,
+      "message": "Updated the description with these explanations.",
+      "parentUuid": "4dcae70f_5be99930",
+      "revId": "382b61a2e2e2d6090413b8986d4a3655190e637a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
