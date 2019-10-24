@@ -612,17 +612,21 @@ void DeleteVulkan(void) {
 
 // Draw one frame
 bool VulkanDrawFrame(void) {
+  TRACE_BEGIN_SECTION("Draw Frame");
 
+  TRACE_BEGIN_SECTION("vkAcquireNextImageKHR");
   uint32_t nextIndex;
   // Get the framebuffer index we should draw in
   CALL_VK(vkAcquireNextImageKHR(device->getDevice(), device->getSwapchain(),
                                 UINT64_MAX, render.acquireSemaphore_, VK_NULL_HANDLE,
                                 &nextIndex));
+  TRACE_END_SECTION();
 
-  CALL_VK(
-          vkWaitForFences(device->getDevice(), 1, &render.fence_[nextIndex], VK_TRUE, 100000000));
+  TRACE_BEGIN_SECTION("vkWaitForFences");
+  CALL_VK(vkWaitForFences(device->getDevice(), 1, &render.fence_[nextIndex], VK_TRUE, 100000000));
   CALL_VK(vkResetFences(device->getDevice(), 1, &render.fence_[nextIndex]));
-
+  TRACE_END_SECTION();
+  
   VkPipelineStageFlags waitStageMask =
     VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
   VkSubmitInfo submit_info = {.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
@@ -635,7 +639,9 @@ bool VulkanDrawFrame(void) {
                               .signalSemaphoreCount = 1,
                               .pSignalSemaphores = &render.renderSemaphore_[nextIndex]};
 
+  TRACE_BEGIN_SECTION("vkQueueSubmit");
   CALL_VK(vkQueueSubmit(device->getQueue(), 1, &submit_info, render.fence_[nextIndex]));
+  TRACE_END_SECTION();
 
   LOGI("Drawing frames...... %d", nextIndex);
 
@@ -650,7 +656,11 @@ bool VulkanDrawFrame(void) {
       .pWaitSemaphores = &render.renderSemaphore_[nextIndex],
       .pResults = &result,
   };
+  TRACE_BEGIN_SECTION("vkQueuePresentKHR");
   vkQueuePresentKHR(device->getQueue(), &presentInfo);
+  TRACE_END_SECTION();
+
+  TRACE_END_SECTION();
 
   return true;
 }
