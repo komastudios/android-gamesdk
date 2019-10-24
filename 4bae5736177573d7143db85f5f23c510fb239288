@@ -16,6 +16,24 @@
       "revId": "4bae5736177573d7143db85f5f23c510fb239288",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4d663444_e8ebb314",
+        "filename": "include/swappy/swappyGL_extra.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-10-24T09:37:06Z",
+      "side": 1,
+      "message": "Done, updated with your description.",
+      "parentUuid": "6d4967f3_facba629",
+      "revId": "4bae5736177573d7143db85f5f23c510fb239288",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
