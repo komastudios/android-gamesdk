@@ -26,14 +26,16 @@
 std::vector<VkImageView> displayViews_;
 std::vector<VkFramebuffer> framebuffers_;
 
+int currentFrame = 0;
+
 struct VulkanRenderInfo {
   VkRenderPass renderPass_;
   VkCommandPool cmdPool_;
   VkCommandBuffer* cmdBuffer_;
   uint32_t cmdBufferLen_;
 
-  VkSemaphore acquireSemaphore_;
-  VkSemaphore* renderSemaphore_;
+  VkSemaphore* giacquireImageSemaphore_;
+  VkSemaphore* renderFinishedSemaphore_;
 
   VkFence* fence_;
 };
@@ -479,7 +481,8 @@ bool InitVulkan(android_app* app) {
   // In our case we need 2 command as we have 2 framebuffer
   render.cmdBufferLen_ = device->getSwapchainLength();
   render.cmdBuffer_ = new VkCommandBuffer[device->getSwapchainLength()];
-  render.renderSemaphore_ = new VkSemaphore[device->getSwapchainLength()];
+  render.acquireImageSemaphore_ = new VkSemaphore[device->getSwapchainLength()];
+  render.renderFinishedSemaphore_ = new VkSemaphore[device->getSwapchainLength()];
   render.fence_ = new VkFence[device->getSwapchainLength()];
 
   for (int bufferIndex = 0; bufferIndex < device->getSwapchainLength();
@@ -548,14 +551,17 @@ bool InitVulkan(android_app* app) {
                    VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT);
     CALL_VK(vkEndCommandBuffer(render.cmdBuffer_[bufferIndex]));
 
-
     VkSemaphoreCreateInfo semaphoreCreateInfo {
             .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
             .pNext = nullptr,
             .flags = 0,
     };
+
     CALL_VK(vkCreateSemaphore(device->getDevice(), &semaphoreCreateInfo, nullptr,
-                              &render.renderSemaphore_[bufferIndex]));
+                              &render.acquireImageSemaphore_[bufferIndex]));
+
+    CALL_VK(vkCreateSemaphore(device->getDevice(), &semaphoreCreateInfo, nullptr,
+                              &render.renderFinishedSemaphore_[bufferIndex]));
 
     VkFenceCreateInfo fenceCreateInfo{
             .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
@@ -565,16 +571,6 @@ bool InitVulkan(android_app* app) {
     CALL_VK(
             vkCreateFence(device->getDevice(), &fenceCreateInfo, nullptr, &render.fence_[bufferIndex]));
   }
-
-  // We need to create a semaphore to be able to wait, in the main loop, for our
-  // framebuffer to be available for us before drawing.
-  VkSemaphoreCreateInfo semaphoreCreateInfo {
-      .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
-      .pNext = nullptr,
-      .flags = 0,
-  };
-  CALL_VK(vkCreateSemaphore(device->getDevice(), &semaphoreCreateInfo, nullptr,
-                            &render.acquireSemaphore_));
 
   return true;
 }
@@ -587,7 +583,8 @@ void DeleteVulkan(void) {
   vkFreeCommandBuffers(device->getDevice(), render.cmdPool_, render.cmdBufferLen_,
                        render.cmdBuffer_);
   delete[] render.cmdBuffer_;
-  delete[] render.renderSemaphore_;
+  delete[] render.acquireImageSemaphore_;
+  delete[] render.renderFinishedSemaphore_;
   delete[] render.fence_;
 
   vkDestroyCommandPool(device->getDevice(), render.cmdPool_, nullptr);
@@ -618,32 +615,32 @@ bool VulkanDrawFrame(void) {
   uint32_t nextIndex;
   // Get the framebuffer index we should draw in
   CALL_VK(vkAcquireNextImageKHR(device->getDevice(), device->getSwapchain(),
-                                UINT64_MAX, render.acquireSemaphore_, VK_NULL_HANDLE,
+                                UINT64_MAX, render.acquireImageSemaphore_[currentFrame], VK_NULL_HANDLE,
                                 &nextIndex));
   TRACE_END_SECTION();
 
   TRACE_BEGIN_SECTION("vkWaitForFences");
-  CALL_VK(vkWaitForFences(device->getDevice(), 1, &render.fence_[nextIndex], VK_TRUE, 100000000));
-  CALL_VK(vkResetFences(device->getDevice(), 1, &render.fence_[nextIndex]));
+  CALL_VK(vkWaitForFences(device->getDevice(), 1, &render.fence_[currentFrame], VK_TRUE, 100000000));
+  CALL_VK(vkResetFences(device->getDevice(), 1, &render.fence_[currentFrame]));
   TRACE_END_SECTION();
-  
+
   VkPipelineStageFlags waitStageMask =
     VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
   VkSubmitInfo submit_info = {.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
                               .pNext = nullptr,
                               .waitSemaphoreCount = 1,
-                              .pWaitSemaphores = &render.acquireSemaphore_,
+                              .pWaitSemaphores = &render.acquireImageSemaphore_[currentFrame],
                               .pWaitDstStageMask = &waitStageMask,
                               .commandBufferCount = 1,
-                              .pCommandBuffers = &render.cmdBuffer_[nextIndex],
+                              .pCommandBuffers = &render.cmdBuffer_[currentFrame],
                               .signalSemaphoreCount = 1,
-                              .pSignalSemaphores = &render.renderSemaphore_[nextIndex]};
+                              .pSignalSemaphores = &render.renderFinishedSemaphore_[currentFrame]};
 
   TRACE_BEGIN_SECTION("vkQueueSubmit");
-  CALL_VK(vkQueueSubmit(device->getQueue(), 1, &submit_info, render.fence_[nextIndex]));
+  CALL_VK(vkQueueSubmit(device->getQueue(), 1, &submit_info, render.fence_[currentFrame]));
   TRACE_END_SECTION();
 
-  LOGI("Drawing frames...... %d", nextIndex);
+  LOGI("Drawing frames...... %d", currentFrame);
 
   VkResult result;
   VkPresentInfoKHR presentInfo{
@@ -653,7 +650,7 @@ bool VulkanDrawFrame(void) {
       .pSwapchains = &device->getSwapchain(),
       .pImageIndices = &nextIndex,
       .waitSemaphoreCount = 1,
-      .pWaitSemaphores = &render.renderSemaphore_[nextIndex],
+      .pWaitSemaphores = &render.renderFinishedSemaphore_[currentFrame],
       .pResults = &result,
   };
   TRACE_BEGIN_SECTION("vkQueuePresentKHR");
@@ -661,6 +658,8 @@ bool VulkanDrawFrame(void) {
   TRACE_END_SECTION();
 
   TRACE_END_SECTION();
+
+  currentFrame = (currentFrame + 1) % device->getDisplayImagesSize();
 
   return true;
 }
