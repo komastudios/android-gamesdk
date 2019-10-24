@@ -46,6 +46,11 @@ VulkanGfxPipelineInfo gfxPipeline;
 struct VulkanBufferInfo {
     VkBuffer vertexBuf_;
     VkDeviceMemory bufferDeviceMemory;
+    int vertexCount;
+
+    VkBuffer indexBuf_;
+    VkDeviceMemory indexBufferDeviceMemory;
+    int indexCount;
 };
 VulkanBufferInfo buffers;
 
@@ -169,22 +174,39 @@ void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyF
 // Create buffers for vertex data
 bool createVertexBuffer(void) {
     // Vertex positions
-    const float vertexData[] = {
-            -1.0f, -1.0f, 0.0f,
-             1.0f, -1.0f, 0.0f,
-             0.0f, 1.0f, 0.0f,
+    const std::vector<float> vertexData = {
+            -0.5f, -0.5f, 0.0f,
+             0.5f, -0.5f, 0.0f,
+             0.5f,  0.5f, 0.0f,
+            -0.5f,  0.5f, 0.0f,
     };
 
-    VkDeviceSize bufferSize = sizeof(vertexData);
-    createBuffer(bufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+    const std::vector<u_int16_t > indexData = {
+            0, 1, 2, 2, 3, 0
+    };
+
+    buffers.vertexCount = vertexData.size();
+    buffers.indexCount = indexData.size();
+
+    VkDeviceSize bufferSizeVertex = sizeof(vertexData[0]) * vertexData.size();
+    createBuffer(bufferSizeVertex, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
                  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                  buffers.vertexBuf_, buffers.bufferDeviceMemory);
 
+    VkDeviceSize bufferSizeIndex = sizeof(indexData[0]) * indexData.size();
+    createBuffer(bufferSizeIndex, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                 buffers.indexBuf_, buffers.indexBufferDeviceMemory);
+
 
     void* data;
-    vkMapMemory(device->getDevice(), buffers.bufferDeviceMemory, 0, bufferSize, 0, &data);
-    memcpy(data, vertexData, sizeof(vertexData));
+    vkMapMemory(device->getDevice(), buffers.bufferDeviceMemory, 0, bufferSizeVertex, 0, &data);
+    memcpy(data, vertexData.data(), bufferSizeVertex);
     vkUnmapMemory(device->getDevice(), buffers.bufferDeviceMemory);
+
+    vkMapMemory(device->getDevice(), buffers.indexBufferDeviceMemory, 0, bufferSizeIndex, 0, &data);
+    memcpy(data, indexData.data(), bufferSizeIndex);
+    vkUnmapMemory(device->getDevice(), buffers.indexBufferDeviceMemory);
 
     return true;
 }
@@ -450,7 +472,7 @@ bool InitVulkan(android_app* app) {
                              &render.renderPass_));
 
   // ---------------------------------------------
-  // Create the triangle vertex buffer
+  // Create the triangle vertex buffer with indices
   createVertexBuffer();
 
   // -----------------------------------------------------------------
@@ -531,7 +553,8 @@ bool InitVulkan(android_app* app) {
     vkCmdBindPipeline(render.cmdBuffer_[bufferIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, gfxPipeline.pipeline_);
     VkDeviceSize offset = 0;
     vkCmdBindVertexBuffers(render.cmdBuffer_[bufferIndex], 0, 1, &buffers.vertexBuf_, &offset);
-    vkCmdDraw(render.cmdBuffer_[bufferIndex], 3, 1, 0, 0);
+    vkCmdBindIndexBuffer(render.cmdBuffer_[bufferIndex], buffers.indexBuf_, offset, VK_INDEX_TYPE_UINT16 );
+    vkCmdDrawIndexed(render.cmdBuffer_[bufferIndex], static_cast<u_int32_t>(buffers.indexCount), 1, 0, 0, 0);
 
     vkCmdEndRenderPass(render.cmdBuffer_[bufferIndex]);
     // transition back to swapchain image to PRESENT_SRC_KHR
@@ -581,6 +604,8 @@ void DeleteVulkan(void) {
 
   vkDestroyBuffer(device->getDevice(), buffers.vertexBuf_, nullptr);
   vkFreeMemory(device->getDevice(), buffers.bufferDeviceMemory, nullptr);
+  vkDestroyBuffer(device->getDevice(), buffers.indexBuf_, nullptr);
+  vkFreeMemory(device->getDevice(), buffers.indexBufferDeviceMemory, nullptr);
 
   for (int i = 0; i < device->getSwapchainLength(); ++i) {
     vkDestroyImageView(device->getDevice(), displayViews_[i], nullptr);
