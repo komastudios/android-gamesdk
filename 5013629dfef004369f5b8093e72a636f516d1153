@@ -155,6 +155,30 @@
     },
     {
       "key": {
+        "uuid": "b62e44ae_23687b1d",
+        "filename": "include/swappy/swappy_common.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2019-10-24T17:08:21Z",
+      "side": 1,
+      "message": "We also need to fix the code to match the documentation:\n\nvoid SwappyCommon::startFrame() {\n    TRACE_CALL();\n    int32_t currentFrame;\n    std::chrono::steady_clock::time_point currentFrameTimestamp;\n    {\n        std::unique_lock\u003cstd::mutex\u003e lock(mWaitingMutex);\n        currentFrame \u003d mCurrentFrame;\n        currentFrameTimestamp \u003d mCurrentFrameTimestamp;\n    }\n -   startFrameCallbacks();\n    mTargetFrame \u003d currentFrame + mAutoSwapInterval;\n    const int intervals \u003d (mPipelineMode \u003d\u003d PipelineMode::On) ? 2 : 1;\n    // We compute the target time as now\n    //   + the time the buffer will be on the GPU and in the queue to the compositor (1 swap period)\n    mPresentationTime \u003d currentFrameTimestamp + (mAutoSwapInterval * intervals) * mRefreshPeriod;\n    mStartFrameTime \u003d std::chrono::steady_clock::now();\n    mCPUTracer.startTrace();\n\n+   startFrameCallbacks();\n}\n\nvoid SwappyCommon::startFrameCallbacks() {\n    executeTracers(mInjectedTracers.startFrame,\n                   mCurrentFrame,\n-                   (long) mCurrentFrameTimestamp.time_since_epoch().count());\n+                   (long) mPresentationTime.time_since_epoch().count());\n}",
+      "parentUuid": "ab3f63af_bc52fbb9",
+      "range": {
+        "startLine": 90,
+        "startChar": 71,
+        "endLine": 90,
+        "endChar": 98
+      },
+      "revId": "5013629dfef004369f5b8093e72a636f516d1153",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0e403048_cd535855",
         "filename": "include/swappy/swappy_common.h",
         "patchSetId": 1
