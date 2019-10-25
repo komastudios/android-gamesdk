@@ -7,7 +7,6 @@ if [ "$OSTYPE" != "linux-gnu" ]; then
 	exit 1;
 fi
 
-
 # Provides sdk, ndk, and cmake dirs for android-build machines
 export BENDER_SCRIPT=true # Gates build.gradle code
 export ANDROID_HOME=`pwd`/../../../prebuilts/sdk
