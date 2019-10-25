@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6e498e60_2cb33234",
+        "filename": "bender/bender-base/app/src/main/jni/VulkanMain.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-25T21:27:17Z",
+      "side": 1,
+      "message": "I would call it setVertexShader();",
+      "revId": "1f0e3073dcd6756eb411f7b9e2a288bb94ac4680",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "92f68d61_613df192",
+        "filename": "bender/bender-base/app/src/main/jni/VulkanMain.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 218,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-25T21:27:17Z",
+      "side": 1,
+      "message": "I would call it setFragmentShader();",
+      "revId": "1f0e3073dcd6756eb411f7b9e2a288bb94ac4680",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4ba8d2e0_c6363396",
+        "filename": "bender/bender-base/utils/bender_kit/shader_state.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-25T21:27:17Z",
+      "side": 1,
+      "message": "lets use i as iterator.",
+      "revId": "1f0e3073dcd6756eb411f7b9e2a288bb94ac4680",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
