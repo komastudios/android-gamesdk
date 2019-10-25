@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "f8e3304f_3e60bb5f",
+        "filename": "bender/bender-base/app/src/main/jni/VulkanMain.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-25T23:22:36Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "be75d0ed_b6aa5c41",
+      "revId": "a22bc243c9268e569c6fb2e6e144f7ad30786f71",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c5c22395_2797ad0e",
         "filename": "bender/bender-base/utils/bender_kit/shader_state.cpp",
         "patchSetId": 4
