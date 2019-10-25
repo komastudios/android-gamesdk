@@ -16,6 +16,24 @@
       "revId": "00bcbef869e6fc24515ccead9afd9bf6fb31b7cc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2229bb76_ba7a5c35",
+        "filename": "bender/bender-base/app/build.gradle",
+        "patchSetId": 16
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-10-25T16:34:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "38d0773f_e1717912",
+      "revId": "00bcbef869e6fc24515ccead9afd9bf6fb31b7cc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
