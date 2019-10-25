@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "be75d0ed_b6aa5c41",
+        "filename": "bender/bender-base/app/src/main/jni/VulkanMain.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-25T23:17:15Z",
+      "side": 1,
+      "message": "This code is error prone, but it\u0027s ok for now. Let\u0027s have a call next week to discuss issues and how it can be improved.",
+      "revId": "a22bc243c9268e569c6fb2e6e144f7ad30786f71",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c5c22395_2797ad0e",
+        "filename": "bender/bender-base/utils/bender_kit/shader_state.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-25T23:17:15Z",
+      "side": 1,
+      "message": "Remove comment :)",
+      "revId": "a22bc243c9268e569c6fb2e6e144f7ad30786f71",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "83e946a3_c28b5096",
+        "filename": "bender/bender-base/utils/bender_kit/shader_state.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-25T23:17:15Z",
+      "side": 1,
+      "message": "Remove comments",
+      "revId": "a22bc243c9268e569c6fb2e6e144f7ad30786f71",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "75c89b5c_81c29208",
+        "filename": "bender/bender-base/utils/bender_kit/shader_state.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-25T23:17:15Z",
+      "side": 1,
+      "message": "Remove comment",
+      "revId": "a22bc243c9268e569c6fb2e6e144f7ad30786f71",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
