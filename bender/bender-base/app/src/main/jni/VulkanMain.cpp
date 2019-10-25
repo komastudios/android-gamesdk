@@ -19,6 +19,7 @@
 #include <cstring>
 #include "vulkan_wrapper.h"
 #include "bender_kit.hpp"
+#include "shader_state.hpp"
 
 
 /// Global Variables ...
@@ -175,10 +176,10 @@ void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyF
 bool createVertexBuffer(void) {
     // Vertex positions
     const std::vector<float> vertexData = {
-            -0.5f, -0.5f, 0.0f,
-             0.5f, -0.5f, 0.0f,
-             0.5f,  0.5f, 0.0f,
-            -0.5f,  0.5f, 0.0f,
+            -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+             0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+             0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+            -0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f,
     };
 
     const std::vector<u_int16_t > indexData = {
@@ -211,92 +212,13 @@ bool createVertexBuffer(void) {
     return true;
 }
 
-//Helper function for loading shader from Android APK
-VkResult loadShaderFromFile(const char *filePath, VkShaderModule *shaderOut) {
-    // Read the file
-    assert(androidAppCtx);
-    AAsset *file = AAssetManager_open(androidAppCtx->activity->assetManager,
-                                      filePath, AASSET_MODE_BUFFER);
-    size_t fileLength = AAsset_getLength(file);
-
-    char *fileContent = new char[fileLength];
-
-    AAsset_read(file, fileContent, fileLength);
-    AAsset_close(file);
-
-    VkShaderModuleCreateInfo shaderModuleCreateInfo{
-            .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
-            .pNext = nullptr,
-            .codeSize = fileLength,
-            .pCode = (const uint32_t *) fileContent,
-            .flags = 0,
-    };
-    VkResult result = vkCreateShaderModule(
-            device->getDevice(), &shaderModuleCreateInfo, nullptr, shaderOut);
-    assert(result == VK_SUCCESS);
-
-    delete[] fileContent;
-
-    return result;
-}
-
 void createGraphicsPipeline() {
-    VkShaderModule vertexShader, fragmentShader;
-
-    // Android studio automatically compiles the shader code to SPIR-V
-    // with *.spv filename when shader files are placed in src/main/shaders folder
-    loadShaderFromFile("shaders/triangle.vert.spv", &vertexShader);
-    loadShaderFromFile("shaders/triangle.frag.spv", &fragmentShader);
-
-    // Defines which shader applies to which state in the rendering pipeline
-    VkPipelineShaderStageCreateInfo shaderStages[2]{{
-            .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-            .pNext = nullptr,
-            .stage = VK_SHADER_STAGE_VERTEX_BIT,
-            .module = vertexShader,
-            .pSpecializationInfo = nullptr,
-            .flags = 0,
-            .pName = "main",
-    },
-    {
-            .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-            .pNext = nullptr,
-            .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-            .module = fragmentShader,
-            .pSpecializationInfo = nullptr,
-            .flags = 0,
-            .pName = "main",
-    }};
-
-    // Describes how the vertex input data is organized
-    VkPipelineInputAssemblyStateCreateInfo pipelineInputAssembly{
-            .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
-            .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-            .primitiveRestartEnable = VK_FALSE,
-    };
-
-    // Specify vertex input state
-    VkVertexInputBindingDescription vertex_input_bindings{
-            .binding = 0,
-            .stride = 3 * sizeof(float),
-            .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
-    };
-
-    VkVertexInputAttributeDescription vertex_input_attributes[1]{{
-            .binding = 0,
-            .location = 0,
-            .format = VK_FORMAT_R32G32B32_SFLOAT,
-            .offset = 0,
-    }};
-
-    // Describes the way that vertex attributes/bindings are laid out in memory
-    VkPipelineVertexInputStateCreateInfo vertexInputInfo{
-            .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-            .vertexBindingDescriptionCount = 1,
-            .pVertexBindingDescriptions = &vertex_input_bindings,
-            .vertexAttributeDescriptionCount = 1,
-            .pVertexAttributeDescriptions = &vertex_input_attributes[0],
-    };
+    ShaderState currShader(androidAppCtx, device->getDevice());
+    currShader.addShader("shaders/triangle.vert", VK_SHADER_STAGE_VERTEX_BIT);
+    currShader.addShader("shaders/triangle.frag", VK_SHADER_STAGE_FRAGMENT_BIT);
+    currShader.addVertexInputBinding(0, 6 * sizeof(float));
+    currShader.addVertexAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0);
+    currShader.addVertexAttributeDescription(0, 1, VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(float));
 
     VkViewport viewport{
             .x = 0.0f,
@@ -394,9 +316,9 @@ void createGraphicsPipeline() {
             .pNext = nullptr,
             .flags = 0,
             .stageCount = 2,
-            .pStages = shaderStages,
-            .pVertexInputState = &vertexInputInfo,
-            .pInputAssemblyState = &pipelineInputAssembly,
+            .pStages = currShader.getShaderStages(),
+            .pVertexInputState = currShader.getVertexInputState(),
+            .pInputAssemblyState = currShader.getPipelineInputAssembly(),
             .pTessellationState = nullptr,
             .pViewportState = &pipelineViewportState,
             .pRasterizationState = &pipelineRasterizationState,
@@ -414,8 +336,7 @@ void createGraphicsPipeline() {
     CALL_VK(vkCreateGraphicsPipelines(device->getDevice(), gfxPipeline.cache_, 1, &pipelineInfo,
                                       nullptr, &gfxPipeline.pipeline_));
     LOGI("Setup Graphics Pipeline");
-    vkDestroyShaderModule(device->getDevice(), vertexShader, nullptr);
-    vkDestroyShaderModule(device->getDevice(), fragmentShader, nullptr);
+    currShader.cleanup();
 }
 
 // InitVulkan:
