@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "07bbd336_f8a13064",
+        "filename": "bender/bender-base/app/src/main/jni/VulkanMain.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-25T22:55:21Z",
+      "side": 1,
+      "message": "Here\u0027s an interesting idea for some syntactic sugar:\nShaderState shader(.., device, \"triangle\");\n\nInside the constructor:\nsetVertexShader(std::string(\"shaders/triangle\") + std::string(name) + std::string(\".vert\"));\nsetFragmentShader(std::string(\"shaders/triangle\") + std::string(name) + std::string(\".frag\"));\n\nAnd we make the two calls private.",
+      "revId": "aa94f5fd2f33f749734ef9af8a61130e95dee31a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2daec672_35b57588",
+        "filename": "bender/bender-base/utils/bender_kit/shader_state.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-25T22:55:21Z",
+      "side": 1,
+      "message": "What happens if i call setVertexShader twice?",
+      "revId": "aa94f5fd2f33f749734ef9af8a61130e95dee31a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0620a49d_8d1ea65f",
+        "filename": "bender/bender-base/utils/bender_kit/shader_state.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-25T22:55:21Z",
+      "side": 1,
+      "message": "Let\u0027s avoid redundant comments",
+      "revId": "aa94f5fd2f33f749734ef9af8a61130e95dee31a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aceb1b27_d0658d55",
+        "filename": "bender/bender-base/utils/bender_kit/shader_state.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-25T22:55:21Z",
+      "side": 1,
+      "message": "for (auto it \u003d ...) {\n..\n}",
+      "revId": "aa94f5fd2f33f749734ef9af8a61130e95dee31a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "61196892_d4b37f60",
+        "filename": "bender/bender-base/utils/bender_kit/shader_state.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-25T22:55:21Z",
+      "side": 1,
+      "message": "Remove comment",
+      "revId": "aa94f5fd2f33f749734ef9af8a61130e95dee31a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
