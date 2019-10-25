@@ -19,7 +19,7 @@
 #include <cstring>
 #include "vulkan_wrapper.h"
 #include "bender_kit.hpp"
-
+#include "geometry.hpp"
 
 /// Global Variables ...
 
@@ -48,21 +48,10 @@ struct VulkanGfxPipelineInfo {
 };
 VulkanGfxPipelineInfo gfxPipeline;
 
-struct VulkanBufferInfo {
-    VkBuffer vertexBuf_;
-    VkDeviceMemory bufferDeviceMemory;
-    int vertexCount;
-
-    VkBuffer indexBuf_;
-    VkDeviceMemory indexBufferDeviceMemory;
-    int indexCount;
-};
-VulkanBufferInfo buffers;
-
 // Android Native App pointer...
 android_app* androidAppCtx = nullptr;
 BenderKit::Device *device;
-
+Geometry *geometry;
 
 /*
  * setImageLayout():
@@ -126,93 +115,6 @@ void CreateFrameBuffers(VkRenderPass& renderPass,
     CALL_VK(vkCreateFramebuffer(device->getDevice(), &fbCreateInfo, nullptr,
                                 &framebuffers_[i]));
   }
-}
-
-// A helper function for selecting the correct memory type for a buffer
-uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, VkPhysicalDevice gpuDevice) {
-    VkPhysicalDeviceMemoryProperties memProperties;
-    vkGetPhysicalDeviceMemoryProperties(gpuDevice, &memProperties);
-
-    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
-        if ((typeFilter & (1 << i)) &&
-            (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
-            return i;
-        }
-    }
-
-    LOGE("failed to find suitable memory type!");
-    return -1;
-}
-
-// Generalized helper function for creating different types of buffers
-void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
-                  VkBuffer &buffer, VkDeviceMemory &bufferMemory) {
-    VkBufferCreateInfo bufferInfo = {
-            .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-            .pNext = nullptr,
-            .size = size,
-            .usage = usage,
-            .flags = 0,
-            .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
-            .queueFamilyIndexCount = 1,
-    };
-
-    CALL_VK(vkCreateBuffer(device->getDevice(), &bufferInfo, nullptr, &buffer));
-
-    VkMemoryRequirements memRequirements;
-    vkGetBufferMemoryRequirements(device->getDevice(), buffer, &memRequirements);
-
-    VkMemoryAllocateInfo allocInfo = {
-            .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-            .pNext = nullptr,
-            .allocationSize = memRequirements.size,
-            .memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits,
-                                              properties, device->getPhysicalDevice())
-    };
-
-    // Allocate memory for the buffer
-    CALL_VK(vkAllocateMemory(device->getDevice(), &allocInfo, nullptr, &bufferMemory));
-    CALL_VK(vkBindBufferMemory(device->getDevice(), buffer, bufferMemory, 0));
-}
-
-// Create buffers for vertex data
-bool createVertexBuffer(void) {
-    // Vertex positions
-    const std::vector<float> vertexData = {
-            -0.5f, -0.5f, 0.0f,
-             0.5f, -0.5f, 0.0f,
-             0.5f,  0.5f, 0.0f,
-            -0.5f,  0.5f, 0.0f,
-    };
-
-    const std::vector<u_int16_t > indexData = {
-            0, 1, 2, 2, 3, 0
-    };
-
-    buffers.vertexCount = vertexData.size();
-    buffers.indexCount = indexData.size();
-
-    VkDeviceSize bufferSizeVertex = sizeof(vertexData[0]) * vertexData.size();
-    createBuffer(bufferSizeVertex, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                 buffers.vertexBuf_, buffers.bufferDeviceMemory);
-
-    VkDeviceSize bufferSizeIndex = sizeof(indexData[0]) * indexData.size();
-    createBuffer(bufferSizeIndex, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                 buffers.indexBuf_, buffers.indexBufferDeviceMemory);
-
-
-    void* data;
-    vkMapMemory(device->getDevice(), buffers.bufferDeviceMemory, 0, bufferSizeVertex, 0, &data);
-    memcpy(data, vertexData.data(), bufferSizeVertex);
-    vkUnmapMemory(device->getDevice(), buffers.bufferDeviceMemory);
-
-    vkMapMemory(device->getDevice(), buffers.indexBufferDeviceMemory, 0, bufferSizeIndex, 0, &data);
-    memcpy(data, indexData.data(), bufferSizeIndex);
-    vkUnmapMemory(device->getDevice(), buffers.indexBufferDeviceMemory);
-
-    return true;
 }
 
 //Helper function for loading shader from Android APK
@@ -477,7 +379,7 @@ bool InitVulkan(android_app* app) {
 
   // ---------------------------------------------
   // Create the triangle vertex buffer with indices
-  createVertexBuffer();
+  geometry = new Geometry(device);
 
   // -----------------------------------------------------------------
   // Create 2 frame buffers.
@@ -559,10 +461,7 @@ void DeleteVulkan(void) {
   vkDestroyCommandPool(device->getDevice(), render.cmdPool_, nullptr);
   vkDestroyRenderPass(device->getDevice(), render.renderPass_, nullptr);
 
-  vkDestroyBuffer(device->getDevice(), buffers.vertexBuf_, nullptr);
-  vkFreeMemory(device->getDevice(), buffers.bufferDeviceMemory, nullptr);
-  vkDestroyBuffer(device->getDevice(), buffers.indexBuf_, nullptr);
-  vkFreeMemory(device->getDevice(), buffers.indexBufferDeviceMemory, nullptr);
+  geometry->cleanup();
 
   for (int i = 0; i < device->getSwapchainLength(); ++i) {
     vkDestroyImageView(device->getDevice(), displayViews_[i], nullptr);
@@ -637,9 +536,9 @@ bool VulkanDrawFrame(void) {
   // Do more drawing !
   vkCmdBindPipeline(render.cmdBuffer_[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, gfxPipeline.pipeline_);
   VkDeviceSize offset = 0;
-  vkCmdBindVertexBuffers(render.cmdBuffer_[currentFrame], 0, 1, &buffers.vertexBuf_, &offset);
-  vkCmdBindIndexBuffer(render.cmdBuffer_[currentFrame], buffers.indexBuf_, offset, VK_INDEX_TYPE_UINT16 );
-  vkCmdDrawIndexed(render.cmdBuffer_[currentFrame], static_cast<u_int32_t>(buffers.indexCount), 1, 0, 0, 0);
+  vkCmdBindVertexBuffers(render.cmdBuffer_[currentFrame], 0, 1, geometry->getVertexBuffer(), &offset);
+  vkCmdBindIndexBuffer(render.cmdBuffer_[currentFrame], *geometry->getIndexBuffer(), offset, VK_INDEX_TYPE_UINT16 );
+  vkCmdDrawIndexed(render.cmdBuffer_[currentFrame], static_cast<u_int32_t>(geometry->getIndexCount()), 1, 0, 0, 0);
 
   vkCmdEndRenderPass(render.cmdBuffer_[currentFrame]);
   // transition back to swapchain image to PRESENT_SRC_KHR
