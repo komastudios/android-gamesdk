@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3b12f173_ab8819f3",
+        "filename": "bender/bender-base/app/src/main/jni/VulkanMain.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 606,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-25T21:04:42Z",
+      "side": 1,
+      "message": "Wrap the begin/end command buffer recording in a trace section:\nTRACE_BEGIN_SECTION(\"CommandBufferRecording\");",
+      "revId": "acf5b730bfd76f8470dc57420812f433d4e5deda",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0d5eee6e_a4d9a92e",
+        "filename": "bender/bender-base/app/src/main/jni/VulkanMain.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 670,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-25T21:04:42Z",
+      "side": 1,
+      "message": "Can you finally remove this comment?",
+      "revId": "acf5b730bfd76f8470dc57420812f433d4e5deda",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
