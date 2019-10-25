@@ -517,59 +517,7 @@ bool InitVulkan(android_app* app) {
     CALL_VK(vkAllocateCommandBuffers(device->getDevice(), &cmdBufferCreateInfo,
                                      &render.cmdBuffer_[bufferIndex]));
 
-    VkCommandBufferBeginInfo cmdBufferBeginInfo{
-        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-        .pNext = nullptr,
-        .flags = 0,
-        .pInheritanceInfo = nullptr,
-    };
-    CALL_VK(vkBeginCommandBuffer(render.cmdBuffer_[bufferIndex],
-                                 &cmdBufferBeginInfo));
-    // transition the display image to color attachment layout
-    setImageLayout(render.cmdBuffer_[bufferIndex],
-                   device->getDisplayImages(bufferIndex),
-                   VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-                   VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                   VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
-                   VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-    // Now we start a renderpass. Any draw command has to be recorded in a
-    // renderpass
-    VkClearValue clearVals{
-        .color.float32[0] = 0.0f,
-        .color.float32[1] = 0.34f,
-        .color.float32[2] = 0.90f,
-        .color.float32[3] = 1.0f,
-    };
-    VkRenderPassBeginInfo renderPassBeginInfo{
-        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-        .pNext = nullptr,
-        .renderPass = render.renderPass_,
-        .framebuffer = framebuffers_[bufferIndex],
-        .renderArea = {.offset =
-                           {
-                               .x = 0, .y = 0,
-                           },
-                       .extent = device->getDisplaySize()},
-        .clearValueCount = 1,
-        .pClearValues = &clearVals};
-    vkCmdBeginRenderPass(render.cmdBuffer_[bufferIndex], &renderPassBeginInfo,
-                         VK_SUBPASS_CONTENTS_INLINE);
-    // Do more drawing !
-    vkCmdBindPipeline(render.cmdBuffer_[bufferIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, gfxPipeline.pipeline_);
-    VkDeviceSize offset = 0;
-    vkCmdBindVertexBuffers(render.cmdBuffer_[bufferIndex], 0, 1, &buffers.vertexBuf_, &offset);
-    vkCmdBindIndexBuffer(render.cmdBuffer_[bufferIndex], buffers.indexBuf_, offset, VK_INDEX_TYPE_UINT16 );
-    vkCmdDrawIndexed(render.cmdBuffer_[bufferIndex], static_cast<u_int32_t>(buffers.indexCount), 1, 0, 0, 0);
 
-    vkCmdEndRenderPass(render.cmdBuffer_[bufferIndex]);
-    // transition back to swapchain image to PRESENT_SRC_KHR
-    setImageLayout(render.cmdBuffer_[bufferIndex],
-                   device->getDisplayImages(bufferIndex),
-                   VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                   VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-                   VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-                   VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT);
-    CALL_VK(vkEndCommandBuffer(render.cmdBuffer_[bufferIndex]));
 
 
     VkSemaphoreCreateInfo semaphoreCreateInfo {
@@ -647,6 +595,60 @@ bool VulkanDrawFrame(void) {
   CALL_VK(
           vkWaitForFences(device->getDevice(), 1, &render.fence_[nextIndex], VK_TRUE, 100000000));
   CALL_VK(vkResetFences(device->getDevice(), 1, &render.fence_[nextIndex]));
+
+  VkCommandBufferBeginInfo cmdBufferBeginInfo{
+            .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+            .pNext = nullptr,
+            .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+            .pInheritanceInfo = nullptr,
+  };
+  CALL_VK(vkBeginCommandBuffer(render.cmdBuffer_[nextIndex],
+                               &cmdBufferBeginInfo));
+  // transition the display image to color attachment layout
+  setImageLayout(render.cmdBuffer_[nextIndex],
+                 device->getDisplayImages(nextIndex),
+                 VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+                 VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                 VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+                 VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+  // Now we start a renderpass. Any draw command has to be recorded in a
+  // renderpass
+  VkClearValue clearVals{
+          .color.float32[0] = 0.0f,
+          .color.float32[1] = 0.34f,
+          .color.float32[2] = 0.90f,
+          .color.float32[3] = 1.0f,
+  };
+  VkRenderPassBeginInfo renderPassBeginInfo{
+          .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+          .pNext = nullptr,
+          .renderPass = render.renderPass_,
+          .framebuffer = framebuffers_[nextIndex],
+          .renderArea = {.offset =
+                  {
+                          .x = 0, .y = 0,
+                  },
+                  .extent = device->getDisplaySize()},
+          .clearValueCount = 1,
+          .pClearValues = &clearVals};
+  vkCmdBeginRenderPass(render.cmdBuffer_[nextIndex], &renderPassBeginInfo,
+                       VK_SUBPASS_CONTENTS_INLINE);
+  // Do more drawing !
+  vkCmdBindPipeline(render.cmdBuffer_[nextIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, gfxPipeline.pipeline_);
+  VkDeviceSize offset = 0;
+  vkCmdBindVertexBuffers(render.cmdBuffer_[nextIndex], 0, 1, &buffers.vertexBuf_, &offset);
+  vkCmdBindIndexBuffer(render.cmdBuffer_[nextIndex], buffers.indexBuf_, offset, VK_INDEX_TYPE_UINT16 );
+  vkCmdDrawIndexed(render.cmdBuffer_[nextIndex], static_cast<u_int32_t>(buffers.indexCount), 1, 0, 0, 0);
+
+  vkCmdEndRenderPass(render.cmdBuffer_[nextIndex]);
+  // transition back to swapchain image to PRESENT_SRC_KHR
+  setImageLayout(render.cmdBuffer_[nextIndex],
+                 device->getDisplayImages(nextIndex),
+                 VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                 VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+                 VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                 VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT);
+  CALL_VK(vkEndCommandBuffer(render.cmdBuffer_[nextIndex]));
 
   VkPipelineStageFlags waitStageMask =
     VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
