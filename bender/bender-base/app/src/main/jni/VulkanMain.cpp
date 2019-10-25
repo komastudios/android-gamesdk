@@ -34,7 +34,7 @@ struct VulkanRenderInfo {
   VkCommandBuffer* cmdBuffer_;
   uint32_t cmdBufferLen_;
 
-  VkSemaphore* giacquireImageSemaphore_;
+  VkSemaphore* acquireImageSemaphore_;
   VkSemaphore* renderFinishedSemaphore_;
 
   VkFence* fence_;
