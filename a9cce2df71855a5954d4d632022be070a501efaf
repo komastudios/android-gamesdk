@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8aa48442_ec754adf",
+        "filename": "bender/bender-base/app/src/main/jni/VulkanMain.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 665,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-25T21:11:00Z",
+      "side": 1,
+      "message": "missing (for consistency) ;",
+      "revId": "a9cce2df71855a5954d4d632022be070a501efaf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
