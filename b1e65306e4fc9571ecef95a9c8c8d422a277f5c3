@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d5ceb14c_48482e49",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-25T22:58:51Z",
+      "side": 1,
+      "message": "At some point the actual data will have to be passed in instead. This is ok as first CL, but the task won\u0027t be complete until the data is extracted.",
+      "revId": "b1e65306e4fc9571ecef95a9c8c8d422a277f5c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "caab35d4_1960a419",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-25T22:58:51Z",
+      "side": 1,
+      "message": "destructor instead",
+      "revId": "b1e65306e4fc9571ecef95a9c8c8d422a277f5c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}

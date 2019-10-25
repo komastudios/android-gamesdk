@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f7b55c2d_8f088f54",
+        "filename": "bender/bender-base/app/src/main/jni/VulkanMain.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 521,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-25T22:58:51Z",
+      "side": 1,
+      "message": "delete geometry;",
+      "revId": "f9fbce573b53458f06204ee255f5f714b149f135",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
