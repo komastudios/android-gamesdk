@@ -22,7 +22,8 @@ add_library(bender-kit STATIC
 add_library(base SHARED
             ${SRC_DIR}/VulkanMain.cpp
             ${SRC_DIR}/AndroidMain.cpp
-            ${SRC_DIR}/geometry.cpp)
+            ${SRC_DIR}/geometry.cpp
+            ${SRC_DIR}/renderer.cpp)
 
 target_link_libraries(base bender-kit)
 
