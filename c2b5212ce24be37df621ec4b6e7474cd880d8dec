@@ -16,6 +16,57 @@
       "revId": "c2b5212ce24be37df621ec4b6e7474cd880d8dec",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "25a40deb_f557a972",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-26T05:42:52Z",
+      "side": 1,
+      "message": "I feel the render pass shouldn\u0027t be part of the Renderer class.",
+      "revId": "c2b5212ce24be37df621ec4b6e7474cd880d8dec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bd1d1210_c963a3a9",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-26T05:42:52Z",
+      "side": 1,
+      "message": "Can you remove these comments please?",
+      "revId": "c2b5212ce24be37df621ec4b6e7474cd880d8dec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a070a50b_f714fb8f",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-26T05:42:52Z",
+      "side": 1,
+      "message": "Just return the command buffer for the current frame.",
+      "revId": "c2b5212ce24be37df621ec4b6e7474cd880d8dec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
