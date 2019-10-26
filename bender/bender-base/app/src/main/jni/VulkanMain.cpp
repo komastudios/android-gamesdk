@@ -20,8 +20,8 @@
 #include "vulkan_wrapper.h"
 #include "bender_kit.hpp"
 #include "shader_state.hpp"
-#include "geometry.hpp"
 #include "renderer.hpp"
+#include "Geometry.hpp"
 
 /// Global Variables ...
 
@@ -381,11 +381,11 @@ bool VulkanDrawFrame(void) {
           .pClearValues = &clearVals};
   vkCmdBeginRenderPass(renderer->getCurrentCommandBuffer(), &render_pass_beginInfo,
                        VK_SUBPASS_CONTENTS_INLINE);
-  // Do more drawing !
+
   vkCmdBindPipeline(renderer->getCurrentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, gfxPipeline.pipeline_);
-  VkDeviceSize offset = 0;
-  vkCmdBindVertexBuffers(renderer->getCurrentCommandBuffer(), 0, 1, geometry->getVertexBuffer(), &offset);
-  vkCmdBindIndexBuffer(renderer->getCurrentCommandBuffer(), *geometry->getIndexBuffer(), offset, VK_INDEX_TYPE_UINT16 );
+
+  geometry->bind(renderer->getCurrentCommandBuffer());
+
   vkCmdDrawIndexed(renderer->getCurrentCommandBuffer(), static_cast<u_int32_t>(geometry->getIndexCount()), 1, 0, 0, 0);
 
   vkCmdEndRenderPass(renderer->getCurrentCommandBuffer());

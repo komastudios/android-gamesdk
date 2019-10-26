@@ -2,7 +2,7 @@
 // Created by mattkw on 10/25/2019.
 //
 
-#include "geometry.hpp"
+#include "Geometry.hpp"
 #include <vector>
 
 Geometry::Geometry(BenderKit::Device* device, std::vector<float> vertexData, std::vector<uint16_t> indexData) {
@@ -18,9 +18,8 @@ Geometry::~Geometry() {
     vkFreeMemory(device_->getDevice(), indexBufferDeviceMemory_, nullptr);
 }
 
-// A helper function for selecting the correct memory type for a buffer
 uint32_t Geometry::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties,
-        VkPhysicalDevice gpuDevice) {
+        VkPhysicalDevice gpuDevice) const {
     VkPhysicalDeviceMemoryProperties memProperties;
     vkGetPhysicalDeviceMemoryProperties(gpuDevice, &memProperties);
 
@@ -35,7 +34,6 @@ uint32_t Geometry::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags pro
     return -1;
 }
 
-// Generalized helper function for creating different types of buffers
 void Geometry::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
                   VkBuffer &buffer, VkDeviceMemory &bufferMemory) {
     VkBufferCreateInfo bufferInfo = {
@@ -61,12 +59,10 @@ void Geometry::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemor
                                               properties, device_->getPhysicalDevice())
     };
 
-    // Allocate memory for the buffer
     CALL_VK(vkAllocateMemory(device_->getDevice(), &allocInfo, nullptr, &bufferMemory));
     CALL_VK(vkBindBufferMemory(device_->getDevice(), buffer, bufferMemory, 0));
 }
 
-// Create buffers for vertex data
 void Geometry::createVertexBuffer(std::vector<float> vertexData, std::vector<uint16_t> indexData) {
     vertexCount_ = vertexData.size();
     indexCount_ = indexData.size();
@@ -90,4 +86,10 @@ void Geometry::createVertexBuffer(std::vector<float> vertexData, std::vector<uin
     vkMapMemory(device_->getDevice(), indexBufferDeviceMemory_, 0, bufferSizeIndex, 0, &data);
     memcpy(data, indexData.data(), bufferSizeIndex);
     vkUnmapMemory(device_->getDevice(), indexBufferDeviceMemory_);
+}
+
+void Geometry::bind(VkCommandBuffer commandBuffer) const {
+    VkDeviceSize offset = 0;
+    vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuf_, &offset);
+    vkCmdBindIndexBuffer(commandBuffer, indexBuf_, offset, VK_INDEX_TYPE_UINT16 );
 }
