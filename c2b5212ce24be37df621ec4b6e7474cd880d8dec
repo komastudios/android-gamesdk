@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "50763fcc_e7061f2c",
+        "filename": "bender/bender-base/app/src/main/jni/VulkanMain.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 324,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-26T05:37:50Z",
+      "side": 1,
+      "message": "Return the current command buffer so you don\u0027t need to query the current frame.",
+      "revId": "c2b5212ce24be37df621ec4b6e7474cd880d8dec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
