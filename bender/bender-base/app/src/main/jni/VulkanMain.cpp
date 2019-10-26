@@ -21,6 +21,7 @@
 #include "bender_kit.hpp"
 #include "shader_state.hpp"
 #include "geometry.hpp"
+#include "renderer.hpp"
 
 /// Global Variables ...
 
@@ -29,18 +30,18 @@ std::vector<VkFramebuffer> framebuffers_;
 
 int currentFrame = 0;
 
-struct VulkanRenderInfo {
-  VkRenderPass renderPass_;
-  VkCommandPool cmdPool_;
-  VkCommandBuffer* cmdBuffer_;
-  uint32_t cmdBufferLen_;
-
-  VkSemaphore* acquireImageSemaphore_;
-  VkSemaphore* renderFinishedSemaphore_;
-
-  VkFence* fence_;
-};
-VulkanRenderInfo render;
+//struct VulkanRenderInfo {
+//  VkRenderPass renderPass_;
+//  VkCommandPool cmdPool_;
+//  VkCommandBuffer* cmdBuffer_;
+//  uint32_t cmdBufferLen_;
+//
+//  VkSemaphore* acquireImageSemaphore_;
+//  VkSemaphore* renderFinishedSemaphore_;
+//
+//  VkFence* fence_;
+//};
+//VulkanRenderInfo render;
 
 struct VulkanGfxPipelineInfo {
     VkPipelineLayout layout_;
@@ -53,6 +54,7 @@ VulkanGfxPipelineInfo gfxPipeline;
 android_app* androidAppCtx = nullptr;
 BenderKit::Device *device;
 Geometry *geometry;
+Renderer *renderer;
 
 /*
  * setImageLayout():
@@ -231,7 +233,7 @@ void createGraphicsPipeline() {
             .pColorBlendState = &colorBlendInfo,
             .pDynamicState = nullptr,
             .layout = gfxPipeline.layout_,
-            .renderPass = render.renderPass_,
+            .renderPass = renderer->getRenderPass(),
             .subpass = 0,
             .basePipelineHandle = VK_NULL_HANDLE,
             .basePipelineIndex = 0,
@@ -253,48 +255,9 @@ bool InitVulkan(android_app* app) {
   device = new BenderKit::Device(app->window);
   assert(device->isInitialized());
 
-  // -----------------------------------------------------------------
-  // Create render pass
-  VkAttachmentDescription attachmentDescriptions{
-      .format = device->getDisplayFormat(),
-      .samples = VK_SAMPLE_COUNT_1_BIT,
-      .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-      .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-      .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-      .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-      .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-  };
+  renderer = new Renderer(device);
 
-  VkAttachmentReference colourReference = {
-      .attachment = 0,
-      .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-  };
 
-  VkSubpassDescription subpassDescription{
-      .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
-      .flags = 0,
-      .inputAttachmentCount = 0,
-      .pInputAttachments = nullptr,
-      .colorAttachmentCount = 1,
-      .pColorAttachments = &colourReference,
-      .pResolveAttachments = nullptr,
-      .pDepthStencilAttachment = nullptr,
-      .preserveAttachmentCount = 0,
-      .pPreserveAttachments = nullptr,
-  };
-  VkRenderPassCreateInfo renderPassCreateInfo{
-      .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-      .pNext = nullptr,
-      .attachmentCount = 1,
-      .pAttachments = &attachmentDescriptions,
-      .subpassCount = 1,
-      .pSubpasses = &subpassDescription,
-      .dependencyCount = 0,
-      .pDependencies = nullptr,
-  };
-  CALL_VK(vkCreateRenderPass(device->getDevice(), &renderPassCreateInfo, nullptr,
-                             &render.renderPass_));
 
   // ---------------------------------------------
   // Create the triangle vertex buffer with indices
@@ -313,65 +276,11 @@ bool InitVulkan(android_app* app) {
 
   // -----------------------------------------------------------------
   // Create 2 frame buffers.
-  CreateFrameBuffers(render.renderPass_);
+  CreateFrameBuffers(renderer->getRenderPass());
 
   // -----------------------------------------------------------------
   // Create Graphics Pipeline and layouts
   createGraphicsPipeline();
-
-  // -----------------------------------------------
-  // Create a pool of command buffers to allocate command buffer from
-  VkCommandPoolCreateInfo cmdPoolCreateInfo{
-      .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-      .pNext = nullptr,
-      .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
-      .queueFamilyIndex = 0,
-  };
-  CALL_VK(vkCreateCommandPool(device->getDevice(), &cmdPoolCreateInfo, nullptr,
-                              &render.cmdPool_));
-
-  // Record a command buffer that just clear the screen
-  // 1 command buffer draw in 1 framebuffer
-  // In our case we need 2 command as we have 2 framebuffer
-  render.cmdBufferLen_ = device->getSwapchainLength();
-  render.cmdBuffer_ = new VkCommandBuffer[device->getSwapchainLength()];
-  render.acquireImageSemaphore_ = new VkSemaphore[device->getSwapchainLength()];
-  render.renderFinishedSemaphore_ = new VkSemaphore[device->getSwapchainLength()];
-  render.fence_ = new VkFence[device->getSwapchainLength()];
-
-  for (int bufferIndex = 0; bufferIndex < device->getSwapchainLength();
-       bufferIndex++) {
-    // We start by creating and declare the "beginning" our command buffer
-    VkCommandBufferAllocateInfo cmdBufferCreateInfo{
-        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-        .pNext = nullptr,
-        .commandPool = render.cmdPool_,
-        .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-        .commandBufferCount = 1,
-    };
-    CALL_VK(vkAllocateCommandBuffers(device->getDevice(), &cmdBufferCreateInfo,
-                                     &render.cmdBuffer_[bufferIndex]));
-
-    VkSemaphoreCreateInfo semaphoreCreateInfo {
-            .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
-            .pNext = nullptr,
-            .flags = 0,
-    };
-
-    CALL_VK(vkCreateSemaphore(device->getDevice(), &semaphoreCreateInfo, nullptr,
-                              &render.acquireImageSemaphore_[bufferIndex]));
-
-    CALL_VK(vkCreateSemaphore(device->getDevice(), &semaphoreCreateInfo, nullptr,
-                              &render.renderFinishedSemaphore_[bufferIndex]));
-
-    VkFenceCreateInfo fenceCreateInfo{
-            .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
-            .pNext = nullptr,
-            .flags = VK_FENCE_CREATE_SIGNALED_BIT,
-    };
-    CALL_VK(
-            vkCreateFence(device->getDevice(), &fenceCreateInfo, nullptr, &render.fence_[bufferIndex]));
-  }
 
   return true;
 }
@@ -381,15 +290,7 @@ bool InitVulkan(android_app* app) {
 bool IsVulkanReady(void) { return device != nullptr && device->isInitialized(); }
 
 void DeleteVulkan(void) {
-  vkFreeCommandBuffers(device->getDevice(), render.cmdPool_, render.cmdBufferLen_,
-                       render.cmdBuffer_);
-  delete[] render.cmdBuffer_;
-  delete[] render.acquireImageSemaphore_;
-  delete[] render.renderFinishedSemaphore_;
-  delete[] render.fence_;
-
-  vkDestroyCommandPool(device->getDevice(), render.cmdPool_, nullptr);
-  vkDestroyRenderPass(device->getDevice(), render.renderPass_, nullptr);
+  delete renderer;
 
   delete geometry;
 
@@ -401,7 +302,6 @@ void DeleteVulkan(void) {
   vkDestroyPipeline(device->getDevice(), gfxPipeline.pipeline_, nullptr);
   vkDestroyPipelineCache(device->getDevice(), gfxPipeline.cache_, nullptr);
   vkDestroyPipelineLayout(device->getDevice(), gfxPipeline.layout_, nullptr);
-  vkDestroyRenderPass(device->getDevice(), render.renderPass_, nullptr);
 
   delete device;
   device = nullptr;
@@ -411,32 +311,21 @@ void DeleteVulkan(void) {
 bool VulkanDrawFrame(void) {
   TRACE_BEGIN_SECTION("Draw Frame");
 
-  TRACE_BEGIN_SECTION("vkAcquireNextImageKHR");
-  uint32_t nextIndex;
-  // Get the framebuffer index we should draw in
-  CALL_VK(vkAcquireNextImageKHR(device->getDevice(), device->getSwapchain(),
-                                UINT64_MAX, render.acquireImageSemaphore_[currentFrame], VK_NULL_HANDLE,
-                                &nextIndex));
-  TRACE_END_SECTION();
+  renderer->begin();
 
-  TRACE_BEGIN_SECTION("vkWaitForFences");
-  CALL_VK(vkWaitForFences(device->getDevice(), 1, &render.fence_[currentFrame], VK_TRUE, 100000000));
-  CALL_VK(vkResetFences(device->getDevice(), 1, &render.fence_[currentFrame]));
-  TRACE_END_SECTION();
-
-  VkCommandBufferBeginInfo cmdBufferBeginInfo{
-            .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-            .pNext = nullptr,
-            .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
-            .pInheritanceInfo = nullptr,
+  uint32_t current_frame = renderer->getCurrentFrame();
+  VkCommandBufferBeginInfo cmd_buffer_beginInfo{
+      .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+      .pNext = nullptr,
+      .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+      .pInheritanceInfo = nullptr,
   };
-
   TRACE_BEGIN_SECTION("CommandBufferRecording")
-  CALL_VK(vkBeginCommandBuffer(render.cmdBuffer_[currentFrame],
-                               &cmdBufferBeginInfo));
+  CALL_VK(vkBeginCommandBuffer(renderer->getCommandBuffer(current_frame),
+                               &cmd_buffer_beginInfo));
   // transition the display image to color attachment layout
-  setImageLayout(render.cmdBuffer_[currentFrame],
-                 device->getDisplayImages(nextIndex),
+  setImageLayout(renderer->getCommandBuffer(current_frame),
+                 device->getDisplayImages(current_frame),
                  VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
                  VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                  VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
@@ -449,10 +338,10 @@ bool VulkanDrawFrame(void) {
           .color.float32[2] = 0.90f,
           .color.float32[3] = 1.0f,
   };
-  VkRenderPassBeginInfo renderPassBeginInfo{
+  VkRenderPassBeginInfo render_pass_beginInfo{
           .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
           .pNext = nullptr,
-          .renderPass = render.renderPass_,
+          .renderPass = renderer->getRenderPass(),
           .framebuffer = framebuffers_[currentFrame],
           .renderArea = {.offset =
                   {
@@ -461,61 +350,29 @@ bool VulkanDrawFrame(void) {
                   .extent = device->getDisplaySize()},
           .clearValueCount = 1,
           .pClearValues = &clearVals};
-  vkCmdBeginRenderPass(render.cmdBuffer_[currentFrame], &renderPassBeginInfo,
+  vkCmdBeginRenderPass(renderer->getCommandBuffer(current_frame), &render_pass_beginInfo,
                        VK_SUBPASS_CONTENTS_INLINE);
   // Do more drawing !
-  vkCmdBindPipeline(render.cmdBuffer_[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, gfxPipeline.pipeline_);
+  vkCmdBindPipeline(renderer->getCommandBuffer(current_frame), VK_PIPELINE_BIND_POINT_GRAPHICS, gfxPipeline.pipeline_);
   VkDeviceSize offset = 0;
-  vkCmdBindVertexBuffers(render.cmdBuffer_[currentFrame], 0, 1, geometry->getVertexBuffer(), &offset);
-  vkCmdBindIndexBuffer(render.cmdBuffer_[currentFrame], *geometry->getIndexBuffer(), offset, VK_INDEX_TYPE_UINT16 );
-  vkCmdDrawIndexed(render.cmdBuffer_[currentFrame], static_cast<u_int32_t>(geometry->getIndexCount()), 1, 0, 0, 0);
+  vkCmdBindVertexBuffers(renderer->getCommandBuffer(current_frame), 0, 1, geometry->getVertexBuffer(), &offset);
+  vkCmdBindIndexBuffer(renderer->getCommandBuffer(current_frame), *geometry->getIndexBuffer(), offset, VK_INDEX_TYPE_UINT16 );
+  vkCmdDrawIndexed(renderer->getCommandBuffer(current_frame), static_cast<u_int32_t>(geometry->getIndexCount()), 1, 0, 0, 0);
 
-  vkCmdEndRenderPass(render.cmdBuffer_[currentFrame]);
+  vkCmdEndRenderPass(renderer->getCommandBuffer(current_frame));
   // transition back to swapchain image to PRESENT_SRC_KHR
-  setImageLayout(render.cmdBuffer_[currentFrame],
+  setImageLayout(renderer->getCommandBuffer(current_frame),
                  device->getDisplayImages(currentFrame),
                  VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                  VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
                  VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
                  VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT);
-  CALL_VK(vkEndCommandBuffer(render.cmdBuffer_[currentFrame]));
-
-  VkPipelineStageFlags waitStageMask =
-    VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-  VkSubmitInfo submit_info = {.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-                              .pNext = nullptr,
-                              .waitSemaphoreCount = 1,
-                              .pWaitSemaphores = &render.acquireImageSemaphore_[currentFrame],
-                              .pWaitDstStageMask = &waitStageMask,
-                              .commandBufferCount = 1,
-                              .pCommandBuffers = &render.cmdBuffer_[currentFrame],
-                              .signalSemaphoreCount = 1,
-                              .pSignalSemaphores = &render.renderFinishedSemaphore_[currentFrame]};
+  CALL_VK(vkEndCommandBuffer(renderer->getCommandBuffer(current_frame)));
   TRACE_END_SECTION();
 
-  TRACE_BEGIN_SECTION("vkQueueSubmit");
-  CALL_VK(vkQueueSubmit(device->getQueue(), 1, &submit_info, render.fence_[currentFrame]));
-  TRACE_END_SECTION();
-
-  VkResult result;
-  VkPresentInfoKHR presentInfo{
-      .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
-      .pNext = nullptr,
-      .swapchainCount = 1,
-      .pSwapchains = &device->getSwapchain(),
-      .pImageIndices = &nextIndex,
-      .waitSemaphoreCount = 1,
-      .pWaitSemaphores = &render.renderFinishedSemaphore_[currentFrame],
-      .pResults = &result,
-  };
-  TRACE_BEGIN_SECTION("vkQueuePresentKHR");
-  vkQueuePresentKHR(device->getQueue(), &presentInfo);
-  TRACE_END_SECTION();
+  renderer->end();
 
   TRACE_END_SECTION();
-
-  currentFrame = (currentFrame + 1) % device->getDisplayImagesSize();
-
   return true;
 }
 
