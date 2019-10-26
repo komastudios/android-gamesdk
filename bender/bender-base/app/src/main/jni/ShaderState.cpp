@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "shader_state.hpp"
+#include "ShaderState.hpp"
 
 ShaderState::ShaderState(std::string shaderName, android_app *app, VkDevice appDevice) {
     ShaderState::androidAppCtx = app;
@@ -21,7 +21,6 @@ ShaderState::ShaderState(std::string shaderName, android_app *app, VkDevice appD
     setVertexShader("shaders/" + shaderName + ".vert");
     setFragmentShader("shaders/" + shaderName + ".frag");
 
-    // Describes how the vertex input data is organized
     pipelineInputAssembly = {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
             .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
@@ -85,11 +84,7 @@ void ShaderState::addVertexInputBinding(u_int32_t binding, u_int32_t stride) {
     vertex_input_bindings.push_back(inputBinding);
 }
 
-VkPipelineInputAssemblyStateCreateInfo* ShaderState::getPipelineInputAssembly() {
-    return &pipelineInputAssembly;
-}
-
-VkPipelineVertexInputStateCreateInfo* ShaderState::getVertexInputState(){
+void ShaderState::completeVertexInputState() {
     vertexInputState = {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
             .vertexBindingDescriptionCount = static_cast<u_int32_t>(vertex_input_bindings.size()),
@@ -97,12 +92,12 @@ VkPipelineVertexInputStateCreateInfo* ShaderState::getVertexInputState(){
             .vertexAttributeDescriptionCount = static_cast<u_int32_t>(vertex_input_attributes.size()),
             .pVertexAttributeDescriptions = vertex_input_attributes.data()
     };
-
-    return &vertexInputState;
 }
 
-VkPipelineShaderStageCreateInfo* ShaderState::getShaderStages() {
-    return shaderStages.data();
+void ShaderState::updatePipelineInfo(VkGraphicsPipelineCreateInfo& pipelineInfo) const {
+    pipelineInfo.pStages = shaderStages.data();
+    pipelineInfo.pVertexInputState = &vertexInputState;
+    pipelineInfo.pInputAssemblyState = &pipelineInputAssembly;
 }
 
 void ShaderState::cleanup() {
@@ -110,7 +105,6 @@ void ShaderState::cleanup() {
         vkDestroyShaderModule(device, *it, nullptr);
     }
 }
-
 
 VkResult ShaderState::loadShaderFromFile(const char *filePath, VkShaderModule *shaderOut) {
     assert(androidAppCtx);

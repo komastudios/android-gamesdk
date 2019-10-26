@@ -23,19 +23,28 @@
 class ShaderState{
 public:
     ShaderState(std::string shaderName, android_app *app, VkDevice appDevice);
-    VkPipelineVertexInputStateCreateInfo* getVertexInputState();
-    VkPipelineInputAssemblyStateCreateInfo* getPipelineInputAssembly();
-    VkPipelineShaderStageCreateInfo* getShaderStages();
-    void addVertexInputBinding(u_int32_t binding, u_int32_t stride);
+
+//    const VkPipelineVertexInputStateCreateInfo& getVertexInputState() const;
+//    const VkPipelineInputAssemblyStateCreateInfo& getPipelineInputAssembly() const;
+//    const VkPipelineShaderStageCreateInfo& getShaderStages() const;
+
     void addVertexAttributeDescription(u_int32_t binding, u_int32_t location, VkFormat format, u_int32_t offset);
+    void addVertexInputBinding(u_int32_t binding, u_int32_t stride);
+    void completeVertexInputState();
+
+    void updatePipelineInfo(VkGraphicsPipelineCreateInfo& pipelineInfo) const;
+
     void cleanup();
 
 private:
     android_app* androidAppCtx;
     VkDevice device;
+
     VkPipelineVertexInputStateCreateInfo vertexInputState;
+
     VkPipelineInputAssemblyStateCreateInfo pipelineInputAssembly;
     std::vector<VkShaderModule> shaderModules;
+
     std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
     std::vector<VkVertexInputBindingDescription> vertex_input_bindings;
     std::vector<VkVertexInputAttributeDescription> vertex_input_attributes;
