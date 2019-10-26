@@ -16,32 +16,43 @@
 #define BENDER_BASE_SHADER_STATE_HPP
 
 #include "vulkan_wrapper.h"
+
 #include <android_native_app_glue.h>
 #include <string>
 #include <vector>
+#include <array>
 
-class ShaderState{
+class ShaderState {
 public:
+    enum class Type { Vertex, Fragment };
+    static constexpr int shaderTypesCount = static_cast<int>(Type::Fragment) + 1;
+
     ShaderState(std::string shaderName, android_app *app, VkDevice appDevice);
-    VkPipelineVertexInputStateCreateInfo* getVertexInputState();
-    VkPipelineInputAssemblyStateCreateInfo* getPipelineInputAssembly();
-    VkPipelineShaderStageCreateInfo* getShaderStages();
-    void addVertexInputBinding(u_int32_t binding, u_int32_t stride);
+
     void addVertexAttributeDescription(u_int32_t binding, u_int32_t location, VkFormat format, u_int32_t offset);
+    void addVertexInputBinding(u_int32_t binding, u_int32_t stride);
+    void completeVertexInputState();
+
+    void updatePipelineInfo(VkGraphicsPipelineCreateInfo& pipelineInfo) const;
+
     void cleanup();
 
 private:
     android_app* androidAppCtx;
     VkDevice device;
+
     VkPipelineVertexInputStateCreateInfo vertexInputState;
     VkPipelineInputAssemblyStateCreateInfo pipelineInputAssembly;
-    std::vector<VkShaderModule> shaderModules;
-    std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
+
+    std::array<VkShaderModule, shaderTypesCount> shaderModules;
+    std::array<VkPipelineShaderStageCreateInfo, shaderTypesCount> shaderStages;
+
     std::vector<VkVertexInputBindingDescription> vertex_input_bindings;
     std::vector<VkVertexInputAttributeDescription> vertex_input_attributes;
 
-    void setVertexShader(std::string shaderFile);
-    void setFragmentShader(std::string shaderFile);
+    void setVertexShader(const std::string& shaderFile);
+    void setFragmentShader(const std::string& shaderFile);
+
     VkResult loadShaderFromFile(const char *filePath, VkShaderModule *shaderOut);
 };
 
