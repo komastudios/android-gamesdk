@@ -13,12 +13,10 @@ public:
     Geometry(BenderKit::Device *device, std::vector<float> vertexData, std::vector<uint16_t> indexData);
     ~Geometry();
 
-    int getVertexCount() { return vertexCount_; }
-    int getIndexCount() { return indexCount_; }
-    VkBuffer* getVertexBuffer() { return &vertexBuf_; }
-    VkBuffer* getIndexBuffer() { return &indexBuf_; }
+    int getVertexCount() const { return vertexCount_; }
+    int getIndexCount() const { return indexCount_; }
 
-    void cleanup();
+    void bind(VkCommandBuffer commandBuffer) const;
 
 private:
     BenderKit::Device *device_;
@@ -32,7 +30,7 @@ private:
     VkDeviceMemory indexBufferDeviceMemory_;
 
     uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties,
-                                VkPhysicalDevice gpuDevice);
+                                VkPhysicalDevice gpuDevice) const;
 
     void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
                                 VkBuffer &buffer, VkDeviceMemory &bufferMemory);
