@@ -18,9 +18,10 @@
 #include <vector>
 #include <cstring>
 #include "vulkan_wrapper.h"
+
 #include "bender_kit.hpp"
-#include "shader_state.hpp"
 #include "renderer.hpp"
+#include "ShaderState.hpp"
 #include "Geometry.hpp"
 
 /// Global Variables ...
@@ -108,10 +109,10 @@ void CreateFrameBuffers(VkRenderPass& renderPass,
 }
 
 void createGraphicsPipeline() {
-    ShaderState currShader("triangle", androidAppCtx, device->getDevice());
-    currShader.addVertexInputBinding(0, 6 * sizeof(float));
-    currShader.addVertexAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0);
-    currShader.addVertexAttributeDescription(0, 1, VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(float));
+    ShaderState shaderState("triangle", androidAppCtx, device->getDevice());
+    shaderState.addVertexInputBinding(0, 6 * sizeof(float));
+    shaderState.addVertexAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0);
+    shaderState.addVertexAttributeDescription(0, 1, VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(float));
 
     VkViewport viewport{
             .x = 0.0f,
@@ -192,7 +193,6 @@ void createGraphicsPipeline() {
     CALL_VK(vkCreatePipelineLayout(device->getDevice(), &pipelineLayoutInfo, nullptr,
                                    &gfxPipeline.layout_))
 
-    // Create the pipeline cache
     VkPipelineCacheCreateInfo pipelineCacheInfo{
             .sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO,
             .pNext = nullptr,
@@ -204,14 +204,11 @@ void createGraphicsPipeline() {
     CALL_VK(vkCreatePipelineCache(device->getDevice(), &pipelineCacheInfo, nullptr,
                                   &gfxPipeline.cache_));
 
-    VkGraphicsPipelineCreateInfo pipelineInfo{
+    VkGraphicsPipelineCreateInfo pipelineInfo {
             .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
             .pNext = nullptr,
             .flags = 0,
             .stageCount = 2,
-            .pStages = currShader.getShaderStages(),
-            .pVertexInputState = currShader.getVertexInputState(),
-            .pInputAssemblyState = currShader.getPipelineInputAssembly(),
             .pTessellationState = nullptr,
             .pViewportState = &pipelineViewportState,
             .pRasterizationState = &pipelineRasterizationState,
@@ -226,10 +223,12 @@ void createGraphicsPipeline() {
             .basePipelineIndex = 0,
     };
 
+    shaderState.updatePipelineInfo(pipelineInfo);
+
     CALL_VK(vkCreateGraphicsPipelines(device->getDevice(), gfxPipeline.cache_, 1, &pipelineInfo,
                                       nullptr, &gfxPipeline.pipeline_));
     LOGI("Setup Graphics Pipeline");
-    currShader.cleanup();
+    shaderState.cleanup();
 }
 
 // InitVulkan:
