@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+#if ANDROID_NDK_VERSION>=15
+
 #include "SwappyVkGoogleDisplayTiming.h"
 
 #define LOG_TAG "SwappyVkGoogleDisplayTiming"
@@ -134,3 +136,5 @@ VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(VkQueue                 que
 }
 
 }  // namespace swappy
+
+#endif // #if ANDROID_NDK_VERSION>=15

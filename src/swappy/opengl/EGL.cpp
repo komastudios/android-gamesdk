@@ -195,11 +195,11 @@ std::pair<bool,EGLuint64KHR> EGL::getNextFrameId(EGLDisplay dpy, EGLSurface surf
 std::unique_ptr<EGL::FrameTimestamps> EGL::getFrameTimestamps(EGLDisplay dpy,
                                                               EGLSurface surface,
                                                               EGLuint64KHR frameId) const {
+#if ANDROID_NDK_VERSION>14
     if (eglGetFrameTimestampsANDROID == nullptr) {
         ALOGE("stats are not supported on this platform");
         return nullptr;
     }
-
     const std::vector<EGLint> timestamps = {
             EGL_REQUESTED_PRESENT_TIME_ANDROID,
             EGL_RENDERING_COMPLETE_TIME_ANDROID,
@@ -234,6 +234,9 @@ std::unique_ptr<EGL::FrameTimestamps> EGL::getFrameTimestamps(EGLDisplay dpy,
     frameTimestamps->presented = values[3];
 
     return frameTimestamps;
+#else
+    return nullptr;
+#endif
 }
 
 EGL::FenceWaiter::FenceWaiter(std::chrono::nanoseconds fenceTimeout,

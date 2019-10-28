@@ -16,7 +16,7 @@
 
 #include "crash_handler.h"
 
-#if __ANDROID_API__ < 16
+#if __ANDROID_API__ < 16 || ANDROID_NDK_VERSION <= 14
 namespace tuningfork {
     CrashHandler::CrashHandler() { }
     CrashHandler::~CrashHandler() { }

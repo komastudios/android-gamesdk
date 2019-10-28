@@ -79,6 +79,10 @@ abstract class Toolchain {
     abstract String getNinjaPath();
     public String getAndroidVersion() { return androidVersion_; }
     public String getNdkVersion() { return ndkVersion_; }
+    public String getNdkVersionNumber() {
+	def (n) = ndkVersion_ =~ /[0-9]+/;
+	return n;
+    }
     public String getBuildKey(String arch, String stl) {
         return arch + '_SDK' + androidVersion_ + "_NDK" + ndkVersion_ + '_' + sanitize(stl)
     }
@@ -237,9 +241,9 @@ def cmake(projectFolder, workingFolder, outputFolder, arch, toolchain, stl,
         threadFlags = "-DGAMESDK_THREAD_CHECKS=0"
     }
 
-    def cxx_flags = ""
+    def cxx_flags = "-DANDROID_NDK_VERSION=${toolchain.getNdkVersionNumber()}"
     if (stl=="gnustl_static")
-        cxx_flags = "-DANDROID_GNUSTL"
+        cxx_flags += " -DANDROID_GNUSTL"
 
     def cmdLine = [toolchain.getCMakePath(),
                    "$projectFolder",
@@ -248,6 +252,7 @@ def cmake(projectFolder, workingFolder, outputFolder, arch, toolchain, stl,
                    "-DANDROID_NDK=$ndkPath",
                    "-DANDROID_STL=$stl",
                    "-DANDROID_ABI=$arch",
+		   "-DANDROID_UNIFIED_HEADERS=1",
                    "-DCMAKE_CXX_FLAGS=$cxx_flags",
                    "-DCMAKE_TOOLCHAIN_FILE=$toolchainFilePath",
                    "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=$outputFolder",
@@ -411,6 +416,7 @@ def unityNativeBuild(withTuningFork=false, buildType="Release") {
 def sdkNativeBuild(withTuningFork = true, buildType="Release") {
     def threadChecks = false
     return defaultAbis().collectMany {
+     [ buildNativeModules(it, "14", "r14", "c++_static", threadChecks, withTuningFork, buildType) ] +
      [ buildNativeModules(it, "14", "r16", "c++_static", threadChecks, withTuningFork, buildType) ] +
      [ buildNativeModules(it, "16", "r17", "c++_static", threadChecks, withTuningFork, buildType) ] +
      [ buildNativeModules(it, "26", "r16", "gnustl_static", threadChecks, withTuningFork, buildType) ] +

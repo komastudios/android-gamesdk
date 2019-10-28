@@ -28,6 +28,7 @@ void SwappyVk::swappyVkDetermineDeviceExtensions(
     uint32_t*              pRequiredExtensionCount,
     char**                 pRequiredExtensions)
 {
+#if ANDROID_NDK_VERSION>=15
     // TODO: Refactor this to be more concise:
     if (!pRequiredExtensions) {
         for (uint32_t i = 0; i < availableExtensionCount; i++) {
@@ -48,6 +49,9 @@ void SwappyVk::swappyVkDetermineDeviceExtensions(
             }
         }
     }
+#else
+    doesPhysicalDeviceHaveGoogleDisplayTiming[physicalDevice] = false;
+#endif
 }
 
 void SwappyVk::SetQueueFamilyIndex(VkDevice   device,
@@ -81,6 +85,7 @@ bool SwappyVk::GetRefreshCycleDuration(JNIEnv           *env,
             }
         }
 
+#if ANDROID_NDK_VERSION>=15
         // First, based on whether VK_GOOGLE_display_timing is available
         // (determined and cached by swappyVkDetermineDeviceExtensions),
         // determine which derived class to use to implement the rest of the API
@@ -88,7 +93,9 @@ bool SwappyVk::GetRefreshCycleDuration(JNIEnv           *env,
             pImplementation = std::make_shared<SwappyVkGoogleDisplayTiming>
                     (env, jactivity, physicalDevice, device, mLibVulkan);
             ALOGV("SwappyVk initialized for VkDevice %p using VK_GOOGLE_display_timing on Android", device);
-        } else {
+        } else
+#endif
+        {
             pImplementation = std::make_shared<SwappyVkFallback>
                     (env, jactivity, physicalDevice, device, mLibVulkan);
             ALOGV("SwappyVk initialized for VkDevice %p using Android fallback", device);
