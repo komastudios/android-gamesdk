@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7e7c1296_70e2d08f",
+        "filename": "src/swappy/opengl/EGL.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-10-28T14:09:53Z",
+      "side": 1,
+      "message": "Can you use everywhere only one of \"\u003e\u003d15\" or \"\u003e14\"?",
+      "range": {
+        "startLine": 198,
+        "startChar": 4,
+        "endLine": 198,
+        "endChar": 26
+      },
+      "revId": "fd4cefc8065d1d59effd59be589bd1ec56093e93",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
