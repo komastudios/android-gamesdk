@@ -11,8 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#include "renderer.hpp"
-#include "Trace.h"
+#include "renderer.h"
+#include "trace.h"
 #include <android_native_app_glue.h>
 
 Renderer::Renderer(BenderKit::Device *device) {
@@ -144,6 +144,6 @@ uint32_t Renderer::getCurrentFrame() {
   return current_frame;
 }
 
-VkImage& Renderer::getCurrentDisplayImage() {
+VkImage &Renderer::getCurrentDisplayImage() {
   return device_->getDisplayImages(current_frame);
 }

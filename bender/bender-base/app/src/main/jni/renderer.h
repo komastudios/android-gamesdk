@@ -12,29 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef _RENDERER_HPP_
-#define _RENDERER_HPP_
+#ifndef BENDER_BASE_RENDERER_H_
+#define BENDER_BASE_RENDERER_H_
 
 #include "vulkan_wrapper.h"
-#include "bender_kit.hpp"
+#include "bender_kit.h"
 
 class Renderer {
-public:
+ public:
   Renderer(BenderKit::Device *device);
   ~Renderer();
   void begin();
   void end();
   VkCommandBuffer getCurrentCommandBuffer();
   uint32_t getCurrentFrame();
-  VkImage& getCurrentDisplayImage();
-private:
+  VkImage &getCurrentDisplayImage();
+ private:
   BenderKit::Device *device_;
   VkCommandPool cmd_pool_;
   VkCommandBuffer *cmd_buffer_;
   uint32_t cmd_buffer_len_;
   VkSemaphore *acquire_image_semaphore_;
   VkSemaphore *render_finished_semaphore_;
-  VkFence* fence_;
+  VkFence *fence_;
   uint32_t current_frame;
   void init();
 };

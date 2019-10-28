@@ -13,8 +13,8 @@
 // limitations under the License.
 
 // This file is generated.
-#ifndef VULKAN_WRAPPER_H
-#define VULKAN_WRAPPER_H
+#ifndef BENDER_BASE_UTILS_BENDER_KIT_VULKAN_WRAPPER_VULKAN_WRAPPER_H
+#define BENDER_BASE_UTILS_BENDER_KIT_VULKAN_WRAPPER_VULKAN_WRAPPER_H
 
 #define VK_NO_PROTOTYPES 1
 #include <vulkan/vulkan.h>
@@ -58,7 +58,8 @@ extern PFN_vkBindImageMemory vkBindImageMemory;
 extern PFN_vkGetBufferMemoryRequirements vkGetBufferMemoryRequirements;
 extern PFN_vkGetImageMemoryRequirements vkGetImageMemoryRequirements;
 extern PFN_vkGetImageSparseMemoryRequirements vkGetImageSparseMemoryRequirements;
-extern PFN_vkGetPhysicalDeviceSparseImageFormatProperties vkGetPhysicalDeviceSparseImageFormatProperties;
+extern PFN_vkGetPhysicalDeviceSparseImageFormatProperties
+    vkGetPhysicalDeviceSparseImageFormatProperties;
 extern PFN_vkQueueBindSparse vkQueueBindSparse;
 extern PFN_vkCreateFence vkCreateFence;
 extern PFN_vkDestroyFence vkDestroyFence;
@@ -179,7 +180,8 @@ extern PFN_vkQueuePresentKHR vkQueuePresentKHR;
 
 // VK_KHR_display
 extern PFN_vkGetPhysicalDeviceDisplayPropertiesKHR vkGetPhysicalDeviceDisplayPropertiesKHR;
-extern PFN_vkGetPhysicalDeviceDisplayPlanePropertiesKHR vkGetPhysicalDeviceDisplayPlanePropertiesKHR;
+extern PFN_vkGetPhysicalDeviceDisplayPlanePropertiesKHR
+    vkGetPhysicalDeviceDisplayPlanePropertiesKHR;
 extern PFN_vkGetDisplayPlaneSupportedDisplaysKHR vkGetDisplayPlaneSupportedDisplaysKHR;
 extern PFN_vkGetDisplayModePropertiesKHR vkGetDisplayModePropertiesKHR;
 extern PFN_vkCreateDisplayModeKHR vkCreateDisplayModeKHR;
@@ -238,6 +240,5 @@ extern PFN_vkCreateDebugReportCallbackEXT vkCreateDebugReportCallbackEXT;
 extern PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallbackEXT;
 extern PFN_vkDebugReportMessageEXT vkDebugReportMessageEXT;
 #endif
-
 
 #endif // VULKAN_WRAPPER_H
