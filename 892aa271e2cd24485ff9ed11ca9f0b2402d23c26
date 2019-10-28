@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bcf13586_2e546b61",
+        "filename": "bender/bender-base/app/src/main/jni/shader_state.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-28T20:17:58Z",
+      "side": 1,
+      "message": "You should fix this compile error. So naughty.",
+      "revId": "892aa271e2cd24485ff9ed11ca9f0b2402d23c26",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
