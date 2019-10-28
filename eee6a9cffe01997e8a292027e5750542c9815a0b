@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e34aa2bd_7fc91f5e",
+        "filename": "cert/test/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-10-28T18:35:16Z",
+      "side": 1,
+      "message": "nit: extra whitespace",
+      "revId": "eee6a9cffe01997e8a292027e5750542c9815a0b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
