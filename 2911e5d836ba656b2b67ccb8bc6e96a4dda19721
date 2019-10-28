@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b666cbd1_3a13de2c",
+        "filename": "src/swappy/common/FrameStatistics.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-10-28T14:58:08Z",
+      "side": 1,
+      "message": "15?",
+      "range": {
+        "startLine": 95,
+        "startChar": 23,
+        "endLine": 95,
+        "endChar": 27
+      },
+      "revId": "2911e5d836ba656b2b67ccb8bc6e96a4dda19721",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "224196a7_3d1962e2",
+        "filename": "src/tuningfork/crash_handler.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-10-28T14:58:08Z",
+      "side": 1,
+      "message": "supernit: \u003c15 for consistency",
+      "range": {
+        "startLine": 19,
+        "startChar": 48,
+        "endLine": 19,
+        "endChar": 53
+      },
+      "revId": "2911e5d836ba656b2b67ccb8bc6e96a4dda19721",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
