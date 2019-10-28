@@ -23,6 +23,7 @@
 #include "renderer.h"
 #include "shader_state.h"
 #include "geometry.h"
+#include "screen_refresh_rate.h"
 
 /// Global Variables ...
 
@@ -44,6 +45,7 @@ BenderKit::Device *device;
 Geometry *geometry;
 Renderer *renderer;
 
+bool is_set_refresh_rate = false;
 /*
  * setImageLayout():
  *    Helper function to transition color buffer layout
@@ -335,6 +337,14 @@ void DeleteVulkan(void) {
 
 // Draw one frame
 bool VulkanDrawFrame(void) {
+  if(!is_set_refresh_rate) {
+    assert(androidAppCtx != nullptr);
+    JNIEnv *jni;
+    androidAppCtx->activity->vm->AttachCurrentThread(&jni, nullptr);
+    setScreenRefreshRateMainThread(jni, androidAppCtx->activity->clazz, SCREEN_REFRESH_RATE);
+    androidAppCtx->activity->vm->DetachCurrentThread();
+    is_set_refresh_rate = true;
+  }
   TRACE_BEGIN_SECTION("Draw Frame");
 
   renderer->begin();
