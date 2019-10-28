@@ -22,12 +22,19 @@ class Renderer {
  public:
   Renderer(BenderKit::Device *device);
   ~Renderer();
-  void begin();
-  void end();
+
+  void beginFrame();
+  void endFrame();
+
+  void beginPrimaryCommandBufferRecording();
+  void endPrimaryCommandBufferRecording();
+
   VkCommandBuffer getCurrentCommandBuffer();
   uint32_t getCurrentFrame();
-  VkImage &getCurrentDisplayImage();
- private:
+
+private:
+  VkImage getCurrentDisplayImage();
+
   BenderKit::Device *device_;
   VkCommandPool cmd_pool_;
   VkCommandBuffer *cmd_buffer_;
@@ -36,6 +43,7 @@ class Renderer {
   VkSemaphore *render_finished_semaphore_;
   VkFence *fence_;
   uint32_t current_frame;
+
   void init();
 };
 
