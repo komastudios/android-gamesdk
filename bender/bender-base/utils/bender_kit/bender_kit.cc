@@ -51,7 +51,6 @@ Device::Device(ANativeWindow *window) {
 }
 
 Device::~Device() {
-  // Delete Swapchain
   for (uint32_t i = 0; i < swapchainLength_; ++i) {
     vkDestroyImage(device_, displayImages_[i], nullptr);
   }
@@ -62,12 +61,11 @@ Device::~Device() {
   vkDestroyInstance(instance_, nullptr);
 }
 
-VkImage &Device::getDisplayImages(int i) {
+VkImage Device::getDisplayImage(int i) {
   assert(i < displayImages_.size() && i >= 0);
   return displayImages_[i];
 }
 
-// Create vulkan device
 void Device::CreateVulkanDevice(ANativeWindow *platformWindow,
                                 VkApplicationInfo *appInfo) {
   LOGI("->CreateVulkanDevice");

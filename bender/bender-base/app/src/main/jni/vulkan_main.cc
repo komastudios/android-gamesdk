@@ -48,10 +48,6 @@ Renderer *renderer;
  * setImageLayout():
  *    Helper function to transition color buffer layout
  */
-void setImageLayout(VkCommandBuffer cmdBuffer, VkImage image,
-                    VkImageLayout oldImageLayout, VkImageLayout newImageLayout,
-                    VkPipelineStageFlags srcStages,
-                    VkPipelineStageFlags destStages);
 
 void CreateFrameBuffers(VkRenderPass &renderPass,
                         VkImageView depthView = VK_NULL_HANDLE) {
@@ -61,7 +57,7 @@ void CreateFrameBuffers(VkRenderPass &renderPass,
     VkImageViewCreateInfo viewCreateInfo = {
         .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
         .pNext = nullptr,
-        .image = device->getDisplayImages(i),
+        .image = device->getDisplayImage(i),
         .viewType = VK_IMAGE_VIEW_TYPE_2D,
         .format = device->getDisplayFormat(),
         .components =
@@ -337,25 +333,9 @@ void DeleteVulkan(void) {
 bool VulkanDrawFrame(void) {
   TRACE_BEGIN_SECTION("Draw Frame");
 
-  renderer->begin();
+  renderer->beginFrame();
+  renderer->beginPrimaryCommandBufferRecording();
 
-  uint32_t current_frame = renderer->getCurrentFrame();
-  VkCommandBufferBeginInfo cmd_buffer_beginInfo{
-      .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-      .pNext = nullptr,
-      .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
-      .pInheritanceInfo = nullptr,
-  };
-  TRACE_BEGIN_SECTION("CommandBufferRecording")
-  CALL_VK(vkBeginCommandBuffer(renderer->getCurrentCommandBuffer(),
-                               &cmd_buffer_beginInfo));
-  // transition the display image to color attachment layout
-  setImageLayout(renderer->getCurrentCommandBuffer(),
-                 device->getDisplayImages(current_frame),
-                 VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-                 VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                 VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
-                 VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
   // Now we start a renderpass. Any draw command has to be recorded in a
   // renderpass
   VkClearValue clearVals{
@@ -364,6 +344,7 @@ bool VulkanDrawFrame(void) {
       .color.float32[2] = 0.90f,
       .color.float32[3] = 1.0f,
   };
+
   VkRenderPassBeginInfo render_pass_beginInfo{
       .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
       .pNext = nullptr,
@@ -376,6 +357,7 @@ bool VulkanDrawFrame(void) {
           .extent = device->getDisplaySize()},
       .clearValueCount = 1,
       .pClearValues = &clearVals};
+
   vkCmdBeginRenderPass(renderer->getCurrentCommandBuffer(), &render_pass_beginInfo,
                        VK_SUBPASS_CONTENTS_INLINE);
 
@@ -387,96 +369,15 @@ bool VulkanDrawFrame(void) {
 
   vkCmdDrawIndexed(renderer->getCurrentCommandBuffer(),
                    static_cast<u_int32_t>(geometry->getIndexCount()),
-                   1,
-                   0,
-                   0,
-                   0);
+                   1, 0, 0, 0);
 
   vkCmdEndRenderPass(renderer->getCurrentCommandBuffer());
-  // transition back to swapchain image to PRESENT_SRC_KHR
-  setImageLayout(renderer->getCurrentCommandBuffer(),
-                 renderer->getCurrentDisplayImage(),
-                 VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                 VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-                 VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-                 VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT);
-  CALL_VK(vkEndCommandBuffer(renderer->getCurrentCommandBuffer()));
-  TRACE_END_SECTION();
 
-  renderer->end();
+  renderer->endPrimaryCommandBufferRecording();
+  renderer->endFrame();
 
   TRACE_END_SECTION();
+
   return true;
 }
 
-/*
- * setImageLayout():
- *    Helper function to transition color buffer layout
- */
-void setImageLayout(VkCommandBuffer cmdBuffer, VkImage image,
-                    VkImageLayout oldImageLayout, VkImageLayout newImageLayout,
-                    VkPipelineStageFlags srcStages,
-                    VkPipelineStageFlags destStages) {
-  VkImageMemoryBarrier imageMemoryBarrier = {
-      .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-      .pNext = NULL,
-      .srcAccessMask = 0,
-      .dstAccessMask = 0,
-      .oldLayout = oldImageLayout,
-      .newLayout = newImageLayout,
-      .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-      .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-      .image = image,
-      .subresourceRange =
-          {
-              .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-              .baseMipLevel = 0,
-              .levelCount = 1,
-              .baseArrayLayer = 0,
-              .layerCount = 1,
-          },
-  };
-
-  switch (oldImageLayout) {
-    case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
-      imageMemoryBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-      break;
-
-    case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-      imageMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-      break;
-
-    case VK_IMAGE_LAYOUT_PREINITIALIZED:imageMemoryBarrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT;
-      break;
-
-    default:break;
-  }
-
-  switch (newImageLayout) {
-    case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-      imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-      break;
-
-    case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
-      imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-      break;
-
-    case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
-      imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-      break;
-
-    case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
-      imageMemoryBarrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-      break;
-
-    case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
-      imageMemoryBarrier.dstAccessMask =
-          VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-      break;
-
-    default:break;
-  }
-
-  vkCmdPipelineBarrier(cmdBuffer, srcStages, destStages, 0, 0, NULL, 0, NULL, 1,
-                       &imageMemoryBarrier);
-}

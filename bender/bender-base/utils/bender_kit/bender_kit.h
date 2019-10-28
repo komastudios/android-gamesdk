@@ -70,7 +70,7 @@ class Device {
 
   const std::vector<VkImage> &getDisplayImages() { return displayImages_; }
 
-  VkImage &getDisplayImages(int i);
+  VkImage getDisplayImage(int i);
 
   uint32_t getDisplayImagesSize() { return displayImages_.size(); }
 
