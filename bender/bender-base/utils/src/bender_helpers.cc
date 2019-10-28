@@ -12,19 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "BenderHelpers.hpp"
-
+#include "bender_helpers.h"
 
 extern VkPhysicalDeviceMemoryProperties benderMemoryProperties;
 
 VkResult memory_type_from_properties(uint32_t typeBits, VkFlags requirements_mask,
-                                 uint32_t *typeIndex) {
+                                     uint32_t *typeIndex) {
   // Search memtypes to find first index with those properties
   for (uint32_t i = 0; i < 32; i++) {
     if ((typeBits & 1) == 1) {
       // Type is available, does it match user properties?
       if ((benderMemoryProperties.memoryTypes[i].propertyFlags &
-           requirements_mask) == requirements_mask) {
+          requirements_mask) == requirements_mask) {
         *typeIndex = i;
         return VK_SUCCESS;
       }

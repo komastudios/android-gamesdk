@@ -11,15 +11,15 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#ifndef __VULKANMAIN_HPP__
-#define __VULKANMAIN_HPP__
+#ifndef BENDER_BASE_VULKAN_MAIN_H__
+#define BENDER_BASE_VULKAN_MAIN_H__
 #include <android_native_app_glue.h>
 
-#include "Trace.h"
+#include "trace.h"
 
 // Initialize vulkan device context
 // after return, vulkan is ready to draw
-bool InitVulkan(android_app* app);
+bool InitVulkan(android_app *app);
 
 // delete vulkan device context when application goes away
 void DeleteVulkan(void);

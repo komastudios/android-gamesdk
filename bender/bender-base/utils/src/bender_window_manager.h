@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef BENDER_WINDOW_MANAGER_HPP
-#define BENDER_WINDOW_MANAGER_HPP
+#ifndef BENDER_BASE_UTILS_SRC_BENDER_WINDOW_MANAGER_H_
+#define BENDER_BASE_UTILS_SRC_BENDER_WINDOW_MANAGER_H_
 
 #include <vulkan_wrapper.h>
 #include <stdexcept>
@@ -34,10 +34,10 @@ extern uint32_t benderSwapchainLength;
 extern VkFramebuffer *benderFramebuffer;
 
 void benderInitWindow(ANativeWindow *platformWindow,
-                        VkApplicationInfo *appInfo);
+                      VkApplicationInfo *appInfo);
 void benderCreateSwapChain();
 void benderCreateFrameBuffers(VkRenderPass &renderPass,
-                                VkImageView depthView = VK_NULL_HANDLE);
+                              VkImageView depthView = VK_NULL_HANDLE);
 void benderCleanup();
 
 #endif  // BENDER_WINDOW_MANAGER_HPP
