@@ -242,9 +242,11 @@ void CrashHandler::SignalHandler(int sig, siginfo_t *info, void *ucontext) {
     pthread_mutex_unlock(&handler_mutex);
 
     if(info->si_code <= 0 || sig ==SIGABRT) {
+#if ANDROID_NDK_VERSION>14
         if(tgkill(getpid(), syscall(__NR_gettid), sig) < 0) {
             _exit(1);
         }
+#endif
     }
 }
 
