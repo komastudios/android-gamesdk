@@ -27,10 +27,10 @@ typedef struct texture_object {
   int32_t tex_width, tex_height;
 } texture_object;
 
-VkResult benderLoadTextureFromFile(const char* filePath,
-                                     struct texture_object* tex_obj,
-                                     VkImageUsageFlags usage,
-                                     VkFlags required_props);
+VkResult benderLoadTextureFromFile(const char *filePath,
+                                   struct texture_object *tex_obj,
+                                   VkImageUsageFlags usage,
+                                   VkFlags required_props);
 
 static const VkFormat kTexFmt = VK_FORMAT_R8G8B8A8_UNORM;
 

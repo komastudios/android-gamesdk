@@ -22,7 +22,7 @@
 #include <stdexcept>
 
 extern VkDevice benderDevice;
-extern AAssetManager* benderAssetManager;
+extern AAssetManager *benderAssetManager;
 extern VkPhysicalDeviceMemoryProperties benderMemoryProperties;
 extern VkCommandPool cmdPool;
 extern VkPhysicalDevice benderGpu;
@@ -31,10 +31,10 @@ extern VkPhysicalDevice benderGpu;
 // The supported texture format is in kTexFmt
 //     Skipping memory barriers the next draw command is far out
 //     by then, the blit will way complete ahead
-VkResult benderLoadTextureFromFile(const char* filePath,
-                                     struct texture_object* tex_obj,
-                                     VkImageUsageFlags usage,
-                                     VkFlags required_props) {
+VkResult benderLoadTextureFromFile(const char *filePath,
+                                   struct texture_object *tex_obj,
+                                   VkImageUsageFlags usage,
+                                   VkFlags required_props) {
   if (!(usage | required_props)) {
     __android_log_print(ANDROID_LOG_ERROR,
                         "bender texture", "No usage and required_pros");
@@ -43,83 +43,83 @@ VkResult benderLoadTextureFromFile(const char* filePath,
 
   // Check for linear supportability
   VkFormatProperties props;
-  bool  needBlit = true;
+  bool needBlit = true;
   vkGetPhysicalDeviceFormatProperties(benderGpu, kTexFmt, &props);
   assert((props.linearTilingFeatures | props.optimalTilingFeatures) &
-          VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
+      VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
 
   if (props.linearTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT) {
     // linear format supporting the required texture
     needBlit = false;
   }
 
-    // Read the file:
-  AAsset* file = AAssetManager_open(benderAssetManager, filePath,
+  // Read the file:
+  AAsset *file = AAssetManager_open(benderAssetManager, filePath,
                                     AASSET_MODE_BUFFER);
   size_t fileLength = AAsset_getLength(file);
-  stbi_uc* fileContent = new unsigned char[fileLength];
+  stbi_uc *fileContent = new unsigned char[fileLength];
   AAsset_read(file, fileContent, fileLength);
 
   uint32_t imgWidth, imgHeight, n;
-  unsigned char* imageData = stbi_load_from_memory(
-          fileContent, fileLength, reinterpret_cast<int*>(&imgWidth),
-          reinterpret_cast<int*>(&imgHeight), reinterpret_cast<int*>(&n), 0);
+  unsigned char *imageData = stbi_load_from_memory(
+      fileContent, fileLength, reinterpret_cast<int *>(&imgWidth),
+      reinterpret_cast<int *>(&imgHeight), reinterpret_cast<int *>(&n), 0);
 
   tex_obj->tex_width = imgWidth;
   tex_obj->tex_height = imgHeight;
 
   // Allocate the linear texture so texture could be copied over
   VkImageCreateInfo image_create_info = {
-          .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-          .pNext = nullptr,
-          .imageType = VK_IMAGE_TYPE_2D,
-          .format = kTexFmt,
-          .extent = {static_cast<uint32_t>(imgWidth),
-                     static_cast<uint32_t>(imgHeight), 1},
-          .mipLevels = 1,
-          .arrayLayers = 1,
-          .samples = VK_SAMPLE_COUNT_1_BIT,
-          .tiling = VK_IMAGE_TILING_LINEAR,
-          .usage = (needBlit ? VK_IMAGE_USAGE_TRANSFER_SRC_BIT :
-                               VK_IMAGE_USAGE_SAMPLED_BIT),
-          .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
-          .queueFamilyIndexCount = 0,
-          .flags = 0,
+      .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+      .pNext = nullptr,
+      .imageType = VK_IMAGE_TYPE_2D,
+      .format = kTexFmt,
+      .extent = {static_cast<uint32_t>(imgWidth),
+                 static_cast<uint32_t>(imgHeight), 1},
+      .mipLevels = 1,
+      .arrayLayers = 1,
+      .samples = VK_SAMPLE_COUNT_1_BIT,
+      .tiling = VK_IMAGE_TILING_LINEAR,
+      .usage = (needBlit ? VK_IMAGE_USAGE_TRANSFER_SRC_BIT :
+                VK_IMAGE_USAGE_SAMPLED_BIT),
+      .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+      .queueFamilyIndexCount = 0,
+      .flags = 0,
   };
   VkMemoryAllocateInfo mem_alloc = {
-          .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-          .pNext = nullptr,
-          .allocationSize = 0,
-          .memoryTypeIndex = 0,
+      .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+      .pNext = nullptr,
+      .allocationSize = 0,
+      .memoryTypeIndex = 0,
   };
 
   VkMemoryRequirements mem_reqs;
   CALL_VK(vkCreateImage(benderDevice, &image_create_info,
-                      nullptr, &tex_obj->image));
+                        nullptr, &tex_obj->image));
   vkGetImageMemoryRequirements(benderDevice, tex_obj->image, &mem_reqs);
   mem_alloc.allocationSize = mem_reqs.size;
   VK_CHECK(memory_type_from_properties(mem_reqs.memoryTypeBits,
-                              VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
-                              &mem_alloc.memoryTypeIndex));
+                                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
+                                       &mem_alloc.memoryTypeIndex));
   CALL_VK(vkAllocateMemory(benderDevice, &mem_alloc, nullptr, &tex_obj->mem));
   CALL_VK(vkBindImageMemory(benderDevice, tex_obj->image, tex_obj->mem, 0));
 
   if (required_props & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) {
     const VkImageSubresource subres = {
-            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-            .mipLevel = 0,
-            .arrayLayer = 0,
+        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+        .mipLevel = 0,
+        .arrayLayer = 0,
     };
     VkSubresourceLayout layout;
-    void* data;
+    void *data;
 
     vkGetImageSubresourceLayout(benderDevice, tex_obj->image, &subres,
                                 &layout);
     CALL_VK(vkMapMemory(benderDevice, tex_obj->mem, 0, mem_alloc.allocationSize,
-                      0, &data));
+                        0, &data));
 
     for (int32_t y = 0; y < imgHeight; y++) {
-      unsigned char* row = (unsigned char*)((char*)data + layout.rowPitch * y);
+      unsigned char *row = (unsigned char *) ((char *) data + layout.rowPitch * y);
       for (int32_t x = 0; x < imgWidth; x++) {
         row[x * 4] = imageData[(x + y * imgWidth) * 4];
         row[x * 4 + 1] = imageData[(x + y * imgWidth) * 4 + 1];
@@ -131,10 +131,10 @@ VkResult benderLoadTextureFromFile(const char* filePath,
     vkUnmapMemory(benderDevice, tex_obj->mem);
     delete[] imageData;
   }
-  delete [] fileContent;
+  delete[] fileContent;
 
   tex_obj->imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
- 
+
   // If linear is supported, we are done
   if (!needBlit) {
     return VK_SUCCESS;
@@ -144,59 +144,59 @@ VkResult benderLoadTextureFromFile(const char* filePath,
   VkImage stageImage = tex_obj->image;
   VkDeviceMemory stageMem = tex_obj->mem;
   tex_obj->image = VK_NULL_HANDLE;
-  tex_obj->mem   = VK_NULL_HANDLE;
+  tex_obj->mem = VK_NULL_HANDLE;
 
   // Create a tile texture to blit into
   image_create_info.tiling = VK_IMAGE_TILING_OPTIMAL;
-  image_create_info.usage  = VK_IMAGE_USAGE_TRANSFER_DST_BIT |
-                             VK_IMAGE_USAGE_SAMPLED_BIT;
+  image_create_info.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT |
+      VK_IMAGE_USAGE_SAMPLED_BIT;
   CALL_VK(vkCreateImage(benderDevice, &image_create_info,
-                                    nullptr, &tex_obj->image));
+                        nullptr, &tex_obj->image));
   vkGetImageMemoryRequirements(benderDevice, tex_obj->image, &mem_reqs);
 
   mem_alloc.allocationSize = mem_reqs.size;
   VK_CHECK(memory_type_from_properties(mem_reqs.memoryTypeBits,
-                                     VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                     &mem_alloc.memoryTypeIndex));
+                                       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                       &mem_alloc.memoryTypeIndex));
   CALL_VK(vkAllocateMemory(benderDevice, &mem_alloc, nullptr, &tex_obj->mem));
   CALL_VK(vkBindImageMemory(benderDevice, tex_obj->image, tex_obj->mem, 0));
 
   VkCommandBuffer gfxCmd;
   const VkCommandBufferAllocateInfo cmd = {
-          .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-          .pNext = nullptr,
-          .commandPool = cmdPool,
-          .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-          .commandBufferCount = 1,
+      .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+      .pNext = nullptr,
+      .commandPool = cmdPool,
+      .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+      .commandBufferCount = 1,
   };
 
   CALL_VK(vkAllocateCommandBuffers(benderDevice, &cmd, &gfxCmd));
 
   VkCommandBufferBeginInfo cmd_buf_info = {
-          .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-          .pNext = nullptr,
-          .flags = 0,
-          .pInheritanceInfo = nullptr};
+      .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+      .pNext = nullptr,
+      .flags = 0,
+      .pInheritanceInfo = nullptr};
   CALL_VK(vkBeginCommandBuffer(gfxCmd, &cmd_buf_info));
 
   VkImageCopy bltInfo = {
-    .srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-    .srcSubresource.mipLevel = 0,
-    .srcSubresource.baseArrayLayer = 0,
-    .srcSubresource.layerCount = 1,
-    .srcOffset.x = 0,
-    .srcOffset.y = 0,
-    .srcOffset.z = 0,
-    .dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-    .dstSubresource.mipLevel = 0,
-    .dstSubresource.baseArrayLayer = 0,
-    .dstSubresource.layerCount = 1,
-    .dstOffset.x = 0,
-    .dstOffset.y = 0,
-    .dstOffset.z = 0,
-    .extent.width = imgWidth,
-    .extent.height = imgHeight,
-    .extent.depth = 1,
+      .srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      .srcSubresource.mipLevel = 0,
+      .srcSubresource.baseArrayLayer = 0,
+      .srcSubresource.layerCount = 1,
+      .srcOffset.x = 0,
+      .srcOffset.y = 0,
+      .srcOffset.z = 0,
+      .dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      .dstSubresource.mipLevel = 0,
+      .dstSubresource.baseArrayLayer = 0,
+      .dstSubresource.layerCount = 1,
+      .dstOffset.x = 0,
+      .dstOffset.y = 0,
+      .dstOffset.z = 0,
+      .extent.width = imgWidth,
+      .extent.height = imgHeight,
+      .extent.depth = 1,
   };
   vkCmdCopyImage(gfxCmd, stageImage,
                  VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, tex_obj->image,
@@ -204,26 +204,26 @@ VkResult benderLoadTextureFromFile(const char* filePath,
 
   CALL_VK(vkEndCommandBuffer(gfxCmd));
   VkFenceCreateInfo fenceInfo = {
-     .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
-     .pNext = nullptr,
-     .flags = 0,
+      .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+      .pNext = nullptr,
+      .flags = 0,
   };
-  VkFence  fence;
+  VkFence fence;
   CALL_VK(vkCreateFence(benderDevice, &fenceInfo, nullptr, &fence));
 
   VkSubmitInfo submitInfo = {
-    .pNext = nullptr,
-    .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-    .waitSemaphoreCount = 0,
-    .pWaitSemaphores = nullptr,
-    .pWaitDstStageMask = nullptr,
-    .commandBufferCount = 1,
-    .pCommandBuffers = &gfxCmd,
-    .signalSemaphoreCount = 0,
-    .pSignalSemaphores = nullptr,
+      .pNext = nullptr,
+      .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+      .waitSemaphoreCount = 0,
+      .pWaitSemaphores = nullptr,
+      .pWaitDstStageMask = nullptr,
+      .commandBufferCount = 1,
+      .pCommandBuffers = &gfxCmd,
+      .signalSemaphoreCount = 0,
+      .pSignalSemaphores = nullptr,
   };
   CALL_VK(vkQueueSubmit(benderGraphicsQueue, 1, &submitInfo, fence) != VK_SUCCESS);
-  CALL_VK(vkWaitForFences(benderDevice, 1, &fence, VK_TRUE, 100000000) !=VK_SUCCESS);
+  CALL_VK(vkWaitForFences(benderDevice, 1, &fence, VK_TRUE, 100000000) != VK_SUCCESS);
   vkDestroyFence(benderDevice, fence, nullptr);
 
   vkFreeCommandBuffers(benderDevice, cmdPool, 1, &gfxCmd);

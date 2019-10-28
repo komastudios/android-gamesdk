@@ -1,22 +1,25 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- BEGIN_INCLUDE(manifest) -->
+<?xml version="1.0" encoding="utf-8"?><!-- BEGIN_INCLUDE(manifest) -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        package="com.google.a2g.bender"
-        android:versionCode="1"
-        android:versionName="1.0">
+    package="com.google.a2g.bender"
+    android:versionCode="1"
+    android:versionName="1.0">
 
     <!-- This .apk has no Java code itself, so set hasCode to false. -->
-    <application android:label="@string/app_name"
-android:hasCode="false" android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+    <application
+        android:label="@string/app_name"
+        android:hasCode="false"
+        android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
 
         <!-- Our activity is the built-in NativeActivity framework class.
              This will take care of integrating with our NDK code. -->
-        <activity android:name="android.app.NativeActivity"
-                android:label="@string/app_name"
-                android:configChanges="orientation|keyboardHidden">
+        <activity
+            android:name="android.app.NativeActivity"
+            android:label="@string/app_name"
+            android:configChanges="orientation|keyboardHidden">
             <!-- Tell NativeActivity the name of or .so -->
-            <meta-data android:name="android.app.lib_name"
-                    android:value="base" />
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="base" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -24,5 +27,4 @@ android:hasCode="false" android:theme="@android:style/Theme.NoTitleBar.Fullscree
         </activity>
     </application>
 
-</manifest>
-<!-- END_INCLUDE(manifest) -->
+</manifest><!-- END_INCLUDE(manifest) -->

@@ -9,33 +9,35 @@
 #include "bender_kit.hpp"
 
 class Geometry {
-public:
-    Geometry(BenderKit::Device *device, std::vector<float> vertexData, std::vector<uint16_t> indexData);
-    ~Geometry();
+ public:
+  Geometry(BenderKit::Device *device,
+           std::vector<float> vertexData,
+           std::vector<uint16_t> indexData);
+  ~Geometry();
 
-    int getVertexCount() const { return vertexCount_; }
-    int getIndexCount() const { return indexCount_; }
+  int getVertexCount() const { return vertexCount_; }
+  int getIndexCount() const { return indexCount_; }
 
-    void bind(VkCommandBuffer commandBuffer) const;
+  void bind(VkCommandBuffer commandBuffer) const;
 
-private:
-    BenderKit::Device *device_;
+ private:
+  BenderKit::Device *device_;
 
-    int vertexCount_;
-    VkBuffer vertexBuf_;
-    VkDeviceMemory vertexBufferDeviceMemory_;
+  int vertexCount_;
+  VkBuffer vertexBuf_;
+  VkDeviceMemory vertexBufferDeviceMemory_;
 
-    int indexCount_;
-    VkBuffer indexBuf_;
-    VkDeviceMemory indexBufferDeviceMemory_;
+  int indexCount_;
+  VkBuffer indexBuf_;
+  VkDeviceMemory indexBufferDeviceMemory_;
 
-    uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties,
-                                VkPhysicalDevice gpuDevice) const;
+  uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties,
+                          VkPhysicalDevice gpuDevice) const;
 
-    void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
-                                VkBuffer &buffer, VkDeviceMemory &bufferMemory);
+  void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
+                    VkBuffer &buffer, VkDeviceMemory &bufferMemory);
 
-    void createVertexBuffer(std::vector<float> vertexData, std::vector<uint16_t> indexData);
+  void createVertexBuffer(std::vector<float> vertexData, std::vector<uint16_t> indexData);
 };
 
 #endif //BENDER_BASE_GEOMETRY_HPP

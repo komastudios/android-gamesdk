@@ -19,22 +19,22 @@
 #include "bender_kit.hpp"
 
 class Renderer {
-public:
+ public:
   Renderer(BenderKit::Device *device);
   ~Renderer();
   void begin();
   void end();
   VkCommandBuffer getCurrentCommandBuffer();
   uint32_t getCurrentFrame();
-  VkImage& getCurrentDisplayImage();
-private:
+  VkImage &getCurrentDisplayImage();
+ private:
   BenderKit::Device *device_;
   VkCommandPool cmd_pool_;
   VkCommandBuffer *cmd_buffer_;
   uint32_t cmd_buffer_len_;
   VkSemaphore *acquire_image_semaphore_;
   VkSemaphore *render_finished_semaphore_;
-  VkFence* fence_;
+  VkFence *fence_;
   uint32_t current_frame;
   void init();
 };

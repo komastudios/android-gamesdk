@@ -144,6 +144,6 @@ uint32_t Renderer::getCurrentFrame() {
   return current_frame;
 }
 
-VkImage& Renderer::getCurrentDisplayImage() {
+VkImage &Renderer::getCurrentDisplayImage() {
   return device_->getDisplayImages(current_frame);
 }

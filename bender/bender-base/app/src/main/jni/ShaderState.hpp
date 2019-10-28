@@ -23,37 +23,40 @@
 #include <array>
 
 class ShaderState {
-public:
-    enum class Type { Vertex, Fragment };
-    static constexpr int shaderTypesCount = static_cast<int>(Type::Fragment) + 1;
+ public:
+  enum class Type { Vertex, Fragment };
+  static constexpr int shaderTypesCount = static_cast<int>(Type::Fragment) + 1;
 
-    ShaderState(std::string shaderName, android_app *app, VkDevice appDevice);
+  ShaderState(std::string shaderName, android_app *app, VkDevice appDevice);
 
-    void addVertexAttributeDescription(u_int32_t binding, u_int32_t location, VkFormat format, u_int32_t offset);
-    void addVertexInputBinding(u_int32_t binding, u_int32_t stride);
-    void completeVertexInputState();
+  void addVertexAttributeDescription(u_int32_t binding,
+                                     u_int32_t location,
+                                     VkFormat format,
+                                     u_int32_t offset);
+  void addVertexInputBinding(u_int32_t binding, u_int32_t stride);
+  void completeVertexInputState();
 
-    void updatePipelineInfo(VkGraphicsPipelineCreateInfo& pipelineInfo) const;
+  void updatePipelineInfo(VkGraphicsPipelineCreateInfo &pipelineInfo);
 
-    void cleanup();
+  void cleanup();
 
-private:
-    android_app* androidAppCtx;
-    VkDevice device;
+ private:
+  android_app *androidAppCtx;
+  VkDevice device;
 
-    VkPipelineVertexInputStateCreateInfo vertexInputState;
-    VkPipelineInputAssemblyStateCreateInfo pipelineInputAssembly;
+  VkPipelineVertexInputStateCreateInfo vertexInputState;
+  VkPipelineInputAssemblyStateCreateInfo pipelineInputAssembly;
 
-    std::array<VkShaderModule, shaderTypesCount> shaderModules;
-    std::array<VkPipelineShaderStageCreateInfo, shaderTypesCount> shaderStages;
+  std::array<VkShaderModule, shaderTypesCount> shaderModules;
+  std::array<VkPipelineShaderStageCreateInfo, shaderTypesCount> shaderStages;
 
-    std::vector<VkVertexInputBindingDescription> vertex_input_bindings;
-    std::vector<VkVertexInputAttributeDescription> vertex_input_attributes;
+  std::vector<VkVertexInputBindingDescription> vertex_input_bindings;
+  std::vector<VkVertexInputAttributeDescription> vertex_input_attributes;
 
-    void setVertexShader(const std::string& shaderFile);
-    void setFragmentShader(const std::string& shaderFile);
+  void setVertexShader(const std::string &shaderFile);
+  void setFragmentShader(const std::string &shaderFile);
 
-    VkResult loadShaderFromFile(const char *filePath, VkShaderModule *shaderOut);
+  VkResult loadShaderFromFile(const char *filePath, VkShaderModule *shaderOut);
 };
 
 #endif //BENDER_BASE_SHADER_STATE_HPP

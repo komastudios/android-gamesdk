@@ -19,7 +19,7 @@
 #include <vulkan_wrapper.h>
 enum ShaderType { VERTEX_SHADER, FRAGMENT_SHADER };
 
-VkResult loadShaderFromFile(const char* filePath, VkShaderModule* shaderOut,
+VkResult loadShaderFromFile(const char *filePath, VkShaderModule *shaderOut,
                             ShaderType type);
 
 #endif  // BENDER_SHADERS_HPP

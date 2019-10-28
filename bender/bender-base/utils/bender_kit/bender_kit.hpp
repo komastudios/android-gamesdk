@@ -20,7 +20,7 @@
 #include <string>
 
 // Android log function wrappers
-static const char* kTAG = "Bender";
+static const char *kTAG = "Bender";
 #define LOGI(...) \
   ((void)__android_log_print(ANDROID_LOG_INFO, kTAG, __VA_ARGS__))
 #define LOGW(...) \
@@ -38,63 +38,63 @@ static const char* kTAG = "Bender";
     }
 
 namespace BenderKit {
-    class Device {
-    public:
-        Device(ANativeWindow *window);
+class Device {
+ public:
+  Device(ANativeWindow *window);
 
-        ~Device();
+  ~Device();
 
-        bool isInitialized() { return initialized_; }
+  bool isInitialized() { return initialized_; }
 
-        void setInitialized(bool flag) { initialized_ = flag; }
+  void setInitialized(bool flag) { initialized_ = flag; }
 
-        void CreateImageView();
+  void CreateImageView();
 
-        VkDevice getDevice() { return device_; }
+  VkDevice getDevice() { return device_; }
 
-        VkPhysicalDevice getPhysicalDevice() { return gpuDevice_; }
+  VkPhysicalDevice getPhysicalDevice() { return gpuDevice_; }
 
-        uint32_t getQueueFamilyIndex() { return queueFamilyIndex_; }
+  uint32_t getQueueFamilyIndex() { return queueFamilyIndex_; }
 
-        VkSurfaceKHR getSurface() { return surface_; }
+  VkSurfaceKHR getSurface() { return surface_; }
 
-        VkQueue getQueue() { return queue_; }
+  VkQueue getQueue() { return queue_; }
 
-        VkSwapchainKHR& getSwapchain() { return swapchain_; }
+  VkSwapchainKHR &getSwapchain() { return swapchain_; }
 
-        uint32_t getSwapchainLength() { return swapchainLength_; }
+  uint32_t getSwapchainLength() { return swapchainLength_; }
 
-        VkExtent2D getDisplaySize() { return displaySize_; }
+  VkExtent2D getDisplaySize() { return displaySize_; }
 
-        VkFormat getDisplayFormat() { return displayFormat_; }
+  VkFormat getDisplayFormat() { return displayFormat_; }
 
-        const std::vector<VkImage>& getDisplayImages() { return displayImages_; }
+  const std::vector<VkImage> &getDisplayImages() { return displayImages_; }
 
-        VkImage& getDisplayImages(int i);
+  VkImage &getDisplayImages(int i);
 
-        uint32_t  getDisplayImagesSize() { return displayImages_.size(); }
+  uint32_t getDisplayImagesSize() { return displayImages_.size(); }
 
-    private:
-        bool initialized_;
-        VkInstance instance_;
-        VkPhysicalDevice gpuDevice_;
-        VkDevice device_;
-        uint32_t queueFamilyIndex_;
-        VkSurfaceKHR surface_;
-        VkQueue queue_;
+ private:
+  bool initialized_;
+  VkInstance instance_;
+  VkPhysicalDevice gpuDevice_;
+  VkDevice device_;
+  uint32_t queueFamilyIndex_;
+  VkSurfaceKHR surface_;
+  VkQueue queue_;
 
-        VkSwapchainKHR swapchain_;
-        uint32_t swapchainLength_;
+  VkSwapchainKHR swapchain_;
+  uint32_t swapchainLength_;
 
-        VkExtent2D displaySize_;
-        VkFormat displayFormat_;
+  VkExtent2D displaySize_;
+  VkFormat displayFormat_;
 
-        std::vector<VkImage> displayImages_;
+  std::vector<VkImage> displayImages_;
 
-        void CreateVulkanDevice(ANativeWindow *platformWindow,
-                                VkApplicationInfo *appInfo);
+  void CreateVulkanDevice(ANativeWindow *platformWindow,
+                          VkApplicationInfo *appInfo);
 
-        void CreateSwapChain();
-    };
+  void CreateSwapChain();
+};
 }
 #endif //BENDER_BASE_BENDER_KIT_HPP

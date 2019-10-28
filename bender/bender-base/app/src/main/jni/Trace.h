@@ -25,122 +25,122 @@
 namespace gamesdk {
 
 class Trace {
-  public:
-    using ATrace_beginSection_type = void (*)(const char *sectionName);
-    using ATrace_endSection_type = void (*)();
-    using ATrace_isEnabled_type = bool (*)();
-    using ATrace_setCounter_type = void (*)(const char *counterName, int64_t counterValue);
+ public:
+  using ATrace_beginSection_type = void (*)(const char *sectionName);
+  using ATrace_endSection_type = void (*)();
+  using ATrace_isEnabled_type = bool (*)();
+  using ATrace_setCounter_type = void (*)(const char *counterName, int64_t counterValue);
 
-    Trace() {
-        __android_log_print(ANDROID_LOG_INFO, "Trace", "Unable to load NDK tracing APIs");
+  Trace() {
+    __android_log_print(ANDROID_LOG_INFO, "Trace", "Unable to load NDK tracing APIs");
+  }
+
+  Trace(ATrace_beginSection_type beginSection,
+        ATrace_endSection_type endSection,
+        ATrace_isEnabled_type isEnabled,
+        ATrace_setCounter_type setCounter)
+      : ATrace_beginSection(beginSection),
+        ATrace_endSection(endSection),
+        ATrace_isEnabled(isEnabled),
+        ATrace_setCounter(setCounter) {}
+
+  static std::unique_ptr<Trace> create() {
+    void *libandroid = dlopen("libandroid.so", RTLD_NOW | RTLD_LOCAL);
+    if (!libandroid) {
+      return std::make_unique<Trace>();
     }
 
-    Trace(ATrace_beginSection_type beginSection,
-          ATrace_endSection_type endSection,
-          ATrace_isEnabled_type isEnabled,
-          ATrace_setCounter_type setCounter)
-        : ATrace_beginSection(beginSection),
-          ATrace_endSection(endSection),
-          ATrace_isEnabled(isEnabled),
-          ATrace_setCounter(setCounter) {}
-
-    static std::unique_ptr<Trace> create() {
-        void *libandroid = dlopen("libandroid.so", RTLD_NOW | RTLD_LOCAL);
-        if (!libandroid) {
-            return std::make_unique<Trace>();
-        }
-
-        auto beginSection = reinterpret_cast<ATrace_beginSection_type>(
-            dlsym(libandroid, "ATrace_beginSection"));
-        if (!beginSection) {
-            return std::make_unique<Trace>();
-        }
-
-        auto endSection = reinterpret_cast<ATrace_endSection_type>(
-            dlsym(libandroid, "ATrace_endSection"));
-        if (!endSection) {
-            return std::make_unique<Trace>();
-        }
-
-        auto isEnabled = reinterpret_cast<ATrace_isEnabled_type>(
-            dlsym(libandroid, "ATrace_isEnabled"));
-        if (!isEnabled) {
-            return std::make_unique<Trace>();
-        }
-
-        auto setCounter = reinterpret_cast<ATrace_setCounter_type>(
-                dlsym(libandroid, "ATrace_setCounter"));
-        /* ATrace_setCounter was added in API 29, continue even if it is not available */
-
-        return std::make_unique<Trace>(beginSection, endSection, isEnabled, setCounter);
+    auto beginSection = reinterpret_cast<ATrace_beginSection_type>(
+        dlsym(libandroid, "ATrace_beginSection"));
+    if (!beginSection) {
+      return std::make_unique<Trace>();
     }
 
-    bool isAvailable() const {
-        return ATrace_beginSection != nullptr;
+    auto endSection = reinterpret_cast<ATrace_endSection_type>(
+        dlsym(libandroid, "ATrace_endSection"));
+    if (!endSection) {
+      return std::make_unique<Trace>();
     }
 
-    bool isEnabled() const {
-        return (ATrace_isEnabled != nullptr) && ATrace_isEnabled();
+    auto isEnabled = reinterpret_cast<ATrace_isEnabled_type>(
+        dlsym(libandroid, "ATrace_isEnabled"));
+    if (!isEnabled) {
+      return std::make_unique<Trace>();
     }
 
-    void beginSection(const char *name) const {
-        if (!ATrace_beginSection) {
-            return;
-        }
+    auto setCounter = reinterpret_cast<ATrace_setCounter_type>(
+        dlsym(libandroid, "ATrace_setCounter"));
+    /* ATrace_setCounter was added in API 29, continue even if it is not available */
 
-        ATrace_beginSection(name);
+    return std::make_unique<Trace>(beginSection, endSection, isEnabled, setCounter);
+  }
+
+  bool isAvailable() const {
+    return ATrace_beginSection != nullptr;
+  }
+
+  bool isEnabled() const {
+    return (ATrace_isEnabled != nullptr) && ATrace_isEnabled();
+  }
+
+  void beginSection(const char *name) const {
+    if (!ATrace_beginSection) {
+      return;
     }
 
-    void endSection() const {
-        if (!ATrace_endSection) {
-            return;
-        }
+    ATrace_beginSection(name);
+  }
 
-        ATrace_endSection();
+  void endSection() const {
+    if (!ATrace_endSection) {
+      return;
     }
 
-    void setCounter(const char *name, int64_t value) {
-        if (!ATrace_setCounter || !isEnabled()) {
-            return;
-        }
+    ATrace_endSection();
+  }
 
-        ATrace_setCounter(name, value);
+  void setCounter(const char *name, int64_t value) {
+    if (!ATrace_setCounter || !isEnabled()) {
+      return;
     }
 
-    static Trace *getInstance() {
-        static std::unique_ptr<Trace> trace = Trace::create();
-        return trace.get();
-    };
+    ATrace_setCounter(name, value);
+  }
 
-  private:
-    const ATrace_beginSection_type ATrace_beginSection = nullptr;
-    const ATrace_endSection_type ATrace_endSection = nullptr;
-    const ATrace_isEnabled_type ATrace_isEnabled = nullptr;
-    const ATrace_setCounter_type ATrace_setCounter = nullptr;
+  static Trace *getInstance() {
+    static std::unique_ptr<Trace> trace = Trace::create();
+    return trace.get();
+  };
+
+ private:
+  const ATrace_beginSection_type ATrace_beginSection = nullptr;
+  const ATrace_endSection_type ATrace_endSection = nullptr;
+  const ATrace_isEnabled_type ATrace_isEnabled = nullptr;
+  const ATrace_setCounter_type ATrace_setCounter = nullptr;
 };
 
 struct ScopedTrace {
-    ScopedTrace(const char *name) {
-        Trace *trace = Trace::getInstance();
-        if (!trace->isAvailable() || !trace->isEnabled()) {
-            return;
-        }
-
-        trace->beginSection(name);
-        mIsTracing = true;
+  ScopedTrace(const char *name) {
+    Trace *trace = Trace::getInstance();
+    if (!trace->isAvailable() || !trace->isEnabled()) {
+      return;
     }
 
-    ~ScopedTrace() {
-        if (!mIsTracing) {
-            return;
-        }
+    trace->beginSection(name);
+    mIsTracing = true;
+  }
 
-        Trace *trace = Trace::getInstance();
-        trace->endSection();
+  ~ScopedTrace() {
+    if (!mIsTracing) {
+      return;
     }
 
-  private:
-    bool mIsTracing = false;
+    Trace *trace = Trace::getInstance();
+    trace->endSection();
+  }
+
+ private:
+  bool mIsTracing = false;
 };
 
 } // namespace gamesdk

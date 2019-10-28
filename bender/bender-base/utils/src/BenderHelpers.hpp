@@ -20,10 +20,10 @@
 #include <cassert>
 
 VkResult memory_type_from_properties(uint32_t typeBits, VkFlags requirements_mask,
-                                 uint32_t *typeIndex);
+                                     uint32_t *typeIndex);
 
 // A set of debugging functions
-static const char* TAG = "Bender";
+static const char *TAG = "Bender";
 #define LOGI(...) \
   ((void)__android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__))
 #define LOGW(...) \

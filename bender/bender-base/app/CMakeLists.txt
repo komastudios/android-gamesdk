@@ -14,16 +14,16 @@ include_directories(${WRAPPER_DIR})
 include_directories(${KIT_DIR})
 
 add_library(bender-kit STATIC
-            ${KIT_DIR}/bender_kit.cpp
-            ${KIT_DIR}/debug_marker.cpp
-            ${WRAPPER_DIR}/vulkan_wrapper.cpp)
+        ${KIT_DIR}/bender_kit.cpp
+        ${KIT_DIR}/debug_marker.cpp
+        ${WRAPPER_DIR}/vulkan_wrapper.cpp)
 
 add_library(base SHARED
-            ${SRC_DIR}/VulkanMain.cpp
-            ${SRC_DIR}/AndroidMain.cpp
-            ${SRC_DIR}/renderer.cpp
-            ${SRC_DIR}/ShaderState.cpp
-            ${SRC_DIR}/Geometry.cpp)
+        ${SRC_DIR}/VulkanMain.cpp
+        ${SRC_DIR}/AndroidMain.cpp
+        ${SRC_DIR}/renderer.cpp
+        ${SRC_DIR}/ShaderState.cpp
+        ${SRC_DIR}/Geometry.cpp)
 
 target_link_libraries(base bender-kit)
 

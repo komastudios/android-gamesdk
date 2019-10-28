@@ -1,7 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="native_activity.android.example.com.nativeactivity">
 
-    <application>
-    </application>
+    <application></application>
 
 </manifest>

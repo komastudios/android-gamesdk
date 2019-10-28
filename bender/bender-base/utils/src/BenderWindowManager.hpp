@@ -34,10 +34,10 @@ extern uint32_t benderSwapchainLength;
 extern VkFramebuffer *benderFramebuffer;
 
 void benderInitWindow(ANativeWindow *platformWindow,
-                        VkApplicationInfo *appInfo);
+                      VkApplicationInfo *appInfo);
 void benderCreateSwapChain();
 void benderCreateFrameBuffers(VkRenderPass &renderPass,
-                                VkImageView depthView = VK_NULL_HANDLE);
+                              VkImageView depthView = VK_NULL_HANDLE);
 void benderCleanup();
 
 #endif  // BENDER_WINDOW_MANAGER_HPP

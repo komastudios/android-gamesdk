@@ -14,16 +14,16 @@
 #include "BenderShaders.hpp"
 
 extern VkDevice benderDevice;
-extern AAssetManager* benderAssetManager;
+extern AAssetManager *benderAssetManager;
 
-VkResult loadShaderFromFile(const char* filePath, VkShaderModule* shaderOut,
+VkResult loadShaderFromFile(const char *filePath, VkShaderModule *shaderOut,
                             ShaderType type) {
   // Read the file:
-  AAsset* file =
+  AAsset *file =
       AAssetManager_open(benderAssetManager, filePath, AASSET_MODE_BUFFER);
   size_t fileLength = AAsset_getLength(file);
 
-  char* fileContent = new char[fileLength];
+  char *fileContent = new char[fileLength];
 
   AAsset_read(file, fileContent, fileLength);
 
@@ -31,7 +31,7 @@ VkResult loadShaderFromFile(const char* filePath, VkShaderModule* shaderOut,
       .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
       .pNext = nullptr,
       .codeSize = fileLength,
-      .pCode = (const uint32_t*)fileContent,
+      .pCode = (const uint32_t *) fileContent,
       .flags = 0,
   };
   VkResult result = vkCreateShaderModule(

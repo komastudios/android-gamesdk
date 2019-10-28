@@ -30,12 +30,12 @@ VkExtent2D benderDisplaySize;
 VkFormat benderDisplayFormat;
 uint32_t benderSwapchainLength;
 
-VkFramebuffer* benderFramebuffer;
+VkFramebuffer *benderFramebuffer;
 
-VkImageView* displayViews;
+VkImageView *displayViews;
 
-void benderInitWindow(ANativeWindow* platformWindow,
-                        VkApplicationInfo* appInfo) {
+void benderInitWindow(ANativeWindow *platformWindow,
+                      VkApplicationInfo *appInfo) {
   LOGI("->BenderInitWindow()");
 
   std::vector<const char *> instance_extensions;
@@ -65,7 +65,7 @@ void benderInitWindow(ANativeWindow* platformWindow,
       .window = platformWindow};
 
   CALL_VK(vkCreateAndroidSurfaceKHR(benderInstance, &createInfo, nullptr,
-                                     &benderSurface));
+                                    &benderSurface));
   LOGI("->BenderInitWindow() CreateAndroidSurfaceKHR");
 
   // **********************************************************
@@ -98,10 +98,10 @@ void benderInitWindow(ANativeWindow* platformWindow,
         // Got a queue supports both graphics and compute
         VkBool32 supPresent;
         CALL_VK(vkGetPhysicalDeviceSurfaceSupportKHR(
-                tmpGpus[idx],
-                family,
-                benderSurface,
-                &supPresent));
+            tmpGpus[idx],
+            family,
+            benderSurface,
+            &supPresent));
         // on Android queue need to support present
         assert(supPresent);
         benderGpu = tmpGpus[idx];
@@ -119,7 +119,7 @@ void benderInitWindow(ANativeWindow* platformWindow,
 
   // **********************************************************
   // Create a logical device (
-  float priorities[] = { 1.0f, };
+  float priorities[] = {1.0f,};
   VkDeviceQueueCreateInfo queueCreateInfo{
       .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
       .pNext = nullptr,
@@ -142,7 +142,7 @@ void benderInitWindow(ANativeWindow* platformWindow,
   };
 
   CALL_VK(vkCreateDevice(benderGpu, &deviceCreateInfo, nullptr,
-                       &benderDevice));
+                         &benderDevice));
   // **********************************************************
   // Get the graphic queue (used later to submit command buffer)
   vkGetDeviceQueue(benderDevice, 0, 0, &benderGraphicsQueue);
@@ -182,10 +182,10 @@ void benderCreateSwapChain() {
   // Query the list of supported surface format and choose one we like
   uint32_t formatCount = 0;
   vkGetPhysicalDeviceSurfaceFormatsKHR(benderGpu, benderSurface, &formatCount,
-                            nullptr);
-  VkSurfaceFormatKHR *formats = new VkSurfaceFormatKHR [formatCount];
+                                       nullptr);
+  VkSurfaceFormatKHR *formats = new VkSurfaceFormatKHR[formatCount];
   vkGetPhysicalDeviceSurfaceFormatsKHR(benderGpu, benderSurface, &formatCount,
-                            formats);
+                                       formats);
   LOGI("Got %d formats", formatCount);
 
   uint32_t chosenFormat;
@@ -223,13 +223,13 @@ void benderCreateSwapChain() {
   benderDisplayFormat = formats[chosenFormat].format;
 
   CALL_VK(vkCreateSwapchainKHR(benderDevice, &swapchainCreate, nullptr,
-                                &benderSwapchain));
+                               &benderSwapchain));
   // **********************************************************
   // Get the length of the created swap chain
   uint32_t displaySwapchainLength;
   CALL_VK(vkGetSwapchainImagesKHR(benderDevice, benderSwapchain,
-                                   &displaySwapchainLength,
-                                   nullptr));
+                                  &displaySwapchainLength,
+                                  nullptr));
 
   LOGI("Swapchain length: %u\n", displaySwapchainLength);
   benderSwapchainLength = displaySwapchainLength;
@@ -237,21 +237,21 @@ void benderCreateSwapChain() {
 
   // Get Memory information and properties
   vkGetPhysicalDeviceMemoryProperties(benderGpu, &benderMemoryProperties);
-  delete [] formats;
+  delete[] formats;
 }
 
-void benderCreateFrameBuffers(VkRenderPass& renderPass,
-                                VkImageView depthView) {
+void benderCreateFrameBuffers(VkRenderPass &renderPass,
+                              VkImageView depthView) {
 
   uint32_t SwapchainImagesCount = 0;
   CALL_VK(vkGetSwapchainImagesKHR(benderDevice, benderSwapchain,
-                                   &SwapchainImagesCount,
-                                   nullptr));
+                                  &SwapchainImagesCount,
+                                  nullptr));
 
-  VkImage* displayImages = new VkImage[SwapchainImagesCount];
+  VkImage *displayImages = new VkImage[SwapchainImagesCount];
   CALL_VK(vkGetSwapchainImagesKHR(benderDevice, benderSwapchain,
-                                   &SwapchainImagesCount,
-                                   displayImages));
+                                  &SwapchainImagesCount,
+                                  displayImages));
 
   displayViews = new VkImageView[SwapchainImagesCount];
   for (uint32_t i = 0; i < SwapchainImagesCount; i++) {
@@ -281,7 +281,7 @@ void benderCreateFrameBuffers(VkRenderPass& renderPass,
     };
 
     CALL_VK(vkCreateImageView(benderDevice, &viewCreateInfo, nullptr,
-                            &displayViews[i]));
+                              &displayViews[i]));
   }
 
   delete[] displayImages;
@@ -305,7 +305,7 @@ void benderCreateFrameBuffers(VkRenderPass& renderPass,
     fbCreateInfo.attachmentCount = (depthView == VK_NULL_HANDLE ? 1 : 2);
 
     CALL_VK(vkCreateFramebuffer(benderDevice, &fbCreateInfo, nullptr,
-                              &benderFramebuffer[i]));
+                                &benderFramebuffer[i]));
   }
 }
 
