@@ -26,6 +26,7 @@
 #include <condition_variable>
 #include <cstring>
 #include <cstdlib>
+#include <cmath>
 
 #include <sched.h>
 #include <pthread.h>
@@ -33,6 +34,7 @@
 
 #include "ChoreographerShim.h"
 #include "Log.h"
+#include "Settings.h"
 #include "Trace.h"
 #include "JNIUtil.h"
 
@@ -309,20 +311,96 @@ Java_com_google_androidgamesdk_ChoreographerCallback_nOnChoreographer(JNIEnv * /
 class NoChoreographerThread : public ChoreographerThread {
 public:
     NoChoreographerThread(Callback onChoreographer);
+    ~NoChoreographerThread();
 
 private:
     void postFrameCallbacks() override;
     void scheduleNextFrameCallback() override REQUIRES(mWaitingMutex);
+    void looperThread();
+    void onSettingsChanged();
+
+    std::thread mThread;
+    bool mThreadRunning GUARDED_BY(mWaitingMutex);
+    std::condition_variable_any mWaitingCondition GUARDED_BY(mWaitingMutex);
+    std::chrono::nanoseconds mRefreshPeriod GUARDED_BY(mWaitingMutex);
 };
 
 NoChoreographerThread::NoChoreographerThread(Callback onChoreographer) :
     ChoreographerThread(onChoreographer) {
+    std::unique_lock<std::mutex> lock(mWaitingMutex);
+    Settings::getInstance()->addListener([this]() { onSettingsChanged(); });
+    mThreadRunning = true;
+    mThread = std::thread([this]() { looperThread(); });
     mInitialized = true;
+}
+
+NoChoreographerThread::~NoChoreographerThread()
+{
+    ALOGI("Destroying NoChoreographerThread");
+    {
+        std::unique_lock<std::mutex> lock(mWaitingMutex);
+        mThreadRunning = false;
+    }
+    mThread.join();
+}
+
+void NoChoreographerThread::onSettingsChanged() {
+    const Settings::DisplayTimings& displayTimings = Settings::getInstance()->getDisplayTimings();
+    std::lock_guard<std::mutex> lock(mWaitingMutex);
+    mRefreshPeriod = displayTimings.refreshPeriod;
+    ALOGV("onSettingsChanged(): refreshPeriod=%lld",
+          (long long)displayTimings.refreshPeriod.count());
+}
+
+void NoChoreographerThread::looperThread()
+{
+    const char *name = "SwappyChoreographer";
+
+    CpuInfo cpu;
+    cpu_set_t cpu_set;
+    CPU_ZERO(&cpu_set);
+    CPU_SET(0, &cpu_set);
+
+    if (cpu.getNumberOfCpus() > 0) {
+        ALOGI("Swappy found %d CPUs [%s].", cpu.getNumberOfCpus(), cpu.getHardware().c_str());
+        if (cpu.getNumberOfLittleCores() > 0) {
+            cpu_set = cpu.getLittleCoresMask();
+        }
+    }
+
+    const auto tid = gettid();
+    ALOGI("Setting '%s' thread [%d-0x%x] affinity mask to 0x%x.",
+          name, tid, tid, to_mask(cpu_set));
+    sched_setaffinity(tid, sizeof(cpu_set), &cpu_set);
+
+    pthread_setname_np(pthread_self(), name);
+
+    auto wakeTime = std::chrono::steady_clock::now();
+
+    while (true) {
+        {
+            // mutex should be unlocked before sleeping
+            std::lock_guard<std::mutex> lock(mWaitingMutex);
+            mWaitingCondition.wait(mWaitingMutex);
+            if (!mThreadRunning) {
+                break;
+            }
+
+            const auto timePassed = std::chrono::steady_clock::now() - wakeTime;
+            const int intervals = std::floor(timePassed / mRefreshPeriod);
+            wakeTime += (intervals + 1) * mRefreshPeriod;
+        }
+
+        std::this_thread::sleep_until(wakeTime);
+        mCallback();
+    }
+    ALOGI("Terminating choreographer thread");
 }
 
 
 void NoChoreographerThread::postFrameCallbacks() {
-    mCallback();
+    std::lock_guard<std::mutex> lock(mWaitingMutex);
+    mWaitingCondition.notify_one();
 }
 
 void NoChoreographerThread::scheduleNextFrameCallback() {}
