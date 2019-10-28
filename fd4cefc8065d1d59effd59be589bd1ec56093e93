@@ -22,6 +22,29 @@
       "revId": "fd4cefc8065d1d59effd59be589bd1ec56093e93",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "14401f36_52a613c9",
+        "filename": "src/tuningfork/crash_handler.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 249,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-10-28T14:11:04Z",
+      "side": 1,
+      "message": "For crash_handler I think it is better not to use it at all for ndk \u003c 15",
+      "range": {
+        "startLine": 245,
+        "startChar": 0,
+        "endLine": 249,
+        "endChar": 6
+      },
+      "revId": "fd4cefc8065d1d59effd59be589bd1ec56093e93",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
