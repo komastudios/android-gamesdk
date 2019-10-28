@@ -569,7 +569,7 @@ void SwappyCommon::postWaitCallbacks() {
 void SwappyCommon::startFrameCallbacks() {
     executeTracers(mInjectedTracers.startFrame,
                    mCurrentFrame,
-                   (long) mCurrentFrameTimestamp.time_since_epoch().count());
+                   (long) mPresentationTime.time_since_epoch().count());
 }
 
 void SwappyCommon::swapIntervalChangedCallbacks() {
@@ -673,8 +673,6 @@ void SwappyCommon::startFrame() {
         currentFrameTimestamp = mCurrentFrameTimestamp;
     }
 
-    startFrameCallbacks();
-
     mTargetFrame = currentFrame + mAutoSwapInterval;
 
     const int intervals = (mPipelineMode == PipelineMode::On) ? 2 : 1;
@@ -685,6 +683,8 @@ void SwappyCommon::startFrame() {
 
     mStartFrameTime = std::chrono::steady_clock::now();
     mCPUTracer.startTrace();
+
+    startFrameCallbacks();
 }
 
 void SwappyCommon::waitUntil(int32_t target) {
