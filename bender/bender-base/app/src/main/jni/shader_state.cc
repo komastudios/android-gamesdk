@@ -42,7 +42,7 @@ void ShaderState::setVertexShader(const std::string &name) {
       .pName = "main",
   };
 
-  shaderStages[static_cast<int>(Type::Vertex)] = shaderStage;
+  shaderStages[EEstatic_cast<int>(Type::Vertex)] = shaderStage;
   shaderModules[static_cast<int>(Type::Vertex)] = shader;
 }
 
