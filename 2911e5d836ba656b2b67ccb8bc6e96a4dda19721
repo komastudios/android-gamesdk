@@ -2,6 +2,40 @@
   "comments": [
     {
       "key": {
+        "uuid": "d917b30a_1d6900da",
+        "filename": "build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-10-28T17:07:08Z",
+      "side": 1,
+      "message": "spaces instead of tabs pls.",
+      "revId": "2911e5d836ba656b2b67ccb8bc6e96a4dda19721",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "918e466e_a5482051",
+        "filename": "build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-10-28T17:07:08Z",
+      "side": 1,
+      "message": "spaces not tabs",
+      "revId": "2911e5d836ba656b2b67ccb8bc6e96a4dda19721",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b666cbd1_3a13de2c",
         "filename": "src/swappy/common/FrameStatistics.cpp",
         "patchSetId": 3
@@ -46,6 +80,23 @@
       "revId": "2911e5d836ba656b2b67ccb8bc6e96a4dda19721",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "226e75f3_9c552b49",
+        "filename": "src/swappy/vulkan/SwappyVk.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-10-28T17:07:08Z",
+      "side": 1,
+      "message": "why is this needed? won\u0027t doesPhysicalDeviceHaveGoogleDisplayTiming[physicalDevice] just be false?",
+      "revId": "2911e5d836ba656b2b67ccb8bc6e96a4dda19721",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     },
     {
       "key": {
