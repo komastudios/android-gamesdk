@@ -54,12 +54,14 @@ SwappyVkBase::SwappyVkBase(JNIEnv           *env,
 }
 
 void SwappyVkBase::initGoogExtension() {
+#if ANDROID_NDK_VERSION>=15
     mpfnGetRefreshCycleDurationGOOGLE =
             reinterpret_cast<PFN_vkGetRefreshCycleDurationGOOGLE>(
                     mpfnGetDeviceProcAddr(mDevice, "vkGetRefreshCycleDurationGOOGLE"));
     mpfnGetPastPresentationTimingGOOGLE =
             reinterpret_cast<PFN_vkGetPastPresentationTimingGOOGLE>(
                     mpfnGetDeviceProcAddr(mDevice, "vkGetPastPresentationTimingGOOGLE"));
+#endif
 }
 
 void SwappyVkBase::doSetSwapInterval(VkSwapchainKHR swapchain, uint64_t swap_ns) {
