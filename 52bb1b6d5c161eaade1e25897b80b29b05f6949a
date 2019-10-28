@@ -1,0 +1,7 @@
+Code-Review+2: Omar El Sheikh <theoking@google.com>
+Presubmit-Ready+1: Treehugger Robot <treehugger-gerrit@google.com>
+Submitted-by: Francesco Carucci <fcarucci@google.com>
+Submitted-at: Mon, 28 Oct 2019 16:53:20 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1151452
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
