@@ -12,25 +12,46 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
+
 #include "vulkan_main.h"
 #include <android_native_app_glue.h>
 #include <cassert>
 #include <vector>
 #include <cstring>
 #include <debug_marker.h>
-#include "vulkan_wrapper.h"
+#include <chrono>
 
+#include "vulkan_wrapper.h"
 #include "bender_kit.h"
+#include "bender_helpers.h"
 #include "renderer.h"
 #include "shader_state.h"
 #include "geometry.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
+using namespace BenderHelpers;
 
 /// Global Variables ...
 
 std::vector<VkImageView> displayViews_;
 std::vector<VkFramebuffer> framebuffers_;
 
+std::vector<VkBuffer> uniformBuffers_;
+std::vector<VkDeviceMemory> uniformBuffersMemory_;
+VkDescriptorSetLayout descriptorSetLayout_;
+VkDescriptorPool descriptorPool_;
+std::vector<VkDescriptorSet> descriptorSets_;
+
 VkRenderPass render_pass;
+
+struct UniformBufferObject {
+    float time;
+
+    alignas(16) glm::mat4 mvp;
+};
 
 struct VulkanGfxPipelineInfo {
   VkPipelineLayout layout_;
@@ -96,6 +117,102 @@ void createFrameBuffers(VkRenderPass &renderPass,
 
     CALL_VK(vkCreateFramebuffer(device->getDevice(), &fbCreateInfo, nullptr,
                                 &framebuffers_[i]));
+  }
+}
+
+void createUniformBuffers() {
+  VkDeviceSize bufferSize = sizeof(UniformBufferObject);
+
+  uniformBuffers_.resize(device->getSwapchainLength());
+  uniformBuffersMemory_.resize(device->getSwapchainLength());
+
+  for (size_t i = 0; i < device->getSwapchainLength(); i++) {
+    createBuffer(device, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+            uniformBuffers_[i], uniformBuffersMemory_[i]);
+  }
+}
+
+void updateUniformBuffer(uint32_t frameIndex) {
+    static auto startTime = std::chrono::high_resolution_clock::now();
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    auto timeDiff = std::chrono::duration<float>(currentTime - startTime).count();
+
+    glm::mat4 model = glm::rotate(glm::mat4(1.0f), timeDiff * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, -2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 proj = glm::perspective(glm::radians(100.0f),
+            device->getDisplaySize().width / (float) device->getDisplaySize().height, 0.1f, 10.0f);
+    proj[1][1] *= -1;
+    glm::mat4 mvp = proj * view * model;
+
+    UniformBufferObject ubo = {
+        .time = timeDiff,
+        .mvp = mvp,
+    };
+
+    void* data;
+    vkMapMemory(device->getDevice(), uniformBuffersMemory_[frameIndex], 0, sizeof(ubo), 0, &data);
+    memcpy(data, &ubo, sizeof(ubo));
+    vkUnmapMemory(device->getDevice(), uniformBuffersMemory_[frameIndex]);
+}
+
+void createDescriptorSets() {
+  VkDescriptorSetLayoutBinding descriptorLayoutBinding = {
+        .binding = 0,
+        .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+        .descriptorCount = 1,
+        .stageFlags = VK_SHADER_STAGE_VERTEX_BIT,
+  };
+
+  VkDescriptorSetLayoutCreateInfo descriptorLayoutInfo = {
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+        .bindingCount = 1,
+        .pBindings = &descriptorLayoutBinding,
+  };
+  CALL_VK(vkCreateDescriptorSetLayout(device->getDevice(), &descriptorLayoutInfo, nullptr,
+                                    &descriptorSetLayout_))
+
+  VkDescriptorPoolSize poolSize = {
+      .type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+      .descriptorCount = device->getSwapchainLength(),
+  };
+  VkDescriptorPoolCreateInfo poolInfo = {
+      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+      .poolSizeCount = 1,
+      .pPoolSizes = &poolSize,
+      .maxSets = device->getSwapchainLength(),
+  };
+  CALL_VK(vkCreateDescriptorPool(device->getDevice(), &poolInfo, nullptr, &descriptorPool_));
+
+  std::vector<VkDescriptorSetLayout> layouts(device->getSwapchainLength(), descriptorSetLayout_);
+  VkDescriptorSetAllocateInfo allocInfo = {
+      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+      .descriptorPool = descriptorPool_,
+      .descriptorSetCount = device->getSwapchainLength(),
+      .pSetLayouts = layouts.data(),
+  };
+
+  descriptorSets_.resize(device->getSwapchainLength());
+  CALL_VK(vkAllocateDescriptorSets(device->getDevice(), &allocInfo, descriptorSets_.data()))
+
+  for (size_t i = 0; i < device->getSwapchainLength(); i++) {
+    VkDescriptorBufferInfo bufferInfo = {
+        .buffer = uniformBuffers_[i],
+        .offset = 0,
+        .range = sizeof(UniformBufferObject),
+    };
+
+    VkWriteDescriptorSet descriptorWrite = {
+        .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+        .dstSet = descriptorSets_[i],
+        .dstBinding = 0,
+        .dstArrayElement = 0,
+        .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+        .descriptorCount = 1,
+        .pBufferInfo = &bufferInfo,
+    };
+
+    vkUpdateDescriptorSets(device->getDevice(), 1, &descriptorWrite, 0, nullptr);
   }
 }
 
@@ -176,8 +293,8 @@ void createGraphicsPipeline() {
   VkPipelineLayoutCreateInfo pipelineLayoutInfo{
       .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
       .pNext = nullptr,
-      .setLayoutCount = 0,
-      .pSetLayouts = nullptr,
+      .setLayoutCount = 1,
+      .pSetLayouts = &descriptorSetLayout_,
       .pushConstantRangeCount = 0,
       .pPushConstantRanges = nullptr,
   };
@@ -229,6 +346,10 @@ bool InitVulkan(android_app *app) {
   assert(device->isInitialized());
   DebugMarker::setObjectName(device->getDevice(), (uint64_t)device->getDevice(),
       VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, "TEST NAME: VULKAN DEVICE");
+
+  createUniformBuffers();
+
+  createDescriptorSets();
 
   renderer = new Renderer(device);
 
@@ -307,7 +428,12 @@ void DeleteVulkan(void) {
   for (int i = 0; i < device->getSwapchainLength(); ++i) {
     vkDestroyImageView(device->getDevice(), displayViews_[i], nullptr);
     vkDestroyFramebuffer(device->getDevice(), framebuffers_[i], nullptr);
+
+    vkDestroyBuffer(device->getDevice(), uniformBuffers_[i], nullptr);
+    vkFreeMemory(device->getDevice(), uniformBuffersMemory_[i], nullptr);
   }
+
+  vkDestroyDescriptorPool(device->getDevice(), descriptorPool_, nullptr);
 
   vkDestroyPipeline(device->getDevice(), gfxPipeline.pipeline_, nullptr);
   vkDestroyPipelineCache(device->getDevice(), gfxPipeline.cache_, nullptr);
@@ -357,7 +483,10 @@ bool VulkanDrawFrame(void) {
                     gfxPipeline.pipeline_);
 
   geometry->bind(renderer->getCurrentCommandBuffer());
+  updateUniformBuffer(renderer->getCurrentFrame());
 
+  vkCmdBindDescriptorSets(renderer->getCurrentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS,
+          gfxPipeline.layout_, 0, 1, &descriptorSets_[renderer->getCurrentFrame()], 0, nullptr);
   vkCmdDrawIndexed(renderer->getCurrentCommandBuffer(),
                    static_cast<u_int32_t>(geometry->getIndexCount()),
                    1, 0, 0, 0);
