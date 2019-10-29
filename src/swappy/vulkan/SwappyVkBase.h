@@ -156,9 +156,10 @@ protected:
 
     PFN_vkGetDeviceProcAddr               mpfnGetDeviceProcAddr               = nullptr;
     PFN_vkQueuePresentKHR                 mpfnQueuePresentKHR                 = nullptr;
+#if ANDROID_NDK_VERSION>=15
     PFN_vkGetRefreshCycleDurationGOOGLE   mpfnGetRefreshCycleDurationGOOGLE   = nullptr;
     PFN_vkGetPastPresentationTimingGOOGLE mpfnGetPastPresentationTimingGOOGLE = nullptr;
-
+#endif
     // Holds VKSync objects ready to be used
     std::map<VkQueue, std::list<VkSync>>              mFreeSyncPool;
 
