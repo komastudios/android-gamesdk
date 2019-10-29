@@ -15,6 +15,7 @@
 #include "renderer.h"
 #include "trace.h"
 #include <android_native_app_glue.h>
+#include <debug_marker.h>
 
 void setImageLayout(VkCommandBuffer cmdBuffer, VkImage image,
                     VkImageLayout oldImageLayout, VkImageLayout newImageLayout,
@@ -103,7 +104,7 @@ void Renderer::beginPrimaryCommandBufferRecording() {
   // transition the display image to color attachment layout
   setImageLayout(getCurrentCommandBuffer(),
                  device_->getDisplayImage(current_frame),
-                 VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+                 VK_IMAGE_LAYOUT_UNDEFINED,
                  VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                  VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
                  VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
@@ -112,7 +113,7 @@ void Renderer::beginPrimaryCommandBufferRecording() {
 void Renderer::endPrimaryCommandBufferRecording() {
   setImageLayout(getCurrentCommandBuffer(),
                  getCurrentDisplayImage(),
-                 VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                 VK_IMAGE_LAYOUT_UNDEFINED,
                  VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
                  VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
                  VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT);
@@ -148,6 +149,10 @@ void Renderer::init() {
     };
     CALL_VK(vkAllocateCommandBuffers(device_->getDevice(), &cmd_buffer_createInfo,
                                      &cmd_buffer_[i]));
+
+    DebugMarker::setObjectName(device_->getDevice(), (uint64_t)cmd_buffer_[i],
+        VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT,
+        ("TEST NAME: COMMAND BUFFER" + std::to_string(i)).c_str());
 
     VkSemaphoreCreateInfo semaphore_create_info{
         .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
