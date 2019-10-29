@@ -18,6 +18,9 @@ class Geometry {
   int getVertexCount() const { return vertexCount_; }
   int getIndexCount() const { return indexCount_; }
 
+  void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
+                      VkBuffer &buffer, VkDeviceMemory &bufferMemory);
+
   void bind(VkCommandBuffer commandBuffer) const;
 
  private:
@@ -33,9 +36,6 @@ class Geometry {
 
   uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties,
                           VkPhysicalDevice gpuDevice) const;
-
-  void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
-                    VkBuffer &buffer, VkDeviceMemory &bufferMemory);
 
   void createVertexBuffer(std::vector<float> vertexData, std::vector<uint16_t> indexData);
 };
