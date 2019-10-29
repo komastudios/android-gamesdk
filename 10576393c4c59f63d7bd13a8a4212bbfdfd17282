@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "26342daf_7cc9688a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2019-10-29T09:04:40Z",
+      "side": 1,
+      "message": "No need to change the commit message for each patch.",
+      "revId": "10576393c4c59f63d7bd13a8a4212bbfdfd17282",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
