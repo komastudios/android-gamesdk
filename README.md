@@ -1,37 +1,71 @@
-# Android Game SDK
+Android Game SDK
 
 ## Build the Game SDK
 
-In order to build using prebuild NDK versions, this project must be initialized from a custom repo using:
+In order to build the Game SDK, this project must be initialized from a custom repo.
 
 ```bash
 mkdir android-games-sdk
 cd android-games-sdk
 repo init -u https://android.googlesource.com/platform/manifest -b android-games-sdk
-# Or for Googlers:
-# repo init -u persistent-https://googleplex-android.git.corp.google.com/platform/manifest -b android-games-sdk
+```
+### Build with locally installed SDK/NDK
+
+If the Android SDK is already installed locally, then download only the Game SDK source and build tools (<500Mb).
+
+```bash
+repo sync -c -j8 gamesdk
+repo sync -c -j8 prebuilts/cmake/linux-x86 external/modp_b64 external/googletest external/nanopb-c external/protobuf
+```
+
+Point the environment variable `ANDROID_HOME` to your local Android SDK (and `ANDROID_NDK`, if the ndk isn't in `ANDROID_HOME/ndk-bundle`).
+Use the following gradle tasks to build the Game SDK with or without Tuning Fork (default target is `archiveZip`).
+
+```bash
+cd gamesdk
+./gradlew archiveZip # Without Tuning Fork
+./gradlew archiveTfZip # With Tuning Fork
+```
+
+### Build with specific prebuilt SDKs
+
+Download the project along with specific versions of prebuilt Android SDK and NDK (<4GB).
+First, download the core project and tools
+
+```bash
+repo sync -c -j8 gamesdk
+repo sync -c -j8 prebuilts/cmake/linux-x86 external/modp_b64 external/googletest external/nanopb-c external/protobuf
+```
+
+Next, use the download script to get prebuilt SDKs and/or NDKs.
+
+```bash
+cd gamesdk
+./download.sh
+```
+
+Finally, build the Game SDK using downloaded pebuilts.
+
+```bash
+cd gamesdk
+ANDROID_HOME=../prebuilts/sdk ANDROID_NDK=../prebuilts/ndk/r20 ./gradlew archiveZip # Without Tuning Fork
+ANDROID_HOME=../prebuilts/sdk ANDROID_NDK=../prebuilts/ndk/r20 ./gradlew archiveTfZip # With Tuning Fork
+```
+
+### Build with all prebuilt SDKs
+
+Download the whole repository with all available prebuilt Android SDKs and NDKs (<23GB).
+
+```bash
 repo sync -c -j8
 ```
 
-### Build with prebuilt SDKs
+Build static and dynamic libraries for several SDK/NDK pairs.
 
 ```bash
 cd gamesdk
 ANDROID_HOME=../prebuilts/sdk ./gradlew gamesdkZip
 ```
-
-will build static and dynamic libraries for several SDK/NDK pairs.
-
-### Build with locally installed SDK/NDK
-
-By default, the gradle script builds target `archiveZip`.
-
-```bash
-./gradlew archiveZip # Without Tuning Fork
-./gradlew archiveTfZip # With Tuning Fork
-```
-
-This will use a locally installed SDK/NDK pointed to by `ANDROID_HOME` (and `ANDROID_NDK`, if the ndk isn't in `ANDROID_HOME/ndk-bundle`).
 
 ## Tests
 
