@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">GC✕OR</string>
+    <string name="save_logs">Save Logs</string>
+    <string name="run_all">Run All</string>
+    <string name="fps_pending">…</string>
+    <string name="dialog_title_exec_then_terminate">Execute suite then terminate?</string>
+    <string name="dialog_button_execute_then_terminate">Execute then Terminate</string>
+    <string name="dialog_message_exec_then_terminate">After test suite \"%1$s\" completes, AndroidCertTest will terminate</string>
+    <string name="dialog_title_crash_warning">Last test crashed!</string>
+    <string name="dialog_message_crash_warning">The report log from the last test run is preserved; extract it now. The next run of this app will overwrite the report log</string>
+</resources>

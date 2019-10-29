@@ -3,13 +3,14 @@
 ---
 
 ## Installation
-1) After cloning update submodules to get dependencies.
+Build the gamesdk `archiveZip` target:
 ```
-git submodule init
-git submodule update
+cd ../../gamesdk
+./gradlew archiveZip
 ```
 
-2) Install the Android gamesdk, and set `gamesdk.dir` in `AndroidCertTest/local.properties` to that location, e.g.:
+Run the `install_deps.sh` script to install `glm` and `nlohman::json`
 ```
-gamesdk.dir=/path/to/android-games-sdk/gamesdk
+./install_deps.sh
 ```
+
