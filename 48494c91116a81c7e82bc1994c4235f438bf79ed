@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fb93bacb_112874cc",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-10-29T22:20:07Z",
+      "side": 1,
+      "message": "This makes me think that we should move createBuffer (and the findMemoryType that it depends on) somewhere more generic than Geometry, if it\u0027s a helper function that helps beyond just vertex/index buffers.",
+      "range": {
+        "startLine": 128,
+        "startChar": 4,
+        "endLine": 128,
+        "endChar": 197
+      },
+      "revId": "48494c91116a81c7e82bc1994c4235f438bf79ed",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
