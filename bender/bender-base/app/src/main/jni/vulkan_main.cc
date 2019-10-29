@@ -44,12 +44,7 @@ BenderKit::Device *device;
 Geometry *geometry;
 Renderer *renderer;
 
-/*
- * setImageLayout():
- *    Helper function to transition color buffer layout
- */
-
-void CreateFrameBuffers(VkRenderPass &renderPass,
+void createFrameBuffers(VkRenderPass &renderPass,
                         VkImageView depthView = VK_NULL_HANDLE) {
   // create image view for each swapchain image
   displayViews_.resize(device->getDisplayImagesSize());
@@ -81,7 +76,6 @@ void CreateFrameBuffers(VkRenderPass &renderPass,
                               &displayViews_[i]));
   }
 
-  // create a framebuffer from each swapchain image
   framebuffers_.resize(device->getSwapchainLength());
   for (uint32_t i = 0; i < device->getSwapchainLength(); i++) {
     VkImageView attachments[2] = {
@@ -227,9 +221,6 @@ void createGraphicsPipeline() {
   shaderState.cleanup();
 }
 
-// InitVulkan:
-//   Initialize Vulkan Context when android application window is created
-//   upon return, vulkan is ready to draw frames
 bool InitVulkan(android_app *app) {
   androidAppCtx = app;
 
@@ -279,7 +270,6 @@ bool InitVulkan(android_app *app) {
   CALL_VK(vkCreateRenderPass(device->getDevice(), &render_pass_createInfo, nullptr,
                              &render_pass));
 
-
   // ---------------------------------------------
   // Create the triangle vertex buffer with indices
   const std::vector<float> vertexData = {
@@ -295,12 +285,8 @@ bool InitVulkan(android_app *app) {
 
   geometry = new Geometry(device, vertexData, indexData);
 
-  // -----------------------------------------------------------------
-  // Create 2 frame buffers.
-  CreateFrameBuffers(render_pass);
+  createFrameBuffers(render_pass);
 
-  // -----------------------------------------------------------------
-  // Create Graphics Pipeline and layouts
   createGraphicsPipeline();
 
   return true;
