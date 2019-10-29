@@ -13,8 +13,17 @@ def platformString() {
         return "mac";
     else if (OperatingSystem.current().isLinux())
         return "linux-x86";
+    else if (OperatingSystem.current().isWindows())
+        return "win";
     else
         throw new GradleException("Only MacOsX and Linux are supported")
+}
+
+def osSuffix() {
+    if (OperatingSystem.current().isWindows())
+        return ".exe"
+    else
+        return ""
 }
 
 def protobufInstallDir() {
@@ -106,7 +115,7 @@ abstract class Toolchain {
     }
     String findNDKTool(String name) {
         def tools = project_.fileTree( dir: project_.joinPath(getAndroidNDKPath(), 'toolchains'),
-                                       include: ['**/bin/'+name])
+                                       include: ['**/bin/'+name+project_.osSuffix()])
         if (tools==null || tools.size() == 0) {
             throw new GradleException('No ' + name + ' found in ' + ndkPath_ + '/toolchains')
         }
@@ -127,11 +136,11 @@ class SpecificToolchain extends Toolchain {
     }
     public String getCMakePath() {
         return new File("${project_.projectDir}/../prebuilts/cmake/"
-                        + project_.platformString() + "/bin/cmake").getPath()
+                        + project_.platformString() + "/bin/cmake" + project_.osSuffix()).getPath()
     }
     public String getNinjaPath() {
         return new File("${project_.projectDir}/../prebuilts/cmake/"
-                        + project_.platformString() + "/bin/ninja").getPath()
+                        + project_.platformString() + "/bin/ninja" + project_.osSuffix()).getPath()
     }
 }
 class LocalToolchain extends Toolchain {
@@ -179,9 +188,8 @@ class LocalToolchain extends Toolchain {
         if (tool) {
             return tool;
         }
-        def osname = OperatingSystem.current().isWindows() ? name + '.exe' : name
         def tools = project_.fileTree( dir: project_.joinPath(sdkPath_, 'cmake'),
-                                      include: ['**/bin/'+osname] )
+                                      include: ['**/bin/'+name+project_.osSuffix()] )
         if (tools==null || tools.size() == 0) {
             throw new GradleException('No ' + osname + ' found in ' + sdkPath_ + '/cmake')
         }
@@ -328,17 +336,37 @@ task cleanPath(type: Delete) {
     delete getTempPath()
     delete getBuildPath()
 }
+def executeCmd(cmd, dir) {
+    def out = new StringBuilder()
+    def err = new StringBuilder()
+    def process = cmd.execute(null, new File(dir))
+    process.consumeProcessOutput(out, err)
+    process.waitFor()
+    logger.info("Runnig $cmd")
+    if(out.length()>0)
+        logger.info(out.toString())
+    if(err.length()>0)
+        logger.error(err.toString())
+}
 
 // Create outAr from the contents of inArs
 // All files taken/created in dir
 def repackArchives(dir, inArs, outAr) {
     def arPath = getLocalToolchain().getArPath()
-    def cmd = /pushd $dir &&/
-    inArs.each {
-        cmd <<= /$arPath -x $it &&/
+    if (OperatingSystem.current().isWindows()) {
+        inArs.each {
+            executeCmd("cmd /c ${arPath} -x ${it}", dir)
+        }
+        executeCmd("cmd /c for %i in (*.o) do ${arPath} -rcs ${outAr} %i", dir)
+        executeCmd("cmd /c del *.o", dir)
+    }  else {
+        def cmd = /pushd $dir &&/
+        inArs.each {
+            cmd <<= /$arPath -x $it &&/
+        }
+        cmd <<= /$arPath -rcs $outAr *.o && rm *.o && popd/
+        ['/bin/bash', '-c', cmd.toString()].execute().waitFor()
     }
-    cmd <<= /$arPath -rcs $outAr *.o && rm *.o && popd/
-    ['/bin/bash', '-c', cmd.toString()].execute().waitFor()
 }
 
 def sdkCopy(buildInfo, outFolder, all = true, staticToo = false,
