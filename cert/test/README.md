@@ -3,13 +3,14 @@
 ---
 
 ## Installation
-1) After cloning update submodules to get dependencies.
+1) After cloning update submodules to get dependencies. 
 ```
 git submodule init
 git submodule update
 ```
 
-2) Install the Android gamesdk, and set `gamesdk.dir` in `AndroidCertTest/local.properties` to that location, e.g.:
+Remember to build the gamesdk `archiveZip` target:
 ```
-gamesdk.dir=/path/to/android-games-sdk/gamesdk
+cd ../../gamesdk
+./gradlew archiveZip
 ```
