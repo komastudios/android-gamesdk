@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "90724dae_2bee8ad9",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 402,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-29T23:13:39Z",
+      "side": 1,
+      "message": "Shouldn\u0027t these two calls be at the beginning of the method?",
+      "revId": "7ed357dce1ef44158fdedbd155aafebabc211828",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d4c1e712_1eef6637",
+        "filename": "bender/bender-base/app/src/main/shaders/triangle.vert",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-29T23:13:39Z",
+      "side": 1,
+      "message": "is ubo.proj * ubo.view * ubo.model constant for every vertex in the drawcall?",
+      "revId": "7ed357dce1ef44158fdedbd155aafebabc211828",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
