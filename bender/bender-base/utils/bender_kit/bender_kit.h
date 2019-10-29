@@ -50,6 +50,10 @@ class Device {
 
   void CreateImageView();
 
+  void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer &buffer,
+                    VkDeviceMemory &bufferMemory,
+                    VkMemoryPropertyFlags properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
   VkDevice getDevice() { return device_; }
 
   VkPhysicalDevice getPhysicalDevice() { return gpuDevice_; }

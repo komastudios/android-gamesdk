@@ -32,37 +32,6 @@ uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties,
     return -1;
 }
 
-void createBuffer(BenderKit::Device *device, VkDeviceSize size, VkBufferUsageFlags usage,
-                  VkMemoryPropertyFlags properties, VkBuffer &buffer,
-                  VkDeviceMemory &bufferMemory) {
-    VkBufferCreateInfo bufferInfo = {
-            .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-            .pNext = nullptr,
-            .size = size,
-            .usage = usage,
-            .flags = 0,
-            .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
-            .queueFamilyIndexCount = 1,
-    };
-
-    CALL_VK(vkCreateBuffer(device->getDevice(), &bufferInfo, nullptr, &buffer));
-
-    VkMemoryRequirements memRequirements;
-    vkGetBufferMemoryRequirements(device->getDevice(), buffer, &memRequirements);
-
-    VkMemoryAllocateInfo allocInfo = {
-            .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-            .pNext = nullptr,
-            .allocationSize = memRequirements.size,
-            .memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits,
-                                              properties, device->getPhysicalDevice())
-    };
-
-    CALL_VK(vkAllocateMemory(device->getDevice(), &allocInfo, nullptr, &bufferMemory));
-    CALL_VK(vkBindBufferMemory(device->getDevice(), buffer, bufferMemory, 0));
-}
-
-
 void setImageLayout(VkCommandBuffer cmdBuffer, VkImage image,
                     VkImageLayout oldImageLayout, VkImageLayout newImageLayout,
                     VkPipelineStageFlags srcStages,

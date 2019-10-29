@@ -5,6 +5,9 @@ set(APP_GLUE_DIR ${ANDROID_NDK}/sources/android/native_app_glue)
 include_directories(${APP_GLUE_DIR})
 add_library(app-glue STATIC ${APP_GLUE_DIR}/android_native_app_glue.c)
 
+# incorporate glm
+include_directories(../external)
+
 # build vulkan app
 set(SRC_DIR src/main/jni)
 set(KIT_DIR ../utils/bender_kit)
