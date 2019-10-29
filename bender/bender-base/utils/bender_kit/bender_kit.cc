@@ -18,11 +18,10 @@
 #include "vulkan_wrapper.h"
 #include "bender_kit.h"
 #include "debug_marker.h"
-
-// #include "BenderHelpers.hpp"
-
+#include "bender_helpers.h"
 
 using namespace BenderKit;
+using namespace BenderHelpers;
 
 // **********************************************************
 // Device class member functions
@@ -166,6 +165,36 @@ void Device::CreateVulkanDevice(ANativeWindow *platformWindow,
   vkGetDeviceQueue(device_, queueFamilyIndex_, 0, &queue_);
   DebugMarker::setup(device_, gpuDevice_);
   LOGI("<-CreateVulkanDevice");
+}
+
+void Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
+                  VkMemoryPropertyFlags properties, VkBuffer &buffer,
+                  VkDeviceMemory &bufferMemory) {
+  VkBufferCreateInfo bufferInfo = {
+          .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+          .pNext = nullptr,
+          .size = size,
+          .usage = usage,
+          .flags = 0,
+          .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+          .queueFamilyIndexCount = 1,
+  };
+
+  CALL_VK(vkCreateBuffer(device_, &bufferInfo, nullptr, &buffer));
+
+  VkMemoryRequirements memRequirements;
+  vkGetBufferMemoryRequirements(device_, buffer, &memRequirements);
+
+  VkMemoryAllocateInfo allocInfo = {
+          .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+          .pNext = nullptr,
+          .allocationSize = memRequirements.size,
+          .memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits,
+                                            properties, gpuDevice_)
+  };
+
+  CALL_VK(vkAllocateMemory(device_, &allocInfo, nullptr, &bufferMemory));
+  CALL_VK(vkBindBufferMemory(device_, buffer, bufferMemory, 0));
 }
 
 void Device::CreateSwapChain() {

@@ -29,12 +29,12 @@ void Geometry::createVertexBuffer(std::vector<float> vertexData, std::vector<uin
   indexCount_ = indexData.size();
 
   VkDeviceSize bufferSizeVertex = sizeof(vertexData[0]) * vertexData.size();
-  createBuffer(device_, bufferSizeVertex, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+  device_->createBuffer(bufferSizeVertex, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                vertexBuf_, vertexBufferDeviceMemory_);
 
   VkDeviceSize bufferSizeIndex = sizeof(indexData[0]) * indexData.size();
-  createBuffer(device_, bufferSizeIndex, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+  device_->createBuffer(bufferSizeIndex, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                indexBuf_, indexBufferDeviceMemory_);
 
