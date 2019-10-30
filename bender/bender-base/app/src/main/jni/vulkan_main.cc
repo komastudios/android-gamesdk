@@ -39,6 +39,13 @@ struct VulkanGfxPipelineInfo {
 };
 VulkanGfxPipelineInfo gfxPipeline;
 
+struct Buffer{
+  VkImage image;
+  VkDeviceMemory device_memory;
+  VkImageView image_view;
+};
+Buffer depthBuffer;
+
 // Android Native App pointer...
 android_app *androidAppCtx = nullptr;
 BenderKit::Device *device;
@@ -222,6 +229,40 @@ void createGraphicsPipeline() {
   shaderState.cleanup();
 }
 
+void createDepthBuffer(){
+  VkImageCreateInfo imageInfo = {
+      .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+      .imageType = VK_IMAGE_TYPE_2D,
+      .extent.width = device->getDisplaySize().width,
+      .extent.height = device->getDisplaySize().height,
+      .extent.depth = 1,
+      .mipLevels = 1,
+      .arrayLayers = 1,
+      .format = VK_FORMAT_D32_SFLOAT,
+      .tiling = VK_IMAGE_TILING_OPTIMAL,
+      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+      .usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+      .samples = VK_SAMPLE_COUNT_1_BIT,
+      .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+  };
+
+  CALL_VK(vkCreateImage(device->getDevice(), &imageInfo, nullptr, &depthBuffer.image));
+
+  VkMemoryRequirements memRequirements;
+  vkGetImageMemoryRequirements(device->getDevice(), depthBuffer.image, &memRequirements);
+
+  VkMemoryAllocateInfo allocInfo = {};
+  allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+  allocInfo.allocationSize = memRequirements.size;
+  allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
+
+  if (vkAllocateMemory(device, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) {
+    throw std::runtime_error("failed to allocate image memory!");
+  }
+
+  vkBindImageMemory(device, image, imageMemory, 0);
+}
+
 bool InitVulkan(android_app *app) {
   androidAppCtx = app;
 
@@ -287,6 +328,8 @@ bool InitVulkan(android_app *app) {
   };
 
   geometry = new Geometry(device, vertexData, indexData);
+
+  createDepthBuffer();
 
   createFrameBuffers(render_pass);
 
