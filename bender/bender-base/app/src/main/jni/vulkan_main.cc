@@ -23,6 +23,7 @@
 #include <cstring>
 #include <debug_marker.h>
 #include <chrono>
+#include "vulkan_wrapper.h"
 
 #include "vulkan_wrapper.h"
 #include "bender_kit.h"
@@ -494,7 +495,7 @@ bool InitVulkan(android_app *app) {
 
   device = new BenderKit::Device(app->window);
   assert(device->isInitialized());
-  DebugMarker::setObjectName(device->getDevice(), (uint64_t)device->getDevice(),
+  device->setObjectName(reinterpret_cast<uint64_t>(device->getDevice()),
       VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, "TEST NAME: VULKAN DEVICE");
 
   createUniformBuffers();
@@ -595,8 +596,6 @@ bool InitVulkan(android_app *app) {
   return true;
 }
 
-// IsVulkanReady():
-//    native app poll to see if we are ready to draw...
 bool IsVulkanReady(void) { return device != nullptr && device->isInitialized(); }
 
 void DeleteVulkan(void) {
@@ -656,8 +655,8 @@ bool VulkanDrawFrame(void) {
   vkCmdBeginRenderPass(renderer->getCurrentCommandBuffer(), &render_pass_beginInfo,
                        VK_SUBPASS_CONTENTS_INLINE);
 
-  float color[4] = {1.0f, 0.0f, 1.0f, 0.0f};
-  DebugMarker::insert(renderer->getCurrentCommandBuffer(), "TEST MARKER: PIPELINE BINDING", color);
+  device->insertDebugMarker(renderer->getCurrentCommandBuffer(), "TEST MARKER: PIPELINE BINDING",
+                            {1.0f, 0.0f, 1.0f, 0.0f});
 
   vkCmdBindPipeline(renderer->getCurrentCommandBuffer(),
                     VK_PIPELINE_BIND_POINT_GRAPHICS,
