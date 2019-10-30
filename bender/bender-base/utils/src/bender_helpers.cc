@@ -14,22 +14,47 @@
 
 #include "bender_helpers.h"
 
-extern VkPhysicalDeviceMemoryProperties benderMemoryProperties;
+uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties,
+                                  VkPhysicalDevice gpuDevice) {
+    VkPhysicalDeviceMemoryProperties memProperties;
+    vkGetPhysicalDeviceMemoryProperties(gpuDevice, &memProperties);
 
-VkResult memory_type_from_properties(uint32_t typeBits, VkFlags requirements_mask,
-                                     uint32_t *typeIndex) {
-  // Search memtypes to find first index with those properties
-  for (uint32_t i = 0; i < 32; i++) {
-    if ((typeBits & 1) == 1) {
-      // Type is available, does it match user properties?
-      if ((benderMemoryProperties.memoryTypes[i].propertyFlags &
-          requirements_mask) == requirements_mask) {
-        *typeIndex = i;
-        return VK_SUCCESS;
-      }
+    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+        if ((typeFilter & (1 << i)) &&
+            (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+            return i;
+        }
     }
-    typeBits >>= 1;
-  }
-  // No memory types matched, return failure
-  return VK_ERROR_MEMORY_MAP_FAILED;
+
+    LOGE("failed to find suitable memory type!");
+    return -1;
+}
+
+void createBuffer(BenderKit::Device* device, VkDeviceSize size, VkBufferUsageFlags usage,
+                  VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory) {
+    VkBufferCreateInfo bufferInfo = {
+            .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+            .pNext = nullptr,
+            .size = size,
+            .usage = usage,
+            .flags = 0,
+            .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+            .queueFamilyIndexCount = 1,
+    };
+
+    CALL_VK(vkCreateBuffer(device->getDevice(), &bufferInfo, nullptr, &buffer));
+
+    VkMemoryRequirements memRequirements;
+    vkGetBufferMemoryRequirements(device->getDevice(), buffer, &memRequirements);
+
+    VkMemoryAllocateInfo allocInfo = {
+            .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+            .pNext = nullptr,
+            .allocationSize = memRequirements.size,
+            .memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits,
+                                              properties, device->getPhysicalDevice())
+    };
+
+    CALL_VK(vkAllocateMemory(device->getDevice(), &allocInfo, nullptr, &bufferMemory));
+    CALL_VK(vkBindBufferMemory(device->getDevice(), buffer, bufferMemory, 0));
 }

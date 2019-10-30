@@ -5,6 +5,8 @@
 #include "geometry.h"
 #include <vector>
 
+#include "bender_helpers.h"
+
 Geometry::Geometry(BenderKit::Device *device,
                    std::vector<float> vertexData,
                    std::vector<uint16_t> indexData) {
@@ -20,65 +22,17 @@ Geometry::~Geometry() {
   vkFreeMemory(device_->getDevice(), indexBufferDeviceMemory_, nullptr);
 }
 
-uint32_t Geometry::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties,
-                                  VkPhysicalDevice gpuDevice) const {
-  VkPhysicalDeviceMemoryProperties memProperties;
-  vkGetPhysicalDeviceMemoryProperties(gpuDevice, &memProperties);
-
-  for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
-    if ((typeFilter & (1 << i)) &&
-        (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
-      return i;
-    }
-  }
-
-  LOGE("failed to find suitable memory type!");
-  return -1;
-}
-
-void Geometry::createBuffer(VkDeviceSize size,
-                            VkBufferUsageFlags usage,
-                            VkMemoryPropertyFlags properties,
-                            VkBuffer &buffer,
-                            VkDeviceMemory &bufferMemory) {
-  VkBufferCreateInfo bufferInfo = {
-      .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-      .pNext = nullptr,
-      .size = size,
-      .usage = usage,
-      .flags = 0,
-      .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
-      .queueFamilyIndexCount = 1,
-  };
-
-  CALL_VK(vkCreateBuffer(device_->getDevice(), &bufferInfo, nullptr, &buffer));
-
-  VkMemoryRequirements memRequirements;
-  vkGetBufferMemoryRequirements(device_->getDevice(), buffer, &memRequirements);
-
-  VkMemoryAllocateInfo allocInfo = {
-      .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-      .pNext = nullptr,
-      .allocationSize = memRequirements.size,
-      .memoryTypeIndex = Geometry::findMemoryType(memRequirements.memoryTypeBits,
-                                                  properties, device_->getPhysicalDevice())
-  };
-
-  CALL_VK(vkAllocateMemory(device_->getDevice(), &allocInfo, nullptr, &bufferMemory));
-  CALL_VK(vkBindBufferMemory(device_->getDevice(), buffer, bufferMemory, 0));
-}
-
 void Geometry::createVertexBuffer(std::vector<float> vertexData, std::vector<uint16_t> indexData) {
   vertexCount_ = vertexData.size();
   indexCount_ = indexData.size();
 
   VkDeviceSize bufferSizeVertex = sizeof(vertexData[0]) * vertexData.size();
-  createBuffer(bufferSizeVertex, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+  createBuffer(device_, bufferSizeVertex, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                vertexBuf_, vertexBufferDeviceMemory_);
 
   VkDeviceSize bufferSizeIndex = sizeof(indexData[0]) * indexData.size();
-  createBuffer(bufferSizeIndex, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+  createBuffer(device_, bufferSizeIndex, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                indexBuf_, indexBufferDeviceMemory_);
 

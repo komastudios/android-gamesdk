@@ -14,35 +14,14 @@
 
 #ifndef BENDER_BASE_UTILS_SRC_BENDER_HELPERS_H_
 #define BENDER_BASE_UTILS_SRC_BENDER_HELPERS_H_
-#include <android/log.h>
-#include <android/asset_manager.h>
-#include <vulkan_wrapper.h>
-#include <cassert>
 
-VkResult memory_type_from_properties(uint32_t typeBits, VkFlags requirements_mask,
-                                     uint32_t *typeIndex);
+#include "vulkan_wrapper.h"
+#include "bender_kit.h"
 
-// A set of debugging functions
-static const char *TAG = "Bender";
-#define LOGI(...) \
-  ((void)__android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__))
-#define LOGW(...) \
-  ((void)__android_log_print(ANDROID_LOG_WARN, TAG, __VA_ARGS__))
-#define LOGE(...) \
-  ((void)__android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__))
+uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties,
+                        VkPhysicalDevice gpuDevice);
 
+void createBuffer(BenderKit::Device* device, VkDeviceSize size, VkBufferUsageFlags usage,
+                    VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory);
 
-// A macro to pass call to Vulkan and check for return value for success
-#define CALL_VK(func)                                                 \
-  if (VK_SUCCESS != (func)) {                                         \
-    __android_log_print(ANDROID_LOG_ERROR, "Bender ",                 \
-                        "Vulkan error. File[%s], line[%d]", __FILE__, \
-                        __LINE__);                                    \
-    assert(false);                                                    \
-  }
-
-// A macro to check value is VK_SUCCESS
-// Used also for non-vulkan functions but return VK_SUCCESS
-#define VK_CHECK(x)  CALL_VK(x)
-
-#endif  // BENDER_HELPERS_HPP
+#endif  // BENDER_BASE_UTILS_SRC_BENDER_HELPERS_H
