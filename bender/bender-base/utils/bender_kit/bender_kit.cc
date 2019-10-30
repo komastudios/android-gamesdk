@@ -114,6 +114,8 @@ void Device::CreateVulkanDevice(ANativeWindow *platformWindow,
   VkPhysicalDevice tmpGpus[gpuCount];
   CALL_VK(vkEnumeratePhysicalDevices(instance_, &gpuCount, tmpGpus));
   gpuDevice_ = tmpGpus[0];  // Pick up the first GPU Device
+  vkGetPhysicalDeviceMemoryProperties(gpuDevice_,
+                                      &gpuMemoryProperties_);
 
   // Find a GFX queue family
   uint32_t queueFamilyCount;
