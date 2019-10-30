@@ -16,6 +16,23 @@
       "revId": "16cbca5cc851f1ffbe4f5e23516c5ccc76820d22",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "86c3462d_2512f692",
+        "filename": "bender/bender-base/app/src/main/shaders/triangle.vert",
+        "patchSetId": 5
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-10-30T21:03:58Z",
+      "side": 1,
+      "message": "Do we need this time variable in the uniform buffer? I think you already use it in the c++ code to generate the MVP so I don\u0027t think we need to pass it into the shader\n\nUnless you\u0027re prepping something for the future or I\u0027m missing something 😋",
+      "revId": "16cbca5cc851f1ffbe4f5e23516c5ccc76820d22",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
