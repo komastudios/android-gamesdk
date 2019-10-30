@@ -29,6 +29,7 @@
 #include "renderer.h"
 #include "shader_state.h"
 #include "geometry.h"
+#include "bender_textures.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
@@ -63,6 +64,42 @@ android_app *androidAppCtx = nullptr;
 BenderKit::Device *device;
 Geometry *geometry;
 Renderer *renderer;
+
+const char* texFiles[TEXTURE_COUNT] = {
+        "textures/sample_texture.png",
+};
+struct texture_object textures[TEXTURE_COUNT];
+
+
+void createTextures() {
+  assert(androidAppCtx != nullptr);
+  assert(device != nullptr);
+  for (uint32_t i = 0; i < TEXTURE_COUNT; i++) {
+    LoadTextureFromFile(texFiles[i], androidAppCtx, &textures[i], device, VK_IMAGE_USAGE_SAMPLED_BIT,
+                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+
+    createSampler(device, &textures[i]);
+
+    VkImageViewCreateInfo view = {
+            .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+            .pNext = nullptr,
+            .image = textures[i].image,
+            .viewType = VK_IMAGE_VIEW_TYPE_2D,
+            .format = kTexFmt,
+            .components =
+                    {
+                            .r = VK_COMPONENT_SWIZZLE_R,
+                            .g = VK_COMPONENT_SWIZZLE_G,
+                            .b = VK_COMPONENT_SWIZZLE_B,
+                            .a = VK_COMPONENT_SWIZZLE_A,
+                    },
+            .subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
+            .flags = 0,
+    };
+    CALL_VK(
+            vkCreateImageView(device->getDevice(), &view, nullptr, &textures[i].view));
+  }
+}
 
 void createFrameBuffers(VkRenderPass &renderPass,
                         VkImageView depthView = VK_NULL_HANDLE) {
@@ -152,71 +189,96 @@ void updateUniformBuffer(uint32_t frameIndex) {
     vkUnmapMemory(device->getDevice(), uniformBuffersMemory_[frameIndex]);
 }
 
-void createDescriptorSets() {
-  VkDescriptorSetLayoutBinding descriptorLayoutBinding = {
-        .binding = 0,
-        .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-        .descriptorCount = 1,
-        .stageFlags = VK_SHADER_STAGE_VERTEX_BIT,
-  };
+void createDescriptorPool() {
+  std::array<VkDescriptorPoolSize, 2> poolSizes = {};
+  poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  poolSizes[0].descriptorCount = static_cast<uint32_t>(device->getDisplayImagesSize());
+  poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+  poolSizes[1].descriptorCount = static_cast<uint32_t>(device->getDisplayImagesSize());
 
-  VkDescriptorSetLayoutCreateInfo descriptorLayoutInfo = {
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-        .bindingCount = 1,
-        .pBindings = &descriptorLayoutBinding,
-  };
-  CALL_VK(vkCreateDescriptorSetLayout(device->getDevice(), &descriptorLayoutInfo, nullptr,
-                                    &descriptorSetLayout_))
+  VkDescriptorPoolCreateInfo poolInfo = {};
+  poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+  poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+  poolInfo.pPoolSizes = poolSizes.data();
+  poolInfo.maxSets = static_cast<uint32_t>(device->getDisplayImagesSize());
 
-  VkDescriptorPoolSize poolSize = {
-      .type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-      .descriptorCount = device->getSwapchainLength(),
-  };
-  VkDescriptorPoolCreateInfo poolInfo = {
-      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
-      .poolSizeCount = 1,
-      .pPoolSizes = &poolSize,
-      .maxSets = device->getSwapchainLength(),
-  };
   CALL_VK(vkCreateDescriptorPool(device->getDevice(), &poolInfo, nullptr, &descriptorPool_));
+}
 
-  std::vector<VkDescriptorSetLayout> layouts(device->getSwapchainLength(), descriptorSetLayout_);
-  VkDescriptorSetAllocateInfo allocInfo = {
-      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-      .descriptorPool = descriptorPool_,
-      .descriptorSetCount = device->getSwapchainLength(),
-      .pSetLayouts = layouts.data(),
-  };
+void createDescriptorSetLayout() {
+  VkDescriptorSetLayoutBinding uboLayoutBinding = {};
+  uboLayoutBinding.binding = 0;
+  uboLayoutBinding.descriptorCount = 1;
+  uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  uboLayoutBinding.pImmutableSamplers = nullptr;
+  uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
-  descriptorSets_.resize(device->getSwapchainLength());
-  CALL_VK(vkAllocateDescriptorSets(device->getDevice(), &allocInfo, descriptorSets_.data()))
+  VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+  samplerLayoutBinding.binding = 1;
+  samplerLayoutBinding.descriptorCount = 1;
+  samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+  samplerLayoutBinding.pImmutableSamplers = nullptr;
+  samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-  for (size_t i = 0; i < device->getSwapchainLength(); i++) {
-    VkDescriptorBufferInfo bufferInfo = {
-        .buffer = uniformBuffers_[i],
-        .offset = 0,
-        .range = sizeof(UniformBufferObject),
-    };
+  std::array<VkDescriptorSetLayoutBinding, 2> bindings = {uboLayoutBinding, samplerLayoutBinding};
+  VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+  layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+  layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+  layoutInfo.pBindings = bindings.data();
 
-    VkWriteDescriptorSet descriptorWrite = {
-        .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-        .dstSet = descriptorSets_[i],
-        .dstBinding = 0,
-        .dstArrayElement = 0,
-        .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-        .descriptorCount = 1,
-        .pBufferInfo = &bufferInfo,
-    };
+  CALL_VK(vkCreateDescriptorSetLayout(device->getDevice(), &layoutInfo, nullptr, &descriptorSetLayout_));
+}
 
-    vkUpdateDescriptorSets(device->getDevice(), 1, &descriptorWrite, 0, nullptr);
+void createDescriptorSets() {
+  std::vector<VkDescriptorSetLayout> layouts(device->getDisplayImagesSize(), descriptorSetLayout_);
+  VkDescriptorSetAllocateInfo allocInfo = {};
+  allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+  allocInfo.descriptorPool = descriptorPool_;
+  allocInfo.descriptorSetCount = static_cast<uint32_t>(device->getDisplayImagesSize());
+  allocInfo.pSetLayouts = layouts.data();
+
+  descriptorSets_.resize(device->getDisplayImagesSize());
+  CALL_VK(vkAllocateDescriptorSets(device->getDevice(), &allocInfo, descriptorSets_.data()));
+
+  for (size_t i = 0; i < device->getDisplayImagesSize(); i++) {
+    VkDescriptorBufferInfo bufferInfo = {};
+    bufferInfo.buffer = uniformBuffers_[i];
+    bufferInfo.offset = 0;
+    bufferInfo.range = sizeof(UniformBufferObject);
+
+    VkDescriptorImageInfo imageInfo = {};
+    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    imageInfo.imageView = textures[0].view;
+    imageInfo.sampler = textures[0].sampler;
+
+    std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
+
+    descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptorWrites[0].dstSet = descriptorSets_[i];
+    descriptorWrites[0].dstBinding = 0;
+    descriptorWrites[0].dstArrayElement = 0;
+    descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    descriptorWrites[0].descriptorCount = 1;
+    descriptorWrites[0].pBufferInfo = &bufferInfo;
+
+    descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptorWrites[1].dstSet = descriptorSets_[i];
+    descriptorWrites[1].dstBinding = 1;
+    descriptorWrites[1].dstArrayElement = 0;
+    descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    descriptorWrites[1].descriptorCount = 1;
+    descriptorWrites[1].pImageInfo = &imageInfo;
+
+    vkUpdateDescriptorSets(device->getDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
   }
 }
 
 void createGraphicsPipeline() {
   ShaderState shaderState("triangle", androidAppCtx, device->getDevice());
-  shaderState.addVertexInputBinding(0, 6 * sizeof(float));
+  shaderState.addVertexInputBinding(0, 8 * sizeof(float));
   shaderState.addVertexAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0);
   shaderState.addVertexAttributeDescription(0, 1, VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(float));
+  shaderState.addVertexAttributeDescription(0, 2, VK_FORMAT_R32G32B32_SFLOAT, 5 * sizeof(float));
 
   VkViewport viewport{
       .x = 0.0f,
@@ -345,7 +407,7 @@ bool InitVulkan(android_app *app) {
 
   createUniformBuffers();
 
-  createDescriptorSets();
+  createDescriptorSetLayout();
 
   renderer = new Renderer(device);
 
@@ -393,10 +455,10 @@ bool InitVulkan(android_app *app) {
   // ---------------------------------------------
   // Create the triangle vertex buffer with indices
   const std::vector<float> vertexData = {
-      -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-      0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-      0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-      -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f,
+      -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+      0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+      0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+      -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f
   };
 
   const std::vector<u_int16_t> indexData = {
@@ -405,9 +467,15 @@ bool InitVulkan(android_app *app) {
 
   geometry = new Geometry(device, vertexData, indexData);
 
+  createTextures();
+
   createFrameBuffers(render_pass);
 
   createGraphicsPipeline();
+
+  createDescriptorPool();
+
+  createDescriptorSets();
 
   return true;
 }
