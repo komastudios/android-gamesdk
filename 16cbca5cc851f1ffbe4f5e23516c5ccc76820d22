@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "149fd6f6_88c5c74e",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-30T21:02:29Z",
+      "side": 1,
+      "message": "I feel VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT almost deserves to be a default argument, since we are targeting mobile.",
+      "revId": "16cbca5cc851f1ffbe4f5e23516c5ccc76820d22",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
