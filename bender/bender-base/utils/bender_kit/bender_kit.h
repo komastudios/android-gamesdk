@@ -72,6 +72,8 @@ class Device {
 
   VkFormat getDisplayFormat() { return displayFormat_; }
 
+  VkPhysicalDeviceMemoryProperties getGpuMemProperties() { return gpuMemoryProperties_; }
+
   const std::vector<VkImage> &getDisplayImages() { return displayImages_; }
 
   VkImage getDisplayImage(int i);
@@ -82,6 +84,7 @@ class Device {
   bool initialized_;
   VkInstance instance_;
   VkPhysicalDevice gpuDevice_;
+  VkPhysicalDeviceMemoryProperties gpuMemoryProperties_;
   VkDevice device_;
   uint32_t queueFamilyIndex_;
   VkSurfaceKHR surface_;

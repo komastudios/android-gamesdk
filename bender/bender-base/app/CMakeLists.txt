@@ -31,7 +31,8 @@ add_library(base SHARED
         ${SRC_DIR}/geometry.cc)
 
 add_library(utils STATIC
-        ${UTILS_DIR}/bender_helpers.cc)
+        ${UTILS_DIR}/bender_helpers.cc
+        ${UTILS_DIR}/bender_textures.cc)
 
 target_link_libraries(base bender-kit)
 
