@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ccca504d_9f4436ef",
+        "filename": "README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-10-30T09:19:16Z",
+      "side": 1,
+      "message": "Can we make a bash script (or something) which takes some version numbers and maps them to the right sync commands? These commands are too long for a readme file, we should automate this a bit more?",
+      "revId": "ea01785721d934b0f99dfecfc9f505e0f674474f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e13ee47a_b942b6c4",
+        "filename": "README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-10-30T09:19:16Z",
+      "side": 1,
+      "message": "multiple instances of unneeded whitespace",
+      "revId": "ea01785721d934b0f99dfecfc9f505e0f674474f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9ccc54f4_5d7658fc",
+        "filename": "README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1269249
+      },
+      "writtenOn": "2019-10-30T09:19:16Z",
+      "side": 1,
+      "message": "Can you move this to be above the \u0027specific versions of pre-builts\u0027? I think it\u0027s the more likely use case.",
+      "revId": "ea01785721d934b0f99dfecfc9f505e0f674474f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
