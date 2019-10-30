@@ -28,6 +28,13 @@ void setImageLayout(VkCommandBuffer cmdBuffer, VkImage image,
                     VkPipelineStageFlags srcStages,
                     VkPipelineStageFlags destStages);
 
+VkFormat findSupportedFormat(BenderKit::Device *device,
+                             const std::vector<VkFormat> &candidates,
+                             VkImageTiling tiling,
+                             VkFormatFeatureFlags features);
+
+VkFormat findDepthFormat(BenderKit::Device *device);
+
 }
 
 #endif  // BENDER_BASE_UTILS_SRC_BENDER_HELPERS_H

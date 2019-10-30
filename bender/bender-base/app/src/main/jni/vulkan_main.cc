@@ -19,6 +19,7 @@
 #include <android_native_app_glue.h>
 #include <cassert>
 #include <vector>
+#include <array>
 #include <cstring>
 #include <debug_marker.h>
 #include <chrono>
@@ -57,6 +58,14 @@ struct VulkanGfxPipelineInfo {
   VkPipeline pipeline_;
 };
 VulkanGfxPipelineInfo gfxPipeline;
+
+struct AttachmentBuffer {
+  VkFormat format;
+  VkImage image;
+  VkDeviceMemory device_memory;
+  VkImageView image_view;
+};
+AttachmentBuffer depthBuffer;
 
 // Android Native App pointer...
 android_app *androidAppCtx = nullptr;
@@ -106,12 +115,11 @@ void createFrameBuffers(VkRenderPass &renderPass,
         .pNext = nullptr,
         .renderPass = renderPass,
         .layers = 1,
-        .attachmentCount = 1,  // 2 if using depth
+        .attachmentCount = 2,  // 2 if using depth
         .pAttachments = attachments,
         .width = static_cast<uint32_t>(device->getDisplaySize().width),
         .height = static_cast<uint32_t>(device->getDisplaySize().height),
     };
-    fbCreateInfo.attachmentCount = (depthView == VK_NULL_HANDLE ? 1 : 2);
 
     CALL_VK(vkCreateFramebuffer(device->getDevice(), &fbCreateInfo, nullptr,
                                 &framebuffers_[i]));
@@ -135,7 +143,7 @@ void updateUniformBuffer(uint32_t frameIndex) {
     auto currentTime = std::chrono::high_resolution_clock::now();
     auto time = std::chrono::duration<float>(currentTime - startTime).count();
 
-    glm::mat4 model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    glm::mat4 model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.5f, 1.0f, 0.5f));
     glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, -2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 proj = glm::perspective(glm::radians(100.0f),
             device->getDisplaySize().width / (float) device->getDisplaySize().height, 0.1f, 10.0f);
@@ -240,7 +248,17 @@ void createGraphicsPipeline() {
       .pScissors = &scissor,
   };
 
-  // Describes how the GPU should rasterize pixels from polygons
+  VkPipelineDepthStencilStateCreateInfo depthStencilState{
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
+      .depthTestEnable = VK_TRUE,
+      .depthWriteEnable = VK_TRUE,
+      .depthCompareOp = VK_COMPARE_OP_LESS,
+      .depthBoundsTestEnable = VK_FALSE,
+      .minDepthBounds = 0.0f,
+      .maxDepthBounds = 1.0f,
+      .stencilTestEnable = VK_FALSE,
+  };
+
   VkPipelineRasterizationStateCreateInfo pipelineRasterizationState{
       .sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
       .depthClampEnable = VK_FALSE,
@@ -317,7 +335,7 @@ void createGraphicsPipeline() {
       .pViewportState = &pipelineViewportState,
       .pRasterizationState = &pipelineRasterizationState,
       .pMultisampleState = &pipelineMultisampleState,
-      .pDepthStencilState = nullptr,
+      .pDepthStencilState = &depthStencilState,
       .pColorBlendState = &colorBlendInfo,
       .pDynamicState = nullptr,
       .layout = gfxPipeline.layout_,
@@ -335,6 +353,62 @@ void createGraphicsPipeline() {
   shaderState.cleanup();
 }
 
+void createDepthBuffer() {
+  depthBuffer.format = BenderHelpers::findDepthFormat(device);
+  VkImageCreateInfo imageInfo = {
+      .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+      .imageType = VK_IMAGE_TYPE_2D,
+      .extent.width = device->getDisplaySize().width,
+      .extent.height = device->getDisplaySize().height,
+      .extent.depth = 1,
+      .mipLevels = 1,
+      .arrayLayers = 1,
+      .format = depthBuffer.format,
+      .tiling = VK_IMAGE_TILING_OPTIMAL,
+      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+      .usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+      .samples = VK_SAMPLE_COUNT_1_BIT,
+      .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+  };
+
+  CALL_VK(vkCreateImage(device->getDevice(), &imageInfo, nullptr, &depthBuffer.image));
+
+  VkMemoryRequirements memRequirements;
+  vkGetImageMemoryRequirements(device->getDevice(), depthBuffer.image, &memRequirements);
+
+  VkMemoryAllocateInfo allocInfo = {
+      .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+      .allocationSize = memRequirements.size,
+      .memoryTypeIndex = BenderHelpers::findMemoryType(memRequirements.memoryTypeBits,
+                                                       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                                       device->getPhysicalDevice()),
+  };
+
+  CALL_VK(vkAllocateMemory(device->getDevice(), &allocInfo, nullptr, &depthBuffer.device_memory))
+
+  vkBindImageMemory(device->getDevice(), depthBuffer.image, depthBuffer.device_memory, 0);
+
+  VkImageViewCreateInfo viewInfo = {
+      .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+      .pNext = nullptr,
+      .image = depthBuffer.image,
+      .viewType = VK_IMAGE_VIEW_TYPE_2D,
+      .format = depthBuffer.format,
+      .subresourceRange =
+          {
+              .aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+              .baseMipLevel = 0,
+              .levelCount = 1,
+              .baseArrayLayer = 0,
+              .layerCount = 1,
+          },
+      .flags = 0,
+  };
+
+  CALL_VK(vkCreateImageView(device->getDevice(), &viewInfo, nullptr, &depthBuffer.image_view));
+
+}
+
 bool InitVulkan(android_app *app) {
   androidAppCtx = app;
 
@@ -349,7 +423,7 @@ bool InitVulkan(android_app *app) {
 
   renderer = new Renderer(device);
 
-  VkAttachmentDescription attachment_descriptions{
+  VkAttachmentDescription color_description{
       .format = device->getDisplayFormat(),
       .samples = VK_SAMPLE_COUNT_1_BIT,
       .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
@@ -360,9 +434,25 @@ bool InitVulkan(android_app *app) {
       .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
   };
 
-  VkAttachmentReference colour_reference = {
+  VkAttachmentDescription depth_description{
+      .format = BenderHelpers::findDepthFormat(device),
+      .samples = VK_SAMPLE_COUNT_1_BIT,
+      .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+      .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+      .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+      .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+      .finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+  };
+
+  VkAttachmentReference color_attachment_reference = {
       .attachment = 0,
       .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+  };
+
+  VkAttachmentReference depth_attachment_reference = {
+      .attachment = 1,
+      .layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
   };
 
   VkSubpassDescription subpass_description{
@@ -371,17 +461,21 @@ bool InitVulkan(android_app *app) {
       .inputAttachmentCount = 0,
       .pInputAttachments = nullptr,
       .colorAttachmentCount = 1,
-      .pColorAttachments = &colour_reference,
+      .pColorAttachments = &color_attachment_reference,
       .pResolveAttachments = nullptr,
-      .pDepthStencilAttachment = nullptr,
+      .pDepthStencilAttachment = &depth_attachment_reference,
       .preserveAttachmentCount = 0,
       .pPreserveAttachments = nullptr,
   };
+
+  std::array<VkAttachmentDescription, 2> attachment_descriptions =
+      {color_description, depth_description};
+
   VkRenderPassCreateInfo render_pass_createInfo{
       .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
       .pNext = nullptr,
-      .attachmentCount = 1,
-      .pAttachments = &attachment_descriptions,
+      .attachmentCount = static_cast<uint32_t>(attachment_descriptions.size()),
+      .pAttachments = attachment_descriptions.data(),
       .subpassCount = 1,
       .pSubpasses = &subpass_description,
       .dependencyCount = 0,
@@ -393,19 +487,22 @@ bool InitVulkan(android_app *app) {
   // ---------------------------------------------
   // Create the triangle vertex buffer with indices
   const std::vector<float> vertexData = {
-      -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-      0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-      0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-      -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f,
+      -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+      0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+      0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+      -0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 1.0f,
+      0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
   };
 
   const std::vector<u_int16_t> indexData = {
-      0, 1, 2, 2, 3, 0
+      1, 2, 4, 2, 1, 0, 0, 3, 2, 2, 3, 4, 3, 0, 4, 0, 1, 4
   };
 
   geometry = new Geometry(device, vertexData, indexData);
 
-  createFrameBuffers(render_pass);
+  createDepthBuffer();
+
+  createFrameBuffers(render_pass, depthBuffer.image_view);
 
   createGraphicsPipeline();
 
@@ -431,6 +528,10 @@ void DeleteVulkan(void) {
 
   vkDestroyDescriptorPool(device->getDevice(), descriptorPool_, nullptr);
 
+  vkDestroyImageView(device->getDevice(), depthBuffer.image_view, nullptr);
+  vkDestroyImage(device->getDevice(), depthBuffer.image, nullptr);
+  vkFreeMemory(device->getDevice(), depthBuffer.device_memory, nullptr);
+
   vkDestroyPipeline(device->getDevice(), gfxPipeline.pipeline_, nullptr);
   vkDestroyPipelineCache(device->getDevice(), gfxPipeline.cache_, nullptr);
   vkDestroyPipelineLayout(device->getDevice(), gfxPipeline.layout_, nullptr);
@@ -448,12 +549,9 @@ bool VulkanDrawFrame(void) {
 
   // Now we start a renderpass. Any draw command has to be recorded in a
   // renderpass
-  VkClearValue clearVals{
-      .color.float32[0] = 0.0f,
-      .color.float32[1] = 0.34f,
-      .color.float32[2] = 0.90f,
-      .color.float32[3] = 1.0f,
-  };
+  std::array<VkClearValue, 2> clear_values = {};
+  clear_values[0].color = {{0.0f, 0.34f, 0.90f, 1.0}};
+  clear_values[1].depthStencil = {1.0f, 0};
 
   VkRenderPassBeginInfo render_pass_beginInfo{
       .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
@@ -465,8 +563,9 @@ bool VulkanDrawFrame(void) {
               .x = 0, .y = 0,
           },
           .extent = device->getDisplaySize()},
-      .clearValueCount = 1,
-      .pClearValues = &clearVals};
+      .clearValueCount = static_cast<uint32_t>(clear_values.size()),
+      .pClearValues = clear_values.data(),
+  };
 
   vkCmdBeginRenderPass(renderer->getCurrentCommandBuffer(), &render_pass_beginInfo,
                        VK_SUBPASS_CONTENTS_INLINE);
