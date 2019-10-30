@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8632414a_59bf8204",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-30T20:33:14Z",
+      "side": 1,
+      "message": "Should createBuffer be member of device?",
+      "revId": "10e34cc711c97923f36f3d6c7522643281e535ef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dc2c6b6f_bd3a37bb",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-30T20:33:14Z",
+      "side": 1,
+      "message": "you can just call it \u0027time\u0027 or elapsedTime.",
+      "revId": "10e34cc711c97923f36f3d6c7522643281e535ef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
