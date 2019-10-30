@@ -2,6 +2,40 @@
   "comments": [
     {
       "key": {
+        "uuid": "59c8125f_0896337f",
+        "filename": "README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-30T12:42:40Z",
+      "side": 1,
+      "message": "If the Android SDK...",
+      "revId": "ea01785721d934b0f99dfecfc9f505e0f674474f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ab75df8c_72817dac",
+        "filename": "README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-30T12:42:40Z",
+      "side": 1,
+      "message": "Point the environment variable...",
+      "revId": "ea01785721d934b0f99dfecfc9f505e0f674474f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ccca504d_9f4436ef",
         "filename": "README.md",
         "patchSetId": 2
@@ -13,6 +47,24 @@
       "writtenOn": "2019-10-30T09:19:16Z",
       "side": 1,
       "message": "Can we make a bash script (or something) which takes some version numbers and maps them to the right sync commands? These commands are too long for a readme file, we should automate this a bit more?",
+      "revId": "ea01785721d934b0f99dfecfc9f505e0f674474f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "09b7a09c_b62159fd",
+        "filename": "README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-30T12:42:40Z",
+      "side": 1,
+      "message": "+1",
+      "parentUuid": "ccca504d_9f4436ef",
       "revId": "ea01785721d934b0f99dfecfc9f505e0f674474f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -47,6 +99,24 @@
       "writtenOn": "2019-10-30T09:19:16Z",
       "side": 1,
       "message": "Can you move this to be above the \u0027specific versions of pre-builts\u0027? I think it\u0027s the more likely use case.",
+      "revId": "ea01785721d934b0f99dfecfc9f505e0f674474f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9ea3e7d0_e16473c2",
+        "filename": "README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-10-30T12:42:40Z",
+      "side": 1,
+      "message": "I\u0027d question that. Most people have a specific toolchain they are using to build their app or game engine, don\u0027t they? It\u0027s only us who are building and testing for multiple SDKs and NDKs.",
+      "parentUuid": "9ccc54f4_5d7658fc",
       "revId": "ea01785721d934b0f99dfecfc9f505e0f674474f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
