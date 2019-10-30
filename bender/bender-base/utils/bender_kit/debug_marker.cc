@@ -21,7 +21,6 @@ namespace DebugMarker {
 bool active = false;
 bool extensionPresent = false;
 
-// Get function pointers for the debug report extensions from the device
 void setup(VkDevice device, VkPhysicalDevice physicalDevice) {
   // Check if the debug marker extension is present (which is the case if run from a graphics debugger)
   uint32_t extensionCount;
@@ -63,61 +62,59 @@ void setObjectName(VkDevice device,
                    VkDebugReportObjectTypeEXT objectType,
                    const char *name) {
   // Check for valid function pointer (may not be present if not running in a debugging application)
-  if (active) {
-    VkDebugMarkerObjectNameInfoEXT nameInfo = {};
-    nameInfo.sType = VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT;
-    nameInfo.objectType = objectType;
-    nameInfo.object = object;
-    nameInfo.pObjectName = name;
-    vkDebugMarkerSetObjectNameEXT(device, &nameInfo);
-  }
+  if (!active)
+    return;
+
+  VkDebugMarkerObjectNameInfoEXT nameInfo = {};
+  nameInfo.sType = VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT;
+  nameInfo.objectType = objectType;
+  nameInfo.object = object;
+  nameInfo.pObjectName = name;
+  vkDebugMarkerSetObjectNameEXT(device, &nameInfo);
 }
 
-// Set the tag for an object
 void setObjectTag(VkDevice device,
                   uint64_t object,
                   VkDebugReportObjectTypeEXT objectType,
                   uint64_t name,
                   size_t tagSize,
                   const void *tag) {
-  // Check for valid function pointer (may not be present if not running in a debugging application)
-  if (active) {
-    VkDebugMarkerObjectTagInfoEXT tagInfo = {};
-    tagInfo.sType = VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_TAG_INFO_EXT;
-    tagInfo.objectType = objectType;
-    tagInfo.object = object;
-    tagInfo.tagName = name;
-    tagInfo.tagSize = tagSize;
-    tagInfo.pTag = tag;
-    vkDebugMarkerSetObjectTagEXT(device, &tagInfo);
-  }
+  if (!active)
+    return;
+
+  VkDebugMarkerObjectTagInfoEXT tagInfo = {};
+  tagInfo.sType = VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_TAG_INFO_EXT;
+  tagInfo.objectType = objectType;
+  tagInfo.object = object;
+  tagInfo.tagName = name;
+  tagInfo.tagSize = tagSize;
+  tagInfo.pTag = tag;
+  vkDebugMarkerSetObjectTagEXT(device, &tagInfo);
 }
 
 // Start a new debug marker region
-void beginRegion(VkCommandBuffer cmdbuffer, const char *pMarkerName, float color[4]) {
-  // Check for valid function pointer (may not be present if not running in a debugging application)
-  if (active) {
+void beginRegion(VkCommandBuffer cmdbuffer, const char markerName[], std::array<float, 4> color) {
+    if (!active)
+      return;
+
     VkDebugMarkerMarkerInfoEXT markerInfo = {};
     markerInfo.sType = VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT;
     memcpy(markerInfo.color, &color[0], sizeof(float) * 4);
-    markerInfo.pMarkerName = pMarkerName;
+    markerInfo.pMarkerName = markerName;
     vkCmdDebugMarkerBeginEXT(cmdbuffer, &markerInfo);
-  }
 }
 
-// Insert a new debug marker into the command buffer
-void insert(VkCommandBuffer cmdbuffer, std::string markerName, float color[4]) {
-  // Check for valid function pointer (may not be present if not running in a debugging application)
-  if (active) {
-    VkDebugMarkerMarkerInfoEXT markerInfo = {};
-    markerInfo.sType = VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT;
-    memcpy(markerInfo.color, &color[0], sizeof(float) * 4);
-    markerInfo.pMarkerName = markerName.c_str();
-    vkCmdDebugMarkerInsertEXT(cmdbuffer, &markerInfo);
-  }
+void insert(VkCommandBuffer cmdbuffer, const char markerName[], std::array<float, 4> color) {
+  if (!active)
+    return;
+
+  VkDebugMarkerMarkerInfoEXT markerInfo = {};
+  markerInfo.sType = VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT;
+  memcpy(markerInfo.color, &color[0], sizeof(float) * 4);
+  markerInfo.pMarkerName = markerName;
+  vkCmdDebugMarkerInsertEXT(cmdbuffer, &markerInfo);
 }
 
-// End the current debug marker region
 void endRegion(VkCommandBuffer cmdBuffer) {
   // Check for valid function (may not be present if not runnin in a debugging application)
   if (vkCmdDebugMarkerEndEXT) {

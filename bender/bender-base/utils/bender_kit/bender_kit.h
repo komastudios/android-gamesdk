@@ -18,9 +18,9 @@
 #include <android/log.h>
 #include <vector>
 #include <string>
+#include <array>
 
-// Android log function wrappers
-static const char *kTAG = "Bender";
+static const char *kTAG = "BenderKit";
 #define LOGI(...) \
   ((void)__android_log_print(ANDROID_LOG_INFO, kTAG, __VA_ARGS__))
 #define LOGW(...) \
@@ -28,7 +28,6 @@ static const char *kTAG = "Bender";
 #define LOGE(...) \
   ((void)__android_log_print(ANDROID_LOG_ERROR, kTAG, __VA_ARGS__))
 
-// Vulkan call wrapper
 #define CALL_VK(func)                                                     \
     if (VK_SUCCESS != (func)) {                                           \
         __android_log_print(ANDROID_LOG_ERROR, "Bender ",                 \
@@ -60,7 +59,7 @@ class Device {
 
   VkQueue getQueue() { return queue_; }
 
-  VkSwapchainKHR &getSwapchain() { return swapchain_; }
+  VkSwapchainKHR getSwapchain() { return swapchain_; }
 
   uint32_t getSwapchainLength() { return swapchainLength_; }
 
@@ -74,7 +73,25 @@ class Device {
 
   uint32_t getDisplayImagesSize() { return displayImages_.size(); }
 
- private:
+  void setObjectName(uint64_t object,
+                     VkDebugReportObjectTypeEXT objectType,
+                     const char *name);
+
+  void setObjectTag(uint64_t object,
+                    VkDebugReportObjectTypeEXT objectType,
+                    uint64_t name,
+                    size_t tagSize,
+                    const void *tag);
+
+  void beginDebugRegion(VkCommandBuffer cmdbuffer, const char *markerName,
+                        std::array<float, 4> color = {
+                                1.0f, 1.0f, 1.0f, 1.0f});
+  void insertDebugMarker(VkCommandBuffer cmdbuffer, const char *markerName,
+                         std::array<float, 4> color = {
+                                 1.0f, 1.0f, 1.0f, 1.0f});
+  void endDebugRegion(VkCommandBuffer cmdBuffer);
+
+private:
   bool initialized_;
   VkInstance instance_;
   VkPhysicalDevice gpuDevice_;

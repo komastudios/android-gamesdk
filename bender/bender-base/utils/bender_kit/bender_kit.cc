@@ -14,13 +14,12 @@
 
 
 #include <android_native_app_glue.h>
+
 #include <cassert>
+
 #include "vulkan_wrapper.h"
 #include "bender_kit.h"
 #include "debug_marker.h"
-
-// #include "BenderHelpers.hpp"
-
 
 using namespace BenderKit;
 
@@ -227,7 +226,6 @@ void Device::CreateSwapChain() {
                                   &swapchainLength_, nullptr));
   delete[] formats;
 
-  // query display attachment to swapchain
   uint32_t SwapchainImagesCount = 0;
   CALL_VK(vkGetSwapchainImagesKHR(device_, swapchain_,
                                   &SwapchainImagesCount, nullptr));
@@ -236,4 +234,32 @@ void Device::CreateSwapChain() {
                                   &SwapchainImagesCount,
                                   displayImages_.data()));
   LOGI("<-CreateSwapChain");
+}
+
+void Device::setObjectName(uint64_t object,
+                   VkDebugReportObjectTypeEXT objectType,
+                   const char *name) {
+  DebugMarker::setObjectName(getDevice(), object, objectType, name);
+}
+
+void Device::setObjectTag(uint64_t object,
+                  VkDebugReportObjectTypeEXT objectType,
+                  uint64_t name,
+                  size_t tagSize,
+                  const void *tag) {
+  DebugMarker::setObjectTag(getDevice(), object, objectType, name, tagSize, tag);
+}
+
+void Device::beginDebugRegion(VkCommandBuffer cmdbuffer, const char *pMarkerName,
+                              std::array<float, 4> color) {
+  DebugMarker::beginRegion(cmdbuffer, pMarkerName, color);
+}
+
+void Device::insertDebugMarker(VkCommandBuffer cmdbuffer, const char *markerName,
+                               std::array<float, 4> color) {
+  DebugMarker::insert(cmdbuffer, markerName, color);
+}
+
+void Device::endDebugRegion(VkCommandBuffer cmdBuffer) {
+  DebugMarker::endRegion(cmdBuffer);
 }

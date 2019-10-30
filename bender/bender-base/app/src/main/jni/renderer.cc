@@ -72,16 +72,18 @@ void Renderer::endFrame() {
   TRACE_END_SECTION();
 
   VkResult result;
+  VkSwapchainKHR swapchains[] = { device_->getSwapchain() };
   VkPresentInfoKHR present_info{
       .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
       .pNext = nullptr,
       .swapchainCount = 1,
-      .pSwapchains = &device_->getSwapchain(),
+      .pSwapchains = swapchains,
       .pImageIndices = &current_frame,
       .waitSemaphoreCount = 1,
       .pWaitSemaphores = &render_finished_semaphore_[current_frame],
       .pResults = &result,
   };
+
   TRACE_BEGIN_SECTION("vkQueuePresentKHR");
   vkQueuePresentKHR(device_->getQueue(), &present_info);
   TRACE_END_SECTION();
