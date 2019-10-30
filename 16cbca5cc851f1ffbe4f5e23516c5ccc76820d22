@@ -33,6 +33,24 @@
       "revId": "16cbca5cc851f1ffbe4f5e23516c5ccc76820d22",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ad54eebd_5e1bf571",
+        "filename": "bender/bender-base/app/src/main/shaders/triangle.vert",
+        "patchSetId": 5
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-10-30T21:23:30Z",
+      "side": 1,
+      "message": "Hmm yeah, good catch; I figured it might be useful info to have but not sure what application at this point (plus it\u0027s certainly not hard to add later). I\u0027ll take it out for now.",
+      "parentUuid": "86c3462d_2512f692",
+      "revId": "16cbca5cc851f1ffbe4f5e23516c5ccc76820d22",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
