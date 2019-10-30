@@ -9,9 +9,11 @@ add_library(app-glue STATIC ${APP_GLUE_DIR}/android_native_app_glue.c)
 set(SRC_DIR src/main/jni)
 set(KIT_DIR ../utils/bender_kit)
 set(WRAPPER_DIR ${KIT_DIR}/vulkan_wrapper)
+set(UTILS_DIR ../utils/src)
 
 include_directories(${WRAPPER_DIR})
 include_directories(${KIT_DIR})
+include_directories(${UTILS_DIR})
 
 add_library(bender-kit STATIC
         ${KIT_DIR}/bender_kit.cc
@@ -25,9 +27,12 @@ add_library(base SHARED
         ${SRC_DIR}/shader_state.cc
         ${SRC_DIR}/geometry.cc)
 
+add_library(utils STATIC
+        ${UTILS_DIR}/bender_helpers.cc)
+
 target_link_libraries(base bender-kit)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -Werror \
                      -DVK_USE_PLATFORM_ANDROID_KHR -DENABLE_VALIDATION_LAYERS")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate")
-target_link_libraries(base app-glue log android)
+target_link_libraries(base app-glue utils log android)

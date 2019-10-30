@@ -31,12 +31,6 @@ class Geometry {
   VkBuffer indexBuf_;
   VkDeviceMemory indexBufferDeviceMemory_;
 
-  uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties,
-                          VkPhysicalDevice gpuDevice) const;
-
-  void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
-                    VkBuffer &buffer, VkDeviceMemory &bufferMemory);
-
   void createVertexBuffer(std::vector<float> vertexData, std::vector<uint16_t> indexData);
 };
 
