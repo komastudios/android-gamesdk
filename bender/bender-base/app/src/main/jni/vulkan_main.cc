@@ -16,6 +16,7 @@
 #define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
 
 #include "vulkan_main.h"
+
 #include <android_native_app_glue.h>
 #include <cassert>
 #include <vector>
@@ -23,7 +24,6 @@
 #include <cstring>
 #include <debug_marker.h>
 #include <chrono>
-#include "vulkan_wrapper.h"
 
 #include "vulkan_wrapper.h"
 #include "bender_kit.h"
@@ -31,7 +31,9 @@
 #include "renderer.h"
 #include "shader_state.h"
 #include "geometry.h"
+#include "uniform_buffer.h"
 #include "bender_textures.h"
+
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
@@ -42,17 +44,17 @@ using namespace BenderHelpers;
 std::vector<VkImageView> displayViews_;
 std::vector<VkFramebuffer> framebuffers_;
 
-std::vector<VkBuffer> uniformBuffers_;
-std::vector<VkDeviceMemory> uniformBuffersMemory_;
+struct ModelViewProjection {
+  alignas(16) glm::mat4 mvp;
+};
+
+UniformBufferObject<ModelViewProjection> *uniformBuffer;
+
 VkDescriptorSetLayout descriptorSetLayout_;
 VkDescriptorPool descriptorPool_;
 std::vector<VkDescriptorSet> descriptorSets_;
 
 VkRenderPass render_pass;
-
-struct UniformBufferObject {
-    alignas(16) glm::mat4 mvp;
-};
 
 struct VulkanGfxPipelineInfo {
   VkPipelineLayout layout_;
@@ -183,15 +185,7 @@ void createFrameBuffers(VkRenderPass &renderPass,
 }
 
 void createUniformBuffers() {
-  VkDeviceSize bufferSize = sizeof(UniformBufferObject);
-
-  uniformBuffers_.resize(device->getSwapchainLength());
-  uniformBuffersMemory_.resize(device->getSwapchainLength());
-
-  for (size_t i = 0; i < device->getSwapchainLength(); i++) {
-    device->createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-            uniformBuffers_[i], uniformBuffersMemory_[i]);
-  }
+  uniformBuffer = new UniformBufferObject<ModelViewProjection>(*device);
 }
 
 void updateUniformBuffer(uint32_t frameIndex) {
@@ -204,16 +198,12 @@ void updateUniformBuffer(uint32_t frameIndex) {
     glm::mat4 proj = glm::perspective(glm::radians(100.0f),
             device->getDisplaySize().width / (float) device->getDisplaySize().height, 0.1f, 10.0f);
     proj[1][1] *= -1;
+
     glm::mat4 mvp = proj * view * model;
 
-    UniformBufferObject ubo = {
-        .mvp = mvp,
-    };
-
-    void* data;
-    vkMapMemory(device->getDevice(), uniformBuffersMemory_[frameIndex], 0, sizeof(ubo), 0, &data);
-    memcpy(data, &ubo, sizeof(ubo));
-    vkUnmapMemory(device->getDevice(), uniformBuffersMemory_[frameIndex]);
+    uniformBuffer->update(frameIndex, [&mvp](auto& ubo) {
+      ubo.mvp = mvp;
+    });
 }
 
 void createDescriptorPool() {
@@ -269,9 +259,9 @@ void createDescriptorSets() {
 
   for (size_t i = 0; i < device->getDisplayImagesSize(); i++) {
     VkDescriptorBufferInfo bufferInfo = {};
-    bufferInfo.buffer = uniformBuffers_[i];
+    bufferInfo.buffer = uniformBuffer->getBuffer(i);
     bufferInfo.offset = 0;
-    bufferInfo.range = sizeof(UniformBufferObject);
+    bufferInfo.range = sizeof(ModelViewProjection);
 
     VkDescriptorImageInfo imageInfo = {};
     imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -602,13 +592,11 @@ void DeleteVulkan(void) {
   delete renderer;
 
   delete geometry;
+  delete uniformBuffer;
 
   for (int i = 0; i < device->getSwapchainLength(); ++i) {
     vkDestroyImageView(device->getDevice(), displayViews_[i], nullptr);
     vkDestroyFramebuffer(device->getDevice(), framebuffers_[i], nullptr);
-
-    vkDestroyBuffer(device->getDevice(), uniformBuffers_[i], nullptr);
-    vkFreeMemory(device->getDevice(), uniformBuffersMemory_[i], nullptr);
   }
 
   vkDestroyDescriptorPool(device->getDevice(), descriptorPool_, nullptr);
