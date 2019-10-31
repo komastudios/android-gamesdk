@@ -30,7 +30,7 @@
 #include "bender_helpers.h"
 #include "renderer.h"
 #include "shader_state.h"
-#include "geometry.h"
+#include "mesh.h"
 #include "texture.h"
 #include "uniform_buffer.h"
 #include "glm/glm.hpp"
@@ -73,8 +73,9 @@ AttachmentBuffer depthBuffer;
 // Android Native App pointer...
 android_app *androidAppCtx = nullptr;
 BenderKit::Device *device;
-Geometry *geometry;
 Renderer *renderer;
+ShaderState *shaderState;
+Mesh *mesh;
 
 std::vector<Texture*> textures;
 std::vector<const char*> texFiles;
@@ -270,13 +271,15 @@ void createDescriptorSets() {
   }
 }
 
-void createGraphicsPipeline() {
-  ShaderState shaderState("triangle", androidAppCtx, device->getDevice());
-  shaderState.addVertexInputBinding(0, 8 * sizeof(float));
-  shaderState.addVertexAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0);
-  shaderState.addVertexAttributeDescription(0, 1, VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(float));
-  shaderState.addVertexAttributeDescription(0, 2, VK_FORMAT_R32G32B32_SFLOAT, 5 * sizeof(float));
+void createShaderState() {
+  shaderState = new ShaderState("triangle", androidAppCtx, device->getDevice());
+  shaderState->addVertexInputBinding(0, 8 * sizeof(float));
+  shaderState->addVertexAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0);
+  shaderState->addVertexAttributeDescription(0, 1, VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(float));
+  shaderState->addVertexAttributeDescription(0, 2, VK_FORMAT_R32G32B32_SFLOAT, 5 * sizeof(float));
+}
 
+void createGraphicsPipeline() {
   VkViewport viewport{
       .x = 0.0f,
       .y = 0.0f,
@@ -396,12 +399,11 @@ void createGraphicsPipeline() {
       .basePipelineIndex = 0,
   };
 
-  shaderState.updatePipelineInfo(pipelineInfo);
+  shaderState->updatePipelineInfo(pipelineInfo);
 
   CALL_VK(vkCreateGraphicsPipelines(device->getDevice(), gfxPipeline.cache_, 1, &pipelineInfo,
                                     nullptr, &gfxPipeline.pipeline_));
   LOGI("Setup Graphics Pipeline");
-  shaderState.cleanup();
 }
 
 void createDepthBuffer() {
@@ -535,6 +537,8 @@ bool InitVulkan(android_app *app) {
   CALL_VK(vkCreateRenderPass(device->getDevice(), &render_pass_createInfo, nullptr,
                              &render_pass));
 
+  createShaderState();
+
   // ---------------------------------------------
   // Create the triangle vertex buffer with indices
   const std::vector<float> vertexData = {
@@ -549,7 +553,7 @@ bool InitVulkan(android_app *app) {
       1, 2, 4, 2, 1, 0, 0, 3, 2, 2, 3, 4, 3, 0, 4, 0, 1, 4
   };
 
-  geometry = new Geometry(device, vertexData, indexData);
+  mesh = new Mesh(device, vertexData, indexData, &descriptorSetLayout_, shaderState, &render_pass);
 
   createDepthBuffer();
 
@@ -572,9 +576,9 @@ bool IsVulkanReady(void) { return device != nullptr && device->isInitialized(); 
 
 void DeleteVulkan(void) {
   delete renderer;
-
-  delete geometry;
+  delete mesh;
   delete uniformBuffer;
+  shaderState->cleanup();
 
   for (int i = 0; i < device->getSwapchainLength(); ++i) {
     vkDestroyImageView(device->getDevice(), displayViews_[i], nullptr);
@@ -598,6 +602,8 @@ void DeleteVulkan(void) {
 
 bool VulkanDrawFrame(void) {
   TRACE_BEGIN_SECTION("Draw Frame");
+
+  updateUniformBuffer(renderer->getCurrentFrame());
 
   renderer->beginFrame();
   renderer->beginPrimaryCommandBufferRecording();
@@ -632,14 +638,7 @@ bool VulkanDrawFrame(void) {
                     VK_PIPELINE_BIND_POINT_GRAPHICS,
                     gfxPipeline.pipeline_);
 
-  geometry->bind(renderer->getCurrentCommandBuffer());
-  updateUniformBuffer(renderer->getCurrentFrame());
-
-  vkCmdBindDescriptorSets(renderer->getCurrentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS,
-          gfxPipeline.layout_, 0, 1, &descriptorSets_[renderer->getCurrentFrame()], 0, nullptr);
-  vkCmdDrawIndexed(renderer->getCurrentCommandBuffer(),
-                   static_cast<u_int32_t>(geometry->getIndexCount()),
-                   1, 0, 0, 0);
+  mesh->submitDraw(renderer->getCurrentCommandBuffer(), descriptorSets_[renderer->getCurrentFrame()]);
 
   vkCmdEndRenderPass(renderer->getCurrentCommandBuffer());
 
