@@ -16,6 +16,91 @@
       "revId": "37251affd6b3ff967096400e2fbf088663e18642",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6e968293_3852509d",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-31T21:34:13Z",
+      "side": 1,
+      "message": "I would have the device as first parameter and passed by reference and the androidAppCtx as second parameter.",
+      "revId": "37251affd6b3ff967096400e2fbf088663e18642",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b212d6b3_2d4693f6",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-31T21:34:13Z",
+      "side": 1,
+      "message": "Samplers must be stored somewhere else, it\u0027s not an attribute of a texture.",
+      "revId": "37251affd6b3ff967096400e2fbf088663e18642",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a26486aa_452e4e67",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-31T21:34:13Z",
+      "side": 1,
+      "message": "I would hold a reference to the device object, not a pointer.",
+      "revId": "37251affd6b3ff967096400e2fbf088663e18642",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3637cded_c694a032",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-31T21:34:13Z",
+      "side": 1,
+      "message": "Do we need to store it?",
+      "revId": "37251affd6b3ff967096400e2fbf088663e18642",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "18b85b22_790070ca",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-31T21:34:13Z",
+      "side": 1,
+      "message": "The format will eventually need to come from \"outside\"",
+      "revId": "37251affd6b3ff967096400e2fbf088663e18642",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
