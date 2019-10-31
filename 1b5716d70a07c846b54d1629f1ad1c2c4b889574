@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b5ec352b_97c73e83",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-31T00:49:42Z",
+      "side": 1,
+      "message": "This should happen outside of createTextures.",
+      "revId": "1b5716d70a07c846b54d1629f1ad1c2c4b889574",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e3742ec6_9cf54c17",
+        "filename": "bender/bender-base/utils/src/bender_textures.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-31T00:49:42Z",
+      "side": 1,
+      "message": "Can you move createSampler to vulkan_main?",
+      "revId": "1b5716d70a07c846b54d1629f1ad1c2c4b889574",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
