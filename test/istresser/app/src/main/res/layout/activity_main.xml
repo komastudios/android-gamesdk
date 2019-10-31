@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Strategies" />
+
+        <TextView
+            android:id="@+id/strategies"
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Uptime" />
+
+        <TextView
+            android:id="@+id/uptime"
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Free Memory (Java)" />
+
+        <TextView
+            android:id="@+id/freeMemory"
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total Memory" />
+
+        <TextView
+            android:id="@+id/totalMemory"
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Max Memory" />
+
+        <TextView
+            android:id="@+id/maxMemory"
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Native Heap Size" />
+
+        <TextView
+            android:id="@+id/nativeHeap"
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Native Allocated" />
+
+        <TextView
+            android:id="@+id/nativeAllocated"
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Native Allocated By Test" />
+
+        <TextView
+            android:id="@+id/nativeAllocatedByTest"
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Record Native Allocated" />
+
+        <TextView
+            android:id="@+id/recordNativeAllocated"
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="availMem" />
+
+        <TextView
+            android:id="@+id/availMem"
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="lowMemory" />
+
+        <TextView
+            android:id="@+id/lowMemory"
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="releases" />
+
+        <TextView
+            android:id="@+id/releases"
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+</TableLayout>
