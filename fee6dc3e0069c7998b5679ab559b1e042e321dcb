@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "ac217dbc_05f9c92c",
+        "filename": "bender/bender-base/app/src/main/shaders/triangle.frag",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-31T00:05:40Z",
+      "side": 1,
+      "message": "You can multiply the texture fetch by the vertex color for fun :)",
+      "revId": "fee6dc3e0069c7998b5679ab559b1e042e321dcb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d00c09a0_937b05c2",
         "filename": "bender/bender-base/utils/src/bender_textures.cc",
         "patchSetId": 2
