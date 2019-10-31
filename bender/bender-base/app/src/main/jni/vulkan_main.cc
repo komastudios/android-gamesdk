@@ -30,7 +30,7 @@
 #include "renderer.h"
 #include "shader_state.h"
 #include "geometry.h"
-#include "bender_textures.h"
+#include "texture.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
@@ -74,13 +74,11 @@ BenderKit::Device *device;
 Geometry *geometry;
 Renderer *renderer;
 
-const char* texFiles[TEXTURE_COUNT] = {
-        "textures/sample_texture.png",
-};
-struct texture_object textures[TEXTURE_COUNT];
+std::vector<Texture*> textures;
+std::vector<const char*> texFiles;
 
-void createSampler(texture_object *texture) {
-  const VkSamplerCreateInfo sampler = {
+void createSampler(Texture* texture) {
+  const VkSamplerCreateInfo sampler_create_info = {
           .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
           .pNext = nullptr,
           .magFilter = VK_FILTER_NEAREST,
@@ -97,34 +95,17 @@ void createSampler(texture_object *texture) {
           .borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE,
           .unnormalizedCoordinates = VK_FALSE,
   };
-  CALL_VK(vkCreateSampler(device->getDevice(), &sampler, nullptr,
-                          &texture->sampler));
+  VkSampler sampler = texture->getSampler();
+  CALL_VK(vkCreateSampler(device->getDevice(), &sampler_create_info, nullptr,
+                          &sampler));
 }
 
 void createTextures() {
   assert(androidAppCtx != nullptr);
   assert(device != nullptr);
-  for (uint32_t i = 0; i < TEXTURE_COUNT; i++) {
-    LoadTextureFromFile(texFiles[i], androidAppCtx, &textures[i], device, VK_IMAGE_USAGE_SAMPLED_BIT,
-                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-    VkImageViewCreateInfo view = {
-            .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-            .pNext = nullptr,
-            .image = textures[i].image,
-            .viewType = VK_IMAGE_VIEW_TYPE_2D,
-            .format = kTexFmt,
-            .components =
-                    {
-                            .r = VK_COMPONENT_SWIZZLE_R,
-                            .g = VK_COMPONENT_SWIZZLE_G,
-                            .b = VK_COMPONENT_SWIZZLE_B,
-                            .a = VK_COMPONENT_SWIZZLE_A,
-                    },
-            .subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
-            .flags = 0,
-    };
-    CALL_VK(
-            vkCreateImageView(device->getDevice(), &view, nullptr, &textures[i].view));
+
+  for (uint32_t i = 0; i < texFiles.size(); ++i) {
+    textures.push_back(new Texture(texFiles[i], device, androidAppCtx));
   }
 }
 
@@ -274,8 +255,8 @@ void createDescriptorSets() {
 
     VkDescriptorImageInfo imageInfo = {};
     imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    imageInfo.imageView = textures[0].view;
-    imageInfo.sampler = textures[0].sampler;
+    imageInfo.imageView = textures[0]->getImageView();
+    imageInfo.sampler = textures[0]->getSampler();
 
     std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
 
@@ -583,6 +564,8 @@ bool InitVulkan(android_app *app) {
   createDepthBuffer();
 
   createFrameBuffers(render_pass, depthBuffer.image_view);
+
+  texFiles.push_back("textures/sample_texture.png");
 
   createTextures();
 
