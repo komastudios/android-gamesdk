@@ -124,6 +124,24 @@
     },
     {
       "key": {
+        "uuid": "41e13f69_056bb0b6",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-31T21:43:45Z",
+      "side": 1,
+      "message": "If it\u0027s a pointer, it can potentially be nullptr, so you are saying that being null is a valid value. If you make it a reference, you are saying that this can never be null.",
+      "parentUuid": "69d70723_5ae62993",
+      "revId": "37251affd6b3ff967096400e2fbf088663e18642",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3637cded_c694a032",
         "filename": "bender/bender-base/app/src/main/jni/texture.h",
         "patchSetId": 2
@@ -159,6 +177,24 @@
     },
     {
       "key": {
+        "uuid": "d647d5fe_24e0ef11",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-31T21:43:45Z",
+      "side": 1,
+      "message": "I think you can simply pass it down to the load method, since you never need it again after construction.",
+      "parentUuid": "1db0a9ec_cf7eaf3b",
+      "revId": "37251affd6b3ff967096400e2fbf088663e18642",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "18b85b22_790070ca",
         "filename": "bender/bender-base/app/src/main/jni/texture.h",
         "patchSetId": 2
@@ -188,6 +224,24 @@
       "side": 1,
       "message": "Got it. I\u0027ll make this as a parameter from the constructor",
       "parentUuid": "18b85b22_790070ca",
+      "revId": "37251affd6b3ff967096400e2fbf088663e18642",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a35325f5_d092bb28",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-31T21:43:45Z",
+      "side": 1,
+      "message": "Yeah, think so.",
+      "parentUuid": "e3931ddd_1249f304",
       "revId": "37251affd6b3ff967096400e2fbf088663e18642",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
