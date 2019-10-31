@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d7ce2bc3_878ada60",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-10-31T21:27:57Z",
+      "side": 1,
+      "message": "Isn\u0027t this the same as findMemoryType in BenderHelpers (with slightly different params)? If so, maybe replace this (you can\u0027t use CALL_VK but if you really need that then maybe just modify findMemoryType).",
+      "revId": "37251affd6b3ff967096400e2fbf088663e18642",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
