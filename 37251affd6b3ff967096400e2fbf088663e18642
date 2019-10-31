@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "0f44bbcc_1d25b488",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-10-31T21:38:23Z",
+      "side": 1,
+      "message": "Makes sense. working on it",
+      "parentUuid": "d7ce2bc3_878ada60",
+      "revId": "37251affd6b3ff967096400e2fbf088663e18642",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6e968293_3852509d",
         "filename": "bender/bender-base/app/src/main/jni/texture.h",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "37251affd6b3ff967096400e2fbf088663e18642",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c81f1fc9_e621645d",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-10-31T21:38:23Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "6e968293_3852509d",
+      "revId": "37251affd6b3ff967096400e2fbf088663e18642",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -70,6 +106,24 @@
     },
     {
       "key": {
+        "uuid": "69d70723_5ae62993",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-10-31T21:38:23Z",
+      "side": 1,
+      "message": "Any specific reason for storing a reference? ShaderState stores a pointer of Device as well",
+      "parentUuid": "a26486aa_452e4e67",
+      "revId": "37251affd6b3ff967096400e2fbf088663e18642",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3637cded_c694a032",
         "filename": "bender/bender-base/app/src/main/jni/texture.h",
         "patchSetId": 2
@@ -87,6 +141,24 @@
     },
     {
       "key": {
+        "uuid": "1db0a9ec_cf7eaf3b",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-10-31T21:38:23Z",
+      "side": 1,
+      "message": "Same as ShaderState for opening asset files. We can store android_app_-\u003eactivity-\u003eassetManager if we don\u0027t want to store android_app pointer.",
+      "parentUuid": "3637cded_c694a032",
+      "revId": "37251affd6b3ff967096400e2fbf088663e18642",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "18b85b22_790070ca",
         "filename": "bender/bender-base/app/src/main/jni/texture.h",
         "patchSetId": 2
@@ -98,6 +170,24 @@
       "writtenOn": "2019-10-31T21:34:13Z",
       "side": 1,
       "message": "The format will eventually need to come from \"outside\"",
+      "revId": "37251affd6b3ff967096400e2fbf088663e18642",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e3931ddd_1249f304",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-10-31T21:38:23Z",
+      "side": 1,
+      "message": "Got it. I\u0027ll make this as a parameter from the constructor",
+      "parentUuid": "18b85b22_790070ca",
       "revId": "37251affd6b3ff967096400e2fbf088663e18642",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
