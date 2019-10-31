@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "74dadaeb_bf9a514e",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-10-31T21:10:31Z",
+      "side": 1,
+      "message": "Do we need this constructor? I just keep it b/c I think it\u0027s okay to keep a default one.",
+      "revId": "296f5d9dcf91d15bd22cf0774dde8bc3e3f36285",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e5e696f6_0c14df90",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-10-31T21:10:31Z",
+      "side": 1,
+      "message": "Should I move sampler out of Texture class?",
+      "revId": "296f5d9dcf91d15bd22cf0774dde8bc3e3f36285",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4a7bdbe8_8e8ea85f",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-10-31T21:10:31Z",
+      "side": 1,
+      "message": "Would the texture format change in the future? Or is it okay to keep in this format?",
+      "revId": "296f5d9dcf91d15bd22cf0774dde8bc3e3f36285",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
