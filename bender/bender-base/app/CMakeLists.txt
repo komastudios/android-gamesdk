@@ -28,7 +28,8 @@ add_library(base SHARED
         ${SRC_DIR}/android_main.cc
         ${SRC_DIR}/renderer.cc
         ${SRC_DIR}/shader_state.cc
-        ${SRC_DIR}/geometry.cc)
+        ${SRC_DIR}/geometry.cc
+        ${SRC_DIR}/texture.cc)
 
 add_library(utils STATIC
         ${UTILS_DIR}/bender_helpers.cc
