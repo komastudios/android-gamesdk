@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "8c98241d_773aece0",
+        "filename": "bender/bender-base/utils/src/bender_textures.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-10-31T00:23:30Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "d00c09a0_937b05c2",
+      "revId": "fee6dc3e0069c7998b5679ab559b1e042e321dcb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "67882279_338cf93a",
         "filename": "bender/bender-base/utils/src/bender_textures.cc",
         "patchSetId": 2
@@ -47,6 +65,24 @@
       "writtenOn": "2019-10-31T00:03:29Z",
       "side": 1,
       "message": "Which path is actually taken on your Pixel 3?",
+      "revId": "fee6dc3e0069c7998b5679ab559b1e042e321dcb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "296dcea2_d76265d3",
+        "filename": "bender/bender-base/utils/src/bender_textures.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-10-31T00:23:30Z",
+      "side": 1,
+      "message": "\u003e Which path is actually taken on your Pixel 3?\n\nAs I run the app with my face rotating, it took the path without needing Blit.\nShould we drop the operations to blit?",
+      "parentUuid": "67882279_338cf93a",
       "revId": "fee6dc3e0069c7998b5679ab559b1e042e321dcb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -67,6 +103,24 @@
       "revId": "fee6dc3e0069c7998b5679ab559b1e042e321dcb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c4888d4e_b32ded09",
+        "filename": "bender/bender-base/utils/src/bender_textures.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 306,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-10-31T00:23:30Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "24b3d23d_d416be93",
+      "revId": "fee6dc3e0069c7998b5679ab559b1e042e321dcb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
