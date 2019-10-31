@@ -89,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "2cc69907_bc536cb0",
+        "filename": "bender/bender-base/utils/src/bender_textures.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-31T00:34:19Z",
+      "side": 1,
+      "message": "Yes, always. Linear textures are very very slow.",
+      "parentUuid": "296dcea2_d76265d3",
+      "revId": "fee6dc3e0069c7998b5679ab559b1e042e321dcb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "24b3d23d_d416be93",
         "filename": "bender/bender-base/utils/src/bender_textures.cc",
         "patchSetId": 2
