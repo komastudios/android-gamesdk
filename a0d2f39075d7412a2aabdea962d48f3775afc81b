@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "69750650_ec45fab8",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-10-31T20:30:37Z",
+      "side": 1,
+      "message": "Ooops yes, forgot to remove it.",
+      "parentUuid": "71497a7f_0954484e",
+      "revId": "a0d2f39075d7412a2aabdea962d48f3775afc81b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "acaff2f8_00e670d5",
         "filename": "bender/bender-base/utils/bender_kit/bender_kit.h",
         "patchSetId": 2
