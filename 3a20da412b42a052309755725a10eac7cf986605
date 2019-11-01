@@ -19,6 +19,23 @@
     },
     {
       "key": {
+        "uuid": "b96e82ef_a2630a76",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-01T21:25:19Z",
+      "side": 1,
+      "message": "VkDescriptorSet\u0026 descriptorSet",
+      "revId": "3a20da412b42a052309755725a10eac7cf986605",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "33b541fc_903a198d",
         "filename": "bender/bender-base/app/src/main/jni/mesh.h",
         "patchSetId": 3
@@ -30,6 +47,23 @@
       "writtenOn": "2019-11-01T20:20:03Z",
       "side": 1,
       "message": "These pipeline structures are the same ones as VulkanGfxPipelineInfo in vulkan_main, don\u0027t know if this can be generalized if they\u0027re going to be reused.",
+      "revId": "3a20da412b42a052309755725a10eac7cf986605",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d009532e_b8b33139",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 579,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-01T21:25:19Z",
+      "side": 1,
+      "message": "we should also delete the object",
       "revId": "3a20da412b42a052309755725a10eac7cf986605",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
