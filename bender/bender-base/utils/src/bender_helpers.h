@@ -15,6 +15,7 @@
 #ifndef BENDER_BASE_UTILS_SRC_BENDER_HELPERS_H_
 #define BENDER_BASE_UTILS_SRC_BENDER_HELPERS_H_
 
+#include <android/asset_manager.h>
 #include "vulkan_wrapper.h"
 #include "bender_kit.h"
 
@@ -35,6 +36,10 @@ VkFormat findSupportedFormat(BenderKit::Device *device,
 
 VkFormat findDepthFormat(BenderKit::Device *device);
 
+void loadOBJ(AAssetManager *mgr,
+             const std::string &fileName,
+             std::vector<float> &vertexData,
+             std::vector<u_int16_t> &indexBuffer);
 }
 
 #endif  // BENDER_BASE_UTILS_SRC_BENDER_HELPERS_H
