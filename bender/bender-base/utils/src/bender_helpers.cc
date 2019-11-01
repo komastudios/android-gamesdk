@@ -13,6 +13,12 @@
 // limitations under the License.
 
 #include "bender_helpers.h"
+#define GLM_FORCE_CXX17
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/glm.hpp"
+#include "glm/gtx/hash.hpp"
+#include <sstream>
+#include <unordered_map>
 
 namespace BenderHelpers {
 
@@ -126,6 +132,119 @@ VkFormat findDepthFormat(BenderKit::Device *device) {
       VK_IMAGE_TILING_OPTIMAL,
       VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
   );
+}
+
+void loadOBJ(AAssetManager *mgr,
+             const std::string &fileName,
+             std::vector<float> &vertexData,
+             std::vector<u_int16_t> &indexBuffer) {
+  std::vector<glm::vec3> position;
+  std::vector<glm::vec3> normal;
+  std::vector<glm::vec2> texCoord;
+
+  std::unordered_map<glm::vec3, int> vertToIndex;
+
+
+  // Read the file:
+  AAsset *file = AAssetManager_open(mgr, fileName.c_str(), AASSET_MODE_BUFFER);
+  size_t fileLength = AAsset_getLength(file);
+
+  char *fileContent = new char[fileLength];
+  AAsset_read(file, fileContent, fileLength);
+
+  std::stringstream data;
+  data << fileContent;
+
+  std::string label;
+  while (data >> label){
+    if (label == "v"){
+      float x, y, z;
+      data >> x >> y >> z;
+      position.push_back({x, y, z});
+    }
+    else if (label == "vt"){
+      float x, y;
+      data >> x >> y;
+      texCoord.push_back({x, y});
+    }
+    else if (label == "vn") {
+      float x, y, z;
+      data >> x >> y >> z;
+      normal.push_back({x, y, z});
+    }
+    else if (label == "f"){
+      glm::vec3 currVert;
+      char skip;
+      data >> currVert.x >> skip >> currVert.y >> skip >> currVert.z;
+      int index;
+      if (vertToIndex.find(currVert) == vertToIndex.end()){
+        index = vertToIndex.size();
+        vertToIndex[currVert] = index;
+      }
+
+      indexBuffer.push_back(vertToIndex[currVert]);
+      vertexData.push_back(position[currVert.x-1].x);
+      vertexData.push_back(position[currVert.x-1].y);
+      vertexData.push_back(position[currVert.x-1].z);
+
+      vertexData.push_back(normal[currVert.z-1].x);
+      vertexData.push_back(normal[currVert.z-1].y);
+      vertexData.push_back(normal[currVert.z-1].z);
+
+      vertexData.push_back(1.0f);
+      vertexData.push_back(0.0f);
+      vertexData.push_back(0.0f);
+
+      vertexData.push_back(texCoord[currVert.y-1].x);
+      vertexData.push_back(texCoord[currVert.y-1].y);
+
+
+      data >> currVert.x >> skip >> currVert.y >> skip >> currVert.z;
+      if (vertToIndex.find(currVert) == vertToIndex.end()){
+        index = vertToIndex.size();
+        vertToIndex[currVert] = index;
+      }
+
+      indexBuffer.push_back(vertToIndex[currVert]);
+      vertexData.push_back(position[currVert.x-1].x);
+      vertexData.push_back(position[currVert.x-1].y);
+      vertexData.push_back(position[currVert.x-1].z);
+
+      vertexData.push_back(normal[currVert.z-1].x);
+      vertexData.push_back(normal[currVert.z-1].y);
+      vertexData.push_back(normal[currVert.z-1].z);
+
+      vertexData.push_back(1.0f);
+      vertexData.push_back(0.0f);
+      vertexData.push_back(0.0f);
+
+      vertexData.push_back(texCoord[currVert.y-1].x);
+      vertexData.push_back(texCoord[currVert.y-1].y);
+
+
+      data >> currVert.x >> skip >> currVert.y >> skip >> currVert.z;
+      if (vertToIndex.find(currVert) == vertToIndex.end()){
+        index = vertToIndex.size();
+        vertToIndex[currVert] = index;
+      }
+
+      indexBuffer.push_back(vertToIndex[currVert]);
+      vertexData.push_back(position[currVert.x-1].x);
+      vertexData.push_back(position[currVert.x-1].y);
+      vertexData.push_back(position[currVert.x-1].z);
+
+      vertexData.push_back(normal[currVert.z-1].x);
+      vertexData.push_back(normal[currVert.z-1].y);
+      vertexData.push_back(normal[currVert.z-1].z);
+
+      vertexData.push_back(1.0f);
+      vertexData.push_back(0.0f);
+      vertexData.push_back(0.0f);
+
+      vertexData.push_back(texCoord[currVert.y-1].x);
+      vertexData.push_back(texCoord[currVert.y-1].y);
+    }
+  }
 }
 
 }

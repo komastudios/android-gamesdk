@@ -49,10 +49,6 @@ std::vector<VkDescriptorSet> descriptorSets_;
 
 VkRenderPass render_pass;
 
-struct UniformBufferObject {
-    alignas(16) glm::mat4 mvp;
-};
-
 struct VulkanGfxPipelineInfo {
   VkPipelineLayout layout_;
   VkPipelineCache cache_;
@@ -67,6 +63,29 @@ struct AttachmentBuffer {
   VkImageView image_view;
 };
 AttachmentBuffer depthBuffer;
+
+struct UniformBufferObject {
+  alignas(16) glm::mat4 mvp;
+  alignas(16) glm::mat4 model;
+  alignas(16) glm::mat4 invTranspose;
+};
+
+struct PointLight{
+  alignas(16) float intensity;
+  alignas(16) glm::vec3 position;
+  alignas(16) glm::vec3 color;
+};
+
+struct ambientLight{
+  alignas(16) float intensity;
+  alignas(16) glm::vec3 color;
+};
+
+struct lightBlock{
+  PointLight pl;
+  ambientLight al;
+  alignas(16) glm::vec3 cameraPos;
+};
 
 // Android Native App pointer...
 android_app *androidAppCtx = nullptr;
@@ -182,7 +201,7 @@ void createFrameBuffers(VkRenderPass &renderPass,
 }
 
 void createUniformBuffers() {
-  VkDeviceSize bufferSize = sizeof(UniformBufferObject);
+  VkDeviceSize bufferSize = sizeof(UniformBufferObject) + sizeof(lightBlock);
 
   uniformBuffers_.resize(device->getSwapchainLength());
   uniformBuffersMemory_.resize(device->getSwapchainLength());
@@ -207,20 +226,46 @@ void updateUniformBuffer(uint32_t frameIndex) {
 
     UniformBufferObject ubo = {
         .mvp = mvp,
+        .model = model,
+        .invTranspose = glm::transpose(glm::inverse(model)),
     };
+
+    lightBlock lb {
+        .pl.position = {0.0f, 2.0f, 0.0f},
+        .pl.color = {1.0f, 1.0f, 1.0f},
+        .pl.intensity = 1.0f,
+        .al.color = {1.0f, 1.0f, 1.0f},
+        .al.intensity = 0.1f,
+        .cameraPos = {0.0f, 0.0f, -2.0f}
+    };
+
 
     void* data;
     vkMapMemory(device->getDevice(), uniformBuffersMemory_[frameIndex], 0, sizeof(ubo), 0, &data);
     memcpy(data, &ubo, sizeof(ubo));
     vkUnmapMemory(device->getDevice(), uniformBuffersMemory_[frameIndex]);
+
+    vkMapMemory(device->getDevice(),
+                uniformBuffersMemory_[frameIndex],
+                sizeof(ubo),
+                sizeof(lb),
+                0,
+                &data);
+    memcpy(data, &lb, sizeof(lb));
+    vkUnmapMemory(device->getDevice(), uniformBuffersMemory_[frameIndex]);
 }
 
 void createDescriptorPool() {
-  std::array<VkDescriptorPoolSize, 2> poolSizes = {};
+  std::array<VkDescriptorPoolSize, 4> poolSizes = {};
   poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
   poolSizes[0].descriptorCount = static_cast<uint32_t>(device->getDisplayImagesSize());
   poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
   poolSizes[1].descriptorCount = static_cast<uint32_t>(device->getDisplayImagesSize());
+  poolSizes[2].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  poolSizes[2].descriptorCount = static_cast<uint32_t>(device->getDisplayImagesSize());
+  poolSizes[3].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  poolSizes[3].descriptorCount = static_cast<uint32_t>(device->getDisplayImagesSize());
+
 
   VkDescriptorPoolCreateInfo poolInfo = {};
   poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -246,7 +291,15 @@ void createDescriptorSetLayout() {
   samplerLayoutBinding.pImmutableSamplers = nullptr;
   samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-  std::array<VkDescriptorSetLayoutBinding, 2> bindings = {uboLayoutBinding, samplerLayoutBinding};
+  VkDescriptorSetLayoutBinding lightBlockLayoutBinding = {};
+  lightBlockLayoutBinding.binding = 2;
+  lightBlockLayoutBinding.descriptorCount = 1;
+  lightBlockLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  lightBlockLayoutBinding.pImmutableSamplers = nullptr;
+  lightBlockLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+  std::array<VkDescriptorSetLayoutBinding, 3> bindings = {uboLayoutBinding, samplerLayoutBinding,
+                                                          lightBlockLayoutBinding};
   VkDescriptorSetLayoutCreateInfo layoutInfo = {};
   layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
   layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
@@ -277,7 +330,13 @@ void createDescriptorSets() {
     imageInfo.imageView = textures[0].view;
     imageInfo.sampler = textures[0].sampler;
 
-    std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
+
+    VkDescriptorBufferInfo lightBlockInfo = {};
+    lightBlockInfo.buffer = uniformBuffers_[i];
+    lightBlockInfo.offset = sizeof(UniformBufferObject);
+    lightBlockInfo.range = sizeof(lightBlockInfo);
+
+    std::array<VkWriteDescriptorSet, 3> descriptorWrites = {};
 
     descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     descriptorWrites[0].dstSet = descriptorSets_[i];
@@ -295,16 +354,25 @@ void createDescriptorSets() {
     descriptorWrites[1].descriptorCount = 1;
     descriptorWrites[1].pImageInfo = &imageInfo;
 
+    descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptorWrites[2].dstSet = descriptorSets_[i];
+    descriptorWrites[2].dstBinding = 2;
+    descriptorWrites[2].dstArrayElement = 0;
+    descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    descriptorWrites[2].descriptorCount = 1;
+    descriptorWrites[2].pBufferInfo = &lightBlockInfo;
+
     vkUpdateDescriptorSets(device->getDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
   }
 }
 
 void createGraphicsPipeline() {
   ShaderState shaderState("triangle", androidAppCtx, device->getDevice());
-  shaderState.addVertexInputBinding(0, 8 * sizeof(float));
+  shaderState.addVertexInputBinding(0, 11 * sizeof(float));
   shaderState.addVertexAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0);
   shaderState.addVertexAttributeDescription(0, 1, VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(float));
-  shaderState.addVertexAttributeDescription(0, 2, VK_FORMAT_R32G32B32_SFLOAT, 5 * sizeof(float));
+  shaderState.addVertexAttributeDescription(0, 2, VK_FORMAT_R32G32B32_SFLOAT, 6 * sizeof(float));
+  shaderState.addVertexAttributeDescription(0, 3, VK_FORMAT_R32G32_SFLOAT, 9 * sizeof(float));
 
   VkViewport viewport{
       .x = 0.0f,
@@ -567,11 +635,11 @@ bool InitVulkan(android_app *app) {
   // ---------------------------------------------
   // Create the triangle vertex buffer with indices
   const std::vector<float> vertexData = {
-      -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-      0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-      0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-      -0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-      0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f
+      -0.5f, -0.5f, 0.5f,          -0.5774f, -0.5774f, 0.5774f,       1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+      0.5f, -0.5f, 0.5f,           0.5774f, -0.5774f, 0.5774f,        0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+      0.5f, 0.5f, 0.5f,            0.5774f, 0.5774f, 0.5774f,         0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+      -0.5f, 0.5f, 0.5f,           -0.5774f, 0.5774f, 0.5774f,      1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+      0.0f, 0.0f, 0.0f,            0.0f, 1.0f, 0.0f,           1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
   };
 
   const std::vector<u_int16_t> indexData = {
