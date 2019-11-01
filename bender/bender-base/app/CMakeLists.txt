@@ -29,7 +29,9 @@ add_library(base SHARED
         ${SRC_DIR}/renderer.cc
         ${SRC_DIR}/shader_state.cc
         ${SRC_DIR}/geometry.cc
-        ${SRC_DIR}/texture.cc)
+        ${SRC_DIR}/texture.cc
+        ${SRC_DIR}/uniform_buffer.cc
+        )
 
 add_library(utils STATIC
         ${UTILS_DIR}/bender_helpers.cc)
