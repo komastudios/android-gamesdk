@@ -29,8 +29,8 @@ class Renderer {
   void beginPrimaryCommandBufferRecording();
   void endPrimaryCommandBufferRecording();
 
-  VkCommandBuffer getCurrentCommandBuffer();
-  uint32_t getCurrentFrame();
+  VkCommandBuffer getCurrentCommandBuffer() const;
+  uint32_t getCurrentFrame() const;
 
 private:
   VkImage getCurrentDisplayImage();
@@ -42,7 +42,8 @@ private:
   VkSemaphore *acquire_image_semaphore_;
   VkSemaphore *render_finished_semaphore_;
   VkFence *fence_;
-  uint32_t current_frame;
+
+//  uint32_t current_frame;
 
   void init();
 };
