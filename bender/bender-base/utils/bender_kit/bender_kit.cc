@@ -48,6 +48,7 @@ Device::Device(ANativeWindow *window) {
 
   CreateVulkanDevice(window, &appInfo);
   CreateSwapChain();
+
   initialized_ = true;
 }
 
@@ -62,9 +63,28 @@ Device::~Device() {
   vkDestroyInstance(instance_, nullptr);
 }
 
-VkImage Device::getDisplayImage(int i) {
+VkImage Device::getDisplayImage(int i) const {
   assert(i < displayImages_.size() && i >= 0);
   return displayImages_[i];
+}
+
+void Device::present(VkSemaphore* wait_semaphores) {
+  VkResult result;
+  VkSwapchainKHR swapchains[] = { getSwapchain() };
+  VkPresentInfoKHR present_info{
+          .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+          .pNext = nullptr,
+          .swapchainCount = 1,
+          .pSwapchains = swapchains,
+          .pImageIndices = &current_frame_index_,
+          .waitSemaphoreCount = 1,
+          .pWaitSemaphores = wait_semaphores,
+          .pResults = &result,
+  };
+
+  vkQueuePresentKHR(queue_, &present_info);
+
+  current_frame_index_ = (current_frame_index_ + 1) % getDisplayImagesSize();
 }
 
 void Device::CreateVulkanDevice(ANativeWindow *platformWindow,

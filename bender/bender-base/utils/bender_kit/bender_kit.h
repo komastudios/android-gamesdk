@@ -45,7 +45,7 @@ class Device {
 
   bool isInitialized() { return initialized_; }
 
-  void setInitialized(bool flag) { initialized_ = flag; }
+//  void setInitialized(bool flag) { initialized_ = flag; }
 
   void CreateImageView();
 
@@ -53,31 +53,35 @@ class Device {
                     VkDeviceMemory &bufferMemory,
                     VkMemoryPropertyFlags properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-  VkDevice getDevice() { return device_; }
+  VkDevice getDevice() const { return device_; }
 
-  VkPhysicalDevice getPhysicalDevice() { return gpuDevice_; }
+  VkPhysicalDevice getPhysicalDevice() const { return gpuDevice_; }
 
-  uint32_t getQueueFamilyIndex() { return queueFamilyIndex_; }
+  uint32_t getQueueFamilyIndex() const { return queueFamilyIndex_; }
 
-  VkSurfaceKHR getSurface() { return surface_; }
+  VkSurfaceKHR getSurface() const { return surface_; }
 
-  VkQueue getQueue() { return queue_; }
+  VkQueue getQueue() const { return queue_; }
 
-  VkSwapchainKHR getSwapchain() { return swapchain_; }
+  VkSwapchainKHR getSwapchain() const { return swapchain_; }
 
-  uint32_t getSwapchainLength() { return swapchainLength_; }
+  uint getSwapchainLength() const { return swapchainLength_; }
 
-  VkExtent2D getDisplaySize() { return displaySize_; }
+  VkExtent2D getDisplaySize() const { return displaySize_; }
 
-  VkFormat getDisplayFormat() { return displayFormat_; }
+  VkFormat getDisplayFormat() const { return displayFormat_; }
 
   VkPhysicalDeviceMemoryProperties getGpuMemProperties() { return gpuMemoryProperties_; }
 
   const std::vector<VkImage> &getDisplayImages() { return displayImages_; }
 
-  VkImage getDisplayImage(int i);
+  VkImage getDisplayImage(int i) const;
 
-  uint32_t getDisplayImagesSize() { return displayImages_.size(); }
+  size_t getDisplayImagesSize() const { return displayImages_.size(); }
+
+  uint getCurrentFrameIndex() const { return current_frame_index_; }
+
+  void present(VkSemaphore* wait_semaphores);
 
   void setObjectName(uint64_t object,
                      VkDebugReportObjectTypeEXT objectType,
@@ -95,10 +99,12 @@ class Device {
   void insertDebugMarker(VkCommandBuffer cmdbuffer, const char *markerName,
                          std::array<float, 4> color = {
                                  1.0f, 1.0f, 1.0f, 1.0f});
+
   void endDebugRegion(VkCommandBuffer cmdBuffer);
 
 private:
   bool initialized_;
+
   VkInstance instance_;
   VkPhysicalDevice gpuDevice_;
   VkPhysicalDeviceMemoryProperties gpuMemoryProperties_;
@@ -113,6 +119,8 @@ private:
   VkExtent2D displaySize_;
   VkFormat displayFormat_;
 
+  uint current_frame_index_ = 0;
+
   std::vector<VkImage> displayImages_;
 
   void CreateVulkanDevice(ANativeWindow *platformWindow,
@@ -121,4 +129,5 @@ private:
   void CreateSwapChain();
 };
 }
+
 #endif //BENDER_BASE_BENDER_KIT_HPP

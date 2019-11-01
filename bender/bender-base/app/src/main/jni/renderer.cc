@@ -21,10 +21,7 @@
 
 using namespace BenderHelpers;
 
-Renderer::Renderer(BenderKit::Device *device) {
-  device_ = device;
-  current_frame = 0;
-
+Renderer::Renderer(BenderKit::Device *device) : device_(device) {
   init();
 }
 
@@ -43,49 +40,37 @@ void Renderer::beginFrame() {
   TRACE_BEGIN_SECTION("vkAcquireNextImageKHR");
   uint32_t nextIndex;
   CALL_VK(vkAcquireNextImageKHR(device_->getDevice(), device_->getSwapchain(),
-                                UINT64_MAX, acquire_image_semaphore_[current_frame], VK_NULL_HANDLE,
+                                UINT64_MAX, acquire_image_semaphore_[getCurrentFrame()], VK_NULL_HANDLE,
                                 &nextIndex));
   TRACE_END_SECTION();
 
   TRACE_BEGIN_SECTION("vkWaitForFences");
-  CALL_VK(vkWaitForFences(device_->getDevice(), 1, &fence_[current_frame], VK_TRUE, 100000000));
-  CALL_VK(vkResetFences(device_->getDevice(), 1, &fence_[current_frame]));
+  CALL_VK(vkWaitForFences(device_->getDevice(), 1, &fence_[getCurrentFrame()], VK_TRUE, 100000000));
+  CALL_VK(vkResetFences(device_->getDevice(), 1, &fence_[getCurrentFrame()]));
   TRACE_END_SECTION();
 }
 
 void Renderer::endFrame() {
   VkPipelineStageFlags wait_stage_mask =
       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+
   VkSubmitInfo submit_info = {.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
       .pNext = nullptr,
       .waitSemaphoreCount = 1,
-      .pWaitSemaphores = &acquire_image_semaphore_[current_frame],
+      .pWaitSemaphores = &acquire_image_semaphore_[getCurrentFrame()],
       .pWaitDstStageMask = &wait_stage_mask,
       .commandBufferCount = 1,
-      .pCommandBuffers = &cmd_buffer_[current_frame],
+      .pCommandBuffers = &cmd_buffer_[getCurrentFrame()],
       .signalSemaphoreCount = 1,
-      .pSignalSemaphores = &render_finished_semaphore_[current_frame]};
+      .pSignalSemaphores = &render_finished_semaphore_[getCurrentFrame()]};
+
   TRACE_BEGIN_SECTION("vkQueueSubmit");
-  CALL_VK(vkQueueSubmit(device_->getQueue(), 1, &submit_info, fence_[current_frame]));
+  CALL_VK(vkQueueSubmit(device_->getQueue(), 1, &submit_info, fence_[getCurrentFrame()]));
   TRACE_END_SECTION();
 
-  VkResult result;
-  VkSwapchainKHR swapchains[] = { device_->getSwapchain() };
-  VkPresentInfoKHR present_info{
-      .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
-      .pNext = nullptr,
-      .swapchainCount = 1,
-      .pSwapchains = swapchains,
-      .pImageIndices = &current_frame,
-      .waitSemaphoreCount = 1,
-      .pWaitSemaphores = &render_finished_semaphore_[current_frame],
-      .pResults = &result,
-  };
-
-  TRACE_BEGIN_SECTION("vkQueuePresentKHR");
-  vkQueuePresentKHR(device_->getQueue(), &present_info);
+  TRACE_BEGIN_SECTION("Device::Present");
+  device_->present(&render_finished_semaphore_[getCurrentFrame()]);
   TRACE_END_SECTION();
-  current_frame = (current_frame + 1) % device_->getDisplayImagesSize();
 }
 
 void Renderer::beginPrimaryCommandBufferRecording() {
@@ -183,14 +168,14 @@ void Renderer::init() {
   }
 }
 
-VkCommandBuffer Renderer::getCurrentCommandBuffer() {
-  return cmd_buffer_[current_frame];
+VkCommandBuffer Renderer::getCurrentCommandBuffer() const {
+  return cmd_buffer_[getCurrentFrame()];
 }
 
-uint32_t Renderer::getCurrentFrame() {
-  return current_frame;
+uint32_t Renderer::getCurrentFrame() const {
+  return device_->getCurrentFrameIndex();
 }
 
 VkImage Renderer::getCurrentDisplayImage() {
-  return device_->getDisplayImage(current_frame);
+  return device_->getDisplayImage(getCurrentFrame());
 }
