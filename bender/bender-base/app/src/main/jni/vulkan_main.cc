@@ -45,9 +45,29 @@ std::vector<VkFramebuffer> framebuffers_;
 
 struct ModelViewProjection {
   alignas(16) glm::mat4 mvp;
+  alignas(16) glm::mat4 model;
+  alignas(16) glm::mat4 invTranspose;
+};
+
+struct PointLight{
+  alignas(16) float intensity;
+  alignas(16) glm::vec3 position;
+  alignas(16) glm::vec3 color;
+};
+
+struct AmbientLight{
+  alignas(16) float intensity;
+  alignas(16) glm::vec3 color;
+};
+
+struct LightBlock{
+  PointLight pointLight;
+  AmbientLight ambientLight;
+  alignas(16) glm::vec3 cameraPos;
 };
 
 UniformBufferObject<ModelViewProjection> *uniformBuffer;
+UniformBufferObject<LightBlock> *lightBuffer;
 
 VkDescriptorSetLayout descriptorSetLayout_;
 VkDescriptorPool descriptorPool_;
@@ -166,6 +186,7 @@ void createFrameBuffers(VkRenderPass &renderPass,
 
 void createUniformBuffers() {
   uniformBuffer = new UniformBufferObject<ModelViewProjection>(*device);
+  lightBuffer = new UniformBufferObject<LightBlock>(*device);
 }
 
 void updateUniformBuffer(uint32_t frameIndex) {
@@ -181,17 +202,33 @@ void updateUniformBuffer(uint32_t frameIndex) {
 
     glm::mat4 mvp = proj * view * model;
 
-    uniformBuffer->update(frameIndex, [&mvp](auto& ubo) {
+    uniformBuffer->update(frameIndex, [&mvp, &model](auto& ubo) {
       ubo.mvp = mvp;
+      ubo.model = model;
+      ubo.invTranspose = glm::transpose(glm::inverse(model));
+    });
+
+    lightBuffer->update(frameIndex, [](auto& lightBuffer) {
+      lightBuffer.pointLight.position = {0.0f, 2.0f, 0.0f};
+      lightBuffer.pointLight.color = {1.0f, 1.0f, 1.0f};
+      lightBuffer.pointLight.intensity = 1.0f;
+      lightBuffer.ambientLight.color = {1.0f, 1.0f, 1.0f};
+      lightBuffer.ambientLight.intensity = 0.1f;
+      lightBuffer.cameraPos = {0.0f, 0.0f, -2.0f};
     });
 }
 
 void createDescriptorPool() {
-  std::array<VkDescriptorPoolSize, 2> poolSizes = {};
+  std::array<VkDescriptorPoolSize, 4> poolSizes = {};
   poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
   poolSizes[0].descriptorCount = static_cast<uint32_t>(device->getDisplayImagesSize());
   poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
   poolSizes[1].descriptorCount = static_cast<uint32_t>(device->getDisplayImagesSize());
+  poolSizes[2].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  poolSizes[2].descriptorCount = static_cast<uint32_t>(device->getDisplayImagesSize());
+  poolSizes[3].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  poolSizes[3].descriptorCount = static_cast<uint32_t>(device->getDisplayImagesSize());
+
 
   VkDescriptorPoolCreateInfo poolInfo = {};
   poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -217,7 +254,15 @@ void createDescriptorSetLayout() {
   samplerLayoutBinding.pImmutableSamplers = nullptr;
   samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-  std::array<VkDescriptorSetLayoutBinding, 2> bindings = {uboLayoutBinding, samplerLayoutBinding};
+  VkDescriptorSetLayoutBinding lightBlockLayoutBinding = {};
+  lightBlockLayoutBinding.binding = 2;
+  lightBlockLayoutBinding.descriptorCount = 1;
+  lightBlockLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  lightBlockLayoutBinding.pImmutableSamplers = nullptr;
+  lightBlockLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+  std::array<VkDescriptorSetLayoutBinding, 3> bindings = {uboLayoutBinding, samplerLayoutBinding,
+                                                          lightBlockLayoutBinding};
   VkDescriptorSetLayoutCreateInfo layoutInfo = {};
   layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
   layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
@@ -248,7 +293,13 @@ void createDescriptorSets() {
     imageInfo.imageView = textures[0]->getImageView();
     imageInfo.sampler = VK_NULL_HANDLE;
 
-    std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
+
+    VkDescriptorBufferInfo lightBlockInfo = {};
+    lightBlockInfo.buffer = lightBuffer->getBuffer(i);
+    lightBlockInfo.offset = 0;
+    lightBlockInfo.range = sizeof(LightBlock);
+
+    std::array<VkWriteDescriptorSet, 3> descriptorWrites = {};
 
     descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     descriptorWrites[0].dstSet = descriptorSets_[i];
@@ -266,16 +317,25 @@ void createDescriptorSets() {
     descriptorWrites[1].descriptorCount = 1;
     descriptorWrites[1].pImageInfo = &imageInfo;
 
+    descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptorWrites[2].dstSet = descriptorSets_[i];
+    descriptorWrites[2].dstBinding = 2;
+    descriptorWrites[2].dstArrayElement = 0;
+    descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    descriptorWrites[2].descriptorCount = 1;
+    descriptorWrites[2].pBufferInfo = &lightBlockInfo;
+
     vkUpdateDescriptorSets(device->getDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
   }
 }
 
 void createGraphicsPipeline() {
   ShaderState shaderState("triangle", androidAppCtx, device->getDevice());
-  shaderState.addVertexInputBinding(0, 8 * sizeof(float));
+  shaderState.addVertexInputBinding(0, 11 * sizeof(float));
   shaderState.addVertexAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0);
   shaderState.addVertexAttributeDescription(0, 1, VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(float));
-  shaderState.addVertexAttributeDescription(0, 2, VK_FORMAT_R32G32B32_SFLOAT, 5 * sizeof(float));
+  shaderState.addVertexAttributeDescription(0, 2, VK_FORMAT_R32G32B32_SFLOAT, 6 * sizeof(float));
+  shaderState.addVertexAttributeDescription(0, 3, VK_FORMAT_R32G32_SFLOAT, 9 * sizeof(float));
 
   VkViewport viewport{
       .x = 0.0f,
@@ -538,11 +598,11 @@ bool InitVulkan(android_app *app) {
   // ---------------------------------------------
   // Create the triangle vertex buffer with indices
   const std::vector<float> vertexData = {
-      -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-      0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-      0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-      -0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-      0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f
+      -0.5f, -0.5f, 0.5f,          -0.5774f, -0.5774f, 0.5774f,       1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+      0.5f, -0.5f, 0.5f,           0.5774f, -0.5774f, 0.5774f,        0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+      0.5f, 0.5f, 0.5f,            0.5774f, 0.5774f, 0.5774f,         0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+      -0.5f, 0.5f, 0.5f,           -0.5774f, 0.5774f, 0.5774f,      1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+      0.0f, 0.0f, 0.0f,            0.0f, 1.0f, 0.0f,           1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
   };
 
   const std::vector<u_int16_t> indexData = {
@@ -575,6 +635,7 @@ void DeleteVulkan(void) {
 
   delete geometry;
   delete uniformBuffer;
+  delete lightBuffer;
 
   for (int i = 0; i < device->getSwapchainLength(); ++i) {
     vkDestroyImageView(device->getDevice(), displayViews_[i], nullptr);
