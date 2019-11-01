@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "26288dbe_786acda8",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-01T20:20:03Z",
+      "side": 1,
+      "message": "Pipeline create here is identical to the one in vulkan_main, but will change as more things are added to Mesh.",
+      "revId": "3a20da412b42a052309755725a10eac7cf986605",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "33b541fc_903a198d",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-01T20:20:03Z",
+      "side": 1,
+      "message": "These pipeline structures are the same ones as VulkanGfxPipelineInfo in vulkan_main, don\u0027t know if this can be generalized if they\u0027re going to be reused.",
+      "revId": "3a20da412b42a052309755725a10eac7cf986605",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c2bc3a2b_86747208",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 631,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-01T20:20:03Z",
+      "side": 0,
+      "message": "This feels kind of awkward, partially b/c the drawing command submission is done in mesh now (so the graphics pipeline constructed out here isn\u0027t actually used for much atm). Will there be things that require a general pipeline separate from the individual meshes?",
+      "revId": "1aea817d00be698e4f347fb6f6ad1e8344e5c75c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
