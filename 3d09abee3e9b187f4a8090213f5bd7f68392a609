@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d5d1d846_823dd34e",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-01T23:12:36Z",
+      "side": 1,
+      "message": "We should pick a consistent naming for these structs (PascalCase or camelCase but not both).",
+      "revId": "3d09abee3e9b187f4a8090213f5bd7f68392a609",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6aee262c_adcd1a5a",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-01T23:12:36Z",
+      "side": 1,
+      "message": "Maybe a better name, \"lb\" doesn\u0027t really tell what it is (maybe like lightBuffer?)",
+      "revId": "3d09abee3e9b187f4a8090213f5bd7f68392a609",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
