@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "90c37dd6_d594401f",
+        "filename": "cert/test/AndroidCertTest/.project",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7c888d1e_003e80ee",
+      "range": {
+        "startLine": 3,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 11
+      },
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4fcee677_ebe789f9",
         "filename": "cert/test/AndroidCertTest/app/.classpath",
         "patchSetId": 2
@@ -81,6 +105,30 @@
         "id": 1373878
       },
       "writtenOn": "2019-11-01T10:29:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4fcee677_ebe789f9",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 6,
+        "endChar": 12
+      },
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "85a19acc_7cb7addd",
+        "filename": "cert/test/AndroidCertTest/app/.classpath",
+        "patchSetId": 2
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "4fcee677_ebe789f9",
@@ -143,6 +191,30 @@
     },
     {
       "key": {
+        "uuid": "72d3a220_d6286134",
+        "filename": "cert/test/AndroidCertTest/app/.project",
+        "patchSetId": 2
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "82ba5750_b54e6721",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 23,
+        "endChar": 21
+      },
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c9b755cf_ab1039a2",
         "filename": "cert/test/AndroidCertTest/app/build.gradle",
         "patchSetId": 2
@@ -169,6 +241,24 @@
         "id": 1373878
       },
       "writtenOn": "2019-11-01T10:29:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c9b755cf_ab1039a2",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "80d736b7_9a99f7cc",
+        "filename": "cert/test/AndroidCertTest/app/build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "c9b755cf_ab1039a2",
@@ -213,6 +303,24 @@
     },
     {
       "key": {
+        "uuid": "2feef9f9_9d76a753",
+        "filename": "cert/test/AndroidCertTest/app/src/androidTest/java/com/google/androidcerttest/NativeTests.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "We\u0027ve renamed the whole shebang to be be more specific. The package is now:\ncom.google.gamesdk.gamecert.operationrunner",
+      "parentUuid": "9ed7efa9_0c135f12",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0dddce8f_de9068a1",
         "filename": "cert/test/AndroidCertTest/app/src/main/assets/generated.json",
         "patchSetId": 2
@@ -241,6 +349,24 @@
       "writtenOn": "2019-11-01T10:29:18Z",
       "side": 1,
       "message": "Done",
+      "parentUuid": "0dddce8f_de9068a1",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2a9ef9ac_72395e94",
+        "filename": "cert/test/AndroidCertTest/app/src/main/assets/generated.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "This is addressed now in the README, and the filename has been changed to make it more clear that it is specifically for the JsonManipulatorOperation\u0027s use.",
       "parentUuid": "0dddce8f_de9068a1",
       "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
@@ -283,6 +409,24 @@
     },
     {
       "key": {
+        "uuid": "6f64341a_4bcd935a",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Excellent! We\u0027ll eliminate this as soon as the windows build issue is resolved.",
+      "parentUuid": "eaa9ef80_ba5269d5",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "30c998ec_bd938c35",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/BaseGLES3Operation.hpp",
         "patchSetId": 2
@@ -309,6 +453,24 @@
         "id": 1373878
       },
       "writtenOn": "2019-11-01T10:29:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "30c998ec_bd938c35",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f7a91e94_c750705d",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/BaseGLES3Operation.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "30c998ec_bd938c35",
@@ -353,6 +515,24 @@
     },
     {
       "key": {
+        "uuid": "c45fcf62_28c60c01",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/BaseOperation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b5284918_b3486f4f",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9c6d93ad_6305b7b4",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/BaseOperation.cpp",
         "patchSetId": 2
@@ -379,6 +559,24 @@
         "id": 1373878
       },
       "writtenOn": "2019-11-01T10:29:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9c6d93ad_6305b7b4",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "44544d32_99021bdc",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/BaseOperation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "9c6d93ad_6305b7b4",
@@ -423,6 +621,24 @@
     },
     {
       "key": {
+        "uuid": "b125e486_ce56a477",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/BaseOperation.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8f3d8046_16cf2126",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c320a656_3e980f30",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/BaseOperation.hpp",
         "patchSetId": 2
@@ -458,6 +674,24 @@
     },
     {
       "key": {
+        "uuid": "da296f53_7428279e",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/BaseOperation.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c320a656_3e980f30",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e5804138_8cc2480e",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/Reporting.cpp",
         "patchSetId": 2
@@ -472,6 +706,24 @@
       "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "426fb1a1_a9b6f4e1",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/Reporting.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Thanks for catching this; it was vestigial for an earlier situation.",
+      "parentUuid": "e5804138_8cc2480e",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -501,6 +753,24 @@
         "id": 1373878
       },
       "writtenOn": "2019-11-01T10:29:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "09e0d55d_400729cc",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1e79fa00_8fd6d934",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/Reporting.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 253,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "09e0d55d_400729cc",
@@ -545,6 +815,24 @@
     },
     {
       "key": {
+        "uuid": "bb8f74d3_9b79b663",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/Reporting.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 320,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7695515f_4dddc34b",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "30ae335b_0b1fedca",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/Reporting.hpp",
         "patchSetId": 2
@@ -571,6 +859,24 @@
         "id": 1373878
       },
       "writtenOn": "2019-11-01T10:29:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "30ae335b_0b1fedca",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7e6ded4c_00bc300b",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/Reporting.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "30ae335b_0b1fedca",
@@ -615,6 +921,24 @@
     },
     {
       "key": {
+        "uuid": "ae830f2c_4a57e347",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/Suite.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "67abcdd7_629890b8",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ee02a136_6ce55cdb",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/Suite.hpp",
         "patchSetId": 2
@@ -641,6 +965,24 @@
         "id": 1373878
       },
       "writtenOn": "2019-11-01T10:29:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ee02a136_6ce55cdb",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "383221ea_859eb147",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/Suite.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "ee02a136_6ce55cdb",
@@ -685,6 +1027,24 @@
     },
     {
       "key": {
+        "uuid": "99267275_2e70ffd5",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/Suite.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5d308fc5_b9dfaff3",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a78b9a1d_f565ca15",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/Suite.hpp",
         "patchSetId": 2
@@ -711,6 +1071,24 @@
         "id": 1373878
       },
       "writtenOn": "2019-11-01T10:29:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a78b9a1d_f565ca15",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6ffa3802_bbbd8050",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/Suite.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "a78b9a1d_f565ca15",
@@ -755,6 +1133,24 @@
     },
     {
       "key": {
+        "uuid": "dd8a6249_865af5cd",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/SwappyRenderer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "63a36246_fc779b59",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "62c9b742_01897f72",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/SwappyRenderer.hpp",
         "patchSetId": 2
@@ -781,6 +1177,24 @@
         "id": 1373878
       },
       "writtenOn": "2019-11-01T10:29:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "62c9b742_01897f72",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "24629cbf_1aa67573",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/SwappyRenderer.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "62c9b742_01897f72",
@@ -825,6 +1239,24 @@
     },
     {
       "key": {
+        "uuid": "8aa335a0_d4ebd623",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/SwappyRenderer.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "48f2e7f6_22eb4e18",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8e7a28b9_da2cf772",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.cpp",
         "patchSetId": 2
@@ -851,6 +1283,24 @@
         "id": 1373878
       },
       "writtenOn": "2019-11-01T10:29:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8e7a28b9_da2cf772",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "71bcdec4_2c3caeb6",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "8e7a28b9_da2cf772",
@@ -895,6 +1345,24 @@
     },
     {
       "key": {
+        "uuid": "e9886a07_4b630414",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "I\u0027ve switch from doxygen-style comments from the C++ sources to a more generic style.",
+      "parentUuid": "cca14b62_2cbe3696",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f541c19b_74743067",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.hpp",
         "patchSetId": 2
@@ -921,6 +1389,24 @@
         "id": 1373878
       },
       "writtenOn": "2019-11-01T10:29:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f541c19b_74743067",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "60146a69_1a70f7b3",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "f541c19b_74743067",
@@ -965,6 +1451,24 @@
     },
     {
       "key": {
+        "uuid": "397da3c6_4f677687",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/Error.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e1c8e47d_a22afbdf",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "22b221ae_751d2f0b",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/FpsCalculator.hpp",
         "patchSetId": 2
@@ -991,6 +1495,24 @@
         "id": 1373878
       },
       "writtenOn": "2019-11-01T10:29:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "22b221ae_751d2f0b",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9e778aeb_2af7828b",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/FpsCalculator.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "22b221ae_751d2f0b",
@@ -1035,6 +1557,24 @@
     },
     {
       "key": {
+        "uuid": "ec7c8627_3560f44f",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/FpsCalculator.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "I added a comment to explain the intent of the number; it does not restrict to 30hz display.",
+      "parentUuid": "0fb9cfc4_2c8e5efe",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a6c6a99c_89d6f359",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/FpsCalculator.hpp",
         "patchSetId": 2
@@ -1061,6 +1601,24 @@
         "id": 1373878
       },
       "writtenOn": "2019-11-01T10:29:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a6c6a99c_89d6f359",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0caafa2a_679b5412",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/FpsCalculator.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "a6c6a99c_89d6f359",
@@ -1105,6 +1663,24 @@
     },
     {
       "key": {
+        "uuid": "cc8f55fd_207b34fb",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/GLHelpers.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0ca38159_f48e0dc9",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9e83d016_aff7e630",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/GLHelpers.cpp",
         "patchSetId": 2
@@ -1131,6 +1707,24 @@
         "id": 1373878
       },
       "writtenOn": "2019-11-01T10:29:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9e83d016_aff7e630",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a4c8ef28_6f0beac5",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/GLHelpers.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "9e83d016_aff7e630",
@@ -1175,6 +1769,24 @@
     },
     {
       "key": {
+        "uuid": "511141c2_22ce6db7",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/GLHelpers.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c7a9d574_1a225348",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "136dbc73_d046c659",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/GLHelpers.hpp",
         "patchSetId": 2
@@ -1210,6 +1822,24 @@
     },
     {
       "key": {
+        "uuid": "af8c4b8a_557d992e",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/GLHelpers.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "136dbc73_d046c659",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7c4577b8_715080b0",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/Json.hpp",
         "patchSetId": 2
@@ -1224,6 +1854,24 @@
       "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "125a1a89_68c87bf4",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/Json.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Is it OK if we make a task to do this next sprint?",
+      "parentUuid": "7c4577b8_715080b0",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -1253,6 +1901,24 @@
         "id": 1373878
       },
       "writtenOn": "2019-11-01T10:29:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6790d708_fcd5572a",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a9625c96_51f1c5ea",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/Json.inl",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "6790d708_fcd5572a",
@@ -1297,6 +1963,24 @@
     },
     {
       "key": {
+        "uuid": "3c392595_8202a540",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/TestResultPrinter.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "32ac0733_e0c5ad3a",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fe54ac70_946037f5",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/TestResultPrinter.hpp",
         "patchSetId": 2
@@ -1323,6 +2007,24 @@
         "id": 1373878
       },
       "writtenOn": "2019-11-01T10:29:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fe54ac70_946037f5",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d03c7b15_74bdc9e7",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/TestResultPrinter.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "fe54ac70_946037f5",
@@ -1367,6 +2069,24 @@
     },
     {
       "key": {
+        "uuid": "bf3a7574_4233329d",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/Time.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da0baa2e_c2227da0",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "aeb81f5d_4dec841b",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/WorkerThread.hpp",
         "patchSetId": 2
@@ -1393,6 +2113,24 @@
         "id": 1373878
       },
       "writtenOn": "2019-11-01T10:29:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aeb81f5d_4dec841b",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cf1b4a15_1ed857b7",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/WorkerThread.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "aeb81f5d_4dec841b",
@@ -1437,6 +2175,24 @@
     },
     {
       "key": {
+        "uuid": "e6bf107f_e5170922",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/CalculatePIOperation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9eabba3c_5061ebbc",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a3e64c15_3691ba3d",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/MonitorOperation.cpp",
         "patchSetId": 2
@@ -1463,6 +2219,24 @@
         "id": 1373878
       },
       "writtenOn": "2019-11-01T10:29:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a3e64c15_3691ba3d",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "657359c5_46b46bba",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/MonitorOperation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "a3e64c15_3691ba3d",
@@ -1507,6 +2281,24 @@
     },
     {
       "key": {
+        "uuid": "a6ac9675_1652a055",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ThreadSchedulingOperation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c98b35bd_a561fe21",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "58cd5fe9_240da9c1",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ThreadSchedulingOperation.cpp",
         "patchSetId": 2
@@ -1542,6 +2334,24 @@
     },
     {
       "key": {
+        "uuid": "cef7b1d3_1a15fc60",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ThreadSchedulingOperation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "58cd5fe9_240da9c1",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9349847e_070581ea",
         "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/androidcerttest/hosts/BaseHostActivity.java",
         "patchSetId": 2
@@ -1568,6 +2378,24 @@
         "id": 1373878
       },
       "writtenOn": "2019-11-01T10:29:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9349847e_070581ea",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "76bb4b6c_943938e5",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/androidcerttest/hosts/BaseHostActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "9349847e_070581ea",
@@ -1624,6 +2452,30 @@
     },
     {
       "key": {
+        "uuid": "cdea7706_58c7cc0a",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/androidcerttest/hosts/BaseHostActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "35db7f0b_7033cab5",
+      "range": {
+        "startLine": 163,
+        "startChar": 1,
+        "endLine": 165,
+        "endChar": 137
+      },
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4c8c83b6_b3e5cba1",
         "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/androidcerttest/hosts/SwappyGLHostActivity.java",
         "patchSetId": 2
@@ -1650,6 +2502,24 @@
         "id": 1373878
       },
       "writtenOn": "2019-11-01T10:29:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4c8c83b6_b3e5cba1",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8b31e1d7_bfe39d74",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/androidcerttest/hosts/SwappyGLHostActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "4c8c83b6_b3e5cba1",
@@ -1694,6 +2564,24 @@
     },
     {
       "key": {
+        "uuid": "fdc32e79_044fb40b",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/androidcerttest/operations/BaseOperation.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "01af1f8a_34b3f07f",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c191707d_6d80839f",
         "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/androidcerttest/operations/Factory.java",
         "patchSetId": 2
@@ -1720,6 +2608,24 @@
         "id": 1373878
       },
       "writtenOn": "2019-11-01T10:29:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c191707d_6d80839f",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "785efe61_3b5313c5",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/androidcerttest/operations/Factory.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "c191707d_6d80839f",
@@ -1764,6 +2670,24 @@
     },
     {
       "key": {
+        "uuid": "6a40ee06_3f25a9a5",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/androidcerttest/operations/Factory.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "71aeb2a6_cfcb1df7",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d50f8f08_ca8e5b5c",
         "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/androidcerttest/operations/JsonManipulatorOperation.java",
         "patchSetId": 2
@@ -1790,6 +2714,24 @@
         "id": 1373878
       },
       "writtenOn": "2019-11-01T10:29:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d50f8f08_ca8e5b5c",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "572a3c6a_d56e2db1",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/androidcerttest/operations/JsonManipulatorOperation.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "d50f8f08_ca8e5b5c",
@@ -1869,6 +2811,24 @@
     },
     {
       "key": {
+        "uuid": "988c881b_872672a3",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/androidcerttest/util/NativeInvoker.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "99570959_2204eaf4",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1c0a7625_a4d549c6",
         "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/androidcerttest/util/SystemHelpers.java",
         "patchSetId": 2
@@ -1904,6 +2864,24 @@
     },
     {
       "key": {
+        "uuid": "9761917a_5907bb20",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/androidcerttest/util/SystemHelpers.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1c0a7625_a4d549c6",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3983bc7f_6112ef12",
         "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/androidcerttest/util/TimeParsing.java",
         "patchSetId": 2
@@ -1918,6 +2896,24 @@
       "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "54316065_c89966fc",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/androidcerttest/util/TimeParsing.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "I looked into Java/Android APIs to do this. The best built-in approach is Duration.parse, but it requires an ISO format which is quite awkward: \n\nhttps://developer.android.com/reference/java/time/Duration.html#parse(java.lang.CharSequence)\n\nOur goal is a very simple syntax like \"300ms\", which Duration doesn\u0027t support. I would like however to put this in the backlog for further investigation since, obviously, time/duration parsing is non-trivial and best left to well-tested std lib utilities.\n\nNote: Joda-time may offer a mechanism for this.",
+      "parentUuid": "3983bc7f_6112ef12",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -1947,6 +2943,24 @@
         "id": 1373878
       },
       "writtenOn": "2019-11-01T10:29:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "665656ba_2c0f0e72",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c637d49a_60048ef4",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/androidcerttest/util/TimeParsing.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "665656ba_2c0f0e72",
@@ -1991,6 +3005,24 @@
     },
     {
       "key": {
+        "uuid": "714e75cc_38d9e424",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/androidcerttest/util/TimeParsing.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6aa70245_57ea8284",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "271ed563_9db15d17",
         "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/androidcerttest/util/TimeParsing.java",
         "patchSetId": 2
@@ -2017,6 +3049,24 @@
         "id": 1373878
       },
       "writtenOn": "2019-11-01T10:29:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "271ed563_9db15d17",
+      "revId": "86a463ce14942d1ebf5783eea7c6a25f7f827aea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "781c9ab8_e0c1fea7",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/androidcerttest/util/TimeParsing.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-01T17:11:43Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "271ed563_9db15d17",
