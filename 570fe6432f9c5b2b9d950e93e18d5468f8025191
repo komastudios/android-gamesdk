@@ -1,0 +1,123 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c7d0921c_b5a4394c",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-02T16:05:32Z",
+      "side": 1,
+      "message": "can you use more verbose names please?\n\nPointLight pointLight;",
+      "revId": "570fe6432f9c5b2b9d950e93e18d5468f8025191",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e50c9ff3_a3632a06",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-02T16:05:32Z",
+      "side": 1,
+      "message": "loving it!",
+      "revId": "570fe6432f9c5b2b9d950e93e18d5468f8025191",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "375937d8_b97dab03",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-02T16:05:32Z",
+      "side": 1,
+      "message": "Can you use more verbose names for parameters and fields?",
+      "revId": "570fe6432f9c5b2b9d950e93e18d5468f8025191",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fef5db26_0a5551aa",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 297,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-02T16:05:32Z",
+      "side": 1,
+      "message": "We can probably use the same update model here.\n\nSomething like:\nlightBlock-\u003eupdateBufferInfo(\u0026lightBlockInfo);\n\nor:\nauto lightBufferInfo \u003d lightblock-\u003egetBufferInfo();\n\nWhat do you think?",
+      "revId": "570fe6432f9c5b2b9d950e93e18d5468f8025191",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "34d61d5e_ecc9877b",
+        "filename": "bender/bender-base/app/src/main/shaders/triangle.frag",
+        "patchSetId": 5
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-02T16:05:32Z",
+      "side": 1,
+      "message": "The constant 128 will eventually become a material property.\n\nInstead of \u0027spec\u0027 use \u0027specularTerm\u0027.",
+      "revId": "570fe6432f9c5b2b9d950e93e18d5468f8025191",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "004e63a2_cbfc356f",
+        "filename": "bender/bender-base/app/src/main/shaders/triangle.frag",
+        "patchSetId": 5
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-02T16:05:32Z",
+      "side": 1,
+      "message": "This will eventually become:\n\ncolor \u003d Cd * diffuse + Cs * specular;\n\nWhere Cd and Cs are constants coming from the material and/or diffuse and specular textures.",
+      "revId": "570fe6432f9c5b2b9d950e93e18d5468f8025191",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dfaa4308_1f9dc87d",
+        "filename": "bender/bender-base/app/src/main/shaders/triangle.frag",
+        "patchSetId": 5
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-02T16:05:32Z",
+      "side": 1,
+      "message": "Can you use more verbose parameter names please?\nLike ambientLight and you can uppercase the struct name.",
+      "revId": "570fe6432f9c5b2b9d950e93e18d5468f8025191",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
