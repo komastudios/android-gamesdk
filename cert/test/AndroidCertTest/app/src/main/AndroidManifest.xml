@@ -15,6 +15,7 @@
 
         <activity android:name="com.google.gamesdk.gamecert.operationrunner.hosts.GLSurfaceViewHostActivity" />
         <activity android:name="com.google.gamesdk.gamecert.operationrunner.hosts.SwappyGLHostActivity" />
+        <activity android:name="com.google.gamesdk.gamecert.operationrunner.hosts.VulkanHostActivity" />
 
         <activity
             android:name="com.google.gamesdk.gamecert.operationrunner.MainActivity"
