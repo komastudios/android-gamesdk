@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "6d1d4383_1d83c1fc",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-11-04T15:24:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "089aaa36_712bdf97",
+      "revId": "6868650d109a3172e9151ae9aa2af31c86cf8851",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2ccff0b1_9aaeb74f",
         "filename": "samples/gamesdk.cmake",
         "patchSetId": 1
