@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.10.2)
 get_filename_component(CppDir ${CMAKE_CURRENT_SOURCE_DIR} ABSOLUTE)
 get_filename_component(GameSDKDir ${GAMESDK_DIR} ABSOLUTE)
 get_filename_component(LibDir ${CMAKE_CURRENT_SOURCE_DIR}/../../../../common/3rd_party ABSOLUTE)
+get_filename_component(ShadercDir ${ANDROID_NDK}/sources/third_party/shaderc ABSOLUTE)
 get_filename_component(GTestDir ${ANDROID_NDK}/sources/third_party/googletest ABSOLUTE)
 
 #===================================================================================================
@@ -56,9 +57,9 @@ if (CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")
 else ()
     include("${GameSDKDir}/samples/gamesdk.cmake")
     add_gamesdk_target(
-        DO_LOCAL_BUILD
-        PACKAGE_DIR "package/local"
-        GEN_TASK "localBuild"
+            DO_LOCAL_BUILD
+            PACKAGE_DIR "package/local"
+            GEN_TASK "localBuild"
     )
 endif ()
 
@@ -68,18 +69,23 @@ find_library(log-lib
 
 #===================================================================================================
 
+add_definitions(-DVK_USE_PLATFORM_ANDROID_KHR)
+
 add_library(${PROJECT_NAME} SHARED
         # Java-Native glue & super-fundamental code
         native-lib.cpp
 
         # Framework & utilities
         ancer/BaseOperation.cpp
+        ancer/BaseVulkanOperation.cpp
         ancer/Reporting.cpp
         ancer/Suite.cpp
         ancer/SwappyRenderer.cpp
         ancer/System.cpp
         ancer/util/GLHelpers.cpp
         ancer/util/Time.cpp
+        ancer/util/vulkan/VkHelpersImpl.cpp
+        ancer/util/VkHelpers.cpp
         # TODO: Either depend on this properly or move it into the project.
         ${GameSDKDir}/samples/common/src/Thread.cpp
 
@@ -102,6 +108,9 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         ${LibDir}/glm/
         ${GameSDKDir}/include
         ${GameSDKDir}/samples/common/include
+        ${ANDROID_NDK}/sources/third_party/vulkan/src/common
+        ${ANDROID_NDK}/sources/android/native_app_glue
+        ${ANDROID_NDK}/sources/third_party/shaderc/include
         )
 
 set_target_properties(${PROJECT_NAME}
@@ -110,11 +119,17 @@ set_target_properties(${PROJECT_NAME}
         CXX_STANDARD_REQUIRED YES
         )
 
+# Import shaderc lib in NDK
+add_library(shaderc_lib STATIC IMPORTED)
+set_target_properties(shaderc_lib PROPERTIES IMPORTED_LOCATION
+        ${ShadercDir}/libs/${ANDROID_STL}/${ANDROID_ABI}/libshaderc.a)
+
 target_link_libraries(${PROJECT_NAME}
         GLESv3
         android
         ${log-lib}
         EGL
+        shaderc_lib
         )
 
 if (CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")
@@ -125,21 +140,21 @@ else ()
     target_link_libraries(${PROJECT_NAME}
             gamesdk
             )
-endif()
+endif ()
 
 #===================================================================================================
 
-if(true) # build_tests
+if (true) # build_tests
     add_definitions(-DBUILD_UNIT_TESTS)
     target_sources(${PROJECT_NAME} PRIVATE
-        ancer/util/TestResultPrinter.cpp
+            ancer/util/TestResultPrinter.cpp
 
-        ancer/util/Json.tests.cpp
-        ancer/util/Time.tests.cpp
-        )
+            ancer/util/Json.tests.cpp
+            ancer/util/Time.tests.cpp
+            )
 
-    add_library(gtest STATIC  ${GTestDir}/src/gtest-all.cc)
+    add_library(gtest STATIC ${GTestDir}/src/gtest-all.cc)
     target_include_directories(gtest PRIVATE ${GTestDir})
     target_include_directories(gtest PUBLIC ${GTestDir}/include)
     target_link_libraries(${PROJECT_NAME} gtest)
-endif()
+endif ()
