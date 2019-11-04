@@ -10,6 +10,20 @@
   "stress_tests": [
     {
       "enabled": true,
+      "name": "Vulkan memory write protection",
+      "description": "mprotect available to make memore read-only",
+      "host": "VulkanHostActivity",
+      "duration": "100ms",
+      "data_gatherer": {
+        "id": "VulkanMprotectCheckOperation",
+        "configuration": {
+        }
+      },
+      "stressors": [
+      ]
+    },
+    {
+      "enabled": true,
       "name": "Java test, c++ Stressor",
       "description": "Single java test, single c++ stressor",
       "duration": "10sec",
