@@ -8,7 +8,8 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99  -Werror -DVK_USE_PLATFORM_ANDROID_
 include("../../../samples/gamesdk.cmake")
 add_gamesdk_target(
     DO_LOCAL_BUILD
-    PACKAGE_DIR "package/local"
+    ROOT_DIR "../../.."
+    PACKAGE_DIR "../../../../package/local"
     GEN_TASK "localBuild"
 )
 
