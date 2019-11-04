@@ -8,8 +8,9 @@ set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Werror -Wthread-safety -D _
 include("../../gamesdk.cmake")
 add_gamesdk_target(
     DO_LOCAL_BUILD
-    PACKAGE_DIR "package/local"
     GEN_TASK "localBuild"
+    ROOT_DIR "../../.."
+    PACKAGE_DIR "../../../../package/local"
 )
 
 # Uncomment to add the Game SDK sources as part of the project sources, allowing to develop
