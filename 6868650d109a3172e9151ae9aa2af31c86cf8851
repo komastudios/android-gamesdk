@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "089aaa36_712bdf97",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-11-04T14:28:41Z",
+      "side": 1,
+      "message": "Yes :) I\u0027ll do that for all the calls to add_gamesdk_target.",
+      "parentUuid": "5307726f_0296b671",
+      "revId": "6868650d109a3172e9151ae9aa2af31c86cf8851",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2ccff0b1_9aaeb74f",
         "filename": "samples/gamesdk.cmake",
         "patchSetId": 1
