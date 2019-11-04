@@ -39,6 +39,30 @@
       "revId": "6868650d109a3172e9151ae9aa2af31c86cf8851",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b5801b92_372455c0",
+        "filename": "samples/gamesdk.cmake",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-11-04T14:27:52Z",
+      "side": 1,
+      "message": "cmake_parse_arguments will prefix all variables that are recognized with \"GAMESDK_\", so we\u0027ll properly have GAMESDK_ANDROID_NDK_VERSION defined there (if defined in the arguments).",
+      "parentUuid": "2ccff0b1_9aaeb74f",
+      "range": {
+        "startLine": 30,
+        "startChar": 20,
+        "endLine": 30,
+        "endChar": 47
+      },
+      "revId": "6868650d109a3172e9151ae9aa2af31c86cf8851",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
