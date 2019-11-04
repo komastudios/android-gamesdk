@@ -27,7 +27,7 @@ add_library( native-lib
              src/main/cpp/Orbit.cpp
              src/main/cpp/Renderer.cpp
              src/main/cpp/Settings.cpp
-             ../../../samples/common/src/Thread.cpp
+             ../../common/src/Thread.cpp
         )
 
 target_link_libraries( native-lib
