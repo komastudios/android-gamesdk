@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "47ca2ad3_434e2639",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-04T18:02:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c7d0921c_b5a4394c",
+      "revId": "570fe6432f9c5b2b9d950e93e18d5468f8025191",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e50c9ff3_a3632a06",
         "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
         "patchSetId": 5
@@ -33,6 +51,24 @@
       "revId": "570fe6432f9c5b2b9d950e93e18d5468f8025191",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "afd2f77a_632dd304",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-04T18:02:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e50c9ff3_a3632a06",
+      "revId": "570fe6432f9c5b2b9d950e93e18d5468f8025191",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "8ad2c458_31b74876",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-04T18:02:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "375937d8_b97dab03",
+      "revId": "570fe6432f9c5b2b9d950e93e18d5468f8025191",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fef5db26_0a5551aa",
         "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
         "patchSetId": 5
@@ -64,6 +118,24 @@
       "writtenOn": "2019-11-02T16:05:32Z",
       "side": 1,
       "message": "We can probably use the same update model here.\n\nSomething like:\nlightBlock-\u003eupdateBufferInfo(\u0026lightBlockInfo);\n\nor:\nauto lightBufferInfo \u003d lightblock-\u003egetBufferInfo();\n\nWhat do you think?",
+      "revId": "570fe6432f9c5b2b9d950e93e18d5468f8025191",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d43b01ab_3b57f279",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 297,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-04T18:02:24Z",
+      "side": 1,
+      "message": "I think this is a good idea! I would probably go with the first one since that matches the style we used before with the pipeline layout\n\nDo you think it would be good to consolidate the VkWriteDescriptorSet creation that occurs below into this function as well? or do these need to be two separate functions because they are used differently?",
+      "parentUuid": "fef5db26_0a5551aa",
       "revId": "570fe6432f9c5b2b9d950e93e18d5468f8025191",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "3f8e5586_661a7411",
+        "filename": "bender/bender-base/app/src/main/shaders/triangle.frag",
+        "patchSetId": 5
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-04T18:02:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "34d61d5e_ecc9877b",
+      "revId": "570fe6432f9c5b2b9d950e93e18d5468f8025191",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "004e63a2_cbfc356f",
         "filename": "bender/bender-base/app/src/main/shaders/triangle.frag",
         "patchSetId": 5
@@ -104,6 +194,24 @@
     },
     {
       "key": {
+        "uuid": "4d9e603d_ab8ebeea",
+        "filename": "bender/bender-base/app/src/main/shaders/triangle.frag",
+        "patchSetId": 5
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-04T18:02:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "004e63a2_cbfc356f",
+      "revId": "570fe6432f9c5b2b9d950e93e18d5468f8025191",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dfaa4308_1f9dc87d",
         "filename": "bender/bender-base/app/src/main/shaders/triangle.frag",
         "patchSetId": 5
@@ -118,6 +226,24 @@
       "revId": "570fe6432f9c5b2b9d950e93e18d5468f8025191",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f4abc3e0_08a2f178",
+        "filename": "bender/bender-base/app/src/main/shaders/triangle.frag",
+        "patchSetId": 5
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-04T18:02:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dfaa4308_1f9dc87d",
+      "revId": "570fe6432f9c5b2b9d950e93e18d5468f8025191",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
