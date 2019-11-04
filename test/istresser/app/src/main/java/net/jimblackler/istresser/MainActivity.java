@@ -36,6 +36,7 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
+  private static final boolean APP_SWITCH_TEST = false;
   private static final String TAG = MainActivity.class.getSimpleName();
   private static final int MAX_DURATION = 1000 * 60 * 10;
   private static final int LAUNCH_DURATION = 1000 * 90;
@@ -213,32 +214,34 @@ public class MainActivity extends AppCompatActivity {
               }
             }
           }
-
-          long appSwitchTimeRunning = System.currentTimeMillis() - appSwitchTimerStart;
-          if (appSwitchTimeRunning > LAUNCH_DURATION && lastLaunched < LAUNCH_DURATION) {
-            lastLaunched = appSwitchTimeRunning;
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            File file = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES) + File.separator + "pic.jpg");
-            String authority = getApplicationContext().getPackageName() + ".provider";
-            intent.putExtra(MediaStore.EXTRA_OUTPUT,
-                FileProvider.getUriForFile(MainActivity.this, authority, file));
-            startActivityForResult(intent, 1);
-          }
-          if (appSwitchTimeRunning > RETURN_DURATION && lastLaunched < RETURN_DURATION) {
-            lastLaunched = appSwitchTimeRunning;
-            finishActivity(1);
-            appSwitchTimerStart = System.currentTimeMillis();
-            lastLaunched = 0;
-          }
           long timeRunning = System.currentTimeMillis() - startTime;
-          if (timeRunning > MAX_DURATION) {
-            try {
-              report = standardInfo();
-              report.put("exiting", true);
-              resultsStream.println(report);
-            } catch (JSONException e) {
-              throw new RuntimeException(e);
+          if (APP_SWITCH_TEST) {
+            long appSwitchTimeRunning = System.currentTimeMillis() - appSwitchTimerStart;
+            if (appSwitchTimeRunning > LAUNCH_DURATION && lastLaunched < LAUNCH_DURATION) {
+              lastLaunched = appSwitchTimeRunning;
+              Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+              File file = new File(Environment.getExternalStoragePublicDirectory(
+                  Environment.DIRECTORY_PICTURES) + File.separator + "pic.jpg");
+              String authority = getApplicationContext().getPackageName() + ".provider";
+              Uri uriForFile = FileProvider.getUriForFile(MainActivity.this, authority, file);
+              intent.putExtra(MediaStore.EXTRA_OUTPUT, uriForFile);
+              startActivityForResult(intent, 1);
+            }
+            if (appSwitchTimeRunning > RETURN_DURATION && lastLaunched < RETURN_DURATION) {
+              lastLaunched = appSwitchTimeRunning;
+              finishActivity(1);
+              appSwitchTimerStart = System.currentTimeMillis();
+              lastLaunched = 0;
+            }
+
+            if (timeRunning > MAX_DURATION) {
+              try {
+                report = standardInfo();
+                report.put("exiting", true);
+                resultsStream.println(report);
+              } catch (JSONException e) {
+                throw new RuntimeException(e);
+              }
             }
           }
 
