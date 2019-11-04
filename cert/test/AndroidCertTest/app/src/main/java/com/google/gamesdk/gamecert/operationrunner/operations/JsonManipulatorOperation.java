@@ -21,6 +21,7 @@ import android.os.SystemClock;
 import android.os.Trace;
 import android.util.Log;
 
+import com.google.gamesdk.gamecert.operationrunner.util.TimeParsing;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
@@ -35,12 +36,13 @@ public class JsonManipulatorOperation extends BaseOperation {
 
     private static class Configuration {
         String json_asset_name;
-        long performance_sample_period_millis;
+        String performance_sample_period = "250ms";
     }
 
     private Configuration _configuration;
     private Gson _gson;
     private Thread _thread;
+    private long _performanceSamplePeriodMillis = -1;
 
     public JsonManipulatorOperation(String suiteId,
                                     String configurationJson,
@@ -59,6 +61,19 @@ public class JsonManipulatorOperation extends BaseOperation {
     @Override
     public void start(long runForDurationMillis) {
         final boolean isTest = getMode() == Mode.DATA_GATHERER;
+
+        if (isTest) {
+            try {
+                _performanceSamplePeriodMillis = (long)TimeParsing.parseDurationString(
+                        _configuration.performance_sample_period,
+                        TimeParsing.Unit.Milliseconds
+                );
+            } catch (TimeParsing.BadFormatException e) {
+                Log.e(TAG, "Unable to parse performance_sample_period, error: " + e.getLocalizedMessage());
+                e.printStackTrace();
+                return;
+            }
+        }
 
         _thread = new Thread(() -> {
             String userDataJsonString = loadString(_configuration.json_asset_name);
@@ -84,9 +99,9 @@ public class JsonManipulatorOperation extends BaseOperation {
                 long nowMillis = SystemClock.elapsedRealtime();
                 long elapsedMillis = nowMillis - startTimeMillis;
 
-                if (isTest) {
+                if (isTest && _performanceSamplePeriodMillis > 0) {
                     if (elapsedMillis - datum.startTimeMillis >
-                            _configuration.performance_sample_period_millis) {
+                            _performanceSamplePeriodMillis) {
                         datum.endTimeMillis = elapsedMillis;
                         report(datum);
                         datum = new Datum(elapsedMillis);
