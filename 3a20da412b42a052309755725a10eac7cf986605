@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "0404f776_6180e378",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-04T18:10:08Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "26288dbe_786acda8",
+      "revId": "3a20da412b42a052309755725a10eac7cf986605",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b96e82ef_a2630a76",
         "filename": "bender/bender-base/app/src/main/jni/mesh.h",
         "patchSetId": 3
@@ -65,6 +83,24 @@
       "writtenOn": "2019-11-01T20:20:03Z",
       "side": 1,
       "message": "These pipeline structures are the same ones as VulkanGfxPipelineInfo in vulkan_main, don\u0027t know if this can be generalized if they\u0027re going to be reused.",
+      "revId": "3a20da412b42a052309755725a10eac7cf986605",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "10fcb9f4_6981430a",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-04T18:10:08Z",
+      "side": 1,
+      "message": "We can likely generalize it. Just want to see more examples of use.",
+      "parentUuid": "33b541fc_903a198d",
       "revId": "3a20da412b42a052309755725a10eac7cf986605",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
