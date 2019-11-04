@@ -95,6 +95,7 @@ add_library(${PROJECT_NAME} SHARED
         operations/MemoryAllocOperation.cpp
         operations/MonitorOperation.cpp
         operations/ThreadSchedulingOperation.cpp
+        operations/VulkanMprotectCheckOperation.cpp
 
         operations/gl/FillRateGLES3Operation.cpp
         operations/gl/HelloGLES3Operation.cpp
