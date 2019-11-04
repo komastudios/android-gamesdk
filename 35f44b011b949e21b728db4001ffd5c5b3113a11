@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "988a4e8a_8a3410d2",
+        "filename": "bender/bender-base/app/src/main/shaders/triangle.frag",
+        "patchSetId": 6
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-04T18:08:08Z",
+      "side": 1,
+      "message": "Isn\u0027t this code LightBlock on the host?",
+      "revId": "35f44b011b949e21b728db4001ffd5c5b3113a11",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
