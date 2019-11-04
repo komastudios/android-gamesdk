@@ -2,12 +2,16 @@
 // Created by mattkw on 10/31/2019.
 //
 
+#include <glm/gtc/matrix_transform.hpp>
 #include "mesh.h"
 
 Mesh::Mesh(BenderKit::Device *device, std::vector<float> vertexData, std::vector<uint16_t> indexData,
            VkDescriptorSetLayout *descriptorSetLayout, ShaderState *shaderState, VkRenderPass* renderPass) {
     device_ = device;
     geometry_ = new Geometry(device, vertexData, indexData);
+    position_ = glm::vec3(0.0f, 0.0f, 0.0f);
+    rotation_ = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+    scale_ = glm::vec3(1.0f, 1.0f, 1.0f);
 
     createMeshPipeline(descriptorSetLayout, shaderState, renderPass);
 }
@@ -162,4 +166,47 @@ void Mesh::submitDraw(VkCommandBuffer commandBuffer, VkDescriptorSet& descriptor
     vkCmdDrawIndexed(commandBuffer,
                      static_cast<u_int32_t>(geometry_->getIndexCount()),
                      1, 0, 0, 0);
+}
+
+void Mesh::translate(glm::vec3 offset) {
+  position_ += offset;
+}
+
+void Mesh::rotate(glm::vec3 axis, float angle) {
+  rotation_ *= glm::angleAxis(glm::radians(angle), axis);
+  rotation_ = glm::normalize(rotation_);
+}
+
+void Mesh::scale(glm::vec3 scaling) {
+  scale_ *= scaling;
+}
+
+void Mesh::setPosition(glm::vec3 position) {
+  position_ = position;
+}
+
+void Mesh::setRotation(glm::vec3 axis, float angle) {
+  rotation_ = glm::angleAxis(glm::radians(angle), axis);
+}
+
+void Mesh::setScale(glm::vec3 scale) {
+  scale_ = scale;
+}
+
+glm::vec3 Mesh::getPosition() {
+  return position_;
+}
+
+glm::quat Mesh::getRotation() {
+  return rotation_;
+}
+
+glm::vec3 Mesh::getScale() {
+  return scale_;
+}
+
+glm::mat4 Mesh::getTransform() {
+  glm::mat4 position = glm::translate(glm::mat4(1.0), position_);
+  glm::mat4 scale = glm::scale(glm::mat4(1.0), scale_);
+  return position * glm::mat4(rotation_) * scale;
 }
