@@ -55,7 +55,11 @@ if (CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")
             )
 else ()
     include("${GameSDKDir}/samples/gamesdk.cmake")
-    add_gamesdk_target("package/local" "localBuild")
+    add_gamesdk_target(
+        DO_LOCAL_BUILD
+        PACKAGE_DIR "package/local"
+        GEN_TASK "localBuild"
+    )
 endif ()
 
 

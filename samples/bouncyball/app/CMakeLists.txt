@@ -6,7 +6,11 @@ set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Werror -Wthread-safety -D _
 
 # This builds and uses swappy as a static library from a gamesdk package
 include("../../gamesdk.cmake")
-add_gamesdk_target("package/local" "localBuild")
+add_gamesdk_target(
+    DO_LOCAL_BUILD
+    PACKAGE_DIR "package/local"
+    GEN_TASK "localBuild"
+)
 
 # Uncomment to add the Game SDK sources as part of the project sources, allowing to develop
 # (with auto completions) and debug Swappy from Android Studio using this sample.

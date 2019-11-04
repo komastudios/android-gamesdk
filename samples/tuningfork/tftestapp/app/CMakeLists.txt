@@ -11,9 +11,13 @@ set( GAMESDK_BUILD_TUNINGFORK ON)
 include("../../../gamesdk.cmake")
 
 # This builds the gamesdk in package/localtf and adds a gamesdk static library target
-add_gamesdk_target()
-# This uses a pre-built gamesdk, unpacked in package/gamesdk
-#add_gamesdk_target("package/gamesdk" "" OFF "r17" "28")
+add_gamesdk_target(DO_LOCAL_BUILD)
+# This uses a pre-built gamesdk, unpacked in package/gamesdk:
+# add_gamesdk_target(
+#     PACKAGE_DIR "package/gamesdk"
+#     ANDROID_NDK_VERSION "r17"
+#     ANDROID_SDK_VERSION "28"
+# )
 
 # Uncomment to add the Game SDK sources as part of the project sources, allowing to develop
 # (with auto completions) and debug Tuning Fork from Android Studio using this sample.
