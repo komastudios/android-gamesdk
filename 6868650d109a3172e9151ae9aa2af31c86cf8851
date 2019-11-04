@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5307726f_0296b671",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-11-04T14:17:08Z",
+      "side": 1,
+      "message": "CMake doesn\u0027t make it easy to read arguments, does it!\nThis is one option + 2 named arguments, I guess?\nCan we put them on separate lines to make it more readable, i.e.\nadd_gamesdk_target(DO_LOCAL_BUILD\n                   PACKAGE_DIR \"package/local\"\n                   GEN_TASK \"localBuild\")",
+      "revId": "6868650d109a3172e9151ae9aa2af31c86cf8851",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2ccff0b1_9aaeb74f",
+        "filename": "samples/gamesdk.cmake",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-11-04T14:17:08Z",
+      "side": 1,
+      "message": "In the comment above, you\u0027ve renamed it to ANDROID_NDK_VERSION from GAMESDK_NDK_VERSION, but here you have kept the GAMESDK prefix",
+      "range": {
+        "startLine": 30,
+        "startChar": 20,
+        "endLine": 30,
+        "endChar": 47
+      },
+      "revId": "6868650d109a3172e9151ae9aa2af31c86cf8851",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
