@@ -8,7 +8,7 @@ set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Werror -Wthread-safety -D _
 include("../../gamesdk.cmake")
 add_gamesdk_target(
     DO_LOCAL_BUILD
-    PACKAGE_DIR "package/local"
+    PACKAGE_DIR "../package/local"
     GEN_TASK "localBuild"
 )
 

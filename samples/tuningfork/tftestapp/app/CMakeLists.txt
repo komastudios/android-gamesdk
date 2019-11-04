@@ -11,10 +11,14 @@ set( GAMESDK_BUILD_TUNINGFORK ON)
 include("../../../gamesdk.cmake")
 
 # This builds the gamesdk in package/localtf and adds a gamesdk static library target
-add_gamesdk_target(DO_LOCAL_BUILD)
+add_gamesdk_target(
+    DO_LOCAL_BUILD
+    PACKAGE_DIR "../package/localtf"
+    GEN_TASK "localTfBuild"
+)
 # This uses a pre-built gamesdk, unpacked in package/gamesdk:
 # add_gamesdk_target(
-#     PACKAGE_DIR "package/gamesdk"
+#     PACKAGE_DIR "../package/gamesdk"
 #     ANDROID_NDK_VERSION "r17"
 #     ANDROID_SDK_VERSION "28"
 # )
