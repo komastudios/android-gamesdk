@@ -62,12 +62,23 @@ public:
 
 class TestParamsLoader : public ParamsLoader {
 public:
+    const ProtobufSerialization* expected_training_params_;
+    TestParamsLoader(const ProtobufSerialization* expected_training_params = nullptr) :
+            expected_training_params_(expected_training_params) {}
+
     TFErrorCode GetFidelityParams(const JniCtx& jni,
                                   const ExtraUploadInfo& info,
                                   const std::string& url_base,
                                   const std::string& api_key,
+                                  const ProtobufSerialization* training_mode_params,
                                   ProtobufSerialization &fidelity_params,
                                   std::string& experiment_id, uint32_t timeout_ms) override {
+        if (expected_training_params_ != nullptr) {
+            EXPECT_NE(training_mode_params, nullptr);
+            EXPECT_EQ(*expected_training_params_, *training_mode_params);
+        } else {
+            EXPECT_EQ(training_mode_params, nullptr);
+        }
         return TFERROR_NO_FIDELITY_PARAMS;
     }
 };
@@ -106,6 +117,14 @@ TestTimeProvider timeProvider;
 ExtraUploadInfo extra_upload_info = {};
 static const std::string kCacheDir = "/data/local/tmp/tuningfork_test";
 
+const CProtobufSerialization* TrainingModeParams() {
+    static ProtobufSerialization pb = {1,2,3,4,5};
+    static CProtobufSerialization cpb = {};
+    cpb.bytes = pb.data();
+    cpb.size = pb.size();
+    return &cpb;
+}
+
 Settings TestSettings(Settings::AggregationStrategy::Submission method, int n_ticks, int n_keys,
                       std::vector<uint32_t> annotation_size,
                       const std::vector<TFHistogram>& hists = {}) {
@@ -115,6 +134,7 @@ Settings TestSettings(Settings::AggregationStrategy::Submission method, int n_ti
     s.aggregation_strategy.max_instrumentation_keys = n_keys;
     s.aggregation_strategy.annotation_enum_size = annotation_size;
     s.histograms = hists;
+    s.c_settings.training_fidelity_params = TrainingModeParams();
     CheckSettings(s, kCacheDir);
     return s;
 }
