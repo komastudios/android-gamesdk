@@ -6,6 +6,7 @@
 #define BENDER_BASE_MESH_H
 
 #import <vector>
+#import <memory>
 
 #import "vulkan_wrapper.h"
 #import "glm/glm.hpp"
@@ -16,39 +17,49 @@
 
 class Mesh {
 public:
-    Mesh(BenderKit::Device *device, std::vector<float> vertexData, std::vector<uint16_t> indexData,
-         VkDescriptorSetLayout *descriptorSetLayout, ShaderState *shaderState, VkRenderPass* renderPass);
-    ~Mesh();
-    void submitDraw(VkCommandBuffer commandBuffer, VkDescriptorSet& descriptorSet) const;
+  Mesh(BenderKit::Device *device,
+          const std::vector<float>& vertexData,
+          const std::vector<uint16_t>& indexData,
+          std::shared_ptr<ShaderState> shaders);
 
+  ~Mesh();
 
-    void translate(glm::vec3 offset);
-    void rotate(glm::vec3 axis, float angle);
-    void scale(glm::vec3 scaling);
+  VkDescriptorSetLayout getDescriptorSetLayout() const { return descriptor_set_layout_; }
 
-    void setPosition(glm::vec3 position);
-    void setRotation(glm::vec3 axis, float angle);
-    void setScale(glm::vec3 scale);
+  void updatePipeline(VkRenderPass renderPass);
+  void submitDraw(VkCommandBuffer commandBuffer, VkDescriptorSet& descriptorSet) const;
 
-    glm::vec3 getPosition();
-    glm::quat getRotation();
-    glm::vec3 getScale();
+  void translate(glm::vec3 offset);
+  void rotate(glm::vec3 axis, float angle);
+  void scale(glm::vec3 scaling);
 
-    glm::mat4 getTransform();
+  void setPosition(glm::vec3 position);
+  void setRotation(glm::vec3 axis, float angle);
+  void setScale(glm::vec3 scale);
+
+  glm::vec3 getPosition() const;
+  glm::quat getRotation() const;
+  glm::vec3 getScale() const;
+
+  glm::mat4 getTransform() const;
 
 private:
-    BenderKit::Device *device_;
-    Geometry *geometry_;
-    glm::vec3 position_;
-    glm::quat rotation_;
-    glm::vec3 scale_;
+  BenderKit::Device *device_;
 
-    VkPipelineLayout layout_;
-    VkPipelineCache cache_;
-    VkPipeline pipeline_;
+  std::shared_ptr<Geometry> geometry_;
+  std::shared_ptr<ShaderState> shaders_;
 
-    void createMeshPipeline(VkDescriptorSetLayout *descriptorSetLayout, ShaderState *shaderState,
-            VkRenderPass *renderPass);
+  glm::vec3 position_;
+  glm::quat rotation_;
+  glm::vec3 scale_;
+
+  VkDescriptorSetLayout descriptor_set_layout_;
+  VkPipelineLayout layout_;
+  VkPipelineCache cache_;
+  VkPipeline pipeline_ = VK_NULL_HANDLE;
+
+  void createDescriptorSetLayout();
+  void createMeshPipeline(VkRenderPass renderPass);
 };
 
 #endif //BENDER_BASE_MESH_H

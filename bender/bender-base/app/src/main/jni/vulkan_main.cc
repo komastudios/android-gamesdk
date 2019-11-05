@@ -69,18 +69,10 @@ struct LightBlock{
 UniformBufferObject<ModelViewProjection> *uniformBuffer;
 UniformBufferObject<LightBlock> *lightBuffer;
 
-VkDescriptorSetLayout descriptorSetLayout_;
 VkDescriptorPool descriptorPool_;
 std::vector<VkDescriptorSet> descriptorSets_;
 
 VkRenderPass render_pass;
-
-struct VulkanGfxPipelineInfo {
-  VkPipelineLayout layout_;
-  VkPipelineCache cache_;
-  VkPipeline pipeline_;
-};
-VulkanGfxPipelineInfo gfxPipeline;
 
 struct AttachmentBuffer {
   VkFormat format;
@@ -94,7 +86,9 @@ AttachmentBuffer depthBuffer;
 android_app *androidAppCtx = nullptr;
 BenderKit::Device *device;
 Renderer *renderer;
-ShaderState *shaderState;
+
+std::shared_ptr<ShaderState> shaders;
+
 Mesh *mesh;
 
 auto lastTime = std::chrono::high_resolution_clock::now();
@@ -247,40 +241,9 @@ void createDescriptorPool() {
   CALL_VK(vkCreateDescriptorPool(device->getDevice(), &poolInfo, nullptr, &descriptorPool_));
 }
 
-void createDescriptorSetLayout() {
-  VkDescriptorSetLayoutBinding uboLayoutBinding = {};
-  uboLayoutBinding.binding = 0;
-  uboLayoutBinding.descriptorCount = 1;
-  uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-  uboLayoutBinding.pImmutableSamplers = nullptr;
-  uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-
-  VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-  samplerLayoutBinding.binding = 1;
-  samplerLayoutBinding.descriptorCount = 1;
-  samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-  samplerLayoutBinding.pImmutableSamplers = nullptr;
-  samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-  VkDescriptorSetLayoutBinding lightBlockLayoutBinding = {};
-  lightBlockLayoutBinding.binding = 2;
-  lightBlockLayoutBinding.descriptorCount = 1;
-  lightBlockLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-  lightBlockLayoutBinding.pImmutableSamplers = nullptr;
-  lightBlockLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-  std::array<VkDescriptorSetLayoutBinding, 3> bindings = {uboLayoutBinding, samplerLayoutBinding,
-                                                          lightBlockLayoutBinding};
-  VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-  layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-  layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
-  layoutInfo.pBindings = bindings.data();
-
-  CALL_VK(vkCreateDescriptorSetLayout(device->getDevice(), &layoutInfo, nullptr, &descriptorSetLayout_));
-}
 
 void createDescriptorSets() {
-  std::vector<VkDescriptorSetLayout> layouts(device->getDisplayImagesSize(), descriptorSetLayout_);
+  std::vector<VkDescriptorSetLayout> layouts(device->getDisplayImagesSize(), mesh->getDescriptorSetLayout());
   VkDescriptorSetAllocateInfo allocInfo = {};
   allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
   allocInfo.descriptorPool = descriptorPool_;
@@ -300,7 +263,6 @@ void createDescriptorSets() {
     imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     imageInfo.imageView = textures[0]->getImageView();
     imageInfo.sampler = VK_NULL_HANDLE;
-
 
     VkDescriptorBufferInfo lightBlockInfo = {};
     lightBlockInfo.buffer = lightBuffer->getBuffer(i);
@@ -338,139 +300,12 @@ void createDescriptorSets() {
 }
 
 void createShaderState() {
-  shaderState = new ShaderState("triangle", androidAppCtx, device->getDevice());
-  shaderState->addVertexInputBinding(0, 11 * sizeof(float));
-  shaderState->addVertexAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0);
-  shaderState->addVertexAttributeDescription(0, 1, VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(float));
-  shaderState->addVertexAttributeDescription(0, 2, VK_FORMAT_R32G32B32_SFLOAT, 5 * sizeof(float));
-  shaderState->addVertexAttributeDescription(0, 3, VK_FORMAT_R32G32_SFLOAT, 9 * sizeof(float));
-}
-
-void createGraphicsPipeline() {
-  VkViewport viewport{
-      .x = 0.0f,
-      .y = 0.0f,
-      .width = static_cast<float>(device->getDisplaySize().width),
-      .height = static_cast<float>(device->getDisplaySize().height),
-      .minDepth = 0.0f,
-      .maxDepth = 1.0f,
-  };
-
-  VkRect2D scissor{
-      .offset = {0, 0},
-      .extent = device->getDisplaySize(),
-  };
-
-  VkPipelineViewportStateCreateInfo pipelineViewportState{
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
-      .viewportCount = 1,
-      .pViewports = &viewport,
-      .scissorCount = 1,
-      .pScissors = &scissor,
-  };
-
-  VkPipelineDepthStencilStateCreateInfo depthStencilState{
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
-      .depthTestEnable = VK_TRUE,
-      .depthWriteEnable = VK_TRUE,
-      .depthCompareOp = VK_COMPARE_OP_LESS,
-      .depthBoundsTestEnable = VK_FALSE,
-      .minDepthBounds = 0.0f,
-      .maxDepthBounds = 1.0f,
-      .stencilTestEnable = VK_FALSE,
-  };
-
-  VkPipelineRasterizationStateCreateInfo pipelineRasterizationState{
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
-      .depthClampEnable = VK_FALSE,
-      .rasterizerDiscardEnable = VK_FALSE,
-      .polygonMode = VK_POLYGON_MODE_FILL,
-      .lineWidth = 1.0f,
-      .cullMode = VK_CULL_MODE_BACK_BIT,
-      .frontFace = VK_FRONT_FACE_CLOCKWISE,
-      .depthBiasEnable = VK_FALSE,
-      .depthBiasConstantFactor = 0.0f,
-      .depthBiasClamp = 0.0f,
-      .depthBiasSlopeFactor = 0.0f,
-  };
-
-  // Multisample anti-aliasing setup
-  VkPipelineMultisampleStateCreateInfo pipelineMultisampleState{
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
-      .pNext = nullptr,
-      .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
-      .sampleShadingEnable = VK_FALSE,
-      .minSampleShading = 0,
-      .pSampleMask = nullptr,
-      .alphaToCoverageEnable = VK_FALSE,
-      .alphaToOneEnable = VK_FALSE,
-  };
-
-  // Describes how to blend pixels from past framebuffers to current framebuffers
-  // Could be used for transparency or cool screen-space effects
-  VkPipelineColorBlendAttachmentState attachmentStates{
-      .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-          VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
-      .blendEnable = VK_FALSE,
-  };
-
-  VkPipelineColorBlendStateCreateInfo colorBlendInfo{
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
-      .pNext = nullptr,
-      .logicOpEnable = VK_FALSE,
-      .logicOp = VK_LOGIC_OP_COPY,
-      .attachmentCount = 1,
-      .pAttachments = &attachmentStates,
-      .flags = 0,
-  };
-
-  // Describes the layout of things such as uniforms
-  VkPipelineLayoutCreateInfo pipelineLayoutInfo{
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-      .pNext = nullptr,
-      .setLayoutCount = 1,
-      .pSetLayouts = &descriptorSetLayout_,
-      .pushConstantRangeCount = 0,
-      .pPushConstantRanges = nullptr,
-  };
-  CALL_VK(vkCreatePipelineLayout(device->getDevice(), &pipelineLayoutInfo, nullptr,
-                                 &gfxPipeline.layout_))
-
-  VkPipelineCacheCreateInfo pipelineCacheInfo{
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO,
-      .pNext = nullptr,
-      .initialDataSize = 0,
-      .pInitialData = nullptr,
-      .flags = 0,  // reserved, must be 0
-  };
-
-  CALL_VK(vkCreatePipelineCache(device->getDevice(), &pipelineCacheInfo, nullptr,
-                                &gfxPipeline.cache_));
-
-  VkGraphicsPipelineCreateInfo pipelineInfo{
-      .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
-      .pNext = nullptr,
-      .flags = 0,
-      .stageCount = 2,
-      .pTessellationState = nullptr,
-      .pViewportState = &pipelineViewportState,
-      .pRasterizationState = &pipelineRasterizationState,
-      .pMultisampleState = &pipelineMultisampleState,
-      .pDepthStencilState = &depthStencilState,
-      .pColorBlendState = &colorBlendInfo,
-      .pDynamicState = nullptr,
-      .layout = gfxPipeline.layout_,
-      .renderPass = render_pass,
-      .subpass = 0,
-      .basePipelineHandle = VK_NULL_HANDLE,
-      .basePipelineIndex = 0,
-  };
-
-  shaderState->updatePipelineInfo(pipelineInfo);
-
-  CALL_VK(vkCreateGraphicsPipelines(device->getDevice(), gfxPipeline.cache_, 1, &pipelineInfo,
-                                    nullptr, &gfxPipeline.pipeline_));
-  LOGI("Setup Graphics Pipeline");
+  shaders = std::make_shared<ShaderState>("triangle", androidAppCtx, device->getDevice());
+  shaders->addVertexInputBinding(0, 11 * sizeof(float));
+  shaders->addVertexAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0);
+  shaders->addVertexAttributeDescription(0, 1, VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(float));
+  shaders->addVertexAttributeDescription(0, 2, VK_FORMAT_R32G32B32_SFLOAT, 5 * sizeof(float));
+  shaders->addVertexAttributeDescription(0, 3, VK_FORMAT_R32G32_SFLOAT, 9 * sizeof(float));
 }
 
 void createDepthBuffer() {
@@ -539,7 +374,7 @@ bool InitVulkan(android_app *app) {
 
   createUniformBuffers();
 
-  createDescriptorSetLayout();
+//  createDescriptorSetLayout();
 
   renderer = new Renderer(device);
 
@@ -618,7 +453,7 @@ bool InitVulkan(android_app *app) {
       1, 2, 4, 2, 1, 0, 0, 3, 2, 2, 3, 4, 3, 0, 4, 0, 1, 4
   };
 
-  mesh = new Mesh(device, vertexData, indexData, &descriptorSetLayout_, shaderState, &render_pass);
+  mesh = new Mesh(device, vertexData, indexData, shaders);
 
   createDepthBuffer();
 
@@ -627,8 +462,6 @@ bool InitVulkan(android_app *app) {
   texFiles.push_back("textures/sample_texture.png");
 
   createTextures();
-
-  createGraphicsPipeline();
 
   createDescriptorPool();
 
@@ -645,8 +478,8 @@ void DeleteVulkan(void) {
   delete uniformBuffer;
   delete lightBuffer;
 
-  shaderState->cleanup();
-  delete shaderState;
+  shaders->cleanup();
+  shaders.reset();
 
   for (int i = 0; i < device->getSwapchainLength(); ++i) {
     vkDestroyImageView(device->getDevice(), displayViews_[i], nullptr);
@@ -659,9 +492,6 @@ void DeleteVulkan(void) {
   vkDestroyImage(device->getDevice(), depthBuffer.image, nullptr);
   vkFreeMemory(device->getDevice(), depthBuffer.device_memory, nullptr);
 
-  vkDestroyPipeline(device->getDevice(), gfxPipeline.pipeline_, nullptr);
-  vkDestroyPipelineCache(device->getDevice(), gfxPipeline.cache_, nullptr);
-  vkDestroyPipelineLayout(device->getDevice(), gfxPipeline.layout_, nullptr);
   vkDestroyRenderPass(device->getDevice(), render_pass, nullptr);
 
   delete device;
@@ -706,6 +536,7 @@ bool VulkanDrawFrame(void) {
   device->insertDebugMarker(renderer->getCurrentCommandBuffer(), "TEST MARKER: PIPELINE BINDING",
                             {1.0f, 0.0f, 1.0f, 0.0f});
 
+  mesh->updatePipeline(render_pass);
   mesh->submitDraw(renderer->getCurrentCommandBuffer(), descriptorSets_[renderer->getCurrentFrame()]);
 
   vkCmdEndRenderPass(renderer->getCurrentCommandBuffer());
