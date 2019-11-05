@@ -163,12 +163,7 @@ Json::object TelemetryReportJson(const ProngCache& prong_cache,
                 for (auto &c: p->histogram_.buckets())
                     counts.push_back(static_cast<int32_t>(c));
                 Json::object o {
-                    {"counts",        counts},
-                    {"range",         Json::object{
-                            {"start_ms", p->histogram_.StartMs()},
-                            {"end_ms",   p->histogram_.EndMs()}
-                        }
-                    }};
+                    {"counts",        counts}};
                 if (p->IsLoading()) {
                     // Should never get here: we make loading histograms events-only in prong.cpp
                     loading_histograms.push_back(o);
