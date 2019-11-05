@@ -38,17 +38,18 @@ namespace ancer {
 
     protected:
         /**
-         * Returns a vulkan_info struct with data pertaining to the current operation.
+         * Returns a vulkan_info struct with data pertaining to the current
+         * operation.
          */
-        vulkan_info& GetInfo();
+        VulkanInfo &GetInfo();
 
         /**
          * Retrieves a Vulkan device handle, if available.
          */
-        const VkDevice& GetDevice();
+        const VkDevice &GetDevice();
 
     private:
-        vulkan_info _operation_info;
-        const Log::Tag _test_tag;
+        VulkanInfo _operationInfo;
+        const Log::Tag _testTag;
     };
 }

@@ -17,100 +17,167 @@
 #ifndef VK_HELPERS
 #define VK_HELPERS
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
+
 #include "ancer/util/vulkan/VkHelpersImpl.hpp"
 
-VkResult init_global_extension_properties(layer_properties &layer_props);
+VkResult InitGlobalExtensionProperties(LayerProperties &layerProps);
 
-VkResult init_global_layer_properties(vulkan_info &info);
+VkResult InitGlobalLayerProperties(VulkanInfo &info);
 
-VkResult init_device_extension_properties(struct vulkan_info &info,
-                                          layer_properties &layer_props);
+VkResult InitDeviceExtensionProperties(struct VulkanInfo &info,
+                                       LayerProperties &layerProps);
 
-void init_instance_extension_names(struct vulkan_info &info);
-VkResult init_instance(struct vulkan_info &info,
-                       char const *const app_short_name);
-void init_device_extension_names(struct vulkan_info &info);
-VkResult init_device(struct vulkan_info &info);
-VkResult init_enumerate_device(struct vulkan_info &info,
-                               uint32_t gpu_count = 1);
-VkBool32 demo_check_layers(const std::vector<layer_properties> &layer_props,
-                           const std::vector<const char *> &layer_names);
-void init_connection(struct vulkan_info &info);
-void init_window(struct vulkan_info &info);
-void init_queue_family_index(struct vulkan_info &info);
-void init_presentable_image(struct vulkan_info &info);
-void execute_queue_cmdbuf(struct vulkan_info &info,
-                          const VkCommandBuffer *cmd_bufs, VkFence &fence);
-void execute_pre_present_barrier(struct vulkan_info &info);
-void execute_present_image(struct vulkan_info &info);
-void init_swapchain_extension(struct vulkan_info &info);
-void init_command_pool(struct vulkan_info &info);
-void init_command_buffer(struct vulkan_info &info);
-void execute_begin_command_buffer(struct vulkan_info &info);
-void execute_end_command_buffer(struct vulkan_info &info);
-void execute_queue_command_buffer(struct vulkan_info &info);
-void init_device_queue(struct vulkan_info &info);
-void init_swap_chain(
-    struct vulkan_info &info,
-    VkImageUsageFlags usageFlags = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
-                                   VK_IMAGE_USAGE_TRANSFER_SRC_BIT);
-void init_depth_buffer(struct vulkan_info &info);
-void init_uniform_buffer(struct vulkan_info &info);
-void init_descriptor_and_pipeline_layouts(struct vulkan_info &info, bool use_texture,
-                                          VkDescriptorSetLayoutCreateFlags descSetLayoutCreateFlags = 0);
-void init_renderpass(
-    struct vulkan_info &info, bool include_depth, bool clear = true,
-    VkImageLayout finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-void init_vertex_buffer(struct vulkan_info &info, const void *vertexData,
-                        uint32_t dataSize, uint32_t dataStride,
-                        bool use_texture);
-void init_framebuffers(struct vulkan_info &info, bool include_depth);
-void init_descriptor_pool(struct vulkan_info &info, bool use_texture);
-void init_descriptor_set(struct vulkan_info &info, bool use_texture);
-void init_shaders(struct vulkan_info &info, const char *vertShaderText,
-                  const char *fragShaderText);
-void init_pipeline_cache(struct vulkan_info &info);
-void init_pipeline(struct vulkan_info &info, VkBool32 include_depth,
-                   VkBool32 include_vi = true);
-void init_sampler(struct vulkan_info &info, VkSampler &sampler);
-void init_image(struct vulkan_info &info, texture_object &texObj,
-                const char *textureName, VkImageUsageFlags extraUsages = 0,
-                VkFormatFeatureFlags extraFeatures = 0);
-void init_texture(struct vulkan_info &info, const char *textureName = nullptr,
-                  VkImageUsageFlags extraUsages = 0,
-                  VkFormatFeatureFlags extraFeatures = 0);
-void init_viewports(struct vulkan_info &info);
-void init_scissors(struct vulkan_info &info);
-void init_fence(struct vulkan_info &info, VkFence &fence);
-void init_submit_info(struct vulkan_info &info, VkSubmitInfo &submit_info,
-                      VkPipelineStageFlags &pipe_stage_flags);
-void init_present_info(struct vulkan_info &info, VkPresentInfoKHR &present);
-void init_clear_color_and_depth(struct vulkan_info &info,
-                                VkClearValue *clear_values);
-void init_render_pass_begin_info(struct vulkan_info &info,
-                                 VkRenderPassBeginInfo &rp_begin);
-void init_window_size(struct vulkan_info &info, int32_t default_width,
-                      int32_t default_height);
+void InitInstanceExtensionNames(struct VulkanInfo &info);
 
-VkResult init_debug_report_callback(struct vulkan_info &info,
-                                    PFN_vkDebugReportCallbackEXT dbgFunc);
-void destroy_debug_report_callback(struct vulkan_info &info);
-void destroy_pipeline(struct vulkan_info &info);
-void destroy_pipeline_cache(struct vulkan_info &info);
-void destroy_descriptor_pool(struct vulkan_info &info);
-void destroy_vertex_buffer(struct vulkan_info &info);
-void destroy_textures(struct vulkan_info &info);
-void destroy_framebuffers(struct vulkan_info &info);
-void destroy_shaders(struct vulkan_info &info);
-void destroy_renderpass(struct vulkan_info &info);
-void destroy_descriptor_and_pipeline_layouts(struct vulkan_info &info);
-void destroy_uniform_buffer(struct vulkan_info &info);
-void destroy_depth_buffer(struct vulkan_info &info);
-void destroy_swap_chain(struct vulkan_info &info);
-void destroy_command_buffer(struct vulkan_info &info);
-void destroy_command_pool(struct vulkan_info &info);
-void destroy_device(struct vulkan_info &info);
-void destroy_instance(struct vulkan_info &info);
-void destroy_window(struct vulkan_info &info);
+VkResult InitInstance(struct VulkanInfo &info,
+                      char const *const appShortName);
+
+void InitDeviceExtensionNames(struct VulkanInfo &info);
+
+VkResult InitDevice(struct VulkanInfo &info);
+
+VkResult InitEnumerateDevice(struct VulkanInfo &info,
+                             uint32_t gpuCount = 1);
+
+VkBool32 DemoCheckLayers(const std::vector<LayerProperties> &layerProps,
+                         const std::vector<const char *> &layerNames);
+
+void InitConnection(struct VulkanInfo &info);
+
+void InitWindow(struct VulkanInfo &info);
+
+void InitQueueFamilyIndex(struct VulkanInfo &info);
+
+void InitPresentableImage(struct VulkanInfo &info);
+
+void ExecuteQueueCmdbuf(struct VulkanInfo &info,
+                        const VkCommandBuffer *cmd_bufs, VkFence &fence);
+
+void ExecutePrePresentBarrier(struct VulkanInfo &info);
+
+void ExecutePresentImage(struct VulkanInfo &info);
+
+void InitSwapchainExtension(struct VulkanInfo &info);
+
+void InitCommandPool(struct VulkanInfo &info);
+
+void InitCommandBuffer(struct VulkanInfo &info);
+
+void ExecuteBeginCommandBuffer(struct VulkanInfo &info);
+
+void ExecuteEndCommandBuffer(struct VulkanInfo &info);
+
+void ExecuteQueueCommandBuffer(struct VulkanInfo &info);
+
+void InitDeviceQueue(struct VulkanInfo &info);
+
+void InitSwapChain(
+        struct VulkanInfo &info,
+        VkImageUsageFlags usageFlags = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                                       VK_IMAGE_USAGE_TRANSFER_SRC_BIT);
+
+void InitDepthBuffer(struct VulkanInfo &info);
+
+void InitUniformBuffer(struct VulkanInfo &info);
+
+void InitDescriptorAndPipelineLayouts(struct VulkanInfo &info,
+                                      bool useTexture,
+                                      VkDescriptorSetLayoutCreateFlags
+                                      descSetLayoutCreateFlags = 0);
+
+void InitRenderpass(
+        struct VulkanInfo &info, bool includeDepth, bool clear = true,
+        VkImageLayout finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+
+void InitVertexBuffer(struct VulkanInfo &info, const void *vertexData,
+                      uint32_t dataSize, uint32_t dataStride,
+                      bool useTexture);
+
+void InitFramebuffers(struct VulkanInfo &info, bool includeDepth);
+
+void InitDescriptorPool(struct VulkanInfo &info, bool use_texture);
+
+void InitDescriptorSet(struct VulkanInfo &info, bool useTexture);
+
+void InitShaders(struct VulkanInfo &info, const char *vertShaderText,
+                 const char *fragShaderText);
+
+void InitPipelineCache(struct VulkanInfo &info);
+
+void InitPipeline(struct VulkanInfo &info, VkBool32 include_depth,
+                  VkBool32 include_vi = static_cast<VkBool32>(true));
+
+void InitSampler(struct VulkanInfo &info, VkSampler &sampler);
+
+void InitImage(struct VulkanInfo &info, TextureObject &texObj,
+               const char *textureName, VkImageUsageFlags extraUsages = 0,
+               VkFormatFeatureFlags extraFeatures = 0);
+
+void InitTexture(struct VulkanInfo &info, const char *textureName = nullptr,
+                 VkImageUsageFlags extraUsages = 0,
+                 VkFormatFeatureFlags extraFeatures = 0);
+
+void InitViewports(struct VulkanInfo &info);
+
+void InitScissors(struct VulkanInfo &info);
+
+void InitFence(struct VulkanInfo &info, VkFence &fence);
+
+void InitSubmitInfo(struct VulkanInfo &info, VkSubmitInfo &submitInfo,
+                    VkPipelineStageFlags &pipeStageFlags);
+
+void InitPresentInfo(struct VulkanInfo &info, VkPresentInfoKHR &present);
+
+void InitClearColorAndDepth(struct VulkanInfo &info,
+                            VkClearValue *clearValues);
+
+void InitRenderPassBeginInfo(struct VulkanInfo &info,
+                             VkRenderPassBeginInfo &rp_begin);
+
+void InitWindowSize(struct VulkanInfo &info, int32_t default_width,
+                    int32_t default_height);
+
+VkResult InitDebugReportCallback(struct VulkanInfo &info,
+                                 PFN_vkDebugReportCallbackEXT dbgFunc);
+
+void DestroyDebugReportCallback(struct VulkanInfo &info);
+
+void DestroyPipeline(struct VulkanInfo &info);
+
+void DestroyPipelineCache(struct VulkanInfo &info);
+
+void DestroyDescriptorPool(struct VulkanInfo &info);
+
+void DestroyVertexBuffer(struct VulkanInfo &info);
+
+void DestroyTextures(struct VulkanInfo &info);
+
+void DestroyFramebuffers(struct VulkanInfo &info);
+
+void DestroyShaders(struct VulkanInfo &info);
+
+void DestroyRenderpass(struct VulkanInfo &info);
+
+void DestroyDescriptorAndPipelineLayouts(struct VulkanInfo &info);
+
+void DestroyUniformBuffer(struct VulkanInfo &info);
+
+void DestroyDepthBuffer(struct VulkanInfo &info);
+
+void DestroySwapChain(struct VulkanInfo &info);
+
+void DestroyCommandBuffer(struct VulkanInfo &info);
+
+void DestroyCommandPool(struct VulkanInfo &info);
+
+void DestroyDevice(struct VulkanInfo &info);
+
+void DestroyInstance(struct VulkanInfo &info);
+
+void DestroyWindow(struct VulkanInfo &info);
+
+#pragma clang diagnostic pop
 
 #endif // VK_HELPERS

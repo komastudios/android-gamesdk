@@ -27,7 +27,8 @@ public class VulkanHostActivity extends BaseHostActivity {
     public static final String ID = "VulkanHostActivity";
     public static final String TAG = "VulkanHostActivity";
 
-    public static Intent createIntent(Context ctx, Configuration.StressTest stressTest) {
+    public static Intent createIntent(Context ctx,
+                                      Configuration.StressTest stressTest) {
         Intent i = new Intent(ctx, VulkanHostActivity.class);
         i.putExtra(STRESS_TEST_JSON, stressTest.toJson());
         return i;
@@ -35,8 +36,9 @@ public class VulkanHostActivity extends BaseHostActivity {
 
     @Override
     protected int getContentViewResource() {
-        // TODO: rename the "swappy" part to something more neutral, so Vulkan doesn't look like
-        // "borrowing" something that doesn't belong exclusively to SwappyGLHostActivity.
+        // TODO (dagum): rename the "swappy" part to something more neutral, so
+        //               Vulkan doesn't look like "borrowing" something that
+        //               doesn't belong exclusively to SwappyGLHostActivity.
         return R.layout.activity_swappy_surface;
     }
 

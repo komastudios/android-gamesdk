@@ -19,14 +19,19 @@
 #include <sstream>
 #include <vector>
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCUnusedMacroInspection"
+#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
+
 #define GLM_FORCE_RADIANS
+
 #include "glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
 // Include files for Android
 #include <unistd.h>
 #include <android/log.h>
-#include <vulkan_wrapper.h> // Include Vulkan_wrapper and dynamically load symbols.
+#include <vulkan_wrapper.h>
 
 
 #include <vulkan/vulkan.h>
@@ -64,13 +69,14 @@
 #define U_ASSERT_ONLY
 #endif
 
-std::string get_base_data_dir();
-std::string get_data_dir(std::string filename);
+std::string GetBaseDataDir();
+
+std::string GetDataDir(const std::string &filename);
 
 /*
  * structure to track all objects related to a texture.
  */
-struct texture_object {
+struct TextureObject {
     VkSampler sampler;
 
     VkImage image;
@@ -78,17 +84,17 @@ struct texture_object {
 
     VkDeviceMemory mem;
     VkImageView view;
-    int32_t tex_width, tex_height;
+    int32_t texWidth, texHeight;
 };
 
 /*
  * Keep each of our swap chain buffers' image, command buffer and view in one
  * spot
  */
-typedef struct _swap_chain_buffers {
+typedef struct _SwapChainBuffers {
     VkImage image;
     VkImageView view;
-} swap_chain_buffer;
+} SwapChainBuffer;
 
 /*
  * A layer can expose extensions, keep track of those
@@ -96,50 +102,50 @@ typedef struct _swap_chain_buffers {
  */
 typedef struct {
     VkLayerProperties properties;
-    std::vector<VkExtensionProperties> instance_extensions;
-    std::vector<VkExtensionProperties> device_extensions;
-} layer_properties;
+    std::vector<VkExtensionProperties> instanceExtensions;
+    std::vector<VkExtensionProperties> deviceExtensions;
+} LayerProperties;
 
 /*
  * Structure for tracking information used / created / modified
  * by utility functions.
  */
-struct vulkan_info {
+struct VulkanInfo {
     PFN_vkCreateAndroidSurfaceKHR fpCreateAndroidSurfaceKHR;
 
     VkSurfaceKHR surface;
     bool prepared;
-    bool use_staging_buffer;
-    bool save_images;
+    bool useStagingBuffer;
+    bool saveImages;
 
-    std::vector<const char *> instance_layer_names;
-    std::vector<const char *> instance_extension_names;
-    std::vector<layer_properties> instance_layer_properties;
-    std::vector<VkExtensionProperties> instance_extension_properties;
+    std::vector<const char *> instanceLayerNames;
+    std::vector<const char *> instanceExtensionNames;
+    std::vector<LayerProperties> instanceLayerProperties;
+    std::vector<VkExtensionProperties> instanceExtensionProperties;
     VkInstance inst;
 
-    std::vector<const char *> device_extension_names;
-    std::vector<VkExtensionProperties> device_extension_properties;
+    std::vector<const char *> deviceExtensionNames;
+    std::vector<VkExtensionProperties> deviceExtensionProperties;
     std::vector<VkPhysicalDevice> gpus;
     VkDevice device;
-    VkQueue graphics_queue;
-    VkQueue present_queue;
-    uint32_t graphics_queue_family_index;
-    uint32_t present_queue_family_index;
-    VkPhysicalDeviceProperties gpu_props;
-    std::vector<VkQueueFamilyProperties> queue_props;
-    VkPhysicalDeviceMemoryProperties memory_properties;
+    VkQueue graphicsQueue;
+    VkQueue presentQueue;
+    uint32_t graphicsQueueFamilyIndex;
+    uint32_t presentQueueFamilyIndex;
+    VkPhysicalDeviceProperties gpuProps;
+    std::vector<VkQueueFamilyProperties> queueProps;
+    VkPhysicalDeviceMemoryProperties memoryProperties;
 
     VkFramebuffer *framebuffers;
     int width, height;
     VkFormat format;
 
     uint32_t swapchainImageCount;
-    VkSwapchainKHR swap_chain;
-    std::vector<swap_chain_buffer> buffers;
+    VkSwapchainKHR swapChain;
+    std::vector<SwapChainBuffer> buffers;
     VkSemaphore imageAcquiredSemaphore;
 
-    VkCommandPool cmd_pool;
+    VkCommandPool cmdPool;
 
     struct {
         VkFormat format;
@@ -149,27 +155,27 @@ struct vulkan_info {
         VkImageView view;
     } depth;
 
-    std::vector<struct texture_object> textures;
+    std::vector<struct TextureObject> textures;
 
     struct {
         VkBuffer buf;
         VkDeviceMemory mem;
-        VkDescriptorBufferInfo buffer_info;
-    } uniform_data;
+        VkDescriptorBufferInfo bufferInfo;
+    } uniformData;
 
     struct {
-        VkDescriptorImageInfo image_info;
-    } texture_data;
+        VkDescriptorImageInfo imageInfo;
+    } textureData;
     VkDeviceMemory stagingMemory;
     VkImage stagingImage;
 
     struct {
         VkBuffer buf;
         VkDeviceMemory mem;
-        VkDescriptorBufferInfo buffer_info;
-    } vertex_buffer;
-    VkVertexInputBindingDescription vi_binding;
-    VkVertexInputAttributeDescription vi_attribs[2];
+        VkDescriptorBufferInfo bufferInfo;
+    } vertexBuffer;
+    VkVertexInputBindingDescription viBinding;
+    VkVertexInputAttributeDescription viAttribs[2];
 
     glm::mat4 Projection;
     glm::mat4 View;
@@ -178,73 +184,91 @@ struct vulkan_info {
     glm::mat4 MVP;
 
     VkCommandBuffer cmd; // Buffer for initialization commands
-    VkPipelineLayout pipeline_layout;
-    std::vector<VkDescriptorSetLayout> desc_layout;
+    VkPipelineLayout pipelineLayout;
+    std::vector<VkDescriptorSetLayout> descLayout;
     VkPipelineCache pipelineCache;
-    VkRenderPass render_pass;
+    VkRenderPass renderPass;
     VkPipeline pipeline;
 
     VkPipelineShaderStageCreateInfo shaderStages[2];
 
-    VkDescriptorPool desc_pool;
-    std::vector<VkDescriptorSet> desc_set;
+    VkDescriptorPool descPool;
+    std::vector<VkDescriptorSet> descSet;
 
     PFN_vkCreateDebugReportCallbackEXT dbgCreateDebugReportCallback;
     PFN_vkDestroyDebugReportCallbackEXT dbgDestroyDebugReportCallback;
     PFN_vkDebugReportMessageEXT dbgBreakCallback;
-    std::vector<VkDebugReportCallbackEXT> debug_report_callbacks;
+    std::vector<VkDebugReportCallbackEXT> debugReportCallbacks;
 
-    uint32_t current_buffer;
-    uint32_t queue_family_count;
+    uint32_t currentBuffer;
+    uint32_t queueFamilyCount;
 
     VkViewport viewport;
     VkRect2D scissor;
 };
-void process_command_line_args(struct vulkan_info &info, int argc,
-                               char *argv[]);
-bool memory_type_from_properties(struct vulkan_info &info, uint32_t typeBits,
-                                 VkFlags requirements_mask,
-                                 uint32_t *typeIndex);
 
-void set_image_layout(struct vulkan_info &demo, VkImage image,
-                      VkImageAspectFlags aspectMask,
-                      VkImageLayout old_image_layout,
-                      VkImageLayout new_image_layout,
-                      VkPipelineStageFlags src_stages,
-                      VkPipelineStageFlags dest_stages);
+void ProcessCommandLineArgs(struct VulkanInfo &info, int argc,
+                            char **argv);
 
-bool read_ppm(char const *const filename, int &width, int &height,
-              uint64_t rowPitch, unsigned char *dataPtr);
-void write_ppm(struct vulkan_info &info, const char *basename);
-void extract_version(uint32_t version, uint32_t &major, uint32_t &minor,
-                     uint32_t &patch);
-bool GLSLtoSPV(const VkShaderStageFlagBits shader_type, const char *pshader,
+bool MemoryTypeFromProperties(struct VulkanInfo &info, uint32_t typeBits,
+                              VkFlags requirementsMask,
+                              uint32_t *typeIndex);
+
+void SetImageLayout(struct VulkanInfo &demo, VkImage image,
+                    VkImageAspectFlags aspectMask,
+                    VkImageLayout oldImageLayout,
+                    VkImageLayout newImageLayout,
+                    VkPipelineStageFlags srcStages,
+                    VkPipelineStageFlags destStages);
+
+bool ReadPpm(char const *const filename, int &width, int &height,
+             uint64_t rowPitch, unsigned char *dataPtr);
+
+void WritePpm(struct VulkanInfo &info, const char *basename);
+
+void ExtractVersion(uint32_t version, uint32_t &major, uint32_t &minor,
+                    uint32_t &patch);
+
+bool GLSLtoSPV(const VkShaderStageFlagBits shaderType, const char *pShader,
                std::vector<unsigned int> &spirv);
-void init_glslang();
-void finalize_glslang();
-void wait_seconds(int seconds);
-void print_UUID(uint8_t *pipelineCacheUUID);
-std::string get_file_directory();
+
+void InitGlslang();
+
+void FinalizeGlslang();
+
+void WaitSeconds(int seconds);
+
+void PrintUUID(uint8_t *pipelineCacheUUID);
+
+std::string GetFileDirectory();
 
 typedef unsigned long long timestamp_t;
-timestamp_t get_milliseconds();
 
-// Main entry point of samples
-int sample_main(int argc, char *argv[]);
+timestamp_t GetMilliseconds();
 
 // Android specific definitions & helpers.
-#define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "VK-SAMPLE", __VA_ARGS__))
-#define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR, "VK-SAMPLE", __VA_ARGS__))
+#define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "VK-SAMPLE",    \
+                                             __VA_ARGS__))
+#define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR, "VK-SAMPLE",   \
+                                             __VA_ARGS__))
 // Replace printf to logcat output.
-#define printf(...) __android_log_print(ANDROID_LOG_DEBUG, "VK-SAMPLE", __VA_ARGS__);
+#define printf(...) __android_log_print(ANDROID_LOG_DEBUG, "VK-SAMPLE",        \
+                                        __VA_ARGS__);
 
-bool Android_process_command();
-ANativeWindow* AndroidGetApplicationWindow();
-FILE* AndroidFopen(const char* fname, const char* mode);
+bool AndroidProcessCommand();
+
+ANativeWindow *AndroidGetApplicationWindow();
+
+FILE *AndroidFopen(const char *fname, const char *mode);
+
 void AndroidGetWindowSize(int32_t *width, int32_t *height);
-bool AndroidLoadFile(const char* filePath, std::string *data);
+
+bool AndroidLoadFile(const char *filePath, std::string *data);
 
 #ifndef VK_API_VERSION_1_0
-// On Android, NDK would include slightly older version of headers that is missing the definition.
+// On Android, NDK would include slightly older version of headers that is
+// missing the definition.
 #define VK_API_VERSION_1_0 VK_API_VERSION
 #endif
+
+#pragma clang diagnostic pop

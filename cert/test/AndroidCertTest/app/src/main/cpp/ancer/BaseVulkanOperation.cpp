@@ -22,35 +22,34 @@ namespace {
 
 namespace ancer {
     BaseVulkanOperation::BaseVulkanOperation(const Log::Tag testTag) :
-        _operation_info{}, _test_tag{testTag}
-    {
-        init_global_layer_properties(this->_operation_info);
-        init_instance_extension_names(this->_operation_info);
-        init_device_extension_names(this->_operation_info);
-        Log::I(this->_test_tag, "Initializing Vulkan instance");
-        init_instance(this->_operation_info, testTag.tag);
-        init_enumerate_device(this->_operation_info);
+            _operationInfo{}, _testTag{testTag} {
+        InitGlobalLayerProperties(this->_operationInfo);
+        InitInstanceExtensionNames(this->_operationInfo);
+        InitDeviceExtensionNames(this->_operationInfo);
+        Log::D(this->_testTag, "Initializing Vulkan instance");
+        InitInstance(this->_operationInfo, testTag.tag);
+        InitEnumerateDevice(this->_operationInfo);
     }
 
     BaseVulkanOperation::~BaseVulkanOperation() {
-        if (this->_operation_info.device != VK_NULL_HANDLE) {
-            Log::I(this->_test_tag, "Releasing Vulkan device");
-            destroy_device(this->_operation_info);
+        if (this->_operationInfo.device != VK_NULL_HANDLE) {
+            Log::D(this->_testTag, "Releasing Vulkan device");
+            DestroyDevice(this->_operationInfo);
         }
-        Log::I(this->_test_tag, "Releasing Vulkan instance");
-        destroy_instance(this->_operation_info);
+        Log::D(this->_testTag, "Releasing Vulkan instance");
+        DestroyInstance(this->_operationInfo);
     }
 
-    vulkan_info& BaseVulkanOperation::GetInfo() {
-        return this->_operation_info;
+    VulkanInfo &BaseVulkanOperation::GetInfo() {
+        return this->_operationInfo;
     }
 
-    const VkDevice& BaseVulkanOperation::GetDevice() {
-        if (this->_operation_info.device == VK_NULL_HANDLE) {
-            Log::I(this->_test_tag, "Initializing Vulkan device");
-            init_device(this->_operation_info);
+    const VkDevice &BaseVulkanOperation::GetDevice() {
+        if (this->_operationInfo.device == VK_NULL_HANDLE) {
+            Log::D(this->_testTag, "Initializing Vulkan device");
+            InitDevice(this->_operationInfo);
         }
 
-        return this->_operation_info.device;
+        return this->_operationInfo.device;
     }
 }
