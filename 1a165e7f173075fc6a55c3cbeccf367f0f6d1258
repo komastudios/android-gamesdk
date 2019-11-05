@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "520ac6a7_ce6b0529",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/CMakeLists.txt",
+        "patchSetId": 6
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-11-05T14:02:46Z",
+      "side": 1,
+      "message": "Yes, ROOT_DIR and PACKAGE_DIR now support absolute paths too - there is no more concatenation between them so they work as \"usual\" CMake paths, that are either absolute or resolved by Cmake from the working directory (which is the directory where you run the CMakeLists.txt, if I\u0027m not mistaken).",
+      "parentUuid": "53aad519_398003a8",
+      "revId": "1a165e7f173075fc6a55c3cbeccf367f0f6d1258",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "839c8b89_ab28e5a1",
         "filename": "samples/gamesdk.cmake",
         "patchSetId": 6
@@ -33,6 +51,24 @@
       "revId": "1a165e7f173075fc6a55c3cbeccf367f0f6d1258",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "045b5a6d_a0d779ee",
+        "filename": "samples/gamesdk.cmake",
+        "patchSetId": 6
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-11-05T14:02:46Z",
+      "side": 1,
+      "message": "The parameter is indeed mandatory, but the value can be anything. I removed the \"default value: none\" for mandatory arguments, this was confusing.",
+      "parentUuid": "839c8b89_ab28e5a1",
+      "revId": "1a165e7f173075fc6a55c3cbeccf367f0f6d1258",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
