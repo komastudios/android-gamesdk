@@ -50,7 +50,7 @@ function(add_gamesdk_target)
     string(REPLACE "+" "p" GAMESDK_ANDROID_STL ${ANDROID_STL}) # Game SDK build names use a sanitized STL name (c++ => cpp)
 
     # Set up the "gamesdk" library
-    set(BUILD_NAME ${ANDROID_ABI}_SDK${GAMESDK_ANDROID_SDK_VERSION}_NDK${GAMESDK_ANDROID_NDK_VERSION}_${GAMESDK_ANDROID_STL})
+    set(BUILD_NAME ${ANDROID_ABI}_NDK${GAMESDK_ANDROID_NDK_VERSION}_${GAMESDK_ANDROID_STL})
     set(GAMESDK_LIB_DIR "${GAMESDK_PACKAGE_DIR}/libs/${BUILD_NAME}")
 
     include_directories( "${GAMESDK_PACKAGE_DIR}/include" ) # Games SDK Public Includes
