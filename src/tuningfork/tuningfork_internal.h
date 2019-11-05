@@ -95,7 +95,7 @@ class IdProvider {
                                                    bool* loading = nullptr) const = 0;
     virtual TFErrorCode MakeCompoundId(InstrumentationKey k,
                                        uint64_t annotation_id,
-                                       uint64_t& id);
+                                       uint64_t& id) = 0;
 };
 
 class Backend {

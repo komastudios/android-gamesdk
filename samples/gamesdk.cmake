@@ -18,11 +18,11 @@ set( _MY_DIR ${CMAKE_CURRENT_LIST_DIR})
 #    default value: OFF
 #  ANDROID_NDK_VERSION: version number for the NDK (major.minor).
 #    default value: derived from ANDROID_NDK_REVISION
-#  ANDROID_SDK_VERSION: android min SDK level.
+#  ANDROID_API_LEVEL: android API level.
 #    default value: derived from ANDROID_PLATFORM
 function(add_gamesdk_target)
     set(options DO_LOCAL_BUILD)
-    set(oneValueArgs GEN_TASK PACKAGE_DIR ROOT_DIR ANDROID_NDK_VERSION ANDROID_SDK_VERSION)
+    set(oneValueArgs GEN_TASK PACKAGE_DIR ROOT_DIR ANDROID_NDK_VERSION ANDROID_API_LEVEL)
     cmake_parse_arguments(GAMESDK "${options}" "${oneValueArgs}" "" ${ARGN} )
 
     # Make sanity checks to avoid hard to debug errors at compile/link time.
@@ -42,15 +42,15 @@ function(add_gamesdk_target)
 
     # Infer Android SDK/NDK and STL versions
     if (NOT DEFINED GAMESDK_ANDROID_NDK_VERSION)
-		string(REGEX REPLACE "^([^.]+)[.]([^.]+).*" "\\1.\\2" GAMESDK_ANDROID_NDK_VERSION ${ANDROID_NDK_REVISION} )
+                string(REGEX REPLACE "^([^.]+)[.]([^.]+).*" "\\1.\\2" GAMESDK_ANDROID_NDK_VERSION ${ANDROID_NDK_REVISION} )
     endif()
-    if (NOT DEFINED GAMESDK_ANDROID_SDK_VERSION)
-		string(REGEX REPLACE "^android-([^.]+)" "\\1" GAMESDK_ANDROID_SDK_VERSION ${ANDROID_PLATFORM} )
+    if (NOT DEFINED GAMESDK_ANDROID_API_LEVEL)
+                string(REGEX REPLACE "^android-([^.]+)" "\\1" GAMESDK_ANDROID_API_LEVEL ${ANDROID_PLATFORM} )
     endif()
     string(REPLACE "+" "p" GAMESDK_ANDROID_STL ${ANDROID_STL}) # Game SDK build names use a sanitized STL name (c++ => cpp)
 
     # Set up the "gamesdk" library
-    set(BUILD_NAME ${ANDROID_ABI}_SDK${GAMESDK_ANDROID_SDK_VERSION}_NDK${GAMESDK_ANDROID_NDK_VERSION}_${GAMESDK_ANDROID_STL})
+    set(BUILD_NAME ${ANDROID_ABI}_API${GAMESDK_ANDROID_API_LEVEL}_NDK${GAMESDK_ANDROID_NDK_VERSION}_${GAMESDK_ANDROID_STL}_${CMAKE_BUILD_TYPE})
     set(GAMESDK_LIB_DIR "${GAMESDK_PACKAGE_DIR}/libs/${BUILD_NAME}")
 
     include_directories( "${GAMESDK_PACKAGE_DIR}/include" ) # Games SDK Public Includes
@@ -75,7 +75,7 @@ function(add_gamesdk_target)
             OUTPUT
                 ${DEP_LIB}
             COMMAND
-                ./gradlew ${GAMESDK_GEN_TASK} -PGAMESDK_ANDROID_SDK_VERSION=${GAMESDK_ANDROID_SDK_VERSION}
+                ./gradlew ${GAMESDK_GEN_TASK} -PGAMESDK_ANDROID_API_LEVEL=${GAMESDK_ANDROID_API_LEVEL} -PGAMESDK_BUILD_TYPE=${CMAKE_BUILD_TYPE}
             VERBATIM
             WORKING_DIRECTORY
                 "${GAMESDK_ROOT_DIR}"
