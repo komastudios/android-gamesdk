@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "0fb4d247_e8a334df",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/CMakeLists.txt",
+        "patchSetId": 6
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-11-05T14:04:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5657ee82_9f18c4cc",
+      "revId": "1a165e7f173075fc6a55c3cbeccf367f0f6d1258",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "839c8b89_ab28e5a1",
         "filename": "samples/gamesdk.cmake",
         "patchSetId": 6
@@ -84,6 +102,24 @@
       "side": 1,
       "message": "The parameter is indeed mandatory, but the value can be anything. I removed the \"default value: none\" for mandatory arguments, this was confusing.",
       "parentUuid": "839c8b89_ab28e5a1",
+      "revId": "1a165e7f173075fc6a55c3cbeccf367f0f6d1258",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1912fbd4_0e5523f7",
+        "filename": "samples/gamesdk.cmake",
+        "patchSetId": 6
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-11-05T14:04:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "045b5a6d_a0d779ee",
       "revId": "1a165e7f173075fc6a55c3cbeccf367f0f6d1258",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
