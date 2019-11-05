@@ -33,15 +33,33 @@ using namespace json11;
 
 const char url_rpcname[] = ":generateTuningParameters";
 
-std::string RequestJson(const ExtraUploadInfo& request_info) {
-    Json request = Json::object {
+static void add_params(const ProtobufSerialization& params, Json::object& obj,
+    const std::string& field_name) {
+    size_t len = params.size();
+    std::string dest(modp_b64_encode_len(len), '\0');
+    size_t encoded_len = modp_b64_encode(const_cast<char*>(dest.c_str()),
+                                         reinterpret_cast<const char*>(params.data()),
+                                         len);
+    if (encoded_len != -1) {
+        dest.resize(encoded_len);
+        obj[field_name] = dest;
+    }
+}
+
+static std::string RequestJson(const ExtraUploadInfo& request_info,
+                        const ProtobufSerialization* training_mode_params) {
+    Json::object request_obj = Json::object {
         {"name", json_utils::GetResourceName(request_info)},
         {"device_spec", json_utils::DeviceSpecJson(request_info)}};
+    if (training_mode_params != nullptr) {
+        add_params(*training_mode_params, request_obj, "serialized_training_mode_parameters");
+    }
+    Json request = request_obj;
     auto result = request.dump();
     ALOGV("Request body: %s", result.c_str());
     return result;
 }
-TFErrorCode DecodeResponse(const std::string& response, std::vector<uint8_t>& fps,
+static TFErrorCode DecodeResponse(const std::string& response, std::vector<uint8_t>& fps,
                            std::string& experiment_id) {
     using namespace json11;
     ALOGI("Response: %s", response.c_str());
@@ -96,14 +114,18 @@ TFErrorCode DecodeResponse(const std::string& response, std::vector<uint8_t>& fp
     return TFERROR_OK;
 }
 
-TFErrorCode DownloadFidelityParams(const JniCtx& jni, const std::string& uri,
-                                   const std::string& api_key, const ExtraUploadInfo& request_info,
-                                   int timeout_ms, std::vector<uint8_t>& fps,
+static TFErrorCode DownloadFidelityParams(const JniCtx& jni, const std::string& uri,
+                                   const std::string& api_key,
+                                   const ExtraUploadInfo& request_info,
+                                   int timeout_ms,
+                                   const ProtobufSerialization* training_mode_fps,
+                                   ProtobufSerialization& fps,
                                    std::string& experiment_id) {
     WebRequest wq(jni, uri, api_key, std::chrono::milliseconds(timeout_ms));
     int response_code;
     std::string body;
-    TFErrorCode ret =wq.Send(RequestJson(request_info), response_code, body);
+    TFErrorCode ret =wq.Send(RequestJson(request_info, training_mode_fps),
+                             response_code, body);
     if (ret!=TFERROR_OK)
         return ret;
 
@@ -119,7 +141,8 @@ TFErrorCode ParamsLoader::GetFidelityParams(const JniCtx& jni,
                                             const ExtraUploadInfo& info,
                                             const std::string& base_url,
                                             const std::string& api_key,
-                                            ProtobufSerialization &fidelity_params,
+                                            const ProtobufSerialization* training_mode_fps,
+                                            ProtobufSerialization& fidelity_params,
                                             std::string& experiment_id,
                                             uint32_t timeout_ms) {
     std::stringstream url;
@@ -127,7 +150,7 @@ TFErrorCode ParamsLoader::GetFidelityParams(const JniCtx& jni,
     url << json_utils::GetResourceName(info);
     url << url_rpcname;
     return DownloadFidelityParams(jni, url.str(), api_key, info, timeout_ms,
-                                  fidelity_params, experiment_id);
+                                  training_mode_fps, fidelity_params, experiment_id);
 }
 
 } // namespace tuningfork

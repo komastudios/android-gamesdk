@@ -75,7 +75,7 @@ struct Settings {
     int32_t level_annotation_index;
 };
 
-// Extra information that is uploaded with the ClearCut proto.
+// Extra information that is uploaded with the proto.
 struct ExtraUploadInfo {
     std::string experiment_id;
     std::string session_id;
@@ -111,7 +111,8 @@ public:
                                           const ExtraUploadInfo& info,
                                           const std::string& url_base,
                                           const std::string& api_key,
-                                          ProtobufSerialization &fidelity_params,
+                                          const ProtobufSerialization* training_mode_fps,
+                                          ProtobufSerialization& fidelity_params,
                                           std::string& experiment_id,
                                           uint32_t timeout_ms);
 };
@@ -166,8 +167,8 @@ void CheckSettings(Settings &c_settings, const std::string& save_dir);
 //  as being associated with those parameters.
 // If you subsequently call GetFidelityParameters, any data that is already collected will be
 // submitted to the backend.
-TFErrorCode GetFidelityParameters(const ProtobufSerialization& defaultParams,
-                           ProtobufSerialization &params, uint32_t timeout_ms);
+TFErrorCode GetFidelityParameters(const ProtobufSerialization& default_params,
+                                  ProtobufSerialization &params, uint32_t timeout_ms);
 
 // Protobuf serialization of the current annotation
 TFErrorCode SetCurrentAnnotation(const ProtobufSerialization &annotation);
@@ -210,5 +211,8 @@ TFErrorCode KillDownloadThreads();
 // Returns TFERROR_OK and fills 'settings' if the file could be loaded.
 // Returns TFERROR_NO_SETTINGS if the file was not found.
 TFErrorCode FindSettingsInApk(Settings* settings, const JniCtx& jni);
+
+// Get the current settings (TF must have been initialized)
+const Settings* GetSettings();
 
 } // namespace tuningfork
