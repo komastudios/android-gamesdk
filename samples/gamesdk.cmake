@@ -82,6 +82,11 @@ function(add_gamesdk_target)
         )
         add_custom_target(gamesdk_lib DEPENDS ${DEP_LIB})
         add_dependencies(gamesdk gamesdk_lib)
+    else()
+        # Sanity check that the library file exists
+        if(NOT EXISTS ${DEP_LIB})
+            message(FATAL_ERROR "Can't find the gamesdk library in ${DEP_LIB}. Are you sure you are using a supported Android SDK/NDK and STL variant?")
+        endif()
     endif()
 
     # Set the gamesdk target to use the library (see https://gitlab.kitware.com/cmake/community/wikis/doc/tutorials/Exporting-and-Importing-Targets)
