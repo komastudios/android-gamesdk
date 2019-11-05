@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "44ddcc28_d25d2ac1",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-05T19:34:54Z",
+      "side": 1,
+      "message": "\u003c3",
+      "revId": "0d7d2761eaf14e9b651a3bca7049b9d1c40175d6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
