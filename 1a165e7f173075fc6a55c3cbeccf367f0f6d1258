@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "53aad519_398003a8",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/CMakeLists.txt",
+        "patchSetId": 6
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-11-05T12:43:05Z",
+      "side": 1,
+      "message": "Does this work? Isn\u0027t this an absolute path?",
+      "revId": "1a165e7f173075fc6a55c3cbeccf367f0f6d1258",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "839c8b89_ab28e5a1",
+        "filename": "samples/gamesdk.cmake",
+        "patchSetId": 6
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-11-05T12:43:05Z",
+      "side": 1,
+      "message": "Do you mean that this argument is mandatory?\nI read this to mean that a value of \u0027none\u0027 is mandatory.\nPut the requirement on a separate line, and the same for the arguments below",
+      "revId": "1a165e7f173075fc6a55c3cbeccf367f0f6d1258",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
