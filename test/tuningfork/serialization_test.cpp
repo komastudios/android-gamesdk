@@ -90,8 +90,7 @@ std::string single_tick = R"TF({
       "render_time_histogram": [{
         "counts": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                    0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "instrument_id": 0,
-        "range": {"end_ms": 40, "start_ms": 10}
+        "instrument_id": 0
       }]
     }
   }
