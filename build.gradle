@@ -436,6 +436,52 @@ def copyExtras(outFolder, all = true) {
     }
 }
 
+// Copy samples for packaging. Also rename CMakeLists.txt files so that the
+// one distributed are using the packaged game sdk.
+def copySamples(outFolder, includeTuningForkSamples = true) {
+    def buildFolder = getPackagePath() + '/' + outFolder
+
+    // CMake utility for the Game SDK
+    copy {
+        from file(joinPath('samples', "gamesdk.cmake"))
+        into file(joinPath(buildFolder, 'samples'))
+    }
+
+    // All sample common files
+    copy {
+        from file(joinPath('samples', "common"))
+        into file(joinPath(buildFolder, 'samples', 'common'))
+    }
+
+    // Bouncyball
+    copy {
+        from file(joinPath('samples', "bouncyball"))
+        into file(joinPath(buildFolder, 'samples', "bouncyball"))
+        exclude '**/build', '**/out'
+        rename 'CMakeLists.for-samples-in-archive.txt', 'CMakeLists.txt'
+        includeEmptyDirs = false
+    }
+
+    // Cube
+    copy {
+        from file(joinPath('samples', "cube"))
+        into file(joinPath(buildFolder, 'samples', "cube"))
+        exclude '**/build', '**/out'
+        includeEmptyDirs = false
+    }
+    copy {
+        from file(joinPath('third_party', "cube"))
+        into file(joinPath(buildFolder, 'third_party', "cube"))
+        rename 'CMakeLists.for-samples-in-archive.txt', 'CMakeLists.txt'
+        exclude '**/build', '**/out'
+        includeEmptyDirs = false
+    }
+
+    if (includeTuningForkSamples) {
+        throw new UnsupportedOperationException("Including samples for TuningFork is not yet supported.");
+    }
+}
+
 // The latest Unity is using NDK 19 and SDK 21 with c++ stl
 def defaultAbis() { return ["armeabi-v7a", "arm64-v8a", "x86", "x86_64"] }
 
@@ -492,6 +538,7 @@ task swappyUnityBuild(type: BuildTask) {
     ext.withSharedLibs = false
     ext.withStaticLibs = true
     ext.withFullBuildKey = true
+    ext.withSamples = false
     ext.buildType = "Release";
     ext.nativeBuild = { tf,bt -> unityNativeBuild(tf,bt) }
 }
@@ -503,6 +550,7 @@ task swappyUnityDebugBuild(type: BuildTask) {
     ext.withSharedLibs = true
     ext.withStaticLibs = true
     ext.withFullBuildKey = true
+    ext.withSamples = false
     ext.buildType = "Debug";
     ext.nativeBuild = { tf,bt -> unityNativeBuild(tf,bt) }
 }
@@ -516,6 +564,7 @@ task unityBuild(type: BuildTask) {
     ext.withSharedLibs = false
     ext.withStaticLibs = true
     ext.withFullBuildKey = true
+    ext.withSamples = false
     ext.buildType = "Release";
     ext.nativeBuild = { tf,bt -> unityNativeBuild(tf,bt) }
 }
@@ -529,6 +578,7 @@ task sdkBuild(type: BuildTask) {
     ext.withSharedLibs = true
     ext.withStaticLibs = true
     ext.withFullBuildKey = true
+    ext.withSamples = false
     ext.buildType = "Release";
     ext.nativeBuild = { tf,bt -> sdkNativeBuild(tf,bt) }
 }
@@ -542,6 +592,7 @@ task localBuild(type: BuildTask) {
     ext.withSharedLibs = true
     ext.withStaticLibs = true;
     ext.withFullBuildKey = false;
+    ext.withSamples = true;
     ext.buildType = "Release";
     ext.nativeBuild = { tf,bt -> localNativeBuild(tf, "src", bt) }
 }
@@ -555,6 +606,7 @@ task localTfBuild(type: BuildTask) {
     ext.withSharedLibs = true
     ext.withStaticLibs = true;
     ext.withFullBuildKey = false;
+    ext.withSamples = false;
     ext.buildType = "Release";
     ext.nativeBuild = { tf,bt -> localNativeBuild(tf, "src", bt) }
 }
@@ -567,6 +619,7 @@ task specificBuild(type: BuildTask) {
     ext.withSharedLibs = true
     ext.withStaticLibs = true;
     ext.withFullBuildKey = false;
+    ext.withSamples = true;
     ext.buildType = "Release";
     ext.nativeBuild = { tf,bt ->
         def sdk = System.getenv("SDK")
@@ -589,6 +642,10 @@ tasks.withType(BuildTask) {
                     withFullBuildKey, flattenLibs, withSharedLibs)
         }
         copyExtras(packageName, withTuningFork)
+
+        if (withSamples) {
+            copySamples(packageName, withTuningFork)
+        }
     }
 }
 
