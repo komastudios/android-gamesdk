@@ -5,6 +5,7 @@ import org.gradle.internal.logging.text.StyledTextOutputFactory;
 import static org.gradle.internal.logging.text.StyledTextOutput.Style;
 import org.gradle.internal.os.OperatingSystem;
 import org.gradle.api.Project;
+import groovy.util.GroovyCollections;
 
 defaultTasks 'cleanPath', 'archiveZip'
 
@@ -92,8 +93,15 @@ abstract class Toolchain {
         def (n) = ndkVersion_ =~ /[0-9]+/;
         return n;
     }
+    public String get2PartNdkVersionNumber() {
+        def (n) = ndkVersion_ =~ /[0-9]+([.][0-9]+)?/;
+	if (n[1]==null)
+	    return n[0] + ".0";
+	else
+	    return n[0] + n[1];
+    }
     public String getBuildKey(String arch, String stl) {
-        return arch + '_SDK' + androidVersion_ + "_NDK" + ndkVersion_ + '_' + sanitize(stl)
+        return arch + "_NDK" + get2PartNdkVersionNumber() + '_' + sanitize(stl)
     }
     protected String getNdkVersionFromPropertiesFile() {
         def f = new File(getAndroidNDKPath(), 'source.properties')
@@ -316,7 +324,8 @@ def buildHostModule(subdir, buildType) {
     return [buildKey: buildKey, outputFolder: outputFolder]
 }
 
-def buildNativeModules(arch, Toolchain toolchain, stl, threadChecks, buildtf, subdir = "src", buildType = "Release") {
+def buildNativeModules(arch, Toolchain toolchain, stl, threadChecks, buildtf, subdir = "src",
+		       buildType = "Release") {
     def buildKey = toolchain.getBuildKey(arch, stl)
     def workingFolder = joinPath(getTempPath(), buildKey, '.cmake')
     def outputFolder = joinPath(getOutPath(), buildKey)
@@ -457,7 +466,7 @@ def copySamples(outFolder, includeTuningForkSamples = true) {
     copy {
         from file(joinPath('samples', "bouncyball"))
         into file(joinPath(buildFolder, 'samples', "bouncyball"))
-        exclude '**/build', '**/out', "local.properties"
+        exclude '**/build', '**/out', "local.properties", "**/.externalNativeBuild", "**/.gradle", "**/OWNERS", "**/.idea"
         rename 'CMakeLists.for-samples-in-archive.txt', 'CMakeLists.txt'
         includeEmptyDirs = false
     }
@@ -466,14 +475,14 @@ def copySamples(outFolder, includeTuningForkSamples = true) {
     copy {
         from file(joinPath('samples', "cube"))
         into file(joinPath(buildFolder, 'samples', "cube"))
-        exclude '**/build', '**/out', "local.properties"
+        exclude '**/build', '**/out', "local.properties", "**/.externalNativeBuild", "**/.gradle", "**/OWNERS", "**/.idea"
         includeEmptyDirs = false
     }
     copy {
         from file(joinPath('third_party', "cube"))
         into file(joinPath(buildFolder, 'third_party', "cube"))
         rename 'CMakeLists.for-samples-in-archive.txt', 'CMakeLists.txt'
-        exclude '**/build', '**/out', "local.properties"
+        exclude '**/build', '**/out', "local.properties", "**/.externalNativeBuild", "**/.gradle", "**/OWNERS", "**/.idea"
         includeEmptyDirs = false
     }
 
@@ -484,6 +493,8 @@ def copySamples(outFolder, includeTuningForkSamples = true) {
 
 // The latest Unity is using NDK 19 and SDK 21 with c++ stl
 def defaultAbis() { return ["armeabi-v7a", "arm64-v8a", "x86", "x86_64"] }
+def allSTLs() { return ["c++_static", "c++_shared", "gnustl_static", "gnustl_shared"] }
+def post17STLs() { return ["c++_static", "c++_shared"] }
 
 def unityNativeBuild(withTuningFork=false, buildType="Release") {
     def threadChecks = false
@@ -494,13 +505,11 @@ def unityNativeBuild(withTuningFork=false, buildType="Release") {
 
 def sdkNativeBuild(withTuningFork = true, buildType="Release") {
     def threadChecks = false
-    return defaultAbis().collectMany {
-     [ buildNativeModules(it, "14", "r14", "c++_static", threadChecks, withTuningFork, buildType) ] +
-     [ buildNativeModules(it, "14", "r16", "c++_static", threadChecks, withTuningFork, buildType) ] +
-     [ buildNativeModules(it, "16", "r17", "c++_static", threadChecks, withTuningFork, buildType) ] +
-     [ buildNativeModules(it, "26", "r16", "gnustl_static", threadChecks, withTuningFork, buildType) ] +
-     [ buildNativeModules(it, "28", "r17", "gnustl_static", threadChecks, withTuningFork, buildType) ] +
-     [ buildNativeModules(it, "28", "r17", "c++_static", threadChecks, withTuningFork, buildType) ]
+    return GroovyCollections.combinations(defaultAbis(), ["r14","r15","r16","r17"], allSTLs()).collect {
+	buildNativeModules(it[0], "24", it[1], it[2], threadChecks, withTuningFork, buildType)
+    }   +
+    GroovyCollections.combinations(defaultAbis(), ["r18","r19","r20"], post17STLs()).collect {
+	buildNativeModules(it[0], "24", it[1], it[2], threadChecks, withTuningFork, buildType)
     }
 }
 
@@ -570,9 +579,9 @@ task unityBuild(type: BuildTask) {
 }
 
 // Build everything
-task sdkBuild(type: BuildTask) {
+task fullSdkBuild(type: BuildTask) {
     dependsOn ':extras:assembleRelease', prepare_proto
-    ext.packageName = 'gamesdk'
+    ext.packageName = 'fullsdk'
     ext.flattenLibs = false
     ext.withTuningFork = true
     ext.withSharedLibs = true
@@ -580,6 +589,33 @@ task sdkBuild(type: BuildTask) {
     ext.withFullBuildKey = true
     ext.withSamples = false
     ext.buildType = "Release";
+    ext.nativeBuild = { tf,bt -> sdkNativeBuild(tf,bt) }
+}
+
+// Build everything without TF
+task releaseSdkBuild(type: BuildTask) {
+    dependsOn ':extras:assembleRelease', prepare_proto
+    ext.packageName = 'gamesdk'
+    ext.flattenLibs = false
+    ext.withTuningFork = false
+    ext.withSharedLibs = true
+    ext.withStaticLibs = true
+    ext.withFullBuildKey = true
+    ext.withSamples = true
+    ext.buildType = "Release";
+    ext.nativeBuild = { tf,bt -> sdkNativeBuild(tf,bt) }
+}
+// Build everything in debug without TF
+task debugSdkBuild(type: BuildTask) {
+    dependsOn ':extras:assembleRelease', prepare_proto
+    ext.packageName = 'gamesdk_debug'
+    ext.flattenLibs = false
+    ext.withTuningFork = false
+    ext.withSharedLibs = true
+    ext.withStaticLibs = true
+    ext.withFullBuildKey = true
+    ext.withSamples = true
+    ext.buildType = "Debug";
     ext.nativeBuild = { tf,bt -> sdkNativeBuild(tf,bt) }
 }
 
@@ -721,5 +757,7 @@ addZipTask("swappyUnityDebugZip", swappyUnityDebugBuild, "builds")
 addZipTask("unityZip", unityBuild, "builds")
 addZipTask("archiveZip", localBuild, "gamesdk")
 addZipTask("archiveTfZip", localTfBuild, "gamesdk")
-addZipTask("gamesdkZip", sdkBuild, "gamesdk")
+addZipTask("fullSdkZip", fullSdkBuild, "gamesdk")
 addZipTask("specificZip", specificBuild, "gamesdk")
+addZipTask("gamesdkZip", releaseSdkBuild, "gamesdk")
+addZipTask("gamesdkDebugZip", debugSdkBuild, "gamesdk_debug")
