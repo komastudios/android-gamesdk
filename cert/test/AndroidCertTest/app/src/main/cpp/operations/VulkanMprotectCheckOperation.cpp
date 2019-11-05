@@ -196,15 +196,28 @@ private:
                         protectionViolationOccurred = false;
                         this->WriteBuffer();
                         if ( protectionViolationOccurred ) {
+                            Log::I(TAG, "Unexpected memory write violation caught.");
                             test_datum.mprotect_available = false;
                         }
+                    } else {
+                        Log::I(TAG, "mprotect couldn't set Vulkan memory read/write");
+                        test_datum.mprotect_available = false;
                     }
                 } else {
+                    Log::I(TAG, "Expected memory write violation wasn't caught.");
                     test_datum.mprotect_available = false;
                 }
             } else {
+                Log::I(TAG, "mprotect couldn't set Vulkan memory read-only");
                 test_datum.mprotect_available = false;
             }
+
+            if (test_datum.mprotect_available) {
+                Log::I(TAG, "mprotect can be applied on Vulkan mapped memory.");
+            } else {
+                Log::I(TAG, "mprotect can't be applied on Vulkan mapped memory.");
+            }
+
         }
 
     private:
@@ -219,31 +232,32 @@ private:
         char* _pMappedBuffer;
 
         bool MakeBufferReadOnly() const {
-            auto retValue = SetBufferProtectionLevel(PROT_READ) == 0;
-            if ( retValue ) {
+            auto success = SetBufferProtectionLevel(PROT_READ) == 0;
+            if ( success ) {
                 Log::I(TAG, "Vulkan memory buffer set read-only");
-            } else {
-                Log::I(TAG, "Vulkan memory buffer couldn't be set read-only. errno=%d", errno);
             }
 
-            return retValue;
+            return success;
         }
 
         bool MakeBufferWritable() const {
-            auto retValue = SetBufferProtectionLevel(PROT_WRITE) == 0;
-            if ( retValue ) {
+            auto success = SetBufferProtectionLevel(PROT_WRITE) == 0;
+            if ( success ) {
                 Log::I(TAG, "Vulkan memory buffer set read/write");
-            } else {
-                Log::I(TAG, "Vulkan memory buffer couldn't be set read/write. errno=%d", errno);
             }
 
-            return retValue;
+            return success;
         }
 
         int SetBufferProtectionLevel(int protectionLevel) const {
             // mprotect requires the beginning of a page as its first parameter. We also map a
             // little more than 4 pages to make sure we can attempt to write to the final page.
-            return mprotect(_pMappedBuffer - BUFFER_OFFSET, MAPPED_SIZE + 1, protectionLevel);
+            if (mprotect(_pMappedBuffer - BUFFER_OFFSET, MAPPED_SIZE + 1, protectionLevel)) {
+                Log::I(TAG, "mprotect on Vulkan mapped memory failed. errno=%d", errno);
+                return errno;
+            }
+
+            return 0;
         }
 
         void WriteBuffer() {
