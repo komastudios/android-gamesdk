@@ -14,7 +14,7 @@
 #import "shader_state.h"
 
 
-Mesh* createPolyhedron(BenderKit::Device *device, VkDescriptorSetLayout *descriptorSetLayout,
-                                   ShaderState *shaderState, VkRenderPass* renderPass, int faces);
+Mesh* createPolyhedron(BenderKit::Device *device,
+                       std::shared_ptr<ShaderState>, int faces);
 
 #endif //BENDER_BASE_SHAPE_H

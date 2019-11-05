@@ -76,8 +76,8 @@ namespace  {
                                                     8, 10, 4, 4, 10, 7, 2, 4, 0, 4, 7, 0, 7, 3, 0, 1, 2, 0, 3, 1, 0};
 }
 
-Mesh* createPolyhedron(BenderKit::Device *device, VkDescriptorSetLayout *descriptorSetLayout,
-                                  ShaderState *shaderState, VkRenderPass *renderPass, int faces) {
+Mesh* createPolyhedron(BenderKit::Device *device,
+                                  std::shared_ptr<ShaderState> shaderState, int faces) {
   std::vector<float> vertex_data_;
   std::vector<u_int16_t> index_data_;
   if (faces == 4) {
@@ -98,5 +98,5 @@ Mesh* createPolyhedron(BenderKit::Device *device, VkDescriptorSetLayout *descrip
   } else {
     return nullptr;
   }
-  return new Mesh(device, vertex_data_, index_data_, descriptorSetLayout, shaderState, renderPass);
+  return new Mesh(device, vertex_data_, index_data_, shaderState);
 }
