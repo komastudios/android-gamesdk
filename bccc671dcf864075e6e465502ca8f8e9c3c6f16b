@@ -1,0 +1,7 @@
+Presubmit-Verified+1: Treehugger Robot <treehugger-gerrit@google.com>
+Code-Review+2: Omar El Sheikh <theoking@google.com>
+Submitted-by: Matt Wang <mattkw@google.com>
+Submitted-at: Tue, 05 Nov 2019 21:23:30 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1158222
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
