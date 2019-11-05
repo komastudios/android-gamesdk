@@ -42,7 +42,7 @@ TFErrorCode TuningFork_findFidelityParamsInApk(JNIEnv* env, jobject context,
 //  will be called after this time with the default / saved params if no params
 //  could be downloaded..
 // ultimateTimeoutMs is the time after which to stop retrying the download.
-void TuningFork_startFidelityParamDownloadThread(
+TFErrorCode TuningFork_startFidelityParamDownloadThread(
                                       const CProtobufSerialization* default_params,
                                       ProtoCallback fidelity_params_callback,
                                       int initialTimeoutMs, int ultimateTimeoutMs);
