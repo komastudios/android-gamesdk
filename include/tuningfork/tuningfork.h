@@ -77,7 +77,8 @@ enum TFErrorCode {
     TFERROR_BAD_FILE_OPERATION = 23,
     TFERROR_BAD_SETTINGS = 24,
     TFERROR_ALREADY_INITIALIZED = 25,
-    TFERROR_NO_SETTINGS_ANNOTATION_ENUM_SIZES = 26
+    TFERROR_NO_SETTINGS_ANNOTATION_ENUM_SIZES = 26,
+    TFERROR_DOWNLOAD_THREAD_ALREADY_STARTED = 27
 };
 
 typedef TFErrorCode (*PFnTFCacheGet)(uint64_t key, CProtobufSerialization* value,
@@ -120,6 +121,14 @@ struct TFSettings {
    * If unset, you need to call TuningFork_getFidelityParameters yourself.
    */
   ProtoCallback fidelity_params_callback;
+  /**
+   * A serialized protobuf containing the fidelity parameters to be uploaded
+   *  for training.
+   * Set this to nullptr if you are not using training mode. Note that these
+   *  are used instead of the default parameters loaded from the APK, if they
+   *  are present.
+   */
+  const CProtobufSerialization* training_fidelity_params;
 };
 
 #ifdef __cplusplus
@@ -155,6 +164,7 @@ static inline TFErrorCode TuningFork_init(const TFSettings *settings, JNIEnv* en
 //  has not first been called.
 
 // Blocking call to get fidelity parameters from the server.
+// You do not need to call this if you pass in a fidelity_params_callback to TuningFork_init.
 // Note that once fidelity parameters are downloaded, any timing information is recorded
 //  as being associated with those parameters.
 // If you subsequently call GetFidelityParameters and a new set of parameters is downloaded,

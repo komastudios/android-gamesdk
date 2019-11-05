@@ -28,7 +28,8 @@ extern "C" {
 
 namespace tf = tuningfork;
 
-TFErrorCode TuningFork_init_internal(const TFSettings *c_settings_in, JNIEnv* env, jobject context) {
+TFErrorCode TuningFork_init_internal(const TFSettings *c_settings_in, JNIEnv* env,
+                                     jobject context) {
     tf::Settings settings {};
     if (c_settings_in != nullptr) {
         settings.c_settings = *c_settings_in;
@@ -52,11 +53,12 @@ TFErrorCode TuningFork_init_internal(const TFSettings *c_settings_in, JNIEnv* en
 // Blocking call to get fidelity parameters from the server.
 // Note that once fidelity parameters are downloaded, any timing information is recorded
 //  as being associated with those parameters.
-TFErrorCode TuningFork_getFidelityParameters(const CProtobufSerialization *defaultParams,
-                                      CProtobufSerialization *params, uint32_t timeout_ms) {
+TFErrorCode TuningFork_getFidelityParameters(const CProtobufSerialization *default_params,
+                                             CProtobufSerialization *params,
+                                             uint32_t timeout_ms) {
     tf::ProtobufSerialization defaults;
-    if(defaultParams)
-        defaults = tf::ToProtobufSerialization(*defaultParams);
+    if(default_params)
+        defaults = tf::ToProtobufSerialization(*default_params);
     tf::ProtobufSerialization s;
     TFErrorCode result = tf::GetFidelityParameters(defaults, s, timeout_ms);
     if (result==TFERROR_OK && params)
