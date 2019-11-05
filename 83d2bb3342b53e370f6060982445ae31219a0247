@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ef9b1265_9efb49db",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-05T03:18:49Z",
+      "side": 1,
+      "message": "Spaces before brackets are free, we should use more :P",
+      "revId": "83d2bb3342b53e370f6060982445ae31219a0247",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7ce94ffb_ec7a04e5",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-05T03:18:49Z",
+      "side": 1,
+      "message": "Blank lines between methods are also free :p",
+      "revId": "83d2bb3342b53e370f6060982445ae31219a0247",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d59c4fce_f0a3de3a",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-05T03:18:49Z",
+      "side": 1,
+      "message": "Won\u0027t this send the mesh out of the screen?",
+      "revId": "83d2bb3342b53e370f6060982445ae31219a0247",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f1d742a5_7a3bb33d",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 671,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-05T03:18:49Z",
+      "side": 1,
+      "message": "This should be called frameTime",
+      "revId": "83d2bb3342b53e370f6060982445ae31219a0247",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
