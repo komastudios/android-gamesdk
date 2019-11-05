@@ -97,6 +97,11 @@ Renderer *renderer;
 ShaderState *shaderState;
 Mesh *mesh;
 
+auto lastTime = std::chrono::high_resolution_clock::now();
+auto currentTime = lastTime;
+float frameTime;
+float totalTime;
+
 std::vector<Texture*> textures;
 std::vector<const char*> texFiles;
 VkSampler sampler;
@@ -191,12 +196,23 @@ void createUniformBuffers() {
 }
 
 void updateUniformBuffer(uint32_t frameIndex) {
-    static auto startTime = std::chrono::high_resolution_clock::now();
-    auto currentTime = std::chrono::high_resolution_clock::now();
-    auto time = std::chrono::duration<float>(currentTime - startTime).count();
+    mesh->rotate(glm::vec3(0.0f, 1.0f, 1.0f), 90 * frameTime);
+    mesh->translate(.02f * glm::vec3(std::sin(2 * totalTime),
+                                     std::sin(3 * totalTime),
+                                     std::cos(2 * totalTime)));
+    glm::vec3 camera = {0.0f, 0.0f, -2.0f};
 
-    glm::mat4 model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.5f, 1.0f, 0.5f));
-    glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, -2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    lightBuffer->update(frameIndex, [&camera](auto& lightBuffer) {
+      lightBuffer.pointLight.position = {0.0f, 2.0f, 0.0f};
+      lightBuffer.pointLight.color = {1.0f, 1.0f, 1.0f};
+      lightBuffer.pointLight.intensity = 1.0f;
+      lightBuffer.ambientLight.color = {1.0f, 1.0f, 1.0f};
+      lightBuffer.ambientLight.intensity = 0.1f;
+      lightBuffer.cameraPos = camera;
+    });
+
+    glm::mat4 model = mesh->getTransform();
+    glm::mat4 view = glm::lookAt(camera, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 proj = glm::perspective(glm::radians(100.0f),
             device->getDisplaySize().width / (float) device->getDisplaySize().height, 0.1f, 10.0f);
     proj[1][1] *= -1;
@@ -207,15 +223,6 @@ void updateUniformBuffer(uint32_t frameIndex) {
       ubo.mvp = mvp;
       ubo.model = model;
       ubo.invTranspose = glm::transpose(glm::inverse(model));
-    });
-
-    lightBuffer->update(frameIndex, [](auto& lightBuffer) {
-      lightBuffer.pointLight.position = {0.0f, 2.0f, 0.0f};
-      lightBuffer.pointLight.color = {1.0f, 1.0f, 1.0f};
-      lightBuffer.pointLight.intensity = 1.0f;
-      lightBuffer.ambientLight.color = {1.0f, 1.0f, 1.0f};
-      lightBuffer.ambientLight.intensity = 0.1f;
-      lightBuffer.cameraPos = {0.0f, 0.0f, -2.0f};
     });
 }
 
@@ -663,6 +670,10 @@ void DeleteVulkan(void) {
 
 bool VulkanDrawFrame(void) {
   TRACE_BEGIN_SECTION("Draw Frame");
+  currentTime = std::chrono::high_resolution_clock::now();
+  frameTime = std::chrono::duration<float>(currentTime - lastTime).count();;
+  lastTime = currentTime;
+  totalTime += frameTime;
 
   updateUniformBuffer(renderer->getCurrentFrame());
 
