@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2c8e62cf_c8442985",
+        "filename": "src/swappy/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-11-05T17:19:52Z",
+      "side": 1,
+      "message": "Why is this needed?",
+      "revId": "1eb58501f8c120e8c800f69c8053d8e1baa0a047",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
