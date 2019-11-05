@@ -53,7 +53,7 @@ TFErrorCode FileCache::Get(uint64_t key, CProtobufSerialization* value) {
         if (FileExists(key_path)) {
             ALOGV("File exists");
             if (LoadBytesFromFile(key_path, value)) {
-                ALOGV("Loaded key %" PRId64 " from %s (%zu bytes)", key,
+                ALOGV("Loaded key %" PRId64 " from %s (%" PRIu32 " bytes)", key,
                       key_path.c_str(), value->size);
                 return TFERROR_OK;
             }
@@ -71,7 +71,7 @@ TFErrorCode FileCache::Set(uint64_t key, const CProtobufSerialization* value) {
     if (CheckAndCreateDir(path_)) {
         auto key_path = PathToKey(path_, key);
         if (SaveBytesToFile(key_path, value)) {
-            ALOGV("Saved key %" PRId64 " to %s (%zu bytes)", key, key_path.c_str(), value->size);
+            ALOGV("Saved key %" PRId64 " to %s (%" PRIu32 " bytes)", key, key_path.c_str(), value->size);
             return TFERROR_OK;
         }
     }

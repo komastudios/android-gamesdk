@@ -21,7 +21,7 @@ add_gamesdk_target(
 # add_gamesdk_target(
 #     PACKAGE_DIR "../../../../../package/gamesdk"
 #     ANDROID_NDK_VERSION "r17"
-#     ANDROID_SDK_VERSION "28"
+#     ANDROID_API_LEVEL "28"
 # )
 
 # Uncomment to add the Game SDK sources as part of the project sources, allowing to develop
