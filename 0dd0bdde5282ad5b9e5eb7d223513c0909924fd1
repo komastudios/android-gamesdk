@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "15a92ae0_57c2ecd0",
+        "filename": "bender/bender-base/app/src/main/jni/shape.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-06T18:49:03Z",
+      "side": 1,
+      "message": "Can you extract the vertex and index data to global variables?",
+      "revId": "0dd0bdde5282ad5b9e5eb7d223513c0909924fd1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cac474b2_08b3aa06",
+        "filename": "bender/bender-base/app/src/main/jni/shape.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-06T18:49:03Z",
+      "side": 1,
+      "message": "I\u0027d rather return nullptr here.\n\"Crash early, crash loud\"",
+      "revId": "0dd0bdde5282ad5b9e5eb7d223513c0909924fd1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
