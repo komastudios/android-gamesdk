@@ -118,9 +118,16 @@ public class Configuration {
         }
 
         public int getDurationMillis() {
-            return (int) TimeParsing.parseDurationString(
-                    duration,
-                    TimeParsing.Unit.Milliseconds);
+            try {
+                return (int) TimeParsing.parseDurationString(
+                        duration,
+                        TimeParsing.Unit.Milliseconds);
+            } catch (TimeParsing.BadFormatException bfe) {
+                Log.e(TAG, "Unable to parse duration; error: "
+                        + bfe.getLocalizedMessage());
+
+                return 0;
+            }
         }
 
         public String toJson() {

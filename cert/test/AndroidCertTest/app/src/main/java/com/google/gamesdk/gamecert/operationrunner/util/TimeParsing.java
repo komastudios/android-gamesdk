@@ -22,6 +22,13 @@ package com.google.gamesdk.gamecert.operationrunner.util;
  * TODO(shamyl@google.com): See if an existing Java/Android API can replace this
  */
 public class TimeParsing {
+
+    public static class BadFormatException extends Exception {
+        BadFormatException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
     public enum Unit {
         Nanoseconds,
         Milliseconds,
@@ -40,25 +47,34 @@ public class TimeParsing {
      * @param intoUnits the time unit desired to convert the input string to
      * @return the duration parsed and converted to the target units
      */
-    public static double parseDurationString(String timeDesc, Unit intoUnits) {
-        double nanoseconds = parseDurationStringToNs(timeDesc);
-        switch (intoUnits) {
-            case Nanoseconds:
-                return nanoseconds;
-            case Milliseconds:
-                return nanoseconds / 1e6;
-            case Seconds:
-                return nanoseconds / 1e9;
-            case Minutes:
-                return nanoseconds / (60 * 1e9);
+    public static double parseDurationString(String timeDesc, Unit intoUnits)
+            throws BadFormatException {
+        try {
+            double nanoseconds = parseDurationStringToNs(timeDesc);
+            switch (intoUnits) {
+                case Nanoseconds:
+                    return nanoseconds;
+                case Milliseconds:
+                    return nanoseconds / 1e6;
+                case Seconds:
+                    return nanoseconds / 1e9;
+                case Minutes:
+                    return nanoseconds / (60 * 1e9);
+            }
+        } catch (Exception e) {
+            throw new BadFormatException("Unable to parse time \""
+                    + timeDesc + " into units: \""
+                    + intoUnits + "\"", e);
         }
-        throw new IllegalStateException("Unable to parse time \""
-                + timeDesc + " into units: \""
-                + intoUnits + "\"");
+        return 0;
     }
 
     private static double parseDurationStringToNs(String timeDesc) {
         timeDesc = timeDesc.trim();
+
+        // special case; zero has no units
+        if (timeDesc.equals("0")) return 0;
+
         String[] components = timeDesc.split("^\\d*\\.?\\d*");
         if (components.length != 2) {
             throw new IllegalArgumentException("Unrecognized time format \""

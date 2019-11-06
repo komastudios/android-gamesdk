@@ -19,19 +19,21 @@ package com.google.gamesdk.gamecert.operationrunner.operations;
 import android.content.Context;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 public class Factory {
 
     private static final String OPERATION_PACKAGE =
-        "com.google.gamesdk.gamecert.operationrunner.operations.";
+            "com.google.gamesdk.gamecert.operationrunner.operations.";
 
     /**
      * Instantiate an operation by class name
-     * @param suiteId the suite the operation will be a part of once instantiated
-     * @param operationId the name of the operation class
+     *
+     * @param suiteId           the suite the operation will be a part of once instantiated
+     * @param operationId       the name of the operation class
      * @param configurationJson the operation's configuration json string
-     * @param context an android context
-     * @param mode the operation's mode at run time
+     * @param context           an android context
+     * @param mode              the operation's mode at run time
      * @return a new operation instance, or null
      */
     public static BaseOperation create(String suiteId,
@@ -52,7 +54,9 @@ public class Factory {
                     context, mode);
 
             return (BaseOperation) object;
-        } catch (Exception ignored) {
+        } catch (ClassNotFoundException | InstantiationException |
+                InvocationTargetException | NoSuchMethodException |
+                IllegalAccessException e) {
             // Failure to load operation is OK; responsibility lies with
             // BaseHostActivity::OperationWrapper
         }
