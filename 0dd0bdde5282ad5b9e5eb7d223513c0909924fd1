@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "59d898b9_7e3a4119",
+        "filename": "bender/bender-base/app/src/main/jni/shape.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-06T19:18:14Z",
+      "side": 1,
+      "message": "Got it!",
+      "parentUuid": "c4dac4df_a1315047",
+      "revId": "0dd0bdde5282ad5b9e5eb7d223513c0909924fd1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "cac474b2_08b3aa06",
         "filename": "bender/bender-base/app/src/main/jni/shape.cc",
         "patchSetId": 4
