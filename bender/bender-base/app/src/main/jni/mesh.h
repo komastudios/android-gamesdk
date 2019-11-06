@@ -13,6 +13,7 @@
 #import "bender_kit.h"
 #import "geometry.h"
 #import "shader_state.h"
+#include "shape.h"
 
 class Mesh {
 public:
@@ -42,7 +43,6 @@ private:
     glm::vec3 position_;
     glm::quat rotation_;
     glm::vec3 scale_;
-
     VkPipelineLayout layout_;
     VkPipelineCache cache_;
     VkPipeline pipeline_;
