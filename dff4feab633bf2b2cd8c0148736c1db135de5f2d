@@ -67,6 +67,24 @@
       "revId": "dff4feab633bf2b2cd8c0148736c1db135de5f2d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "286b55fe_2904d1c8",
+        "filename": "bender/bender-base/app/src/main/jni/shape.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-06T05:36:23Z",
+      "side": 1,
+      "message": "Actually, never mind, you dont even need a class, you only need a free function:\n\nshared_ptr\u003cMesh\u003e createPolyhedron(int faces) {\n  ... vertex_data\n  ... index_data\n  if (faces \u003d\u003d ...) {\n    vertex_data \u003d ...\n    index_data \u003d ...\n  }\n  else ...\n\n  return std::make_shared\u003cMesh\u003e(... vertex_data, index_data, ...);\n}",
+      "parentUuid": "22e47861_0c3b70c2",
+      "revId": "dff4feab633bf2b2cd8c0148736c1db135de5f2d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
