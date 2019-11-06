@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "29aa714f_38ab7bfc",
+        "filename": "bender/bender-base/app/src/main/jni/shape.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-06T19:48:58Z",
+      "side": 1,
+      "message": "Just noticed that if we set to null here we would need to have pointer of vector here (std::vector\u003cfloat\u003e* vertex_data_) and new std::vector\u003cfloat\u003e(vertex_cube). If so how and when do we free the memory?",
+      "revId": "bdd0074d8aa5828382247ecbec55d5cb8608cf7d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
