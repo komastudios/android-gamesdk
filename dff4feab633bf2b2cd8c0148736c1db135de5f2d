@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "79e895c4_065dca02",
+        "filename": "bender/bender-base/app/src/main/jni/shape.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-06T05:27:46Z",
+      "side": 1,
+      "message": "I would call the class Polyhedron",
+      "revId": "dff4feab633bf2b2cd8c0148736c1db135de5f2d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8046c92b_6d18a9fe",
+        "filename": "bender/bender-base/app/src/main/jni/shape.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-06T05:27:46Z",
+      "side": 1,
+      "message": "const std::vector\u003cfloat\u003e\u0026 Shape::getVertexData() const ...",
+      "revId": "dff4feab633bf2b2cd8c0148736c1db135de5f2d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "369b68bd_4d324eea",
+        "filename": "bender/bender-base/app/src/main/jni/shape.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-06T05:27:46Z",
+      "side": 1,
+      "message": "const std::vector\u003cu_int16_t\u003e\u0026 Shape::getIndexData() const ...",
+      "revId": "dff4feab633bf2b2cd8c0148736c1db135de5f2d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "22e47861_0c3b70c2",
+        "filename": "bender/bender-base/app/src/main/jni/shape.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-06T05:27:46Z",
+      "side": 1,
+      "message": "You can probably just inherit Shape (Polyhedron) from Mesh and avoid holding the same data in two places.",
+      "revId": "dff4feab633bf2b2cd8c0148736c1db135de5f2d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
