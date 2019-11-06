@@ -13,10 +13,12 @@ set(SRC_DIR src/main/jni)
 set(KIT_DIR ../utils/bender_kit)
 set(WRAPPER_DIR ${KIT_DIR}/vulkan_wrapper)
 set(UTILS_DIR ../utils/src)
+set(SHADERS_DIR src/main/shaders)
 
 include_directories(${WRAPPER_DIR})
 include_directories(${KIT_DIR})
 include_directories(${UTILS_DIR})
+include_directories(${SHADERS_DIR})
 
 add_library(bender-kit STATIC
         ${KIT_DIR}/bender_kit.cc

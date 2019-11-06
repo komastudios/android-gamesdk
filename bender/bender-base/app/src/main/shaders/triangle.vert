@@ -1,7 +1,9 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
 
-layout(binding = 0) uniform UniformBufferObject {
+#include "shader_bindings.h"
+
+layout(binding = VERTEX_BINDING_MODEL_VIEW_PROJECTION) uniform UniformBufferObject {
     mat4 mvp;
     mat4 model;
     mat4 invTranspose;
