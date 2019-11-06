@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8d133686_3c8fb855",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/HalfFloatPrecisionGLES3Operation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-06T22:44:37Z",
+      "side": 1,
+      "message": "Why are you adding 700 here?",
+      "revId": "edc906669fc46d419df9d2834c89d21afd2dcf12",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
