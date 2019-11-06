@@ -30,6 +30,7 @@
 #include "bender_helpers.h"
 #include "renderer.h"
 #include "shader_state.h"
+#include "polyhedron.h"
 #include "mesh.h"
 #include "texture.h"
 #include "uniform_buffer.h"
@@ -200,10 +201,10 @@ void updateUniformBuffer(uint32_t frameIndex) {
     mesh->translate(.02f * glm::vec3(std::sin(2 * totalTime),
                                      std::sin(3 * totalTime),
                                      std::cos(2 * totalTime)));
-    glm::vec3 camera = {0.0f, 0.0f, -2.0f};
+    glm::vec3 camera = {0.0f, 0.0f, -16.0f};
 
     lightBuffer->update(frameIndex, [&camera](auto& lightBuffer) {
-      lightBuffer.pointLight.position = {0.0f, 2.0f, 0.0f};
+      lightBuffer.pointLight.position = {0.0f, 0.0f, -6.0f};
       lightBuffer.pointLight.color = {1.0f, 1.0f, 1.0f};
       lightBuffer.pointLight.intensity = 1.0f;
       lightBuffer.ambientLight.color = {1.0f, 1.0f, 1.0f};
@@ -214,7 +215,7 @@ void updateUniformBuffer(uint32_t frameIndex) {
     glm::mat4 model = mesh->getTransform();
     glm::mat4 view = glm::lookAt(camera, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 proj = glm::perspective(glm::radians(100.0f),
-            device->getDisplaySize().width / (float) device->getDisplaySize().height, 0.1f, 10.0f);
+            device->getDisplaySize().width / (float) device->getDisplaySize().height, 0.1f, 100.0f);
     proj[1][1] *= -1;
 
     glm::mat4 mvp = proj * view * model;
@@ -342,7 +343,7 @@ void createShaderState() {
   shaderState->addVertexInputBinding(0, 11 * sizeof(float));
   shaderState->addVertexAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0);
   shaderState->addVertexAttributeDescription(0, 1, VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(float));
-  shaderState->addVertexAttributeDescription(0, 2, VK_FORMAT_R32G32B32_SFLOAT, 5 * sizeof(float));
+  shaderState->addVertexAttributeDescription(0, 2, VK_FORMAT_R32G32B32_SFLOAT, 6 * sizeof(float));
   shaderState->addVertexAttributeDescription(0, 3, VK_FORMAT_R32G32_SFLOAT, 9 * sizeof(float));
 }
 
@@ -606,19 +607,8 @@ bool InitVulkan(android_app *app) {
 
   createShaderState();
 
-  const std::vector<float> vertexData = {
-      -0.5f, -0.5f, 0.5f,          -0.5774f, -0.5774f, 0.5774f,       1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-      0.5f, -0.5f, 0.5f,           0.5774f, -0.5774f, 0.5774f,        0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-      0.5f, 0.5f, 0.5f,            0.5774f, 0.5774f, 0.5774f,         0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-      -0.5f, 0.5f, 0.5f,           -0.5774f, 0.5774f, 0.5774f,      1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-      0.0f, 0.0f, 0.0f,            0.0f, 1.0f, 0.0f,           1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-  };
-
-  const std::vector<u_int16_t> indexData = {
-      1, 2, 4, 2, 1, 0, 0, 3, 2, 2, 3, 4, 3, 0, 4, 0, 1, 4
-  };
-
-  mesh = new Mesh(device, vertexData, indexData, &descriptorSetLayout_, shaderState, &render_pass);
+//  mesh = new Mesh(device, shape->getVertexData(), shape->getIndexData(), &descriptorSetLayout_, shaderState, &render_pass);
+  mesh = createPolyhedron(device, &descriptorSetLayout_, shaderState, &render_pass, 20);
 
   createDepthBuffer();
 
