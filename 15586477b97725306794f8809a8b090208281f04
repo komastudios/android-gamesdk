@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1754c837_520d0a43",
+        "filename": "build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 621,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-11-06T11:45:07Z",
+      "side": 1,
+      "message": "It looks like we don\u0027t have a size issue with the build. Can we include into gamesdk.zip all: release binaries, debug binaries, samples, and binaries of samples?",
+      "revId": "15586477b97725306794f8809a8b090208281f04",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
