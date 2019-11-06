@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "7c9b0179_91837f0d",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 547,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-11-06T11:34:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5a0557af_5c63ca85",
+      "revId": "1eb58501f8c120e8c800f69c8053d8e1baa0a047",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2c8e62cf_c8442985",
         "filename": "src/swappy/CMakeLists.txt",
         "patchSetId": 1
