@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "86994b40_dc324d94",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 447,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-06T23:14:15Z",
+      "side": 1,
+      "message": "These vectors can be cleaned up for now? vertexData and indexData",
+      "revId": "5726027ceb31c6a094573b04afc694a11d8df381",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
