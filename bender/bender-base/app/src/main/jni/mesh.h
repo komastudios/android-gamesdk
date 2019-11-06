@@ -13,6 +13,7 @@
 #import "bender_kit.h"
 #import "geometry.h"
 #import "shader_state.h"
+#include "shape.h"
 
 class Mesh {
 public:
