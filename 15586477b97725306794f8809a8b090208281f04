@@ -52,6 +52,24 @@
       "revId": "15586477b97725306794f8809a8b090208281f04",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "05ce10b2_44059c0b",
+        "filename": "build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 621,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-11-06T14:23:31Z",
+      "side": 1,
+      "message": "Related to building and packaging the binaries for the samples, as it sounds to be something that is a bit unrelated to the build of the gamesdk libraries themselves, I wonder if it would be a good idea to make this part of another .gradle file, like \"packaging.gradle\" (and move everything that is not related to the build itself there, like the .zip generations).\n\nThis build.gradle file is starting to be really large :) It would also create a kind of circular dependency: the build.gradle would call the compilation of samples, which are themselves calling build.gradle to compile the library.\n\nThis would work, but seems like a code smell. Would be cleaner if we separate the tasks into files according to what they are doing (building vs packaging).",
+      "parentUuid": "7c9cd0d0_46806dbf",
+      "revId": "15586477b97725306794f8809a8b090208281f04",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
