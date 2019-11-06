@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "5a0557af_5c63ca85",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 547,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-11-06T09:45:34Z",
+      "side": 1,
+      "message": "You probably want to add ext.withSamples \u003d true, as added in aosp/1158891",
+      "revId": "1eb58501f8c120e8c800f69c8053d8e1baa0a047",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2c8e62cf_c8442985",
         "filename": "src/swappy/CMakeLists.txt",
         "patchSetId": 1
@@ -34,6 +51,24 @@
       "revId": "1eb58501f8c120e8c800f69c8053d8e1baa0a047",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1514bfac_a7cb2c40",
+        "filename": "src/swappy/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-11-06T09:45:34Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "2fa7bb86_d48032fc",
+      "revId": "1eb58501f8c120e8c800f69c8053d8e1baa0a047",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
