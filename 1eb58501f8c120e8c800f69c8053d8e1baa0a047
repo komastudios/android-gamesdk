@@ -16,6 +16,24 @@
       "revId": "1eb58501f8c120e8c800f69c8053d8e1baa0a047",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2fa7bb86_d48032fc",
+        "filename": "src/swappy/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-11-06T09:26:41Z",
+      "side": 1,
+      "message": "There are missing symbols in the gnustl r14 and r15 builds without it.",
+      "parentUuid": "2c8e62cf_c8442985",
+      "revId": "1eb58501f8c120e8c800f69c8053d8e1baa0a047",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
