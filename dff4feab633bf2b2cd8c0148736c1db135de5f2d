@@ -103,6 +103,24 @@
       "revId": "dff4feab633bf2b2cd8c0148736c1db135de5f2d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "927073ee_8123558b",
+        "filename": "bender/bender-base/app/src/main/jni/shape.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-06T05:46:41Z",
+      "side": 1,
+      "message": "Right.",
+      "parentUuid": "83b5d88b_c35f01f5",
+      "revId": "dff4feab633bf2b2cd8c0148736c1db135de5f2d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
