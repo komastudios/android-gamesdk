@@ -85,6 +85,24 @@
       "revId": "dff4feab633bf2b2cd8c0148736c1db135de5f2d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "83b5d88b_c35f01f5",
+        "filename": "bender/bender-base/app/src/main/jni/shape.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-06T05:40:03Z",
+      "side": 1,
+      "message": "That\u0027s exactly what I am thinking, since for further development we would just load the model from somewhere else and don\u0027t need these polyhedron data right?",
+      "parentUuid": "286b55fe_2904d1c8",
+      "revId": "dff4feab633bf2b2cd8c0148736c1db135de5f2d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
