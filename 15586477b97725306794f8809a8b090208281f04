@@ -34,6 +34,24 @@
       "revId": "15586477b97725306794f8809a8b090208281f04",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7c9cd0d0_46806dbf",
+        "filename": "build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 621,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-11-06T12:14:28Z",
+      "side": 1,
+      "message": "Ok, let\u0027s get this in first.",
+      "parentUuid": "e4aa3f00_462db622",
+      "revId": "15586477b97725306794f8809a8b090208281f04",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
