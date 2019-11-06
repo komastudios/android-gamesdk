@@ -16,6 +16,24 @@
       "revId": "15586477b97725306794f8809a8b090208281f04",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e4aa3f00_462db622",
+        "filename": "build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 621,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-11-06T12:11:20Z",
+      "side": 1,
+      "message": "That\u0027s going to require some work. The samples are not built from this gradle file. Why do we need binaries of the samples?\nHow about we submit this CL, then start another to combine the builds?",
+      "parentUuid": "1754c837_520d0a43",
+      "revId": "15586477b97725306794f8809a8b090208281f04",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
