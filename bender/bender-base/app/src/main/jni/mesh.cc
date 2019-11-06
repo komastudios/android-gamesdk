@@ -3,7 +3,9 @@
 //
 
 #include <glm/gtc/matrix_transform.hpp>
+
 #include "mesh.h"
+#include "shader_bindings.h"
 
 Mesh::Mesh(BenderKit::Device *device, const std::vector<float>& vertexData, const std::vector<uint16_t>& indexData,
            std::shared_ptr<ShaderState> shaders) {
@@ -103,7 +105,6 @@ void Mesh::createMeshPipeline(VkRenderPass renderPass) {
           .flags = 0,
   };
 
-  // Describes the layout of things such as uniforms
   VkDescriptorSetLayout layouts[] = { descriptor_set_layout_ };
   VkPipelineLayoutCreateInfo pipelineLayoutInfo{
           .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
@@ -154,21 +155,21 @@ void Mesh::createMeshPipeline(VkRenderPass renderPass) {
 
 void Mesh::createDescriptorSetLayout() {
   VkDescriptorSetLayoutBinding uboLayoutBinding = {};
-  uboLayoutBinding.binding = 0;
+  uboLayoutBinding.binding = VERTEX_BINDING_MODEL_VIEW_PROJECTION;
   uboLayoutBinding.descriptorCount = 1;
   uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
   uboLayoutBinding.pImmutableSamplers = nullptr;
   uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
   VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-  samplerLayoutBinding.binding = 1;
+  samplerLayoutBinding.binding = FRAGMENT_BINDING_SAMPLER;
   samplerLayoutBinding.descriptorCount = 1;
   samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
   samplerLayoutBinding.pImmutableSamplers = nullptr;
   samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
   VkDescriptorSetLayoutBinding lightBlockLayoutBinding = {};
-  lightBlockLayoutBinding.binding = 2;
+  lightBlockLayoutBinding.binding = FRAGMENT_BINDING_LIGHTS;
   lightBlockLayoutBinding.descriptorCount = 1;
   lightBlockLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
   lightBlockLayoutBinding.pImmutableSamplers = nullptr;

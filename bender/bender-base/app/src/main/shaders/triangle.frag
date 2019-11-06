@@ -1,19 +1,22 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
 
-struct PointLight{
+#include "shader_bindings.h"
+
+struct PointLight {
     float intensity;
     vec3 position;
     vec3 color;
 };
 
-struct AmbientLight{
+struct AmbientLight {
     float intensity;
     vec3 color;
 };
 
-layout(binding = 1) uniform sampler2D texSampler;
-layout(binding = 2) uniform LightBlock {
+layout(binding = FRAGMENT_BINDING_SAMPLER) uniform sampler2D texSampler;
+
+layout(binding = FRAGMENT_BINDING_LIGHTS) uniform LightBlock {
     PointLight pointLight;
     AmbientLight ambientLight;
     vec3 cameraPos;
@@ -45,7 +48,6 @@ vec3 calcPointLight(PointLight light){
 vec3 calcAmbientLight(AmbientLight light){
     return light.intensity * light.color;
 }
-
 
 void main(){
     vec3 res = calcPointLight(lightBlock.pointLight) +
