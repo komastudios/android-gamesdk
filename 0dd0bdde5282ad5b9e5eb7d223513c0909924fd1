@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "c4dac4df_a1315047",
+        "filename": "bender/bender-base/app/src/main/jni/shape.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-06T19:02:40Z",
+      "side": 1,
+      "message": "No no, just keep the private to this translation unit (cc file). You can even put everything in an anonymous namespace.\nIt\u0027s just to not pollute the function code with a lot of data.",
+      "parentUuid": "be20bff5_3dc67b45",
+      "revId": "0dd0bdde5282ad5b9e5eb7d223513c0909924fd1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "cac474b2_08b3aa06",
         "filename": "bender/bender-base/app/src/main/jni/shape.cc",
         "patchSetId": 4
