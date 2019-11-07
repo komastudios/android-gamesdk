@@ -2,7 +2,7 @@ include(CMakeParseArguments) # CMake 2.8 - 3.4 compatibility
 
 set( _MY_DIR ${CMAKE_CURRENT_LIST_DIR})
 
-# This function will create a static library target called 'gamesdk'.
+# This function will use (and build if asked to) a static library target called 'gamesdk'.
 # The location of the library is set according to your ANDROID_NDK_REVISION
 # and ANDROID_PLATFORM, unless you explicitly set ANDROID_NDK_VERSION and/or
 # ANDROID_SDK_VERSION arguments.
@@ -20,9 +20,11 @@ set( _MY_DIR ${CMAKE_CURRENT_LIST_DIR})
 #    default value: derived from ANDROID_NDK_REVISION
 #  ANDROID_API_LEVEL: android API level.
 #    default value: derived from ANDROID_PLATFORM
+#  BUILD_TYPE: type of Game SDK build libraries to use. Can be "Release" or "Debug".
+#    default value: Release
 function(add_gamesdk_target)
     set(options DO_LOCAL_BUILD)
-    set(oneValueArgs GEN_TASK PACKAGE_DIR ROOT_DIR ANDROID_NDK_VERSION ANDROID_API_LEVEL)
+    set(oneValueArgs GEN_TASK PACKAGE_DIR ROOT_DIR ANDROID_NDK_VERSION ANDROID_API_LEVEL BUILD_TYPE)
     cmake_parse_arguments(GAMESDK "${options}" "${oneValueArgs}" "" ${ARGN} )
 
     # Make sanity checks to avoid hard to debug errors at compile/link time.
@@ -39,6 +41,9 @@ function(add_gamesdk_target)
     if(GAMESDK_DO_LOCAL_BUILD AND NOT DEFINED GAMESDK_ROOT_DIR)
         message(FATAL_ERROR "You specified DO_LOCAL_BUILD to build the game sdk from sources, but did not specified the gamesdk root folder with ROOT_DIR (used to run Gradle).")
     endif()
+    if(NOT DEFINED GAMESDK_BUILD_TYPE)
+        set(GAMESDK_BUILD_TYPE "${CMAKE_BUILD_TYPE}")
+    endif()
 
     # Infer Android SDK/NDK and STL versions
     if (NOT DEFINED GAMESDK_ANDROID_NDK_VERSION)
@@ -50,7 +55,7 @@ function(add_gamesdk_target)
     string(REPLACE "+" "p" GAMESDK_ANDROID_STL ${ANDROID_STL}) # Game SDK build names use a sanitized STL name (c++ => cpp)
 
     # Set up the "gamesdk" library
-    set(BUILD_NAME ${ANDROID_ABI}_API${GAMESDK_ANDROID_API_LEVEL}_NDK${GAMESDK_ANDROID_NDK_VERSION}_${GAMESDK_ANDROID_STL}_${CMAKE_BUILD_TYPE})
+    set(BUILD_NAME ${ANDROID_ABI}_API${GAMESDK_ANDROID_API_LEVEL}_NDK${GAMESDK_ANDROID_NDK_VERSION}_${GAMESDK_ANDROID_STL}_${GAMESDK_BUILD_TYPE})
     set(GAMESDK_LIB_DIR "${GAMESDK_PACKAGE_DIR}/libs/${BUILD_NAME}")
 
     include_directories( "${GAMESDK_PACKAGE_DIR}/include" ) # Games SDK Public Includes
@@ -75,7 +80,7 @@ function(add_gamesdk_target)
             OUTPUT
                 ${DEP_LIB}
             COMMAND
-                ./gradlew ${GAMESDK_GEN_TASK} -PGAMESDK_ANDROID_API_LEVEL=${GAMESDK_ANDROID_API_LEVEL} -PGAMESDK_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                ./gradlew ${GAMESDK_GEN_TASK} -PGAMESDK_ANDROID_API_LEVEL=${GAMESDK_ANDROID_API_LEVEL} -PGAMESDK_BUILD_TYPE=${GAMESDK_BUILD_TYPE}}
             VERBATIM
             WORKING_DIRECTORY
                 "${GAMESDK_ROOT_DIR}"
