@@ -49,6 +49,11 @@ std::vector<VkFramebuffer> framebuffers_;
 //std::vector<VkDescriptorSet> descriptorSets_;
 //std::vector<VkDescriptorSet> modelViewProjectionDescriptorSets_;
 
+struct Camera {
+  glm::vec3 position = glm::vec3(0.0f, 0.0f, 3.0f);
+  glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+} camera;
+
 VkRenderPass render_pass;
 
 struct AttachmentBuffer {
@@ -63,9 +68,6 @@ AttachmentBuffer depthBuffer;
 android_app *androidAppCtx = nullptr;
 BenderKit::Device *device;
 Renderer *renderer;
-
-
-glm::vec3 camera = { 0.0f, 0.0f, -16.0f };
 
 glm::mat4 view;
 glm::mat4 proj;
@@ -167,10 +169,32 @@ void createFrameBuffers(VkRenderPass &renderPass,
   }
 }
 
-void updateCamera() {
-  view = glm::lookAt(camera, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+void updateCamera(Input::Data *inputData) {
+  camera.rotation =
+      glm::quat(glm::vec3(0.0f, inputData->deltaX / device->getDisplaySize().width, 0.0f))
+          * camera.rotation;
+  camera.rotation *=
+      glm::quat(glm::vec3(inputData->deltaY / device->getDisplaySize().height, 0.0f, 0.0f));
+  camera.rotation = glm::normalize(camera.rotation);
+
+  glm::vec3 up = glm::normalize(camera.rotation * glm::vec3(0.0f, 1.0f, 0.0f));
+  glm::vec3 right = glm::normalize(camera.rotation * glm::vec3(1.0f, 0.0f, 0.0f));
+  camera.position += right * (inputData->deltaXPan / device->getDisplaySize().width) +
+      up * -(inputData->deltaYPan / device->getDisplaySize().height);
+
+  if (inputData->doubleTapHoldUpper) {
+    glm::vec3 forward = glm::normalize(camera.rotation * glm::vec3(0.0f, 0.0f, -1.0f));
+    camera.position += forward * 2.0f * frameTime;
+  }
+  else if (inputData->doubleTapHoldLower) {
+    glm::vec3 forward = glm::normalize(camera.rotation * glm::vec3(0.0f, 0.0f, -1.0f));
+    camera.position -= forward * 2.0f * frameTime;
+  }
+
+  view = glm::inverse(glm::translate(glm::mat4(1.0f), camera.position) * glm::mat4(camera.rotation));
   proj = glm::perspective(glm::radians(100.0f),
-          device->getDisplaySize().width / (float) device->getDisplaySize().height, 0.1f, 100.0f);
+                          device->getDisplaySize().width / (float) device->getDisplaySize().height, 0.1f, 100.0f);
   proj[1][1] *= -1;
 }
 
@@ -183,7 +207,7 @@ void createShaderState() {
   shaders->addVertexInputBinding(0, 11 * sizeof(float));
   shaders->addVertexAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0);
   shaders->addVertexAttributeDescription(0, 1, VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(float));
-  shaders->addVertexAttributeDescription(0, 2, VK_FORMAT_R32G32B32_SFLOAT, 5 * sizeof(float));
+  shaders->addVertexAttributeDescription(0, 2, VK_FORMAT_R32G32B32_SFLOAT, 6 * sizeof(float));
   shaders->addVertexAttributeDescription(0, 3, VK_FORMAT_R32G32_SFLOAT, 9 * sizeof(float));
 }
 
@@ -371,21 +395,21 @@ void DeleteVulkan(void) {
   device = nullptr;
 }
 
-bool VulkanDrawFrame(void) {
+bool VulkanDrawFrame(Input::Data *inputData) {
   TRACE_BEGIN_SECTION("Draw Frame");
   currentTime = std::chrono::high_resolution_clock::now();
   frameTime = std::chrono::duration<float>(currentTime - lastTime).count();;
   lastTime = currentTime;
   totalTime += frameTime;
 
-  updateCamera();
+  updateCamera(inputData);
 
   mesh->rotate(glm::vec3(0.0f, 1.0f, 1.0f), 90 * frameTime);
   mesh->translate(.02f * glm::vec3(std::sin(2 * totalTime),
                                    std::sin(3 * totalTime),
                                    std::cos(2 * totalTime)));
 
-  mesh->update(renderer->getCurrentFrame(), camera, view, proj);
+  mesh->update(renderer->getCurrentFrame(), camera.position, view, proj);
 
   renderer->beginFrame();
   renderer->beginPrimaryCommandBufferRecording();

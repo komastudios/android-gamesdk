@@ -342,7 +342,7 @@ void Mesh::updatePipeline(VkRenderPass renderPass) {
 
 void Mesh::update(uint_t frame_index, glm::vec3 camera, glm::mat4 view, glm::mat4 proj) {
   lightsBuffer->update(frame_index, [&camera](auto& lightsBuffer) {
-    lightsBuffer.pointLight.position = {0.0f, 0.0f, -6.0f};
+    lightsBuffer.pointLight.position = {0.0f, 0.0f, 6.0f};
     lightsBuffer.pointLight.color = {1.0f, 1.0f, 1.0f};
     lightsBuffer.pointLight.intensity = 1.0f;
     lightsBuffer.ambientLight.color = {1.0f, 1.0f, 1.0f};

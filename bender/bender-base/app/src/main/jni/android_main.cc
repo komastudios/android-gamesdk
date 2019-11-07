@@ -15,6 +15,24 @@
 #include <android_native_app_glue.h>
 #include "vulkan_main.h"
 
+int32_t input_cmd(android_app *app, AInputEvent *event) {
+  Input::Data *inputData = (Input::Data *) app->userData;
+  if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION) {
+    Input::testDoubleTapHold(app, event, inputData);
+    if (AMotionEvent_getPointerCount(event) == 1) {
+      Input::testRotate(app, event, inputData);
+    }
+    else if (AMotionEvent_getPointerCount(event) == 2) {
+      Input::testPan(app, event, inputData);
+    }
+    if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_UP) {
+      Input::clearInput(inputData);
+    }
+    return 1;
+  }
+  return 0;
+}
+
 // Process the next main command.
 void handle_cmd(android_app *app, int32_t cmd) {
   switch (cmd) {
@@ -33,9 +51,10 @@ void handle_cmd(android_app *app, int32_t cmd) {
 }
 
 void android_main(struct android_app *app) {
-
   // Set the callback to process system events
   app->onAppCmd = handle_cmd;
+  app->onInputEvent = input_cmd;
+  app->userData = (void *) new Input::Data;
 
   // Used to poll the events in the main loop
   int events;
@@ -50,7 +69,7 @@ void android_main(struct android_app *app) {
 
     // render if vulkan is ready
     if (IsVulkanReady()) {
-      VulkanDrawFrame();
+      VulkanDrawFrame((Input::Data *)app->userData);
     }
   } while (app->destroyRequested == 0);
 }
