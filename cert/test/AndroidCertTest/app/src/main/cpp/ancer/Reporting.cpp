@@ -253,16 +253,17 @@ namespace ancer::reporting {
 
     void OpenReportLog(const std::string& file) {
         if ( _ofs.is_open()) {
-            FatalError(
-                    TAG,
-                    "Called OpenReportLog on an already open report; please "
-                    "call CloseReportLog() first");
+          // It's fine if it happens that the report file is already open.
+          // Opening happens upon Android MainActivity creation, that at times is recycled and
+          // re-created as Android takes allocated resources back.
+          Log::I(TAG, "OpenReportLog - File \"" + file + "\" was already open.");
+        } else {
+          _ofs = std::ofstream(file.c_str(), std::ofstream::out);
+          Log::I(TAG, "OpenReportLog - Opened report log file \"" + file + "\"");
         }
-
-        _ofs = std::ofstream(file.c_str(), std::ofstream::out);
-        _report_serializer = MakeReportSerializer(_report_flush_mode, _ofs);
-
-        Log::I(TAG, "OpenReportLog - Opened report log file \"" + file + "\"");
+        if (_report_serializer == nullptr) {
+          _report_serializer = MakeReportSerializer(_report_flush_mode, _ofs);
+        }
     }
 
     void CloseReportLog() {
