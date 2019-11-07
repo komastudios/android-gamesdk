@@ -3,7 +3,7 @@
 
 #include "shader_bindings.h"
 
-layout(binding = VERTEX_BINDING_MODEL_VIEW_PROJECTION) uniform UniformBufferObject {
+layout(set = 0, binding = 0) uniform UniformBufferObject {
     mat4 mvp;
     mat4 model;
     mat4 invTranspose;
