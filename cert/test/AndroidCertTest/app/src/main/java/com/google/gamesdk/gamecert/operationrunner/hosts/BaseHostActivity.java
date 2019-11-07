@@ -27,6 +27,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.gamesdk.gamecert.operationrunner.ACTApplication;
 import com.google.gamesdk.gamecert.operationrunner.MainActivity;
 import com.google.gamesdk.R;
 import com.google.gamesdk.gamecert.operationrunner.operations.BaseOperation;
@@ -190,7 +191,7 @@ public abstract class BaseHostActivity extends AppCompatActivity
 
     private void startDataGathererAndStressors() {
         Log.d(TAG, "startDataGathererAndStressors - \"" + _suiteId + "\"");
-        _running = true;
+        setRunning(true);
 
         if (SHOW_TIMING_INFO) {
             _mainThreadPump.postDelayed(this::updateTimingStats, 1000);
@@ -223,7 +224,7 @@ public abstract class BaseHostActivity extends AppCompatActivity
                 op.waitForCompletion();
             }
 
-            _running = false;
+            setRunning(false);
             _mainThreadPump.post(() -> onFinished(_canceled));
 
         }).start();
@@ -344,6 +345,11 @@ public abstract class BaseHostActivity extends AppCompatActivity
                 NativeInvoker.waitForOperation(_nativeOperation.nativeHandle);
             }
         }
+    }
+
+    private void setRunning(boolean running) {
+        _running = running;
+        ((ACTApplication) getApplication()).setIsRunningTest(running);
     }
 
     private static class NativeOperationHandle {
