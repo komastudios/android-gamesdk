@@ -44,35 +44,6 @@ using namespace BenderHelpers;
 std::vector<VkImageView> displayViews_;
 std::vector<VkFramebuffer> framebuffers_;
 
-struct ModelViewProjection {
-  alignas(16) glm::mat4 mvp;
-  alignas(16) glm::mat4 model;
-  alignas(16) glm::mat4 invTranspose;
-};
-
-struct PointLight{
-  alignas(16) float intensity;
-  alignas(16) glm::vec3 position;
-  alignas(16) glm::vec3 color;
-};
-
-struct AmbientLight{
-  alignas(16) float intensity;
-  alignas(16) glm::vec3 color;
-};
-
-struct LightBlock{
-  PointLight pointLight;
-  AmbientLight ambientLight;
-  alignas(16) glm::vec3 cameraPos;
-};
-
-UniformBufferObject<ModelViewProjection> *uniformBuffer;
-UniformBufferObject<LightBlock> *lightBuffer;
-
-VkDescriptorPool descriptorPool_;
-std::vector<VkDescriptorSet> descriptorSets_;
-
 VkRenderPass render_pass;
 
 struct AttachmentBuffer {
@@ -90,47 +61,12 @@ Renderer *renderer;
 
 std::shared_ptr<ShaderState> shaders;
 
-Mesh *mesh;
+Mesh *mesh, *mesh2;
 
 auto lastTime = std::chrono::high_resolution_clock::now();
 auto currentTime = lastTime;
 float frameTime;
 float totalTime;
-
-std::vector<Texture*> textures;
-std::vector<const char*> texFiles;
-VkSampler sampler;
-
-void createSampler() {
-  const VkSamplerCreateInfo sampler_create_info = {
-          .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
-          .pNext = nullptr,
-          .magFilter = VK_FILTER_NEAREST,
-          .minFilter = VK_FILTER_NEAREST,
-          .mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST,
-          .addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-          .addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-          .addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-          .mipLodBias = 0.0f,
-          .maxAnisotropy = 1,
-          .compareOp = VK_COMPARE_OP_NEVER,
-          .minLod = 0.0f,
-          .maxLod = 0.0f,
-          .borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE,
-          .unnormalizedCoordinates = VK_FALSE,
-  };
-  CALL_VK(vkCreateSampler(device->getDevice(), &sampler_create_info, nullptr,
-                          &sampler));
-}
-
-void createTextures() {
-  assert(androidAppCtx != nullptr);
-  assert(device != nullptr);
-
-  for (uint32_t i = 0; i < texFiles.size(); ++i) {
-    textures.push_back(new Texture(*device, androidAppCtx, texFiles[i], VK_FORMAT_R8G8B8A8_SRGB));
-  }
-}
 
 void createFrameBuffers(VkRenderPass &renderPass,
                         VkImageView depthView = VK_NULL_HANDLE) {
@@ -185,117 +121,18 @@ void createFrameBuffers(VkRenderPass &renderPass,
   }
 }
 
-void createUniformBuffers() {
-  uniformBuffer = new UniformBufferObject<ModelViewProjection>(*device);
-  lightBuffer = new UniformBufferObject<LightBlock>(*device);
-}
+void updateUniformBuffer() {
+  mesh->rotate(glm::vec3(0.0f, 1.0f, 1.0f), 90 * frameTime);
+  mesh->translate(.02f * glm::vec3(std::sin(2 * totalTime),
+                                   std::sin(3 * totalTime),
+                                   std::cos(2 * totalTime)));
 
-void updateUniformBuffer(uint32_t frameIndex) {
-    mesh->rotate(glm::vec3(0.0f, 1.0f, 1.0f), 90 * frameTime);
-    mesh->translate(.02f * glm::vec3(std::sin(2 * totalTime),
-                                     std::sin(3 * totalTime),
-                                     std::cos(2 * totalTime)));
-    glm::vec3 camera = {0.0f, 0.0f, -16.0f};
+  mesh2->rotate(glm::vec3(0.0f, 1.0f, 1.0f), 90 * frameTime);
+  glm::vec3 camera = {0.0f, 0.0f, -30.0f};
 
-    lightBuffer->update(frameIndex, [&camera](auto& lightBuffer) {
-      lightBuffer.pointLight.position = {0.0f, 0.0f, -6.0f};
-      lightBuffer.pointLight.color = {1.0f, 1.0f, 1.0f};
-      lightBuffer.pointLight.intensity = 1.0f;
-      lightBuffer.ambientLight.color = {1.0f, 1.0f, 1.0f};
-      lightBuffer.ambientLight.intensity = 0.1f;
-      lightBuffer.cameraPos = camera;
-    });
-
-    glm::mat4 model = mesh->getTransform();
-    glm::mat4 view = glm::lookAt(camera, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 proj = glm::perspective(glm::radians(100.0f),
-            device->getDisplaySize().width / (float) device->getDisplaySize().height, 0.1f, 100.0f);
-    proj[1][1] *= -1;
-
-    glm::mat4 mvp = proj * view * model;
-
-    uniformBuffer->update(frameIndex, [&mvp, &model](auto& ubo) {
-      ubo.mvp = mvp;
-      ubo.model = model;
-      ubo.invTranspose = glm::transpose(glm::inverse(model));
-    });
-}
-
-void createDescriptorPool() {
-  std::array<VkDescriptorPoolSize, 4> poolSizes = {};
-  poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-  poolSizes[0].descriptorCount = device->getDisplayImagesSize();
-  poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-  poolSizes[1].descriptorCount = device->getDisplayImagesSize();
-  poolSizes[2].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-  poolSizes[2].descriptorCount = device->getDisplayImagesSize();
-  poolSizes[3].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-  poolSizes[3].descriptorCount = device->getDisplayImagesSize();
-
-  VkDescriptorPoolCreateInfo poolInfo = {};
-  poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-  poolInfo.poolSizeCount = poolSizes.size();
-  poolInfo.pPoolSizes = poolSizes.data();
-  poolInfo.maxSets = device->getDisplayImagesSize();
-
-  CALL_VK(vkCreateDescriptorPool(device->getDevice(), &poolInfo, nullptr, &descriptorPool_));
-}
-
-void createDescriptorSets() {
-  std::vector<VkDescriptorSetLayout> layouts(device->getDisplayImagesSize(), mesh->getDescriptorSetLayout());
-  VkDescriptorSetAllocateInfo allocInfo = {};
-  allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-  allocInfo.descriptorPool = descriptorPool_;
-  allocInfo.descriptorSetCount = static_cast<uint32_t>(device->getDisplayImagesSize());
-  allocInfo.pSetLayouts = layouts.data();
-
-  descriptorSets_.resize(device->getDisplayImagesSize());
-  CALL_VK(vkAllocateDescriptorSets(device->getDevice(), &allocInfo, descriptorSets_.data()));
-
-  for (size_t i = 0; i < device->getDisplayImagesSize(); i++) {
-    VkDescriptorBufferInfo bufferInfo = {};
-    bufferInfo.buffer = uniformBuffer->getBuffer(i);
-    bufferInfo.offset = 0;
-    bufferInfo.range = sizeof(ModelViewProjection);
-
-    VkDescriptorImageInfo imageInfo = {};
-    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    imageInfo.imageView = textures[0]->getImageView();
-    imageInfo.sampler = VK_NULL_HANDLE;
-
-    VkDescriptorBufferInfo lightBlockInfo = {};
-    lightBlockInfo.buffer = lightBuffer->getBuffer(i);
-    lightBlockInfo.offset = 0;
-    lightBlockInfo.range = sizeof(LightBlock);
-
-    std::array<VkWriteDescriptorSet, 3> descriptorWrites = {};
-
-    descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    descriptorWrites[0].dstSet = descriptorSets_[i];
-    descriptorWrites[0].dstBinding = 0;
-    descriptorWrites[0].dstArrayElement = 0;
-    descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    descriptorWrites[0].descriptorCount = 1;
-    descriptorWrites[0].pBufferInfo = &bufferInfo;
-
-    descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    descriptorWrites[1].dstSet = descriptorSets_[i];
-    descriptorWrites[1].dstBinding = 1;
-    descriptorWrites[1].dstArrayElement = 0;
-    descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    descriptorWrites[1].descriptorCount = 1;
-    descriptorWrites[1].pImageInfo = &imageInfo;
-
-    descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    descriptorWrites[2].dstSet = descriptorSets_[i];
-    descriptorWrites[2].dstBinding = 2;
-    descriptorWrites[2].dstArrayElement = 0;
-    descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    descriptorWrites[2].descriptorCount = 1;
-    descriptorWrites[2].pBufferInfo = &lightBlockInfo;
-
-    vkUpdateDescriptorSets(device->getDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-  }
+  renderer->updateLightBuffer(camera);
+  mesh->updateMvpBuffer(camera);
+  mesh2->updateMvpBuffer(camera);
 }
 
 void createShaderState() {
@@ -371,10 +208,6 @@ bool InitVulkan(android_app *app) {
   device->setObjectName(reinterpret_cast<uint64_t>(device->getDevice()),
       VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, "TEST NAME: VULKAN DEVICE");
 
-  createUniformBuffers();
-
-//  createDescriptorSetLayout();
-
   renderer = new Renderer(device);
 
   VkAttachmentDescription color_description{
@@ -440,31 +273,26 @@ bool InitVulkan(android_app *app) {
 
   createShaderState();
 
-  mesh = createPolyhedron(device, shaders, 20);
+  mesh = createPolyhedron(app, device, renderer, shaders, 20);
 
   const std::vector<float> vertexData = {
-      -0.5f, -0.5f, 0.5f,          -0.5774f, -0.5774f, 0.5774f,       1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-      0.5f, -0.5f, 0.5f,           0.5774f, -0.5774f, 0.5774f,        0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-      0.5f, 0.5f, 0.5f,            0.5774f, 0.5774f, 0.5774f,         0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-      -0.5f, 0.5f, 0.5f,           -0.5774f, 0.5774f, 0.5774f,      1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-      0.0f, 0.0f, 0.0f,            0.0f, 1.0f, 0.0f,           1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-  };
+          -0.5f, -0.5f, 0.5f,          -0.5774f, -0.5774f, 0.5774f,       1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+          0.5f, -0.5f, 0.5f,           0.5774f, -0.5774f, 0.5774f,        0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+          0.5f, 0.5f, 0.5f,            0.5774f, 0.5774f, 0.5774f,         0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+          -0.5f, 0.5f, 0.5f,           -0.5774f, 0.5774f, 0.5774f,      1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+          0.0f, 0.0f, 0.0f,            0.0f, 1.0f, 0.0f,           1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+          };
 
   const std::vector<u_int16_t> indexData = {
-      1, 2, 4, 2, 1, 0, 0, 3, 2, 2, 3, 4, 3, 0, 4, 0, 1, 4
+          1, 2, 4, 2, 1, 0, 0, 3, 2, 2, 3, 4, 3, 0, 4, 0, 1, 4
   };
-  
+
+  mesh2 = new Mesh(app, device, renderer, vertexData, indexData, shaders);
+  mesh2->translate(glm::vec3(0.0, 8.0, -8.0));
+
   createDepthBuffer();
 
   createFrameBuffers(render_pass, depthBuffer.image_view);
-
-  texFiles.push_back("textures/sample_texture.png");
-
-  createTextures();
-
-  createDescriptorPool();
-
-  createDescriptorSets();
 
   return true;
 }
@@ -474,8 +302,7 @@ bool IsVulkanReady(void) { return device != nullptr && device->isInitialized(); 
 void DeleteVulkan(void) {
   delete renderer;
   delete mesh;
-  delete uniformBuffer;
-  delete lightBuffer;
+  delete mesh2;
 
   shaders->cleanup();
   shaders.reset();
@@ -484,8 +311,6 @@ void DeleteVulkan(void) {
     vkDestroyImageView(device->getDevice(), displayViews_[i], nullptr);
     vkDestroyFramebuffer(device->getDevice(), framebuffers_[i], nullptr);
   }
-
-  vkDestroyDescriptorPool(device->getDevice(), descriptorPool_, nullptr);
 
   vkDestroyImageView(device->getDevice(), depthBuffer.image_view, nullptr);
   vkDestroyImage(device->getDevice(), depthBuffer.image, nullptr);
@@ -504,7 +329,7 @@ bool VulkanDrawFrame(void) {
   lastTime = currentTime;
   totalTime += frameTime;
 
-  updateUniformBuffer(renderer->getCurrentFrame());
+  updateUniformBuffer();
 
   renderer->beginFrame();
   renderer->beginPrimaryCommandBufferRecording();
@@ -536,7 +361,10 @@ bool VulkanDrawFrame(void) {
                             {1.0f, 0.0f, 1.0f, 0.0f});
 
   mesh->updatePipeline(render_pass);
-  mesh->submitDraw(renderer->getCurrentCommandBuffer(), descriptorSets_[renderer->getCurrentFrame()]);
+  mesh->submitDraw();
+
+  mesh2->updatePipeline(render_pass);
+  mesh2->submitDraw();
 
   vkCmdEndRenderPass(renderer->getCurrentCommandBuffer());
 

@@ -7,24 +7,33 @@
 #include "mesh.h"
 #include "shader_bindings.h"
 
-Mesh::Mesh(BenderKit::Device *device, const std::vector<float>& vertexData, const std::vector<uint16_t>& indexData,
-           std::shared_ptr<ShaderState> shaders) {
+Mesh::Mesh(android_app *app, BenderKit::Device *device, Renderer *renderer,
+        const std::vector<float>& vertexData, const std::vector<uint16_t>& indexData,
+        std::shared_ptr<ShaderState> shaders) {
   device_ = device;
-
+  renderer_ = renderer;
   geometry_ = std::make_shared<Geometry>(device, vertexData, indexData);
+  std::vector<const char *> texFiles = {"textures/sample_texture.png"};
+  material_ = std::make_shared<Material>(app, device, texFiles);
   shaders_ = shaders;
+  mvp_buffer_ = new UniformBufferObject<ModelViewProjection>(*device);
 
   position_ = glm::vec3(0.0f, 0.0f, 0.0f);
   rotation_ = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
   scale_ = glm::vec3(1.0f, 1.0f, 1.0f);
 
   createDescriptorSetLayout();
+  createDescriptorSets();
 }
 
 Mesh::~Mesh() {
   vkDestroyPipeline(device_->getDevice(), pipeline_, nullptr);
   vkDestroyPipelineCache(device_->getDevice(), cache_, nullptr);
   vkDestroyPipelineLayout(device_->getDevice(), layout_, nullptr);
+
+  vkDestroyDescriptorSetLayout(device_->getDevice(), descriptor_set_layout_, nullptr);
+
+  delete mvp_buffer_;
 }
 
 void Mesh::createMeshPipeline(VkRenderPass renderPass) {
@@ -185,6 +194,64 @@ void Mesh::createDescriptorSetLayout() {
   CALL_VK(vkCreateDescriptorSetLayout(device_->getDevice(), &layoutInfo, nullptr, &descriptor_set_layout_));
 }
 
+void Mesh::createDescriptorSets() {
+  std::vector<VkDescriptorSetLayout> layouts(device_->getDisplayImagesSize(), descriptor_set_layout_);
+  VkDescriptorSetAllocateInfo allocInfo = {
+          .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+          .descriptorPool = *renderer_->getDescriptorPool(),
+          .descriptorSetCount = static_cast<uint32_t>(device_->getDisplayImagesSize()),
+          .pSetLayouts = layouts.data(),
+  };
+
+  descriptor_sets_.resize(device_->getDisplayImagesSize());
+  CALL_VK(vkAllocateDescriptorSets(device_->getDevice(), &allocInfo, descriptor_sets_.data()));
+
+  for (size_t i = 0; i < device_->getDisplayImagesSize(); i++) {
+    VkDescriptorBufferInfo bufferInfo = {};
+    bufferInfo.buffer = mvp_buffer_->getBuffer(i);
+    bufferInfo.offset = 0;
+    bufferInfo.range = sizeof(ModelViewProjection);
+
+    VkDescriptorImageInfo imageInfo = {};
+    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    imageInfo.imageView = material_->getTexture(0)->getImageView();
+    imageInfo.sampler = *material_->getSampler(0);
+
+    VkDescriptorBufferInfo lightBlockInfo = {};
+    lightBlockInfo.buffer = renderer_->getLightBuffer()->getBuffer(i);
+    lightBlockInfo.offset = 0;
+    lightBlockInfo.range = sizeof(LightBlock);
+
+    std::array<VkWriteDescriptorSet, 3> descriptorWrites = {};
+
+    descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptorWrites[0].dstSet = descriptor_sets_[i];
+    descriptorWrites[0].dstBinding = 0;
+    descriptorWrites[0].dstArrayElement = 0;
+    descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    descriptorWrites[0].descriptorCount = 1;
+    descriptorWrites[0].pBufferInfo = &bufferInfo;
+
+    descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptorWrites[1].dstSet = descriptor_sets_[i];
+    descriptorWrites[1].dstBinding = 1;
+    descriptorWrites[1].dstArrayElement = 0;
+    descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    descriptorWrites[1].descriptorCount = 1;
+    descriptorWrites[1].pImageInfo = &imageInfo;
+
+    descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptorWrites[2].dstSet = descriptor_sets_[i];
+    descriptorWrites[2].dstBinding = 2;
+    descriptorWrites[2].dstArrayElement = 0;
+    descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    descriptorWrites[2].descriptorCount = 1;
+    descriptorWrites[2].pBufferInfo = &lightBlockInfo;
+
+    vkUpdateDescriptorSets(device_->getDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+  }
+}
+
 void Mesh::updatePipeline(VkRenderPass renderPass) {
   if (pipeline_ != VK_NULL_HANDLE)
     return;
@@ -192,7 +259,8 @@ void Mesh::updatePipeline(VkRenderPass renderPass) {
   createMeshPipeline(renderPass);
 }
 
-void Mesh::submitDraw(VkCommandBuffer commandBuffer, VkDescriptorSet& descriptorSet) const {
+void Mesh::submitDraw() const {
+  VkCommandBuffer commandBuffer = renderer_->getCurrentCommandBuffer();
   vkCmdBindPipeline(commandBuffer,
       VK_PIPELINE_BIND_POINT_GRAPHICS,
       pipeline_);
@@ -204,7 +272,7 @@ void Mesh::submitDraw(VkCommandBuffer commandBuffer, VkDescriptorSet& descriptor
   geometry_->bind(commandBuffer);
 
   vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                          layout_, 0, 1, &descriptorSet, 0, nullptr);
+                          layout_, 0, 1, &descriptor_sets_[renderer_->getCurrentFrame()], 0, nullptr);
 
   vkCmdDrawIndexed(commandBuffer,
                    geometry_->getIndexCount(),
@@ -248,8 +316,21 @@ glm::vec3 Mesh::getScale() const {
   return scale_;
 }
 
-glm::mat4 Mesh::getTransform() const {
+void Mesh::updateMvpBuffer(glm::vec3 camera) {
   glm::mat4 position = glm::translate(glm::mat4(1.0), position_);
   glm::mat4 scale = glm::scale(glm::mat4(1.0), scale_);
-  return position * glm::mat4(rotation_) * scale;
+
+  glm::mat4 model = position * glm::mat4(rotation_) * scale;
+  glm::mat4 view = glm::lookAt(camera, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+  glm::mat4 proj = glm::perspective(glm::radians(100.0f),
+                                    device_->getDisplaySize().width / (float) device_->getDisplaySize().height, 0.1f, 100.0f);
+  proj[1][1] *= -1;
+
+  glm::mat4 mvp = proj * view * model;
+
+  mvp_buffer_->update(renderer_->getCurrentFrame(), [&mvp, &model](auto& ubo) {
+      ubo.mvp = mvp;
+      ubo.model = model;
+      ubo.invTranspose = glm::transpose(glm::inverse(model));
+  });
 }
