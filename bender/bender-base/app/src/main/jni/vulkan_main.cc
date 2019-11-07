@@ -67,6 +67,11 @@ struct LightBlock{
   alignas(16) glm::vec3 cameraPos;
 };
 
+struct Camera {
+  glm::vec3 position = glm::vec3(0.0f, 0.0f, 3.0f);
+  glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+} camera;
+
 UniformBufferObject<ModelViewProjection> *uniformBuffer;
 UniformBufferObject<LightBlock> *lightBuffer;
 
@@ -190,24 +195,47 @@ void createUniformBuffers() {
   lightBuffer = new UniformBufferObject<LightBlock>(*device);
 }
 
-void updateUniformBuffer(uint32_t frameIndex) {
+void updateCamera(Input::Data *inputData) {
+  camera.rotation =
+      glm::quat(glm::vec3(0.0f, inputData->deltaX / device->getDisplaySize().width, 0.0f))
+          * camera.rotation;
+  camera.rotation *=
+      glm::quat(glm::vec3(inputData->deltaY / device->getDisplaySize().height, 0.0f, 0.0f));
+  camera.rotation = glm::normalize(camera.rotation);
+
+  glm::vec3 up = glm::normalize(camera.rotation * glm::vec3(0.0f, 1.0f, 0.0f));
+  glm::vec3 right = glm::normalize(camera.rotation * glm::vec3(1.0f, 0.0f, 0.0f));
+  camera.position += right * (inputData->deltaXPan / device->getDisplaySize().width) +
+                     up * -(inputData->deltaYPan / device->getDisplaySize().height);
+
+  if (inputData->doubleTapHoldUpper) {
+    glm::vec3 forward = glm::normalize(camera.rotation * glm::vec3(0.0f, 0.0f, -1.0f));
+    camera.position += forward * 2.0f * frameTime;
+  }
+  else if (inputData->doubleTapHoldLower) {
+    glm::vec3 forward = glm::normalize(camera.rotation * glm::vec3(0.0f, 0.0f, -1.0f));
+    camera.position -= forward * 2.0f * frameTime;
+  }
+}
+
+void updateUniformBuffer(uint32_t frameIndex, Input::Data *inputData) {
     mesh->rotate(glm::vec3(0.0f, 1.0f, 1.0f), 90 * frameTime);
     mesh->translate(.02f * glm::vec3(std::sin(2 * totalTime),
                                      std::sin(3 * totalTime),
                                      std::cos(2 * totalTime)));
-    glm::vec3 camera = {0.0f, 0.0f, -16.0f};
 
-    lightBuffer->update(frameIndex, [&camera](auto& lightBuffer) {
-      lightBuffer.pointLight.position = {0.0f, 0.0f, -6.0f};
+    updateCamera(inputData);
+    lightBuffer->update(frameIndex, [](auto& lightBuffer) {
+      lightBuffer.pointLight.position = {0.0f, 0.0f, 2.0f};
       lightBuffer.pointLight.color = {1.0f, 1.0f, 1.0f};
       lightBuffer.pointLight.intensity = 1.0f;
       lightBuffer.ambientLight.color = {1.0f, 1.0f, 1.0f};
       lightBuffer.ambientLight.intensity = 0.1f;
-      lightBuffer.cameraPos = camera;
+      lightBuffer.cameraPos = camera.position;
     });
 
     glm::mat4 model = mesh->getTransform();
-    glm::mat4 view = glm::lookAt(camera, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 view = glm::inverse(glm::translate(glm::mat4(1.0f), camera.position) * glm::mat4(camera.rotation));
     glm::mat4 proj = glm::perspective(glm::radians(100.0f),
             device->getDisplaySize().width / (float) device->getDisplaySize().height, 0.1f, 100.0f);
     proj[1][1] *= -1;
@@ -303,7 +331,7 @@ void createShaderState() {
   shaders->addVertexInputBinding(0, 11 * sizeof(float));
   shaders->addVertexAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0);
   shaders->addVertexAttributeDescription(0, 1, VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(float));
-  shaders->addVertexAttributeDescription(0, 2, VK_FORMAT_R32G32B32_SFLOAT, 5 * sizeof(float));
+  shaders->addVertexAttributeDescription(0, 2, VK_FORMAT_R32G32B32_SFLOAT, 6 * sizeof(float));
   shaders->addVertexAttributeDescription(0, 3, VK_FORMAT_R32G32_SFLOAT, 9 * sizeof(float));
 }
 
@@ -440,7 +468,7 @@ bool InitVulkan(android_app *app) {
 
   createShaderState();
 
-  mesh = createPolyhedron(device, shaders, 20);
+  mesh = createPolyhedron(device, shaders, 12);
 
   const std::vector<float> vertexData = {
       -0.5f, -0.5f, 0.5f,          -0.5774f, -0.5774f, 0.5774f,       1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
@@ -497,14 +525,14 @@ void DeleteVulkan(void) {
   device = nullptr;
 }
 
-bool VulkanDrawFrame(void) {
+bool VulkanDrawFrame(Input::Data *inputData) {
   TRACE_BEGIN_SECTION("Draw Frame");
   currentTime = std::chrono::high_resolution_clock::now();
   frameTime = std::chrono::duration<float>(currentTime - lastTime).count();;
   lastTime = currentTime;
   totalTime += frameTime;
 
-  updateUniformBuffer(renderer->getCurrentFrame());
+  updateUniformBuffer(renderer->getCurrentFrame(), inputData);
 
   renderer->beginFrame();
   renderer->beginPrimaryCommandBufferRecording();
