@@ -85,4 +85,5 @@ target_link_libraries( swappy
                         swappy_static
                         android
                         GLESv2
-                        log)
+                        log
+			atomic)
