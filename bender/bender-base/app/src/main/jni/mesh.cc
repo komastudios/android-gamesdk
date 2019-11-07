@@ -23,7 +23,8 @@ void Mesh::createPools(BenderKit::Device& device) {
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     poolInfo.poolSizeCount = poolSizes.size();
     poolInfo.pPoolSizes = poolSizes.data();
-    poolInfo.maxSets = device.getDisplayImagesSize();
+    poolInfo.maxSets = device.getDisplayImagesSize();     // maxSets will need to take into account
+                                                          // the max number of materials in a scene
 
     CALL_VK(vkCreateDescriptorPool(device.getDevice(), &poolInfo, nullptr, &material_descriptor_pool_));
   }
@@ -37,7 +38,8 @@ void Mesh::createPools(BenderKit::Device& device) {
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     poolInfo.poolSizeCount = poolSizes.size();
     poolInfo.pPoolSizes = poolSizes.data();
-    poolInfo.maxSets = device.getDisplayImagesSize();
+    poolInfo.maxSets = device.getDisplayImagesSize();     // maxSets will need to take into account
+                                                          // the max number of meshes in a scene
 
     CALL_VK(vkCreateDescriptorPool(device.getDevice(), &poolInfo, nullptr, &mesh_descriptor_pool_));
   }
@@ -61,7 +63,7 @@ Mesh::Mesh(BenderKit::Device *device, const std::vector<float>& vertexData, cons
 
   createDescriptorSetLayout();
 
-  mvpBuffer = new UniformBufferObject<ModelViewProjection>(*device);
+  meshBuffer = new UniformBufferObject<ModelViewProjection>(*device);
   lightsBuffer = new UniformBufferObject<LightBlock>(*device);
 }
 
@@ -70,7 +72,7 @@ Mesh::~Mesh() {
   vkDestroyPipelineCache(device_->getDevice(), cache_, nullptr);
   vkDestroyPipelineLayout(device_->getDevice(), layout_, nullptr);
 
-  delete mvpBuffer;
+  delete meshBuffer;
   delete lightsBuffer;
 }
 
@@ -78,7 +80,7 @@ void Mesh::createDescriptors(Texture* texture) {
   // TODO move this descriptor set to a Material class and extract the lights descriptor set
   {
     std::vector<VkDescriptorSetLayout> layouts(device_->getDisplayImagesSize(),
-                                               material_layout_);
+                                               material_descriptors_layout_);
 
     VkDescriptorSetAllocateInfo allocInfo = {};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -104,7 +106,7 @@ void Mesh::createDescriptors(Texture* texture) {
 
       descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
       descriptorWrites[0].dstSet = material_descriptor_sets_[i];
-      descriptorWrites[0].dstBinding = 2;
+      descriptorWrites[0].dstBinding = FRAGMENT_BINDING_LIGHTS;
       descriptorWrites[0].dstArrayElement = 0;
       descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
       descriptorWrites[0].descriptorCount = 1;
@@ -112,7 +114,7 @@ void Mesh::createDescriptors(Texture* texture) {
 
       descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
       descriptorWrites[1].dstSet = material_descriptor_sets_[i];
-      descriptorWrites[1].dstBinding = 1;
+      descriptorWrites[1].dstBinding = FRAGMENT_BINDING_SAMPLER;
       descriptorWrites[1].dstArrayElement = 0;
       descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
       descriptorWrites[1].descriptorCount = 1;
@@ -125,7 +127,7 @@ void Mesh::createDescriptors(Texture* texture) {
 
   {
     std::vector<VkDescriptorSetLayout> layouts(device_->getDisplayImagesSize(),
-                                               model_view_projection_layout_);
+                                               mesh_descriptors_layout_);
 
     VkDescriptorSetAllocateInfo allocInfo = {};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -138,7 +140,7 @@ void Mesh::createDescriptors(Texture* texture) {
 
     for (size_t i = 0; i < device_->getDisplayImagesSize(); i++) {
       VkDescriptorBufferInfo bufferInfo = {};
-      bufferInfo.buffer = mvpBuffer->getBuffer(i);
+      bufferInfo.buffer = meshBuffer->getBuffer(i);
       bufferInfo.offset = 0;
       bufferInfo.range = sizeof(ModelViewProjection);
 
@@ -236,12 +238,16 @@ void Mesh::createMeshPipeline(VkRenderPass renderPass) {
           .flags = 0,
   };
 
-  VkDescriptorSetLayout layouts[] = { model_view_projection_layout_, material_layout_  };
+  std::array<VkDescriptorSetLayout, 2> layouts;
+
+  layouts[BINDING_SET_MESH] = mesh_descriptors_layout_;
+  layouts[BINDING_SET_MATERIAL] = material_descriptors_layout_ ;
+
   VkPipelineLayoutCreateInfo pipelineLayoutInfo{
           .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
           .pNext = nullptr,
-          .setLayoutCount = 2,
-          .pSetLayouts = layouts,
+          .setLayoutCount = layouts.size(),
+          .pSetLayouts = layouts.data(),
           .pushConstantRangeCount = 0,
           .pPushConstantRanges = nullptr,
   };
@@ -312,7 +318,7 @@ void Mesh::createDescriptorSetLayout() {
     layoutInfo.pBindings = bindings.data();
 
     CALL_VK(vkCreateDescriptorSetLayout(device_->getDevice(), &layoutInfo, nullptr,
-                                        &material_layout_));
+                                        &material_descriptors_layout_));
   }
   {
     VkDescriptorSetLayoutBinding uboLayoutBinding = {};
@@ -329,7 +335,7 @@ void Mesh::createDescriptorSetLayout() {
     layoutInfo.pBindings = bindings.data();
 
     CALL_VK(vkCreateDescriptorSetLayout(device_->getDevice(), &layoutInfo, nullptr,
-                                        &model_view_projection_layout_));
+                                        &mesh_descriptors_layout_));
   }
 }
 
@@ -353,7 +359,7 @@ void Mesh::update(uint_t frame_index, glm::vec3 camera, glm::mat4 view, glm::mat
   glm::mat4 model = getTransform();
   glm::mat4 mvp = proj * view * model;
 
-  mvpBuffer->update(frame_index, [&mvp, &model](auto& ubo) {
+  meshBuffer->update(frame_index, [&mvp, &model](auto& ubo) {
     ubo.mvp = mvp;
     ubo.model = model;
     ubo.invTranspose = glm::transpose(glm::inverse(model));
@@ -368,10 +374,10 @@ void Mesh::submitDraw(VkCommandBuffer commandBuffer, uint_t frame_index) const {
   geometry_->bind(commandBuffer);
 
   vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                          layout_, 0, 1, &model_view_projection_descriptor_sets_[frame_index], 0, nullptr);
+                          layout_, BINDING_SET_MESH, 1, &model_view_projection_descriptor_sets_[frame_index], 0, nullptr);
 
   vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                          layout_, 1, 1, &material_descriptor_sets_[frame_index], 0, nullptr);
+                          layout_, BINDING_SET_MATERIAL, 1, &material_descriptor_sets_[frame_index], 0, nullptr);
 
   vkCmdDrawIndexed(commandBuffer,
                    geometry_->getIndexCount(),

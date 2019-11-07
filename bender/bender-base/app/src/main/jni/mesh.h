@@ -83,7 +83,7 @@ private:
   static VkDescriptorPool mesh_descriptor_pool_;
   static VkDescriptorPool material_descriptor_pool_;
 
-  UniformBufferObject<ModelViewProjection> *mvpBuffer;
+  UniformBufferObject<ModelViewProjection> *meshBuffer;
 
   // TODO: extract the lightsBuffer into a different class (Renderer?)
   // TODO: give the lights buffer its own descriptor set
@@ -98,8 +98,8 @@ private:
   glm::quat rotation_;
   glm::vec3 scale_;
 
-  VkDescriptorSetLayout material_layout_;
-  VkDescriptorSetLayout model_view_projection_layout_;
+  VkDescriptorSetLayout material_descriptors_layout_;
+  VkDescriptorSetLayout mesh_descriptors_layout_;
 
   VkPipelineLayout layout_;
   VkPipelineCache cache_;
