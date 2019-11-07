@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "df3d35ad_b329e045",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-07T19:03:54Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "ff27edc5_031947cf",
+      "range": {
+        "startLine": 13,
+        "startChar": 5,
+        "endLine": 13,
+        "endChar": 49
+      },
+      "revId": "5f663ee8071a340559c999f281b83f8c49c54cf9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6e189465_133f6420",
         "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
         "patchSetId": 3
@@ -42,6 +66,24 @@
     },
     {
       "key": {
+        "uuid": "e51ef846_d1f8080f",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-07T19:03:54Z",
+      "side": 1,
+      "message": "Correct.",
+      "parentUuid": "6e189465_133f6420",
+      "revId": "5f663ee8071a340559c999f281b83f8c49c54cf9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1d714318_ef14a538",
         "filename": "bender/bender-base/app/src/main/jni/mesh.h",
         "patchSetId": 3
@@ -53,6 +95,24 @@
       "writtenOn": "2019-11-07T17:47:30Z",
       "side": 1,
       "message": "Should we rename this if it\u0027s gonna be separate from the mvp descriptor set layout? Feels weird to have to figure out why there\u0027s both a general descriptor set layout and also an mvp layout.",
+      "revId": "5f663ee8071a340559c999f281b83f8c49c54cf9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6b1ab18c_aee6391f",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-07T19:03:54Z",
+      "side": 1,
+      "message": "Yes. Nice find.",
+      "parentUuid": "1d714318_ef14a538",
       "revId": "5f663ee8071a340559c999f281b83f8c49c54cf9",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
