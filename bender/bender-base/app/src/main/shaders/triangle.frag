@@ -14,9 +14,9 @@ struct AmbientLight {
     vec3 color;
 };
 
-layout(binding = FRAGMENT_BINDING_SAMPLER) uniform sampler2D texSampler;
+layout(set = 1, binding = FRAGMENT_BINDING_SAMPLER) uniform sampler2D texSampler;
 
-layout(binding = FRAGMENT_BINDING_LIGHTS) uniform LightBlock {
+layout(set = 1, binding = FRAGMENT_BINDING_LIGHTS) uniform LightBlock {
     PointLight pointLight;
     AmbientLight ambientLight;
     vec3 cameraPos;
