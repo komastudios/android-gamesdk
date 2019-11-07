@@ -16,6 +16,7 @@
 #include <android_native_app_glue.h>
 
 #include "trace.h"
+#include "input.h"
 
 // Initialize vulkan device context
 // after return, vulkan is ready to draw
@@ -28,7 +29,7 @@ void DeleteVulkan(void);
 bool IsVulkanReady(void);
 
 // Ask Vulkan to Render a frame
-bool VulkanDrawFrame(void);
+bool VulkanDrawFrame(Input *inputData);
 
 #endif // __VULKANMAIN_HPP__
 
