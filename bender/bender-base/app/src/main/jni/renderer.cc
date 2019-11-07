@@ -32,7 +32,9 @@ Renderer::~Renderer() {
   delete[] acquire_image_semaphore_;
   delete[] render_finished_semaphore_;
   delete[] fence_;
+  delete light_buffer_;
 
+  vkDestroyDescriptorPool(device_->getDevice(), descriptor_pool_, nullptr);
   vkDestroyCommandPool(device_->getDevice(), cmd_pool_, nullptr);
 }
 
@@ -108,6 +110,17 @@ void Renderer::endPrimaryCommandBufferRecording() {
   TRACE_END_SECTION();
 }
 
+void Renderer::updateLightBuffer(glm::vec3 camera) {
+    light_buffer_->update(getCurrentFrame(), [&camera](auto& lightBuffer) {
+        lightBuffer.pointLight.position = {0.0f, 0.0f, -6.0f};
+        lightBuffer.pointLight.color = {1.0f, 1.0f, 1.0f};
+        lightBuffer.pointLight.intensity = 1.0f;
+        lightBuffer.ambientLight.color = {1.0f, 1.0f, 1.0f};
+        lightBuffer.ambientLight.intensity = 0.1f;
+        lightBuffer.cameraPos = camera;
+    });
+}
+
 void Renderer::init() {
   VkCommandPoolCreateInfo cmd_pool_createInfo{
       .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
@@ -166,6 +179,27 @@ void Renderer::init() {
                       nullptr,
                       &fence_[i]));
   }
+
+  createDescriptorPool();
+  light_buffer_ = new UniformBufferObject<LightBlock>(*device_);
+}
+
+void Renderer::createDescriptorPool() {
+  std::array<VkDescriptorPoolSize, 3> poolSizes = {};
+  poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  poolSizes[0].descriptorCount = device_->getDisplayImagesSize();
+  poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+  poolSizes[1].descriptorCount = device_->getDisplayImagesSize();
+  poolSizes[2].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  poolSizes[2].descriptorCount = device_->getDisplayImagesSize();
+
+  VkDescriptorPoolCreateInfo poolInfo = {};
+  poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+  poolInfo.poolSizeCount = poolSizes.size();
+  poolInfo.pPoolSizes = poolSizes.data();
+  poolInfo.maxSets = device_->getDisplayImagesSize();
+
+  CALL_VK(vkCreateDescriptorPool(device_->getDevice(), &poolInfo, nullptr, &descriptor_pool_));
 }
 
 VkCommandBuffer Renderer::getCurrentCommandBuffer() const {
