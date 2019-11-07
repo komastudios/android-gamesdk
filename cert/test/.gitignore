@@ -100,15 +100,15 @@ lint/tmp/
 # hide log directories and log reports
 devicefarm/*/
 tmp/
+out/
 report.json
 report.csv
 configuration_backup.json
 
 __pycache__
-Pipfile.lock
 
 # hide VSCode settings files
-reporting/.vscode/settings.json
+reporting/.vscode
 
 # hide 3rd party deps
 AndroidCertTest/common/3rd_party/*
