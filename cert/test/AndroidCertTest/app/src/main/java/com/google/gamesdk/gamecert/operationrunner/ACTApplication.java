@@ -17,10 +17,12 @@
 package com.google.gamesdk.gamecert.operationrunner;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 
 public class ACTApplication extends Application {
 
     private static ACTApplication _instance = null;
+    private static final String PREFS_KEY_IS_RUNNING_TEST = "MainActivity.isRunningTest";
 
     public static ACTApplication getInstance() {
         return _instance;
@@ -31,4 +33,17 @@ public class ACTApplication extends Application {
         _instance = this;
         super.onCreate();
     }
+
+    public void setIsRunningTest(boolean isRunningTest) {
+        getPreferences().edit().putBoolean(PREFS_KEY_IS_RUNNING_TEST, isRunningTest).commit();
+    }
+
+    public boolean isRunningTest() {
+        return getPreferences().getBoolean(PREFS_KEY_IS_RUNNING_TEST, false);
+    }
+
+    private SharedPreferences getPreferences() {
+        return getSharedPreferences(getClass().getSimpleName(), MODE_PRIVATE);
+    }
+
 }
