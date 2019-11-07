@@ -1,0 +1,51 @@
+{
+  "auto_run": false,
+  "delay_between_tests": "5000ms",
+  "host": "SwappyGLHostActivity",
+  "defaultMonitors": [
+    {
+      "id": "MonitorOperation"
+    }
+  ],
+  "stress_tests": [
+    {
+      "enabled": true,
+      "name": "Affinity Test",
+      "description": "Attempts to set affinity to each available processor and validate our selection 'sticks'.",
+      "duration": "10s",
+      "data_gatherer": {
+        "id": "ScheduleAffinityOperation",
+        "configuration": {
+          "thread_count": 4,
+          "report_frequency": "50ms"
+        }
+      },
+      "stressors": [
+        {
+          "id": "JsonManipulatorOperation",
+          "configuration": {
+            "json_asset_name": "JsonManipulatorOperation.json"
+          }
+        },
+        {
+          "id": "JsonManipulatorOperation",
+          "configuration": {
+            "json_asset_name": "JsonManipulatorOperation.json"
+          }
+        },
+        {
+          "id": "JsonManipulatorOperation",
+          "configuration": {
+            "json_asset_name": "JsonManipulatorOperation.json"
+          }
+        },
+        {
+          "id": "JsonManipulatorOperation",
+          "configuration": {
+            "json_asset_name": "JsonManipulatorOperation.json"
+          }
+        }
+      ]
+    }
+  ]
+}
