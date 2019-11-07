@@ -14,9 +14,41 @@
 #import "bender_kit.h"
 #import "geometry.h"
 #import "shader_state.h"
+#import "texture.h"
+
+#import "uniform_buffer.h"
+
+struct ModelViewProjection {
+  alignas(16) glm::mat4 mvp;
+  alignas(16) glm::mat4 model;
+  alignas(16) glm::mat4 invTranspose;
+};
+
+struct PointLight{
+  alignas(16) float intensity;
+  alignas(16) glm::vec3 position;
+  alignas(16) glm::vec3 color;
+};
+
+struct AmbientLight{
+  alignas(16) float intensity;
+  alignas(16) glm::vec3 color;
+};
+
+struct LightBlock{
+  PointLight pointLight;
+  AmbientLight ambientLight;
+  alignas(16) glm::vec3 cameraPos;
+};
 
 class Mesh {
 public:
+  static void createPools(BenderKit::Device& device);
+  static void destroyPools(BenderKit::Device& device);
+
+  static VkDescriptorPool getMeshDescriptorPool() { return mesh_descriptor_pool_; };
+  static VkDescriptorPool getMasterialDescriptorPool() { return material_descriptor_pool_; };
+
   Mesh(BenderKit::Device *device,
           const std::vector<float>& vertexData,
           const std::vector<uint16_t>& indexData,
@@ -24,10 +56,14 @@ public:
 
   ~Mesh();
 
-  VkDescriptorSetLayout getDescriptorSetLayout() const { return descriptor_set_layout_; }
+  // TODO: Move texture to the Material class
+  void createDescriptors(Texture* texture);
 
   void updatePipeline(VkRenderPass renderPass);
-  void submitDraw(VkCommandBuffer commandBuffer, VkDescriptorSet& descriptorSet) const;
+
+  // TODO: consolidate camera, view, proj into a camera object
+  void update(uint_t frame_index, glm::vec3 camera, glm::mat4 view, glm::mat4 proj);
+  void submitDraw(VkCommandBuffer commandBuffer, uint_t frame_index) const;
 
   void translate(glm::vec3 offset);
   void rotate(glm::vec3 axis, float angle);
@@ -44,6 +80,15 @@ public:
   glm::mat4 getTransform() const;
 
 private:
+  static VkDescriptorPool mesh_descriptor_pool_;
+  static VkDescriptorPool material_descriptor_pool_;
+
+  UniformBufferObject<ModelViewProjection> *mvpBuffer;
+
+  // TODO: extract the lightsBuffer into a different class (Renderer?)
+  // TODO: give the lights buffer its own descriptor set
+  UniformBufferObject<LightBlock> *lightsBuffer;
+
   BenderKit::Device *device_;
 
   std::shared_ptr<Geometry> geometry_;
@@ -53,10 +98,15 @@ private:
   glm::quat rotation_;
   glm::vec3 scale_;
 
-  VkDescriptorSetLayout descriptor_set_layout_;
+  VkDescriptorSetLayout material_layout_;
+  VkDescriptorSetLayout model_view_projection_layout_;
+
   VkPipelineLayout layout_;
   VkPipelineCache cache_;
   VkPipeline pipeline_ = VK_NULL_HANDLE;
+
+  std::vector<VkDescriptorSet> material_descriptor_sets_;
+  std::vector<VkDescriptorSet> model_view_projection_descriptor_sets_;
 
   void createDescriptorSetLayout();
   void createMeshPipeline(VkRenderPass renderPass);
