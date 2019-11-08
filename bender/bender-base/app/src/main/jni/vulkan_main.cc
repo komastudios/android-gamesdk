@@ -33,6 +33,7 @@
 #include "polyhedron.h"
 #include "mesh.h"
 #include "texture.h"
+#include "font.h"
 #include "uniform_buffer.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -340,7 +341,7 @@ bool InitVulkan(android_app *app) {
 
   createShaderState();
 
-  mesh = createPolyhedron(device, shaders, 20);
+  mesh = createPolyhedron(device, shaders, 6);
 
   const std::vector<float> vertexData = {
       -0.5f, -0.5f, 0.5f,          -0.5774f, -0.5774f, 0.5774f,       1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
@@ -358,7 +359,7 @@ bool InitVulkan(android_app *app) {
 
   createFrameBuffers(render_pass, depthBuffer.image_view);
 
-  texFiles.push_back("textures/sample_texture.png");
+  texFiles.push_back(FONT_SDF_PATH);
 
   createTextures();
 
