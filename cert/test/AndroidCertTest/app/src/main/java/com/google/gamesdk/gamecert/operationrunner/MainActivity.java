@@ -52,6 +52,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Objects;
 
 @SuppressLint("ApplySharedPref")
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
     private StressTestAdapter _testsAdapter;
     private Handler _mainThreadPump;
     private String _reportFilePath;
+    private int _reportFileDescriptor = -1;
     private boolean _finishAfterTestCompletion;
 
     @Override
@@ -214,7 +216,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openReportLog() {
-        NativeInvoker.openReportFile(_reportFilePath);
+        if (_reportFileDescriptor != -1) {
+            NativeInvoker.openReportFileDescriptor(_reportFileDescriptor);
+        } else if (_reportFilePath != null) {
+            NativeInvoker.openReportFile(_reportFilePath);
+        } else {
+            finish();
+            throw new IllegalStateException("_reportFilePath is null and _reportFileDescriptor is -1; no log file to write to");
+        }
 
         try {
             JSONObject build = new JSONObject();
@@ -244,7 +253,6 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
             finish();
         }
-
     }
 
     private boolean handleGameLoopLaunch() {
@@ -252,12 +260,35 @@ public class MainActivity extends AppCompatActivity {
         if ("com.google.intent.action.TEST_LOOP".equals(launchIntent.getAction())) {
             Log.i(TAG, "launched via TEST_LOOP game loop mode");
 
-            Uri logFile = launchIntent.getData();
-            if (logFile != null) {
-                String logPath = logFile.getEncodedPath();
+            Uri logFileUri = launchIntent.getData();
+            if (logFileUri != null) {
+                String logPath = logFileUri.getEncodedPath();
                 if (logPath != null) {
-                    Log.i(TAG, "Gameloop log file " + logPath);
-                    _reportFilePath = logPath;
+                    Log.i(TAG, "TEST_LOOP: game-loop logPath: " + logPath);
+
+                    // we need to get the file descriptor for this URI
+                    // https://firebase.google.com/docs/test-lab/android/game-loop
+                    _reportFileDescriptor = -1;
+                    try {
+                        _reportFileDescriptor = getContentResolver()
+                                .openAssetFileDescriptor(logFileUri, "w")
+                                .getParcelFileDescriptor()
+                                .getFd();
+
+                        Log.i(TAG, "resolved game-loop _reportFileDescriptor: "
+                                + _reportFileDescriptor);
+                    } catch (FileNotFoundException e) {
+                        Log.e(TAG,
+                                "Unable to get report file descriptor, FileNotFound: "
+                                + e.getLocalizedMessage());
+                        e.printStackTrace();
+                        _reportFileDescriptor = -1;
+                    } catch (NullPointerException e) {
+                        Log.e(TAG, "Unable to get report file descriptor, NPE: "
+                                + e.getLocalizedMessage());
+                        e.printStackTrace();
+                        _reportFileDescriptor = -1;
+                    }
                 }
             }
             openReportLog();
@@ -279,7 +310,9 @@ public class MainActivity extends AppCompatActivity {
     private void startAutoRun() {
         _configuration.setAutoRun(true);
         setTestsRecyclerViewInteractionEnabled(false);
-        _mainThreadPump.postDelayed(this::runCurrentTest, _configuration.getDelayBetweenTestsMillis());
+        _mainThreadPump.postDelayed(
+                this::runCurrentTest,
+                _configuration.getDelayBetweenTestsMillis());
     }
 
 
@@ -292,10 +325,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void runCurrentTest() {
-        runStressTest(_configuration.getStressTests()[_currentStressTestIndex % numTests()], false);
+        int idx = _currentStressTestIndex % numTests();
+        Configuration.StressTest st = _configuration.getStressTests()[idx];
+        runStressTest(st, false);
     }
 
-    private void runStressTest(Configuration.StressTest stressTest, boolean finishOnCompletion) {
+    private void runStressTest(
+            Configuration.StressTest stressTest,
+            boolean finishOnCompletion) {
 
         Intent i;
         String host = stressTest.getHost();
@@ -361,7 +398,8 @@ public class MainActivity extends AppCompatActivity {
      * Adapter to feed the RecyclerView
      */
 
-    private static class StressTestAdapter extends RecyclerView.Adapter<StressTestAdapter.StressTestViewHolder> {
+    private static class StressTestAdapter
+            extends RecyclerView.Adapter<StressTestAdapter.StressTestViewHolder> {
 
         class StressTestViewHolder extends RecyclerView.ViewHolder {
             TextView name;
@@ -401,7 +439,8 @@ public class MainActivity extends AppCompatActivity {
         private StressTestTapListener _listener;
         private boolean _interactionEnabled;
 
-        StressTestAdapter(Configuration _configuration, StressTestTapListener listener) {
+        StressTestAdapter(Configuration _configuration,
+                          StressTestTapListener listener) {
             this._configuration = _configuration;
             this._listener = listener;
         }
@@ -416,7 +455,8 @@ public class MainActivity extends AppCompatActivity {
 
         @NonNull
         @Override
-        public StressTestAdapter.StressTestViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public StressTestAdapter.StressTestViewHolder
+        onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.stress_test_recycler_item, parent, false);
 
@@ -424,7 +464,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull StressTestAdapter.StressTestViewHolder holder, int position) {
+        public void
+        onBindViewHolder(@NonNull StressTestAdapter.StressTestViewHolder holder,
+                         int position) {
             Configuration.StressTest st = _configuration.getStressTests()[position];
             holder.bind(st);
         }
