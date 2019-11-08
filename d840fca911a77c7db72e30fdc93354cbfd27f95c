@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "d2557399_cd96bf56",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-08T19:25:51Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "bae2b984_dbad9c79",
+      "revId": "d840fca911a77c7db72e30fdc93354cbfd27f95c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "62f6e29f_14f62483",
         "filename": "bender/bender-base/app/src/main/jni/geometry.h",
         "patchSetId": 3
@@ -30,6 +48,24 @@
       "writtenOn": "2019-11-08T19:23:30Z",
       "side": 1,
       "message": "super nit pick: BenderKit::Device\u0026 device",
+      "revId": "d840fca911a77c7db72e30fdc93354cbfd27f95c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "de0de1a6_71ef82e8",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-08T19:25:51Z",
+      "side": 1,
+      "message": "Ooh okay I\u0027ll try to fix these around",
+      "parentUuid": "62f6e29f_14f62483",
       "revId": "d840fca911a77c7db72e30fdc93354cbfd27f95c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "f50713c5_46b5e46c",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-08T19:25:51Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "614136d5_b8a29e97",
+      "revId": "d840fca911a77c7db72e30fdc93354cbfd27f95c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "531a193f_1621e3fc",
         "filename": "bender/bender-base/app/src/main/jni/mesh.h",
         "patchSetId": 3
@@ -67,6 +121,24 @@
       "revId": "d840fca911a77c7db72e30fdc93354cbfd27f95c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1611092f_15aba775",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-08T19:25:51Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "531a193f_1621e3fc",
+      "revId": "d840fca911a77c7db72e30fdc93354cbfd27f95c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
