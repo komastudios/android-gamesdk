@@ -33,6 +33,7 @@
 #include "polyhedron.h"
 #include "mesh.h"
 #include "texture.h"
+#include "font.h"
 #include "uniform_buffer.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -71,7 +72,9 @@ glm::mat4 proj;
 
 
 std::shared_ptr<ShaderState> shaders;
+std::shared_ptr<ShaderState> font_shaders;
 Mesh *mesh;
+Font *font;
 
 auto lastTime = std::chrono::high_resolution_clock::now();
 auto currentTime = lastTime;
@@ -208,6 +211,10 @@ void createShaderState() {
   shaders->addVertexAttributeDescription(0, 1, VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(float));
   shaders->addVertexAttributeDescription(0, 2, VK_FORMAT_R32G32B32_SFLOAT, 6 * sizeof(float));
   shaders->addVertexAttributeDescription(0, 3, VK_FORMAT_R32G32_SFLOAT, 9 * sizeof(float));
+  font_shaders = std::make_shared<ShaderState>("sdf", androidAppCtx, device->getDevice());
+  font_shaders->addVertexInputBinding(0, 5 * sizeof(float));
+  font_shaders->addVertexAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0);
+  font_shaders->addVertexAttributeDescription(0, 1, VK_FORMAT_R32G32_SFLOAT, 3 * sizeof(float));
 }
 
 void createDepthBuffer() {
@@ -363,6 +370,12 @@ bool InitVulkan(android_app *app) {
 
   createFrameBuffers(render_pass, depthBuffer.image_view);
 
+  texFiles.push_back("textures/sample_texture.png");
+
+  createTextures();
+
+  font = new Font(*device, *renderer, font_shaders, androidAppCtx, FONT_SDF_PATH, FONT_INFO_PATH);
+
   return true;
 }
 
@@ -371,6 +384,7 @@ bool IsVulkanReady(void) { return device != nullptr && device->isInitialized(); 
 void DeleteVulkan(void) {
   delete renderer;
   delete mesh;
+  delete font;
 
   shaders->cleanup();
   shaders.reset();
@@ -409,7 +423,7 @@ bool VulkanDrawFrame(Input::Data *inputData) {
 
   mesh->update(renderer->getCurrentFrame(), camera.position, view, proj);
   renderer->updateLights(camera.position);
-
+  font->update(renderer->getCurrentFrame());
   renderer->beginFrame();
   renderer->beginPrimaryCommandBufferRecording();
 
@@ -441,8 +455,10 @@ bool VulkanDrawFrame(Input::Data *inputData) {
 
 
   mesh->updatePipeline(render_pass);
+  font->updatePipeline(render_pass);
 
   mesh->submitDraw(renderer->getCurrentCommandBuffer(), renderer->getCurrentFrame());
+  font->generateText("B3nDer V1", renderer->getCurrentCommandBuffer(), renderer->getCurrentFrame());
 
   vkCmdEndRenderPass(renderer->getCurrentCommandBuffer());
 

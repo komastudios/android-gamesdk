@@ -236,3 +236,11 @@ VkResult Texture::loadTextureFromFile(const char *file_path,
     vkDestroyCommandPool(device_.getDevice(), cmd_pool, nullptr);
     return VK_SUCCESS;
 }
+
+int32_t Texture::getWidth() {
+    return tex_width_;
+}
+
+int32_t Texture::getHeight() {
+    return tex_height_;
+}
