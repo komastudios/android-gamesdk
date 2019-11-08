@@ -338,9 +338,7 @@ bool InitVulkan(android_app *app) {
 
   createShaderState();
 
-  Mesh::createPools(*device);
-
-  renderer = new Renderer(*device, Mesh::getMaterialDescriptorPool());
+  renderer = new Renderer(*device);
 
   mesh = createPolyhedron(*renderer, shaders, 20);
 
@@ -382,8 +380,6 @@ void DeleteVulkan(void) {
     vkDestroyImageView(device->getDevice(), displayViews_[i], nullptr);
     vkDestroyFramebuffer(device->getDevice(), framebuffers_[i], nullptr);
   }
-
-  Mesh::destroyPools(*device);
 
   vkDestroyImageView(device->getDevice(), depthBuffer.image_view, nullptr);
   vkDestroyImage(device->getDevice(), depthBuffer.image, nullptr);

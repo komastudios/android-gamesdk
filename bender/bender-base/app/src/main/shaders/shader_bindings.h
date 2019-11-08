@@ -10,7 +10,6 @@
 
 //////// LIGHTS BINDINGS
 
-// TODO: change the lights set index once the lights set is extracted
 #define BINDING_SET_LIGHTS 1
 #define FRAGMENT_BINDING_LIGHTS 2
 

@@ -39,7 +39,7 @@ struct LightBlock{
 
 class Renderer {
  public:
-  Renderer(BenderKit::Device& device, VkDescriptorPool descriptorPool);
+  Renderer(BenderKit::Device& device);
   ~Renderer();
 
   void beginFrame();
@@ -53,6 +53,8 @@ class Renderer {
   BenderKit::Device& getDevice() const { return device_; };
   VkCommandBuffer getCurrentCommandBuffer() const;
   uint32_t getCurrentFrame() const;
+
+  VkDescriptorPool getDescriptorPool() const { return descriptor_pool_; };
   VkDescriptorSetLayout getLightsDescriptorSetLayout() const { return lights_descriptors_layout_; }
   VkDescriptorSet getLightsDescriptorSet(uint_t frame_index) const { return lights_descriptor_sets_[frame_index]; }
 
@@ -65,15 +67,20 @@ private:
   VkSemaphore *render_finished_semaphore_;
   VkFence *fence_;
 
-  UniformBufferObject<LightBlock> *lightsBuffer;
+  VkDescriptorPool descriptor_pool_;
   VkDescriptorSetLayout lights_descriptors_layout_;
   std::vector<VkDescriptorSet> lights_descriptor_sets_;
+  UniformBufferObject<LightBlock> *lightsBuffer;
 
   void init();
 
+  void createPool();
+
+  void destroyPool();
+
   void createLightsDescriptorSetLayout();
 
-  void createLightsDescriptors(VkDescriptorPool descriptorPool);
+  void createLightsDescriptors();
 
   VkImage getCurrentDisplayImage() const;
 };
