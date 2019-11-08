@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "1b95b3c3_e25f6d3c",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-08T18:40:46Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "dca8d268_ba34d723",
+      "revId": "520e08fb731f2e84043fd8543fb14e00f5e51c2f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e1b7244f_7ae50bc8",
         "filename": "bender/bender-base/app/src/main/jni/renderer.h",
         "patchSetId": 2
@@ -30,6 +48,24 @@
       "writtenOn": "2019-11-08T18:30:20Z",
       "side": 1,
       "message": "Handles don\u0027t need to be returned by reference, you can simply return VkDescriptorSet.\nAlso, this is the lights descriptor set, so we should use a more descriptive getter name.\n\nLast thing: spaces are free :P \nSomething like { return ...; }",
+      "revId": "520e08fb731f2e84043fd8543fb14e00f5e51c2f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "12a13794_698428f3",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-08T18:40:46Z",
+      "side": 1,
+      "message": "LOL whoops didn\u0027t catch this naming-wise (will do)",
+      "parentUuid": "e1b7244f_7ae50bc8",
       "revId": "520e08fb731f2e84043fd8543fb14e00f5e51c2f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -50,6 +86,24 @@
       "revId": "520e08fb731f2e84043fd8543fb14e00f5e51c2f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "de68dc32_d95a6b40",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-08T18:40:46Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "490fe5fa_bcc6c725",
+      "revId": "520e08fb731f2e84043fd8543fb14e00f5e51c2f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
