@@ -11,10 +11,10 @@
 //////// LIGHTS BINDINGS
 
 // TODO: change the lights set index once the lights set is extracted
-#define BINDING_SET_LIGHTS BINDING_SET_MATERIAL
+#define BINDING_SET_LIGHTS 1
 #define FRAGMENT_BINDING_LIGHTS 2
 
 //////// MESH BINDINGS
 
-#define BINDING_SET_MESH  1
+#define BINDING_SET_MESH  2
 #define VERTEX_BINDING_MODEL_VIEW_PROJECTION 0

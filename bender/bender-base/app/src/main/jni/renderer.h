@@ -15,12 +15,31 @@
 #ifndef BENDER_BASE_RENDERER_H_
 #define BENDER_BASE_RENDERER_H_
 
+#include "glm/glm.hpp"
 #include "vulkan_wrapper.h"
 #include "bender_kit.h"
+#include "uniform_buffer.h"
+
+struct PointLight{
+    alignas(16) float intensity;
+    alignas(16) glm::vec3 position;
+    alignas(16) glm::vec3 color;
+};
+
+struct AmbientLight{
+    alignas(16) float intensity;
+    alignas(16) glm::vec3 color;
+};
+
+struct LightBlock{
+    PointLight pointLight;
+    AmbientLight ambientLight;
+    alignas(16) glm::vec3 cameraPos;
+};
 
 class Renderer {
  public:
-  Renderer(BenderKit::Device *device);
+  Renderer(BenderKit::Device& device, VkDescriptorPool descriptorPool);
   ~Renderer();
 
   void beginFrame();
@@ -29,13 +48,16 @@ class Renderer {
   void beginPrimaryCommandBufferRecording();
   void endPrimaryCommandBufferRecording();
 
+  void updateLights(glm::vec3 camera);
+
+  BenderKit::Device& getDevice() const { return device_; };
   VkCommandBuffer getCurrentCommandBuffer() const;
   uint32_t getCurrentFrame() const;
+  VkDescriptorSetLayout getLightsDescriptorSetLayout() const { return lights_descriptors_layout_; }
+  VkDescriptorSet getLightsDescriptorSet(uint_t frame_index) const { return lights_descriptor_sets_[frame_index]; }
 
 private:
-  VkImage getCurrentDisplayImage();
-
-  BenderKit::Device *device_;
+  BenderKit::Device& device_;
   VkCommandPool cmd_pool_;
   VkCommandBuffer *cmd_buffer_;
   uint32_t cmd_buffer_len_;
@@ -43,9 +65,17 @@ private:
   VkSemaphore *render_finished_semaphore_;
   VkFence *fence_;
 
-//  uint32_t current_frame;
+  UniformBufferObject<LightBlock> *lightsBuffer;
+  VkDescriptorSetLayout lights_descriptors_layout_;
+  std::vector<VkDescriptorSet> lights_descriptor_sets_;
 
   void init();
+
+  void createLightsDescriptorSetLayout();
+
+  void createLightsDescriptors(VkDescriptorPool descriptorPool);
+
+  VkImage getCurrentDisplayImage() const;
 };
 
 #endif // _RENDERER_HPP_
