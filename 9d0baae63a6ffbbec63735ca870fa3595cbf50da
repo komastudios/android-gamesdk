@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "07e8737b_8f7c3a2b",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/HalfFloatPrecisionGLES3Operation.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1587423
+      },
+      "writtenOn": "2019-11-08T23:59:56Z",
+      "side": 1,
+      "message": "yes, I will remove this because it is not used anywhere",
+      "parentUuid": "b50ed4d7_7f0d4cc0",
+      "revId": "9d0baae63a6ffbbec63735ca870fa3595cbf50da",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1cfe9483_b3e8c600",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/HalfFloatPrecisionGLES3Operation.cpp",
         "patchSetId": 5
@@ -30,6 +48,24 @@
       "writtenOn": "2019-11-08T22:04:37Z",
       "side": 1,
       "message": "Magic number. Does 0.9f means something? If so, the best practice is to declare a constant with a meaningful name, then apply it here.",
+      "revId": "9d0baae63a6ffbbec63735ca870fa3595cbf50da",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cd8de32e_b84cd849",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/HalfFloatPrecisionGLES3Operation.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1587423
+      },
+      "writtenOn": "2019-11-08T23:59:56Z",
+      "side": 1,
+      "message": "It is the length of the vertex. So I renamed \u0027v\u0027 to \u0027vertex_length\u0027",
+      "parentUuid": "1cfe9483_b3e8c600",
       "revId": "9d0baae63a6ffbbec63735ca870fa3595cbf50da",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "c81cb1aa_a6e75e58",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/HalfFloatPrecisionGLES3Operation.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 1587423
+      },
+      "writtenOn": "2019-11-08T23:59:56Z",
+      "side": 1,
+      "message": "Yes, this is desired behavior. We report only if it fails",
+      "parentUuid": "addc79d3_244b4bb9",
+      "revId": "9d0baae63a6ffbbec63735ca870fa3595cbf50da",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1094f0b6_3d2bed22",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/HalfFloatPrecisionGLES3Operation.cpp",
         "patchSetId": 5
@@ -64,6 +118,24 @@
       "writtenOn": "2019-11-08T22:04:37Z",
       "side": 1,
       "message": "Magic numbers. Namely, you may declare\n\nconst auto NO_COLOR{0}, MAX_COLOR{255};\n// 👆 or better names, I\u0027m just guessing what these numbers mean in this context.\n...\nif (_color_offset \u003e MAX_COLOR) { _color_offset \u003d NO_COLOR };",
+      "revId": "9d0baae63a6ffbbec63735ca870fa3595cbf50da",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5e1db103_78c97fe6",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/HalfFloatPrecisionGLES3Operation.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1587423
+      },
+      "writtenOn": "2019-11-08T23:59:56Z",
+      "side": 1,
+      "message": "Added the comment to understand better about this line. Also added the constant MAX_COLOR{255}",
+      "parentUuid": "1094f0b6_3d2bed22",
       "revId": "9d0baae63a6ffbbec63735ca870fa3595cbf50da",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
