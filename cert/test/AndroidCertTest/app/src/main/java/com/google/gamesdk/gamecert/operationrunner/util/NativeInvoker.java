@@ -31,7 +31,10 @@ public class NativeInvoker {
      */
     public static native boolean runUnitTests();
 
-    public static native void initializeSuite(BaseHostActivity activity);
+    public static native void initializeSuite(BaseHostActivity activity,
+                                              String internal_data_path,
+                                              String raw_data_path,
+                                              String obb_path);
 
     public static native void shutdownSuite();
 
