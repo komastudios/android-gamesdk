@@ -10,6 +10,26 @@
   "stress_tests": [
     {
       "enabled": true,
+      "name": "I/O Performance Test",
+      "description": "Reads data from a file",
+      "duration": "10sec",
+      "data_gatherer": {
+        "id": "IOPerformanceOperation",
+        "configuration": {
+          "file_location": "Create File",
+          "thread_setup": "All Cores",
+          "work_scheme": "Greedy",
+          "file_api": "C++ Streams",
+          "data_size": 1048576,
+          "buf_size": 256,
+          "read_align": 384
+        }
+      },
+      "stressors": [
+      ]
+    },
+    {
+      "enabled": true,
       "name": "Affinity Test",
       "description": "Attempts to set affinity to each available processor and validate our selection 'sticks'.",
       "duration": "10s",

@@ -95,6 +95,13 @@ void ancer::internal::UnbindJNI() {
 
 //==================================================================================================
 
+std::string ancer::InternalDataPath() {
+    // TODO(tmillican@google.com): Placeholder, needs to be set up properly.
+    return "/data/user/0/com.google.gamesdk.gamecert.operationrunner/files";
+}
+
+//==================================================================================================
+
 std::string ancer::LoadText(const char* file_name) {
     std::string text;
     JniCallInAttachedThread(

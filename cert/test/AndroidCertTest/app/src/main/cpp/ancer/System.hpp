@@ -36,6 +36,10 @@ namespace ancer {
         void UnbindJNI();
     }
 
+    // TODO(tmillican@google.com): Would prefer filesystem, but it was causing
+    //  linker errors. :/
+    [[nodiscard]] std::string InternalDataPath();
+
     /*
      * Load the text from a file in the application's assets/ folder
      */
