@@ -220,7 +220,7 @@ void Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer 
   CALL_VK(vkBindBufferMemory(device_, buffer, bufferMemory, 0));
 }
 
-void Device::CreateSwapChain() {
+void Device::CreateSwapChain(VkSurfaceTransformFlagBitsKHR transformFlags, VkSwapchainKHR oldSwapchain = VK_NULL_HANDLE) {
   LOGI("->CreateSwapChain");
 
   // **********************************************************
@@ -261,14 +261,14 @@ void Device::CreateSwapChain() {
       .imageColorSpace = formats[chosenFormat].colorSpace,
       .imageExtent = surfaceCapabilities.currentExtent,
       .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-      .preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR,
+      .preTransform = transformFlags,
       .compositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR,
       .imageArrayLayers = 1,
       .imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
       .queueFamilyIndexCount = 1,
       .pQueueFamilyIndices = &queueFamilyIndex_,
       .presentMode = VK_PRESENT_MODE_FIFO_KHR,
-      .oldSwapchain = VK_NULL_HANDLE,
+      .oldSwapchain = oldSwapchain,
       .clipped = VK_FALSE,
   };
   CALL_VK(vkCreateSwapchainKHR(device_, &swapchainCreateInfo, nullptr,

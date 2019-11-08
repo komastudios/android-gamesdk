@@ -126,7 +126,7 @@ private:
   void CreateVulkanDevice(ANativeWindow *platformWindow,
                           VkApplicationInfo *appInfo);
 
-  void CreateSwapChain();
+  void CreateSwapChain(VkSurfaceTransformFlagBitsKHR transformFlags, VkSwapchainKHR oldSwapchain = VK_NULL_HANDLE);
 };
 }
 

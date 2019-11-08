@@ -31,6 +31,8 @@ bool IsVulkanReady(void);
 // Ask Vulkan to Render a frame
 bool VulkanDrawFrame(Input::Data *inputData);
 
+bool ScreenRotation(int width, int height);
+
 #endif // __VULKANMAIN_HPP__
 
 

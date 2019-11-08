@@ -40,6 +40,12 @@ void handle_cmd(android_app *app, int32_t cmd) {
       // The window is being shown, get it ready.
       InitVulkan(app);
       break;
+    case APP_CMD_CONTENT_RECT_CHANGED :
+      // Get the new size
+      auto width  = app->contentRect.right - app->contentRect.left;
+      auto height = app->contentRect.bottom - app->contentRect.top;
+      ScreenRotation(width, height);
+      break;
     case APP_CMD_TERM_WINDOW:
       // The window is being hidden or closed, clean it up.
       DeleteVulkan();

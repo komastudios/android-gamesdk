@@ -455,3 +455,44 @@ bool VulkanDrawFrame(Input::Data *inputData) {
   return true;
 }
 
+bool ScreenRotation(int width, int height) {
+  vkDeviceWaitIdle(device->getDevice());
+
+  for (int i = 0; i < device->getSwapchainLength(); ++i) {
+    vkDestroyImageView(device->getDevice(), displayViews_[i], nullptr);
+    vkDestroyFramebuffer(device->getDevice(), framebuffers_[i], nullptr);
+  }
+
+  VkSurfaceCapabilitiesKHR surface_properties;
+  vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device->getPhysicalDevice(),
+                                            device->getSurface(),
+                                            &surface_properties);
+
+  uint32_t                      new_width         = surface_properties.currentExtent.width;
+  uint32_t                      new_height        = surface_properties.currentExtent.height;
+  VkSurfaceTransformFlagBitsKHR new_pre_transform = surface_properties.currentTransform;
+
+  if (new_pre_transform & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR ||
+      new_pre_transform & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR)
+  {
+    // Do not change the swapchain dimensions
+    new_width  = surface_properties.currentExtent.height;
+    new_height = surface_properties.currentExtent.width;
+  }
+
+  surface_properties.currentExtent.width  = new_width;
+  surface_properties.currentExtent.height = new_height;
+
+  VkSwapchainCreateInfoKHR info = {VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR};
+  (...)
+  info.imageExtent              = surface_properties.currentExtent;
+  info.preTransform             = new_pre_transform;
+  info.oldSwapchain             = device->getSwapchain();
+
+  vkCreateSwapchainKHR(device->getDevice(), &info, nullptr, );
+
+  if (old_swapchain != VK_NULL_HANDLE)
+  {
+    vkDestroySwapchainKHR(context.device, old_swapchain, nullptr);
+  }
+}
