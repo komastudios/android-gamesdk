@@ -10,9 +10,9 @@
 
 class Geometry {
  public:
-  Geometry(BenderKit::Device *device,
-           std::vector<float> vertexData,
-           std::vector<uint16_t> indexData);
+  Geometry(BenderKit::Device& device,
+           const std::vector<float>& vertexData,
+           const std::vector<uint16_t>& indexData);
   ~Geometry();
 
   int getVertexCount() const { return vertexCount_; }
@@ -21,7 +21,7 @@ class Geometry {
   void bind(VkCommandBuffer commandBuffer) const;
 
  private:
-  BenderKit::Device *device_;
+  BenderKit::Device& device_;
 
   int vertexCount_;
   VkBuffer vertexBuf_;
@@ -31,7 +31,7 @@ class Geometry {
   VkBuffer indexBuf_;
   VkDeviceMemory indexBufferDeviceMemory_;
 
-  void createVertexBuffer(std::vector<float> vertexData, std::vector<uint16_t> indexData);
+  void createVertexBuffer(const std::vector<float>& vertexData, const std::vector<uint16_t>& indexData);
 };
 
 #endif //BENDER_BASE_GEOMETRY_H

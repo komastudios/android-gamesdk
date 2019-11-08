@@ -5,40 +5,24 @@
 #ifndef BENDER_BASE_MESH_H
 #define BENDER_BASE_MESH_H
 
-#import <vector>
-#import <memory>
+#include <vector>
+#include <memory>
 
-#import "vulkan_wrapper.h"
-#import "glm/glm.hpp"
-#import "glm/gtc/quaternion.hpp"
-#import "bender_kit.h"
-#import "geometry.h"
-#import "shader_state.h"
-#import "texture.h"
+#include "vulkan_wrapper.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/quaternion.hpp"
+#include "bender_kit.h"
+#include "geometry.h"
+#include "shader_state.h"
+#include "texture.h"
+#include "renderer.h"
 
-#import "uniform_buffer.h"
+#include "uniform_buffer.h"
 
 struct ModelViewProjection {
   alignas(16) glm::mat4 mvp;
   alignas(16) glm::mat4 model;
   alignas(16) glm::mat4 invTranspose;
-};
-
-struct PointLight{
-  alignas(16) float intensity;
-  alignas(16) glm::vec3 position;
-  alignas(16) glm::vec3 color;
-};
-
-struct AmbientLight{
-  alignas(16) float intensity;
-  alignas(16) glm::vec3 color;
-};
-
-struct LightBlock{
-  PointLight pointLight;
-  AmbientLight ambientLight;
-  alignas(16) glm::vec3 cameraPos;
 };
 
 class Mesh {
@@ -47,12 +31,10 @@ public:
   static void destroyPools(BenderKit::Device& device);
 
   static VkDescriptorPool getMeshDescriptorPool() { return mesh_descriptor_pool_; };
-  static VkDescriptorPool getMasterialDescriptorPool() { return material_descriptor_pool_; };
+  static VkDescriptorPool getMaterialDescriptorPool() { return material_descriptor_pool_; };
 
-  Mesh(BenderKit::Device *device,
-          const std::vector<float>& vertexData,
-          const std::vector<uint16_t>& indexData,
-          std::shared_ptr<ShaderState> shaders);
+  Mesh(Renderer& renderer, const std::vector<float>& vertexData,
+          const std::vector<uint16_t>& indexData, std::shared_ptr<ShaderState> shaders);
 
   ~Mesh();
 
@@ -85,11 +67,7 @@ private:
 
   UniformBufferObject<ModelViewProjection> *meshBuffer;
 
-  // TODO: extract the lightsBuffer into a different class (Renderer?)
-  // TODO: give the lights buffer its own descriptor set
-  UniformBufferObject<LightBlock> *lightsBuffer;
-
-  BenderKit::Device *device_;
+  Renderer& renderer_;
 
   std::shared_ptr<Geometry> geometry_;
   std::shared_ptr<ShaderState> shaders_;
