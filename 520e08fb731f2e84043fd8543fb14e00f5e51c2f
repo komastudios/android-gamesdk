@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dca8d268_ba34d723",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-08T18:30:20Z",
+      "side": 1,
+      "message": "We can now grab the device from the renderer.\nAlso, can you pass a reference to the renderer and store it as a ref too?",
+      "revId": "520e08fb731f2e84043fd8543fb14e00f5e51c2f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e1b7244f_7ae50bc8",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-08T18:30:20Z",
+      "side": 1,
+      "message": "Handles don\u0027t need to be returned by reference, you can simply return VkDescriptorSet.\nAlso, this is the lights descriptor set, so we should use a more descriptive getter name.\n\nLast thing: spaces are free :P \nSomething like { return ...; }",
+      "revId": "520e08fb731f2e84043fd8543fb14e00f5e51c2f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "490fe5fa_bcc6c725",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-08T18:30:20Z",
+      "side": 1,
+      "message": "const",
+      "revId": "520e08fb731f2e84043fd8543fb14e00f5e51c2f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dedaffbb_c3a100cd",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 413,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-08T18:30:20Z",
+      "side": 1,
+      "message": "Love it.",
+      "revId": "520e08fb731f2e84043fd8543fb14e00f5e51c2f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
