@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ea6ac565_6b22c232",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-08T22:09:32Z",
+      "side": 1,
+      "message": "Should we just make the size \"a bunch\"?",
+      "revId": "bbcfd751a5d339205a17442c60c0f9f486e12e7c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b473d3e0_3a3c5b25",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-08T22:09:32Z",
+      "side": 1,
+      "message": "Should we just make the size \"a bunch\"?",
+      "revId": "bbcfd751a5d339205a17442c60c0f9f486e12e7c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "52cc846d_534f6604",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-08T22:09:32Z",
+      "side": 1,
+      "message": "const",
+      "revId": "bbcfd751a5d339205a17442c60c0f9f486e12e7c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
