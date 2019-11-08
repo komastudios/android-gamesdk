@@ -17,7 +17,7 @@ Mesh::Mesh(Renderer &renderer, Material &material, std::shared_ptr<Geometry> geo
   mesh_buffer_ = std::make_unique<UniformBufferObject<ModelViewProjection>>(renderer_.getDevice());
   createMeshDescriptorSetLayout();
   createMeshDescriptors();
-};
+}
 
 Mesh::Mesh(Renderer &renderer, Material &material, const std::vector<float> &vertexData,
            const std::vector<uint16_t> &indexData) :
@@ -65,6 +65,7 @@ void Mesh::createMeshDescriptors() {
 
     vkUpdateDescriptorSets(renderer_.getVulkanDevice(), descriptorWrites.size(), descriptorWrites.data(),
                            0, nullptr);
+
   }
 }
 
@@ -146,7 +147,7 @@ void Mesh::createMeshPipeline(VkRenderPass renderPass) {
           .flags = 0,
   };
 
-  std::array<VkDescriptorSetLayout, 3> layouts; 
+  std::array<VkDescriptorSetLayout, 3> layouts;
 
   layouts[BINDING_SET_MESH] = mesh_descriptors_layout_;
   layouts[BINDING_SET_MATERIAL] = material_.getMaterialDescriptorSetLayout();

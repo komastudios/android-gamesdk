@@ -33,6 +33,7 @@
 #include "polyhedron.h"
 #include "mesh.h"
 #include "texture.h"
+#include "font.h"
 #include "uniform_buffer.h"
 #include "vertex_format.h"
 
@@ -74,6 +75,7 @@ glm::mat4 proj;
 
 std::shared_ptr<ShaderState> shaders;
 std::vector<Mesh *> meshes;
+Font *font;
 
 auto lastTime = std::chrono::high_resolution_clock::now();
 auto currentTime = lastTime;
@@ -394,6 +396,12 @@ bool InitVulkan(android_app *app) {
 
   createFrameBuffers(render_pass, depthBuffer.image_view);
 
+  texFiles.push_back("textures/sample_texture.png");
+
+  createTextures();
+
+  font = new Font(*renderer, androidAppCtx, FONT_SDF_PATH, FONT_INFO_PATH);
+
   return true;
 }
 
@@ -404,6 +412,7 @@ void DeleteVulkan(void) {
   for (int x = 0; x < meshes.size(); x++) {
     delete meshes[x];
   }
+  delete font;
 
   shaders->cleanup();
   shaders.reset();
