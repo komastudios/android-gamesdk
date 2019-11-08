@@ -18,35 +18,39 @@
 
 #include "trace.h"
 #include "bender_helpers.h"
+#include "shader_bindings.h"
 
 using namespace BenderHelpers;
 
-Renderer::Renderer(BenderKit::Device *device) : device_(device) {
+Renderer::Renderer(BenderKit::Device &device, VkDescriptorPool descriptorPool) : device_(device) {
   init();
+  createLightsDescriptors(descriptorPool);
 }
 
 Renderer::~Renderer() {
-  vkFreeCommandBuffers(device_->getDevice(), cmd_pool_, cmd_buffer_len_,
+  vkFreeCommandBuffers(device_.getDevice(), cmd_pool_, cmd_buffer_len_,
                        cmd_buffer_);
   delete[] cmd_buffer_;
   delete[] acquire_image_semaphore_;
   delete[] render_finished_semaphore_;
   delete[] fence_;
 
-  vkDestroyCommandPool(device_->getDevice(), cmd_pool_, nullptr);
+  delete lightsBuffer;
+
+  vkDestroyCommandPool(device_.getDevice(), cmd_pool_, nullptr);
 }
 
 void Renderer::beginFrame() {
   TRACE_BEGIN_SECTION("vkAcquireNextImageKHR");
   uint32_t nextIndex;
-  CALL_VK(vkAcquireNextImageKHR(device_->getDevice(), device_->getSwapchain(),
+  CALL_VK(vkAcquireNextImageKHR(device_.getDevice(), device_.getSwapchain(),
                                 UINT64_MAX, acquire_image_semaphore_[getCurrentFrame()], VK_NULL_HANDLE,
                                 &nextIndex));
   TRACE_END_SECTION();
 
   TRACE_BEGIN_SECTION("vkWaitForFences");
-  CALL_VK(vkWaitForFences(device_->getDevice(), 1, &fence_[getCurrentFrame()], VK_TRUE, 100000000));
-  CALL_VK(vkResetFences(device_->getDevice(), 1, &fence_[getCurrentFrame()]));
+  CALL_VK(vkWaitForFences(device_.getDevice(), 1, &fence_[getCurrentFrame()], VK_TRUE, 100000000));
+  CALL_VK(vkResetFences(device_.getDevice(), 1, &fence_[getCurrentFrame()]));
   TRACE_END_SECTION();
 }
 
@@ -65,11 +69,11 @@ void Renderer::endFrame() {
       .pSignalSemaphores = &render_finished_semaphore_[getCurrentFrame()]};
 
   TRACE_BEGIN_SECTION("vkQueueSubmit");
-  CALL_VK(vkQueueSubmit(device_->getQueue(), 1, &submit_info, fence_[getCurrentFrame()]));
+  CALL_VK(vkQueueSubmit(device_.getQueue(), 1, &submit_info, fence_[getCurrentFrame()]));
   TRACE_END_SECTION();
 
   TRACE_BEGIN_SECTION("Device::Present");
-  device_->present(&render_finished_semaphore_[getCurrentFrame()]);
+  device_.present(&render_finished_semaphore_[getCurrentFrame()]);
   TRACE_END_SECTION();
 }
 
@@ -88,7 +92,7 @@ void Renderer::beginPrimaryCommandBufferRecording() {
 
   // transition the display image to color attachment layout
   setImageLayout(getCurrentCommandBuffer(),
-                 device_->getDisplayImage(current_frame),
+                 device_.getDisplayImage(current_frame),
                  VK_IMAGE_LAYOUT_UNDEFINED,
                  VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                  VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
@@ -115,16 +119,16 @@ void Renderer::init() {
       .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
       .queueFamilyIndex = 0,
   };
-  CALL_VK(vkCreateCommandPool(device_->getDevice(), &cmd_pool_createInfo, nullptr,
+  CALL_VK(vkCreateCommandPool(device_.getDevice(), &cmd_pool_createInfo, nullptr,
                               &cmd_pool_));
 
-  cmd_buffer_len_ = device_->getSwapchainLength();
-  cmd_buffer_ = new VkCommandBuffer[device_->getSwapchainLength()];
-  acquire_image_semaphore_ = new VkSemaphore[device_->getSwapchainLength()];
-  render_finished_semaphore_ = new VkSemaphore[device_->getSwapchainLength()];
-  fence_ = new VkFence[device_->getSwapchainLength()];
+  cmd_buffer_len_ = device_.getSwapchainLength();
+  cmd_buffer_ = new VkCommandBuffer[device_.getSwapchainLength()];
+  acquire_image_semaphore_ = new VkSemaphore[device_.getSwapchainLength()];
+  render_finished_semaphore_ = new VkSemaphore[device_.getSwapchainLength()];
+  fence_ = new VkFence[device_.getSwapchainLength()];
 
-  for (int i = 0; i < device_->getSwapchainLength(); ++i) {
+  for (int i = 0; i < device_.getSwapchainLength(); ++i) {
     VkCommandBufferAllocateInfo cmd_buffer_createInfo{
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
         .pNext = nullptr,
@@ -132,10 +136,10 @@ void Renderer::init() {
         .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
         .commandBufferCount = 1,
     };
-    CALL_VK(vkAllocateCommandBuffers(device_->getDevice(), &cmd_buffer_createInfo,
+    CALL_VK(vkAllocateCommandBuffers(device_.getDevice(), &cmd_buffer_createInfo,
                                      &cmd_buffer_[i]));
 
-    DebugMarker::setObjectName(device_->getDevice(), (uint64_t)cmd_buffer_[i],
+    DebugMarker::setObjectName(device_.getDevice(), (uint64_t)cmd_buffer_[i],
         VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT,
         ("TEST NAME: COMMAND BUFFER" + std::to_string(i)).c_str());
 
@@ -145,12 +149,12 @@ void Renderer::init() {
         .flags = 0,
     };
 
-    CALL_VK(vkCreateSemaphore(device_->getDevice(),
+    CALL_VK(vkCreateSemaphore(device_.getDevice(),
                               &semaphore_create_info,
                               nullptr,
                               &acquire_image_semaphore_[i]));
 
-    CALL_VK(vkCreateSemaphore(device_->getDevice(),
+    CALL_VK(vkCreateSemaphore(device_.getDevice(),
                               &semaphore_create_info,
                               nullptr,
                               &render_finished_semaphore_[i]));
@@ -161,10 +165,77 @@ void Renderer::init() {
         .flags = VK_FENCE_CREATE_SIGNALED_BIT,
     };
     CALL_VK(
-        vkCreateFence(device_->getDevice(),
+        vkCreateFence(device_.getDevice(),
                       &fenceCreateInfo,
                       nullptr,
                       &fence_[i]));
+  }
+
+  lightsBuffer = new UniformBufferObject<LightBlock>(device_);
+  createLightsDescriptorSetLayout();
+
+}
+
+void Renderer::updateLights(glm::vec3 camera) {
+  lightsBuffer->update(getCurrentFrame(), [&camera](auto &lightsBuffer) {
+      lightsBuffer.pointLight.position = {0.0f, 0.0f, 6.0f};
+      lightsBuffer.pointLight.color = {1.0f, 1.0f, 1.0f};
+      lightsBuffer.pointLight.intensity = 1.0f;
+      lightsBuffer.ambientLight.color = {1.0f, 1.0f, 1.0f};
+      lightsBuffer.ambientLight.intensity = 0.1f;
+      lightsBuffer.cameraPos = camera;
+  });
+}
+
+void Renderer::createLightsDescriptorSetLayout() {
+  VkDescriptorSetLayoutBinding lightBlockLayoutBinding = {};
+  lightBlockLayoutBinding.binding = FRAGMENT_BINDING_LIGHTS;
+  lightBlockLayoutBinding.descriptorCount = 1;
+  lightBlockLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  lightBlockLayoutBinding.pImmutableSamplers = nullptr;
+  lightBlockLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+  std::array<VkDescriptorSetLayoutBinding, 1> bindings = {lightBlockLayoutBinding};
+
+  VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+  layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+  layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+  layoutInfo.pBindings = bindings.data();
+
+  CALL_VK(vkCreateDescriptorSetLayout(device_.getDevice(), &layoutInfo, nullptr,
+                                      &lights_descriptors_layout_));
+}
+
+void Renderer::createLightsDescriptors(VkDescriptorPool descriptorPool) {
+  std::vector<VkDescriptorSetLayout> layouts(device_.getDisplayImagesSize(), lights_descriptors_layout_);
+
+  VkDescriptorSetAllocateInfo allocInfo = {};
+  allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+  allocInfo.descriptorPool = descriptorPool;
+  allocInfo.descriptorSetCount = static_cast<uint32_t>(device_.getDisplayImagesSize());
+  allocInfo.pSetLayouts = layouts.data();
+
+  lights_descriptor_sets_.resize(device_.getDisplayImagesSize());
+  CALL_VK(vkAllocateDescriptorSets(device_.getDevice(), &allocInfo, lights_descriptor_sets_.data()));
+
+  for (size_t i = 0; i < device_.getDisplayImagesSize(); i++) {
+    VkDescriptorBufferInfo lightBlockInfo = {};
+    lightBlockInfo.buffer = lightsBuffer->getBuffer(i);
+    lightBlockInfo.offset = 0;
+    lightBlockInfo.range = sizeof(LightBlock);
+
+    std::array<VkWriteDescriptorSet, 1> descriptorWrites = {};
+
+    descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptorWrites[0].dstSet = lights_descriptor_sets_[i];
+    descriptorWrites[0].dstBinding = FRAGMENT_BINDING_LIGHTS;
+    descriptorWrites[0].dstArrayElement = 0;
+    descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    descriptorWrites[0].descriptorCount = 1;
+    descriptorWrites[0].pBufferInfo = &lightBlockInfo;
+
+    vkUpdateDescriptorSets(device_.getDevice(), descriptorWrites.size(), descriptorWrites.data(),
+                           0, nullptr);
   }
 }
 
@@ -173,9 +244,9 @@ VkCommandBuffer Renderer::getCurrentCommandBuffer() const {
 }
 
 uint32_t Renderer::getCurrentFrame() const {
-  return device_->getCurrentFrameIndex();
+  return device_.getCurrentFrameIndex();
 }
 
-VkImage Renderer::getCurrentDisplayImage() {
-  return device_->getDisplayImage(getCurrentFrame());
+VkImage Renderer::getCurrentDisplayImage() const {
+  return device_.getDisplayImage(getCurrentFrame());
 }

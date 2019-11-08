@@ -14,7 +14,6 @@
 #import "shader_state.h"
 
 
-Mesh* createPolyhedron(BenderKit::Device *device,
-                       std::shared_ptr<ShaderState>, int faces);
+Mesh* createPolyhedron(Renderer *renderer, std::shared_ptr<ShaderState>, int faces);
 
 #endif //BENDER_BASE_SHAPE_H

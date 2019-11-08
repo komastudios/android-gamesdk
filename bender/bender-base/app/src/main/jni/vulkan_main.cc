@@ -275,8 +275,6 @@ bool InitVulkan(android_app *app) {
   device->setObjectName(reinterpret_cast<uint64_t>(device->getDevice()),
       VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, "TEST NAME: VULKAN DEVICE");
 
-  renderer = new Renderer(device);
-
   VkAttachmentDescription color_description{
       .format = device->getDisplayFormat(),
       .samples = VK_SAMPLE_COUNT_1_BIT,
@@ -340,7 +338,11 @@ bool InitVulkan(android_app *app) {
 
   createShaderState();
 
-  mesh = createPolyhedron(device, shaders, 20);
+  Mesh::createPools(*device);
+
+  renderer = new Renderer(*device, Mesh::getMaterialDescriptorPool());
+
+  mesh = createPolyhedron(renderer, shaders, 20);
 
   const std::vector<float> vertexData = {
       -0.5f, -0.5f, 0.5f,          -0.5774f, -0.5774f, 0.5774f,       1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
@@ -361,8 +363,6 @@ bool InitVulkan(android_app *app) {
   texFiles.push_back("textures/sample_texture.png");
 
   createTextures();
-
-  Mesh::createPools(*device);
 
   createDescriptorSets();
 
@@ -410,6 +410,7 @@ bool VulkanDrawFrame(Input::Data *inputData) {
                                    std::cos(2 * totalTime)));
 
   mesh->update(renderer->getCurrentFrame(), camera.position, view, proj);
+  renderer->updateLights(camera.position);
 
   renderer->beginFrame();
   renderer->beginPrimaryCommandBufferRecording();

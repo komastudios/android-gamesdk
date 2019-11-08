@@ -10,7 +10,7 @@
 
 class Geometry {
  public:
-  Geometry(BenderKit::Device *device,
+  Geometry(BenderKit::Device &device,
            std::vector<float> vertexData,
            std::vector<uint16_t> indexData);
   ~Geometry();
@@ -21,7 +21,7 @@ class Geometry {
   void bind(VkCommandBuffer commandBuffer) const;
 
  private:
-  BenderKit::Device *device_;
+  BenderKit::Device &device_;
 
   int vertexCount_;
   VkBuffer vertexBuf_;
