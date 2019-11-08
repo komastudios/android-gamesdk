@@ -194,12 +194,13 @@ void Renderer::createPool() {
   uint32_t maxMvpBuffers = MAX_MESHES * device_.getDisplayImagesSize();
   uint32_t maxLightsBuffers = MAX_LIGHTS * device_.getDisplayImagesSize();
   uint32_t maxSamplers = MAX_SAMPLERS * device_.getDisplayImagesSize();
+  uint32_t maxTexts = MAX_LINES_TEXTS * device_.getDisplayImagesSize();
 
   std::array<VkDescriptorPoolSize, 2> poolSizes = {};
   poolSizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-  poolSizes[0].descriptorCount = maxSamplers;
+  poolSizes[0].descriptorCount = maxSamplers + maxTexts;
   poolSizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-  poolSizes[1].descriptorCount = maxMvpBuffers + maxLightsBuffers;
+  poolSizes[1].descriptorCount = maxMvpBuffers + maxLightsBuffers + maxTexts;
 
   VkDescriptorPoolCreateInfo poolInfo = {};
   poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;

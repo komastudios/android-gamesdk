@@ -26,6 +26,8 @@ public:
             const char *texture_file_name, VkFormat texture_format);
     ~Texture();
     VkImageView getImageView();
+    int32_t getWidth();
+    int32_t getHeight();
 private:
     BenderKit::Device& device_;
     VkImage image_;
