@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d68e1bd5_78266fa4",
+        "filename": "cert/test/reporting/Pipfile",
+        "patchSetId": 3
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-11-08T23:27:11Z",
+      "side": 1,
+      "message": "I like to point out that by installing like this, I got version 3.13 that doesn\u0027t contain yaml attribute \u0027FullLoader\u0027 (required in run.py).\n\nI would suggest\n\npyyaml \u003d \"\u003e\u003d5.1\"\n\nor just the version that worked for me\n👇\npyyaml \u003d \"5.1.2\"",
+      "revId": "112c72df06f5ba651d6029ec3a1ef4ea8d90a3e5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ab71d632_4afada64",
+        "filename": "cert/test/reporting/run.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-11-08T23:27:11Z",
+      "side": 1,
+      "message": "Just found this 👆, Shamyl:\nLine 206 needs a leading space before the \"-n\". As it is, it\u0027s producing this command (i.e., \"start-n\" altogether instead of \"start -n\"):\n\nrun_command: adb -s ce091719c3e1331905 shell am start-n \"com.google.gamesdk.gamecert.operationrunner/.MainActivity\" -a \"com.google.intent.action.TEST_LOOP\"",
+      "revId": "112c72df06f5ba651d6029ec3a1ef4ea8d90a3e5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
