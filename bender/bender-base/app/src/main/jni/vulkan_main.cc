@@ -192,9 +192,29 @@ void updateCamera(Input::Data *inputData) {
     camera.position -= forward * 2.0f * frameTime;
   }
 
-  view = glm::inverse(glm::translate(glm::mat4(1.0f), camera.position) * glm::mat4(camera.rotation));
-  proj = glm::perspective(glm::radians(100.0f),
-                          device->getDisplaySize().width / (float) device->getDisplaySize().height, 0.1f, 100.0f);
+  float aspect_ratio = device->getDisplaySize().width / (float) device->getDisplaySize().height;
+  auto horizontal_fov = glm::radians(60.0f);
+  auto vertical_fov =
+      static_cast<float>(2 * atan((0.5 * device->getDisplaySize().height)
+                                      / (0.5 * device->getDisplaySize().width
+                                          / tan(horizontal_fov / 2))));
+  auto fov = (aspect_ratio > 1.0f) ? horizontal_fov : vertical_fov;
+
+  glm::mat4 pre_rotate_mat = glm::mat4(1.0f);
+  glm::vec3 rotation_axis = glm::vec3(0.0f, 0.0f, -1.0f);
+  if (device->getPretransform() & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR) {
+    pre_rotate_mat = glm::rotate(pre_rotate_mat, glm::radians(90.0f), rotation_axis);
+  }
+  else if (device->getPretransform() & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR) {
+    pre_rotate_mat = glm::rotate(pre_rotate_mat, glm::radians(270.0f), rotation_axis);
+  }
+  else if (device->getPretransform() & VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR) {
+    pre_rotate_mat = glm::rotate(pre_rotate_mat, glm::radians(180.0f), rotation_axis);
+  }
+
+  view = pre_rotate_mat
+      * glm::inverse(glm::translate(glm::mat4(1.0f), camera.position) * glm::mat4(camera.rotation));
+  proj = glm::perspective(fov, aspect_ratio, 0.1f, 100.0f);
   proj[1][1] *= -1;
 }
 
@@ -397,6 +417,9 @@ void DeleteVulkan(void) {
 
 bool VulkanDrawFrame(Input::Data *inputData) {
   TRACE_BEGIN_SECTION("Draw Frame");
+  if (device->windowResized()) {
+    ScreenChange();
+  }
   currentTime = std::chrono::high_resolution_clock::now();
   frameTime = std::chrono::duration<float>(currentTime - lastTime).count();;
   lastTime = currentTime;
@@ -455,3 +478,26 @@ bool VulkanDrawFrame(Input::Data *inputData) {
   return true;
 }
 
+void resizeCallback(ANativeActivity *activity, ANativeWindow *window){
+  if (device == NULL)
+    return;
+
+  device->setWindowResized(true);
+}
+
+void ScreenChange() {
+  vkDeviceWaitIdle(device->getDevice());
+
+  for (int i = 0; i < device->getSwapchainLength(); ++i) {
+    vkDestroyImageView(device->getDevice(), displayViews_[i], nullptr);
+    vkDestroyFramebuffer(device->getDevice(), framebuffers_[i], nullptr);
+  }
+  vkDestroyImageView(device->getDevice(), depthBuffer.image_view, nullptr);
+  vkDestroyImage(device->getDevice(), depthBuffer.image, nullptr);
+  vkFreeMemory(device->getDevice(), depthBuffer.device_memory, nullptr);
+
+  device->CreateSwapChain(device->getSwapchain());
+  createDepthBuffer();
+  createFrameBuffers(render_pass, depthBuffer.image_view);
+  device->setWindowResized(false);
+}
