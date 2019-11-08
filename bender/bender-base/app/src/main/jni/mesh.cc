@@ -50,11 +50,9 @@ void Mesh::destroyPools(BenderKit::Device& device) {
   vkDestroyDescriptorPool(device.getDevice(), mesh_descriptor_pool_, nullptr);
 }
 
-Mesh::Mesh(BenderKit::Device *device, const std::vector<float>& vertexData, const std::vector<uint16_t>& indexData,
-           std::shared_ptr<ShaderState> shaders) {
-  device_ = device;
-
-  geometry_ = std::make_shared<Geometry>(device, vertexData, indexData);
+Mesh::Mesh(Renderer& renderer, const std::vector<float>& vertexData,
+        const std::vector<uint16_t>& indexData, std::shared_ptr<ShaderState> shaders) : renderer_(renderer){
+  geometry_ = std::make_shared<Geometry>(renderer_.getDevice(), vertexData, indexData);
   shaders_ = shaders;
 
   position_ = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -63,82 +61,67 @@ Mesh::Mesh(BenderKit::Device *device, const std::vector<float>& vertexData, cons
 
   createDescriptorSetLayout();
 
-  meshBuffer = new UniformBufferObject<ModelViewProjection>(*device);
-  lightsBuffer = new UniformBufferObject<LightBlock>(*device);
+  meshBuffer = new UniformBufferObject<ModelViewProjection>(renderer_.getDevice());
 }
 
 Mesh::~Mesh() {
-  vkDestroyPipeline(device_->getDevice(), pipeline_, nullptr);
-  vkDestroyPipelineCache(device_->getDevice(), cache_, nullptr);
-  vkDestroyPipelineLayout(device_->getDevice(), layout_, nullptr);
+  vkDestroyPipeline(renderer_.getDevice().getDevice(), pipeline_, nullptr);
+  vkDestroyPipelineCache(renderer_.getDevice().getDevice(), cache_, nullptr);
+  vkDestroyPipelineLayout(renderer_.getDevice().getDevice(), layout_, nullptr);
 
   delete meshBuffer;
-  delete lightsBuffer;
 }
 
 void Mesh::createDescriptors(Texture* texture) {
-  // TODO move this descriptor set to a Material class and extract the lights descriptor set
+  // TODO move this descriptor set to a Material class
   {
-    std::vector<VkDescriptorSetLayout> layouts(device_->getDisplayImagesSize(),
+    std::vector<VkDescriptorSetLayout> layouts(renderer_.getDevice().getDisplayImagesSize(),
                                                material_descriptors_layout_);
 
     VkDescriptorSetAllocateInfo allocInfo = {};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocInfo.descriptorPool = Mesh::getMasterialDescriptorPool();
-    allocInfo.descriptorSetCount = static_cast<uint32_t>(device_->getDisplayImagesSize());
+    allocInfo.descriptorPool = Mesh::getMaterialDescriptorPool();
+    allocInfo.descriptorSetCount = static_cast<uint32_t>(renderer_.getDevice().getDisplayImagesSize());
     allocInfo.pSetLayouts = layouts.data();
 
-    material_descriptor_sets_.resize(device_->getDisplayImagesSize());
-    CALL_VK(vkAllocateDescriptorSets(device_->getDevice(), &allocInfo, material_descriptor_sets_.data()));
+    material_descriptor_sets_.resize(renderer_.getDevice().getDisplayImagesSize());
+    CALL_VK(vkAllocateDescriptorSets(renderer_.getDevice().getDevice(), &allocInfo, material_descriptor_sets_.data()));
 
-    for (size_t i = 0; i < device_->getDisplayImagesSize(); i++) {
+    for (size_t i = 0; i < renderer_.getDevice().getDisplayImagesSize(); i++) {
       VkDescriptorImageInfo imageInfo = {};
       imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
       imageInfo.imageView = texture->getImageView();
       imageInfo.sampler = VK_NULL_HANDLE;
 
-      VkDescriptorBufferInfo lightBlockInfo = {};
-      lightBlockInfo.buffer = lightsBuffer->getBuffer(i);
-      lightBlockInfo.offset = 0;
-      lightBlockInfo.range = sizeof(LightBlock);
-
-      std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
+      std::array<VkWriteDescriptorSet, 1> descriptorWrites = {};
 
       descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
       descriptorWrites[0].dstSet = material_descriptor_sets_[i];
-      descriptorWrites[0].dstBinding = FRAGMENT_BINDING_LIGHTS;
+      descriptorWrites[0].dstBinding = FRAGMENT_BINDING_SAMPLER;
       descriptorWrites[0].dstArrayElement = 0;
-      descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+      descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
       descriptorWrites[0].descriptorCount = 1;
-      descriptorWrites[0].pBufferInfo = &lightBlockInfo;
+      descriptorWrites[0].pImageInfo = &imageInfo;
 
-      descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-      descriptorWrites[1].dstSet = material_descriptor_sets_[i];
-      descriptorWrites[1].dstBinding = FRAGMENT_BINDING_SAMPLER;
-      descriptorWrites[1].dstArrayElement = 0;
-      descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-      descriptorWrites[1].descriptorCount = 1;
-      descriptorWrites[1].pImageInfo = &imageInfo;
-
-      vkUpdateDescriptorSets(device_->getDevice(), descriptorWrites.size(), descriptorWrites.data(),
+      vkUpdateDescriptorSets(renderer_.getDevice().getDevice(), descriptorWrites.size(), descriptorWrites.data(),
                              0, nullptr);
     }
   }
 
   {
-    std::vector<VkDescriptorSetLayout> layouts(device_->getDisplayImagesSize(),
+    std::vector<VkDescriptorSetLayout> layouts(renderer_.getDevice().getDisplayImagesSize(),
                                                mesh_descriptors_layout_);
 
     VkDescriptorSetAllocateInfo allocInfo = {};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     allocInfo.descriptorPool = Mesh::getMeshDescriptorPool();
-    allocInfo.descriptorSetCount = device_->getDisplayImagesSize();
+    allocInfo.descriptorSetCount = renderer_.getDevice().getDisplayImagesSize();
     allocInfo.pSetLayouts = layouts.data();
 
-    model_view_projection_descriptor_sets_.resize(device_->getDisplayImagesSize());
-    CALL_VK(vkAllocateDescriptorSets(device_->getDevice(), &allocInfo, model_view_projection_descriptor_sets_.data()));
+    model_view_projection_descriptor_sets_.resize(renderer_.getDevice().getDisplayImagesSize());
+    CALL_VK(vkAllocateDescriptorSets(renderer_.getDevice().getDevice(), &allocInfo, model_view_projection_descriptor_sets_.data()));
 
-    for (size_t i = 0; i < device_->getDisplayImagesSize(); i++) {
+    for (size_t i = 0; i < renderer_.getDevice().getDisplayImagesSize(); i++) {
       VkDescriptorBufferInfo bufferInfo = {};
       bufferInfo.buffer = meshBuffer->getBuffer(i);
       bufferInfo.offset = 0;
@@ -154,7 +137,7 @@ void Mesh::createDescriptors(Texture* texture) {
       descriptorWrites[0].descriptorCount = 1;
       descriptorWrites[0].pBufferInfo = &bufferInfo;
 
-      vkUpdateDescriptorSets(device_->getDevice(), descriptorWrites.size(), descriptorWrites.data(),
+      vkUpdateDescriptorSets(renderer_.getDevice().getDevice(), descriptorWrites.size(), descriptorWrites.data(),
                              0, nullptr);
     }
   }
@@ -164,15 +147,15 @@ void Mesh::createMeshPipeline(VkRenderPass renderPass) {
   VkViewport viewport{
           .x = 0.0f,
           .y = 0.0f,
-          .width = static_cast<float>(device_->getDisplaySize().width),
-          .height = static_cast<float>(device_->getDisplaySize().height),
+          .width = static_cast<float>(renderer_.getDevice().getDisplaySize().width),
+          .height = static_cast<float>(renderer_.getDevice().getDisplaySize().height),
           .minDepth = 0.0f,
           .maxDepth = 1.0f,
   };
 
   VkRect2D scissor{
           .offset = {0, 0},
-          .extent = device_->getDisplaySize(),
+          .extent = renderer_.getDevice().getDisplaySize(),
   };
 
   VkPipelineViewportStateCreateInfo pipelineViewportState{
@@ -238,10 +221,11 @@ void Mesh::createMeshPipeline(VkRenderPass renderPass) {
           .flags = 0,
   };
 
-  std::array<VkDescriptorSetLayout, 2> layouts;
+  std::array<VkDescriptorSetLayout, 3> layouts;
 
   layouts[BINDING_SET_MESH] = mesh_descriptors_layout_;
-  layouts[BINDING_SET_MATERIAL] = material_descriptors_layout_ ;
+  layouts[BINDING_SET_MATERIAL] = material_descriptors_layout_;
+  layouts[BINDING_SET_LIGHTS] = renderer_.getLightsDescriptorSetLayout();
 
   VkPipelineLayoutCreateInfo pipelineLayoutInfo{
           .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
@@ -252,7 +236,7 @@ void Mesh::createMeshPipeline(VkRenderPass renderPass) {
           .pPushConstantRanges = nullptr,
   };
 
-  CALL_VK(vkCreatePipelineLayout(device_->getDevice(), &pipelineLayoutInfo, nullptr,
+  CALL_VK(vkCreatePipelineLayout(renderer_.getDevice().getDevice(), &pipelineLayoutInfo, nullptr,
                                  &layout_))
 
   VkPipelineCacheCreateInfo pipelineCacheInfo{
@@ -263,7 +247,7 @@ void Mesh::createMeshPipeline(VkRenderPass renderPass) {
           .flags = 0,  // reserved, must be 0
   };
 
-  CALL_VK(vkCreatePipelineCache(device_->getDevice(), &pipelineCacheInfo, nullptr,
+  CALL_VK(vkCreatePipelineCache(renderer_.getDevice().getDevice(), &pipelineCacheInfo, nullptr,
                                 &cache_));
 
   VkGraphicsPipelineCreateInfo pipelineInfo{
@@ -287,7 +271,7 @@ void Mesh::createMeshPipeline(VkRenderPass renderPass) {
 
   shaders_->updatePipelineInfo(pipelineInfo);
 
-  CALL_VK(vkCreateGraphicsPipelines(device_->getDevice(), cache_, 1, &pipelineInfo,
+  CALL_VK(vkCreateGraphicsPipelines(renderer_.getDevice().getDevice(), cache_, 1, &pipelineInfo,
                                     nullptr, &pipeline_));
 }
 
@@ -300,24 +284,14 @@ void Mesh::createDescriptorSetLayout() {
     samplerLayoutBinding.pImmutableSamplers = nullptr;
     samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-    VkDescriptorSetLayoutBinding lightBlockLayoutBinding = {};
-    lightBlockLayoutBinding.binding = FRAGMENT_BINDING_LIGHTS;
-    lightBlockLayoutBinding.descriptorCount = 1;
-    lightBlockLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    lightBlockLayoutBinding.pImmutableSamplers = nullptr;
-    lightBlockLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-    std::array<VkDescriptorSetLayoutBinding, 2> bindings = {
-            samplerLayoutBinding,
-            lightBlockLayoutBinding
-    };
+    std::array<VkDescriptorSetLayoutBinding, 1> bindings = {samplerLayoutBinding};
 
     VkDescriptorSetLayoutCreateInfo layoutInfo = {};
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
     layoutInfo.pBindings = bindings.data();
 
-    CALL_VK(vkCreateDescriptorSetLayout(device_->getDevice(), &layoutInfo, nullptr,
+    CALL_VK(vkCreateDescriptorSetLayout(renderer_.getDevice().getDevice(), &layoutInfo, nullptr,
                                         &material_descriptors_layout_));
   }
   {
@@ -334,7 +308,7 @@ void Mesh::createDescriptorSetLayout() {
     layoutInfo.bindingCount = bindings.size();
     layoutInfo.pBindings = bindings.data();
 
-    CALL_VK(vkCreateDescriptorSetLayout(device_->getDevice(), &layoutInfo, nullptr,
+    CALL_VK(vkCreateDescriptorSetLayout(renderer_.getDevice().getDevice(), &layoutInfo, nullptr,
                                         &mesh_descriptors_layout_));
   }
 }
@@ -347,15 +321,6 @@ void Mesh::updatePipeline(VkRenderPass renderPass) {
 }
 
 void Mesh::update(uint_t frame_index, glm::vec3 camera, glm::mat4 view, glm::mat4 proj) {
-  lightsBuffer->update(frame_index, [&camera](auto& lightsBuffer) {
-    lightsBuffer.pointLight.position = {0.0f, 0.0f, 6.0f};
-    lightsBuffer.pointLight.color = {1.0f, 1.0f, 1.0f};
-    lightsBuffer.pointLight.intensity = 1.0f;
-    lightsBuffer.ambientLight.color = {1.0f, 1.0f, 1.0f};
-    lightsBuffer.ambientLight.intensity = 0.1f;
-    lightsBuffer.cameraPos = camera;
-  });
-
   glm::mat4 model = getTransform();
   glm::mat4 mvp = proj * view * model;
 
@@ -375,6 +340,11 @@ void Mesh::submitDraw(VkCommandBuffer commandBuffer, uint_t frame_index) const {
 
   vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                           layout_, BINDING_SET_MESH, 1, &model_view_projection_descriptor_sets_[frame_index], 0, nullptr);
+
+  VkDescriptorSet lightsDescriptorSet = renderer_.getLightsDescriptorSet(frame_index);
+
+  vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                          layout_, BINDING_SET_LIGHTS, 1, &lightsDescriptorSet, 0, nullptr);
 
   vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                           layout_, BINDING_SET_MATERIAL, 1, &material_descriptor_sets_[frame_index], 0, nullptr);
