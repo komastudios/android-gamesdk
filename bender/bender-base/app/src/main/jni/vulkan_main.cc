@@ -33,6 +33,7 @@
 #include "polyhedron.h"
 #include "mesh.h"
 #include "texture.h"
+#include "font.h"
 #include "uniform_buffer.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -72,6 +73,7 @@ glm::mat4 proj;
 
 std::shared_ptr<ShaderState> shaders;
 Mesh *mesh;
+Font *font;
 
 auto lastTime = std::chrono::high_resolution_clock::now();
 auto currentTime = lastTime;
@@ -209,6 +211,7 @@ void createShaderState() {
   shaders->addVertexAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0);
   shaders->addVertexAttributeDescription(0, 1, VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(float));
   shaders->addVertexAttributeDescription(0, 2, VK_FORMAT_R32G32B32_SFLOAT, 6 * sizeof(float));
+  shaders->addVertexAttributeDescription(0, 3, VK_FORMAT_R32G32_SFLOAT, 9 * sizeof(float));
 }
 
 void createDepthBuffer() {
@@ -364,6 +367,12 @@ bool InitVulkan(android_app *app) {
 
   createFrameBuffers(render_pass, depthBuffer.image_view);
 
+  texFiles.push_back("textures/sample_texture.png");
+
+  createTextures();
+
+  font = new Font(*renderer, androidAppCtx, FONT_SDF_PATH, FONT_INFO_PATH);
+
   return true;
 }
 
@@ -372,6 +381,7 @@ bool IsVulkanReady(void) { return device != nullptr && device->isInitialized(); 
 void DeleteVulkan(void) {
   delete renderer;
   delete mesh;
+  delete font;
 
   shaders->cleanup();
   shaders.reset();
@@ -410,7 +420,6 @@ bool VulkanDrawFrame(Input::Data *inputData) {
 
   mesh->update(renderer->getCurrentFrame(), camera.position, view, proj);
   renderer->updateLights(camera.position);
-
   renderer->beginFrame();
   renderer->beginPrimaryCommandBufferRecording();
 
@@ -444,6 +453,8 @@ bool VulkanDrawFrame(Input::Data *inputData) {
   mesh->updatePipeline(render_pass);
 
   mesh->submitDraw(renderer->getCurrentCommandBuffer(), renderer->getCurrentFrame());
+  font->drawString("B3nDeR V1", 0.0f, 0.0f,
+                   renderer->getCurrentCommandBuffer(), render_pass, renderer->getCurrentFrame());
 
   vkCmdEndRenderPass(renderer->getCurrentCommandBuffer());
 
