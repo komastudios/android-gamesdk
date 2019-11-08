@@ -19,12 +19,12 @@
 #include "trace.h"
 #include "bender_helpers.h"
 #include "shader_bindings.h"
+#include "constants.h"
 
 using namespace BenderHelpers;
 
-Renderer::Renderer(BenderKit::Device& device, VkDescriptorPool descriptorPool) : device_(device) {
+Renderer::Renderer(BenderKit::Device& device) : device_(device) {
   init();
-  createLightsDescriptors(descriptorPool);
 }
 
 Renderer::~Renderer() {
@@ -35,6 +35,7 @@ Renderer::~Renderer() {
   delete[] render_finished_semaphore_;
   delete[] fence_;
 
+  destroyPool();
   delete lightsBuffer;
 
   vkDestroyCommandPool(device_.getDevice(), cmd_pool_, nullptr);
@@ -172,8 +173,9 @@ void Renderer::init() {
   }
 
   lightsBuffer = new UniformBufferObject<LightBlock>(device_);
+  createPool();
   createLightsDescriptorSetLayout();
-
+  createLightsDescriptors();
 }
 
 void Renderer::updateLights(glm::vec3 camera) {
@@ -185,6 +187,31 @@ void Renderer::updateLights(glm::vec3 camera) {
       lightsBuffer.ambientLight.intensity = 0.1f;
       lightsBuffer.cameraPos = camera;
   });
+}
+
+void Renderer::createPool() {
+  uint32_t maxMvpBuffers = MAX_MESHES * device_.getDisplayImagesSize();
+  uint32_t maxLightsBuffers = MAX_LIGHTS * device_.getDisplayImagesSize();
+  uint32_t maxSamplers = MAX_SAMPLERS * device_.getDisplayImagesSize();
+
+  std::array<VkDescriptorPoolSize, 2> poolSizes = {};
+  poolSizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+  poolSizes[0].descriptorCount = maxSamplers;
+  poolSizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  poolSizes[1].descriptorCount = maxMvpBuffers + maxLightsBuffers;
+
+  VkDescriptorPoolCreateInfo poolInfo = {};
+  poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+  poolInfo.poolSizeCount = poolSizes.size();
+  poolInfo.pPoolSizes = poolSizes.data();
+  poolInfo.maxSets = device_.getDisplayImagesSize();     // maxSets will need to take into account
+                                                         // the max stuff in a scene
+
+  CALL_VK(vkCreateDescriptorPool(device_.getDevice(), &poolInfo, nullptr, &descriptor_pool_));
+}
+
+void Renderer::destroyPool() {
+    vkDestroyDescriptorPool(device_.getDevice(), descriptor_pool_, nullptr);
 }
 
 void Renderer::createLightsDescriptorSetLayout() {
@@ -206,12 +233,12 @@ void Renderer::createLightsDescriptorSetLayout() {
                                       &lights_descriptors_layout_));
 }
 
-void Renderer::createLightsDescriptors(VkDescriptorPool descriptorPool) {
+void Renderer::createLightsDescriptors() {
   std::vector<VkDescriptorSetLayout> layouts(device_.getDisplayImagesSize(), lights_descriptors_layout_);
 
   VkDescriptorSetAllocateInfo allocInfo = {};
   allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-  allocInfo.descriptorPool = descriptorPool;
+  allocInfo.descriptorPool = descriptor_pool_;
   allocInfo.descriptorSetCount = static_cast<uint32_t>(device_.getDisplayImagesSize());
   allocInfo.pSetLayouts = layouts.data();
 
