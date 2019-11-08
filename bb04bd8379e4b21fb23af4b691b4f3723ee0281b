@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b3c2c743_84af0613",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-08T18:12:57Z",
+      "side": 1,
+      "message": "This is more of a question, in terms of should we split up the lights ubo and the [eventual] materials sampler? We technically don\u0027t need to, b/c they are different types and wouldn\u0027t be accidentally allocated for one another, but for logical separation maybe it would be good.\n\nOn the other hand, I don\u0027t know if that would mean that we would \"logically\" want more individual descriptor pools with a single type each for new stuff that comes up, so not sure if there\u0027s a better way to determine how we should organize our descriptors.",
+      "revId": "bb04bd8379e4b21fb23af4b691b4f3723ee0281b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
