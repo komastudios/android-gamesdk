@@ -16,6 +16,24 @@
       "revId": "4b0c3b92bec246683c2c6adf70089d7015a754b1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e5a26219_5a529246",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-08T19:52:23Z",
+      "side": 1,
+      "message": "Ooh yeah I\u0027m not super sure about this distinction; seems that for our purposes import only includes a header once, but I don\u0027t know that we have a particular need for that. We can make these consistent (but maybe in a separate CL so it has a more explicit purpose).",
+      "parentUuid": "a8ec68d9_b522a230",
+      "revId": "4b0c3b92bec246683c2c6adf70089d7015a754b1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
