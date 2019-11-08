@@ -46,9 +46,6 @@ using namespace BenderHelpers;
 std::vector<VkImageView> displayViews_;
 std::vector<VkFramebuffer> framebuffers_;
 
-//std::vector<VkDescriptorSet> descriptorSets_;
-//std::vector<VkDescriptorSet> modelViewProjectionDescriptorSets_;
-
 struct Camera {
   glm::vec3 position = glm::vec3(0.0f, 0.0f, 3.0f);
   glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
@@ -81,31 +78,10 @@ auto currentTime = lastTime;
 float frameTime;
 float totalTime;
 
-std::vector<Texture*> textures;
-std::vector<const char*> texFiles;
-VkSampler sampler;
+std::vector<const char *> texFiles;
+std::vector<Texture *> textures;
+std::vector<Material *> materials;
 
-void createSampler() {
-  const VkSamplerCreateInfo sampler_create_info = {
-          .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
-          .pNext = nullptr,
-          .magFilter = VK_FILTER_NEAREST,
-          .minFilter = VK_FILTER_NEAREST,
-          .mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST,
-          .addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-          .addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-          .addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-          .mipLodBias = 0.0f,
-          .maxAnisotropy = 1,
-          .compareOp = VK_COMPARE_OP_NEVER,
-          .minLod = 0.0f,
-          .maxLod = 0.0f,
-          .borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE,
-          .unnormalizedCoordinates = VK_FALSE,
-  };
-  CALL_VK(vkCreateSampler(device->getDevice(), &sampler_create_info, nullptr,
-                          &sampler));
-}
 
 void createTextures() {
   assert(androidAppCtx != nullptr);
@@ -113,6 +89,12 @@ void createTextures() {
 
   for (uint32_t i = 0; i < texFiles.size(); ++i) {
     textures.push_back(new Texture(*device, androidAppCtx, texFiles[i], VK_FORMAT_R8G8B8A8_SRGB));
+  }
+}
+
+void createMaterials() {
+  for (uint32_t i = 0; i < textures.size(); ++i) {
+    materials.push_back(new Material(*renderer, shaders, *textures[i]));
   }
 }
 
@@ -196,10 +178,6 @@ void updateCamera(Input::Data *inputData) {
   proj = glm::perspective(glm::radians(100.0f),
                           device->getDisplaySize().width / (float) device->getDisplaySize().height, 0.1f, 100.0f);
   proj[1][1] *= -1;
-}
-
-void createDescriptorSets() {
-  mesh->createDescriptors(textures[0]);
 }
 
 void createShaderState() {
@@ -340,7 +318,13 @@ bool InitVulkan(android_app *app) {
 
   renderer = new Renderer(*device);
 
-  mesh = createPolyhedron(*renderer, shaders, 20);
+  texFiles.push_back("textures/sample_texture.png");
+
+  createTextures();
+
+  createMaterials();
+
+  mesh = createPolyhedron(*renderer, *materials[0], 20);
 
   const std::vector<float> vertexData = {
       -0.5f, -0.5f, 0.5f,          -0.5774f, -0.5774f, 0.5774f,       1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
@@ -357,12 +341,6 @@ bool InitVulkan(android_app *app) {
   createDepthBuffer();
 
   createFrameBuffers(render_pass, depthBuffer.image_view);
-
-  texFiles.push_back("textures/sample_texture.png");
-
-  createTextures();
-
-  createDescriptorSets();
 
   return true;
 }
