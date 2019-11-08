@@ -46,6 +46,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.gamesdk.R;
 import com.google.gamesdk.gamecert.operationrunner.hosts.GLSurfaceViewHostActivity;
 import com.google.gamesdk.gamecert.operationrunner.hosts.SwappyGLHostActivity;
+import com.google.gamesdk.gamecert.operationrunner.hosts.VulkanHostActivity;
 import com.google.gamesdk.gamecert.operationrunner.transport.Configuration;
 import com.google.gamesdk.gamecert.operationrunner.util.NativeInvoker;
 
@@ -356,6 +357,11 @@ public class MainActivity extends AppCompatActivity {
 
             case SwappyGLHostActivity.ID: {
                 i = SwappyGLHostActivity.createIntent(this, stressTest);
+                break;
+            }
+
+            case VulkanHostActivity.ID: {
+                i = VulkanHostActivity.createIntent(this, stressTest);
                 break;
             }
 
