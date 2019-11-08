@@ -46,7 +46,7 @@
 using namespace ancer;
 
 
-//==================================================================================================
+//==============================================================================
 
 namespace {
     constexpr Log::Tag TAG{"NativeInvoker"};
@@ -63,23 +63,26 @@ namespace {
     }
 }
 
-//==================================================================================================
+//==============================================================================
 
 extern "C" JNIEXPORT jboolean JNICALL
-Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_runUnitTests(JNIEnv *env, jclass instance) {
-    // TODO: Maybe support a standalone version? There are a lot of tools that support Google Test's
-    //  normal output if it's built as an executable, including Visual Studio.
+Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_runUnitTests(
+        JNIEnv *env, jclass instance) {
+    // TODO(tmillican@google.com): Maybe support a standalone version? There are
+    //  a lot of tools that support Google Test's normal output if it's built as
+    //  an executable, including Visual Studio.
 #ifdef BUILD_UNIT_TESTS
     testing::InitGoogleTest();
     testing::UnitTest::GetInstance()->listeners().Append(new ResultPrinter{env});
-    return RUN_ALL_TESTS() == 0;
+    return static_cast<jboolean>(RUN_ALL_TESTS() == 0);
 #else
-    Log::E(TAG, "Attempting to run unit tests in a build where they aren't being generated.");
+    Log::E(TAG, "Attempting to run unit tests in a build where they aren't "
+                "being generated.");
     return false;
 #endif
 }
 
-//==================================================================================================
+//==============================================================================
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_initializeSuite(
@@ -89,19 +92,20 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_initializeSu
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_shutdownSuite(JNIEnv* env, jclass instance) {
+Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_shutdownSuite(
+        JNIEnv* env, jclass instance) {
     internal::ShutdownSuite();
     internal::UnbindJNI();
 }
 
-//==================================================================================================
+//==============================================================================
 
 JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     internal::SetJavaVM(vm);
     return JNI_VERSION_1_6;
 }
 
-///////////////////////////////////////////////////////////////////////
+//==============================================================================
 // Operation management
 
 extern "C" JNIEXPORT jint JNICALL
@@ -160,9 +164,9 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_onTrimMemory
     reporting::FlushReportLogQueue();
 }
 
-/////////////////////////////////////////////////////////////////////////
-//// GLSurfaceViewHostActivity
-// TODO: Move into own file
+//==============================================================================
+// GLSurfaceViewHostActivity
+// TODO(tmillican@google.com): Move into own file
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_glSurfaceViewHost_1ContextReady(
@@ -184,7 +188,9 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_glSurfaceVie
     glClearDepthf(1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    internal::ForEachOperation([delta_seconds](BaseOperation& op) { op.Draw(delta_seconds); });
+    internal::ForEachOperation([delta_seconds](BaseOperation& op) {
+        op.Draw(delta_seconds);
+    });
 }
 
 extern "C" JNIEXPORT void JNICALL
@@ -195,12 +201,14 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_glSurfaceVie
         jint height) {
     glViewport(0, 0, width, height);
     internal::ForEachOperation(
-            [width, height](BaseOperation& op) { op.OnGlContextResized(width, height); });
+            [width, height](BaseOperation& op) {
+                op.OnGlContextResized(width, height);
+            });
 }
 
-/////////////////////////////////////////////////////////////////////////
-//// SwappyGLHostActivity
-// TODO: Move into swappy renderer
+//==============================================================================
+// SwappyGLHostActivity
+// TODO(tmillican@google.com, shamyl@google.com): Move into swappy renderer
 
 namespace {
     void StartFrameCallback(void*, int, long) {
@@ -233,7 +241,8 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_swappyGLHost
     tracers.swapIntervalChanged = SwapIntervalChangedCallback;
     SwappyGL_injectTracer(&tracers);
 
-    // Init is called at end of SwappyGLHostActivity::OnCreate, and all operations have already been created
+    // Init is called at end of SwappyGLHostActivity::OnCreate, and all
+    // operations have already been created
     internal::SetSwappyRenderer(_swappy_renderer.get());
 }
 
@@ -245,7 +254,8 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_swappyGLHost
         jint width,
         jint height) {
     ANativeWindow* window = ANativeWindow_fromSurface(env, surface);
-    _swappy_renderer->SetWindow(window, static_cast<int32_t>(width), static_cast<int32_t>(height));
+    _swappy_renderer->SetWindow(window,
+            static_cast<int32_t>(width), static_cast<int32_t>(height));
 }
 
 extern "C" JNIEXPORT void JNICALL
@@ -289,6 +299,7 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_swappyGLHost
         jclass instance,
         jint stat,
         jint bin) {
+
     static bool enabled = false;
     if ( !enabled ) {
         SwappyGL_enableStats(true);
@@ -325,7 +336,7 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_swappyGLHost
     return static_cast<jint>(value);
 }
 
-///////////////////////////////////////////////////////////////////////
+//==============================================================================
 // Helper functions
 
 extern "C" JNIEXPORT void JNICALL
@@ -336,7 +347,15 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_openReportFi
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_closeReportFile(JNIEnv* env, jclass instance) {
+Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_openReportFileDescriptor(
+        JNIEnv* env, jclass instance, jint fd) {
+    reporting::OpenReportLog(dup(fd));
+}
+
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_closeReportFile(
+        JNIEnv* env, jclass instance) {
     reporting::CloseReportLog();
 }
 
@@ -348,36 +367,40 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_writeToRepor
 }
 
 extern "C" JNIEXPORT jlong JNICALL
-Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_getSteadyClockTimeNanos(JNIEnv *env, jclass instance) {
+Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_getSteadyClockTimeNanos(
+        JNIEnv *env, jclass instance) {
     auto n = ancer::SteadyClock::now();
     return static_cast<jlong>(n.time_since_epoch().count());
 }
 
 extern "C" JNIEXPORT jint JNICALL
-Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_getCpuId(JNIEnv* env, jclass instance) {
+Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_getCpuId(
+        JNIEnv* env, jclass instance) {
     return sched_getcpu();
 }
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_getThreadId(JNIEnv* env, jclass instance) {
+Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_getThreadId(
+        JNIEnv* env, jclass instance) {
     std::stringstream ss;
     ss << std::this_thread::get_id();
     return env->NewStringUTF(ss.str().c_str());
 }
 
 extern "C" JNIEXPORT jdouble JNICALL
-Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_getCurrentFps(JNIEnv* env, jclass instance) {
+Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_getCurrentFps(
+        JNIEnv* env, jclass instance) {
     return ancer::GetFpsCalculator().GetAverageFps();
 }
 
 extern "C" JNIEXPORT jlong JNICALL
-Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_getCurrentMinFrameTimeNs(JNIEnv *env,
-                                                                            jclass instance) {
+Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_getCurrentMinFrameTimeNs(
+        JNIEnv *env, jclass instance) {
     return duration_cast<Nanoseconds>(ancer::GetFpsCalculator().GetMinFrameTime()).count();
 }
 
 extern "C" JNIEXPORT jlong JNICALL
-Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_getCurrentMaxFrameTimeNs(JNIEnv *env,
-                                                                            jclass instance) {
+Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_getCurrentMaxFrameTimeNs(
+        JNIEnv *env, jclass instance) {
     return duration_cast<Nanoseconds>(ancer::GetFpsCalculator().GetMaxFrameTime()).count();
 }
