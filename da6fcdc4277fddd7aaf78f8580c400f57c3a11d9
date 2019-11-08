@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8d862f6a_421b7f9c",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-11-08T11:52:32Z",
+      "side": 1,
+      "message": "Are the functions below intended for public use? May be use doxygen comment style?",
+      "revId": "da6fcdc4277fddd7aaf78f8580c400f57c3a11d9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f3ef9afa_65ebe6aa",
+        "filename": "include/tuningfork/tuningfork_extra.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-11-08T11:52:32Z",
+      "side": 1,
+      "message": "Are these functions for public use? May be use doxygen comment style?",
+      "revId": "da6fcdc4277fddd7aaf78f8580c400f57c3a11d9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1db4d79d_e467d08a",
+        "filename": "src/tuningfork/tuningfork_internal.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-11-08T11:52:32Z",
+      "side": 1,
+      "message": "Nit: Can we use one style everywhere \"T\u0026 v\" or \"T \u0026v\"",
+      "revId": "da6fcdc4277fddd7aaf78f8580c400f57c3a11d9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
