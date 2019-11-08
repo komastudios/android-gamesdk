@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bae2b984_dbad9c79",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-08T19:23:30Z",
+      "side": 1,
+      "message": "these vectors should be passed in as const ref.",
+      "revId": "d840fca911a77c7db72e30fdc93354cbfd27f95c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "62f6e29f_14f62483",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-08T19:23:30Z",
+      "side": 1,
+      "message": "super nit pick: BenderKit::Device\u0026 device",
+      "revId": "d840fca911a77c7db72e30fdc93354cbfd27f95c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "614136d5_b8a29e97",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-08T19:23:30Z",
+      "side": 1,
+      "message": "Can you pass the renderer as ref?",
+      "revId": "d840fca911a77c7db72e30fdc93354cbfd27f95c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "531a193f_1621e3fc",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-08T19:23:30Z",
+      "side": 1,
+      "message": "We don\u0027t need to store a reference to the device, we can grab it from the renderer when we need it.",
+      "revId": "d840fca911a77c7db72e30fdc93354cbfd27f95c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
