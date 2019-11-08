@@ -16,6 +16,7 @@
 #include "shader_state.h"
 #include "texture.h"
 #include "renderer.h"
+#include "material.h"
 
 #include "uniform_buffer.h"
 
@@ -27,13 +28,10 @@ struct ModelViewProjection {
 
 class Mesh {
 public:
-  Mesh(Renderer& renderer, const std::vector<float>& vertexData,
-          const std::vector<uint16_t>& indexData, std::shared_ptr<ShaderState> shaders);
+  Mesh(Renderer& renderer, Material& material, const std::vector<float>& vertexData,
+          const std::vector<uint16_t>& indexData);
 
   ~Mesh();
-
-  // TODO: Move texture to the Material class
-  void createDescriptors(Texture* texture);
 
   void updatePipeline(VkRenderPass renderPass);
 
@@ -59,26 +57,26 @@ private:
   UniformBufferObject<ModelViewProjection> *meshBuffer;
 
   Renderer& renderer_;
+  Material& material_;
 
   std::shared_ptr<Geometry> geometry_;
-  std::shared_ptr<ShaderState> shaders_;
 
   glm::vec3 position_;
   glm::quat rotation_;
   glm::vec3 scale_;
 
-  VkDescriptorSetLayout material_descriptors_layout_;
   VkDescriptorSetLayout mesh_descriptors_layout_;
 
   VkPipelineLayout layout_;
   VkPipelineCache cache_;
   VkPipeline pipeline_ = VK_NULL_HANDLE;
 
-  std::vector<VkDescriptorSet> material_descriptor_sets_;
-  std::vector<VkDescriptorSet> model_view_projection_descriptor_sets_;
+  std::vector<VkDescriptorSet> mesh_descriptor_sets_;
 
-  void createDescriptorSetLayout();
   void createMeshPipeline(VkRenderPass renderPass);
+
+  void createMeshDescriptorSetLayout();
+  void createMeshDescriptors();
 };
 
 #endif //BENDER_BASE_MESH_H
