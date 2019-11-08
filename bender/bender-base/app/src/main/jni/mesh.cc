@@ -7,17 +7,16 @@
 #include "mesh.h"
 #include "shader_bindings.h"
 
-VkDescriptorPool Mesh::mesh_descriptor_pool_ = VK_NULL_HANDLE;
-VkDescriptorPool Mesh::material_descriptor_pool_ = VK_NULL_HANDLE;
+VkDescriptorPool Mesh::descriptor_pool_ = VK_NULL_HANDLE;
 
-void Mesh::createPools(BenderKit::Device& device) {
-  if (material_descriptor_pool_ == VK_NULL_HANDLE) {
+void Mesh::createPool(BenderKit::Device& device) {
+  if (descriptor_pool_ == VK_NULL_HANDLE) {
     std::array<VkDescriptorPoolSize, 2> poolSizes = {};
 
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     poolSizes[0].descriptorCount = device.getDisplayImagesSize();
     poolSizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    poolSizes[1].descriptorCount = device.getDisplayImagesSize();
+    poolSizes[1].descriptorCount = 2 * device.getDisplayImagesSize();
 
     VkDescriptorPoolCreateInfo poolInfo = {};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -26,28 +25,12 @@ void Mesh::createPools(BenderKit::Device& device) {
     poolInfo.maxSets = device.getDisplayImagesSize();     // maxSets will need to take into account
                                                           // the max number of materials in a scene
 
-    CALL_VK(vkCreateDescriptorPool(device.getDevice(), &poolInfo, nullptr, &material_descriptor_pool_));
-  }
-
-  if (mesh_descriptor_pool_ == VK_NULL_HANDLE) {
-    std::array<VkDescriptorPoolSize, 1> poolSizes = {};
-    poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    poolSizes[0].descriptorCount = device.getDisplayImagesSize();
-
-    VkDescriptorPoolCreateInfo poolInfo = {};
-    poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    poolInfo.poolSizeCount = poolSizes.size();
-    poolInfo.pPoolSizes = poolSizes.data();
-    poolInfo.maxSets = device.getDisplayImagesSize();     // maxSets will need to take into account
-                                                          // the max number of meshes in a scene
-
-    CALL_VK(vkCreateDescriptorPool(device.getDevice(), &poolInfo, nullptr, &mesh_descriptor_pool_));
+    CALL_VK(vkCreateDescriptorPool(device.getDevice(), &poolInfo, nullptr, &descriptor_pool_));
   }
 }
 
-void Mesh::destroyPools(BenderKit::Device& device) {
-  vkDestroyDescriptorPool(device.getDevice(), material_descriptor_pool_, nullptr);
-  vkDestroyDescriptorPool(device.getDevice(), mesh_descriptor_pool_, nullptr);
+void Mesh::destroyPool(BenderKit::Device& device) {
+  vkDestroyDescriptorPool(device.getDevice(), descriptor_pool_, nullptr);
 }
 
 Mesh::Mesh(Renderer& renderer, const std::vector<float>& vertexData,
@@ -80,7 +63,7 @@ void Mesh::createDescriptors(Texture* texture) {
 
     VkDescriptorSetAllocateInfo allocInfo = {};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocInfo.descriptorPool = Mesh::getMaterialDescriptorPool();
+    allocInfo.descriptorPool = getDescriptorPool();
     allocInfo.descriptorSetCount = static_cast<uint32_t>(renderer_.getDevice().getDisplayImagesSize());
     allocInfo.pSetLayouts = layouts.data();
 
@@ -114,7 +97,7 @@ void Mesh::createDescriptors(Texture* texture) {
 
     VkDescriptorSetAllocateInfo allocInfo = {};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocInfo.descriptorPool = Mesh::getMeshDescriptorPool();
+    allocInfo.descriptorPool = getDescriptorPool();
     allocInfo.descriptorSetCount = renderer_.getDevice().getDisplayImagesSize();
     allocInfo.pSetLayouts = layouts.data();
 

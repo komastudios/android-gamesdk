@@ -27,11 +27,10 @@ struct ModelViewProjection {
 
 class Mesh {
 public:
-  static void createPools(BenderKit::Device& device);
-  static void destroyPools(BenderKit::Device& device);
+  static void createPool(BenderKit::Device& device);
+  static void destroyPool(BenderKit::Device& device);
 
-  static VkDescriptorPool getMeshDescriptorPool() { return mesh_descriptor_pool_; };
-  static VkDescriptorPool getMaterialDescriptorPool() { return material_descriptor_pool_; };
+  static VkDescriptorPool getDescriptorPool() { return descriptor_pool_; };
 
   Mesh(Renderer& renderer, const std::vector<float>& vertexData,
           const std::vector<uint16_t>& indexData, std::shared_ptr<ShaderState> shaders);
@@ -62,8 +61,7 @@ public:
   glm::mat4 getTransform() const;
 
 private:
-  static VkDescriptorPool mesh_descriptor_pool_;
-  static VkDescriptorPool material_descriptor_pool_;
+  static VkDescriptorPool descriptor_pool_;
 
   UniformBufferObject<ModelViewProjection> *meshBuffer;
 
