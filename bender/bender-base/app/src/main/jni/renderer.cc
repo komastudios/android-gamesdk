@@ -18,11 +18,13 @@
 
 #include "trace.h"
 #include "bender_helpers.h"
+#include "shader_bindings.h"
 
 using namespace BenderHelpers;
 
-Renderer::Renderer(BenderKit::Device *device) : device_(device) {
+Renderer::Renderer(BenderKit::Device *device, VkDescriptorPool descriptorPool) : device_(device) {
   init();
+  createLightsDescriptors(descriptorPool);
 }
 
 Renderer::~Renderer() {
@@ -32,6 +34,8 @@ Renderer::~Renderer() {
   delete[] acquire_image_semaphore_;
   delete[] render_finished_semaphore_;
   delete[] fence_;
+
+  delete lightsBuffer;
 
   vkDestroyCommandPool(device_->getDevice(), cmd_pool_, nullptr);
 }
@@ -165,6 +169,73 @@ void Renderer::init() {
                       &fenceCreateInfo,
                       nullptr,
                       &fence_[i]));
+  }
+
+  lightsBuffer = new UniformBufferObject<LightBlock>(*device_);
+  createLightsDescriptorSetLayout();
+
+}
+
+void Renderer::updateLights(glm::vec3 camera) {
+  lightsBuffer->update(getCurrentFrame(), [&camera](auto &lightsBuffer) {
+      lightsBuffer.pointLight.position = {0.0f, 0.0f, 6.0f};
+      lightsBuffer.pointLight.color = {1.0f, 1.0f, 1.0f};
+      lightsBuffer.pointLight.intensity = 1.0f;
+      lightsBuffer.ambientLight.color = {1.0f, 1.0f, 1.0f};
+      lightsBuffer.ambientLight.intensity = 0.1f;
+      lightsBuffer.cameraPos = camera;
+  });
+}
+
+void Renderer::createLightsDescriptorSetLayout() {
+  VkDescriptorSetLayoutBinding lightBlockLayoutBinding = {};
+  lightBlockLayoutBinding.binding = FRAGMENT_BINDING_LIGHTS;
+  lightBlockLayoutBinding.descriptorCount = 1;
+  lightBlockLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  lightBlockLayoutBinding.pImmutableSamplers = nullptr;
+  lightBlockLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+  std::array<VkDescriptorSetLayoutBinding, 1> bindings = {lightBlockLayoutBinding};
+
+  VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+  layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+  layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+  layoutInfo.pBindings = bindings.data();
+
+  CALL_VK(vkCreateDescriptorSetLayout(device_->getDevice(), &layoutInfo, nullptr,
+                                      &lights_descriptors_layout_));
+}
+
+void Renderer::createLightsDescriptors(VkDescriptorPool descriptorPool) {
+  std::vector<VkDescriptorSetLayout> layouts(device_->getDisplayImagesSize(), lights_descriptors_layout_);
+
+  VkDescriptorSetAllocateInfo allocInfo = {};
+  allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+  allocInfo.descriptorPool = descriptorPool;
+  allocInfo.descriptorSetCount = static_cast<uint32_t>(device_->getDisplayImagesSize());
+  allocInfo.pSetLayouts = layouts.data();
+
+  lights_descriptor_sets_.resize(device_->getDisplayImagesSize());
+  CALL_VK(vkAllocateDescriptorSets(device_->getDevice(), &allocInfo, lights_descriptor_sets_.data()));
+
+  for (size_t i = 0; i < device_->getDisplayImagesSize(); i++) {
+    VkDescriptorBufferInfo lightBlockInfo = {};
+    lightBlockInfo.buffer = lightsBuffer->getBuffer(i);
+    lightBlockInfo.offset = 0;
+    lightBlockInfo.range = sizeof(LightBlock);
+
+    std::array<VkWriteDescriptorSet, 1> descriptorWrites = {};
+
+    descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptorWrites[0].dstSet = lights_descriptor_sets_[i];
+    descriptorWrites[0].dstBinding = FRAGMENT_BINDING_LIGHTS;
+    descriptorWrites[0].dstArrayElement = 0;
+    descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    descriptorWrites[0].descriptorCount = 1;
+    descriptorWrites[0].pBufferInfo = &lightBlockInfo;
+
+    vkUpdateDescriptorSets(device_->getDevice(), descriptorWrites.size(), descriptorWrites.data(),
+                           0, nullptr);
   }
 }
 

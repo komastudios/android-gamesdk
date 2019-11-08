@@ -6,6 +6,7 @@
 **/local.properties
 **/captures
 **/build
+**/assets
 
 .temp
 .externalNativeBuild
