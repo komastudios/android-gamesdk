@@ -5,8 +5,13 @@
 #include "material.h"
 #include "shader_bindings.h"
 
-Material::Material(Renderer& renderer, Texture& texture) : renderer_(renderer), texture_(texture) {
+Material::Material(Renderer& renderer, std::shared_ptr<ShaderState> shaders, Texture& texture) :
+    renderer_(renderer), texture_(texture) {
+  shaders_ = shaders;
 
+  createSampler();
+  createMaterialDescriptorSetLayout();
+  createMaterialDescriptorSets();
 }
 
 Material::~Material() {
