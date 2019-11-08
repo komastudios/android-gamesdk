@@ -47,7 +47,7 @@ Device::Device(ANativeWindow *window) {
   };
 
   CreateVulkanDevice(window, &appInfo);
-  CreateSwapChain();
+  createSwapChain();
 
   initialized_ = true;
 }
@@ -220,17 +220,24 @@ void Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer 
   CALL_VK(vkBindBufferMemory(device_, buffer, bufferMemory, 0));
 }
 
-void Device::CreateSwapChain() {
-  LOGI("->CreateSwapChain");
+void Device::createSwapChain(VkSwapchainKHR oldSwapchain) {
+  LOGI("->createSwapChain");
 
-  // **********************************************************
-  // Get the surface capabilities because:
-  //   - It contains the minimal and max length of the chain, we will need it
-  //   - It's necessary to query the supported surface format (R8G8B8A8 for
-  //   instance ...)
   VkSurfaceCapabilitiesKHR surfaceCapabilities;
   vkGetPhysicalDeviceSurfaceCapabilitiesKHR(gpuDevice_, surface_,
                                             &surfaceCapabilities);
+
+  uint32_t new_width = surfaceCapabilities.currentExtent.width;
+  uint32_t new_height = surfaceCapabilities.currentExtent.height;
+  pretransformFlag_ = surfaceCapabilities.currentTransform;
+
+  if (pretransformFlag_ & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR ||
+      pretransformFlag_ & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR) {
+    // Do not change the swapchain dimensions
+    surfaceCapabilities.currentExtent.height = new_width;
+    surfaceCapabilities.currentExtent.width = new_height;
+  }
+
   // Query the list of supported surface format and choose one we like
   uint32_t formatCount = 0;
   vkGetPhysicalDeviceSurfaceFormatsKHR(gpuDevice_, surface_,
@@ -261,18 +268,22 @@ void Device::CreateSwapChain() {
       .imageColorSpace = formats[chosenFormat].colorSpace,
       .imageExtent = surfaceCapabilities.currentExtent,
       .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-      .preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR,
+      .preTransform = pretransformFlag_,
       .compositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR,
       .imageArrayLayers = 1,
       .imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
       .queueFamilyIndexCount = 1,
       .pQueueFamilyIndices = &queueFamilyIndex_,
       .presentMode = VK_PRESENT_MODE_FIFO_KHR,
-      .oldSwapchain = VK_NULL_HANDLE,
+      .oldSwapchain = oldSwapchain,
       .clipped = VK_FALSE,
   };
   CALL_VK(vkCreateSwapchainKHR(device_, &swapchainCreateInfo, nullptr,
                                &swapchain_));
+
+  if (oldSwapchain != VK_NULL_HANDLE) {
+    vkDestroySwapchainKHR(device_, oldSwapchain, nullptr);
+  }
 
   // Get the length of the created swap chain
   CALL_VK(vkGetSwapchainImagesKHR(device_, swapchain_,
@@ -286,7 +297,9 @@ void Device::CreateSwapChain() {
   CALL_VK(vkGetSwapchainImagesKHR(device_, swapchain_,
                                   &SwapchainImagesCount,
                                   displayImages_.data()));
-  LOGI("<-CreateSwapChain");
+
+  current_frame_index_ = 0;
+  LOGI("<-createSwapChain");
 }
 
 void Device::setObjectName(uint64_t object,

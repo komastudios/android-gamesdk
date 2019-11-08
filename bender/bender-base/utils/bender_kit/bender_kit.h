@@ -67,6 +67,8 @@ class Device {
 
   uint getSwapchainLength() const { return swapchainLength_; }
 
+  VkSurfaceTransformFlagBitsKHR getPretransformFlag() const { return pretransformFlag_; }
+
   VkExtent2D getDisplaySize() const { return displaySize_; }
 
   VkFormat getDisplayFormat() const { return displayFormat_; }
@@ -102,7 +104,9 @@ class Device {
 
   void endDebugRegion(VkCommandBuffer cmdBuffer);
 
-private:
+  void createSwapChain(VkSwapchainKHR oldSwapchain = VK_NULL_HANDLE);
+
+ private:
   bool initialized_;
 
   VkInstance instance_;
@@ -115,6 +119,7 @@ private:
 
   VkSwapchainKHR swapchain_;
   uint32_t swapchainLength_;
+  VkSurfaceTransformFlagBitsKHR pretransformFlag_;
 
   VkExtent2D displaySize_;
   VkFormat displayFormat_;
@@ -126,7 +131,6 @@ private:
   void CreateVulkanDevice(ANativeWindow *platformWindow,
                           VkApplicationInfo *appInfo);
 
-  void CreateSwapChain();
 };
 }
 
