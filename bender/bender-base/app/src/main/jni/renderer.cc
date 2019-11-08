@@ -37,6 +37,7 @@ Renderer::~Renderer() {
 
   destroyPool();
   delete lightsBuffer;
+  vkDestroyDescriptorSetLayout(device_.getDevice(), lights_descriptors_layout_, nullptr);
 
   vkDestroyCommandPool(device_.getDevice(), cmd_pool_, nullptr);
 }
