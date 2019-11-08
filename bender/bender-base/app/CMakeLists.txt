@@ -35,7 +35,8 @@ add_library(base SHARED
         ${SRC_DIR}/uniform_buffer.cc
         ${SRC_DIR}/material.cc
         ${SRC_DIR}/mesh.cc
-        ${SRC_DIR}/polyhedron.cc)
+        ${SRC_DIR}/polyhedron.cc
+        ${SRC_DIR}/font.cc)
 
 add_library(utils STATIC
         ${UTILS_DIR}/bender_helpers.cc)

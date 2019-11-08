@@ -29,9 +29,11 @@ public:
             const char *textureFileName, VkFormat textureFormat);
 
     ~Texture();
-
     VkImageView getImageView() const { return view_; }
 
+    int32_t getWidth() const { return tex_width_; };
+
+    int32_t getHeight() const { return tex_height_; };
 private:
     BenderKit::Device& device_;
 
