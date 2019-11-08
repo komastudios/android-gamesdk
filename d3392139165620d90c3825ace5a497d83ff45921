@@ -16,6 +16,24 @@
       "revId": "d3392139165620d90c3825ace5a497d83ff45921",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "beab0b32_f8c1bec3",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/HalfFloatPrecisionGLES3Operation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1587423
+      },
+      "writtenOn": "2019-11-08T21:25:35Z",
+      "side": 1,
+      "message": "will fix that in next commit",
+      "parentUuid": "5d0d31ad_22a33c6e",
+      "revId": "d3392139165620d90c3825ace5a497d83ff45921",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }

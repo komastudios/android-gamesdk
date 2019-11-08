@@ -16,6 +16,24 @@
       "revId": "edc906669fc46d419df9d2834c89d21afd2dcf12",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "18a7c129_e5172a47",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/HalfFloatPrecisionGLES3Operation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1587423
+      },
+      "writtenOn": "2019-11-08T21:25:35Z",
+      "side": 1,
+      "message": "I am trying get the middle point in the square. \nUpdated the formula reasonably in latest commit",
+      "parentUuid": "8d133686_3c8fb855",
+      "revId": "edc906669fc46d419df9d2834c89d21afd2dcf12",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
