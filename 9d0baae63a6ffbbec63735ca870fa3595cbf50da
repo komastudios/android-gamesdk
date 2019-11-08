@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b50ed4d7_7f0d4cc0",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/HalfFloatPrecisionGLES3Operation.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-11-08T22:04:37Z",
+      "side": 1,
+      "message": "These two lines seem to define constants. Is that the case?\nIf so, they should be -by C++ style convention- DEFAULT_SATURATION and DEFAULT_VALUE.\n\n(Notwithstanding, I don\u0027t see these used anywhere. There\u0027s a chance that we don\u0027t need these after all 🙂)",
+      "revId": "9d0baae63a6ffbbec63735ca870fa3595cbf50da",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1cfe9483_b3e8c600",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/HalfFloatPrecisionGLES3Operation.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-11-08T22:04:37Z",
+      "side": 1,
+      "message": "Magic number. Does 0.9f means something? If so, the best practice is to declare a constant with a meaningful name, then apply it here.",
+      "revId": "9d0baae63a6ffbbec63735ca870fa3595cbf50da",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "addc79d3_244b4bb9",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/HalfFloatPrecisionGLES3Operation.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-11-08T22:04:37Z",
+      "side": 1,
+      "message": "I want to confirm that this Report(...) above is the desired behavior: it will only happen if expected and actual colors are not equal.\nThat is to say, when they are equal, we don\u0027t report anything. Is that the desired behavior?\nJust to confirm.",
+      "revId": "9d0baae63a6ffbbec63735ca870fa3595cbf50da",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1094f0b6_3d2bed22",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/HalfFloatPrecisionGLES3Operation.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-11-08T22:04:37Z",
+      "side": 1,
+      "message": "Magic numbers. Namely, you may declare\n\nconst auto NO_COLOR{0}, MAX_COLOR{255};\n// 👆 or better names, I\u0027m just guessing what these numbers mean in this context.\n...\nif (_color_offset \u003e MAX_COLOR) { _color_offset \u003d NO_COLOR };",
+      "revId": "9d0baae63a6ffbbec63735ca870fa3595cbf50da",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
