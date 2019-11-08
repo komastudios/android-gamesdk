@@ -17,6 +17,7 @@
 #pragma once
 
 #include <cstddef>
+#include <filesystem>
 #include <string>
 
 #include <GLES3/gl32.h>
@@ -33,9 +34,16 @@ namespace ancer {
         void SetJavaVM(JavaVM*);
 
         // init/deinit calls for the framework.
-        void BindJNI(jobject activity);
-        void UnbindJNI();
+        void InitSystem(jobject activity, jstring internal_data_path,
+                        jstring raw_data_path, jstring obb_path);
+        void DeinitSystem();
     }
+
+    // TODO(tmillican@google.com): Would prefer to return filesystem::path, but
+    //  that was causing weird linker errors. :/
+    [[nodiscard]] std::string InternalDataPath();
+    [[nodiscard]] std::string RawResourcePath();
+    [[nodiscard]] std::string ObbPath();
 
     /*
      * Load the text from a file in the application's assets/ folder
@@ -121,10 +129,17 @@ namespace ancer {
      */
     void RunSystemGc();
 
-    /*
-     * Set cpu affinity for the calling thread
-     */
-    void SetThreadAffinity(int cpuIndex);
+
+    enum class ThreadAffinity { kAnyCore, kBigCore, kLittleCore };
+    // Returns how many cores are in a given affinity category.
+    [[nodiscard]] int NumCores(ThreadAffinity);
+
+    // Sets our affinity to a specific core in the given group.
+    // An index of -1 acts as SetThreadAffinity(affinity).
+    void SetThreadAffinity(int index, ThreadAffinity affinity = ThreadAffinity::kAnyCore);
+    // Sets our affinity to any/all of the cores in a group.
+    void SetThreadAffinity(ThreadAffinity affinity);
+
 
     static jclass RetrieveClass(JNIEnv* env, jobject activity, const char* className);
 

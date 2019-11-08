@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.protobuf'
 
 def gamesdkDir = "../../../../../../../"
 
@@ -45,6 +46,28 @@ android {
     }
 }
 
+buildscript {
+    repositories {
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.8'
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.8.0'
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                java { }
+            }
+        }
+    }
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.1.0'
@@ -57,4 +80,8 @@ dependencies {
 
     // add gamesdk deps
     implementation(name:"aar-release", ext: "aar")
+
+    // Use protobuf to read the results from Android Game SDK
+    implementation 'com.google.protobuf:protobuf-java:3.8.0'
+    protobuf files('../../../../../include/device_info/device_info.proto')
 }

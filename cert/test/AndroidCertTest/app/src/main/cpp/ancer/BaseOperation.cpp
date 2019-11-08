@@ -114,7 +114,7 @@ namespace ancer {
         _height = height;
     }
 
-    void BaseOperation::ReportImpl(const Json& custom_payload) {
+    void BaseOperation::ReportImpl(const Json& custom_payload) const {
         if ( GetMode() == Mode::DataGatherer ) {
             std::stringstream ss;
             ss << std::this_thread::get_id();

@@ -65,6 +65,8 @@ else ()
     )
 endif ()
 
+include("${GameSDKDir}/src/device_info/device_info.cmake")
+add_compile_options("-frtti")
 
 find_library(log-lib
         log)
@@ -89,9 +91,12 @@ add_library(${PROJECT_NAME} SHARED
         ancer/util/vulkan/VkHelpersImpl.cpp
         ancer/util/VkHelpers.cpp
         ancer/util/Basics.cpp
+        ancer/util/Bitmath.cpp
 
         # Operations
         operations/CalculatePIOperation.cpp
+        operations/IOPerformanceOperation.cpp
+        operations/MemoryAccessOperation.cpp
         operations/MemoryAllocOperation.cpp
         operations/MonitorOperation.cpp
         operations/ScheduleAffinityOperation.cpp
@@ -108,6 +113,7 @@ add_library(${PROJECT_NAME} SHARED
         # some external deps
         ${CpuFeaturesDir}/cpu-features.c
         ${GameSDKDir}/samples/common/src/Thread.cpp
+        ${GameSdkDir}/
         )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
@@ -148,6 +154,7 @@ if (CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")
             )
 else ()
     target_link_libraries(${PROJECT_NAME}
+            device_info_static
             gamesdk
             )
 endif ()
@@ -159,6 +166,7 @@ if (true) # build_tests
     target_sources(${PROJECT_NAME} PRIVATE
             ancer/util/TestResultPrinter.cpp
 
+            ancer/util/Bitmath.tests.cpp
             ancer/util/Json.tests.cpp
             ancer/util/Time.tests.cpp
             )

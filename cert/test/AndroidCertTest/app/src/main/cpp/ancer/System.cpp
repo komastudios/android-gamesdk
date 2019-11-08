@@ -16,7 +16,11 @@
 
 #include "System.hpp"
 
+#include <array>
 #include <thread>
+
+#include <cpu-features.h>
+#include <device_info/device_info.h>
 
 #include "util/FpsCalculator.hpp"
 #include "util/GLHelpers.hpp"
@@ -32,6 +36,10 @@ namespace {
     Log::Tag TAG{"ancer::system"};
     jobject _activity_weak_global_ref;
     JavaVM* _java_vm;
+
+    std::filesystem::path _internal_data_path;
+    std::filesystem::path _raw_data_path;
+    std::filesystem::path _obb_path;
 }
 
 //==============================================================================
@@ -78,19 +86,40 @@ void ancer::internal::SetJavaVM(JavaVM* vm) {
     _java_vm = vm;
 }
 
-void ancer::internal::BindJNI(jobject activity) {
-    JniCallInAttachedThread(
-            [activity](JNIEnv* env) {
-                _activity_weak_global_ref = env->NewWeakGlobalRef(activity);
-            });
+void ancer::internal::InitSystem(jobject activity, jstring internal_data_path,
+                                 jstring raw_data_path, jstring obb_path) {
+    JniCallInAttachedThread([&](JNIEnv* env) {
+        _activity_weak_global_ref = env->NewWeakGlobalRef(activity);
+
+        _internal_data_path = std::filesystem::path(
+                env->GetStringUTFChars(internal_data_path, nullptr));
+        _raw_data_path = std::filesystem::path(
+                env->GetStringUTFChars(raw_data_path, nullptr));
+        _obb_path = std::filesystem::path(
+                env->GetStringUTFChars(obb_path, nullptr));
+    });
 }
 
 
-void ancer::internal::UnbindJNI() {
-    JniCallInAttachedThread(
-            [](JNIEnv* env) {
-                env->DeleteWeakGlobalRef(_activity_weak_global_ref);
-            });
+void ancer::internal::DeinitSystem() {
+    JniCallInAttachedThread([](JNIEnv* env) {
+        env->DeleteWeakGlobalRef(_activity_weak_global_ref);
+    });
+}
+
+//==================================================================================================
+
+std::string ancer::InternalDataPath() {
+    return _internal_data_path.string();
+}
+
+
+std::string ancer::RawResourcePath() {
+    return _raw_data_path.string();
+}
+
+std::string ancer::ObbPath() {
+    return _obb_path.string();
 }
 
 //==============================================================================
@@ -339,11 +368,85 @@ void ancer::RunSystemGc() {
 
 //==============================================================================
 
-void ancer::SetThreadAffinity(int threadIndex) {
-    auto numCores = std::thread::hardware_concurrency();
+namespace {
+    const auto core_info = [] {
+        struct {
+            std::array<int, 3> num_cores;
+            std::vector<char> big_core; // 1 for Big, 0 for Little
+        } info;
+
+        androidgamesdk_deviceinfo_GameSdkDeviceInfoWithErrors proto;
+        androidgamesdk_deviceinfo::ProtoDataHolder data_holder;
+        createProto(proto, data_holder);
+
+        const auto num_cpus = data_holder.cpuFreqs.size;
+        assert(data_holder.cpuFreqs.size == android_getCpuCount());
+
+        info.num_cores[(int)ThreadAffinity::kAnyCore] = num_cpus;
+        info.big_core.reserve(num_cpus);
+
+
+        auto min_freq = data_holder.cpuFreqs.data[0];
+        auto max_freq = min_freq;
+
+        for (int i = 0 ; i < num_cpus ; ++i) {
+            const auto freq = data_holder.cpuFreqs.data[i];
+            // Assume the list starts with big cores so we default to all-big if
+            // there are no little cores. If we find a bigger core, swap the old
+            // results and then continue now knowing the big/little sizes.
+            if (min_freq == max_freq && freq != min_freq) {
+                if (freq > max_freq) {
+                    std::swap(info.num_cores[(int)ThreadAffinity::kBigCore],
+                              info.num_cores[(int)ThreadAffinity::kLittleCore]);
+                    for (auto& big : info.big_core) {
+                        big = !big;
+                    }
+                }
+            } else if (freq != min_freq && freq != max_freq) {
+                FatalError(TAG,
+                           "More than two core speeds detected; cannot "
+                           "differentiate between big & little cores.");
+            }
+
+            min_freq = std::min(min_freq, freq);
+            max_freq = std::max(max_freq, freq);
+
+            ++info.num_cores[(int)(max_freq == freq
+                                   ? ThreadAffinity::kBigCore
+                                   : ThreadAffinity::kLittleCore)];
+            info.big_core.push_back(max_freq == freq);
+        }
+
+        Log::D(TAG, "%d cores detected : %d @ %ld, %d @ %ld)",
+               info.num_cores[(int)ThreadAffinity::kAnyCore],
+               info.num_cores[(int)ThreadAffinity::kBigCore], max_freq,
+               info.num_cores[(int)ThreadAffinity::kLittleCore], min_freq);
+
+        return info;
+    }();
+}
+
+
+int ancer::NumCores(ThreadAffinity affinity) {
+    return core_info.num_cores[(int)affinity];
+}
+
+
+void ancer::SetThreadAffinity(int index, ThreadAffinity affinity) {
     cpu_set_t cpuset;
     CPU_ZERO(&cpuset);
-    CPU_SET(threadIndex % numCores, &cpuset);
+
+    // i is real CPU index, j is the index restricted to any/big/little CPUs.
+    for (int i = 0, j = 0; i < std::size(core_info.big_core); ++i) {
+        if (affinity != ThreadAffinity::kAnyCore &&
+            (affinity == ThreadAffinity::kBigCore) != core_info.big_core[i]) {
+            continue;
+        }
+        if (index == -1 || j++ == index) {
+            CPU_SET(i, &cpuset);
+        }
+    }
+
     if ( sched_setaffinity(0, sizeof(cpu_set_t), &cpuset) == -1 ) {
         std::string err;
         switch ( errno) {
@@ -358,8 +461,13 @@ void ancer::SetThreadAffinity(int threadIndex) {
         default:err = "(errno: " + std::to_string(errno) + ")";
             break;
         }
-        Log::D(TAG, "error setting thread affinity, error: " + err);
+        FatalError(TAG, "error setting thread affinity, error: " + err);
     }
+}
+
+
+void ancer::SetThreadAffinity(ThreadAffinity affinity) {
+    SetThreadAffinity(-1, affinity);
 }
 
 //==============================================================================

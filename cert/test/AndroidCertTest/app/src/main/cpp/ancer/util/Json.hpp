@@ -36,7 +36,7 @@ namespace ancer {
     INTERNAL_TO_JSON(Type) \
     INTERNAL_CONVERT_BEGIN(Type)
 
-//==================================================================================================
+//==============================================================================
 
 // If you have logic that differs depending on if we're reading or writing.
 // Note that these are constexpr.
@@ -44,10 +44,10 @@ namespace ancer {
 #define IS_FROM_JSON() Converter::is_from_json
 
 // Declares a required JSON variable that corresponds to a struct member.
-#define JSON_REQVAR(name)  _converter.template Convert< true>(#name, data.name)
-// Declares an optional JSON variable that corresponds to a struct member. Will read nothing if the
-// variable isn't found in JSON.
-#define JSON_OPTVAR(name) _converter.template Convert<false>(#name, data.name)
+#define JSON_REQVAR(name) JSON_REQVAR_AT(#name, data.name)
+// Declares an optional JSON variable that corresponds to a struct member. Will
+// read nothing if the variable isn't found in JSON.
+#define JSON_OPTVAR(name) JSON_OPTVAR_AT(#name, data.name)
 // Declares a variable and reads/writes a given value.
 #define JSON_SETVAR(name, value) \
     do { if constexpr ( IS_TO_JSON() ) { \
@@ -56,6 +56,15 @@ namespace ancer {
         data.name = value; \
     } } while(false)
 
-//==================================================================================================
+// Like the above, but gives a specific variable to write/read to/from.
+#define JSON_REQVAR_AT(name, data) _converter.template Convert< true>(name, data)
+#define JSON_OPTVAR_AT(name, data) _converter.template Convert<false>(name, data)
+
+#define JSON_REQENUM(name, enum_names) \
+    _converter.template ConvertEnum< true, std::size(enum_names)>(#name, data.name, enum_names)
+#define JSON_OPTENUM(name, enum_names) \
+    _converter.template ConvertEnum<false, std::size(enum_names)>(#name, data.name, enum_names)
+
+//==============================================================================
 
 #include "Json.inl"

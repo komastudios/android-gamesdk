@@ -22,6 +22,15 @@ namespace ancer::json_detail {
         void Convert(const char* name, const T& value) {
             j[name] = value;
         }
+
+        template <bool Required, size_t N, typename T>
+        void ConvertEnum(const char* name, const T& value, const char* const* enum_names) noexcept {
+            auto i = static_cast<size_t>(value);
+            if ( ! (0 <= i && i < N) ) {
+                FatalError(TAG, "Invalid enum value %zu / %zu!", i, N);
+            }
+            j[name] = enum_names[i];
+        }
     };
 
     struct FromJson {
@@ -39,6 +48,27 @@ namespace ancer::json_detail {
                     if ( j.count(name)) {
                         j.at(name).get_to(value);
                     }
+                }
+            } catch ( const std::exception& e ) {
+                FatalError(
+                        TAG,
+                        "An fatal error occurred when trying to read '%s %s' from JSON: %s",
+                        typeid(T).name(), name, e.what());
+            }
+        }
+
+        template <bool Required, size_t N, typename T>
+        void ConvertEnum(const char* name, T& value, const char* const* enum_names) noexcept {
+            try {
+                if ( Required || j.count(name) ) {
+                    std::string enum_name;
+                    j.at(name).get_to(enum_name);
+                    const auto* end = enum_names + N;
+                    auto it = std::find(enum_names, end, enum_name);
+                    if ( it == end ) {
+                        FatalError(TAG, "Invalid enum name: '%s'", enum_name.c_str());
+                    }
+                    value = static_cast<T>(it - enum_names);
                 }
             } catch ( const std::exception& e ) {
                 FatalError(
