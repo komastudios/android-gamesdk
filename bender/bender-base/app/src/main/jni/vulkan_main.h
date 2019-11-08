@@ -31,6 +31,10 @@ bool IsVulkanReady(void);
 // Ask Vulkan to Render a frame
 bool VulkanDrawFrame(Input::Data *inputData);
 
+void resizeCallback(ANativeActivity *activity, ANativeWindow *window);
+
+void ScreenChange();
+
 #endif // __VULKANMAIN_HPP__
 
 

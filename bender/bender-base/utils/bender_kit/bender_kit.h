@@ -67,6 +67,8 @@ class Device {
 
   uint getSwapchainLength() const { return swapchainLength_; }
 
+  VkSurfaceTransformFlagBitsKHR getPretransform() const { return pretransform_; }
+
   VkExtent2D getDisplaySize() const { return displaySize_; }
 
   VkFormat getDisplayFormat() const { return displayFormat_; }
@@ -80,6 +82,10 @@ class Device {
   size_t getDisplayImagesSize() const { return displayImages_.size(); }
 
   uint getCurrentFrameIndex() const { return current_frame_index_; }
+
+  const bool windowResized() { return windowResized_; }
+
+  void setWindowResized(bool isResized) { windowResized_ = isResized; }
 
   void present(VkSemaphore* wait_semaphores);
 
@@ -102,8 +108,11 @@ class Device {
 
   void endDebugRegion(VkCommandBuffer cmdBuffer);
 
-private:
+  void CreateSwapChain(VkSwapchainKHR oldSwapchain = VK_NULL_HANDLE);
+
+ private:
   bool initialized_;
+  bool windowResized_ = false;
 
   VkInstance instance_;
   VkPhysicalDevice gpuDevice_;
@@ -115,6 +124,7 @@ private:
 
   VkSwapchainKHR swapchain_;
   uint32_t swapchainLength_;
+  VkSurfaceTransformFlagBitsKHR pretransform_;
 
   VkExtent2D displaySize_;
   VkFormat displayFormat_;
@@ -126,7 +136,6 @@ private:
   void CreateVulkanDevice(ANativeWindow *platformWindow,
                           VkApplicationInfo *appInfo);
 
-  void CreateSwapChain();
 };
 }
 
