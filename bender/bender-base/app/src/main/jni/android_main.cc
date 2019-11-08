@@ -40,6 +40,9 @@ void handle_cmd(android_app *app, int32_t cmd) {
       // The window is being shown, get it ready.
       InitVulkan(app);
       break;
+    case APP_CMD_CONFIG_CHANGED:
+      ScreenChange();
+      break;
     case APP_CMD_TERM_WINDOW:
       // The window is being hidden or closed, clean it up.
       DeleteVulkan();
