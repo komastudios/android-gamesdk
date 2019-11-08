@@ -17,6 +17,7 @@
 #pragma once
 
 #include <cstddef>
+#include <filesystem>
 #include <string>
 
 #include <GLES3/gl32.h>
@@ -33,9 +34,16 @@ namespace ancer {
         void SetJavaVM(JavaVM*);
 
         // init/deinit calls for the framework.
-        void BindJNI(jobject activity);
-        void UnbindJNI();
+        void InitSystem(jobject activity, jstring internal_data_path,
+                        jstring raw_data_path, jstring obb_path);
+        void DeinitSystem();
     }
+
+    // TODO(tmillican@google.com): Would prefer to return filesystem::path, but
+    //  that was causing weird linker errors. :/
+    [[nodiscard]] std::string InternalDataPath();
+    [[nodiscard]] std::string RawResourcePath();
+    [[nodiscard]] std::string ObbPath();
 
     /*
      * Load the text from a file in the application's assets/ folder

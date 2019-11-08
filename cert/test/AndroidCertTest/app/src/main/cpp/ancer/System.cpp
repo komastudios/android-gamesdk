@@ -32,6 +32,10 @@ namespace {
     Log::Tag TAG{"ancer::system"};
     jobject _activity_weak_global_ref;
     JavaVM* _java_vm;
+
+    std::filesystem::path _internal_data_path;
+    std::filesystem::path _raw_data_path;
+    std::filesystem::path _obb_path;
 }
 
 //==============================================================================
@@ -78,19 +82,40 @@ void ancer::internal::SetJavaVM(JavaVM* vm) {
     _java_vm = vm;
 }
 
-void ancer::internal::BindJNI(jobject activity) {
-    JniCallInAttachedThread(
-            [activity](JNIEnv* env) {
-                _activity_weak_global_ref = env->NewWeakGlobalRef(activity);
-            });
+void ancer::internal::InitSystem(jobject activity, jstring internal_data_path,
+                                 jstring raw_data_path, jstring obb_path) {
+    JniCallInAttachedThread([&](JNIEnv* env) {
+        _activity_weak_global_ref = env->NewWeakGlobalRef(activity);
+
+        _internal_data_path = std::filesystem::path(
+                env->GetStringUTFChars(internal_data_path, nullptr));
+        _raw_data_path = std::filesystem::path(
+                env->GetStringUTFChars(raw_data_path, nullptr));
+        _obb_path = std::filesystem::path(
+                env->GetStringUTFChars(obb_path, nullptr));
+    });
 }
 
 
-void ancer::internal::UnbindJNI() {
-    JniCallInAttachedThread(
-            [](JNIEnv* env) {
-                env->DeleteWeakGlobalRef(_activity_weak_global_ref);
-            });
+void ancer::internal::DeinitSystem() {
+    JniCallInAttachedThread([](JNIEnv* env) {
+        env->DeleteWeakGlobalRef(_activity_weak_global_ref);
+    });
+}
+
+//==================================================================================================
+
+std::string ancer::InternalDataPath() {
+    return _internal_data_path.string();
+}
+
+
+std::string ancer::RawResourcePath() {
+    return _raw_data_path.string();
+}
+
+std::string ancer::ObbPath() {
+    return _obb_path.string();
 }
 
 //==============================================================================

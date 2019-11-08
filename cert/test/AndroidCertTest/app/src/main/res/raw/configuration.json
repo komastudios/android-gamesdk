@@ -17,7 +17,31 @@
         "id": "DepthClearGLES3Operation",
         "configuration": {
         }
-      }
+      },
+      "stressors": [
+      ]
+    },
+    {
+      "enabled": true,
+      "name": "Workload Configuration Test",
+      "description": "Reads data from a created file",
+      "duration": "10sec",
+      "data_gatherer": {
+        "id": "IOPerformanceOperation",
+        "configuration": {
+          "file_setup": "Base APK",
+          "read_area_start": 0,
+          "read_area_end": 2048,
+          "total_read": 1048576,
+          "thread_setup": "All Cores",
+          "work_scheme": "Greedy",
+          "file_api": "C++ Streams",
+          "buf_size": 256,
+          "read_align": 384
+        }
+      },
+      "stressors": [
+      ]
     },
     {
       "enabled": true,

@@ -105,7 +105,9 @@ public abstract class BaseHostActivity extends AppCompatActivity
             getSupportActionBar().setTitle(_suiteId);
         }
 
-        NativeInvoker.initializeSuite(this);
+        NativeInvoker.initializeSuite(this, getFilesDir().getAbsolutePath(),
+                                      getPackageResourcePath(),
+                                      getObbDir().getAbsolutePath());
 
         //
         // build the data gatherers, stressors and monitors
