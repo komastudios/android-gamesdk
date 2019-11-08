@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a8ec68d9_b522a230",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-08T19:48:56Z",
+      "side": 1,
+      "message": "Should we be consistent with #include/#import? Given some headers using #include and some uses #import. I know not much about their difference since it gives no error and works fine.",
+      "revId": "4b0c3b92bec246683c2c6adf70089d7015a754b1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
