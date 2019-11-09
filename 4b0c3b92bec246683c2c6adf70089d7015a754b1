@@ -52,6 +52,24 @@
       "revId": "4b0c3b92bec246683c2c6adf70089d7015a754b1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e1cd61c2_5f25ac1b",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-09T06:15:01Z",
+      "side": 1,
+      "message": "Haha I\u0027ve cleaned up the imports into includes, other stuff can come with later cleanup I guess :O",
+      "parentUuid": "7132cabf_7470cfd1",
+      "revId": "4b0c3b92bec246683c2c6adf70089d7015a754b1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
