@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "ee63093f_677694ab",
+        "filename": "bender/bender-base/app/src/main/jni/material.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-09T06:16:54Z",
+      "side": 1,
+      "message": "Ooh yes I had considered this, though I was hoping that the default pink box would be able to kick in with the input Texture param. Will investigate this and make sure that it will work in any case next week.",
+      "parentUuid": "db2f6280_d374a881",
+      "revId": "d088927d007f79a019bf9329f859ddaf65da0005",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6058e6fe_ede39d16",
         "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
         "patchSetId": 4
@@ -33,6 +51,24 @@
       "revId": "d088927d007f79a019bf9329f859ddaf65da0005",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4cce7323_87a48ecb",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-09T06:16:54Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "6058e6fe_ede39d16",
+      "revId": "d088927d007f79a019bf9329f859ddaf65da0005",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
