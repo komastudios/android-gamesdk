@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "db2f6280_d374a881",
+        "filename": "bender/bender-base/app/src/main/jni/material.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-09T04:47:27Z",
+      "side": 1,
+      "message": "What if a material has no texture, but only, for example, a color?",
+      "revId": "d088927d007f79a019bf9329f859ddaf65da0005",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6058e6fe_ede39d16",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-09T04:47:27Z",
+      "side": 1,
+      "message": "Can you use the #define constant for the binding instead of 0?",
+      "revId": "d088927d007f79a019bf9329f859ddaf65da0005",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
