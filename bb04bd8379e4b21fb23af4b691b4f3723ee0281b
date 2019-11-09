@@ -16,6 +16,24 @@
       "revId": "bb04bd8379e4b21fb23af4b691b4f3723ee0281b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "89704c43_ea6fc43c",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-09T04:41:43Z",
+      "side": 1,
+      "message": "We are limited to 4 sets at the same time per pipeline so we can\u0027t be too liberal with splitting anyway.",
+      "parentUuid": "b3c2c743_84af0613",
+      "revId": "bb04bd8379e4b21fb23af4b691b4f3723ee0281b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }

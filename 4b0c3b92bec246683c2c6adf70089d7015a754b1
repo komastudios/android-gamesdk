@@ -34,6 +34,24 @@
       "revId": "4b0c3b92bec246683c2c6adf70089d7015a754b1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7132cabf_7470cfd1",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-09T04:41:43Z",
+      "side": 1,
+      "message": "I\u0027d go for include only and use #pragma once. But it\u0027s just habit. *zeeeen*",
+      "parentUuid": "e5a26219_5a529246",
+      "revId": "4b0c3b92bec246683c2c6adf70089d7015a754b1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
