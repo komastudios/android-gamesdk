@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "be1fc406_a3d7e798",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-11T22:27:21Z",
+      "side": 1,
+      "message": "Can you keep the naming convention consistent?",
+      "revId": "3145066553607b60f23d0a78393a858e782f28ee",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "28312ddb_63667bb7",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-11T22:27:21Z",
+      "side": 1,
+      "message": "getPretransformFlag\n\nWhere is this method used?",
+      "revId": "3145066553607b60f23d0a78393a858e782f28ee",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a625c3ef_187743a0",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-11T22:27:21Z",
+      "side": 1,
+      "message": "bool windowResized() const { return windowResized_; }\n\nThe method is const, not bool. A scalar type is always const by definition.",
+      "revId": "3145066553607b60f23d0a78393a858e782f28ee",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "749b9f5e_1a3f1176",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-11T22:27:21Z",
+      "side": 1,
+      "message": "Can you keep the naming convention pls?",
+      "revId": "3145066553607b60f23d0a78393a858e782f28ee",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9609b9be_8b0fc0a6",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-11T22:27:21Z",
+      "side": 1,
+      "message": "pretransformFlag_",
+      "revId": "3145066553607b60f23d0a78393a858e782f28ee",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
