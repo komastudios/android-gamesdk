@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "6b3bf55b_bbca8025",
+        "filename": "bender/bender-base/app/src/main/jni/material.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-11T21:10:41Z",
+      "side": 1,
+      "message": "I will add stuff expanding this into a separate CL; this one is getting quite large, and I think it will be non-trivial to figure out how descriptor stuff will work if I don\u0027t have a texture, since the layout is expecting an image sampler for a texture that may not exist.",
+      "parentUuid": "ee63093f_677694ab",
+      "revId": "d088927d007f79a019bf9329f859ddaf65da0005",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6058e6fe_ede39d16",
         "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
         "patchSetId": 4
