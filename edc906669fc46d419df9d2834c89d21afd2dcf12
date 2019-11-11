@@ -34,6 +34,24 @@
       "revId": "edc906669fc46d419df9d2834c89d21afd2dcf12",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "81f134ea_8c65a180",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/HalfFloatPrecisionGLES3Operation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1587423
+      },
+      "writtenOn": "2019-11-11T23:33:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "18a7c129_e5172a47",
+      "revId": "edc906669fc46d419df9d2834c89d21afd2dcf12",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
