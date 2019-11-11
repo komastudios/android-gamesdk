@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "3d1736c2_3299be76",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-11-11T11:04:17Z",
+      "side": 1,
+      "message": "No, they are not used instead of parameters downloaded from the server. I\u0027ll make it clearer.",
+      "parentUuid": "f3c60859_60ea78cf",
+      "range": {
+        "startLine": 127,
+        "startChar": 61,
+        "endLine": 128,
+        "endChar": 68
+      },
+      "revId": "da6fcdc4277fddd7aaf78f8580c400f57c3a11d9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8d862f6a_421b7f9c",
         "filename": "include/tuningfork/tuningfork.h",
         "patchSetId": 4
@@ -42,6 +66,24 @@
     },
     {
       "key": {
+        "uuid": "c81fe9c8_27216593",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-11-11T11:04:17Z",
+      "side": 1,
+      "message": "There\u0027s a separate bug to doxygenate the Tuning Fork interface.",
+      "parentUuid": "8d862f6a_421b7f9c",
+      "revId": "da6fcdc4277fddd7aaf78f8580c400f57c3a11d9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f3ef9afa_65ebe6aa",
         "filename": "include/tuningfork/tuningfork_extra.h",
         "patchSetId": 4
@@ -56,6 +98,24 @@
       "revId": "da6fcdc4277fddd7aaf78f8580c400f57c3a11d9",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "50e7fbf0_d4b15dde",
+        "filename": "include/tuningfork/tuningfork_extra.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-11-11T11:04:17Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f3ef9afa_65ebe6aa",
+      "revId": "da6fcdc4277fddd7aaf78f8580c400f57c3a11d9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -82,6 +142,30 @@
     },
     {
       "key": {
+        "uuid": "da2a1d9e_de0f5f27",
+        "filename": "src/tuningfork/tuningfork.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 674,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-11-11T11:04:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5efeee30_1dec60b5",
+      "range": {
+        "startLine": 674,
+        "startChar": 0,
+        "endLine": 674,
+        "endChar": 104
+      },
+      "revId": "da6fcdc4277fddd7aaf78f8580c400f57c3a11d9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c05e540a_9e292944",
         "filename": "src/tuningfork/tuningfork_extra.cpp",
         "patchSetId": 4
@@ -102,6 +186,30 @@
       "revId": "da6fcdc4277fddd7aaf78f8580c400f57c3a11d9",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "49ced4df_66c2c7fc",
+        "filename": "src/tuningfork/tuningfork_extra.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-11-11T11:04:17Z",
+      "side": 1,
+      "message": "It\u0027s in include/tuningfork/protobuf_util.h",
+      "parentUuid": "c05e540a_9e292944",
+      "range": {
+        "startLine": 41,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 21
+      },
+      "revId": "da6fcdc4277fddd7aaf78f8580c400f57c3a11d9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -128,6 +236,30 @@
     },
     {
       "key": {
+        "uuid": "1740d9bc_944a14b1",
+        "filename": "src/tuningfork/tuningfork_extra.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-11-11T11:04:17Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "4157e99c_1cff838d",
+      "range": {
+        "startLine": 173,
+        "startChar": 0,
+        "endLine": 173,
+        "endChar": 55
+      },
+      "revId": "da6fcdc4277fddd7aaf78f8580c400f57c3a11d9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "57b90aec_5d69be0e",
         "filename": "src/tuningfork/tuningfork_extra.cpp",
         "patchSetId": 4
@@ -151,6 +283,30 @@
     },
     {
       "key": {
+        "uuid": "c566916a_211bca61",
+        "filename": "src/tuningfork/tuningfork_extra.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 253,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-11-11T11:04:17Z",
+      "side": 1,
+      "message": "This function could be used prior to calling TuningFork_init, so I think we want to keep as is.",
+      "parentUuid": "57b90aec_5d69be0e",
+      "range": {
+        "startLine": 253,
+        "startChar": 47,
+        "endLine": 253,
+        "endChar": 58
+      },
+      "revId": "da6fcdc4277fddd7aaf78f8580c400f57c3a11d9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1db4d79d_e467d08a",
         "filename": "src/tuningfork/tuningfork_internal.h",
         "patchSetId": 4
@@ -165,6 +321,24 @@
       "revId": "da6fcdc4277fddd7aaf78f8580c400f57c3a11d9",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "42875797_6ea8f280",
+        "filename": "src/tuningfork/tuningfork_internal.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-11-11T11:04:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1db4d79d_e467d08a",
+      "revId": "da6fcdc4277fddd7aaf78f8580c400f57c3a11d9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
