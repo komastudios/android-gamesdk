@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "895289fa_c2c18885",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 420,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-11T22:53:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e4e25b12_ffb6c189",
+      "revId": "3145066553607b60f23d0a78393a858e782f28ee",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "be1fc406_a3d7e798",
         "filename": "bender/bender-base/app/src/main/jni/vulkan_main.h",
         "patchSetId": 4
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "eee44617_e0d1f861",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-11T22:53:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "be1fc406_a3d7e798",
+      "revId": "3145066553607b60f23d0a78393a858e782f28ee",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "28312ddb_63667bb7",
         "filename": "bender/bender-base/utils/bender_kit/bender_kit.h",
         "patchSetId": 4
@@ -47,6 +83,24 @@
       "writtenOn": "2019-11-11T22:27:21Z",
       "side": 1,
       "message": "getPretransformFlag\n\nWhere is this method used?",
+      "revId": "3145066553607b60f23d0a78393a858e782f28ee",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b607fa71_f96dafad",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-11T22:53:00Z",
+      "side": 1,
+      "message": "This method is used in the updateCamera function to figure out what the current orientation of the device is for transforming the view matrix",
+      "parentUuid": "28312ddb_63667bb7",
       "revId": "3145066553607b60f23d0a78393a858e782f28ee",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -70,6 +124,24 @@
     },
     {
       "key": {
+        "uuid": "20751d84_fd05a18f",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-11T22:53:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a625c3ef_187743a0",
+      "revId": "3145066553607b60f23d0a78393a858e782f28ee",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "749b9f5e_1a3f1176",
         "filename": "bender/bender-base/utils/bender_kit/bender_kit.h",
         "patchSetId": 4
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "19fd1e16_b31a39e3",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-11T22:53:00Z",
+      "side": 1,
+      "message": "Oh I missed that when I moved the existing function from private to public and added a default argument to, I can update it\u0027s name for sure!",
+      "parentUuid": "749b9f5e_1a3f1176",
+      "revId": "3145066553607b60f23d0a78393a858e782f28ee",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9609b9be_8b0fc0a6",
         "filename": "bender/bender-base/utils/bender_kit/bender_kit.h",
         "patchSetId": 4
@@ -101,6 +191,24 @@
       "revId": "3145066553607b60f23d0a78393a858e782f28ee",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7707b938_6171c686",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-11T22:53:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9609b9be_8b0fc0a6",
+      "revId": "3145066553607b60f23d0a78393a858e782f28ee",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
