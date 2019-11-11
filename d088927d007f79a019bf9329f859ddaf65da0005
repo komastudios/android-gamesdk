@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "bbb9c32e_15f88099",
+        "filename": "bender/bender-base/app/src/main/jni/material.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-11T21:14:04Z",
+      "side": 1,
+      "message": "Ack\n\nThe way forward will be to return a different layout based on parameters and textures.",
+      "parentUuid": "6b3bf55b_bbca8025",
+      "revId": "d088927d007f79a019bf9329f859ddaf65da0005",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6058e6fe_ede39d16",
         "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
         "patchSetId": 4
