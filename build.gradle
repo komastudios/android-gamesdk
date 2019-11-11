@@ -447,6 +447,13 @@ def copyExtras(outFolder, all = true) {
     }
 }
 
+def copyDocs(outFolder) {
+    copy {
+	from "LICENSE", "README.md", "THIRD_PARTY_NOTICES", "RELEASE_NOTES"
+	into getPackagePath() + '/' + outFolder
+    }
+}
+
 // Copy samples for packaging. Also rename CMakeLists.txt files so that the
 // one distributed are using the packaged game sdk.
 def copySamples(outFolder, includeTuningForkSamples = true) {
@@ -694,6 +701,8 @@ tasks.withType(BuildTask) {
                     withFullBuildKey, flattenLibs, withSharedLibs)
         }
         copyExtras(packageName, withTuningFork)
+
+	copyDocs(packageName)
 
         if (withSamples) {
             copySamples(packageName, withTuningFork)
