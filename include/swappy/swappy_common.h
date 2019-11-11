@@ -33,7 +33,7 @@
 /** @brief Swap interval for 20fps, in nanoseconds. */
 #define SWAPPY_SWAP_20FPS (50000000L)
 
-/** @internal */
+/** @cond INTERNAL */
 
 #define SWAPPY_SYSTEM_PROP_KEY_DISABLE "swappy.disable"
 
@@ -56,7 +56,7 @@ extern "C" {
 // mismatch between the header used at compilation and the actually library used by the linker.
 void SWAPPY_VERSION_SYMBOL();
 
-/** @endinternal */
+/** @endcond */
 
 /**
  * @brief Return the version of the Swappy library at runtime.
