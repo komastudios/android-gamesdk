@@ -16,6 +16,24 @@
       "revId": "5a87c49cd7ede0e646a17f37e2dbcf28fa45f031",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5bbec8d4_13d0c927",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 461,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-11T23:14:26Z",
+      "side": 1,
+      "message": "OnOrientationChange makes sense since I\u0027m not sure if this function can deal with a device_lost situation, only an ANativeWindow change\n\nThanks for the suggestions!",
+      "parentUuid": "9f21934b_eb14c1ef",
+      "revId": "5a87c49cd7ede0e646a17f37e2dbcf28fa45f031",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
