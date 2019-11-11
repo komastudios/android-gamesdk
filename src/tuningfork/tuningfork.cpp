@@ -100,6 +100,7 @@ private:
     std::atomic<int> next_ikey_;
     JniCtx jni_;
     TimePoint loading_start_;
+    std::unique_ptr<ProtobufSerialization> training_mode_params_;
 public:
     TuningForkImpl(const Settings& settings,
                    const JniCtx& jni,
@@ -112,9 +113,11 @@ public:
 
     void InitAnnotationRadixes();
 
+    void InitTrainingModeParams();
+
     // Returns true if the fidelity params were retrieved
     TFErrorCode GetFidelityParameters(const ProtobufSerialization& defaultParams,
-                    ProtobufSerialization &fidelityParams, uint32_t timeout_ms);
+                                      ProtobufSerialization &fidelityParams, uint32_t timeout_ms);
 
     // Returns the set annotation id or -1 if it could not be set
     uint64_t SetCurrentAnnotation(const ProtobufSerialization &annotation);
@@ -136,6 +139,9 @@ public:
 
     const JniCtx& GetJniCtx() const {
         return jni_;
+    }
+    const Settings& GetSettings() const {
+        return settings_;
     }
 private:
     Prong *TickNanos(uint64_t compound_id, TimePoint t);
@@ -223,7 +229,7 @@ TFErrorCode Init(const Settings &settings,
 }
 
 TFErrorCode GetFidelityParameters(const ProtobufSerialization &defaultParams,
-                           ProtobufSerialization &params, uint32_t timeout_ms) {
+                                  ProtobufSerialization &params, uint32_t timeout_ms) {
     if (!s_impl) {
         return TFERROR_TUNINGFORK_NOT_INITIALIZED;
     } else {
@@ -312,6 +318,11 @@ const JniCtx& GetJniCtx() {
     }
 }
 
+const Settings* GetSettings() {
+    if (!s_impl) return nullptr;
+    else return &s_impl->GetSettings();
+}
+
 TuningForkImpl::TuningForkImpl(const Settings& settings,
                                const JniCtx& jni,
                                const ExtraUploadInfo& extra_upload_info,
@@ -351,6 +362,7 @@ TuningForkImpl::TuningForkImpl(const Settings& settings,
 
     InitHistogramSettings();
     InitAnnotationRadixes();
+    InitTrainingModeParams();
 
     size_t max_num_prongs_ = 0;
     int max_ikeys = settings.aggregation_strategy.max_instrumentation_keys;
@@ -455,8 +467,9 @@ bool TuningForkImpl::IsLoadingAnnotationId(AnnotationId id) const {
 }
 
 TFErrorCode TuningForkImpl::GetFidelityParameters(
-                                           const ProtobufSerialization& defaultParams,
-                                           ProtobufSerialization &params_ser, uint32_t timeout_ms) {
+                                           const ProtobufSerialization& default_params,
+                                           ProtobufSerialization &params_ser,
+                                           uint32_t timeout_ms) {
     if(loader_) {
         std::string experiment_id;
         if (settings_.base_uri.empty()) {
@@ -469,8 +482,8 @@ TFErrorCode TuningForkImpl::GetFidelityParameters(
         }
         auto result = loader_->GetFidelityParams(jni_,
             UploadThread::BuildExtraUploadInfo(jni_),
-            settings_.base_uri, settings_.api_key, params_ser,
-            experiment_id, timeout_ms);
+            settings_.base_uri, settings_.api_key, training_mode_params_.get(),
+            params_ser, experiment_id, timeout_ms);
         upload_thread_.SetCurrentFidelityParams(params_ser, experiment_id);
         return result;
     }
@@ -653,6 +666,13 @@ TFErrorCode TuningForkImpl::Flush(TimePoint t, bool upload) {
     if (upload)
         last_submit_time_ = t;
     return ret_code;
+}
+
+void TuningForkImpl::InitTrainingModeParams() {
+    auto cser = settings_.c_settings.training_fidelity_params;
+    if (cser != nullptr)
+        training_mode_params_ =
+                std::make_unique<ProtobufSerialization>(ToProtobufSerialization(*cser));
 }
 
 } // namespace tuningfork {
