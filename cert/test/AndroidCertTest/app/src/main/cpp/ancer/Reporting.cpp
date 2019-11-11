@@ -281,36 +281,40 @@ namespace ancer::reporting {
                 DEFAULT_FLUSH_PERIOD_MILLIS;
     }
 
-
-    void OpenReportLog(const std::string& file) {
+    void OpenReportLog(const std::string &file) {
         if (_writer) {
-            FatalError(
-                    TAG,
-                    "Called OpenReportLog on an already open report; please "
-                    "call CloseReportLog() first");
+            // It's fine if it happens that the report writer is already
+            // instantiated. Instantiation happens upon Android MainActivity
+            // creation, that at times is recycled and re-created as Android
+            // takes allocated resources back.
+            Log::I(TAG, "OpenReportLog - File \"%s\" was already open.",
+                   file.c_str());
+        } else {
+            _writer = std::make_unique<Writer>(file);
+            Log::I(TAG, "OpenReportLog - Opened report log file \"%s\"",
+                   file.c_str());
         }
 
-        _writer = std::make_unique<Writer>(file);
-        _report_serializer = MakeReportSerializer(
-                _report_flush_mode, _writer.get());
-
-        Log::I(TAG, "OpenReportLog - Opened report log file \"" + file + "\"");
+        if (_report_serializer==nullptr) {
+            _report_serializer =
+                  MakeReportSerializer(_report_flush_mode, _writer.get());
+        }
     }
 
     void OpenReportLog(int file_descriptor) {
         if (_writer) {
-            FatalError(
-                    TAG,
-                    "Called OpenReportLog on an already open report; please "
-                    "call CloseReportLog() first");
+            Log::I(TAG, "OpenReportLog - File \"%d\" was already open.",
+                   file_descriptor);
+        } else {
+            _writer = std::make_unique<Writer>(file_descriptor);
+            Log::I(TAG, "OpenReportLog - Opened report log using file "
+                        "descriptor %d", file_descriptor);
         }
 
-        _writer = std::make_unique<Writer>(file_descriptor);
-        _report_serializer = MakeReportSerializer(
-                _report_flush_mode, _writer.get());
-
-        Log::I(TAG, "OpenReportLog - Opened report log using file descriptor %d",
-                file_descriptor);
+        if (_report_serializer==nullptr) {
+            _report_serializer =
+                  MakeReportSerializer(_report_flush_mode, _writer.get());
+        }
     }
 
 
