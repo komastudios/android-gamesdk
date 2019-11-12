@@ -56,7 +56,7 @@ public:
   glm::mat4 getTransform() const;
 
 private:
-  std::unique_ptr<UniformBufferObject<ModelViewProjection>> meshBuffer;
+  std::unique_ptr<UniformBufferObject<ModelViewProjection>> mesh_buffer_;
 
   Renderer& renderer_;
   Material& material_;
