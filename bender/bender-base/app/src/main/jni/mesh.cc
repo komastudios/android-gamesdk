@@ -50,7 +50,7 @@ void Mesh::createMeshDescriptors() {
 
   for (size_t i = 0; i < renderer_.getDevice().getDisplayImagesSize(); i++) {
     VkDescriptorBufferInfo bufferInfo = {};
-    bufferInfo.buffer = meshBuffer->getBuffer(i);
+    bufferInfo.buffer = mesh_buffer_->getBuffer(i);
     bufferInfo.offset = 0;
     bufferInfo.range = sizeof(ModelViewProjection);
 
@@ -230,7 +230,7 @@ void Mesh::update(uint_t frame_index, glm::vec3 camera, glm::mat4 view, glm::mat
   glm::mat4 model = getTransform();
   glm::mat4 mvp = proj * view * model;
 
-  meshBuffer->update(frame_index, [&mvp, &model](auto& ubo) {
+  mesh_buffer_->update(frame_index, [&mvp, &model](auto& ubo) {
     ubo.mvp = mvp;
     ubo.model = model;
     ubo.invTranspose = glm::transpose(glm::inverse(model));
