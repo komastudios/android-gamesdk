@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "a3fe24f1_1b7eadb7",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-12T19:28:01Z",
+      "side": 1,
+      "message": "Actually these are from the style guide :) \n\nhttps://google.github.io/styleguide/cppguide.html#Reference_Arguments",
+      "parentUuid": "9ce2a5a1_56319ad0",
+      "revId": "6fc8fecad74557aacf54e03b673ec78fb66a9d7e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "41775f13_e34be253",
         "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "6fc8fecad74557aacf54e03b673ec78fb66a9d7e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f8a15c77_0393a7b4",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-12T19:28:01Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "41775f13_e34be253",
+      "revId": "6fc8fecad74557aacf54e03b673ec78fb66a9d7e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +107,24 @@
     },
     {
       "key": {
+        "uuid": "9bd11291_22160018",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-12T19:28:01Z",
+      "side": 1,
+      "message": "I guess that depends on how we are planning on constructing Mesh objects, would we want to instantiate Mesh objects using data stored in another Mesh object or would we have a data structure that stores already instantiated geometry objects and uses that for the creation of new Mesh objects?",
+      "parentUuid": "0dfc38e9_16fd8b99",
+      "revId": "6fc8fecad74557aacf54e03b673ec78fb66a9d7e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "093efa08_bee5236a",
         "filename": "bender/bender-base/app/src/main/jni/mesh.h",
         "patchSetId": 1
@@ -82,6 +136,24 @@
       "writtenOn": "2019-11-12T19:16:35Z",
       "side": 1,
       "message": "We could probably use a std::unique_ptr here.",
+      "revId": "6fc8fecad74557aacf54e03b673ec78fb66a9d7e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f371b3dd_12fd9fec",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-12T19:28:01Z",
+      "side": 1,
+      "message": "That makes sense, there is never a case where two mesh objects would share the same MVP.\n\nI did have a question about the mesh class and it\u0027s relationship to mesh instances, but I think I will save it for our meeting today!",
+      "parentUuid": "093efa08_bee5236a",
       "revId": "6fc8fecad74557aacf54e03b673ec78fb66a9d7e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
