@@ -18,4 +18,4 @@ deployment:
 chart:
   enabled: true
   suites:
-    - "Affinity Test"
+    - "Memory allocation"
