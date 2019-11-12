@@ -103,8 +103,8 @@ def run_test(flags_file: Path, args_yaml: Path, test_name: str, enable_systrace,
     if run_on_all_physical_devices:
         print("run_on_all_physical_devices: - disabled for now.")
         # TODO(shamyl@google.com): Why does this crash the gcloud client?
-        # device_args_list, _ = get_all_physical_devices(flags_file)
-        # cmdline.extend(device_args_list)
+        device_args_list, _ = get_all_physical_devices(flags_file)
+        cmdline.extend(device_args_list)
 
     print('Stand by...\n')
     proc = subprocess.run(cmdline,

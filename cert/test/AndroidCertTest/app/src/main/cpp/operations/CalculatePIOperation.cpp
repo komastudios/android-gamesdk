@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <cmath>
 #include <thread>
 #include <mutex>
 #include <sstream>
@@ -29,7 +30,10 @@ using namespace ancer;
 
 namespace {
     constexpr Log::Tag TAG{"calculate_pi_native"};
-    constexpr auto ITERATION_SAMPLE_PERIOD = int64_t(100);
+
+    constexpr auto ITERATION_SAMPLE_PERIOD(int64_t(100));
+
+    constexpr auto PI = 3.14159265358979323846;
 }
 
 //==================================================================================================
@@ -50,17 +54,17 @@ namespace {
 //--------------------------------------------------------------------------------------------------
 
     struct datum {
-        Timestamp start_time;
-        Timestamp end_time;
-        int64_t iterations = 0;
-        double pi_approximation = 0;
+        Duration duration;
+        int64_t iterations;
+        double pi_approximation;
+        double pi_error;
     };
 
     JSON_WRITER(datum) {
-        JSON_REQVAR(start_time);
-        JSON_REQVAR(end_time);
+        JSON_REQVAR(duration);
         JSON_REQVAR(iterations);
         JSON_REQVAR(pi_approximation);
+        JSON_REQVAR(pi_error);
     }
 }
 
@@ -86,14 +90,13 @@ public:
         for ( auto i = 0 ; i < num_threads ; i++ ) {
             _threads.emplace_back(
                     [this, i, is_test, c]() {
-
                         if ( c.affinity ) {
                             SetThreadAffinity(i);
                         }
 
-                        CalculatePi(
-                                GetDuration(),
-                                is_test ? c.performance_sample_period : Duration::zero());
+                        CalculatePi(GetDuration(), is_test
+                                                   ? c.performance_sample_period
+                                                   : Duration::zero());
                     });
         }
     }
@@ -109,67 +112,58 @@ public:
 private:
 
     /*
-     * Performs an iterative calculation of PI for a time duration; note: the goal is not accuracy, but just to heat up the CPU
-     * @param duration the time duration to run. If 0, run indefinitely (or until *canceled == true)
-     * @param samplePeriod if > 0, a sample will be recorded every samplePeriod
-     * @param canceled when set to true, stop work
+     * Performs an iterative calculation of PI for a time duration; note: the goal is not accuracy,
+     * but just to heat up the CPU.
+     * @param calculationDuration the total test duration time. If 0, run indefinitely
+     * @param reportSamplingDuration if > 0, a sample will be recorded every sampling duration
      * @return the result (duration, iterations, result pi, etc)
      */
-    void CalculatePi(Duration duration, Duration samplePeriod) {
+    void CalculatePi(Duration calculationDuration, Duration reportSamplingDuration) {
         ANCER_SCOPED_TRACE("CalculatePIOperation::calculate_pi");
 
         auto is_test = GetMode() == Mode::DataGatherer;
-
-        SteadyClock clock;
-        auto start_time = SteadyClock::now();
 
         long d = 3;
         long i = 0;
         double accumulator = 1;
 
         datum current_datum{};
-        current_datum.start_time = SteadyClock::now(); // TODO
 
-        for ( ;; i++, d += 2, current_datum.iterations++ ) {
-            if ( IsStopped()) {
+        for (auto start_time = SteadyClock::now();; i++, d += 2, ++current_datum.iterations) {
+            if (IsStopped()) {
                 break;
             }
 
-            double factor = 1.0 / static_cast<double>(d);
+            double factor = 1.0 / static_cast<double>((i % 2 == 0) ? -d : d);
+            accumulator += factor;
 
-            if ( i % 2 == 0 ) {
-                accumulator -= factor;
-            } else {
-                accumulator += factor;
-            }
-
-            if ( i % ITERATION_SAMPLE_PERIOD == 0 ) {
+            if (i % ITERATION_SAMPLE_PERIOD == 0) {
                 auto now = SteadyClock::now();
-                auto elapsed = now - start_time;
+                current_datum.duration = now - start_time;
 
-                if ((duration > Duration::zero()) && (elapsed >= duration)) {
+                if ((calculationDuration > Duration::zero()) &&
+                    (current_datum.duration >= calculationDuration)) {
                     // report current state and bail
-                    current_datum.end_time = now;
                     current_datum.pi_approximation = 4 * accumulator;
+                    current_datum.pi_error = std::abs(current_datum.pi_approximation - PI);
                     Report(current_datum);
                     break;
                 }
 
-                if ((samplePeriod > Duration::zero()) &&
-                        (now - current_datum.start_time >= samplePeriod)) {
-                    current_datum.end_time = now;
+                if ((reportSamplingDuration > Duration::zero()) &&
+                    (current_datum.duration >= reportSamplingDuration)) {
                     current_datum.pi_approximation = 4 * accumulator;
+                    current_datum.pi_error = std::abs(current_datum.pi_approximation - PI);
                     Report(current_datum);
 
                     current_datum = datum{};
-                    current_datum.start_time = now;
+                    start_time = now;
                 }
             }
         }
     }
 
 private:
-
     std::vector<std::thread> _threads;
 };
 

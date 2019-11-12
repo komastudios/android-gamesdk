@@ -28,12 +28,76 @@ using namespace ancer;
 
 
 namespace {
-    struct datum {
-        bool mprotect_available = false;
+    /**
+     * This mprotect availability test may fail at many stages. For that reason
+     * this enum establishes a ranking to measure how far from success a device
+     * is.
+     * The higher the score, the farther from success. The lowest score, zero,
+     * means success (i.e., mprotect is fully available).
+     */
+    enum MprotectRank : int {
+      /**
+       * Vulkan memory can be successfully protected against writing
+       */
+          AVAILABLE,
+      /**
+       * mprotect failed to make Vulkan mapped memory R/W
+       */
+          READ_WRITE_MPROTECT_FAILURE,
+      /**
+       * Vulkan memory write error in spite of being R/W
+       */
+          WRITE_VIOLATION_UNEXPECTED,
+      /**
+       * mprotect failed to make Vulkan mapped memory read only
+       */
+          READ_ONLY_MPROTECT_FAILURE,
+      /**
+       * Vulkan memory write succeeded in spite of being read-only
+       */
+          WRITE_VIOLATION_EXPECTED,
+      /**
+       * Vulkan memory mapping failed
+       */
+          MEMORY_MAPPING_FAILURE,
+      /**
+       * Vulkan memory allocation failed
+       */
+          MEMORY_ALLOCATION_FAILURE,
+      /**
+       * Device doesn't have mappable memory
+       */
+          NO_MAPPABLE_MEMORY
     };
 
+    struct mprotect_info {
+        bool available{false};
+        MprotectRank rank{NO_MAPPABLE_MEMORY};
+
+        mprotect_info(const MprotectRank rank)
+        {
+            this->SetRank(rank);
+        }
+
+        void
+        SetRank(const MprotectRank rank)
+        {
+            this->available = rank==AVAILABLE;
+            this->rank = rank;
+        }
+    };
+
+    struct datum {
+        mprotect_info mprotect;
+    };
+
+    JSON_WRITER(mprotect_info) {
+        JSON_REQVAR(available);
+        JSON_REQVAR(rank);
+    }
+
     JSON_WRITER(datum) {
-        JSON_REQVAR(mprotect_available);
+        JSON_REQVAR(mprotect);
     }
 
     constexpr Log::Tag TAG{"VulkanMprotectCheckOperation"};
@@ -94,8 +158,7 @@ public:
     }
 
     void Start() override {
-        datum testDatum{};
-        testDatum.mprotect_available = false;  // until proved otherwise
+        mprotect_info mprotect{NO_MAPPABLE_MEMORY};    // until proved otherwise
 
         auto &info{this->GetInfo()};
         for (uint32_t memTypeIndex = 0;
@@ -105,8 +168,8 @@ public:
                     info.memoryProperties.memoryTypes[memTypeIndex])) {
                 Log::I(TAG, "Testing memory type index %d", memTypeIndex);
 
-                ProtectMemoryAndAttemptWrite(memTypeIndex, testDatum);
-                if (!testDatum.mprotect_available) {
+                ProtectMemoryAndAttemptWrite(memTypeIndex, mprotect);
+                if (!mprotect.available) {
                     break;
                 }
             } else {
@@ -114,14 +177,16 @@ public:
             }
         }
 
-        Report(testDatum);
+        Report(datum{mprotect});
     }
 
 private:
     void ProtectMemoryAndAttemptWrite(const uint32_t memTypeIndex,
-                                      datum &testDatum) {
-        VulkanMemoryAllocator allocator{this->GetDevice(), memTypeIndex};
-        allocator.ProtectMemoryAndAttemptWrite(testDatum);
+                                      mprotect_info &mprotect) {
+        VulkanMemoryAllocator allocator{
+              this->GetDevice(), memTypeIndex, mprotect
+        };
+        allocator.ProtectMemoryAndAttemptWrite(mprotect);
     }
 
     struct sigaction _oldSigaction;
@@ -141,9 +206,12 @@ private:
          * @param memoryTypeIndex Index to the physical Vulkan device memory
          *                        type table.
          */
-        VulkanMemoryAllocator(VkDevice device, const uint32_t memoryTypeIndex) :
-                _device{device}, _deviceMemoryBuffer{VK_NULL_HANDLE},
-                _pMappedBuffer{nullptr} {
+        VulkanMemoryAllocator(
+              VkDevice device,
+              const uint32_t memoryTypeIndex,
+              mprotect_info &mprotect
+        ) : _device{device}, _deviceMemoryBuffer{VK_NULL_HANDLE},
+            _pMappedBuffer{nullptr} {
             VkMemoryAllocateInfo allocInfo = {};
             allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
             allocInfo.allocationSize = ALLOCATION_SIZE;
@@ -163,9 +231,11 @@ private:
                 if (res == VK_SUCCESS) {
                     Log::D(TAG, "Vulkan memory mapped");
                 } else {
+                    mprotect.SetRank(MEMORY_MAPPING_FAILURE);
                     Log::E(TAG, "Vulkan memory mapping failure. res=%d", res);
                 }
             } else {
+                mprotect.SetRank(MEMORY_ALLOCATION_FAILURE);
                 Log::E(TAG, "Vulkan memory allocation failure. res=%d", res);
             }
         }
@@ -191,12 +261,10 @@ private:
          * occur. If it did, the test failed.
          * Otherwise, it passed.
          *
-         * @param testDatum The data structure used to hold test results.
+         * @param mprotect The data structure used to hold test results.
          */
-        void ProtectMemoryAndAttemptWrite(datum &testDatum) {
+        void ProtectMemoryAndAttemptWrite(mprotect_info &mprotect) {
             if (this->MakeBufferReadOnly()) {
-                testDatum.mprotect_available = true;   // until proved otherwise
-
                 protectionViolationOccurred = false;
                 this->WriteBuffer();
                 if (protectionViolationOccurred) {
@@ -204,30 +272,28 @@ private:
                         protectionViolationOccurred = false;
                         this->WriteBuffer();
                         if (protectionViolationOccurred) {
+                            mprotect.SetRank(WRITE_VIOLATION_UNEXPECTED);
                             Log::I(TAG,
                                    "Unexpected memory write violation caught.");
-                            testDatum.mprotect_available = false;
+                        } else {
+                            mprotect.SetRank(AVAILABLE);
+                            Log::I(TAG,
+                                   "mprotect can be applied to Vulkan mapped "
+                                   "memory.");
                         }
                     } else {
+                        mprotect.SetRank(READ_WRITE_MPROTECT_FAILURE);
                         Log::I(TAG, "mprotect couldn't set Vulkan memory "
                                     "read/write");
-                        testDatum.mprotect_available = false;
                     }
                 } else {
+                    mprotect.SetRank(WRITE_VIOLATION_EXPECTED);
                     Log::I(TAG,
                            "Expected memory write violation wasn't caught.");
-                    testDatum.mprotect_available = false;
                 }
             } else {
+                mprotect.SetRank(READ_ONLY_MPROTECT_FAILURE);
                 Log::I(TAG, "mprotect couldn't set Vulkan memory read-only");
-                testDatum.mprotect_available = false;
-            }
-
-            if (testDatum.mprotect_available) {
-                Log::I(TAG, "mprotect can be applied to Vulkan mapped memory.");
-            } else {
-                Log::I(TAG,
-                       "mprotect can't be applied to Vulkan mapped memory.");
             }
         }
 

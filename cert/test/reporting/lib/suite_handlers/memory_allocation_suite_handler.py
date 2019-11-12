@@ -1,18 +1,13 @@
 import matplotlib
 import matplotlib.pyplot as plt
-import numpy as np
-
-from typing import List
 
 from lib.chart_components import *
+from .common_plot import add_plotters_to_default, \
+    plot_memory_as_mb, plot_ignore, plot_boolean
 
 
 def plot_event_ignore(renderer, fig, index, count, start_time_seconds,
                       end_time_seconds):
-    pass
-
-
-def plot_ignore(renderer):
     pass
 
 
@@ -46,42 +41,6 @@ def plot_event_default(renderer, fig, index, count, start_time_seconds,
     pass
 
 
-def plot_default(renderer):
-    plt.plot(renderer.get_x_axis_as_seconds(),
-             renderer.get_ys(),
-             label=renderer.chart.field)
-
-
-def plot_oom(renderer):
-    plt.ylim(0, 1000)
-    plt.plot(renderer.get_x_axis_as_seconds(),
-             renderer.get_ys(),
-             label=renderer.chart.field)
-
-
-def plot_memory(renderer):
-    plt.gca().yaxis.set_major_formatter(
-        matplotlib.ticker.FormatStrFormatter('%d mb'))
-    plt.plot(renderer.get_x_axis_as_seconds(),
-             renderer.get_ys() / (1024 * 1024),
-             label=renderer.chart.field)
-
-
-def plot_boolean(renderer):
-    plt.ylim(0, 1)
-    plt.plot(renderer.get_x_axis_as_seconds(),
-             renderer.get_ys(),
-             label=renderer.chart.field)
-
-
-def plot_time_ns(renderer):
-    plt.gca().yaxis.set_major_formatter(
-        matplotlib.ticker.FormatStrFormatter('%.3f ms'))
-    plt.plot(renderer.get_x_axis_as_seconds(),
-             renderer.get_ys() / NS_PER_MS,
-             label=renderer.chart.field)
-
-
 def create_color(index, count):
     h = index / count
     s = 0.7
@@ -96,18 +55,12 @@ class MemoryChartRenderer(ChartRenderer):
         "is_free": plot_event_is_free,
         "is_malloc_fail": plot_event_is_malloc_fail
     }
-    plotters = {
-        "memory_state.available_memory": plot_memory,
-        "memory_state.native_allocated": plot_memory,
-        "sys_mem_info.available_memory": plot_memory,
-        "sys_mem_info.native_allocated": plot_memory,
-        "total_allocation_bytes": plot_memory,
-        "memory_state.oom_score": plot_oom,
-        "sys_mem_info.low_memory": plot_ignore,
-        "memory_state.low_memory": plot_ignore,
-        "perf.max_frame_time_ns": plot_time_ns,
-        "perf.min_frame_time_ns": plot_time_ns,
-    }
+    plotters = add_plotters_to_default({
+        "sys_mem_info.available_memory": plot_memory_as_mb,
+        "sys_mem_info.native_allocated": plot_memory_as_mb,
+        "sys_mem_info.low_memory": plot_boolean,
+        "total_allocation_bytes": plot_memory_as_mb,
+    })
 
     def __init__(self, chart: Chart):
         super().__init__(chart)

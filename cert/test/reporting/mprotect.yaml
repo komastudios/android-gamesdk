@@ -1,6 +1,6 @@
 build:
   clean: false
-  configuration: configurations/memory.json
+  configuration: configurations/mprotect.json
 
 systrace:
   enabled: false
@@ -18,4 +18,4 @@ deployment:
 chart:
   enabled: true
   suites:
-    - "Affinity Test"
+    - "Vulkan memory write protection"

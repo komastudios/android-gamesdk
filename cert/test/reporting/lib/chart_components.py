@@ -17,11 +17,14 @@
 import numpy as np
 
 from lib.csv import CSVEntry, time_units_per_ns
+import re as regex
 from typing import Any, List, Callable
 
 NS_PER_S = 1e9
 MS_PER_S = 1e3
 NS_PER_MS = 1e6
+
+NANOSEC_EXPRESSION = "^(\d+) (nanoseconds|ns|nsec)$"
 
 
 def to_float(v: Any) -> float:
@@ -32,6 +35,12 @@ def to_float(v: Any) -> float:
             return 1
         elif v == "False":
             return 0
+        else:
+            match = regex.search(NANOSEC_EXPRESSION, v)
+            if match is not None and \
+                len(match.groups()) > 1:
+                return float(match.group(1))
+
     return None
 
 
