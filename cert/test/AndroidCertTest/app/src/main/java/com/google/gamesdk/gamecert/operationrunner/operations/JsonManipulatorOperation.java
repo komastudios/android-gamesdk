@@ -44,6 +44,7 @@ public class JsonManipulatorOperation extends BaseOperation {
     private Thread _thread;
     private long _performanceSamplePeriodMillis = -1;
 
+    @SuppressWarnings("unused")
     public JsonManipulatorOperation(String suiteId,
                                     String configurationJson,
                                     Context context,
@@ -69,7 +70,8 @@ public class JsonManipulatorOperation extends BaseOperation {
                         TimeParsing.Unit.Milliseconds
                 );
             } catch (TimeParsing.BadFormatException e) {
-                Log.e(TAG, "Unable to parse performance_sample_period, error: " + e.getLocalizedMessage());
+                Log.e(TAG, "Unable to parse performance_sample_period, error: " +
+                        e.getLocalizedMessage());
                 e.printStackTrace();
                 return;
             }
@@ -100,16 +102,15 @@ public class JsonManipulatorOperation extends BaseOperation {
                 long elapsedMillis = nowMillis - startTimeMillis;
 
                 if (isTest && _performanceSamplePeriodMillis > 0) {
-                    if (elapsedMillis - datum.startTimeMillis >
-                            _performanceSamplePeriodMillis) {
+                    datum.duration = elapsedMillis - datum.startTimeMillis;
+                    if (datum.duration > _performanceSamplePeriodMillis) {
                         datum.endTimeMillis = elapsedMillis;
-                        report(datum);
+                        report(new Envelope(datum));
                         datum = new Datum(elapsedMillis);
                     }
                 }
 
-                if (runForDurationMillis > 0 && elapsedMillis >=
-                        runForDurationMillis) {
+                if (runForDurationMillis > 0 && elapsedMillis >= runForDurationMillis) {
                     break;
                 }
             }
@@ -127,18 +128,23 @@ public class JsonManipulatorOperation extends BaseOperation {
         }
     }
 
+    // "work" in this CPU intensive context means...
+    // "deserialize a very large JSON string representing a JSON array of JSON objects into a Java
+    // array of Java objects so then all fields for each object in the Java array are tweaked in
+    // order to produce a new array of new, tweaked objects that is ultimately serialized back into
+    // a brand new JSON string"
     private String work(String userDataJsonString) {
         try {
             Trace.beginSection("JsonManipulatorOperation::work");
-            UserDatum[] data = loadUserData(userDataJsonString);
-            data = frobulateUserData(data);
-            return encodeUserData(data);
+            UserDatum[] data = deserializeJsonToUserArray(userDataJsonString);
+            data = frobulateUsers(data);
+            return serializeUserArrayAsJson(data);
         } finally {
             Trace.endSection();
         }
     }
 
-    class Datum {
+    static class Datum {
         long iterations;
 
         @SerializedName("start_time_millis")
@@ -147,8 +153,19 @@ public class JsonManipulatorOperation extends BaseOperation {
         @SerializedName("end_time_millis")
         long endTimeMillis;
 
+        long duration;
+
         Datum(long startTimeMillis) {
             this.startTimeMillis = startTimeMillis;
+        }
+    }
+
+    static class Envelope {
+        @SerializedName("json_manipulation")
+        Datum jsonManipulation;
+
+        Envelope(final Datum jsonManipulation) {
+            this.jsonManipulation = jsonManipulation;
         }
     }
 
@@ -168,19 +185,15 @@ public class JsonManipulatorOperation extends BaseOperation {
         return null;
     }
 
-    private UserDatum[] loadUserData(String jsonString) {
+    private UserDatum[] deserializeJsonToUserArray(String jsonString) {
         return _gson.fromJson(jsonString, UserDatum[].class);
     }
 
-    private String encodeUserData(UserDatum[] userData) {
+    private String serializeUserArrayAsJson(UserDatum[] userData) {
         return _gson.toJson(userData);
     }
 
-    //
-    //  "frobulate" functions - these just munge our dataset in nonsensical ways
-    //
-
-    private UserDatum[] frobulateUserData(UserDatum[] datums) {
+    private UserDatum[] frobulateUsers(UserDatum[] datums) {
         return Arrays.stream(datums)
                 .map(UserDatum::frobulate)
                 .toArray(UserDatum[]::new);

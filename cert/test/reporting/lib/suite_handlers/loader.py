@@ -21,10 +21,7 @@ from lib.chart_components import *
 # -----------------------------------------------------------------------------
 
 # import our renderer implementations
-# TODO(shamyl@google.com): Determine a way to perform this import automatically
-
-from lib.suite_handlers.affinity_test_suite_handler import AffinityTestSuiteHandler
-from lib.suite_handlers.memory_allocation_suite_handler import MemoryAllocationSuiteHandler
+from ..suite_handlers import HANDLERS
 
 # -----------------------------------------------------------------------------
 
@@ -36,13 +33,8 @@ def create_suite_handler(suite: Suite):
     Returns:
         ChartRenderer implementatin which can render this data
     """
-    handler_classes = [
-        AffinityTestSuiteHandler,
-        MemoryAllocationSuiteHandler,
-    ]
-
-    for hc in handler_classes:
-        if hc.can_handle_suite(suite):
-            return hc(suite)
+    for handler in HANDLERS:
+        if handler.can_handle_suite(suite):
+            return handler(suite)
 
     return None
