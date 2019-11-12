@@ -1,0 +1,108 @@
+build:
+  clean: false
+  configuration: configurations/affinity_test.json
+
+systrace:
+  enabled: false
+  keywords:
+    - MonitorOperation
+
+deployment:
+  ftl:
+    test: test-robo
+    all-physical-devices: false
+    flags:
+      project: gamesdk-testing
+      format: json
+    args:
+      test-robo:
+        app: ../AndroidCertTest/app/build/outputs/apk/debug/app-debug.apk
+        type: game-loop
+        timeout: 1500 # 25 minutes
+        device:
+          # - {model: sawfish, version: 26}
+          # - {model: hero2qltevzw, version: 26}
+          # - {model: heroqltetmo, version: 26}
+          # - {model: A0001, version: 22}
+          # - {model: HWMHA, version: 24}
+          - { model: A1N_sprout, version: 26 }
+          - { model: ASUS_Z01H_1, version: 26 }
+          - { model: F8331, version: 26 }
+          - { model: F8332, version: 26 }
+          - { model: FRT, version: 27 }
+          - { model: G8142, version: 26 }
+          - { model: G8441, version: 26 }
+          - { model: H8296, version: 28 }
+          - { model: H8324, version: 26 }
+          - { model: HWCOR, version: 27 }
+          - { model: OnePlus3T, version: 26 }
+          - { model: OnePlus5, version: 26 }
+          - { model: OnePlus6T, version: 28 }
+          - { model: a5y17lte, version: 24 }
+          - { model: a9y18qlte, version: 26 }
+          - { model: albus, version: 26 }
+          - { model: aljeter_n, version: 26 }
+          - { model: athene, version: 23 }
+          - { model: athene_f, version: 23 }
+          - { model: beyond1, version: 28 }
+          - { model: blueline, version: Q-beta-3 }
+          - { model: cheryl, version: 25 }
+          - { model: crownlte, version: 28 }
+          - { model: crownqlteue, version: 27 }
+          - { model: deen_sprout, version: 28 }
+          - { model: dream2lte, version: 26 }
+          - { model: dream2qlteue, version: 26 }
+          - { model: dreamqlteue, version: 26 }
+          - { model: flo, version: 21 }
+          - { model: g3, version: 19 }
+          - { model: grandpplte, version: 23 }
+          - { model: greatlte, version: 28 }
+          - { model: griffin, version: 24 }
+          - { model: hammerhead, version: 23 }
+          - { model: harpia, version: 23 }
+          - { model: hero2lte, version: 23 }
+          - { model: heroqltevzw, version: 26 }
+          - { model: hlte, version: 19 }
+          - { model: htc_m8, version: 19 }
+          - { model: htc_ocedugl, version: 26 }
+          - { model: htc_ocmdugl, version: 26 }
+          - { model: htc_ocndugl, version: 26 }
+          - { model: hwALE-H, version: 21 }
+          - { model: j1acevelte, version: 22 }
+          - { model: j7xelte, version: 23 }
+          - { model: james, version: 26 }
+          - { model: jeter, version: 26 }
+          - { model: lt02wifi, version: 19 }
+          - { model: lucye, version: 24 }
+          - { model: lv0, version: 23 }
+          - { model: m0, version: 18 }
+          - { model: mata, version: 25 }
+          - { model: mlv1, version: 23 }
+          - { model: nitrogen, version: 28 }
+          - { model: poseidonlteatt, version: 26 }
+          - { model: potter, version: 24 }
+          - { model: sailfish, version: 28 }
+          - { model: seoul, version: 26 }
+          - { model: shamu, version: 23 }
+          - { model: star2qltechn, version: 26 }
+          - { model: star2qlteue, version: 26 }
+          - { model: starlte, version: 26 }
+          - { model: starlteks, version: 28 }
+          - { model: starqltechn, version: 26 }
+          - { model: starqlteue, version: 26 }
+          - { model: taimen, version: 27 }
+          - { model: victara, version: 19 }
+          - { model: walleye, version: 28 }
+          - { model: zeroflte, version: 23 }
+            # - {model: taimen, version: 27}
+            # - {model: walleye, version: 28}
+            # - {model: blueline, version: 28}
+      test-robo-onlypixel:
+        include: [test-robo]
+        device:
+          - { model: sailfish, version: 28 }
+
+chart:
+  enabled: false
+  suites:
+    - "Affinity Test"
