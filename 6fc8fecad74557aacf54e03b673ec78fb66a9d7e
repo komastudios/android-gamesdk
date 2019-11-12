@@ -2,6 +2,40 @@
   "comments": [
     {
       "key": {
+        "uuid": "9ce2a5a1_56319ad0",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-12T19:16:35Z",
+      "side": 1,
+      "message": "super nit pick: Renderer\u0026 renderer, Material\u0026 material, ...",
+      "revId": "6fc8fecad74557aacf54e03b673ec78fb66a9d7e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "41775f13_e34be253",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-12T19:16:35Z",
+      "side": 1,
+      "message": "super nit pick: Renderer\u0026 renderer, Material\u0026 material, ...",
+      "revId": "6fc8fecad74557aacf54e03b673ec78fb66a9d7e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0dfc38e9_16fd8b99",
         "filename": "bender/bender-base/app/src/main/jni/mesh.h",
         "patchSetId": 1
@@ -13,6 +47,23 @@
       "writtenOn": "2019-11-12T19:15:34Z",
       "side": 1,
       "message": "Er, if we\u0027re going to have a constructor with shared Geometry, shouldn\u0027t we have like a getter for geometry data, like getGeometry, so that one Mesh can give Geometry to another?",
+      "revId": "6fc8fecad74557aacf54e03b673ec78fb66a9d7e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "093efa08_bee5236a",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-12T19:16:35Z",
+      "side": 1,
+      "message": "We could probably use a std::unique_ptr here.",
       "revId": "6fc8fecad74557aacf54e03b673ec78fb66a9d7e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
