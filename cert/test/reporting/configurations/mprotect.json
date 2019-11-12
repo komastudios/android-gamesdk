@@ -1,0 +1,24 @@
+{
+    "auto_run": false,
+    "delay_between_tests": "5000ms",
+    "host": "SwappyGLHostActivity",
+    "defaultMonitors": [
+        {
+            "id": "MonitorOperation"
+        }
+    ],
+    "stress_tests": [
+        {
+            "enabled": true,
+            "name": "Vulkan memory write protection",
+            "description": "mprotect available to make memore read-only",
+            "host": "VulkanHostActivity",
+            "duration": "100ms",
+            "data_gatherer": {
+              "id": "VulkanMprotectCheckOperation",
+              "configuration": {}
+            },
+            "stressors": []
+        }
+    ]
+}

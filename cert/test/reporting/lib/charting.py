@@ -145,21 +145,24 @@ class SuiteImpl(Suite):
 
         charts_to_render = []
         for c in self.charts:
-            include = False
-
             if fields:
+                include = False
                 for field_name in fields:
-                    if field_name in c.field or field_name in c.operation_id:
+                    if c.field.startswith(field_name) or \
+                        field_name in c.operation_id:
                         include = True
                         break
+            else:
+                include = True
 
             if skip:
                 for field_name in skip:
-                    if field_name in c.field or field_name in c.operation_id:
+                    if c.field.startswith(field_name) or \
+                        field_name in c.operation_id:
                         include = False
                         break
 
-            if include or not fields:
+            if include:
                 charts_to_render.append(c)
 
         start_time_seconds = min(

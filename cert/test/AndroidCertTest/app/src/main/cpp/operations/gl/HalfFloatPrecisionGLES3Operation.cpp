@@ -53,7 +53,7 @@ JSON_CONVERTER(configuration) {
 
 //------------------------------------------------------------------------------
 
-struct datum {
+struct half_precision {
     bool is_correct;
     int offset;
     int expected_r;
@@ -67,9 +67,13 @@ struct datum {
     int actual_a;
 };
 
-JSON_WRITER(datum) {
-    JSON_OPTVAR(is_correct);
-    JSON_OPTVAR(offset);
+struct datum {
+    half_precision half_precision;
+};
+
+JSON_WRITER(half_precision) {
+    JSON_REQVAR(is_correct);
+    JSON_REQVAR(offset);
     JSON_OPTVAR(expected_r);
     JSON_OPTVAR(expected_g);
     JSON_OPTVAR(expected_b);
@@ -78,6 +82,10 @@ JSON_WRITER(datum) {
     JSON_OPTVAR(actual_g);
     JSON_OPTVAR(actual_b);
     JSON_OPTVAR(actual_a);
+}
+
+JSON_WRITER(datum) {
+    JSON_REQVAR(half_precision);
 }
 }
 
@@ -191,13 +199,14 @@ class HalfFloatPrecisionGLES3Operation : public BaseGLES3Operation {
                 actualColor[1] == expectedColor[1] &&
                 actualColor[2] == expectedColor[2];
 
-        Report(datum{
+        half_precision results{
             is_expected,
             _color_offset,
             expectedColor[0], expectedColor[1], expectedColor[2],
             0, actualColor[0], actualColor[1],
             actualColor[2], 0
-        });
+        };
+        Report(datum{results});
 
         if (!is_expected) {
             Log::D(

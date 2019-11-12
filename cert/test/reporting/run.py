@@ -180,6 +180,9 @@ def run_local_deployment(recipe: Dict, apk: Path, tmp_dir: Path):
     render_chart = dict_lookup(recipe, "chart.enabled", fallback=False)
     render_chart_suites = dict_lookup(recipe, "chart.suites", [])
 
+    fields = dict_lookup(recipe, "chart.fields", [])
+    skipping_fields = dict_lookup(recipe, "chart.skipping", [])
+
     if systrace_categories:
         systrace_categories = systrace_categories.split(" ")
 
@@ -238,7 +241,7 @@ def run_local_deployment(recipe: Dict, apk: Path, tmp_dir: Path):
                 if (suite.suite_name in render_chart_suites or
                         not render_chart_suites):
                     title = suite.suite_name
-                    suite.plot(title)
+                    suite.plot(title, fields, skipping_fields)
 
 
 def run_ftl_deployment(recipe: Dict, apk: Path, tmp_dir: Path):
@@ -257,6 +260,9 @@ def run_ftl_deployment(recipe: Dict, apk: Path, tmp_dir: Path):
     systrace_keywords = dict_lookup(recipe, "systrace.keywords", fallback=[])
     render_chart = dict_lookup(recipe, "chart.enabled", fallback=False)
     render_chart_suites = dict_lookup(recipe, "chart.suites", [])
+
+    fields = dict_lookup(recipe, "chart.fields", [])
+    skipping_fields = dict_lookup(recipe, "chart.skipping", [])
 
     json_files, systrace_files = run_on_farm_and_collect_reports(
         args_dict=args_dict,
@@ -307,7 +313,7 @@ def run_ftl_deployment(recipe: Dict, apk: Path, tmp_dir: Path):
                 if ( suite.suite_name in render_chart_suites \
                     or not render_chart_suites):
                     title = suite.suite_name
-                    suite.plot(title)
+                    suite.plot(title, fields, skipping_fields)
 
 
 # ------------------------------------------------------------------------------
