@@ -17,14 +17,30 @@
 from lib.chart_components import *
 
 from .common_plot import add_plotters_to_default, \
-    plot_default, plot_ignore, plot_time_ms_as_sec
+    plot_default, plot_ignore, plot_time_ns_as_ms
 
 
-class CpuIntensiveChartRenderer(ChartRenderer):
+def plot_pi_error(renderer):
+    """
+    Adapts pi calculation errors to a more relevant scale
+    """
+    return plot_default(renderer, 1e-9, "%d x10e-9")
+
+
+def plot_pi_iterations(renderer):
+    """
+    Adapts pi iterations to a more relevant scale
+    """
+    return plot_default(renderer, 1e6, "%d M")
+
+
+class CalculatePiChartRenderer(ChartRenderer):
 
     plotters = add_plotters_to_default({
-        "json_manipulation.duration": plot_time_ms_as_sec,
-        "json_manipulation.iterations": plot_default,
+        "pi.duration": plot_time_ns_as_ms,
+        "pi.iterations": plot_pi_iterations,
+        "pi.value": plot_default,
+        "pi.error": plot_pi_error,
     })
 
     def __init__(self, chart: Chart):
@@ -42,19 +58,19 @@ class CpuIntensiveChartRenderer(ChartRenderer):
         self.plotters.get(self.chart.field, plot_ignore)(self)
 
 
-class CpuIntensiveSuiteHandler(SuiteHandler):
+class CalculatePiSuiteHandler(SuiteHandler):
 
     def __init__(self, suite):
         super().__init__(suite)
 
     @classmethod
     def can_handle_suite(cls, suite: Suite):
-        return "Cpu intensive json (Java)" in suite.suite_name
+        return "Calculate Pi (C++)" in suite.suite_name
 
     def assign_renderer(self, chart: Chart):
-        chart.set_renderer(CpuIntensiveChartRenderer(chart))
+        chart.set_renderer(CalculatePiChartRenderer(chart))
         return True
 
     def analyze(self, cb: Callable[[Any, Datum, str], None]):
-        """TODO(dagum@google.com): No analysis as yet on cpu intensive data"""
+        """TODO(dagum@google.com): No analysis as yet on calculate pi data"""
         return None

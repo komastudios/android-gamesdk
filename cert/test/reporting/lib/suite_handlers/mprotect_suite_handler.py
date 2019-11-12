@@ -14,18 +14,43 @@
 # limitations under the License.
 #
 
+import matplotlib.pyplot as plt
+import numpy as np
+
 from lib.chart_components import *
 
-from .common_plot import add_plotters_to_default, \
-    plot_default, plot_ignore, plot_time_ms_as_sec
+from .common_plot import plot_ignore
 
 
-class CpuIntensiveChartRenderer(ChartRenderer):
+MPROTECT_RANKING = [
+    "mprotect available", "R/W protect fail", "Unexpected violation",
+    "Read protect fail", "Missing violation", "Mem mapping fail",
+    "Mem alloc fail", "No mappable mem"
+]
 
-    plotters = add_plotters_to_default({
-        "json_manipulation.duration": plot_time_ms_as_sec,
-        "json_manipulation.iterations": plot_default,
-    })
+
+def plot_rank(renderer):
+    """
+    Plots the mprotect ranking on a green box if OK, red otherwise.
+    """
+    ranking_length = len(MPROTECT_RANKING)
+    ranking_value = int(renderer.data[0].numeric_value)
+    ranking_color = (0, 1, 0) if ranking_value == 0 else (1, 0, 0)
+
+    plt.xticks(np.arange(ranking_length))
+    plt.yticks([])
+    plt.barh(0, ranking_length, color=ranking_color)
+    plt.text((ranking_length - 1) / 2,
+             0,
+             MPROTECT_RANKING[ranking_value],
+             ha='center')
+
+
+class MprotectChartRenderer(ChartRenderer):
+
+    plotters = {
+        "mprotect.rank": plot_rank,
+    }
 
     def __init__(self, chart: Chart):
         super().__init__(chart)
@@ -42,19 +67,18 @@ class CpuIntensiveChartRenderer(ChartRenderer):
         self.plotters.get(self.chart.field, plot_ignore)(self)
 
 
-class CpuIntensiveSuiteHandler(SuiteHandler):
+class MprotectSuiteHandler(SuiteHandler):
 
     def __init__(self, suite):
         super().__init__(suite)
 
     @classmethod
     def can_handle_suite(cls, suite: Suite):
-        return "Cpu intensive json (Java)" in suite.suite_name
+        return "Vulkan memory write protection" in suite.suite_name
 
     def assign_renderer(self, chart: Chart):
-        chart.set_renderer(CpuIntensiveChartRenderer(chart))
+        chart.set_renderer(MprotectChartRenderer(chart))
         return True
 
     def analyze(self, cb: Callable[[Any, Datum, str], None]):
-        """TODO(dagum@google.com): No analysis as yet on cpu intensive data"""
         return None

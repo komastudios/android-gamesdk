@@ -16,8 +16,11 @@
 
 
 from .affinity_test_suite_handler import AffinityTestSuiteHandler
+from .calculate_pi_suite_handler import CalculatePiSuiteHandler
 from .cpu_intensive_suite_handler import CpuIntensiveSuiteHandler
+from .gpu_half_precision import GpuHalfPrecisionSuiteHandler
 from .memory_allocation_suite_handler import MemoryAllocationSuiteHandler
+from .mprotect_suite_handler import MprotectSuiteHandler
 
 
 """
@@ -25,6 +28,9 @@ List containing all enabled handlers to render charts.
 """
 HANDLERS = [
     AffinityTestSuiteHandler,
+    CalculatePiSuiteHandler,
     CpuIntensiveSuiteHandler,
+    GpuHalfPrecisionSuiteHandler,
     MemoryAllocationSuiteHandler,
+    MprotectSuiteHandler,
 ]
