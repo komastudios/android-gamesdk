@@ -101,6 +101,7 @@ add_library(${PROJECT_NAME} SHARED
         operations/gl/HelloGLES3Operation.cpp
         operations/gl/StreamDrawGLES3Operation.cpp
         operations/gl/TeapotRendererGLES3Operation.cpp
+        operations/gl/HalfFloatPrecisionGLES3Operation.cpp
         )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
