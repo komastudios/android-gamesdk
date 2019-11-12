@@ -1,3 +1,32 @@
+/*
+ * Copyright 2019 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * Current state compared to spec (see Android Predictability Performance Tests)
+ *
+ * - Big/Little core are unsupported. We need to figure out if this is something
+ *   we can even determine programmatically.
+ * - nio reads are unsupported. This seems to be a Java thing (Android is still
+ *   a new platform to me); if that's the case, it seems like an in-Java test is
+ *   the proper setup for that.
+ * - Data is only in a test-created file. Our current test framework is all-or-
+ *   nothing with the tests, so adding data (especially the amount requested)
+ *   will require work on that front.
+ * - Random reads aren't implemented. This is mostly an oversight.
+ */
 #include <ancer/BaseOperation.hpp>
 
 #include <cstdlib>
