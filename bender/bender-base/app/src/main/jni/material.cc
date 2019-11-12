@@ -5,9 +5,16 @@
 #include "material.h"
 #include "shader_bindings.h"
 
-Material::Material(Renderer& renderer, std::shared_ptr<ShaderState> shaders, Texture& texture) :
-    renderer_(renderer), texture_(texture) {
+Material::Material(Renderer& renderer, std::shared_ptr<ShaderState> shaders, Texture *texture, glm::vec3 *color) :
+    renderer_(renderer) {
   shaders_ = shaders;
+  texture_ = texture;
+  if (texture == nullptr) {
+    unsigned char imgData[4] = {255, 255, 255, 0};
+    texture_ = new Texture(renderer_.getDevice(), imgData, 1, 1, VK_FORMAT_R8G8B8A8_SRGB);
+  }
+  color_ = color != nullptr ? color : new glm::vec3(1.0, 1.0, 1.0);
+  material_buffer_ = std::make_unique<UniformBufferObject<MaterialAttributes>>(renderer_.getDevice());
 
   createSampler();
   createMaterialDescriptorSetLayout();
@@ -15,8 +22,8 @@ Material::Material(Renderer& renderer, std::shared_ptr<ShaderState> shaders, Tex
 }
 
 Material::~Material() {
-  vkDestroySampler(renderer_.getDevice().getDevice(), sampler_, nullptr);
-  vkDestroyDescriptorSetLayout(renderer_.getDevice().getDevice(), material_descriptors_layout_, nullptr);
+  vkDestroySampler(renderer_.getVulkanDevice(), sampler_, nullptr);
+  vkDestroyDescriptorSetLayout(renderer_.getVulkanDevice(), material_descriptors_layout_, nullptr);
 }
 
 void Material::createSampler() {
@@ -37,7 +44,7 @@ void Material::createSampler() {
     .borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE,
     .unnormalizedCoordinates = VK_FALSE,
   };
-  CALL_VK(vkCreateSampler(renderer_.getDevice().getDevice(), &sampler_create_info, nullptr, &sampler_));
+  CALL_VK(vkCreateSampler(renderer_.getVulkanDevice(), &sampler_create_info, nullptr, &sampler_));
 }
 
 void Material::createMaterialDescriptorSetLayout() {
@@ -48,14 +55,21 @@ void Material::createMaterialDescriptorSetLayout() {
   samplerLayoutBinding.pImmutableSamplers = nullptr;
   samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-  std::array<VkDescriptorSetLayoutBinding, 1> bindings = {samplerLayoutBinding};
+  VkDescriptorSetLayoutBinding attributesLayoutBinding = {};
+  attributesLayoutBinding.binding = FRAGMENT_BINDING_MATERIAL_ATTRIBUTES;
+  attributesLayoutBinding.descriptorCount = 1;
+  attributesLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  attributesLayoutBinding.pImmutableSamplers = nullptr;
+  attributesLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+  std::array<VkDescriptorSetLayoutBinding, 2> bindings = {samplerLayoutBinding, attributesLayoutBinding};
 
   VkDescriptorSetLayoutCreateInfo layoutInfo = {};
   layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
   layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
   layoutInfo.pBindings = bindings.data();
 
-  CALL_VK(vkCreateDescriptorSetLayout(renderer_.getDevice().getDevice(), &layoutInfo, nullptr,
+  CALL_VK(vkCreateDescriptorSetLayout(renderer_.getVulkanDevice(), &layoutInfo, nullptr,
                                         &material_descriptors_layout_));
 }
 
@@ -70,15 +84,17 @@ void Material::createMaterialDescriptorSets() {
   allocInfo.pSetLayouts = layouts.data();
 
   material_descriptor_sets_.resize(renderer_.getDevice().getDisplayImagesSize());
-  CALL_VK(vkAllocateDescriptorSets(renderer_.getDevice().getDevice(), &allocInfo, material_descriptor_sets_.data()));
+  CALL_VK(vkAllocateDescriptorSets(renderer_.getVulkanDevice(), &allocInfo, material_descriptor_sets_.data()));
+
+  glm::vec3 color = *color_;
 
   for (size_t i = 0; i < renderer_.getDevice().getDisplayImagesSize(); i++) {
+    std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
+
     VkDescriptorImageInfo imageInfo = {};
     imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    imageInfo.imageView = texture_.getImageView();
+    imageInfo.imageView = texture_->getImageView();
     imageInfo.sampler = sampler_;
-
-    std::array<VkWriteDescriptorSet, 1> descriptorWrites = {};
 
     descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     descriptorWrites[0].dstSet = material_descriptor_sets_[i];
@@ -88,7 +104,24 @@ void Material::createMaterialDescriptorSets() {
     descriptorWrites[0].descriptorCount = 1;
     descriptorWrites[0].pImageInfo = &imageInfo;
 
-    vkUpdateDescriptorSets(renderer_.getDevice().getDevice(), descriptorWrites.size(), descriptorWrites.data(),
+    material_buffer_->update(i, [&color](auto& ubo) {
+        ubo.color = color;
+    });
+
+    VkDescriptorBufferInfo materialBufferInfo = {};
+    materialBufferInfo.buffer = material_buffer_->getBuffer(i);
+    materialBufferInfo.offset = 0;
+    materialBufferInfo.range = sizeof(MaterialAttributes);
+
+    descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptorWrites[1].dstSet = material_descriptor_sets_[i];
+    descriptorWrites[1].dstBinding = FRAGMENT_BINDING_MATERIAL_ATTRIBUTES;
+    descriptorWrites[1].dstArrayElement = 0;
+    descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    descriptorWrites[1].descriptorCount = 1;
+    descriptorWrites[1].pBufferInfo = &materialBufferInfo;
+
+    vkUpdateDescriptorSets(renderer_.getVulkanDevice(), descriptorWrites.size(), descriptorWrites.data(),
                            0, nullptr);
   }
 }

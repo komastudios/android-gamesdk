@@ -15,35 +15,26 @@
 #include "texture.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include "bender_kit.h"
 #include "bender_helpers.h"
 
 #include <cstdlib>
 #include <vector>
 
-#define CHECK_VK(x) CALL_VK(x)
+Texture::Texture(BenderKit::Device& device, unsigned char *imgData, uint32_t imgWidth,
+        uint32_t imgHeight, VkFormat textureFormat) : device_(device), texture_format_(textureFormat) {
+    tex_width_ = imgWidth;
+    tex_height_ = imgHeight;
+    CALL_VK(createTexture(imgData, VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+    createImageView();
+}
 
 Texture::Texture(BenderKit::Device& device, android_app *androidAppCtx,
-                 const char *texture_file_name, VkFormat texture_format) : device_(device), texture_format_(texture_format){
-    CHECK_VK(loadTextureFromFile(texture_file_name, androidAppCtx, VK_IMAGE_USAGE_SAMPLED_BIT,
-                                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
-    VkImageViewCreateInfo view_create_info = {
-            .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-            .pNext = nullptr,
-            .image = image_,
-            .viewType = VK_IMAGE_VIEW_TYPE_2D,
-            .format = texture_format_,
-            .components =
-                    {
-                            .r = VK_COMPONENT_SWIZZLE_R,
-                            .g = VK_COMPONENT_SWIZZLE_G,
-                            .b = VK_COMPONENT_SWIZZLE_B,
-                            .a = VK_COMPONENT_SWIZZLE_A,
-                    },
-            .subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
-            .flags = 0,
-    };
-    CALL_VK(
-            vkCreateImageView(device_.getDevice(), &view_create_info, nullptr, &view_));
+                 const char *textureFileName, VkFormat textureFormat) : device_(device), texture_format_(textureFormat) {
+    unsigned char *imgData = loadFileData(androidAppCtx, textureFileName);
+    CALL_VK(createTexture(imgData, VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+    createImageView();
+    stbi_image_free(imgData);
 }
 
 Texture::~Texture() {
@@ -52,41 +43,23 @@ Texture::~Texture() {
     vkFreeMemory(device_.getDevice(), mem_, nullptr);
 }
 
-VkImageView Texture::getImageView() {
-    return view_;
-}
-
-VkResult Texture::loadTextureFromFile(const char *file_path,
-                                      android_app *android_app_,
-                                      VkImageUsageFlags usage,
-                                      VkFlags required_props) {
-    if (!(usage | required_props)) {
-        LOGE("Texture: No usage and required_pros");
-        return VK_ERROR_FORMAT_NOT_SUPPORTED;
-    }
-
-    VkFormatProperties props;
-    vkGetPhysicalDeviceFormatProperties(device_.getPhysicalDevice(), texture_format_, &props);
-    assert((props.linearTilingFeatures | props.optimalTilingFeatures) &
-           VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
-
-    AAsset* file = AAssetManager_open(android_app_->activity->assetManager,
-                                      file_path, AASSET_MODE_BUFFER);
+unsigned char *Texture::loadFileData(android_app *app, const char *filePath) {
+    AAsset *file = AAssetManager_open(app->activity->assetManager,
+                                      filePath, AASSET_MODE_BUFFER);
     uint32_t img_width, img_height, n;
     unsigned char *img_data;
-    if(file == nullptr) {
+    if (file == nullptr) {
         img_width = 128;
         img_height = 128;
         img_data = (unsigned char *) malloc(img_width * img_height * 4 * sizeof(unsigned char));
         for (int32_t y = 0; y < img_height; y++) {
             for (int32_t x = 0; x < img_width; x++) {
                 img_data[(x + y * img_width) * 4] = 215;
-                img_data[(x + y * img_width) * 4 + 1] =  95;
+                img_data[(x + y * img_width) * 4 + 1] = 95;
                 img_data[(x + y * img_width) * 4 + 2] = 175;
                 img_data[(x + y * img_width) * 4 + 3] = 1;
             }
         }
-
     } else {
         size_t file_length = AAsset_getLength(file);
         stbi_uc *file_content = new unsigned char[file_length];
@@ -102,6 +75,20 @@ VkResult Texture::loadTextureFromFile(const char *file_path,
     tex_width_ = img_width;
     tex_height_ = img_height;
 
+    return img_data;
+}
+
+VkResult Texture::createTexture(unsigned char *imgData, VkImageUsageFlags usage,
+                              VkFlags required_props) {
+if (!(usage | required_props)) {
+    LOGE("Texture: No usage and required_pros");
+    return VK_ERROR_FORMAT_NOT_SUPPORTED;
+}
+
+VkFormatProperties props;
+vkGetPhysicalDeviceFormatProperties(device_.getPhysicalDevice(), texture_format_, &props);
+assert((props.linearTilingFeatures | props.optimalTilingFeatures) &
+       VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
 
     uint32_t queue_family_index = device_.getQueueFamilyIndex();
     VkImageCreateInfo image_create_info = {
@@ -109,8 +96,8 @@ VkResult Texture::loadTextureFromFile(const char *file_path,
             .pNext = nullptr,
             .imageType = VK_IMAGE_TYPE_2D,
             .format = texture_format_,
-            .extent = {static_cast<uint32_t>(img_width),
-                       static_cast<uint32_t>(img_height), 1},
+            .extent = {static_cast<uint32_t>(tex_width_),
+                       static_cast<uint32_t>(tex_height_), 1},
             .mipLevels = 1,
             .arrayLayers = 1,
             .samples = VK_SAMPLE_COUNT_1_BIT,
@@ -157,18 +144,17 @@ VkResult Texture::loadTextureFromFile(const char *file_path,
         CALL_VK(vkMapMemory(device_.getDevice(), mem_, 0,
                             mem_alloc.allocationSize, 0, &data));
 
-        for (int32_t y = 0; y < img_height; y++) {
+        for (int32_t y = 0; y < tex_height_; y++) {
             unsigned char* row = (unsigned char*)((char*)data + layout.rowPitch * y);
-            for (int32_t x = 0; x < img_width; x++) {
-                row[x * 4] = img_data[(x + y * img_width) * 4];
-                row[x * 4 + 1] = img_data[(x + y * img_width) * 4 + 1];
-                row[x * 4 + 2] = img_data[(x + y * img_width) * 4 + 2];
-                row[x * 4 + 3] = img_data[(x + y * img_width) * 4 + 3];
+            for (int32_t x = 0; x < tex_width_; x++) {
+                row[x * 4] = imgData[(x + y * tex_width_) * 4];
+                row[x * 4 + 1] = imgData[(x + y * tex_width_) * 4 + 1];
+                row[x * 4 + 2] = imgData[(x + y * tex_width_) * 4 + 2];
+                row[x * 4 + 3] = imgData[(x + y * tex_width_) * 4 + 3];
             }
         }
 
         vkUnmapMemory(device_.getDevice(), mem_);
-        stbi_image_free(img_data);
     }
 
 
@@ -235,4 +221,24 @@ VkResult Texture::loadTextureFromFile(const char *file_path,
     vkFreeCommandBuffers(device_.getDevice(), cmd_pool, 1, &gfx_cmd);
     vkDestroyCommandPool(device_.getDevice(), cmd_pool, nullptr);
     return VK_SUCCESS;
+}
+
+void Texture::createImageView() {
+    VkImageViewCreateInfo viewCreateInfo = {
+            .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+            .pNext = nullptr,
+            .image = image_,
+            .viewType = VK_IMAGE_VIEW_TYPE_2D,
+            .format = texture_format_,
+            .components =
+                    {
+                            .r = VK_COMPONENT_SWIZZLE_R,
+                            .g = VK_COMPONENT_SWIZZLE_G,
+                            .b = VK_COMPONENT_SWIZZLE_B,
+                            .a = VK_COMPONENT_SWIZZLE_A,
+                    },
+            .subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
+            .flags = 0,
+    };
+    CALL_VK(vkCreateImageView(device_.getDevice(), &viewCreateInfo, nullptr, &view_));
 }
