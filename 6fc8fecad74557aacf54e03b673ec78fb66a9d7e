@@ -175,6 +175,24 @@
       "revId": "6fc8fecad74557aacf54e03b673ec78fb66a9d7e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "35cdd1f5_7866b7bd",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-12T19:30:46Z",
+      "side": 1,
+      "message": "I\u0027d argue that the MVP (basically it\u0027s position and size), it\u0027s the only characteristic that differantiate two meshes with the same geometry, so it makes a lot of sense to document this behavior by making this pointer unique.",
+      "parentUuid": "f371b3dd_12fd9fec",
+      "revId": "6fc8fecad74557aacf54e03b673ec78fb66a9d7e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
