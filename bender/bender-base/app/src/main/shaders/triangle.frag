@@ -17,6 +17,11 @@ struct AmbientLight {
 layout(set = BINDING_SET_MATERIAL, binding = FRAGMENT_BINDING_SAMPLER)
 uniform sampler2D texSampler;
 
+layout(set = BINDING_SET_MATERIAL, binding = FRAGMENT_BINDING_MATERIAL_ATTRIBUTES)
+uniform MaterialAttributes {
+    vec3 color;
+} materialAttr;
+
 layout(set = BINDING_SET_LIGHTS, binding = FRAGMENT_BINDING_LIGHTS)
 uniform LightBlock {
     PointLight pointLight;
@@ -24,10 +29,9 @@ uniform LightBlock {
     vec3 cameraPos;
 } lightBlock;
 
-layout(location = 0) in vec3 fragColor;
-layout(location = 1) in vec3 fragNormal;
-layout(location = 2) in vec3 fragPos;
-layout(location = 3) in vec2 fragTexCoord;
+layout(location = 0) in vec3 fragNormal;
+layout(location = 1) in vec3 fragPos;
+layout(location = 2) in vec2 fragTexCoord;
 
 layout(location = 0) out vec4 outColor;
 
@@ -55,5 +59,5 @@ void main(){
     vec3 res = calcPointLight(lightBlock.pointLight) +
                calcAmbientLight(lightBlock.ambientLight);
 
-    outColor = vec4((res * fragColor), 1.0) * texture(texSampler, fragTexCoord);
+    outColor = vec4((res * materialAttr.color), 1.0) * texture(texSampler, fragTexCoord);
 }

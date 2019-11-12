@@ -70,7 +70,7 @@ private:
   VkDescriptorPool descriptor_pool_;
   VkDescriptorSetLayout lights_descriptors_layout_;
   std::vector<VkDescriptorSet> lights_descriptor_sets_;
-  UniformBufferObject<LightBlock> *lightsBuffer;
+  UniformBufferObject<LightBlock> *lights_buffer_;
 
   void init();
 

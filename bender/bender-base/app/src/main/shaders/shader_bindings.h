@@ -3,10 +3,15 @@
 //
 // Shaders and host code use this defines
 
+//////// VERTEX SHADER INPUTS
+
+
+
 //////// MATERIAL BINDINGS
 
 #define BINDING_SET_MATERIAL 0
 #define FRAGMENT_BINDING_SAMPLER 0
+#define FRAGMENT_BINDING_MATERIAL_ATTRIBUTES 1
 
 //////// LIGHTS BINDINGS
 

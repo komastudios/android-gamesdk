@@ -94,7 +94,7 @@ void createTextures() {
 
 void createMaterials() {
   for (uint32_t i = 0; i < textures.size(); ++i) {
-    materials.push_back(new Material(*renderer, shaders, *textures[i]));
+    materials.push_back(new Material(*renderer, shaders, textures[i], new glm::vec3(0.0, 0.0, 0.0)));
   }
 }
 
@@ -182,11 +182,10 @@ void updateCamera(Input::Data *inputData) {
 
 void createShaderState() {
   shaders = std::make_shared<ShaderState>("triangle", androidAppCtx, device->getDevice());
-  shaders->addVertexInputBinding(0, 11 * sizeof(float));
+  shaders->addVertexInputBinding(0, 8 * sizeof(float));
   shaders->addVertexAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0);
   shaders->addVertexAttributeDescription(0, 1, VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(float));
   shaders->addVertexAttributeDescription(0, 2, VK_FORMAT_R32G32B32_SFLOAT, 6 * sizeof(float));
-  shaders->addVertexAttributeDescription(0, 3, VK_FORMAT_R32G32_SFLOAT, 9 * sizeof(float));
 }
 
 void createDepthBuffer() {
@@ -337,7 +336,7 @@ bool InitVulkan(android_app *app) {
   const std::vector<u_int16_t> indexData = {
       1, 2, 4, 2, 1, 0, 0, 3, 2, 2, 3, 4, 3, 0, 4, 0, 1, 4
   };
-  
+
   createDepthBuffer();
 
   createFrameBuffers(render_pass, depthBuffer.image_view);
