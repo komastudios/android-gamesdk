@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0dfc38e9_16fd8b99",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-12T19:15:34Z",
+      "side": 1,
+      "message": "Er, if we\u0027re going to have a constructor with shared Geometry, shouldn\u0027t we have like a getter for geometry data, like getGeometry, so that one Mesh can give Geometry to another?",
+      "revId": "6fc8fecad74557aacf54e03b673ec78fb66a9d7e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
