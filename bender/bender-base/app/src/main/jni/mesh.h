@@ -28,6 +28,8 @@ struct ModelViewProjection {
 
 class Mesh {
 public:
+  Mesh(Renderer& renderer, Material& material, std::shared_ptr<Geometry> geometryData);
+
   Mesh(Renderer& renderer, Material& material, const std::vector<float>& vertexData,
           const std::vector<uint16_t>& indexData);
 
@@ -54,7 +56,7 @@ public:
   glm::mat4 getTransform() const;
 
 private:
-  UniformBufferObject<ModelViewProjection> *meshBuffer;
+  std::unique_ptr<UniformBufferObject<ModelViewProjection>> meshBuffer;
 
   Renderer& renderer_;
   Material& material_;
