@@ -183,14 +183,14 @@ namespace ancer::reporting {
             }
 
             ~ReportSerializer_Periodic() override {
-                Log::I(
+                Log::V(
                         TAG,
                         "ReportSerializer_Periodic::dtor - _numWrites: %d - "
                         "stopping write thread...",
                         _num_writes);
                 _alive.store(false, std::memory_order_relaxed);
                 _write_thread.join();
-                Log::I(TAG, "ReportSerializer_Periodic::dtor - DONE");
+                Log::V(TAG, "ReportSerializer_Periodic::dtor - DONE");
             }
 
             void SetFlushPeriod(Duration duration) {
@@ -217,7 +217,7 @@ namespace ancer::reporting {
 
                 if ( !_log_items.empty()) {
 
-                    Log::I( TAG,
+                    Log::V( TAG,
                             "ReportSerializer_Periodic::Flush - writing %d items",
                             _log_items.size());
 
