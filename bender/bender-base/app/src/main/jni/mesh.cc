@@ -14,7 +14,7 @@ Mesh::Mesh(Renderer &renderer, Material &material, std::shared_ptr<Geometry> geo
   rotation_ = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
   scale_ = glm::vec3(1.0f, 1.0f, 1.0f);
 
-  meshBuffer = std::make_unique<UniformBufferObject<ModelViewProjection>>(renderer_.getDevice());
+  mesh_buffer_ = std::make_unique<UniformBufferObject<ModelViewProjection>>(renderer_.getDevice());
   createMeshDescriptorSetLayout();
   createMeshDescriptors();
 };
@@ -31,7 +31,7 @@ Mesh::~Mesh() {
   vkDestroyPipelineCache(renderer_.getDevice().getDevice(), cache_, nullptr);
   vkDestroyPipelineLayout(renderer_.getDevice().getDevice(), layout_, nullptr);
 
-  meshBuffer.reset();
+  mesh_buffer_.reset();
   vkDestroyDescriptorSetLayout(renderer_.getDevice().getDevice(), mesh_descriptors_layout_, nullptr);
 }
 
@@ -50,7 +50,7 @@ void Mesh::createMeshDescriptors() {
 
   for (size_t i = 0; i < renderer_.getDevice().getDisplayImagesSize(); i++) {
     VkDescriptorBufferInfo bufferInfo = {};
-    bufferInfo.buffer = meshBuffer->getBuffer(i);
+    bufferInfo.buffer = mesh_buffer_->getBuffer(i);
     bufferInfo.offset = 0;
     bufferInfo.range = sizeof(ModelViewProjection);
 
@@ -230,7 +230,7 @@ void Mesh::update(uint_t frame_index, glm::vec3 camera, glm::mat4 view, glm::mat
   glm::mat4 model = getTransform();
   glm::mat4 mvp = proj * view * model;
 
-  meshBuffer->update(frame_index, [&mvp, &model](auto& ubo) {
+  mesh_buffer_->update(frame_index, [&mvp, &model](auto& ubo) {
     ubo.mvp = mvp;
     ubo.model = model;
     ubo.invTranspose = glm::transpose(glm::inverse(model));

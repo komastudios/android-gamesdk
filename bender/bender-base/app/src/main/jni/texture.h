@@ -22,12 +22,19 @@
 
 class Texture {
 public:
+    Texture(BenderKit::Device& device, unsigned char *imgData, uint32_t imgWidth,
+                     uint32_t imgHeight, VkFormat textureFormat);
+
     Texture(BenderKit::Device& device, android_app *androidAppCtx,
-            const char *texture_file_name, VkFormat texture_format);
+            const char *textureFileName, VkFormat textureFormat);
+
     ~Texture();
-    VkImageView getImageView();
+
+    VkImageView getImageView() const { return view_; }
+
 private:
     BenderKit::Device& device_;
+
     VkImage image_;
     VkImageLayout image_layout_;
     VkDeviceMemory mem_;
@@ -35,8 +42,10 @@ private:
     int32_t tex_width_;
     int32_t tex_height_;
     VkFormat texture_format_;
-    VkResult loadTextureFromFile(const char* filePath, android_app *android_app_,
-                                 VkImageUsageFlags usage, VkFlags required_props);
+
+    unsigned char *loadFileData(android_app *app, const char *filePath);
+    VkResult createTexture(unsigned char *imgData, VkImageUsageFlags usage, VkFlags required_props);
+    void createImageView();
 };
 
 #endif //BENDER_BASE_TEXTURE_H

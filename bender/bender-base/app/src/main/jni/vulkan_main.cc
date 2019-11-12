@@ -94,9 +94,10 @@ void createTextures() {
 }
 
 void createMaterials() {
-  for (uint32_t i = 0; i < textures.size(); ++i) {
-    materials.push_back(new Material(*renderer, shaders, *textures[i]));
-  }
+  materials.push_back(new Material(*renderer, shaders, nullptr, nullptr));
+  materials.push_back(new Material(*renderer, shaders, textures[0], nullptr));
+  materials.push_back(new Material(*renderer, shaders, nullptr, new glm::vec3(5, 0, 0)));
+  materials.push_back(new Material(*renderer, shaders, textures[0], new glm::vec3(0, 5, 0)));
 }
 
 void createFrameBuffers(VkRenderPass &renderPass,
@@ -202,12 +203,11 @@ void updateCamera(Input::Data *inputData) {
 }
 
 void createShaderState() {
-  shaders = std::make_shared<ShaderState>("triangle", androidAppCtx, device->getDevice());
-  shaders->addVertexInputBinding(0, 11 * sizeof(float));
-  shaders->addVertexAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0);
-  shaders->addVertexAttributeDescription(0, 1, VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(float));
-  shaders->addVertexAttributeDescription(0, 2, VK_FORMAT_R32G32B32_SFLOAT, 6 * sizeof(float));
-  shaders->addVertexAttributeDescription(0, 3, VK_FORMAT_R32G32_SFLOAT, 9 * sizeof(float));
+  shaders = std::make_shared<ShaderState>("mesh", androidAppCtx, device->getDevice());
+  shaders->addVertexInputBinding(0, MESH_VERT_STRIDE);
+  shaders->addVertexAttributeDescription(0, MESH_VERT_IN_POSITION, VK_FORMAT_R32G32B32_SFLOAT, MESH_VERT_POSITION_OFFSET);
+  shaders->addVertexAttributeDescription(0, MESH_VERT_IN_NORMAL, VK_FORMAT_R32G32B32_SFLOAT, MESH_VERT_NORMAL_OFFSET);
+  shaders->addVertexAttributeDescription(0, MESH_VERT_IN_TEX_COORDS, VK_FORMAT_R32G32B32_SFLOAT, MESH_VERT_TEX_COORDS_OFFSET);
 }
 
 void createDepthBuffer() {
@@ -345,20 +345,20 @@ bool InitVulkan(android_app *app) {
 
   createMaterials();
 
-  mesh = createPolyhedron(*renderer, *materials[0], 20);
-
   const std::vector<float> vertexData = {
-      -0.5f, -0.5f, 0.5f,          -0.5774f, -0.5774f, 0.5774f,       1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-      0.5f, -0.5f, 0.5f,           0.5774f, -0.5774f, 0.5774f,        0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-      0.5f, 0.5f, 0.5f,            0.5774f, 0.5774f, 0.5774f,         0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-      -0.5f, 0.5f, 0.5f,           -0.5774f, 0.5774f, 0.5774f,      1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-      0.0f, 0.0f, 0.0f,            0.0f, 1.0f, 0.0f,           1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+      -0.5f, -0.5f, 0.5f,          -0.5774f, -0.5774f, 0.5774f,       1.0f, 0.0f,
+      0.5f, -0.5f, 0.5f,           0.5774f, -0.5774f, 0.5774f,        0.0f, 0.0f,
+      0.5f, 0.5f, 0.5f,            0.5774f, 0.5774f, 0.5774f,         0.0f, 1.0f,
+      -0.5f, 0.5f, 0.5f,           -0.5774f, 0.5774f, 0.5774f,      1.0f, 1.0f,
+      0.0f, 0.0f, 0.0f,            0.0f, 1.0f, 0.0f,           0.0f, 0.0f,
   };
 
   const std::vector<u_int16_t> indexData = {
       1, 2, 4, 2, 1, 0, 0, 3, 2, 2, 3, 4, 3, 0, 4, 0, 1, 4
   };
-  
+
+  mesh = createPolyhedron(*renderer, *materials[0], 20);
+
   createDepthBuffer();
 
   createFrameBuffers(render_pass, depthBuffer.image_view);

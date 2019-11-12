@@ -10,9 +10,13 @@
 #include "shader_state.h"
 #include "texture.h"
 
+struct MaterialAttributes {
+    alignas(16) glm::vec3 color;
+};
+
 class Material {
 public:
-    Material(Renderer& renderer, std::shared_ptr<ShaderState> shaders, Texture& texture);
+    Material(Renderer& renderer, std::shared_ptr<ShaderState> shaders, Texture *texture, glm::vec3 *color);
     ~Material();
 
     std::shared_ptr<ShaderState> getShaders() const { return shaders_; }
@@ -22,8 +26,11 @@ public:
 private:
     Renderer& renderer_;
     std::shared_ptr<ShaderState> shaders_;
-    Texture texture_;
+    Texture *texture_;
+    glm::vec3 *color_;
     VkSampler sampler_;
+
+    UniformBufferObject<MaterialAttributes> *material_buffer_;
 
     VkDescriptorSetLayout material_descriptors_layout_;
     std::vector<VkDescriptorSet> material_descriptor_sets_;
