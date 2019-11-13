@@ -21,7 +21,6 @@ import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ConfigurationInfo;
 import android.net.Uri;
 import android.os.Build;
@@ -83,10 +82,6 @@ public class MainActivity extends AppCompatActivity {
     // ---------------------------------------------------------------------------------------------
 
     private static final int STRESS_TEST_ACTIVITY_REQUEST_CODE = 1001;
-
-    // ---------------------------------------------------------------------------------------------
-
-    private static final String PREFS_KEY_IS_RUNNING_TEST = "MainActivity.isRunningTest";
 
     // ---------------------------------------------------------------------------------------------
 
@@ -375,12 +370,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onStressTestStarted() {
-        setIsRunningTest(true);
         setTestsRecyclerViewInteractionEnabled(false);
     }
 
     private void onStressTestCompleted() {
-        setIsRunningTest(false);
         setTestsRecyclerViewInteractionEnabled(!_configuration.isAutoRun());
 
         if (_finishAfterTestCompletion) {
@@ -389,13 +382,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setIsRunningTest(boolean isRunningTest) {
-        SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
-        prefs.edit().putBoolean(PREFS_KEY_IS_RUNNING_TEST, isRunningTest).commit();
+        ((ACTApplication) getApplication()).setIsRunningTest(isRunningTest);
     }
 
     private boolean isRunningTest() {
-        SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
-        return prefs.getBoolean(PREFS_KEY_IS_RUNNING_TEST, false);
+        return ((ACTApplication) getApplication()).isRunningTest();
     }
 
     private void setTestsRecyclerViewInteractionEnabled(boolean interactionEnabled) {
