@@ -5,6 +5,7 @@ get_filename_component(GameSDKDir ${GAMESDK_DIR} ABSOLUTE)
 get_filename_component(LibDir ${CMAKE_CURRENT_SOURCE_DIR}/../../../../common/3rd_party ABSOLUTE)
 get_filename_component(ShadercDir ${ANDROID_NDK}/sources/third_party/shaderc ABSOLUTE)
 get_filename_component(GTestDir ${ANDROID_NDK}/sources/third_party/googletest ABSOLUTE)
+get_filename_component(CpuFeaturesDir ${ANDROID_NDK}/sources/android/cpufeatures ABSOLUTE)
 
 #===================================================================================================
 
@@ -87,13 +88,13 @@ add_library(${PROJECT_NAME} SHARED
         ancer/util/Time.cpp
         ancer/util/vulkan/VkHelpersImpl.cpp
         ancer/util/VkHelpers.cpp
-        # TODO: Either depend on this properly or move it into the project.
-        ${GameSDKDir}/samples/common/src/Thread.cpp
+        ancer/util/Basics.cpp
 
         # Operations
         operations/CalculatePIOperation.cpp
         operations/MemoryAllocOperation.cpp
         operations/MonitorOperation.cpp
+        operations/ScheduleAffinityOperation.cpp
         operations/ThreadSchedulingOperation.cpp
         operations/VulkanMprotectCheckOperation.cpp
 
@@ -102,6 +103,10 @@ add_library(${PROJECT_NAME} SHARED
         operations/gl/StreamDrawGLES3Operation.cpp
         operations/gl/TeapotRendererGLES3Operation.cpp
         operations/gl/HalfFloatPrecisionGLES3Operation.cpp
+
+        # some external deps
+        ${CpuFeaturesDir}/cpu-features.c
+        ${GameSDKDir}/samples/common/src/Thread.cpp
         )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
@@ -114,6 +119,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         ${ANDROID_NDK}/sources/third_party/vulkan/src/common
         ${ANDROID_NDK}/sources/android/native_app_glue
         ${ANDROID_NDK}/sources/third_party/shaderc/include
+        ${CpuFeaturesDir}
         )
 
 set_target_properties(${PROJECT_NAME}
