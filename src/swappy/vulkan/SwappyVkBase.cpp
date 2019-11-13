@@ -64,6 +64,10 @@ void SwappyVkBase::initGoogExtension() {
 #endif
 }
 
+SwappyVkBase::~SwappyVkBase() {
+    destroyVkSyncObjects();
+}
+
 void SwappyVkBase::doSetSwapInterval(VkSwapchainKHR swapchain, uint64_t swap_ns) {
     Settings::getInstance()->setSwapIntervalNS(swap_ns);
 }
@@ -174,7 +178,8 @@ void SwappyVkBase::destroyVkSyncObjects() {
             it->second->running = false;
             it->second->condition.notify_one();
         }
-        it->second->thread.join();
+        if (it->second->thread.joinable())
+            it->second->thread.join();
     }
 
     // Wait for all unsignaled fences to get signlaed

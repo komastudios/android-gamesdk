@@ -100,6 +100,8 @@ public:
                  VkDevice         device,
                  void             *libVulkan);
 
+    virtual ~SwappyVkBase();
+
     virtual bool doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
                                            uint64_t*      pRefreshDuration) = 0;
 
