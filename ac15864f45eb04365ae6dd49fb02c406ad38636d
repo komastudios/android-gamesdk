@@ -151,6 +151,24 @@
       "revId": "ac15864f45eb04365ae6dd49fb02c406ad38636d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1599c284_0a126f90",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-13T22:04:42Z",
+      "side": 1,
+      "message": "The purpose of this for loop is to copy the imgData to void* data.\nThis is more like a bioler-plate style of doing this since at that time I am also trying to make sure the order/layout of the image data is copied correctly.\nThere will be another CL optimizing this.",
+      "parentUuid": "e27b85ff_b579f4f7",
+      "revId": "ac15864f45eb04365ae6dd49fb02c406ad38636d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
