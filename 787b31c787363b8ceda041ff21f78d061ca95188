@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "1be5063a_c94962c5",
+        "filename": "bender/bender-base/app/src/main/jni/material.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-13T17:24:15Z",
+      "side": 1,
+      "message": "So I think for this, it\u0027s more that like textures and samplers are not 1:1 (even though they currently are right now). If you think of Fran\u0027s B/W water example, that was three samplers for a single texture. Adding support for that sort of design will probs come later (maybe V2?).",
+      "parentUuid": "7702fbad_c7dc4603",
+      "revId": "787b31c787363b8ceda041ff21f78d061ca95188",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5d71f11c_9ceafaf1",
         "filename": "bender/bender-base/app/src/main/jni/material.h",
         "patchSetId": 4
@@ -30,6 +48,24 @@
       "writtenOn": "2019-11-13T17:09:27Z",
       "side": 1,
       "message": "Could this be a unique_ptr as well? Or can different materials share the same UBO?",
+      "revId": "787b31c787363b8ceda041ff21f78d061ca95188",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "67cba18d_94ab0939",
+        "filename": "bender/bender-base/app/src/main/jni/material.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-13T17:24:15Z",
+      "side": 1,
+      "message": "Good point. I think for our thoughts Materials shouldn\u0027t share a UBO, so I can make this unique.",
+      "parentUuid": "5d71f11c_9ceafaf1",
       "revId": "787b31c787363b8ceda041ff21f78d061ca95188",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
