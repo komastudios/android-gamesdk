@@ -16,3 +16,13 @@ export BENDER_CMAKE=`pwd`/../../../prebuilts/cmake/linux-x86
 cp -rf sdk_licenses ../../../prebuilts/sdk/licenses
 
 ./gradlew build
+
+dist_dir=$DIST_DIR
+if [[ -z dist_dir ]]
+    then
+        export dist_dir=`pwd`/../
+fi
+
+mkdir $dist_dir/bender
+cp app/build/outputs/apk/debug/app-debug.apk \
+        $dist_dir/bender/bender.apk
