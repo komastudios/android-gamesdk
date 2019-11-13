@@ -38,14 +38,12 @@ TFErrorCode TuningFork_findFidelityParamsInApk(JNIEnv* env, jobject context,
 //  will be used if there is no download connection and there are no saved parameters.
 // fidelity_params_callback is called with any downloaded params or with default /
 //  saved params.
-// initialTimeoutMs is the time to wait for an initial download. The fidelity_params_callback
-//  will be called after this time with the default / saved params if no params
-//  could be downloaded..
-// ultimateTimeoutMs is the time after which to stop retrying the download.
+// Requests will timeout according to the initial_request_timeout_ms and
+//  ultimate_request_timeout_ms fields in the TFSettings struct with which Tuning Fork was
+//  initialized.
 TFErrorCode TuningFork_startFidelityParamDownloadThread(
                                       const CProtobufSerialization* default_params,
-                                      ProtoCallback fidelity_params_callback,
-                                      int initialTimeoutMs, int ultimateTimeoutMs);
+                                      ProtoCallback fidelity_params_callback);
 
 // The TuningFork_init function will save fidelity params to a file
 //  for use when a download connection is not available. With this function,

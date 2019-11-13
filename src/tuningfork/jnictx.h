@@ -19,7 +19,7 @@
 #include <jni.h>
 
 namespace tuningfork {
-    
+
 // a class that stores an app's JVM and context
 class JniCtx {
     JavaVM* jvm_;
@@ -33,6 +33,7 @@ class JniCtx {
     jobject Ctx() const { return jctx_; }
     // Calling Env() will call AttachCurrentThread automatically.
     JNIEnv* Env() const;
+    bool IsValid() const { return jvm_!=nullptr && jctx_!=nullptr; }
 };
 
 } // namespace tuningfork
