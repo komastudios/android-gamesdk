@@ -64,6 +64,10 @@ void SwappyVkBase::initGoogExtension() {
 #endif
 }
 
+SwappyVkBase::~SwappyVkBase() {
+    destroyVkSyncObjects();
+}
+
 void SwappyVkBase::doSetSwapInterval(VkSwapchainKHR swapchain, uint64_t swap_ns) {
     Settings::getInstance()->setSwapIntervalNS(swap_ns);
 }
