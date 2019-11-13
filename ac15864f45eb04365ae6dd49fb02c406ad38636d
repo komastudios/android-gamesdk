@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "efaa2940_c020d255",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-13T21:54:21Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "72f8cf2d_30029b54",
+      "revId": "ac15864f45eb04365ae6dd49fb02c406ad38636d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9fffe7b1_6abfe3df",
         "filename": "bender/bender-base/app/src/main/jni/material.cc",
         "patchSetId": 5
@@ -42,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "9fe35838_9989cc6c",
+        "filename": "bender/bender-base/app/src/main/jni/material.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-13T21:54:21Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "9fffe7b1_6abfe3df",
+      "range": {
+        "startLine": 92,
+        "startChar": 37,
+        "endLine": 92,
+        "endChar": 38
+      },
+      "revId": "ac15864f45eb04365ae6dd49fb02c406ad38636d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b950a63c_d7a1224c",
         "filename": "bender/bender-base/app/src/main/jni/material.h",
         "patchSetId": 5
@@ -53,6 +95,24 @@
       "writtenOn": "2019-11-13T21:20:46Z",
       "side": 1,
       "message": "Can this ever be null?",
+      "revId": "ac15864f45eb04365ae6dd49fb02c406ad38636d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9e13c379_4f73abb3",
+        "filename": "bender/bender-base/app/src/main/jni/material.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-13T21:54:21Z",
+      "side": 1,
+      "message": "Right now this should not be null (the constructor should either receive a non-null values or should create a new Texture), same for the color. Is this a question of making them references instead? The constructor gets unhappy with the switching logic for the default texture and default color if I make these references, I think from the if/else logic.",
+      "parentUuid": "b950a63c_d7a1224c",
       "revId": "ac15864f45eb04365ae6dd49fb02c406ad38636d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -73,6 +133,24 @@
       "revId": "ac15864f45eb04365ae6dd49fb02c406ad38636d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e27b85ff_b579f4f7",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-13T21:54:21Z",
+      "side": 1,
+      "message": "Ooh in terms of functionality or in terms of the change?\n\nThe variable name change has to do w/ splitting up the previous large function into a few smaller ones; img_height and img_width are local to loadFileData() now, so to get the same functionality we should use tex_height_ and tex_width_ which are instance variables that are equivalent to img_height and img_width.\n\nIn terms of functionality, I discussed with Andy yesterday, and we discussed it in context of the ImageView not creating properly if the data wasn\u0027t copied. I wanted to investigate further, but I think for the scope of this CL I didn\u0027t want to change anything in Texture if it didn\u0027t affect Material.",
+      "parentUuid": "a41a0331_f564f7ea",
+      "revId": "ac15864f45eb04365ae6dd49fb02c406ad38636d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
