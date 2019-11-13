@@ -28,7 +28,7 @@ void SwappyVk::swappyVkDetermineDeviceExtensions(
     uint32_t*              pRequiredExtensionCount,
     char**                 pRequiredExtensions)
 {
-#if ANDROID_NDK_VERSION>=15
+#if (not defined ANDROID_NDK_VERSION) || ANDROID_NDK_VERSION>=15
     // TODO: Refactor this to be more concise:
     if (!pRequiredExtensions) {
         for (uint32_t i = 0; i < availableExtensionCount; i++) {
@@ -85,7 +85,7 @@ bool SwappyVk::GetRefreshCycleDuration(JNIEnv           *env,
             }
         }
 
-#if ANDROID_NDK_VERSION>=15
+#if (not defined ANDROID_NDK_VERSION) || ANDROID_NDK_VERSION>=15
         // First, based on whether VK_GOOGLE_display_timing is available
         // (determined and cached by swappyVkDetermineDeviceExtensions),
         // determine which derived class to use to implement the rest of the API

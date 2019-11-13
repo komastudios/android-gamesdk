@@ -100,6 +100,8 @@ public:
                  VkDevice         device,
                  void             *libVulkan);
 
+    virtual ~SwappyVkBase();
+
     virtual bool doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
                                            uint64_t*      pRefreshDuration) = 0;
 
@@ -156,7 +158,7 @@ protected:
 
     PFN_vkGetDeviceProcAddr               mpfnGetDeviceProcAddr               = nullptr;
     PFN_vkQueuePresentKHR                 mpfnQueuePresentKHR                 = nullptr;
-#if ANDROID_NDK_VERSION>=15
+#if (not defined ANDROID_NDK_VERSION) || ANDROID_NDK_VERSION>=15
     PFN_vkGetRefreshCycleDurationGOOGLE   mpfnGetRefreshCycleDurationGOOGLE   = nullptr;
     PFN_vkGetPastPresentationTimingGOOGLE mpfnGetPastPresentationTimingGOOGLE = nullptr;
 #endif
