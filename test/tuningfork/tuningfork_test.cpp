@@ -38,6 +38,10 @@ using ::com::google::tuningfork::FidelityParams;
 using ::com::google::tuningfork::Annotation;
 typedef std::string TuningForkLogEvent;
 
+static const std::string kCacheDir = "/data/local/tmp/tuningfork_test";
+const Duration s_test_wait_time = std::chrono::seconds(1);
+const JniCtx s_jni {NULL, NULL};
+
 class TestBackend : public Backend {
 public:
     TestBackend(std::shared_ptr<std::condition_variable> cv_,
@@ -62,8 +66,15 @@ public:
 
 class TestParamsLoader : public ParamsLoader {
 public:
+    int n_times_called_ = 0;
+    int wait_count_ = 0;
+    const ProtobufSerialization* download_params_;
     const ProtobufSerialization* expected_training_params_;
-    TestParamsLoader(const ProtobufSerialization* expected_training_params = nullptr) :
+    TestParamsLoader(int wait_count = 0,
+                     const ProtobufSerialization* download_params = nullptr,
+                     const ProtobufSerialization* expected_training_params = nullptr) :
+            wait_count_(wait_count),
+            download_params_(download_params),
             expected_training_params_(expected_training_params) {}
 
     TFErrorCode GetFidelityParams(const JniCtx& jni,
@@ -73,34 +84,41 @@ public:
                                   const ProtobufSerialization* training_mode_params,
                                   ProtobufSerialization &fidelity_params,
                                   std::string& experiment_id, uint32_t timeout_ms) override {
+        n_times_called_++;
         if (expected_training_params_ != nullptr) {
             EXPECT_NE(training_mode_params, nullptr);
             EXPECT_EQ(*expected_training_params_, *training_mode_params);
         } else {
             EXPECT_EQ(training_mode_params, nullptr);
         }
-        return TFERROR_NO_FIDELITY_PARAMS;
+        if (n_times_called_ > wait_count_ && download_params_!=nullptr) {
+            fidelity_params = *download_params_;
+            return TFERROR_OK;
+        }
+        else {
+            return TFERROR_NO_FIDELITY_PARAMS;
+        }
     }
 };
 
 // Increment time with a known tick size
 class TestTimeProvider : public ITimeProvider {
 public:
-    TestTimeProvider(Duration tickSize_ = std::chrono::milliseconds(20),
-                     SystemDuration systemTickSize_ = std::chrono::milliseconds(20))
-        : tickSize(tickSize_), systemTickSize(systemTickSize_) {}
+    TestTimeProvider(Duration tick_size_ = std::chrono::milliseconds(20),
+                     SystemDuration system_tick_size_ = std::chrono::milliseconds(20))
+        : tick_size(tick_size_), system_tick_size(system_tick_size_) {}
 
     TimePoint t;
     SystemTimePoint st;
-    Duration tickSize;
-    SystemDuration systemTickSize;
+    Duration tick_size;
+    SystemDuration system_tick_size;
 
     TimePoint Now() override {
-        t += tickSize;
+        t += tick_size;
         return t;
     }
     SystemTimePoint SystemNow() override {
-        st += systemTickSize;
+        st += system_tick_size;
         return st;
     }
     void Reset() {
@@ -109,13 +127,39 @@ public:
     }
 };
 
-std::shared_ptr<std::condition_variable> cv = std::make_shared<std::condition_variable>();
-std::shared_ptr<std::mutex> rmutex = std::make_shared<std::mutex>();
-TestBackend testBackend(cv, rmutex);
-TestParamsLoader paramsLoader;
-TestTimeProvider timeProvider;
-ExtraUploadInfo extra_upload_info = {};
-static const std::string kCacheDir = "/data/local/tmp/tuningfork_test";
+class TuningForkTest {
+  public:
+    std::shared_ptr<std::condition_variable> cv_ = std::make_shared<std::condition_variable>();
+    std::shared_ptr<std::mutex> rmutex_ = std::make_shared<std::mutex>();
+    TestBackend test_backend_;
+    std::shared_ptr<TestParamsLoader> params_loader_;
+    TestTimeProvider time_provider_;
+    ExtraUploadInfo extra_upload_info_;
+    TFErrorCode init_return_value_;
+
+    TuningForkTest(const Settings& settings, Duration tick_size = std::chrono::milliseconds(20),
+                   const std::shared_ptr<TestParamsLoader>& params_loader
+                     = std::make_shared<TestParamsLoader>())
+            : test_backend_(cv_, rmutex_), params_loader_(params_loader),
+              time_provider_(tick_size), extra_upload_info_({}) {
+        init_return_value_ = tuningfork::Init(settings, s_jni, &extra_upload_info_, &test_backend_,
+                                              params_loader_.get(),
+                                              &time_provider_);
+        EXPECT_EQ(init_return_value_, TFERROR_OK) << "Bad Init";
+    }
+
+    ~TuningForkTest() {
+        if (init_return_value_ == TFERROR_OK) {
+            tuningfork::Destroy();
+            tuningfork::KillDownloadThreads();
+        }
+    }
+
+    TuningForkLogEvent Result() const {
+        return test_backend_.result;
+    }
+
+};
 
 const CProtobufSerialization* TrainingModeParams() {
     static ProtobufSerialization pb = {1,2,3,4,5};
@@ -136,65 +180,55 @@ Settings TestSettings(Settings::AggregationStrategy::Submission method, int n_ti
     s.histograms = hists;
     s.c_settings.training_fidelity_params = TrainingModeParams();
     CheckSettings(s, kCacheDir);
+    s.initial_request_timeout_ms = 5;
+    s.ultimate_request_timeout_ms = 50;
     return s;
 }
-const Duration test_wait_time = std::chrono::seconds(1);
-JniCtx jni {NULL, NULL};
-const TuningForkLogEvent& TestEndToEnd() {
-    testBackend.Clear();
-    timeProvider.Reset();
+
+TuningForkLogEvent TestEndToEnd() {
     const int NTICKS = 101; // note the first tick doesn't add anything to the histogram
     auto settings = TestSettings(Settings::AggregationStrategy::Submission::TICK_BASED, NTICKS - 1,
                                  1, {});
-    EXPECT_EQ(tuningfork::Init(settings, jni, &extra_upload_info, &testBackend, &paramsLoader,
-                               &timeProvider), TFERROR_OK) << "Bad Init";
-    std::unique_lock<std::mutex> lock(*rmutex);
+    TuningForkTest test(settings);
+    std::unique_lock<std::mutex> lock(*test.rmutex_);
     for (int i = 0; i < NTICKS; ++i)
         tuningfork::FrameTick(TFTICK_SYSCPU);
     // Wait for the upload thread to complete writing the string
-    EXPECT_TRUE(cv->wait_for(lock, test_wait_time)==std::cv_status::no_timeout) << "Timeout";
+    EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time)==std::cv_status::no_timeout) << "Timeout";
 
-    tuningfork::Destroy();
-    return testBackend.result;
+    return test.Result();
 }
 
-const TuningForkLogEvent& TestEndToEndWithAnnotation() {
-    testBackend.Clear();
-    timeProvider.Reset();
+TuningForkLogEvent TestEndToEndWithAnnotation() {
     const int NTICKS = 101; // note the first tick doesn't add anything to the histogram
     // {3} is the number of values in the Level enum in tuningfork_extensions.proto
     auto settings = TestSettings(Settings::AggregationStrategy::Submission::TICK_BASED, NTICKS - 1,
                                  2, {3});
-    EXPECT_EQ(tuningfork::Init(settings, jni, &extra_upload_info, &testBackend, &paramsLoader,
-                               &timeProvider), TFERROR_OK) << "Bad Init";
+    TuningForkTest test(settings);
     Annotation ann;
     ann.set_level(com::google::tuningfork::LEVEL_1);
     tuningfork::SetCurrentAnnotation(Serialize(ann));
-    std::unique_lock<std::mutex> lock(*rmutex);
+    std::unique_lock<std::mutex> lock(*test.rmutex_);
     for (int i = 0; i < NTICKS; ++i)
         tuningfork::FrameTick(TFTICK_SYSGPU);
     // Wait for the upload thread to complete writing the string
-    EXPECT_TRUE(cv->wait_for(lock, test_wait_time)==std::cv_status::no_timeout) << "Timeout";
-    tuningfork::Destroy();
-    return testBackend.result;
+    EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time)==std::cv_status::no_timeout) << "Timeout";
+
+    return test.Result();
 }
 
-const TuningForkLogEvent& TestEndToEndTimeBased() {
-    testBackend.Clear();
-    timeProvider.Reset();
+TuningForkLogEvent TestEndToEndTimeBased() {
     const int NTICKS = 101; // note the first tick doesn't add anything to the histogram
-    TestTimeProvider timeProvider(std::chrono::milliseconds(100)); // Tick in 100ms intervals
-    auto settings = TestSettings(Settings::AggregationStrategy::Submission::TIME_BASED, 10100, 1,
-                                 {}, {{TFTICK_SYSCPU, 50,150,10}});
-    EXPECT_EQ(tuningfork::Init(settings, jni, &extra_upload_info, &testBackend, &paramsLoader,
-                               &timeProvider), TFERROR_OK) << "Bad Init";
-    std::unique_lock<std::mutex> lock(*rmutex);
+    auto settings = TestSettings(Settings::AggregationStrategy::Submission::TIME_BASED, 10100,
+                                 1, {}, {{TFTICK_SYSCPU, 50,150,10}});
+    TuningForkTest test(settings, std::chrono::milliseconds(100));
+    std::unique_lock<std::mutex> lock(*test.rmutex_);
     for (int i = 0; i < NTICKS; ++i)
         tuningfork::FrameTick(TFTICK_SYSCPU);
     // Wait for the upload thread to complete writing the string
-    EXPECT_TRUE(cv->wait_for(lock, test_wait_time)==std::cv_status::no_timeout) << "Timeout";
-    tuningfork::Destroy();
-    return testBackend.result;
+    EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time)==std::cv_status::no_timeout) << "Timeout";
+
+    return test.Result();
 }
 
 void CheckEvent(const std::string& name, const TuningForkLogEvent& result,
@@ -231,7 +265,7 @@ static const std::string session_context = R"TF(
 )TF";
 
 TEST(TuningForkTest, EndToEnd) {
-    auto& result = TestEndToEnd();
+    auto result = TestEndToEnd();
     TuningForkLogEvent expected = R"TF(
 {
   "name": "applications//apks/0",
@@ -262,7 +296,7 @@ TEST(TuningForkTest, EndToEnd) {
 }
 
 TEST(TuningForkTest, TestEndToEndWithAnnotation) {
-    auto& result = TestEndToEndWithAnnotation();
+    auto result = TestEndToEndWithAnnotation();
     TuningForkLogEvent expected = R"TF(
 {
   "name": "applications//apks/0",
@@ -293,7 +327,7 @@ TEST(TuningForkTest, TestEndToEndWithAnnotation) {
 }
 
 TEST(TuningForkTest, TestEndToEndTimeBased) {
-    auto& result = TestEndToEndTimeBased();
+    auto result = TestEndToEndTimeBased();
     TuningForkLogEvent expected = R"TF(
 {
   "name": "applications//apks/0",
@@ -320,6 +354,53 @@ TEST(TuningForkTest, TestEndToEndTimeBased) {
 }
 )TF";
     CheckEvent("TimeBased", result, expected);
+}
+
+std::condition_variable fp_cv;
+std::mutex fp_mutex;
+int fp_n_callbacks_called = 0;
+ProtobufSerialization default_fps = {1,2,3};
+void FidelityParamsCallback(const CProtobufSerialization* s) {
+    EXPECT_NE(s, nullptr) << "Null FPs in callback";
+    auto in_fps = ToProtobufSerialization(*s);
+    EXPECT_EQ(in_fps, default_fps) << "Wrong FPs in callback";
+    fp_n_callbacks_called++;
+    fp_cv.notify_all();
+}
+
+void TestFidelityParamDownloadThread() {
+
+    CProtobufSerialization c_default_fps;
+    ToCProtobufSerialization(default_fps, c_default_fps);
+
+    auto settings = TestSettings(Settings::AggregationStrategy::Submission::TICK_BASED, 100, 1, {});
+
+    settings.api_key = "dummy_api_key";
+    settings.c_settings.training_fidelity_params = nullptr;
+
+    int wait_count = 3;
+    auto params_loader = std::make_shared<TestParamsLoader>(wait_count, &default_fps);
+
+    TuningForkTest test(settings, std::chrono::milliseconds(20), params_loader);
+
+    auto r = TuningFork_startFidelityParamDownloadThread(nullptr, FidelityParamsCallback);
+    EXPECT_EQ(r, TFERROR_BAD_PARAMETER);
+    std::unique_lock<std::mutex> lock(fp_mutex);
+    r = TuningFork_startFidelityParamDownloadThread(&c_default_fps, FidelityParamsCallback);
+    EXPECT_EQ(r, TFERROR_OK);
+    // Wait for the download thread. We have one initial callback with the defaults and
+    //  one with the ones from the loader.
+    for(int i=0;i<2;++i) {
+        EXPECT_TRUE(fp_cv.wait_for(lock, s_test_wait_time)!=std::cv_status::timeout) << "Timeout";
+    }
+    EXPECT_EQ(fp_n_callbacks_called, 2);
+    EXPECT_EQ(params_loader->n_times_called_, 4);
+
+    CProtobufSerialization_Free(&c_default_fps);
+
+}
+TEST(TuningForkTest, TestFidelityParamDownloadThread) {
+    TestFidelityParamDownloadThread();
 }
 
 } // namespace tuningfork_test
