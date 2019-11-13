@@ -1,0 +1,78 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "72f8cf2d_30029b54",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1584175
+      },
+      "writtenOn": "2019-11-13T21:20:46Z",
+      "side": 1,
+      "message": "There seem to be several structural or style changes not related to texture or color.  That may be worth adding to the CL description to communicate intent.",
+      "revId": "ac15864f45eb04365ae6dd49fb02c406ad38636d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9fffe7b1_6abfe3df",
+        "filename": "bender/bender-base/app/src/main/jni/material.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1584175
+      },
+      "writtenOn": "2019-11-13T21:20:46Z",
+      "side": 1,
+      "message": "Magic number used in a couple of places in this file.  May be worth making a const to assist future expansion and make it\u0027s purpose clear.",
+      "range": {
+        "startLine": 92,
+        "startChar": 37,
+        "endLine": 92,
+        "endChar": 38
+      },
+      "revId": "ac15864f45eb04365ae6dd49fb02c406ad38636d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b950a63c_d7a1224c",
+        "filename": "bender/bender-base/app/src/main/jni/material.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1584175
+      },
+      "writtenOn": "2019-11-13T21:20:46Z",
+      "side": 1,
+      "message": "Can this ever be null?",
+      "revId": "ac15864f45eb04365ae6dd49fb02c406ad38636d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a41a0331_f564f7ea",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1584175
+      },
+      "writtenOn": "2019-11-13T21:20:46Z",
+      "side": 1,
+      "message": "I know you just updated the variable style, but I\u0027d love a comment here for why we\u0027re doing this.",
+      "revId": "ac15864f45eb04365ae6dd49fb02c406ad38636d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
