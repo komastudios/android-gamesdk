@@ -103,13 +103,12 @@ void createMaterials() {
 
 void createFrameBuffers(VkRenderPass &renderPass,
                         VkImageView depthView = VK_NULL_HANDLE) {
-  // create image view for each swapchain image
-  displayViews_.resize(device->getDisplayImagesSize());
-  for (uint32_t i = 0; i < device->getDisplayImagesSize(); i++) {
+  displayViews_.resize(device->getDisplayImages().size());
+  for (uint32_t i = 0; i < device->getDisplayImages().size(); i++) {
     VkImageViewCreateInfo viewCreateInfo = {
         .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
         .pNext = nullptr,
-        .image = device->getDisplayImage(i),
+        .image = device->getDisplayImages()[i],
         .viewType = VK_IMAGE_VIEW_TYPE_2D,
         .format = device->getDisplayFormat(),
         .components =
