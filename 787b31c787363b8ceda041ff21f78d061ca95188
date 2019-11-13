@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "284ef149_6b1c069d",
+        "filename": "bender/bender-base/app/src/main/jni/material.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-13T17:31:04Z",
+      "side": 1,
+      "message": "Matt is correct. It\u0027s not 1:1. A sampler is associated to only 1 texture while a texture can have multiple samplers. I tried in the past to have textures own samplers but it has always ended up in a mess. I think materials should own samplers created from textures passed in.",
+      "parentUuid": "1be5063a_c94962c5",
+      "revId": "787b31c787363b8ceda041ff21f78d061ca95188",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5d71f11c_9ceafaf1",
         "filename": "bender/bender-base/app/src/main/jni/material.h",
         "patchSetId": 4
@@ -69,6 +87,24 @@
       "revId": "787b31c787363b8ceda041ff21f78d061ca95188",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7137f179_73cae3a7",
+        "filename": "bender/bender-base/app/src/main/jni/material.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-13T17:31:04Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "67cba18d_94ab0939",
+      "revId": "787b31c787363b8ceda041ff21f78d061ca95188",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
