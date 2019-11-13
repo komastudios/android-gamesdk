@@ -84,7 +84,6 @@ void Renderer::endFrame() {
 }
 
 void Renderer::beginPrimaryCommandBufferRecording() {
-  uint32_t current_frame = getCurrentFrame();
   VkCommandBufferBeginInfo cmd_buffer_beginInfo{
           .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
           .pNext = nullptr,
@@ -96,7 +95,7 @@ void Renderer::beginPrimaryCommandBufferRecording() {
 
   // transition the display image to color attachment layout
   setImageLayout(getCurrentCommandBuffer(),
-                 device_.getDisplayImage(current_frame),
+                 device_.getCurrentDisplayImage(),
                  VK_IMAGE_LAYOUT_UNDEFINED,
                  VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                  VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
@@ -203,10 +202,10 @@ void Renderer::updateLights(glm::vec3 camera) {
 }
 
 void Renderer::createPool() {
-  uint32_t maxMvpBuffers = MAX_MESHES * device_.getDisplayImagesSize();
-  uint32_t maxLightsBuffers = MAX_LIGHTS * device_.getDisplayImagesSize();
-  uint32_t maxSamplers = MAX_SAMPLERS * device_.getDisplayImagesSize();
-  uint32_t maxTexts = MAX_LINES_TEXTS * device_.getDisplayImagesSize();
+  uint32_t maxMvpBuffers = MAX_MESHES * device_.getDisplayImages().size();
+  uint32_t maxLightsBuffers = MAX_LIGHTS * device_.getDisplayImages().size();
+  uint32_t maxSamplers = MAX_SAMPLERS * device_.getDisplayImages().size();
+  uint32_t maxTexts = MAX_LINES_TEXTS * device_.getDisplayImages().size();
 
   std::array<VkDescriptorPoolSize, 2> poolSizes = {};
   poolSizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -218,7 +217,7 @@ void Renderer::createPool() {
   poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
   poolInfo.poolSizeCount = poolSizes.size();
   poolInfo.pPoolSizes = poolSizes.data();
-  poolInfo.maxSets = device_.getDisplayImagesSize();     // maxSets will need to take into account
+  poolInfo.maxSets = device_.getDisplayImages().size();     // maxSets will need to take into account
                                                          // the max stuff in a scene
 
   CALL_VK(vkCreateDescriptorPool(device_.getDevice(), &poolInfo, nullptr, &descriptor_pool_));
@@ -248,18 +247,18 @@ void Renderer::createLightsDescriptorSetLayout() {
 }
 
 void Renderer::createLightsDescriptors() {
-  std::vector<VkDescriptorSetLayout> layouts(device_.getDisplayImagesSize(), lights_descriptors_layout_);
+  std::vector<VkDescriptorSetLayout> layouts(device_.getDisplayImages().size(), lights_descriptors_layout_);
 
   VkDescriptorSetAllocateInfo allocInfo = {};
   allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
   allocInfo.descriptorPool = descriptor_pool_;
-  allocInfo.descriptorSetCount = static_cast<uint32_t>(device_.getDisplayImagesSize());
+  allocInfo.descriptorSetCount = static_cast<uint32_t>(device_.getDisplayImages().size());
   allocInfo.pSetLayouts = layouts.data();
 
-  lights_descriptor_sets_.resize(device_.getDisplayImagesSize());
+  lights_descriptor_sets_.resize(device_.getDisplayImages().size());
   CALL_VK(vkAllocateDescriptorSets(device_.getDevice(), &allocInfo, lights_descriptor_sets_.data()));
 
-  for (size_t i = 0; i < device_.getDisplayImagesSize(); i++) {
+  for (size_t i = 0; i < device_.getDisplayImages().size(); i++) {
     VkDescriptorBufferInfo lightBlockInfo = {};
     lightBlockInfo.buffer = lights_buffer_->getBuffer(i);
     lightBlockInfo.offset = 0;
@@ -302,5 +301,5 @@ uint32_t Renderer::getCurrentFrame() const {
 }
 
 VkImage Renderer::getCurrentDisplayImage() const {
-  return device_.getDisplayImage(getCurrentFrame());
+  return device_.getCurrentDisplayImage();
 }

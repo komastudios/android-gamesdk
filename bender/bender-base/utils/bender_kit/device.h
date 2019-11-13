@@ -51,9 +51,7 @@ namespace BenderKit {
 
         const std::vector<VkImage> &getDisplayImages() { return displayImages_; }
 
-        VkImage getDisplayImage(int i) const;
-
-        size_t getDisplayImagesSize() const { return displayImages_.size(); }
+        VkImage getCurrentDisplayImage() const { return displayImages_[current_frame_index_]; }
 
         uint getCurrentFrameIndex() const { return current_frame_index_; }
 
