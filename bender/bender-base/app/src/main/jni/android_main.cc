@@ -19,6 +19,7 @@ int32_t input_cmd(android_app *app, AInputEvent *event) {
   Input::Data *inputData = (Input::Data *) app->userData;
   if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION) {
     Input::testDoubleTapHold(app, event, inputData);
+    Input::testSingleTap(app, event, inputData);
     if (AMotionEvent_getPointerCount(event) == 1) {
       Input::testRotate(app, event, inputData);
     }

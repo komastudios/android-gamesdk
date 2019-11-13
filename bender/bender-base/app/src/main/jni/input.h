@@ -18,6 +18,8 @@ struct Data {
   long doubleTapThresholdTime = 200000000;
   bool doubleTapHoldUpper = false;
   bool doubleTapHoldLower = false;
+  bool singleTapLowerLeft = false;
+  bool singleTapLowerRight = false;
 
   int lastInputCount = 0;
 };
@@ -34,6 +36,23 @@ inline void testDoubleTapHold(android_app *app, AInputEvent *event, Data *input)
       }
     }
     input->lastTapTime = currTapTime;
+  }
+}
+
+inline void testSingleTap(android_app *app, AInputEvent *event, Data *input) {
+  if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_DOWN) {
+    if (AMotionEvent_getY(event, 0) > ANativeWindow_getHeight(app->window) * .75) {
+      if (AMotionEvent_getX(event, 0) < ANativeWindow_getWidth(app->window) * .25) {
+        input->singleTapLowerLeft = true;
+      }
+      else if (AMotionEvent_getX(event, 0) > ANativeWindow_getWidth(app->window) * .75) {
+        input->singleTapLowerRight = true;
+      }
+    }
+  }
+  else {
+    input->singleTapLowerLeft = false;
+    input->singleTapLowerRight = false;
   }
 }
 
