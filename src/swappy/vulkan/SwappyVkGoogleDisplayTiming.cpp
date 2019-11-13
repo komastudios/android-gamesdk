@@ -31,10 +31,6 @@ SwappyVkGoogleDisplayTiming::SwappyVkGoogleDisplayTiming(JNIEnv           *env,
                                                          void             *libVulkan) :
     SwappyVkBase(env, jactivity, physicalDevice, device, libVulkan) {}
 
-SwappyVkGoogleDisplayTiming::~SwappyVkGoogleDisplayTiming() {
-    destroyVkSyncObjects();
-}
-
 bool SwappyVkGoogleDisplayTiming::doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
                                                             uint64_t*      pRefreshDuration) {
     if (!isEnabled()) {
