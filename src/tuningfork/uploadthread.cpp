@@ -196,7 +196,8 @@ ExtraUploadInfo UploadThread::BuildExtraUploadInfo(const JniCtx& jni_) {
     extra_info.build_version_sdk = getSystemPropViaGet("ro.build.version.sdk");
     extra_info.build_fingerprint = getSystemPropViaGet("ro.build.fingerprint");
 
-    extra_info.session_id = UniqueId(jni_.Env());
+    if (jni_.IsValid())
+        extra_info.session_id = UniqueId(jni_.Env());
 
     extra_info.cpu_max_freq_hz.clear();
     for(int index = 1;;++index) {
@@ -211,9 +212,10 @@ ExtraUploadInfo UploadThread::BuildExtraUploadInfo(const JniCtx& jni_) {
         extra_info.cpu_max_freq_hz.push_back(freq*1000); // File is in kHz
     }
 
-    extra_info.apk_version_code = apk_utils::GetVersionCode(jni_,
-        &extra_info.apk_package_name);
-
+    if (jni_.IsValid()) {
+        extra_info.apk_version_code = apk_utils::GetVersionCode(jni_,
+                                       &extra_info.apk_package_name);
+    }
     extra_info.tuningfork_version = TUNINGFORK_PACKED_VERSION;
 
     return extra_info;

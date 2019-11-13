@@ -106,7 +106,7 @@ bool SavedFidelityParamsFileExists(const JniCtx& jni) {
 }
 
 static bool s_kill_thread = false;
-static std::thread s_fp_thread;
+static std::unique_ptr<std::thread> s_fp_thread;
 
 // Download FPs on a separate thread
 TFErrorCode StartFidelityParamDownloadThread(const ProtobufSerialization& default_params,
@@ -115,12 +115,13 @@ TFErrorCode StartFidelityParamDownloadThread(const ProtobufSerialization& defaul
     if (fidelity_params_callback == nullptr) return TFERROR_BAD_PARAMETER;
     static std::mutex threadMutex;
     std::lock_guard<std::mutex> lock(threadMutex);
-    if (s_fp_thread.joinable()) {
+    if (s_fp_thread.get() && s_fp_thread->joinable()) {
         ALOGW("Fidelity param download thread already started");
         return TFERROR_DOWNLOAD_THREAD_ALREADY_STARTED;
     }
+    s_fp_thread = std::make_unique<std::thread>();
     s_kill_thread = false;
-    s_fp_thread = std::thread([=]() {
+    s_fp_thread = std::make_unique<std::thread>([=]() {
         ProtobufSerialization params;
         auto waitTime = std::chrono::milliseconds(initialTimeoutMs);
         bool first_time = true;
@@ -130,7 +131,8 @@ TFErrorCode StartFidelityParamDownloadThread(const ProtobufSerialization& defaul
                                              params, waitTime.count());
             if (err==TFERROR_OK) {
                 ALOGI("Got fidelity params from server");
-                SaveFidelityParams(tuningfork::GetJniCtx(), params);
+                if (tuningfork::GetJniCtx().IsValid())
+                    SaveFidelityParams(tuningfork::GetJniCtx(), params);
                 CProtobufSerialization cpbs;
                 ToCProtobufSerialization(params, cpbs);
                 fidelity_params_callback(&cpbs);
@@ -219,9 +221,10 @@ TFErrorCode GetDefaultsFromAPKAndDownloadFPs(const Settings& settings, const Jni
 }
 
 TFErrorCode KillDownloadThreads() {
-    if (s_fp_thread.joinable()) {
+    if (s_fp_thread.get() && s_fp_thread->joinable()) {
         s_kill_thread = true;
-        s_fp_thread.join();
+        s_fp_thread->join();
+        s_fp_thread.reset();
         return TFERROR_OK;
     }
     return TFERROR_TUNINGFORK_NOT_INITIALIZED;
@@ -236,15 +239,15 @@ using namespace tuningfork;
 // Download FPs on a separate thread
 TFErrorCode TuningFork_startFidelityParamDownloadThread(
                                       const CProtobufSerialization* c_default_params,
-                                      ProtoCallback fidelity_params_callback,
-                                      int initialTimeoutMs, int ultimateTimeoutMs) {
+                                      ProtoCallback fidelity_params_callback) {
     if (c_default_params==nullptr) return TFERROR_BAD_PARAMETER;
     if (fidelity_params_callback==nullptr) return TFERROR_BAD_PARAMETER;
     const Settings* settings = GetSettings();
     if (settings == nullptr) return TFERROR_TUNINGFORK_NOT_INITIALIZED;
     return StartFidelityParamDownloadThread(ToProtobufSerialization(*c_default_params),
                                             fidelity_params_callback,
-                                            initialTimeoutMs, ultimateTimeoutMs);
+                                            settings->initial_request_timeout_ms,
+                                            settings->ultimate_request_timeout_ms);
 }
 
 // Load fidelity params from assets/tuningfork/<filename>

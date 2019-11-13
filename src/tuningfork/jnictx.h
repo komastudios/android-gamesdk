@@ -33,6 +33,7 @@ class JniCtx {
     jobject Ctx() const { return jctx_; }
     // Calling Env() will call AttachCurrentThread automatically.
     JNIEnv* Env() const;
+    bool IsValid() const { return jvm_!=nullptr && jctx_!=nullptr; }
 };
 
 } // namespace tuningfork

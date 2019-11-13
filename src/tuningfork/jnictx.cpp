@@ -33,7 +33,10 @@ JniCtx::JniCtx(const JniCtx& rhs) : jvm_(rhs.jvm_) {
 }
 JniCtx::~JniCtx() {
     if (jctx_) {
-        Env()->DeleteGlobalRef(jctx_);
+        JNIEnv* env = Env();
+        if (env) {
+            env->DeleteGlobalRef(jctx_);
+        }
     }
 }
 JNIEnv* JniCtx::Env() const {

@@ -91,6 +91,7 @@ struct ExtraUploadInfo {
 
 class IdProvider {
   public:
+    virtual ~IdProvider() {}
     virtual uint64_t DecodeAnnotationSerialization(const ProtobufSerialization& ser,
                                                    bool* loading = nullptr) const = 0;
     virtual TFErrorCode MakeCompoundId(InstrumentationKey k,
