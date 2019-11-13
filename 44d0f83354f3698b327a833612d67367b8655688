@@ -34,6 +34,23 @@
       "revId": "44d0f83354f3698b327a833612d67367b8655688",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7845f0a8_61f257b1",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-13T23:09:41Z",
+      "side": 1,
+      "message": "I would have only one getDisplaySize() and maybe accompanied by a method to know the current orientation.",
+      "revId": "44d0f83354f3698b327a833612d67367b8655688",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
