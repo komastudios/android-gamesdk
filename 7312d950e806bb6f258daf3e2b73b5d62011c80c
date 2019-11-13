@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "49971f6a_e3bb92f1",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-13T23:36:22Z",
+      "side": 1,
+      "message": "Do we even need this commented out now?",
+      "revId": "7312d950e806bb6f258daf3e2b73b5d62011c80c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
