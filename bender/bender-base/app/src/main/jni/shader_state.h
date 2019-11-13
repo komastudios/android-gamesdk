@@ -22,19 +22,17 @@
 #include <vector>
 #include <array>
 
+#include "vertex_format.h"
+
 class ShaderState {
  public:
   enum class Type { Vertex, Fragment };
+
   static constexpr int shaderTypesCount = static_cast<int>(Type::Fragment) + 1;
 
-  ShaderState(std::string shaderName, android_app *app, VkDevice appDevice);
-
-  void addVertexAttributeDescription(u_int32_t binding,
-                                     u_int32_t location,
-                                     VkFormat format,
-                                     u_int32_t offset);
-  void addVertexInputBinding(u_int32_t binding, u_int32_t stride);
-  void completeVertexInputState();
+  // TODO: passing app and appDevice to each shader state object to just set a static member variable
+  // TODO: is bad design. Consider a different approach.
+  ShaderState(std::string shaderName, const VertexFormat& vertex_format, android_app *app, VkDevice appDevice);
 
   void updatePipelineInfo(VkGraphicsPipelineCreateInfo &pipelineInfo);
 
@@ -44,14 +42,12 @@ class ShaderState {
   android_app *androidAppCtx;
   VkDevice device;
 
-  VkPipelineVertexInputStateCreateInfo vertexInputState;
+  VertexFormat vertex_format_;        // TODO: Consider sharing the vertex format across shader states
+
   VkPipelineInputAssemblyStateCreateInfo pipelineInputAssembly;
 
   std::array<VkShaderModule, shaderTypesCount> shaderModules;
   std::array<VkPipelineShaderStageCreateInfo, shaderTypesCount> shaderStages;
-
-  std::vector<VkVertexInputBindingDescription> vertex_input_bindings;
-  std::vector<VkVertexInputAttributeDescription> vertex_input_attributes;
 
   void setVertexShader(const std::string &shaderFile);
   void setFragmentShader(const std::string &shaderFile);

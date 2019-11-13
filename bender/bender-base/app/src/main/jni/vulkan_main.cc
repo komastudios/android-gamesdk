@@ -34,6 +34,8 @@
 #include "mesh.h"
 #include "texture.h"
 #include "uniform_buffer.h"
+#include "vertex_format.h"
+
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
@@ -202,12 +204,15 @@ void updateCamera(Input::Data *inputData) {
 }
 
 void createShaderState() {
-  shaders = std::make_shared<ShaderState>("triangle", androidAppCtx, device->getDevice());
-  shaders->addVertexInputBinding(0, 11 * sizeof(float));
-  shaders->addVertexAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0);
-  shaders->addVertexAttributeDescription(0, 1, VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(float));
-  shaders->addVertexAttributeDescription(0, 2, VK_FORMAT_R32G32B32_SFLOAT, 6 * sizeof(float));
-  shaders->addVertexAttributeDescription(0, 3, VK_FORMAT_R32G32_SFLOAT, 9 * sizeof(float));
+  VertexFormat vertex_format { {
+      VertexElement::float3,
+      VertexElement::float3,
+      VertexElement::float3,
+      VertexElement::float2
+      },
+  };
+
+  shaders = std::make_shared<ShaderState>("triangle", vertex_format, androidAppCtx, device->getDevice());
 }
 
 void createDepthBuffer() {
