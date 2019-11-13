@@ -142,6 +142,24 @@
     },
     {
       "key": {
+        "uuid": "3c786377_08617436",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-13T18:15:25Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "0565c256_0296ebe2",
+      "revId": "787b31c787363b8ceda041ff21f78d061ca95188",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f9d09c77_8f6e9e4d",
         "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
         "patchSetId": 4
@@ -156,6 +174,24 @@
       "revId": "787b31c787363b8ceda041ff21f78d061ca95188",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ccf0a588_a35bebeb",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-13T18:15:25Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f9d09c77_8f6e9e4d",
+      "revId": "787b31c787363b8ceda041ff21f78d061ca95188",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -176,6 +212,24 @@
     },
     {
       "key": {
+        "uuid": "8ea6ba19_730c527b",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-13T18:15:25Z",
+      "side": 1,
+      "message": "Ack, this will be in a separate CL at some point.",
+      "parentUuid": "dac5089e_37f3cb0d",
+      "revId": "787b31c787363b8ceda041ff21f78d061ca95188",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "eb84f9e1_9e833186",
         "filename": "bender/bender-base/app/src/main/shaders/shader_bindings.h",
         "patchSetId": 4
@@ -187,6 +241,24 @@
       "writtenOn": "2019-11-13T17:38:53Z",
       "side": 1,
       "message": "I dont think this is the place for such defines, because they depend on the actual vertex format. This has nothing to do with shader bindings.\nCan you find a different home or, better, get rid of them?",
+      "revId": "787b31c787363b8ceda041ff21f78d061ca95188",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "762bf655_f500aac1",
+        "filename": "bender/bender-base/app/src/main/shaders/shader_bindings.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-13T18:15:25Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "eb84f9e1_9e833186",
       "revId": "787b31c787363b8ceda041ff21f78d061ca95188",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
