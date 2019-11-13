@@ -16,6 +16,24 @@
       "revId": "8de418ff6994a0496959f61c0be0c3a592ca3d2b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1b432271_5f2d6f80",
+        "filename": "bender/bender-base/app/src/main/jni/shader_state.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-13T23:47:04Z",
+      "side": 1,
+      "message": "I\u0027m ok having a glorified global variable as a static member, but it should be set with a static member function, not through the constructor.\nSomething like:\n\nShaderState::setVulkanDevice(device);\nShaderState::setAppCtx(app_ctx);",
+      "parentUuid": "4f88ccdb_7c9651b5",
+      "revId": "8de418ff6994a0496959f61c0be0c3a592ca3d2b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
