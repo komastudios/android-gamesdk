@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4f88ccdb_7c9651b5",
+        "filename": "bender/bender-base/app/src/main/jni/shader_state.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-13T23:43:50Z",
+      "side": 1,
+      "message": "Is this more about how we\u0027re giving info to the ShaderState than it is about how they\u0027re actually used? Otherwise, I\u0027m not sure how we would destroy the shader modules without holding onto the VkDevice for the destructor? Maybe I\u0027m misunderstanding this TODO.",
+      "revId": "8de418ff6994a0496959f61c0be0c3a592ca3d2b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
