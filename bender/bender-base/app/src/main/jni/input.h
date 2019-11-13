@@ -18,6 +18,7 @@ struct Data {
   long doubleTapThresholdTime = 200000000;
   bool doubleTapHoldUpper = false;
   bool doubleTapHoldLower = false;
+  bool singleTapDown = false;
 
   int lastInputCount = 0;
 };
@@ -35,6 +36,16 @@ inline void testDoubleTapHold(android_app *app, AInputEvent *event, Data *input)
     }
     input->lastTapTime = currTapTime;
   }
+}
+
+inline void testSingleTap(android_app *app, AInputEvent *event, Data *input){
+  if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_DOWN) {
+    input->lastX = AMotionEvent_getX(event, 0);
+    input->lastY = AMotionEvent_getY(event, 0);
+    input->singleTapDown = true;
+  }
+  else
+    input->singleTapDown = false;
 }
 
 inline void testRotate(android_app *app, AInputEvent *event, Data *input) {

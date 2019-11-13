@@ -71,6 +71,8 @@ class Device {
 
   VkExtent2D getDisplaySize() const { return displaySize_; }
 
+  VkExtent2D getDisplaySizeOriented() const;
+
   VkFormat getDisplayFormat() const { return displayFormat_; }
 
   VkPhysicalDeviceMemoryProperties getGpuMemProperties() { return gpuMemoryProperties_; }

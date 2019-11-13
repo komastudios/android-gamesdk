@@ -329,3 +329,14 @@ void Device::insertDebugMarker(VkCommandBuffer cmdbuffer, const char *markerName
 void Device::endDebugRegion(VkCommandBuffer cmdBuffer) {
   DebugMarker::endRegion(cmdBuffer);
 }
+
+VkExtent2D Device::getDisplaySizeOriented() const {
+  VkExtent2D result = displaySize_;
+  if (pretransformFlag_ & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR ||
+      pretransformFlag_ & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR){
+    uint32_t temp = result.width;
+    result.width = result.height;
+    result.height = temp;
+  }
+  return result;
+}

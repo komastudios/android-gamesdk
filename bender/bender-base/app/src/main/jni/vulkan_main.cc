@@ -71,7 +71,7 @@ glm::mat4 proj;
 
 
 std::shared_ptr<ShaderState> shaders;
-Mesh *mesh;
+std::vector<Mesh *> meshes;
 
 auto lastTime = std::chrono::high_resolution_clock::now();
 auto currentTime = lastTime;
@@ -199,6 +199,39 @@ void updateCamera(Input::Data *inputData) {
       * glm::inverse(glm::translate(glm::mat4(1.0f), camera.position) * glm::mat4(camera.rotation));
   proj = glm::perspective(fov, aspect_ratio, 0.1f, 100.0f);
   proj[1][1] *= -1;
+}
+
+void updateInstances(Input::Data *inputData) {
+  if (inputData->singleTapDown){
+    if (inputData->lastY > device->getDisplaySizeOriented().height *  .75) {
+      if (inputData->lastX < device->getDisplaySizeOriented().width * .25) {
+        if (meshes.size() > 0) {
+          meshes.pop_back();
+        }
+      }
+      else if (inputData->lastX > device->getDisplaySizeOriented().width * .75) {
+        meshes.push_back(createPolyhedron(*renderer, *materials[0], 20));
+        meshes[meshes.size()-1]->translate(glm::vec3(rand() % 3, rand() % 3, rand() % 3));
+      }
+    }
+  }
+
+  for (int x = 0; x < meshes.size(); x++) {
+    meshes[x]->rotate(glm::vec3(0.0f, 1.0f, 1.0f), 90 * frameTime);
+    meshes[x]->translate(.02f * glm::vec3(std::sin(2 * totalTime),
+                                          std::sin(x * totalTime),
+                                          std::cos(2 * totalTime)));
+
+    meshes[x]->update(renderer->getCurrentFrame(), camera.position, view, proj);
+  }
+  renderer->updateLights(camera.position);
+}
+
+void handleInput(Input::Data *inputData){
+  updateCamera(inputData);
+  updateInstances(inputData);
+  if (inputData->singleTapDown == true)
+    inputData->singleTapDown = false;
 }
 
 void createShaderState() {
@@ -345,7 +378,7 @@ bool InitVulkan(android_app *app) {
 
   createMaterials();
 
-  mesh = createPolyhedron(*renderer, *materials[0], 20);
+  meshes.push_back(createPolyhedron(*renderer, *materials[0], 20));
 
   const std::vector<float> vertexData = {
       -0.5f, -0.5f, 0.5f,          -0.5774f, -0.5774f, 0.5774f,       1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
@@ -370,7 +403,9 @@ bool IsVulkanReady(void) { return device != nullptr && device->isInitialized(); 
 
 void DeleteVulkan(void) {
   delete renderer;
-  delete mesh;
+  for (int x = 0; x < meshes.size(); x++) {
+    delete meshes[x];
+  }
 
   shaders->cleanup();
   shaders.reset();
@@ -400,15 +435,7 @@ bool VulkanDrawFrame(Input::Data *inputData) {
   lastTime = currentTime;
   totalTime += frameTime;
 
-  updateCamera(inputData);
-
-  mesh->rotate(glm::vec3(0.0f, 1.0f, 1.0f), 90 * frameTime);
-  mesh->translate(.02f * glm::vec3(std::sin(2 * totalTime),
-                                   std::sin(3 * totalTime),
-                                   std::cos(2 * totalTime)));
-
-  mesh->update(renderer->getCurrentFrame(), camera.position, view, proj);
-  renderer->updateLights(camera.position);
+  handleInput(inputData);
 
   renderer->beginFrame();
   renderer->beginPrimaryCommandBufferRecording();
@@ -439,10 +466,10 @@ bool VulkanDrawFrame(Input::Data *inputData) {
   device->insertDebugMarker(renderer->getCurrentCommandBuffer(), "TEST MARKER: PIPELINE BINDING",
                             {1.0f, 0.0f, 1.0f, 0.0f});
 
-
-  mesh->updatePipeline(render_pass);
-
-  mesh->submitDraw(renderer->getCurrentCommandBuffer(), renderer->getCurrentFrame());
+  for (int x = 0; x < meshes.size(); x++){
+    meshes[x]->updatePipeline(render_pass);
+    meshes[x]->submitDraw(renderer->getCurrentCommandBuffer(), renderer->getCurrentFrame());
+  }
 
   vkCmdEndRenderPass(renderer->getCurrentCommandBuffer());
 
