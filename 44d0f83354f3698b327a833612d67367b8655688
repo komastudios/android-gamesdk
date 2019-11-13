@@ -51,6 +51,24 @@
       "revId": "44d0f83354f3698b327a833612d67367b8655688",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "be24f863_e79dc3ac",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-13T23:20:11Z",
+      "side": 1,
+      "message": "I actually ended up removing this function since I can test the correct screen width/height in the input handler callback in android_main\n\nand we can do something like this by checking the preTransformFlag",
+      "parentUuid": "7845f0a8_61f257b1",
+      "revId": "44d0f83354f3698b327a833612d67367b8655688",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
