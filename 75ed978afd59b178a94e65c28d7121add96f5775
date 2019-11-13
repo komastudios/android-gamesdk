@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3f7cae46_5dee0707",
+        "filename": "bender/bender-base/utils/bender_kit/bender_kit.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-13T23:54:02Z",
+      "side": 1,
+      "message": "Cleanup? (Delete instead of leave as comments)",
+      "revId": "75ed978afd59b178a94e65c28d7121add96f5775",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
