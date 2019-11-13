@@ -63,11 +63,6 @@ Device::~Device() {
   vkDestroyInstance(instance_, nullptr);
 }
 
-VkImage Device::getDisplayImage(int i) const {
-  assert(i < displayImages_.size() && i >= 0);
-  return displayImages_[i];
-}
-
 void Device::present(VkSemaphore* wait_semaphores) {
   VkResult result;
   VkSwapchainKHR swapchains[] = { getSwapchain() };
@@ -84,7 +79,7 @@ void Device::present(VkSemaphore* wait_semaphores) {
 
   vkQueuePresentKHR(queue_, &present_info);
 
-  current_frame_index_ = (current_frame_index_ + 1) % getDisplayImagesSize();
+  current_frame_index_ = (current_frame_index_ + 1) % displayImages_.size();
 }
 
 void Device::CreateVulkanDevice(ANativeWindow *platformWindow,
