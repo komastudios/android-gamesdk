@@ -8,25 +8,30 @@
 #include "material.h"
 #include "shader_bindings.h"
 
-Mesh::Mesh(Renderer& renderer, Material& material, const std::vector<float>& vertexData,
-        const std::vector<uint16_t>& indexData) : renderer_(renderer), material_(material) {
-  geometry_ = std::make_shared<Geometry>(renderer_.getDevice(), vertexData, indexData);
-
+Mesh::Mesh(Renderer &renderer, Material &material, std::shared_ptr<Geometry> geometry) :
+    renderer_(renderer), material_(material), geometry_(geometry) {
   position_ = glm::vec3(0.0f, 0.0f, 0.0f);
   rotation_ = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
   scale_ = glm::vec3(1.0f, 1.0f, 1.0f);
 
-  meshBuffer = new UniformBufferObject<ModelViewProjection>(renderer_.getDevice());
+  meshBuffer = std::make_unique<UniformBufferObject<ModelViewProjection>>(renderer_.getDevice());
   createMeshDescriptorSetLayout();
   createMeshDescriptors();
-}
+};
+
+Mesh::Mesh(Renderer &renderer, Material &material, const std::vector<float> &vertexData,
+           const std::vector<uint16_t> &indexData) :
+    Mesh(renderer,
+         material,
+         std::make_shared<Geometry>(renderer.getDevice(), vertexData, indexData)) {}
+
 
 Mesh::~Mesh() {
   vkDestroyPipeline(renderer_.getDevice().getDevice(), pipeline_, nullptr);
   vkDestroyPipelineCache(renderer_.getDevice().getDevice(), cache_, nullptr);
   vkDestroyPipelineLayout(renderer_.getDevice().getDevice(), layout_, nullptr);
 
-  delete meshBuffer;
+  meshBuffer.reset();
   vkDestroyDescriptorSetLayout(renderer_.getDevice().getDevice(), mesh_descriptors_layout_, nullptr);
 }
 
