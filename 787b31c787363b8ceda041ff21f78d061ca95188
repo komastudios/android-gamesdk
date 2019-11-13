@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "c939d554_1ae768d1",
+        "filename": "bender/bender-base/app/src/main/jni/material.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-13T17:38:53Z",
+      "side": 1,
+      "message": "https://medium.com/better-programming/demeters-law-don-t-talk-to-strangers-87bb4af11694\n\nWe should create a method getVulkanDevice() that returns the device from renderer_.getDevice().",
+      "revId": "787b31c787363b8ceda041ff21f78d061ca95188",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "7702fbad_c7dc4603",
         "filename": "bender/bender-base/app/src/main/jni/material.h",
         "patchSetId": 4
@@ -105,6 +122,74 @@
       "revId": "787b31c787363b8ceda041ff21f78d061ca95188",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0565c256_0296ebe2",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-13T17:38:53Z",
+      "side": 1,
+      "message": "we don\u0027t need this call, it\u0027d implicit",
+      "revId": "787b31c787363b8ceda041ff21f78d061ca95188",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f9d09c77_8f6e9e4d",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-13T17:38:53Z",
+      "side": 1,
+      "message": "This is the beginning of the MaterialStore class \u003c3",
+      "revId": "787b31c787363b8ceda041ff21f78d061ca95188",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dac5089e_37f3cb0d",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-13T17:38:53Z",
+      "side": 1,
+      "message": "I think the time has come to calculate the offsets automatically.",
+      "revId": "787b31c787363b8ceda041ff21f78d061ca95188",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eb84f9e1_9e833186",
+        "filename": "bender/bender-base/app/src/main/shaders/shader_bindings.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-13T17:38:53Z",
+      "side": 1,
+      "message": "I dont think this is the place for such defines, because they depend on the actual vertex format. This has nothing to do with shader bindings.\nCan you find a different home or, better, get rid of them?",
+      "revId": "787b31c787363b8ceda041ff21f78d061ca95188",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
