@@ -14,7 +14,8 @@
 
 #include "shader_state.h"
 
-ShaderState::ShaderState(std::string shaderName, android_app *app, VkDevice appDevice) {
+ShaderState::ShaderState(std::string shaderName, const VertexFormat& vertex_format, android_app *app, VkDevice appDevice)
+  : vertex_format_(vertex_format) {
   ShaderState::androidAppCtx = app;
   ShaderState::device = appDevice;
 
@@ -64,43 +65,10 @@ void ShaderState::setFragmentShader(const std::string &name) {
   shaderModules[static_cast<int>(Type::Fragment)] = shader;
 }
 
-void ShaderState::addVertexAttributeDescription(u_int32_t binding,
-                                                u_int32_t location,
-                                                VkFormat format,
-                                                u_int32_t offset) {
-  VkVertexInputAttributeDescription attribute{
-      .binding = binding,
-      .location = location,
-      .format = format,
-      .offset = offset,
-  };
-
-  vertex_input_attributes.push_back(attribute);
-}
-
-void ShaderState::addVertexInputBinding(u_int32_t binding, u_int32_t stride) {
-  VkVertexInputBindingDescription inputBinding{
-      .binding = binding,
-      .stride = stride,
-      .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
-  };
-  vertex_input_bindings.push_back(inputBinding);
-}
-
-void ShaderState::completeVertexInputState() {
-  vertexInputState = {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-      .vertexBindingDescriptionCount = static_cast<u_int32_t>(vertex_input_bindings.size()),
-      .pVertexBindingDescriptions = vertex_input_bindings.data(),
-      .vertexAttributeDescriptionCount = static_cast<u_int32_t>(vertex_input_attributes.size()),
-      .pVertexAttributeDescriptions = vertex_input_attributes.data()
-  };
-}
 
 void ShaderState::updatePipelineInfo(VkGraphicsPipelineCreateInfo &pipelineInfo) {
-  completeVertexInputState();
   pipelineInfo.pStages = shaderStages.data();
-  pipelineInfo.pVertexInputState = &vertexInputState;
+  pipelineInfo.pVertexInputState = &vertex_format_.getVertexInputState();
   pipelineInfo.pInputAssemblyState = &pipelineInputAssembly;
 }
 
