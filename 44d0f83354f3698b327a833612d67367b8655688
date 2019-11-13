@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "152418c9_b6b45152",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-13T22:44:32Z",
+      "side": 1,
+      "message": "I don\u0027t know if there\u0027s a way to avoid having all this computation w/ inputData? I think in updateCamera it\u0027s pretty fine b/c you\u0027re just checking for the conditions doubleTapHoldUpper and doubleTapHoldLower, but having this more fine-grained logic in here to determine where the singleTap is less readable and messier (maybe something with like isLower[Left/Right]SingleTap()?)",
+      "revId": "44d0f83354f3698b327a833612d67367b8655688",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
