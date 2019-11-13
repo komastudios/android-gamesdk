@@ -16,6 +16,24 @@
       "revId": "44d0f83354f3698b327a833612d67367b8655688",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b72b1402_81c95da6",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-13T23:04:31Z",
+      "side": 1,
+      "message": "Yea this makes sense, since I already abstract the screen resolution computations for working with double taps, it would make the code more consistent if I did the same for single taps\n\nAlthough I\u0027m actually still wondering about refactoring the input code later to be just flags where like you can ask questions like\n\nif (doubleTap \u0026\u0026 lowerHalf \u0026\u0026 leftSide)\nrather then having specific flags like lowerLeftSingleTap since that could get messy",
+      "parentUuid": "152418c9_b6b45152",
+      "revId": "44d0f83354f3698b327a833612d67367b8655688",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
