@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7702fbad_c7dc4603",
+        "filename": "bender/bender-base/app/src/main/jni/material.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-13T17:09:27Z",
+      "side": 1,
+      "message": "Question - Are the texture and sampler essentially a single unit or can a sampler be tied to multiple different textures? If they act as a unit maybe the sampler should be a part of the texture class now?\n\nThat\u0027s probably a different CL though haha",
+      "revId": "787b31c787363b8ceda041ff21f78d061ca95188",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5d71f11c_9ceafaf1",
+        "filename": "bender/bender-base/app/src/main/jni/material.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-13T17:09:27Z",
+      "side": 1,
+      "message": "Could this be a unique_ptr as well? Or can different materials share the same UBO?",
+      "revId": "787b31c787363b8ceda041ff21f78d061ca95188",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
