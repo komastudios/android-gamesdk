@@ -36,6 +36,23 @@
     },
     {
       "key": {
+        "uuid": "0efd4cb7_35861882",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-14T01:47:15Z",
+      "side": 1,
+      "message": "We can get rid of the memcpy by mapping the buffer memory and writing straight into it.",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ae8459f2_f09d2a45",
         "filename": "bender/bender-base/app/src/main/jni/font.cc",
         "patchSetId": 3
@@ -47,6 +64,23 @@
       "writtenOn": "2019-11-14T01:44:13Z",
       "side": 1,
       "message": "I am not sure if I need to reset the buffer content every time or just overwrite this.",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4e24fb39_0a8bc323",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-14T01:47:15Z",
+      "side": 1,
+      "message": "There\u0027s not much vertex re-use in this kind of rendering (it\u0027s a bunch of quads) so can get away without the index buffer.",
       "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -81,6 +115,91 @@
       "writtenOn": "2019-11-14T01:44:13Z",
       "side": 1,
       "message": "These three vectors should be modifiable in later stages",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f852c3ce_f896f7a9",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 418,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-14T01:47:15Z",
+      "side": 1,
+      "message": "you can fold this method into drawString by passing down the renderPass to drawString",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "81edf257_c94de743",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 425,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-14T01:47:15Z",
+      "side": 1,
+      "message": "you can fold this method into drawString.",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e35fd67c_36988547",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 427,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-14T01:47:15Z",
+      "side": 1,
+      "message": "The concept of MVP is a bit weird for text. There\u0027s no projection and we don\u0027t have any text rotation yet. So it feels like it\u0027s complicating things unnecessarily.",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "60fb9805_1c637890",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-14T01:47:15Z",
+      "side": 1,
+      "message": "You can grab the device from the renderer.",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b6be742a_3c67e762",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-14T01:47:15Z",
+      "side": 1,
+      "message": "I would call it drawString or submitString.",
       "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
