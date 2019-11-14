@@ -15,6 +15,7 @@
 #include "renderer.h"
 #include <android_native_app_glue.h>
 #include <debug_marker.h>
+#include <timing.h>
 
 #include "trace.h"
 #include "bender_helpers.h"
@@ -42,17 +43,17 @@ Renderer::~Renderer() {
 }
 
 void Renderer::beginFrame() {
-  TRACE_BEGIN_SECTION("vkAcquireNextImageKHR");
+  Timing::timer.startEvent("vkAcquireNextImageKHR");
   uint32_t nextIndex;
   CALL_VK(vkAcquireNextImageKHR(device_.getDevice(), device_.getSwapchain(),
                                 UINT64_MAX, acquire_image_semaphore_[getCurrentFrame()], VK_NULL_HANDLE,
                                 &nextIndex));
-  TRACE_END_SECTION();
+  Timing::timer.stopEvent();
 
-  TRACE_BEGIN_SECTION("vkWaitForFences");
+  Timing::timer.startEvent("vkWaitForFences");
   CALL_VK(vkWaitForFences(device_.getDevice(), 1, &fence_[getCurrentFrame()], VK_TRUE, 100000000));
   CALL_VK(vkResetFences(device_.getDevice(), 1, &fence_[getCurrentFrame()]));
-  TRACE_END_SECTION();
+  Timing::timer.stopEvent();
 }
 
 void Renderer::endFrame() {
@@ -69,17 +70,17 @@ void Renderer::endFrame() {
       .signalSemaphoreCount = 1,
       .pSignalSemaphores = &render_finished_semaphore_[getCurrentFrame()]};
 
-  TRACE_BEGIN_SECTION("vkQueueSubmit");
+  Timing::timer.startEvent("vkQueueSubmit");
   CALL_VK(vkQueueSubmit(device_.getQueue(), 1, &submit_info, fence_[getCurrentFrame()]));
-  TRACE_END_SECTION();
+  Timing::timer.stopEvent();
 
-  TRACE_BEGIN_SECTION("Device::Present");
+  Timing::timer.startEvent("Device::Present");
   device_.present(&render_finished_semaphore_[getCurrentFrame()]);
-  TRACE_END_SECTION();
+  Timing::timer.stopEvent();
 }
 
 void Renderer::beginPrimaryCommandBufferRecording() {
-  TRACE_BEGIN_SECTION("CommandBufferRecording")
+  Timing::timer.startEvent("CommandBufferRecording");
 
   uint32_t current_frame = getCurrentFrame();
   VkCommandBufferBeginInfo cmd_buffer_beginInfo{
@@ -110,7 +111,7 @@ void Renderer::endPrimaryCommandBufferRecording() {
 
   CALL_VK(vkEndCommandBuffer(getCurrentCommandBuffer()));
 
-  TRACE_END_SECTION();
+  Timing::timer.stopEvent();
 }
 
 void Renderer::init() {
