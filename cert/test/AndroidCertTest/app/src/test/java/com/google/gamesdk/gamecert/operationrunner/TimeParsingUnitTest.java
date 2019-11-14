@@ -56,6 +56,10 @@ public class TimeParsingUnitTest {
 
     @Test
     public void timeParsing_isCorrect() {
-        assertEquals(expected, TimeParsing.parseDurationString(timeDesc, intoUnits), 0);
+        try {
+            assertEquals(expected, TimeParsing.parseDurationString(timeDesc, intoUnits), 0);
+        } catch (TimeParsing.BadFormatException ex) {
+            fail("Bad format error.");
+        }
     }
 }
