@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "08211456_7a05cf41",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 489,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-14T23:39:01Z",
+      "side": 1,
+      "message": "I created the getLastFrame function since I\u0027m going to try to get this to render graphs onscreen with the data and I would need just data from the previous frame for something like that\n\nBut I think having a function that outputs a string with all this data is a good idea",
+      "parentUuid": "33797cca_00b22cc9",
+      "revId": "8df2231b6b5dfd251d7bbe5893c5cf92d3ac0354",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "60f2c717_293a8122",
         "filename": "bender/bender-base/utils/bender_kit/timing.cc",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2019-11-14T23:21:07Z",
       "side": 1,
       "message": "I think the biggest thing that stands out to me is that you can\u0027t do nested timing in this (i.e. startSection() stops any other sections that are ongoing). Maybe support for nested timing should just come later, but I do think that for a general timing library we should allow for nested cases (what if I want to know what proportion of creating a Mesh is spent on creating descriptors, or something like that?).",
+      "revId": "8df2231b6b5dfd251d7bbe5893c5cf92d3ac0354",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "24210f51_465bec28",
+        "filename": "bender/bender-base/utils/bender_kit/timing.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-14T23:39:01Z",
+      "side": 1,
+      "message": "Yup I\u0027m actually in the middle of getting this to work! yea right now it only support sequential stuff since I wanted to get some feedback on the current design :P nested event is coming!",
+      "parentUuid": "60f2c717_293a8122",
       "revId": "8df2231b6b5dfd251d7bbe5893c5cf92d3ac0354",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -64,6 +100,24 @@
       "writtenOn": "2019-11-14T23:21:07Z",
       "side": 1,
       "message": "Avoid the magic number here. Maybe taking it as an argument might be nice (if someone using this function wants an average from the last 10000 frames vs like precision to last 10 frames).",
+      "revId": "8df2231b6b5dfd251d7bbe5893c5cf92d3ac0354",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9162ca6b_d698f528",
+        "filename": "bender/bender-base/utils/bender_kit/timing.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-14T23:39:01Z",
+      "side": 1,
+      "message": "Oh having it be a function argument is a really good idea!!!",
+      "parentUuid": "5febb853_5f2cb4f4",
       "revId": "8df2231b6b5dfd251d7bbe5893c5cf92d3ac0354",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
