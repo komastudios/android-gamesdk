@@ -88,6 +88,24 @@
     },
     {
       "key": {
+        "uuid": "5efffb1a_80f829ac",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-14T01:56:22Z",
+      "side": 1,
+      "message": "Over write it. Also the buffer needs to be created as dynamic with the right flags.",
+      "parentUuid": "ae8459f2_f09d2a45",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4e24fb39_0a8bc323",
         "filename": "bender/bender-base/app/src/main/jni/font.cc",
         "patchSetId": 3
@@ -123,6 +141,24 @@
     },
     {
       "key": {
+        "uuid": "efcfe34e_54f32997",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-14T01:56:22Z",
+      "side": 1,
+      "message": "You lay out the vertices for each quad in the correct order in the vbuffer.",
+      "parentUuid": "8606a1e8_9c336223",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "78572989_c8fc5456",
         "filename": "bender/bender-base/app/src/main/jni/font.cc",
         "patchSetId": 3
@@ -151,6 +187,58 @@
       "writtenOn": "2019-11-14T01:44:13Z",
       "side": 1,
       "message": "These three vectors should be modifiable in later stages",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3d5927b7_5b6dd172",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-14T01:56:22Z",
+      "side": 1,
+      "message": "This will need to be passed down to drawString and it can be a push constant instead of part of being in the UBO.",
+      "parentUuid": "5e58e45a_29c8d02e",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "13945930_e585c7a4",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-14T01:56:22Z",
+      "side": 1,
+      "message": "You really really don\u0027t need a view matrix :D",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9d1baabc_f7220f63",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-14T01:56:22Z",
+      "side": 1,
+      "message": "And definitely not a projection matrix. We are working on 2D text here.",
       "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -291,6 +379,24 @@
       "side": 1,
       "message": "I am not really sure how to deal with MVP when writing this so I just keep the same style as mesh. Is it okay to fix this as constant can house this in Font class instead of updating it per frame?",
       "parentUuid": "e35fd67c_36988547",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "651e19f1_c182bde3",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 427,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-14T01:56:22Z",
+      "side": 1,
+      "message": "You need a different shader (font) and you specify vertex coordinates in NDC (-1, +1).",
+      "parentUuid": "b48f6f32_241bbe88",
       "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
