@@ -92,7 +92,7 @@ void FrameStatistics::capture(EGLDisplay dpy, EGLSurface surface) {
         frame = mPendingFrames.front();
     }
 
-#if ANDROID_NDK_VERSION>=14
+#if (not defined ANDROID_NDK_VERSION) || ANDROID_NDK_VERSION>=14
     std::unique_ptr<EGL::FrameTimestamps> frameStats
         = mEgl.getFrameTimestamps(frame.dpy, frame.surface, frame.id);
 

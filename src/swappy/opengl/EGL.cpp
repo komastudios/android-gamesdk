@@ -195,7 +195,7 @@ std::pair<bool,EGLuint64KHR> EGL::getNextFrameId(EGLDisplay dpy, EGLSurface surf
 std::unique_ptr<EGL::FrameTimestamps> EGL::getFrameTimestamps(EGLDisplay dpy,
                                                               EGLSurface surface,
                                                               EGLuint64KHR frameId) const {
-#if ANDROID_NDK_VERSION>=15
+#if (not defined ANDROID_NDK_VERSION) || ANDROID_NDK_VERSION>=15
     if (eglGetFrameTimestampsANDROID == nullptr) {
         ALOGE("stats are not supported on this platform");
         return nullptr;

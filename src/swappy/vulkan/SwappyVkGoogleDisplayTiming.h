@@ -66,8 +66,6 @@ public:
                                 VkDevice         device,
                                 void             *libVulkan);
 
-    ~SwappyVkGoogleDisplayTiming();
-
     virtual bool doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
                                            uint64_t*      pRefreshDuration) override;
 

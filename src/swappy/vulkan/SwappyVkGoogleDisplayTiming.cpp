@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#if ANDROID_NDK_VERSION>=15
+#if (not defined ANDROID_NDK_VERSION) || ANDROID_NDK_VERSION>=15
 
 #include "SwappyVkGoogleDisplayTiming.h"
 
@@ -30,10 +30,6 @@ SwappyVkGoogleDisplayTiming::SwappyVkGoogleDisplayTiming(JNIEnv           *env,
                                                          VkDevice         device,
                                                          void             *libVulkan) :
     SwappyVkBase(env, jactivity, physicalDevice, device, libVulkan) {}
-
-SwappyVkGoogleDisplayTiming::~SwappyVkGoogleDisplayTiming() {
-    destroyVkSyncObjects();
-}
 
 bool SwappyVkGoogleDisplayTiming::doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
                                                             uint64_t*      pRefreshDuration) {
@@ -137,4 +133,4 @@ VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(VkQueue                 que
 
 }  // namespace swappy
 
-#endif // #if ANDROID_NDK_VERSION>=15
+#endif // #if (not defined ANDROID_NDK_VERSION) || ANDROID_NDK_VERSION>=15
