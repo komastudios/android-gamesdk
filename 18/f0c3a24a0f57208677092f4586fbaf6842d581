@@ -1,0 +1,12 @@
+Autosubmit+1: Will Osborn <willosborn@google.com>
+Presubmit-Ready+1: Will Osborn <willosborn@google.com>
+Verified+1: Diego Dagum <dagum@google.com>
+Code-Review+1: Diego Dagum <dagum@google.com>
+Code-Review+1: Shamyl Zakariya <shamyl@google.com>
+Code-Review+1: Justin Loudermilk <loudermilk@google.com>
+Code-Review+2: Will Osborn <willosborn@google.com>
+Submitted-by: Treehugger Robot <treehugger-gerrit@google.com>
+Submitted-at: Thu, 14 Nov 2019 10:37:23 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1162755
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
