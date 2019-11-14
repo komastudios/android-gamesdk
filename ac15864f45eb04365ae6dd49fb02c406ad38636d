@@ -37,6 +37,52 @@
     },
     {
       "key": {
+        "uuid": "e60e8ff3_1fa063b3",
+        "filename": "bender/bender-base/app/src/main/jni/material.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "color parameter being passed in as a pointer / use of new glm::vec3(1.0 ... :\n\nInstead, pass in as a const ref with a default parameter of vec3(1.0,1.0,1.0), and store in a member variable instead of as a pointer. This avoids an allocation (new glm::vec3(1.0 ... ). In general, if avoidable, allocations in games code are bad 😊\n\nshaders parameter - will want to verify that the shaders are actually refcounted more than once in any scenario. (Currently shaders_ isn\u0027t used at all elsewhere in this file).\n\nTexture_ - consider a handle-based approach (later!). For now this is fine.\n\nDefault texture handling: can we create a default _static_ texture the first time this is needed, and keep it around, using its pointer every time we need to do anything with a default texture? That way we only create it once.",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 102
+      },
+      "revId": "ac15864f45eb04365ae6dd49fb02c406ad38636d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8cd767cb_849f3424",
+        "filename": "bender/bender-base/app/src/main/jni/material.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "Good stuff pre-sizing the vector :)",
+      "range": {
+        "startLine": 77,
+        "startChar": 45,
+        "endLine": 77,
+        "endChar": 89
+      },
+      "revId": "ac15864f45eb04365ae6dd49fb02c406ad38636d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "9fffe7b1_6abfe3df",
         "filename": "bender/bender-base/app/src/main/jni/material.cc",
         "patchSetId": 5
@@ -84,6 +130,52 @@
     },
     {
       "key": {
+        "uuid": "bded8c52_48ad276f",
+        "filename": "bender/bender-base/app/src/main/jni/material.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "Curious - why use std::array instead of just a standard C++ VkWriteDescriptorSet[] array?",
+      "range": {
+        "startLine": 92,
+        "startChar": 4,
+        "endLine": 92,
+        "endChar": 62
+      },
+      "revId": "ac15864f45eb04365ae6dd49fb02c406ad38636d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ffac4de9_a8874fcf",
+        "filename": "bender/bender-base/app/src/main/jni/material.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "Consider moving the alignas(16) to the struct rather than the glm::vec3 inside of it, and allow the glm::vec3 to have natural alignment.",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 0
+      },
+      "revId": "ac15864f45eb04365ae6dd49fb02c406ad38636d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b950a63c_d7a1224c",
         "filename": "bender/bender-base/app/src/main/jni/material.h",
         "patchSetId": 5
@@ -113,6 +205,29 @@
       "side": 1,
       "message": "Right now this should not be null (the constructor should either receive a non-null values or should create a new Texture), same for the color. Is this a question of making them references instead? The constructor gets unhappy with the switching logic for the default texture and default color if I make these references, I think from the if/else logic.",
       "parentUuid": "b950a63c_d7a1224c",
+      "revId": "ac15864f45eb04365ae6dd49fb02c406ad38636d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ab72cc79_aa2c9647",
+        "filename": "bender/bender-base/app/src/main/jni/polyhedron.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "These might be a good place to use std::array, especially if you need .size() elsewhere. AFAIK these aren\u0027t resizable.",
+      "range": {
+        "startLine": 8,
+        "startChar": 1,
+        "endLine": 8,
+        "endChar": 27
+      },
       "revId": "ac15864f45eb04365ae6dd49fb02c406ad38636d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true

@@ -1,0 +1,464 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "06850eab_7fee952b",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "Will this ever have multiple owners? Or should this be a unique_ptr and lifetime be managed some other way?",
+      "range": {
+        "startLine": 64,
+        "startChar": 2,
+        "endLine": 64,
+        "endChar": 38
+      },
+      "revId": "97bdd5c3d09b50247023ae730a197b4c37ea855a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "628d43ee_504497b0",
+        "filename": "bender/bender-base/app/src/main/jni/polyhedron.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "This doesn\u0027t look like it\u0027s one of the stdint types - should it be uint16_t instead?",
+      "range": {
+        "startLine": 13,
+        "startChar": 20,
+        "endLine": 13,
+        "endChar": 29
+      },
+      "revId": "97bdd5c3d09b50247023ae730a197b4c37ea855a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b88b2a2e_ca6b998f",
+        "filename": "bender/bender-base/app/src/main/jni/polyhedron.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "Should these be references/pointers to the original data instead of copies? (The way you have it right now it looks like you\u0027re copying the data). \n\nTwo ways you might solve this:\n\nTake pointers to the vertex data - e.g. \nstd::vector\u003cfloat\u003e* vertex_data_ \u003d nullptr;\n// ... \nvertex_data_ \u003d \u0026vertex_tetrahedron;\n\n... or alternatively, create a new struct that lets you pass the vertex and index around (and initialize with references) - more effort on infrastructure, but maybe useful later.\n\ne.g.\n\nstruct VertexData {\n  const std::vector\u003cfloat\u003e\u0026 vertex_data;\n  const std::vector\u003cu_int16_t\u003e index_data;\n  VertexData( const std::vector\u003cfloat\u003e\u0026 vertices, const std::vector\u003cu_int16_t\u003e\u0026 indices )\n   : vertex_data(vertices), index_data(indices)\n  {\n  } \n};",
+      "range": {
+        "startLine": 81,
+        "startChar": 2,
+        "endLine": 82,
+        "endChar": 37
+      },
+      "revId": "97bdd5c3d09b50247023ae730a197b4c37ea855a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5fa890d8_391a6c36",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "If we use #define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES, we might not need to add alignas(16) on all of the glm::vec3 types. Worth considering.\n\nAlso, likely worth aligning the struct.\n\nA trick worth remembering: Put the most commonly used info first (this is called the \"hot data\"). The position is the most important info for a point light - it\u0027s how you decide what is affected by it. Put the position first. Then the color (because it\u0027s also a vec3 type), and then the float.\n\nSo something like this:\n\nstruct alignas(16) PointLight {\n  alignas(16) glm::vec3 position;\n  alignas(16) glm::vec3 color;\n  alignas(16) float intensity;\n}\n\n... or if you use GLM_FORCE_DEFAULT_ALIGNED_GENTYPES, this:\n\nstruct alignas(16) PointLight {\n  glm::vec3 position;\n  glm::vec3 color;\n  float intensity;\n}\n\nAt some point in the future, we should talk about SOA vs AOS optimizations, data-oriented design, and hot/cold data \"splitting\".",
+      "range": {
+        "startLine": 24,
+        "startChar": 4,
+        "endLine": 24,
+        "endChar": 16
+      },
+      "revId": "97bdd5c3d09b50247023ae730a197b4c37ea855a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7d673918_e8e6ff3d",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "Should this be passed as a const reference instead? e.g. const glm::vec3\u0026 camera?\n\nAlso - don\u0027t add this! - but on some platforms you might want to enable the vector-register ABI by adding __vectorcall. This works on Clang, GCC, and works on x86, x64.",
+      "range": {
+        "startLine": 51,
+        "startChar": 20,
+        "endLine": 51,
+        "endChar": 36
+      },
+      "revId": "97bdd5c3d09b50247023ae730a197b4c37ea855a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7dcb666e_b456424e",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "consider using uint8_t instead of unsigned char; by convention, uint8_t* implies a buffer made up of bytes.",
+      "range": {
+        "startLine": 25,
+        "startChar": 39,
+        "endLine": 25,
+        "endChar": 52
+      },
+      "revId": "97bdd5c3d09b50247023ae730a197b4c37ea855a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dd5bd5bd_fa390e9e",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "If androidAppCtx can never be null (given usage, I\u0027m guessing not?) consider passing as a reference instead.",
+      "range": {
+        "startLine": 28,
+        "startChar": 39,
+        "endLine": 28,
+        "endChar": 64
+      },
+      "revId": "97bdd5c3d09b50247023ae730a197b4c37ea855a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aed8e131_32b18756",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "Same comment as above - can android_app be null? If not, consider passing by reference.\n... also, consider returning as uint8_t* instead of unsigned char*.\n\nWhy does unsigned char* get returned here instead of being stored directly in the Texture object? (I\u0027ll check in the .cpp, but it seems we\u0027re either missing the num bytes in the file being returned, or we have a leaky abstraction).",
+      "range": {
+        "startLine": 46,
+        "startChar": 32,
+        "endLine": 46,
+        "endChar": 49
+      },
+      "revId": "97bdd5c3d09b50247023ae730a197b4c37ea855a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "db4b3532_597c23f7",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "Same uint8_t* comment as above :)",
+      "range": {
+        "startLine": 47,
+        "startChar": 27,
+        "endLine": 47,
+        "endChar": 41
+      },
+      "revId": "97bdd5c3d09b50247023ae730a197b4c37ea855a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d62964f5_e6225586",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "Do these need to be alignas(16)? (or even alignas(128))",
+      "range": {
+        "startLine": 69,
+        "startChar": 0,
+        "endLine": 70,
+        "endChar": 15
+      },
+      "revId": "97bdd5c3d09b50247023ae730a197b4c37ea855a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "56b4fd8d_393d11c0",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "Given that this is a file-scope variable, does shared_ptr\u0027s reference count ever go to 0?",
+      "range": {
+        "startLine": 73,
+        "startChar": 0,
+        "endLine": 73,
+        "endChar": 37
+      },
+      "revId": "97bdd5c3d09b50247023ae730a197b4c37ea855a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8dcd03a4_177dba88",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "Can we generate these values at device initialization time instead of every frame?",
+      "range": {
+        "startLine": 179,
+        "startChar": 2,
+        "endLine": 185,
+        "endChar": 67
+      },
+      "revId": "97bdd5c3d09b50247023ae730a197b4c37ea855a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a611c47a_5b9a6114",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "May be worth generating this as a constant value somewhere, so you can just do something like:\n\nalignas(128) const glm::mat4 c_identity_mat4 \u003d glm::mat4(1.0f);\n\n...\n\nglm::mat4 pre_rotate_mat \u003d c_identity_mat4;",
+      "range": {
+        "startLine": 187,
+        "startChar": 29,
+        "endLine": 187,
+        "endChar": 45
+      },
+      "revId": "97bdd5c3d09b50247023ae730a197b4c37ea855a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8c4a0c2f_29d26bec",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "Use half_pi() here, and put 90 degrees in a comment if you want to make it explicit.",
+      "range": {
+        "startLine": 190,
+        "startChar": 49,
+        "endLine": 190,
+        "endChar": 68
+      },
+      "revId": "97bdd5c3d09b50247023ae730a197b4c37ea855a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ab73531a_38af5b62",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "Use three_over_two_pi() here, and put 270 degrees in a comment if you want to make it explicit.",
+      "range": {
+        "startLine": 193,
+        "startChar": 49,
+        "endLine": 193,
+        "endChar": 69
+      },
+      "revId": "97bdd5c3d09b50247023ae730a197b4c37ea855a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "275bc59d_81cdcf79",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "Use pi() here, and put 180 degrees in a comment if you want to make it explicit.",
+      "range": {
+        "startLine": 196,
+        "startChar": 49,
+        "endLine": 196,
+        "endChar": 69
+      },
+      "revId": "97bdd5c3d09b50247023ae730a197b4c37ea855a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "72fc3dc6_1cc6d969",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 355,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "... in the future, we should look into importing mesh data from Blender. :)",
+      "range": {
+        "startLine": 349,
+        "startChar": 2,
+        "endLine": 355,
+        "endChar": 4
+      },
+      "revId": "97bdd5c3d09b50247023ae730a197b4c37ea855a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "257fdfcb_134de08e",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 6
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "This appears to be a missing part of the specular calculation - the result isn\u0027t used anywhere",
+      "range": {
+        "startLine": 43,
+        "startChar": 9,
+        "endLine": 43,
+        "endChar": 19
+      },
+      "revId": "97bdd5c3d09b50247023ae730a197b4c37ea855a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c23a7c06_6aa74dea",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 6
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "Just checking: Intensity normally falls off with 1/(dist^2) for a point source light. \n\nIf it\u0027s meant to be distance squared, there\u0027s a trick you can do here which means you can avoid calling length() - which requires performing a square root to calculate the result:\n \ncalculate light.position - fragPos\ndot the result with itself\n\nThe value you get back is the squared distance - use that as your dist parameter in the attenuation calculation.\n\nNote: In my copy of Computer Graphics Principles and Practice (Foley \u0026 van Dam), they refer to a different attenuation calculation which gives you a few more constants to play with. It\u0027s not necessary to do this unless poor results are given by the simple inverse square version above.",
+      "range": {
+        "startLine": 45,
+        "startChar": 4,
+        "endLine": 45,
+        "endChar": 47
+      },
+      "revId": "97bdd5c3d09b50247023ae730a197b4c37ea855a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "26ca8383_cfc2704f",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 6
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-14T03:13:04Z",
+      "side": 1,
+      "message": "may want to pull out the specular power coefficient to a constant defined near the top of the file.",
+      "range": {
+        "startLine": 49,
+        "startChar": 67,
+        "endLine": 49,
+        "endChar": 72
+      },
+      "revId": "97bdd5c3d09b50247023ae730a197b4c37ea855a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
