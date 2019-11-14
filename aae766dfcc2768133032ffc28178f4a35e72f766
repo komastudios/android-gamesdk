@@ -53,6 +53,24 @@
     },
     {
       "key": {
+        "uuid": "b1d14e83_edd4c134",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-14T01:52:25Z",
+      "side": 1,
+      "message": "ohhh got it",
+      "parentUuid": "0efd4cb7_35861882",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ae8459f2_f09d2a45",
         "filename": "bender/bender-base/app/src/main/jni/font.cc",
         "patchSetId": 3
@@ -81,6 +99,24 @@
       "writtenOn": "2019-11-14T01:47:15Z",
       "side": 1,
       "message": "There\u0027s not much vertex re-use in this kind of rendering (it\u0027s a bunch of quads) so can get away without the index buffer.",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8606a1e8_9c336223",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-14T01:52:25Z",
+      "side": 1,
+      "message": "like just sort of hard-coding indices to index buffer?",
+      "parentUuid": "4e24fb39_0a8bc323",
       "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -155,6 +191,24 @@
     },
     {
       "key": {
+        "uuid": "5e0781d2_88d189b2",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 418,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-14T01:52:25Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f852c3ce_f896f7a9",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "81edf257_c94de743",
         "filename": "bender/bender-base/app/src/main/jni/font.cc",
         "patchSetId": 3
@@ -172,6 +226,24 @@
     },
     {
       "key": {
+        "uuid": "1e9b1dd0_9f558c58",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 425,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-14T01:52:25Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "81edf257_c94de743",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e35fd67c_36988547",
         "filename": "bender/bender-base/app/src/main/jni/font.cc",
         "patchSetId": 3
@@ -183,6 +255,24 @@
       "writtenOn": "2019-11-14T01:47:15Z",
       "side": 1,
       "message": "The concept of MVP is a bit weird for text. There\u0027s no projection and we don\u0027t have any text rotation yet. So it feels like it\u0027s complicating things unnecessarily.",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b48f6f32_241bbe88",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 427,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-14T01:52:25Z",
+      "side": 1,
+      "message": "I am not really sure how to deal with MVP when writing this so I just keep the same style as mesh. Is it okay to fix this as constant can house this in Font class instead of updating it per frame?",
+      "parentUuid": "e35fd67c_36988547",
       "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
