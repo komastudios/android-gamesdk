@@ -16,6 +16,24 @@
       "revId": "e72df374b1f4f9ea7e10a2fd12c728f92eb15651",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e7aa6845_ce1a722f",
+        "filename": "src/swappy/common/FrameStatistics.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-11-14T09:15:31Z",
+      "side": 1,
+      "message": "It\u0027s only defined in our build script. Unity, for example, don\u0027t define it. It\u0027s better to make the default the more function-rich codepath rather than educate everyone on setting ANDROID_NDK_VERSION.",
+      "parentUuid": "329b20e0_8c2baf2b",
+      "revId": "e72df374b1f4f9ea7e10a2fd12c728f92eb15651",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
