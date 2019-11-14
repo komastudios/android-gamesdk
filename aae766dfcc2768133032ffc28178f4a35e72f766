@@ -1,0 +1,123 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c3f5ea96_c3b64e92",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-14T01:44:13Z",
+      "side": 1,
+      "message": "skipping the page and channel value from the font data. We dont need these two values",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "83127098_b6c5e70c",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-14T01:44:13Z",
+      "side": 1,
+      "message": "Another magic number I used when testing. This can be user-configurable.",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ae8459f2_f09d2a45",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-14T01:44:13Z",
+      "side": 1,
+      "message": "I am not sure if I need to reset the buffer content every time or just overwrite this.",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "78572989_c8fc5456",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-14T01:44:13Z",
+      "side": 1,
+      "message": "I am fixing the size of the buffer right now. Optimally this should be depending on the font size and style.",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5e58e45a_29c8d02e",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-14T01:44:13Z",
+      "side": 1,
+      "message": "These three vectors should be modifiable in later stages",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "339c5fa3_a56b58d7",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-14T01:44:13Z",
+      "side": 1,
+      "message": "these two getters are for font textures.",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5df241bd_1da95f12",
+        "filename": "bender/bender-base/app/src/main/shaders/sdf.frag",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-14T01:44:13Z",
+      "side": 1,
+      "message": "Just simple smoothing steps here referring to other sdf shaders. More optimizations could be done",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
