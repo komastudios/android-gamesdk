@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "33797cca_00b22cc9",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 489,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-14T23:21:07Z",
+      "side": 1,
+      "message": "Is there any reason why you decide to implement this logging with getLastFrame() instead of like, providing an iterator or having some string output intrinsic to the FrameTiming? Seems kinda specific and I\u0027m not sure what other usecase we\u0027re supporting where we specifically want just the last frame (for now)?",
+      "revId": "8df2231b6b5dfd251d7bbe5893c5cf92d3ac0354",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "60f2c717_293a8122",
+        "filename": "bender/bender-base/utils/bender_kit/timing.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-14T23:21:07Z",
+      "side": 1,
+      "message": "I think the biggest thing that stands out to me is that you can\u0027t do nested timing in this (i.e. startSection() stops any other sections that are ongoing). Maybe support for nested timing should just come later, but I do think that for a general timing library we should allow for nested cases (what if I want to know what proportion of creating a Mesh is spent on creating descriptors, or something like that?).",
+      "revId": "8df2231b6b5dfd251d7bbe5893c5cf92d3ac0354",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6850fd28_afcd71a6",
+        "filename": "bender/bender-base/utils/bender_kit/timing.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-14T23:21:07Z",
+      "side": 1,
+      "message": "Going along with previous comment about nested timing, I think that this will eventually need to take some parameter to specify which timing section you\u0027re ending.",
+      "revId": "8df2231b6b5dfd251d7bbe5893c5cf92d3ac0354",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5febb853_5f2cb4f4",
+        "filename": "bender/bender-base/utils/bender_kit/timing.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-14T23:21:07Z",
+      "side": 1,
+      "message": "Avoid the magic number here. Maybe taking it as an argument might be nice (if someone using this function wants an average from the last 10000 frames vs like precision to last 10 frames).",
+      "revId": "8df2231b6b5dfd251d7bbe5893c5cf92d3ac0354",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
