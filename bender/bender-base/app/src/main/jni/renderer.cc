@@ -15,6 +15,7 @@
 #include "renderer.h"
 #include <android_native_app_glue.h>
 #include <debug_marker.h>
+#include <timing.h>
 
 #include "trace.h"
 #include "bender_helpers.h"
@@ -44,14 +45,18 @@ Renderer::~Renderer() {
 void Renderer::beginFrame() {
   TRACE_BEGIN_SECTION("vkAcquireNextImageKHR");
   uint32_t nextIndex;
+  Timing::timer.startSection("Acquire Image");
   CALL_VK(vkAcquireNextImageKHR(device_.getDevice(), device_.getSwapchain(),
                                 UINT64_MAX, acquire_image_semaphore_[getCurrentFrame()], VK_NULL_HANDLE,
                                 &nextIndex));
+  Timing::timer.stopSection("Acquire Image");
   TRACE_END_SECTION();
 
   TRACE_BEGIN_SECTION("vkWaitForFences");
+  Timing::timer.startSection("Wait Fences");
   CALL_VK(vkWaitForFences(device_.getDevice(), 1, &fence_[getCurrentFrame()], VK_TRUE, 100000000));
   CALL_VK(vkResetFences(device_.getDevice(), 1, &fence_[getCurrentFrame()]));
+  Timing::timer.stopSection("Wait Fences");
   TRACE_END_SECTION();
 }
 

@@ -24,6 +24,7 @@
 #include <cstring>
 #include <debug_marker.h>
 #include <chrono>
+#include "timing.h"
 
 #include "vulkan_wrapper.h"
 #include "bender_kit.h"
@@ -421,15 +422,18 @@ void DeleteVulkan(void) {
 
 bool VulkanDrawFrame(Input::Data *inputData) {
   TRACE_BEGIN_SECTION("Draw Frame");
+  Timing::timer.startFrame();
   if (windowResized) {
     OnOrientationChange();
   }
   currentTime = std::chrono::high_resolution_clock::now();
-  frameTime = std::chrono::duration<float>(currentTime - lastTime).count();;
+  frameTime = std::chrono::duration<float>(currentTime - lastTime).count();
   lastTime = currentTime;
   totalTime += frameTime;
 
+  Timing::timer.startSection("Handle Input");
   handleInput(inputData);
+  Timing::timer.stopSection("Handle Input");
 
   renderer->beginFrame();
   renderer->beginPrimaryCommandBufferRecording();
@@ -454,6 +458,7 @@ bool VulkanDrawFrame(Input::Data *inputData) {
       .pClearValues = clear_values.data(),
   };
 
+  Timing::timer.startSection("Render Pass");
   vkCmdBeginRenderPass(renderer->getCurrentCommandBuffer(), &render_pass_beginInfo,
                        VK_SUBPASS_CONTENTS_INLINE);
 
@@ -466,10 +471,24 @@ bool VulkanDrawFrame(Input::Data *inputData) {
   }
 
   vkCmdEndRenderPass(renderer->getCurrentCommandBuffer());
+  Timing::timer.stopSection("Render Pass");
 
   renderer->endPrimaryCommandBufferRecording();
+  Timing::timer.startSection("End Frame");
   renderer->endFrame();
+  Timing::timer.stopSection("End Frame");
 
+
+  Timing::timer.stopFrame();
+
+  // Outputs the collected frame data and average FPS of past 100 frames
+  LOGI("Frame %u: %f ms %f FPS", Timing::timer.getLastFrame().number,
+       Timing::timer.getLastFrame().duration.count() * NS_TO_MS, Timing::timer.getFramerate(100));
+  for (int x = 0; x < Timing::timer.getLastFrame().subsectionTimes.size(); x++){
+    LOGI("\t%s: \tStart Time: %f s \tDuration: %f ms", Timing::timer.getLastFrame().subsectionTimes[x].name.c_str(),
+         Timing::timer.getLastFrame().subsectionTimes[x].startTime.count() * NS_TO_S,
+         Timing::timer.getLastFrame().subsectionTimes[x].duration.count() * NS_TO_MS);
+  }
   TRACE_END_SECTION();
 
   return true;

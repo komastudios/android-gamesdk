@@ -23,6 +23,7 @@ include_directories(${SHADERS_DIR})
 add_library(bender-kit STATIC
         ${KIT_DIR}/bender_kit.cc
         ${KIT_DIR}/debug_marker.cc
+        ${KIT_DIR}/timing.cc
         ${WRAPPER_DIR}/vulkan_wrapper.cc)
 
 add_library(base SHARED
