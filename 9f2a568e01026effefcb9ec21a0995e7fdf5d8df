@@ -16,6 +16,24 @@
       "revId": "9f2a568e01026effefcb9ec21a0995e7fdf5d8df",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "35211397_8a9605c8",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-14T00:58:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a761d2d6_2a894304",
+      "revId": "9f2a568e01026effefcb9ec21a0995e7fdf5d8df",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
