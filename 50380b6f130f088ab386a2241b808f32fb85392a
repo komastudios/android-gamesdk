@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2df0ff5d_e77efd34",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-14T00:49:42Z",
+      "side": 1,
+      "message": "Actually it should be a float3 that was removed not a float2 (the float2 is for tex coords which are still there).",
+      "revId": "50380b6f130f088ab386a2241b808f32fb85392a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
