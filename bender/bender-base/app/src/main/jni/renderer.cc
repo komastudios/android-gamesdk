@@ -36,7 +36,6 @@ Renderer::~Renderer() {
   delete[] fence_;
 
   destroyPool();
-  delete lightsBuffer;
   vkDestroyDescriptorSetLayout(device_.getDevice(), lights_descriptors_layout_, nullptr);
 
   vkDestroyCommandPool(device_.getDevice(), cmd_pool_, nullptr);
@@ -173,14 +172,14 @@ void Renderer::init() {
                       &fence_[i]));
   }
 
-  lightsBuffer = new UniformBufferObject<LightBlock>(device_);
+  lights_buffer_ = std::make_unique<UniformBufferObject<LightBlock>>(device_);
   createPool();
   createLightsDescriptorSetLayout();
   createLightsDescriptors();
 }
 
 void Renderer::updateLights(glm::vec3 camera) {
-  lightsBuffer->update(getCurrentFrame(), [&camera](auto &lightsBuffer) {
+  lights_buffer_->update(getCurrentFrame(), [&camera](auto &lightsBuffer) {
       lightsBuffer.pointLight.position = {0.0f, 0.0f, 6.0f};
       lightsBuffer.pointLight.color = {1.0f, 1.0f, 1.0f};
       lightsBuffer.pointLight.intensity = 1.0f;
@@ -248,7 +247,7 @@ void Renderer::createLightsDescriptors() {
 
   for (size_t i = 0; i < device_.getDisplayImagesSize(); i++) {
     VkDescriptorBufferInfo lightBlockInfo = {};
-    lightBlockInfo.buffer = lightsBuffer->getBuffer(i);
+    lightBlockInfo.buffer = lights_buffer_->getBuffer(i);
     lightBlockInfo.offset = 0;
     lightBlockInfo.range = sizeof(LightBlock);
 

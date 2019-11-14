@@ -14,7 +14,7 @@ Mesh::Mesh(Renderer &renderer, Material &material, std::shared_ptr<Geometry> geo
   rotation_ = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
   scale_ = glm::vec3(1.0f, 1.0f, 1.0f);
 
-  meshBuffer = std::make_unique<UniformBufferObject<ModelViewProjection>>(renderer_.getDevice());
+  mesh_buffer_ = std::make_unique<UniformBufferObject<ModelViewProjection>>(renderer_.getDevice());
   createMeshDescriptorSetLayout();
   createMeshDescriptors();
 };
@@ -27,12 +27,11 @@ Mesh::Mesh(Renderer &renderer, Material &material, const std::vector<float> &ver
 
 
 Mesh::~Mesh() {
-  vkDestroyPipeline(renderer_.getDevice().getDevice(), pipeline_, nullptr);
-  vkDestroyPipelineCache(renderer_.getDevice().getDevice(), cache_, nullptr);
-  vkDestroyPipelineLayout(renderer_.getDevice().getDevice(), layout_, nullptr);
+  vkDestroyPipeline(renderer_.getVulkanDevice(), pipeline_, nullptr);
+  vkDestroyPipelineCache(renderer_.getVulkanDevice(), cache_, nullptr);
+  vkDestroyPipelineLayout(renderer_.getVulkanDevice(), layout_, nullptr);
 
-  meshBuffer.reset();
-  vkDestroyDescriptorSetLayout(renderer_.getDevice().getDevice(), mesh_descriptors_layout_, nullptr);
+  vkDestroyDescriptorSetLayout(renderer_.getVulkanDevice(), mesh_descriptors_layout_, nullptr);
 }
 
 void Mesh::createMeshDescriptors() {
@@ -46,11 +45,11 @@ void Mesh::createMeshDescriptors() {
   allocInfo.pSetLayouts = layouts.data();
 
   mesh_descriptor_sets_.resize(renderer_.getDevice().getDisplayImagesSize());
-  CALL_VK(vkAllocateDescriptorSets(renderer_.getDevice().getDevice(), &allocInfo, mesh_descriptor_sets_.data()));
+  CALL_VK(vkAllocateDescriptorSets(renderer_.getVulkanDevice(), &allocInfo, mesh_descriptor_sets_.data()));
 
   for (size_t i = 0; i < renderer_.getDevice().getDisplayImagesSize(); i++) {
     VkDescriptorBufferInfo bufferInfo = {};
-    bufferInfo.buffer = meshBuffer->getBuffer(i);
+    bufferInfo.buffer = mesh_buffer_->getBuffer(i);
     bufferInfo.offset = 0;
     bufferInfo.range = sizeof(ModelViewProjection);
 
@@ -64,7 +63,7 @@ void Mesh::createMeshDescriptors() {
     descriptorWrites[0].descriptorCount = 1;
     descriptorWrites[0].pBufferInfo = &bufferInfo;
 
-    vkUpdateDescriptorSets(renderer_.getDevice().getDevice(), descriptorWrites.size(), descriptorWrites.data(),
+    vkUpdateDescriptorSets(renderer_.getVulkanDevice(), descriptorWrites.size(), descriptorWrites.data(),
                            0, nullptr);
   }
 }
@@ -162,7 +161,7 @@ void Mesh::createMeshPipeline(VkRenderPass renderPass) {
           .pPushConstantRanges = nullptr,
   };
 
-  CALL_VK(vkCreatePipelineLayout(renderer_.getDevice().getDevice(), &pipelineLayoutInfo, nullptr,
+  CALL_VK(vkCreatePipelineLayout(renderer_.getVulkanDevice(), &pipelineLayoutInfo, nullptr,
                                  &layout_))
 
   VkPipelineCacheCreateInfo pipelineCacheInfo{
@@ -173,7 +172,7 @@ void Mesh::createMeshPipeline(VkRenderPass renderPass) {
           .flags = 0,  // reserved, must be 0
   };
 
-  CALL_VK(vkCreatePipelineCache(renderer_.getDevice().getDevice(), &pipelineCacheInfo, nullptr,
+  CALL_VK(vkCreatePipelineCache(renderer_.getVulkanDevice(), &pipelineCacheInfo, nullptr,
                                 &cache_));
 
   VkGraphicsPipelineCreateInfo pipelineInfo{
@@ -197,7 +196,7 @@ void Mesh::createMeshPipeline(VkRenderPass renderPass) {
 
   material_.getShaders()->updatePipelineInfo(pipelineInfo);
 
-  CALL_VK(vkCreateGraphicsPipelines(renderer_.getDevice().getDevice(), cache_, 1, &pipelineInfo,
+  CALL_VK(vkCreateGraphicsPipelines(renderer_.getVulkanDevice(), cache_, 1, &pipelineInfo,
                                     nullptr, &pipeline_));
 }
 
@@ -215,7 +214,7 @@ void Mesh::createMeshDescriptorSetLayout() {
   layoutInfo.bindingCount = bindings.size();
   layoutInfo.pBindings = bindings.data();
 
-  CALL_VK(vkCreateDescriptorSetLayout(renderer_.getDevice().getDevice(), &layoutInfo, nullptr,
+  CALL_VK(vkCreateDescriptorSetLayout(renderer_.getVulkanDevice(), &layoutInfo, nullptr,
                                     &mesh_descriptors_layout_));
 }
 
@@ -230,7 +229,7 @@ void Mesh::update(uint_t frame_index, glm::vec3 camera, glm::mat4 view, glm::mat
   glm::mat4 model = getTransform();
   glm::mat4 mvp = proj * view * model;
 
-  meshBuffer->update(frame_index, [&mvp, &model](auto& ubo) {
+  mesh_buffer_->update(frame_index, [&mvp, &model](auto& ubo) {
     ubo.mvp = mvp;
     ubo.model = model;
     ubo.invTranspose = glm::transpose(glm::inverse(model));

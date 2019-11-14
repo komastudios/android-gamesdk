@@ -51,6 +51,7 @@ class Renderer {
   void updateLights(glm::vec3 camera);
 
   BenderKit::Device& getDevice() const { return device_; };
+  VkDevice getVulkanDevice() const { return device_.getDevice(); }
   VkCommandBuffer getCurrentCommandBuffer() const;
   uint32_t getCurrentFrame() const;
 
@@ -70,7 +71,7 @@ private:
   VkDescriptorPool descriptor_pool_;
   VkDescriptorSetLayout lights_descriptors_layout_;
   std::vector<VkDescriptorSet> lights_descriptor_sets_;
-  UniformBufferObject<LightBlock> *lightsBuffer;
+  std::unique_ptr<UniformBufferObject<LightBlock>> lights_buffer_;
 
   void init();
 
