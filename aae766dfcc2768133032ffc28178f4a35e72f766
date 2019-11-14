@@ -121,6 +121,23 @@
     },
     {
       "key": {
+        "uuid": "8b065470_ffb9494e",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 353,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-14T01:51:50Z",
+      "side": 1,
+      "message": "Blend should be enabled to get rid of the black background.",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f852c3ce_f896f7a9",
         "filename": "bender/bender-base/app/src/main/jni/font.cc",
         "patchSetId": 3
