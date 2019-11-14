@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a761d2d6_2a894304",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-14T00:55:25Z",
+      "side": 1,
+      "message": "Sorry also should have noticed this in previous patchset, but since the shaders have been renamed this also has to be changed (\"mesh\")",
+      "revId": "9f2a568e01026effefcb9ec21a0995e7fdf5d8df",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
