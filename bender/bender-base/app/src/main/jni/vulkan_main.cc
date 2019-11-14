@@ -24,6 +24,7 @@
 #include <cstring>
 #include <debug_marker.h>
 #include <chrono>
+#include "timing.h"
 
 #include "vulkan_wrapper.h"
 #include "bender_kit.h"
@@ -90,18 +91,22 @@ const std::string sample_string = "B3nDeR V1";
 bool windowResized = false;
 
 void createTextures() {
+  Timing::timer.startEvent("Texture Creation");
   assert(androidAppCtx != nullptr);
   assert(device != nullptr);
 
   for (uint32_t i = 0; i < texFiles.size(); ++i) {
     textures.push_back(new Texture(*device, androidAppCtx, texFiles[i], VK_FORMAT_R8G8B8A8_SRGB));
   }
+  Timing::timer.stopEvent();
 }
 
 void createMaterials() {
+  Timing::timer.startEvent("Materials Creation");
   for (uint32_t i = 0; i < textures.size(); ++i) {
     materials.push_back(new Material(*renderer, shaders, textures[i], nullptr));
   }
+  Timing::timer.stopEvent();
 }
 
 void createFrameBuffers(VkRenderPass &renderPass,
@@ -301,6 +306,7 @@ void createDepthBuffer() {
 }
 
 bool InitVulkan(android_app *app) {
+  Timing::timer.startEvent("Initialization");
   androidAppCtx = app;
 
   device = new Device(app->window);
@@ -373,13 +379,19 @@ bool InitVulkan(android_app *app) {
 
   renderer = new Renderer(*device);
 
+  Timing::timer.startEvent("Mesh Creation");
+
   texFiles.push_back("textures/sample_texture.png");
 
   createTextures();
 
   createMaterials();
 
+  Timing::timer.startEvent("Create Polyhedron");
   meshes.push_back(createPolyhedron(*renderer, *materials[0], 20));
+  Timing::timer.stopEvent();
+
+  Timing::timer.stopEvent();
 
   const std::vector<float> vertexData = {
       -0.5f, -0.5f, 0.5f,          -0.5774f, -0.5774f, 0.5774f,       1.0f, 0.0f,
@@ -403,6 +415,8 @@ bool InitVulkan(android_app *app) {
 
   font = new Font(*renderer, androidAppCtx, FONT_SDF_PATH, FONT_INFO_PATH);
 
+  Timing::timer.stopEvent();
+  Timing::printEvent(*Timing::timer.getLastMajorEvent());
   return true;
 }
 
@@ -434,16 +448,18 @@ void DeleteVulkan(void) {
 }
 
 bool VulkanDrawFrame(Input::Data *inputData) {
-  TRACE_BEGIN_SECTION("Draw Frame");
+  Timing::timer.startEvent("Draw Frame");
   if (windowResized) {
     OnOrientationChange();
   }
   currentTime = std::chrono::high_resolution_clock::now();
-  frameTime = std::chrono::duration<float>(currentTime - lastTime).count();;
+  frameTime = std::chrono::duration<float>(currentTime - lastTime).count();
   lastTime = currentTime;
   totalTime += frameTime;
 
+  Timing::timer.startEvent("Handle Input");
   handleInput(inputData);
+  Timing::timer.stopEvent();
 
   renderer->beginFrame();
   renderer->beginPrimaryCommandBufferRecording();
@@ -468,6 +484,7 @@ bool VulkanDrawFrame(Input::Data *inputData) {
       .pClearValues = clear_values.data(),
   };
 
+  Timing::timer.startEvent("Render Pass");
   vkCmdBeginRenderPass(renderer->getCurrentCommandBuffer(), &render_pass_beginInfo,
                        VK_SUBPASS_CONTENTS_INLINE);
 
@@ -482,11 +499,15 @@ bool VulkanDrawFrame(Input::Data *inputData) {
                    renderer->getCurrentCommandBuffer(), render_pass, renderer->getCurrentFrame());
 
   vkCmdEndRenderPass(renderer->getCurrentCommandBuffer());
+  Timing::timer.stopEvent();
 
   renderer->endPrimaryCommandBufferRecording();
+  Timing::timer.startEvent("End Frame");
   renderer->endFrame();
+  Timing::timer.stopEvent();
 
-  TRACE_END_SECTION();
+  Timing::timer.stopEvent();
+  Timing::printEvent(*Timing::timer.getLastMajorEvent());
 
   return true;
 }

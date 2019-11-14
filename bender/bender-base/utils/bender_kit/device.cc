@@ -19,6 +19,7 @@
 #include "device.h"
 #include "debug_marker.h"
 #include "bender_helpers.h"
+#include "timing.h"
 
 using namespace BenderKit;
 using namespace BenderHelpers;
@@ -27,6 +28,7 @@ using namespace BenderHelpers;
 // Device class member functions
 //
 Device::Device(ANativeWindow *window) {
+  Timing::timer.startEvent("Create Bender Device");
   if (!InitVulkan()) {
     LOGW("Vulkan is unavailable, install vulkan and re-start");
     initialized_ = false;
@@ -48,6 +50,7 @@ Device::Device(ANativeWindow *window) {
   createSwapChain();
 
   initialized_ = true;
+  Timing::timer.stopEvent();
 }
 
 Device::~Device() {
@@ -87,7 +90,7 @@ void Device::present(VkSemaphore* wait_semaphores) {
 
 void Device::CreateVulkanDevice(ANativeWindow *platformWindow,
                                 VkApplicationInfo *appInfo) {
-  LOGI("->CreateVulkanDevice");
+  Timing::timer.startEvent("Create Vulkan Device");
   std::vector<const char *> instance_extensions;
   std::vector<const char *> instance_layers;
   std::vector<const char *> device_extensions;
@@ -186,7 +189,7 @@ void Device::CreateVulkanDevice(ANativeWindow *platformWindow,
                          &device_));
   vkGetDeviceQueue(device_, queueFamilyIndex_, 0, &queue_);
   DebugMarker::setup(device_, gpuDevice_);
-  LOGI("<-CreateVulkanDevice");
+  Timing::timer.stopEvent();
 }
 
 void Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer &buffer,
@@ -219,8 +222,7 @@ void Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer 
 }
 
 void Device::createSwapChain(VkSwapchainKHR oldSwapchain) {
-  LOGI("->createSwapChain");
-
+  Timing::timer.startEvent("Create Swapchain");
   VkSurfaceCapabilitiesKHR surfaceCapabilities;
   vkGetPhysicalDeviceSurfaceCapabilitiesKHR(gpuDevice_, surface_,
                                             &surfaceCapabilities);
@@ -297,7 +299,7 @@ void Device::createSwapChain(VkSwapchainKHR oldSwapchain) {
                                   displayImages_.data()));
 
   current_frame_index_ = 0;
-  LOGI("<-createSwapChain");
+  Timing::timer.stopEvent();
 }
 
 void Device::setObjectName(uint64_t object,
