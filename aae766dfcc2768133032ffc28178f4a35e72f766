@@ -504,6 +504,23 @@
       "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d7dd6cb4_36a3413c",
+        "filename": "bender/bender-base/app/src/main/shaders/sdf.vert",
+        "patchSetId": 3
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-14T01:57:35Z",
+      "side": 1,
+      "message": "Just send unPosition straight out without going through the MVP.",
+      "revId": "aae766dfcc2768133032ffc28178f4a35e72f766",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
