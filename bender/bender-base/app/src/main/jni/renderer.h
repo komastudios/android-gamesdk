@@ -19,6 +19,7 @@
 #include "vulkan_wrapper.h"
 #include "bender_kit.h"
 #include "uniform_buffer.h"
+#include "default_states.h"
 
 struct PointLight{
     alignas(16) float intensity;
@@ -59,6 +60,16 @@ class Renderer {
   VkDescriptorSetLayout getLightsDescriptorSetLayout() const { return lights_descriptors_layout_; }
   VkDescriptorSet getLightsDescriptorSet(uint_t frame_index) const { return lights_descriptor_sets_[frame_index]; }
 
+  const DefaultStates &getDefaultStates() const {
+    return default_states_;
+  }
+
+  void fillDefaultPipelineCreateInfo(VkGraphicsPipelineCreateInfo* pipeline_create_info) const;
+
+  VkGraphicsPipelineCreateInfo getDefaultPipelineInfo(
+          VkPipelineLayout layout,
+          VkRenderPass render_pass) const;
+
 private:
   BenderKit::Device& device_;
   VkCommandPool cmd_pool_;
@@ -72,6 +83,8 @@ private:
   VkDescriptorSetLayout lights_descriptors_layout_;
   std::vector<VkDescriptorSet> lights_descriptor_sets_;
   std::unique_ptr<UniformBufferObject<LightBlock>> lights_buffer_;
+
+  DefaultStates default_states_;
 
   void init();
 

@@ -34,7 +34,7 @@ class ShaderState {
   // TODO: is bad design. Consider a different approach.
   ShaderState(std::string shaderName, const VertexFormat& vertex_format, android_app *app, VkDevice appDevice);
 
-  void updatePipelineInfo(VkGraphicsPipelineCreateInfo &pipelineInfo);
+  void fillPipelineInfo(VkGraphicsPipelineCreateInfo *pipline_info);
 
   void cleanup();
 

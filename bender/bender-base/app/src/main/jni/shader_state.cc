@@ -65,11 +65,10 @@ void ShaderState::setFragmentShader(const std::string &name) {
   shaderModules[static_cast<int>(Type::Fragment)] = shader;
 }
 
-
-void ShaderState::updatePipelineInfo(VkGraphicsPipelineCreateInfo &pipelineInfo) {
-  pipelineInfo.pStages = shaderStages.data();
-  pipelineInfo.pVertexInputState = &vertex_format_.getVertexInputState();
-  pipelineInfo.pInputAssemblyState = &pipelineInputAssembly;
+void ShaderState::fillPipelineInfo(VkGraphicsPipelineCreateInfo *pipline_info) {
+  pipline_info->pStages = shaderStages.data();
+  pipline_info->pVertexInputState = &vertex_format_.getVertexInputState();
+  pipline_info->pInputAssemblyState = &pipelineInputAssembly;
 }
 
 void ShaderState::cleanup() {
