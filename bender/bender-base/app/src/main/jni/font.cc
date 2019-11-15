@@ -29,7 +29,10 @@ namespace {
 void Font::parseFontInfo(const char *info_file_path, android_app *androidAppCtx) {
     AAsset *asset = AAssetManager_open(androidAppCtx->activity->assetManager,
                                        info_file_path, AASSET_MODE_STREAMING);
-    assert(asset);
+    if(asset == nullptr) {
+        LOGE("Font parseFontInfo(): font info not found [%s]", info_file_path);
+        return;
+    }
 
     size_t size = AAsset_getLength(asset);
     assert(size > 0);
@@ -66,7 +69,7 @@ void Font::parseFontInfo(const char *info_file_path, android_app *androidAppCtx)
     }
 }
 
-void Font::drawString(std::string text, float x, float y,
+void Font::drawString(const std::string& text, const size_t text_size, float x, float y,
                       VkCommandBuffer commandBuffer, VkRenderPass render_pass, uint_t frame_index) {
     updatePipeline(render_pass);
 
@@ -96,38 +99,38 @@ void Font::drawString(std::string text, float x, float y,
         float xo = char_info->xoffset;
         float yo = char_info->yoffset;
 
-        write_vertex((posx) + (dimx + xo) / w, &head);
-        write_vertex((posy) + (dimy + yo) / h, &head);
+        write_vertex((posx) + (dimx + xo) / w * text_size, &head);
+        write_vertex((posy) + (dimy + yo) / h * text_size, &head);
         write_vertex(ue, &head);
         write_vertex(te, &head);
 
 
-        write_vertex((posx) +  (xo) / w, &head);
-        write_vertex((posy) + (dimy + yo) / h, &head);
+        write_vertex((posx) +  (xo) / w * text_size, &head);
+        write_vertex((posy) + (dimy + yo) / h * text_size, &head);
         write_vertex(us, &head);
         write_vertex(te, &head);
 
-        write_vertex((posx) + (xo) / w, &head);
-        write_vertex((posy) + (yo) / h, &head);
+        write_vertex((posx) + (xo) / w * text_size, &head);
+        write_vertex((posy) + (yo) / h * text_size, &head);
         write_vertex(us, &head);
         write_vertex(ts, &head);
 
-        write_vertex((posx) + (xo) / w, &head);
-        write_vertex((posy) + (yo) / h, &head);
+        write_vertex((posx) + (xo) / w * text_size, &head);
+        write_vertex((posy) + (yo) / h * text_size, &head);
         write_vertex(us, &head);
         write_vertex(ts, &head);
 
-        write_vertex((posx) + (dimx + xo) / w, &head);
-        write_vertex((posy) + (yo) / h, &head);
+        write_vertex((posx) + (dimx + xo) / w * text_size, &head);
+        write_vertex((posy) + (yo) / h * text_size, &head);
         write_vertex(ue, &head);
         write_vertex(ts, &head);
 
-        write_vertex((posx) + (dimx + xo) / w, &head);
-        write_vertex((posy) + (dimy + yo) / h, &head);
+        write_vertex((posx) + (dimx + xo) / w * text_size, &head);
+        write_vertex((posy) + (dimy + yo) / h * text_size, &head);
         write_vertex(ue, &head);
         write_vertex(te, &head);
 
-        posx += (float)(char_info->xadvance) / w;
+        posx += (float)(char_info->xadvance) / w * text_size;
     }
 
     vkUnmapMemory(renderer_.getDevice().getDevice(), vertexBufferDeviceMemory_);
