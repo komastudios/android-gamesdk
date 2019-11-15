@@ -234,10 +234,10 @@ void handleInput(Input::Data *inputData){
 }
 
 void createShaderState() {
-  VertexFormat vertex_format { {
-      VertexElement::float3,
-      VertexElement::float3,
-      VertexElement::float2,
+  BenderKit::VertexFormat vertex_format { {
+        BenderKit::VertexElement::float3,
+        BenderKit::VertexElement::float3,
+        BenderKit::VertexElement::float2,
       },
   };
 

@@ -21,7 +21,8 @@ include_directories(${UTILS_DIR})
 include_directories(${SHADERS_DIR})
 
 add_library(bender-kit STATIC
-        ${KIT_DIR}/bender_kit.cc
+        ${KIT_DIR}/device.cc
+        ${KIT_DIR}/vertex_format.cc
         ${KIT_DIR}/debug_marker.cc
         ${WRAPPER_DIR}/vulkan_wrapper.cc)
 
@@ -36,7 +37,6 @@ add_library(base SHARED
         ${SRC_DIR}/material.cc
         ${SRC_DIR}/mesh.cc
         ${SRC_DIR}/polyhedron.cc
-        ${SRC_DIR}/vertex_format.cc
         ${SRC_DIR}/font.cc)
 
 add_library(utils STATIC

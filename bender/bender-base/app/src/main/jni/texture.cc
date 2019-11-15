@@ -15,7 +15,6 @@
 #include "texture.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-#include "bender_kit.h"
 #include "bender_helpers.h"
 
 #include <cstdlib>

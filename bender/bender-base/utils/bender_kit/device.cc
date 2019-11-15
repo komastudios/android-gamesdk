@@ -14,11 +14,9 @@
 
 
 #include <android_native_app_glue.h>
-
 #include <cassert>
 
-#include "vulkan_wrapper.h"
-#include "bender_kit.h"
+#include "device.h"
 #include "debug_marker.h"
 #include "bender_helpers.h"
 
