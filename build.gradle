@@ -95,15 +95,9 @@ abstract class Toolchain {
         def (n) = ndkVersion_ =~ /[0-9]+/;
         return n;
     }
-    public String get2PartNdkVersionNumber() {
-        def (n) = ndkVersion_ =~ /([0-9]+)([.][0-9]+)?/;
-        if (n[2]==null)
-            return n[1] + ".0";
-        else
-            return n[1] + n[2];
-    }
     public String getBuildKey(String arch, String stl, String buildType) {
-        return arch + "_API" + androidVersion_ + "_NDK" + get2PartNdkVersionNumber() + '_' + sanitize(stl)+ '_'+buildType
+        return arch + "_API" + androidVersion_ + "_NDK" + getNdkVersionNumber() + '_' +
+	    sanitize(stl)+ '_'+buildType
     }
     protected String getNdkVersionFromPropertiesFile() {
         def f = new File(getAndroidNDKPath(), 'source.properties')
@@ -118,10 +112,8 @@ abstract class Toolchain {
             }
             def ver = props."Pkg.Revision"
             def parts = ver.findAll("[^.]+")
-            if (parts.size()>1)
-                return parts[0] + "." + parts[1]
-            else
-                return parts[0] + ".0"
+	    // Ignore the minor version
+            return parts[0]
         }
     }
     private String sanitize(String s) {
@@ -475,7 +467,8 @@ def copySamples(outFolder, includeTuningForkSamples = true) {
     copy {
         from file(joinPath('samples', "bouncyball"))
         into file(joinPath(buildFolder, 'samples', "bouncyball"))
-        exclude '**/build', '**/out', "local.properties", "**/.externalNativeBuild", "**/.gradle", "**/OWNERS", "**/.idea"
+        exclude '**/build', '**/out', "local.properties", "**/.externalNativeBuild", "**/.gradle",
+	    "**/OWNERS", "**/.idea"
         rename 'CMakeLists.for-samples-in-archive.txt', 'CMakeLists.txt'
         includeEmptyDirs = false
     }
@@ -484,19 +477,22 @@ def copySamples(outFolder, includeTuningForkSamples = true) {
     copy {
         from file(joinPath('samples', "cube"))
         into file(joinPath(buildFolder, 'samples', "cube"))
-        exclude '**/build', '**/out', "local.properties", "**/.externalNativeBuild", "**/.gradle", "**/OWNERS", "**/.idea"
+        exclude '**/build', '**/out', "local.properties", "**/.externalNativeBuild",
+	    "**/.gradle", "**/OWNERS", "**/.idea"
         includeEmptyDirs = false
     }
     copy {
         from file(joinPath('third_party', "cube"))
         into file(joinPath(buildFolder, 'third_party', "cube"))
         rename 'CMakeLists.for-samples-in-archive.txt', 'CMakeLists.txt'
-        exclude '**/build', '**/out', "local.properties", "**/.externalNativeBuild", "**/.gradle", "**/OWNERS", "**/.idea"
+        exclude '**/build', '**/out', "local.properties", "**/.externalNativeBuild", "**/.gradle",
+	    "**/OWNERS", "**/.idea"
         includeEmptyDirs = false
     }
 
     if (includeTuningForkSamples) {
-        throw new UnsupportedOperationException("Including samples for TuningFork is not yet supported.");
+        throw new UnsupportedOperationException(
+	    "Including samples for TuningFork is not yet supported.");
     }
 }
 
@@ -526,15 +522,18 @@ def sdkNativeBuild(withTuningFork = true, buildType="Release") {
 	GroovyCollections.combinations(defaultAbis(), versionsPost17, post17STLs());
     GParsPool.withPool {
 	return allCombos.collectParallel { x ->
-            buildNativeModules(x[0], x[1][1].toString(), x[1][0], x[2], threadChecks, withTuningFork, buildType	)
+            buildNativeModules(x[0], x[1][1].toString(), x[1][0], x[2], threadChecks,
+			       withTuningFork, buildType	)
 	}
     }
 }
 
-def specificNativeBuild(sdkVersion, ndkVersion, stlVersion, withTuningFork = false, buildType="Release") {
+def specificNativeBuild(sdkVersion, ndkVersion, stlVersion, withTuningFork = false,
+			buildType="Release") {
     def threadChecks = false
     return defaultAbis().collect {
-        buildNativeModules(it, sdkVersion, ndkVersion, stlVersion, threadChecks, withTuningFork, buildType)
+        buildNativeModules(it, sdkVersion, ndkVersion, stlVersion, threadChecks, withTuningFork,
+			   buildType)
     }
 }
 

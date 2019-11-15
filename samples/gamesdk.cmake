@@ -47,7 +47,7 @@ function(add_gamesdk_target)
 
     # Infer Android SDK/NDK and STL versions
     if (NOT DEFINED GAMESDK_ANDROID_NDK_VERSION)
-                string(REGEX REPLACE "^([^.]+)[.]([^.]+).*" "\\1.\\2" GAMESDK_ANDROID_NDK_VERSION ${ANDROID_NDK_REVISION} )
+                string(REGEX REPLACE "^([^.]+).*" "\\1" GAMESDK_ANDROID_NDK_VERSION ${ANDROID_NDK_REVISION} )
     endif()
     if (NOT DEFINED GAMESDK_ANDROID_API_LEVEL)
                 string(REGEX REPLACE "^android-([^.]+)" "\\1" GAMESDK_ANDROID_API_LEVEL ${ANDROID_PLATFORM} )
