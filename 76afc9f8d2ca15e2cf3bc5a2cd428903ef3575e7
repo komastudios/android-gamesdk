@@ -1,0 +1,140 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8ad87832_a1a85c95",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-15T03:19:54Z",
+      "side": 1,
+      "message": "Pass position and scale as parameters",
+      "revId": "76afc9f8d2ca15e2cf3bc5a2cd428903ef3575e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f482806c_0b23353f",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-15T03:19:54Z",
+      "side": 1,
+      "message": "Let\u0027s get rid of the memcpy.",
+      "revId": "76afc9f8d2ca15e2cf3bc5a2cd428903ef3575e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b11815d1_52c3c27e",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-15T03:19:54Z",
+      "side": 1,
+      "message": "meshBuffer should be renamed.",
+      "revId": "76afc9f8d2ca15e2cf3bc5a2cd428903ef3575e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "485f1909_9a3d7708",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-15T03:19:54Z",
+      "side": 1,
+      "message": "Do we still need the index buffer?",
+      "revId": "76afc9f8d2ca15e2cf3bc5a2cd428903ef3575e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f76e7dcf_197c2b66",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-15T03:19:54Z",
+      "side": 1,
+      "message": "What is this UBO being used for?",
+      "revId": "76afc9f8d2ca15e2cf3bc5a2cd428903ef3575e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6a2d3874_9479389b",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-15T03:19:54Z",
+      "side": 1,
+      "message": "You can move the shaders inside the Font constructor and explicitly create the object there.",
+      "revId": "76afc9f8d2ca15e2cf3bc5a2cd428903ef3575e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5dfb0009_b7ec2b8a",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-15T03:19:54Z",
+      "side": 1,
+      "message": "Remove comment",
+      "revId": "76afc9f8d2ca15e2cf3bc5a2cd428903ef3575e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6e1b4248_33d84699",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-15T03:19:54Z",
+      "side": 1,
+      "message": "You can move this object to the Font class.",
+      "revId": "76afc9f8d2ca15e2cf3bc5a2cd428903ef3575e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
