@@ -72,6 +72,29 @@
     },
     {
       "key": {
+        "uuid": "c5421c67_7ffe72c3",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-15T18:41:50Z",
+      "side": 1,
+      "message": "Could this be a static variable? I don\u0027t know if that matters in this case though if we only ever have one instance of the renderer class (unless we plan on having multiple renderer class instances for multithreaded rendering?)",
+      "range": {
+        "startLine": 87,
+        "startChar": 2,
+        "endLine": 87,
+        "endChar": 16
+      },
+      "revId": "1229dcfe9e9b12f261b1abc109831fb0a31eb964",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6ece4dd5_f5c6dfab",
         "filename": "bender/bender-base/app/src/main/jni/shader_state.cc",
         "patchSetId": 1
