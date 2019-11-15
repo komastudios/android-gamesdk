@@ -48,6 +48,10 @@ void Material::createSampler() {
   CALL_VK(vkCreateSampler(renderer_.getVulkanDevice(), &sampler_create_info, nullptr, &sampler_));
 }
 
+void Material::fillPipelineInfo(VkGraphicsPipelineCreateInfo *pipeline_info) {
+  getShaders()->fillPipelineInfo(pipeline_info);
+}
+
 void Material::createMaterialDescriptorSetLayout() {
   VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
   samplerLayoutBinding.binding = FRAGMENT_BINDING_SAMPLER;
