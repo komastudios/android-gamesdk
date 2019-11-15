@@ -57,7 +57,7 @@ unsigned char *Texture::loadFileData(android_app *app, const char *filePath) {
                 img_data[(x + y * img_width) * 4] = 215;
                 img_data[(x + y * img_width) * 4 + 1] = 95;
                 img_data[(x + y * img_width) * 4 + 2] = 175;
-                img_data[(x + y * img_width) * 4 + 3] = 1;
+                img_data[(x + y * img_width) * 4 + 3] = 255;
             }
         }
     } else {

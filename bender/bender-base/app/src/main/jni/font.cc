@@ -29,7 +29,10 @@ namespace {
 void Font::parseFontInfo(const char *info_file_path, android_app *androidAppCtx) {
     AAsset *asset = AAssetManager_open(androidAppCtx->activity->assetManager,
                                        info_file_path, AASSET_MODE_STREAMING);
-    assert(asset);
+    if(asset == nullptr) {
+        LOGE("Font parseFontInfo(): font info not found [%s]", info_file_path);
+        return;
+    }
 
     size_t size = AAsset_getLength(asset);
     assert(size > 0);
@@ -66,7 +69,7 @@ void Font::parseFontInfo(const char *info_file_path, android_app *androidAppCtx)
     }
 }
 
-void Font::drawString(std::string text, float x, float y,
+void Font::drawString(const std::string& text, const size_t text_size, float x, float y,
                       VkCommandBuffer commandBuffer, VkRenderPass render_pass, uint_t frame_index) {
     updatePipeline(render_pass);
 
@@ -78,7 +81,7 @@ void Font::drawString(std::string text, float x, float y,
 
     void *data;
     vkMapMemory(renderer_.getDevice().getDevice(), vertexBufferDeviceMemory_, 0,
-                sizeof(float) * text.size() * FONT_NUM_QUAD_INDICES, 0, &data);
+                sizeof(float) * text_size * FONT_NUM_QUAD_INDICES, 0, &data);
 
     float *head = (float*)data;
 
@@ -143,7 +146,7 @@ void Font::drawString(std::string text, float x, float y,
                             layout_, 0, 1, &font_descriptor_sets_[frame_index], 0, nullptr);
 
     vkCmdDraw(commandBuffer,
-              text.size() * FONT_NUM_QUAD_INDICES,
+              text_size * FONT_NUM_QUAD_INDICES,
               1, 0, 0);
 }
 

@@ -6,17 +6,11 @@
 #define BENDER_BASE_FONT_H_
 
 #import "vulkan_wrapper.h"
-#import "glm/glm.hpp"
-#import "glm/gtc/quaternion.hpp"
-#import "bender_helpers.h"
 #import "bender_kit.h"
-#import "geometry.h"
 #import "shader_state.h"
 #import "texture.h"
-#import "mesh.h"
 #import "renderer.h"
 #import <unordered_map>
-#import <vector>
 
 #define FONT_SDF_PATH "textures/font_sdf.png"
 #define FONT_INFO_PATH "textures/font_sdf.fnt"
@@ -32,7 +26,7 @@ public:
          const std::string& font_texture_path, const std::string& font_info_path);
     ~Font();
 
-    void drawString(std::string text, float x, float y,
+    void drawString(const std::string& text, const size_t text_size, float x, float y,
                     VkCommandBuffer commandBuffer, VkRenderPass render_pass, uint_t frame_index);
 private:
     Renderer& renderer_;
