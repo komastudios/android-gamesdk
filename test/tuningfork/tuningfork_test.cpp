@@ -77,13 +77,10 @@ public:
             download_params_(download_params),
             expected_training_params_(expected_training_params) {}
 
-    TFErrorCode GetFidelityParams(const JniCtx& jni,
-                                  const ExtraUploadInfo& info,
-                                  const std::string& url_base,
-                                  const std::string& api_key,
+    TFErrorCode GetFidelityParams(Request& request,
                                   const ProtobufSerialization* training_mode_params,
                                   ProtobufSerialization &fidelity_params,
-                                  std::string& experiment_id, uint32_t timeout_ms) override {
+                                  std::string& experiment_id) override {
         n_times_called_++;
         if (expected_training_params_ != nullptr) {
             EXPECT_NE(training_mode_params, nullptr);
@@ -231,10 +228,11 @@ TuningForkLogEvent TestEndToEndTimeBased() {
     return test.Result();
 }
 
-void CheckEvent(const std::string& name, const TuningForkLogEvent& result,
-                const TuningForkLogEvent& expected) {
+bool CheckStrings(const std::string& name, const std::string& result,
+                  const std::string& expected) {
     bool comp = CompareIgnoringWhitespace(result, expected);
     EXPECT_TRUE( comp ) << "\nResult:\n" << result << "\n!=\nExpected:" << expected;
+    return comp;
 }
 
 static std::string ReplaceReturns(std::string in) {
@@ -245,14 +243,15 @@ static std::string ReplaceReturns(std::string in) {
 static const std::string session_context = R"TF(
 {
   "device": {
-  "build_version": "",
+    "build_version": "",
     "cpu_core_freqs_hz": [],
     "fingerprint": "",
     "gles_version": {
       "major": 2,
       "minor": 0
     },
-    "total_memory_bytes": 0},
+    "total_memory_bytes": 0
+  },
   "game_sdk_info": {
     "session_id": "",
     "version": "0.4"
@@ -292,7 +291,7 @@ TEST(TuningForkTest, EndToEnd) {
   }]
 }
 )TF";
-    CheckEvent("Base", result, expected);
+    CheckStrings("Base", result, expected);
 }
 
 TEST(TuningForkTest, TestEndToEndWithAnnotation) {
@@ -323,7 +322,7 @@ TEST(TuningForkTest, TestEndToEndWithAnnotation) {
   }]
 }
 )TF";
-    CheckEvent("Annotation", result, expected);
+    CheckStrings("Annotation", result, expected);
 }
 
 TEST(TuningForkTest, TestEndToEndTimeBased) {
@@ -353,7 +352,7 @@ TEST(TuningForkTest, TestEndToEndTimeBased) {
   }]
 }
 )TF";
-    CheckEvent("TimeBased", result, expected);
+    CheckStrings("TimeBased", result, expected);
 }
 
 std::condition_variable fp_cv;
@@ -401,6 +400,57 @@ void TestFidelityParamDownloadThread() {
 }
 TEST(TuningForkTest, TestFidelityParamDownloadThread) {
     TestFidelityParamDownloadThread();
+}
+
+struct TestResponse {
+    std::string request;
+    int response_code;
+    std::string response_body;
+};
+
+class TestRequest: public Request {
+    std::vector<TestResponse> responses_;
+    int next_response_ = 0;
+  public:
+    TestRequest(const Request& r, std::vector<TestResponse> responses)
+            : Request(r), responses_(responses) {}
+    TFErrorCode Send(const std::string& rpc_name, const std::string& request,
+              int& response_code, std::string& response_body) override {
+        EXPECT_LT(next_response_, responses_.size()) << "Unexpected request";
+        if (next_response_<responses_.size()) {
+            auto& expected = responses_[next_response_];
+            if (CheckStrings("DownloadRequest", request, expected.request)) {
+                response_code = expected.response_code;
+                response_body = expected.response_body;
+                ++next_response_;
+            }
+        }
+        return TFERROR_OK;
+    }
+};
+
+static const std::string empty_tuning_parameters_request = R"({
+"device_spec": {
+  "build_version": "",
+  "cpu_core_freqs_hz": [],
+  "fingerprint": "",
+  "gles_version": {
+    "major": 0,
+    "minor": 0
+  },
+  "total_memory_bytes": 0
+  },
+  "name": "applications//apks/0"
+})";
+
+TEST(TuningForkTest, TestFidelityParamDownloadRequest) {
+    ParamsLoader p;
+    ExtraUploadInfo info ({});
+    Request inner_request(info, "https://test.google.com", "dummy_api_key", std::chrono::milliseconds(1000));
+    TestRequest request(inner_request, {{empty_tuning_parameters_request, 200, "out"}});
+    ProtobufSerialization fps;
+    std::string experiment_id;
+    p.GetFidelityParams(request, nullptr, fps, experiment_id);
 }
 
 } // namespace tuningfork_test
