@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "302fff0f_4f9882f9",
+        "filename": "src/tuningfork/fpdownload.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-11-15T16:49:16Z",
+      "side": 1,
+      "message": "Two thoughts \n1. Use constant\n2. Use range of the successful codes",
+      "revId": "44efa45e8289d1c61f7852d77633a8277fa6c77e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
