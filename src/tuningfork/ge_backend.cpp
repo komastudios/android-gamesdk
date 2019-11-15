@@ -15,6 +15,8 @@ namespace tuningfork {
 constexpr Duration kUploadCheckInterval = std::chrono::seconds(10);
 constexpr Duration kRequestTimeout = std::chrono::seconds(10);
 
+const char kRpcName[] = ":uploadTelemetry";
+
 class UltimateUploader : public Runnable {
     const TFCache* persister_;
     WebRequest request_;
@@ -37,7 +39,7 @@ class UltimateUploader : public Runnable {
             int response_code = -1;
             std::string body;
             ALOGV("Got UPLOADING histograms: %s", request_json.c_str());
-            TFErrorCode ret = request_.Send(request_json, response_code, body);
+            TFErrorCode ret = request_.Send(kRpcName, request_json, response_code, body);
             if (ret==TFERROR_OK) {
                 ALOGI("UPLOAD request returned %d %s", response_code, body.c_str());
                 if (response_code==200) {
@@ -68,18 +70,15 @@ TFErrorCode GEBackend::Init(const JniCtx& jni, const Settings& settings,
         return TFERROR_BAD_PARAMETER;
     }
 
-    std::stringstream upload_uri;
-    upload_uri << settings.base_uri;
-    upload_uri << json_utils::GetResourceName(extra_upload_info);
-    upload_uri << ":uploadTelemetry";
-    WebRequest rq(jni, upload_uri.str(), settings.api_key, kRequestTimeout);
+    Request rq(extra_upload_info, settings.base_uri, settings.api_key, kRequestTimeout);
+    WebRequest web_request(jni, rq);
 
     persister_ = settings.c_settings.persistent_cache;
 
     // TODO(b/140367226): Initialize a Java JobScheduler if we can
 
     if( ultimate_uploader_.get() == nullptr) {
-        ultimate_uploader_ = std::make_shared<UltimateUploader>(persister_, rq);
+        ultimate_uploader_ = std::make_shared<UltimateUploader>(persister_, web_request);
         ultimate_uploader_->Start();
     }
 
