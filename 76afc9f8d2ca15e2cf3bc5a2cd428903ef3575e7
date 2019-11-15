@@ -142,6 +142,24 @@
     },
     {
       "key": {
+        "uuid": "50162744_78905c5e",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-15T03:32:02Z",
+      "side": 1,
+      "message": "Yes, my question was more general: do we need to use an index buffer at all?",
+      "parentUuid": "0453957b_66e0e853",
+      "revId": "76afc9f8d2ca15e2cf3bc5a2cd428903ef3575e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2b9cbec9_f26879f9",
         "filename": "bender/bender-base/app/src/main/jni/font.cc",
         "patchSetId": 5
@@ -188,6 +206,24 @@
       "side": 1,
       "message": "I am thinking that this buffer would be used as later rendering font without VB.\nSo I just leave this here... I can remove it for now",
       "parentUuid": "f76e7dcf_197c2b66",
+      "revId": "76afc9f8d2ca15e2cf3bc5a2cd428903ef3575e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4d6342b5_e586d21b",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-15T03:32:02Z",
+      "side": 1,
+      "message": "Yes, let\u0027s remove it.",
+      "parentUuid": "e57d78f4_e70ba8d5",
       "revId": "76afc9f8d2ca15e2cf3bc5a2cd428903ef3575e7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
