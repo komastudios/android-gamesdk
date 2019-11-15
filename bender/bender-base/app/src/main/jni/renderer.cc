@@ -23,13 +23,16 @@
 
 using namespace BenderHelpers;
 
-Renderer::Renderer(BenderKit::Device& device) : device_(device) {
+Renderer::Renderer(BenderKit::Device& device)
+  : device_(device)
+  , default_states_(device) {
   init();
 }
 
 Renderer::~Renderer() {
-  vkFreeCommandBuffers(device_.getDevice(), cmd_pool_, cmd_buffer_len_,
+  vkFreeCommandBuffers(getVulkanDevice(), cmd_pool_, cmd_buffer_len_,
                        cmd_buffer_);
+
   delete[] cmd_buffer_;
   delete[] acquire_image_semaphore_;
   delete[] render_finished_semaphore_;
@@ -38,7 +41,8 @@ Renderer::~Renderer() {
   destroyPool();
   vkDestroyDescriptorSetLayout(device_.getDevice(), lights_descriptors_layout_, nullptr);
 
-  vkDestroyCommandPool(device_.getDevice(), cmd_pool_, nullptr);
+  vkDestroyPipelineCache(getVulkanDevice(), cache_, nullptr);
+  vkDestroyCommandPool(getVulkanDevice(), cmd_pool_, nullptr);
 }
 
 void Renderer::beginFrame() {
@@ -50,8 +54,8 @@ void Renderer::beginFrame() {
   TRACE_END_SECTION();
 
   TRACE_BEGIN_SECTION("vkWaitForFences");
-  CALL_VK(vkWaitForFences(device_.getDevice(), 1, &fence_[getCurrentFrame()], VK_TRUE, 100000000));
-  CALL_VK(vkResetFences(device_.getDevice(), 1, &fence_[getCurrentFrame()]));
+  CALL_VK(vkWaitForFences(getVulkanDevice(), 1, &fence_[getCurrentFrame()], VK_TRUE, 100000000));
+  CALL_VK(vkResetFences(getVulkanDevice(), 1, &fence_[getCurrentFrame()]));
   TRACE_END_SECTION();
 }
 
@@ -173,6 +177,18 @@ void Renderer::init() {
   }
 
   lights_buffer_ = std::make_unique<UniformBufferObject<LightBlock>>(device_);
+
+  VkPipelineCacheCreateInfo pipelineCacheInfo {
+          .sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO,
+          .pNext = nullptr,
+          .initialDataSize = 0,
+          .pInitialData = nullptr,
+          .flags = 0,  // reserved, must be 0
+  };
+
+  CALL_VK(vkCreatePipelineCache(getVulkanDevice(), &pipelineCacheInfo, nullptr,
+                                &cache_));
+
   createPool();
   createLightsDescriptorSetLayout();
   createLightsDescriptors();
@@ -265,6 +281,19 @@ void Renderer::createLightsDescriptors() {
     vkUpdateDescriptorSets(device_.getDevice(), descriptorWrites.size(), descriptorWrites.data(),
                            0, nullptr);
   }
+}
+
+VkGraphicsPipelineCreateInfo Renderer::getDefaultPipelineInfo(
+        VkPipelineLayout layout,
+        VkRenderPass render_pass) const {
+  VkGraphicsPipelineCreateInfo pipeline_info {
+          .layout = layout,
+          .renderPass = render_pass,
+  };
+
+  getDefaultStates().fillDefaultPipelineCreateInfo(&pipeline_info);
+
+  return pipeline_info;
 }
 
 VkCommandBuffer Renderer::getCurrentCommandBuffer() const {

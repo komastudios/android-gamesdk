@@ -171,16 +171,16 @@ Font::Font(Renderer& renderer, android_app *androidAppCtx,
 }
 
 Font::~Font() {
-    vkDestroyBuffer(renderer_.getDevice().getDevice(), vertexBuf_, nullptr);
-    vkFreeMemory(renderer_.getDevice().getDevice(), vertexBufferDeviceMemory_, nullptr);
+    vkDestroyBuffer(renderer_.getVulkanDevice(), vertexBuf_, nullptr);
+    vkFreeMemory(renderer_.getVulkanDevice(), vertexBufferDeviceMemory_, nullptr);
 
-    vkDestroyPipeline(renderer_.getDevice().getDevice(), pipeline_, nullptr);
-    vkDestroyPipelineCache(renderer_.getDevice().getDevice(), cache_, nullptr);
-    vkDestroyPipelineLayout(renderer_.getDevice().getDevice(), layout_, nullptr);
+    vkDestroyPipeline(renderer_.getVulkanDevice(), pipeline_, nullptr);
+    vkDestroyPipelineCache(renderer_.getVulkanDevice(), cache_, nullptr);
+    vkDestroyPipelineLayout(renderer_.getVulkanDevice(), layout_, nullptr);
 }
 
 void Font::createFontShaders(android_app *androidAppCtx) {
-    VertexFormat vertex_format{
+  VertexFormat vertex_format {
             {
                     VertexElement::float2,
                     VertexElement::float2,
@@ -396,7 +396,7 @@ void Font::createFontPipeline(VkRenderPass renderPass) {
             .basePipelineIndex = 0,
     };
 
-    shader_->updatePipelineInfo(pipelineInfo);
+    shader_->fillPipelineInfo(&pipelineInfo);
 
     CALL_VK(vkCreateGraphicsPipelines(renderer_.getDevice().getDevice(), cache_, 1, &pipelineInfo,
                                       nullptr, &pipeline_));
