@@ -16,29 +16,32 @@ struct MaterialAttributes {
 
 class Material {
 public:
-    Material(Renderer& renderer, std::shared_ptr<ShaderState> shaders, Texture *texture, glm::vec3 *color);
-    ~Material();
+  Material(Renderer& renderer, std::shared_ptr<ShaderState> shaders, Texture *texture, glm::vec3 *color);
+  ~Material();
 
-    std::shared_ptr<ShaderState> getShaders() const { return shaders_; }
-    VkDescriptorSetLayout getMaterialDescriptorSetLayout() const { return material_descriptors_layout_; }
-    VkDescriptorSet getMaterialDescriptorSet(uint_t frame_index) const {return material_descriptor_sets_[frame_index]; }
+  void fillPipelineInfo(VkGraphicsPipelineCreateInfo *pipeline_info);
+
+  VkDescriptorSetLayout getMaterialDescriptorSetLayout() const { return material_descriptors_layout_; }
+  VkDescriptorSet getMaterialDescriptorSet(uint_t frame_index) const {return material_descriptor_sets_[frame_index]; }
 
 private:
-    Renderer& renderer_;
-    std::shared_ptr<ShaderState> shaders_;
-    Texture *texture_;
-    glm::vec3 *color_;
-    VkSampler sampler_;
+  Renderer& renderer_;
 
-    std::unique_ptr<UniformBufferObject<MaterialAttributes>> material_buffer_;
+  std::shared_ptr<ShaderState> shaders_;
+  Texture *texture_;
+  glm::vec3 *color_;
+  VkSampler sampler_;
 
-    VkDescriptorSetLayout material_descriptors_layout_;
-    std::vector<VkDescriptorSet> material_descriptor_sets_;
+  std::unique_ptr<UniformBufferObject<MaterialAttributes>> material_buffer_;
 
-    void createSampler();
-    void createMaterialDescriptorSetLayout();
-    void createMaterialDescriptorSets();
+  VkDescriptorSetLayout material_descriptors_layout_;
+  std::vector<VkDescriptorSet> material_descriptor_sets_;
+
+  std::shared_ptr<ShaderState> getShaders() const { return shaders_; }
+
+  void createSampler();
+  void createMaterialDescriptorSetLayout();
+  void createMaterialDescriptorSets();
 };
-
 
 #endif //BENDER_BASE_MATERIAL_H
