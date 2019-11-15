@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "8e895c1d_a7f6dc95",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-15T03:29:51Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "8ad87832_a1a85c95",
+      "revId": "76afc9f8d2ca15e2cf3bc5a2cd428903ef3575e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f482806c_0b23353f",
         "filename": "bender/bender-base/app/src/main/jni/font.cc",
         "patchSetId": 5
@@ -30,6 +48,24 @@
       "writtenOn": "2019-11-15T03:19:54Z",
       "side": 1,
       "message": "Let\u0027s get rid of the memcpy.",
+      "revId": "76afc9f8d2ca15e2cf3bc5a2cd428903ef3575e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3f32e08f_ced88ef1",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-15T03:29:51Z",
+      "side": 1,
+      "message": "still work in progress",
+      "parentUuid": "f482806c_0b23353f",
       "revId": "76afc9f8d2ca15e2cf3bc5a2cd428903ef3575e7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "cd95d984_91aba2fb",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-15T03:29:51Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "b11815d1_52c3c27e",
+      "revId": "76afc9f8d2ca15e2cf3bc5a2cd428903ef3575e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "485f1909_9a3d7708",
         "filename": "bender/bender-base/app/src/main/jni/font.cc",
         "patchSetId": 5
@@ -64,6 +118,41 @@
       "writtenOn": "2019-11-15T03:19:54Z",
       "side": 1,
       "message": "Do we still need the index buffer?",
+      "revId": "76afc9f8d2ca15e2cf3bc5a2cd428903ef3575e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0453957b_66e0e853",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-15T03:29:51Z",
+      "side": 1,
+      "message": "This is for my convenience to write all the indices to the index buffer.\nThis array is only in the scope of this constructor.",
+      "parentUuid": "485f1909_9a3d7708",
+      "revId": "76afc9f8d2ca15e2cf3bc5a2cd428903ef3575e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2b9cbec9_f26879f9",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-15T03:29:51Z",
+      "side": 1,
+      "message": "Right here it would only map once per font object and without mapping it per frame",
       "revId": "76afc9f8d2ca15e2cf3bc5a2cd428903ef3575e7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -87,6 +176,24 @@
     },
     {
       "key": {
+        "uuid": "e57d78f4_e70ba8d5",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-15T03:29:51Z",
+      "side": 1,
+      "message": "I am thinking that this buffer would be used as later rendering font without VB.\nSo I just leave this here... I can remove it for now",
+      "parentUuid": "f76e7dcf_197c2b66",
+      "revId": "76afc9f8d2ca15e2cf3bc5a2cd428903ef3575e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6a2d3874_9479389b",
         "filename": "bender/bender-base/app/src/main/jni/font.h",
         "patchSetId": 5
@@ -101,6 +208,24 @@
       "revId": "76afc9f8d2ca15e2cf3bc5a2cd428903ef3575e7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e4c6951e_7795be8d",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-15T03:29:51Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "6a2d3874_9479389b",
+      "revId": "76afc9f8d2ca15e2cf3bc5a2cd428903ef3575e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -121,6 +246,24 @@
     },
     {
       "key": {
+        "uuid": "70618bdc_bcef289b",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-15T03:29:51Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "5dfb0009_b7ec2b8a",
+      "revId": "76afc9f8d2ca15e2cf3bc5a2cd428903ef3575e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6e1b4248_33d84699",
         "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
         "patchSetId": 5
@@ -135,6 +278,24 @@
       "revId": "76afc9f8d2ca15e2cf3bc5a2cd428903ef3575e7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1fd06cf6_525b19c7",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-15T03:29:51Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "6e1b4248_33d84699",
+      "revId": "76afc9f8d2ca15e2cf3bc5a2cd428903ef3575e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
