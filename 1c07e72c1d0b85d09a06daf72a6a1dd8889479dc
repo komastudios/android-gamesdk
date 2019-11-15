@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c5278e9e_03281332",
+        "filename": "cert/test/reporting/lib/suite_handlers/loader.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-15T23:35:42Z",
+      "side": 1,
+      "message": "Excellent",
+      "revId": "1c07e72c1d0b85d09a06daf72a6a1dd8889479dc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
