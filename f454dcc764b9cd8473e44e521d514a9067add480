@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "c5e593a2_5866f299",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-15T23:29:09Z",
+      "side": 1,
+      "message": "We can start with a scale, where 1.0 is the same pixel size as the number of texels in the original texture.",
+      "parentUuid": "a833fc24_12db6aae",
+      "revId": "f454dcc764b9cd8473e44e521d514a9067add480",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e3f1cacb_41f5095c",
         "filename": "bender/bender-base/app/src/main/jni/font.h",
         "patchSetId": 1
