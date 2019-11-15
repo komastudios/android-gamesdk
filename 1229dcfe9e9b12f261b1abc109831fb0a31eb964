@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "9da67c90_127eb561",
+        "filename": "bender/bender-base/app/src/main/jni/material.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-15T18:30:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9e5cefee_ad557a1d",
+      "revId": "1229dcfe9e9b12f261b1abc109831fb0a31eb964",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "700dd407_e99c3a95",
         "filename": "bender/bender-base/app/src/main/jni/renderer.cc",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2019-11-15T18:26:01Z",
       "side": 1,
       "message": "Is this filling any function right now (or are we planning for it to?)? Right now I believe only getDefaultPipelineInfo is being used?",
+      "revId": "1229dcfe9e9b12f261b1abc109831fb0a31eb964",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "df796d70_fb26275f",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-15T18:30:25Z",
+      "side": 1,
+      "message": "I\u0027ll remove it.",
+      "parentUuid": "700dd407_e99c3a95",
       "revId": "1229dcfe9e9b12f261b1abc109831fb0a31eb964",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -50,6 +86,24 @@
       "revId": "1229dcfe9e9b12f261b1abc109831fb0a31eb964",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c905f93a_68019e01",
+        "filename": "bender/bender-base/app/src/main/jni/shader_state.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-15T18:30:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6ece4dd5_f5c6dfab",
+      "revId": "1229dcfe9e9b12f261b1abc109831fb0a31eb964",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
