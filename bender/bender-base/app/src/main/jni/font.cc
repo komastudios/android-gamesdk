@@ -173,10 +173,16 @@ Font::~Font() {
 }
 
 void Font::createFontShaders(android_app *androidAppCtx) {
-    shader_ = std::make_shared<ShaderState>("sdf", androidAppCtx, renderer_.getDevice().getDevice());
-    shader_->addVertexInputBinding(0, 4 * sizeof(float));
-    shader_->addVertexAttributeDescription(0, 0, VK_FORMAT_R32G32_SFLOAT, 0);
-    shader_->addVertexAttributeDescription(0, 1, VK_FORMAT_R32G32_SFLOAT, 2 * sizeof(float));
+    VertexFormat format = {
+            {
+                VertexElement::float2,
+                VertexElement::float2}
+    };
+
+    shader_ = std::make_shared<ShaderState>("sdf", format, androidAppCtx, renderer_.getDevice().getDevice());
+//    shader_->addVertexInputBinding(0, 4 * sizeof(float));
+//    shader_->addVertexAttributeDescription(0, 0, VK_FORMAT_R32G32_SFLOAT, 0);
+//    shader_->addVertexAttributeDescription(0, 1, VK_FORMAT_R32G32_SFLOAT, 2 * sizeof(float));
 }
 
 void Font::createSampler() {
@@ -385,7 +391,7 @@ void Font::createFontPipeline(VkRenderPass renderPass) {
             .basePipelineIndex = 0,
     };
 
-    shader_->updatePipelineInfo(pipelineInfo);
+    shader_->fillPipelineInfo(&pipelineInfo);
 
     CALL_VK(vkCreateGraphicsPipelines(renderer_.getDevice().getDevice(), cache_, 1, &pipelineInfo,
                                       nullptr, &pipeline_));
