@@ -95,6 +95,30 @@
     },
     {
       "key": {
+        "uuid": "0474f401_31764c2b",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-15T18:43:17Z",
+      "side": 1,
+      "message": "Unless there is a real demonstrable need for a static variable and I can not do it otherwise, I tend to avoid statics like the plague.",
+      "parentUuid": "c5421c67_7ffe72c3",
+      "range": {
+        "startLine": 87,
+        "startChar": 2,
+        "endLine": 87,
+        "endChar": 16
+      },
+      "revId": "1229dcfe9e9b12f261b1abc109831fb0a31eb964",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6ece4dd5_f5c6dfab",
         "filename": "bender/bender-base/app/src/main/jni/shader_state.cc",
         "patchSetId": 1
