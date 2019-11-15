@@ -23,7 +23,9 @@
 
 using namespace BenderHelpers;
 
-Renderer::Renderer(BenderKit::Device& device) : device_(device) {
+Renderer::Renderer(BenderKit::Device& device)
+  : device_(device)
+  , default_states_(device) {
   init();
 }
 
@@ -264,6 +266,19 @@ void Renderer::createLightsDescriptors() {
     vkUpdateDescriptorSets(device_.getDevice(), descriptorWrites.size(), descriptorWrites.data(),
                            0, nullptr);
   }
+}
+
+VkGraphicsPipelineCreateInfo Renderer::getDefaultPipelineInfo(
+        VkPipelineLayout layout,
+        VkRenderPass render_pass) const {
+  VkGraphicsPipelineCreateInfo pipeline_info {
+          .layout = layout,
+          .renderPass = render_pass,
+  };
+
+  getDefaultStates().fillDefaultPipelineCreateInfo(&pipeline_info);
+
+  return pipeline_info;
 }
 
 VkCommandBuffer Renderer::getCurrentCommandBuffer() const {
