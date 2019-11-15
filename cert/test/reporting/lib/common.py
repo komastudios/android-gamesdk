@@ -53,10 +53,13 @@ def ensure_dir(file_path):
         os.makedirs(directory)
 
 
-def create_output_dir():
+def create_output_dir(postfix: str = None):
     """ensure ./out/ exists
     """
     out_dir = "./out"
+    if postfix:
+        out_dir = "./out/" + postfix
+
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
 

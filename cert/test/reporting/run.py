@@ -294,8 +294,11 @@ def run_ftl_deployment(recipe: Dict, apk: Path, tmp_dir: Path):
             shutil.copy(json_file, dst_json_file)
 
             # convert to csv
-            json_file, csv_file = convert_json_report_to_csv(dst_json_file)
-            csv_files.append(csv_file)
+            try:
+                json_file, csv_file = convert_json_report_to_csv(dst_json_file)
+                csv_files.append(csv_file)
+            except:
+                print(f"Unable to convert file {json_file} to CSV")
 
     if render_chart:
         for csv_file in csv_files:
@@ -325,10 +328,17 @@ if __name__ == "__main__":
         recipe = yaml.load(recipe_file, Loader=yaml.FullLoader)
 
     # ensure the out/ dir exists for storing reports/csvs/systraces
-    tmp_dir = create_output_dir()
+    # use the name of the provided configuration, or if none, the yaml file
+    # to specialize the output dir
+    custom_config = dict_lookup(recipe, "build.configuration", fallback=None)
+    if custom_config:
+        prefix = Path(custom_config).stem
+    else:
+        prefix = Path(recipe_path).stem
+
+    tmp_dir = create_output_dir(prefix)
 
     # step one: build the APK
-    custom_config = dict_lookup(recipe, "build.configuration", fallback=None)
 
     apk_path = build_apk(
         clean=dict_lookup(recipe, "build.clean", fallback=False),
