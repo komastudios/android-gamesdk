@@ -85,6 +85,7 @@ float totalTime;
 std::vector<const char *> texFiles;
 std::vector<Texture *> textures;
 std::vector<Material *> materials;
+const std::string sample_string = "B3nDeR V1";
 
 bool windowResized = false;
 
@@ -477,7 +478,7 @@ bool VulkanDrawFrame(Input::Data *inputData) {
     meshes[x]->updatePipeline(render_pass);
     meshes[x]->submitDraw(renderer->getCurrentCommandBuffer(), renderer->getCurrentFrame());
   }
-  font->drawString("B3nDeR V1", 0.0f, 0.0f,
+  font->drawString(sample_string, 2.0f, 0.0f, 0.0f,
                    renderer->getCurrentCommandBuffer(), render_pass, renderer->getCurrentFrame());
 
   vkCmdEndRenderPass(renderer->getCurrentCommandBuffer());
