@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b31709bc_b1ad12b2",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 491,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-15T00:30:27Z",
+      "side": 1,
+      "message": "Just a structural comment - I\u0027d consider putting this code inside the Timer object as a function call, and calling that here instead.",
+      "range": {
+        "startLine": 484,
+        "startChar": 0,
+        "endLine": 491,
+        "endChar": 3
+      },
+      "revId": "19d94914e3c2d3264c21020f1163e83a58687665",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b60ad7a3_ccf1e7c4",
+        "filename": "bender/bender-base/utils/bender_kit/timing.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-15T00:30:27Z",
+      "side": 1,
+      "message": "Can we make this call the systrace brackets here? (enable/disable with a #define?) That way we only need to call this, rather than do both which is redundant.",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 50
+      },
+      "revId": "19d94914e3c2d3264c21020f1163e83a58687665",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "32a450ec_c2a12da8",
+        "filename": "bender/bender-base/utils/bender_kit/timing.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-15T00:30:27Z",
+      "side": 1,
+      "message": "Can we make this call the systrace brackets here? (maybe enable/disable with a #define?) That way we only need to call this, rather than do both which is redundant.",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 49
+      },
+      "revId": "19d94914e3c2d3264c21020f1163e83a58687665",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4cbe429c_8de78a7c",
+        "filename": "bender/bender-base/utils/bender_kit/timing.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-15T00:30:27Z",
+      "side": 1,
+      "message": "Use 1.0E-9 or 1.0/1000000000.0",
+      "range": {
+        "startLine": 13,
+        "startChar": 16,
+        "endLine": 13,
+        "endChar": 30
+      },
+      "revId": "19d94914e3c2d3264c21020f1163e83a58687665",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e0ed619c_1ec75131",
+        "filename": "bender/bender-base/utils/bender_kit/timing.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-15T00:30:27Z",
+      "side": 1,
+      "message": "Use 1.0E-6 or 1.0/1000000.0",
+      "range": {
+        "startLine": 14,
+        "startChar": 17,
+        "endLine": 14,
+        "endChar": 28
+      },
+      "revId": "19d94914e3c2d3264c21020f1163e83a58687665",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b530048b_255ca95e",
+        "filename": "bender/bender-base/utils/bender_kit/timing.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-15T00:30:27Z",
+      "side": 1,
+      "message": "Do you want a category ID as well that can be defined (e.g. all graphics rendering, all post-process effects, all animation, etc etc).",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 2
+      },
+      "revId": "19d94914e3c2d3264c21020f1163e83a58687665",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "13fb52ad_ad62ae0d",
+        "filename": "bender/bender-base/utils/bender_kit/timing.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-15T00:30:27Z",
+      "side": 1,
+      "message": "Feels like we\u0027re missing a Scoped timer class here. For example:\n\nclass ScopedSection {\n  const char* sectionName_;\n  public:\n  ScopedSection( const char* sectionName ) : sectionName_( sectionName ) {\n    FrameTiming.startSection( sectionName_ );\n  }\n\n  ~ScopedSection() {\n    FrameTiming.stopSection( sectionName_);\n  }\n}\n\n... and then you use it to bracket a section. For example:\n\nvoid DoSomething() {\n  {\n    ScopedSection(\"Section One\");\n    DoSomethingForSectionOne();\n  }\n  {\n    ScopedSection(\"Section Two\");\n    DoSomethingForSectionTwo();\n  }\n}",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 19
+      },
+      "revId": "19d94914e3c2d3264c21020f1163e83a58687665",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3de96c7d_4e9e639a",
+        "filename": "bender/bender-base/utils/bender_kit/timing.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2019-11-15T00:30:27Z",
+      "side": 1,
+      "message": "I\u0027d use a const char* const or similar here, and that way you can just include string literals in the usage. a std::string feels a bit heavyweight. \n\nShould also pass it by reference, not by value - copies are expensive, and you want to avoid them if at all possible.",
+      "range": {
+        "startLine": 33,
+        "startChar": 20,
+        "endLine": 33,
+        "endChar": 31
+      },
+      "revId": "19d94914e3c2d3264c21020f1163e83a58687665",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
