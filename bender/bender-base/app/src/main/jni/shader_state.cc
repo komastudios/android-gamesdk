@@ -14,7 +14,7 @@
 
 #include "shader_state.h"
 
-ShaderState::ShaderState(std::string shaderName, const VertexFormat& vertex_format, android_app *app, VkDevice appDevice)
+ShaderState::ShaderState(std::string shaderName, const BenderKit::VertexFormat& vertex_format, android_app *app, VkDevice appDevice)
   : vertex_format_(vertex_format) {
   ShaderState::androidAppCtx = app;
   ShaderState::device = appDevice;

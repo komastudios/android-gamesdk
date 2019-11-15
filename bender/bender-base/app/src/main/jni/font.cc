@@ -2,12 +2,10 @@
 // Created by chingtangyu on 11/11/2019.
 //
 
-#import "font.h"
 #import <string>
 #import <sstream>
 #import <istream>
-
-#include <glm/gtc/matrix_transform.hpp>
+#import "font.h"
 #include "shader_bindings.h"
 
 namespace {
@@ -180,10 +178,10 @@ Font::~Font() {
 }
 
 void Font::createFontShaders(android_app *androidAppCtx) {
-    VertexFormat vertex_format{
+    BenderKit::VertexFormat vertex_format{
             {
-                    VertexElement::float2,
-                    VertexElement::float2,
+                    BenderKit::VertexElement::float2,
+                    BenderKit::VertexElement::float2,
             },
     };
     shader_ = std::make_shared<ShaderState>("sdf", vertex_format, androidAppCtx,

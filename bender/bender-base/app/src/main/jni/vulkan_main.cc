@@ -35,13 +35,13 @@
 #include "texture.h"
 #include "font.h"
 #include "uniform_buffer.h"
-#include "vertex_format.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
 #include "shader_bindings.h"
 
+using namespace BenderKit;
 using namespace BenderHelpers;
 
 /// Global Variables ...
@@ -66,7 +66,7 @@ AttachmentBuffer depthBuffer;
 
 // Android Native App pointer...
 android_app *androidAppCtx = nullptr;
-BenderKit::Device *device;
+Device *device;
 Renderer *renderer;
 
 glm::mat4 view;
@@ -235,9 +235,9 @@ void handleInput(Input::Data *inputData){
 
 void createShaderState() {
   VertexFormat vertex_format { {
-      VertexElement::float3,
-      VertexElement::float3,
-      VertexElement::float2,
+        VertexElement::float3,
+        VertexElement::float3,
+        VertexElement::float2,
       },
   };
 
@@ -303,7 +303,7 @@ void createDepthBuffer() {
 bool InitVulkan(android_app *app) {
   androidAppCtx = app;
 
-  device = new BenderKit::Device(app->window);
+  device = new Device(app->window);
   assert(device->isInitialized());
   device->setObjectName(reinterpret_cast<uint64_t>(device->getDevice()),
       VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, "TEST NAME: VULKAN DEVICE");
