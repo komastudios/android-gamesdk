@@ -78,17 +78,18 @@ unsigned char *Texture::loadFileData(android_app *app, const char *filePath) {
     return img_data;
 }
 
-VkResult Texture::createTexture(unsigned char *imgData, VkImageUsageFlags usage,
-                              VkFlags required_props) {
-if (!(usage | required_props)) {
-    LOGE("Texture: No usage and required_pros");
-    return VK_ERROR_FORMAT_NOT_SUPPORTED;
-}
+VkResult Texture::createTexture(unsigned char *imgData,
+                                VkImageUsageFlags usage,
+                                VkFlags required_props) {
+    if (!(usage | required_props)) {
+        LOGE("Texture: No usage and required_pros");
+        return VK_ERROR_FORMAT_NOT_SUPPORTED;
+    }
 
-VkFormatProperties props;
-vkGetPhysicalDeviceFormatProperties(device_.getPhysicalDevice(), texture_format_, &props);
-assert((props.linearTilingFeatures | props.optimalTilingFeatures) &
-       VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
+    VkFormatProperties props;
+    vkGetPhysicalDeviceFormatProperties(device_.getPhysicalDevice(), texture_format_, &props);
+    assert((props.linearTilingFeatures | props.optimalTilingFeatures) &
+            VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
 
     uint32_t queue_family_index = device_.getQueueFamilyIndex();
     VkImageCreateInfo image_create_info = {
@@ -117,11 +118,11 @@ assert((props.linearTilingFeatures | props.optimalTilingFeatures) &
     };
 
     VkMemoryRequirements mem_reqs;
-    CALL_VK(vkCreateImage(device_.getDevice(), &image_create_info, nullptr,
-                          &image_));
-    vkGetImageMemoryRequirements(device_.getDevice(), image_, &mem_reqs);
-    mem_alloc.allocationSize = mem_reqs.size;
+    CALL_VK(vkCreateImage(device_.getDevice(), &image_create_info, nullptr, &image_));
 
+    vkGetImageMemoryRequirements(device_.getDevice(), image_, &mem_reqs);
+
+    mem_alloc.allocationSize = mem_reqs.size;
     mem_alloc.memoryTypeIndex = BenderHelpers::findMemoryType(mem_reqs.memoryTypeBits,
                                                               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
                                                               device_.getPhysicalDevice());
@@ -131,16 +132,17 @@ assert((props.linearTilingFeatures | props.optimalTilingFeatures) &
     CALL_VK(vkBindImageMemory(device_.getDevice(), image_, mem_, 0));
 
     if (required_props & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) {
+        VkSubresourceLayout layout;
+
         const VkImageSubresource subres = {
                 .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
                 .mipLevel = 0,
                 .arrayLayer = 0,
         };
-        VkSubresourceLayout layout;
-        void* data;
 
         vkGetImageSubresourceLayout(device_.getDevice(), image_, &subres,
                                     &layout);
+        void *data;
         CALL_VK(vkMapMemory(device_.getDevice(), mem_, 0,
                             mem_alloc.allocationSize, 0, &data));
 

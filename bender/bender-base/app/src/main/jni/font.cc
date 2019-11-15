@@ -173,10 +173,14 @@ Font::~Font() {
 }
 
 void Font::createFontShaders(android_app *androidAppCtx) {
-    shader_ = std::make_shared<ShaderState>("sdf", androidAppCtx, renderer_.getDevice().getDevice());
-    shader_->addVertexInputBinding(0, 4 * sizeof(float));
-    shader_->addVertexAttributeDescription(0, 0, VK_FORMAT_R32G32_SFLOAT, 0);
-    shader_->addVertexAttributeDescription(0, 1, VK_FORMAT_R32G32_SFLOAT, 2 * sizeof(float));
+    VertexFormat vertex_format{
+            {
+                    VertexElement::float2,
+                    VertexElement::float2,
+            },
+    };
+    shader_ = std::make_shared<ShaderState>("sdf", vertex_format, androidAppCtx,
+                                            renderer_.getDevice().getDevice());
 }
 
 void Font::createSampler() {

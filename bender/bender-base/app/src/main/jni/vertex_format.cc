@@ -7,7 +7,7 @@
 constexpr VkFormat vertexElementToFormat(VertexElement element) {
   switch (element) {
     case VertexElement::float1: return VK_FORMAT_R32_SFLOAT;
-    case VertexElement::float2: return VK_FORMAT_R32G32B32_SFLOAT;
+    case VertexElement::float2: return VK_FORMAT_R32G32_SFLOAT;
     case VertexElement::float3: return VK_FORMAT_R32G32B32_SFLOAT;
     case VertexElement::float4: return VK_FORMAT_R32G32B32A32_SFLOAT;
   }

@@ -477,6 +477,8 @@ bool VulkanDrawFrame(Input::Data *inputData) {
     meshes[x]->updatePipeline(render_pass);
     meshes[x]->submitDraw(renderer->getCurrentCommandBuffer(), renderer->getCurrentFrame());
   }
+  font->drawString("B3nDeR V1", 0.0f, 0.0f,
+                   renderer->getCurrentCommandBuffer(), render_pass, renderer->getCurrentFrame());
 
   vkCmdEndRenderPass(renderer->getCurrentCommandBuffer());
 
