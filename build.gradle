@@ -95,15 +95,8 @@ abstract class Toolchain {
         def (n) = ndkVersion_ =~ /[0-9]+/;
         return n;
     }
-    public String get2PartNdkVersionNumber() {
-        def (n) = ndkVersion_ =~ /([0-9]+)([.][0-9]+)?/;
-        if (n[2]==null)
-            return n[1] + ".0";
-        else
-            return n[1] + n[2];
-    }
     public String getBuildKey(String arch, String stl, String buildType) {
-        return arch + "_API" + androidVersion_ + "_NDK" + get2PartNdkVersionNumber() + '_' + sanitize(stl)+ '_'+buildType
+        return arch + "_API" + androidVersion_ + "_NDK" + getNdkVersionNumber() + '_' + sanitize(stl)+ '_'+buildType
     }
     protected String getNdkVersionFromPropertiesFile() {
         def f = new File(getAndroidNDKPath(), 'source.properties')
@@ -118,10 +111,8 @@ abstract class Toolchain {
             }
             def ver = props."Pkg.Revision"
             def parts = ver.findAll("[^.]+")
-            if (parts.size()>1)
-                return parts[0] + "." + parts[1]
-            else
-                return parts[0] + ".0"
+	    // Ignore the minor version
+            return parts[0]
         }
     }
     private String sanitize(String s) {
