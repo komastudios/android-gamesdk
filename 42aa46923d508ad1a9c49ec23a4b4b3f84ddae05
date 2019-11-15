@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "52e2d472_ff2e5908",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-15T19:05:10Z",
+      "side": 1,
+      "message": "yep.. basically any free function that is not meant to be used outside of this translation unit",
+      "parentUuid": "8cd234dc_b9131483",
+      "revId": "42aa46923d508ad1a9c49ec23a4b4b3f84ddae05",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7c5e09ea_30577181",
         "filename": "bender/bender-base/app/src/main/jni/font.h",
         "patchSetId": 6
