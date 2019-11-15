@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8a8d85dd_7621754b",
+        "filename": "bender/bender-base/app/src/main/jni/vertex_format.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-15T20:51:23Z",
+      "side": 0,
+      "message": "ooopsie daisy",
+      "revId": "ac97b73f67adad41d8c0b0391c2b9ccfbf817727",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
