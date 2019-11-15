@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "67aa1933_c6d20327",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-15T19:01:10Z",
+      "side": 1,
+      "message": "can you wrap this in an anonymous namespace?",
+      "revId": "42aa46923d508ad1a9c49ec23a4b4b3f84ddae05",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7c5e09ea_30577181",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-15T19:01:10Z",
+      "side": 1,
+      "message": "const std::string \u0026font_texture_path\n\nBasically, always pass std::string as const std::string \u0026",
+      "revId": "42aa46923d508ad1a9c49ec23a4b4b3f84ddae05",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
