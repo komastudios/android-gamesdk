@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "a833fc24_12db6aae",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-15T23:20:52Z",
+      "side": 1,
+      "message": "oh lol how do we define the size of the text? by pixel?",
+      "parentUuid": "8dba073f_d31004bf",
+      "revId": "f454dcc764b9cd8473e44e521d514a9067add480",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e3f1cacb_41f5095c",
         "filename": "bender/bender-base/app/src/main/jni/font.h",
         "patchSetId": 1
@@ -63,6 +81,30 @@
       "revId": "f454dcc764b9cd8473e44e521d514a9067add480",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "681b18dd_5e152b6a",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-15T23:20:52Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "14b45094_45e16994",
+      "range": {
+        "startLine": 29,
+        "startChar": 51,
+        "endLine": 29,
+        "endChar": 57
+      },
+      "revId": "f454dcc764b9cd8473e44e521d514a9067add480",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
