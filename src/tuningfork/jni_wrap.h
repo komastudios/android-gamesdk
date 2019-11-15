@@ -45,6 +45,11 @@ class Object {
                 obj_ = jni_.Cast(o);
         }
     }
+    void release() {
+        jni_.env()->DeleteLocalRef(obj_.obj);
+        jni_.env()->DeleteLocalRef(obj_.clz);
+    }
+
     bool valid() const {
         return obj_.clz!=nullptr;
     }
@@ -71,6 +76,12 @@ class Object {
     void CallSSVMethod(const char* name, const char* a, const char* b) {
         jni_.CallVoidMethod(obj_, name, "(Ljava/lang/String;Ljava/lang/String;)V",
                             jni_.NewString(a).J(), jni_.NewString(b).J());
+    }
+    Object CallAOMethod(const char* name, const char* returnClass) {
+        std::stringstream str;
+        str << "()[L" << returnClass << ";";
+        jobject o = jni_.CallObjectMethod(obj_, name, str.str().c_str());
+        return Object(o, jni_);
     }
     Object CallVOMethod(const char* name, const char* returnClass) {
         std::stringstream str;
@@ -268,6 +279,20 @@ namespace content {
 
 namespace pm {
 
+class FeatureInfo : public java::Object {
+  public:
+    FeatureInfo(const java::Object& o) : java::Object(o) {
+        jni::String jname = jni::String(jni_.env(), 
+                  (jstring)jni_.GetObjectField(obj_, "name", "Ljava/lang/String;").obj); 
+        if(jname.J() != nullptr) name = jname.C();
+        reqGlEsVersion = jni_.GetIntField(obj_, "reqGlEsVersion");
+    }
+    static constexpr int GL_ES_VERSION_UNDEFINED = 0x0000000;
+
+    std::string name;
+    int reqGlEsVersion;
+};
+
 class PackageInfo : public java::Object {
   public:
     PackageInfo(const java::Object& o) : java::Object(o) {}
@@ -286,6 +311,7 @@ class PackageInfo : public java::Object {
                                                                                       "toByteArray",
                                                                                       "()[B"));
                 ret.push_back(jni_.GetByteArrayBytes(bytes));
+                //sig.release();
             }
             return ret;
         }
@@ -304,6 +330,23 @@ class PackageManager : public java::Object {
     PackageInfo getPackageInfo(const std::string& name, int flags) {
         return CallSIOMethod("getPackageInfo", name.c_str(), flags,
                              "android/content/pm/PackageInfo");
+    }
+    std::vector<FeatureInfo> getSystemAvailableFeatures() {
+        auto env = jni_.env();
+        auto jfeatures = CallAOMethod("getSystemAvailableFeatures", 
+                                                "android/content/pm/FeatureInfo");
+        if (jfeatures.obj_.obj == nullptr)  return {};
+        jobjectArray features = reinterpret_cast<jobjectArray>(jfeatures.obj_.obj);
+        int n = env->GetArrayLength(features);
+        std::vector<FeatureInfo> ret;
+        if (n>0) {
+            for (int i=0; i<n; ++i) {
+                FeatureInfo f(Object(env->GetObjectArrayElement(features, i), jni_));
+                ret.push_back(f);
+                //f.release();
+            }
+        }
+        return ret;
     }
 };
 

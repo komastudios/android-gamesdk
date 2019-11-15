@@ -175,6 +175,9 @@ static jclass loadClass(JNIEnv *env,
                             env->RegisterNatives(targetClass, nativeMethods, nativeMethodsSize);
                             ALOGI("Using internal %s class from dex bytes.", name);
                         }
+                        if (imclassloaderObj) {
+                            env->DeleteLocalRef(imclassloaderObj);
+                        }
                     }
                     deleteFile(tempPath);
                 }
@@ -204,7 +207,14 @@ static jclass loadClass(JNIEnv *env,
                 env->RegisterNatives(targetClass, nativeMethods, nativeMethodsSize);
                 ALOGI("Using internal %s class from dex bytes.", name);
             }
+            if (imclassloaderObj) {
+                env->DeleteLocalRef(imclassloaderObj);
+            }
         }
+        if (imclassloaderClass) {
+            env->DeleteLocalRef(imclassloaderClass);
+        }
+
     }
     env->DeleteLocalRef(className);
     return targetClass;

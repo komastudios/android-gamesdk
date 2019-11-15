@@ -39,7 +39,8 @@ namespace apk_utils {
 
     // Get the app's version code. Also fills packageNameStr, if not null, with
     // the package name.
-    int GetVersionCode(const JniCtx& jni, std::string* packageNameStr = nullptr);
+    int GetVersionCode(const JniCtx& jni_ctx, std::string* packageNameStr = nullptr,
+                                                    uint32_t* gl_es_version = nullptr); 
 
     // Get the app's SHA1 signature
     std::string GetSignature(const JniCtx& jni);

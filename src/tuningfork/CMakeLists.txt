@@ -74,7 +74,6 @@ function(build_shared libname version)
   set_target_properties( ${libname}  PROPERTIES COMPILE_OPTIONS "-DPROTOBUF_NANO" )
   target_link_libraries( ${libname}
     android
-    GLESv2
     log)
   set_link_options(${libname} ${version})
 endfunction()
