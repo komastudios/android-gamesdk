@@ -16,13 +16,12 @@
 #define BENDER_BASE_SHADER_STATE_H_
 
 #include "vulkan_wrapper.h"
-
+#include "bender_kit.h"
 #include <android_native_app_glue.h>
 #include <string>
 #include <vector>
 #include <array>
 
-#include "vertex_format.h"
 
 class ShaderState {
  public:
@@ -32,7 +31,7 @@ class ShaderState {
 
   // TODO: passing app and appDevice to each shader state object to just set a static member variable
   // TODO: is bad design. Consider a different approach.
-  ShaderState(std::string shaderName, const VertexFormat& vertex_format, android_app *app, VkDevice appDevice);
+  ShaderState(std::string shaderName, const BenderKit::VertexFormat& vertex_format, android_app *app, VkDevice appDevice);
 
   void updatePipelineInfo(VkGraphicsPipelineCreateInfo &pipelineInfo);
 
@@ -42,7 +41,7 @@ class ShaderState {
   android_app *androidAppCtx;
   VkDevice device;
 
-  VertexFormat vertex_format_;        // TODO: Consider sharing the vertex format across shader states
+  BenderKit::VertexFormat vertex_format_;        // TODO: Consider sharing the vertex format across shader states
 
   VkPipelineInputAssemblyStateCreateInfo pipelineInputAssembly;
 

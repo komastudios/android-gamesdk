@@ -4,6 +4,8 @@
 
 #include "vertex_format.h"
 
+using namespace BenderKit;
+
 constexpr VkFormat vertexElementToFormat(VertexElement element) {
   switch (element) {
     case VertexElement::float1: return VK_FORMAT_R32_SFLOAT;
