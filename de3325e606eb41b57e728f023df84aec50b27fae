@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "85c0ece2_328e984d",
+        "filename": "bender/bender-base/utils/bender_kit/timing.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-16T00:50:56Z",
+      "side": 1,
+      "message": "I was using this to make it easier to traverse nested events (such as when I go through and print out events with the printEvent function) since they are essentially organized in a tree\n\nI guess this bookkeeping also depends on how we actually want to end up consuming this profiling information - like I said for now I just print it to logcat and so this made it easier to traverse",
+      "parentUuid": "dffa9ca7_41f3af51",
+      "revId": "de3325e606eb41b57e728f023df84aec50b27fae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f5894428_63f3fd72",
         "filename": "bender/bender-base/utils/bender_kit/timing.h",
         "patchSetId": 5
@@ -30,6 +48,24 @@
       "writtenOn": "2019-11-16T00:39:32Z",
       "side": 1,
       "message": "Can event be nullptr?",
+      "revId": "de3325e606eb41b57e728f023df84aec50b27fae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a496f927_b96a6b2f",
+        "filename": "bender/bender-base/utils/bender_kit/timing.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-16T00:50:56Z",
+      "side": 1,
+      "message": "No it should always have an object passed in - I should probably put a check in the function for whether a nullptr is passed in",
+      "parentUuid": "f5894428_63f3fd72",
       "revId": "de3325e606eb41b57e728f023df84aec50b27fae",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "12f8ad04_49c8740f",
+        "filename": "bender/bender-base/utils/bender_kit/timing.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-16T00:50:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cb2bb2e8_1658eafd",
+      "revId": "de3325e606eb41b57e728f023df84aec50b27fae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "10be221a_4ea81996",
         "filename": "bender/bender-base/utils/bender_kit/timing.h",
         "patchSetId": 5
@@ -67,6 +121,24 @@
       "revId": "de3325e606eb41b57e728f023df84aec50b27fae",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5e0daee4_13096032",
+        "filename": "bender/bender-base/utils/bender_kit/timing.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-16T00:50:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "10be221a_4ea81996",
+      "revId": "de3325e606eb41b57e728f023df84aec50b27fae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -102,6 +174,24 @@
       "revId": "de3325e606eb41b57e728f023df84aec50b27fae",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e00e06c3_0c89b26e",
+        "filename": "bender/bender-base/utils/bender_kit/timing.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-16T00:50:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a80a19b4_5aab03f9",
+      "revId": "de3325e606eb41b57e728f023df84aec50b27fae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
