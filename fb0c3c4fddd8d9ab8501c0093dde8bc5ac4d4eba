@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "670f327a_0cc8e107",
+        "filename": "bender/bender-base/utils/bender_kit/timing.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-16T00:59:07Z",
+      "side": 1,
+      "message": "Can this function return nullptr?",
+      "revId": "fb0c3c4fddd8d9ab8501c0093dde8bc5ac4d4eba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
