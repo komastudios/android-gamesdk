@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dffa9ca7_41f3af51",
+        "filename": "bender/bender-base/utils/bender_kit/timing.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-16T00:39:32Z",
+      "side": 1,
+      "message": "This bookkeeping feels unnecessary.",
+      "revId": "de3325e606eb41b57e728f023df84aec50b27fae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f5894428_63f3fd72",
+        "filename": "bender/bender-base/utils/bender_kit/timing.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-16T00:39:32Z",
+      "side": 1,
+      "message": "Can event be nullptr?",
+      "revId": "de3325e606eb41b57e728f023df84aec50b27fae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cb2bb2e8_1658eafd",
+        "filename": "bender/bender-base/utils/bender_kit/timing.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-16T00:39:32Z",
+      "side": 1,
+      "message": "current_major_event_num_",
+      "revId": "de3325e606eb41b57e728f023df84aec50b27fae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "10be221a_4ea81996",
+        "filename": "bender/bender-base/utils/bender_kit/timing.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-16T00:39:32Z",
+      "side": 1,
+      "message": "application_start_time_",
+      "revId": "de3325e606eb41b57e728f023df84aec50b27fae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4f22f6a9_3eb4cb0e",
+        "filename": "bender/bender-base/utils/bender_kit/timing.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-16T00:39:32Z",
+      "side": 1,
+      "message": "I think you can get away with just the stack declared as std::stack\u003cEvent\u003e without the need of a pool.",
+      "revId": "de3325e606eb41b57e728f023df84aec50b27fae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
