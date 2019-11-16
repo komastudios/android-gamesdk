@@ -34,6 +34,24 @@
       "revId": "fb0c3c4fddd8d9ab8501c0093dde8bc5ac4d4eba",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a6f1f2c6_566ae8b9",
+        "filename": "bender/bender-base/utils/bender_kit/timing.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-16T01:05:50Z",
+      "side": 1,
+      "message": "So be careful to handle the scenario where the events vector is empty.",
+      "parentUuid": "dfe2ec16_90f13af9",
+      "revId": "fb0c3c4fddd8d9ab8501c0093dde8bc5ac4d4eba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
