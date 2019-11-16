@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "c67d7a6b_ef29ac5c",
+        "filename": "bender/bender-base/utils/bender_kit/timing.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-16T00:53:42Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "85c0ece2_328e984d",
+      "revId": "de3325e606eb41b57e728f023df84aec50b27fae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f5894428_63f3fd72",
         "filename": "bender/bender-base/utils/bender_kit/timing.h",
         "patchSetId": 5
@@ -66,6 +84,24 @@
       "side": 1,
       "message": "No it should always have an object passed in - I should probably put a check in the function for whether a nullptr is passed in",
       "parentUuid": "f5894428_63f3fd72",
+      "revId": "de3325e606eb41b57e728f023df84aec50b27fae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c10a2b0c_4cb3d2ef",
+        "filename": "bender/bender-base/utils/bender_kit/timing.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-16T00:53:42Z",
+      "side": 1,
+      "message": "Or you can pass a reference so you don\u0027t need the check.",
+      "parentUuid": "a496f927_b96a6b2f",
       "revId": "de3325e606eb41b57e728f023df84aec50b27fae",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
