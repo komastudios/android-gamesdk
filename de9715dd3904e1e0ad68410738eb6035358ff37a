@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e3aed6cd_d38038a3",
+        "filename": "src/tuningfork/jni_wrap.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 346,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-11-18T11:03:26Z",
+      "side": 1,
+      "message": "Maybe use RAII and put the call to release() into the FeatureInfo or java::Object destructor?",
+      "revId": "de9715dd3904e1e0ad68410738eb6035358ff37a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
