@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ced69532_e7c5bb76",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-19T23:19:37Z",
+      "side": 1,
+      "message": "I don\u0027t like the clearOffset method, can it be done automatically? It\u0027s an implementation detail, the client should only need to call drawString.",
+      "revId": "dd1937de02bd44e7dd949fe5b1284605f106fe18",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
