@@ -16,6 +16,24 @@
       "revId": "4a427ce76fe7b1852915a24af8634b52fe2a5ab5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1328daf8_f89d91b3",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-19T18:44:05Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "3b7c869b_182f3cea",
+      "revId": "4a427ce76fe7b1852915a24af8634b52fe2a5ab5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
