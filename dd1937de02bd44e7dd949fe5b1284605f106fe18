@@ -16,6 +16,24 @@
       "revId": "dd1937de02bd44e7dd949fe5b1284605f106fe18",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8486a5d6_e94ca318",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-19T23:29:17Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "ced69532_e7c5bb76",
+      "revId": "dd1937de02bd44e7dd949fe5b1284605f106fe18",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
