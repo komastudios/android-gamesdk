@@ -16,6 +16,24 @@
       "revId": "de9715dd3904e1e0ad68410738eb6035358ff37a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "adbd760d_992b5ade",
+        "filename": "src/tuningfork/jni_wrap.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 346,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-11-19T08:23:52Z",
+      "side": 1,
+      "message": "The current version of JNI framework uses deferred garbage collection (see Helper Helper::~Helper()). However, there are several places where the references are cleared manually, or framework is not used (~AssetManagerHelper(), MessageDigest::digest).\nIn this case there was a specific reason to manually intervene. On older phones there\u0027s a limit to number of objects can be created in a JNI session: 512. This leads to an overflow crash because we create many instances of Signature/FeaturInfo. We cannot rely on the deferred cleanup. Therefore I added this manual release method.\nThe reason it is not in the Object::~Object currently, is that adding it there brakes many other things. Specifically, we use copies of objects and destructor is called several time on a single reference for a Java object. This in turn causes crashes. \nFor example in the code above FeatureInfo is copied into a vector. Similarly below the package manager object is copied when getPackageManager is called.\nI believe the right approach is to have consistency, either \n1) use DeleteLocalRef in Object::~Object, and refactor the project to avoid using object copies or use smart pointers\n2) user release method manually throughout the project\nFor now, I suggest to do the release calls to Signature/FeatureInfo.",
+      "parentUuid": "e3aed6cd_d38038a3",
+      "revId": "de9715dd3904e1e0ad68410738eb6035358ff37a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
