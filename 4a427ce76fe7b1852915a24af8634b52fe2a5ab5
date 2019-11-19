@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3b7c869b_182f3cea",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-19T18:43:46Z",
+      "side": 1,
+      "message": "super nit pick: getTrianglesCount()",
+      "revId": "4a427ce76fe7b1852915a24af8634b52fe2a5ab5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
