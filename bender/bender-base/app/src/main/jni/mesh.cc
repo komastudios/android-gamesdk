@@ -203,3 +203,7 @@ glm::mat4 Mesh::getTransform() const {
   glm::mat4 scale = glm::scale(glm::mat4(1.0), scale_);
   return position * glm::mat4(rotation_) * scale;
 }
+
+int Mesh::getTrianglesCount() const {
+  return geometry_->getIndexCount() / 3;
+}
