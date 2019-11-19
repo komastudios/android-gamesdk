@@ -86,27 +86,26 @@ float totalTime;
 std::vector<const char *> texFiles;
 std::vector<Texture *> textures;
 std::vector<Material *> materials;
-const std::string sample_string = "1234567890";
 
 bool windowResized = false;
 
 void createTextures() {
-  Timing::timer.startEvent("Texture Creation");
-  assert(androidAppCtx != nullptr);
-  assert(device != nullptr);
+  Timing::timer.time("Texture Creation", Timing::OTHER, [](){
+    assert(androidAppCtx != nullptr);
+    assert(device != nullptr);
 
-  for (uint32_t i = 0; i < texFiles.size(); ++i) {
-    textures.push_back(new Texture(*device, androidAppCtx, texFiles[i], VK_FORMAT_R8G8B8A8_SRGB));
-  }
-  Timing::timer.stopEvent();
+    for (uint32_t i = 0; i < texFiles.size(); ++i) {
+      textures.push_back(new Texture(*device, androidAppCtx, texFiles[i], VK_FORMAT_R8G8B8A8_SRGB));
+    }
+  });
 }
 
 void createMaterials() {
-  Timing::timer.startEvent("Materials Creation");
-  for (uint32_t i = 0; i < textures.size(); ++i) {
-    materials.push_back(new Material(*renderer, shaders, textures[i], nullptr));
-  }
-  Timing::timer.stopEvent();
+  Timing::timer.time("Materials Creation", Timing::OTHER, [](){
+    for (uint32_t i = 0; i < textures.size(); ++i) {
+      materials.push_back(new Material(*renderer, shaders, textures[i], nullptr));
+    }
+  });
 }
 
 void createFrameBuffers(VkRenderPass &renderPass,
@@ -306,116 +305,115 @@ void createDepthBuffer() {
 }
 
 bool InitVulkan(android_app *app) {
-  Timing::timer.startEvent("Initialization");
-  androidAppCtx = app;
+  Timing::timer.time("Initialization", Timing::OTHER, [app](){
+    androidAppCtx = app;
 
-  device = new Device(app->window);
-  assert(device->isInitialized());
-  device->setObjectName(reinterpret_cast<uint64_t>(device->getDevice()),
-      VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, "TEST NAME: VULKAN DEVICE");
+    device = new Device(app->window);
+    assert(device->isInitialized());
+    device->setObjectName(reinterpret_cast<uint64_t>(device->getDevice()),
+                          VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, "TEST NAME: VULKAN DEVICE");
 
-  VkAttachmentDescription color_description{
-      .format = device->getDisplayFormat(),
-      .samples = VK_SAMPLE_COUNT_1_BIT,
-      .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-      .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-      .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-      .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-      .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-  };
+    VkAttachmentDescription color_description{
+        .format = device->getDisplayFormat(),
+        .samples = VK_SAMPLE_COUNT_1_BIT,
+        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+        .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+    };
 
-  VkAttachmentDescription depth_description{
-      .format = BenderHelpers::findDepthFormat(device),
-      .samples = VK_SAMPLE_COUNT_1_BIT,
-      .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-      .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-      .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-      .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-      .finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-  };
+    VkAttachmentDescription depth_description{
+        .format = BenderHelpers::findDepthFormat(device),
+        .samples = VK_SAMPLE_COUNT_1_BIT,
+        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+        .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+        .finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+    };
 
-  VkAttachmentReference color_attachment_reference = {
-      .attachment = 0,
-      .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-  };
+    VkAttachmentReference color_attachment_reference = {
+        .attachment = 0,
+        .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+    };
 
-  VkAttachmentReference depth_attachment_reference = {
-      .attachment = 1,
-      .layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
-  };
+    VkAttachmentReference depth_attachment_reference = {
+        .attachment = 1,
+        .layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+    };
 
-  VkSubpassDescription subpass_description{
-      .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
-      .flags = 0,
-      .inputAttachmentCount = 0,
-      .pInputAttachments = nullptr,
-      .colorAttachmentCount = 1,
-      .pColorAttachments = &color_attachment_reference,
-      .pResolveAttachments = nullptr,
-      .pDepthStencilAttachment = &depth_attachment_reference,
-      .preserveAttachmentCount = 0,
-      .pPreserveAttachments = nullptr,
-  };
+    VkSubpassDescription subpass_description{
+        .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
+        .flags = 0,
+        .inputAttachmentCount = 0,
+        .pInputAttachments = nullptr,
+        .colorAttachmentCount = 1,
+        .pColorAttachments = &color_attachment_reference,
+        .pResolveAttachments = nullptr,
+        .pDepthStencilAttachment = &depth_attachment_reference,
+        .preserveAttachmentCount = 0,
+        .pPreserveAttachments = nullptr,
+    };
 
-  std::array<VkAttachmentDescription, 2> attachment_descriptions =
-      {color_description, depth_description};
+    std::array<VkAttachmentDescription, 2> attachment_descriptions =
+        {color_description, depth_description};
 
-  VkRenderPassCreateInfo render_pass_createInfo{
-      .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-      .pNext = nullptr,
-      .attachmentCount = static_cast<uint32_t>(attachment_descriptions.size()),
-      .pAttachments = attachment_descriptions.data(),
-      .subpassCount = 1,
-      .pSubpasses = &subpass_description,
-      .dependencyCount = 0,
-      .pDependencies = nullptr,
-  };
-  CALL_VK(vkCreateRenderPass(device->getDevice(), &render_pass_createInfo, nullptr,
-                             &render_pass));
+    VkRenderPassCreateInfo render_pass_createInfo{
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+        .pNext = nullptr,
+        .attachmentCount = static_cast<uint32_t>(attachment_descriptions.size()),
+        .pAttachments = attachment_descriptions.data(),
+        .subpassCount = 1,
+        .pSubpasses = &subpass_description,
+        .dependencyCount = 0,
+        .pDependencies = nullptr,
+    };
+    CALL_VK(vkCreateRenderPass(device->getDevice(), &render_pass_createInfo, nullptr,
+                               &render_pass));
 
-  createShaderState();
+    createShaderState();
 
-  renderer = new Renderer(*device);
+    renderer = new Renderer(*device);
 
-  Timing::timer.startEvent("Mesh Creation");
+    Timing::timer.time("Mesh Creation", Timing::OTHER, [](){
+      texFiles.push_back("textures/sample_texture.png");
 
-  texFiles.push_back("textures/sample_texture.png");
+      createTextures();
 
-  createTextures();
+      createMaterials();
 
-  createMaterials();
+      Timing::timer.time("Create Polyhedron", Timing::OTHER, [](){
+        meshes.push_back(createPolyhedron(*renderer, *materials[0], 20));
+      });
+    });
 
-  Timing::timer.startEvent("Create Polyhedron");
-  meshes.push_back(createPolyhedron(*renderer, *materials[0], 20));
-  Timing::timer.stopEvent();
+    const std::vector<float> vertexData = {
+        -0.5f, -0.5f, 0.5f,          -0.5774f, -0.5774f, 0.5774f,       1.0f, 0.0f,
+        0.5f, -0.5f, 0.5f,           0.5774f, -0.5774f, 0.5774f,        0.0f, 0.0f,
+        0.5f, 0.5f, 0.5f,            0.5774f, 0.5774f, 0.5774f,         0.0f, 1.0f,
+        -0.5f, 0.5f, 0.5f,           -0.5774f, 0.5774f, 0.5774f,      1.0f, 1.0f,
+        0.0f, 0.0f, 0.0f,            0.0f, 1.0f, 0.0f,           0.0f, 0.0f,
+    };
 
-  Timing::timer.stopEvent();
+    const std::vector<u_int16_t> indexData = {
+        1, 2, 4, 2, 1, 0, 0, 3, 2, 2, 3, 4, 3, 0, 4, 0, 1, 4
+    };
 
-  const std::vector<float> vertexData = {
-      -0.5f, -0.5f, 0.5f,          -0.5774f, -0.5774f, 0.5774f,       1.0f, 0.0f,
-      0.5f, -0.5f, 0.5f,           0.5774f, -0.5774f, 0.5774f,        0.0f, 0.0f,
-      0.5f, 0.5f, 0.5f,            0.5774f, 0.5774f, 0.5774f,         0.0f, 1.0f,
-      -0.5f, 0.5f, 0.5f,           -0.5774f, 0.5774f, 0.5774f,      1.0f, 1.0f,
-      0.0f, 0.0f, 0.0f,            0.0f, 1.0f, 0.0f,           0.0f, 0.0f,
-  };
+    createDepthBuffer();
 
-  const std::vector<u_int16_t> indexData = {
-      1, 2, 4, 2, 1, 0, 0, 3, 2, 2, 3, 4, 3, 0, 4, 0, 1, 4
-  };
-  
-  createDepthBuffer();
+    createFrameBuffers(render_pass, depthBuffer.image_view);
 
-  createFrameBuffers(render_pass, depthBuffer.image_view);
+    texFiles.push_back("textures/sample_texture.png");
 
-  texFiles.push_back("textures/sample_texture.png");
+    createTextures();
 
-  createTextures();
+    font = new Font(*renderer, androidAppCtx, FONT_SDF_PATH, FONT_INFO_PATH);
 
-  font = new Font(*renderer, androidAppCtx, FONT_SDF_PATH, FONT_INFO_PATH);
+  });
 
-  Timing::timer.stopEvent();
   Timing::printEvent(*Timing::timer.getLastMajorEvent());
   return true;
 }
@@ -448,7 +446,6 @@ void DeleteVulkan(void) {
 }
 
 bool VulkanDrawFrame(Input::Data *inputData) {
-  Timing::timer.startEvent("Draw Frame");
   if (windowResized) {
     OnOrientationChange();
   }
@@ -457,75 +454,92 @@ bool VulkanDrawFrame(Input::Data *inputData) {
   lastTime = currentTime;
   totalTime += frameTime;
 
-  Timing::timer.startEvent("Handle Input");
-  handleInput(inputData);
-  Timing::timer.stopEvent();
+  Timing::timer.time("Handle Input", Timing::OTHER, [inputData]() {
+    handleInput(inputData);
+  });
 
   renderer->beginFrame();
-  renderer->beginPrimaryCommandBufferRecording();
+  Timing::timer.time("Start Frame", Timing::START_FRAME, []() {
+    Timing::timer.time("PrimaryCommandBufferRecording", Timing::START_FRAME, []() {
+      renderer->beginPrimaryCommandBufferRecording();
 
-  // Now we start a renderpass. Any draw command has to be recorded in a
-  // renderpass
-  std::array<VkClearValue, 2> clear_values = {};
-  clear_values[0].color = {{0.0f, 0.34f, 0.90f, 1.0}};
-  clear_values[1].depthStencil = {1.0f, 0};
+      // Now we start a renderpass. Any draw command has to be recorded in a
+      // renderpass
+      std::array<VkClearValue, 2> clear_values = {};
+      clear_values[0].color = {{0.0f, 0.34f, 0.90f, 1.0}};
+      clear_values[1].depthStencil = {1.0f, 0};
 
-  VkRenderPassBeginInfo render_pass_beginInfo{
-      .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-      .pNext = nullptr,
-      .renderPass = render_pass,
-      .framebuffer = framebuffers_[renderer->getCurrentFrame()],
-      .renderArea = {.offset =
-          {
-              .x = 0, .y = 0,
-          },
-          .extent = device->getDisplaySize()},
-      .clearValueCount = static_cast<uint32_t>(clear_values.size()),
-      .pClearValues = clear_values.data(),
-  };
+      VkRenderPassBeginInfo render_pass_beginInfo{
+          .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+          .pNext = nullptr,
+          .renderPass = render_pass,
+          .framebuffer = framebuffers_[renderer->getCurrentFrame()],
+          .renderArea = {.offset =
+              {
+                  .x = 0, .y = 0,
+              },
+              .extent = device->getDisplaySize()},
+          .clearValueCount = static_cast<uint32_t>(clear_values.size()),
+          .pClearValues = clear_values.data(),
+      };
 
-  Timing::timer.startEvent("Render Pass");
-  vkCmdBeginRenderPass(renderer->getCurrentCommandBuffer(), &render_pass_beginInfo,
-                       VK_SUBPASS_CONTENTS_INLINE);
+      Timing::timer.time("Render Pass", Timing::OTHER, [render_pass_beginInfo]() {
+        vkCmdBeginRenderPass(renderer->getCurrentCommandBuffer(), &render_pass_beginInfo,
+                             VK_SUBPASS_CONTENTS_INLINE);
 
-  device->insertDebugMarker(renderer->getCurrentCommandBuffer(), "TEST MARKER: PIPELINE BINDING",
-                            {1.0f, 0.0f, 1.0f, 0.0f});
+        device->insertDebugMarker(renderer->getCurrentCommandBuffer(),
+                                  "TEST MARKER: PIPELINE BINDING",
+                                  {1.0f, 0.0f, 1.0f, 0.0f});
 
-  int total_triangles = 0;
-  for (int x = 0; x < meshes.size(); x++){
-    meshes[x]->updatePipeline(render_pass);
-    meshes[x]->submitDraw(renderer->getCurrentCommandBuffer(), renderer->getCurrentFrame());
-    total_triangles += meshes[x]->getTrianglesCount();
-  }
+        int total_triangles = 0;
+        for (int x = 0; x < meshes.size(); x++) {
+          meshes[x]->updatePipeline(render_pass);
+          meshes[x]->submitDraw(renderer->getCurrentCommandBuffer(), renderer->getCurrentFrame());
+          total_triangles += meshes[x]->getTrianglesCount();
+        }
 
-  char output_string[50];
-  if(meshes.size() > 1){
-    sprintf(output_string, "%d meshes", (int)meshes.size());
-  } else {
-    sprintf(output_string, "%d mesh", (int)meshes.size());
-  }
-  if(total_triangles > 1){
-    sprintf(output_string+strlen(output_string), " %d triangles", total_triangles);
-  } else {
-    sprintf(output_string+strlen(output_string), " %d triangle", total_triangles);
-  }
-  font->drawString(output_string, 1.0f, -0.98f, 0.75f,
-                   renderer->getCurrentCommandBuffer(), render_pass, renderer->getCurrentFrame());
-  for(int i = 0; i < 24; ++i) {
-    font->drawString(sample_string, 1.0f, -0.98f, 0.5f - i*0.05f,
-                     renderer->getCurrentCommandBuffer(), render_pass, renderer->getCurrentFrame());
-  }
-  vkCmdEndRenderPass(renderer->getCurrentCommandBuffer());
-  Timing::timer.stopEvent();
+        char output_string[50];
+        if (meshes.size() > 1) {
+          sprintf(output_string, "%d meshes", (int) meshes.size());
+        } else {
+          sprintf(output_string, "%d mesh", (int) meshes.size());
+        }
+        if (total_triangles > 1) {
+          sprintf(output_string + strlen(output_string), " %d triangles", total_triangles);
+        } else {
+          sprintf(output_string + strlen(output_string), " %d triangle", total_triangles);
+        }
+        font->drawString(output_string,
+                         1.0f,
+                         -0.98f,
+                         0.75f,
+                         renderer->getCurrentCommandBuffer(),
+                         render_pass,
+                         renderer->getCurrentFrame());
 
-  renderer->endPrimaryCommandBufferRecording();
-  Timing::timer.startEvent("End Frame");
-  renderer->endFrame();
-  Timing::timer.stopEvent();
-
-  Timing::timer.stopEvent();
-  Timing::printEvent(*Timing::timer.getLastMajorEvent());
-
+        int fps;
+        float frametime;
+        char fpsString[50];
+        Timing::timer.getFramerate(100,
+                                   Timing::timer.getLastMajorEvent()->number,
+                                   &fps,
+                                   &frametime);
+        sprintf(fpsString, "%2.d FPS  %.3f ms", fps, frametime);
+        font->drawString(fpsString,
+                         1.0f,
+                         -.98f,
+                         -.98f,
+                         renderer->getCurrentCommandBuffer(),
+                         render_pass,
+                         renderer->getCurrentFrame());
+        vkCmdEndRenderPass(renderer->getCurrentCommandBuffer());
+      });
+      renderer->endPrimaryCommandBufferRecording();
+    });
+    Timing::timer.time("End Frame", Timing::OTHER, []() {
+      renderer->endFrame();
+    });
+  });
   return true;
 }
 
