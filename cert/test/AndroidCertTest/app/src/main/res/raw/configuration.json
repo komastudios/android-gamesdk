@@ -207,6 +207,25 @@
       },
       "stressors": [
       ]
+    },
+    {
+      "enabled": true,
+      "name": "WorkLoadConfigurationTest",
+      "description": "I/O workload throughput",
+      "duration": "100ms",
+      "data_gatherer": {
+        "id": "WorkLoadConfigurationTest",
+        "configuration": {
+          "file_location" : "create_file",
+          "thread_setup" : "all_core",
+          "read_scheme" : "interleaved",
+          "data_size" : 12800000,
+          "buffer_size": 64,
+          "read_align" : 0
+        }
+      },
+      "stressors": [
+      ]
     }
   ]
 }
