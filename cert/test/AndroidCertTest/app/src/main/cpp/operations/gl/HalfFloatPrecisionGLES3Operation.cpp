@@ -54,6 +54,7 @@ JSON_CONVERTER(configuration) {
 //------------------------------------------------------------------------------
 
 struct datum {
+    bool is_correct;
     int offset;
     int expected_r;
     int expected_g;
@@ -67,6 +68,7 @@ struct datum {
 };
 
 JSON_WRITER(datum) {
+    JSON_OPTVAR(is_correct);
     JSON_OPTVAR(offset);
     JSON_OPTVAR(expected_r);
     JSON_OPTVAR(expected_g);
@@ -90,15 +92,16 @@ class HalfFloatPrecisionGLES3Operation : public BaseGLES3Operation {
         Log::D(TAG, "GlContextReady");
         _configuration = GetConfiguration<configuration>();
 
-        SetHeartbeatPeriod(10ms);
+        SetHeartbeatPeriod(500ms);
 
         // Create and compile our GLSL program from the shaders
 
-        auto
-            vertex_file = "Shaders/HalfFloatPrecisionGLES3Operation/shader.vsh";
-        auto
-            fragment_file =
-            "Shaders/HalfFloatPrecisionGLES3Operation/shader.fsh";
+        auto vertex_file =
+                "Shaders/HalfFloatPrecisionGLES3Operation/shader.vsh";
+
+        auto fragment_file =
+              "Shaders/HalfFloatPrecisionGLES3Operation/shader.fsh";
+
         _program_id = CreateProgram(vertex_file, fragment_file);
         glh::CheckGlError("created program");
 
@@ -108,8 +111,8 @@ class HalfFloatPrecisionGLES3Operation : public BaseGLES3Operation {
         }
         glh::CheckGlError("looked up offset");
 
-        static const float vertex_length = 0.9f;
-        static const GLfloat g_vertex_buffer_data[] = {
+        const float vertex_length = 0.9f;
+        const GLfloat g_vertex_buffer_data[] = {
             -vertex_length, +vertex_length, 0,
             -vertex_length, -vertex_length, 0,
             +vertex_length, +vertex_length, 0,
@@ -136,7 +139,7 @@ class HalfFloatPrecisionGLES3Operation : public BaseGLES3Operation {
             GL_FLOAT,           // type
             GL_FALSE,           // normalized?
             0,                  // stride
-            (void *) 0            // array buffer offset
+            nullptr            // array buffer offset
         );
         glEnableVertexAttribArray(0);
 
@@ -160,49 +163,52 @@ class HalfFloatPrecisionGLES3Operation : public BaseGLES3Operation {
         int col_width = size.x;
         int row_height = size.y;
 
-        getPixels(col_width, row_height);
+        if (_did_update_color_offset) {
+          getPixels(col_width, row_height);
+          _did_update_color_offset = false;
+        }
     }
 
     void getPixels(int x, int y) {
-        std::vector<unsigned char> data(4 * x * y);
+        // TODO(shamyl@google.com) Handle R8G8B8A8 contexts if needed
+        std::vector<unsigned char> data(static_cast<unsigned long>(3 * x * y));
 
         glFinish();
         glReadPixels
             (
                 0, 0,
                 x, y,
-                GL_RGBA, GL_UNSIGNED_BYTE, &data[0]
+                GL_RGB, GL_UNSIGNED_BYTE, &data[0]
             );
-        int position = (x * y / 2) + (x / 4);
-        std::array<int, 4> actualColor = {data[position], data[position + 1],
-                                          data[position + 2],
-                                          data[position + 3]};
-        std::array<int, 4> expectedColor = {255, 0, 0, 255};
 
-        bool is_equal =
+        int position = (x * y / 2) + (x / 3);
+        std::array<int, 3> actualColor = {data[position], data[position + 1],
+                                          data[position + 2]};
+        std::array<int, 3> expectedColor = {255, 0, 0};
+
+        bool is_expected =
             actualColor[0] == expectedColor[0] &&
                 actualColor[1] == expectedColor[1] &&
-                actualColor[2] == expectedColor[2] &&
-                actualColor[3] == expectedColor[3];
+                actualColor[2] == expectedColor[2];
 
-        if (!is_equal) {
+        Report(datum{
+            is_expected,
+            _color_offset,
+            expectedColor[0], expectedColor[1], expectedColor[2],
+            0, actualColor[0], actualColor[1],
+            actualColor[2], 0
+        });
+
+        if (!is_expected) {
             Log::D(
                 TAG, "Vector is not normalized expected: offset: %d "
                      "(%d,%d,%d,%d) received: (%d,%d,%d,%d)",
                 _color_offset,
                 expectedColor[0], expectedColor[1],
-                expectedColor[2], expectedColor[3],
+                expectedColor[2], 0,
                 actualColor[0], actualColor[1],
-                actualColor[2], actualColor[3]
+                actualColor[2], 0
             );
-
-            Report(
-                datum{
-                    _color_offset,
-                    expectedColor[0], expectedColor[1], expectedColor[2],
-                    expectedColor[3], actualColor[0], actualColor[1],
-                    actualColor[2], actualColor[3]
-                });
         }
 
         glh::CheckGlError("check read pixels");
@@ -213,6 +219,7 @@ class HalfFloatPrecisionGLES3Operation : public BaseGLES3Operation {
            reaches MAX_COLOR*/
         _color_offset += 16;
         if (_color_offset > MAX_COLOR) { _color_offset = 0; }
+        _did_update_color_offset = true;
     }
 
  private:
@@ -222,6 +229,7 @@ class HalfFloatPrecisionGLES3Operation : public BaseGLES3Operation {
     GLuint _program_id = 0;
     GLint _offset_uniform_id = -1;
     int _color_offset = 0;
+    bool _did_update_color_offset = false;
     int MAX_COLOR = 255;
 };
 
