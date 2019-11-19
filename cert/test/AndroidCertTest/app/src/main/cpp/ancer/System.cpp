@@ -26,7 +26,7 @@
 using namespace ancer;
 
 
-//==================================================================================================
+//==============================================================================
 
 namespace {
     Log::Tag TAG{"ancer::system"};
@@ -34,7 +34,7 @@ namespace {
     JavaVM* _java_vm;
 }
 
-//==================================================================================================
+//==============================================================================
 
 namespace {
     // Returns if we need to be detached.
@@ -72,7 +72,7 @@ namespace {
     }
 } // anonymous namespace
 
-//==================================================================================================
+//==============================================================================
 
 void ancer::internal::SetJavaVM(JavaVM* vm) {
     _java_vm = vm;
@@ -93,7 +93,7 @@ void ancer::internal::UnbindJNI() {
             });
 }
 
-//==================================================================================================
+//==============================================================================
 
 std::string ancer::LoadText(const char* file_name) {
     std::string text;
@@ -106,8 +106,10 @@ std::string ancer::LoadText(const char* file_name) {
                 jmethodID get_asset_helpers_mid = env->GetMethodID(
                         activity_class, "getSystemHelpers",
                         "()Lcom/google/gamesdk/gamecert/operationrunner/util/SystemHelpers;");
-                jobject asset_helpers_instance = env->CallObjectMethod(activity, get_asset_helpers_mid);
-                jclass asset_helpers_class = env->GetObjectClass(asset_helpers_instance);
+                jobject asset_helpers_instance =
+                    env->CallObjectMethod(activity, get_asset_helpers_mid);
+                jclass asset_helpers_class =
+                    env->GetObjectClass(asset_helpers_instance);
 
 
                 jmethodID load_text_mid = env->GetMethodID(
@@ -118,7 +120,8 @@ std::string ancer::LoadText(const char* file_name) {
                         name);
 
                 if ( result_j_string ) {
-                    const char* result_utf_ptr = env->GetStringUTFChars(result_j_string, nullptr);
+                    const char* result_utf_ptr =
+                        env->GetStringUTFChars(result_j_string, nullptr);
                     text = std::string(result_utf_ptr);
                     env->ReleaseStringUTFChars(result_j_string, result_utf_ptr);
                 }
@@ -129,7 +132,7 @@ std::string ancer::LoadText(const char* file_name) {
     return text;
 }
 
-//==================================================================================================
+//==============================================================================
 
 GLuint ancer::CreateProgram(const char* vtx_file_name, const char* frg_file_name) {
     std::string vtx_src = LoadText(vtx_file_name);
@@ -140,7 +143,7 @@ GLuint ancer::CreateProgram(const char* vtx_file_name, const char* frg_file_name
     return 0;
 }
 
-//==================================================================================================
+//==============================================================================
 
 GLuint ancer::LoadTexture(
         const char* file_name, int32_t* out_width,
@@ -154,8 +157,10 @@ GLuint ancer::LoadTexture(
 
                 glGenTextures(1, &tex);
                 glBindTexture(GL_TEXTURE_2D, tex);
-                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameterf(GL_TEXTURE_2D,
+                    GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+                glTexParameterf(GL_TEXTURE_2D,
+                    GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
                 jmethodID get_asset_helpers_mid = env->GetMethodID(
                         activity_class,
@@ -164,7 +169,8 @@ GLuint ancer::LoadTexture(
                 jobject asset_helpers_instance = env->CallObjectMethod(
                         activity,
                         get_asset_helpers_mid);
-                jclass asset_helpers_class = env->GetObjectClass(asset_helpers_instance);
+                jclass asset_helpers_class =
+                    env->GetObjectClass(asset_helpers_instance);
 
                 jmethodID load_texture_mid = env->GetMethodID(
                         asset_helpers_class, "loadTexture",
@@ -190,7 +196,8 @@ GLuint ancer::LoadTexture(
                     *out_width = 0;
                     *out_height = 0;
                     if ( has_alpha ) *has_alpha = false;
-                    FatalError(TAG, "loadTexture - unable to load \"%s\"", file_name);
+                    FatalError(TAG, "loadTexture - unable to load \"%s\"",
+                        file_name);
                 } else {
                     *out_width = width;
                     *out_height = height;
@@ -207,7 +214,7 @@ GLuint ancer::LoadTexture(
     return tex;
 }
 
-//==================================================================================================
+//==============================================================================
 
 MemoryInfo ancer::GetMemoryInfo() {
     auto info = MemoryInfo{};
@@ -225,7 +232,8 @@ MemoryInfo ancer::GetMemoryInfo() {
                 jobject system_helpers_instance = env->CallObjectMethod(
                         activity,
                         get_system_helpers_mid);
-                jclass system_helpers_class = env->GetObjectClass(system_helpers_instance);
+                jclass system_helpers_class =
+                    env->GetObjectClass(system_helpers_instance);
 
                 jmethodID get_memory_info_mid = env->GetMethodID(
                         system_helpers_class, "getMemoryInfo",
@@ -266,7 +274,7 @@ MemoryInfo ancer::GetMemoryInfo() {
     return info;
 }
 
-//==================================================================================================
+//==============================================================================
 
 ThermalStatus ancer::GetThermalStatus() {
     ThermalStatus status = ThermalStatus::Unknown;
@@ -285,14 +293,16 @@ ThermalStatus ancer::GetThermalStatus() {
                 jobject system_helpers_instance = env->CallObjectMethod(
                         activity,
                         get_system_helpers_mid);
-                jclass system_helpers_class = env->GetObjectClass(system_helpers_instance);
+                jclass system_helpers_class =
+                    env->GetObjectClass(system_helpers_instance);
 
                 jmethodID get_thermal_status_mid = env->GetMethodID(
                         system_helpers_class, "getCurrentThermalStatus", "()I");
 
                 // we assume that the java api will return one of the defined thermal status
                 // values, but the api is new as of Q and AFAIK only supported on pixel
-                jint status_int = env->CallIntMethod(system_helpers_instance, get_thermal_status_mid);
+                jint status_int =
+                    env->CallIntMethod(system_helpers_instance, get_thermal_status_mid);
                 if ( status_int >= 0 && status_int <= 6 ) {
                     status = static_cast<ThermalStatus>(status_int);
                 }
@@ -301,7 +311,7 @@ ThermalStatus ancer::GetThermalStatus() {
     return status;
 }
 
-//==================================================================================================
+//==============================================================================
 
 void ancer::RunSystemGc() {
     JniCallInAttachedThread(
@@ -320,13 +330,14 @@ void ancer::RunSystemGc() {
                         get_system_helpers_mid);
                 jclass system_helpers_class = env->GetObjectClass(system_helpers_instance);
 
-                jmethodID run_gc_mid = env->GetMethodID(system_helpers_class, "runGc", "()V");
+                jmethodID run_gc_mid =
+                    env->GetMethodID(system_helpers_class, "runGc", "()V");
 
                 env->CallVoidMethod(system_helpers_instance, run_gc_mid);
             });
 }
 
-//==================================================================================================
+//==============================================================================
 
 void ancer::SetThreadAffinity(int threadIndex) {
     auto numCores = std::thread::hardware_concurrency();
@@ -351,7 +362,7 @@ void ancer::SetThreadAffinity(int threadIndex) {
     }
 }
 
-//==================================================================================================
+//==============================================================================
 
 jclass ancer::RetrieveClass(JNIEnv* env, jobject activity, const char* className) {
     jclass activity_class = env->GetObjectClass(activity);
@@ -363,16 +374,74 @@ jclass ancer::RetrieveClass(JNIEnv* env, jobject activity, const char* className
             class_loader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
 
     jstring jstr_class_name = env->NewStringUTF(className);
-    auto class_retrieved = (jclass)env->CallObjectMethod(cls, find_class, jstr_class_name);
+    auto class_retrieved =
+        (jclass)env->CallObjectMethod(cls, find_class, jstr_class_name);
     env->DeleteLocalRef(jstr_class_name);
     env->DeleteLocalRef(activity_class);
     env->DeleteLocalRef(class_loader);
     return class_retrieved;
 }
 
-//==================================================================================================
+//==============================================================================
 
 FpsCalculator& ancer::GetFpsCalculator() {
     static FpsCalculator fps_calc;
     return fps_calc;
 }
+
+void ancer::BridgeGLContextConfiguration(GLContextConfig src_config,
+                                         jobject dst_config)
+{
+  JniCallInAttachedThread(
+      [src_config, dst_config](JNIEnv* env) {
+        jobject activity = env->NewLocalRef(_activity_weak_global_ref);
+
+        jclass java_cls = RetrieveClass(
+            env, activity,
+            "com/google/gamesdk/gamecert/operationrunner/hosts/BaseGLHostActivity$GLContextConfiguration");
+
+        jfieldID red_bits = env->GetFieldID(java_cls, "redBits", "I");
+        jfieldID green_bits = env->GetFieldID(java_cls, "greenBits", "I");
+        jfieldID blue_bits = env->GetFieldID(java_cls, "blueBits", "I");
+        jfieldID alpha_bits = env->GetFieldID(java_cls, "alphaBits", "I");
+        jfieldID depth_bits = env->GetFieldID(java_cls, "depthBits", "I");
+        jfieldID stencil_bits = env->GetFieldID(java_cls, "stencilBits", "I");
+
+        env->SetIntField(dst_config, red_bits, src_config.red_bits);
+        env->SetIntField(dst_config, green_bits, src_config.green_bits);
+        env->SetIntField(dst_config, blue_bits, src_config.blue_bits);
+        env->SetIntField(dst_config, alpha_bits, src_config.alpha_bits);
+        env->SetIntField(dst_config, depth_bits, src_config.depth_bits);
+        env->SetIntField(dst_config, stencil_bits, src_config.stencil_bits);
+      });
+}
+
+GLContextConfig ancer::BridgeGLContextConfiguration(jobject src_config)
+{
+  GLContextConfig dst_config;
+  JniCallInAttachedThread(
+      [src_config, &dst_config](JNIEnv* env) {
+        jobject activity = env->NewLocalRef(_activity_weak_global_ref);
+
+        jclass java_cls = RetrieveClass(
+            env, activity,
+            "com/google/gamesdk/gamecert/operationrunner/hosts/BaseGLHostActivity$GLContextConfiguration");
+
+        jfieldID red_bits = env->GetFieldID(java_cls, "redBits", "I");
+        jfieldID green_bits = env->GetFieldID(java_cls, "greenBits", "I");
+        jfieldID blue_bits = env->GetFieldID(java_cls, "blueBits", "I");
+        jfieldID alpha_bits = env->GetFieldID(java_cls, "alphaBits", "I");
+        jfieldID depth_bits = env->GetFieldID(java_cls, "depthBits", "I");
+        jfieldID stencil_bits = env->GetFieldID(java_cls, "stencilBits", "I");
+
+        dst_config.red_bits = env->GetIntField(src_config, red_bits);
+        dst_config.green_bits = env->GetIntField(src_config, green_bits);
+        dst_config.blue_bits = env->GetIntField(src_config, blue_bits);
+        dst_config.alpha_bits = env->GetIntField(src_config, alpha_bits);
+        dst_config.depth_bits = env->GetIntField(src_config, depth_bits);
+        dst_config.stencil_bits = env->GetIntField(src_config, stencil_bits);
+      });
+
+  return dst_config;
+}
+

@@ -20,12 +20,14 @@
 #include <exception>
 #include <memory>
 #include <string>
+#include <optional>
 
 #include <EGL/egl.h>
 #include <GLES3/gl32.h>
 #include <Trace.h>
 
 #include "Reporting.hpp"
+#include "System.hpp"
 #include "util/Error.hpp"
 #include "util/FpsCalculator.hpp"
 #include "util/GLHelpers.hpp"
@@ -39,6 +41,8 @@
     MACRO_CONCAT( trace_, __COUNTER__ )( desc )
 
 namespace ancer {
+
+
     /**
      * Base class for Operations
      */
@@ -132,11 +136,22 @@ namespace ancer {
                     std::memory_order_relaxed);
         }
 
+        /*
+         * If an operation chooses to return a GLContextConfig, and if that
+         * operation is the "data gatherer" for a suite, its context
+         * configuration will be used to create the gl context if possible,
+         * otherwise a safe fallback context configuration will be used.
+         */
+        virtual std::optional<GLContextConfig> GetGLContextConfiguration() const {
+            return std::nullopt;
+        }
+
         /**
-         * Callback invoked when the opengl context is ready.
+         * Callback invoked when the opengl context is ready, passing the gl
+         * context configuration used
          * NOTE: Non-OpenGL operations can ignore this.
          */
-        virtual void OnGlContextReady() {}
+        virtual void OnGlContextReady(const GLContextConfig &ctxConfig) {}
 
         /**
          * Callback invoked when its time to render.

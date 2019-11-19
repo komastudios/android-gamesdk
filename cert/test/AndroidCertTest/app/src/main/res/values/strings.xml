@@ -7,5 +7,5 @@
     <string name="dialog_button_execute_then_terminate">Execute then Terminate</string>
     <string name="dialog_message_exec_then_terminate">After test suite \"%1$s\" completes, AndroidCertTest will terminate</string>
     <string name="dialog_title_crash_warning">Last test crashed!</string>
-    <string name="dialog_message_crash_warning">The report log from the last test run is preserved; extract it now. The next run of this app will overwrite the report log</string>
+    <string name="dialog_message_crash_warning">We crashed on last run. Click Terminate to kill this app now to preserve the log.</string>
 </resources>
