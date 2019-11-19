@@ -10,7 +10,7 @@
   "stress_tests": [
     {
       "enabled": true,
-      "name": "I/O Performance Test",
+      "name": "Workload Configuration Test",
       "description": "Reads data from a file",
       "duration": "10sec",
       "data_gatherer": {
