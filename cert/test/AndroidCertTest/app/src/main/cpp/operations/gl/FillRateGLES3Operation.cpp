@@ -432,7 +432,7 @@ public:
         for ( auto& r : _renderers ) r->DeleteGlResources();
     }
 
-    void OnGlContextReady() override {
+    void OnGlContextReady(const GLContextConfig &ctx_config) override {
         _configuration = GetConfiguration<configuration>();
         _current_configuration = _configuration;
         SetHeartbeatPeriod(1000ms);

@@ -10,6 +10,30 @@
   "stress_tests": [
     {
       "enabled": true,
+      "name": "32bit Depth Clear",
+      "description": "Tests expected behavior when using a 32-bit depth buffer and clearing to different depth values",
+      "duration": "1m",
+      "data_gatherer": {
+        "id": "DepthClearGLES3Operation",
+        "configuration": {
+        }
+      },
+      "host": "GLSurfaceViewHostActivity"
+    },
+    {
+      "enabled": true,
+      "name": "32bit Depth Clear",
+      "description": "Tests expected behavior when using a 32-bit depth buffer and clearing to different depth values",
+      "duration": "1m",
+      "data_gatherer": {
+        "id": "DepthClearGLES3Operation",
+        "configuration": {
+        }
+      },
+      "host": "SwappyGLHostActivity"
+    },
+    {
+      "enabled": true,
       "name": "Affinity Test",
       "description": "Attempts to set affinity to each available processor and validate our selection 'sticks'.",
       "duration": "10s",

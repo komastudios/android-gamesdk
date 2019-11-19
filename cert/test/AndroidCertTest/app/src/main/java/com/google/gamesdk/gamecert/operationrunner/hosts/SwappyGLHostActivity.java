@@ -31,7 +31,7 @@ import com.google.gamesdk.R;
 import com.google.gamesdk.gamecert.operationrunner.transport.Configuration;
 import com.google.gamesdk.gamecert.operationrunner.util.NativeInvoker;
 
-public class SwappyGLHostActivity extends BaseHostActivity
+public class SwappyGLHostActivity extends BaseGLHostActivity
         implements Choreographer.FrameCallback, SurfaceHolder.Callback {
 
     public static final String ID = "SwappyGLHostActivity";
@@ -53,10 +53,13 @@ public class SwappyGLHostActivity extends BaseHostActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        GLContextConfiguration configuration = getGLContextConfiguration();
+        GLContextConfiguration fallbackConfiguration = getDefaultGLContextConfiguration();
+
         SurfaceView surfaceView = findViewById(R.id.surfaceView);
         surfaceView.getHolder().addCallback(this);
 
-        NativeInvoker.swappyGLHost_Init(this);
+        NativeInvoker.swappyGLHost_Init(this, configuration, fallbackConfiguration);
         NativeInvoker.swappyGLHost_SetAutoSwapInterval(true);
     }
 
