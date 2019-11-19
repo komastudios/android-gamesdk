@@ -47,17 +47,17 @@ Renderer::~Renderer() {
 }
 
 void Renderer::beginFrame() {
-  Timing::timer.startEvent("vkAcquireNextImageKHR");
-  uint32_t nextIndex;
-  CALL_VK(vkAcquireNextImageKHR(device_.getDevice(), device_.getSwapchain(),
-                                UINT64_MAX, acquire_image_semaphore_[getCurrentFrame()], VK_NULL_HANDLE,
-                                &nextIndex));
-  Timing::timer.stopEvent();
+  Timing::timer.time("vkAcquireNextImageKHR", Timing::OTHER, [this](){
+    uint32_t nextIndex;
+    CALL_VK(vkAcquireNextImageKHR(device_.getDevice(), device_.getSwapchain(),
+                                  UINT64_MAX, acquire_image_semaphore_[getCurrentFrame()], VK_NULL_HANDLE,
+                                  &nextIndex));
+  });
 
-  Timing::timer.startEvent("vkWaitForFences");
-  CALL_VK(vkWaitForFences(device_.getDevice(), 1, &fence_[getCurrentFrame()], VK_TRUE, 100000000));
-  CALL_VK(vkResetFences(device_.getDevice(), 1, &fence_[getCurrentFrame()]));
-  Timing::timer.stopEvent();
+  Timing::timer.time("vkWaitForFences", Timing::OTHER, [this](){
+    CALL_VK(vkWaitForFences(device_.getDevice(), 1, &fence_[getCurrentFrame()], VK_TRUE, 100000000));
+    CALL_VK(vkResetFences(device_.getDevice(), 1, &fence_[getCurrentFrame()]));
+  });
 }
 
 void Renderer::endFrame() {
@@ -74,18 +74,16 @@ void Renderer::endFrame() {
       .signalSemaphoreCount = 1,
       .pSignalSemaphores = &render_finished_semaphore_[getCurrentFrame()]};
 
-  Timing::timer.startEvent("vkQueueSubmit");
-  CALL_VK(vkQueueSubmit(device_.getQueue(), 1, &submit_info, fence_[getCurrentFrame()]));
-  Timing::timer.stopEvent();
+  Timing::timer.time("vkQueueSubmit", Timing::OTHER, [this, submit_info](){
+    CALL_VK(vkQueueSubmit(device_.getQueue(), 1, &submit_info, fence_[getCurrentFrame()]));
+  });
 
-  Timing::timer.startEvent("Device::Present");
-  device_.present(&render_finished_semaphore_[getCurrentFrame()]);
-  Timing::timer.stopEvent();
+  Timing::timer.time("Device::Present", Timing::OTHER, [this](){
+    device_.present(&render_finished_semaphore_[getCurrentFrame()]);
+  });
 }
 
 void Renderer::beginPrimaryCommandBufferRecording() {
-  Timing::timer.startEvent("CommandBufferRecording");
-
   uint32_t current_frame = getCurrentFrame();
   VkCommandBufferBeginInfo cmd_buffer_beginInfo{
           .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
@@ -114,8 +112,6 @@ void Renderer::endPrimaryCommandBufferRecording() {
                  VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT);
 
   CALL_VK(vkEndCommandBuffer(getCurrentCommandBuffer()));
-
-  Timing::timer.stopEvent();
 }
 
 void Renderer::init() {

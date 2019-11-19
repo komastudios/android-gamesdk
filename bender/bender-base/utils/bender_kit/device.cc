@@ -28,29 +28,29 @@ using namespace BenderHelpers;
 // Device class member functions
 //
 Device::Device(ANativeWindow *window) {
-  Timing::timer.startEvent("Create Bender Device");
-  if (!InitVulkan()) {
-    LOGW("Vulkan is unavailable, install vulkan and re-start");
-    initialized_ = false;
-    return;
-  }
+  Timing::timer.time("Create Bender Device", Timing::OTHER, [this, window](){
+    if (!InitVulkan()) {
+      LOGW("Vulkan is unavailable, install vulkan and re-start");
+      initialized_ = false;
+      return;
+    }
 
-  // parameterize version number?
-  VkApplicationInfo appInfo = {
-      .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
-      .pNext = nullptr,
-      .apiVersion = VK_MAKE_VERSION(1, 0, 0),
-      .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
-      .engineVersion = VK_MAKE_VERSION(1, 0, 0),
-      .pApplicationName = "bender_main_window",
-      .pEngineName = "bender",
-  };
+    // parameterize version number?
+    VkApplicationInfo appInfo = {
+        .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+        .pNext = nullptr,
+        .apiVersion = VK_MAKE_VERSION(1, 0, 0),
+        .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
+        .engineVersion = VK_MAKE_VERSION(1, 0, 0),
+        .pApplicationName = "bender_main_window",
+        .pEngineName = "bender",
+    };
 
-  CreateVulkanDevice(window, &appInfo);
-  createSwapChain();
+    CreateVulkanDevice(window, &appInfo);
+    createSwapChain();
 
-  initialized_ = true;
-  Timing::timer.stopEvent();
+    initialized_ = true;
+  });
 }
 
 Device::~Device() {
@@ -90,106 +90,106 @@ void Device::present(VkSemaphore* wait_semaphores) {
 
 void Device::CreateVulkanDevice(ANativeWindow *platformWindow,
                                 VkApplicationInfo *appInfo) {
-  Timing::timer.startEvent("Create Vulkan Device");
-  std::vector<const char *> instance_extensions;
-  std::vector<const char *> instance_layers;
-  std::vector<const char *> device_extensions;
+  Timing::timer.time("Create Vulkan Device", Timing::OTHER, [this, platformWindow, appInfo](){
+    std::vector<const char *> instance_extensions;
+    std::vector<const char *> instance_layers;
+    std::vector<const char *> device_extensions;
 
-  instance_extensions.push_back("VK_KHR_surface");
-  instance_extensions.push_back("VK_KHR_android_surface");
-  instance_extensions.push_back("VK_EXT_debug_report");
+    instance_extensions.push_back("VK_KHR_surface");
+    instance_extensions.push_back("VK_KHR_android_surface");
 
 #ifdef ENABLE_VALIDATION_LAYERS
-  instance_layers.push_back("VK_LAYER_KHRONOS_validation");
+    instance_extensions.push_back("VK_EXT_debug_report");
+    instance_layers.push_back("VK_LAYER_KHRONOS_validation");
+    device_extensions.push_back("VK_EXT_debug_marker");
 #endif
 
-  device_extensions.push_back("VK_KHR_swapchain");
-  device_extensions.push_back("VK_EXT_debug_marker");
+    device_extensions.push_back("VK_KHR_swapchain");
 
-  // **********************************************************
-  // Create the Vulkan instance
-  VkInstanceCreateInfo instanceCreateInfo{
-      .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-      .pNext = nullptr,
-      .pApplicationInfo = appInfo,
-      .enabledExtensionCount =
-      static_cast<uint32_t>(instance_extensions.size()),
-      .ppEnabledExtensionNames = instance_extensions.data(),
-      .enabledLayerCount = static_cast<uint32_t>(instance_layers.size()),
-      .ppEnabledLayerNames = instance_layers.data(),
-  };
-  CALL_VK(vkCreateInstance(&instanceCreateInfo, nullptr, &instance_));
-  VkAndroidSurfaceCreateInfoKHR createInfo{
-      .sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR,
-      .pNext = nullptr,
-      .flags = 0,
-      .window = platformWindow};
+    // **********************************************************
+    // Create the Vulkan instance
+    VkInstanceCreateInfo instanceCreateInfo{
+        .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+        .pNext = nullptr,
+        .pApplicationInfo = appInfo,
+        .enabledExtensionCount =
+        static_cast<uint32_t>(instance_extensions.size()),
+        .ppEnabledExtensionNames = instance_extensions.data(),
+        .enabledLayerCount = static_cast<uint32_t>(instance_layers.size()),
+        .ppEnabledLayerNames = instance_layers.data(),
+    };
+    CALL_VK(vkCreateInstance(&instanceCreateInfo, nullptr, &instance_));
+    VkAndroidSurfaceCreateInfoKHR createInfo{
+        .sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR,
+        .pNext = nullptr,
+        .flags = 0,
+        .window = platformWindow};
 
-  CALL_VK(vkCreateAndroidSurfaceKHR(instance_, &createInfo, nullptr,
-                                    &surface_));
-  // Find one GPU to use:
+    CALL_VK(vkCreateAndroidSurfaceKHR(instance_, &createInfo, nullptr,
+                                      &surface_));
+    // Find one GPU to use:
 
-  // On Android, every GPU device is equal -- supporting
-  // graphics/compute/present
-  // for this sample, we use the very first GPU device found on the system
-  uint32_t gpuCount = 0;
-  CALL_VK(vkEnumeratePhysicalDevices(instance_, &gpuCount, nullptr));
-  VkPhysicalDevice tmpGpus[gpuCount];
-  CALL_VK(vkEnumeratePhysicalDevices(instance_, &gpuCount, tmpGpus));
-  gpuDevice_ = tmpGpus[0];  // Pick up the first GPU Device
-  vkGetPhysicalDeviceMemoryProperties(gpuDevice_,
-                                      &gpuMemoryProperties_);
+    // On Android, every GPU device is equal -- supporting
+    // graphics/compute/present
+    // for this sample, we use the very first GPU device found on the system
+    uint32_t gpuCount = 0;
+    CALL_VK(vkEnumeratePhysicalDevices(instance_, &gpuCount, nullptr));
+    VkPhysicalDevice tmpGpus[gpuCount];
+    CALL_VK(vkEnumeratePhysicalDevices(instance_, &gpuCount, tmpGpus));
+    gpuDevice_ = tmpGpus[0];  // Pick up the first GPU Device
+    vkGetPhysicalDeviceMemoryProperties(gpuDevice_,
+                                        &gpuMemoryProperties_);
 
-  // Find a GFX queue family
-  uint32_t queueFamilyCount;
-  vkGetPhysicalDeviceQueueFamilyProperties(gpuDevice_, &queueFamilyCount,
-                                           nullptr);
-  assert(queueFamilyCount);
-  std::vector<VkQueueFamilyProperties> queueFamilyProperties(queueFamilyCount);
-  vkGetPhysicalDeviceQueueFamilyProperties(gpuDevice_, &queueFamilyCount,
-                                           queueFamilyProperties.data());
+    // Find a GFX queue family
+    uint32_t queueFamilyCount;
+    vkGetPhysicalDeviceQueueFamilyProperties(gpuDevice_, &queueFamilyCount,
+                                             nullptr);
+    assert(queueFamilyCount);
+    std::vector<VkQueueFamilyProperties> queueFamilyProperties(queueFamilyCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(gpuDevice_, &queueFamilyCount,
+                                             queueFamilyProperties.data());
 
-  uint32_t queueFamilyIndex;
-  for (queueFamilyIndex = 0; queueFamilyIndex < queueFamilyCount;
-       queueFamilyIndex++) {
-    if (queueFamilyProperties[queueFamilyIndex].queueFlags &
-        VK_QUEUE_GRAPHICS_BIT) {
-      break;
+    uint32_t queueFamilyIndex;
+    for (queueFamilyIndex = 0; queueFamilyIndex < queueFamilyCount;
+         queueFamilyIndex++) {
+      if (queueFamilyProperties[queueFamilyIndex].queueFlags &
+          VK_QUEUE_GRAPHICS_BIT) {
+        break;
+      }
     }
-  }
-  assert(queueFamilyIndex < queueFamilyCount);
-  queueFamilyIndex_ = queueFamilyIndex;
+    assert(queueFamilyIndex < queueFamilyCount);
+    queueFamilyIndex_ = queueFamilyIndex;
 
-  // Create a logical device (vulkan device)
-  float priorities[] = {
-      1.0f,
-  };
-  VkDeviceQueueCreateInfo queueCreateInfo{
-      .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-      .pNext = nullptr,
-      .flags = 0,
-      .queueCount = 1,
-      .queueFamilyIndex = queueFamilyIndex,
-      .pQueuePriorities = priorities,
-  };
+    // Create a logical device (vulkan device)
+    float priorities[] = {
+        1.0f,
+    };
+    VkDeviceQueueCreateInfo queueCreateInfo{
+        .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+        .pNext = nullptr,
+        .flags = 0,
+        .queueCount = 1,
+        .queueFamilyIndex = queueFamilyIndex,
+        .pQueuePriorities = priorities,
+    };
 
-  VkDeviceCreateInfo deviceCreateInfo{
-      .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-      .pNext = nullptr,
-      .queueCreateInfoCount = 1,
-      .pQueueCreateInfos = &queueCreateInfo,
-      .enabledLayerCount = 0,
-      .ppEnabledLayerNames = nullptr,
-      .enabledExtensionCount = static_cast<uint32_t>(device_extensions.size()),
-      .ppEnabledExtensionNames = device_extensions.data(),
-      .pEnabledFeatures = nullptr,
-  };
+    VkDeviceCreateInfo deviceCreateInfo{
+        .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+        .pNext = nullptr,
+        .queueCreateInfoCount = 1,
+        .pQueueCreateInfos = &queueCreateInfo,
+        .enabledLayerCount = 0,
+        .ppEnabledLayerNames = nullptr,
+        .enabledExtensionCount = static_cast<uint32_t>(device_extensions.size()),
+        .ppEnabledExtensionNames = device_extensions.data(),
+        .pEnabledFeatures = nullptr,
+    };
 
-  CALL_VK(vkCreateDevice(gpuDevice_, &deviceCreateInfo, nullptr,
-                         &device_));
-  vkGetDeviceQueue(device_, queueFamilyIndex_, 0, &queue_);
-  DebugMarker::setup(device_, gpuDevice_);
-  Timing::timer.stopEvent();
+    CALL_VK(vkCreateDevice(gpuDevice_, &deviceCreateInfo, nullptr,
+                           &device_));
+    vkGetDeviceQueue(device_, queueFamilyIndex_, 0, &queue_);
+    DebugMarker::setup(device_, gpuDevice_);
+  });
 }
 
 void Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer &buffer,
@@ -222,84 +222,84 @@ void Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer 
 }
 
 void Device::createSwapChain(VkSwapchainKHR oldSwapchain) {
-  Timing::timer.startEvent("Create Swapchain");
-  VkSurfaceCapabilitiesKHR surfaceCapabilities;
-  vkGetPhysicalDeviceSurfaceCapabilitiesKHR(gpuDevice_, surface_,
-                                            &surfaceCapabilities);
+  Timing::timer.time("Create Swapchain", Timing::OTHER, [this, oldSwapchain](){
+    VkSurfaceCapabilitiesKHR surfaceCapabilities;
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(gpuDevice_, surface_,
+                                              &surfaceCapabilities);
 
-  uint32_t new_width = surfaceCapabilities.currentExtent.width;
-  uint32_t new_height = surfaceCapabilities.currentExtent.height;
-  pretransformFlag_ = surfaceCapabilities.currentTransform;
+    uint32_t new_width = surfaceCapabilities.currentExtent.width;
+    uint32_t new_height = surfaceCapabilities.currentExtent.height;
+    pretransformFlag_ = surfaceCapabilities.currentTransform;
 
-  if (pretransformFlag_ & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR ||
-      pretransformFlag_ & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR) {
-    // Do not change the swapchain dimensions
-    surfaceCapabilities.currentExtent.height = new_width;
-    surfaceCapabilities.currentExtent.width = new_height;
-  }
+    if (pretransformFlag_ & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR ||
+        pretransformFlag_ & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR) {
+      // Do not change the swapchain dimensions
+      surfaceCapabilities.currentExtent.height = new_width;
+      surfaceCapabilities.currentExtent.width = new_height;
+    }
 
-  // Query the list of supported surface format and choose one we like
-  uint32_t formatCount = 0;
-  vkGetPhysicalDeviceSurfaceFormatsKHR(gpuDevice_, surface_,
-                                       &formatCount, nullptr);
-  VkSurfaceFormatKHR *formats = new VkSurfaceFormatKHR[formatCount];
-  vkGetPhysicalDeviceSurfaceFormatsKHR(gpuDevice_, surface_,
-                                       &formatCount, formats);
-  LOGI("Got %d formats", formatCount);
+    // Query the list of supported surface format and choose one we like
+    uint32_t formatCount = 0;
+    vkGetPhysicalDeviceSurfaceFormatsKHR(gpuDevice_, surface_,
+                                         &formatCount, nullptr);
+    VkSurfaceFormatKHR *formats = new VkSurfaceFormatKHR[formatCount];
+    vkGetPhysicalDeviceSurfaceFormatsKHR(gpuDevice_, surface_,
+                                         &formatCount, formats);
+    LOGI("Got %d formats", formatCount);
 
-  uint32_t chosenFormat;
-  for (chosenFormat = 0; chosenFormat < formatCount; chosenFormat++) {
-    if (formats[chosenFormat].format == VK_FORMAT_R8G8B8A8_SRGB) break;
-  }
-  assert(chosenFormat < formatCount);
+    uint32_t chosenFormat;
+    for (chosenFormat = 0; chosenFormat < formatCount; chosenFormat++) {
+      if (formats[chosenFormat].format == VK_FORMAT_R8G8B8A8_SRGB) break;
+    }
+    assert(chosenFormat < formatCount);
 
-  displaySize_ = surfaceCapabilities.currentExtent;
-  displayFormat_ = formats[chosenFormat].format;
+    displaySize_ = surfaceCapabilities.currentExtent;
+    displayFormat_ = formats[chosenFormat].format;
 
-  // **********************************************************
-  // Create a swap chain (here we choose the minimum available number of surface
-  // in the chain)
-  VkSwapchainCreateInfoKHR swapchainCreateInfo{
-      .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
-      .pNext = nullptr,
-      .surface = surface_,
-      .minImageCount = surfaceCapabilities.minImageCount,
-      .imageFormat = formats[chosenFormat].format,
-      .imageColorSpace = formats[chosenFormat].colorSpace,
-      .imageExtent = surfaceCapabilities.currentExtent,
-      .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-      .preTransform = pretransformFlag_,
-      .compositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR,
-      .imageArrayLayers = 1,
-      .imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
-      .queueFamilyIndexCount = 1,
-      .pQueueFamilyIndices = &queueFamilyIndex_,
-      .presentMode = VK_PRESENT_MODE_FIFO_KHR,
-      .oldSwapchain = oldSwapchain,
-      .clipped = VK_FALSE,
-  };
-  CALL_VK(vkCreateSwapchainKHR(device_, &swapchainCreateInfo, nullptr,
-                               &swapchain_));
+    // **********************************************************
+    // Create a swap chain (here we choose the minimum available number of surface
+    // in the chain)
+    VkSwapchainCreateInfoKHR swapchainCreateInfo{
+        .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
+        .pNext = nullptr,
+        .surface = surface_,
+        .minImageCount = surfaceCapabilities.minImageCount,
+        .imageFormat = formats[chosenFormat].format,
+        .imageColorSpace = formats[chosenFormat].colorSpace,
+        .imageExtent = surfaceCapabilities.currentExtent,
+        .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+        .preTransform = pretransformFlag_,
+        .compositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR,
+        .imageArrayLayers = 1,
+        .imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
+        .queueFamilyIndexCount = 1,
+        .pQueueFamilyIndices = &queueFamilyIndex_,
+        .presentMode = VK_PRESENT_MODE_FIFO_KHR,
+        .oldSwapchain = oldSwapchain,
+        .clipped = VK_FALSE,
+    };
+    CALL_VK(vkCreateSwapchainKHR(device_, &swapchainCreateInfo, nullptr,
+                                 &swapchain_));
 
-  if (oldSwapchain != VK_NULL_HANDLE) {
-    vkDestroySwapchainKHR(device_, oldSwapchain, nullptr);
-  }
+    if (oldSwapchain != VK_NULL_HANDLE) {
+      vkDestroySwapchainKHR(device_, oldSwapchain, nullptr);
+    }
 
-  // Get the length of the created swap chain
-  CALL_VK(vkGetSwapchainImagesKHR(device_, swapchain_,
-                                  &swapchainLength_, nullptr));
-  delete[] formats;
+    // Get the length of the created swap chain
+    CALL_VK(vkGetSwapchainImagesKHR(device_, swapchain_,
+                                    &swapchainLength_, nullptr));
+    delete[] formats;
 
-  uint32_t SwapchainImagesCount = 0;
-  CALL_VK(vkGetSwapchainImagesKHR(device_, swapchain_,
-                                  &SwapchainImagesCount, nullptr));
-  displayImages_.resize(SwapchainImagesCount);
-  CALL_VK(vkGetSwapchainImagesKHR(device_, swapchain_,
-                                  &SwapchainImagesCount,
-                                  displayImages_.data()));
+    uint32_t SwapchainImagesCount = 0;
+    CALL_VK(vkGetSwapchainImagesKHR(device_, swapchain_,
+                                    &SwapchainImagesCount, nullptr));
+    displayImages_.resize(SwapchainImagesCount);
+    CALL_VK(vkGetSwapchainImagesKHR(device_, swapchain_,
+                                    &SwapchainImagesCount,
+                                    displayImages_.data()));
 
-  current_frame_index_ = 0;
-  Timing::timer.stopEvent();
+    current_frame_index_ = 0;
+  });
 }
 
 void Device::setObjectName(uint64_t object,
