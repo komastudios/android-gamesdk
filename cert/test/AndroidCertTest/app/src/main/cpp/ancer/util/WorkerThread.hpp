@@ -18,6 +18,7 @@
 
 #include <condition_variable>
 #include <mutex>
+#include <optional>
 #include <queue>
 #include <thread>
 
@@ -30,8 +31,17 @@ namespace ancer {
     public:
         using Work = std::function<void(ThreadState*)>;
 
-        WorkerThread(const char* name, samples::Affinity affinity)
-                : _name(name), _affinity(affinity) {
+        WorkerThread(const char* name, samples::Affinity affinity,
+            std::function<ThreadState()> thread_state_factory)
+            : _name(name), _affinity(affinity),
+              _thread_state_factory(thread_state_factory) {
+            LaunchThread();
+        }
+
+        WorkerThread(const char* name,
+                   samples::Affinity affinity)
+            : _name(name), _affinity(affinity),
+            _thread_state_factory([](){ return ThreadState(); }) {
             LaunchThread();
         }
 
@@ -73,7 +83,7 @@ namespace ancer {
             samples::setAffinity(_affinity);
             pthread_setname_np(pthread_self(), _name.c_str());
 
-            ThreadState threadState;
+            ThreadState thread_state = _thread_state_factory();
 
             std::lock_guard<std::mutex> lock(_work_mutex);
             while ( _isActive ) {
@@ -88,7 +98,7 @@ namespace ancer {
 
                     // Drop the mutex while we execute
                     _work_mutex.unlock();
-                    head(&threadState);
+                    head(&thread_state);
                     _work_mutex.lock();
                 }
             }
@@ -96,6 +106,7 @@ namespace ancer {
 
         const std::string _name;
         const samples::Affinity _affinity;
+        std::function<ThreadState()> _thread_state_factory;
 
         std::mutex _thread_mutex;
         std::thread _thread GUARDED_BY(_thread_mutex);
