@@ -208,9 +208,14 @@ public class Configuration {
 
         // for each enabled stress filter out disabled stressors
         for (StressTest st : c.stressTests) {
-            st.stressors = Arrays.stream(st.stressors)
+            if (st.stressors != null) {
+                st.stressors = Arrays.stream(st.stressors)
                     .filter((s) -> s.enabled)
                     .toArray(Operation[]::new);
+            } else {
+                st.stressors = new Operation[]{};
+            }
+
             if (TextUtils.isEmpty(st.host)) {
                 st.host = c.host;
             }
