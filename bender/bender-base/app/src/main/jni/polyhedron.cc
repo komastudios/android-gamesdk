@@ -10,7 +10,7 @@ namespace  {
       -0.35682208977304947f, -0.9341723589627311f, 0.0f, -0.35682208977308316f, -0.9341723589627182f, -2.8075255221199808e-14f, 0.0f, 0.0f,
       0.9341723589627311f, 0.0f, -0.35682208977304947f, 0.9341723589627182f, 2.793103301972104e-14f, -0.35682208977308316f, 0.0f, 0.0f,
       -0.5773502691896257f, 0.5773502691896257f, -0.5773502691896257f, -0.5773502691896257f, 0.5773502691896256f, -0.5773502691896258f, 0.0f, 0.0f};
-  const std::vector<u_int16_t> index_tetrahedron = {0, 1, 3, 0, 2, 1, 0, 3, 2, 3, 1, 2};
+  const std::vector<uint16_t> index_tetrahedron = {0, 1, 3, 0, 2, 1, 0, 3, 2, 3, 1, 2};
 
   const std::vector<float> vertex_cube = {1.0f, -1.0f, -1.0f, 0.3333f, -0.3333f, -0.3333f, 0.0f, 0.0f,
                                           1.0f, 1.0f, -1.0f, 0.3333f, 0.3333f, -0.3333f, 0.0f, 0.0f,
@@ -21,7 +21,7 @@ namespace  {
                                           -1.0f, 1.0f, 1.0f, -0.3333f, 0.3333f, 0.3333f, 0.0f, 0.0f,
                                           -1.0f, -1.0f, 1.0f, -0.3333f, -0.3333f, 0.3333f, 0.0f, 0.0f};;
 
-  const std::vector<u_int16_t> index_cube = {0, 1, 2, 0, 2, 3, 5, 1, 0, 5, 0, 4,
+  const std::vector<uint16_t> index_cube = {0, 1, 2, 0, 2, 3, 5, 1, 0, 5, 0, 4,
                                              5, 4, 7, 5, 7, 6, 7, 3, 2, 7, 2, 6,
                                              6, 2, 1, 6, 1, 5, 4, 0, 3, 4, 3, 7};
 
@@ -31,7 +31,7 @@ namespace  {
                                                 0.49999999999998185f, -0.8090169943749705f, -0.30901699437491614f, 0.49999999999998185f, -0.8090169943749705f, -0.30901699437491614f, 0.0f, 0.0f,
                                                 -0.8090169943749705f, -0.30901699437491614f, -0.49999999999998185f, -0.8090169943749705f, -0.30901699437491614f, -0.49999999999998185f, 0.0f, 0.0f,
                                                 0.30901699437491614f, 0.49999999999998185f, -0.8090169943749705f, 0.3090169943749637f, 0.4999999999999638f, -0.8090169943749637f, 0.0f, 0.0f};
-  const std::vector<u_int16_t> index_octahedron = {0, 2, 1, 0, 1, 3, 0, 3, 4, 0, 4, 2,
+  const std::vector<uint16_t> index_octahedron = {0, 2, 1, 0, 1, 3, 0, 3, 4, 0, 4, 2,
                                                    5, 2, 4, 5, 1, 2, 5, 3, 1, 5, 4, 3};
 
   const std::vector<float> vertex_dodecahedron = {0.0f, 0.35682208977304947f, 0.9341723589627311f, -0.10767686505541395f, 0.5226744823848766f, 0.845705077550998f, 0.0f, 0.0f,
@@ -54,7 +54,7 @@ namespace  {
                                                   0.5773502691896257f, -0.5773502691896257f, -0.5773502691896257f, 0.688190960235578f, -0.587785252292488f, -0.42532540417601356f, 0.0f, 0.0f,
                                                   0.0f, 0.35682208977304947f, -0.9341723589627311f, -1.0720516976587767e-14f, 0.3568220897730853f, -0.9341723589627173f, 0.0f, 0.0f,
                                                   0.0f, -0.35682208977304947f, -0.9341723589627311f, 1.3681685080609877e-14f, -0.4560634293478342f, -0.8899472728265945f, 0.0f, 0.0f};
-  const std::vector<u_int16_t> index_dodecahedron = {16, 19, 13, 19, 18, 13, 18, 15, 13, 14, 18, 12, 18, 19, 12, 19, 17,
+  const std::vector<uint16_t> index_dodecahedron = {16, 19, 13, 19, 18, 13, 18, 15, 13, 14, 18, 12, 18, 19, 12, 19, 17,
                                                      12, 17, 19, 11, 11, 19, 10, 19, 16, 10, 9, 15, 8, 15, 18, 8, 18, 14,
                                                      8, 6, 12, 5, 12, 17, 5, 17, 11, 5, 13, 7, 16, 16, 7, 10, 10, 7, 4,
                                                      15, 9, 13, 13, 9, 7, 7, 9, 3, 14, 12, 6, 8, 14, 6, 8, 6, 2, 11, 10,
@@ -73,31 +73,31 @@ namespace  {
                                                  0.0f, -0.8506508083520552f, -0.525731112119109f, 0.0f, -0.8506508083520398f, -0.5257311121191336f, 0.0f, 0.0f,
                                                  0.525731112119109f, 0.0f, -0.8506508083520552f, 0.5257311121191336f, 0.0f, -0.8506508083520398f, 0.0f, 0.0f,
                                                  -0.525731112119109f, 0.0f, -0.8506508083520552f, -0.5257311121191336f, 0.0f, -0.8506508083520398f, 0.0f, 0.0f};
-  const std::vector<u_int16_t> index_icosahedron = {6, 9, 11, 5, 6, 11, 8, 5, 11, 10, 8, 11, 9, 10, 11, 10, 9, 7,
+  const std::vector<uint16_t> index_icosahedron = {6, 9, 11, 5, 6, 11, 8, 5, 11, 10, 8, 11, 9, 10, 11, 10, 9, 7,
                                                     7, 9, 3, 9, 6, 3, 3, 6, 1, 6, 5, 1, 1, 5, 2, 5, 8, 2, 2, 8, 4,
                                                     8, 10, 4, 4, 10, 7, 2, 4, 0, 4, 7, 0, 7, 3, 0, 1, 2, 0, 3, 1, 0};
 }
 
-Mesh* createPolyhedron(Renderer& renderer, Material& material, int faces) {
-  std::vector<float> vertex_data_;
-  std::vector<u_int16_t> index_data_;
+Mesh* createPolyhedron(Renderer &renderer, Material &material, int faces) {
+  const std::vector<float> *vertex_data_;
+  const std::vector<uint16_t> *index_data_;
   if (faces == 4) {
-    vertex_data_ = vertex_tetrahedron;
-    index_data_ = index_tetrahedron;
+    vertex_data_ = &vertex_tetrahedron;
+    index_data_ = &index_tetrahedron;
   } else if (faces == 6) {
-    vertex_data_ = vertex_cube;
-    index_data_ = index_cube;
+    vertex_data_ = &vertex_cube;
+    index_data_ = &index_cube;
   } else if (faces == 8) {
-    vertex_data_ = vertex_octahedron;
-    index_data_ = index_octahedron;
+    vertex_data_ = &vertex_octahedron;
+    index_data_ = &index_octahedron;
   } else if (faces == 12) {
-    vertex_data_ = vertex_dodecahedron;
-    index_data_ = index_dodecahedron;
+    vertex_data_ = &vertex_dodecahedron;
+    index_data_ = &index_dodecahedron;
   } else if (faces == 20) {
-    vertex_data_ = vertex_icosahedron;
-    index_data_ = index_icosahedron;
+    vertex_data_ = &vertex_icosahedron;
+    index_data_ = &index_icosahedron;
   } else {
     return nullptr;
   }
-  return new Mesh(renderer, material, vertex_data_, index_data_);
+  return new Mesh(renderer, material, *vertex_data_, *index_data_);
 }
