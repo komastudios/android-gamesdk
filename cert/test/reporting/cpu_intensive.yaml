@@ -1,6 +1,6 @@
 build:
   clean: false
-  configuration: configurations/memory.json
+  configuration: configurations/cpu_intensive_java.json
 
 systrace:
   enabled: false
@@ -18,4 +18,4 @@ deployment:
 chart:
   enabled: true
   suites:
-    - "Affinity Test"
+    - "Cpu intensive json (Java)"
