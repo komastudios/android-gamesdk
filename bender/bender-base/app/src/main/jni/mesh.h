@@ -55,6 +55,8 @@ public:
 
   glm::mat4 getTransform() const;
 
+  int getNumTriangles() const;
+
 private:
   std::unique_ptr<UniformBufferObject<ModelViewProjection>> mesh_buffer_;
 

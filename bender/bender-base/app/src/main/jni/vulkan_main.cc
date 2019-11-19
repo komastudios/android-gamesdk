@@ -491,11 +491,25 @@ bool VulkanDrawFrame(Input::Data *inputData) {
   device->insertDebugMarker(renderer->getCurrentCommandBuffer(), "TEST MARKER: PIPELINE BINDING",
                             {1.0f, 0.0f, 1.0f, 0.0f});
 
+  int total_triangles = 0;
   for (int x = 0; x < meshes.size(); x++){
     meshes[x]->updatePipeline(render_pass);
     meshes[x]->submitDraw(renderer->getCurrentCommandBuffer(), renderer->getCurrentFrame());
+    total_triangles += meshes[x]->getNumTriangles();
   }
-  font->drawString(sample_string, 2.0f, 0.0f, 0.0f,
+
+  char output_string[50];
+  if(meshes.size() > 1){
+    sprintf(output_string, "%d meshes", (int)meshes.size());
+  } else {
+    sprintf(output_string, "%d mesh", (int)meshes.size());
+  }
+  if(total_triangles > 1){
+    sprintf(output_string+strlen(output_string), " %d triangles", total_triangles);
+  } else {
+    sprintf(output_string+strlen(output_string), " %d triangle", total_triangles);
+  }
+  font->drawString(output_string, 1.0f, -0.98f, 0.75f,
                    renderer->getCurrentCommandBuffer(), render_pass, renderer->getCurrentFrame());
 
   vkCmdEndRenderPass(renderer->getCurrentCommandBuffer());
