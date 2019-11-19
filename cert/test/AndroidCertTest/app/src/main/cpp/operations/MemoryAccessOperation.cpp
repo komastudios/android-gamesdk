@@ -44,85 +44,135 @@ namespace {
 //==============================================================================
 
 namespace {
-    enum class OpType { kRead, kWrite };
+    constexpr size_t kMaxReadWrite = 2048;
+
+//------------------------------------------------------------------------------
+
     enum class ThreadSetup {
         kOneCore, kAllCores, kBigCores, kLittleCores
     };
+    constexpr const char* const kThreadSetupNames[] = {
+            "Single Core", "All Cores", "Big Cores", "Little Cores"
+    };
+
     enum class WorkScheme {
         kDividedEvenly, kInterleaved
     };
+    constexpr const char* const kWorkSchemeNames[] = {"Divided", "Interleaved"};
 
-    constexpr size_t kMaxReadWrite = 2048;
 
     // Performs operations that have a regular pattern.
     struct FixedOpConfig {
-        OpType type;
         ThreadSetup threads;
         WorkScheme work_scheme;
 
-        // How many read/writes to perform. Will automatically stop at the end
-        // of the buffer for safety.
-        int times = std::numeric_limits<int>::max();
-        size_t size;    // How much to read/write at once.
-        size_t offset;  // How far off to start the first read/write.
+        // How many read/writes to perform.
+        // Note that we will not continue past the end of the buffer.
+        size_t times = std::numeric_limits<size_t>::max();
         size_t advance; // Advance by this much per read/write.
+        size_t initial_offset = 0; // How far off to start the first read/write.
     };
+
+    JSON_READER(FixedOpConfig) {
+        JSON_REQENUM(threads, kThreadSetupNames);
+        JSON_OPTENUM(work_scheme, kWorkSchemeNames);
+        JSON_OPTVAR(times);
+        JSON_REQVAR(advance);
+        JSON_OPTVAR(initial_offset);
+    }
+
+    //--------------
 
     // Performs operations while advancing irregularly through the buffer.
     // Single-threaded only to avoid introducing too much chaos.
     struct IrregularOpConfig {
-        OpType type;
-
         // Note: If we reach the end of the buffer, we'll loop if necessary.
-        int times;
-        size_t size;
-        size_t align;
+        size_t times;
+        size_t rw_align;
         size_t min_advance;
         size_t max_advance;
     };
 
+    JSON_READER(IrregularOpConfig) {
+        JSON_REQVAR(times);
+        JSON_REQVAR(rw_align);
+        JSON_REQVAR(min_advance);
+        JSON_REQVAR(max_advance);
+    }
+
+    //--------------
+
     // Performs operations at random points within the buffer.
     // Single-threaded only to avoid introducing too much chaos.
     struct RandomOpConfig {
-        OpType type;
-
-        int times;
-        size_t size;
-        size_t align;
+        size_t times;
+        size_t rw_align;
     };
+
+    JSON_READER(RandomOpConfig) {
+        JSON_REQVAR(times);
+        JSON_REQVAR(rw_align);
+    }
 
     //--------------
 
     // Threads gobble up the data in-order as quickly as they can.
     // Multithreaded only since it doesn't make much sense otherwise.
     struct GreedyOpConfig {
-        OpType type;
-
-        size_t size;
-        // Helper: Based on user-defined advance, hands out offsets to threads.
-        struct {
-            size_t advance;
-
-            std::mutex mutex;
-            size_t next_offset = 0;
-
-            auto operator () () {
-                std::scoped_lock lock{mutex};
-                auto ret = next_offset;
-                next_offset += advance;
-                return ret;
-            }
-        } dispenser;
+        size_t advance;
     };
+
+    JSON_READER(GreedyOpConfig) {
+        JSON_REQVAR(advance);
+    }
 
 //------------------------------------------------------------------------------
 
-    enum BufferOpType { kFixedOp, kIrregularOp, kRandomOp, kGreedyOp };
-    struct BufferOpConfig {
-        // Bleh, keep it JSON-friendly
-        BufferOpType type;
-        std::variant<FixedOpConfig, IrregularOpConfig, RandomOpConfig, GreedyOpConfig> config;
+    enum class ReadOrWrite { kRead, kWrite };
+    constexpr const char* const kReadWriteNames[] = {"Read", "Write"};
+
+    enum class BufferOpType { kFixedOp, kIrregularOp, kRandomOp, kGreedyOp };
+    constexpr const char* const kBufferOpTypeNames[] = {
+        "Fixed", "Irregular", "Random", "Greedy"
     };
+
+
+    struct BufferOpConfig {
+        ReadOrWrite read_write;
+        size_t rw_size;
+        BufferOpType operation_type;
+        std::variant<FixedOpConfig, IrregularOpConfig,
+                     RandomOpConfig, GreedyOpConfig> config;
+    };
+
+    JSON_READER(BufferOpConfig) {
+        JSON_REQENUM(read_write, kReadWriteNames);
+        JSON_REQVAR(rw_size);
+        JSON_REQENUM(operation_type, kBufferOpTypeNames);
+        switch(data.operation_type) {
+            case BufferOpType::kFixedOp:
+                JSON_REQVAR_AT("config", data.config.template emplace<FixedOpConfig>());
+                break;
+            case BufferOpType::kIrregularOp:
+                JSON_REQVAR_AT("config", data.config.template emplace<IrregularOpConfig>());
+                break;
+            case BufferOpType::kRandomOp:
+                JSON_REQVAR_AT("config", data.config.template emplace<RandomOpConfig>());
+                break;
+            case BufferOpType::kGreedyOp:
+                JSON_REQVAR_AT("config", data.config.template emplace<GreedyOpConfig>());
+                break;
+            default:
+                FatalError(TAG, "Unknown operation type %d", data.operation_type);
+        }
+
+        if (data.rw_size > kMaxReadWrite) {
+            FatalError(TAG, "rw_size(%zu) is larger than the maximum (%zu)",
+                    data.rw_size, kMaxReadWrite);
+        }
+    }
+
+    //--------------
 
     struct Configuration {
         size_t buffer_size;
@@ -130,9 +180,8 @@ namespace {
     };
 
     JSON_READER(Configuration) {
-        // STUB
-        // assert max read/write
-        // assert reads * advance doesn't overflow our data
+        JSON_REQVAR(buffer_size);
+        JSON_REQVAR(operations);
     }
 
 //------------------------------------------------------------------------------
@@ -150,17 +199,37 @@ namespace {
 
 namespace {
     struct ReadOperation {
-        void operator () (const FixedBuffer& src, size_t offset, size_t size) const {
-            char buffer[kMaxReadWrite];
-            memcpy(buffer, src.data() + offset, size);
+        const FixedBuffer& buffer;
+        size_t size;
+
+        bool operator () (size_t offset) const {
+            if (offset + size <= buffer.size()) {
+                char data[kMaxReadWrite];
+                memcpy(data, buffer.data() + offset, size);
+                return true;
+            } else {
+                return false;
+            }
         }
+
+        [[nodiscard]] auto BufferSize() const { return buffer.size(); }
     };
 
     struct WriteOperation {
-        void operator () (FixedBuffer& dst, size_t offset, size_t size) const {
-            char buffer[kMaxReadWrite];
-            memcpy(dst.data() + offset, buffer, size);
+        FixedBuffer& buffer;
+        size_t size;
+
+        bool operator () (size_t offset) const {
+            if (offset + size <= buffer.size()) {
+                char data[kMaxReadWrite]; // Just writing garbage is fine.
+                memcpy(buffer.data() + offset, data, size);
+                return true;
+            } else {
+                return false;
+            }
         }
+
+        [[nodiscard]] auto BufferSize() const { return buffer.size(); }
     };
 }
 
@@ -172,17 +241,33 @@ namespace {
 //------------------------------------------------------------------------------
 // Fixed
 
-    // Helpers: The first X threads may include an extra op if things don't
-    // divide evenly.
-    auto OperationsInThread(int cpu, int thread_count, int op_count) {
-        const auto oversized_threads = op_count % thread_count;
-        return op_count / thread_count + (cpu < oversized_threads ? 1 : 0);
+    // It's possible config.times may be too high, either by user error or to
+    // indicate we should read/write until the end of the buffer.
+    template <typename ReadWrite>
+    auto CheckTotalTimes(const ReadWrite& read_write, const FixedOpConfig& config) {
+        const auto buffer_size = read_write.BufferSize();
+        const auto rw_size = read_write.size;
+
+        const auto effective_buffer_size = buffer_size - config.initial_offset;
+        const auto num_advances = effective_buffer_size / config.advance;
+        const auto max_ops =
+                (effective_buffer_size % num_advances) > rw_size
+                ? num_advances + 1
+                : num_advances;
+        return std::min(max_ops, config.times);
     }
 
-    auto OperationsBeforeThread(int cpu, int thread_count, int op_count) {
+    // Helpers: The first X threads may include an extra op if things don't
+    // divide evenly.
+    auto DetermineLocalTimes(int cpu, int thread_count, int op_count) {
+        const auto num_oversized_threads = op_count % thread_count;
+        return op_count / thread_count + (cpu < num_oversized_threads ? 1 : 0);
+    }
+
+    auto TimesBeforeThread(int cpu, int thread_count, int op_count) {
         size_t ops = 0;
         for (int i = 0 ; i < cpu ; ++i) {
-            ops += OperationsInThread(i, thread_count, op_count);
+            ops += DetermineLocalTimes(i, thread_count, op_count);
         }
         return ops;
     }
@@ -190,13 +275,14 @@ namespace {
 
     template <typename ReadWrite>
     void RunEvenDivision(int cpu, int thread_count, ReadWrite&& read_write,
-                         FixedBuffer& buffer, const FixedOpConfig& config) {
-        const auto num_ops = OperationsInThread(cpu, thread_count, config.times);
-        auto offset = config.offset +
-                OperationsBeforeThread(cpu, thread_count, config.times) * config.advance;
-        for ( int i = 0 ; i < num_ops ; ++i ) {
-            assert(offset + config.size <= buffer.size());
-            read_write(buffer, offset, config.size);
+                         const BaseOperation& op, const FixedOpConfig& config) {
+        const auto total_times = CheckTotalTimes(read_write, config);
+        const auto local_times = DetermineLocalTimes(cpu, thread_count, total_times);
+
+        int count = 0;
+        auto offset = config.initial_offset +
+                TimesBeforeThread(cpu, thread_count, total_times) * config.advance;
+        while ( !op.IsStopped() && count < local_times && read_write(offset) ) {
             offset += config.advance;
         }
     }
@@ -205,10 +291,9 @@ namespace {
 
     template <typename ReadWrite>
     void RunInterleaved(int cpu, int thread_count, ReadWrite&& read_write,
-                        FixedBuffer& buffer, const FixedOpConfig& config) {
-        auto offset = config.offset + cpu * config.advance;
-        while ( offset < buffer.size() ) {
-            read_write(buffer, offset, config.size);
+                        const BaseOperation& op, const FixedOpConfig& config) {
+        auto offset = config.initial_offset + cpu * config.advance;
+        while ( !op.IsStopped() && read_write(offset) ) {
             offset += config.advance * thread_count;
         }
     }
@@ -216,15 +301,12 @@ namespace {
     //==============
 
     template <typename ReadWrite>
-    void Run(ReadWrite&& read_write, FixedBuffer& buffer, const FixedOpConfig& config) {
-        assert(config.threads == ThreadSetup::kOneCore);
-
+    void Run(ReadWrite&& read_write, const BaseOperation& op,
+             const FixedOpConfig& config) {
         if (config.threads == ThreadSetup::kOneCore) {
             int count = 0;
-            size_t offset = config.offset;
-            while (count < config.times && offset < buffer.size()) {
-                read_write(buffer, offset, config.size);
-                ++count;
+            size_t offset = config.initial_offset;
+            while (!op.IsStopped() && count++ < config.times && read_write(offset) ) {
                 offset += config.advance;
             }
         } else {
@@ -237,7 +319,7 @@ namespace {
 
             for ( int cpu = 0 ; cpu < thread_count ; ++cpu ) {
                 threads.push_back(std::thread{[cpu, thread_count, read_write,
-                                               config, &buffer] {
+                                               config, &op] {
                     cpu_set_t affinity;
                     CPU_ZERO(&affinity);
                     CPU_SET(cpu, &affinity);
@@ -245,9 +327,9 @@ namespace {
 
                     switch (config.work_scheme) {
                         case WorkScheme::kDividedEvenly:
-                            return RunEvenDivision(cpu, thread_count, read_write, buffer, config);
+                            return RunEvenDivision(cpu, thread_count, read_write, op, config);
                         case WorkScheme::kInterleaved:
-                            return RunInterleaved(cpu, thread_count, read_write, buffer, config);
+                            return RunInterleaved(cpu, thread_count, read_write, op, config);
                         default:
                             FatalError(TAG, "Unknown work scheme: %d", config.work_scheme);
                     }
@@ -264,18 +346,25 @@ namespace {
 // Irregular
 
     template <typename ReadWrite>
-    void Run(ReadWrite&& read_write, FixedBuffer& buffer, const IrregularOpConfig& config) {
+    void Run(ReadWrite&& read_write, const BaseOperation& op,
+             const IrregularOpConfig& config) {
         std::mt19937 random{};
         const auto range = config.max_advance - config.min_advance;
 
         int count = 0;
         size_t offset = 0;
 
-        while (count < config.times) {
-            offset += NextAlignedValue((random() % range) + config.min_advance, config.align);
-            while (offset >= buffer.size()) offset -= buffer.size();
-            read_write(buffer, offset, config.size);
-            ++count;
+        while (count++ < config.times && !op.IsStopped()) {
+            offset += NextAlignedValue((random() % range) + config.min_advance,
+                                       config.rw_align);
+            // Irregular loops if we hit the end of the buffer.
+            while (offset >= read_write.BufferSize()) offset -= read_write.BufferSize();
+            // TODO(tmillican@google.com): Not technically safe/correct, but if
+            //  we actually run into the bug then our buffer and align/rw_size
+            //  are absurdly close to one another.
+            offset = NextAlignedValue(offset, config.rw_align);
+
+            read_write(offset);
         }
     }
 
@@ -283,24 +372,68 @@ namespace {
 // Random
 
     template <typename ReadWrite>
-    void Run(ReadWrite&& read_write, FixedBuffer& buffer, const RandomOpConfig& config) {
+    void Run(ReadWrite&& read_write, const BaseOperation& op,
+             const RandomOpConfig& config) {
         std::mt19937 random{};
 
-        for (int count = 0 ; count < config.times ; ++count) {
-            auto offset = NextAlignedValue(random() % buffer.size(), config.align);
-            if (offset >= buffer.size()) offset -= buffer.size(); // Might align to/past end.
-            read_write(buffer, offset, config.size);
+        for ( int count = 0 ; count < config.times && !op.IsStopped() ; ++count ) {
+            auto offset = NextAlignedValue(random() % read_write.BufferSize(),
+                                           config.rw_align);
+            // We might have landed / aligned too close to the end.
+            // TODO(tmillican@google.com): This solution makes the last bit of
+            //  the buffer a 'hotspot', but in practice it shouldn't matter
+            //  unless the read/align are absurdly close to the buffer's size.
+            while (offset + read_write.size > read_write.BufferSize()) {
+                offset -= config.rw_align;
+            }
+
+            read_write(offset);
         }
     }
 
 //------------------------------------------------------------------------------
 // Greedy
 
+    // Hands out offsets to threads on a first-come-first-served basis.
+    struct GreedyDispenser {
+        size_t advance;
+        std::mutex mutex;
+        size_t next_offset = 0;
+
+        auto operator () () {
+            std::scoped_lock lock{mutex};
+            auto ret = next_offset;
+            next_offset += advance;
+            return ret;
+        }
+    };
+
     template <typename ReadWrite>
-    void Run(ReadWrite&& read_write, FixedBuffer& buffer, GreedyOpConfig& config) {
-        for ( auto offset = config.dispenser() ; offset < buffer.size() ;
-              offset = config.dispenser() ) {
-            read_write(buffer, offset, config.size);
+    void Run(ReadWrite&& read_write, const BaseOperation& op,
+             const GreedyOpConfig& config) {
+        GreedyDispenser greedy_dispenser{config.advance};
+
+        std::vector<std::thread> threads;
+        const auto thread_count = android_getCpuCount();
+        threads.reserve(thread_count);
+
+        for ( int cpu = 0 ; cpu < thread_count ; ++cpu ) {
+            threads.push_back(std::thread{[cpu, read_write, config, &op,
+                                           &greedy_dispenser] {
+                cpu_set_t affinity;
+                CPU_ZERO(&affinity);
+                CPU_SET(cpu, &affinity);
+                sched_setaffinity(0, sizeof(affinity), &affinity);
+
+                auto offset = greedy_dispenser();
+                while (!op.IsStopped() && read_write(offset)) {
+                    offset = greedy_dispenser();
+                }
+            }});
+        }
+
+        for (auto& thread : threads) {
+            thread.join();
         }
     }
 
@@ -308,14 +441,15 @@ namespace {
 
     // Helper to handle the common read/write determination logic.
     template <typename ConfigType>
-    void Run(FixedBuffer& buffer, ConfigType&& config) {
-        switch (config.type) {
-            case OpType::kRead:
-                return Run(ReadOperation{}, buffer, std::forward<ConfigType>(config));
-            case OpType::kWrite:
-                return Run(WriteOperation{}, buffer, std::forward<ConfigType>(config));
+    void Run(ReadOrWrite read_write, FixedBuffer& buffer, size_t rw_size,
+             const BaseOperation& op, const ConfigType& config) {
+        switch (read_write) {
+            case ReadOrWrite::kRead:
+                return Run(ReadOperation{buffer, rw_size}, op, config);
+            case ReadOrWrite::kWrite:
+                return Run(WriteOperation{buffer, rw_size}, op, config);
             default:
-                FatalError(TAG, "Unknown type: %d", config.type);
+                FatalError(TAG, "Unknown read/write value: %d", read_write);
         }
     }
 }
@@ -333,18 +467,29 @@ public:
             FixedBuffer buffer;
             buffer.resize(_config.buffer_size);
 
-            for (auto& op : _config.operations) {
-                switch (op.type) {
+            for (const auto& op : _config.operations) {
+                Log::D(TAG, "%s %s", kBufferOpTypeNames[(size_t)op.operation_type],
+                       kReadWriteNames[(size_t)op.read_write]);
+
+                switch (op.operation_type) {
                     case BufferOpType::kFixedOp:
-                        Run(buffer, std::get<FixedOpConfig>(op.config)); break;
+                        Run(op.read_write, buffer, op.rw_size, *this,
+                            std::get<FixedOpConfig>(op.config));
+                        break;
                     case BufferOpType::kIrregularOp:
-                        Run(buffer, std::get<IrregularOpConfig>(op.config)); break;
+                        Run(op.read_write, buffer, op.rw_size, *this,
+                            std::get<IrregularOpConfig>(op.config));
+                        break;
                     case BufferOpType::kRandomOp:
-                        Run(buffer, std::get<RandomOpConfig>(op.config)); break;
+                        Run(op.read_write, buffer, op.rw_size, *this,
+                            std::get<RandomOpConfig>(op.config));
+                        break;
                     case BufferOpType::kGreedyOp:
-                        Run(buffer, std::get<GreedyOpConfig>(op.config)); break;
+                        Run(op.read_write, buffer, op.rw_size, *this,
+                            std::get<GreedyOpConfig>(op.config));
+                        break;
                     default:
-                        FatalError(TAG, "Unknown buffer operation: %d", op.type);
+                        FatalError(TAG, "Unknown buffer operation: %d", op.operation_type);
                 }
             }
         }};

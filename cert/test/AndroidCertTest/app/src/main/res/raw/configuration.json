@@ -10,6 +10,106 @@
   "stress_tests": [
     {
       "enabled": true,
+      "name": "MemoryAccessTest",
+      "description": "Tests accessing preallocated memory",
+      "duration": "10s",
+      "data_gatherer": {
+        "id": "MemoryAccessOperation",
+        "configuration": {
+          "buffer_size": 1048576,
+          "operations": [
+            {
+              "read_write": "Write",
+              "rw_size": 256,
+              "operation_type": "Fixed",
+              "config": {
+                "threads": "Single Core",
+                "advance": 256
+              }
+            },
+            {
+              "read_write": "Read",
+              "rw_size": 256,
+              "operation_type": "Fixed",
+              "config": {
+                "threads": "All Cores",
+                "work_scheme": "Divided",
+                "advance": 512
+              }
+            },
+            {
+              "read_write": "Write",
+              "rw_size": 128,
+              "operation_type": "Fixed",
+              "config": {
+                "threads": "All Cores",
+                "work_scheme": "Interleaved",
+                "advance": 256,
+                "initial_offset": 1024
+              }
+            },
+            {
+              "read_write": "Write",
+              "rw_size": 256,
+              "operation_type": "Fixed",
+              "config": {
+                "threads": "All Cores",
+                "work_scheme": "Divided",
+                "times": 23,
+                "advance": 512,
+                "initial_offset": 256
+              }
+            },
+            {
+              "read_write": "Read",
+              "rw_size": 128,
+              "operation_type": "Fixed",
+              "config": {
+                "threads": "All Cores",
+                "work_scheme": "Interleaved",
+                "times": 7,
+                "advance": 256,
+                "initial_offset": 1024
+              }
+            },
+
+            {
+              "read_write": "Read",
+              "rw_size": 56,
+              "operation_type": "Irregular",
+              "config": {
+                "times": 200,
+                "rw_align": 32,
+                "min_advance": 0,
+                "max_advance": 1000
+              }
+            },
+
+            {
+              "read_write": "Read",
+              "rw_size": 56,
+              "operation_type": "Random",
+              "config": {
+                "times": 200,
+                "rw_align": 32
+              }
+            },
+
+            {
+              "read_write": "Read",
+              "rw_size": 56,
+              "operation_type": "Greedy",
+              "config": {
+                "advance": 64
+              }
+            }
+          ]
+        }
+      },
+      "stressors": []
+    },
+    {
+      "enabled": true,
       "name": "Affinity Test",
       "description": "Attempts to set affinity to each available processor and validate our selection 'sticks'.",
       "duration": "10s",
