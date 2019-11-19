@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e # Exit on error
 export ANDROID_HOME=`pwd`/../prebuilts/sdk
-export ANDROID_NDK_HOME=`pwd`/../prebuilts/ndk/r17
 ./gradlew gamesdkZip
 
 # Build samples
@@ -10,9 +9,9 @@ pushd samples/bouncyball
 ./gradlew build
 popd
 # Commented out because of NDK warning
-#pushd samples/cube
-#./gradlew build
-#popd
+pushd samples/cube
+./gradlew build
+popd
 pushd samples/tuningfork/tftestapp
 ./gradlew build
 popd
@@ -30,4 +29,6 @@ if [ $1 == "samples" ]
             $dist_dir/samples/bouncyball.apk
         cp samples/tuningfork/tftestapp/app/build/outputs/apk/debug/app-debug.apk \
             $dist_dir/samples/tuningfork.apk
+        cp third_party/cube/app/build/outputs/apk/debug/app-debug.apk \
+            $dist_dir/samples/cube.apk
 fi

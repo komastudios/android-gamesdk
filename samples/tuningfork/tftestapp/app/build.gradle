@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 28
+    ndkVersion "19.2.5345600"
     defaultConfig {
         applicationId "com.tuningfork.demoapp"
         minSdkVersion 16
