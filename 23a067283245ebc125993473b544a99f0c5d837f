@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "72f3c31e_8f633ac3",
+        "filename": "bender/bender-base/utils/bender_kit/timing.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-19T17:49:14Z",
+      "side": 1,
+      "message": "can you output value through a pointer rather than a ref?\nvoid EventTiming::getFramerate(int numFrames, int mostRecentFrame, int *fps, float *frameTime)",
+      "revId": "23a067283245ebc125993473b544a99f0c5d837f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
