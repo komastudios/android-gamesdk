@@ -28,11 +28,11 @@ if(!ndkDir || ndkDir.empty) {
    throw new GradleException('Environment Variable ANDROID_NDK_HOME for NDK path need to be setup')
 }
 
-
 def stlType = 'c++_static'
 
 android {
     compileSdkVersion  26
+    ndkVersion "20.1.5948944"
 
     defaultConfig {
         applicationId 'com.samples.cube'
