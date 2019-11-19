@@ -33,6 +33,7 @@ def stlType = 'c++_static'
 
 android {
     compileSdkVersion  26
+    ndkVersion "20.1.5948944"
 
     defaultConfig {
         applicationId 'com.samples.cube'
