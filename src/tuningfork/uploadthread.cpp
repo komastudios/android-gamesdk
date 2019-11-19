@@ -20,7 +20,6 @@
 #include "ge_serializer.h"
 #include "web.h"
 #include <sys/system_properties.h>
-#include <GLES3/gl32.h>
 #include <cstring>
 #include <fstream>
 #include <sstream>
@@ -102,7 +101,6 @@ void UploadThread::Start() {
 
 Duration UploadThread::DoWork() {
     if (ready_) {
-        UpdateGLVersion(); // Needs to be done with an active gl context
         std::string evt_ser_json;
         GESerializer::SerializeEvent(*ready_, current_fidelity_params_,
                                      extra_info_,
@@ -214,25 +212,12 @@ ExtraUploadInfo UploadThread::BuildExtraUploadInfo(const JniCtx& jni_) {
 
     if (jni_.IsValid()) {
         extra_info.apk_version_code = apk_utils::GetVersionCode(jni_,
-                                       &extra_info.apk_package_name);
+                                       &extra_info.apk_package_name,
+                                       &extra_info.gl_es_version);
     }
     extra_info.tuningfork_version = TUNINGFORK_PACKED_VERSION;
 
     return extra_info;
-}
-
-void UploadThread::UpdateGLVersion() {
-    // gl_es_version
-    GLint glVerMajor = 2;
-    GLint glVerMinor = 0;
-    glGetIntegerv(GL_MAJOR_VERSION, &glVerMajor);
-    if (glGetError() != GL_NO_ERROR) {
-        glVerMajor = 0;
-        glVerMinor = 0;
-    } else {
-        glGetIntegerv(GL_MINOR_VERSION, &glVerMinor);
-    }
-    extra_info_.gl_es_version = (glVerMajor<<16) + glVerMinor;
 }
 
 void UploadThread::InitialChecks(ProngCache& prongs,

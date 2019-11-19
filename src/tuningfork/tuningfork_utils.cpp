@@ -99,7 +99,7 @@ AAsset* GetAsset(const JniCtx& jni, const char* name) {
 
 // Get the app's version code. Also fills packageNameStr with the package name
 //  if it is non-null.
-int GetVersionCode(const JniCtx& jni_ctx, std::string* packageNameStr) {
+int GetVersionCode(const JniCtx& jni_ctx, std::string* packageNameStr, uint32_t* gl_es_version) {
     using namespace jni;
     Helper jni(jni_ctx.Env(), jni_ctx.Ctx());
     android::content::Context context(jni_ctx.Ctx(), jni);
@@ -114,6 +114,21 @@ int GetVersionCode(const JniCtx& jni_ctx, std::string* packageNameStr) {
     }
     auto code = package_info.versionCode();
     CHECK_FOR_JNI_EXCEPTION_AND_RETURN(0);
+    if(gl_es_version != nullptr) {
+        auto features = pm.getSystemAvailableFeatures();
+        CHECK_FOR_JNI_EXCEPTION_AND_RETURN(0);
+        for (auto f : features) {
+            if(f.name.empty()) {
+                if (f.reqGlEsVersion !=
+                                android::content::pm::FeatureInfo::GL_ES_VERSION_UNDEFINED) {
+                    *gl_es_version = f.reqGlEsVersion;
+                } else {
+                    *gl_es_version = 1; // Lack of property means OpenGL ES version 1
+                }
+            }
+        }
+        ALOGI("OpenGL version %d.%d ", ((*gl_es_version) >> 16), ((*gl_es_version) & 0x0000ffff));
+    }
     return code;
 }
 
