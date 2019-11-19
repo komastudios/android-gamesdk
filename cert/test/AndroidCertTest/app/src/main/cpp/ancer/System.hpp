@@ -21,6 +21,7 @@
 
 #include <GLES3/gl32.h>
 #include <jni.h>
+#include <sstream>
 
 namespace ancer {
     class FpsCalculator;
@@ -128,4 +129,57 @@ namespace ancer {
     static jclass RetrieveClass(JNIEnv* env, jobject activity, const char* className);
 
     FpsCalculator& GetFpsCalculator();
+
+    /*
+    * Configuration params for opengl contexts
+    */
+    struct GLContextConfig {
+      int red_bits = 8;
+      int green_bits = 8;
+      int blue_bits = 8;
+      int alpha_bits = 0;
+      int depth_bits = 24;
+      int stencil_bits = 0;
+
+      static GLContextConfig Default() {
+          return GLContextConfig {
+              8,8,8,8,
+              24,0
+          };
+      }
+    };
+
+    inline bool operator==(const GLContextConfig &lhs, const GLContextConfig &rhs) {
+      return lhs.red_bits == rhs.red_bits &&
+        lhs.green_bits == rhs.green_bits &&
+        lhs.blue_bits == rhs.blue_bits &&
+        lhs.alpha_bits == rhs.alpha_bits &&
+        lhs.depth_bits == rhs.depth_bits &&
+        lhs.stencil_bits == rhs.stencil_bits;
+    }
+
+    inline std::ostream& operator<<(std::ostream& os, GLContextConfig c) {
+        os << "<GLContextConfig r" << c.red_bits << "g" << c.green_bits << "b" << c.blue_bits << "a" << c.alpha_bits << "d" << c.depth_bits << "s" << c.stencil_bits << ">";
+        return os;
+    }
+
+    inline std::string to_string(const GLContextConfig &c) {
+        std::stringstream ss;
+        ss << c;
+        return ss.str();
+    }
+
+    /*
+     * Write the fields from config into the java-hosted destination
+     */
+    void BridgeGLContextConfiguration(GLContextConfig src_config,
+                                      jobject dst_config);
+
+    /*
+     * Create native GLContextConfig from java-based GLContextConfiguration
+     * instance
+    */
+    GLContextConfig BridgeGLContextConfiguration(jobject src_config);
+
+
 } // namespace ancer

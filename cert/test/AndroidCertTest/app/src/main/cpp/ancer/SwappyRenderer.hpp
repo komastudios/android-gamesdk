@@ -23,76 +23,97 @@
 #include <thread>
 #include <EGL/egl.h>
 
+#include "System.hpp"
 #include "Thread.h"
 #include "util/WorkerThread.hpp"
-
 #include "util/FpsCalculator.hpp"
 
 namespace ancer {
-    class BaseOperation;
+class BaseOperation;
 }
 
 namespace ancer::swappy {
 
-    class Renderer {
-        // Allows construction with std::unique_ptr from a static method, but disallows construction
-        // outside of the class since no one else can construct a ConstructorTag
-        struct ConstructorTag {
-        };
+class Renderer {
+  // Allows construction with std::unique_ptr from a static method, but disallows construction
+  // outside of the class since no one else can construct a ConstructorTag
+  struct ConstructorTag {
+  };
 
-    public:
-        explicit Renderer(ConstructorTag) {}
+  class ThreadState {
+   public:
+    ThreadState(GLContextConfig preferred_ctx_config,
+                GLContextConfig fallback_ctx_config);
 
-        static std::unique_ptr<Renderer> Create();
+    ~ThreadState();
 
-        // Sets the active window to render into
-        // Takes ownership of window and will release its reference
-        void SetWindow(ANativeWindow* window, int32_t width, int32_t height);
+    void ClearSurface();
 
-        void Start();
+    bool ConfigHasAttribute(EGLint attribute, EGLint value);
 
-        void Stop();
+    EGLBoolean MakeCurrent(EGLSurface surface);
 
-        void RequestDraw();
+    EGLDisplay display = EGL_NO_DISPLAY;
+    EGLConfig config = static_cast<EGLConfig>(0);
+    EGLSurface surface = EGL_NO_SURFACE;
+    EGLContext context = EGL_NO_CONTEXT;
 
-        void AddOperation(const std::shared_ptr<BaseOperation>& operation);
+    bool is_started = false;
+    int32_t width = 0;
+    int32_t height = 0;
+    GLContextConfig using_gl_context_config;
+   private:
+    bool TryCreateContext(GLContextConfig config);
+  };
 
-        void RemoveOperation(const std::shared_ptr<BaseOperation>& operation);
+ public:
+  explicit Renderer(ConstructorTag,
+                    const GLContextConfig& preferred_ctx_config,
+                    const GLContextConfig& fallback_ctx_config) :
+      _preferred_ctx_config(preferred_ctx_config),
+      _fallback_ctx_config(fallback_ctx_config),
+      _worker_thread(
 
-        void ClearOperations();
+          "Renderer",
 
-    private:
-        class ThreadState {
-        public:
-            ThreadState();
+          // TODO(shamyl@google.com): Find a better way to assign render thread core
+          samples::Affinity::Odd,
 
-            ~ThreadState();
+          [preferred_ctx_config, fallback_ctx_config]() {
+            return ThreadState{preferred_ctx_config, fallback_ctx_config};
+          }
+      ) {}
 
-            void ClearSurface();
+  static std::unique_ptr<Renderer> Create(
+      const GLContextConfig& preferred_ctx_config,
+      const GLContextConfig& fallback_ctx_config);
 
-            bool ConfigHasAttribute(EGLint attribute, EGLint value);
+  // Sets the active window to render into
+  // Takes ownership of window and will release its reference
+  void SetWindow(ANativeWindow* window, int32_t width, int32_t height);
 
-            EGLBoolean MakeCurrent(EGLSurface surface);
+  void Start();
 
-            EGLDisplay display = EGL_NO_DISPLAY;
-            EGLConfig config = static_cast<EGLConfig>(0);
-            EGLSurface surface = EGL_NO_SURFACE;
-            EGLContext context = EGL_NO_CONTEXT;
+  void Stop();
 
-            bool is_started = false;
-            int32_t width = 0;
-            int32_t height = 0;
-        };
+  void RequestDraw();
 
-        void Draw(ThreadState* thread_state);
+  void AddOperation(const std::shared_ptr<BaseOperation>& operation);
 
-        // TODO(shamyl@google.com): Find a better way to assign render thread core
-        WorkerThread<ThreadState> _worker_thread = {
-                "Renderer",
-                samples::Affinity::Odd
-        };
-        std::mutex _operations_lock;
-        std::vector<std::shared_ptr<BaseOperation>> _operations;
-        FpsCalculator _fps_calculator;
-    };
+  void RemoveOperation(const std::shared_ptr<BaseOperation>& operation);
+
+  void ClearOperations();
+
+ private:
+
+  void Draw(ThreadState* thread_state);
+
+  WorkerThread<ThreadState> _worker_thread;
+  std::mutex _operations_lock;
+  std::vector<std::shared_ptr<BaseOperation>> _operations;
+  FpsCalculator _fps_calculator;
+  GLContextConfig _preferred_ctx_config;
+  GLContextConfig _fallback_ctx_config;
+
+};
 } // namespace ancer::swappy

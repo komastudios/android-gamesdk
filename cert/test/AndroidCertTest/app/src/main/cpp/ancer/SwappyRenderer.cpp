@@ -37,8 +37,11 @@ constexpr Log::Tag TAG{"SwappyRenderer"};
 
 namespace ancer::swappy {
 
-    std::unique_ptr<Renderer> Renderer::Create() {
-        return std::move(std::make_unique<Renderer>(ConstructorTag{}));
+    std::unique_ptr<Renderer> Renderer::Create(
+        const GLContextConfig &preferred_ctx_config,
+        const GLContextConfig &fallback_ctx_config) {
+        return std::move(std::make_unique<Renderer>(ConstructorTag{},
+            preferred_ctx_config, fallback_ctx_config));
     }
 
     void Renderer::SetWindow(ANativeWindow* window, int32_t width, int32_t height) {
@@ -66,7 +69,7 @@ namespace ancer::swappy {
                     glViewport(0, 0, width, height);
 
                     for ( const auto& op : _operations ) {
-                        op->OnGlContextReady();
+                        op->OnGlContextReady(thread_state->using_gl_context_config);
                         op->OnGlContextResized(width, height);
                     }
                 });
@@ -112,49 +115,17 @@ namespace ancer::swappy {
         _operations.clear();
     }
 
-    Renderer::ThreadState::ThreadState() {
+    Renderer::ThreadState::ThreadState(GLContextConfig preferred_ctx_config,
+                                       GLContextConfig fallback_ctx_config)
+    {
         display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
         eglInitialize(display, 0, 0);
 
-        const EGLint config_attributes[] = {
-                EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT,
-                EGL_BLUE_SIZE, 8,
-                EGL_GREEN_SIZE, 8,
-                EGL_RED_SIZE, 8,
-                EGL_DEPTH_SIZE, 24,
-                EGL_NONE
-        };
-
-        EGLint num_configs = 0;
-        eglChooseConfig(display, config_attributes, nullptr, 0, &num_configs);
-        std::vector<EGLConfig> supportedConfigs(static_cast<size_t>(num_configs));
-        eglChooseConfig(
-                display, config_attributes, supportedConfigs.data(), num_configs,
-                &num_configs);
-
-        // Choose a config, either a match if possible or the first config otherwise
-
-        const auto config_matches = [&](EGLConfig config) {
-            if ( !ConfigHasAttribute(EGL_RED_SIZE, 8)) return false;
-            if ( !ConfigHasAttribute(EGL_GREEN_SIZE, 8)) return false;
-            if ( !ConfigHasAttribute(EGL_BLUE_SIZE, 8)) return false;
-            return ConfigHasAttribute(EGL_DEPTH_SIZE, 24);
-        };
-
-        const auto config_iter = std::find_if(
-                supportedConfigs.cbegin(), supportedConfigs.cend(),
-                config_matches);
-
-        config = (config_iter != supportedConfigs.cend()) ? *config_iter : supportedConfigs[0];
-
-        const EGLint context_attributes[] = {
-                EGL_CONTEXT_CLIENT_VERSION, 3,
-                EGL_NONE
-        };
-
-        context = eglCreateContext(display, config, nullptr, context_attributes);
-        if ( context == EGL_NO_CONTEXT) {
-            FatalError(TAG, "Unable to create EGL context");
+        if (!TryCreateContext(preferred_ctx_config)) {
+            Log::I(TAG, "Unable to build preferred EGL ctx, using fallback");
+            if (!TryCreateContext(fallback_ctx_config)) {
+                FatalError(TAG, "Unable to create fallback EGL context");
+            }
         }
     }
 
@@ -180,6 +151,58 @@ namespace ancer::swappy {
 
     EGLBoolean Renderer::ThreadState::MakeCurrent(EGLSurface surface) {
         return eglMakeCurrent(display, surface, surface, context);
+    }
+
+    bool Renderer::ThreadState::TryCreateContext(GLContextConfig req_config) {
+        const EGLint config_attributes[] = {
+            EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT,
+            EGL_BLUE_SIZE, req_config.blue_bits,
+            EGL_GREEN_SIZE, req_config.green_bits,
+            EGL_RED_SIZE, req_config.red_bits,
+            EGL_DEPTH_SIZE, req_config.depth_bits,
+            EGL_STENCIL_SIZE, req_config.stencil_bits,
+            EGL_NONE
+        };
+
+        EGLint num_configs = 0;
+        eglChooseConfig(display, config_attributes, nullptr, 0, &num_configs);
+        if (num_configs == 0) {
+            return false;
+        }
+
+        std::vector<EGLConfig> supported_configs(static_cast<size_t>(num_configs));
+
+        eglChooseConfig(
+            display, config_attributes, supported_configs.data(), num_configs,
+            &num_configs);
+
+        // Choose a config, either a match if possible or the first config otherwise
+
+        const auto config_matches = [&](EGLConfig config) {
+          if ( !ConfigHasAttribute(EGL_RED_SIZE, req_config.red_bits)) return false;
+          if ( !ConfigHasAttribute(EGL_GREEN_SIZE, req_config.green_bits)) return false;
+          if ( !ConfigHasAttribute(EGL_BLUE_SIZE, req_config.blue_bits)) return false;
+          if ( !ConfigHasAttribute(EGL_DEPTH_SIZE, req_config.depth_bits)) return false;
+          return ConfigHasAttribute(EGL_STENCIL_SIZE, req_config.stencil_bits);
+        };
+
+        const auto config_iter = std::find_if(
+            supported_configs.cbegin(), supported_configs.cend(),
+            config_matches);
+
+        config = (config_iter != supported_configs.cend()) ? *config_iter : supported_configs[0];
+
+        const EGLint context_attributes[] = {
+            EGL_CONTEXT_CLIENT_VERSION, 3,
+            EGL_NONE
+        };
+
+        context = eglCreateContext(display, config, nullptr, context_attributes);
+        if ( context == EGL_NO_CONTEXT) {
+            return false;
+        }
+        using_gl_context_config = req_config;
+        return true;
     }
 
     void Renderer::Draw(ThreadState* thread_state) {

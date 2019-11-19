@@ -234,7 +234,7 @@ public:
 
     TeapotRendererGLES3Operation() = default;
 
-    void OnGlContextReady() override {
+    void OnGlContextReady(const GLContextConfig &ctx_config) override {
         _configuration = GetConfiguration<configuration>();
 
         if ( GetMode() == Mode::DataGatherer ) {
