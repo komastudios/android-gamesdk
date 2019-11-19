@@ -498,6 +498,8 @@ bool VulkanDrawFrame(Input::Data *inputData) {
     total_triangles += meshes[x]->getTrianglesCount();
   }
 
+  font->clearOffset();
+
   char output_string[50];
   if(meshes.size() > 1){
     sprintf(output_string, "%d meshes", (int)meshes.size());
@@ -511,7 +513,10 @@ bool VulkanDrawFrame(Input::Data *inputData) {
   }
   font->drawString(output_string, 1.0f, -0.98f, 0.75f,
                    renderer->getCurrentCommandBuffer(), render_pass, renderer->getCurrentFrame());
-
+  for(int i = 0; i < 10; ++i) {
+    font->drawString(sample_string, 1.0f, -0.98f, 0.5f - i*0.05f,
+                     renderer->getCurrentCommandBuffer(), render_pass, renderer->getCurrentFrame());
+  }
   vkCmdEndRenderPass(renderer->getCurrentCommandBuffer());
   Timing::timer.stopEvent();
 

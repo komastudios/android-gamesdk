@@ -67,6 +67,10 @@ void Font::parseFontInfo(const char *info_file_path, android_app *androidAppCtx)
     }
 }
 
+void Font::clearOffset() {
+    offset_ = 0;
+}
+
 void Font::drawString(const std::string& text, float text_size, float x, float y,
                       VkCommandBuffer commandBuffer, VkRenderPass render_pass, uint_t frame_index) {
     updatePipeline(render_pass);
@@ -82,8 +86,8 @@ void Font::drawString(const std::string& text, float text_size, float x, float y
     float posy = y;
 
     void *data;
-    vkMapMemory(renderer_.getDevice().getDevice(), vertexBufferDeviceMemory_, 0,
-                sizeof(float) * text.size() * FONT_NUM_QUAD_INDICES, 0, &data);
+    CALL_VK(vkMapMemory(renderer_.getDevice().getDevice(), vertexBufferDeviceMemory_, offset_,
+                sizeof(float) * text.size() * FONT_NUM_QUAD_INDICES * FONT_ATTR_COUNT, 0, &data));
 
     float *head = (float*)data;
 
@@ -141,8 +145,7 @@ void Font::drawString(const std::string& text, float text_size, float x, float y
                       VK_PIPELINE_BIND_POINT_GRAPHICS,
                       pipeline_);
 
-    VkDeviceSize offset = 0;
-    vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuf_, &offset);
+    vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuf_, &offset_);
 
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                             layout_, 0, 1, &font_descriptor_sets_[frame_index], 0, nullptr);
@@ -150,6 +153,7 @@ void Font::drawString(const std::string& text, float text_size, float x, float y
     vkCmdDraw(commandBuffer,
               text.size() * FONT_NUM_QUAD_INDICES,
               1, 0, 0);
+    offset_ += sizeof(float) * text.size() * FONT_NUM_QUAD_INDICES * FONT_ATTR_COUNT;
 }
 
 Font::Font(Renderer& renderer, android_app *androidAppCtx,
@@ -163,9 +167,10 @@ Font::Font(Renderer& renderer, android_app *androidAppCtx,
     createDescriptorSetLayout();
     createDescriptors(renderer);
 
-    VkDeviceSize bufferSizeVertex = sizeof(float) * FONT_STRING_SIZE * FONT_NUM_QUAD_INDICES;
+    VkDeviceSize bufferSizeVertex = sizeof(float) * FONT_STRING_SIZE * FONT_NUM_QUAD_INDICES * FONT_ATTR_COUNT;
     renderer_.getDevice().createBuffer(bufferSizeVertex, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
                           vertexBuf_, vertexBufferDeviceMemory_);
+    offset_ = 0;
 }
 
 Font::~Font() {
