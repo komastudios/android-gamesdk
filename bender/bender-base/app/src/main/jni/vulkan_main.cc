@@ -448,7 +448,6 @@ void DeleteVulkan(void) {
 }
 
 bool VulkanDrawFrame(Input::Data *inputData) {
-  Timing::timer.startEvent("Draw Frame");
   if (windowResized) {
     OnOrientationChange();
   }
@@ -462,6 +461,7 @@ bool VulkanDrawFrame(Input::Data *inputData) {
   Timing::timer.stopEvent();
 
   renderer->beginFrame();
+  Timing::timer.startEvent("Start Frame", Timing::EventType::START_FRAME);
   renderer->beginPrimaryCommandBufferRecording();
 
   // Now we start a renderpass. Any draw command has to be recorded in a
@@ -495,7 +495,12 @@ bool VulkanDrawFrame(Input::Data *inputData) {
     meshes[x]->updatePipeline(render_pass);
     meshes[x]->submitDraw(renderer->getCurrentCommandBuffer(), renderer->getCurrentFrame());
   }
-  font->drawString(sample_string, 2.0f, 0.0f, 0.0f,
+  int fps;
+  float frametime;
+  char fpsString[50];
+  Timing::timer.getFramerate(100, Timing::timer.getLastMajorEvent()->number, fps, frametime);
+  sprintf(fpsString, "%2.d FPS  %.3f ms", fps, frametime);
+  font->drawString(fpsString, 1.0f, -.98f, -.98f,
                    renderer->getCurrentCommandBuffer(), render_pass, renderer->getCurrentFrame());
 
   vkCmdEndRenderPass(renderer->getCurrentCommandBuffer());
@@ -505,10 +510,7 @@ bool VulkanDrawFrame(Input::Data *inputData) {
   Timing::timer.startEvent("End Frame");
   renderer->endFrame();
   Timing::timer.stopEvent();
-
   Timing::timer.stopEvent();
-  Timing::printEvent(*Timing::timer.getLastMajorEvent());
-
   return true;
 }
 

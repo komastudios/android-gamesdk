@@ -97,14 +97,14 @@ void Device::CreateVulkanDevice(ANativeWindow *platformWindow,
 
   instance_extensions.push_back("VK_KHR_surface");
   instance_extensions.push_back("VK_KHR_android_surface");
-  instance_extensions.push_back("VK_EXT_debug_report");
 
 #ifdef ENABLE_VALIDATION_LAYERS
+  instance_extensions.push_back("VK_EXT_debug_report");
   instance_layers.push_back("VK_LAYER_KHRONOS_validation");
+  device_extensions.push_back("VK_EXT_debug_marker");
 #endif
 
   device_extensions.push_back("VK_KHR_swapchain");
-  device_extensions.push_back("VK_EXT_debug_marker");
 
   // **********************************************************
   // Create the Vulkan instance

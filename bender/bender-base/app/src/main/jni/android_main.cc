@@ -13,6 +13,7 @@
 // limitations under the License.
 #include <android/log.h>
 #include <android_native_app_glue.h>
+#include <timing.h>
 #include "vulkan_main.h"
 
 int32_t input_cmd(android_app *app, AInputEvent *event) {
@@ -64,6 +65,7 @@ void android_main(struct android_app *app) {
 
   // Main loop
   do {
+    Timing::timer.startEvent("Main Loop", Timing::EventType::MAIN_LOOP);
     if (ALooper_pollAll(IsVulkanReady() ? 1 : 0, nullptr,
                         &events, (void **) &source) >= 0) {
       if (source != NULL) source->process(app, source);
@@ -73,5 +75,6 @@ void android_main(struct android_app *app) {
     if (IsVulkanReady()) {
       VulkanDrawFrame((Input::Data *)app->userData);
     }
+    Timing::timer.stopEvent();
   } while (app->destroyRequested == 0);
 }
