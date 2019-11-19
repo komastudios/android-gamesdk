@@ -34,6 +34,24 @@
       "revId": "de9715dd3904e1e0ad68410738eb6035358ff37a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "45a57088_1cef275f",
+        "filename": "src/tuningfork/jni_wrap.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 346,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-11-19T10:53:24Z",
+      "side": 1,
+      "message": "Fair enough. The initial implementation was only meant for a small number of JNI calls in a single method. Keep it as is and let\u0027s refactor in another CL.",
+      "parentUuid": "adbd760d_992b5ade",
+      "revId": "de9715dd3904e1e0ad68410738eb6035358ff37a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
