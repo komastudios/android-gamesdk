@@ -17,6 +17,7 @@
 #define FONT_SDF_INDEX 0
 #define FONT_STRING_SIZE 120
 #define FONT_NUM_QUAD_INDICES 6
+#define FONT_ATTR_COUNT 4
 #define FONT_SCREEN_TOP -1.0f
 #define FONT_SCREEN_LEFT -1.0f
 
@@ -45,6 +46,9 @@ private:
 
     VkBuffer vertexBuf_;
     VkDeviceMemory vertexBufferDeviceMemory_;
+
+    VkDeviceSize offset_;
+    int current_frame_;
 
     typedef struct Character {
         int x, y, width, height, xoffset, yoffset, xadvance;
