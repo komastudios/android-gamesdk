@@ -18,6 +18,7 @@ package com.google.gamesdk.gamecert.operationrunner.util;
 
 import android.view.Surface;
 
+import com.google.gamesdk.gamecert.operationrunner.hosts.BaseGLHostActivity;
 import com.google.gamesdk.gamecert.operationrunner.hosts.BaseHostActivity;
 import com.google.gamesdk.gamecert.operationrunner.hosts.SwappyGLHostActivity;
 
@@ -118,15 +119,26 @@ public class NativeInvoker {
      */
     public static native void onTrimMemory(int level);
 
+    /**
+     * Get configuration for the gl context the data gathering operation requires
+     * This is only called by GL operations hosted by GLSurfaceViewHostActivity and
+     * SwappyGLHostActivity
+     * @param c Configuration will be written into this
+     * TODO(shamyl@google.com): This may eventually be refactored to support Vulkan hosts
+     */
+    public static native void getGLContextConfiguration(
+        BaseGLHostActivity.GLContextConfiguration c);
 
-    public static native void glSurfaceViewHost_ContextReady();
+    public static native void glSurfaceViewHost_ContextReady(
+        BaseGLHostActivity.GLContextConfiguration c);
 
     public static native void glSurfaceViewHost_Draw();
 
     public static native void glSurfaceViewHost_Resize(int width, int height);
 
-
-    public static native void swappyGLHost_Init(SwappyGLHostActivity activity);
+    public static native void swappyGLHost_Init(SwappyGLHostActivity activity,
+        BaseGLHostActivity.GLContextConfiguration preferredCtxConfiguration,
+        BaseGLHostActivity.GLContextConfiguration fallbackCtxConfiguration);
 
     public static native void swappyGLHost_SetSurface(Surface surface,
                                                       int width,

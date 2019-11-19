@@ -164,6 +164,25 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_onTrimMemory
     reporting::FlushReportLogQueue();
 }
 
+extern "C" JNIEXPORT void JNICALL
+    Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_getGLContextConfiguration(
+        JNIEnv *env,
+        jclass instance,
+        jobject c
+        ) {
+
+    GLContextConfig config = GLContextConfig::Default();
+    internal::ForEachOperation([&config](BaseOperation& op){
+        if (op.GetMode() == BaseOperation::Mode::DataGatherer) {
+            if (auto cc = op.GetGLContextConfiguration()) {
+                config = *cc;
+            }
+        }
+    });
+
+  BridgeGLContextConfiguration(config, c);
+}
+
 //==============================================================================
 // GLSurfaceViewHostActivity
 // TODO(tmillican@google.com): Move into own file
@@ -171,9 +190,12 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_onTrimMemory
 extern "C" JNIEXPORT void JNICALL
 Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_glSurfaceViewHost_1ContextReady(
         JNIEnv* env,
-        jclass instance) {
+        jclass instance,
+        jobject c) {
     ancer::GetFpsCalculator().Reset();
-    internal::ForEachOperation([](BaseOperation& op) { op.OnGlContextReady(); });
+
+    auto config = ancer::BridgeGLContextConfiguration(c);
+    internal::ForEachOperation([&config](BaseOperation& op) { op.OnGlContextReady(config); });
 }
 
 extern "C" JNIEXPORT void JNICALL
@@ -225,9 +247,19 @@ namespace {
 extern "C" JNIEXPORT void JNICALL
 Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_swappyGLHost_1Init(
         JNIEnv* env, jclass instance,
-        jobject activity) {
-    // Get the Renderer instance to create it
-    _swappy_renderer = swappy::Renderer::Create();
+        jobject activity,
+        jobject preferredCtxConfiguration,
+        jobject fallbackCtxConfiguration) {
+
+    GLContextConfig preferredConfig =
+        ancer::BridgeGLContextConfiguration(preferredCtxConfiguration);
+
+    GLContextConfig fallbackConfig =
+        ancer::BridgeGLContextConfiguration(fallbackCtxConfiguration);
+
+    _swappy_renderer = swappy::Renderer::Create(
+        preferredConfig, fallbackConfig
+        );
 
     SwappyGL_init(env, activity);
 

@@ -297,7 +297,7 @@ public:
         }
     }
 
-    void OnGlContextReady() override {
+    void OnGlContextReady(const GLContextConfig &ctx_config) override {
         SetHeartbeatPeriod(250ms);
 
         _configuration = GetConfiguration<configuration>();

@@ -14,17 +14,14 @@
 # limitations under the License.
 #
 
-
 from .affinity_test_suite_handler import AffinityTestSuiteHandler
 from .cpu_intensive_suite_handler import CpuIntensiveSuiteHandler
 from .memory_allocation_suite_handler import MemoryAllocationSuiteHandler
-
-
+from .depth_clear_suite_handler import DepthClearSuiteHandler
 """
 List containing all enabled handlers to render charts.
 """
 HANDLERS = [
-    AffinityTestSuiteHandler,
-    CpuIntensiveSuiteHandler,
-    MemoryAllocationSuiteHandler,
+    AffinityTestSuiteHandler, CpuIntensiveSuiteHandler,
+    MemoryAllocationSuiteHandler, DepthClearSuiteHandler
 ]

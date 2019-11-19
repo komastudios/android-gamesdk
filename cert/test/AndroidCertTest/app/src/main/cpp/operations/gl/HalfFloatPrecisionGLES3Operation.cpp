@@ -88,7 +88,7 @@ class HalfFloatPrecisionGLES3Operation : public BaseGLES3Operation {
 
     HalfFloatPrecisionGLES3Operation() = default;
 
-    void OnGlContextReady() override {
+    void OnGlContextReady(const GLContextConfig &ctx_config) override {
         Log::D(TAG, "GlContextReady");
         _configuration = GetConfiguration<configuration>();
 

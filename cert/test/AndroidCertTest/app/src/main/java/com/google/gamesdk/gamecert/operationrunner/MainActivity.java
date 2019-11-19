@@ -145,7 +145,13 @@ public class MainActivity extends AppCompatActivity {
             new AlertDialog.Builder(this)
                     .setTitle(R.string.dialog_title_crash_warning)
                     .setMessage(R.string.dialog_message_crash_warning)
-                    .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> finish())
+                    .setPositiveButton(android.R.string.ok, (dialogInterface, i)->{
+                        openReportLog();
+                        if (_configuration.isAutoRun()) {
+                            startAutoRun();
+                        }
+                    })
+                    .setNegativeButton("Terminate", (dialogInterface, i) -> finish())
                     .setCancelable(false)
                     .show();
 
@@ -245,6 +251,7 @@ public class MainActivity extends AppCompatActivity {
             build.put("SDK_INT", Build.VERSION.SDK_INT);
             build.put("PREVIEW_SDK_INT", Build.VERSION.PREVIEW_SDK_INT);
             build.put("SECURITY_PATCH", Build.VERSION.SECURITY_PATCH);
+            build.put("FINGERPRINT", Build.FINGERPRINT);
             build.put("OPENGLES", getOpenGLVersion());
 
             NativeInvoker.writeToReportFile(build.toString());
