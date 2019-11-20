@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f9246255_3130fbef",
+        "filename": "cert/test/reporting/lib/csv.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-11-20T17:49:42Z",
+      "side": 1,
+      "message": "@shamyl, I remember you told me that this fix could even replace line 220. However, I chose to keep it because the first JSON line provides more info than prod and sdk_int.\nWe are still on time to remove it if that extra info isn\u0027t used anywhere.",
+      "revId": "058cada66f585e395a9da260a862813396c696b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
