@@ -16,6 +16,24 @@
       "revId": "052a28a4e98e2a2ae92662a393d6bd91d832afcd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f26c29f5_f1c82be0",
+        "filename": "bender/bender-base/utils/bender_kit/timing.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-11-20T17:35:09Z",
+      "side": 1,
+      "message": "Ohhh yea good catch, I was basing this off of the lambda in UniformBufferObject since I haven\u0027t really implemented them before haha, updating!",
+      "parentUuid": "bc80e6a9_2910dc86",
+      "revId": "052a28a4e98e2a2ae92662a393d6bd91d832afcd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
