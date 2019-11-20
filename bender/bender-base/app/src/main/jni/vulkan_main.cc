@@ -460,7 +460,7 @@ bool VulkanDrawFrame(Input::Data *inputData) {
 
   renderer->beginFrame();
   Timing::timer.time("Start Frame", Timing::START_FRAME, []() {
-    Timing::timer.time("PrimaryCommandBufferRecording", Timing::START_FRAME, []() {
+    Timing::timer.time("PrimaryCommandBufferRecording", Timing::OTHER, []() {
       renderer->beginPrimaryCommandBufferRecording();
 
       // Now we start a renderpass. Any draw command has to be recorded in a
@@ -520,7 +520,7 @@ bool VulkanDrawFrame(Input::Data *inputData) {
         int fps;
         float frametime;
         char fpsString[50];
-        Timing::timer.getFramerate(100,
+        Timing::timer.getFramerate(500,
                                    Timing::timer.getLastMajorEvent()->number,
                                    &fps,
                                    &frametime);

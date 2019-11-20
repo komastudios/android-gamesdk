@@ -26,7 +26,6 @@ EventTiming timer;
 
 EventTiming::EventTiming() {
   application_start_time_ = std::chrono::high_resolution_clock::now();
-  eventPool.reserve(100);
   event_buckets.resize(EVENT_TYPE_COUNT);
   time("Application Start", OTHER, [](){});
 }
@@ -69,14 +68,15 @@ Event *EventTiming::getLastMajorEvent() {
 }
 
 void EventTiming::getFramerate(int numFrames, int mostRecentFrame, int *fps, float *frameTime) {
-  mostRecentFrame = event_buckets[START_FRAME].size() < mostRecentFrame ? event_buckets[START_FRAME].size() : mostRecentFrame;
+  int mostRecentFrameMain = event_buckets[MAIN_LOOP].size() - 2;
+  mostRecentFrame = (int)event_buckets[START_FRAME].size() - 2 < mostRecentFrame ? (int)event_buckets[START_FRAME].size() - 2: mostRecentFrame;
   int framesCount = mostRecentFrame < numFrames ? mostRecentFrame : numFrames;
 
   float sumFPS = 0;
   float sumFrameTime = 0;
   for (int x = 0; x < framesCount; x++) {
-    sumFPS += event_buckets[MAIN_LOOP][event_buckets[MAIN_LOOP].size() - 1 - x]->duration.count();
-    sumFrameTime += event_buckets[START_FRAME][event_buckets[START_FRAME].size() - 1 - x]->duration.count();
+    sumFPS += event_buckets[MAIN_LOOP][mostRecentFrameMain - x]->duration.count();
+    sumFrameTime += event_buckets[START_FRAME][mostRecentFrame - x]->duration.count();
   }
 
   *fps = framesCount / (sumFPS * NS_TO_S);

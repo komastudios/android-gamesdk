@@ -17,6 +17,7 @@
 
 #include <chrono>
 #include <vector>
+#include <deque>
 #include <stack>
 #include <map>
 
@@ -63,7 +64,7 @@ class EventTiming {
   int current_major_event_num_ = 0;
   Event *current_event = nullptr;
   std::chrono::high_resolution_clock::time_point application_start_time_;
-  std::vector<Event> eventPool;
+  std::deque<Event> eventPool;
 
 };
 
