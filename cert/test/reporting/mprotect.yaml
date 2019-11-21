@@ -19,3 +19,5 @@ chart:
   enabled: true
   suites:
     - "Vulkan memory write protection"
+  fields:
+    - "mprotect.rank"
