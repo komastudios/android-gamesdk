@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "0fa9b23a_3fecbeb0",
+        "filename": "cert/test/AndroidCertTest/app/src/main/assets/Shaders/DepthClearGLES3Operation/frag.fsh",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-21T17:27:37Z",
+      "side": 1,
+      "message": "That is a valid question. I\u0027m going to add copyright to these and future ones.",
+      "parentUuid": "f984dd7a_c0070f1c",
+      "revId": "41d41fbac59d5246944637cca2d814f56a881978",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dcf6c380_9c147e2a",
         "filename": "cert/test/AndroidCertTest/app/src/main/assets/Shaders/DepthClearGLES3Operation/vert.vsh",
         "patchSetId": 4
@@ -33,6 +51,24 @@
       "revId": "41d41fbac59d5246944637cca2d814f56a881978",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2b7a65ff_6fbe79ef",
+        "filename": "cert/test/AndroidCertTest/app/src/main/assets/Shaders/DepthClearGLES3Operation/vert.vsh",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-21T17:27:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dcf6c380_9c147e2a",
+      "revId": "41d41fbac59d5246944637cca2d814f56a881978",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "18581d61_58eb2ecd",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/gamesdk/gamecert/operationrunner/hosts/BaseGLHostActivity.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-21T17:27:37Z",
+      "side": 1,
+      "message": "Whoops! Will do.",
+      "parentUuid": "ed27d500_e6132bfe",
+      "revId": "41d41fbac59d5246944637cca2d814f56a881978",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "aa23dea8_35948795",
         "filename": "cert/test/AndroidCertTest/app/src/main/res/raw/configuration.json",
         "patchSetId": 4
@@ -70,6 +124,24 @@
     },
     {
       "key": {
+        "uuid": "f9d4ead3_f73ddfe4",
+        "filename": "cert/test/AndroidCertTest/app/src/main/res/raw/configuration.json",
+        "patchSetId": 4
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-21T17:27:37Z",
+      "side": 1,
+      "message": "The UI shows the user the underlying host activity, I think this is likely unecessary.",
+      "parentUuid": "aa23dea8_35948795",
+      "revId": "41d41fbac59d5246944637cca2d814f56a881978",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8d62d674_0eb54977",
         "filename": "cert/test/AndroidCertTest/app/src/main/res/raw/configuration.json",
         "patchSetId": 4
@@ -84,6 +156,24 @@
       "revId": "41d41fbac59d5246944637cca2d814f56a881978",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "58c55e57_b0b5d3ec",
+        "filename": "cert/test/AndroidCertTest/app/src/main/res/raw/configuration.json",
+        "patchSetId": 4
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-21T17:27:37Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "8d62d674_0eb54977",
+      "revId": "41d41fbac59d5246944637cca2d814f56a881978",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
