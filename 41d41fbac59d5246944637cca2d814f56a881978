@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f984dd7a_c0070f1c",
+        "filename": "cert/test/AndroidCertTest/app/src/main/assets/Shaders/DepthClearGLES3Operation/frag.fsh",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-11-21T00:58:20Z",
+      "side": 1,
+      "message": "Wouldn\u0027t we need copyright message for shaders?",
+      "revId": "41d41fbac59d5246944637cca2d814f56a881978",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dcf6c380_9c147e2a",
+        "filename": "cert/test/AndroidCertTest/app/src/main/assets/Shaders/DepthClearGLES3Operation/vert.vsh",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-11-21T00:58:20Z",
+      "side": 1,
+      "message": "Copyright message at all?",
+      "revId": "41d41fbac59d5246944637cca2d814f56a881978",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ed27d500_e6132bfe",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/gamesdk/gamecert/operationrunner/hosts/BaseGLHostActivity.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-11-21T00:58:20Z",
+      "side": 1,
+      "message": "Copyright message missing?",
+      "revId": "41d41fbac59d5246944637cca2d814f56a881978",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aa23dea8_35948795",
+        "filename": "cert/test/AndroidCertTest/app/src/main/res/raw/configuration.json",
+        "patchSetId": 4
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-11-21T00:58:20Z",
+      "side": 1,
+      "message": "\"name\": \"32bit Depth Clear (OpenGL ES)\"",
+      "revId": "41d41fbac59d5246944637cca2d814f56a881978",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8d62d674_0eb54977",
+        "filename": "cert/test/AndroidCertTest/app/src/main/res/raw/configuration.json",
+        "patchSetId": 4
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-11-21T00:58:20Z",
+      "side": 1,
+      "message": "\"name\": \"32bit Depth Clear (Swappy)\"",
+      "revId": "41d41fbac59d5246944637cca2d814f56a881978",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
