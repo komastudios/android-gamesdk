@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "84e7427a_aca109d2",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/gamesdk/gamecert/operationrunner/operations/WorkLoadConfigurationTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-21T18:01:13Z",
+      "side": 1,
+      "message": "All source files should include the copyright header. You can find it in our other java files.",
+      "revId": "de5dd66eb5139f3c5cf9e1c030f43ab41eb42543",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "63ef5a74_22fa7edb",
         "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/gamesdk/gamecert/operationrunner/operations/WorkLoadConfigurationTest.java",
         "patchSetId": 1
