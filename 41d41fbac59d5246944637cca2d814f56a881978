@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "ca48512a_fa716d65",
+        "filename": "cert/test/AndroidCertTest/app/src/main/assets/Shaders/DepthClearGLES3Operation/frag.fsh",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-11-21T19:11:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0fa9b23a_3fecbeb0",
+      "revId": "41d41fbac59d5246944637cca2d814f56a881978",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dcf6c380_9c147e2a",
         "filename": "cert/test/AndroidCertTest/app/src/main/assets/Shaders/DepthClearGLES3Operation/vert.vsh",
         "patchSetId": 4
@@ -66,6 +84,24 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "dcf6c380_9c147e2a",
+      "revId": "41d41fbac59d5246944637cca2d814f56a881978",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4b62a0d1_d76d9e38",
+        "filename": "cert/test/AndroidCertTest/app/src/main/assets/Shaders/DepthClearGLES3Operation/vert.vsh",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-11-21T19:11:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2b7a65ff_6fbe79ef",
       "revId": "41d41fbac59d5246944637cca2d814f56a881978",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
@@ -107,6 +143,24 @@
     },
     {
       "key": {
+        "uuid": "96542cf7_1367fde1",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/gamesdk/gamecert/operationrunner/hosts/BaseGLHostActivity.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-11-21T19:11:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "18581d61_58eb2ecd",
+      "revId": "41d41fbac59d5246944637cca2d814f56a881978",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "aa23dea8_35948795",
         "filename": "cert/test/AndroidCertTest/app/src/main/res/raw/configuration.json",
         "patchSetId": 4
@@ -142,6 +196,24 @@
     },
     {
       "key": {
+        "uuid": "5b23fd59_04f51d89",
+        "filename": "cert/test/AndroidCertTest/app/src/main/res/raw/configuration.json",
+        "patchSetId": 4
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-11-21T19:11:33Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f9d4ead3_f73ddfe4",
+      "revId": "41d41fbac59d5246944637cca2d814f56a881978",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8d62d674_0eb54977",
         "filename": "cert/test/AndroidCertTest/app/src/main/res/raw/configuration.json",
         "patchSetId": 4
@@ -171,6 +243,24 @@
       "side": 1,
       "message": "Ack",
       "parentUuid": "8d62d674_0eb54977",
+      "revId": "41d41fbac59d5246944637cca2d814f56a881978",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e2b46d45_a4b92533",
+        "filename": "cert/test/AndroidCertTest/app/src/main/res/raw/configuration.json",
+        "patchSetId": 4
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-11-21T19:11:33Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "58c55e57_b0b5d3ec",
       "revId": "41d41fbac59d5246944637cca2d814f56a881978",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
