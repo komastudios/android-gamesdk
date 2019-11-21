@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "63ef5a74_22fa7edb",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/gamesdk/gamecert/operationrunner/operations/WorkLoadConfigurationTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1597621
+      },
+      "writtenOn": "2019-11-21T17:40:18Z",
+      "side": 1,
+      "message": "All of the printStackTrace() \u0026 error logs: Replace with FatalError(TAG, \"...\") calls so things fail immediately.",
+      "revId": "de5dd66eb5139f3c5cf9e1c030f43ab41eb42543",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ab9acc29_c6e2e47f",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/gamesdk/gamecert/operationrunner/operations/WorkLoadConfigurationTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1597621
+      },
+      "writtenOn": "2019-11-21T17:40:18Z",
+      "side": 1,
+      "message": "After re-reading the spec, I think this might be better as a log every X ms reporting how much was read (cumulatively or since the last report - it\u0027s the same data either way). That would give info on how the different threads are acting, as well as any changes in I/O rate over time.",
+      "range": {
+        "startLine": 116,
+        "startChar": 0,
+        "endLine": 127,
+        "endChar": 0
+      },
+      "revId": "de5dd66eb5139f3c5cf9e1c030f43ab41eb42543",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
