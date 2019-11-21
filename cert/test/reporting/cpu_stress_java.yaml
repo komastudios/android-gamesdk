@@ -1,6 +1,6 @@
 build:
   clean: false
-  configuration: configurations/cpu_intensive_java.json
+  configuration: configurations/cpu_stress_java.json
 
 systrace:
   enabled: false
@@ -19,3 +19,7 @@ chart:
   enabled: true
   suites:
     - "Cpu intensive json (Java)"
+  skipping:
+    - "json_manipulation.start_time_millis"
+    - "json_manipulation.end_time_millis"
+    - "perf_info"

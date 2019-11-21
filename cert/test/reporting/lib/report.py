@@ -19,10 +19,10 @@ import subprocess
 import tempfile
 import shutil
 import os
-import re
 import csv
 
 from pathlib import Path
+from re import match
 from typing import List, Tuple
 
 from lib.build import APP_ID
@@ -138,3 +138,15 @@ def extract_and_export(device_id: str, dst_dir: Path, systrace_file: Path,
         upload_to_gcloud(csv_file, bucket)
 
     return log_file, csv_file, systrace_file
+
+
+def get_device_product_and_api(report_path: Path) -> (str, int):
+    """
+    Given a report path, infers from it its device and api level.
+    """
+    device_patterns = match(r"^report_(.+)_(\d+)\.(csv|json)$",
+                            report_path.name)
+    result = ("UNKNOWN", 0) if device_patterns is None \
+    else device_patterns.group(1), int(device_patterns.group(2))
+
+    return result

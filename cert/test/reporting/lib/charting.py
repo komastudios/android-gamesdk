@@ -92,8 +92,79 @@ def label_line(line, label, x, y, color='0.5', size=12):
 # -----------------------------------------------------------------------------
 
 
-class SuiteImpl(Suite):
+def should_chart_be_rendered(chart: Chart, restrict_to: List[str], \
+    skip: List[str]) -> bool:
+    """
+    Determines if a given chart object should be rendered at all.
+    A chart is to be rendered if the following conditions apply:
+    1) The chart name is equal or prefixes at least one element in
+       a non-empty restrict_to.
+    2) The chart name isn't equal, nor prefixes any element in a
+       non-empty skip.
+    When both restrict_to and skip are empty, the chart is rendered.
 
+    Args:
+        chart: the Chart whose rendering is to be determined.
+        restrict_to: list of data points to include. If empty, it's assumed
+                     that this one is included.
+        skip: list of data points to exclude.
+
+    Returns:
+        True if the chart should be rendered.
+    """
+    yes_no = True
+
+    chart_name = chart.field
+    chart_operation = chart.operation_id
+    name_matches_chart = lambda name: \
+        chart_name.startswith(name) or name in chart_operation
+
+    if restrict_to:
+        yes_no = any(map(name_matches_chart, restrict_to))
+
+    if skip:
+        yes_no = not any(map(name_matches_chart, skip))
+
+    return yes_no
+
+
+def filter_charts_to_render(charts: List[Chart], restrict_to: List[str], \
+    skip: List[str]) -> List[Chart]:
+    """
+    Given a list of charts filters the ones that should be rendered.
+    See should_chart_be_rendered().
+    """
+    return list(
+        filter(
+            lambda chart: should_chart_be_rendered(chart, restrict_to, skip),
+            charts))
+
+
+# -----------------------------------------------------------------------------
+
+
+def find_chart_time_frame(chart: Chart) -> (int, int):
+    """
+    Given a chart, finds the time frame in which its sampled data was captured.
+    """
+    xs = chart.renderer.get_xs()
+    return min(xs), max(xs)
+
+
+def find_outer_time_frame_in_seconds(charts: List[Chart]) -> (float, float):
+    """
+    Given a list of charts, finds the minimum time frame that includes all
+    chart time frames.
+    """
+    time_frames = list(map(lambda chart: find_chart_time_frame(chart), charts))
+    return min(map(lambda time_frame: time_frame[0], time_frames)) / NS_PER_S,\
+        max(map(lambda time_frame: time_frame[1], time_frames)) / NS_PER_S
+
+
+# -----------------------------------------------------------------------------
+
+
+class SuiteImpl(Suite):
     def __init__(self, suite_name: str, entries: List[CSVEntry]):
         super().__init__(suite_name, entries)
         self.charts: List[Chart] = []
@@ -143,38 +214,14 @@ class SuiteImpl(Suite):
 
         plt.figure()
 
-        charts_to_render = []
-        for c in self.charts:
-            if fields:
-                include = False
-                for field_name in fields:
-                    if c.field.startswith(field_name) or \
-                        field_name in c.operation_id:
-                        include = True
-                        break
-            else:
-                include = True
-
-            if skip:
-                for field_name in skip:
-                    if c.field.startswith(field_name) or \
-                        field_name in c.operation_id:
-                        include = False
-                        break
-
-            if include:
-                charts_to_render.append(c)
-
-        start_time_seconds = min(
-            map(lambda c: min(c.renderer.get_xs()), self.charts)) / NS_PER_S
-        end_time_seconds = max(
-            map(lambda c: max(c.renderer.get_xs()), self.charts)) / NS_PER_S
-
+        charts_to_render = filter_charts_to_render(self.charts, fields, skip)
+        start, end = find_outer_time_frame_in_seconds(self.charts)
         count = len(charts_to_render)
+
         for i, chart in enumerate(charts_to_render):
             fig = plt.subplot(count, 1, i + 1)
-            plt.xlim(0, end_time_seconds - start_time_seconds)
-            chart.plot(fig, i, count, start_time_seconds, end_time_seconds)
+            plt.xlim(0, end - start)
+            chart.plot(fig, i, count, start, end)
 
             fig.legend(labels=None, loc="upper right")
 

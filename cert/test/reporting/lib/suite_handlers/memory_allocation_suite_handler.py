@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 
 from lib.chart_components import *
 from .common_plot import add_plotters_to_default, \
-    plot_memory_as_mb, plot_ignore, plot_boolean
+    plot_boolean, plot_ignore, plot_memory_as_mb, plot_oom
 
 
 def plot_event_ignore(renderer, fig, index, count, start_time_seconds,
@@ -75,6 +75,7 @@ class MemoryChartRenderer(ChartRenderer):
         "sys_mem_info.available_memory": plot_memory_as_mb,
         "sys_mem_info.native_allocated": plot_memory_as_mb,
         "sys_mem_info.low_memory": plot_boolean,
+        "sys_mem_info.oom_score": plot_oom,
         "total_allocation_bytes": plot_memory_as_mb,
     })
 
@@ -91,12 +92,11 @@ class MemoryChartRenderer(ChartRenderer):
             "on_trim_level", "is_free", "is_malloc_fail"
         ]
 
-    def plot(self, fig, index, count, start_time_seconds, end_time_seconds):
+    def plot(self, fig, index, count, start_time, end_time):
         if self.is_event_chart():
-            self.event_plotters.get(self.chart.field,
-                                    plot_event_default)(self, fig, index, count,
-                                                        start_time_seconds,
-                                                        end_time_seconds)
+            plot_event_fn = self.event_plotters.get(self.chart.field,
+                                                    plot_event_default)
+            plot_event_fn(self, fig, index, count, start_time, end_time)
         else:
             plt.gca().xaxis.set_major_formatter(
                 matplotlib.ticker.FormatStrFormatter('%d s'))
@@ -104,7 +104,6 @@ class MemoryChartRenderer(ChartRenderer):
 
 
 class MemoryAllocationSuiteHandler(SuiteHandler):
-
     def __init__(self, suite):
         super().__init__(suite)
 
