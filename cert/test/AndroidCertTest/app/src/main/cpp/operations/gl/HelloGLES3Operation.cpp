@@ -64,7 +64,7 @@ public:
 
     HelloGLES3Operation() = default;
 
-    void OnGlContextReady() override {
+    void OnGlContextReady(const GLContextConfig &ctx_config) override {
         Log::D(TAG, "GlContextReady");
         _configuration = GetConfiguration<configuration>();
         _tick = 0;

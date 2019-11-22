@@ -103,6 +103,7 @@ add_library(${PROJECT_NAME} SHARED
         operations/gl/StreamDrawGLES3Operation.cpp
         operations/gl/TeapotRendererGLES3Operation.cpp
         operations/gl/HalfFloatPrecisionGLES3Operation.cpp
+        operations/gl/DepthClearGLES3Operation.cpp
 
         # some external deps
         ${CpuFeaturesDir}/cpu-features.c

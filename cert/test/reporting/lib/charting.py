@@ -137,6 +137,10 @@ class SuiteImpl(Suite):
         return None
 
     def plot(self, title: str, fields: List[str] = [], skip: List[str] = []):
+        if not self.charts:
+            print(f"No charts to render for {title}")
+            return
+
         plt.figure()
 
         charts_to_render = []
