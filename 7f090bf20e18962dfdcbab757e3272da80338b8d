@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ad215aeb_10ce6667",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/MemoryAccessOperation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-22T18:30:46Z",
+      "side": 1,
+      "message": "No report data; so long as there is a plan to implement this, I\u0027m OK",
+      "revId": "7f090bf20e18962dfdcbab757e3272da80338b8d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
