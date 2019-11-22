@@ -69,7 +69,7 @@
       "stressors": [
         {
           "id": "CalculatePIOperation",
-          "enabled": true,
+          "enabled": false,
           "configuration": {
             "threads": 0,
             "affinity": true
@@ -78,7 +78,7 @@
       ]
     },
     {
-      "enabled": true,
+      "enabled": false,
       "name": "C++ Test, Java Stressor",
       "description": "Single C++ test, single Java stressor",
       "duration": "10s",
@@ -94,7 +94,7 @@
       ]
     },
     {
-      "enabled": true,
+      "enabled": false,
       "name": "GPU fill rate & CPU stressor",
       "description": "Draws a ton of textured quads via swappy gl while calculating PI in background",
       "duration": "0.5m",
@@ -116,7 +116,7 @@
       "stressors": [
         {
           "id": "CalculatePIOperation",
-          "enabled": true,
+          "enabled": false,
           "configuration": {
             "threads": 0,
             "affinity": true
@@ -125,7 +125,7 @@
       ]
     },
     {
-      "enabled": true,
+      "enabled": false,
       "name": "Vertex streaming",
       "description": "Streams vertices to draw each frame",
       "duration": "1m",
@@ -147,7 +147,7 @@
       ]
     },
     {
-      "enabled": true,
+      "enabled": false,
       "name": "Scheduler",
       "description": "Schedules a thread to run and measures error in scheduling",
       "duration": "5s",
@@ -170,14 +170,14 @@
       ]
     },
     {
-      "enabled": true,
+      "enabled": false,
       "name": "Teapot",
       "description": "Just drawing teapots",
-      "duration": "1000ms",
+      "duration": "10000ms",
       "data_gatherer": {
         "id": "TeapotRendererGLES3Operation",
         "configuration": {
-          "count": 216,
+          "count": 4,
           "min_fps_threshold": 15
         }
       },
@@ -186,6 +186,23 @@
     },
     {
       "enabled": true,
+      "name": "Shader Blob Stressor",
+      "description": "Generates 2^(iterations) shader variants",
+      "host": "GLSurfaceViewHostActivity",
+      "duration": "5s",
+      "data_gatherer": {
+        "id": "ShaderBlobGLES3Operation",
+        "configuration": {
+          "debug_only": false,
+          "iterations": 8,
+          "trials": 4
+        }
+      },
+      "stressors": [
+      ]
+    },
+    {
+      "enabled": false,
       "name": "Memory allocation",
       "description": "Port of istressor",
       "duration": "1m",
