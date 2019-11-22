@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "31f5dbe6_54b73c93",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-11-22T17:38:24Z",
+      "side": 1,
+      "message": "Didn\u0027t know about this [[nodiscard]] new keyword. Awesome!!",
+      "revId": "f9d431c154595c9f0cee785c578bbcd6250903b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
