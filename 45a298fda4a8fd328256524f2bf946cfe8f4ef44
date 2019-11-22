@@ -16,6 +16,24 @@
       "revId": "45a298fda4a8fd328256524f2bf946cfe8f4ef44",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e5f0ab0e_9a16a0c7",
+        "filename": "bender/bender-base/app/src/main/jni/material.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-22T20:38:06Z",
+      "side": 1,
+      "message": "I think Android Studio formatting indents it for me (when I was resolving merge conflicts I deleted/re-entered the line and this was the result); I don\u0027t think this is significant enough to do another patchset, though.",
+      "parentUuid": "206bb9d8_8116ccfa",
+      "revId": "45a298fda4a8fd328256524f2bf946cfe8f4ef44",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
