@@ -32,6 +32,8 @@ namespace {
     Log::Tag TAG{"ancer::system"};
     jobject _activity_weak_global_ref;
     JavaVM* _java_vm;
+
+    std::string _shared_files_directory;
 }
 
 //==============================================================================
@@ -94,6 +96,14 @@ void ancer::internal::UnbindJNI() {
 }
 
 //==============================================================================
+
+void ancer::SetFilesDirectory(std::string path) {
+    _shared_files_directory = path;
+}
+
+std::string ancer::GetFilesDirectory() {
+    return _shared_files_directory;
+}
 
 std::string ancer::LoadText(const char* file_name) {
     std::string text;
