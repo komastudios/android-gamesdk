@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "206bb9d8_8116ccfa",
+        "filename": "bender/bender-base/app/src/main/jni/material.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-22T19:34:40Z",
+      "side": 1,
+      "message": "nit: remove the space/indent here",
+      "revId": "45a298fda4a8fd328256524f2bf946cfe8f4ef44",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
