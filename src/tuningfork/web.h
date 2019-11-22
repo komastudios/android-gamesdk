@@ -24,19 +24,15 @@ namespace tuningfork {
 const uint64_t HISTOGRAMS_PAUSED = 0;
 const uint64_t HISTOGRAMS_UPLOADING = 1;
 
-class WebRequest {
+class WebRequest : public Request {
     JniCtx jni_;
-    std::string uri_;
-    std::string api_key_;
-    Duration timeout_;
-public:
-    WebRequest(const JniCtx& jni, const std::string& uri,
-               const std::string& api_key, Duration timeout);
+  public:
+    WebRequest(const JniCtx& jni, const Request& inner);
     WebRequest(const WebRequest&);
     WebRequest(WebRequest&& rq) = delete;
     WebRequest& operator=(const WebRequest& rq) = delete;
-    TFErrorCode Send(const std::string& request_json,
-                     int& response_code, std::string& response_body);
+    TFErrorCode Send(const std::string& rpc_name, const std::string& request_json,
+                     int& response_code, std::string& response_body) override;
 };
 
 } // namespace tuningfork

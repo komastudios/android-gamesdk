@@ -27,25 +27,39 @@
 
 namespace tuningfork {
 
-WebRequest::WebRequest(const JniCtx& jni, const std::string& uri,
-                       const std::string& api_key, Duration timeout) :
-    jni_(jni), uri_(uri), api_key_(api_key), timeout_(timeout) {
+std::string Request::GetURL(std::string rpcname) const {
+    std::stringstream url;
+    url << base_url_;
+    url << json_utils::GetResourceName(info_);
+    url << rpcname;
+    return url.str();
 }
+
+TFErrorCode Request::Send(const std::string& rpc_name, const std::string& request,
+                          int& response_code, std::string& response_body) {
+    return TFERROR_OK;
+}
+
+WebRequest::WebRequest(const JniCtx& jni, const Request& inner) :
+        Request(inner), jni_(jni) {
+}
+
 WebRequest::WebRequest(const WebRequest& rhs) :
-    jni_(rhs.jni_), uri_(rhs.uri_), api_key_(rhs.api_key_), timeout_(rhs.timeout_) {
+        Request(rhs), jni_(rhs.jni_) {
 }
 
 
-TFErrorCode WebRequest::Send(const std::string& request_json,
+TFErrorCode WebRequest::Send(const std::string& rpc_name, const std::string& request_json,
                  int& response_code, std::string& response_body) {
-    ALOGI("Connecting to: %s", uri_.c_str());
+    auto uri = GetURL(rpc_name);
+    ALOGI("Connecting to: %s", uri.c_str());
 
     using namespace jni;
 
     Helper jni(jni_.Env(), jni_.Ctx());
 
     // url = new URL(uri)
-    auto url = java::net::URL(uri_, jni);
+    auto url = java::net::URL(uri, jni);
     CHECK_FOR_JNI_EXCEPTION_AND_RETURN(TFERROR_JNI_EXCEPTION); // Malformed URL
 
     // Open connection and set properties

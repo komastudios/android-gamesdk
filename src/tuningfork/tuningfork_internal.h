@@ -105,17 +105,30 @@ public:
     virtual TFErrorCode Process(const std::string& tuningfork_log_event) = 0;
 };
 
+class Request {
+  protected:
+    const ExtraUploadInfo& info_;
+    std::string base_url_;
+    std::string api_key_;
+    Duration timeout_;
+  public:
+    Request(const ExtraUploadInfo& info, std::string base_url, std::string api_key,
+            Duration timeout) : info_(info), base_url_(base_url), api_key_(api_key),
+                                  timeout_(timeout) {}
+    virtual ~Request() {}
+    std::string GetURL(std::string rpcname) const;
+    const ExtraUploadInfo& Info() const { return info_; }
+    virtual TFErrorCode Send(const std::string& rpc_name, const std::string& request,
+                             int& response_code, std::string& response_body);
+};
+
 class ParamsLoader {
 public:
     virtual ~ParamsLoader() {};
-    virtual TFErrorCode GetFidelityParams(const JniCtx& jni,
-                                          const ExtraUploadInfo& info,
-                                          const std::string& url_base,
-                                          const std::string& api_key,
+    virtual TFErrorCode GetFidelityParams(Request& request,
                                           const ProtobufSerialization* training_mode_fps,
                                           ProtobufSerialization& fidelity_params,
-                                          std::string& experiment_id,
-                                          uint32_t timeout_ms);
+                                          std::string& experiment_id);
 };
 
 // TODO(willosborn): remove this
