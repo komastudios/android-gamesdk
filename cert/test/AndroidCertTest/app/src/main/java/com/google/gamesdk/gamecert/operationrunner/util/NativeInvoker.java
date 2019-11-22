@@ -68,6 +68,13 @@ public class NativeInvoker {
     public static native void writeToReportFile(String msg);
 
     /**
+     * Sets the directory that operations can use to store and load
+     * persistent files.
+     * @param path the absolute path of the directory
+     */
+    public static native void setFilesDirectory(String path);
+
+    /**
      * Create an operation instance (from native-lib) by name.
      *
      * @param suiteId     the name of the test suite the operation will run in

@@ -37,6 +37,10 @@ namespace ancer {
         void UnbindJNI();
     }
 
+    void SetFilesDirectory(std::string path);
+
+    std::string GetFilesDirectory();
+
     /*
      * Load the text from a file in the application's assets/ folder
      */

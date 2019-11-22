@@ -186,6 +186,23 @@
     },
     {
       "enabled": true,
+      "name": "Shader Blob Stressor",
+      "description": "Measures shader compile time versus to loading from binary.",
+      "host": "GLSurfaceViewHostActivity",
+      "duration": "5s",
+      "data_gatherer": {
+        "id": "ShaderBlobGLES3Operation",
+        "configuration": {
+          "debug_only": false,
+          "iterations": 8,
+          "trials": 4
+        }
+      },
+      "stressors": [
+      ]
+    },
+    {
+      "enabled": true,
       "name": "Memory allocation",
       "description": "Port of istressor",
       "duration": "1m",
