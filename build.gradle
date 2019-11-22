@@ -157,7 +157,7 @@ class LocalToolchain extends Toolchain {
         project_ = project
         androidVersion_ = androidVersion
         sdkPath_ = System.getenv("ANDROID_HOME")
-        if(sdkPath_ == null) {
+        if(sdkPath_ == null && project.rootProject.file('local.properties').isFile()) {
             Properties properties = new Properties()
             properties.load(project.rootProject.file('local.properties').newDataInputStream())
             sdkPath_ = properties.getProperty('sdk.dir')
@@ -169,7 +169,7 @@ class LocalToolchain extends Toolchain {
         if(ndkPath_ == null) {
             ndkPath_ = System.getenv("ANDROID_NDK_HOME")
         }
-        if(ndkPath_ == null) {
+        if(ndkPath_ == null && project.rootProject.file('local.properties').isFile()) {
             Properties properties = new Properties()
             properties.load(project.rootProject.file('local.properties').newDataInputStream())
             ndkPath_ = properties.getProperty('ndk.dir')
@@ -468,7 +468,7 @@ def copySamples(outFolder, includeTuningForkSamples = true) {
         from file(joinPath('samples', "bouncyball"))
         into file(joinPath(buildFolder, 'samples', "bouncyball"))
         exclude '**/build', '**/out', "local.properties", "**/.externalNativeBuild", "**/.gradle",
-	    "**/OWNERS", "**/.idea"
+	    "**/OWNERS", "**/.idea", '**/CMakeLists.txt'
         rename 'CMakeLists.for-samples-in-archive.txt', 'CMakeLists.txt'
         includeEmptyDirs = false
     }
