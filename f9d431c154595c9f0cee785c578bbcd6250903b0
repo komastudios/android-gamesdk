@@ -16,6 +16,40 @@
       "revId": "f9d431c154595c9f0cee785c578bbcd6250903b0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bc539ed3_d28bdba9",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/IOPerformanceOperation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-22T18:31:27Z",
+      "side": 1,
+      "message": "It looks like you\u0027re doing the *work* but not reporting any results? I\u0027m OK in principle so long as it\u0027s part of the next sprint to implement result data logging",
+      "revId": "f9d431c154595c9f0cee785c578bbcd6250903b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e84e2670_b1d437da",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/IOPerformanceOperation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 398,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-22T18:31:27Z",
+      "side": 1,
+      "message": "Is there a reason to keep this commented-out allocation here?",
+      "revId": "f9d431c154595c9f0cee785c578bbcd6250903b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
