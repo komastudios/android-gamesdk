@@ -16,6 +16,24 @@
       "revId": "44efa45e8289d1c61f7852d77633a8277fa6c77e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9502ba16_138f4558",
+        "filename": "src/tuningfork/fpdownload.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-11-22T10:30:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "302fff0f_4f9882f9",
+      "revId": "44efa45e8289d1c61f7852d77633a8277fa6c77e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
