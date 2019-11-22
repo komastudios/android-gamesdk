@@ -398,6 +398,14 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_writeToRepor
     reporting::WriteToReportLog(to_string(j_report_str, env));
 }
 
+extern "C" JNIEXPORT void JNICALL
+Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_setFilesDirectory(
+        JNIEnv* env, jclass instance,
+        jstring j_shared_files_dir
+        ) {
+    SetFilesDirectory(to_string(j_shared_files_dir, env));
+}
+
 extern "C" JNIEXPORT jlong JNICALL
 Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_getSteadyClockTimeNanos(
         JNIEnv *env, jclass instance) {

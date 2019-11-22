@@ -136,6 +136,9 @@ public class MainActivity extends AppCompatActivity {
         // it will be changed to another location provided by firebase
         _reportFilePath = new File(getFilesDir(), RESULT_FILE_NAME).getAbsolutePath();
 
+        String sharedDirectoryPath = new File(getFilesDir(), "/").getAbsolutePath();
+        NativeInvoker.setFilesDirectory(sharedDirectoryPath);
+
         // onCreate shouldn't be called if a test is currently executing. This means the test
         // that was launched crashed and MainActivity was restarted!
         // Show a dialog explaining the situation, reset the flag  to false so that on next

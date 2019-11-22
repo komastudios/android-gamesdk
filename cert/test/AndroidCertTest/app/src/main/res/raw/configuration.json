@@ -69,7 +69,7 @@
       "stressors": [
         {
           "id": "CalculatePIOperation",
-          "enabled": true,
+          "enabled": false,
           "configuration": {
             "threads": 0,
             "affinity": true
@@ -116,7 +116,7 @@
       "stressors": [
         {
           "id": "CalculatePIOperation",
-          "enabled": true,
+          "enabled": false,
           "configuration": {
             "threads": 0,
             "affinity": true
@@ -173,12 +173,29 @@
       "enabled": true,
       "name": "Teapot",
       "description": "Just drawing teapots",
-      "duration": "1000ms",
+      "duration": "10000ms",
       "data_gatherer": {
         "id": "TeapotRendererGLES3Operation",
         "configuration": {
-          "count": 216,
+          "count": 4,
           "min_fps_threshold": 15
+        }
+      },
+      "stressors": [
+      ]
+    },
+    {
+      "enabled": true,
+      "name": "Shader Blob Stressor",
+      "description": "Generates 2^(iterations) shader variants",
+      "host": "GLSurfaceViewHostActivity",
+      "duration": "5s",
+      "data_gatherer": {
+        "id": "ShaderBlobGLES3Operation",
+        "configuration": {
+          "debug_only": false,
+          "iterations": 8,
+          "trials": 4
         }
       },
       "stressors": [
