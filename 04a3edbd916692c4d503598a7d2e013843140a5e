@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dec6008e_4e382e04",
+        "filename": "bender/bender-base/app/src/main/jni/polyhedron.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-25T21:42:02Z",
+      "side": 1,
+      "message": "Is there any reason I should avoid double pointers? I figured this would be better than needing two separate functions, one for vertex data and one for index data.",
+      "revId": "04a3edbd916692c4d503598a7d2e013843140a5e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
