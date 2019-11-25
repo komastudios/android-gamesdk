@@ -161,6 +161,10 @@ void Mesh::submitDraw(VkCommandBuffer commandBuffer, uint_t frame_index) const {
                    1, 0, 0, 0);
 }
 
+void Mesh::swapGeometry(const std::vector<float>& vertexData, const std::vector<uint16_t>& indexData) {
+  geometry_ = std::make_shared<Geometry>(renderer_.getDevice(), vertexData, indexData);
+}
+
 void Mesh::translate(glm::vec3 offset) {
   position_ += offset;
 }

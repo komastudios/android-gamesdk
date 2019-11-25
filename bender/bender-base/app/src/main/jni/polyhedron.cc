@@ -101,3 +101,28 @@ Mesh* createPolyhedron(Renderer &renderer, Material &material, int faces) {
   }
   return new Mesh(renderer, material, *vertex_data_, *index_data_);
 }
+
+void swapPolyhedron(Renderer& renderer, Mesh& mesh, int faces) {
+  // TODO: move switch statement out (or just let it get obsoleted by random polyhedra)
+  const std::vector<float> *vertex_data_;
+  const std::vector<uint16_t> *index_data_;
+  if (faces == 4) {
+    vertex_data_ = &vertex_tetrahedron;
+    index_data_ = &index_tetrahedron;
+  } else if (faces == 6) {
+    vertex_data_ = &vertex_cube;
+    index_data_ = &index_cube;
+  } else if (faces == 8) {
+    vertex_data_ = &vertex_octahedron;
+    index_data_ = &index_octahedron;
+  } else if (faces == 12) {
+    vertex_data_ = &vertex_dodecahedron;
+    index_data_ = &index_dodecahedron;
+  } else if (faces == 20) {
+    vertex_data_ = &vertex_icosahedron;
+    index_data_ = &index_icosahedron;
+  } else {
+    return;
+  }
+  mesh.swapGeometry(*vertex_data_, *index_data_);
+}
