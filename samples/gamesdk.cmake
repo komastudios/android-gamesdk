@@ -76,11 +76,12 @@ function(add_gamesdk_target)
 
         # Build Game SDK (Gradle will use local.properties to find the Android SDK/NDK,
         # or the environment variables if no local.properties - i.e: if compiling from command line).
+        file(TO_NATIVE_PATH "${GAMESDK_ROOT_DIR}/gradlew" GAMESDK_GRADLE_BIN)
         add_custom_command(
             OUTPUT
                 ${DEP_LIB}
             COMMAND
-                ./gradlew ${GAMESDK_GEN_TASK} -PGAMESDK_ANDROID_API_LEVEL=${GAMESDK_ANDROID_API_LEVEL} -PGAMESDK_BUILD_TYPE=${GAMESDK_BUILD_TYPE}
+                ${GAMESDK_GRADLE_BIN} ${GAMESDK_GEN_TASK} -PGAMESDK_ANDROID_API_LEVEL=${GAMESDK_ANDROID_API_LEVEL} -PGAMESDK_BUILD_TYPE=${GAMESDK_BUILD_TYPE}
             VERBATIM
             WORKING_DIRECTORY
                 "${GAMESDK_ROOT_DIR}"

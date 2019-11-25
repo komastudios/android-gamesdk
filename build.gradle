@@ -650,7 +650,7 @@ task localBuild(type: BuildTask) {
     ext.withSharedLibs = true
     ext.withStaticLibs = true;
     ext.withFullBuildKey = false;
-    ext.withSamples = true;
+    ext.withSamples = false;
     ext.buildType = defaultBuildType();
     ext.nativeBuild = { tf,bt -> localNativeBuild(tf, "src", bt) }
 }
