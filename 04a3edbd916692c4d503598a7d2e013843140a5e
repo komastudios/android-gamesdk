@@ -16,6 +16,24 @@
       "revId": "04a3edbd916692c4d503598a7d2e013843140a5e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a8491890_34933e90",
+        "filename": "bender/bender-base/app/src/main/jni/polyhedron.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-25T21:49:00Z",
+      "side": 1,
+      "message": "I don\u0027t see reasons to avoid though.",
+      "parentUuid": "dec6008e_4e382e04",
+      "revId": "04a3edbd916692c4d503598a7d2e013843140a5e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
