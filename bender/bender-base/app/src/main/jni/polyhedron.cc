@@ -78,26 +78,56 @@ namespace  {
                                                     8, 10, 4, 4, 10, 7, 2, 4, 0, 4, 7, 0, 7, 3, 0, 1, 2, 0, 3, 1, 0};
 }
 
-Mesh* createPolyhedron(Renderer &renderer, Material &material, int faces) {
-  const std::vector<float> *vertex_data_;
-  const std::vector<uint16_t> *index_data_;
+bool populatePolyhedron(std::vector<float>& vertex_data, std::vector<uint16_t>& index_data, int faces) {
   if (faces == 4) {
-    vertex_data_ = &vertex_tetrahedron;
-    index_data_ = &index_tetrahedron;
+    vertex_data.resize(vertex_tetrahedron.size());
+    index_data.resize(index_tetrahedron.size());
+    memcpy((void *) &vertex_data, (const void *) &vertex_tetrahedron, sizeof(vertex_tetrahedron));
+    memcpy((void *) &index_data, (const void *) &index_tetrahedron, sizeof(index_tetrahedron));
   } else if (faces == 6) {
-    vertex_data_ = &vertex_cube;
-    index_data_ = &index_cube;
+    vertex_data.resize(vertex_cube.size());
+    index_data.resize(index_cube.size());
+    memcpy((void *) &vertex_data, (const void *) &vertex_cube, sizeof(vertex_cube));
+    memcpy((void *) &index_data, (const void *) &index_cube, sizeof(index_cube));
   } else if (faces == 8) {
-    vertex_data_ = &vertex_octahedron;
-    index_data_ = &index_octahedron;
+    vertex_data.resize(vertex_octahedron.size());
+    index_data.resize(index_octahedron.size());
+    memcpy((void *) &vertex_data, (const void *) &vertex_octahedron, sizeof(vertex_octahedron));
+    memcpy((void *) &index_data, (const void *) &index_octahedron, sizeof(index_octahedron));
   } else if (faces == 12) {
-    vertex_data_ = &vertex_dodecahedron;
-    index_data_ = &index_dodecahedron;
+    vertex_data.resize(vertex_dodecahedron.size());
+    index_data.resize(index_dodecahedron.size());
+    memcpy((void *) &vertex_data, (const void *) &vertex_dodecahedron, sizeof(vertex_dodecahedron));
+    memcpy((void *) &index_data, (const void *) &index_dodecahedron, sizeof(index_dodecahedron));
   } else if (faces == 20) {
-    vertex_data_ = &vertex_icosahedron;
-    index_data_ = &index_icosahedron;
+    vertex_data.resize(vertex_icosahedron.size());
+    index_data.resize(index_icosahedron.size());
+    memcpy((void *) &vertex_data, (const void *) &vertex_icosahedron, sizeof(vertex_icosahedron));
+    memcpy((void *) &index_data, (const void *) &index_icosahedron, sizeof(index_icosahedron));
   } else {
+    return false;
+  }
+  return true;
+}
+
+Mesh* createPolyhedron(Renderer &renderer, Material &material, int faces) {
+  std::vector<float> *vertex_data = new std::vector<float>();
+  std::vector<uint16_t> *index_data = new std::vector<uint16_t>();
+
+  if (populatePolyhedron(*vertex_data, *index_data, faces) == false) {
     return nullptr;
   }
-  return new Mesh(renderer, material, *vertex_data_, *index_data_);
+
+  return new Mesh(renderer, material, *vertex_data, *index_data);
+}
+
+void swapPolyhedron(Mesh& mesh, int faces) {
+  std::vector<float> *vertex_data = new std::vector<float>();
+  std::vector<uint16_t> *index_data = new std::vector<uint16_t>();
+
+  if (populatePolyhedron(*vertex_data, *index_data, faces) == false) {
+    return;
+  }
+
+  mesh.swapGeometry(*vertex_data, *index_data);
 }

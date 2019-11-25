@@ -73,7 +73,6 @@ Renderer *renderer;
 glm::mat4 view;
 glm::mat4 proj;
 
-
 std::shared_ptr<ShaderState> shaders;
 std::vector<Mesh *> meshes;
 Font *font;
