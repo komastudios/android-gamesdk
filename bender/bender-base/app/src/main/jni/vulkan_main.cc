@@ -42,6 +42,8 @@
 
 #include "shader_bindings.h"
 
+#include <button.h>
+
 using namespace BenderKit;
 using namespace BenderHelpers;
 
@@ -90,6 +92,68 @@ std::vector<std::shared_ptr<Texture>> textures;
 std::vector<std::shared_ptr<Material>> materials;
 
 bool windowResized = false;
+
+void moveForward(){
+  glm::vec3 forward = glm::normalize(camera.rotation * glm::vec3(0.0f, 0.0f, -1.0f));
+  camera.position += forward * 2.0f * frameTime;
+}
+void moveBackward(){
+  glm::vec3 forward = glm::normalize(camera.rotation * glm::vec3(0.0f, 0.0f, -1.0f));
+  camera.position -= forward * 2.0f * frameTime;
+}
+void strafeLeft(){
+  glm::vec3 right = glm::normalize(camera.rotation * glm::vec3(1.0f, 0.0f, 0.0f));
+  camera.position -= right * (20.0f / device->getDisplaySize().width);
+}
+void strafeRight(){
+  glm::vec3 right = glm::normalize(camera.rotation * glm::vec3(1.0f, 0.0f, 0.0f));
+  camera.position += right * (20.0f / device->getDisplaySize().width);
+}
+void strafeUp(){
+  glm::vec3 up = glm::normalize(camera.rotation * glm::vec3(0.0f, 1.0f, 0.0f));
+  camera.position += up * (20.0f / device->getDisplaySize().height);
+}
+void strafeDown(){
+  glm::vec3 up = glm::normalize(camera.rotation * glm::vec3(0.0f, 1.0f, 0.0f));
+  camera.position -= up * (20.0f / device->getDisplaySize().height);
+}
+void createInstance(){
+  meshes.push_back(createPolyhedron(*renderer, *materials[0], 20));
+  meshes[meshes.size() - 1]->translate(glm::vec3(rand() % 3, rand() % 3, rand() % 3));
+}
+void deleteInstance(){
+  if (meshes.size() > 0) {
+    meshes.pop_back();
+  }
+}
+
+void createButtons(){
+  Button b0(-.7, .2, .6, .2, device->getDisplaySize().width, device->getDisplaySize().height, "<--");
+  b0.onHold = strafeLeft;
+  Button b1(-.2, .2, .6, .2, device->getDisplaySize().width, device->getDisplaySize().height, "-->");
+  b1.onHold = strafeRight;
+  Button b2(-.47, .2, .5, .2, device->getDisplaySize().width, device->getDisplaySize().height, "^");
+  b2.onHold = strafeUp;
+  Button b3(-.47, .2, .75, .2, device->getDisplaySize().width, device->getDisplaySize().height, "O");
+  b3.onHold = strafeDown;
+  Button b4(.43, .2, .6, .2, device->getDisplaySize().width, device->getDisplaySize().height, "Forward");
+  b4.onHold = moveForward;
+  Button b5(.43, .2, .8, .2, device->getDisplaySize().width, device->getDisplaySize().height, "Backward");
+  b5.onHold = moveBackward;
+  Button b6(.2, .2, .4, .2, device->getDisplaySize().width, device->getDisplaySize().height, "+1 Mesh");
+  b6.onDown = createInstance;
+  Button b7(.7, .2, .4, .2, device->getDisplaySize().width, device->getDisplaySize().height, "-1 Mesh");
+  b7.onUp = deleteInstance;
+
+  Input::buttons.push_back(b0);
+  Input::buttons.push_back(b1);
+  Input::buttons.push_back(b2);
+  Input::buttons.push_back(b3);
+  Input::buttons.push_back(b4);
+  Input::buttons.push_back(b5);
+  Input::buttons.push_back(b6);
+  Input::buttons.push_back(b7);
+}
 
 void createTextures() {
   Timing::timer.time("Texture Creation", Timing::OTHER, [](){
@@ -163,25 +227,13 @@ void createFrameBuffers(VkRenderPass &renderPass,
 }
 
 void updateCamera(Input::Data *inputData) {
-  camera.rotation =
-      glm::quat(glm::vec3(0.0f, inputData->deltaX / device->getDisplaySize().width, 0.0f))
-          * camera.rotation;
-  camera.rotation *=
-      glm::quat(glm::vec3(inputData->deltaY / device->getDisplaySize().height, 0.0f, 0.0f));
-  camera.rotation = glm::normalize(camera.rotation);
-
-  glm::vec3 up = glm::normalize(camera.rotation * glm::vec3(0.0f, 1.0f, 0.0f));
-  glm::vec3 right = glm::normalize(camera.rotation * glm::vec3(1.0f, 0.0f, 0.0f));
-  camera.position += right * (inputData->deltaXPan / device->getDisplaySize().width) +
-      up * -(inputData->deltaYPan / device->getDisplaySize().height);
-
-  if (inputData->doubleTapHoldUpper) {
-    glm::vec3 forward = glm::normalize(camera.rotation * glm::vec3(0.0f, 0.0f, -1.0f));
-    camera.position += forward * 2.0f * frameTime;
-  }
-  else if (inputData->doubleTapHoldLower) {
-    glm::vec3 forward = glm::normalize(camera.rotation * glm::vec3(0.0f, 0.0f, -1.0f));
-    camera.position -= forward * 2.0f * frameTime;
+  if ((inputData->lastButton != nullptr && inputData->lastInputCount > 1) || inputData->lastButton == nullptr){
+    camera.rotation =
+        glm::quat(glm::vec3(0.0f, inputData->deltaX / device->getDisplaySize().width, 0.0f))
+            * camera.rotation;
+    camera.rotation *=
+        glm::quat(glm::vec3(inputData->deltaY / device->getDisplaySize().height, 0.0f, 0.0f));
+    camera.rotation = glm::normalize(camera.rotation);
   }
 
   glm::mat4 pre_rotate_mat = identity_mat4;
@@ -203,14 +255,6 @@ void updateCamera(Input::Data *inputData) {
 }
 
 void updateInstances(Input::Data *inputData) {
-  if (inputData->singleTapLowerLeft && meshes.size() > 0) {
-      meshes.pop_back();
-  }
-  else if (inputData->singleTapLowerRight) {
-    meshes.push_back(createPolyhedron(*renderer, materials[0], 20));
-    meshes[meshes.size() - 1]->translate(glm::vec3(rand() % 3, rand() % 3, rand() % 3));
-  }
-
   for (int x = 0; x < meshes.size(); x++) {
     meshes[x]->rotate(glm::vec3(0.0f, 1.0f, 1.0f), 90 * frameTime);
     meshes[x]->translate(.02f * glm::vec3(std::sin(2 * totalTime),
@@ -225,8 +269,6 @@ void updateInstances(Input::Data *inputData) {
 void handleInput(Input::Data *inputData){
   updateCamera(inputData);
   updateInstances(inputData);
-  inputData->singleTapLowerRight = false;
-  inputData->singleTapLowerLeft = false;
 }
 
 void createShaderState() {
@@ -397,6 +439,8 @@ bool InitVulkan(android_app *app) {
 
     font = new Font(*renderer, *androidAppCtx, FONT_SDF_PATH, FONT_INFO_PATH);
 
+    createButtons();
+
   });
 
   Timing::printEvent(*Timing::timer.getLastMajorEvent());
@@ -496,8 +540,8 @@ bool VulkanDrawFrame(Input::Data *inputData) {
         }
         font->drawString(output_string,
                          1.0f,
-                         -0.98f,
-                         0.75f,
+                         -.98f,
+                         -.98f,
                          renderer->getCurrentCommandBuffer(),
                          render_pass,
                          renderer->getCurrentFrame());
@@ -512,11 +556,16 @@ bool VulkanDrawFrame(Input::Data *inputData) {
         sprintf(fpsString, "%2.d FPS  %.3f ms", fps, frametime);
         font->drawString(fpsString,
                          1.0f,
-                         -.98f,
-                         -.98f,
+                         -0.98f,
+                         -0.90f,
                          renderer->getCurrentCommandBuffer(),
                          render_pass,
                          renderer->getCurrentFrame());
+
+        for (Button button : Input::buttons) {
+          button.drawButton(render_pass, font, renderer);
+        }
+
         vkCmdEndRenderPass(renderer->getCurrentCommandBuffer());
       });
       renderer->endPrimaryCommandBufferRecording();
