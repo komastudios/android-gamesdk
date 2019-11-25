@@ -232,7 +232,8 @@
           "read_scheme" : "interleaved",
           "data_size" : 12800000,
           "buffer_size": 64,
-          "read_align" : 0
+          "read_align" : 0,
+          "performance_sample_period": "500ms"
         }
       },
       "stressors": [

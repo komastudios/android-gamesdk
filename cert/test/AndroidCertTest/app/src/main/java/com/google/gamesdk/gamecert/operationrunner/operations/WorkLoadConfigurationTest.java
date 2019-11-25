@@ -1,9 +1,27 @@
+/*
+ * Copyright 2019 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.google.gamesdk.gamecert.operationrunner.operations;
 
 import android.content.Context;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.google.gamesdk.gamecert.operationrunner.util.NativeInvoker;
+import com.google.gamesdk.gamecert.operationrunner.util.TimeParsing;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
@@ -28,6 +46,7 @@ public class WorkLoadConfigurationTest extends BaseOperation {
         int data_size;      // size of data to read
         int buffer_size;       // Read buffer size
         int read_align; // Pad the file so reads start at this alignment.
+        String performance_sample_period = "250ms";
     }
 
     private Configuration _configuration;
@@ -37,6 +56,7 @@ public class WorkLoadConfigurationTest extends BaseOperation {
     String file_path;
     int file_size;
     int num_threads;
+    private long performanceSamplePeriodMillis;
     GreedySync greedy_synch;
 
     private static final String create_file = "CREATE_FILE";
@@ -63,25 +83,22 @@ public class WorkLoadConfigurationTest extends BaseOperation {
             createFileAndData();
 
             // Thread Setup
-            List<ThreadConfig> threadSetup = determineThreadSetups();
-            num_threads = threadSetup.size();
+            List<ThreadState> threadsState = determineThreadSetup();
+            num_threads = threadsState.size();
             Log.d(TAG, "Num threads: " + num_threads);
             if (greedy.equalsIgnoreCase(_configuration.read_scheme)) {
                 greedy_synch = new GreedySync();
             }
 
             List<Thread> threads = new ArrayList<>();
-            for (int t = 0; t < threadSetup.size(); ++t) {
-                ThreadConfig threadConfig = threadSetup.get(t);
+            for (int t = 0; t < threadsState.size(); ++t) {
+                ThreadState threadState = threadsState.get(t);
                 Thread workerThread = new Thread(() -> {
-                    doWork(threadConfig);
+                    doWork(threadState);
                 });
                 workerThread.setPriority(Thread.MAX_PRIORITY);
                 threads.add(workerThread);
             }
-
-            long startTimeMillis = SystemClock.elapsedRealtime();
-            Datum datum = new Datum(startTimeMillis);
 
             for (int t = 0; t < threads.size(); ++t) {
                 threads.get(t).start();
@@ -91,14 +108,9 @@ public class WorkLoadConfigurationTest extends BaseOperation {
                 try {
                     threads.get(t).join();
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    NativeInvoker.fatalError(TAG, "Interrupted Exception");
                 }
             }
-
-            long nowMillis = SystemClock.elapsedRealtime();
-            long elapsedMillis = nowMillis - startTimeMillis;
-            datum.endTimeMillis = elapsedMillis;
-            report(datum);
             deleteFileAndData();
         });
         _thread.start();
@@ -109,7 +121,7 @@ public class WorkLoadConfigurationTest extends BaseOperation {
         try {
             _thread.join();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            NativeInvoker.fatalError(TAG, "Interrupted Exception");
         }
     }
 
@@ -120,30 +132,44 @@ public class WorkLoadConfigurationTest extends BaseOperation {
         @SerializedName("end_time_millis")
         long endTimeMillis;
 
-        Datum(long startTimeMillis) {
+        @SerializedName("data_read")
+        long data_read;
+
+        @SerializedName("thread_id")
+        long thread_id;
+
+        Datum(long startTimeMillis, long thread_id) {
             this.startTimeMillis = startTimeMillis;
+            this.thread_id = thread_id;
+            this.data_read = 0;
         }
     }
 
     // determine read scheme type
-    void doWork(ThreadConfig threadConfiguration) {
-        Log.d(TAG, "Implement work: " + threadConfiguration.id);
+    void doWork(ThreadState threadState) {
+        Log.d(TAG, "Implement work: " + threadState.id);
+
+        long startTimeMillis = SystemClock.elapsedRealtime();
+        threadState.datum = new Datum(startTimeMillis, threadState.id);
+
         if (_configuration.read_scheme.equalsIgnoreCase(divided)) {
-            dividedRead(threadConfiguration);
+            dividedRead(threadState);
         } else if (_configuration.read_scheme.equalsIgnoreCase(interleaved)) {
-            interleavedRead(threadConfiguration);
+            interleavedRead(threadState);
         } else {
-            greedyRead(threadConfiguration);
+            greedyRead(threadState);
         }
+
+        reportProgress(threadState);
     }
 
     // Divided Read
-    void dividedRead(ThreadConfig threadConfig) {
+    void dividedRead(ThreadState threadState) {
         Path path = new File(file_path).toPath();
         int dividedSize = file_size / num_threads;
-        int fileOffset = dividedSize * threadConfig.id;
+        int fileOffset = dividedSize * threadState.id;
         long endOffset = fileOffset + dividedSize;
-        Log.d(TAG, "Thread Id: " + threadConfig.id
+        Log.d(TAG, "Thread Id: " + threadState.id
                 + ", Start position: " + fileOffset + ", End position = "
                 + (fileOffset + dividedSize));
 
@@ -151,31 +177,30 @@ public class WorkLoadConfigurationTest extends BaseOperation {
             SeekableByteChannel readChannel = Files.newByteChannel(path,
                     StandardOpenOption.READ);
             readChannel.position(fileOffset);
-
             while (!isStopped() && readChannel.position() < endOffset) {
                 long bytesLeft = endOffset - readChannel.position();
                 int readSize = bytesLeft > padded_read_size ?
                         padded_read_size : (int) bytesLeft;
                 ByteBuffer buffer = ByteBuffer.allocate(readSize);
-                readChannel.read(buffer);
+                int bytesRead = readChannel.read(buffer);
+                reportProgressIfRequired(threadState, bytesRead);
             }
         } catch (Exception e) {
-            Log.e(TAG, "Unable to read file, error: "
+            NativeInvoker.fatalError(TAG, "Unable to read file, error: "
                     + e.getLocalizedMessage());
-            e.printStackTrace();
             return;
         }
-        Log.v(TAG, "Thread Id: " + threadConfig.id
+        Log.v(TAG, "Thread Id: " + threadState.id
                 + ", Read completed");
     }
 
     //Interleaved Read
-    void interleavedRead(ThreadConfig threadConfig) {
+    void interleavedRead(ThreadState threadState) {
         Path path = new File(file_path).toPath();
 
-        int fileOffset = padded_read_size * threadConfig.id;
+        int fileOffset = padded_read_size * threadState.id;
         long endOffset = file_size;
-        Log.d(TAG, "Thread Id: " + threadConfig.id
+        Log.d(TAG, "Thread Id: " + threadState.id
                 + ", Start position: " + fileOffset + ", End position = "
                 + endOffset);
 
@@ -183,23 +208,22 @@ public class WorkLoadConfigurationTest extends BaseOperation {
             SeekableByteChannel readChannel = Files.newByteChannel(path,
                     StandardOpenOption.READ);
             readChannel.position(fileOffset);
-
             while (!isStopped() && readChannel.position() < endOffset) {
                 long bytesLeft = endOffset - readChannel.position();
                 int readSize = bytesLeft > padded_read_size ?
                         padded_read_size : (int) bytesLeft;
                 ByteBuffer buffer = ByteBuffer.allocate(readSize);
-                readChannel.read(buffer);
+                int bytesRead = readChannel.read(buffer);
+                reportProgressIfRequired(threadState, bytesRead);
                 fileOffset += padded_read_size * num_threads;
                 readChannel.position(fileOffset);
             }
         } catch (Exception e) {
-            Log.e(TAG, "Unable to read file, error: "
+            NativeInvoker.fatalError(TAG, "Unable to read file, error: "
                     + e.getLocalizedMessage());
-            e.printStackTrace();
             return;
         }
-        Log.v(TAG, "Thread Id: " + threadConfig.id
+        Log.v(TAG, "Thread Id: " + threadState.id
                 + ", Read completed");
     }
 
@@ -219,12 +243,12 @@ public class WorkLoadConfigurationTest extends BaseOperation {
     }
 
     // Greedy Read
-    void greedyRead(ThreadConfig threadConfig) {
+    void greedyRead(ThreadState threadState) {
         Path path = new File(file_path).toPath();
 
         int fileOffset = greedy_synch.GetNextOffset();
         long endOffset = file_size;
-        Log.d(TAG, "Thread Id: " + threadConfig.id
+        Log.d(TAG, "Thread Id: " + threadState.id
                 + ", Start position: " + fileOffset + ", End position = "
                 + endOffset);
 
@@ -238,19 +262,39 @@ public class WorkLoadConfigurationTest extends BaseOperation {
                 int readSize = bytesLeft > padded_read_size ?
                         padded_read_size : (int) bytesLeft;
                 ByteBuffer buffer = ByteBuffer.allocate(readSize);
-                readChannel.read(buffer);
+                int bytesRead = readChannel.read(buffer);
+                reportProgressIfRequired(threadState, bytesRead);
+
                 fileOffset = greedy_synch.GetNextOffset();
                 readChannel.position(fileOffset);
             }
         } catch (Exception e) {
-            Log.e(TAG, "Unable to read file, error: "
+            NativeInvoker.fatalError(TAG, "Unable to read file, error: "
                     + e.getLocalizedMessage());
-            e.printStackTrace();
             return;
         }
-        Log.v(TAG, "Thread Id: " + threadConfig.id
+        Log.v(TAG, "Thread Id: " + threadState.id
                 + ", Read completed");
 
+    }
+
+    void reportProgressIfRequired(ThreadState threadState, int bytesRead) {
+        if (bytesRead > 0) {
+            threadState.datum.data_read += bytesRead;
+        }
+
+        long nowMillis = SystemClock.elapsedRealtime();
+        long elapsedMillis = nowMillis - threadState.datum.startTimeMillis;
+
+        if (elapsedMillis >= performanceSamplePeriodMillis) {
+            reportProgress(threadState);
+            threadState.datum = new Datum(nowMillis, threadState.id);
+        }
+    }
+
+    void reportProgress(ThreadState threadState) {
+        threadState.datum.endTimeMillis = SystemClock.elapsedRealtime();
+        report(threadState.datum);
     }
 
     //validate file, thread & read scheme configuration from configuration.json
@@ -285,6 +329,18 @@ public class WorkLoadConfigurationTest extends BaseOperation {
                             + "buffer size="
                             + _configuration.buffer_size + "\"");
         }
+
+        try {
+            performanceSamplePeriodMillis = (long) TimeParsing.parseDurationString(
+                    _configuration.performance_sample_period,
+                    TimeParsing.Unit.Milliseconds
+            );
+        } catch (TimeParsing.BadFormatException e) {
+            Log.e(TAG, "Unable to parse performance_sample_period, error: " +
+                    e.getLocalizedMessage());
+            e.printStackTrace();
+            return;
+        }
     }
 
     //Create file with size mentioned in configuration.json
@@ -318,9 +374,8 @@ public class WorkLoadConfigurationTest extends BaseOperation {
                 }
             }
         } catch (Exception e) {
-            Log.e(TAG, "Unable to create file, error: "
+            NativeInvoker.fatalError(TAG, "Unable to create file, error: "
                     + e.getLocalizedMessage());
-            e.printStackTrace();
             return;
         }
 
@@ -333,29 +388,30 @@ public class WorkLoadConfigurationTest extends BaseOperation {
             File file = new File(file_path);
             file.delete();
         } catch (Exception e) {
-            Log.e(TAG, "Failed to delete created file, error: "
+            NativeInvoker.fatalError(TAG, "Failed to delete created file, error: "
                     + e.getLocalizedMessage());
-            e.printStackTrace();
             return;
         }
     }
 
-    class ThreadConfig {
-        ThreadConfig(int _id) {
+    class ThreadState {
+        ThreadState(int _id) {
             id = _id;
         }
+
+        Datum datum;
 
         int id;
     }
 
-    List<ThreadConfig> determineThreadSetups() {
-        ArrayList<ThreadConfig> threads = new ArrayList<>();
+    List<ThreadState> determineThreadSetup() {
+        ArrayList<ThreadState> threads = new ArrayList<>();
         if (_configuration.thread_setup.equalsIgnoreCase(single_core)) {
-            threads.add(new ThreadConfig(0));
+            threads.add(new ThreadState(0));
         } else if (_configuration.thread_setup.equalsIgnoreCase(all_core)) {
             int cpu_count = getNumberOfProcessors();
             for (int cpu = 0; cpu < cpu_count; ++cpu) {
-                threads.add(new ThreadConfig(cpu));
+                threads.add(new ThreadState(cpu));
             }
         }
         return threads;

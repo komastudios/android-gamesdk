@@ -154,5 +154,5 @@ public class NativeInvoker {
 
     public static native int swappyGLHost_GetSwappyStats(int stat, int bin);
 
-
+    public static native void fatalError(String tag, String msg);
 }

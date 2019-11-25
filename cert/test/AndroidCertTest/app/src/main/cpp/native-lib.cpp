@@ -436,3 +436,15 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_getCurrentMa
         JNIEnv *env, jclass instance) {
     return duration_cast<Nanoseconds>(ancer::GetFpsCalculator().GetMaxFrameTime()).count();
 }
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_fatalError(
+    JNIEnv *env,
+    jclass instance,
+    jstring j_tag,
+    jstring j_msg) {
+    auto tag_str = to_string(j_tag, env);
+    auto msg = to_string(j_msg, env);
+    Log::Tag tag{tag_str.c_str()};
+    ancer::FatalError(tag, msg);
+}
