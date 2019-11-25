@@ -42,6 +42,8 @@
 
 #include "shader_bindings.h"
 
+#include <button.h>
+
 using namespace BenderKit;
 using namespace BenderHelpers;
 
@@ -86,7 +88,116 @@ std::vector<const char *> texFiles;
 std::vector<Texture *> textures;
 std::vector<Material *> materials;
 
+std::vector<Button> buttons;
+
 bool windowResized = false;
+
+void moveForward(){
+  glm::vec3 forward = glm::normalize(camera.rotation * glm::vec3(0.0f, 0.0f, -1.0f));
+  camera.position += forward * 2.0f * frameTime;
+}
+void moveBackward(){
+  glm::vec3 forward = glm::normalize(camera.rotation * glm::vec3(0.0f, 0.0f, -1.0f));
+  camera.position -= forward * 2.0f * frameTime;
+}
+void strafeLeft(){
+  glm::vec3 right = glm::normalize(camera.rotation * glm::vec3(1.0f, 0.0f, 0.0f));
+  camera.position -= right * (20.0f / device->getDisplaySize().width);
+}
+void strafeRight(){
+  glm::vec3 right = glm::normalize(camera.rotation * glm::vec3(1.0f, 0.0f, 0.0f));
+  camera.position += right * (20.0f / device->getDisplaySize().width);
+}
+void strafeUp(){
+  glm::vec3 up = glm::normalize(camera.rotation * glm::vec3(0.0f, 1.0f, 0.0f));
+  camera.position += up * (20.0f / device->getDisplaySize().height);
+}
+void strafeDown(){
+  glm::vec3 up = glm::normalize(camera.rotation * glm::vec3(0.0f, 1.0f, 0.0f));
+  camera.position -= up * (20.0f / device->getDisplaySize().height);
+}
+void createInstance(){
+  meshes.push_back(createPolyhedron(*renderer, *materials[0], 20));
+  meshes[meshes.size() - 1]->translate(glm::vec3(rand() % 3, rand() % 3, rand() % 3));
+}
+void deleteInstance(){
+  if (meshes.size() > 0) {
+    meshes.pop_back();
+  }
+}
+
+void createButtons(){
+  Button b0(100, 200, 1800, 200, "<--");
+  b0.onHold = strafeLeft;
+  Button b1(300, 200, 1800, 200, "-->");
+  b1.onHold = strafeRight;
+  Button b2(200, 200, 1600, 200, "^");
+  b2.onHold = strafeUp;
+  Button b3(200, 200, 2000, 200, "O");
+  b3.onHold = strafeDown;
+  Button b4(700, 200, 1800, 200, "Forward");
+  b4.onHold = moveForward;
+  Button b5(700, 200, 2000, 200, "Backward");
+  b5.onHold = moveBackward;
+  Button b6(800, 200, 1600, 200, "+1 Mesh");
+  b6.onDown = createInstance;
+  Button b7(600, 200, 1600, 200, "-1 Mesh");
+  b7.onUp = deleteInstance;
+
+  buttons.push_back(b0);
+  buttons.push_back(b1);
+  buttons.push_back(b2);
+  buttons.push_back(b3);
+  buttons.push_back(b4);
+  buttons.push_back(b5);
+  buttons.push_back(b6);
+  buttons.push_back(b7);
+}
+
+int32_t InputHandler(android_app *app, AInputEvent *event) {
+  if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION) {
+    Input::Data *inputData = (Input::Data *) app->userData;
+    Input::updateInputData(event, inputData);
+
+    if (inputData->lastButton != nullptr
+        && !inputData->lastButton->testHit(inputData->lastX, inputData->lastY)) {
+      inputData->lastButton->onButtonUp();
+      inputData->lastButton = nullptr;
+    }
+
+    if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_DOWN) {
+      for (Button &b : buttons) {
+        if (b.testHit(inputData->lastX, inputData->lastY)) {
+          inputData->lastButton = &b;
+          b.onButtonDown();
+        }
+      }
+    }
+    else if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_MOVE) {
+      for (Button &b : buttons) {
+        if (b.testHit(inputData->lastX, inputData->lastY)) {
+          if (inputData->lastButton == nullptr){
+            b.onButtonDown();
+          }
+          else {
+            b.onButtonHold();
+          }
+          inputData->lastButton = &b;
+        }
+      }
+    }
+    else if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_UP) {
+      for (Button &b : buttons) {
+        if (b.testHit(inputData->lastX, inputData->lastY)) {
+          b.onButtonUp();
+        }
+      }
+      Input::clearInput(inputData);
+    }
+    return 1;
+  }
+  return 0;
+}
 
 void createTextures() {
   Timing::timer.time("Texture Creation", Timing::OTHER, [](){
@@ -160,25 +271,13 @@ void createFrameBuffers(VkRenderPass &renderPass,
 }
 
 void updateCamera(Input::Data *inputData) {
-  camera.rotation =
-      glm::quat(glm::vec3(0.0f, inputData->deltaX / device->getDisplaySize().width, 0.0f))
-          * camera.rotation;
-  camera.rotation *=
-      glm::quat(glm::vec3(inputData->deltaY / device->getDisplaySize().height, 0.0f, 0.0f));
-  camera.rotation = glm::normalize(camera.rotation);
-
-  glm::vec3 up = glm::normalize(camera.rotation * glm::vec3(0.0f, 1.0f, 0.0f));
-  glm::vec3 right = glm::normalize(camera.rotation * glm::vec3(1.0f, 0.0f, 0.0f));
-  camera.position += right * (inputData->deltaXPan / device->getDisplaySize().width) +
-      up * -(inputData->deltaYPan / device->getDisplaySize().height);
-
-  if (inputData->doubleTapHoldUpper) {
-    glm::vec3 forward = glm::normalize(camera.rotation * glm::vec3(0.0f, 0.0f, -1.0f));
-    camera.position += forward * 2.0f * frameTime;
-  }
-  else if (inputData->doubleTapHoldLower) {
-    glm::vec3 forward = glm::normalize(camera.rotation * glm::vec3(0.0f, 0.0f, -1.0f));
-    camera.position -= forward * 2.0f * frameTime;
+  if ((inputData->lastButton != nullptr && inputData->lastInputCount > 1) || inputData->lastButton == nullptr){
+    camera.rotation =
+        glm::quat(glm::vec3(0.0f, inputData->deltaX / device->getDisplaySize().width, 0.0f))
+            * camera.rotation;
+    camera.rotation *=
+        glm::quat(glm::vec3(inputData->deltaY / device->getDisplaySize().height, 0.0f, 0.0f));
+    camera.rotation = glm::normalize(camera.rotation);
   }
 
   float aspect_ratio = device->getDisplaySize().width / (float) device->getDisplaySize().height;
@@ -208,14 +307,6 @@ void updateCamera(Input::Data *inputData) {
 }
 
 void updateInstances(Input::Data *inputData) {
-  if (inputData->singleTapLowerLeft && meshes.size() > 0) {
-      meshes.pop_back();
-  }
-  else if (inputData->singleTapLowerRight) {
-    meshes.push_back(createPolyhedron(*renderer, *materials[0], 20));
-    meshes[meshes.size() - 1]->translate(glm::vec3(rand() % 3, rand() % 3, rand() % 3));
-  }
-
   for (int x = 0; x < meshes.size(); x++) {
     meshes[x]->rotate(glm::vec3(0.0f, 1.0f, 1.0f), 90 * frameTime);
     meshes[x]->translate(.02f * glm::vec3(std::sin(2 * totalTime),
@@ -230,8 +321,6 @@ void updateInstances(Input::Data *inputData) {
 void handleInput(Input::Data *inputData){
   updateCamera(inputData);
   updateInstances(inputData);
-  inputData->singleTapLowerRight = false;
-  inputData->singleTapLowerLeft = false;
 }
 
 void createShaderState() {
@@ -409,6 +498,8 @@ bool InitVulkan(android_app *app) {
 
     font = new Font(*renderer, *androidAppCtx, FONT_SDF_PATH, FONT_INFO_PATH);
 
+    createButtons();
+
   });
 
   Timing::printEvent(*Timing::timer.getLastMajorEvent());
@@ -508,8 +599,8 @@ bool VulkanDrawFrame(Input::Data *inputData) {
         }
         font->drawString(output_string,
                          1.0f,
-                         -0.98f,
-                         0.75f,
+                         -.98f,
+                         -.98f,
                          renderer->getCurrentCommandBuffer(),
                          render_pass,
                          renderer->getCurrentFrame());
@@ -524,11 +615,21 @@ bool VulkanDrawFrame(Input::Data *inputData) {
         sprintf(fpsString, "%2.d FPS  %.3f ms", fps, frametime);
         font->drawString(fpsString,
                          1.0f,
-                         -.98f,
-                         -.98f,
+                         -0.98f,
+                         -0.90f,
                          renderer->getCurrentCommandBuffer(),
                          render_pass,
                          renderer->getCurrentFrame());
+
+        for (Button b : buttons) {
+          font->drawString(b.getLabel(),
+                           1.25f,
+                           b.getNormalizedX(device->getDisplaySize().width),
+                           b.getNormalizedY(device->getDisplaySize().height),
+                           renderer->getCurrentCommandBuffer(),
+                           render_pass,
+                           renderer->getCurrentFrame());
+        }
         vkCmdEndRenderPass(renderer->getCurrentCommandBuffer());
       });
       renderer->endPrimaryCommandBufferRecording();

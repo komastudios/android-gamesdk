@@ -35,6 +35,8 @@ void ResizeCallback(ANativeActivity *activity, ANativeWindow *window);
 
 void OnOrientationChange();
 
+int32_t InputHandler(android_app *app, AInputEvent *event);
+
 #endif // __VULKANMAIN_HPP__
 
 
