@@ -1,105 +1,52 @@
+// Copyright 2019 Google Inc. All Rights Reserved.
 //
-// Created by theoking on 11/6/2019.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 #ifndef BENDER_BASE_APP_SRC_MAIN_JNI_INPUT_H_
 #define BENDER_BASE_APP_SRC_MAIN_JNI_INPUT_H_
 
-namespace Input{
+#include <button.h>
+#include <map>
+#include <vector>
+#include <functional>
+
+namespace Input {
 
 struct Data {
   float lastX = 0, lastY = 0;
   float deltaX = 0, deltaY = 0;
 
-  float lastXPan = 0, lastYPan = 0;
-  float deltaXPan = 0, deltaYPan = 0;
-
   long lastTapTime = 0;
   long doubleTapThresholdTime = 200000000;
-  bool doubleTapHoldUpper = false;
-  bool doubleTapHoldLower = false;
-  bool singleTapLowerLeft = false;
-  bool singleTapLowerRight = false;
+  bool doubleTap = false;
 
   int lastInputCount = 0;
+  Button *lastButton = nullptr;
 };
 
-inline void testDoubleTapHold(android_app *app, AInputEvent *event, Data *input) {
-  if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_DOWN) {
-    long currTapTime = AMotionEvent_getEventTime(event);
-    long deltaTapTime = currTapTime - input->lastTapTime;
-    if (deltaTapTime < input->doubleTapThresholdTime) {
-      if (AMotionEvent_getY(event, 0) < ANativeWindow_getHeight(app->window) / 2) {
-        input->doubleTapHoldUpper = true;
-      } else {
-        input->doubleTapHoldLower = true;
-      }
-    }
-    input->lastTapTime = currTapTime;
-  }
-}
+void getPointerPosition(AInputEvent *event, int *outX, int *outY);
+void testDoubleTap(AInputEvent *event, Data *input);
+void updateInputData(AInputEvent *event, Data *input);
+void clearInput(Data *input);
 
-inline void testSingleTap(android_app *app, AInputEvent *event, Data *input) {
-  if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_DOWN) {
-    if (AMotionEvent_getY(event, 0) > ANativeWindow_getHeight(app->window) * .75) {
-      if (AMotionEvent_getX(event, 0) < ANativeWindow_getWidth(app->window) * .25) {
-        input->singleTapLowerLeft = true;
-      }
-      else if (AMotionEvent_getX(event, 0) > ANativeWindow_getWidth(app->window) * .75) {
-        input->singleTapLowerRight = true;
-      }
-    }
-  }
-  else {
-    input->singleTapLowerLeft = false;
-    input->singleTapLowerRight = false;
-  }
-}
+void actionDownHandler(Input::Data *inputData, std::vector<Button> &buttons);
+void actionMoveHandler(Input::Data *inputData, std::vector<Button> &buttons);
+void actionUpHandler(Input::Data *inputData, std::vector<Button> &buttons);
+int32_t handler(android_app *app, AInputEvent *event);
 
-inline void testRotate(android_app *app, AInputEvent *event, Data *input) {
-  if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_DOWN || input->lastInputCount > 1) {
-    input->lastX = AMotionEvent_getX(event, 0);
-    input->lastY = AMotionEvent_getY(event, 0);
-  } else if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_MOVE) {
-    float currX = AMotionEvent_getX(event, 0);
-    float currY = AMotionEvent_getY(event, 0);
-    input->deltaX = currX - input->lastX;
-    input->deltaY = currY - input->lastY;
-    input->lastX = currX;
-    input->lastY = currY;
-  }
-  input->lastInputCount = 1;
-}
-
-inline void testPan(android_app *app, AInputEvent *event, Data *input) {
-  if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_DOWN || input->lastInputCount < 2) {
-    input->lastXPan = (AMotionEvent_getX(event, 0) + AMotionEvent_getX(event, 1)) / 2;
-    input->lastYPan = (AMotionEvent_getY(event, 0) + AMotionEvent_getY(event, 1)) / 2;
-  } else if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_MOVE) {
-    float currX = (AMotionEvent_getX(event, 0) + AMotionEvent_getX(event, 1)) / 2;
-    float currY = (AMotionEvent_getY(event, 0) + AMotionEvent_getY(event, 1)) / 2;
-    input->deltaXPan = currX - input->lastXPan;
-    input->deltaYPan = currY - input->lastYPan;
-    input->lastXPan = currX;
-    input->lastYPan = currY;
-  }
-  input->lastInputCount = 2;
-}
-
-inline void clearInput(Data *input) {
-  input->lastX = 0;
-  input->lastY = 0;
-  input->lastXPan = 0;
-  input->lastYPan = 0;
-  input->deltaX = 0;
-  input->deltaY = 0;
-  input->deltaXPan = 0;
-  input->deltaYPan = 0;
-  input->doubleTapHoldUpper = false;
-  input->doubleTapHoldLower = false;
-}
+extern std::map<int, std::function<void(Data *, std::vector<Button> &)>> handlers;
+extern std::vector<Button> buttons;
 
 }
-
 
 #endif //BENDER_BASE_APP_SRC_MAIN_JNI_INPUT_H_

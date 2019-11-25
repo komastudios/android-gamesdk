@@ -30,11 +30,21 @@ public:
 
     void drawString(const std::string& text, float text_size, float x, float y,
                     VkCommandBuffer commandBuffer, VkRenderPass render_pass, uint_t frame_index);
+
+  void setResolutionRatios() {
+      resolution_ratio_x_ = (float) renderer_.getDevice().getDisplaySize().width
+          / renderer_.getDevice().getDisplaySizeOriented().width;
+      resolution_ratio_y = (float) renderer_.getDevice().getDisplaySize().height
+          / renderer_.getDevice().getDisplaySizeOriented().height;
+  }
+
 private:
     Renderer& renderer_;
 
     Texture *texture_;
     VkSampler sampler_;
+
+    std::unique_ptr<UniformBufferObject<glm::mat4>> orientation_matrix_;
 
     std::shared_ptr<ShaderState> shader_;
 
@@ -50,6 +60,7 @@ private:
 
     VkDeviceSize offset_;
     int current_frame_;
+    float resolution_ratio_x_, resolution_ratio_y;
 
     typedef struct Character {
         int x, y, width, height, xoffset, yoffset, xadvance;
