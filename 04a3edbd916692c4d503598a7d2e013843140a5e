@@ -34,6 +34,24 @@
       "revId": "04a3edbd916692c4d503598a7d2e013843140a5e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f340ebf6_0c35e2f0",
+        "filename": "bender/bender-base/app/src/main/jni/polyhedron.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-25T22:06:12Z",
+      "side": 1,
+      "message": "This is not a perf critical function, so I would use a different pattern that is safer.\nbool populatePolyhedron(const std::vector\u003cfloat\u003e\u0026 vertex_data, const std::vector\u003cuint16_t\u003e \u0026index_data, int faces)\n\nThen fill the passed down vectors with the new data with a mem copy.",
+      "parentUuid": "a8491890_34933e90",
+      "revId": "04a3edbd916692c4d503598a7d2e013843140a5e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
