@@ -331,13 +331,14 @@ public class WorkLoadConfigurationTest extends BaseOperation {
         }
 
         try {
-            performanceSamplePeriodMillis = (long) TimeParsing.parseDurationString(
+            performanceSamplePeriodMillis = (long)TimeParsing
+                    .parseDurationString(
                     _configuration.performance_sample_period,
                     TimeParsing.Unit.Milliseconds
             );
         } catch (TimeParsing.BadFormatException e) {
-            Log.e(TAG, "Unable to parse performance_sample_period, error: " +
-                    e.getLocalizedMessage());
+            Log.e(TAG, "Unable to parse performance_sample_period, error:"
+                    +e.getLocalizedMessage());
             e.printStackTrace();
             return;
         }
@@ -388,8 +389,8 @@ public class WorkLoadConfigurationTest extends BaseOperation {
             File file = new File(file_path);
             file.delete();
         } catch (Exception e) {
-            NativeInvoker.fatalError(TAG, "Failed to delete created file, error: "
-                    + e.getLocalizedMessage());
+            NativeInvoker.fatalError(TAG, "Failed to delete created" +
+                    " file, error: " + e.getLocalizedMessage());
             return;
         }
     }
