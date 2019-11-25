@@ -13,7 +13,8 @@
 #import "mesh.h"
 #import "shader_state.h"
 
-
 Mesh* createPolyhedron(Renderer& renderer, Material& material, int faces);
+
+void swapPolyhedron(Mesh& mesh, int faces);
 
 #endif //BENDER_BASE_SHAPE_H

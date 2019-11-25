@@ -78,26 +78,46 @@ namespace  {
                                                     8, 10, 4, 4, 10, 7, 2, 4, 0, 4, 7, 0, 7, 3, 0, 1, 2, 0, 3, 1, 0};
 }
 
-Mesh* createPolyhedron(Renderer &renderer, Material &material, int faces) {
-  const std::vector<float> *vertex_data_;
-  const std::vector<uint16_t> *index_data_;
+bool populatePolyhedron(const std::vector<float> **vertex_data, const std::vector<uint16_t> **index_data, int faces) {
   if (faces == 4) {
-    vertex_data_ = &vertex_tetrahedron;
-    index_data_ = &index_tetrahedron;
+    *vertex_data = &vertex_tetrahedron;
+    *index_data = &index_tetrahedron;
   } else if (faces == 6) {
-    vertex_data_ = &vertex_cube;
-    index_data_ = &index_cube;
+    *vertex_data = &vertex_cube;
+    *index_data = &index_cube;
   } else if (faces == 8) {
-    vertex_data_ = &vertex_octahedron;
-    index_data_ = &index_octahedron;
+    *vertex_data = &vertex_octahedron;
+    *index_data = &index_octahedron;
   } else if (faces == 12) {
-    vertex_data_ = &vertex_dodecahedron;
-    index_data_ = &index_dodecahedron;
+    *vertex_data = &vertex_dodecahedron;
+    *index_data = &index_dodecahedron;
   } else if (faces == 20) {
-    vertex_data_ = &vertex_icosahedron;
-    index_data_ = &index_icosahedron;
+    *vertex_data = &vertex_icosahedron;
+    *index_data = &index_icosahedron;
   } else {
+    return false;
+  }
+  return true;
+}
+
+Mesh* createPolyhedron(Renderer &renderer, Material &material, int faces) {
+  const std::vector<float> *vertex_data;
+  const std::vector<uint16_t> *index_data;
+
+  if (populatePolyhedron(&vertex_data, &index_data, faces) == false) {
     return nullptr;
   }
-  return new Mesh(renderer, material, *vertex_data_, *index_data_);
+
+  return new Mesh(renderer, material, *vertex_data, *index_data);
+}
+
+void swapPolyhedron(Mesh& mesh, int faces) {
+  const std::vector<float> *vertex_data;
+  const std::vector<uint16_t> *index_data;
+
+  if (populatePolyhedron(&vertex_data, &index_data, faces) == false) {
+    return;
+  }
+
+  mesh.swapGeometry(*vertex_data, *index_data);
 }

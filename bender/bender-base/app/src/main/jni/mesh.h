@@ -41,6 +41,8 @@ public:
   void update(uint_t frame_index, glm::vec3 camera, glm::mat4 view, glm::mat4 proj);
   void submitDraw(VkCommandBuffer commandBuffer, uint_t frame_index) const;
 
+  void swapGeometry(const std::vector<float>& vertexData, const std::vector<uint16_t>& indexData);
+
   void translate(glm::vec3 offset);
   void rotate(glm::vec3 axis, float angle);
   void scale(glm::vec3 scaling);
