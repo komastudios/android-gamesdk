@@ -36,6 +36,40 @@
     },
     {
       "key": {
+        "uuid": "d067a059_e3da341e",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-25T17:33:37Z",
+      "side": 1,
+      "message": "For convention, I\u0027d prefer that shared_files_directory have a leading underscore (_) to show that it lives in the enclosing scope.",
+      "revId": "86a6b011e9a6b3959220c39c496d538a6dade500",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6ec064d8_f0dcbd05",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/gamesdk/gamecert/operationrunner/MainActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 238,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-11-25T17:33:37Z",
+      "side": 1,
+      "message": "You should wrap this in a null-check, or only print this right above NativeInvoker.openReportFile; when running on FTL the app will be using _reportFileDescriptor (and _reportFilePath will be null).",
+      "revId": "86a6b011e9a6b3959220c39c496d538a6dade500",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e9733d44_81a6286a",
         "filename": "cert/test/AndroidCertTest/app/src/main/res/raw/configuration.json",
         "patchSetId": 1
