@@ -14,9 +14,8 @@
 
 #include "shader_state.h"
 
-ShaderState::ShaderState(std::string shaderName, const BenderKit::VertexFormat& vertex_format, android_app *app, VkDevice appDevice)
-  : vertex_format_(vertex_format) {
-  ShaderState::androidAppCtx = app;
+ShaderState::ShaderState(std::string shaderName, const BenderKit::VertexFormat& vertex_format, android_app &app, VkDevice appDevice)
+  : androidAppCtx(app), vertex_format_(vertex_format) {
   ShaderState::device = appDevice;
 
   setVertexShader("shaders/" + shaderName + ".vert");
@@ -78,8 +77,7 @@ void ShaderState::cleanup() {
 }
 
 VkResult ShaderState::loadShaderFromFile(const char *filePath, VkShaderModule *shaderOut) {
-  assert(androidAppCtx);
-  AAsset *file = AAssetManager_open(androidAppCtx->activity->assetManager,
+  AAsset *file = AAssetManager_open(androidAppCtx.activity->assetManager,
                                     filePath, AASSET_MODE_BUFFER);
   size_t fileLength = AAsset_getLength(file);
 

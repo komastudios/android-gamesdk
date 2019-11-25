@@ -20,7 +20,7 @@
 #include <cstdlib>
 #include <vector>
 
-Texture::Texture(BenderKit::Device& device, unsigned char *imgData, uint32_t imgWidth,
+Texture::Texture(BenderKit::Device& device, uint8_t *imgData, uint32_t imgWidth,
         uint32_t imgHeight, VkFormat textureFormat) : device_(device), texture_format_(textureFormat) {
     tex_width_ = imgWidth;
     tex_height_ = imgHeight;
@@ -28,7 +28,7 @@ Texture::Texture(BenderKit::Device& device, unsigned char *imgData, uint32_t img
     createImageView();
 }
 
-Texture::Texture(BenderKit::Device& device, android_app *androidAppCtx,
+Texture::Texture(BenderKit::Device& device, android_app &androidAppCtx,
                  const char *textureFileName, VkFormat textureFormat) : device_(device), texture_format_(textureFormat) {
     unsigned char *imgData = loadFileData(androidAppCtx, textureFileName);
     CALL_VK(createTexture(imgData, VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
@@ -42,8 +42,8 @@ Texture::~Texture() {
     vkFreeMemory(device_.getDevice(), mem_, nullptr);
 }
 
-unsigned char *Texture::loadFileData(android_app *app, const char *filePath) {
-    AAsset *file = AAssetManager_open(app->activity->assetManager,
+unsigned char *Texture::loadFileData(android_app &app, const char *filePath) {
+    AAsset *file = AAssetManager_open(app.activity->assetManager,
                                       filePath, AASSET_MODE_BUFFER);
     uint32_t img_width, img_height, n;
     unsigned char *img_data;
@@ -77,7 +77,7 @@ unsigned char *Texture::loadFileData(android_app *app, const char *filePath) {
     return img_data;
 }
 
-VkResult Texture::createTexture(unsigned char *imgData,
+VkResult Texture::createTexture(uint8_t *imgData,
                                 VkImageUsageFlags usage,
                                 VkFlags required_props) {
     if (!(usage | required_props)) {

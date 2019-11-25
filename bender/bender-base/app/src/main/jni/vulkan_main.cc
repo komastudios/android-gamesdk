@@ -95,7 +95,7 @@ void createTextures() {
     assert(device != nullptr);
 
     for (uint32_t i = 0; i < texFiles.size(); ++i) {
-      textures.push_back(new Texture(*device, androidAppCtx, texFiles[i], VK_FORMAT_R8G8B8A8_SRGB));
+      textures.push_back(new Texture(*device, *androidAppCtx, texFiles[i], VK_FORMAT_R8G8B8A8_SRGB));
     }
   });
 }
@@ -243,7 +243,7 @@ void createShaderState() {
       },
   };
 
-  shaders = std::make_shared<ShaderState>("mesh", vertex_format, androidAppCtx, device->getDevice());
+  shaders = std::make_shared<ShaderState>("mesh", vertex_format, *androidAppCtx, device->getDevice());
 }
 
 void createDepthBuffer() {
@@ -408,7 +408,7 @@ bool InitVulkan(android_app *app) {
 
     createTextures();
 
-    font = new Font(*renderer, androidAppCtx, FONT_SDF_PATH, FONT_INFO_PATH);
+    font = new Font(*renderer, *androidAppCtx, FONT_SDF_PATH, FONT_INFO_PATH);
 
   });
 
