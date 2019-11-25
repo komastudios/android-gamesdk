@@ -1,0 +1,24 @@
+build:
+  clean: false
+  configuration: configurations/gpu_half_precision.json
+
+systrace:
+  enabled: false
+  categories: "sched freq idle am wm gfx view binder_driver hal dalvik input res"
+  keywords:
+    - MonitorOperation
+
+deployment:
+  local:
+    all_attached_devices: true
+    # device_ids:
+    #   - 6feeb429
+    #   - 94CX1Z4AJ
+
+chart:
+  enabled: true
+  suites:
+    - "GPU Half Precision"
+  fields:
+    - "half_precision.is_correct"
+    - "half_precision.offset"

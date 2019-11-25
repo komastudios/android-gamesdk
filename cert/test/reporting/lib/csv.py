@@ -18,6 +18,7 @@ import csv
 import json
 import argparse
 from pathlib import Path
+from re import match
 from typing import Dict, List, Any, Tuple
 
 # ----------------------------------------------------------------------
@@ -221,6 +222,16 @@ def load_report(file: Path) -> (BuildInfo, List[Datum], List[CSVEntry]):
                 datum = Datum.from_json(jd)
                 data.append(datum)
                 csvs.extend(datum.to_csvs())
+
+    if build is None:
+        device_patterns = match(r"^(.+)-(\d+)-.+$", file.name)
+        build = {
+            "PRODUCT": device_patterns.group(1),
+            "SDK_INT": device_patterns.group(2)
+        } if device_patterns is not None else {
+            "PRODUCT": "Unknown",
+            "SDK_INT": "00"
+        }
 
     return build, data, csvs
 

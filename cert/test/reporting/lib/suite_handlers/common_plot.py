@@ -78,7 +78,7 @@ def plot_time_ns_as_ms(renderer):
     """
     Plots renderer data (expressed in nanoseconds) converted to milliseconds.
     """
-    plot_default(renderer, NS_PER_MS, "%.3f ms")
+    plot_default(renderer, NS_PER_MS, "%d ms")
 
 
 def plot_time_ms_as_sec(renderer):
