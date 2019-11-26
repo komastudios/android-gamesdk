@@ -114,20 +114,25 @@ constexpr float ANGULAR_VEL = static_cast<float>(M_PI);
 constexpr const char *OPAQUE_TEXTURE_FILE = "Textures/sphinx.png";
 constexpr const char *BLENDING_TEXTURE_FILE = "Textures/dvd.png";
 
+/**
+ * Abstract quad renderer that declares some purely virtual rendering life cycle methods.
+ */
 class QuadRenderer {
  public:
 
   QuadRenderer(GLuint num_instances, float quad_size) :
-      _num_quads(num_instances), _quad_size(quad_size), _width(0), _height(0) {}
+      _num_quads(num_instances), _quad_size(quad_size), _egl_context(eglGetCurrentContext()),
+      _width(0), _height(0) {
+    Log::D(TAG, "Constructing QuadRenderer for %u instances of size %f", num_instances, quad_size);
+  }
 
   virtual ~QuadRenderer() = default;
 
   int NumQuads() const { return _num_quads; }
 
-  // We *should* do this in the dtor, but if the egl context has been changed,
-  // that would trap. So FillRateGLES3Operation::dtor will call this iff safe
-  virtual void DeleteGlResources() {}
-
+  /**
+   * Initial state of animation to render.
+   */
   virtual void Start() = 0;
 
   virtual void Resize(int width, int height) {
@@ -135,17 +140,28 @@ class QuadRenderer {
     _height = height;
   }
 
+  /**
+   * Recomputes the new state for the rendering animation.
+   * @param delta_t time in seconds since last call.
+   */
   virtual void Step(double delta_t) = 0;
 
+  /**
+   * Renders the current animation state for all quads.
+   */
   virtual void Draw() = 0;
 
  protected:
 
+  EGLContext _egl_context = EGL_NO_CONTEXT;
   int _width, _height;
   GLuint _num_quads;
   float _quad_size;
 };
 
+/**
+ * Actual QuadRenderer implementation used by FillRateGLES3Operation.
+ */
 class InstancedQuadRenderer : public QuadRenderer {
  public:
 
@@ -154,15 +170,27 @@ class InstancedQuadRenderer : public QuadRenderer {
     for (unsigned int &i : _vb) { i = 0; }
   }
 
+  virtual ~InstancedQuadRenderer() {
+    if (eglGetCurrentContext()!=_egl_context) {
+      Log::D(TAG, "~InstancedQuadRenderer: EGL context changed. GL resource deletion skipped.");
+      return;
+    }
+
+    this->DeleteGlResources();
+  };
+
   static std::tuple<std::string, std::string> GetShaderFiles() {
     return std::make_tuple<std::string, std::string>(
         "Shaders/FillRateGLES3Operation/quad_instanced.vsh",
         "Shaders/FillRateGLES3Operation/quad_instanced.fsh");
   }
 
-  // We *should* do this in the dtor, but if the egl context has been changed,
-  // that would trap. So FillRateGLES3Operation::dtor will call this iff safe
-  void DeleteGlResources() override {
+  /**
+   * Releases all allocated GL resources. The destructor calls this function if the EGL context is
+   * the same than the one at the moment of construction.
+   */
+  void DeleteGlResources() {
+    Log::D(TAG, "InstancedQuadRenderer::DeleteGlResources() invoked");
     glDeleteVertexArrays(1, &_vb_state);
     glDeleteBuffers(VbCount, _vb);
   }
@@ -360,7 +388,7 @@ class InstancedQuadRenderer : public QuadRenderer {
   }
 
   void Draw() override {
-    ANCER_SCOPED_TRACE("FillRateGLES3Operation::InstancedQuadRenderer::draw");
+    ANCER_SCOPED_TRACE("InstancedQuadRenderer::draw");
     glBindVertexArray(_vb_state);
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, _num_quads);
   }
@@ -415,17 +443,17 @@ class InstancedQuadRenderer : public QuadRenderer {
 
 #define RENDERER InstancedQuadRenderer
 
+/**
+ * This is the operation that measures
+ */
 class FillRateGLES3Operation : public BaseGLES3Operation {
  public:
 
   FillRateGLES3Operation() = default;
 
   ~FillRateGLES3Operation() override {
-    if (eglGetCurrentContext()!=_egl_context) return;
-
     glDeleteProgram(_program);
     glDeleteTextures(1, &_tex_id);
-    for (auto &r : _renderers) r->DeleteGlResources();
   }
 
   void OnGlContextReady(const GLContextConfig &ctx_config) override {
@@ -437,8 +465,7 @@ class FillRateGLES3Operation : public BaseGLES3Operation {
         TAG, "glContextReady, configuration: %s - loading shaders, textures, etc",
         Json(_configuration).dump().c_str());
 
-    _egl_context = eglGetCurrentContext();
-    if (_egl_context==EGL_NO_CONTEXT) {
+    if (eglGetCurrentContext()==EGL_NO_CONTEXT) {
       FatalError(TAG, "No EGL context available");
     }
 
@@ -527,6 +554,7 @@ class FillRateGLES3Operation : public BaseGLES3Operation {
       auto qps = static_cast<float>(_quads_rendered_since_last_fps_timestamp
           /seconds_elapsed.count());
       auto ppq = _current_configuration.quad_size*_current_configuration.quad_size;
+      Log::D(TAG, "FillRateGLES3Operation::OnHeartbeat(): reporting status");
       Report(datum{qps, ppq});
     }
 
@@ -562,14 +590,15 @@ class FillRateGLES3Operation : public BaseGLES3Operation {
   }
 
   void BuildRenderers(base_configuration configuration) {
-
+    Log::D(TAG, "FillRateGLES3Operation::BuildRenderers()");
+    Log::D(TAG, "Destructing all previous renderers (if any).");
     // clean up previous renderers, if any
-    for (auto &r : _renderers) r->DeleteGlResources();
     _renderers.clear();
 
     int remaining = configuration.num_quads;
     while (remaining > 0) {
       int instances = std::min(remaining, configuration.instances_per_renderer);
+      Log::D(TAG, "%d remaining quad instances", remaining);
       remaining -= instances;
 
       _renderers.push_back(std::make_shared<RENDERER>(instances, configuration.quad_size));
@@ -591,7 +620,6 @@ class FillRateGLES3Operation : public BaseGLES3Operation {
   Duration _time_since_configuration_increment;
 
   // opengl
-  EGLContext _egl_context = EGL_NO_CONTEXT;
   GLuint _program = 0;
   GLuint _tex_id = 0;
   GLint _tex_id_uniform_loc = 0;
