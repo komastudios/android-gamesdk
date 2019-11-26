@@ -31,14 +31,14 @@ class ShaderState {
 
   // TODO: passing app and appDevice to each shader state object to just set a static member variable
   // TODO: is bad design. Consider a different approach.
-  ShaderState(std::string shaderName, const BenderKit::VertexFormat& vertex_format, android_app *app, VkDevice appDevice);
+  ShaderState(std::string shaderName, const BenderKit::VertexFormat& vertex_format, android_app &app, VkDevice appDevice);
 
   void fillPipelineInfo(VkGraphicsPipelineCreateInfo *pipeline_info);
 
   void cleanup();
 
  private:
-  android_app *androidAppCtx;
+  android_app &androidAppCtx;
   VkDevice device;
 
   BenderKit::VertexFormat vertex_format_;        // TODO: Consider sharing the vertex format across shader states

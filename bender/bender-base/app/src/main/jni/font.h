@@ -24,7 +24,7 @@
 
 class Font {
 public:
-    Font(Renderer& renderer, android_app *androidAppCtx,
+    Font(Renderer& renderer, android_app &androidAppCtx,
          const std::string& font_texture_path, const std::string& font_info_path);
     ~Font();
 
@@ -57,8 +57,8 @@ private:
 
     std::unordered_map<int, Font::Character> char_map;
 
-    void createFontShaders(android_app *androidAppCtx);
-    void parseFontInfo(const char* info_file_path, android_app *androidAppCtx);
+    void createFontShaders(android_app &androidAppCtx);
+    void parseFontInfo(const char* info_file_path, android_app &androidAppCtx);
     void createSampler();
     void createDescriptorSetLayout();
     void createDescriptors(Renderer& renderer);

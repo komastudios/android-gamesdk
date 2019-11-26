@@ -24,8 +24,8 @@ namespace {
     }
 }
 
-void Font::parseFontInfo(const char *info_file_path, android_app *androidAppCtx) {
-    AAsset *asset = AAssetManager_open(androidAppCtx->activity->assetManager,
+void Font::parseFontInfo(const char *info_file_path, android_app &androidAppCtx) {
+    AAsset *asset = AAssetManager_open(androidAppCtx.activity->assetManager,
                                        info_file_path, AASSET_MODE_STREAMING);
     if(asset == nullptr) {
         LOGE("Font parseFontInfo(): font info not found [%s]", info_file_path);
@@ -162,7 +162,7 @@ void Font::drawString(const std::string& text, float text_size, float x, float y
     LOGI("vertex buffer offset: %d", (int)offset_);
 }
 
-Font::Font(Renderer& renderer, android_app *androidAppCtx,
+Font::Font(Renderer& renderer, android_app &androidAppCtx,
            const std::string& font_texture_path, const std::string& font_info_path) : renderer_(renderer){
     texture_ = new Texture(renderer_.getDevice(), androidAppCtx,
                            font_texture_path.c_str(), VK_FORMAT_R8G8B8A8_SRGB);
@@ -189,7 +189,7 @@ Font::~Font() {
     vkDestroyPipelineLayout(renderer_.getVulkanDevice(), layout_, nullptr);
 }
 
-void Font::createFontShaders(android_app *androidAppCtx) {
+void Font::createFontShaders(android_app &androidAppCtx) {
     BenderKit::VertexFormat vertex_format{
             {
                     BenderKit::VertexElement::float2,

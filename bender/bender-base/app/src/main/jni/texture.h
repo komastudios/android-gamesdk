@@ -22,10 +22,10 @@
 
 class Texture {
 public:
-    Texture(BenderKit::Device& device, unsigned char *imgData, uint32_t imgWidth,
+    Texture(BenderKit::Device& device, uint8_t *imgData, uint32_t imgWidth,
                      uint32_t imgHeight, VkFormat textureFormat);
 
-    Texture(BenderKit::Device& device, android_app *androidAppCtx,
+    Texture(BenderKit::Device& device, android_app &androidAppCtx,
             const char *textureFileName, VkFormat textureFormat);
 
     ~Texture();
@@ -45,8 +45,8 @@ private:
     int32_t tex_height_;
     VkFormat texture_format_;
 
-    unsigned char *loadFileData(android_app *app, const char *filePath);
-    VkResult createTexture(unsigned char *imgData, VkImageUsageFlags usage, VkFlags required_props);
+    unsigned char *loadFileData(android_app &app, const char *filePath);
+    VkResult createTexture(uint8_t *imgData, VkImageUsageFlags usage, VkFlags required_props);
     void createImageView();
 };
 
