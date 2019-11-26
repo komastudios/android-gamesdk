@@ -14,50 +14,29 @@
 # limitations under the License.
 #
 
-import matplotlib.pyplot as plt
-import numpy as np
+from typing import Any, Callable
 
-from lib.chart_components import *
+from lib.chart_components \
+  import Chart, ChartRenderer, Datum, Suite, SuiteHandler
 
-from .common_plot import plot_ignore
-
-
-MPROTECT_RANKING = [
-    "mprotect available", "R/W protect fail", "Unexpected violation",
-    "Read protect fail", "Missing violation", "Mem mapping fail",
-    "Mem alloc fail", "No mappable mem"
-]
+from .common_plot import add_plotters_to_default, plot_default, plot_ignore
 
 
-def plot_rank(renderer):
-    """
-    Plots the mprotect ranking on a green box if OK, red otherwise.
-    """
-    ranking_length = len(MPROTECT_RANKING)
-    ranking_value = int(renderer.data[0].numeric_value)
-    ranking_color = (0, 1, 0) if ranking_value == 0 else (1, 0, 0)
+class FillRateChartRenderer(ChartRenderer):
 
-    plt.xticks(np.arange(ranking_length))
-    plt.yticks([])
-    plt.barh(0, ranking_length, color=ranking_color)
-    plt.text((ranking_length - 1) / 2,
-             0,
-             MPROTECT_RANKING[ranking_value],
-             ha='center')
-
-
-class MprotectChartRenderer(ChartRenderer):
-
-    plotters = {
-        "mprotect.rank": plot_rank,
-    }
+    plotters = add_plotters_to_default({
+        "fill_rate.num_quads": plot_default,
+        "fill_rate.quad_size": plot_default,
+        "fill_rate.pixels_per_second": plot_default,
+        "fill_rate.pixels_per_quad": plot_default,
+    })
 
     def __init__(self, chart: Chart):
         super().__init__(chart)
 
     @classmethod
     def can_render_chart(cls, chart: Chart):
-        return chart.operation_id == "VulkanMprotectCheckOperation" and (
+        return chart.operation_id == "FillRateGLES3Operation" and (
             chart.field in cls.plotters)
 
     def is_event_chart(self):
@@ -67,18 +46,24 @@ class MprotectChartRenderer(ChartRenderer):
         self.plotters.get(self.chart.field, plot_ignore)(self)
 
 
-class MprotectSuiteHandler(SuiteHandler):
+class FillRateSuiteHandler(SuiteHandler):
 
     def __init__(self, suite):
         super().__init__(suite)
 
     @classmethod
     def can_handle_suite(cls, suite: Suite):
-        return "Vulkan memory write protection" in suite.suite_name
+        return "GPU fill rate" in suite.suite_name
 
     def assign_renderer(self, chart: Chart):
-        chart.set_renderer(MprotectChartRenderer(chart))
+        chart.set_renderer(FillRateChartRenderer(chart))
         return True
 
     def analyze(self, cb: Callable[[Any, Datum, str], None]):
+        """
+        TODO(dagum@google.com): Determine analysis points.
+        Hint: fps tells a lot about how the combination number of quads, quad
+        size affects overall throughput. Where fps falls, where it recovers, if
+        at all, etc. Lots of meat to digest there.
+        """
         return None

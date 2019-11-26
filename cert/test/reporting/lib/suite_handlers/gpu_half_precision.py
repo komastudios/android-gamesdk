@@ -34,7 +34,7 @@ class GpuHalfPrecisionChartRenderer(ChartRenderer):
 
     @classmethod
     def can_render_chart(cls, chart: Chart):
-        return chart.operation_id == "JsonManipulatorOperation" and (
+        return chart.operation_id == "HalfFloatPrecisionGLES3Operation" and (
             chart.field in cls.plotters)
 
     def is_event_chart(self):

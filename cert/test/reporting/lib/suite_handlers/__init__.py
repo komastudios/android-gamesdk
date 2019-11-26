@@ -18,6 +18,7 @@ from .affinity_test_suite_handler import AffinityTestSuiteHandler
 from .calculate_pi_suite_handler import CalculatePiSuiteHandler
 from .cpu_intensive_suite_handler import CpuIntensiveSuiteHandler
 from .depth_clear_suite_handler import DepthClearSuiteHandler
+from .fill_rate_suite_handler import FillRateSuiteHandler
 from .gpu_half_precision import GpuHalfPrecisionSuiteHandler
 from .memory_allocation_suite_handler import MemoryAllocationSuiteHandler
 from .mprotect_suite_handler import MprotectSuiteHandler
@@ -29,6 +30,7 @@ HANDLERS = [
     CalculatePiSuiteHandler,
     CpuIntensiveSuiteHandler,
     DepthClearSuiteHandler,
+    FillRateSuiteHandler,
     GpuHalfPrecisionSuiteHandler,
     MemoryAllocationSuiteHandler,
     MprotectSuiteHandler,
