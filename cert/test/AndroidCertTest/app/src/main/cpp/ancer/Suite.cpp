@@ -33,20 +33,15 @@ using namespace ancer;
 
 namespace ancer::internal {
     // For ForEachOperation
+    std::mutex _operations_lock;
     std::map<int, std::shared_ptr<BaseOperation>> _operations;
 }
 
 namespace {
     Log::Tag TAG{"ancer::suite"};
 
-    std::mutex _id_counter_lock;
     int _id_counter = 0;
-
-    int getNextID() {
-        std::lock_guard<std::mutex> lock(_id_counter_lock);
-        return _id_counter++;
-    }
-
+    
     std::set<int> _stopped_operations;
 
     // TODO(tmillican@google.com): Refactor this to better separate concerns
@@ -82,9 +77,12 @@ int internal::CreateOperation(
         ancer::BaseOperation::Mode mode) {
     auto op = BaseOperation::Load(operation, suite, mode);
     if ( op ) {
-        int id = getNextID();
-        _operations[id] = op;
-        return id;
+        {
+            int id = _id_counter++;
+            std::lock_guard<std::mutex> lock(_operations_lock);
+            _operations[id] = op;
+            return id;
+        }
     } else {
         FatalError(
                 TAG, "createOperation - Unable to load operation named \""
@@ -120,8 +118,12 @@ void internal::StartOperation(
 
 void internal::StopOperation(int id) {
     if ( auto pos = _operations.find(id); pos != _operations.end()) {
-        pos->second->Stop();
-        _stopped_operations.insert(id);
+
+        {
+            std::lock_guard<std::mutex> lock(_operations_lock);
+            _stopped_operations.insert(id);
+            pos->second->Stop();
+        }
 
         if ( _swappy_renderer ) {
             _swappy_renderer->RemoveOperation(pos->second);
@@ -136,6 +138,7 @@ void internal::StopOperation(int id) {
 //==================================================================================================
 
 bool internal::OperationIsStopped(int id) {
+    std::lock_guard<std::mutex> lock(_operations_lock);
     auto pos = _operations.find(id);
     if ( pos != _operations.end()) {
         return pos->second->IsStopped();
@@ -157,8 +160,12 @@ void internal::WaitForOperation(int id) {
         pos->second->Wait();
         reporting::FlushReportLogQueue();
 
-        _operations.erase(pos);
-        _stopped_operations.insert(id);
+        {
+            std::lock_guard<std::mutex> lock(_operations_lock);
+            _stopped_operations.insert(id);
+            _operations.erase(pos);
+        }
+
     } else {
         FatalError(
                 TAG, "waitForOperation - No operation with id "
