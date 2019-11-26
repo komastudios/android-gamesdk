@@ -1,0 +1,46 @@
+{
+    "auto_run": false,
+    "delay_between_tests": "5000ms",
+    "host": "SwappyGLHostActivity",
+    "defaultMonitors": [
+        {
+            "id": "MonitorOperation",
+            "configuration": {
+                "sample_period": "1s"
+            }
+        }
+    ],
+    "stress_tests": [
+        {
+            "enabled": true,
+            "name": "GPU fill rate & CPU stressor",
+            "description": "Draws a ton of textured quads via swappy gl while calculating PI in background",
+            "duration": "0.5m",
+            "data_gatherer": {
+                "id": "FillRateGLES3Operation",
+                "configuration": {
+                    "num_quads": 256,
+                    "quad_size": 64,
+                    "instances_per_renderer": 128,
+                    "blending": true,
+                    "increment": {
+                        "period": "5sec",
+                        "num_quads_increment": 256,
+                        "quad_size_increment": 64
+                    },
+                    "min_fps_threshold": 15
+                }
+            },
+            "stressors": [
+                {
+                    "id": "CalculatePIOperation",
+                    "enabled": true,
+                    "configuration": {
+                        "threads": 0,
+                        "affinity": true
+                    }
+                }
+            ]
+        }
+    ]
+}
