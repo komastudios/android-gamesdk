@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "b0eda57a_a7db1932",
+        "filename": "bender/bender-base/app/src/main/jni/material.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-26T21:48:01Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "5e41d1d6_52213a7a",
+      "revId": "0a667c84d7f8073de9a8eaa80aea373dc5e49212",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "de43c51f_7aaf6799",
         "filename": "bender/bender-base/app/src/main/jni/material.cc",
         "patchSetId": 2
@@ -30,6 +48,24 @@
       "writtenOn": "2019-11-26T21:43:01Z",
       "side": 1,
       "message": "should we clean up this tab/indent/spaces 😄",
+      "revId": "0a667c84d7f8073de9a8eaa80aea373dc5e49212",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "93263640_c1f64873",
+        "filename": "bender/bender-base/app/src/main/jni/material.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-26T21:48:01Z",
+      "side": 1,
+      "message": "Haha why not I guess",
+      "parentUuid": "de43c51f_7aaf6799",
       "revId": "0a667c84d7f8073de9a8eaa80aea373dc5e49212",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "19fd38fa_c0cd9549",
+        "filename": "bender/bender-base/app/src/main/jni/material.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-26T21:48:01Z",
+      "side": 1,
+      "message": "Hmm, that\u0027s fair. I guess a vec3 is also small enough that a copy is also not so bad?",
+      "parentUuid": "a80a1c7c_6a6defc2",
+      "revId": "0a667c84d7f8073de9a8eaa80aea373dc5e49212",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2a145da2_46e31d9e",
         "filename": "bender/bender-base/app/src/main/jni/material.h",
         "patchSetId": 2
@@ -67,6 +121,24 @@
       "revId": "0a667c84d7f8073de9a8eaa80aea373dc5e49212",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "991089dc_9293ad1b",
+        "filename": "bender/bender-base/app/src/main/jni/material.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-26T21:48:01Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "2a145da2_46e31d9e",
+      "revId": "0a667c84d7f8073de9a8eaa80aea373dc5e49212",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
