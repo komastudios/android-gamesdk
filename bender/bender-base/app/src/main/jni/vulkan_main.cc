@@ -83,7 +83,7 @@ float frameTime;
 float totalTime;
 
 std::vector<const char *> texFiles;
-std::vector<Texture *> textures;
+std::vector<std::shared_ptr<Texture>> textures;
 std::vector<std::shared_ptr<Material>> materials;
 
 bool windowResized = false;
@@ -94,7 +94,7 @@ void createTextures() {
     assert(device != nullptr);
 
     for (uint32_t i = 0; i < texFiles.size(); ++i) {
-      textures.push_back(new Texture(*device, *androidAppCtx, texFiles[i], VK_FORMAT_R8G8B8A8_SRGB));
+      textures.push_back(std::make_shared<Texture>(*device, *androidAppCtx, texFiles[i], VK_FORMAT_R8G8B8A8_SRGB));
     }
   });
 }
@@ -102,7 +102,7 @@ void createTextures() {
 void createMaterials() {
   Timing::timer.time("Materials Creation", Timing::OTHER, [](){
     for (uint32_t i = 0; i < textures.size(); ++i) {
-      materials.push_back(std::make_shared<Material>(*renderer, shaders, textures[i], nullptr));
+      materials.push_back(std::make_shared<Material>(*renderer, shaders, textures[i]));
     }
   });
 }

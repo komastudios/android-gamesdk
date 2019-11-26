@@ -6,15 +6,24 @@
 #include "shader_bindings.h"
 #include "constants.h"
 
-Material::Material(Renderer& renderer, std::shared_ptr<ShaderState> shaders, Texture *texture, glm::vec3 *color) :
+std::unique_ptr<Texture> Material::default_texture_ = nullptr;
+
+void Material::createDefaultTexture(Renderer& renderer) {
+  if (default_texture_ != nullptr) { return; }
+  unsigned char imgData[4] = {255, 255, 255, 0};
+  default_texture_ = std::make_unique<Texture>(renderer.getDevice(), imgData, 1, 1, VK_FORMAT_R8G8B8A8_SRGB);
+}
+
+Material::Material(Renderer& renderer, std::shared_ptr<ShaderState> shaders, std::shared_ptr<Texture> texture, const glm::vec3 color) :
     renderer_(renderer) {
   shaders_ = shaders;
-  texture_ = texture;
   if (texture == nullptr) {
-    unsigned char imgData[4] = {255, 255, 255, 0};
-    texture_ = new Texture(renderer_.getDevice(), imgData, 1, 1, VK_FORMAT_R8G8B8A8_SRGB);
+    createDefaultTexture(renderer);
+    texture_ = std::move(default_texture_);
+  } else {
+    texture_ = texture;
   }
-  color_ = color != nullptr ? color : new glm::vec3(1.0, 1.0, 1.0);
+  color_ = color;
   material_buffer_ = std::make_unique<UniformBufferObject<MaterialAttributes>>(renderer_.getDevice());
 
   createSampler();
@@ -49,7 +58,7 @@ void Material::createSampler() {
 }
 
 void Material::fillPipelineInfo(VkGraphicsPipelineCreateInfo *pipeline_info) {
-  getShaders()->fillPipelineInfo(pipeline_info);
+  shaders_->fillPipelineInfo(pipeline_info);
 }
 
 void Material::createMaterialDescriptorSetLayout() {
@@ -91,11 +100,11 @@ void Material::createMaterialDescriptorSets() {
   material_descriptor_sets_.resize(renderer_.getDevice().getDisplayImages().size());
   CALL_VK(vkAllocateDescriptorSets(renderer_.getVulkanDevice(), &allocInfo, material_descriptor_sets_.data()));
 
-  glm::vec3 color = *color_;
+  glm::vec3 color = color_;
 
   for (size_t i = 0; i < renderer_.getDevice().getDisplayImages().size(); i++) {
     std::array<VkWriteDescriptorSet, MATERIAL_DESCRIPTOR_LAYOUT_SIZE> descriptorWrites = {};
-    
+
     VkDescriptorImageInfo imageInfo = {};
     imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     imageInfo.imageView = texture_->getImageView();
