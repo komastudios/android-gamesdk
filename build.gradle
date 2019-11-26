@@ -8,6 +8,8 @@ import org.gradle.api.Project;
 import groovy.util.GroovyCollections;
 import groovyx.gpars.GParsPool;
 
+apply plugin: 'java'
+
 defaultTasks 'cleanPath', 'archiveZip'
 
 def platformString() {
