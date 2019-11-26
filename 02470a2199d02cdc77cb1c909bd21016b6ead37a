@@ -34,6 +34,24 @@
       "revId": "02470a2199d02cdc77cb1c909bd21016b6ead37a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eb966671_4621f700",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-26T00:05:28Z",
+      "side": 1,
+      "message": "Hmm, okay sounds fine in that case :)",
+      "parentUuid": "5dea7dca_24a3c36f",
+      "revId": "02470a2199d02cdc77cb1c909bd21016b6ead37a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
