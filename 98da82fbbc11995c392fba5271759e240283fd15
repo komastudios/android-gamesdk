@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5dab96c9_8cad3924",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-26T22:46:46Z",
+      "side": 1,
+      "message": "I\u0027m not completely sure I understand the event stuff so correct me if this is wrong; is there a possibility that this if/else structure could lead to both onButtonDown and onButtonHold being called for a held button? Is that intended behavior (like if we didn\u0027t want this behavior then we would have smthg like onButtonPress instead)?",
+      "revId": "98da82fbbc11995c392fba5271759e240283fd15",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ca8573df_b5f0f03b",
+        "filename": "bender/bender-base/utils/bender_kit/button.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-26T22:46:46Z",
+      "side": 1,
+      "message": "Are you currently using getX and getY? Also, in this vein if you\u0027re mainly using normalized X and Y, wouldn\u0027t it make more sense to define a button with x and y being the center of the button and then x and y sizing extending from the center?\n\nIn this same vein, the naming for the constructor rn is not super clear on what the params represent (maybe xCorner, yCorner, or more like xCenter and yCenter if you switch to centered form)?",
+      "revId": "98da82fbbc11995c392fba5271759e240283fd15",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b8fd6a1b_6f9c73e2",
+        "filename": "bender/bender-base/utils/bender_kit/button.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-26T22:46:46Z",
+      "side": 1,
+      "message": "Er maybe this naming is not clear? I\u0027m not sure what would be better (maybe like current_label, and the other being like default_label or smthg)",
+      "revId": "98da82fbbc11995c392fba5271759e240283fd15",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
