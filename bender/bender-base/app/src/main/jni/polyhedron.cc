@@ -100,7 +100,7 @@ bool populatePolyhedron(std::vector<float>& vertex_data, std::vector<uint16_t>& 
   return true;
 }
 
-Mesh* createPolyhedron(Renderer &renderer, Material &material, int faces) {
+Mesh* createPolyhedron(Renderer &renderer, std::shared_ptr<Material> material, int faces) {
   std::vector<float> vertex_data;
   std::vector<uint16_t> index_data;
 
