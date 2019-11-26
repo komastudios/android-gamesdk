@@ -155,6 +155,8 @@ public:
     }
 
     void Start() override {
+        if (!IsVulkanAvailable()) return;
+
         mprotect_info mprotect{NO_MAPPABLE_MEMORY};    // until proved otherwise
 
         auto &info{this->GetInfo()};

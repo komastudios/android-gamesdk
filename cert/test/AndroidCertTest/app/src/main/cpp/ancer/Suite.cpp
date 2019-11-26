@@ -33,6 +33,7 @@ using namespace ancer;
 
 namespace ancer::internal {
     // For ForEachOperation
+    std::mutex _operations_lock;
     std::map<int, std::shared_ptr<BaseOperation>> _operations;
 }
 
@@ -83,7 +84,10 @@ int internal::CreateOperation(
     auto op = BaseOperation::Load(operation, suite, mode);
     if ( op ) {
         int id = getNextID();
-        _operations[id] = op;
+        {
+            std::lock_guard<std::mutex> lock(_operations_lock);
+            _operations[id] = op;
+        }
         return id;
     } else {
         FatalError(
@@ -120,8 +124,12 @@ void internal::StartOperation(
 
 void internal::StopOperation(int id) {
     if ( auto pos = _operations.find(id); pos != _operations.end()) {
-        pos->second->Stop();
-        _stopped_operations.insert(id);
+
+        {
+            std::lock_guard<std::mutex> lock(_operations_lock);
+            _stopped_operations.insert(id);
+            pos->second->Stop();
+        }
 
         if ( _swappy_renderer ) {
             _swappy_renderer->RemoveOperation(pos->second);
@@ -136,6 +144,7 @@ void internal::StopOperation(int id) {
 //==================================================================================================
 
 bool internal::OperationIsStopped(int id) {
+    std::lock_guard<std::mutex> lock(_operations_lock);
     auto pos = _operations.find(id);
     if ( pos != _operations.end()) {
         return pos->second->IsStopped();
@@ -157,8 +166,12 @@ void internal::WaitForOperation(int id) {
         pos->second->Wait();
         reporting::FlushReportLogQueue();
 
-        _operations.erase(pos);
-        _stopped_operations.insert(id);
+        {
+            std::lock_guard<std::mutex> lock(_operations_lock);
+            _stopped_operations.insert(id);
+            _operations.erase(pos);
+        }
+
     } else {
         FatalError(
                 TAG, "waitForOperation - No operation with id "
