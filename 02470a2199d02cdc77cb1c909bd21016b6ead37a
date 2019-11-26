@@ -16,6 +16,24 @@
       "revId": "02470a2199d02cdc77cb1c909bd21016b6ead37a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5dea7dca_24a3c36f",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-26T00:03:28Z",
+      "side": 1,
+      "message": "I am not sure, \nhttp://go/cstyle#Pointer_and_Reference_Expressions\nit\u0027s either way in the style guide. I am just following the previous commit which does this after the name 😐",
+      "parentUuid": "bfd3f26e_26958e86",
+      "revId": "02470a2199d02cdc77cb1c909bd21016b6ead37a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
