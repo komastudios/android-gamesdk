@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "5e41d1d6_52213a7a",
+        "filename": "bender/bender-base/app/src/main/jni/material.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-26T21:43:28Z",
+      "side": 1,
+      "message": "You can move the code to check for default_texture as a if guard inside createDefaultTexture and save one if in the chain.",
+      "revId": "0a667c84d7f8073de9a8eaa80aea373dc5e49212",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "de43c51f_7aaf6799",
         "filename": "bender/bender-base/app/src/main/jni/material.cc",
         "patchSetId": 2
@@ -13,6 +30,40 @@
       "writtenOn": "2019-11-26T21:43:01Z",
       "side": 1,
       "message": "should we clean up this tab/indent/spaces 😄",
+      "revId": "0a667c84d7f8073de9a8eaa80aea373dc5e49212",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a80a1c7c_6a6defc2",
+        "filename": "bender/bender-base/app/src/main/jni/material.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-26T21:43:28Z",
+      "side": 1,
+      "message": "I don\u0027t think color should be passed by ref instead of value here. It makes using it a little bit more cumbersome since you can not bind an rvalue at the calling site.",
+      "revId": "0a667c84d7f8073de9a8eaa80aea373dc5e49212",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2a145da2_46e31d9e",
+        "filename": "bender/bender-base/app/src/main/jni/material.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-26T21:43:28Z",
+      "side": 1,
+      "message": "This can be a std::unque_ptr",
       "revId": "0a667c84d7f8073de9a8eaa80aea373dc5e49212",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
