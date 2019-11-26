@@ -28,9 +28,9 @@ struct ModelViewProjection {
 
 class Mesh {
 public:
-  Mesh(Renderer& renderer, Material& material, std::shared_ptr<Geometry> geometryData);
+  Mesh(Renderer& renderer, std::shared_ptr<Material> material, std::shared_ptr<Geometry> geometryData);
 
-  Mesh(Renderer& renderer, Material& material, const std::vector<float>& vertexData,
+  Mesh(Renderer& renderer, std::shared_ptr<Material> material, const std::vector<float>& vertexData,
           const std::vector<uint16_t>& indexData);
 
   ~Mesh();
@@ -42,6 +42,7 @@ public:
   void submitDraw(VkCommandBuffer commandBuffer, uint_t frame_index) const;
 
   void swapGeometry(const std::vector<float>& vertexData, const std::vector<uint16_t>& indexData);
+  void swapMaterial(std::shared_ptr<Material> material) { material_ = material; }
 
   void translate(glm::vec3 offset);
   void rotate(glm::vec3 axis, float angle);
@@ -63,8 +64,8 @@ private:
   std::unique_ptr<UniformBufferObject<ModelViewProjection>> mesh_buffer_;
 
   Renderer& renderer_;
-  Material& material_;
 
+  std::shared_ptr<Material> material_;
   std::shared_ptr<Geometry> geometry_;
 
   glm::vec3 position_;

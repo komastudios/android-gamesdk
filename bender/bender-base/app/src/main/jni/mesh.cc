@@ -8,7 +8,7 @@
 #include "material.h"
 #include "shader_bindings.h"
 
-Mesh::Mesh(Renderer &renderer, Material &material, std::shared_ptr<Geometry> geometry) :
+Mesh::Mesh(Renderer &renderer, std::shared_ptr<Material> material, std::shared_ptr<Geometry> geometry) :
     renderer_(renderer), material_(material), geometry_(geometry) {
   position_ = glm::vec3(0.0f, 0.0f, 0.0f);
   rotation_ = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
@@ -19,7 +19,7 @@ Mesh::Mesh(Renderer &renderer, Material &material, std::shared_ptr<Geometry> geo
   createMeshDescriptors();
 }
 
-Mesh::Mesh(Renderer &renderer, Material &material, const std::vector<float> &vertexData,
+Mesh::Mesh(Renderer &renderer, std::shared_ptr<Material> material, const std::vector<float> &vertexData,
            const std::vector<uint16_t> &indexData) :
     Mesh(renderer,
          material,
@@ -72,7 +72,7 @@ void Mesh::createMeshPipeline(VkRenderPass renderPass) {
   std::array<VkDescriptorSetLayout, 3> layouts;
 
   layouts[BINDING_SET_MESH] = mesh_descriptors_layout_;
-  layouts[BINDING_SET_MATERIAL] = material_.getMaterialDescriptorSetLayout();
+  layouts[BINDING_SET_MATERIAL] = material_->getMaterialDescriptorSetLayout();
   layouts[BINDING_SET_LIGHTS] = renderer_.getLightsDescriptorSetLayout();
 
   VkPipelineLayoutCreateInfo pipelineLayoutInfo {
@@ -91,7 +91,7 @@ void Mesh::createMeshPipeline(VkRenderPass renderPass) {
           layout_,
           renderPass);
 
-  material_.fillPipelineInfo(&pipelineInfo);
+  material_->fillPipelineInfo(&pipelineInfo);
 
   CALL_VK(vkCreateGraphicsPipelines(
           renderer_.getVulkanDevice(),
@@ -151,7 +151,7 @@ void Mesh::submitDraw(VkCommandBuffer commandBuffer, uint_t frame_index) const {
   vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                           layout_, BINDING_SET_LIGHTS, 1, &lightsDescriptorSet, 0, nullptr);
 
-  VkDescriptorSet materialDescriptorSet = material_.getMaterialDescriptorSet(frame_index);
+  VkDescriptorSet materialDescriptorSet = material_->getMaterialDescriptorSet(frame_index);
 
   vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                           layout_, BINDING_SET_MATERIAL, 1, &materialDescriptorSet, 0, nullptr);

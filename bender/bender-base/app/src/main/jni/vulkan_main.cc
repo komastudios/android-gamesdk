@@ -84,7 +84,7 @@ float totalTime;
 
 std::vector<const char *> texFiles;
 std::vector<Texture *> textures;
-std::vector<Material *> materials;
+std::vector<std::shared_ptr<Material>> materials;
 
 bool windowResized = false;
 
@@ -102,7 +102,7 @@ void createTextures() {
 void createMaterials() {
   Timing::timer.time("Materials Creation", Timing::OTHER, [](){
     for (uint32_t i = 0; i < textures.size(); ++i) {
-      materials.push_back(new Material(*renderer, shaders, textures[i], nullptr));
+      materials.push_back(std::make_shared<Material>(*renderer, shaders, textures[i], nullptr));
     }
   });
 }
@@ -212,7 +212,7 @@ void updateInstances(Input::Data *inputData) {
       meshes.pop_back();
   }
   else if (inputData->singleTapLowerRight) {
-    meshes.push_back(createPolyhedron(*renderer, *materials[0], 20));
+    meshes.push_back(createPolyhedron(*renderer, materials[0], 20));
     meshes[meshes.size() - 1]->translate(glm::vec3(rand() % 3, rand() % 3, rand() % 3));
   }
 
@@ -377,35 +377,20 @@ bool InitVulkan(android_app *app) {
 
     Timing::timer.time("Mesh Creation", Timing::OTHER, [](){
       texFiles.push_back("textures/sample_texture.png");
+      texFiles.push_back("textures/sample_texture2.png");
 
       createTextures();
 
       createMaterials();
 
       Timing::timer.time("Create Polyhedron", Timing::OTHER, [](){
-        meshes.push_back(createPolyhedron(*renderer, *materials[0], 20));
+        meshes.push_back(createPolyhedron(*renderer, materials[0], 20));
       });
     });
-
-    const std::vector<float> vertexData = {
-        -0.5f, -0.5f, 0.5f,          -0.5774f, -0.5774f, 0.5774f,       1.0f, 0.0f,
-        0.5f, -0.5f, 0.5f,           0.5774f, -0.5774f, 0.5774f,        0.0f, 0.0f,
-        0.5f, 0.5f, 0.5f,            0.5774f, 0.5774f, 0.5774f,         0.0f, 1.0f,
-        -0.5f, 0.5f, 0.5f,           -0.5774f, 0.5774f, 0.5774f,      1.0f, 1.0f,
-        0.0f, 0.0f, 0.0f,            0.0f, 1.0f, 0.0f,           0.0f, 0.0f,
-    };
-
-    const std::vector<u_int16_t> indexData = {
-        1, 2, 4, 2, 1, 0, 0, 3, 2, 2, 3, 4, 3, 0, 4, 0, 1, 4
-    };
 
     createDepthBuffer();
 
     createFrameBuffers(render_pass, depthBuffer.image_view);
-
-    texFiles.push_back("textures/sample_texture.png");
-
-    createTextures();
 
     font = new Font(*renderer, *androidAppCtx, FONT_SDF_PATH, FONT_INFO_PATH);
 

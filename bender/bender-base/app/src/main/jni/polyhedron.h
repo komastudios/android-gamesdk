@@ -13,7 +13,7 @@
 #import "mesh.h"
 #import "shader_state.h"
 
-Mesh* createPolyhedron(Renderer& renderer, Material& material, int faces);
+Mesh* createPolyhedron(Renderer& renderer, std::shared_ptr<Material> material, int faces);
 
 void swapPolyhedron(Mesh& mesh, int faces);
 
