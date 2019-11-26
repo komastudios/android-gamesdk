@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "de43c51f_7aaf6799",
+        "filename": "bender/bender-base/app/src/main/jni/material.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-11-26T21:43:01Z",
+      "side": 1,
+      "message": "should we clean up this tab/indent/spaces 😄",
+      "revId": "0a667c84d7f8073de9a8eaa80aea373dc5e49212",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
