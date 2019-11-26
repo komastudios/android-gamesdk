@@ -27,7 +27,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class JsonManipulatorOperation extends BaseOperation {
 
@@ -194,9 +196,13 @@ public class JsonManipulatorOperation extends BaseOperation {
     }
 
     private UserDatum[] frobulateUsers(UserDatum[] datums) {
-        return Arrays.stream(datums)
-                .map(UserDatum::frobulate)
-                .toArray(UserDatum[]::new);
+        // we're not using java streams because of SDK 19 support
+        List<UserDatum> result = new ArrayList<>();
+        for (UserDatum d : datums) {
+            result.add(d.frobulate());
+        }
+
+        return result.toArray(new UserDatum[0]);
     }
 
     private static String frobulateString(String s) {
@@ -206,15 +212,23 @@ public class JsonManipulatorOperation extends BaseOperation {
     }
 
     private static String[] frobulateStrings(String[] strs) {
-        return Arrays.stream(strs)
-                .map(JsonManipulatorOperation::frobulateString)
-                .toArray(String[]::new);
+        // we're not using java streams because of SDK 19 support
+        List<String> result = new ArrayList<>();
+        for (String s : strs) {
+            result.add(frobulateString(s));
+        }
+
+        return result.toArray(new String[0]);
     }
 
     private static FriendDatum[] frobulateFriends(FriendDatum[] friends) {
-        return Arrays.stream(friends)
-                .map(FriendDatum::frobulate)
-                .toArray(FriendDatum[]::new);
+        // we're not using java streams because of SDK 19 support
+        List<FriendDatum> result = new ArrayList<>();
+        for (FriendDatum d : friends) {
+            result.add(d.frobulate());
+        }
+
+        return result.toArray(new FriendDatum[0]);
     }
 
     //

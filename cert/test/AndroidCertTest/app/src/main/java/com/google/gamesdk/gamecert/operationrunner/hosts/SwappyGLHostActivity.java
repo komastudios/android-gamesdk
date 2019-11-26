@@ -18,6 +18,8 @@ package com.google.gamesdk.gamecert.operationrunner.hosts;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Trace;
 import android.view.Choreographer;
@@ -42,6 +44,10 @@ public class SwappyGLHostActivity extends BaseGLHostActivity
         Intent i = new Intent(ctx, SwappyGLHostActivity.class);
         i.putExtra(STRESS_TEST_JSON, stressTest.toJson());
         return i;
+    }
+
+    public static boolean isSupported() {
+        return (VERSION.SDK_INT >= VERSION_CODES.N);
     }
 
     @Override

@@ -22,22 +22,41 @@ namespace {
 
 namespace ancer {
     BaseVulkanOperation::BaseVulkanOperation(const Log::Tag testTag) :
-            _operationInfo{}, _testTag{testTag} {
-        InitGlobalLayerProperties(this->_operationInfo);
+            _operationInfo{}, _testTag{testTag}, _vulkan_initialized(false) {
+
+        if (InitGlobalLayerProperties(this->_operationInfo) != VK_SUCCESS) {
+            Log::E(TAG, "Unable to initialize Vulkan");
+            Stop();
+            return;
+        }
+
         InitInstanceExtensionNames(this->_operationInfo);
         InitDeviceExtensionNames(this->_operationInfo);
         Log::D(this->_testTag, "Initializing Vulkan instance");
-        InitInstance(this->_operationInfo, testTag.tag);
-        InitEnumerateDevice(this->_operationInfo);
+        if (InitInstance(this->_operationInfo, testTag.tag) != VK_SUCCESS){
+            Log::E(TAG, "Unable to initialize Vulkan instance");
+            Stop();
+            return;
+        }
+
+        if (InitEnumerateDevice(this->_operationInfo) != VK_SUCCESS) {
+            Log::E(TAG, "Unable to enumerate Vulkan devices");
+            Stop();
+            return;
+        }
+
+        _vulkan_initialized = true;
     }
 
     BaseVulkanOperation::~BaseVulkanOperation() {
-        if (this->_operationInfo.device != VK_NULL_HANDLE) {
+        if (_vulkan_initialized) {
+          if (this->_operationInfo.device != VK_NULL_HANDLE) {
             Log::D(this->_testTag, "Releasing Vulkan device");
             DestroyDevice(this->_operationInfo);
+          }
+          Log::D(this->_testTag, "Releasing Vulkan instance");
+          DestroyInstance(this->_operationInfo);
         }
-        Log::D(this->_testTag, "Releasing Vulkan instance");
-        DestroyInstance(this->_operationInfo);
     }
 
     VulkanInfo &BaseVulkanOperation::GetInfo() {
