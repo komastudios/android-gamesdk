@@ -102,7 +102,7 @@ void createTextures() {
 void createMaterials() {
   Timing::timer.time("Materials Creation", Timing::OTHER, [](){
     for (uint32_t i = 0; i < textures.size(); ++i) {
-      materials.push_back(new Material(*renderer, shaders, textures[i], nullptr));
+      materials.push_back(new Material(*renderer, shaders, textures[i]));
     }
   });
 }

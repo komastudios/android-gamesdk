@@ -10,13 +10,14 @@
 #include "shader_state.h"
 #include "texture.h"
 
-struct MaterialAttributes {
-    alignas(16) glm::vec3 color;
+struct alignas(16) MaterialAttributes {
+    glm::vec3 color;
 };
 
 class Material {
 public:
-  Material(Renderer& renderer, std::shared_ptr<ShaderState> shaders, Texture *texture, glm::vec3 *color);
+  Material(Renderer& renderer, std::shared_ptr<ShaderState> shaders, Texture *texture,
+          const glm::vec3& color = glm::vec3(1.0, 1.0, 1.0));
   ~Material();
 
   void fillPipelineInfo(VkGraphicsPipelineCreateInfo *pipeline_info);
@@ -25,11 +26,13 @@ public:
   VkDescriptorSet getMaterialDescriptorSet(uint_t frame_index) const {return material_descriptor_sets_[frame_index]; }
 
 private:
+  static Texture *default_texture_;
+
   Renderer& renderer_;
 
   std::shared_ptr<ShaderState> shaders_;
   Texture *texture_;
-  glm::vec3 *color_;
+  glm::vec3 color_;
   VkSampler sampler_;
 
   std::unique_ptr<UniformBufferObject<MaterialAttributes>> material_buffer_;
@@ -39,6 +42,7 @@ private:
 
   std::shared_ptr<ShaderState> getShaders() const { return shaders_; }
 
+  void createDefaultTexture(Renderer& renderer);
   void createSampler();
   void createMaterialDescriptorSetLayout();
   void createMaterialDescriptorSets();
