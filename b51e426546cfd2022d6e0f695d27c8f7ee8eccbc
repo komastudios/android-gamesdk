@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0def2932_e4ff3681",
+        "filename": "bender/bender-base/app/src/main/jni/polyhedron.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-26T00:17:15Z",
+      "side": 1,
+      "message": "oh no no no, you don\u0027t memcopy C++ objects.\n\nAlternatives:\n    copy(vect1.begin(), vect1.end(), back_inserter(vect2)); \n    vect2.assign(vect1.begin(), vect1.end());\n\nOr just:\nv2 \u003d v1",
+      "revId": "b51e426546cfd2022d6e0f695d27c8f7ee8eccbc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "02533b66_2af61820",
+        "filename": "bender/bender-base/app/src/main/jni/polyhedron.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-26T00:17:15Z",
+      "side": 1,
+      "message": "Don\u0027t new a std::vector. Just create it and pass it around.",
+      "revId": "b51e426546cfd2022d6e0f695d27c8f7ee8eccbc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
