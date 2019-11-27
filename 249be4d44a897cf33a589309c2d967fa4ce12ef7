@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d3c2fe07_b0fd5501",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/gamesdk/gamecert/operationrunner/MainActivity.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 350,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-11-27T00:38:25Z",
+      "side": 1,
+      "message": "Good catch! 👏👏👏",
+      "revId": "249be4d44a897cf33a589309c2d967fa4ce12ef7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f62af526_20ed5422",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/gamesdk/gamecert/operationrunner/hosts/BaseHostActivity.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-11-27T00:38:25Z",
+      "side": 1,
+      "message": "I kinda like the for-each-based workaround code more than the original.",
+      "revId": "249be4d44a897cf33a589309c2d967fa4ce12ef7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
