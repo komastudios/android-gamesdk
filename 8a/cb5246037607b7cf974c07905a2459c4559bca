@@ -1,0 +1,7 @@
+Presubmit-Verified+1: Treehugger Robot <treehugger-gerrit@google.com>
+Code-Review+2: Victor Repetskyi <vrepets@google.com>
+Submitted-by: Florian Rival <florianrival@google.com>
+Submitted-at: Wed, 27 Nov 2019 10:13:20 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1169895
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
