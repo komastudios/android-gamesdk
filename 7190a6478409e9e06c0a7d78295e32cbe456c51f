@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "db234758_8769c96a",
+        "filename": "bender/bender-base/app/src/main/jni/material.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-27T19:37:40Z",
+      "side": 1,
+      "message": "why std::move?",
+      "revId": "7190a6478409e9e06c0a7d78295e32cbe456c51f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
