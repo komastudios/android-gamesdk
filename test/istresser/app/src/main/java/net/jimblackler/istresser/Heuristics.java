@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.os.Debug;
-
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,8 +19,9 @@ import java.util.regex.Pattern;
 
 public class Heuristics {
   private static List<Integer> getPids(Activity activity) {
-    ActivityManager activityManager = (ActivityManager) Objects.requireNonNull(
-        activity.getSystemService((Context.ACTIVITY_SERVICE)));
+    ActivityManager activityManager =
+        (ActivityManager)
+            Objects.requireNonNull(activity.getSystemService((Context.ACTIVITY_SERVICE)));
     List<Integer> pids = new ArrayList<>();
     List<ActivityManager.RunningAppProcessInfo> runningAppProcesses =
         activityManager.getRunningAppProcesses();
@@ -41,8 +41,7 @@ public class Heuristics {
   }
 
   private static String readStream(InputStream inputStream) throws IOException {
-    try (
-        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+    try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         BufferedReader reader = new BufferedReader(inputStreamReader)) {
       String newline = System.getProperty("line.separator");
       StringBuilder output = new StringBuilder();
@@ -62,8 +61,9 @@ public class Heuristics {
   }
 
   static ActivityManager.MemoryInfo getMemoryInfo(Activity activity) {
-    ActivityManager activityManager = (ActivityManager) Objects.requireNonNull(
-        activity.getSystemService((Context.ACTIVITY_SERVICE)));
+    ActivityManager activityManager =
+        (ActivityManager)
+            Objects.requireNonNull(activity.getSystemService((Context.ACTIVITY_SERVICE)));
     ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
     activityManager.getMemoryInfo(memoryInfo);
     return memoryInfo;
@@ -123,5 +123,4 @@ public class Heuristics {
     ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activity);
     return value < memoryInfo.threshold * 2 / 1024;
   }
-
 }
