@@ -6,14 +6,14 @@
 const int specExponent = 128;
 
 struct PointLight {
-    float intensity;
     vec3 position;
     vec3 color;
+    float intensity;
 };
 
 struct AmbientLight {
-    float intensity;
     vec3 color;
+    float intensity;
 };
 
 layout(set = BINDING_SET_MATERIAL, binding = FRAGMENT_BINDING_SAMPLER)

@@ -104,7 +104,7 @@ Mesh* createPolyhedron(Renderer &renderer, std::shared_ptr<Material> material, i
   std::vector<float> vertex_data;
   std::vector<uint16_t> index_data;
 
-  if (populatePolyhedron(vertex_data, index_data, faces) == false) {
+  if (!populatePolyhedron(vertex_data, index_data, faces)) {
     return nullptr;
   }
 
@@ -115,7 +115,7 @@ void swapPolyhedron(Mesh& mesh, int faces) {
   std::vector<float> vertex_data;
   std::vector<uint16_t> index_data;
 
-  if (populatePolyhedron(vertex_data, index_data, faces) == false) {
+  if (!populatePolyhedron(vertex_data, index_data, faces)) {
     return;
   }
 
