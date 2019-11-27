@@ -1,0 +1,8 @@
+Code-Review+1: Andy Yu <chingtangyu@google.com>
+Code-Review+2: Matt Wang <mattkw@google.com>
+Presubmit-Ready+1: Andy Yu <chingtangyu@google.com>
+Submitted-by: Matt Wang <mattkw@google.com>
+Submitted-at: Wed, 27 Nov 2019 22:57:36 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1176169
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
