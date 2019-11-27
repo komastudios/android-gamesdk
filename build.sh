@@ -9,10 +9,9 @@ cp -Rf samples/sdk_licenses ../prebuilts/sdk/licenses
 pushd samples/bouncyball
 ./gradlew build
 popd
-# Commented out because of NDK warning
-#pushd samples/cube
-#./gradlew build
-#popd
+pushd samples/cube
+./gradlew build
+popd
 pushd samples/tuningfork/tftestapp
 ./gradlew build
 popd
