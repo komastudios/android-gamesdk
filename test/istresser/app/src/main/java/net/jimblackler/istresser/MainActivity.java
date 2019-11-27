@@ -1,8 +1,13 @@
 package net.jimblackler.istresser;
 
+import static net.jimblackler.istresser.ServiceCommunicationHelper.CRASHED_BEFORE;
+import static net.jimblackler.istresser.ServiceCommunicationHelper.TOTAL_MEMORY_MB;
+
 import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -41,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
   private static final int MAX_DURATION = 1000 * 60 * 10;
   private static final int LAUNCH_DURATION = 1000 * 90;
   private static final int RETURN_DURATION = LAUNCH_DURATION + 1000 * 20;
+  private static final int MAX_SERVICE_MEMORY_MB = 500;
+  private static final int BYTES_IN_MEGABYTE = 1024 * 1024;
 
   private static final List<List<String>> groups =
       ImmutableList.<List<String>>builder()
@@ -74,9 +81,21 @@ public class MainActivity extends AppCompatActivity {
   private long startTime;
   private long allocationStartedAt = -1;
   private int releases;
-  private int scenario = 13;
+  private int scenario = 26;
   private long appSwitchTimerStart;
   private long lastLaunched;
+  private int serviceTotalMb = 0;
+  private ServiceCommunicationHelper serviceCommunicationHelper;
+  private boolean isServiceCrashed = false;
+
+  enum ServiceState {
+    ALLOCATING_MEMORY,
+    ALLOCATED,
+    FREEING_MEMORY,
+    DEALLOCATED,
+  }
+
+  private ServiceState serviceState;
 
 
   private static String memoryString(long bytes) {
@@ -98,8 +117,59 @@ public class MainActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+    serviceCommunicationHelper = new ServiceCommunicationHelper(this);
+    serviceState = ServiceState.DEALLOCATED;
 
     try {
+      // Setting up broadcast receiver
+      BroadcastReceiver receiver =
+          new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+              isServiceCrashed = intent.getBooleanExtra(CRASHED_BEFORE, false);
+              serviceTotalMb = intent.getIntExtra(TOTAL_MEMORY_MB, 0);
+              switch (serviceState) {
+                case ALLOCATING_MEMORY:
+                  serviceState = ServiceState.ALLOCATED;
+
+                  Thread t =
+                      new Thread() {
+                        @Override
+                        public void run() {
+                          try {
+                            Thread.sleep(60*1000);
+                          } catch (Exception e) {
+                            e.printStackTrace();
+                          }
+                          serviceState = ServiceState.FREEING_MEMORY;
+                          serviceCommunicationHelper.freeServerMemory();
+                        }
+                      };
+                  t.start();
+
+                  break;
+                case FREEING_MEMORY:
+                  serviceState = ServiceState.DEALLOCATED;
+
+                  Thread t2 =
+                      new Thread() {
+                        @Override
+                        public void run() {
+                          try {
+                            Thread.sleep(60*1000);
+                          } catch (Exception e) {
+                            e.printStackTrace();
+                          }
+                          serviceState = ServiceState.ALLOCATING_MEMORY;
+                          serviceCommunicationHelper.allocateServerMemory(MAX_SERVICE_MEMORY_MB);
+                        }
+                      };
+                  t2.start();
+                  break;
+              }
+            }};
+      registerReceiver(receiver, new IntentFilter("experimental.users.bkaya.memory.RETURN"));
+
       JSONObject report = new JSONObject();
 
       PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -120,13 +190,18 @@ public class MainActivity extends AppCompatActivity {
           }
         }
         scenario = launchIntent.getIntExtra("scenario", 0);
+        if (scenario > groups.size() && scenario <= 2*groups.size()) {
+          serviceState = ServiceState.ALLOCATING_MEMORY;
+          serviceTotalMb = 0;
+          serviceCommunicationHelper.allocateServerMemory(MAX_SERVICE_MEMORY_MB);
+        }
 
       }
 
       report.put("scenario", scenario);
 
       JSONArray groupsOut = new JSONArray();
-      for (String group : groups.get(scenario - 1)) {
+      for (String group : groups.get((scenario - 1) % 13)) {
         groupsOut.put(group);
       }
       report.put("groups", groupsOut);
@@ -313,7 +388,7 @@ public class MainActivity extends AppCompatActivity {
       updateRecords();
 
       TextView strategies = findViewById(R.id.strategies);
-      List<String> strings = groups.get(scenario - 1);
+      List<String> strings = groups.get((scenario - 1) % 13);
       strategies.setText(join(strings, ", "));  // TODO .. move to onCreate()
 
       TextView uptime = findViewById(R.id.uptime);
@@ -388,7 +463,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private boolean scenarioGroup(String group) {
-    List<String> strings = groups.get(scenario - 1);
+    List<String> strings = groups.get((scenario - 1) % 13);
     return strings.contains(group);
   }
 
@@ -452,7 +527,11 @@ public class MainActivity extends AppCompatActivity {
     if (lowMemory) {
       report.put("lowMemory", true);
     }
+    if (isServiceCrashed) {
+      report.put("serviceCrashed", true);
+    }
     report.put("nativeAllocatedByTest", nativeAllocatedByTest);
+    report.put("serviceTotalMemory", BYTES_IN_MEGABYTE * serviceTotalMb);
     report.put("oom_score", Heuristics.getOomScore(this));
 
     Map<String, Long> values = Heuristics.processMeminfo();
