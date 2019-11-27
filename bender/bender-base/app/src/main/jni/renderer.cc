@@ -190,7 +190,7 @@ void Renderer::init() {
   createLightsDescriptors();
 }
 
-void Renderer::updateLights(glm::vec3 camera) {
+void Renderer::updateLights(glm::vec3& camera) {
   lights_buffer_->update(getCurrentFrame(), [&camera](auto &lightsBuffer) {
       lightsBuffer.pointLight.position = {0.0f, 0.0f, 6.0f};
       lightsBuffer.pointLight.color = {1.0f, 1.0f, 1.0f};

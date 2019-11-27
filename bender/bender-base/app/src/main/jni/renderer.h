@@ -21,18 +21,18 @@
 #include "uniform_buffer.h"
 #include "default_states.h"
 
-struct PointLight{
-    alignas(16) float intensity;
+struct alignas(16) PointLight{
     alignas(16) glm::vec3 position;
     alignas(16) glm::vec3 color;
+    alignas(4) float intensity;
 };
 
-struct AmbientLight{
-    alignas(16) float intensity;
+struct alignas(16) AmbientLight{
     alignas(16) glm::vec3 color;
+    alignas(4) float intensity;
 };
 
-struct LightBlock{
+struct alignas(16) LightBlock{
     PointLight pointLight;
     AmbientLight ambientLight;
     alignas(16) glm::vec3 cameraPos;
@@ -49,7 +49,7 @@ public:
   void beginPrimaryCommandBufferRecording();
   void endPrimaryCommandBufferRecording();
 
-  void updateLights(glm::vec3 camera);
+  void updateLights(glm::vec3& camera);
 
   BenderKit::Device& getDevice() const { return device_; };
   VkDevice getVulkanDevice() const { return device_.getDevice(); }
