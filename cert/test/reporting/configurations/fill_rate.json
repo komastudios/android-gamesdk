@@ -15,7 +15,7 @@
             "enabled": true,
             "name": "GPU fill rate & CPU stressor",
             "description": "Draws a ton of textured quads via swappy gl while calculating PI in background",
-            "duration": "0.5m",
+            "duration": "1m",
             "data_gatherer": {
                 "id": "FillRateGLES3Operation",
                 "configuration": {

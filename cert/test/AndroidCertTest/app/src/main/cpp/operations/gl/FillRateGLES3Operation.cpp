@@ -122,9 +122,7 @@ class QuadRenderer {
 
   QuadRenderer(GLuint num_instances, float quad_size) :
       _num_quads(num_instances), _quad_size(quad_size), _egl_context(eglGetCurrentContext()),
-      _width(0), _height(0) {
-    Log::D(TAG, "Constructing QuadRenderer for %u instances of size %f", num_instances, quad_size);
-  }
+      _width(0), _height(0) {}
 
   virtual ~QuadRenderer() = default;
 
@@ -172,7 +170,7 @@ class InstancedQuadRenderer : public QuadRenderer {
 
   virtual ~InstancedQuadRenderer() {
     if (eglGetCurrentContext()!=_egl_context) {
-      Log::D(TAG, "~InstancedQuadRenderer: EGL context changed. GL resource deletion skipped.");
+      Log::I(TAG, "~InstancedQuadRenderer: EGL context changed. GL resource deletion skipped.");
       return;
     }
 
@@ -183,16 +181,6 @@ class InstancedQuadRenderer : public QuadRenderer {
     return std::make_tuple<std::string, std::string>(
         "Shaders/FillRateGLES3Operation/quad_instanced.vsh",
         "Shaders/FillRateGLES3Operation/quad_instanced.fsh");
-  }
-
-  /**
-   * Releases all allocated GL resources. The destructor calls this function if the EGL context is
-   * the same than the one at the moment of construction.
-   */
-  void DeleteGlResources() {
-    Log::D(TAG, "InstancedQuadRenderer::DeleteGlResources() invoked");
-    glDeleteVertexArrays(1, &_vb_state);
-    glDeleteBuffers(VbCount, _vb);
   }
 
   void Start() override {
@@ -421,6 +409,15 @@ class InstancedQuadRenderer : public QuadRenderer {
     glUnmapBuffer(GL_ARRAY_BUFFER);
   }
 
+  /**
+   * Releases all allocated GL resources. The destructor calls this function if the EGL context is
+   * the same than the one at the moment of construction.
+   */
+  void DeleteGlResources() {
+    glDeleteVertexArrays(1, &_vb_state);
+    glDeleteBuffers(VbCount, _vb);
+  }
+
  private:
 
   enum {
@@ -457,8 +454,7 @@ class FillRateGLES3Operation : public BaseGLES3Operation {
   }
 
   void OnGlContextReady(const GLContextConfig &ctx_config) override {
-    _configuration = GetConfiguration<configuration>();
-    _current_configuration = _configuration;
+    Setup(GetConfiguration<configuration>());
     SetHeartbeatPeriod(1000ms);
 
     Log::I(
@@ -554,19 +550,18 @@ class FillRateGLES3Operation : public BaseGLES3Operation {
       auto qps = static_cast<float>(_quads_rendered_since_last_fps_timestamp
           /seconds_elapsed.count());
       auto ppq = _current_configuration.quad_size*_current_configuration.quad_size;
-      Log::D(TAG, "FillRateGLES3Operation::OnHeartbeat(): reporting status");
       Report(datum{qps, ppq});
     }
 
     //
-    //  Check for configuration increment
+    //  Check for configuration change timeout
     //
 
-    _time_since_configuration_increment += elapsed;
+    _time_since_configuration_change += elapsed;
     if ((_configuration.increment.period > Duration::zero()) &&
-        (_time_since_configuration_increment >= _configuration.increment.period)) {
-      IncrementConfiguration();
-      _time_since_configuration_increment = Duration::zero();
+        (_time_since_configuration_change >= _configuration.increment.period)) {
+      ChangeConfiguration();
+      _time_since_configuration_change = Duration::zero();
     }
 
     _frames_rendered_since_last_fps_timestamp = 0;
@@ -575,12 +570,36 @@ class FillRateGLES3Operation : public BaseGLES3Operation {
 
  private:
 
-  void IncrementConfiguration() {
-    _current_configuration.quad_size += _configuration.increment.quad_size_increment;
-    _current_configuration.num_quads += _configuration.increment.num_quads_increment;
+  void Setup(const configuration) {
+    _configuration = GetConfiguration<configuration>();
+    _current_configuration = _configuration;
+
+    std::chrono::duration<float> total_duration = GetDuration();
+    std::chrono::duration<float> half_duration = total_duration/2;
+
+    _change_threshold = static_cast<uint>(
+        std::ceil(half_duration/_configuration.increment.period)
+    );
+
+    _configuration_changes = 0;
+  }
+
+  void ChangeConfiguration() {
+    ++_configuration_changes;
+
+    if (_configuration_changes==_change_threshold) {
+      Log::D(TAG, "Configuration change #u. Pattern reset.", _configuration_changes);
+      _current_configuration.num_quads = _configuration.num_quads;
+    } else if ((_configuration_changes < _change_threshold)) {
+      _current_configuration.quad_size += _configuration.increment.quad_size_increment;
+      _current_configuration.num_quads += _configuration.increment.num_quads_increment;
+    } else {
+      _current_configuration.quad_size += _configuration.increment.quad_size_increment;
+      _current_configuration.num_quads -= _configuration.increment.num_quads_increment;
+    }
 
     Log::I(
-        TAG, "_incrementConfiguration, incremented num_quads to: %d quad_size to: %d",
+        TAG, "Changing configuration to total quads: %d; quad size: %d",
         _current_configuration.num_quads, _current_configuration.quad_size);
 
     ancer::GetFpsCalculator().Ignore(
@@ -590,15 +609,12 @@ class FillRateGLES3Operation : public BaseGLES3Operation {
   }
 
   void BuildRenderers(base_configuration configuration) {
-    Log::D(TAG, "FillRateGLES3Operation::BuildRenderers()");
-    Log::D(TAG, "Destructing all previous renderers (if any).");
     // clean up previous renderers, if any
     _renderers.clear();
 
     int remaining = configuration.num_quads;
     while (remaining > 0) {
       int instances = std::min(remaining, configuration.instances_per_renderer);
-      Log::D(TAG, "%d remaining quad instances", remaining);
       remaining -= instances;
 
       _renderers.push_back(std::make_shared<RENDERER>(instances, configuration.quad_size));
@@ -617,7 +633,9 @@ class FillRateGLES3Operation : public BaseGLES3Operation {
   base_configuration _current_configuration;
   int64_t _frames_rendered_since_last_fps_timestamp = 0;
   int64_t _quads_rendered_since_last_fps_timestamp = 0;
-  Duration _time_since_configuration_increment;
+  Duration _time_since_configuration_change;
+  uint _change_threshold;
+  uint _configuration_changes;
 
   // opengl
   GLuint _program = 0;
