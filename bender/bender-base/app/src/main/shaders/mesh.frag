@@ -3,6 +3,8 @@
 
 #include "shader_bindings.h"
 
+const int specExponent = 128;
+
 struct PointLight {
     float intensity;
     vec3 position;
@@ -40,13 +42,13 @@ vec3 calcPointLight(PointLight light){
     vec3 viewDir = normalize(lightBlock.cameraPos - fragPos);
     vec3 halfwayDir = normalize(lightDir +  viewDir);
 
-    vec3 reflectDir = reflect(-lightDir, fragNormal);
-    float dist = length(light.position - fragPos);
-    float attenuation = light.intensity / dist;
+    vec3 lightDiff = light.position - fragPos;
+    float distSquared = dot(lightDiff, lightDiff);
+    float attenuation = light.intensity / distSquared;
 
     float diffuseTerm = max(dot(lightDir, fragNormal), 0.0);
     vec3 diffuse = diffuseTerm * light.color * attenuation;
-    float specularTerm = pow(max(dot(fragNormal, halfwayDir), 0.0), 128);
+    float specularTerm = pow(max(dot(fragNormal, halfwayDir), 0.0), specExponent);
     vec3 specular = specularTerm * light.color * attenuation;
     return diffuse + specular;
 }
