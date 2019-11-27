@@ -16,6 +16,24 @@
       "revId": "7190a6478409e9e06c0a7d78295e32cbe456c51f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a86464e2_e949e83c",
+        "filename": "bender/bender-base/app/src/main/jni/material.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-27T19:41:13Z",
+      "side": 1,
+      "message": "This is for the conversion of unique pointer to shared pointer; it feels kind of weird in a way, but I feel like it\u0027s what makes sense? (i.e. the default texture is unique to the Material class, so it\u0027s a unique pointer, but the texture of this Material should be shared b/c in general Textures can be re-used?",
+      "parentUuid": "db234758_8769c96a",
+      "revId": "7190a6478409e9e06c0a7d78295e32cbe456c51f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
