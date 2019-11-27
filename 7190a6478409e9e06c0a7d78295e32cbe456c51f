@@ -34,6 +34,24 @@
       "revId": "7190a6478409e9e06c0a7d78295e32cbe456c51f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "88089f13_61b6906d",
+        "filename": "bender/bender-base/app/src/main/jni/material.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-27T20:44:14Z",
+      "side": 1,
+      "message": "My bad, the default texture should be shared_ptr.",
+      "parentUuid": "a86464e2_e949e83c",
+      "revId": "7190a6478409e9e06c0a7d78295e32cbe456c51f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
