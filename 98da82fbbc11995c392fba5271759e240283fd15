@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "8e8e630f_65893b25",
+        "filename": "bender/bender-base/app/src/main/jni/input.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-27T00:07:39Z",
+      "side": 1,
+      "message": "What kind of data?",
+      "revId": "98da82fbbc11995c392fba5271759e240283fd15",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5dab96c9_8cad3924",
         "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
         "patchSetId": 2
@@ -13,6 +30,75 @@
       "writtenOn": "2019-11-26T22:46:46Z",
       "side": 1,
       "message": "I\u0027m not completely sure I understand the event stuff so correct me if this is wrong; is there a possibility that this if/else structure could lead to both onButtonDown and onButtonHold being called for a held button? Is that intended behavior (like if we didn\u0027t want this behavior then we would have smthg like onButtonPress instead)?",
+      "revId": "98da82fbbc11995c392fba5271759e240283fd15",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c824d39b_d67bacd5",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-27T00:07:39Z",
+      "side": 1,
+      "message": "The if else chain should be refactored in something more manageable, like some kind of command pattern.",
+      "parentUuid": "5dab96c9_8cad3924",
+      "revId": "98da82fbbc11995c392fba5271759e240283fd15",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4e402e57_91c3415c",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 624,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-27T00:07:39Z",
+      "side": 1,
+      "message": "rename b to button",
+      "revId": "98da82fbbc11995c392fba5271759e240283fd15",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f3a3024f_ab093528",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 627,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-27T00:07:39Z",
+      "side": 1,
+      "message": "I would pass the display size in the button constructor so you can simply getX and getY in the correct coordinate system when needed.",
+      "revId": "98da82fbbc11995c392fba5271759e240283fd15",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "035a2898_eb019324",
+        "filename": "bender/bender-base/utils/bender_kit/button.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-27T00:07:39Z",
+      "side": 1,
+      "message": "let\u0027s stick to the naming convention: device_x, device_y",
       "revId": "98da82fbbc11995c392fba5271759e240283fd15",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
