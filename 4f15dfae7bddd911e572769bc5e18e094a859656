@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c606030c_2f02f8db",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-11-27T00:13:03Z",
+      "side": 1,
+      "message": "Actually, Simon mentioned this and it seems that irl the attenuation is over distance squared, but it also seems that sometimes it\u0027s designed over just distance b/c otherwise the attenuation is too severe; was the previous design choice intentional and should we keep it just over distance?",
+      "revId": "4f15dfae7bddd911e572769bc5e18e094a859656",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
