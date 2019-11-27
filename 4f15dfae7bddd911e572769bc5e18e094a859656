@@ -16,6 +16,24 @@
       "revId": "4f15dfae7bddd911e572769bc5e18e094a859656",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9e8ae54e_3f61d55d",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-11-27T00:15:33Z",
+      "side": 1,
+      "message": "It should be over dist squared.",
+      "parentUuid": "c606030c_2f02f8db",
+      "revId": "4f15dfae7bddd911e572769bc5e18e094a859656",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
