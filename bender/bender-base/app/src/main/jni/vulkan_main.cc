@@ -70,6 +70,9 @@ android_app *androidAppCtx = nullptr;
 Device *device;
 Renderer *renderer;
 
+const glm::mat4 identity_mat4 = glm::mat4(1.0f);
+float aspect_ratio;
+float fov;
 glm::mat4 view;
 glm::mat4 proj;
 
@@ -181,24 +184,16 @@ void updateCamera(Input::Data *inputData) {
     camera.position -= forward * 2.0f * frameTime;
   }
 
-  float aspect_ratio = device->getDisplaySize().width / (float) device->getDisplaySize().height;
-  auto horizontal_fov = glm::radians(60.0f);
-  auto vertical_fov =
-      static_cast<float>(2 * atan((0.5 * device->getDisplaySize().height)
-                                      / (0.5 * device->getDisplaySize().width
-                                          / tan(horizontal_fov / 2))));
-  auto fov = (aspect_ratio > 1.0f) ? horizontal_fov : vertical_fov;
-
-  glm::mat4 pre_rotate_mat = glm::mat4(1.0f);
+  glm::mat4 pre_rotate_mat = identity_mat4;
   glm::vec3 rotation_axis = glm::vec3(0.0f, 0.0f, -1.0f);
   if (device->getPretransformFlag() & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR) {
-    pre_rotate_mat = glm::rotate(pre_rotate_mat, glm::radians(90.0f), rotation_axis);
+    pre_rotate_mat = glm::rotate(pre_rotate_mat, glm::half_pi<float>(), rotation_axis);
   }
   else if (device->getPretransformFlag() & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR) {
-    pre_rotate_mat = glm::rotate(pre_rotate_mat, glm::radians(270.0f), rotation_axis);
+    pre_rotate_mat = glm::rotate(pre_rotate_mat, glm::three_over_two_pi<float>(), rotation_axis);
   }
   else if (device->getPretransformFlag() & VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR) {
-    pre_rotate_mat = glm::rotate(pre_rotate_mat, glm::radians(180.0f), rotation_axis);
+    pre_rotate_mat = glm::rotate(pre_rotate_mat, glm::pi<float>(), rotation_axis);
   }
 
   view = pre_rotate_mat
@@ -309,6 +304,14 @@ bool InitVulkan(android_app *app) {
     assert(device->isInitialized());
     device->setObjectName(reinterpret_cast<uint64_t>(device->getDevice()),
                           VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, "TEST NAME: VULKAN DEVICE");
+
+  aspect_ratio = device->getDisplaySize().width / (float) device->getDisplaySize().height;
+  auto horizontal_fov = glm::radians(60.0f);
+  auto vertical_fov =
+          static_cast<float>(2 * atan((0.5 * device->getDisplaySize().height)
+                                      / (0.5 * device->getDisplaySize().width
+                                         / tan(horizontal_fov / 2))));
+  fov = (aspect_ratio > 1.0f) ? horizontal_fov : vertical_fov;
 
     VkAttachmentDescription color_description{
         .format = device->getDisplayFormat(),
