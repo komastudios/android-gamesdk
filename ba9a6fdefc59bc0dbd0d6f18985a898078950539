@@ -1,0 +1,136 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "02e45d3a_b5ba526d",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2019-11-28T13:48:35Z",
+      "side": 1,
+      "message": "You don\u0027t need to allocate this to a variable - just do new Thread(){..}.start()",
+      "range": {
+        "startLine": 135,
+        "startChar": 0,
+        "endLine": 135,
+        "endChar": 28
+      },
+      "revId": "ba9a6fdefc59bc0dbd0d6f18985a898078950539",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f50dd2bf_60fd7ea6",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2019-11-28T13:48:35Z",
+      "side": 1,
+      "message": "Same as above, no variable needed.",
+      "revId": "ba9a6fdefc59bc0dbd0d6f18985a898078950539",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "452a4e0e_dacf86d5",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2019-11-28T13:48:35Z",
+      "side": 1,
+      "message": "Please run the formatter on the file. There should be spaces between operators and values.",
+      "range": {
+        "startLine": 193,
+        "startChar": 53,
+        "endLine": 193,
+        "endChar": 54
+      },
+      "revId": "ba9a6fdefc59bc0dbd0d6f18985a898078950539",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6fd59f3c_f0dbda54",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 391,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2019-11-28T13:48:35Z",
+      "side": 1,
+      "message": "Magic number. Is the \u002713\u0027 the same as scenario.size()? Use that if it is.\n\nAlso we need a way to disable or enable this mode of the test. I suggest a constant flag at the top of the file.\n\nBut a general comment; the idea about the scenario groups was not to just double the number of scenarios with each variation. We should think about adding the new technique as a new tag type rather than doubling up. As you know it\u0027s expensive (in resources) to run a lot of tests in the lab.",
+      "range": {
+        "startLine": 391,
+        "startChar": 57,
+        "endLine": 391,
+        "endChar": 59
+      },
+      "revId": "ba9a6fdefc59bc0dbd0d6f18985a898078950539",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6d0f0edd_3e8306b4",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 466,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2019-11-28T13:48:35Z",
+      "side": 1,
+      "message": "Same as above.",
+      "range": {
+        "startLine": 466,
+        "startChar": 55,
+        "endLine": 466,
+        "endChar": 57
+      },
+      "revId": "ba9a6fdefc59bc0dbd0d6f18985a898078950539",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "300451ea_533c65c6",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/ServiceCommunicationHelper.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2019-11-28T13:48:35Z",
+      "side": 1,
+      "message": "megaBytes -\u003e megabytes. It is one word.",
+      "range": {
+        "startLine": 26,
+        "startChar": 32,
+        "endLine": 26,
+        "endChar": 41
+      },
+      "revId": "ba9a6fdefc59bc0dbd0d6f18985a898078950539",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
