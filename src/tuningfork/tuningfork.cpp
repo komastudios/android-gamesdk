@@ -203,13 +203,14 @@ TFErrorCode Init(const Settings &settings,
     }
 
     if (backend == nullptr) {
-        bool backend_inited = s_backend.Init(jni, settings, *extra_upload_info)==TFERROR_OK;
-        if(backend_inited) {
+        TFErrorCode err = s_backend.Init(jni, settings, *extra_upload_info);
+        if (err == TFERROR_OK) {
             ALOGI("TuningFork.GoogleEndpoint: OK");
             backend = &s_backend;
             loader = &s_loader;
         } else {
-            ALOGW("TuningFork.GoogleEndpoint: FAILED");
+            ALOGE("TuningFork.GoogleEndpoint: FAILED");
+            return err;
         }
     }
 
