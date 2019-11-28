@@ -19,3 +19,7 @@ chart:
   enabled: true
   suites:
     - "Memory allocation"
+  skipping:
+    - "timestamp"
+    - "total_allocation_mb"
+    - "perf_info"
