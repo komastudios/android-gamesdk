@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "93618109_db087743",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2019-11-28T14:26:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "02e45d3a_b5ba526d",
+      "range": {
+        "startLine": 135,
+        "startChar": 0,
+        "endLine": 135,
+        "endChar": 28
+      },
+      "revId": "ba9a6fdefc59bc0dbd0d6f18985a898078950539",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f50dd2bf_60fd7ea6",
         "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
         "patchSetId": 1
@@ -39,6 +63,24 @@
       "revId": "ba9a6fdefc59bc0dbd0d6f18985a898078950539",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5ae66a1a_c5b6c553",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2019-11-28T14:26:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f50dd2bf_60fd7ea6",
+      "revId": "ba9a6fdefc59bc0dbd0d6f18985a898078950539",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -65,6 +107,30 @@
     },
     {
       "key": {
+        "uuid": "82c92619_2736d687",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2019-11-28T14:26:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "452a4e0e_dacf86d5",
+      "range": {
+        "startLine": 193,
+        "startChar": 53,
+        "endLine": 193,
+        "endChar": 54
+      },
+      "revId": "ba9a6fdefc59bc0dbd0d6f18985a898078950539",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6fd59f3c_f0dbda54",
         "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
         "patchSetId": 1
@@ -76,6 +142,30 @@
       "writtenOn": "2019-11-28T13:48:35Z",
       "side": 1,
       "message": "Magic number. Is the \u002713\u0027 the same as scenario.size()? Use that if it is.\n\nAlso we need a way to disable or enable this mode of the test. I suggest a constant flag at the top of the file.\n\nBut a general comment; the idea about the scenario groups was not to just double the number of scenarios with each variation. We should think about adding the new technique as a new tag type rather than doubling up. As you know it\u0027s expensive (in resources) to run a lot of tests in the lab.",
+      "range": {
+        "startLine": 391,
+        "startChar": 57,
+        "endLine": 391,
+        "endChar": 59
+      },
+      "revId": "ba9a6fdefc59bc0dbd0d6f18985a898078950539",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d2165631_0911fb8a",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 391,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2019-11-28T14:26:14Z",
+      "side": 1,
+      "message": "I believe we do need to double the number of scenarios when it comes to this. At the end, for every possible heuristic, we need to test that heuristic with 1) without a background app, 2) with a background app, and 3) with a linux executable (when that feature is available in ftl). So at the end, I think it\u0027s inevitable for the number of scenarios to be 3 times the number of heuristics.\n\nWe already have a way to disable/enable this mode of test; giving a scenario number larger than the number of groups will enable the service, otherwise it will be disabled.",
+      "parentUuid": "6fd59f3c_f0dbda54",
       "range": {
         "startLine": 391,
         "startChar": 57,
@@ -111,6 +201,30 @@
     },
     {
       "key": {
+        "uuid": "03c0084c_11feed76",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 466,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2019-11-28T14:26:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6d0f0edd_3e8306b4",
+      "range": {
+        "startLine": 466,
+        "startChar": 55,
+        "endLine": 466,
+        "endChar": 57
+      },
+      "revId": "ba9a6fdefc59bc0dbd0d6f18985a898078950539",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "300451ea_533c65c6",
         "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/ServiceCommunicationHelper.java",
         "patchSetId": 1
@@ -131,6 +245,30 @@
       "revId": "ba9a6fdefc59bc0dbd0d6f18985a898078950539",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "27f3a95e_1307aa80",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/ServiceCommunicationHelper.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2019-11-28T14:26:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "300451ea_533c65c6",
+      "range": {
+        "startLine": 26,
+        "startChar": 32,
+        "endLine": 26,
+        "endChar": 41
+      },
+      "revId": "ba9a6fdefc59bc0dbd0d6f18985a898078950539",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
