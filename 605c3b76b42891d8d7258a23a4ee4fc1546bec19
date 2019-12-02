@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "a509d94a_0e45b817",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/ShaderBlobGLES3Operation.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-02T21:07:13Z",
+      "side": 1,
+      "message": "Consider the convenience of having these general purpose file manipulation functions in an operation-neutral place (like ancer/util/File.hpp \u0026 .cpp)\nThis would apply to GetFilename, GetPathRemovingExtension, GetFileExtension, StringReplace, LoadTextFromFiles, SaveTextToFiles.\n\nBut I\u0027m making this comment \"resolved\" on its own.",
+      "revId": "605c3b76b42891d8d7258a23a4ee4fc1546bec19",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "23118ce8_84acbf7f",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/ShaderBlobGLES3Operation.cpp",
         "patchSetId": 4
