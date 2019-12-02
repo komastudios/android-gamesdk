@@ -130,7 +130,7 @@
       "description": "Streams vertices to draw each frame",
       "duration": "1m",
       "data_gatherer": {
-        "id": "StreamDrawGLES3Operation",
+        "id": "VertexStreamGLES3Operation",
         "configuration": {
           "count": 1,
           "rows": 128,
