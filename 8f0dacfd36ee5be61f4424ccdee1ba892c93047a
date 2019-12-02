@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8c22593b_b425f077",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2019-12-02T15:23:52Z",
+      "side": 1,
+      "message": "It\u0027s confusing to me having two values, scenario and groupNumber - which one should I be changing when I change the configuration of the local test?",
+      "range": {
+        "startLine": 82,
+        "startChar": 0,
+        "endLine": 82,
+        "endChar": 31
+      },
+      "revId": "8f0dacfd36ee5be61f4424ccdee1ba892c93047a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
