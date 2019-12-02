@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+/**
+ * @defgroup Protobuf_nano_util
+ * Utility functions for help with nanopb-c
+ * @see external/nanopb-c
+ *
+ * These structures are useful when serializing and deserializing either vectors of bytes or
+ *  malloc'd byte streams, using pb_encode and pb_decode.
+ * @{
+ */
+
 #pragma once
 
 #include <vector>
@@ -23,16 +33,17 @@
 
 namespace tuningfork {
 
-// These structures are useful when serializing and deserializing either vectors of bytes or
-//  malloc'd byte streams, using pb_encode and pb_decode.
-
-// VectorStream is a view on the vector provided in vec: it takes no ownership.
-// vec must be valid while Read or Write are called. It will be resized as needed by Write.
-// Example usage:
-//    std::vector<uint8_t> v;
-//    VectorStream str {&v, 0};
-//    pb_ostream_t stream = {VectorStream::Write, &str, SIZE_MAX, 0};
-//    pb_encode(&stream, ...);
+/**
+ * @brief A view on the vector provided in vec: no ownership is taken.
+ * @param vec A vector of bytes that must be valid while Read or Write are called.
+ *   It will be resized as needed by Write.
+ *
+ * Example usage:
+ *    std::vector<uint8_t> v;
+ *    VectorStream str {&v, 0};
+ *    pb_ostream_t stream = {VectorStream::Write, &str, SIZE_MAX, 0};
+ *    pb_encode(&stream, ...);
+ */
 struct VectorStream {
     std::vector<uint8_t>* vec;
     size_t it;
@@ -40,10 +51,12 @@ struct VectorStream {
     static bool Write(pb_ostream_t *stream, const uint8_t *buf, size_t count);
 };
 
-// ByteStream is a view on the bytes provided in vec. Write will call realloc
-//  if more bytes are needed and it is up to the caller to free the data allocated.
-// It is valid to set vec=nullptr and size=0, in which case vec will be allocated using
-//  malloc.
+/**
+ * @brief A view on the bytes provided in vec. Write will call realloc
+ *  if more bytes are needed and it is up to the caller to free the data allocated.
+ * It is valid to set vec=nullptr and size=0, in which case vec will be allocated using
+ *  malloc.
+ */
 struct ByteStream {
     uint8_t* vec;
     size_t size;
@@ -53,3 +66,5 @@ struct ByteStream {
 };
 
 } // namespace tuningfork {
+
+/** @} */

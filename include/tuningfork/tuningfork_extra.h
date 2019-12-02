@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * @defgroup tuningfork_extra
+ * Tuning Fork extra utility functions.
+ * @{
+ */
+
 #pragma once
 
 #include "tuningfork.h"
@@ -22,35 +28,54 @@
 extern "C" {
 #endif
 
-// Load fidelity params from assets/tuningfork/<filename>
-// Ownership of @p fp is passed to the caller: call
-//  CProtobufSerialization_Free to deallocate data stored in the struct.
+/**
+ * @brief Load fidelity params from assets/tuningfork/\<filename\>
+ * Ownership of @p fp is passed to the caller: call CProtobufSerialization_Free to deallocate
+ *  data stored in the struct.
+ * @param env JNIEnv
+ * @param context Application context
+ * @param filename The filename to load
+ * @param[out] fidelity_params Protocol buffer serialization of fidelity parameters found.
+ * @return TFERROR_OK if no error
+ */
 TFErrorCode TuningFork_findFidelityParamsInApk(JNIEnv* env, jobject context,
                                                const char* filename,
-                                               CProtobufSerialization* fp);
+                                               CProtobufSerialization* fidelity_params);
 
-// Download fidelity parameters on a separate thread.
-// A download thread is activated to retrieve fidelity params and retries are
-//    performed until a download is successful or a timeout occurs.
-// Downloaded params are stored locally and used in preference of default
-//    params when the app is started in future.
-// default_params is a protobuf serialization containing the fidelity params that
-//  will be used if there is no download connection and there are no saved parameters.
-// fidelity_params_callback is called with any downloaded params or with default /
-//  saved params.
-// Requests will timeout according to the initial_request_timeout_ms and
-//  ultimate_request_timeout_ms fields in the TFSettings struct with which Tuning Fork was
-//  initialized.
+/**
+ * @brief Download fidelity parameters on a separate thread.
+ * A download thread is activated to retrieve fidelity params and retries are
+ *    performed until a download is successful or a timeout occurs.
+ * Downloaded params are stored locally and used in preference of default
+ *    params when the app is started in future.
+ * Requests will timeout according to the initial_request_timeout_ms and
+ *  ultimate_request_timeout_ms fields in the TFSettings struct with which Tuning Fork was
+ *  initialized.
+ * @param default_params A protobuf serialization containing the fidelity params that
+ *  will be used if there is no download connection and there are no saved parameters.
+ * @param fidelity_params_callback is called with any downloaded params or with default /
+ *  saved params.
+ * @return TFERROR_OK if no error
+ */
 TFErrorCode TuningFork_startFidelityParamDownloadThread(
                                       const CProtobufSerialization* default_params,
                                       ProtoCallback fidelity_params_callback);
 
-// The TuningFork_init function will save fidelity params to a file
-//  for use when a download connection is not available. With this function,
-//  you can replace or delete any saved file. To delete the file, pass fps=NULL.
+/*
+ * @brief The TuningFork_init function will save fidelity params to a file
+ *  for use when a download connection is not available. With this function,
+ *  you can replace or delete the saved file.
+ * @param env JNIEnv
+ * @param context Application context.
+ * @param fidelity_params The parameters to save. The save file will be deleted if fidelity_params
+ *  is NULL.
+ * @return TFERROR_OK if no error
+ */
 TFErrorCode TuningFork_saveOrDeleteFidelityParamsFile(JNIEnv* env, jobject context,
-                                                      CProtobufSerialization* fps);
+                        const CProtobufSerialization* fidelity_params);
 
 #ifdef __cplusplus
 }
 #endif
+
+/** @} */

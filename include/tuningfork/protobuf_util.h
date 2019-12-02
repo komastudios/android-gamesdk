@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * @defgroup Protobuf_util
+ * Helper functions for converting between C and C++ protocol buffer serializations.
+ * @{
+ */
+
 #pragma once
 
 #include "tuningfork/tuningfork.h"
@@ -24,17 +30,28 @@
 #include <cstring>
 #include <string>
 
-// Deallocate the bytes using stdlib's 'free'
+/**
+ * Internal to this file - do not use.
+ */
 extern "C" void CProtobufSerialization_Dealloc(CProtobufSerialization* c);
 
 namespace tuningfork {
 
+/**
+ * A protocol buffer serialization stored as a STL vector of bytes
+ */
 typedef std::vector<uint8_t> ProtobufSerialization;
 
+/**
+ * @brief Convert from a C to a C++ serialization.
+ */
 inline ProtobufSerialization ToProtobufSerialization(const CProtobufSerialization& cpbs) {
     return ProtobufSerialization(cpbs.bytes, cpbs.bytes + cpbs.size);
 }
 
+/**
+ * @brief Convert from a C++ to a C serialization.
+ */
 inline void ToCProtobufSerialization(const ProtobufSerialization& pbs,
                                      CProtobufSerialization& cpbs) {
     cpbs.bytes = (uint8_t*)::malloc(pbs.size());
@@ -43,6 +60,9 @@ inline void ToCProtobufSerialization(const ProtobufSerialization& pbs,
     cpbs.dealloc = CProtobufSerialization_Dealloc;
 }
 
+/**
+ * @brief Convert from an STL string to a C serialization.
+ */
 inline void ToCProtobufSerialization(const std::string& s,
                                      CProtobufSerialization& cpbs) {
     cpbs.bytes = (uint8_t*)::malloc(s.size());
@@ -51,19 +71,33 @@ inline void ToCProtobufSerialization(const std::string& s,
     cpbs.dealloc = CProtobufSerialization_Dealloc;
 }
 
+/**
+ * @brief Convert from a C serialization to an STL string.
+ */
 inline std::string ToString(const CProtobufSerialization& cpbs) {
     return std::string((const char*)cpbs.bytes, cpbs.size);
 }
 
+/**
+ * @brief Deserialize an STL vector of bytes to a protocol buffer object.
+ */
 template <typename T>
 bool Deserialize(const std::vector<uint8_t> &ser, T &pb) {
     return pb.ParseFromArray(ser.data(), ser.size());
 }
+
+/**
+ * @brief Serialize a protocol buffer object to an STL vector of bytes.
+ */
 template <typename T>
 bool Serialize(const T &pb, std::vector<uint8_t> &ser) {
     ser.resize(pb.ByteSize());
     return pb.SerializeToArray(ser.data(), ser.size());
 }
+
+/**
+ * @brief Serialize a protocol buffer object to an STL vector of bytes.
+ */
 template <typename T>
 std::vector<uint8_t> Serialize(const T &pb) {
     std::vector<uint8_t> ser(pb.ByteSize());
@@ -71,8 +105,11 @@ std::vector<uint8_t> Serialize(const T &pb) {
     return ser;
 }
 
-// Serialize to a CProtobuf. The caller takes ownership of the returned serialization and must
-//  call CProtobufSerialization_Free to deallocate any memory.
+/**
+ * Serialize a protocol buffer object to a CProtobuf.
+ * The caller takes ownership of the returned serialization and must call
+ *  CProtobufSerialization_Free to deallocate any memory.
+ */
 template <typename T>
 CProtobufSerialization CProtobufSerialization_Alloc(const T &pb) {
     CProtobufSerialization cser;
@@ -84,3 +121,5 @@ CProtobufSerialization CProtobufSerialization_Alloc(const T &pb) {
 }
 
 } // namespace tuningfork {
+
+/** @} */

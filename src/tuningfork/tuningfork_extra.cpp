@@ -268,7 +268,8 @@ TFErrorCode TuningFork_setUploadCallback(UploadCallback cbk) {
     return tuningfork::SetUploadCallback(cbk);
 }
 
-TFErrorCode TuningFork_saveOrDeleteFidelityParamsFile(JNIEnv* env, jobject context, CProtobufSerialization* fps) {
+TFErrorCode TuningFork_saveOrDeleteFidelityParamsFile(JNIEnv* env, jobject context,
+                                                      const CProtobufSerialization* fps) {
     JniCtx jni(env, context);
     if(fps) {
         if (SaveFidelityParams(jni, ToProtobufSerialization(*fps)))
