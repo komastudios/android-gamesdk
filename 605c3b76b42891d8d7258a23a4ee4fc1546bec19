@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "23118ce8_84acbf7f",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/ShaderBlobGLES3Operation.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 415,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-12-02T19:48:49Z",
+      "side": 1,
+      "message": "👍",
+      "revId": "605c3b76b42891d8d7258a23a4ee4fc1546bec19",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
