@@ -15,7 +15,6 @@ deployment:
     #   - 6feeb429
     #   - 94CX1Z4AJ
 
-chart:
+summary:
   enabled: true
-  suites:
-    - "Affinity Test"
+  html: false
