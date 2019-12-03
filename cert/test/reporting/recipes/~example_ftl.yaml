@@ -1,0 +1,28 @@
+build:
+  clean: false
+  configuration: configurations/cpu_stress_cpp.json
+
+systrace:
+  enabled: false
+  keywords:
+    - MonitorOperation
+
+deployment:
+  ftl:
+    test: test-robo
+    all-physical-devices: true
+    flags:
+      project: gamesdk-testing
+      format: json
+    args:
+      test-robo:
+        type: game-loop
+        timeout: 1500 # 25 minutes
+
+chart:
+  enabled: true
+  suites:
+    - "Calculate Pi (C++)"
+  skipping:
+    - "pi.value"
+    - "perf_info"
