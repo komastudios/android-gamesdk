@@ -16,6 +16,24 @@
       "revId": "60a365c020db10ee1b4a084355723a0474244ffc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "33cb873f_f3b88e4a",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/FillRateGLES3Operation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 598,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-03T19:39:01Z",
+      "side": 1,
+      "message": "Great catch, Shamyl. Thank you!\nActually the param was unnecessary. Tyler\u0027s GetConfiguration\u003cT\u003e() does the magic of looking inside an internal field containing the input JSON for an entry labeled T.\n\nI fixed this in the next patch.",
+      "parentUuid": "c5ce284c_c36c9744",
+      "revId": "60a365c020db10ee1b4a084355723a0474244ffc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
