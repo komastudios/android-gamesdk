@@ -19,6 +19,11 @@
 #include <jni.h>
 #include "tuningfork.h"
 
+/**
+ * @file Functions used by the Tuning Fork Unity plugin.
+ *  Not for external use.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

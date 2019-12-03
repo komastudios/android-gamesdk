@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * @defgroup tuningfork
+ * Tuning Fork main interface.
+ * @{
+ */
+
 #pragma once
 
 #include <stdint.h>
@@ -28,77 +34,101 @@
 #define TUNINGFORK_VERSION_CONCAT(PREFIX, MAJOR, MINOR) TUNINGFORK_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR)
 #define TUNINGFORK_VERSION_SYMBOL TUNINGFORK_VERSION_CONCAT(TuningFork_version, TUNINGFORK_MAJOR_VERSION, TUNINGFORK_MINOR_VERSION)
 
-// Instrument keys 64000-65535 are reserved
-enum {
+/**
+ * @brief Instrument keys indicating time periods within a frame.
+ *  Keys 64000-65535 are reserved
+ */
+enum InstrumentKeys {
     TFTICK_USERDEFINED_BASE = 0,
-    TFTICK_SYSCPU = 64000,
-    TFTICK_SYSGPU = 64001,
-    TFTICK_SWAPPY_WAIT_TIME = 64002,
-    TFTICK_SWAPPY_SWAP_TIME = 64003
+    TFTICK_SYSCPU = 64000, /// Frame time between ends of glSwapBuffers calls or Vulkan equivalent.
+    TFTICK_SYSGPU = 64001, /// Frame time between Swappy sync fences.
+    TFTICK_SWAPPY_WAIT_TIME = 64002, /// The time Swappy waits on sync fence.
+    TFTICK_SWAPPY_SWAP_TIME = 64003 /// Time for call of glSwapBuffers or Vulkan equivalent.
 };
 
+/**
+ * @brief A series of bytes representing a serialized protocol buffer.
+ * @see CProtobufSerialization_Free for how to deallocate the memory once finished with the buffer.
+ */
 struct CProtobufSerialization {
-    uint8_t* bytes;
-    uint32_t size;
+    uint8_t* bytes; /// Array of bytes.
+    uint32_t size; /// Size of array.
+    /// Deallocation callback (may be NULL if not owned).
     void (*dealloc)(struct CProtobufSerialization*);
 };
 
-// The instrumentation key identifies a tick point within a frame or a trace segment
+/// The instrumentation key identifies a tick point within a frame or a trace segment
 typedef uint16_t TFInstrumentKey;
+/// A trace handle used in TuningFork_startTrace
 typedef uint64_t TFTraceHandle;
+/// A time as milliseconds past the epoch.
 typedef uint64_t TFTimePoint;
+/// A duration in nanoseconds.
 typedef uint64_t TFDuration;
 
 enum TFErrorCode {
-    TFERROR_OK = 0, // No error
-    TFERROR_NO_SETTINGS = 1, // No tuningfork_settings.bin found in assets/tuningfork.
-    TFERROR_NO_SWAPPY = 2, // Not able to find Swappy.
-    TFERROR_INVALID_DEFAULT_FIDELITY_PARAMS = 3, // fpDefaultFileNum is out of range.
-    TFERROR_NO_FIDELITY_PARAMS = 4,
-    TFERROR_TUNINGFORK_NOT_INITIALIZED = 5,
-    TFERROR_INVALID_ANNOTATION = 6,
-    TFERROR_INVALID_INSTRUMENT_KEY = 7,
-    TFERROR_INVALID_TRACE_HANDLE = 8,
-    TFERROR_TIMEOUT = 9,
-    TFERROR_BAD_PARAMETER = 10,
-    TFERROR_B64_ENCODE_FAILED = 11,
-    TFERROR_JNI_BAD_VERSION = 12,
-    TFERROR_JNI_BAD_THREAD = 13,
-    TFERROR_JNI_BAD_ENV = 14,
-    TFERROR_JNI_EXCEPTION = 15,
-    TFERROR_JNI_BAD_JVM = 16,
-    TFERROR_NO_CLEARCUT = 17,
-    TFERROR_NO_FIDELITY_PARAMS_IN_APK = 18, // No dev_tuningfork_fidelityparams_#.bin found
-                                           //  in assets/tuningfork.
-    TFERROR_COULDNT_SAVE_OR_DELETE_FPS = 19,
-    TFERROR_PREVIOUS_UPLOAD_PENDING = 20,
-    TFERROR_UPLOAD_TOO_FREQUENT = 21,
-    TFERROR_NO_SUCH_KEY = 22,
-    TFERROR_BAD_FILE_OPERATION = 23,
-    TFERROR_BAD_SETTINGS = 24,
-    TFERROR_ALREADY_INITIALIZED = 25,
-    TFERROR_NO_SETTINGS_ANNOTATION_ENUM_SIZES = 26,
-    TFERROR_DOWNLOAD_THREAD_ALREADY_STARTED = 27,
-    TFERROR_PLATFORM_NOT_SUPPORTED = 28,
+    TFERROR_OK = 0, /// No error
+    TFERROR_NO_SETTINGS = 1, /// No tuningfork_settings.bin found in assets/tuningfork.
+    TFERROR_NO_SWAPPY = 2, /// Not able to find the required Swappy functions.
+    TFERROR_INVALID_DEFAULT_FIDELITY_PARAMS = 3, /// fpDefaultFileNum is out of range.
+    TFERROR_NO_FIDELITY_PARAMS = 4, /// No fidelity parameters found at initialization.
+    TFERROR_TUNINGFORK_NOT_INITIALIZED = 5, /// A call was made before Tuning Fork was initialized.
+    TFERROR_INVALID_ANNOTATION = 6, /// Invalid parameter to TuningFork_setCurrentAnnotation.
+    TFERROR_INVALID_INSTRUMENT_KEY = 7, /// Invalid instrument key passed to a tick function.
+    TFERROR_INVALID_TRACE_HANDLE = 8, /// Invalid handle passed to TuningFork_endTrace
+    TFERROR_TIMEOUT = 9, /// Timeout in request for fidelity parameters.
+    TFERROR_BAD_PARAMETER = 10, /// Generic bad parameter.
+    TFERROR_B64_ENCODE_FAILED = 11, /// Could not encode a protobuf.
+    TFERROR_JNI_BAD_VERSION = 12, /// Jni error - obsolete
+    TFERROR_JNI_BAD_THREAD = 13, /// Jni error - obsolete
+    TFERROR_JNI_BAD_ENV = 14, /// Jni error - obsolete
+    TFERROR_JNI_EXCEPTION = 15, /// Jni error - an exception was thrown. See logcat output.
+    TFERROR_JNI_BAD_JVM = 16, /// Jni error - obsolete
+    TFERROR_NO_CLEARCUT = 17, /// Obsolete
+    TFERROR_NO_FIDELITY_PARAMS_IN_APK = 18, /// No dev_tuningfork_fidelityparams_#.bin found
+                                           ///  in assets/tuningfork.
+    TFERROR_COULDNT_SAVE_OR_DELETE_FPS = 19, /// Error calling TuningFork_saveOrDeleteFidelityParamsFile
+    TFERROR_PREVIOUS_UPLOAD_PENDING = 20, /// Can't upload since another request is pending.
+    TFERROR_UPLOAD_TOO_FREQUENT = 21, /// Too frequent calls to TuningFork_flush.
+    TFERROR_NO_SUCH_KEY = 22, /// No such key when accessing file cache.
+    TFERROR_BAD_FILE_OPERATION = 23, /// General file error.
+    TFERROR_BAD_SETTINGS = 24, /// Invalid tuningfork_settings.bin file.
+    TFERROR_ALREADY_INITIALIZED = 25, /// TuningFork_init was called more than once.
+    TFERROR_NO_SETTINGS_ANNOTATION_ENUM_SIZES = 26, /// Missing part of tuningfork_settings.bin.
+    TFERROR_DOWNLOAD_THREAD_ALREADY_STARTED = 27, /// TuningFork_startFidelityParamDownloadThread
+        /// was called more than once, or called when TuningFork_init has already started download.
+    TFERROR_PLATFORM_NOT_SUPPORTED = 28, /// Only used by Unity plugin.
 };
 
-typedef TFErrorCode (*PFnTFCacheGet)(uint64_t key, CProtobufSerialization* value,
-                                     void* user_data);
-typedef TFErrorCode (*PFnTFCacheSet)(uint64_t key, const CProtobufSerialization* value,
-                                     void* user_data);
-typedef TFErrorCode (*PFnTFCacheRemove)(uint64_t key, void* user_data);
+/**
+ * @defgroup TFCache
+ * Optional persistent cache object.
+ * @{
+ */
 
+typedef TFErrorCode (* PFnTFCacheGet )(uint64_t key, CProtobufSerialization* value,
+                                     void* user_data);
+typedef TFErrorCode (* PFnTFCacheSet )(uint64_t key, const CProtobufSerialization* value,
+                                     void* user_data);
+typedef TFErrorCode (* PFnTFCacheRemove )(uint64_t key, void* user_data);
+
+/**
+ * @brief An object used to cache upload data when no connection is available.
+ *  If you do not supply one of these, data is saved to a temporary file.
+ */
 struct TFCache {
-  void* user_data;
-  PFnTFCacheSet set;
-  PFnTFCacheGet get;
-  PFnTFCacheRemove remove;
+  void* user_data; /// Data passed to each callback.
+  PFnTFCacheSet set; /// Function to set a value for a key.
+  PFnTFCacheGet get; /// Function to get a valud for a key.
+  PFnTFCacheRemove remove; /// Function to remove an entry in the cache.
 };
 
-typedef void (*ProtoCallback)(const CProtobufSerialization*);
-typedef void (*UploadCallback)(const char*, size_t n);
+/** @} */
+
+typedef void (* ProtoCallback )(const CProtobufSerialization*);
+typedef void (* UploadCallback )(const char*, size_t n);
 struct SwappyTracer;
-typedef void (*SwappyTracerFn)(const SwappyTracer*);
+typedef void (* SwappyTracerFn )(const SwappyTracer*);
 
 /**
  * @brief Initialization settings
@@ -136,8 +166,15 @@ struct TFSettings {
 extern "C" {
 #endif
 
+/**
+ * @brief Deallocate any memory owned by the procol buffer serialization.
+ * @param ser A protocol buffer serialization
+ */
 inline void CProtobufSerialization_Free(CProtobufSerialization* ser) {
-    if(ser->dealloc) ser->dealloc(ser);
+    if (ser->dealloc) {
+        ser->dealloc(ser);
+        ser->dealloc = NULL;
+    }
 }
 
 // Internal init function. Do not call directly.
@@ -148,12 +185,20 @@ TFErrorCode TuningFork_init_internal(const TFSettings *settings, JNIEnv* env, jo
 // mismatch between the header used at compilation and the actually library used by the linker.
 void TUNINGFORK_VERSION_SYMBOL();
 
-// TuningFork_init must be called before any other functions.
-// The app will load histogram and annotation settings from your tuningfork_settings.bin file.
-// See above for the semantics of how TFSettings change initialization behaviour.
-// Returns TFERROR_OK if successful, TFERROR_NO_SETTINGS if no settings could be found,
-//  TFERROR_BAD_SETTINGS if your tuningfork_settings.bin file was invalid or
-//  TFERROR_ALREADY_INITIALIZED if tuningfork was already initialized.
+/**
+ * @brief Initialize Tuning Fork. This must be called before any other functions.
+ *
+ * The app will load histogram and annotation settings from your tuningfork_settings.bin file.
+ * @see TFSettings for the semantics of how other settings change initialization behaviour.
+ *
+ * @param settings a TFSettings structure
+ * @param env a JNIEnv
+ * @param context the app context
+ * 
+ * @return TFERROR_OK if successful, TFERROR_NO_SETTINGS if no settings could be found,
+ *  TFERROR_BAD_SETTINGS if your tuningfork_settings.bin file was invalid or
+ *  TFERROR_ALREADY_INITIALIZED if tuningfork was already initialized.
+ */
 static inline TFErrorCode TuningFork_init(const TFSettings *settings, JNIEnv* env, jobject context) {
     // This call ensures that the header and the linked library are from the same version
     // (if not, a linker error will be triggered because of an undefined symbol).
@@ -164,65 +209,99 @@ static inline TFErrorCode TuningFork_init(const TFSettings *settings, JNIEnv* en
 // The functions below will return TFERROR_TUNINGFORK_NOT_INITIALIZED if TuningFork_init
 //  has not first been called.
 
-// Blocking call to get fidelity parameters from the server.
-// You do not need to call this if you pass in a fidelity_params_callback to TuningFork_init.
-// Note that once fidelity parameters are downloaded, any timing information is recorded
-//  as being associated with those parameters.
-// If you subsequently call GetFidelityParameters and a new set of parameters is downloaded,
-// any data that is already collected will be submitted to the backend.
-// Ownership of 'params' is transferred to the caller, so they must call params->dealloc
-//  when they are done with it.
-// The parameter request is sent to:
-//  ${url_base}+'applications/'+package_name+'/apks/'+version_number+':generateTuningParameters'.
-// Returns TFERROR_TIMEOUT if there was a timeout before params could be downloaded.
-// Returns TFERROR_OK on success.
+/**
+ * @brief A blocking call to get fidelity parameters from the server.
+ * You do not need to call this if you pass in a fidelity_params_callback as part of the settings
+ *  to TuningFork_init.
+ * Note that once fidelity parameters are downloaded, any timing information is recorded
+ *  as being associated with those parameters.
+ * If you subsequently call GetFidelityParameters and a new set of parameters is downloaded,
+ *  any data that is already collected will be submitted to the backend.
+ * Ownership of 'params' is transferred to the caller, so they must call params->dealloc
+ *  when they are done with it.
+ * The parameter request is sent to:
+ *  ${url_base}+'applications/'+package_name+'/apks/'+version_number+':generateTuningParameters'.
+ * @param defaultParams these will be assumed current if no parameters could be downloaded.
+ * @param[out] params 
+ * @param timeout_ms time to wait before returning from this call when no connection can be made.
+ * @return TFERROR_TIMEOUT if there was a timeout before params could be downloaded.
+ *  TFERROR_OK on success.
+ */
 TFErrorCode TuningFork_getFidelityParameters(
     const CProtobufSerialization* defaultParams,
     CProtobufSerialization* params, uint32_t timeout_ms);
 
-// Protobuf serialization of the current annotation.
-// Returns TFERROR_INVALID_ANNOTATION if annotation is inconsistent with the settings.
-// Returns TFERROR_OK on success.
+/**
+ * @brief Set the current annotation.
+ * @param annotation the protobuf serialization of the current annotation.
+ * @return TFERROR_INVALID_ANNOTATION if annotation is inconsistent with the settings.
+ * @return TFERROR_OK on success.
+ */
 TFErrorCode TuningFork_setCurrentAnnotation(const CProtobufSerialization* annotation);
 
-// Record a frame tick that will be associated with the instrumentation key and the current
-//   annotation.
-// NB: calling the tick or trace functions from different threads is allowed, but a given
-//  instrument key should always be ticked from the same thread.
-// Returns TFERROR_INVALID_INSTRUMENT_KEY if the instrument key is invalid.
-// Returns TFERROR_OK on success.
-TFErrorCode TuningFork_frameTick(TFInstrumentKey id);
+/**
+ * @brief Record a frame tick that will be associated with the instrumentation key and the current
+ *   annotation.
+ * NB: calling the tick or trace functions from different threads is allowed, but a single
+ *  instrument key should always be ticked from the same thread.
+ * @param key an instrument key
+ * @see the reserved instrument keys above
+ * @return TFERROR_INVALID_INSTRUMENT_KEY if the instrument key is invalid.
+ *  TFERROR_OK on success.
+ */
+TFErrorCode TuningFork_frameTick(TFInstrumentKey key);
 
-// Record a frame tick using an external time, rather than system time.
-// Returns TFERROR_INVALID_INSTRUMENT_KEY if the instrument key is invalid.
-// Returns TFERROR_OK on success.
-TFErrorCode TuningFork_frameDeltaTimeNanos(TFInstrumentKey id, TFDuration dt);
+/**
+ * @brief Record a frame tick using an external time, rather than system time.
+ * @param key an instrument key
+ * @see the reserved instrument keys above
+ * @param dt the duration you wish to record (in nanoseconds)
+ * @return TFERROR_INVALID_INSTRUMENT_KEY if the instrument key is invalid.
+ *  TFERROR_OK on success.
+ */
+TFErrorCode TuningFork_frameDeltaTimeNanos(TFInstrumentKey key, TFDuration dt);
 
-// Start a trace segment.
-// handle is filled with a new handle on success.
-// Returns TFERROR_INVALID_INSTRUMENT_KEY if the instrument key is invalid.
-// Returns TFERROR_OK on success.
+/**
+ * @brief Start a trace segment.
+ * @param key an instrument key
+ * @see the reserved instrument keys above
+ * @param[out] handle this is filled with a new handle on success.
+ * @return TFERROR_INVALID_INSTRUMENT_KEY if the instrument key is invalid.
+ *  TFERROR_OK on success.
+ */
 TFErrorCode TuningFork_startTrace(TFInstrumentKey key, TFTraceHandle* handle);
 
-// Record a trace with the key and annotation set using startTrace.
-// Returns TFERROR_INVALID_TRACE_HANDLE if the handle is invalid.
-// Returns TFERROR_OK on success.
-TFErrorCode TuningFork_endTrace(TFTraceHandle h);
+/**
+ * @brief Stop and record a trace segment.
+ * @param handle this is a handle previously returned by TuningFork_startTrace
+ * @return TFERROR_INVALID_TRACE_HANDLE if the handle is invalid.
+ * TFERROR_OK on success.
+ */
+TFErrorCode TuningFork_endTrace(TFTraceHandle handle);
 
-// Force upload of the current histograms.
-// Returns TFERROR_OK if the upload could be initiated.
-// Returns TFERROR_PREVIOUS_UPLOAD_PENDING if there is a previous upload blocking this
-//  one.
-// Returns TFERROR_UPLOAD_TOO_FREQUENT if less than a minute has elapsed since the previous upload.
+/**
+ * @brief Force upload of the current histograms.
+ * @return TFERROR_OK if the upload could be initiated.
+ *  TFERROR_PREVIOUS_UPLOAD_PENDING if there is a previous upload blocking this one.
+ *  TFERROR_UPLOAD_TOO_FREQUENT if less than a minute has elapsed since the previous upload.
+ */
 TFErrorCode TuningFork_flush();
 
-// Set a callback to be called on a separate thread every time TuningFork
-//  performs an upload.
+/**
+ * @brief set a callback to be called on a separate thread every time TuningFork performs an upload.
+ * @param cbk
+ * @return TFERROR_OK unless Tuning Fork wasn't initialized.
+ */
 TFErrorCode TuningFork_setUploadCallback(UploadCallback cbk);
 
-// Clean up all memory owned by Tuning Fork and kill any threads.
+/**
+ * @brief Clean up all memory owned by Tuning Fork and kill any threads.
+ * @return TFERROR_OK unless Tuning Fork wasn't initialized.
+ */
 TFErrorCode TuningFork_destroy();
 
 #ifdef __cplusplus
 }
 #endif
+
+/** @} */
