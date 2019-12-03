@@ -41,8 +41,8 @@ struct configuration_increment {
 };
 
 JSON_CONVERTER(configuration_increment) {
-    JSON_REQVAR(period);
-    JSON_REQVAR(increment);
+  JSON_REQVAR(period);
+  JSON_REQVAR(increment);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -58,11 +58,11 @@ struct configuration {
 };
 
 JSON_CONVERTER(configuration) {
-    JSON_REQVAR(count);
-    JSON_REQVAR(rows);
-    JSON_REQVAR(cols);
-    JSON_OPTVAR(increment);
-    JSON_OPTVAR(min_fps_threshold);
+  JSON_REQVAR(count);
+  JSON_REQVAR(rows);
+  JSON_REQVAR(cols);
+  JSON_OPTVAR(increment);
+  JSON_OPTVAR(min_fps_threshold);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -73,7 +73,7 @@ struct datum {
 };
 
 JSON_WRITER(datum) {
-    JSON_REQVAR(vertices_per_second);
+  JSON_REQVAR(vertices_per_second);
 }
 }
 
@@ -87,7 +87,7 @@ struct Vertex {
   vec4 rgba;
 };
 
-constexpr auto VertexComponents = 8;
+constexpr auto VERTEX_COMPONENT = 8;
 
 enum class Attributes : GLuint {
   Pos = 0,
@@ -111,9 +111,9 @@ class Renderer {
     int n_verts_across = cols + 1;
     int n_verts_tall = rows + 1;
 
-    for (int row = 0; row < n_verts_tall; row++) {
+    for (int row = 0; row < n_verts_tall; ++row) {
       const auto across_row = static_cast<float>(row)/rows;
-      for (int col = 0; col < n_verts_across; col++) {
+      for (int col = 0; col < n_verts_across; ++col) {
         const auto across_col = static_cast<float>(col)/cols;
 
         float x = left + width*across_col;
@@ -231,15 +231,23 @@ class Renderer {
       int col = static_cast<int>(floor(i - (row*verts_per_row)));
 
       auto a = _time*M_PI*4 + row*b - col*c;
-      auto dx = static_cast<float>(std::cos(a)*r);
-      auto dy = static_cast<float>(std::sin(a)*r);
+      auto cosa = std::cos(a);
+      auto sina = std::sin(a);
+      auto tana = std::tan(a);
 
       auto vv = v;
-      vv.pos += vec2(dx, dy);
+      vv.pos += vec2(static_cast<float>(cosa*r),
+                     static_cast<float>(sina*r));
+      vv.tex_coord = vec2(static_cast<float>(cosa*v.tex_coord.x),
+                          static_cast<float>(sina*v.tex_coord.y));
+      vv.rgba = vec4(std::fabs(static_cast<float>(cosa*v.rgba.x)),
+                     std::fabs(static_cast<float>(sina*v.rgba.y)),
+                     std::fabs(static_cast<float>(tana*v.rgba.z)),
+                     std::fabs(static_cast<float>(sina)));
 
       *vertex_iterator = vv;
-      vertex_iterator++;
-      i++;
+      ++vertex_iterator;
+      ++i;
     }
 
     // modulate vertex positions
@@ -282,6 +290,15 @@ class Renderer {
 };
 }
 
+/**
+ * This operation draws an incremental number of indexed vertices. Its goal is to measure the device
+ * capacity to handle such incremental workload without getting throughput (e.g., fps) to drop below
+ * acceptable thresholds.
+ *
+ * This operation delegates on a local Renderer the task of drawing a single tile. That way,
+ * increasing workload at regular intervals is a matter of adding more renderers. Every rendered
+ * frame is the result of all available renderers rendering their respective part.
+ */
 class VertexStreamGLES3Operation : public BaseGLES3Operation {
  public:
 
@@ -298,7 +315,7 @@ class VertexStreamGLES3Operation : public BaseGLES3Operation {
     SetHeartbeatPeriod(250ms);
 
     _configuration = GetConfiguration<configuration>();
-    _layout_count = _configuration.count;
+    _renderer_count = _configuration.count;
 
     Log::I(
         TAG, "glContextReady, configuration: %s - loading shaders, textures, etc",
@@ -309,34 +326,11 @@ class VertexStreamGLES3Operation : public BaseGLES3Operation {
       FatalError(TAG, "No EGL context available");
     }
 
-    int tex_width = 0;
-    int tex_height = 0;
-    _tex_id = LoadTexture(
-        "Textures/sphinx.png",
-        &tex_width, &tex_height, nullptr);
-    if (tex_width==0 || tex_height==0) {
-      FatalError(TAG, "Unable to load texture");
-    }
+    _tex_id = SetupTexture();
 
     glDisable(GL_BLEND);
 
-    //
-    //  Build the shader program and get uniform locations
-    //
-
-    auto vertex_file = "Shaders/VertexStreamGLES3Operation/simple.vsh";
-    auto fragment_file = "Shaders/VertexStreamGLES3Operation/simple.fsh";
-    _program = CreateProgram(vertex_file, fragment_file);
-
-    if (!_program) {
-      FatalError(TAG, "Unable to load quad program");
-    }
-
-    _tex_id_uniform_loc = glGetUniformLocation(_program, "uTex");
-    glh::CheckGlError("looking up uTex");
-
-    _projection_uniform_loc = glGetUniformLocation(_program, "uProjection");
-    glh::CheckGlError("looking up uProjection");
+    _program = SetupProgram();
 
     _context_ready = true;
   }
@@ -352,6 +346,7 @@ class VertexStreamGLES3Operation : public BaseGLES3Operation {
     glBindTexture(GL_TEXTURE_2D, _tex_id);
     glUniform1i(_tex_id_uniform_loc, 0);
 
+    // The operation drawing actually delegates onto its current renderers to draw themselves.
     for (const auto &r : _renderers) {
       r->Step(delta_seconds);
       r->Draw();
@@ -370,7 +365,7 @@ class VertexStreamGLES3Operation : public BaseGLES3Operation {
 
   void OnHeartbeat(Duration elapsed) override {
     if (GetMode()==Mode::DataGatherer) {
-      RecordPerfDatum(duration_cast < SecondsAs < float >> (elapsed));
+      ReportVertexThroughput(duration_cast<SecondsAs<float >>(elapsed));
     }
 
     _heartbeat_time += elapsed;
@@ -378,7 +373,7 @@ class VertexStreamGLES3Operation : public BaseGLES3Operation {
         (_configuration.increment.period > Duration::zero()) &&
         (_heartbeat_time >= _configuration.increment.period)) {
       _heartbeat_time -= _configuration.increment.period;
-      _layout_count += _configuration.increment.increment;
+      _renderer_count += _configuration.increment.increment;
 
       GetFpsCalculator().Ignore([this]() { BuildRenderers(); });
     }
@@ -386,35 +381,79 @@ class VertexStreamGLES3Operation : public BaseGLES3Operation {
 
  private:
 
-  void RecordPerfDatum(SecondsAs<float> elapsed_seconds) {
+  /**
+   * Loads a texture, aborting the execution in case of failure.
+   * @return the texture ID.
+   */
+  GLuint SetupTexture() {
+    int tex_width = 0;
+    int tex_height = 0;
+
+    GLuint tex_id = LoadTexture(
+        "Textures/sphinx.png",
+        &tex_width, &tex_height, nullptr);
+    if (tex_width==0 || tex_height==0) {
+      FatalError(TAG, "Unable to load texture");
+    }
+
+    return tex_id;
+  }
+
+  /**
+   * Creates a shader program based on app assets.
+   * @return the program id.
+   */
+  GLuint SetupProgram() {
+    auto vertex_file = "Shaders/VertexStreamGLES3Operation/simple.vsh";
+    auto fragment_file = "Shaders/VertexStreamGLES3Operation/simple.fsh";
+
+    GLuint program_id = CreateProgram(vertex_file, fragment_file);
+
+    if (!program_id) {
+      FatalError(TAG, "Unable to create shader program");
+    }
+
+    _tex_id_uniform_loc = glGetUniformLocation(program_id, "uTex");
+    glh::CheckGlError("looking up uTex");
+
+    _projection_uniform_loc = glGetUniformLocation(program_id, "uProjection");
+    glh::CheckGlError("looking up uProjection");
+
+    return program_id;
+  }
+
+  void ReportVertexThroughput(SecondsAs<float> elapsed_seconds) {
     size_t total_vertices = 0;
     for (const auto &r : _renderers) { total_vertices += r->VertexCount(); }
     auto vps = total_vertices/elapsed_seconds.count();
 
-    Report(datum{vps, VertexComponents});
+    Report(datum{vps, VERTEX_COMPONENT});
   }
 
+  /**
+   * Depending on the total of renderers to build, it will set an NxN grid where N is the minimum
+   * layout dimension that can hold all renderers.
+   */
   void BuildRenderers() {
     _renderers.clear();
 
-    while (_layout_count > _layout_rows*_layout_cols) {
-      _layout_rows++;
-      _layout_cols++;
+    while (_renderer_count > _layout_dimension*_layout_dimension) {
+      ++_layout_dimension;
     }
 
     auto size = GetGlContextSize();
-    int col_width = size.x/_layout_cols;
-    int row_height = size.y/_layout_rows;
+    int shader_width = size.x/_layout_dimension;
+    int shader_height = size.y/_layout_dimension;
     int inset = 16;
 
-    for (int i = 0; i < _layout_count; i++) {
-      int row = i/_layout_cols;
-      int col = i - (row*_layout_cols);
+    for (int i = 0; i < _renderer_count; ++i) {
+      int row = i/_layout_dimension;
+      int col = i - (row*_layout_dimension);
 
-      int left = col*col_width + inset;
-      int top = row*row_height + inset;
-      int width = col_width - 2*inset;
-      int height = row_height - 2*inset;
+      int left = col*shader_width + inset;
+      int top = row*shader_height + inset;
+      int width = shader_width - 2*inset;
+      int height = shader_height - 2*inset;
 
       _renderers.push_back(
           std::make_shared<Renderer>(
@@ -440,9 +479,8 @@ class VertexStreamGLES3Operation : public BaseGLES3Operation {
   bool _context_ready = false;
   Duration _heartbeat_time;
   std::vector<std::shared_ptr<Renderer>> _renderers;
-  int _layout_rows = 1;
-  int _layout_cols = 1;
-  int _layout_count = 1;
+  int _layout_dimension = 1;
+  int _renderer_count = 1;
 };
 
 EXPORT_ANCER_OPERATION(VertexStreamGLES3Operation)
