@@ -46,7 +46,6 @@ namespace {
 
     template <typename CastTo, typename Rep, typename Period>
     std::optional<CastTo> TryGetNumberAndCast(const std::string_view str) {
-        // HACK: from_chars only implemented for integral values right now.
         if constexpr ( std::is_integral_v<Rep> ) {
             Rep num;
             if ( auto[p, ec] = std::from_chars(str.begin(), str.end(), num); ec == std::errc{} ) {
@@ -95,9 +94,9 @@ namespace {
 
     template <typename T>
     T TimeFromString(const std::string& str) {
-        if ( auto from_sec = TryGetTimeStringAndCast<T, Seconds>(str)) return *from_sec;
-        if ( auto from_ms = TryGetTimeStringAndCast<T, Milliseconds>(str)) return *from_ms;
-        if ( auto from_ns = TryGetTimeStringAndCast<T, Nanoseconds>(str)) return *from_ns;
+        if (auto from_sec = TryGetTimeStringAndCast<T, Seconds>(str)) return *from_sec;
+        if (auto from_ms = TryGetTimeStringAndCast<T, Milliseconds>(str)) return *from_ms;
+        if (auto from_ns = TryGetTimeStringAndCast<T, Nanoseconds>(str)) return *from_ns;
 
         FatalError(TAG, "Failed to parse a valid time type from string: '%s'", str.c_str());
     }

@@ -35,14 +35,14 @@
 #include "util/Log.hpp"
 #include "util/Time.hpp"
 
+
 #define CONCAT_IMPL(x, y) x##y
 #define MACRO_CONCAT(x, y) CONCAT_IMPL( x, y )
-#define ANCER_SCOPED_TRACE(desc) samples::ScopedTrace \
-    MACRO_CONCAT( trace_, __COUNTER__ )( desc )
+#define ANCER_SCOPED_TRACE(desc) \
+    gamesdk::ScopedTrace MACRO_CONCAT( trace_, __COUNTER__ )( desc )
+
 
 namespace ancer {
-
-
     /**
      * Base class for Operations
      */
@@ -230,15 +230,15 @@ namespace ancer {
         //
         //  Helper functions
         //
-
         template <typename T>
-        void Report(const T& payload) {
+        void Report(const T& payload) const {
             ReportImpl(Json(payload));
         }
 
     private:
+        friend class Reporter;
 
-        void ReportImpl(const Json& custom_payload);
+        void ReportImpl(const Json& custom_payload) const;
 
     private:
 
@@ -255,6 +255,17 @@ namespace ancer {
         Timestamp _start_time;
         Duration _heartbeat_period = Duration::zero();
         Timestamp _heartbeat_timestamp;
+    };
+
+    /// Helper so reporting can be done by helper classes/functions.
+    class Reporter {
+    public:
+        Reporter(BaseOperation& op) : _op(op) {}
+
+        template <typename T>
+        void operator () (T&& payload) const { _op.ReportImpl(Json(payload)); }
+    private:
+        BaseOperation& _op;
     };
 } // namespace ancer
 

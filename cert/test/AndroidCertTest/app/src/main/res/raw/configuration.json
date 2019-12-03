@@ -17,7 +17,134 @@
         "id": "DepthClearGLES3Operation",
         "configuration": {
         }
-      }
+      },
+      "stressors": [
+      ]
+    },
+    {
+      "enabled": true,
+      "name": "MemoryAccessTest",
+      "description": "Tests accessing preallocated memory",
+      "duration": "0s",
+      "data_gatherer": {
+        "id": "MemoryAccessOperation",
+        "configuration": {
+          "buffer_size": "512mb",
+          "report_rate": "5ms",
+          "operations": [
+            {
+              "read_write": "Write",
+              "rw_size": "256b",
+              "operation_type": "Fixed",
+              "config": {
+                "threads": "Single Core",
+                "advance": "256b"
+              }
+            },
+            {
+              "read_write": "Read",
+              "rw_size": "256b",
+              "operation_type": "Fixed",
+              "config": {
+                "threads": "All Cores",
+                "work_scheme": "Divided",
+                "advance": "512b"
+              }
+            },
+            {
+              "read_write": "Write",
+              "rw_size": "128b",
+              "operation_type": "Fixed",
+              "config": {
+                "threads": "All Cores",
+                "work_scheme": "Interleaved",
+                "advance": "256b",
+                "initial_offset": "1kb"
+              }
+            },
+            {
+              "read_write": "Write",
+              "rw_size": "256b",
+              "operation_type": "Fixed",
+              "config": {
+                "threads": "All Cores",
+                "work_scheme": "Divided",
+                "times": 23,
+                "advance": "512b",
+                "initial_offset": "256b"
+              }
+            },
+            {
+              "read_write": "Read",
+              "rw_size": "128b",
+              "operation_type": "Fixed",
+              "config": {
+                "threads": "All Cores",
+                "work_scheme": "Interleaved",
+                "times": 7,
+                "advance": "256b",
+                "initial_offset": "1kb"
+              }
+            },
+
+            {
+              "read_write": "Read",
+              "rw_size": "56b",
+              "operation_type": "Irregular",
+              "config": {
+                "times": 200,
+                "rw_align": "32b",
+                "min_advance": "0b",
+                "max_advance": "1000b"
+              }
+            },
+
+            {
+              "read_write": "Read",
+              "rw_size": "56b",
+              "operation_type": "Random",
+              "config": {
+                "times": 200,
+                "rw_align": "32b"
+              }
+            },
+
+            {
+              "read_write": "Read",
+              "rw_size": "56b",
+              "operation_type": "Greedy",
+              "config": {
+                "threads": "All Cores",
+                "advance": "64b"
+              }
+            }
+          ]
+        }
+      },
+      "stressors": []
+    },
+    {
+      "enabled": true,
+      "name": "Workload Configuration Test",
+      "description": "Reads data from the APK",
+      "duration": "0m",
+      "data_gatherer": {
+        "id": "IOPerformanceOperation",
+        "configuration": {
+          "file_setup": "Base APK",
+          "read_area_start": "0b",
+          "read_area_end": "1mb",
+          "total_read": "2mb",
+          "thread_setup": "Big Cores",
+          "work_scheme": "Greedy",
+          "file_api": "C++ Streams",
+          "buffer_size": "256b",
+          "read_align": "384b",
+          "report_rate": "10ms"
+        }
+      },
+      "stressors": [
+      ]
     },
     {
       "enabled": true,
