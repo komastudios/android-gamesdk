@@ -1,0 +1,35 @@
+{
+  "auto_run": false,
+  "delay_between_tests": "5000ms",
+  "host": "SwappyGLHostActivity",
+  "defaultMonitors": [
+    {
+      "id": "MonitorOperation",
+      "configuration": {
+          "sample_period": "1s"
+      }
+    }
+  ],
+  "stress_tests": [
+    {
+      "enabled": true,
+      "name": "Vertex Streaming",
+      "description": "Streams vertices to draw each frame",
+      "duration": "1m",
+      "data_gatherer": {
+        "id": "VertexStreamGLES3Operation",
+        "configuration": {
+          "count": 1,
+          "rows": 128,
+          "cols": 128,
+          "increment": {
+            "period": "2sec",
+            "increment": 1
+          },
+          "min_fps_threshold": 15
+        }
+      },
+      "stressors": []
+    }
+  ]
+}
