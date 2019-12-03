@@ -41,8 +41,8 @@ struct configuration_increment {
 };
 
 JSON_CONVERTER(configuration_increment) {
-    JSON_REQVAR(period);
-    JSON_REQVAR(increment);
+  JSON_REQVAR(period);
+  JSON_REQVAR(increment);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -58,11 +58,11 @@ struct configuration {
 };
 
 JSON_CONVERTER(configuration) {
-    JSON_REQVAR(count);
-    JSON_REQVAR(rows);
-    JSON_REQVAR(cols);
-    JSON_OPTVAR(increment);
-    JSON_OPTVAR(min_fps_threshold);
+  JSON_REQVAR(count);
+  JSON_REQVAR(rows);
+  JSON_REQVAR(cols);
+  JSON_OPTVAR(increment);
+  JSON_OPTVAR(min_fps_threshold);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -73,7 +73,7 @@ struct datum {
 };
 
 JSON_WRITER(datum) {
-    JSON_REQVAR(vertices_per_second);
+  JSON_REQVAR(vertices_per_second);
 }
 }
 
@@ -110,6 +110,8 @@ class Renderer {
 
     int n_verts_across = cols + 1;
     int n_verts_tall = rows + 1;
+
+    Log::V(TAG, "R=%i, C=%i, L=%i, T=%i, W=%i, H=%i", rows, cols, left, top, width, height);
 
     for (int row = 0; row < n_verts_tall; row++) {
       const auto across_row = static_cast<float>(row)/rows;
@@ -282,6 +284,15 @@ class Renderer {
 };
 }
 
+/**
+ * This operation draws an incremental number of indexed vertices. Its goal is to measure the device
+ * capacity to handle such incremental workload without getting throughput (e.g., fps) to drop below
+ * acceptable thresholds.
+ *
+ * This operation delegates on a local Renderer the task of drawing a single tile. That way,
+ * increasing workload at regular intervals is a matter of adding more renderers. Every rendered
+ * frame is the result of all available renderers rendering their respective part.
+ */
 class VertexStreamGLES3Operation : public BaseGLES3Operation {
  public:
 
@@ -309,14 +320,7 @@ class VertexStreamGLES3Operation : public BaseGLES3Operation {
       FatalError(TAG, "No EGL context available");
     }
 
-    int tex_width = 0;
-    int tex_height = 0;
-    _tex_id = LoadTexture(
-        "Textures/sphinx.png",
-        &tex_width, &tex_height, nullptr);
-    if (tex_width==0 || tex_height==0) {
-      FatalError(TAG, "Unable to load texture");
-    }
+    _tex_id = SetupTexture();
 
     glDisable(GL_BLEND);
 
@@ -324,19 +328,7 @@ class VertexStreamGLES3Operation : public BaseGLES3Operation {
     //  Build the shader program and get uniform locations
     //
 
-    auto vertex_file = "Shaders/VertexStreamGLES3Operation/simple.vsh";
-    auto fragment_file = "Shaders/VertexStreamGLES3Operation/simple.fsh";
-    _program = CreateProgram(vertex_file, fragment_file);
-
-    if (!_program) {
-      FatalError(TAG, "Unable to load quad program");
-    }
-
-    _tex_id_uniform_loc = glGetUniformLocation(_program, "uTex");
-    glh::CheckGlError("looking up uTex");
-
-    _projection_uniform_loc = glGetUniformLocation(_program, "uProjection");
-    glh::CheckGlError("looking up uProjection");
+    _program = SetupProgram();
 
     _context_ready = true;
   }
@@ -370,7 +362,7 @@ class VertexStreamGLES3Operation : public BaseGLES3Operation {
 
   void OnHeartbeat(Duration elapsed) override {
     if (GetMode()==Mode::DataGatherer) {
-      RecordPerfDatum(duration_cast < SecondsAs < float >> (elapsed));
+      RecordPerfDatum(duration_cast<SecondsAs<float >>(elapsed));
     }
 
     _heartbeat_time += elapsed;
@@ -386,6 +378,47 @@ class VertexStreamGLES3Operation : public BaseGLES3Operation {
 
  private:
 
+  /**
+   * Loads a texture, aborting the execution in case of failure.
+   * @return the texture ID.
+   */
+  GLuint SetupTexture() {
+    int tex_width = 0;
+    int tex_height = 0;
+
+    GLUint tex_id = LoadTexture(
+        "Textures/sphinx.png",
+        &tex_width, &tex_height, nullptr);
+    if (tex_width==0 || tex_height==0) {
+      FatalError(TAG, "Unable to load texture");
+    }
+
+    return tex_id;
+  }
+
+  /**
+   * Creates a shader program based on app assets.
+   * @return the program id.
+   */
+  GLuint SetupProgram() {
+    auto vertex_file = "Shaders/VertexStreamGLES3Operation/simple.vsh";
+    auto fragment_file = "Shaders/VertexStreamGLES3Operation/simple.fsh";
+
+    GLuint program = CreateProgram(vertex_file, fragment_file);
+
+    if (!program) {
+      FatalError(TAG, "Unable to create shader program");
+    }
+
+    _tex_id_uniform_loc = glGetUniformLocation(program, "uTex");
+    glh::CheckGlError("looking up uTex");
+
+    _projection_uniform_loc = glGetUniformLocation(program, "uProjection");
+    glh::CheckGlError("looking up uProjection");
+
+    return program;
+  }
+
   void RecordPerfDatum(SecondsAs<float> elapsed_seconds) {
     size_t total_vertices = 0;
     for (const auto &r : _renderers) { total_vertices += r->VertexCount(); }
@@ -396,6 +429,8 @@ class VertexStreamGLES3Operation : public BaseGLES3Operation {
 
   void BuildRenderers() {
     _renderers.clear();
+
+    Log::V(TAG, "Renderers to build: %i", _layout_count);
 
     while (_layout_count > _layout_rows*_layout_cols) {
       _layout_rows++;
