@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+import platform
 import sys
 import csv
 from pathlib import Path
@@ -26,7 +27,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
-matplotlib.use('gtk3cairo')
+if platform.system == "Linux":
+    matplotlib.use('gtk3cairo')
 
 # -----------------------------------------------------------------------------
 

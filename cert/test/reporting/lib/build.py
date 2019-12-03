@@ -54,11 +54,13 @@ def _restore_configuration(backup: Path):
     os.remove(backup)
 
 
-def build_apk(clean: bool, custom_configuration: Path = None) -> Path:
+def build_apk(clean: bool, release: bool,
+              custom_configuration: Path = None) -> Path:
     """Builds the AndroidCertTest APK
 
     Args:
         clean: if true, clean and rebuild
+        release: if true, make a release build
         custom_configuration: if provided and exists, is a custom
             configuration.json to build into the ACT app APK
 
@@ -81,15 +83,19 @@ def build_apk(clean: bool, custom_configuration: Path = None) -> Path:
     cwd = os.getcwd()
     os.chdir("../AndroidCertTest")
 
-    try:
-        if clean:
-            run_command("./gradlew clean assembleDebug")
-        else:
-            run_command("./gradlew assembleDebug")
+    task = ["./gradlew"]
+    if clean:
+        task.append("clean")
 
-        return Path(
-            "../AndroidCertTest/app/build/outputs/apk/debug/app-debug.apk"
-        ).resolve()
+    task.append("assembleRelease" if release else "assembleDebug")
+    task_cmd = " ".join(task)
+
+    artifact_path = "../AndroidCertTest/app/build/outputs/apk/release/app-release.apk" \
+        if release else "../AndroidCertTest/app/build/outputs/apk/debug/app-debug.apk"
+
+    try:
+        run_command(task_cmd)
+        return Path(artifact_path).resolve()
     finally:
         # cleanup
         os.chdir(cwd)
