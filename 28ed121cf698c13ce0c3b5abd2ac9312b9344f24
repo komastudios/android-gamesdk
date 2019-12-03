@@ -34,6 +34,24 @@
       "revId": "28ed121cf698c13ce0c3b5abd2ac9312b9344f24",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "16c31a16_31d43420",
+        "filename": "src/swappy/tools/test_swappy.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2019-12-03T15:40:05Z",
+      "side": 1,
+      "message": "No, let\u0027s leave it then -- could be useful.",
+      "parentUuid": "75445337_603afa34",
+      "revId": "28ed121cf698c13ce0c3b5abd2ac9312b9344f24",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
