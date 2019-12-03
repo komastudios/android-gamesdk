@@ -17,6 +17,7 @@
 #
 
 import argparse
+import glob
 import shutil
 import time
 import yaml
@@ -30,11 +31,8 @@ from lib.report import extract_and_export, convert_json_report_to_csv, \
     get_device_product_and_api, merge_systrace_into_csv
 from lib.devicefarm import run_on_farm_and_collect_reports
 import lib.charting
-
-
-class Error(Exception):
-    """Base class for exceptions in this module."""
-    pass
+import lib.graphing
+import lib.preflight
 
 
 class MissingPropertyError(Error):
@@ -43,6 +41,7 @@ class MissingPropertyError(Error):
     Attributes:
         message -- explanation of the error
     """
+
     def __init__(self, message):
         self.message = message
 
@@ -51,6 +50,7 @@ class MissingPropertyError(Error):
 
 
 class LocalSystrace(object):
+
     def __init__(self, device_id: str, dst_file: Path, categories: List[str]):
         """Start systrace on a device, blocks until systrace is ready"""
         self._trace_file = dst_file
@@ -165,6 +165,28 @@ def get_chart_config(recipe: Dict) -> (bool, List[str], List[str], List[str]):
     return enabled, suites, fields, skip
 
 
+def get_summary_config(recipe: Dict) -> (bool, bool):
+    """
+    Extracts, from the recipe, summary related arguments.
+    These are:
+
+    * enabled: a boolean telling whether a summary is enabled at all.
+    * html: a boolean to specify if the summary format is html instead of its
+            markdown default.
+    """
+    enabled = dict_lookup(recipe, "summary.enabled", fallback=False)
+    html = dict_lookup(recipe, "summary.html", fallback=False)
+
+    return enabled, html
+
+
+def get_preflight_tasks(recipe: Dict) -> List[lib.preflight.Task]:
+    """Load preflight tasks from the local deployment block of the recipe
+    """
+    preflight = dict_lookup(recipe, "deployment.local.preflight", fallback=[])
+    return lib.preflight.load(preflight)
+
+
 def push_apk_to_device(apk: Path, device_id: str) -> type(None):
     """
     Gets the app installed in the device.
@@ -177,14 +199,14 @@ def push_apk_to_device(apk: Path, device_id: str) -> type(None):
     run_command(f"adb -s {device_id} install -r {str(apk)}")
 
 
-def block_for_systrace(device_id: str, tmp_dir: Path,
+def block_for_systrace(device_id: str, out_dir: Path,
                        categories: List[str]) -> LocalSystrace:
     """
     Starts systrace and blocks until finished.
 
     Args:
         device_id: local device serial number.
-        tmp_dir: temporary directory where to place the HTML capture.
+        out_dir: output directory where to place the HTML capture.
         categories: systrace categories to capture.
 
     Returns:
@@ -192,7 +214,7 @@ def block_for_systrace(device_id: str, tmp_dir: Path,
     """
     # Start systrace - this blocks until systrace is ready to run
     return LocalSystrace(device_id=device_id,
-                         dst_file=tmp_dir.joinpath("tracey.html"),
+                         dst_file=out_dir.joinpath("tracey.html"),
                          categories=categories)
 
 
@@ -257,7 +279,7 @@ def start_test_and_wait_for_completion(local_device_id: str) -> type(None):
 
 
 def map_reports_to_csv(
-        tmp_dir: Path,
+        out_dir: Path,
         json_files: List[Path],
         systrace_files: List[Path],
         systrace_keywords: List[str],
@@ -268,7 +290,7 @@ def map_reports_to_csv(
     per device).
 
     Args:
-        tmp_dir: directory where gCloud test results got downloaded.
+        out_dir: directory where gCloud test results got downloaded.
         json_files: list of file names (one per device).
         systrace_files: list of associated systrace collections. May be empty
                         if systrace_enabled is False.
@@ -283,7 +305,7 @@ def map_reports_to_csv(
         lambda json_file: (json_file, None), json_files)
     for json_file, systrace_file in report_pairs:
         # copy from the ftl dest folder into tmp
-        dst_json_file = tmp_dir.joinpath(json_file.name)
+        dst_json_file = out_dir.joinpath(json_file.name)
         shutil.copy(json_file, dst_json_file)
 
         try:
@@ -292,7 +314,7 @@ def map_reports_to_csv(
 
             if systrace_file:
                 # copy the trace.html file to basename_trace.html
-                dst_trace_file = tmp_dir.joinpath(
+                dst_trace_file = out_dir.joinpath(
                     f"{json_file.stem}_trace.html")
                 shutil.copy(systrace_file, dst_trace_file)
 
@@ -330,10 +352,26 @@ def plot_suites(suites: List[str], csv_files: List[Path], fields: List[str],
                 suite.plot(title, fields, skipping)
 
 
+def generate_report_summary(report_files_dir: Path, html: bool,
+                            figure_dpi=600) -> Path:
+    report_files = [
+        Path(f) for f in glob.glob(str(report_files_dir) + '/*.json')
+    ]
+
+    report_summary_file_name = f"summary_{str(report_files_dir.stem)}" + (
+        ".html" if html else ".md")
+
+    report_summary_file = report_files_dir.joinpath(report_summary_file_name)
+
+    lib.graphing.render_report_document(report_files,
+                                        report_summary_file,
+                                        dpi=figure_dpi)
+
+
 # ------------------------------------------------------------------------------
 
 
-def run_local_deployment(recipe: Dict, apk: Path, tmp_dir: Path):
+def run_local_deployment(recipe: Dict, apk: Path, out_dir: Path):
     if not dict_lookup(recipe, "deployment.local.all_attached_devices", False):
         devices = dict_lookup(recipe, "deployment.local.device_ids", None)
         devices = list(set(devices) & set(get_attached_devices()))
@@ -342,19 +380,28 @@ def run_local_deployment(recipe: Dict, apk: Path, tmp_dir: Path):
 
     systrace_enabled, systrace_keywords, systrace_categories = \
         get_systrace_config(recipe)
+
     chart_enabled, chart_suites, chart_fields, chart_skip = \
         get_chart_config(recipe)
 
+    summary_enabled, summary_html = get_summary_config(recipe)
+
+    preflight_tasks = get_preflight_tasks(recipe)
+
     print("Will run local deployment on the following ADB device IDs:" +
           unpack(devices))
+
     print(f"\tSystrace: {systrace_enabled} systrace_keywords: " +
           unpack(systrace_keywords) + "\n\n")
 
     for device_id in devices:
         push_apk_to_device(apk, device_id)
 
+        for task in preflight_tasks:
+            task.run(device_id)
+
         systracer = block_for_systrace(
-            device_id, tmp_dir,
+            device_id, out_dir,
             systrace_categories) if systrace_enabled else None
 
         start_test_and_wait_for_completion(device_id)
@@ -362,7 +409,7 @@ def run_local_deployment(recipe: Dict, apk: Path, tmp_dir: Path):
         # extract report (for now we're skipping systrace operations)
         log_file, csv_file, sys_file = extract_and_export(
             device_id,
-            dst_dir=tmp_dir,
+            dst_dir=out_dir,
             systrace_file=systracer.finish() if systracer else None,
             systrace_keywords=systrace_keywords,
             bucket=None)
@@ -370,8 +417,14 @@ def run_local_deployment(recipe: Dict, apk: Path, tmp_dir: Path):
         if chart_enabled:
             plot_suites(chart_suites, [csv_file], chart_fields, chart_skip)
 
+    if summary_enabled:
+        generate_report_summary(out_dir, summary_html)
 
-def run_ftl_deployment(recipe: Dict, apk: Path, tmp_dir: Path):
+
+# ------------------------------------------------------------------------------
+
+
+def run_ftl_deployment(recipe: Dict, apk: Path, out_dir: Path):
     # first step is to save out an args.yaml file to pass on to gsutil API
     args_dict = dict_lookup(recipe, "deployment.ftl.args", fallback=None)
     for test in args_dict:
@@ -388,6 +441,7 @@ def run_ftl_deployment(recipe: Dict, apk: Path, tmp_dir: Path):
         get_systrace_config(recipe)
     chart_enabled, chart_suites, chart_fields, chart_skip = \
         get_chart_config(recipe)
+    summary_enabled, summary_html = get_summary_config(recipe)
 
     json_files, systrace_files = run_on_farm_and_collect_reports(
         args_dict=args_dict,
@@ -395,13 +449,16 @@ def run_ftl_deployment(recipe: Dict, apk: Path, tmp_dir: Path):
         test=active_test,
         enable_systrace=systrace_enabled,
         enable_all_physical=all_physical_devices,
-        dst_dir=tmp_dir)
+        dst_dir=out_dir)
 
-    csv_files = map_reports_to_csv(tmp_dir, json_files, systrace_files,
+    csv_files = map_reports_to_csv(out_dir, json_files, systrace_files,
                                    systrace_keywords)
 
     if chart_enabled:
         plot_suites(chart_suites, csv_files, chart_fields, chart_skip)
+
+    if summary_enabled:
+        generate_report_summary(out_dir, summary_html)
 
 
 # ------------------------------------------------------------------------------
@@ -430,7 +487,7 @@ if __name__ == "__main__":
     else:
         prefix = Path(recipe_path).stem
 
-    tmp_dir = create_output_dir(prefix)
+    out_dir = create_output_dir(prefix)
 
     # step one: build the APK
 
@@ -439,7 +496,7 @@ if __name__ == "__main__":
         custom_configuration=Path(custom_config) if custom_config else None)
 
     if "local" in recipe["deployment"]:
-        run_local_deployment(recipe, apk_path, tmp_dir)
+        run_local_deployment(recipe, apk_path, out_dir)
 
     if "ftl" in recipe["deployment"]:
-        run_ftl_deployment(recipe, apk_path, tmp_dir)
+        run_ftl_deployment(recipe, apk_path, out_dir)

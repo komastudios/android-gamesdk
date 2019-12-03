@@ -1,0 +1,38 @@
+build:
+  clean: false
+  configuration: configurations/affinity_test.json
+
+systrace:
+  enabled: false
+  categories: "sched freq idle am wm gfx view binder_driver hal dalvik input res"
+  keywords:
+    - MonitorOperation
+
+deployment:
+  local:
+    all_attached_devices: true
+    preflight:
+      - {
+          action: copy,
+          src: "~/Downloads/img.jpg",
+          dst: "${APP_FILES_DIR}/img.jpg",
+        }
+      - {
+          action: copy,
+          src: "~/Downloads/sammy.png",
+          dst: "${APP_FILES_DIR}/bar/baz/samuel.png",
+        }
+      - {
+          action: copy,
+          src: "~/Downloads/img.jpg",
+          dst: "${APP_OOB_DATA_DIR}/img.jpg",
+        }
+      - {
+          action: copy,
+          src: "~/Downloads/sammy.png",
+          dst: "${APP_OOB_DATA_DIR}/bar/baz/sam.png",
+        }
+
+summary:
+  enabled: true
+  html: false
