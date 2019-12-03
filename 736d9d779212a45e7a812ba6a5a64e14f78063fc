@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "eb466c1d_d76086f1",
+        "filename": "cert/test/AndroidCertTest/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-03T19:11:35Z",
+      "side": 1,
+      "message": "👏👏👏👏👏\nThat available update was bugging me for more than a month now. Thanks for taking care up, @Tyler!",
+      "revId": "736d9d779212a45e7a812ba6a5a64e14f78063fc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
