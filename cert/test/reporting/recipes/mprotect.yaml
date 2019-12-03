@@ -1,6 +1,6 @@
 build:
   clean: false
-  configuration: configurations/affinity_test.json
+  configuration: configurations/mprotect.json
 
 systrace:
   enabled: false
@@ -11,11 +11,6 @@ systrace:
 deployment:
   local:
     all_attached_devices: true
-    # device_ids:
-    #   - 6feeb429
-    #   - 94CX1Z4AJ
 
-chart:
+summary:
   enabled: true
-  suites:
-    - "Affinity Test"
