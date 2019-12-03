@@ -37,6 +37,12 @@ namespace ancer {
         void Wait() override {}
 
     protected:
+
+        /**
+         * Returns true iff Vulkan was successfully initialized
+         */
+        bool IsVulkanAvailable() const { return _vulkan_initialized; }
+
         /**
          * Returns a vulkan_info struct with data pertaining to the current
          * operation.
@@ -49,6 +55,7 @@ namespace ancer {
         const VkDevice &GetDevice();
 
     private:
+        bool _vulkan_initialized = false;
         VulkanInfo _operationInfo;
         const Log::Tag _testTag;
     };

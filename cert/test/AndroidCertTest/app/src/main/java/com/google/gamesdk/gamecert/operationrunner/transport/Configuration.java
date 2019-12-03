@@ -33,7 +33,9 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Describes a set of stress tests to execute.
@@ -202,16 +204,26 @@ public class Configuration {
         Configuration c = _gson.fromJson(jsonString, Configuration.class);
 
         // filter out disabled stress tests
-        c.stressTests = Arrays.stream(c.stressTests)
-                .filter((st) -> st.enabled)
-                .toArray(StressTest[]::new);
+        // NOTE: we're not using java streams because of SDK 19 support
+        List<StressTest> enabledStressTests = new ArrayList<>();
+        for (StressTest st : c.stressTests) {
+            if (st.enabled) {
+                enabledStressTests.add(st);
+            }
+        }
+        c.stressTests = enabledStressTests.toArray(new StressTest[0]);
 
         // for each enabled stress filter out disabled stressors
         for (StressTest st : c.stressTests) {
             if (st.stressors != null) {
-                st.stressors = Arrays.stream(st.stressors)
-                    .filter((s) -> s.enabled)
-                    .toArray(Operation[]::new);
+                List<Operation> enabledStressors = new ArrayList<>();
+                for (Operation op : st.stressors) {
+                    if (st.enabled) {
+                        enabledStressors.add(op);
+                    }
+                }
+                st.stressors = enabledStressors.toArray(new Operation[0]);
+
             } else {
                 st.stressors = new Operation[]{};
             }

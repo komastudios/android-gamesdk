@@ -23,11 +23,13 @@
 
 
 namespace ancer::internal {
+    extern std::mutex _operations_lock;
     extern std::map<int, std::shared_ptr<BaseOperation>> _operations;
 }
 
 template <typename Func>
 void ancer::internal::ForEachOperation(Func&& func) {
+    std::lock_guard<std::mutex> lock(_operations_lock);
     for ( auto& op : _operations ) {
         if ( !op.second->IsStopped()) {
             func(*op.second);

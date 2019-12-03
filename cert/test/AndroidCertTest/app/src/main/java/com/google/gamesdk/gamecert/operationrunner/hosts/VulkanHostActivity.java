@@ -19,6 +19,8 @@ package com.google.gamesdk.gamecert.operationrunner.hosts;
 import android.content.Context;
 import android.content.Intent;
 
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import com.google.gamesdk.R;
 import com.google.gamesdk.gamecert.operationrunner.transport.Configuration;
 
@@ -33,6 +35,11 @@ public class VulkanHostActivity extends BaseHostActivity {
         i.putExtra(STRESS_TEST_JSON, stressTest.toJson());
         return i;
     }
+
+    public static boolean isSupported() {
+        return (VERSION.SDK_INT >= VERSION_CODES.N);
+    }
+
 
     @Override
     protected int getContentViewResource() {

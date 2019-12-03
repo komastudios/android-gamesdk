@@ -31,8 +31,11 @@ import com.google.gamesdk.gamecert.operationrunner.ACTApplication;
 import com.google.gamesdk.gamecert.operationrunner.MainActivity;
 import com.google.gamesdk.R;
 import com.google.gamesdk.gamecert.operationrunner.operations.BaseOperation;
+import com.google.gamesdk.gamecert.operationrunner.operations.BaseOperation.Mode;
 import com.google.gamesdk.gamecert.operationrunner.operations.Factory;
 import com.google.gamesdk.gamecert.operationrunner.transport.Configuration;
+import com.google.gamesdk.gamecert.operationrunner.transport.Configuration.Operation;
+import com.google.gamesdk.gamecert.operationrunner.transport.Configuration.StressTest;
 import com.google.gamesdk.gamecert.operationrunner.util.NativeInvoker;
 import com.google.gamesdk.gamecert.operationrunner.util.SystemHelpers;
 
@@ -117,19 +120,16 @@ public abstract class BaseHostActivity extends AppCompatActivity
                 this,
                 BaseOperation.Mode.DATA_GATHERER);
 
-        _stressors = Arrays.stream(_stressTest.getStressors())
-                .map((op) -> new OperationWrapper(_suiteId,
-                        op,
-                        this,
-                        BaseOperation.Mode.STRESSOR))
-                .collect(Collectors.toList());
+        // we're not using java streams because of SDK 19 support
+        for (Operation stressor : _stressTest.getStressors()) {
+            OperationWrapper wrapper = new OperationWrapper(_suiteId, stressor,this, Mode.STRESSOR);
+            _stressors.add(wrapper);
+        }
 
-        _monitors = Arrays.stream(_stressTest.getMonitors())
-                .map((op) -> new OperationWrapper(_suiteId,
-                        op,
-                        this,
-                        BaseOperation.Mode.DATA_GATHERER))
-                .collect(Collectors.toList());
+        for (Operation monitor : _stressTest.getMonitors()) {
+            OperationWrapper wrapper = new OperationWrapper(_suiteId, monitor, this, Mode.DATA_GATHERER);
+            _monitors.add(wrapper);
+        }
     }
 
     @Override

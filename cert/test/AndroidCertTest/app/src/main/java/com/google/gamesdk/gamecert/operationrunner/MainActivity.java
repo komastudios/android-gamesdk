@@ -24,6 +24,8 @@ import android.content.Intent;
 import android.content.pm.ConfigurationInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -244,15 +246,18 @@ public class MainActivity extends AppCompatActivity {
             build.put("MODEL", Build.MODEL);
             build.put("BOOTLOADER", Build.BOOTLOADER);
             build.put("HARDWARE", Build.HARDWARE);
-            build.put("BASE_OS", Build.VERSION.BASE_OS);
-            build.put("CODENAME", Build.VERSION.CODENAME);
-            build.put("INCREMENTAL", Build.VERSION.INCREMENTAL);
-            build.put("RELEASE", Build.VERSION.RELEASE);
-            build.put("SDK_INT", Build.VERSION.SDK_INT);
-            build.put("PREVIEW_SDK_INT", Build.VERSION.PREVIEW_SDK_INT);
-            build.put("SECURITY_PATCH", Build.VERSION.SECURITY_PATCH);
+            build.put("CODENAME", VERSION.CODENAME);
+            build.put("INCREMENTAL", VERSION.INCREMENTAL);
+            build.put("RELEASE", VERSION.RELEASE);
+            build.put("SDK_INT", VERSION.SDK_INT);
             build.put("FINGERPRINT", Build.FINGERPRINT);
             build.put("OPENGLES", getOpenGLVersion());
+
+            if (VERSION.SDK_INT >= VERSION_CODES.M) {
+                build.put("BASE_OS", VERSION.BASE_OS);
+                build.put("PREVIEW_SDK_INT", VERSION.PREVIEW_SDK_INT);
+                build.put("SECURITY_PATCH", VERSION.SECURITY_PATCH);
+            }
 
             NativeInvoker.writeToReportFile(build.toString());
 
@@ -342,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
             Configuration.StressTest stressTest,
             boolean finishOnCompletion) {
 
-        Intent i;
+        Intent i = null;
         String host = stressTest.getHost();
         if (TextUtils.isEmpty(host)) {
             host = _configuration.getHost();
@@ -350,6 +355,7 @@ public class MainActivity extends AppCompatActivity {
                 host = SwappyGLHostActivity.ID;
             }
         }
+
         switch (host) {
 
             case GLSurfaceViewHostActivity.ID: {
@@ -358,12 +364,23 @@ public class MainActivity extends AppCompatActivity {
             }
 
             case SwappyGLHostActivity.ID: {
-                i = SwappyGLHostActivity.createIntent(this, stressTest);
+                if (SwappyGLHostActivity.isSupported()) {
+                    i = SwappyGLHostActivity.createIntent(this, stressTest);
+                } else {
+                    Log.i(TAG, "SwappyGLHostActivity not supported on SDK "
+                            + VERSION.SDK_INT + " using GLSurfaceViewHostActivity");
+                    i = GLSurfaceViewHostActivity.createIntent(this, stressTest);
+                }
                 break;
             }
 
             case VulkanHostActivity.ID: {
-                i = VulkanHostActivity.createIntent(this, stressTest);
+                if (VulkanHostActivity.isSupported()) {
+                    i = VulkanHostActivity.createIntent(this, stressTest);
+                } else {
+                    Log.i(TAG, "VulkanHostActivity not supported on SDK "
+                        + VERSION.SDK_INT + " using GLSurfaceViewHostActivity");
+                }
                 break;
             }
 
@@ -371,9 +388,11 @@ public class MainActivity extends AppCompatActivity {
                 throw new IllegalStateException("Unrecognized host \"" + host + "\"");
         }
 
-        _finishAfterTestCompletion = finishOnCompletion;
-        onStressTestStarted();
-        startActivityForResult(i, STRESS_TEST_ACTIVITY_REQUEST_CODE);
+        if (i != null) {
+            _finishAfterTestCompletion = finishOnCompletion;
+            onStressTestStarted();
+            startActivityForResult(i, STRESS_TEST_ACTIVITY_REQUEST_CODE);
+        }
     }
 
     private void onStressTestStarted() {
