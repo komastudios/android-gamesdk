@@ -17,6 +17,7 @@
 #
 
 import argparse
+import glob
 import shutil
 import time
 import yaml
@@ -29,6 +30,7 @@ from lib.common import *
 from lib.report import extract_and_export, convert_json_report_to_csv, merge_systrace_into_csv
 from lib.devicefarm import run_on_farm_and_collect_reports
 import lib.charting
+import lib.graphing
 
 
 class Error(Exception):
@@ -81,6 +83,11 @@ def dict_lookup(d: Dict, key_path: str, fallback: Any) -> Any:
     return fallback
 
 
+def unpack(s):
+    """Convenience string join function"""
+    return " ".join(map(str, s))
+
+
 def poll_app_active(device_id: str, app_id: str):
     """Check if the given app is running and frontmost on the activity stack
 
@@ -111,6 +118,25 @@ def poll_app_active(device_id: str, app_id: str):
             return False
 
     return False
+
+
+# ------------------------------------------------------------------------------
+
+
+def generate_report_summary(report_files_dir: Path, html: bool,
+                            figure_dpi=600) -> Path:
+    report_files = [
+        Path(f) for f in glob.glob(str(report_files_dir) + '/*.json')
+    ]
+
+    report_summary_file_name = f"summary_{str(Path(args.batch).stem)}" + (
+        ".html" if html else ".md")
+
+    report_summary_file = Path(args.batch).joinpath(report_summary_file_name)
+
+    lib.graphing.render_report_document(report_files,
+                                        report_summary_file,
+                                        dpi=figure_dpi)
 
 
 # ------------------------------------------------------------------------------
@@ -160,12 +186,10 @@ class LocalSystrace(object):
         return self._trace_file
 
 
-def unpack(s):
-    """Convenience string join function"""
-    return " ".join(map(str, s))
+# ------------------------------------------------------------------------------
 
 
-def run_local_deployment(recipe: Dict, apk: Path, tmp_dir: Path):
+def run_local_deployment(recipe: Dict, apk: Path, out_dir: Path):
     if not dict_lookup(recipe, "deployment.local.all_attached_devices", False):
         devices = dict_lookup(recipe, "deployment.local.device_ids", None)
         devices = list(set(devices) & set(get_attached_devices()))
@@ -179,6 +203,9 @@ def run_local_deployment(recipe: Dict, apk: Path, tmp_dir: Path):
                                       fallback="")
     render_chart = dict_lookup(recipe, "chart.enabled", fallback=False)
     render_chart_suites = dict_lookup(recipe, "chart.suites", [])
+
+    render_summary = dict_lookup(recipe, "summary.enabled", fallback=False)
+    render_summary_html = dict_lookup(recipe, "summary.html", fallback=False)
 
     fields = dict_lookup(recipe, "chart.fields", [])
     skipping_fields = dict_lookup(recipe, "chart.skipping", [])
@@ -200,7 +227,7 @@ def run_local_deployment(recipe: Dict, apk: Path, tmp_dir: Path):
         # Start systrace - this blocks until systrace is ready to run
         if collect_systrace:
             systracer = LocalSystrace(device_id=device_id,
-                                      dst_file=tmp_dir.joinpath("tracey.html"),
+                                      dst_file=out_dir.joinpath("tracey.html"),
                                       categories=systrace_categories)
 
         # launch the activity in GAME_LOOP mode
@@ -230,7 +257,7 @@ def run_local_deployment(recipe: Dict, apk: Path, tmp_dir: Path):
         # extract report (for now we're skipping systrace operations)
         log_file, csv_file, sys_file = extract_and_export(
             device_id,
-            dst_dir=tmp_dir,
+            dst_dir=out_dir,
             systrace_file=trace_file,
             systrace_keywords=systrace_keywords,
             bucket=None)
@@ -243,8 +270,14 @@ def run_local_deployment(recipe: Dict, apk: Path, tmp_dir: Path):
                     title = suite.suite_name
                     suite.plot(title, fields, skipping_fields)
 
+    if render_summary:
+        generate_report_summary(out_dir, render_summary_html)
 
-def run_ftl_deployment(recipe: Dict, apk: Path, tmp_dir: Path):
+
+# ------------------------------------------------------------------------------
+
+
+def run_ftl_deployment(recipe: Dict, apk: Path, out_dir: Path):
     # first step is to save out an args.yaml file to pass on to gsutil API
     args_dict = dict_lookup(recipe, "deployment.ftl.args", fallback=None)
     for test in args_dict:
@@ -258,8 +291,12 @@ def run_ftl_deployment(recipe: Dict, apk: Path, tmp_dir: Path):
                                        fallback=False)
     enable_systrace = dict_lookup(recipe, "systrace.enabled", fallback=False)
     systrace_keywords = dict_lookup(recipe, "systrace.keywords", fallback=[])
+
     render_chart = dict_lookup(recipe, "chart.enabled", fallback=False)
     render_chart_suites = dict_lookup(recipe, "chart.suites", [])
+
+    render_summary = dict_lookup(recipe, "summary.enabled", fallback=False)
+    render_summary_html = dict_lookup(recipe, "summary.html", fallback=False)
 
     fields = dict_lookup(recipe, "chart.fields", [])
     skipping_fields = dict_lookup(recipe, "chart.skipping", [])
@@ -270,21 +307,21 @@ def run_ftl_deployment(recipe: Dict, apk: Path, tmp_dir: Path):
         test=active_test,
         enable_systrace=enable_systrace,
         enable_all_physical=all_physical_devices,
-        dst_dir=tmp_dir)
+        dst_dir=out_dir)
 
     csv_files = []
 
     if enable_systrace:
         for json_file, systrace_file in zip(json_files, systrace_files):
             # copy from the ftl dest folder into tmp
-            dst_json_file = tmp_dir.joinpath(json_file.name)
+            dst_json_file = out_dir.joinpath(json_file.name)
             shutil.copy(json_file, dst_json_file)
 
             # convert to csv
             json_file, csv_file = convert_json_report_to_csv(dst_json_file)
 
             # copy the trace.html file to basename_trace.html
-            dst_trace_file = tmp_dir.joinpath(json_file.stem + "_trace.html")
+            dst_trace_file = out_dir.joinpath(json_file.stem + "_trace.html")
             shutil.copy(systrace_file, dst_trace_file)
 
             # merge the systrace data into our csv
@@ -296,7 +333,7 @@ def run_ftl_deployment(recipe: Dict, apk: Path, tmp_dir: Path):
     else:
         for json_file in json_files:
             # copy from the ftl dest folder into tmp
-            dst_json_file = tmp_dir.joinpath(json_file.name)
+            dst_json_file = out_dir.joinpath(json_file.name)
             shutil.copy(json_file, dst_json_file)
 
             # convert to csv
@@ -305,6 +342,9 @@ def run_ftl_deployment(recipe: Dict, apk: Path, tmp_dir: Path):
                 csv_files.append(csv_file)
             except:
                 print(f"Unable to convert file {json_file} to CSV")
+
+    if render_summary:
+        generate_report_summary(out_dir, render_summary_html)
 
     if render_chart:
         for csv_file in csv_files:
@@ -342,7 +382,7 @@ if __name__ == "__main__":
     else:
         prefix = Path(recipe_path).stem
 
-    tmp_dir = create_output_dir(prefix)
+    out_dir = create_output_dir(prefix)
 
     # step one: build the APK
 
@@ -351,7 +391,7 @@ if __name__ == "__main__":
         custom_configuration=Path(custom_config) if custom_config else None)
 
     if "local" in recipe["deployment"]:
-        run_local_deployment(recipe, apk_path, tmp_dir)
+        run_local_deployment(recipe, apk_path, out_dir)
 
     if "ftl" in recipe["deployment"]:
-        run_ftl_deployment(recipe, apk_path, tmp_dir)
+        run_ftl_deployment(recipe, apk_path, out_dir)
