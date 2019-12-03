@@ -482,8 +482,10 @@ TFErrorCode TuningForkImpl::GetFidelityParameters(
           return TFERROR_BAD_PARAMETER;
         }
         ExtraUploadInfo info = UploadThread::BuildExtraUploadInfo(jni_);
-        WebRequest web_request(jni_, Request(info, settings_.base_uri, settings_.api_key,
-            std::chrono::milliseconds(timeout_ms)));
+        Duration timeout = (timeout_ms<=0)
+                           ? std::chrono::milliseconds(settings_.initial_request_timeout_ms)
+                           : std::chrono::milliseconds(timeout_ms);
+        WebRequest web_request(jni_, Request(info, settings_.base_uri, settings_.api_key, timeout));
         auto result = loader_->GetFidelityParams(web_request, training_mode_params_.get(),
                                                  params_ser, experiment_id);
         upload_thread_.SetCurrentFidelityParams(params_ser, experiment_id);

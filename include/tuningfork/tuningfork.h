@@ -222,8 +222,9 @@ static inline TFErrorCode TuningFork_init(const TFSettings *settings, JNIEnv* en
  * The parameter request is sent to:
  *  ${url_base}+'applications/'+package_name+'/apks/'+version_number+':generateTuningParameters'.
  * @param defaultParams these will be assumed current if no parameters could be downloaded.
- * @param[out] params 
+ * @param[out] params
  * @param timeout_ms time to wait before returning from this call when no connection can be made.
+ *  If zero or negative, the value in Settings.initial_request_timeout_ms is used.
  * @return TFERROR_TIMEOUT if there was a timeout before params could be downloaded.
  *  TFERROR_OK on success.
  */
