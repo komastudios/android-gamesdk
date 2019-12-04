@@ -26,7 +26,7 @@ import os
 import yaml
 
 from pathlib import Path
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 from lib.report import *
 from lib.build import *
@@ -116,7 +116,7 @@ def run_test(flags_file: Path, args_yaml: Path, test_name: str, enable_systrace,
     return proc.stdout, proc.stderr
 
 
-def display_test_results(stdout, stderr):
+def display_test_results(stdout, stderr, dst_dir):
     result = json.loads(stdout)
     if len(result) == 0:
         return
@@ -128,6 +128,12 @@ def display_test_results(stdout, stderr):
         print()
     print()
 
+    for line in result:
+        if line['outcome'] == 'Skipped':
+            file_name = 'skipped_' + line['axis_value'] + '.json'
+            args_file: Path = dst_dir.joinpath(file_name)
+            with open(args_file, "w") as write_file:
+                json.dump(line, write_file)
 
 def get_test_info(stderr):
     pattern = (r'^.*GCS bucket at \[(https.*?)\]' + r'.*Test \[(matrix-.*?)\]' +
@@ -207,7 +213,7 @@ def run_on_farm_and_collect_reports(args_dict: Dict, flags_dict: Dict,
             enable_systrace=enable_systrace,
             run_on_all_physical_devices=enable_all_physical)
 
-        display_test_results(stdout, stderr)
+        display_test_results(stdout, stderr, dst_dir)
         test_info = get_test_info(stderr)
         display_test_info(test_info)
 
