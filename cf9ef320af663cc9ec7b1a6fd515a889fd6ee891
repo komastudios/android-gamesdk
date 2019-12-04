@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "0ebfc6ef_cea6e57e",
+        "filename": "cert/test/reporting/lib/devicefarm.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1587423
+      },
+      "writtenOn": "2019-12-04T18:46:33Z",
+      "side": 1,
+      "message": "Sure, made changes in latest commit",
+      "parentUuid": "dc3d3060_d9168ed5",
+      "revId": "cf9ef320af663cc9ec7b1a6fd515a889fd6ee891",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "004f38d2_d4ceaa6a",
         "filename": "cert/test/reporting/lib/devicefarm.py",
         "patchSetId": 2
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "ecae2e04_32f09d7d",
+        "filename": "cert/test/reporting/lib/devicefarm.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1587423
+      },
+      "writtenOn": "2019-12-04T18:46:33Z",
+      "side": 1,
+      "message": "Sure, made changes in latest commit",
+      "parentUuid": "004f38d2_d4ceaa6a",
+      "revId": "cf9ef320af663cc9ec7b1a6fd515a889fd6ee891",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "804ce90e_00df792e",
         "filename": "cert/test/reporting/lib/devicefarm.py",
         "patchSetId": 2
@@ -50,6 +86,24 @@
       "revId": "cf9ef320af663cc9ec7b1a6fd515a889fd6ee891",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a2ea553b_4cada42c",
+        "filename": "cert/test/reporting/lib/devicefarm.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1587423
+      },
+      "writtenOn": "2019-12-04T18:46:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "804ce90e_00df792e",
+      "revId": "cf9ef320af663cc9ec7b1a6fd515a889fd6ee891",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
