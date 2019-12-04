@@ -5,6 +5,7 @@
 #import <string>
 #import <sstream>
 #import <istream>
+#include <glm/ext/matrix_transform.hpp>
 #import "font.h"
 #include "shader_bindings.h"
 
@@ -84,6 +85,14 @@ void Font::drawString(const std::string& text, float text_size, float x, float y
         text_size = 0.0f;
     }
 
+    float resolution_ratio_x_ = (float) renderer_.getDevice().getDisplaySize().width
+        / renderer_.getDevice().getDisplaySizeOriented().width;
+    float resolution_ratio_y = (float) renderer_.getDevice().getDisplaySize().height
+        / renderer_.getDevice().getDisplaySizeOriented().height;
+
+    float text_size_x = text_size * resolution_ratio_x_;
+    float text_size_y = text_size * resolution_ratio_y;
+
     float w = (float)texture_->getWidth();
     float h = (float)texture_->getHeight();
 
@@ -110,39 +119,58 @@ void Font::drawString(const std::string& text, float text_size, float x, float y
         float xo = char_info->xoffset;
         float yo = char_info->yoffset;
 
-        write_vertex((posx) + (dimx + xo) / w * text_size, &head);
-        write_vertex((posy) + (dimy + yo) / h * text_size, &head);
+        write_vertex((posx) + (dimx + xo) / w * text_size_x, &head);
+        write_vertex((posy) + (dimy + yo) / h * text_size_y, &head);
         write_vertex(ue, &head);
         write_vertex(te, &head);
 
 
-        write_vertex((posx) +  (xo) / w * text_size, &head);
-        write_vertex((posy) + (dimy + yo) / h * text_size, &head);
+        write_vertex((posx) +  (xo) / w * text_size_x, &head);
+        write_vertex((posy) + (dimy + yo) / h * text_size_y, &head);
         write_vertex(us, &head);
         write_vertex(te, &head);
 
-        write_vertex((posx) + (xo) / w * text_size, &head);
-        write_vertex((posy) + (yo) / h * text_size, &head);
+        write_vertex((posx) + (xo) / w * text_size_x, &head);
+        write_vertex((posy) + (yo) / h * text_size_y, &head);
         write_vertex(us, &head);
         write_vertex(ts, &head);
 
-        write_vertex((posx) + (xo) / w * text_size, &head);
-        write_vertex((posy) + (yo) / h * text_size, &head);
+        write_vertex((posx) + (xo) / w * text_size_x, &head);
+        write_vertex((posy) + (yo) / h * text_size_y, &head);
         write_vertex(us, &head);
         write_vertex(ts, &head);
 
-        write_vertex((posx) + (dimx + xo) / w * text_size, &head);
-        write_vertex((posy) + (yo) / h * text_size, &head);
+        write_vertex((posx) + (dimx + xo) / w * text_size_x, &head);
+        write_vertex((posy) + (yo) / h * text_size_y, &head);
         write_vertex(ue, &head);
         write_vertex(ts, &head);
 
-        write_vertex((posx) + (dimx + xo) / w * text_size, &head);
-        write_vertex((posy) + (dimy + yo) / h * text_size, &head);
+        write_vertex((posx) + (dimx + xo) / w * text_size_x, &head);
+        write_vertex((posy) + (dimy + yo) / h * text_size_y, &head);
         write_vertex(ue, &head);
         write_vertex(te, &head);
 
-        posx += (float)(char_info->xadvance) / w * text_size;
+        posx += (float)(char_info->xadvance) / w * text_size_x;
     }
+
+    orientation_matrix_->update(frame_index, [this](auto &matrix) {
+      auto transform = renderer_.getDevice().getPretransformFlag();
+      switch (transform) {
+          case VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR:
+              matrix = glm::rotate(glm::mat4(1.0f),
+                                   glm::radians(90.0f),
+                                   glm::vec3(0, 0, 1));
+          break;
+          case VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR:
+              matrix = glm::rotate(glm::mat4(1.0f),
+                                   glm::radians(270.0f),
+                                   glm::vec3(0, 0, 1));
+          break;
+          default:
+              matrix = glm::mat4(1.0f);
+          break;
+      }
+    });
 
     vkUnmapMemory(renderer_.getDevice().getDevice(), vertexBufferDeviceMemory_);
 
@@ -166,6 +194,8 @@ Font::Font(Renderer& renderer, android_app &androidAppCtx,
            const std::string& font_texture_path, const std::string& font_info_path) : renderer_(renderer){
     texture_ = new Texture(renderer_.getDevice(), androidAppCtx,
                            font_texture_path.c_str(), VK_FORMAT_R8G8B8A8_SRGB);
+
+    orientation_matrix_ = std::make_unique<UniformBufferObject<glm::mat4>>(renderer_.getDevice());
 
     createFontShaders(androidAppCtx);
     parseFontInfo(font_info_path.c_str(), androidAppCtx);
@@ -241,7 +271,12 @@ void Font::createDescriptors(Renderer& renderer) {
         imageInfo.imageView = texture_->getImageView();
         imageInfo.sampler = sampler_;
 
-        std::array<VkWriteDescriptorSet, 1> descriptorWrites = {};
+        VkDescriptorBufferInfo bufferInfo = {};
+        bufferInfo.buffer = orientation_matrix_->getBuffer(i);
+        bufferInfo.offset = 0;
+        bufferInfo.range = sizeof(glm::mat4);
+
+        std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
 
         descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[0].dstSet = font_descriptor_sets_[i];
@@ -250,6 +285,14 @@ void Font::createDescriptors(Renderer& renderer) {
         descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         descriptorWrites[0].descriptorCount = 1;
         descriptorWrites[0].pImageInfo = &imageInfo;
+
+        descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[1].dstSet = font_descriptor_sets_[i];
+        descriptorWrites[1].dstBinding = FONT_VERTEX_UBO_BINDING;
+        descriptorWrites[1].dstArrayElement = 0;
+        descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        descriptorWrites[1].descriptorCount = 1;
+        descriptorWrites[1].pBufferInfo = &bufferInfo;
 
         vkUpdateDescriptorSets(renderer_.getDevice().getDevice(),
                                descriptorWrites.size(), descriptorWrites.data(),
@@ -265,7 +308,14 @@ void Font::createDescriptorSetLayout() {
     samplerLayoutBinding.pImmutableSamplers = nullptr;
     samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-    std::array<VkDescriptorSetLayoutBinding, 1> bindings = { samplerLayoutBinding };
+    VkDescriptorSetLayoutBinding orientationMatrixLayoutBinding = {};
+    orientationMatrixLayoutBinding.binding = FONT_VERTEX_UBO_BINDING;
+    orientationMatrixLayoutBinding.descriptorCount = 1;
+    orientationMatrixLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    orientationMatrixLayoutBinding.pImmutableSamplers = nullptr;
+    orientationMatrixLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+    std::array<VkDescriptorSetLayoutBinding, 2> bindings = { samplerLayoutBinding, orientationMatrixLayoutBinding };
 
     VkDescriptorSetLayoutCreateInfo layoutInfo = {};
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;

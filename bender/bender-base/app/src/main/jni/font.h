@@ -36,6 +36,8 @@ private:
     Texture *texture_;
     VkSampler sampler_;
 
+    std::unique_ptr<UniformBufferObject<glm::mat4>> orientation_matrix_;
+
     std::shared_ptr<ShaderState> shader_;
 
     VkDescriptorSetLayout font_descriptors_layout_;

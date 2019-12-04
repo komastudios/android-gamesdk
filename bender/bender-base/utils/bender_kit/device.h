@@ -45,6 +45,16 @@ namespace BenderKit {
 
         VkExtent2D getDisplaySize() const { return displaySize_; }
 
+        VkExtent2D getDisplaySizeOriented() const {
+            VkExtent2D result = displaySize_;
+            if (pretransformFlag_ == VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR ||
+                pretransformFlag_ == VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR) {
+                result.width = displaySize_.height;
+                result.height = displaySize_.width;
+            }
+            return result;
+        }
+
         VkFormat getDisplayFormat() const { return displayFormat_; }
 
         VkPhysicalDeviceMemoryProperties getGpuMemProperties() { return gpuMemoryProperties_; }
