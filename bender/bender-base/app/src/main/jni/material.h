@@ -11,7 +11,10 @@
 #include "texture.h"
 
 struct alignas(16) MaterialAttributes {
-  glm::vec3 color;
+  alignas(16) glm::vec3 ambient = {1.0f, 1.0f, 1.0f};
+  alignas(16) glm::vec3 diffuse = {1.0f, 1.0f, 1.0f};
+  alignas(16) glm::vec3 specular = {1.0f, 1.0f, 1.0f};
+  alignas(16) float specularExponent = 128;
 };
 
 class Material {
@@ -19,7 +22,7 @@ class Material {
   Material(Renderer *renderer,
            std::shared_ptr<ShaderState> shaders,
            std::shared_ptr<Texture> texture,
-           const glm::vec3 color = glm::vec3(1.0, 1.0, 1.0));
+           const MaterialAttributes &attrs);
   ~Material();
 
   void cleanup();
@@ -43,7 +46,7 @@ class Material {
 
   std::shared_ptr<ShaderState> shaders_;
   std::shared_ptr<Texture> texture_;
-  glm::vec3 color_;
+  MaterialAttributes material_attributes_;
   VkSampler sampler_;
 
   std::unique_ptr<UniformBufferObject<MaterialAttributes>> material_buffer_;

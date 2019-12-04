@@ -13,14 +13,14 @@
 #import "mesh.h"
 #import "shader_state.h"
 
-bool populatePolyhedron(std::vector<float> &vertex_data, std::vector<uint16_t> &index_data, int faces);
-void populateTetrahedron(std::vector<float> &vertex_data, std::vector<uint16_t> &index_data);
-void populateCube(std::vector<float> &vertex_data, std::vector<uint16_t> &index_data);
-void populateOctahedron(std::vector<float> &vertex_data, std::vector<uint16_t> &index_data);
-void populateDodecahedron(std::vector<float> &vertex_data, std::vector<uint16_t> &index_data);
-void populateIcosahedron(std::vector<float> &vertex_data, std::vector<uint16_t> &index_data);
+bool populatePolyhedron(std::vector<float> &vertex_data, std::vector<uint32_t> &index_data, int faces);
+void populateTetrahedron(std::vector<float> &vertex_data, std::vector<uint32_t> &index_data);
+void populateCube(std::vector<float> &vertex_data, std::vector<uint32_t> &index_data);
+void populateOctahedron(std::vector<float> &vertex_data, std::vector<uint32_t> &index_data);
+void populateDodecahedron(std::vector<float> &vertex_data, std::vector<uint32_t> &index_data);
+void populateIcosahedron(std::vector<float> &vertex_data, std::vector<uint32_t> &index_data);
 
 extern std::array<int, 5> allowedPolyFaces;
-extern std::vector<std::function<void(std::vector<float>&, std::vector<uint16_t>&)>> polyhedronGenerators;
+extern std::vector<std::function<void(std::vector<float>&, std::vector<uint32_t>&)>> polyhedronGenerators;
 
 #endif //BENDER_BASE_SHAPE_H

@@ -13,8 +13,8 @@ class Geometry {
  public:
   Geometry(BenderKit::Device &device,
            const std::vector<float> &vertexData,
-           const std::vector<uint16_t> &indexData,
-           std::function<void(std::vector<float> &, std::vector<uint16_t> &)> generator = nullptr);
+           const std::vector<uint32_t> &indexData,
+           std::function<void(std::vector<float> &, std::vector<uint32_t> &)> generator = nullptr);
   ~Geometry();
 
   void cleanup();
@@ -37,10 +37,10 @@ class Geometry {
   VkBuffer indexBuf_;
   VkDeviceMemory indexBufferDeviceMemory_;
 
-  std::function<void(std::vector<float> &, std::vector<uint16_t> &)> generator_ = nullptr;
+  std::function<void(std::vector<float> &, std::vector<uint32_t> &)> generator_ = nullptr;
 
   void createVertexBuffer(const std::vector<float> &vertexData,
-                          const std::vector<uint16_t> &indexData);
+                          const std::vector<uint32_t> &indexData);
 };
 
 #endif //BENDER_BASE_GEOMETRY_H
