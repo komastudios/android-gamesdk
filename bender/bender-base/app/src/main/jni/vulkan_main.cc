@@ -91,61 +91,83 @@ std::vector<const char *> texFiles;
 std::vector<std::shared_ptr<Texture>> textures;
 std::vector<std::shared_ptr<Material>> materials;
 
+std::vector<std::shared_ptr<Material>> baselineMaterials;
+uint32_t materialsIdx = 0;
+
+static const std::array<int, 5> allowedPolyFaces = {4, 6, 8, 12, 20};
+uint32_t polyFacesIdx = 0;
+
 bool windowResized = false;
 
-void moveForward(){
+void moveForward() {
   glm::vec3 forward = glm::normalize(camera.rotation * glm::vec3(0.0f, 0.0f, -1.0f));
   camera.position += forward * 2.0f * frameTime;
 }
-void moveBackward(){
+void moveBackward() {
   glm::vec3 forward = glm::normalize(camera.rotation * glm::vec3(0.0f, 0.0f, -1.0f));
   camera.position -= forward * 2.0f * frameTime;
 }
-void strafeLeft(){
+void strafeLeft() {
   glm::vec3 right = glm::normalize(camera.rotation * glm::vec3(1.0f, 0.0f, 0.0f));
   camera.position -= right * (20.0f / device->getDisplaySize().width);
 }
-void strafeRight(){
+void strafeRight() {
   glm::vec3 right = glm::normalize(camera.rotation * glm::vec3(1.0f, 0.0f, 0.0f));
   camera.position += right * (20.0f / device->getDisplaySize().width);
 }
-void strafeUp(){
+void strafeUp() {
   glm::vec3 up = glm::normalize(camera.rotation * glm::vec3(0.0f, 1.0f, 0.0f));
   camera.position += up * (20.0f / device->getDisplaySize().height);
 }
-void strafeDown(){
+void strafeDown() {
   glm::vec3 up = glm::normalize(camera.rotation * glm::vec3(0.0f, 1.0f, 0.0f));
   camera.position -= up * (20.0f / device->getDisplaySize().height);
 }
-void createInstance(){
-  meshes.push_back(createPolyhedron(*renderer, materials[0], 20));
+void createInstance() {
+  meshes.push_back(createPolyhedron(*renderer, baselineMaterials[materialsIdx], allowedPolyFaces[polyFacesIdx]));
   meshes[meshes.size() - 1]->translate(glm::vec3(rand() % 3, rand() % 3, rand() % 3));
 }
-void deleteInstance(){
+void deleteInstance() {
   if (meshes.size() > 0) {
     meshes.pop_back();
+  }
+}
+void changePolyhedralComplexity() {
+  polyFacesIdx = (polyFacesIdx + 1) % allowedPolyFaces.size();
+  for (uint32_t i = 0; i < meshes.size(); i++) {
+    swapPolyhedron(*meshes[i], allowedPolyFaces[polyFacesIdx]);
+  }
+}
+void changeMaterialComplexity() {
+  materialsIdx = (materialsIdx + 1) % baselineMaterials.size();
+  for (uint32_t i = 0; i < meshes.size(); i++) {
+      meshes[i]->swapMaterial(baselineMaterials[materialsIdx]);
   }
 }
 
 void createButtons(){
   Button::setScreenResolution(device->getDisplaySizeOriented());
 
-  Button button0(-.7, .2, .6, .2, "<--");
+  Button button0(-.7, .2, .7, .2, "<--");
   button0.onHold = strafeLeft;
-  Button button1(-.2, .2, .6, .2, "-->");
+  Button button1(-.2, .2, .7, .2, "-->");
   button1.onHold = strafeRight;
-  Button button2(-.47, .2, .5, .2, "^");
+  Button button2(-.47, .2, .6, .2, "^");
   button2.onHold = strafeUp;
-  Button button3(-.47, .2, .75, .2, "O");
+  Button button3(-.47, .2, .85, .2, "O");
   button3.onHold = strafeDown;
-  Button button4(.43, .2, .6, .2, "Forward");
+  Button button4(.43, .2, .7, .2, "Forward");
   button4.onHold = moveForward;
-  Button button5(.43, .2, .8, .2, "Backward");
+  Button button5(.43, .2, .85, .2, "Backward");
   button5.onHold = moveBackward;
-  Button button6(.2, .2, .4, .2, "+1 Mesh");
-  button6.onDown = createInstance;
-  Button button7(.7, .2, .4, .2, "-1 Mesh");
+  Button button6(-.2, .2, .4, .2, "+1 Mesh");
+  button6.onUp = createInstance;
+  Button button7(-.7, .2, .4, .2, "-1 Mesh");
   button7.onUp = deleteInstance;
+  Button button8(.5, .2, .35, .2, "Poly Switch");
+  button8.onUp = changePolyhedralComplexity;
+  Button button9(.5, .2, .5, .2, "Tex Switch");
+  button9.onUp = changeMaterialComplexity;
 
   Input::buttons.push_back(button0);
   Input::buttons.push_back(button1);
@@ -155,6 +177,8 @@ void createButtons(){
   Input::buttons.push_back(button5);
   Input::buttons.push_back(button6);
   Input::buttons.push_back(button7);
+  Input::buttons.push_back(button8);
+  Input::buttons.push_back(button9);
 }
 
 void createTextures() {
@@ -170,6 +194,11 @@ void createTextures() {
 
 void createMaterials() {
   Timing::timer.time("Materials Creation", Timing::OTHER, [](){
+    baselineMaterials.push_back(std::make_shared<Material>(*renderer, shaders, nullptr));
+    baselineMaterials.push_back(std::make_shared<Material>(*renderer, shaders, nullptr, glm::vec3(0.8, 0.0, 0.5)));
+    baselineMaterials.push_back(std::make_shared<Material>(*renderer, shaders, textures[0]));
+    baselineMaterials.push_back(std::make_shared<Material>(*renderer, shaders, textures[0], glm::vec3(0.8, 0.0, 0.5)));
+
     for (uint32_t i = 0; i < textures.size(); ++i) {
       materials.push_back(std::make_shared<Material>(*renderer, shaders, textures[i]));
     }
@@ -431,7 +460,7 @@ bool InitVulkan(android_app *app) {
       createMaterials();
 
       Timing::timer.time("Create Polyhedron", Timing::OTHER, [](){
-        meshes.push_back(createPolyhedron(*renderer, materials[0], 20));
+        meshes.push_back(createPolyhedron(*renderer, baselineMaterials[materialsIdx], allowedPolyFaces[polyFacesIdx]));
       });
     });
 
