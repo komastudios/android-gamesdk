@@ -24,7 +24,7 @@ Mesh::Mesh(Renderer *renderer,
 Mesh::Mesh(Renderer *renderer,
            std::shared_ptr<Material> material,
            const std::vector<float> &vertexData,
-           const std::vector<uint16_t> &indexData) :
+           const std::vector<uint32_t> &indexData) :
     Mesh(renderer,
          material,
          std::make_shared<Geometry>(renderer->getDevice(), vertexData, indexData)) {}
@@ -35,7 +35,7 @@ Mesh::Mesh(const Mesh &other, std::shared_ptr<Material> material) :
     geometry_(other.geometry_),
     position_(other.position_),
     rotation_(other.rotation_),
-    scale_(other.scale_){
+    scale_(other.scale_) {
   mesh_buffer_ = std::make_unique<UniformBufferObject<ModelViewProjection>>(renderer_->getDevice());
   createMeshDescriptorSetLayout();
   createMeshDescriptors();
@@ -247,6 +247,25 @@ glm::quat Mesh::getRotation() const {
 
 glm::vec3 Mesh::getScale() const {
   return scale_;
+}
+
+BoundingBox Mesh::getBoundingBox() const {
+  glm::mat4 finalTransform = getTransform();
+  BoundingBox originalBox = geometry_->getBoundingBox();
+
+  glm::vec3 xMin = finalTransform[0] * (originalBox.min.x);
+  glm::vec3 xMax = finalTransform[0] * (originalBox.max.x);
+
+  glm::vec3 yMin = finalTransform[1] * (originalBox.min.y);
+  glm::vec3 yMax = finalTransform[1] * (originalBox.max.y);
+
+  glm::vec3 zMin = finalTransform[2] * (originalBox.min.z);
+  glm::vec3 zMax = finalTransform[2] * (originalBox.max.z);
+
+  return BoundingBox{
+      .min = glm::min(xMin, xMax) + glm::min(yMin ,yMax) + glm::min(zMin, zMax) + glm::vec3(finalTransform[3]),
+      .max = glm::max(xMin, xMax) + glm::max(yMin ,yMax) + glm::max(zMin, zMax) + glm::vec3(finalTransform[3]),
+  };
 }
 
 glm::mat4 Mesh::getTransform() const {

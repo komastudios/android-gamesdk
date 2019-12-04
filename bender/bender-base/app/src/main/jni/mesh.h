@@ -31,7 +31,7 @@ public:
   Mesh(Renderer *renderer, std::shared_ptr<Material> material, std::shared_ptr<Geometry> geometryData);
 
   Mesh(Renderer *renderer, std::shared_ptr<Material> material, const std::vector<float>& vertexData,
-          const std::vector<uint16_t>& indexData);
+          const std::vector<uint32_t>& indexData);
 
   Mesh(const Mesh &other, std::shared_ptr<Geometry> geometry);
   Mesh(const Mesh &other, std::shared_ptr<Material> material);
@@ -60,6 +60,8 @@ public:
   glm::vec3 getPosition() const;
   glm::quat getRotation() const;
   glm::vec3 getScale() const;
+
+  BoundingBox getBoundingBox() const;
 
   glm::mat4 getTransform() const;
 

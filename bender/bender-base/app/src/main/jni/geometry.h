@@ -8,13 +8,19 @@
 #include "vulkan_wrapper.h"
 #include "bender_kit.h"
 #include <functional>
+#include <glm/glm.hpp>
+
+struct BoundingBox {
+  glm::vec3 min {MAXFLOAT, MAXFLOAT, MAXFLOAT};
+  glm::vec3 max {-MAXFLOAT, -MAXFLOAT, -MAXFLOAT};
+};
 
 class Geometry {
  public:
   Geometry(BenderKit::Device &device,
            const std::vector<float> &vertexData,
-           const std::vector<uint16_t> &indexData,
-           std::function<void(std::vector<float> &, std::vector<uint16_t> &)> generator = nullptr);
+           const std::vector<uint32_t> &indexData,
+           std::function<void(std::vector<float> &, std::vector<uint32_t> &)> generator = nullptr);
   ~Geometry();
 
   void cleanup();
@@ -23,6 +29,7 @@ class Geometry {
 
   int getVertexCount() const { return vertexCount_; }
   int getIndexCount() const { return indexCount_; }
+  BoundingBox getBoundingBox() const { return bounding_box_; }
 
   void bind(VkCommandBuffer commandBuffer) const;
 
@@ -37,10 +44,12 @@ class Geometry {
   VkBuffer indexBuf_;
   VkDeviceMemory indexBufferDeviceMemory_;
 
-  std::function<void(std::vector<float> &, std::vector<uint16_t> &)> generator_ = nullptr;
+  BoundingBox bounding_box_;
+
+  std::function<void(std::vector<float> &, std::vector<uint32_t> &)> generator_ = nullptr;
 
   void createVertexBuffer(const std::vector<float> &vertexData,
-                          const std::vector<uint16_t> &indexData);
+                          const std::vector<uint32_t> &indexData);
 };
 
 #endif //BENDER_BASE_GEOMETRY_H

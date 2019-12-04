@@ -102,7 +102,6 @@ unsigned char *Texture::loadFileData(android_app &app, const char *filePath) {
     img_data = stbi_load_from_memory(
         file_content, file_length, reinterpret_cast<int *>(&img_width),
         reinterpret_cast<int *>(&img_height), reinterpret_cast<int *>(&n), 4);
-    assert(n == 4);
     delete[] file_content;
   }
   tex_width_ = img_width;
