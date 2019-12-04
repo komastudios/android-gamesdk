@@ -14,6 +14,8 @@
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
+#define GLM_FORCE_CXX17
+#define GLM_ENABLE_EXPERIMENTAL
 
 #include "vulkan_main.h"
 
@@ -233,17 +235,20 @@ void CreateTextures() {
 
 void CreateMaterials() {
   timing::timer.Time("Materials Creation", timing::OTHER, [] {
+    MaterialAttributes defaultMaterial;
+    defaultMaterial.specular = {0.8f, 0.0f, 0.5f, 128.0f};
+    defaultMaterial.diffuse = {0.8f, 0.0f, 0.5f};
+    defaultMaterial.ambient = {0.8f, 0.0f, 0.5f};
     baseline_materials.push_back(std::make_shared<Material>(renderer, shaders, nullptr));
     baseline_materials.push_back(std::make_shared<Material>(renderer,
                                                            shaders,
                                                            nullptr,
-                                                           glm::vec3(0.8, 0.0, 0.5)));
+                                                           defaultMaterial));
     baseline_materials.push_back(std::make_shared<Material>(renderer, shaders, textures[0]));
     baseline_materials.push_back(std::make_shared<Material>(renderer,
                                                            shaders,
                                                            textures[0],
-                                                           glm::vec3(0.8, 0.0, 0.5)));
-
+                                                           defaultMaterial));
     for (uint32_t i = 0; i < textures.size(); ++i) {
       materials.push_back(std::make_shared<Material>(renderer, shaders, textures[i]));
     }
@@ -253,7 +258,7 @@ void CreateMaterials() {
 void CreateGeometries() {
   for (uint32_t i = 0; i < allowedPolyFaces.size(); i++) {
     std::vector<float> vertex_data;
-    std::vector<uint16_t> index_data;
+    std::vector<uint32_t> index_data;
     polyhedronGenerators[i](vertex_data, index_data);
     geometries.push_back(std::make_shared<Geometry>(*device,
                                                     vertex_data,
@@ -317,12 +322,10 @@ void CreateFramebuffers(VkRenderPass &render_pass,
 void UpdateCamera(input::Data *input_data) {
   if ((input_data->last_button != nullptr && input_data->last_input_count > 1)
       || input_data->last_button == nullptr) {
-    render_graph->RotateCameraLocal(glm::quat(glm::vec3(0.0f,
-                                                        input_data->delta_x
-                                                            / device->GetDisplaySize().width,
-                                                        0.0f)));
-    render_graph->RotateCameraGlobal(glm::quat(glm::vec3(
-        input_data->delta_y / device->GetDisplaySize().height, 0.0f, 0.0f)));
+    render_graph->RotateCameraGlobal(
+        glm::quat(glm::vec3(0.0f, input_data->delta_x / device->GetDisplaySize().width, 0.0f)));
+    render_graph->RotateCameraLocal(
+        glm::quat(glm::vec3(input_data->delta_y / device->GetDisplaySize().height, 0.0f, 0.0f)));
   }
 
   glm::mat4 pre_rotate_mat = kIdentityMat4;

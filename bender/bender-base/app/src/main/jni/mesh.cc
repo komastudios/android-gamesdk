@@ -24,7 +24,7 @@ Mesh::Mesh(Renderer *renderer,
 Mesh::Mesh(Renderer *renderer,
            std::shared_ptr<Material> material,
            const std::vector<float> &vertex_data,
-           const std::vector<uint16_t> &index_data) :
+           const std::vector<uint32_t> &index_data) :
     Mesh(renderer,
          material,
          std::make_shared<Geometry>(renderer->GetDevice(), vertex_data, index_data)) {}
@@ -257,6 +257,26 @@ glm::mat4 Mesh::GetTransform() const {
   glm::mat4 position = glm::translate(glm::mat4(1.0), position_);
   glm::mat4 scale = glm::scale(glm::mat4(1.0), scale_);
   return position * glm::mat4(rotation_) * scale;
+}
+
+
+BoundingBox Mesh::GetBoundingBox() const {
+  glm::mat4 finalTransform = GetTransform();
+  BoundingBox originalBox = geometry_->GetBoundingBox();
+
+  glm::vec3 xMin = finalTransform[0] * (originalBox.min.x);
+  glm::vec3 xMax = finalTransform[0] * (originalBox.max.x);
+
+  glm::vec3 yMin = finalTransform[1] * (originalBox.min.y);
+  glm::vec3 yMax = finalTransform[1] * (originalBox.max.y);
+
+  glm::vec3 zMin = finalTransform[2] * (originalBox.min.z);
+  glm::vec3 zMax = finalTransform[2] * (originalBox.max.z);
+
+  return BoundingBox{
+      .min = glm::min(xMin, xMax) + glm::min(yMin ,yMax) + glm::min(zMin, zMax) + glm::vec3(finalTransform[3]),
+      .max = glm::max(xMin, xMax) + glm::max(yMin ,yMax) + glm::max(zMin, zMax) + glm::vec3(finalTransform[3]),
+  };
 }
 
 int Mesh::GetTrianglesCount() const {

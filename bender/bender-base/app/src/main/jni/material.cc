@@ -21,7 +21,7 @@ void Material::CreateDefaultTexture(Renderer &renderer) {
 }
 
 Material::Material(Renderer *renderer, std::shared_ptr<ShaderState> shaders,
-                   std::shared_ptr<Texture> texture, const glm::vec3 color) :
+                   std::shared_ptr<Texture> texture, const MaterialAttributes &attrs) :
     renderer_(renderer) {
   shaders_ = shaders;
   if (texture == nullptr) {
@@ -30,7 +30,7 @@ Material::Material(Renderer *renderer, std::shared_ptr<ShaderState> shaders,
   } else {
     texture_ = texture;
   }
-  color_ = color;
+  material_attributes_ = attrs;
   material_buffer_ = std::make_unique<UniformBufferObject<MaterialAttributes>>(renderer_->GetDevice());
 
   CreateSampler();
@@ -126,7 +126,7 @@ void Material::CreateMaterialDescriptorSets() {
   material_descriptor_sets_.resize(renderer_->GetDevice().GetDisplayImages().size());
   CALL_VK(vkAllocateDescriptorSets(renderer_->GetVulkanDevice(), &alloc_info, material_descriptor_sets_.data()));
 
-  glm::vec3 color = color_;
+  MaterialAttributes attrs = material_attributes_;
 
   for (size_t i = 0; i < renderer_->GetDevice().GetDisplayImages().size(); i++) {
     std::array<VkWriteDescriptorSet, MATERIAL_DESCRIPTOR_LAYOUT_SIZE> descriptor_writes = {};
@@ -145,8 +145,10 @@ void Material::CreateMaterialDescriptorSets() {
     descriptor_writes[0].descriptorCount = 1;
     descriptor_writes[0].pImageInfo = &image_info;
 
-    material_buffer_->Update(i, [&color](auto& ubo) {
-        ubo.color = color;
+    material_buffer_->Update(i, [&attrs](auto& ubo) {
+        ubo.ambient = attrs.ambient;
+        ubo.specular = attrs.specular;
+        ubo.diffuse = attrs.diffuse;
     });
 
     VkDescriptorBufferInfo material_buffer_info = {
