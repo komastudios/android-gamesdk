@@ -12,10 +12,23 @@ using namespace BenderHelpers;
 
 Geometry::Geometry(BenderKit::Device &device,
                    const std::vector<float> &vertexData,
-                   const std::vector<uint16_t> &indexData,
-                   std::function<void(std::vector<float>&, std::vector<uint16_t>&)> generator)
+                   const std::vector<uint32_t> &indexData,
+                   std::function<void(std::vector<float>&, std::vector<uint32_t>&)> generator)
     : device_(device), generator_(generator) {
   createVertexBuffer(vertexData, indexData);
+
+  for (int x = 0; x < vertexData.size() / 8; x++){
+    float xCoord = vertexData[x * 8];
+    float yCoord = vertexData[x * 8 + 1];
+    float zCoord = vertexData[x * 8 + 2];
+
+    if (xCoord > bounding_box_.max.x) bounding_box_.max.x = xCoord;
+    if (xCoord < bounding_box_.min.x) bounding_box_.min.x = xCoord;
+    if (yCoord > bounding_box_.max.y) bounding_box_.max.y = yCoord;
+    if (yCoord < bounding_box_.min.y) bounding_box_.min.y = yCoord;
+    if (zCoord > bounding_box_.max.z) bounding_box_.max.z = zCoord;
+    if (zCoord < bounding_box_.min.z) bounding_box_.min.z = zCoord;
+  }
 }
 
 Geometry::~Geometry() {
@@ -34,13 +47,13 @@ void Geometry::onResume(BenderKit::Device &device) {
   device_ = device;
   if (generator_ != nullptr){
     std::vector<float> vertex_data;
-    std::vector<uint16_t> index_data;
+    std::vector<uint32_t> index_data;
     generator_(vertex_data, index_data);
     createVertexBuffer(vertex_data, index_data);
   }
 }
 
-void Geometry::createVertexBuffer(const std::vector<float>& vertexData, const std::vector<uint16_t>& indexData) {
+void Geometry::createVertexBuffer(const std::vector<float>& vertexData, const std::vector<uint32_t>& indexData) {
   vertexCount_ = vertexData.size();
   indexCount_ = indexData.size();
 
@@ -65,5 +78,5 @@ void Geometry::createVertexBuffer(const std::vector<float>& vertexData, const st
 void Geometry::bind(VkCommandBuffer commandBuffer) const {
   VkDeviceSize offset = 0;
   vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuf_, &offset);
-  vkCmdBindIndexBuffer(commandBuffer, indexBuf_, offset, VK_INDEX_TYPE_UINT16);
+  vkCmdBindIndexBuffer(commandBuffer, indexBuf_, offset, VK_INDEX_TYPE_UINT32);
 }
