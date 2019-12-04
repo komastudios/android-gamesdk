@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2238e4ab_e2d1b666",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-12-04T23:19:05Z",
+      "side": 1,
+      "message": "Do you think it would be good to have the label of the button show which polyhedron you are currently on? so when you press the button it will change the label to the currently selected polyhedron\u0027s face count \n\nSo the label could be like \"Poly: ##\" where ## is the current face count of the polyhedra\n\nYou might need to add a setter to the button class for the default label in order to do this since I don\u0027t think I have one there\n\n(idea could be applied to texture as well)",
+      "revId": "7624129da8111fbf7d384157c92d982b03d01aee",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
