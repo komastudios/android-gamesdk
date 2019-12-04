@@ -3,8 +3,6 @@
 
 #include "shader_bindings.h"
 
-const int specExponent = 128;
-
 struct PointLight {
     vec3 position;
     vec3 color;
@@ -21,7 +19,10 @@ uniform sampler2D texSampler;
 
 layout(set = BINDING_SET_MATERIAL, binding = FRAGMENT_BINDING_MATERIAL_ATTRIBUTES)
 uniform MaterialAttributes {
-    vec3 color;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    float specularExponent;
 } materialAttr;
 
 layout(set = BINDING_SET_LIGHTS, binding = FRAGMENT_BINDING_LIGHTS)
@@ -40,26 +41,25 @@ layout(location = 0) out vec4 outColor;
 vec3 calcPointLight(PointLight light){
     vec3 lightDir = normalize(light.position - fragPos);
     vec3 viewDir = normalize(lightBlock.cameraPos - fragPos);
-    vec3 halfwayDir = normalize(lightDir +  viewDir);
+    vec3 halfwayDir = normalize(lightDir + viewDir);
 
     vec3 lightDiff = light.position - fragPos;
-    float distSquared = dot(lightDiff, lightDiff);
-    float attenuation = light.intensity / distSquared;
+    float attenuation = light.intensity / length(lightDiff);
 
     float diffuseTerm = max(dot(lightDir, fragNormal), 0.0);
-    vec3 diffuse = diffuseTerm * light.color * attenuation;
-    float specularTerm = pow(max(dot(fragNormal, halfwayDir), 0.0), specExponent);
-    vec3 specular = specularTerm * light.color * attenuation;
+    vec3 diffuse = diffuseTerm * light.color * attenuation * texture(texSampler, fragTexCoord).xyz;
+    float specularTerm = pow(max(dot(fragNormal, halfwayDir), 0.0), materialAttr.specularExponent);
+    vec3 specular = specularTerm * light.color * attenuation * materialAttr.specular;
     return diffuse + specular;
 }
 
 vec3 calcAmbientLight(AmbientLight light){
-    return light.intensity * light.color;
+    return light.intensity * light.color * materialAttr.ambient;
 }
 
 void main(){
     vec3 res = calcPointLight(lightBlock.pointLight) +
                calcAmbientLight(lightBlock.ambientLight);
 
-    outColor = vec4((res * materialAttr.color), 1.0) * texture(texSampler, fragTexCoord);
+    outColor = vec4(res, 1.0) * texture(texSampler, fragTexCoord);
 }
