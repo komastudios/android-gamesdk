@@ -62,6 +62,8 @@ public:
 
   glm::mat4 GetTransform() const;
 
+  BoundingBox GetBoundingBoxWorldSpace() const;
+
   int GetTrianglesCount() const;
 
 private:
