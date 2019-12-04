@@ -14,6 +14,8 @@
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
+#define GLM_FORCE_CXX17
+#define GLM_ENABLE_EXPERIMENTAL
 
 #include "vulkan_main.h"
 
@@ -24,6 +26,7 @@
 #include <cstring>
 #include <debug_marker.h>
 #include <chrono>
+#include <obj_loader.h>
 #include "timing.h"
 
 #include "vulkan_wrapper.h"
@@ -238,16 +241,20 @@ void createTextures() {
 
 void createMaterials() {
   Timing::timer.time("Materials Creation", Timing::OTHER, []() {
+    MaterialAttributes defaultMaterial;
+    defaultMaterial.specular = {0.8f, 0.0f, 0.5f, 128.0f};
+    defaultMaterial.diffuse = {0.8f, 0.0f, 0.5f};
+    defaultMaterial.ambient = {0.8f, 0.0f, 0.5f};
     baselineMaterials.push_back(std::make_shared<Material>(renderer, shaders, nullptr));
     baselineMaterials.push_back(std::make_shared<Material>(renderer,
                                                            shaders,
                                                            nullptr,
-                                                           glm::vec3(0.8, 0.0, 0.5)));
+                                                           defaultMaterial));
     baselineMaterials.push_back(std::make_shared<Material>(renderer, shaders, textures[0]));
     baselineMaterials.push_back(std::make_shared<Material>(renderer,
                                                            shaders,
                                                            textures[0],
-                                                           glm::vec3(0.8, 0.0, 0.5)));
+                                                           defaultMaterial));
 
     for (uint32_t i = 0; i < textures.size(); ++i) {
       materials.push_back(std::make_shared<Material>(renderer, shaders, textures[i]));
@@ -258,7 +265,7 @@ void createMaterials() {
 void createGeometries() {
   for (int x = 0; x < allowedPolyFaces.size(); x++) {
     std::vector<float> vertex_data;
-    std::vector<uint16_t> index_data;
+    std::vector<uint32_t> index_data;
     polyhedronGenerators[x](vertex_data, index_data);
     geometries.push_back(std::make_shared<Geometry>(*device,
                                                     vertex_data,
