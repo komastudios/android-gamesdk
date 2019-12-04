@@ -20,7 +20,7 @@ Mesh::Mesh(Renderer &renderer, std::shared_ptr<Material> material, std::shared_p
 }
 
 Mesh::Mesh(Renderer &renderer, std::shared_ptr<Material> material, const std::vector<float> &vertexData,
-           const std::vector<uint16_t> &indexData) :
+           const std::vector<uint32_t> &indexData) :
     Mesh(renderer,
          material,
          std::make_shared<Geometry>(renderer.getDevice(), vertexData, indexData)) {}
@@ -160,7 +160,7 @@ void Mesh::submitDraw(VkCommandBuffer commandBuffer, uint_t frame_index) const {
                    1, 0, 0, 0);
 }
 
-void Mesh::swapGeometry(const std::vector<float>& vertexData, const std::vector<uint16_t>& indexData) {
+void Mesh::swapGeometry(const std::vector<float>& vertexData, const std::vector<uint32_t>& indexData) {
   geometry_ = std::make_shared<Geometry>(renderer_.getDevice(), vertexData, indexData);
 }
 

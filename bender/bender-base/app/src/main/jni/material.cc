@@ -14,7 +14,7 @@ void Material::createDefaultTexture(Renderer& renderer) {
   default_texture_ = std::make_shared<Texture>(renderer.getDevice(), imgData, 1, 1, VK_FORMAT_R8G8B8A8_SRGB);
 }
 
-Material::Material(Renderer& renderer, std::shared_ptr<ShaderState> shaders, std::shared_ptr<Texture> texture, const glm::vec3 color) :
+Material::Material(Renderer& renderer, std::shared_ptr<ShaderState> shaders, std::shared_ptr<Texture> texture, const MaterialAttributes &attrs) :
     renderer_(renderer) {
   shaders_ = shaders;
   if (texture == nullptr) {
@@ -23,7 +23,7 @@ Material::Material(Renderer& renderer, std::shared_ptr<ShaderState> shaders, std
   } else {
     texture_ = texture;
   }
-  color_ = color;
+  material_attributes_ = attrs;
   material_buffer_ = std::make_unique<UniformBufferObject<MaterialAttributes>>(renderer_.getDevice());
 
   createSampler();
@@ -100,7 +100,7 @@ void Material::createMaterialDescriptorSets() {
   material_descriptor_sets_.resize(renderer_.getDevice().getDisplayImages().size());
   CALL_VK(vkAllocateDescriptorSets(renderer_.getVulkanDevice(), &allocInfo, material_descriptor_sets_.data()));
 
-  glm::vec3 color = color_;
+  MaterialAttributes attrs = material_attributes_;
 
   for (size_t i = 0; i < renderer_.getDevice().getDisplayImages().size(); i++) {
     std::array<VkWriteDescriptorSet, MATERIAL_DESCRIPTOR_LAYOUT_SIZE> descriptorWrites = {};
@@ -118,8 +118,11 @@ void Material::createMaterialDescriptorSets() {
     descriptorWrites[0].descriptorCount = 1;
     descriptorWrites[0].pImageInfo = &imageInfo;
 
-    material_buffer_->update(i, [&color](auto& ubo) {
-        ubo.color = color;
+    material_buffer_->update(i, [&attrs](auto& ubo) {
+        ubo.ambient = attrs.ambient;
+        ubo.specular = attrs.specular;
+        ubo.diffuse = attrs.diffuse;
+        ubo.specularExponent = attrs.specularExponent;
     });
 
     VkDescriptorBufferInfo materialBufferInfo = {};

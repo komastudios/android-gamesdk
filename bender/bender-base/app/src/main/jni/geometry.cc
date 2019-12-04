@@ -11,7 +11,7 @@ using namespace BenderHelpers;
 
 Geometry::Geometry(BenderKit::Device& device,
                    const std::vector<float>& vertexData,
-                   const std::vector<uint16_t>& indexData) : device_(device) {
+                   const std::vector<uint32_t>& indexData) : device_(device) {
   createVertexBuffer(vertexData, indexData);
 }
 
@@ -22,7 +22,7 @@ Geometry::~Geometry() {
   vkFreeMemory(device_.getDevice(), indexBufferDeviceMemory_, nullptr);
 }
 
-void Geometry::createVertexBuffer(const std::vector<float>& vertexData, const std::vector<uint16_t>& indexData) {
+void Geometry::createVertexBuffer(const std::vector<float>& vertexData, const std::vector<uint32_t>& indexData) {
   vertexCount_ = vertexData.size();
   indexCount_ = indexData.size();
 
@@ -47,5 +47,5 @@ void Geometry::createVertexBuffer(const std::vector<float>& vertexData, const st
 void Geometry::bind(VkCommandBuffer commandBuffer) const {
   VkDeviceSize offset = 0;
   vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuf_, &offset);
-  vkCmdBindIndexBuffer(commandBuffer, indexBuf_, offset, VK_INDEX_TYPE_UINT16);
+  vkCmdBindIndexBuffer(commandBuffer, indexBuf_, offset, VK_INDEX_TYPE_UINT32);
 }
