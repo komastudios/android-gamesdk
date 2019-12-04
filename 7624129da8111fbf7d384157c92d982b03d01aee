@@ -16,6 +16,24 @@
       "revId": "7624129da8111fbf7d384157c92d982b03d01aee",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d62cff08_bfc64125",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-12-04T23:21:18Z",
+      "side": 1,
+      "message": "Ooh, right now I\u0027m having both buttons change complexity for all the polyhedra (aka all of them will become 12-sided in a step, or all of them will change texture). I figure that that\u0027s probably the most useful for comparing performance? But yeah at least right now, it\u0027s not changing individual objects.",
+      "parentUuid": "2238e4ab_e2d1b666",
+      "revId": "7624129da8111fbf7d384157c92d982b03d01aee",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
