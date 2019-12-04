@@ -17,6 +17,11 @@
 
 #include "vulkan_wrapper.h"
 #include "bender_kit.h"
+#include <android/asset_manager.h>
+#define GLM_FORCE_CXX17
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/glm.hpp"
+#include <unordered_map>
 
 namespace BenderHelpers {
 
@@ -34,6 +39,32 @@ VkFormat findSupportedFormat(BenderKit::Device *device,
                              VkFormatFeatureFlags features);
 
 VkFormat findDepthFormat(BenderKit::Device *device);
+
+
+struct MTL{
+  glm::vec3 ambient;
+  glm::vec3 diffuse;
+  glm::vec3 specular;
+  float specularExponent;
+
+  std::string map_Ka;
+  std::string map_Kd;
+  std::string map_Ks;
+  std::string map_Ns;
+  std::string map_bump;
+};
+
+struct OBJ{
+  std::string name;
+  std::string materialName;
+  std::vector<uint16_t> indexBuffer;
+};
+
+void loadOBJ(AAssetManager *mgr,
+             const std::string &fileName,
+             std::vector<float> &vertexData,
+             std::unordered_map<std::string, MTL> &mtllib,
+             std::vector<OBJ> &modelData);
 
 }
 

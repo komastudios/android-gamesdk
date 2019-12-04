@@ -422,7 +422,7 @@ bool InitVulkan(android_app *app) {
 
     renderer = new Renderer(*device);
 
-    Timing::timer.time("Mesh Creation", Timing::OTHER, [](){
+    Timing::timer.time("Mesh Creation", Timing::OTHER, [app](){
       texFiles.push_back("textures/sample_texture.png");
       texFiles.push_back("textures/sample_texture2.png");
 
@@ -430,8 +430,20 @@ bool InitVulkan(android_app *app) {
 
       createMaterials();
 
-      Timing::timer.time("Create Polyhedron", Timing::OTHER, [](){
-        meshes.push_back(createPolyhedron(*renderer, materials[0], 20));
+      Timing::timer.time("Create Polyhedron", Timing::OTHER, [app](){
+        // Every OBJ file has it's own vertex buffer essentially
+        // Multiple models can be defined in a single OBJ file
+        // They all share the same vertex buffer (the global one for the OBJ file)
+        // Models are specified with their index buffer
+        // (the indicies of which correspond to the global vertex buffer of the file)
+        
+        std::vector<float> vertexData;
+        std::vector<OBJ> modelData;
+        std::unordered_map<std::string, MTL> mtllib;
+        loadOBJ(app->activity->assetManager, "models/untitled.obj", vertexData, mtllib, modelData);
+
+        // Iterate over all the MTLs in map, instantiate them as Materials
+        // Then iterate over the OBJ vector and get the Material that corresponds to their MTL
       });
     });
 
