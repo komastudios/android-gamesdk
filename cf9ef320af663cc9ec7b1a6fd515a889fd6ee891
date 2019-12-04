@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dc3d3060_d9168ed5",
+        "filename": "cert/test/reporting/lib/devicefarm.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-04T18:37:20Z",
+      "side": 1,
+      "message": "Last-min request: let\u0027s make file_name to be \"skipped_....json\" (that is to say, all lowercase).\nThat way it keeps some consistency with the non-skipped reports, which adhere to the pattern \"report_....json\"\n\nThanks!",
+      "revId": "cf9ef320af663cc9ec7b1a6fd515a889fd6ee891",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "004f38d2_d4ceaa6a",
+        "filename": "cert/test/reporting/lib/devicefarm.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-04T18:37:20Z",
+      "side": 1,
+      "message": "Whitespace",
+      "revId": "cf9ef320af663cc9ec7b1a6fd515a889fd6ee891",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "804ce90e_00df792e",
+        "filename": "cert/test/reporting/lib/devicefarm.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-04T18:37:20Z",
+      "side": 1,
+      "message": "Whitespace",
+      "revId": "cf9ef320af663cc9ec7b1a6fd515a889fd6ee891",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
