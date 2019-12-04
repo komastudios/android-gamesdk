@@ -422,7 +422,7 @@ bool InitVulkan(android_app *app) {
 
     renderer = new Renderer(*device);
 
-    Timing::timer.time("Mesh Creation", Timing::OTHER, [](){
+    Timing::timer.time("Mesh Creation", Timing::OTHER, [app](){
       texFiles.push_back("textures/sample_texture.png");
       texFiles.push_back("textures/sample_texture2.png");
 
@@ -430,8 +430,11 @@ bool InitVulkan(android_app *app) {
 
       createMaterials();
 
-      Timing::timer.time("Create Polyhedron", Timing::OTHER, [](){
-        meshes.push_back(createPolyhedron(*renderer, materials[0], 20));
+      Timing::timer.time("Create Polyhedron", Timing::OTHER, [app](){
+        std::vector<float> vertexData;
+        std::vector<uint16_t> indexData;
+        loadOBJ(app->activity->assetManager, "models/untitled.obj", vertexData, indexData);
+        meshes.push_back(new Mesh(*renderer, materials[0], vertexData, indexData));
       });
     });
 

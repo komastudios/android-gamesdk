@@ -17,6 +17,7 @@
 
 #include "vulkan_wrapper.h"
 #include "bender_kit.h"
+#include <android/asset_manager.h>
 
 namespace BenderHelpers {
 
@@ -34,6 +35,12 @@ VkFormat findSupportedFormat(BenderKit::Device *device,
                              VkFormatFeatureFlags features);
 
 VkFormat findDepthFormat(BenderKit::Device *device);
+
+
+void loadOBJ(AAssetManager *mgr,
+             const std::string &fileName,
+             std::vector<float> &vertexData,
+             std::vector<u_int16_t> &indexBuffer);
 
 }
 

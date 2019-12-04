@@ -13,91 +13,97 @@
 // limitations under the License.
 
 #include "bender_helpers.h"
+#define GLM_FORCE_CXX17
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/glm.hpp"
+#include "glm/gtx/hash.hpp"
+#include <sstream>
+#include <unordered_map>
 
 namespace BenderHelpers {
 
 uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties,
                         VkPhysicalDevice gpuDevice) {
-    VkPhysicalDeviceMemoryProperties memProperties;
-    vkGetPhysicalDeviceMemoryProperties(gpuDevice, &memProperties);
+  VkPhysicalDeviceMemoryProperties memProperties;
+  vkGetPhysicalDeviceMemoryProperties(gpuDevice, &memProperties);
 
-    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
-        if ((typeFilter & (1 << i)) &&
-            (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
-            return i;
-        }
+  for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+    if ((typeFilter & (1 << i)) &&
+        (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+      return i;
     }
+  }
 
-    LOGE("failed to find suitable memory type!");
-    return -1;
+  LOGE("failed to find suitable memory type!");
+  return -1;
 }
 
 void setImageLayout(VkCommandBuffer cmdBuffer, VkImage image,
                     VkImageLayout oldImageLayout, VkImageLayout newImageLayout,
                     VkPipelineStageFlags srcStages,
                     VkPipelineStageFlags destStages) {
-    VkImageMemoryBarrier imageMemoryBarrier = {
-            .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-            .pNext = NULL,
-            .srcAccessMask = 0,
-            .dstAccessMask = 0,
-            .oldLayout = oldImageLayout,
-            .newLayout = newImageLayout,
-            .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-            .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-            .image = image,
-            .subresourceRange =
-                    {
-                            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-                            .baseMipLevel = 0,
-                            .levelCount = 1,
-                            .baseArrayLayer = 0,
-                            .layerCount = 1,
-                    },
-    };
+  VkImageMemoryBarrier imageMemoryBarrier = {
+      .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+      .pNext = NULL,
+      .srcAccessMask = 0,
+      .dstAccessMask = 0,
+      .oldLayout = oldImageLayout,
+      .newLayout = newImageLayout,
+      .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      .image = image,
+      .subresourceRange =
+          {
+              .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+              .baseMipLevel = 0,
+              .levelCount = 1,
+              .baseArrayLayer = 0,
+              .layerCount = 1,
+          },
+  };
 
-    switch (oldImageLayout) {
-        case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
-            imageMemoryBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-            break;
+  switch (oldImageLayout) {
+    case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+      imageMemoryBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+      break;
 
-        case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-            imageMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-            break;
+    case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+      imageMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+      break;
 
-        case VK_IMAGE_LAYOUT_PREINITIALIZED:imageMemoryBarrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT;
-            break;
+    case VK_IMAGE_LAYOUT_PREINITIALIZED:imageMemoryBarrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT;
+      break;
 
-        default:break;
-    }
+    default:break;
+  }
 
-    switch (newImageLayout) {
-        case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-            imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-            break;
+  switch (newImageLayout) {
+    case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+      imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+      break;
 
-        case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
-            imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-            break;
+    case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+      imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+      break;
 
-        case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
-            imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-            break;
+    case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+      imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+      break;
 
-        case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
-            imageMemoryBarrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-            break;
+    case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+      imageMemoryBarrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+      break;
 
-        case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
-            imageMemoryBarrier.dstAccessMask =
-                    VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-            break;
+    case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+      imageMemoryBarrier.dstAccessMask =
+          VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+      break;
 
-        default:break;
-    }
+    default:break;
+  }
 
-    vkCmdPipelineBarrier(cmdBuffer, srcStages, destStages, 0, 0, NULL, 0, NULL, 1,
-                         &imageMemoryBarrier);
+  vkCmdPipelineBarrier(cmdBuffer, srcStages, destStages, 0, 0, NULL, 0, NULL, 1,
+                       &imageMemoryBarrier);
 }
 
 VkFormat findSupportedFormat(BenderKit::Device *device,
@@ -128,4 +134,80 @@ VkFormat findDepthFormat(BenderKit::Device *device) {
   );
 }
 
+void addVertex(glm::vec3 &currVert,
+               std::vector<uint16_t> &indexBuffer,
+               std::vector<float> &vertexData,
+               std::unordered_map<glm::vec3, uint16_t> &vertToIndex,
+               std::vector<glm::vec3> &position,
+               std::vector<glm::vec3> &normal,
+               std::vector<glm::vec2> &texCoord) {
+  uint16_t index;
+  if (vertToIndex.find(currVert) != vertToIndex.end()) {
+    indexBuffer.push_back(vertToIndex[currVert]);
+    return;
+  }
+
+  index = vertToIndex.size();
+  vertToIndex[currVert] = index;
+  indexBuffer.push_back(vertToIndex[currVert]);
+  vertexData.push_back(position[currVert.x - 1].x);
+  vertexData.push_back(position[currVert.x - 1].y);
+  vertexData.push_back(position[currVert.x - 1].z);
+
+  vertexData.push_back(normal[currVert.z - 1].x);
+  vertexData.push_back(normal[currVert.z - 1].y);
+  vertexData.push_back(normal[currVert.z - 1].z);
+
+  vertexData.push_back(texCoord[currVert.y - 1].x);
+  vertexData.push_back(texCoord[currVert.y - 1].y);
+}
+
+void loadOBJ(AAssetManager *mgr,
+             const std::string &fileName,
+             std::vector<float> &vertexData,
+             std::vector<u_int16_t> &indexBuffer) {
+
+  std::vector<glm::vec3> position;
+  std::vector<glm::vec3> normal;
+  std::vector<glm::vec2> texCoord;
+
+  std::unordered_map<glm::vec3, uint16_t> vertToIndex;
+
+
+  // Read the file:
+  AAsset *file = AAssetManager_open(mgr, fileName.c_str(), AASSET_MODE_BUFFER);
+  size_t fileLength = AAsset_getLength(file);
+
+  char *fileContent = new char[fileLength];
+  AAsset_read(file, fileContent, fileLength);
+
+  std::stringstream data;
+  data << fileContent;
+
+  std::string label;
+  while (data >> label) {
+    if (label == "v") {
+      float x, y, z;
+      data >> x >> y >> z;
+      position.push_back({x, y, z});
+    } else if (label == "vt") {
+      float x, y;
+      data >> x >> y;
+      texCoord.push_back({x, y});
+    } else if (label == "vn") {
+      float x, y, z;
+      data >> x >> y >> z;
+      normal.push_back({x, y, z});
+    } else if (label == "f") {
+      glm::vec3 vertex1, vertex2, vertex3;
+      char skip;
+      data >> vertex1.x >> skip >> vertex1.y >> skip >> vertex1.z;
+      data >> vertex2.x >> skip >> vertex2.y >> skip >> vertex2.z;
+      data >> vertex3.x >> skip >> vertex3.y >> skip >> vertex3.z;
+      addVertex(vertex3, indexBuffer, vertexData, vertToIndex, position, normal, texCoord);
+      addVertex(vertex2, indexBuffer, vertexData, vertToIndex, position, normal, texCoord);
+      addVertex(vertex1, indexBuffer, vertexData, vertToIndex, position, normal, texCoord);
+    }
+  }
+}
 }
