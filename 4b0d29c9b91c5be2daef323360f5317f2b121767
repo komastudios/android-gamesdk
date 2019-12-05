@@ -34,6 +34,24 @@
       "revId": "4b0d29c9b91c5be2daef323360f5317f2b121767",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "90d2c564_f3e3f194",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 563,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-12-05T22:02:00Z",
+      "side": 1,
+      "message": "I am not good at grammar so 😄. Also yeah I should have make these separate const char*s for readability.",
+      "parentUuid": "b67125a2_69d08e13",
+      "revId": "4b0d29c9b91c5be2daef323360f5317f2b121767",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
