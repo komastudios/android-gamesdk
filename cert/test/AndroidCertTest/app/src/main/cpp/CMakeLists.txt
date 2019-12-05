@@ -109,6 +109,10 @@ add_library(${PROJECT_NAME} SHARED
         operations/gl/TeapotRendererGLES3Operation.cpp
         operations/gl/HalfFloatPrecisionGLES3Operation.cpp
         operations/gl/DepthClearGLES3Operation.cpp
+        operations/gl/MarchingCubesGLES3Operation.cpp
+        operations/gl/marching_cubes/MarchingCubes.cpp
+        operations/gl/marching_cubes/Storage.cpp
+
 
         # some external deps
         ${CpuFeaturesDir}/cpu-features.c
