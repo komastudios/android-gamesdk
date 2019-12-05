@@ -70,6 +70,24 @@
       "revId": "7624129da8111fbf7d384157c92d982b03d01aee",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2303809d_07360357",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-12-05T21:24:07Z",
+      "side": 1,
+      "message": "I think I\u0027m gonna table this b/c there isn\u0027t a straightforward way to do this that doesn\u0027t also make Button bulkier.\n\nOmar\u0027s suggestion and my thought is that I could add a text setter in Button, and change the std::function signature to include a ptr to the Button that the button could pass with `this`. However, as far as I can tell, there isn\u0027t a way to specify an optional parameter for std::function, which would require that all functions passed to the Button have a Button * param, even if they\u0027re not using it. I don\u0027t think this is a good idea to require, and I don\u0027t think that alternatives are better (in terms of having a std::function with a different signature to assign to, or to wrap all functions without a param with a [] (Button *b) {f();} or something like that).\n\nWe may need some text setting functionality in the future regardless, but I don\u0027t think that expanding it for Poly: ## is worthy for now. An easier alternative would to just print the number of faces per polyhedron, as is done with # of polyhedra and # of triangles, for example.",
+      "parentUuid": "7925857d_83c852aa",
+      "revId": "7624129da8111fbf7d384157c92d982b03d01aee",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
