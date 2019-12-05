@@ -36,13 +36,12 @@
 #include "texture.h"
 #include "font.h"
 #include "uniform_buffer.h"
+#include "button.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
 #include "shader_bindings.h"
-
-#include <button.h>
 
 using namespace BenderKit;
 using namespace BenderHelpers;

@@ -25,7 +25,6 @@ add_library(bender-kit STATIC
         ${KIT_DIR}/vertex_format.cc
         ${KIT_DIR}/debug_marker.cc
         ${KIT_DIR}/timing.cc
-        ${KIT_DIR}/button.cc
         ${WRAPPER_DIR}/vulkan_wrapper.cc)
 
 add_library(base SHARED
@@ -41,7 +40,8 @@ add_library(base SHARED
         ${SRC_DIR}/mesh.cc
         ${SRC_DIR}/polyhedron.cc
         ${SRC_DIR}/font.cc
-        ${SRC_DIR}/input.cc)
+        ${SRC_DIR}/input.cc
+        ${SRC_DIR}/button.cc)
 
 add_library(utils STATIC
         ${UTILS_DIR}/bender_helpers.cc)

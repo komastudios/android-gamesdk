@@ -15,10 +15,11 @@
 #ifndef BENDER_BASE_APP_SRC_MAIN_JNI_INPUT_H_
 #define BENDER_BASE_APP_SRC_MAIN_JNI_INPUT_H_
 
-#include <button.h>
 #include <map>
 #include <vector>
 #include <functional>
+
+#include "button.h"
 
 namespace Input {
 
