@@ -106,6 +106,24 @@
       "revId": "7624129da8111fbf7d384157c92d982b03d01aee",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "273b5fbb_a19095dd",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-12-05T21:37:04Z",
+      "side": 1,
+      "message": "I considered that, but that would still require the function to know about the existence of the Button calling it (or just generally the buttons in Input::buttons), which doesn\u0027t feel like an advisable idea.",
+      "parentUuid": "a5a3cd17_c5ca3f7c",
+      "revId": "7624129da8111fbf7d384157c92d982b03d01aee",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
