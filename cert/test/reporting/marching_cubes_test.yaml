@@ -1,0 +1,10 @@
+build:
+  clean: false
+  configuration: configurations/marching_cubes_test.json
+
+deployment:
+  local:
+    all_attached_devices: true
+
+chart:
+  enabled: false
