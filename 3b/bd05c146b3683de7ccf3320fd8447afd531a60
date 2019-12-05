@@ -1,0 +1,13 @@
+Presubmit-Ready+1: Matt Wang <mattkw@google.com>
+Presubmit-Ready+1: Francesco Carucci <fcarucci@google.com>
+Code-Review+1: Andy Yu <chingtangyu@google.com>
+Code-Review+1: Francesco Carucci <fcarucci@google.com>
+Code-Review+2: Matt Wang <mattkw@google.com>
+Verified+1: Francesco Carucci <fcarucci@google.com>
+Open-Source-Licensing+1: Francesco Carucci <fcarucci@google.com>
+Autosubmit+1: Francesco Carucci <fcarucci@google.com>
+Submitted-by: Matt Wang <mattkw@google.com>
+Submitted-at: Thu, 05 Dec 2019 20:36:28 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1182936
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
