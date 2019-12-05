@@ -15,9 +15,5 @@ deployment:
     #   - 6feeb429
     #   - 94CX1Z4AJ
 
-chart:
+summary:
   enabled: true
-  suites:
-    - "Vulkan memory write protection"
-  fields:
-    - "mprotect.rank"
