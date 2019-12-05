@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "27e97e98_06715ba6",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 563,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-12-05T21:48:45Z",
+      "side": 1,
+      "message": "would there be a case when mesh/triangle becomes zero?",
+      "revId": "4b0d29c9b91c5be2daef323360f5317f2b121767",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
