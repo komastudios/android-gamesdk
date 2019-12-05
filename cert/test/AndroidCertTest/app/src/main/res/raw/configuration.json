@@ -183,6 +183,30 @@
     },
     {
       "enabled": true,
+      "name": "WaitForPI",
+      "description": "Testing out Pi and waiting: This will make the phone hot!",
+      "duration": "20000ms",
+      "data_gatherer":
+      {
+        "id": "CalculateWaitPIOperation",
+        "enabled": true,
+        "configuration": {
+          "affinity": true,
+          "performance_sample_period": "1000ms",
+          "iterationWaitCount": 10000,
+          "iterationWaitTime": 0
+        }
+      },
+      "stressors": [
+      {
+        "id": "HelloGLES3Operation",
+        "configuration": {
+        }
+      }
+      ]
+    },
+    {
+      "enabled": true,
       "name": "Java test, c++ Stressor",
       "description": "Single java test, single c++ stressor",
       "duration": "10sec",

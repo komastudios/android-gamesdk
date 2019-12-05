@@ -97,6 +97,8 @@ add_library(${PROJECT_NAME} SHARED
         operations/CalculatePIOperation.cpp
         operations/IOPerformanceOperation.cpp
         operations/MemoryAccessOperation.cpp
+        operations/CalculateWaitPIOperation.cpp
+
         operations/MemoryAllocOperation.cpp
         operations/MonitorOperation.cpp
         operations/ScheduleAffinityOperation.cpp
