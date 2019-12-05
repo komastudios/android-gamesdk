@@ -8,6 +8,7 @@ get_filename_component(GTestDir ${ANDROID_NDK}/sources/third_party/googletest AB
 get_filename_component(CpuFeaturesDir ${ANDROID_NDK}/sources/android/cpufeatures ABSOLUTE)
 
 #===================================================================================================
+include("${GameSDKDir}/src/device_info/device_info.cmake")
 
 project(native-lib LANGUAGES C CXX)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
@@ -65,7 +66,6 @@ else ()
     )
 endif ()
 
-include("${GameSDKDir}/src/device_info/device_info.cmake")
 add_compile_options("-frtti")
 
 find_library(log-lib
@@ -109,6 +109,10 @@ add_library(${PROJECT_NAME} SHARED
         operations/gl/TeapotRendererGLES3Operation.cpp
         operations/gl/HalfFloatPrecisionGLES3Operation.cpp
         operations/gl/DepthClearGLES3Operation.cpp
+        operations/gl/MarchingCubesGLES3Operation.cpp
+        operations/gl/marching_cubes/MarchingCubes.cpp
+        operations/gl/marching_cubes/Storage.cpp
+
 
         # some external deps
         ${CpuFeaturesDir}/cpu-features.c
