@@ -46,6 +46,30 @@
       "revId": "8f0dacfd36ee5be61f4424ccdee1ba892c93047a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c9c3c496_945e1e0a",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2019-12-05T15:24:18Z",
+      "side": 1,
+      "message": "Did you upload the change? I can\u0027t see it in patch 3 and that\u0027s the latest I can see.",
+      "parentUuid": "46a95a78_011afb5a",
+      "range": {
+        "startLine": 82,
+        "startChar": 0,
+        "endLine": 82,
+        "endChar": 31
+      },
+      "revId": "8f0dacfd36ee5be61f4424ccdee1ba892c93047a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
