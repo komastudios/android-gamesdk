@@ -204,7 +204,7 @@ class LocalToolchain extends Toolchain {
         def tools = project_.fileTree( dir: project_.joinPath(sdkPath_, 'cmake'),
                                       include: ['**/bin/'+name+project_.osSuffix()] )
         if (tools==null || tools.size() == 0) {
-            throw new GradleException('No ' + osname + ' found in ' + sdkPath_ + '/cmake')
+            throw new GradleException('No ' + name + ' found in ' + sdkPath_ + '/cmake')
         }
         return tools.getFiles().last().toString()
     }
