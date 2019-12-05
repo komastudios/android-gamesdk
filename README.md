@@ -44,12 +44,12 @@ cd gamesdk
 ./download.sh
 ```
 
-Finally, build the Game SDK using downloaded pebuilts.
+Finally, build the Game SDK using downloaded prebuilts.
 
 ```bash
 cd gamesdk
-ANDROID_HOME=../prebuilts/sdk ANDROID_NDK=../prebuilts/ndk/r20 ./gradlew archiveZip # Without Tuning Fork
-ANDROID_HOME=../prebuilts/sdk ANDROID_NDK=../prebuilts/ndk/r20 ./gradlew archiveTfZip # With Tuning Fork
+ANDROID_HOME=`pwd`/../prebuilts/sdk ANDROID_NDK=`pwd`/../prebuilts/ndk/r20 ./gradlew archiveZip # Without Tuning Fork
+ANDROID_HOME=`pwd`/../prebuilts/sdk ANDROID_NDK=`pwd`/../prebuilts/ndk/r20 ./gradlew archiveTfZip # With Tuning Fork
 ```
 
 ### Build with all prebuilt SDKs
@@ -64,7 +64,7 @@ Build static and dynamic libraries for several SDK/NDK pairs.
 
 ```bash
 cd gamesdk
-ANDROID_HOME=../prebuilts/sdk ./gradlew gamesdkZip
+ANDROID_HOME=`pwd`/../prebuilts/sdk ./gradlew gamesdkZip
 ```
 
 ## Tests
