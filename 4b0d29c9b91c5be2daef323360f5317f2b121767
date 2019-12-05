@@ -16,6 +16,24 @@
       "revId": "4b0d29c9b91c5be2daef323360f5317f2b121767",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b67125a2_69d08e13",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 563,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-12-05T21:57:50Z",
+      "side": 1,
+      "message": "Yeah, this is actually why I changed the condition from \u003e1 to \u003d\u003d1, b/c I think that a singular is the only case where the noun is singular (\"I have one mesh\" vs. \"I have zero meshes\"), so I figured it would read more clearly.",
+      "parentUuid": "27e97e98_06715ba6",
+      "revId": "4b0d29c9b91c5be2daef323360f5317f2b121767",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }

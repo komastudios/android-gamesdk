@@ -142,6 +142,24 @@
       "revId": "7624129da8111fbf7d384157c92d982b03d01aee",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "57db9f4e_5b478d9a",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-12-05T21:57:50Z",
+      "side": 1,
+      "message": "I\u0027ll defer to Fran or others if they have a good answer; I think it shouldn\u0027t be a bad thing in the general case for a callback to perform operations with the button, so I was trying to figure out if I could pass the button with a lambda or something, to avoid requiring a Button param instead of optionally having one for callback functions.",
+      "parentUuid": "af74ee70_48a4cc58",
+      "revId": "7624129da8111fbf7d384157c92d982b03d01aee",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
