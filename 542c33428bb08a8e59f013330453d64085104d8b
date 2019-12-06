@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8a62f0f3_3ab01e8d",
+        "filename": "cert/test/reporting/lib/graphing_components.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-06T22:58:51Z",
+      "side": 1,
+      "message": "👏👏👏👏👏",
+      "revId": "542c33428bb08a8e59f013330453d64085104d8b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
