@@ -37,6 +37,57 @@
     },
     {
       "key": {
+        "uuid": "33ad48f7_59352017",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-06T23:49:54Z",
+      "side": 1,
+      "message": "Texture should be a shared_ptr or unique_ptr",
+      "revId": "9520e5635888859fb78ee15fe924d3fa59f21a5f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dadb3f50_e58b2145",
+        "filename": "bender/bender-base/app/src/main/jni/material.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-06T23:49:54Z",
+      "side": 1,
+      "message": "You don\u0027t need to call reset. It\u0027s implicit.",
+      "revId": "9520e5635888859fb78ee15fe924d3fa59f21a5f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7abd1a28_feea955b",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-06T23:49:54Z",
+      "side": 1,
+      "message": "No need to call reset.",
+      "revId": "9520e5635888859fb78ee15fe924d3fa59f21a5f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b103c1f1_311a93cc",
         "filename": "bender/bender-base/app/src/main/jni/renderer.cc",
         "patchSetId": 1
@@ -68,6 +119,24 @@
       "revId": "9520e5635888859fb78ee15fe924d3fa59f21a5f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1218cc4e_45e80fad",
+        "filename": "bender/bender-base/app/src/main/jni/shader_state.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-06T23:49:54Z",
+      "side": 1,
+      "message": "Cleanup is to delete resources like the shaders after it\u0027s been bound to a pipeline.",
+      "parentUuid": "30fa5aaa_7e7e1420",
+      "revId": "9520e5635888859fb78ee15fe924d3fa59f21a5f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
