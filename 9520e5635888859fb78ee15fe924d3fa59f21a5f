@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4c60aa1f_f680a404",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-12-06T23:46:32Z",
+      "side": 1,
+      "message": "Is this doing something related to validation errors? :O",
+      "revId": "9520e5635888859fb78ee15fe924d3fa59f21a5f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b103c1f1_311a93cc",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-12-06T23:46:32Z",
+      "side": 1,
+      "message": "Hmm, is this enough? I didn\u0027t update this b/c I thought it wasn\u0027t crashing anything, but in the maximal case, wouldn\u0027t it be all the things that have descriptor sets (everything for lights + all the meshes + all the materials)?",
+      "revId": "9520e5635888859fb78ee15fe924d3fa59f21a5f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "30fa5aaa_7e7e1420",
+        "filename": "bender/bender-base/app/src/main/jni/shader_state.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-12-06T23:46:32Z",
+      "side": 1,
+      "message": "@Fran, was there a reason why we were using cleanup() instead of a destructor? Was it something around preserving the other instance vars?",
+      "revId": "9520e5635888859fb78ee15fe924d3fa59f21a5f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
