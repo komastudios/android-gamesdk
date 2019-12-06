@@ -217,6 +217,13 @@ Font::~Font() {
     vkDestroyPipeline(renderer_.getVulkanDevice(), pipeline_, nullptr);
     vkDestroyPipelineCache(renderer_.getVulkanDevice(), cache_, nullptr);
     vkDestroyPipelineLayout(renderer_.getVulkanDevice(), layout_, nullptr);
+
+    vkDestroySampler(renderer_.getVulkanDevice(), sampler_, nullptr);
+    vkDestroyDescriptorSetLayout(renderer_.getVulkanDevice(), font_descriptors_layout_, nullptr);
+
+    delete texture_;
+    orientation_matrix_.reset();
+    shader_.reset();
 }
 
 void Font::createFontShaders(android_app &androidAppCtx) {

@@ -29,8 +29,10 @@ Mesh::Mesh(Renderer &renderer, std::shared_ptr<Material> material, const std::ve
 Mesh::~Mesh() {
   vkDestroyPipeline(renderer_.getVulkanDevice(), pipeline_, nullptr);
   vkDestroyPipelineLayout(renderer_.getVulkanDevice(), layout_, nullptr);
-
   vkDestroyDescriptorSetLayout(renderer_.getVulkanDevice(), mesh_descriptors_layout_, nullptr);
+  mesh_buffer_.reset();
+  geometry_.reset();
+  material_.reset();
 }
 
 void Mesh::createMeshDescriptors() {
