@@ -70,7 +70,7 @@ void ShaderState::fillPipelineInfo(VkGraphicsPipelineCreateInfo *pipeline_info) 
   pipeline_info->pInputAssemblyState = &pipelineInputAssembly;
 }
 
-void ShaderState::cleanup() {
+ShaderState::~ShaderState() {
   for (auto it = shaderModules.begin(); it != shaderModules.end(); it++) {
     vkDestroyShaderModule(device, *it, nullptr);
   }

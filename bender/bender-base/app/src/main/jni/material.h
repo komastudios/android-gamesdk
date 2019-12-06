@@ -25,6 +25,8 @@ public:
   VkDescriptorSetLayout getMaterialDescriptorSetLayout() const { return material_descriptors_layout_; }
   VkDescriptorSet getMaterialDescriptorSet(uint_t frame_index) const {return material_descriptor_sets_[frame_index]; }
 
+  static void cleanup() { default_texture_.reset(); }
+
 private:
   static std::shared_ptr<Texture> default_texture_;
 

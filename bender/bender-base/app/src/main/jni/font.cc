@@ -192,7 +192,7 @@ void Font::drawString(const std::string& text, float text_size, float x, float y
 
 Font::Font(Renderer& renderer, android_app &androidAppCtx,
            const std::string& font_texture_path, const std::string& font_info_path) : renderer_(renderer){
-    texture_ = new Texture(renderer_.getDevice(), androidAppCtx,
+    texture_ = std::make_unique<Texture>(renderer_.getDevice(), androidAppCtx,
                            font_texture_path.c_str(), VK_FORMAT_R8G8B8A8_SRGB);
 
     orientation_matrix_ = std::make_unique<UniformBufferObject<glm::mat4>>(renderer_.getDevice());
@@ -217,6 +217,9 @@ Font::~Font() {
     vkDestroyPipeline(renderer_.getVulkanDevice(), pipeline_, nullptr);
     vkDestroyPipelineCache(renderer_.getVulkanDevice(), cache_, nullptr);
     vkDestroyPipelineLayout(renderer_.getVulkanDevice(), layout_, nullptr);
+
+    vkDestroySampler(renderer_.getVulkanDevice(), sampler_, nullptr);
+    vkDestroyDescriptorSetLayout(renderer_.getVulkanDevice(), font_descriptors_layout_, nullptr);
 }
 
 void Font::createFontShaders(android_app &androidAppCtx) {

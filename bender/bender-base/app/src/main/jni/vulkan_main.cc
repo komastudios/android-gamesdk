@@ -480,13 +480,14 @@ bool InitVulkan(android_app *app) {
 bool IsVulkanReady(void) { return device != nullptr && device->isInitialized(); }
 
 void DeleteVulkan(void) {
+  vkDeviceWaitIdle(device->getDevice());
+
   delete renderer;
   for (int x = 0; x < meshes.size(); x++) {
     delete meshes[x];
   }
   delete font;
 
-  shaders->cleanup();
   shaders.reset();
 
   for (int i = 0; i < device->getSwapchainLength(); ++i) {
@@ -499,6 +500,11 @@ void DeleteVulkan(void) {
   vkFreeMemory(device->getDevice(), depthBuffer.device_memory, nullptr);
 
   vkDestroyRenderPass(device->getDevice(), render_pass, nullptr);
+
+  textures.clear();
+  baselineMaterials.clear();
+  materials.clear();
+  Material::cleanup();
 
   delete device;
   device = nullptr;
