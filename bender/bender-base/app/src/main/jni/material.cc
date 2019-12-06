@@ -34,6 +34,9 @@ Material::Material(Renderer& renderer, std::shared_ptr<ShaderState> shaders, std
 Material::~Material() {
   vkDestroySampler(renderer_.getVulkanDevice(), sampler_, nullptr);
   vkDestroyDescriptorSetLayout(renderer_.getVulkanDevice(), material_descriptors_layout_, nullptr);
+  shaders_.reset();
+  texture_.reset();
+  default_texture_.reset();
 }
 
 void Material::createSampler() {

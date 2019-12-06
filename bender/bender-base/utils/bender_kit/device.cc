@@ -54,10 +54,8 @@ Device::Device(ANativeWindow *window) {
 }
 
 Device::~Device() {
-  for (uint32_t i = 0; i < swapchainLength_; ++i) {
-    vkDestroyImage(device_, displayImages_[i], nullptr);
-  }
   vkDestroySwapchainKHR(device_, swapchain_, nullptr);
+  vkDestroySurfaceKHR(instance_, surface_, nullptr);
 
   // Delete Device
   vkDestroyDevice(device_, nullptr);

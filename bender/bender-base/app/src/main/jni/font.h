@@ -15,7 +15,7 @@
 #define FONT_SDF_PATH "textures/font_sdf.png"
 #define FONT_INFO_PATH "textures/font_sdf.fnt"
 #define FONT_SDF_INDEX 0
-#define FONT_STRING_SIZE 120
+#define FONT_STRING_SIZE 200
 #define FONT_NUM_QUAD_INDICES 6
 #define FONT_ATTR_COUNT 4
 #define FONT_VERTEX_BUFFER_SIZE sizeof(float) * FONT_STRING_SIZE * FONT_NUM_QUAD_INDICES * FONT_ATTR_COUNT
@@ -33,7 +33,7 @@ public:
 private:
     Renderer& renderer_;
 
-    Texture *texture_;
+    std::unique_ptr<Texture> texture_;
     VkSampler sampler_;
 
     std::unique_ptr<UniformBufferObject<glm::mat4>> orientation_matrix_;
