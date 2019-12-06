@@ -203,12 +203,12 @@ bool readCpuExtensions(ProtoDataHolder& dataHolder) {
 
 // 26 is the required android api version for __system_property_read_callback
 // In the time of writing it is 18.
-#if __ANDROID_API__ >= 26
-#error "Time to switch to __system_property_read_callback"
+// #if __ANDROID_API__ >= 26
+// #error "Time to switch to __system_property_read_callback"
 // Time to move from deprecated __system_property_get
 // To __system_property_read_callback
 // Do it together with a run-time check of "ro.build.version.sdk"
-#endif
+// #endif
 // Returns number of errors.
 int getSystemProp(const char* key, String& result, StringVector& errors) {
   char buffer[PROP_VALUE_MAX + 1];  // +1 for terminator
