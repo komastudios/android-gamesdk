@@ -34,6 +34,12 @@ Renderer::~Renderer() {
   vkFreeCommandBuffers(getVulkanDevice(), cmd_pool_, cmd_buffer_len_,
                        cmd_buffer_);
 
+  for (int x = 0; x < device_.getDisplayImages().size(); x++){
+    vkDestroySemaphore(device_.getDevice(), acquire_image_semaphore_[x], nullptr);
+    vkDestroySemaphore(device_.getDevice(), render_finished_semaphore_[x], nullptr);
+    vkDestroyFence(device_.getDevice(), fence_[x], nullptr);
+  }
+
   delete[] cmd_buffer_;
   delete[] acquire_image_semaphore_;
   delete[] render_finished_semaphore_;
@@ -217,8 +223,7 @@ void Renderer::createPool() {
   poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
   poolInfo.poolSizeCount = poolSizes.size();
   poolInfo.pPoolSizes = poolSizes.data();
-  poolInfo.maxSets = device_.getDisplayImages().size();     // maxSets will need to take into account
-                                                         // the max stuff in a scene
+  poolInfo.maxSets = maxMvpBuffers + maxLightsBuffers + maxSamplers + maxTexts;
 
   CALL_VK(vkCreateDescriptorPool(device_.getDevice(), &poolInfo, nullptr, &descriptor_pool_));
 }
