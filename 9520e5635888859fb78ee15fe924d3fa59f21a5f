@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "3b79ad92_ddb8d466",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-12-07T00:12:59Z",
+      "side": 1,
+      "message": "Yea this is used to actually set the macro a few lines below (FONT_VERTEX_BUFFER_SIZE) and that macro is then used to actually allocate the buffer size. The buffer needed to be bigger so this was the macro I thought made the most sense to adjust",
+      "parentUuid": "b2d86c91_ad8ce9cf",
+      "revId": "9520e5635888859fb78ee15fe924d3fa59f21a5f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "33ad48f7_59352017",
         "filename": "bender/bender-base/app/src/main/jni/font.h",
         "patchSetId": 1
@@ -51,6 +69,24 @@
       "revId": "9520e5635888859fb78ee15fe924d3fa59f21a5f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bc65b9de_de4e209c",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-12-07T00:12:59Z",
+      "side": 1,
+      "message": "Made it unique since I think right now we only have one instance of the Font object and no other objects should be using the Font textures",
+      "parentUuid": "33ad48f7_59352017",
+      "revId": "9520e5635888859fb78ee15fe924d3fa59f21a5f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +107,24 @@
     },
     {
       "key": {
+        "uuid": "c3a8aa13_cc46cb20",
+        "filename": "bender/bender-base/app/src/main/jni/material.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-12-07T00:12:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dadb3f50_e58b2145",
+      "revId": "9520e5635888859fb78ee15fe924d3fa59f21a5f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7abd1a28_feea955b",
         "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
         "patchSetId": 1
@@ -88,6 +142,24 @@
     },
     {
       "key": {
+        "uuid": "c7dab6c4_7b501241",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-12-07T00:12:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7abd1a28_feea955b",
+      "revId": "9520e5635888859fb78ee15fe924d3fa59f21a5f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b103c1f1_311a93cc",
         "filename": "bender/bender-base/app/src/main/jni/renderer.cc",
         "patchSetId": 1
@@ -99,6 +171,24 @@
       "writtenOn": "2019-12-06T23:46:32Z",
       "side": 1,
       "message": "Hmm, is this enough? I didn\u0027t update this b/c I thought it wasn\u0027t crashing anything, but in the maximal case, wouldn\u0027t it be all the things that have descriptor sets (everything for lights + all the meshes + all the materials)?",
+      "revId": "9520e5635888859fb78ee15fe924d3fa59f21a5f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c91f8f7e_fa534a58",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-12-07T00:12:59Z",
+      "side": 1,
+      "message": "So before maxSets was getting set to 2 (the number of display images) which definitely wasn\u0027t enough but like you said it wasn\u0027t crashing the application, I decided to go with MAX_MESHES to see if 2000 would work - thinking about it I wonder if it might be better to do maxMvpBuffers + maxLightBuffers + maxSamplers + maxTexts based on what you listed as the potential max number of sets!",
+      "parentUuid": "b103c1f1_311a93cc",
       "revId": "9520e5635888859fb78ee15fe924d3fa59f21a5f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -134,6 +224,24 @@
       "side": 1,
       "message": "Cleanup is to delete resources like the shaders after it\u0027s been bound to a pipeline.",
       "parentUuid": "30fa5aaa_7e7e1420",
+      "revId": "9520e5635888859fb78ee15fe924d3fa59f21a5f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3f6e36b0_91d79b62",
+        "filename": "bender/bender-base/app/src/main/jni/shader_state.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-12-07T00:12:59Z",
+      "side": 1,
+      "message": "I believe initially cleanup was for removing the shaders after being bound to a pipeline - but from looking at the code we only were calling it in DeleteVulkan as a means of destroying the ShaderModules - so the cleanup() function seemed redundant since right under cleanup we did a \"shaders.reset()\" so I thought just putting it into a destructor made sense\n\nUnless cleanup wasn\u0027t being used in the places it should have been?",
+      "parentUuid": "1218cc4e_45e80fad",
       "revId": "9520e5635888859fb78ee15fe924d3fa59f21a5f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
