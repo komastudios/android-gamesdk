@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b12565b7_dd12d102",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/marching_cubes/MarchingCubes_Detail.hpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2019-12-09T21:54:44Z",
+      "side": 1,
+      "message": "It looks like Paul doesn\u0027t provide a license with his code, so in my understanding that means it is implicitly protected under copyright law. However, the tables he borrows (http://paulbourke.net/geometry/polygonise/marchingsource.cpp) appear to be public domain. It seems like the C++ code here is adapted from the C code, but I\u0027m not sure how different it needs to be in order to distribute a derivative work under open-source license. It\u0027s a bit startling that Paul doesn\u0027t provide licenses for his code given how frequently his page comes up in search results having to do with file formats. (Apologies if I\u0027m misunderstanding any of the work you did here.)",
+      "revId": "3999617c5201be5b3d3ec8a1b663c189d3c24bdc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
