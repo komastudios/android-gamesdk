@@ -51,6 +51,24 @@
       "revId": "18122206dd3404bfc8c96eb4609f6bb31afd53c6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e81bcb6b_2c858ef2",
+        "filename": "bender/bender-base/app/src/main/jni/userinterface.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-12-09T23:10:31Z",
+      "side": 1,
+      "message": "Does this imply most of the codes using reference should use pointer as well?",
+      "parentUuid": "c4072aa1_7e284a9e",
+      "revId": "18122206dd3404bfc8c96eb4609f6bb31afd53c6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
