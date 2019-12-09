@@ -34,9 +34,9 @@
 #include "polyhedron.h"
 #include "mesh.h"
 #include "texture.h"
-#include "font.h"
 #include "uniform_buffer.h"
 #include "button.h"
+#include "userinterface.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -79,7 +79,7 @@ glm::mat4 proj;
 
 std::shared_ptr<ShaderState> shaders;
 std::vector<Mesh *> meshes;
-Font *font;
+UserInterface *userInterface;
 
 auto lastTime = std::chrono::high_resolution_clock::now();
 auto currentTime = lastTime;
@@ -91,93 +91,13 @@ std::vector<std::shared_ptr<Texture>> textures;
 std::vector<std::shared_ptr<Material>> materials;
 
 std::vector<std::shared_ptr<Material>> baselineMaterials;
-uint32_t materialsIdx = 0;
-
-static const std::array<int, 5> allowedPolyFaces = {4, 6, 8, 12, 20};
-uint32_t polyFacesIdx = 0;
+const std::vector<int> allowedPolyFaces = {4, 6, 8, 12, 20};
 
 bool windowResized = false;
 
-void moveForward() {
-  glm::vec3 forward = glm::normalize(camera.rotation * glm::vec3(0.0f, 0.0f, -1.0f));
-  camera.position += forward * 2.0f * frameTime;
-}
-void moveBackward() {
-  glm::vec3 forward = glm::normalize(camera.rotation * glm::vec3(0.0f, 0.0f, -1.0f));
-  camera.position -= forward * 2.0f * frameTime;
-}
-void strafeLeft() {
-  glm::vec3 right = glm::normalize(camera.rotation * glm::vec3(1.0f, 0.0f, 0.0f));
-  camera.position -= right * (20.0f / device->getDisplaySize().width);
-}
-void strafeRight() {
-  glm::vec3 right = glm::normalize(camera.rotation * glm::vec3(1.0f, 0.0f, 0.0f));
-  camera.position += right * (20.0f / device->getDisplaySize().width);
-}
-void strafeUp() {
-  glm::vec3 up = glm::normalize(camera.rotation * glm::vec3(0.0f, 1.0f, 0.0f));
-  camera.position += up * (20.0f / device->getDisplaySize().height);
-}
-void strafeDown() {
-  glm::vec3 up = glm::normalize(camera.rotation * glm::vec3(0.0f, 1.0f, 0.0f));
-  camera.position -= up * (20.0f / device->getDisplaySize().height);
-}
-void createInstance() {
-  meshes.push_back(createPolyhedron(*renderer, baselineMaterials[materialsIdx], allowedPolyFaces[polyFacesIdx]));
-  meshes[meshes.size() - 1]->translate(glm::vec3(rand() % 3, rand() % 3, rand() % 3));
-}
-void deleteInstance() {
-  if (meshes.size() > 0) {
-    meshes.pop_back();
-  }
-}
-void changePolyhedralComplexity() {
-  polyFacesIdx = (polyFacesIdx + 1) % allowedPolyFaces.size();
-  for (uint32_t i = 0; i < meshes.size(); i++) {
-    swapPolyhedron(*meshes[i], allowedPolyFaces[polyFacesIdx]);
-  }
-}
-void changeMaterialComplexity() {
-  materialsIdx = (materialsIdx + 1) % baselineMaterials.size();
-  for (uint32_t i = 0; i < meshes.size(); i++) {
-      meshes[i]->swapMaterial(baselineMaterials[materialsIdx]);
-  }
-}
-
-void createButtons(){
-  Button::setScreenResolution(device->getDisplaySizeOriented());
-
-  Button button0(-.7, .2, .7, .2, "<--");
-  button0.onHold = strafeLeft;
-  Button button1(-.2, .2, .7, .2, "-->");
-  button1.onHold = strafeRight;
-  Button button2(-.47, .2, .6, .2, "^");
-  button2.onHold = strafeUp;
-  Button button3(-.47, .2, .85, .2, "O");
-  button3.onHold = strafeDown;
-  Button button4(.43, .2, .65, .2, "Forward");
-  button4.onHold = moveForward;
-  Button button5(.43, .2, .85, .2, "Backward");
-  button5.onHold = moveBackward;
-  Button button6(-.2, .2, .4, .2, "+1 Mesh");
-  button6.onUp = createInstance;
-  Button button7(-.7, .2, .4, .2, "-1 Mesh");
-  button7.onUp = deleteInstance;
-  Button button8(.5, .2, .2, .2, "Poly Switch");
-  button8.onUp = changePolyhedralComplexity;
-  Button button9(.5, .2, .4, .2, "Tex Switch");
-  button9.onUp = changeMaterialComplexity;
-
-  Input::buttons.push_back(button0);
-  Input::buttons.push_back(button1);
-  Input::buttons.push_back(button2);
-  Input::buttons.push_back(button3);
-  Input::buttons.push_back(button4);
-  Input::buttons.push_back(button5);
-  Input::buttons.push_back(button6);
-  Input::buttons.push_back(button7);
-  Input::buttons.push_back(button8);
-  Input::buttons.push_back(button9);
+void createUserInterface() {
+    userInterface = new UserInterface(*androidAppCtx, *device, *renderer, meshes, baselineMaterials,
+            allowedPolyFaces, frameTime, camera.position, camera.rotation);
 }
 
 void createTextures() {
@@ -459,7 +379,7 @@ bool InitVulkan(android_app *app) {
       createMaterials();
 
       Timing::timer.time("Create Polyhedron", Timing::OTHER, [](){
-        meshes.push_back(createPolyhedron(*renderer, baselineMaterials[materialsIdx], allowedPolyFaces[polyFacesIdx]));
+        meshes.push_back(createPolyhedron(*renderer, baselineMaterials[0], allowedPolyFaces[0]));
       });
     });
 
@@ -467,9 +387,7 @@ bool InitVulkan(android_app *app) {
 
     createFrameBuffers(render_pass, depthBuffer.image_view);
 
-    font = new Font(*renderer, *androidAppCtx, FONT_SDF_PATH, FONT_INFO_PATH);
-
-    createButtons();
+    createUserInterface();
 
   });
 
@@ -486,7 +404,6 @@ void DeleteVulkan(void) {
   for (int x = 0; x < meshes.size(); x++) {
     delete meshes[x];
   }
-  delete font;
 
   shaders.reset();
 
@@ -563,40 +480,16 @@ bool VulkanDrawFrame(Input::Data *inputData) {
           total_triangles += meshes[x]->getTrianglesCount();
         }
 
-        char output_string[50];
-        const char *meshNoun = meshes.size() == 1 ? "mesh" : "meshes";
-        const char *polyNoun = "faces/polyhedron";
-        const char *triangleNoun = total_triangles == 1 ? "triangle" : "triangles";
-
-        sprintf(output_string, "%d %s, %d %s, %d %s", (int) meshes.size(), meshNoun,
-                allowedPolyFaces[polyFacesIdx], polyNoun, total_triangles, triangleNoun);
-        font->drawString(output_string,
-                         1.0f,
-                         -.98f,
-                         -.98f,
-                         renderer->getCurrentCommandBuffer(),
-                         render_pass,
-                         renderer->getCurrentFrame());
-
         int fps;
         float frametime;
-        char fpsString[50];
         Timing::timer.getFramerate(500,
                                    Timing::timer.getLastMajorEvent()->number,
                                    &fps,
                                    &frametime);
-        sprintf(fpsString, "%2.d FPS  %.3f ms", fps, frametime);
-        font->drawString(fpsString,
-                         1.0f,
-                         -0.98f,
-                         -0.88f,
-                         renderer->getCurrentCommandBuffer(),
-                         render_pass,
-                         renderer->getCurrentFrame());
 
-        for (Button button : Input::buttons) {
-          button.drawButton(render_pass, font, renderer);
-        }
+        userInterface->drawMeshInfo(render_pass, total_triangles);
+        userInterface->drawFPS(render_pass, fps, frametime);
+        userInterface->drawButtons(render_pass);
 
         vkCmdEndRenderPass(renderer->getCurrentCommandBuffer());
       });
