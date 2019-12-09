@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "db1ea977_828f170d",
+        "filename": "bender/bender-base/app/src/main/jni/userinterface.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-09T23:02:04Z",
+      "side": 1,
+      "message": "MAMMA MIA!!!",
+      "revId": "18122206dd3404bfc8c96eb4609f6bb31afd53c6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
