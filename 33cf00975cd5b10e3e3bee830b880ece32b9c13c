@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "24a4e528_abc2fa78",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-09T17:20:45Z",
+      "side": 1,
+      "message": "You don\u0027t need these calls.",
+      "revId": "33cf00975cd5b10e3e3bee830b880ece32b9c13c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
