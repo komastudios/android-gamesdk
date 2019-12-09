@@ -12,18 +12,24 @@ apply plugin: 'java'
 
 defaultTasks 'cleanPath', 'archiveZip'
 
-def platformString() {
-    if (OperatingSystem.current().isMacOsX())
-        return "mac";
-    else if (OperatingSystem.current().isLinux())
+enum ExternalToolName { PROTOBUF, CMAKE }
+
+def osFolderName(externalToolName) {
+    if (OperatingSystem.current().isMacOsX()) {
+        if (externalToolName == ExternalToolName.PROTOBUF) {
+            return "mac";
+        } else if (externalToolName == ExternalToolName.CMAKE) {
+            return "darwin-x86"
+        }
+    } else if (OperatingSystem.current().isLinux())
         return "linux-x86";
     else if (OperatingSystem.current().isWindows())
         return "win";
-    else
-        throw new GradleException("Only MacOsX and Linux are supported")
+
+    throw new GradleException("Unsupported OS");
 }
 
-def osSuffix() {
+def osExecutableSuffix() {
     if (OperatingSystem.current().isWindows())
         return ".exe"
     else
@@ -31,7 +37,8 @@ def osSuffix() {
 }
 
 def protobufInstallDir() {
-    return new File("$projectDir/third_party/protobuf-3.0.0/install/" + platformString()).getPath()
+    return new File("$projectDir/third_party/protobuf-3.0.0/install/"
+        + osFolderName(ExternalToolName.PROTOBUF)).getPath()
 }
 
 def joinPath(String first, String... more) {
@@ -121,7 +128,7 @@ abstract class Toolchain {
     }
     String findNDKTool(String name) {
         def tools = project_.fileTree( dir: project_.joinPath(getAndroidNDKPath(), 'toolchains'),
-                                       include: ['**/bin/'+name+project_.osSuffix()])
+                                       include: ['**/bin/'+name+project_.osExecutableSuffix()])
         if (tools==null || tools.size() == 0) {
             throw new GradleException('No ' + name + ' found in ' + ndkPath_ + '/toolchains')
         }
@@ -132,11 +139,13 @@ abstract class Toolchain {
     }
     public String getCMakePath() {
         return new File("${project_.projectDir}/../prebuilts/cmake/"
-                        + project_.platformString() + "/bin/cmake" + project_.osSuffix()).getPath()
+                        + project_.osFolderName(ExternalToolName.CMAKE)
+                        + "/bin/cmake" + project_.osExecutableSuffix()).getPath()
     }
     public String getNinjaPath() {
         return new File("${project_.projectDir}/../prebuilts/cmake/"
-                        + project_.platformString() + "/bin/ninja" + project_.osSuffix()).getPath()
+                        + project_.osFolderName(ExternalToolName.CMAKE)
+                        + "/bin/ninja" + project_.osExecutableSuffix()).getPath()
     }
 }
 class SpecificToolchain extends Toolchain {
