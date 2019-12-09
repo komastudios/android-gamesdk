@@ -16,6 +16,23 @@
       "revId": "18122206dd3404bfc8c96eb4609f6bb31afd53c6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "675c4496_bae571fe",
+        "filename": "bender/bender-base/app/src/main/jni/userinterface.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-12-09T23:04:02Z",
+      "side": 1,
+      "message": "Something I learned when doing the device lost/rendergraph stuff - BenderKit::device and Renderers have to be recreated whenever the application window is closed, so setting them as reference member variables doesn\u0027t work since you have to assign them to the new BenderKit::Device/Renderer respectively, we\u0027re going to need those to be pointers \n\n(unless there\u0027s a better method of changing them!)",
+      "revId": "18122206dd3404bfc8c96eb4609f6bb31afd53c6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
