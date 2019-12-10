@@ -108,7 +108,7 @@ Mesh* createPolyhedron(Renderer &renderer, std::shared_ptr<Material> material, i
     return nullptr;
   }
 
-  return new Mesh(renderer, material, vertex_data, index_data);
+  return new Mesh(&renderer, material, vertex_data, index_data, true, faces);
 }
 
 void swapPolyhedron(Mesh& mesh, int faces) {
@@ -119,5 +119,5 @@ void swapPolyhedron(Mesh& mesh, int faces) {
     return;
   }
 
-  mesh.swapGeometry(vertex_data, index_data);
+  mesh.swapGeometry(vertex_data, index_data, true, faces);
 }

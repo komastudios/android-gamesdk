@@ -97,6 +97,7 @@ static const std::array<int, 5> allowedPolyFaces = {4, 6, 8, 12, 20};
 uint32_t polyFacesIdx = 0;
 
 bool windowResized = false;
+bool appInitializedOnce = false;
 
 void moveForward() {
   glm::vec3 forward = glm::normalize(camera.rotation * glm::vec3(0.0f, 0.0f, -1.0f));
@@ -193,13 +194,13 @@ void createTextures() {
 
 void createMaterials() {
   Timing::timer.time("Materials Creation", Timing::OTHER, [](){
-    baselineMaterials.push_back(std::make_shared<Material>(*renderer, shaders, nullptr));
-    baselineMaterials.push_back(std::make_shared<Material>(*renderer, shaders, nullptr, glm::vec3(0.8, 0.0, 0.5)));
-    baselineMaterials.push_back(std::make_shared<Material>(*renderer, shaders, textures[0]));
-    baselineMaterials.push_back(std::make_shared<Material>(*renderer, shaders, textures[0], glm::vec3(0.8, 0.0, 0.5)));
+    baselineMaterials.push_back(std::make_shared<Material>(renderer, shaders, nullptr));
+    baselineMaterials.push_back(std::make_shared<Material>(renderer, shaders, nullptr, glm::vec3(0.8, 0.0, 0.5)));
+    baselineMaterials.push_back(std::make_shared<Material>(renderer, shaders, textures[0]));
+    baselineMaterials.push_back(std::make_shared<Material>(renderer, shaders, textures[0], glm::vec3(0.8, 0.0, 0.5)));
 
     for (uint32_t i = 0; i < textures.size(); ++i) {
-      materials.push_back(std::make_shared<Material>(*renderer, shaders, textures[i]));
+      materials.push_back(std::make_shared<Material>(renderer, shaders, textures[i]));
     }
   });
 }
@@ -377,13 +378,13 @@ bool InitVulkan(android_app *app) {
     device->setObjectName(reinterpret_cast<uint64_t>(device->getDevice()),
                           VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, "TEST NAME: VULKAN DEVICE");
 
-  aspect_ratio = device->getDisplaySize().width / (float) device->getDisplaySize().height;
-  auto horizontal_fov = glm::radians(60.0f);
-  auto vertical_fov =
-          static_cast<float>(2 * atan((0.5 * device->getDisplaySize().height)
-                                      / (0.5 * device->getDisplaySize().width
-                                         / tan(horizontal_fov / 2))));
-  fov = (aspect_ratio > 1.0f) ? horizontal_fov : vertical_fov;
+    aspect_ratio = device->getDisplaySize().width / (float) device->getDisplaySize().height;
+    auto horizontal_fov = glm::radians(60.0f);
+    auto vertical_fov =
+        static_cast<float>(2 * atan((0.5 * device->getDisplaySize().height)
+                                        / (0.5 * device->getDisplaySize().width
+                                            / tan(horizontal_fov / 2))));
+    fov = (aspect_ratio > 1.0f) ? horizontal_fov : vertical_fov;
 
     VkAttachmentDescription color_description{
         .format = device->getDisplayFormat(),
@@ -474,7 +475,129 @@ bool InitVulkan(android_app *app) {
   });
 
   Timing::printEvent(*Timing::timer.getLastMajorEvent());
+  appInitializedOnce = true;
   return true;
+}
+
+bool ResumeVulkan(android_app *app) {
+  Timing::timer.time("Initialization", Timing::OTHER, [app](){
+    androidAppCtx = app;
+
+    device = new Device(app->window);
+    assert(device->isInitialized());
+    device->setObjectName(reinterpret_cast<uint64_t>(device->getDevice()),
+                          VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, "TEST NAME: VULKAN DEVICE");
+
+    aspect_ratio = device->getDisplaySize().width / (float) device->getDisplaySize().height;
+    auto horizontal_fov = glm::radians(60.0f);
+    auto vertical_fov =
+        static_cast<float>(2 * atan((0.5 * device->getDisplaySize().height)
+                                        / (0.5 * device->getDisplaySize().width
+                                            / tan(horizontal_fov / 2))));
+    fov = (aspect_ratio > 1.0f) ? horizontal_fov : vertical_fov;
+
+    VkAttachmentDescription color_description{
+        .format = device->getDisplayFormat(),
+        .samples = VK_SAMPLE_COUNT_1_BIT,
+        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+        .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+    };
+
+    VkAttachmentDescription depth_description{
+        .format = BenderHelpers::findDepthFormat(device),
+        .samples = VK_SAMPLE_COUNT_1_BIT,
+        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+        .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+        .finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+    };
+
+    VkAttachmentReference color_attachment_reference = {
+        .attachment = 0,
+        .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+    };
+
+    VkAttachmentReference depth_attachment_reference = {
+        .attachment = 1,
+        .layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+    };
+
+    VkSubpassDescription subpass_description{
+        .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
+        .flags = 0,
+        .inputAttachmentCount = 0,
+        .pInputAttachments = nullptr,
+        .colorAttachmentCount = 1,
+        .pColorAttachments = &color_attachment_reference,
+        .pResolveAttachments = nullptr,
+        .pDepthStencilAttachment = &depth_attachment_reference,
+        .preserveAttachmentCount = 0,
+        .pPreserveAttachments = nullptr,
+    };
+
+    std::array<VkAttachmentDescription, 2> attachment_descriptions =
+        {color_description, depth_description};
+
+    VkRenderPassCreateInfo render_pass_createInfo{
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+        .pNext = nullptr,
+        .attachmentCount = static_cast<uint32_t>(attachment_descriptions.size()),
+        .pAttachments = attachment_descriptions.data(),
+        .subpassCount = 1,
+        .pSubpasses = &subpass_description,
+        .dependencyCount = 0,
+        .pDependencies = nullptr,
+    };
+    CALL_VK(vkCreateRenderPass(device->getDevice(), &render_pass_createInfo, nullptr,
+                               &render_pass));
+
+    shaders->onResume(device->getDevice());
+
+    renderer = new Renderer(*device);
+
+    Timing::timer.time("Mesh Creation", Timing::OTHER, [app](){
+      for (auto &texture: textures){
+        texture->onResume(*device, androidAppCtx);
+      }
+      Material::onResumeStatic(*device, app);
+
+      for (auto &material : materials){
+        material->onResume(renderer);
+      }
+
+      for (auto &material : baselineMaterials){
+        material->onResume(renderer);
+      }
+
+      for (auto &mesh : meshes){
+        mesh->onResume(renderer);
+      }
+    });
+
+    createDepthBuffer();
+
+    createFrameBuffers(render_pass, depthBuffer.image_view);
+
+    font = new Font(*renderer, *androidAppCtx, FONT_SDF_PATH, FONT_INFO_PATH);
+  });
+
+  Timing::printEvent(*Timing::timer.getLastMajorEvent());
+  return true;
+}
+
+void OnResume(android_app *app){
+  if (!appInitializedOnce){
+    InitVulkan(app);
+  }
+  else{
+    ResumeVulkan(app);
+  }
 }
 
 bool IsVulkanReady(void) { return device != nullptr && device->isInitialized(); }
@@ -483,12 +606,7 @@ void DeleteVulkan(void) {
   vkDeviceWaitIdle(device->getDevice());
 
   delete renderer;
-  for (int x = 0; x < meshes.size(); x++) {
-    delete meshes[x];
-  }
   delete font;
-
-  shaders.reset();
 
   for (int i = 0; i < device->getSwapchainLength(); ++i) {
     vkDestroyImageView(device->getDevice(), displayViews_[i], nullptr);
@@ -501,10 +619,20 @@ void DeleteVulkan(void) {
 
   vkDestroyRenderPass(device->getDevice(), render_pass, nullptr);
 
-  textures.clear();
-  baselineMaterials.clear();
-  materials.clear();
-  Material::cleanup();
+  for (auto &mesh : meshes) {
+    mesh->vulkanCleanup();
+  }
+  for (auto &texture : textures){
+    texture->vulkanCleanup();
+  }
+  for (auto &material : materials){
+    material->vulkanCleanup();
+  }
+  for (auto &material : baselineMaterials){
+    material->vulkanCleanup();
+  }
+  shaders->vulkanCleanup();
+  Material::vulkanCleanupStatic();
 
   delete device;
   device = nullptr;

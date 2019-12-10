@@ -31,15 +31,36 @@ Texture::Texture(BenderKit::Device& device, uint8_t *imgData, uint32_t imgWidth,
 Texture::Texture(BenderKit::Device& device, android_app &androidAppCtx,
                  const char *textureFileName, VkFormat textureFormat) : device_(device), texture_format_(textureFormat) {
     unsigned char *imgData = loadFileData(androidAppCtx, textureFileName);
+    file_name_ = textureFileName;
     CALL_VK(createTexture(imgData, VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
     createImageView();
     stbi_image_free(imgData);
 }
 
 Texture::~Texture() {
+    vulkanCleanup();
+}
+
+void Texture::vulkanCleanup(){
     vkDestroyImageView(device_.getDevice(), view_, nullptr);
     vkDestroyImage(device_.getDevice(), image_, nullptr);
     vkFreeMemory(device_.getDevice(), mem_, nullptr);
+}
+
+void Texture::onResume(BenderKit::Device& device, android_app *app) {
+    if (file_name_ == nullptr){
+        unsigned char imgData[4] = {255, 255, 255, 0};
+        tex_width_ = 1;
+        tex_height_ = 1;
+        CALL_VK(createTexture(imgData, VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+        createImageView();
+    }
+    else {
+        unsigned char *imgData = loadFileData(*app, file_name_);
+        CALL_VK(createTexture(imgData, VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+        createImageView();
+        stbi_image_free(imgData);
+    }
 }
 
 unsigned char *Texture::loadFileData(android_app &app, const char *filePath) {

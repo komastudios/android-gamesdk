@@ -17,6 +17,7 @@
 ShaderState::ShaderState(std::string shaderName, const BenderKit::VertexFormat& vertex_format, android_app &app, VkDevice appDevice)
   : androidAppCtx(app), vertex_format_(vertex_format) {
   ShaderState::device = appDevice;
+  file_name_ = shaderName;
 
   setVertexShader("shaders/" + shaderName + ".vert");
   setFragmentShader("shaders/" + shaderName + ".frag");
@@ -26,6 +27,12 @@ ShaderState::ShaderState(std::string shaderName, const BenderKit::VertexFormat& 
       .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
       .primitiveRestartEnable = VK_FALSE,
   };
+}
+
+void ShaderState::onResume(VkDevice appDevice){
+  ShaderState::device = appDevice;
+  setVertexShader("shaders/" + file_name_ + ".vert");
+  setFragmentShader("shaders/" + file_name_ + ".frag");
 }
 
 void ShaderState::setVertexShader(const std::string &name) {
@@ -71,6 +78,10 @@ void ShaderState::fillPipelineInfo(VkGraphicsPipelineCreateInfo *pipeline_info) 
 }
 
 ShaderState::~ShaderState() {
+  vulkanCleanup();
+}
+
+void ShaderState::vulkanCleanup() {
   for (auto it = shaderModules.begin(); it != shaderModules.end(); it++) {
     vkDestroyShaderModule(device, *it, nullptr);
   }

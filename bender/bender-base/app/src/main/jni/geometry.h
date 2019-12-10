@@ -12,8 +12,14 @@ class Geometry {
  public:
   Geometry(BenderKit::Device& device,
            const std::vector<float>& vertexData,
-           const std::vector<uint16_t>& indexData);
+           const std::vector<uint16_t>& indexData,
+           bool isPolyhedron = false,
+           int numFaces = 0);
   ~Geometry();
+
+  void vulkanCleanup();
+
+  void onResume(BenderKit::Device& device);
 
   int getVertexCount() const { return vertexCount_; }
   int getIndexCount() const { return indexCount_; }
@@ -30,6 +36,9 @@ class Geometry {
   int indexCount_;
   VkBuffer indexBuf_;
   VkDeviceMemory indexBufferDeviceMemory_;
+
+  bool is_polyheron_;
+  int polyhedron_faces_;
 
   void createVertexBuffer(const std::vector<float>& vertexData, const std::vector<uint16_t>& indexData);
 };
