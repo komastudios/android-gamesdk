@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "89d590b5_ec781da7",
+        "filename": "bender/bender-base/app/src/main/jni/material.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-12-10T19:53:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a9c4bd5c_caa525aa",
+      "revId": "cb45691e5a9f2c723b65a7f22b263c653dd1b0f9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0b66f4de_1fb779f1",
         "filename": "bender/bender-base/app/src/main/jni/mesh.h",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "cb45691e5a9f2c723b65a7f22b263c653dd1b0f9",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dbd5643c_27e9e395",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-12-10T19:53:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0b66f4de_1fb779f1",
+      "revId": "cb45691e5a9f2c723b65a7f22b263c653dd1b0f9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "1fc1f0b7_98cdca2d",
+        "filename": "bender/bender-base/app/src/main/jni/render_graph.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-12-10T19:53:03Z",
+      "side": 1,
+      "message": "Ok, yea the RenderGraph is still in very early stages so not too sure yet what should/shouldn\u0027t be here in terms of storing state just yet! I\u0027ll get back to ya on all of this :)",
+      "parentUuid": "ca8b502e_dd871698",
+      "revId": "cb45691e5a9f2c723b65a7f22b263c653dd1b0f9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9f2cfef0_aa9fdb03",
         "filename": "bender/bender-base/app/src/main/jni/shader_state.h",
         "patchSetId": 2
@@ -64,6 +118,24 @@
       "writtenOn": "2019-12-10T19:25:51Z",
       "side": 1,
       "message": "Consider just calling it cleanup, so we don\u0027t tie this code to vulkan.",
+      "revId": "cb45691e5a9f2c723b65a7f22b263c653dd1b0f9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4d41a310_d6f9f64f",
+        "filename": "bender/bender-base/app/src/main/jni/shader_state.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-12-10T19:53:03Z",
+      "side": 1,
+      "message": "I see, I guess the reason I\u0027m calling it vulkanCleanup right now is because it\u0027s primary focus is to cleanup vulkan objects (for destruction/creation of vulkan device) - could there be a situation where vulkan cleanup and other cleanup should not happen at the same time (like clearing some state/pointers external to vulkan)? If so that could be a case for having a specific vulkanCleanup function",
+      "parentUuid": "9f2cfef0_aa9fdb03",
       "revId": "cb45691e5a9f2c723b65a7f22b263c653dd1b0f9",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -84,6 +156,24 @@
       "revId": "cb45691e5a9f2c723b65a7f22b263c653dd1b0f9",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "979d2166_d4516eef",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-12-10T19:53:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e40fae96_2a5efbc9",
+      "revId": "cb45691e5a9f2c723b65a7f22b263c653dd1b0f9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }

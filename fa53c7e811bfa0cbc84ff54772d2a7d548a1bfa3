@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "27f36dc5_1dc23ddf",
+        "filename": "bender/bender-base/app/src/main/jni/android_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-12-10T19:53:03Z",
+      "side": 1,
+      "message": "Do you calling this StartVulkan would be better - so that StartVulkan can either call InitVulkan (for first time application startup) or ResumeVulkan (for resuming on focus regain)",
+      "parentUuid": "08a2f086_e0b63c51",
+      "revId": "fa53c7e811bfa0cbc84ff54772d2a7d548a1bfa3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "88f487e6_a0cd662b",
         "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
         "patchSetId": 1
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "258b6c4e_4d8a8dfb",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-12-10T19:53:03Z",
+      "side": 1,
+      "message": "Oh I like this A LOT :) basically pass in a vertex data generator function for geometry that isn\u0027t from a file",
+      "parentUuid": "88f487e6_a0cd662b",
+      "revId": "fa53c7e811bfa0cbc84ff54772d2a7d548a1bfa3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8e7b965d_9bc501c9",
         "filename": "bender/bender-base/app/src/main/jni/geometry.h",
         "patchSetId": 1
@@ -50,6 +86,24 @@
       "revId": "fa53c7e811bfa0cbc84ff54772d2a7d548a1bfa3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6b8a9594_e29ea7d2",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-12-10T19:53:03Z",
+      "side": 1,
+      "message": "I totally agree, this is something I was kinda unsure about myself - I was looking for a solution for the issue of how to regenerate that vertex/index data on focus regain\n\nYour idea to pass in a function pointer is awesome though, and definitely takes care of this issue better than this special case code (and in a more generic way so we can produce other cool, random vertex data algorithmically)",
+      "parentUuid": "8e7b965d_9bc501c9",
+      "revId": "fa53c7e811bfa0cbc84ff54772d2a7d548a1bfa3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
