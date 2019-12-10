@@ -16,6 +16,24 @@
       "revId": "3999617c5201be5b3d3ec8a1b663c189d3c24bdc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "91c62a16_f22e9c80",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/marching_cubes/MarchingCubes_Detail.hpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2019-12-10T21:58:06Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "b12565b7_dd12d102",
+      "revId": "3999617c5201be5b3d3ec8a1b663c189d3c24bdc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
