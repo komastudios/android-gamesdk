@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "4d71dd32_b822bb76",
+        "filename": "cert/test/reporting/recipes/affinity.yaml",
+        "patchSetId": 9
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-12-10T21:52:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "06e0397d_32319eb4",
+      "revId": "a1992ffa987b0a03ca10a2df496b1403cc2b7afa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b0c3dcf4_ed9eb712",
         "filename": "cert/test/reporting/recipes/~example-pre-post-flight.yaml",
         "patchSetId": 9
@@ -63,6 +81,24 @@
         "id": 1590267
       },
       "writtenOn": "2019-12-10T21:38:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b0c3dcf4_ed9eb712",
+      "revId": "a1992ffa987b0a03ca10a2df496b1403cc2b7afa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0eefce2d_30be2eb0",
+        "filename": "cert/test/reporting/recipes/~example-pre-post-flight.yaml",
+        "patchSetId": 9
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-12-10T21:52:47Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "b0c3dcf4_ed9eb712",
