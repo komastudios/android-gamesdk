@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "3be3dd33_7c76e4cc",
+        "filename": "bender/bender-base/app/src/main/jni/android_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-12-10T20:08:02Z",
+      "side": 1,
+      "message": "Oh but I need the logic because InitVulkan does the initial population of things like the Texture/Geometry/Mesh/Buttons, while ResumeVulkan doesn\u0027t populate things - rather it tells the vulkan objects to update their vulkan objects with new ones created from the new Vulkan device\n\nand APP_CMD_INIT_WINDOW is sent for both the initial startup of the application and resumes of the application so it has to handle both these functions (no other signals for the app lifecycle are sent other than APP_CMD_TERM_WINDOW)",
+      "parentUuid": "b601c8f2_49804889",
+      "revId": "fa53c7e811bfa0cbc84ff54772d2a7d548a1bfa3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "88f487e6_a0cd662b",
         "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
         "patchSetId": 1
@@ -102,6 +120,24 @@
       "side": 1,
       "message": "You can also use it for geometry that is loaded from a file as well.",
       "parentUuid": "258b6c4e_4d8a8dfb",
+      "revId": "fa53c7e811bfa0cbc84ff54772d2a7d548a1bfa3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dd43734f_d481e47b",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-12-10T20:08:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7f89e401_bd1b6344",
       "revId": "fa53c7e811bfa0cbc84ff54772d2a7d548a1bfa3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
