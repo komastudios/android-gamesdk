@@ -21,6 +21,7 @@ from .depth_clear_suite_handler import DepthClearSuiteHandler
 from .gpu_half_precision import GpuHalfPrecisionSuiteHandler
 from .memory_allocation_suite_handler import MemoryAllocationSuiteHandler
 from .mprotect_suite_handler import MprotectSuiteHandler
+from .vertex_streaming_suite_handler import VertexStreamingSuiteHandler
 """
 List containing all enabled handlers to render charts.
 """
@@ -32,4 +33,5 @@ HANDLERS = [
     GpuHalfPrecisionSuiteHandler,
     MemoryAllocationSuiteHandler,
     MprotectSuiteHandler,
+    VertexStreamingSuiteHandler,
 ]
