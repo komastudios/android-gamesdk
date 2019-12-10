@@ -113,6 +113,7 @@ void actionUpHandler(Input::Data *inputData, std::vector<Button> &buttons) {
       button.onButtonUp();
     }
   }
+  inputData->lastButton = nullptr;
   Input::clearInput(inputData);
 }
 
