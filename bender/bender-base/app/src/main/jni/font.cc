@@ -187,7 +187,6 @@ void Font::drawString(const std::string& text, float text_size, float x, float y
               text.size() * FONT_NUM_QUAD_INDICES,
               1, 0, 0);
     offset_ += sizeof(float) * text.size() * FONT_NUM_QUAD_INDICES * FONT_ATTR_COUNT;
-    LOGI("vertex buffer offset: %d", (int)offset_);
 }
 
 Font::Font(Renderer& renderer, android_app &androidAppCtx,
