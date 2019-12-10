@@ -28,12 +28,19 @@ struct ModelViewProjection {
 
 class Mesh {
 public:
-  Mesh(Renderer& renderer, std::shared_ptr<Material> material, std::shared_ptr<Geometry> geometryData);
+  Mesh(Renderer *renderer, std::shared_ptr<Material> material, std::shared_ptr<Geometry> geometryData);
 
-  Mesh(Renderer& renderer, std::shared_ptr<Material> material, const std::vector<float>& vertexData,
+  Mesh(Renderer *renderer, std::shared_ptr<Material> material, const std::vector<float>& vertexData,
           const std::vector<uint16_t>& indexData);
 
+  Mesh(const Mesh &other, std::shared_ptr<Geometry> geometry);
+  Mesh(const Mesh &other, std::shared_ptr<Material> material);
+
   ~Mesh();
+
+  void cleanup();
+
+  void onResume(Renderer *renderer);
 
   void updatePipeline(VkRenderPass renderPass);
 
@@ -41,8 +48,6 @@ public:
   void update(uint_t frame_index, glm::vec3 camera, glm::mat4 view, glm::mat4 proj);
   void submitDraw(VkCommandBuffer commandBuffer, uint_t frame_index) const;
 
-  void swapGeometry(const std::vector<float>& vertexData, const std::vector<uint16_t>& indexData);
-  void swapMaterial(std::shared_ptr<Material> material) { material_ = material; }
 
   void translate(glm::vec3 offset);
   void rotate(glm::vec3 axis, float angle);
@@ -63,10 +68,10 @@ public:
 private:
   std::unique_ptr<UniformBufferObject<ModelViewProjection>> mesh_buffer_;
 
-  Renderer& renderer_;
+  Renderer *renderer_;
 
-  std::shared_ptr<Material> material_;
-  std::shared_ptr<Geometry> geometry_;
+  const std::shared_ptr<Material> material_;
+  const std::shared_ptr<Geometry> geometry_;
 
   glm::vec3 position_;
   glm::quat rotation_;

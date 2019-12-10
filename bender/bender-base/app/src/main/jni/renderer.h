@@ -49,7 +49,7 @@ public:
   void beginPrimaryCommandBufferRecording();
   void endPrimaryCommandBufferRecording();
 
-  void updateLights(glm::vec3& camera);
+  void updateLights(glm::vec3 camera);
 
   BenderKit::Device& getDevice() const { return device_; };
   VkDevice getVulkanDevice() const { return device_.getDevice(); }
