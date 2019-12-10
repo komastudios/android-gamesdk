@@ -11,11 +11,13 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#include <android/log.h>
-#include <android_native_app_glue.h>
-#include <timing.h>
+
+#include "timing.h"
 #include "vulkan_main.h"
 #include "userinterface.h"
+
+#include <android/log.h>
+#include <android_native_app_glue.h>
 
 // Process the next main command.
 void handle_cmd(android_app *app, int32_t cmd) {
