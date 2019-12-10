@@ -53,15 +53,16 @@ namespace {
     };
 
     enum class ThreadSetup {
-        kOneCore, kAllCores, kBigCores, kLittleCores
+        kOneCore, kAllCores, kBigCores, kLittleCores, kMiddleCores
     };
     constexpr const char *kThreadSetupNames[] = {
-            "Single Core", "All Cores", "Big Cores", "Little Cores"
+            "Single Core", "All Cores", "Big Cores", "Little Cores", "Middle Cores"
     };
     constexpr auto ToAffinity(ThreadSetup setup) {
         switch (setup) {
             case ThreadSetup::kBigCores: return ThreadAffinity::kBigCore;
             case ThreadSetup::kLittleCores: return ThreadAffinity::kLittleCore;
+            case ThreadSetup::kMiddleCores: return ThreadAffinity::kMiddleCore;
             case ThreadSetup::kAllCores:
             case ThreadSetup::kOneCore: return ThreadAffinity::kAnyCore;
             default:
