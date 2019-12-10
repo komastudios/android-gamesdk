@@ -29,6 +29,11 @@ public:
             const char *textureFileName, VkFormat textureFormat);
 
     ~Texture();
+
+    void vulkanCleanup();
+
+    void onResume(BenderKit::Device& device, android_app *app);
+
     VkImageView getImageView() const { return view_; }
 
     int32_t getWidth() const { return tex_width_; };
@@ -37,6 +42,7 @@ public:
 private:
     BenderKit::Device& device_;
 
+    const char *file_name_ = nullptr;
     VkImage image_;
     VkImageLayout image_layout_;
     VkDeviceMemory mem_;
