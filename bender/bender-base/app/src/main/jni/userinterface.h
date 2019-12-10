@@ -24,7 +24,7 @@ struct TextField {
 class UserInterface {
 public:
 
-    UserInterface(Renderer *renderer, Font& font);
+    UserInterface(Renderer *renderer, Font *font);
 
     void RegisterButton(std::function<void(Button&)> updater);
 
@@ -37,9 +37,11 @@ public:
     static void ActionMoveHandler(Input::Data *input_data, std::vector<Button> &buttons);
     static void ActionUpHandler(Input::Data *input_data, std::vector<Button> &buttons);
 
+    void OnResume(Renderer *newRenderer, Font *font);
+
 private:
     Renderer *renderer_;
-    Font& font_;
+    Font *font_;
     std::vector<TextField> text_fields_;
 
     static std::vector<Button> buttons_;

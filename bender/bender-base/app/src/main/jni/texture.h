@@ -17,37 +17,53 @@
 
 #include "vulkan_wrapper.h"
 #include "bender_kit.h"
+#include <functional>
 
 #include <android_native_app_glue.h>
 
 class Texture {
-public:
-    Texture(BenderKit::Device& device, uint8_t *imgData, uint32_t imgWidth,
-                     uint32_t imgHeight, VkFormat textureFormat);
+ public:
+  Texture(BenderKit::Device &device,
+          uint8_t *imgData,
+          uint32_t imgWidth,
+          uint32_t imgHeight,
+          VkFormat textureFormat,
+          std::function<void(uint8_t *)> generator = nullptr);
 
-    Texture(BenderKit::Device& device, android_app &androidAppCtx,
-            const char *textureFileName, VkFormat textureFormat);
+  Texture(BenderKit::Device &device,
+          android_app &androidAppCtx,
+          const char *textureFileName,
+          VkFormat textureFormat,
+          std::function<void(uint8_t *)> generator = nullptr);
 
-    ~Texture();
-    VkImageView getImageView() const { return view_; }
+  ~Texture();
 
-    int32_t getWidth() const { return tex_width_; };
+  void cleanup();
 
-    int32_t getHeight() const { return tex_height_; };
-private:
-    BenderKit::Device& device_;
+  void onResume(BenderKit::Device &device, android_app *app);
 
-    VkImage image_;
-    VkImageLayout image_layout_;
-    VkDeviceMemory mem_;
-    VkImageView view_;
-    int32_t tex_width_;
-    int32_t tex_height_;
-    VkFormat texture_format_;
+  VkImageView getImageView() const { return view_; }
 
-    unsigned char *loadFileData(android_app &app, const char *filePath);
-    VkResult createTexture(uint8_t *imgData, VkImageUsageFlags usage, VkFlags required_props);
-    void createImageView();
+  int32_t getWidth() const { return tex_width_; };
+
+  int32_t getHeight() const { return tex_height_; };
+ private:
+  BenderKit::Device &device_;
+
+  const char *file_name_ = nullptr;
+  VkImage image_;
+  VkImageLayout image_layout_;
+  VkDeviceMemory mem_;
+  VkImageView view_;
+  int32_t tex_width_;
+  int32_t tex_height_;
+  VkFormat texture_format_;
+
+  std::function<void(uint8_t *)> generator_ = nullptr;
+
+  unsigned char *loadFileData(android_app &app, const char *filePath);
+  VkResult createTexture(uint8_t *imgData, VkImageUsageFlags usage, VkFlags required_props);
+  void createImageView();
 };
 
 #endif //BENDER_BASE_TEXTURE_H
