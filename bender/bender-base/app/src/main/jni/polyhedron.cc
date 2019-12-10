@@ -100,24 +100,30 @@ bool populatePolyhedron(std::vector<float>& vertex_data, std::vector<uint16_t>& 
   return true;
 }
 
-Mesh* createPolyhedron(Renderer &renderer, std::shared_ptr<Material> material, int faces) {
-  std::vector<float> vertex_data;
-  std::vector<uint16_t> index_data;
+std::array<int, 5> allowedPolyFaces = {4, 6, 8, 12, 20};
 
-  if (!populatePolyhedron(vertex_data, index_data, faces)) {
-    return nullptr;
-  }
+std::vector<std::function<void(std::vector<float>&, std::vector<uint16_t>&)>> polyhedronGenerators = {
+    populateTetrahedron,
+    populateCube,
+    populateOctahedron,
+    populateDodecahedron,
+    populateIcosahedron,
+};
 
-  return new Mesh(renderer, material, vertex_data, index_data);
+void populateTetrahedron(std::vector<float> &vertex_data, std::vector<uint16_t> &index_data) {
+  populatePolyhedron(vertex_data, index_data, 4);
 }
+void populateCube(std::vector<float> &vertex_data, std::vector<uint16_t> &index_data) {
+  populatePolyhedron(vertex_data, index_data, 6);
+}
+void populateOctahedron(std::vector<float> &vertex_data, std::vector<uint16_t> &index_data) {
+  populatePolyhedron(vertex_data, index_data, 8);
 
-void swapPolyhedron(Mesh& mesh, int faces) {
-  std::vector<float> vertex_data;
-  std::vector<uint16_t> index_data;
+}
+void populateDodecahedron(std::vector<float> &vertex_data, std::vector<uint16_t> &index_data) {
+  populatePolyhedron(vertex_data, index_data, 12);
 
-  if (!populatePolyhedron(vertex_data, index_data, faces)) {
-    return;
-  }
-
-  mesh.swapGeometry(vertex_data, index_data);
+}
+void populateIcosahedron(std::vector<float> &vertex_data, std::vector<uint16_t> &index_data) {
+  populatePolyhedron(vertex_data, index_data, 20);
 }
