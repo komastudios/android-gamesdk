@@ -42,6 +42,11 @@ class Button {
     onUp();
   }
 
+  void setLabel(std::string text) {
+    default_label = text;
+    current_label = default_label;
+  }
+
   std::function<void()> onDown;
   std::function<void()> onUp;
   std::function<void()> onHold;

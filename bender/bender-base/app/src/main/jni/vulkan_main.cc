@@ -37,6 +37,7 @@
 #include "font.h"
 #include "uniform_buffer.h"
 #include "button.h"
+#include "userinterface.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -96,6 +97,10 @@ uint32_t materialsIdx = 0;
 static const std::array<int, 5> allowedPolyFaces = {4, 6, 8, 12, 20};
 uint32_t polyFacesIdx = 0;
 
+UserInterface *user_interface;
+char mesh_info[50];
+char fps_info[50];
+
 bool windowResized = false;
 
 void moveForward() {
@@ -147,37 +152,54 @@ void changeMaterialComplexity() {
 void createButtons(){
   Button::setScreenResolution(device->getDisplaySizeOriented());
 
-  Button button0(-.7, .2, .7, .2, "<--");
-  button0.onHold = strafeLeft;
-  Button button1(-.2, .2, .7, .2, "-->");
-  button1.onHold = strafeRight;
-  Button button2(-.47, .2, .6, .2, "^");
-  button2.onHold = strafeUp;
-  Button button3(-.47, .2, .85, .2, "O");
-  button3.onHold = strafeDown;
-  Button button4(.43, .2, .65, .2, "Forward");
-  button4.onHold = moveForward;
-  Button button5(.43, .2, .85, .2, "Backward");
-  button5.onHold = moveBackward;
-  Button button6(-.2, .2, .4, .2, "+1 Mesh");
-  button6.onUp = createInstance;
-  Button button7(-.7, .2, .4, .2, "-1 Mesh");
-  button7.onUp = deleteInstance;
-  Button button8(.5, .2, .2, .2, "Poly Switch");
-  button8.onUp = changePolyhedralComplexity;
-  Button button9(.5, .2, .4, .2, "Tex Switch");
-  button9.onUp = changeMaterialComplexity;
+  user_interface->RegisterButton(-.7, .2, .7, .2, [] (Button& button) {
+      button.onHold = strafeLeft;
+      button.setLabel("<--");
+  });
+  user_interface->RegisterButton(-.2, .2, .7, .2, [] (Button& button) {
+    button.onHold = strafeRight;
+    button.setLabel("-->");
+  });
+  user_interface->RegisterButton(-.47, .2, .6, .2, [] (Button& button) {
+    button.onHold = strafeUp;
+    button.setLabel("^");
+  });
+  user_interface->RegisterButton(-.47, .2, .85, .2, [] (Button& button) {
+    button.onHold = strafeDown;
+    button.setLabel("0");
+  });
+  user_interface->RegisterButton(.43, .2, .65, .2, [] (Button& button) {
+    button.onHold = moveForward;
+    button.setLabel("Forward");
+  });
+  user_interface->RegisterButton(.43, .2, .85, .2, [] (Button& button) {
+    button.onHold = moveBackward;
+    button.setLabel("Backward");
+  });
+  user_interface->RegisterButton(-.2, .2, .4, .2, [] (Button& button) {
+    button.onUp = createInstance;
+    button.setLabel("+1 Mesh");
+  });
+  user_interface->RegisterButton(-.7, .2, .4, .2, [] (Button& button) {
+    button.onUp = deleteInstance;
+    button.setLabel("-1 Mesh");
+  });
+  user_interface->RegisterButton(.5, .2, .2, .2, [] (Button& button) {
+    button.onUp = changePolyhedralComplexity;
+    button.setLabel("Poly Switch");
+  });
+  user_interface->RegisterButton(.5, .2, .4, .2, [] (Button& button) {
+    button.onUp = changeMaterialComplexity;
+    button.setLabel("Tex Switch");
+  });
+}
 
-  Input::buttons.push_back(button0);
-  Input::buttons.push_back(button1);
-  Input::buttons.push_back(button2);
-  Input::buttons.push_back(button3);
-  Input::buttons.push_back(button4);
-  Input::buttons.push_back(button5);
-  Input::buttons.push_back(button6);
-  Input::buttons.push_back(button7);
-  Input::buttons.push_back(button8);
-  Input::buttons.push_back(button9);
+void createUserInterface() {
+  user_interface = new UserInterface(renderer, *font);
+
+  user_interface->RegisterTextField("", 1.0f, -.98f, -.98f, [] (TextField& field) { field.text = mesh_info; });
+  user_interface->RegisterTextField("", 1.0f, -0.98f, -0.88f, [] (TextField& field) { field.text = fps_info; });
+  createButtons();
 }
 
 void createTextures() {
@@ -469,7 +491,7 @@ bool InitVulkan(android_app *app) {
 
     font = new Font(*renderer, *androidAppCtx, FONT_SDF_PATH, FONT_INFO_PATH);
 
-    createButtons();
+    createUserInterface();
 
   });
 
@@ -563,40 +585,22 @@ bool VulkanDrawFrame(Input::Data *inputData) {
           total_triangles += meshes[x]->getTrianglesCount();
         }
 
-        char output_string[50];
         const char *meshNoun = meshes.size() == 1 ? "mesh" : "meshes";
         const char *polyNoun = "faces/polyhedron";
         const char *triangleNoun = total_triangles == 1 ? "triangle" : "triangles";
 
-        sprintf(output_string, "%d %s, %d %s, %d %s", (int) meshes.size(), meshNoun,
+        sprintf(mesh_info, "%d %s, %d %s, %d %s", (int) meshes.size(), meshNoun,
                 allowedPolyFaces[polyFacesIdx], polyNoun, total_triangles, triangleNoun);
-        font->drawString(output_string,
-                         1.0f,
-                         -.98f,
-                         -.98f,
-                         renderer->getCurrentCommandBuffer(),
-                         render_pass,
-                         renderer->getCurrentFrame());
 
         int fps;
         float frametime;
-        char fpsString[50];
         Timing::timer.getFramerate(500,
                                    Timing::timer.getLastMajorEvent()->number,
                                    &fps,
                                    &frametime);
-        sprintf(fpsString, "%2.d FPS  %.3f ms", fps, frametime);
-        font->drawString(fpsString,
-                         1.0f,
-                         -0.98f,
-                         -0.88f,
-                         renderer->getCurrentCommandBuffer(),
-                         render_pass,
-                         renderer->getCurrentFrame());
+        sprintf(fps_info, "%2.d FPS  %.3f ms", fps, frametime);
 
-        for (Button button : Input::buttons) {
-          button.drawButton(render_pass, font, renderer);
-        }
+        user_interface->DrawUserInterface(render_pass);
 
         vkCmdEndRenderPass(renderer->getCurrentCommandBuffer());
       });

@@ -15,6 +15,7 @@
 #include <android_native_app_glue.h>
 #include <timing.h>
 #include "vulkan_main.h"
+#include "userinterface.h"
 
 // Process the next main command.
 void handle_cmd(android_app *app, int32_t cmd) {
@@ -36,7 +37,7 @@ void handle_cmd(android_app *app, int32_t cmd) {
 void android_main(struct android_app *app) {
   // Set the callback to process system events
   app->onAppCmd = handle_cmd;
-  app->onInputEvent = Input::handler;
+  app->onInputEvent = UserInterface::Handler;
   app->userData = (void *) new Input::Data;
   app->activity->callbacks->onNativeWindowResized = ResizeCallback;
 
