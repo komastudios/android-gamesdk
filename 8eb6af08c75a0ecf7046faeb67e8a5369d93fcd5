@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "26febf82_6c718360",
+        "filename": "include/swappy/swappyGL_extra.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-12-10T14:24:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1332b783_246c6867",
+      "range": {
+        "startLine": 19,
+        "startChar": 9,
+        "endLine": 19,
+        "endChar": 13
+      },
+      "revId": "8eb6af08c75a0ecf7046faeb67e8a5369d93fcd5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "71517050_1fddd280",
         "filename": "include/tuningfork/tuningfork.h",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "9e7bf2a8_cde1d0ab",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-12-10T14:24:18Z",
+      "side": 1,
+      "message": "Not entirely redundant as :\n\n* \"tuningfork\" is the internal name for the page, \n* \"Tuning Fork main interface\" is the title (i.e: short name) \n* and \"The main interface to use Tuning Fork\" is the description (showed at the right of the title in the reference main page).\n\nRemoving the description will create a blank in the reference main page and in the documentation page.\n\nI could maybe renaming Tuning Fork main interface to just \"Tuning Fork\" though, but I like the explicitness of \"main interface\"?\n\nIn any case, I removed the period at the end of \"Tuning Fork main interface\" as it\u0027s not a sentence but a name.",
+      "parentUuid": "71517050_1fddd280",
+      "range": {
+        "startLine": 19,
+        "startChar": 3,
+        "endLine": 19,
+        "endChar": 41
+      },
+      "revId": "8eb6af08c75a0ecf7046faeb67e8a5369d93fcd5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "20d659ee_cfba52ec",
         "filename": "include/tuningfork/tuningfork_extra.h",
         "patchSetId": 1
@@ -68,6 +116,30 @@
       "revId": "8eb6af08c75a0ecf7046faeb67e8a5369d93fcd5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cd8a2719_2cda515e",
+        "filename": "include/tuningfork/tuningfork_extra.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-12-10T14:24:18Z",
+      "side": 1,
+      "message": "Same thing about the title and the description. I\u0027ve removed the extra period at the end of the title.",
+      "parentUuid": "20d659ee_cfba52ec",
+      "range": {
+        "startLine": 19,
+        "startChar": 3,
+        "endLine": 19,
+        "endChar": 43
+      },
+      "revId": "8eb6af08c75a0ecf7046faeb67e8a5369d93fcd5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -100,6 +172,24 @@
       "side": 1,
       "message": "lol",
       "parentUuid": "94d56d55_ae82e820",
+      "revId": "8eb6af08c75a0ecf7046faeb67e8a5369d93fcd5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "98e70755_c68a94d8",
+        "filename": "include/tuningfork/tuningfork_extra.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-12-10T14:24:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "891dff13_13cd6b3f",
       "revId": "8eb6af08c75a0ecf7046faeb67e8a5369d93fcd5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
