@@ -37,6 +37,41 @@
     },
     {
       "key": {
+        "uuid": "60025346_6e3f5f11",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-12-10T23:58:04Z",
+      "side": 1,
+      "message": "I don\u0027t know either, just asking. \u0027Cause I see there are depth_buffers as well ;)",
+      "parentUuid": "7e245738_49577e51",
+      "revId": "bc674fdbb92841ee2df50e6b7394094aaf1bd28a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7200925a_5e13a6c6",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-12-10T23:58:04Z",
+      "side": 1,
+      "message": "Like here I don\u0027t see practical difference between ++i and i++.\nSo just curious that which should we choose when \u0027i\u0027 is just for index of an array/ a vector?",
+      "revId": "bc674fdbb92841ee2df50e6b7394094aaf1bd28a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a4bc88d0_4e3c1b26",
         "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
         "patchSetId": 1
