@@ -15,8 +15,8 @@
  */
 
 /**
- * @defgroup tuningfork_extra
- * Tuning Fork extra utility functions.
+ * @defgroup tuningfork_extra Tuning Fork extra utilities
+ * Extra utility functions to use Tuning Fork.
  * @{
  */
 
@@ -61,7 +61,7 @@ TFErrorCode TuningFork_startFidelityParamDownloadThread(
                                       const CProtobufSerialization* default_params,
                                       ProtoCallback fidelity_params_callback);
 
-/*
+/**
  * @brief The TuningFork_init function will save fidelity params to a file
  *  for use when a download connection is not available. With this function,
  *  you can replace or delete the saved file.
