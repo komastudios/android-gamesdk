@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "7e245738_49577e51",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-12-10T23:49:09Z",
+      "side": 1,
+      "message": "I figured we\u0027d leave this as framebuffers b/c \"framebuffer\" can be one word? I\u0027m not sure but that\u0027s not really true of other types of buffers so I was kinda like ehh I won\u0027t change this.",
+      "parentUuid": "9da8a1f9_ca809302",
+      "revId": "bc674fdbb92841ee2df50e6b7394094aaf1bd28a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a4bc88d0_4e3c1b26",
         "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "bc674fdbb92841ee2df50e6b7394094aaf1bd28a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d6cde168_6e3bdb32",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-12-10T23:49:09Z",
+      "side": 1,
+      "message": "Yeah I mean I don\u0027t think this is super significant; they have practical differences so I don\u0027t think it really falls under style...",
+      "parentUuid": "a4bc88d0_4e3c1b26",
+      "revId": "bc674fdbb92841ee2df50e6b7394094aaf1bd28a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
