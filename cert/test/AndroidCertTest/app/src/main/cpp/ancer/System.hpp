@@ -130,7 +130,7 @@ namespace ancer {
     void RunSystemGc();
 
 
-    enum class ThreadAffinity { kAnyCore, kBigCore, kLittleCore };
+    enum class ThreadAffinity { kLittleCore, kMiddleCore, kBigCore, kAnyCore };
     // Returns how many cores are in a given affinity category.
     [[nodiscard]] int NumCores(ThreadAffinity);
 
