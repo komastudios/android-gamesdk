@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9da8a1f9_ca809302",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-12-10T23:44:48Z",
+      "side": 1,
+      "message": "framebuffers v.s. frame_buffers",
+      "revId": "bc674fdbb92841ee2df50e6b7394094aaf1bd28a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4bc88d0_4e3c1b26",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2019-12-10T23:44:48Z",
+      "side": 1,
+      "message": "should we unify the style of \"++i\" v.s. \"i++\" ?\nsince it seems that this is not regulated in cpp style guide 😊",
+      "revId": "bc674fdbb92841ee2df50e6b7394094aaf1bd28a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
