@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "08a2f086_e0b63c51",
+        "filename": "bender/bender-base/app/src/main/jni/android_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-10T19:25:51Z",
+      "side": 1,
+      "message": "Super nitpicking: I want call InitWulkan that just calls OnResume.",
+      "revId": "fa53c7e811bfa0cbc84ff54772d2a7d548a1bfa3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "88f487e6_a0cd662b",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-10T19:25:51Z",
+      "side": 1,
+      "message": "Here\u0027s what I would do instead: pass a std::function that knows how to refill the data in the constructor and call it if it\u0027s not nullptr in OnResume. This way you catch both scenarios (load from file and polyhedron elegantly).",
+      "revId": "fa53c7e811bfa0cbc84ff54772d2a7d548a1bfa3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8e7b965d_9bc501c9",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-10T19:25:51Z",
+      "side": 1,
+      "message": "Geometry object doesn\u0027t know what kind of geometry it is, so a isPolyhedron flag is a big NO-NO.",
+      "revId": "fa53c7e811bfa0cbc84ff54772d2a7d548a1bfa3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}

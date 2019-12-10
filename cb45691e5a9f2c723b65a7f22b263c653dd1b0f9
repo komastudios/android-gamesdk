@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a9c4bd5c_caa525aa",
+        "filename": "bender/bender-base/app/src/main/jni/material.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-10T19:25:51Z",
+      "side": 1,
+      "message": "Super nitpick: i would still consider passing a reference here, since you are not outputting a renderer or the parameter can not be nullptr, which are the two use cases for passing a naked ptr.",
+      "revId": "cb45691e5a9f2c723b65a7f22b263c653dd1b0f9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0b66f4de_1fb779f1",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-10T19:25:51Z",
+      "side": 1,
+      "message": "I would considering eliminating these methods and recreating the mesh on geometry/material swap.",
+      "revId": "cb45691e5a9f2c723b65a7f22b263c653dd1b0f9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ca8b502e_dd871698",
+        "filename": "bender/bender-base/app/src/main/jni/render_graph.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-10T19:25:51Z",
+      "side": 1,
+      "message": "This should be stored somewhere else.",
+      "revId": "cb45691e5a9f2c723b65a7f22b263c653dd1b0f9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9f2cfef0_aa9fdb03",
+        "filename": "bender/bender-base/app/src/main/jni/shader_state.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-10T19:25:51Z",
+      "side": 1,
+      "message": "Consider just calling it cleanup, so we don\u0027t tie this code to vulkan.",
+      "revId": "cb45691e5a9f2c723b65a7f22b263c653dd1b0f9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e40fae96_2a5efbc9",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-10T19:25:51Z",
+      "side": 1,
+      "message": "I would consider the same design as geometry where you pass a std::function that implements generating a bunch of data for the texture.",
+      "revId": "cb45691e5a9f2c723b65a7f22b263c653dd1b0f9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
