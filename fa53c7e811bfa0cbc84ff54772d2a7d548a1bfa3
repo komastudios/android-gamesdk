@@ -91,6 +91,24 @@
     },
     {
       "key": {
+        "uuid": "847ac6c2_d79cad4c",
+        "filename": "bender/bender-base/app/src/main/jni/android_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-12-10T20:19:22Z",
+      "side": 1,
+      "message": "Ohhhhhhh I see where the confusion lies - OnResume actually has that logic inside of it (I just didn\u0027t rename it to something proper yet - OnResume is a vestige of another idea I had before lol) so I think we are talking about the same thing haha\n\nI\u0027ll update the CL with better name for it to be more clear what\u0027s going on!",
+      "parentUuid": "167e3f0f_1976d12c",
+      "revId": "fa53c7e811bfa0cbc84ff54772d2a7d548a1bfa3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "88f487e6_a0cd662b",
         "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
         "patchSetId": 1
