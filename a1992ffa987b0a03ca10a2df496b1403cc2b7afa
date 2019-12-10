@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "855f83c4_06a62295",
+        "filename": "cert/test/reporting/recipes/affinity.yaml",
+        "patchSetId": 9
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-10T21:38:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "06e0397d_32319eb4",
+      "revId": "a1992ffa987b0a03ca10a2df496b1403cc2b7afa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b0c3dcf4_ed9eb712",
         "filename": "cert/test/reporting/recipes/~example-pre-post-flight.yaml",
         "patchSetId": 9
@@ -30,6 +48,24 @@
       "writtenOn": "2019-12-10T19:43:09Z",
       "side": 1,
       "message": "Whitespace. But I\u0027m making the thing self-resolved as this is just an example and not production code.",
+      "revId": "a1992ffa987b0a03ca10a2df496b1403cc2b7afa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c1c26c6a_48b33f7c",
+        "filename": "cert/test/reporting/recipes/~example-pre-post-flight.yaml",
+        "patchSetId": 9
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-10T21:38:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b0c3dcf4_ed9eb712",
       "revId": "a1992ffa987b0a03ca10a2df496b1403cc2b7afa",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
