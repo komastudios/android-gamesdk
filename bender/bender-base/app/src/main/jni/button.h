@@ -14,6 +14,8 @@
 
 class Button {
  public:
+  Button();
+
   Button(float x_center,
          float x_extent,
          float y_center,
@@ -29,29 +31,38 @@ class Button {
   }
 
   void onButtonDown(){
-    current_label = "X";
+    pressed_ = true;
     onDown();
   }
 
   void onButtonHold(){
+    pressed_ = true;
     onHold();
   }
 
   void onButtonUp(){
-    current_label = default_label;
+    pressed_ = false;
     onUp();
   }
+
+  void update() { updater(*this); }
+
+  void setLabel(std::string text);
+
+  void setPosition(float x_center, float x_extent, float y_center, float y_extent);
 
   std::function<void()> onDown;
   std::function<void()> onUp;
   std::function<void()> onHold;
 
+  std::function<void(Button&)> updater;
+
  private:
-  float x_min, y_min, x_max, y_max, x_center, y_center;
+  float x_min_, y_min_, x_max_, y_max_, x_center_, y_center_;
   static inline int screen_width_, screen_height_;
-  std::string default_label;
-  std::string current_label;
-  static void empty(){ }
+  bool pressed_;
+  std::string default_label_;
+  const std::string pressed_label_ = "X";
 
 };
 

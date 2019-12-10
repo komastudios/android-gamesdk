@@ -16,34 +16,6 @@
 
 namespace Input {
 
-std::vector<Button> buttons;
-
-std::map<int, std::function<void(Data *, std::vector<Button> &)>> handlers = {
-    {AMOTION_EVENT_ACTION_DOWN, actionDownHandler},
-    {AMOTION_EVENT_ACTION_UP, actionUpHandler},
-    {AMOTION_EVENT_ACTION_MOVE, actionMoveHandler},
-};
-
-int32_t handler(android_app *app, AInputEvent *event) {
-  if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION) {
-    Input::Data *inputData = (Input::Data *) app->userData;
-    Input::updateInputData(event, inputData);
-
-    if (inputData->lastButton != nullptr
-        && !inputData->lastButton->testHit(inputData->lastX, inputData->lastY)) {
-      inputData->lastButton->onButtonUp();
-      inputData->lastButton = nullptr;
-    }
-
-    int action = AMotionEvent_getAction(event);
-    if (Input::handlers.find(action) != Input::handlers.end()) {
-      Input::handlers[action](inputData, buttons);
-    }
-    return 1;
-  }
-  return 0;
-}
-
 void getPointerPosition(AInputEvent *event, int *outX, int *outY) {
   *outX = AMotionEvent_getX(event, 0);
   *outY = AMotionEvent_getY(event, 0);
@@ -83,37 +55,6 @@ void updateInputData(AInputEvent *event, Data *input) {
 
   input->lastInputCount = AMotionEvent_getPointerCount(event);
   testDoubleTap(event, input);
-}
-
-void actionDownHandler(Input::Data *inputData, std::vector<Button> &buttons) {
-  for (auto &button : buttons) {
-    if (button.testHit(inputData->lastX, inputData->lastY)) {
-      inputData->lastButton = &button;
-      button.onButtonDown();
-    }
-  }
-}
-
-void actionMoveHandler(Input::Data *inputData, std::vector<Button> &buttons) {
-  for (auto &button : buttons) {
-    if (button.testHit(inputData->lastX, inputData->lastY)) {
-      if (inputData->lastButton == nullptr) {
-        button.onButtonDown();
-      } else {
-        button.onButtonHold();
-      }
-      inputData->lastButton = &button;
-    }
-  }
-}
-
-void actionUpHandler(Input::Data *inputData, std::vector<Button> &buttons) {
-  for (auto &button : buttons) {
-    if (button.testHit(inputData->lastX, inputData->lastY)) {
-      button.onButtonUp();
-    }
-  }
-  Input::clearInput(inputData);
 }
 
 }
