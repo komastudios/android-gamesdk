@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "b601c8f2_49804889",
+        "filename": "bender/bender-base/app/src/main/jni/android_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-10T19:56:37Z",
+      "side": 1,
+      "message": "I would keep it simple and call OnResume from InitVulkan without any logic.",
+      "parentUuid": "27f36dc5_1dc23ddf",
+      "revId": "fa53c7e811bfa0cbc84ff54772d2a7d548a1bfa3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "88f487e6_a0cd662b",
         "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
         "patchSetId": 1
@@ -72,6 +90,24 @@
     },
     {
       "key": {
+        "uuid": "7f89e401_bd1b6344",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-10T19:56:37Z",
+      "side": 1,
+      "message": "You can also use it for geometry that is loaded from a file as well.",
+      "parentUuid": "258b6c4e_4d8a8dfb",
+      "revId": "fa53c7e811bfa0cbc84ff54772d2a7d548a1bfa3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8e7b965d_9bc501c9",
         "filename": "bender/bender-base/app/src/main/jni/geometry.h",
         "patchSetId": 1
@@ -101,6 +137,24 @@
       "side": 1,
       "message": "I totally agree, this is something I was kinda unsure about myself - I was looking for a solution for the issue of how to regenerate that vertex/index data on focus regain\n\nYour idea to pass in a function pointer is awesome though, and definitely takes care of this issue better than this special case code (and in a more generic way so we can produce other cool, random vertex data algorithmically)",
       "parentUuid": "8e7b965d_9bc501c9",
+      "revId": "fa53c7e811bfa0cbc84ff54772d2a7d548a1bfa3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5e7c9cd6_f626ced4",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-10T19:56:37Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "6b8a9594_e29ea7d2",
       "revId": "fa53c7e811bfa0cbc84ff54772d2a7d548a1bfa3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false

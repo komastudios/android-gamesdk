@@ -142,6 +142,24 @@
     },
     {
       "key": {
+        "uuid": "87488c28_ffd6bba1",
+        "filename": "bender/bender-base/app/src/main/jni/shader_state.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-10T19:56:37Z",
+      "side": 1,
+      "message": "Makes sense. For now we don\u0027t have this need so we can simply call it cleanup.",
+      "parentUuid": "4d41a310_d6f9f64f",
+      "revId": "cb45691e5a9f2c723b65a7f22b263c653dd1b0f9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e40fae96_2a5efbc9",
         "filename": "bender/bender-base/app/src/main/jni/texture.cc",
         "patchSetId": 2
