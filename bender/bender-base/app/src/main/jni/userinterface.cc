@@ -12,7 +12,7 @@ std::map<int, std::function<void(Data *, std::vector<Button> &)>> UserInterface:
         {AMOTION_EVENT_ACTION_MOVE, UserInterface::ActionMoveHandler},
 };
 
-UserInterface::UserInterface(Renderer *renderer, Font& font) : renderer_(renderer), font_(font) {}
+UserInterface::UserInterface(Renderer *renderer, Font *font) : renderer_(renderer), font_(font) {}
 
 void UserInterface::RegisterButton(std::function<void(Button&)> updater) {
     Button button;
@@ -31,12 +31,12 @@ void UserInterface::RegisterTextField(std::function<void(TextField&)> updater) {
 void UserInterface::DrawUserInterface(VkRenderPass render_pass) {
     for (auto& button : buttons_) {
         button.update();
-        button.drawButton(render_pass, &font_, renderer_);
+        button.drawButton(render_pass, font_, renderer_);
     }
 
     for (auto& text_field : text_fields_) {
         text_field.update();
-        font_.drawString(text_field.text,
+        font_->drawString(text_field.text,
                          text_field.text_size,
                          text_field.x_corner,
                          text_field.y_corner,
@@ -94,5 +94,11 @@ void UserInterface::ActionUpHandler(Input::Data *input_data, std::vector<Button>
             button.onButtonUp();
         }
     }
+    input_data->lastButton = nullptr;
     Input::clearInput(input_data);
+}
+
+void UserInterface::OnResume(Renderer *newRenderer, Font *font) {
+  renderer_ = newRenderer;
+  font_ = font;
 }

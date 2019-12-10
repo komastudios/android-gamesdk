@@ -3,23 +3,41 @@
 //
 
 #include "geometry.h"
+#include "polyhedron.h"
 #include <vector>
 
 #include "bender_helpers.h"
 
 using namespace BenderHelpers;
 
-Geometry::Geometry(BenderKit::Device& device,
-                   const std::vector<float>& vertexData,
-                   const std::vector<uint16_t>& indexData) : device_(device) {
+Geometry::Geometry(BenderKit::Device &device,
+                   const std::vector<float> &vertexData,
+                   const std::vector<uint16_t> &indexData,
+                   std::function<void(std::vector<float>&, std::vector<uint16_t>&)> generator)
+    : device_(device), generator_(generator) {
   createVertexBuffer(vertexData, indexData);
 }
 
 Geometry::~Geometry() {
+  cleanup();
+}
+
+void Geometry::cleanup() {
+  vkDeviceWaitIdle(device_.getDevice());
   vkDestroyBuffer(device_.getDevice(), vertexBuf_, nullptr);
   vkFreeMemory(device_.getDevice(), vertexBufferDeviceMemory_, nullptr);
   vkDestroyBuffer(device_.getDevice(), indexBuf_, nullptr);
   vkFreeMemory(device_.getDevice(), indexBufferDeviceMemory_, nullptr);
+}
+
+void Geometry::onResume(BenderKit::Device &device) {
+  device_ = device;
+  if (generator_ != nullptr){
+    std::vector<float> vertex_data;
+    std::vector<uint16_t> index_data;
+    generator_(vertex_data, index_data);
+    createVertexBuffer(vertex_data, index_data);
+  }
 }
 
 void Geometry::createVertexBuffer(const std::vector<float>& vertexData, const std::vector<uint16_t>& indexData) {
