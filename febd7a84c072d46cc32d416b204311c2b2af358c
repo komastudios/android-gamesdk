@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c470dcb6_d5c21810",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 444,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-10T17:30:48Z",
+      "side": 1,
+      "message": "Want to make sure these are non-inclusive comparisons (\"less than\" instead of \"less than or equal to\")",
+      "revId": "febd7a84c072d46cc32d416b204311c2b2af358c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
