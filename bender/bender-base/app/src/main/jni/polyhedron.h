@@ -13,8 +13,6 @@
 #import "mesh.h"
 #import "shader_state.h"
 
-Mesh* createPolyhedron(Renderer& renderer, std::shared_ptr<Material> material, int faces);
-
-void swapPolyhedron(Mesh& mesh, int faces);
+bool populatePolyhedron(std::vector<float>& vertex_data, std::vector<uint16_t>& index_data, int faces);
 
 #endif //BENDER_BASE_SHAPE_H

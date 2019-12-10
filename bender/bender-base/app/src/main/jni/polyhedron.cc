@@ -99,25 +99,3 @@ bool populatePolyhedron(std::vector<float>& vertex_data, std::vector<uint16_t>& 
   }
   return true;
 }
-
-Mesh* createPolyhedron(Renderer &renderer, std::shared_ptr<Material> material, int faces) {
-  std::vector<float> vertex_data;
-  std::vector<uint16_t> index_data;
-
-  if (!populatePolyhedron(vertex_data, index_data, faces)) {
-    return nullptr;
-  }
-
-  return new Mesh(renderer, material, vertex_data, index_data);
-}
-
-void swapPolyhedron(Mesh& mesh, int faces) {
-  std::vector<float> vertex_data;
-  std::vector<uint16_t> index_data;
-
-  if (!populatePolyhedron(vertex_data, index_data, faces)) {
-    return;
-  }
-
-  mesh.swapGeometry(vertex_data, index_data);
-}

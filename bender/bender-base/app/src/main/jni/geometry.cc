@@ -3,23 +3,45 @@
 //
 
 #include "geometry.h"
+#include "polyhedron.h"
 #include <vector>
 
 #include "bender_helpers.h"
 
 using namespace BenderHelpers;
 
-Geometry::Geometry(BenderKit::Device& device,
-                   const std::vector<float>& vertexData,
-                   const std::vector<uint16_t>& indexData) : device_(device) {
+Geometry::Geometry(BenderKit::Device &device,
+                   const std::vector<float> &vertexData,
+                   const std::vector<uint16_t> &indexData,
+                   bool isPolyhedron,
+                   int numFaces)
+    : device_(device), is_polyheron_(isPolyhedron), polyhedron_faces_(numFaces) {
   createVertexBuffer(vertexData, indexData);
 }
 
 Geometry::~Geometry() {
+  cleanup();
+}
+
+void Geometry::cleanup() {
+  vkDeviceWaitIdle(device_.getDevice());
   vkDestroyBuffer(device_.getDevice(), vertexBuf_, nullptr);
   vkFreeMemory(device_.getDevice(), vertexBufferDeviceMemory_, nullptr);
   vkDestroyBuffer(device_.getDevice(), indexBuf_, nullptr);
   vkFreeMemory(device_.getDevice(), indexBufferDeviceMemory_, nullptr);
+}
+
+void Geometry::onResume(BenderKit::Device &device) {
+  device_ = device;
+  if (is_polyheron_){
+    std::vector<float> vertex_data;
+    std::vector<uint16_t> index_data;
+    populatePolyhedron(vertex_data, index_data, polyhedron_faces_);
+    createVertexBuffer(vertex_data, index_data);
+  }
+  else{
+    // need to load from file or some other method of getting the vert/index data
+  }
 }
 
 void Geometry::createVertexBuffer(const std::vector<float>& vertexData, const std::vector<uint16_t>& indexData) {

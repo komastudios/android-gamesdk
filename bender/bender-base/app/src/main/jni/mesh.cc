@@ -8,44 +8,58 @@
 #include "material.h"
 #include "shader_bindings.h"
 
-Mesh::Mesh(Renderer &renderer, std::shared_ptr<Material> material, std::shared_ptr<Geometry> geometry) :
+Mesh::Mesh(Renderer *renderer, std::shared_ptr<Material> material, std::shared_ptr<Geometry> geometry) :
     renderer_(renderer), material_(material), geometry_(geometry) {
   position_ = glm::vec3(0.0f, 0.0f, 0.0f);
   rotation_ = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
   scale_ = glm::vec3(1.0f, 1.0f, 1.0f);
 
-  mesh_buffer_ = std::make_unique<UniformBufferObject<ModelViewProjection>>(renderer_.getDevice());
+  mesh_buffer_ = std::make_unique<UniformBufferObject<ModelViewProjection>>(renderer_->getDevice());
   createMeshDescriptorSetLayout();
   createMeshDescriptors();
 }
 
-Mesh::Mesh(Renderer &renderer, std::shared_ptr<Material> material, const std::vector<float> &vertexData,
-           const std::vector<uint16_t> &indexData) :
+Mesh::Mesh(Renderer *renderer, std::shared_ptr<Material> material, const std::vector<float> &vertexData,
+           const std::vector<uint16_t> &indexData, bool isPolyhedron, int faces) :
     Mesh(renderer,
          material,
-         std::make_shared<Geometry>(renderer.getDevice(), vertexData, indexData)) {}
+         std::make_shared<Geometry>(renderer->getDevice(), vertexData, indexData, isPolyhedron, faces)) {}
 
 
 Mesh::~Mesh() {
-  vkDestroyPipeline(renderer_.getVulkanDevice(), pipeline_, nullptr);
-  vkDestroyPipelineLayout(renderer_.getVulkanDevice(), layout_, nullptr);
-  vkDestroyDescriptorSetLayout(renderer_.getVulkanDevice(), mesh_descriptors_layout_, nullptr);
+  cleanup();
+}
+
+void Mesh::cleanup(){
+  vkDeviceWaitIdle(renderer_->getVulkanDevice());
+  vkDestroyPipeline(renderer_->getVulkanDevice(), pipeline_, nullptr);
+  vkDestroyPipelineLayout(renderer_->getVulkanDevice(), layout_, nullptr);
+  vkDestroyDescriptorSetLayout(renderer_->getVulkanDevice(), mesh_descriptors_layout_, nullptr);
+  mesh_buffer_.reset();
+  pipeline_ = VK_NULL_HANDLE;
+}
+
+void Mesh::onResume(Renderer *renderer){
+  renderer_ = renderer;
+  mesh_buffer_ = std::make_unique<UniformBufferObject<ModelViewProjection>>(renderer_->getDevice());
+  createMeshDescriptorSetLayout();
+  createMeshDescriptors();
 }
 
 void Mesh::createMeshDescriptors() {
-  std::vector<VkDescriptorSetLayout> layouts(renderer_.getDevice().getDisplayImages().size(),
+  std::vector<VkDescriptorSetLayout> layouts(renderer_->getDevice().getDisplayImages().size(),
                                              mesh_descriptors_layout_);
 
   VkDescriptorSetAllocateInfo allocInfo = {};
   allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-  allocInfo.descriptorPool = renderer_.getDescriptorPool();
-  allocInfo.descriptorSetCount = renderer_.getDevice().getDisplayImages().size();
+  allocInfo.descriptorPool = renderer_->getDescriptorPool();
+  allocInfo.descriptorSetCount = renderer_->getDevice().getDisplayImages().size();
   allocInfo.pSetLayouts = layouts.data();
 
-  mesh_descriptor_sets_.resize(renderer_.getDevice().getDisplayImages().size());
-  CALL_VK(vkAllocateDescriptorSets(renderer_.getVulkanDevice(), &allocInfo, mesh_descriptor_sets_.data()));
+  mesh_descriptor_sets_.resize(renderer_->getDevice().getDisplayImages().size());
+  CALL_VK(vkAllocateDescriptorSets(renderer_->getVulkanDevice(), &allocInfo, mesh_descriptor_sets_.data()));
 
-  for (size_t i = 0; i < renderer_.getDevice().getDisplayImages().size(); i++) {
+  for (size_t i = 0; i < renderer_->getDevice().getDisplayImages().size(); i++) {
     VkDescriptorBufferInfo bufferInfo = {};
     bufferInfo.buffer = mesh_buffer_->getBuffer(i);
     bufferInfo.offset = 0;
@@ -61,7 +75,7 @@ void Mesh::createMeshDescriptors() {
     descriptorWrites[0].descriptorCount = 1;
     descriptorWrites[0].pBufferInfo = &bufferInfo;
 
-    vkUpdateDescriptorSets(renderer_.getVulkanDevice(), descriptorWrites.size(), descriptorWrites.data(),
+    vkUpdateDescriptorSets(renderer_->getVulkanDevice(), descriptorWrites.size(), descriptorWrites.data(),
                            0, nullptr);
 
   }
@@ -72,7 +86,7 @@ void Mesh::createMeshPipeline(VkRenderPass renderPass) {
 
   layouts[BINDING_SET_MESH] = mesh_descriptors_layout_;
   layouts[BINDING_SET_MATERIAL] = material_->getMaterialDescriptorSetLayout();
-  layouts[BINDING_SET_LIGHTS] = renderer_.getLightsDescriptorSetLayout();
+  layouts[BINDING_SET_LIGHTS] = renderer_->getLightsDescriptorSetLayout();
 
   VkPipelineLayoutCreateInfo pipelineLayoutInfo {
           .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
@@ -83,18 +97,18 @@ void Mesh::createMeshPipeline(VkRenderPass renderPass) {
           .pPushConstantRanges = nullptr,
   };
 
-  CALL_VK(vkCreatePipelineLayout(renderer_.getVulkanDevice(), &pipelineLayoutInfo, nullptr,
+  CALL_VK(vkCreatePipelineLayout(renderer_->getVulkanDevice(), &pipelineLayoutInfo, nullptr,
                                  &layout_))
 
-  VkGraphicsPipelineCreateInfo pipelineInfo = renderer_.getDefaultPipelineInfo(
+  VkGraphicsPipelineCreateInfo pipelineInfo = renderer_->getDefaultPipelineInfo(
           layout_,
           renderPass);
 
   material_->fillPipelineInfo(&pipelineInfo);
 
   CALL_VK(vkCreateGraphicsPipelines(
-          renderer_.getVulkanDevice(),
-          renderer_.getPipelineCache(), 1,
+          renderer_->getVulkanDevice(),
+          renderer_->getPipelineCache(), 1,
           &pipelineInfo,
           nullptr, &pipeline_));
 }
@@ -113,7 +127,7 @@ void Mesh::createMeshDescriptorSetLayout() {
   layoutInfo.bindingCount = bindings.size();
   layoutInfo.pBindings = bindings.data();
 
-  CALL_VK(vkCreateDescriptorSetLayout(renderer_.getVulkanDevice(), &layoutInfo, nullptr,
+  CALL_VK(vkCreateDescriptorSetLayout(renderer_->getVulkanDevice(), &layoutInfo, nullptr,
                                     &mesh_descriptors_layout_));
 }
 
@@ -145,7 +159,7 @@ void Mesh::submitDraw(VkCommandBuffer commandBuffer, uint_t frame_index) const {
   vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                           layout_, BINDING_SET_MESH, 1, &mesh_descriptor_sets_[frame_index], 0, nullptr);
 
-  VkDescriptorSet lightsDescriptorSet = renderer_.getLightsDescriptorSet(frame_index);
+  VkDescriptorSet lightsDescriptorSet = renderer_->getLightsDescriptorSet(frame_index);
 
   vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                           layout_, BINDING_SET_LIGHTS, 1, &lightsDescriptorSet, 0, nullptr);
@@ -158,10 +172,6 @@ void Mesh::submitDraw(VkCommandBuffer commandBuffer, uint_t frame_index) const {
   vkCmdDrawIndexed(commandBuffer,
                    geometry_->getIndexCount(),
                    1, 0, 0, 0);
-}
-
-void Mesh::swapGeometry(const std::vector<float>& vertexData, const std::vector<uint16_t>& indexData) {
-  geometry_ = std::make_shared<Geometry>(renderer_.getDevice(), vertexData, indexData);
 }
 
 void Mesh::translate(glm::vec3 offset) {

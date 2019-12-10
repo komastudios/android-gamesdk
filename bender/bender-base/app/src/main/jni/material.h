@@ -16,21 +16,27 @@ struct alignas(16) MaterialAttributes {
 
 class Material {
 public:
-  Material(Renderer& renderer, std::shared_ptr<ShaderState> shaders, std::shared_ptr<Texture> texture,
+  Material(Renderer *renderer, std::shared_ptr<ShaderState> shaders, std::shared_ptr<Texture> texture,
           const glm::vec3 color = glm::vec3(1.0, 1.0, 1.0));
   ~Material();
+
+  void cleanup();
+
+  void onResume(Renderer *renderer);
 
   void fillPipelineInfo(VkGraphicsPipelineCreateInfo *pipeline_info);
 
   VkDescriptorSetLayout getMaterialDescriptorSetLayout() const { return material_descriptors_layout_; }
   VkDescriptorSet getMaterialDescriptorSet(uint_t frame_index) const {return material_descriptor_sets_[frame_index]; }
 
-  static void cleanup() { default_texture_.reset(); }
+  static void cleanupStatic() { default_texture_->cleanup(); }
+
+  static void onResumeStatic(BenderKit::Device& device, android_app *app) { default_texture_->onResume(device, app); }
 
 private:
   static std::shared_ptr<Texture> default_texture_;
 
-  Renderer& renderer_;
+  Renderer *renderer_;
 
   std::shared_ptr<ShaderState> shaders_;
   std::shared_ptr<Texture> texture_;
@@ -44,7 +50,7 @@ private:
 
   std::shared_ptr<ShaderState> getShaders() const { return shaders_; }
 
-  void createDefaultTexture(Renderer& renderer);
+  void createDefaultTexture(Renderer &renderer);
   void createSampler();
   void createMaterialDescriptorSetLayout();
   void createMaterialDescriptorSets();
