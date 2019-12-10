@@ -4,22 +4,38 @@
 
 #include "button.h"
 
+Button::Button() : Button(0.0, 0.0, 0.0, 0.0, "") {}
+
 Button::Button(float x,
                float x_extent,
                float y,
                float y_extent,
                const char *text) {
+  setPosition(x, x_extent, y, y_extent);
+  setLabel(text);
+  syncLabel();
+
+  onUp = [] {};
+  onDown = [] {};
+  onHold = [] {};
+  updater = [] (Button&) {};
+}
+
+void Button::setLabel(std::string text) {
+  default_label = text;
+}
+
+void Button::syncLabel() {
+  current_label = default_label;
+}
+
+void Button::setPosition(float x, float x_extent, float y, float y_extent) {
+  x_center = x;
   x_min = x - x_extent / 2;
   x_max = x + x_extent / 2;
-  x_center = x;
+  y_center = y;
   y_min = y - y_extent / 2;
   y_max = y + y_extent / 2;
-  y_center = y;
-  default_label = text;
-  current_label = text;
-  onUp = empty;
-  onDown = empty;
-  onHold = empty;
 }
 
 bool Button::testHit(int x, int y) {

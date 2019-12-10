@@ -14,6 +14,8 @@
 
 class Button {
  public:
+  Button();
+
   Button(float x_center,
          float x_extent,
          float y_center,
@@ -42,16 +44,23 @@ class Button {
     onUp();
   }
 
+  void setLabel(std::string text);
+
+  void syncLabel();
+
+  void setPosition(float x_center, float x_extent, float y_center, float y_extent);
+
   std::function<void()> onDown;
   std::function<void()> onUp;
   std::function<void()> onHold;
+
+  std::function<void(Button&)> updater;
 
  private:
   float x_min, y_min, x_max, y_max, x_center, y_center;
   static inline int screen_width_, screen_height_;
   std::string default_label;
   std::string current_label;
-  static void empty(){ }
 
 };
 
