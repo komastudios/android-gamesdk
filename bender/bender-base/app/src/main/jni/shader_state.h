@@ -35,12 +35,17 @@ class ShaderState {
 
   ~ShaderState();
 
+  void cleanup();
+
+  void onResume(VkDevice appDevice);
+
   void fillPipelineInfo(VkGraphicsPipelineCreateInfo *pipeline_info);
 
 
  private:
   android_app &androidAppCtx;
   VkDevice device;
+  std::string file_name_;
 
   BenderKit::VertexFormat vertex_format_;        // TODO: Consider sharing the vertex format across shader states
 
