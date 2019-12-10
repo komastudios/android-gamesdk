@@ -15,8 +15,8 @@
  */
 
 /**
- * @defgroup tuningfork
- * Tuning Fork main interface.
+ * @defgroup tuningfork Tuning Fork main interface.
+ * The main interface to use Tuning Fork.
  * @{
  */
 
@@ -24,6 +24,8 @@
 
 #include <stdint.h>
 #include <jni.h>
+
+/** @cond INTERNAL */
 
 #define TUNINGFORK_MAJOR_VERSION 0
 #define TUNINGFORK_MINOR_VERSION 4
@@ -33,6 +35,8 @@
 #define TUNINGFORK_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR) PREFIX ## _ ## MAJOR ## _ ## MINOR
 #define TUNINGFORK_VERSION_CONCAT(PREFIX, MAJOR, MINOR) TUNINGFORK_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR)
 #define TUNINGFORK_VERSION_SYMBOL TUNINGFORK_VERSION_CONCAT(TuningFork_version, TUNINGFORK_MAJOR_VERSION, TUNINGFORK_MINOR_VERSION)
+
+/** @endcond */
 
 /**
  * @brief Instrument keys indicating time periods within a frame.
@@ -66,6 +70,9 @@ typedef uint64_t TFTimePoint;
 /// A duration in nanoseconds.
 typedef uint64_t TFDuration;
 
+/**
+ * @brief All the error codes that can be returned by Tuning Fork functions.
+ */
 enum TFErrorCode {
     TFERROR_OK = 0, /// No error
     TFERROR_NO_SETTINGS = 1, /// No tuningfork_settings.bin found in assets/tuningfork.
@@ -101,15 +108,34 @@ enum TFErrorCode {
 };
 
 /**
- * @defgroup TFCache
- * Optional persistent cache object.
+ * @defgroup TFCache Optional persistent cache object.
  * @{
  */
 
+/**
+ * @brief Pointer to a function that can be attached to TFCache::get
+ *
+ * Function that will be called to get a value for a key.
+ * @see TFCache
+ */
 typedef TFErrorCode (* PFnTFCacheGet )(uint64_t key, CProtobufSerialization* value,
                                      void* user_data);
+
+/**
+ * @brief Pointer to a function that can be attached to TFCache::set
+ *
+ * Function that will be called to set a value for a key.
+ * @see TFCache
+ */
 typedef TFErrorCode (* PFnTFCacheSet )(uint64_t key, const CProtobufSerialization* value,
                                      void* user_data);
+
+/**
+ * @brief Pointer to a function that can be attached to TFCache::remove
+ *
+ * Function that will be called to remove an entry in the cache.
+ * @see TFCache
+ */
 typedef TFErrorCode (* PFnTFCacheRemove )(uint64_t key, void* user_data);
 
 /**
@@ -117,17 +143,36 @@ typedef TFErrorCode (* PFnTFCacheRemove )(uint64_t key, void* user_data);
  *  If you do not supply one of these, data is saved to a temporary file.
  */
 struct TFCache {
-  void* user_data; /// Data passed to each callback.
-  PFnTFCacheSet set; /// Function to set a value for a key.
-  PFnTFCacheGet get; /// Function to get a valud for a key.
-  PFnTFCacheRemove remove; /// Function to remove an entry in the cache.
+  void* user_data; ///< Data passed to each callback.
+  PFnTFCacheSet set; ///< Function to set a value for a key.
+  PFnTFCacheGet get; ///< Function to get a value for a key.
+  PFnTFCacheRemove remove; ///< Function to remove an entry in the cache.
 };
 
 /** @} */
 
+/**
+ * @brief Pointer to a function that can be attached to TFSettings::fidelity_params_callback
+ *
+ * Function that will be called with the fidelity parameters that are downloaded.
+ * @see TFSettings
+ */
 typedef void (* ProtoCallback )(const CProtobufSerialization*);
+
+/**
+ * @brief Pointer to a function that can be passed to TuningFork_setUploadCallback.
+ *
+ * Function that will be called on a separate thread every time TuningFork performs an upload.
+ * @see TFSettings
+ */
 typedef void (* UploadCallback )(const char*, size_t n);
+
 struct SwappyTracer;
+
+/**
+ * @brief Pointer to Swappy_injectTracers that can be attached to TFSettings::swappy_tracer_fn.
+ * @see TFSettings
+ */
 typedef void (* SwappyTracerFn )(const SwappyTracer*);
 
 /**
@@ -177,6 +222,8 @@ inline void CProtobufSerialization_Free(CProtobufSerialization* ser) {
     }
 }
 
+/** @cond INTERNAL */
+
 // Internal init function. Do not call directly.
 TFErrorCode TuningFork_init_internal(const TFSettings *settings, JNIEnv* env, jobject context);
 
@@ -184,6 +231,8 @@ TFErrorCode TuningFork_init_internal(const TFSettings *settings, JNIEnv* env, jo
 // If you are getting linker errors related to TuningFork_version_x_y, you probably have a
 // mismatch between the header used at compilation and the actually library used by the linker.
 void TUNINGFORK_VERSION_SYMBOL();
+
+/** @endcond */
 
 /**
  * @brief Initialize Tuning Fork. This must be called before any other functions.
@@ -194,7 +243,7 @@ void TUNINGFORK_VERSION_SYMBOL();
  * @param settings a TFSettings structure
  * @param env a JNIEnv
  * @param context the app context
- * 
+ *
  * @return TFERROR_OK if successful, TFERROR_NO_SETTINGS if no settings could be found,
  *  TFERROR_BAD_SETTINGS if your tuningfork_settings.bin file was invalid or
  *  TFERROR_ALREADY_INITIALIZED if tuningfork was already initialized.

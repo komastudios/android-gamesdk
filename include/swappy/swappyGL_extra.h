@@ -16,7 +16,7 @@
 
 /**
  * @defgroup swappyGL_extra Swappy for OpenGL extras
- * Extra tools functions to use Swappy with OpenGL.
+ * Extra tool functions to use Swappy with OpenGL.
  * @{
  */
 
