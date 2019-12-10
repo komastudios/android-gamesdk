@@ -40,14 +40,7 @@ void testDoubleTap(AInputEvent *event, Data *input);
 void updateInputData(AInputEvent *event, Data *input);
 void clearInput(Data *input);
 
-void actionDownHandler(Input::Data *inputData, std::vector<Button> &buttons);
-void actionMoveHandler(Input::Data *inputData, std::vector<Button> &buttons);
-void actionUpHandler(Input::Data *inputData, std::vector<Button> &buttons);
 int32_t handler(android_app *app, AInputEvent *event);
-
-extern std::map<int, std::function<void(Data *, std::vector<Button> &)>> handlers;
-extern std::vector<Button> buttons;
-
 }
 
 #endif //BENDER_BASE_APP_SRC_MAIN_JNI_INPUT_H_
