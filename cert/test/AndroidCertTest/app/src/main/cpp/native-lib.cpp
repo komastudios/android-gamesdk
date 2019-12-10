@@ -413,6 +413,12 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_getCpuId(
 }
 
 extern "C" JNIEXPORT jstring JNICALL
+Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_getCpuInfo(
+        JNIEnv* env, jclass instance) {
+    return env->NewStringUTF(GetCpuInfo().c_str());
+}
+
+extern "C" JNIEXPORT jstring JNICALL
 Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_getThreadId(
         JNIEnv* env, jclass instance) {
     std::stringstream ss;

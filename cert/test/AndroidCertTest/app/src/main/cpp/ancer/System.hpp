@@ -130,15 +130,17 @@ namespace ancer {
     void RunSystemGc();
 
 
-    enum class ThreadAffinity { kAnyCore, kBigCore, kLittleCore };
+    enum class ThreadAffinity { kLittleCore, kMiddleCore, kBigCore, kAnyCore };
     // Returns how many cores are in a given affinity category.
-    [[nodiscard]] int NumCores(ThreadAffinity);
+    [[nodiscard]] int NumCores(ThreadAffinity = ThreadAffinity::kAnyCore);
 
     // Sets our affinity to a specific core in the given group.
     // An index of -1 acts as SetThreadAffinity(affinity).
-    void SetThreadAffinity(int index, ThreadAffinity affinity = ThreadAffinity::kAnyCore);
+    void SetThreadAffinity(int index, ThreadAffinity = ThreadAffinity::kAnyCore);
     // Sets our affinity to any/all of the cores in a group.
     void SetThreadAffinity(ThreadAffinity affinity);
+
+    [[nodiscard]] std::string GetCpuInfo();
 
 
     static jclass RetrieveClass(JNIEnv* env, jobject activity, const char* className);
