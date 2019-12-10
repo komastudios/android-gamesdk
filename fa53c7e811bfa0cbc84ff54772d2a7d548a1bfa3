@@ -109,6 +109,24 @@
     },
     {
       "key": {
+        "uuid": "17fe3420_f534b4c7",
+        "filename": "bender/bender-base/app/src/main/jni/android_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-10T20:36:54Z",
+      "side": 1,
+      "message": "Got it! Thanks for the clarification.",
+      "parentUuid": "847ac6c2_d79cad4c",
+      "revId": "fa53c7e811bfa0cbc84ff54772d2a7d548a1bfa3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "88f487e6_a0cd662b",
         "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
         "patchSetId": 1
