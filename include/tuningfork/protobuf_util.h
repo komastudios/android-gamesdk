@@ -15,7 +15,7 @@
  */
 
 /**
- * @defgroup Protobuf_util
+ * @defgroup Protobuf_util Protocol Buffer utilities
  * Helper functions for converting between C and C++ protocol buffer serializations.
  * @{
  */
@@ -30,15 +30,19 @@
 #include <cstring>
 #include <string>
 
+/** @cond INTERNAL */
+
 /**
  * Internal to this file - do not use.
  */
 extern "C" void CProtobufSerialization_Dealloc(CProtobufSerialization* c);
 
+/** @endcond */
+
 namespace tuningfork {
 
 /**
- * A protocol buffer serialization stored as a STL vector of bytes
+ * @brief A protocol buffer serialization stored as a STL vector of bytes
  */
 typedef std::vector<uint8_t> ProtobufSerialization;
 
@@ -106,9 +110,10 @@ std::vector<uint8_t> Serialize(const T &pb) {
 }
 
 /**
- * Serialize a protocol buffer object to a CProtobuf.
+ * @brief Serialize a protocol buffer object to a CProtobuf.
+ *
  * The caller takes ownership of the returned serialization and must call
- *  CProtobufSerialization_Free to deallocate any memory.
+ * CProtobufSerialization_Free to deallocate any memory.
  */
 template <typename T>
 CProtobufSerialization CProtobufSerialization_Alloc(const T &pb) {
