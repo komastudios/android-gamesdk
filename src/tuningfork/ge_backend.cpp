@@ -61,7 +61,7 @@ class UltimateUploader : public Runnable {
 TFErrorCode GEBackend::Init(const JniCtx& jni, const Settings& settings,
                            const ExtraUploadInfo& extra_upload_info) {
 
-    if (settings.base_uri.empty()) {
+    if (settings.EndpointUri().empty()) {
         ALOGW("The base URI in Tuning Fork TFSettings is invalid");
         return TFERROR_BAD_PARAMETER;
     }
@@ -70,7 +70,7 @@ TFErrorCode GEBackend::Init(const JniCtx& jni, const Settings& settings,
         return TFERROR_BAD_PARAMETER;
     }
 
-    Request rq(extra_upload_info, settings.base_uri, settings.api_key, kRequestTimeout);
+    Request rq(extra_upload_info, settings.EndpointUri(), settings.api_key, kRequestTimeout);
     WebRequest web_request(jni, rq);
 
     persister_ = settings.c_settings.persistent_cache;

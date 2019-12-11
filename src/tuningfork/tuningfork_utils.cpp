@@ -97,6 +97,18 @@ AAsset* GetAsset(const JniCtx& jni, const char* name) {
     return asset;
 }
 
+bool GetAssetAsSerialization(const JniCtx& jni, const char* name,
+                             ProtobufSerialization& out) {
+
+    AAsset* asset = GetAsset(jni, name);
+    if (asset==nullptr) return false;
+    uint64_t size = AAsset_getLength64(asset);
+    out.resize(size);
+    memcpy(const_cast<uint8_t*>(out.data()), AAsset_getBuffer(asset), size);
+    AAsset_close(asset);
+    return true;
+}
+
 // Get the app's version code. Also fills packageNameStr with the package name
 //  if it is non-null.
 int GetVersionCode(const JniCtx& jni_ctx, std::string* packageNameStr, uint32_t* gl_es_version) {
@@ -153,6 +165,22 @@ std::string GetSignature(const JniCtx& jni_ctx) {
     auto padded_sig = md.digest(sigs[0]);
     CHECK_FOR_JNI_EXCEPTION_AND_RETURN("");
     return Base16(padded_sig);
+}
+
+
+bool GetDebuggable(const JniCtx& jni_ctx) {
+    using namespace jni;
+    Helper jni(jni_ctx.Env(), jni_ctx.Ctx());
+    android::content::Context context(jni_ctx.Ctx(), jni);
+    auto pm = context.getPackageManager();
+    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(false);
+    auto package_name = context.getPackageName();
+    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(false);
+    auto package_info = pm.getPackageInfo(package_name.C(),0);
+    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(false);
+    if (!package_info.valid()) return false;
+    return package_info.applicationInfo().flags()
+            & android::content::pm::ApplicationInfo::FLAG_DEBUGGABLE;
 }
 
 } // namespace apk_utils
