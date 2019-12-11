@@ -58,6 +58,7 @@ set( TUNINGFORK_SRCS
   jni_helper.cpp
   jni_wrap.cpp
   jnictx.cpp
+  debug_upload.cpp
   ${THIRDPARTY_DIR}/json11/json11.cpp
   ${MODPB64_DIR}/modp_b64.cc
   ${PROTO_GENS_DIR}/nano/tuningfork.pb.c

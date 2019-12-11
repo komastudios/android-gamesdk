@@ -293,6 +293,15 @@ class FeatureInfo : public java::Object {
     int reqGlEsVersion;
 };
 
+class ApplicationInfo : public java::Object {
+  public:
+    ApplicationInfo(const java::Object& o) : java::Object(o) {}
+    int flags() const {
+        return jni_.GetIntField(obj_, "flags");
+    }
+    static const int FLAG_DEBUGGABLE = 2;
+};
+
 class PackageInfo : public java::Object {
   public:
     PackageInfo(const java::Object& o) : java::Object(o) {}
@@ -320,6 +329,12 @@ class PackageInfo : public java::Object {
     }
     int versionCode() const {
         return jni_.GetIntField(obj_, "versionCode");
+    }
+    ApplicationInfo applicationInfo() const {
+        auto env = jni_.env();
+        auto appInfo = jni_.GetObjectField(obj_, "applicationInfo",
+                                           "[Landroid/content/pm/ApplicationInfo;");
+        return ApplicationInfo(Object(appInfo.obj, jni_));
     }
 };
 
