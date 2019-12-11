@@ -69,6 +69,24 @@
       "revId": "cd3c9d56d008c49a072b6c7df4e151200b38b57b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e86df852_b6c7bd40",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 256,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-11T22:10:08Z",
+      "side": 1,
+      "message": "Addendum: here I see a bunch of calculations that essentially depends on delta_x, delta_y. I would rather see these calculations moved inside the camera class and, eventually, the render_graph object yielding a camera back to the client to update it, which is ok.",
+      "parentUuid": "ad6642db_f5a2edd9",
+      "revId": "cd3c9d56d008c49a072b6c7df4e151200b38b57b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
