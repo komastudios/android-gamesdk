@@ -38,14 +38,6 @@
 
 namespace tuningfork {
 
-ProtobufSerialization GetAssetAsSerialization(AAsset* asset) {
-    ProtobufSerialization ser;
-    uint64_t size = AAsset_getLength64(asset);
-    ser.resize(size);
-    memcpy(const_cast<uint8_t*>(ser.data()), AAsset_getBuffer(asset), size);
-    return ser;
-}
-
 // Get the name of the tuning fork save file. Returns true if the directory
 //  for the file exists and false on error.
 bool GetSavedFileName(const JniCtx& jni, std::string& name) {
@@ -168,14 +160,11 @@ TFErrorCode FindFidelityParamsInApk(const JniCtx& jni,
                                     ProtobufSerialization& fp) {
     std::stringstream full_filename;
     full_filename << "tuningfork/" << filename;
-    AAsset* a = apk_utils::GetAsset(jni, full_filename.str().c_str());
-    if (a==nullptr) {
+    if (!apk_utils::GetAssetAsSerialization(jni, full_filename.str().c_str(), fp)) {
         ALOGE("Can't find %s", full_filename.str().c_str());
         return TFERROR_NO_FIDELITY_PARAMS;
     }
-    ALOGI("Using file %s for default params", full_filename.str().c_str());
-    fp = GetAssetAsSerialization(a);
-    AAsset_close(a);
+    ALOGV("Found %s", full_filename.str().c_str());
     return TFERROR_OK;
 }
 
@@ -209,6 +198,8 @@ TFErrorCode GetDefaultsFromAPKAndDownloadFPs(const Settings& settings, const Jni
                                            default_params);
             if (err!=TFERROR_OK)
                 return err;
+            ALOGI("Using file %s for default params",
+                settings.default_fidelity_parameters_filename.c_str());
         }
     }
     auto training_params = GetTrainingParams(settings);

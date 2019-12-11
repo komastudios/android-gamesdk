@@ -37,6 +37,8 @@ namespace apk_utils {
     // Asset_close must be called once the asset is no longer needed.
     AAsset* GetAsset(const JniCtx& jni, const char* name);
 
+    bool GetAssetAsSerialization(const JniCtx& jni, const char* name, ProtobufSerialization& out);
+
     // Get the app's version code. Also fills packageNameStr, if not null, with
     // the package name.
     int GetVersionCode(const JniCtx& jni_ctx, std::string* packageNameStr = nullptr,
@@ -44,6 +46,9 @@ namespace apk_utils {
 
     // Get the app's SHA1 signature
     std::string GetSignature(const JniCtx& jni);
+
+    // Get whether the ApplicationInfo indicates the APK is debuggable
+    bool GetDebuggable(const JniCtx& jni);
 
 } // namespace apk_utils
 
