@@ -123,6 +123,9 @@ void InitTf(JNIEnv* env, jobject activity) {
         settings.swappy_tracer_fn = &SwappyGL_injectTracer;
     }
     settings.fidelity_params_callback = SetFidelityParams;
+#ifndef NDEBUG
+    settings.endpoint_uri_override = "http://localhost:9000";
+#endif
     TFErrorCode err = TuningFork_init(&settings, env, activity);
     if (err==TFERROR_OK) {
         TuningFork_setUploadCallback(UploadCallback);

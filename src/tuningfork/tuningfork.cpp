@@ -140,6 +140,7 @@ public:
     const JniCtx& GetJniCtx() const {
         return jni_;
     }
+
     const Settings& GetSettings() const {
         return settings_;
     }
@@ -181,6 +182,9 @@ private:
     bool IsLoadingAnnotationId(uint64_t id) const;
 
     void SwapProngCaches();
+
+    bool Debugging() const;
+
 };
 
 static std::unique_ptr<TuningForkImpl> s_impl;
@@ -350,8 +354,9 @@ TuningForkImpl::TuningForkImpl(const Settings& settings,
                                      next_ikey_(0),
                                      jni_(jni),
                                      loading_start_(TimePoint::min()) {
-    ALOGI("TuningFork Settings:\n  method: %d\n  interval: %d\n  n_ikeys: %d\n  n_annotations: %zu\n"
-          "  n_histograms: %zu\n  base_uri: %s\n  api_key: %s\n  fp filename: %s\n  itimeout: %d\n  utimeout: %d",
+    ALOGI("TuningFork Settings:\n  method: %d\n  interval: %d\n  n_ikeys: %d\n  n_annotations: %zu"
+          "\n  n_histograms: %zu\n  base_uri: %s\n  api_key: %s\n  fp filename: %s\n  itimeout: %d"
+          "\n  utimeout: %d",
           settings.aggregation_strategy.method,
           settings.aggregation_strategy.intervalms_or_count,
           settings.aggregation_strategy.max_instrumentation_keys,
@@ -482,7 +487,7 @@ TFErrorCode TuningForkImpl::GetFidelityParameters(
                                            uint32_t timeout_ms) {
     if(loader_) {
         std::string experiment_id;
-        if (settings_.base_uri.empty()) {
+        if (settings_.EndpointUri().empty()) {
             ALOGW("The base URI in Tuning Fork TFSettings is invalid");
             return TFERROR_BAD_PARAMETER;
         }
@@ -494,10 +499,14 @@ TFErrorCode TuningForkImpl::GetFidelityParameters(
         Duration timeout = (timeout_ms<=0)
                            ? std::chrono::milliseconds(settings_.initial_request_timeout_ms)
                            : std::chrono::milliseconds(timeout_ms);
-        WebRequest web_request(jni_, Request(info, settings_.base_uri, settings_.api_key, timeout));
+        WebRequest web_request(jni_, Request(info, settings_.EndpointUri(),
+                                             settings_.api_key, timeout));
         auto result = loader_->GetFidelityParams(web_request, training_mode_params_.get(),
                                                  params_ser, experiment_id);
         upload_thread_.SetCurrentFidelityParams(params_ser, experiment_id);
+        if (Debugging()) {
+            UploadDebugInfo(jni_, web_request);
+        }
         return result;
     }
     else
@@ -700,6 +709,16 @@ TFErrorCode TuningForkImpl::SetFidelityParameters(const ProtobufSerialization& p
     // We clear the experiment id here.
     upload_thread_.SetCurrentFidelityParams(params, "");
     return TFERROR_OK;
+}
+
+bool TuningForkImpl::Debugging() const {
+#ifndef NDEBUG
+    // Always return true if we are a debug build
+    return true;
+#else
+    // Otherwise, check the APK and system settings
+    return apk_utils::GetDebuggable(jni_);
+#endif
 }
 
 } // namespace tuningfork {
