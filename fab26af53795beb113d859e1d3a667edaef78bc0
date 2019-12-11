@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2e00894f_e17e9a77",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-11T18:28:36Z",
+      "side": 1,
+      "message": "I feel that these two calls could be merged into one, where you pass down the handler as last parameter of the register function.",
+      "revId": "fab26af53795beb113d859e1d3a667edaef78bc0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
