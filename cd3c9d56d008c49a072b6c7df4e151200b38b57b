@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "82c1f697_0134c189",
+        "filename": "bender/bender-base/app/src/main/jni/render_graph.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-11T21:50:53Z",
+      "side": 1,
+      "message": "Public member data is a big no-no. Write accessors to access data if needed, better to write method to manipulate internal data.",
+      "revId": "cd3c9d56d008c49a072b6c7df4e151200b38b57b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f754c477_de6403b2",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 256,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-11T21:50:53Z",
+      "side": 1,
+      "message": "Call methods on render_graph to do the calculations instead of exposing internal objects.",
+      "revId": "cd3c9d56d008c49a072b6c7df4e151200b38b57b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
