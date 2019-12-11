@@ -16,6 +16,24 @@
       "revId": "febd7a84c072d46cc32d416b204311c2b2af358c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "44d68f8d_2526ce10",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 444,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-11T19:08:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c470dcb6_d5c21810",
+      "revId": "febd7a84c072d46cc32d416b204311c2b2af358c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
