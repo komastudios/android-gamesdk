@@ -51,6 +51,24 @@
       "revId": "cd3c9d56d008c49a072b6c7df4e151200b38b57b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ad6642db_f5a2edd9",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 256,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-11T22:06:12Z",
+      "side": 1,
+      "message": "I\u0027m ok with writing wrapping to manipulate objects inside the class. Every time you feel the need to make a member public, you must have an extraordinary good motivation for doing so and breaking the abstraction, which I don\u0027t see here.",
+      "parentUuid": "498998cd_25c9c437",
+      "revId": "cd3c9d56d008c49a072b6c7df4e151200b38b57b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
