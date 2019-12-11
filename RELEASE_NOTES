@@ -12,4 +12,20 @@ Version 1.0.0
  - Static and dynamic linking of the library.
  - Support for devices with multiple refresh rates.
 
+Version 1.1.0
+=============
+- This version features the Tuning Fork metric reporting and quality tuning library.
+- Features of Tuning Fork
+ - Integration with the Android Frame Pacing Library to automatically record frame times and other
+   rendering metrics.
+ - Frame timing information is recorded in histograms and uploaded periodically.
+ - Annotation of timing data with the current game state.
+ - Device characteristics, annotations and quality settings are uploaded with the timing data to
+   allow cross-sectional analysis.
+ - Special treatment of annotations that signify level-loading time. Frame tick data is not recorded
+   during loading, but the duration of each loading period is.
+ - Ability to record custom timing information (startTrace/endTrace).
+ - In expert mode, quality settings are remotely setable using the Play console.
+- A Unity plugin incorporating the Tuning Fork library is available separately.
+
 For more information, see https://developer.android.com/games/sdk/.
