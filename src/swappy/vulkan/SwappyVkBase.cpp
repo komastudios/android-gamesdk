@@ -164,9 +164,14 @@ VkResult SwappyVkBase::initializeVkSyncObjects(VkQueue   queue,
     }
 
     // Create a thread that will wait for the fences
-    mThreads.emplace(queue, std::make_unique<ThreadContext>(
-            std::thread(std::bind(&SwappyVkBase::waitForFenceThreadMain, this, queue))));
+    auto emplaceResult = mThreads.emplace(queue, std::make_unique<ThreadContext>(queue));
+    auto& threadContext = emplaceResult.first->second;
 
+    // Start the thread
+    std::lock_guard<std::mutex> lock(threadContext->lock);
+    threadContext->thread = std::thread([&]() {
+        waitForFenceThreadMain(*threadContext);
+    });
     return VK_SUCCESS;
 }
 
@@ -252,7 +257,8 @@ VkResult SwappyVkBase::injectFence(VkQueue                 queue,
 
     // If we cross the swap interval threshold, we don't pace at all.
     // In this case we might not have a free fence, so just don't use the fence.
-    if (mFreeSyncPool[queue].size() == 0) {
+    if (mFreeSyncPool[queue].empty()) {
+        *pSemaphore = VK_NULL_HANDLE;
         return VK_SUCCESS;
     }
 
@@ -294,9 +300,7 @@ void SwappyVkBase::setAutoPipelineMode(bool enabled) {
     mCommonBase.setAutoPipelineMode(enabled);
 }
 
-void SwappyVkBase::waitForFenceThreadMain(VkQueue queue) {
-    ThreadContext& thread = *mThreads[queue];
-
+void SwappyVkBase::waitForFenceThreadMain(ThreadContext& thread) {
     while (true) {
         bool waitingSyncsEmpty;
         {
@@ -312,15 +316,15 @@ void SwappyVkBase::waitForFenceThreadMain(VkQueue queue) {
                 break;
             }
 
-            waitingSyncsEmpty = mWaitingSyncs[queue].empty();
+            waitingSyncsEmpty = mWaitingSyncs[thread.queue].empty();
         }
 
         while (!waitingSyncsEmpty) {
             VkSync sync;
             {  // Get the sync object with a lock
                 std::lock_guard<std::mutex> lock(thread.lock);
-                sync = mWaitingSyncs[queue].front();
-                mWaitingSyncs[queue].pop_front();
+                sync = mWaitingSyncs[thread.queue].front();
+                mWaitingSyncs[thread.queue].pop_front();
             }
 
             gamesdk::ScopedTrace tracer("Swappy: GPU frame time");
@@ -337,8 +341,8 @@ void SwappyVkBase::waitForFenceThreadMain(VkQueue queue) {
             {
                 std::lock_guard<std::mutex> lock(thread.lock);
 
-                mSignaledSyncs[queue].push_back(sync);
-                waitingSyncsEmpty = mWaitingSyncs[queue].empty();
+                mSignaledSyncs[thread.queue].push_back(sync);
+                waitingSyncsEmpty = mWaitingSyncs[thread.queue].empty();
             }
         }
     }
