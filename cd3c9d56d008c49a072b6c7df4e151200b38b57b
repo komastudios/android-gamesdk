@@ -33,6 +33,24 @@
       "revId": "cd3c9d56d008c49a072b6c7df4e151200b38b57b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "498998cd_25c9c437",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 256,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-12-11T22:02:03Z",
+      "side": 1,
+      "message": "Maybe I was unclear on what we meant when we talked about RenderGraph not being able to manipulate any of the data within it, I interpreted that as essentially RenderGraph being a struct sort of object that provided views to the data stored within it that you could access, as well as just the raw data contained within (basically like the camera struct we had before)\n\nit seemed a little extra to return like a const reference to the data in the class (which essentially gives the same access as just making the data public) or write a bunch of wrapping code around the vector and camera object stored within the render_graph (such as methods for setting the camera\u0027s FOV/aspect_ration/etc)",
+      "parentUuid": "f754c477_de6403b2",
+      "revId": "cd3c9d56d008c49a072b6c7df4e151200b38b57b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
