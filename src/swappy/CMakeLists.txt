@@ -28,9 +28,18 @@ include_directories( ${ANDROID_NDK}/sources/third_party/vulkan/src/common )
 
 message( STATUS "Building swappy_static to ${CMAKE_CURRENT_BINARY_DIR}/build" )
 
+if(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/../../../../out/intermediates/dex/release/mergeDexRelease/out/classes.dex)
+    set (DEX_CLASS_PATH "${CMAKE_CURRENT_BINARY_DIR}/../../../../out/intermediates/dex/release/mergeDexRelease/out")
+elseif (EXISTS ${CMAKE_CURRENT_BINARY_DIR}/../../../../../../out/intermediates/dex/release/mergeDexRelease/out/classes.dex)
+    set (DEX_CLASS_PATH "${CMAKE_CURRENT_BINARY_DIR}/../../../../../../out/intermediates/dex/release/mergeDexRelease/out")
+else()
+    message ("Error cannot find dex class path in ${CMAKE_CURRENT_BINARY_DIR}")
+endif()
+
+
 add_custom_command(OUTPUT classes_dex.o
-     COMMAND cd ../intermediates/dex/release/mergeDexRelease/out && ${CMAKE_LINKER} -r -b binary -o ${CMAKE_CURRENT_BINARY_DIR}/classes_dex.o classes.dex
-     WORKING_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
+     COMMAND cd ${DEX_CLASS_PATH} && ${CMAKE_LINKER} -r -b binary -o ${CMAKE_CURRENT_BINARY_DIR}/classes_dex.o classes.dex
+     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
      )
 
 set_source_files_properties(
