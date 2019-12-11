@@ -143,6 +143,9 @@ public:
     const Settings& GetSettings() const {
         return settings_;
     }
+
+    TFErrorCode SetFidelityParameters(const ProtobufSerialization& params);
+
 private:
     Prong *TickNanos(uint64_t compound_id, TimePoint t);
 
@@ -177,6 +180,7 @@ private:
 
     bool IsLoadingAnnotationId(uint64_t id) const;
 
+    void SwapProngCaches();
 };
 
 static std::unique_ptr<TuningForkImpl> s_impl;
@@ -322,6 +326,11 @@ const JniCtx& GetJniCtx() {
 const Settings* GetSettings() {
     if (!s_impl) return nullptr;
     else return &s_impl->GetSettings();
+}
+
+TFErrorCode SetFidelityParameters(const ProtobufSerialization& params) {
+    if (!s_impl) return TFERROR_TUNINGFORK_NOT_INITIALIZED;
+    else return s_impl->SetFidelityParameters(params);
 }
 
 TuningForkImpl::TuningForkImpl(const Settings& settings,
@@ -651,18 +660,21 @@ TFErrorCode TuningForkImpl::Flush() {
     return Flush(t, false);
 }
 
+void TuningForkImpl::SwapProngCaches() {
+    if (current_prong_cache_ == prong_caches_[0].get()) {
+        prong_caches_[1]->Clear();
+        current_prong_cache_ = prong_caches_[1].get();
+    } else {
+        prong_caches_[0]->Clear();
+        current_prong_cache_ = prong_caches_[0].get();
+    }
+}
 TFErrorCode TuningForkImpl::Flush(TimePoint t, bool upload) {
     ALOGV("Flush %d", upload);
     TFErrorCode ret_code;
     current_prong_cache_->SetInstrumentKeys(ikeys_);
     if (upload_thread_.Submit(current_prong_cache_, upload)) {
-        if (current_prong_cache_ == prong_caches_[0].get()) {
-            prong_caches_[1]->Clear();
-            current_prong_cache_ = prong_caches_[1].get();
-        } else {
-            prong_caches_[0]->Clear();
-            current_prong_cache_ = prong_caches_[0].get();
-        }
+        SwapProngCaches();
         ret_code = TFERROR_OK;
     } else {
         ret_code = TFERROR_PREVIOUS_UPLOAD_PENDING;
@@ -677,6 +689,17 @@ void TuningForkImpl::InitTrainingModeParams() {
     if (cser != nullptr)
         training_mode_params_ =
                 std::make_unique<ProtobufSerialization>(ToProtobufSerialization(*cser));
+}
+
+TFErrorCode TuningForkImpl::SetFidelityParameters(const ProtobufSerialization& params) {
+    auto flush_result = Flush();
+    if (flush_result!=TFERROR_OK) {
+        ALOGW("Warning, previous data could not be flushed.");
+        SwapProngCaches();
+    }
+    // We clear the experiment id here.
+    upload_thread_.SetCurrentFidelityParams(params, "");
+    return TFERROR_OK;
 }
 
 } // namespace tuningfork {
