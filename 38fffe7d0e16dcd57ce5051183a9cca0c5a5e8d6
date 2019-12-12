@@ -52,6 +52,24 @@
       "revId": "38fffe7d0e16dcd57ce5051183a9cca0c5a5e8d6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8f3a9c7f_c488b9bb",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-12-12T17:52:42Z",
+      "side": 1,
+      "message": "Ok, I just thought since those were important features of the state of the scene (in our current implementation) that it would fit within RenerGraph, but I can move it back into vulkan_main for now until we find a better place for them\n\nBecause all we do right now are operations on the entire list of Mesh/last added Mesh, are the operations I have currently implemented enough, or should I implement a system of names/handles in RenderGraph and implement the current functionality of Bender using only AddMesh/RemoveMesh?",
+      "parentUuid": "01ffa6a2_b38f709e",
+      "revId": "38fffe7d0e16dcd57ce5051183a9cca0c5a5e8d6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
