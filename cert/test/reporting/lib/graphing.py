@@ -21,7 +21,7 @@ import markdown2
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-from lib.common import Error
+from lib.common import Error, get_readable_utc, remove_files_with_extensions
 from lib.graphing_components import BuildInfo, Datum, Suite
 from lib.graphers.loader import create_suite_handler
 
@@ -36,6 +36,21 @@ class UnsupportedReportFormatError(Error):
 
     def __init__(self, message):
         self.message = message
+
+
+# -----------------------------------------------------------------------------
+
+
+def cleanup_report_dir(report_dir: Path) -> type(None):
+    """
+    Removes any existing report-related asset (e.g., .json, .png) that could
+    be treated as "brand new" by a brand new report to create.
+
+    Args:
+        report_dir: path.
+    """
+    remove_files_with_extensions(report_dir, [".json", ".csv", ".md", ".html"])
+    remove_files_with_extensions(report_dir.joinpath("images"), [".png"])
 
 
 def load_suites(report_file) -> List[Suite]:
@@ -97,7 +112,11 @@ def render_report_document(report_files: List[Path], report_summary_file: Path,
             suites_by_name.setdefault(suite.name, []).append(suite)
 
     for suite_name in suites_by_name:
-        markdown_str += f"\n# {suite_name}\n"
+        markdown_str += f"""
+# {suite_name}
+{get_readable_utc()}
+"""
+
         suites = suites_by_name[suite_name]
 
         for i, suite in enumerate(suites):
@@ -109,11 +128,15 @@ def render_report_document(report_files: List[Path], report_summary_file: Path,
                     f"{base_name}.png")
                 suite.handler.plot(False, plot_file_name=plot_file, dpi=dpi)
 
-                markdown_str += f"\n### {title}\n"
-                markdown_str += f"\n![{title}]({str(plot_file.relative_to(folder))})\n"
-                if summary:
-                    markdown_str += "\n" + summary + "\n"
-            markdown_str += "\n---\n"
+                markdown_str += f"""
+### {title}
+
+<img src="{str(plot_file.relative_to(folder))}" width="90%" alt="{title}" />
+
+{summary if summary else ""}
+
+---
+"""
 
     with open(report_summary_file, "w") as fp:
         if save_as_html:
