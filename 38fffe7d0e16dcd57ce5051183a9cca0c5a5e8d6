@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8a4e93e1_7d78cfdb",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-12T17:25:53Z",
+      "side": 1,
+      "message": "What are polyfaces and matrerialIdx used for?",
+      "revId": "38fffe7d0e16dcd57ce5051183a9cca0c5a5e8d6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
