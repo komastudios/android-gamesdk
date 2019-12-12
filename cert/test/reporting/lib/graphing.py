@@ -21,7 +21,7 @@ import markdown2
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-from lib.common import Error
+from lib.common import Error, get_readable_utc, remove_files_with_extensions
 from lib.graphing_components import BuildInfo, Datum, Suite
 from lib.graphers.loader import create_suite_handler
 
@@ -36,6 +36,21 @@ class UnsupportedReportFormatError(Error):
 
     def __init__(self, message):
         self.message = message
+
+
+# -----------------------------------------------------------------------------
+
+
+def cleanup_report_dir(report_dir: Path) -> type(None):
+    """
+    Removes any existing report-related asset (e.g., .json, .png) that could
+    be treated as "brand new" by a brand new report to create.
+
+    Args:
+        report_dir: path.
+    """
+    remove_files_with_extensions(report_dir, [".json", ".csv", ".md", ".html"])
+    remove_files_with_extensions(report_dir.joinpath("images"), [".png"])
 
 
 def load_suites(report_file) -> List[Suite]:
@@ -70,54 +85,3 @@ def load_suites(report_file) -> List[Suite]:
         suites.append(suite)
 
     return suites
-
-
-def render_report_document(report_files: List[Path], report_summary_file: Path,
-                           dpi):
-    """Render a report (markdown, or HTML) of the report JSON data contained
-    in report_files
-    Args:
-        report_files: List of report JSON files
-        report_summary_file: Name of file to write summary Markdown or HTML to
-        dpi: DPI for saving figures
-    """
-    markdown_str = ""
-    suites_by_name = {}
-    folder = report_summary_file.parent
-
-    if not report_summary_file.suffix in [".md", ".html"]:
-        raise UnsupportedReportFormatError(
-            f"Unsupported format {report_summary_file.suffix} for saving report document"
-        )
-
-    save_as_html = report_summary_file.suffix == ".html"
-
-    for report_file in report_files:
-        for suite in load_suites(report_file):
-            suites_by_name.setdefault(suite.name, []).append(suite)
-
-    for suite_name in suites_by_name:
-        markdown_str += f"\n# {suite_name}\n"
-        suites = suites_by_name[suite_name]
-
-        for i, suite in enumerate(suites):
-            if suite.handler:
-                base_name = suite.file.stem
-                title = suite.identifier()
-                summary = suite.handler.summary()
-                plot_file = folder.joinpath("images").joinpath(
-                    f"{base_name}.png")
-                suite.handler.plot(False, plot_file_name=plot_file, dpi=dpi)
-
-                markdown_str += f"\n### {title}\n"
-                markdown_str += f"\n![{title}]({str(plot_file.relative_to(folder))})\n"
-                if summary:
-                    markdown_str += "\n" + summary + "\n"
-            markdown_str += "\n---\n"
-
-    with open(report_summary_file, "w") as fp:
-        if save_as_html:
-            html_str = markdown2.markdown(markdown_str)
-            fp.write(html_str)
-        else:
-            fp.write(markdown_str)

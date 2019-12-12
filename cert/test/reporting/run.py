@@ -17,7 +17,6 @@
 #
 
 import argparse
-import glob
 import shutil
 import time
 import yaml
@@ -27,11 +26,11 @@ from pathlib import Path
 
 from lib.build import build_apk, APP_ID
 from lib.common import *
+from lib.summary_formatters import perform_summary_if_enabled
 from lib.report import extract_and_export, convert_json_report_to_csv, \
     get_device_product_and_api, merge_systrace_into_csv
 from lib.devicefarm import run_on_farm_and_collect_reports
 import lib.charting
-import lib.graphing
 import lib.tasks_runner
 
 
@@ -96,37 +95,6 @@ class LocalSystrace(object):
 # ------------------------------------------------------------------------------
 
 
-def dict_lookup(d: Dict, key_path: str, fallback: Any) -> Any:
-    """Look up a value (possibly deep) in a dict, safely, with fallback
-
-    Performs deep lookup of a value in a dict, e.g. "foo.bar.baz" would
-    return the value d["foo"]["bar"]["baz"] or the fallback if that path
-    isn't traversable.
-
-    Args:
-        d: The dict to lookup values from
-        key_path: A string in format "foo.bar.baz"
-        fallback: If not none, the value to return if the dict lookup fails
-
-    Raises:
-        MissingPropertyError if fallback is None and the key_path wasn't
-            resolvable
-
-    """
-    keys = key_path.split(".")
-    for i, kp in enumerate(keys):
-        if kp in d:
-            if i < len(keys) - 1:
-                d = d[kp]
-            else:
-                return d[kp]
-
-    if fallback is None:
-        raise MissingPropertyError(f"Key path \"{key_path}\" is required")
-
-    return fallback
-
-
 def unpack(s):
     """Convenience string join function"""
     return " ".join(map(str, s))
@@ -163,21 +131,6 @@ def get_chart_config(recipe: Dict) -> (bool, List[str], List[str], List[str]):
     fields = dict_lookup(recipe, "chart.fields", [])
     skip = dict_lookup(recipe, "chart.skipping", [])
     return enabled, suites, fields, skip
-
-
-def get_summary_config(recipe: Dict) -> (bool, bool):
-    """
-    Extracts, from the recipe, summary related arguments.
-    These are:
-
-    * enabled: a boolean telling whether a summary is enabled at all.
-    * html: a boolean to specify if the summary format is html instead of its
-            markdown default.
-    """
-    enabled = dict_lookup(recipe, "summary.enabled", fallback=False)
-    html = dict_lookup(recipe, "summary.html", fallback=False)
-
-    return enabled, html
 
 
 def load_tasks(tasks_dict: List[Dict], task_ctors: Dict
@@ -391,23 +344,7 @@ def plot_suites(suites: List[str], csv_files: List[Path], fields: List[str],
                 suite.plot(title, fields, skipping)
 
 
-def generate_report_summary(report_files_dir: Path, html: bool,
-                            figure_dpi=600) -> Path:
-    report_files = [
-        Path(f) for f in glob.glob(str(report_files_dir) + '/*.json')
-    ]
-
-    report_summary_file_name = f"summary_{str(report_files_dir.stem)}" + (
-        ".html" if html else ".md")
-
-    report_summary_file = report_files_dir.joinpath(report_summary_file_name)
-
-    lib.graphing.render_report_document(report_files,
-                                        report_summary_file,
-                                        dpi=figure_dpi)
-
-
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def run_local_deployment(recipe: Dict, apk: Path, out_dir: Path):
@@ -422,8 +359,6 @@ def run_local_deployment(recipe: Dict, apk: Path, out_dir: Path):
 
     chart_enabled, chart_suites, chart_fields, chart_skip = \
         get_chart_config(recipe)
-
-    summary_enabled, summary_html = get_summary_config(recipe)
 
     # at present, preflight_tasks are only available for local deployment
     preflight_tasks, preflight_env = get_preflight_tasks(recipe)
@@ -464,8 +399,7 @@ def run_local_deployment(recipe: Dict, apk: Path, out_dir: Path):
         if chart_enabled:
             plot_suites(chart_suites, [csv_file], chart_fields, chart_skip)
 
-    if summary_enabled:
-        generate_report_summary(out_dir, summary_html)
+    perform_summary_if_enabled(recipe, out_dir)
 
 
 # ------------------------------------------------------------------------------
@@ -488,7 +422,6 @@ def run_ftl_deployment(recipe: Dict, apk: Path, out_dir: Path):
         get_systrace_config(recipe)
     chart_enabled, chart_suites, chart_fields, chart_skip = \
         get_chart_config(recipe)
-    summary_enabled, summary_html = get_summary_config(recipe)
 
     json_files, systrace_files = run_on_farm_and_collect_reports(
         args_dict=args_dict,
@@ -504,8 +437,7 @@ def run_ftl_deployment(recipe: Dict, apk: Path, out_dir: Path):
     if chart_enabled:
         plot_suites(chart_suites, csv_files, chart_fields, chart_skip)
 
-    if summary_enabled:
-        generate_report_summary(out_dir, summary_html)
+    perform_summary_if_enabled(recipe, out_dir)
 
 
 # ------------------------------------------------------------------------------
@@ -535,6 +467,7 @@ if __name__ == "__main__":
         prefix = Path(recipe_path).stem
 
     out_dir = create_output_dir(prefix)
+    lib.graphing.cleanup_report_dir(out_dir)
 
     # step one: build the APK
 
@@ -543,10 +476,12 @@ if __name__ == "__main__":
         release=dict_lookup(recipe, "build.release", fallback=False),
         custom_configuration=Path(custom_config) if custom_config else None)
 
-    if "local" in recipe["deployment"] and dict_lookup(
-            recipe, "deployment.local.enabled", fallback=True):
-        run_local_deployment(recipe, apk_path, out_dir)
+    deployment = recipe["deployment"]
+    if deployment:
+        if "local" in deployment and dict_lookup(
+                recipe, "deployment.local.enabled", fallback=True):
+            run_local_deployment(recipe, apk_path, out_dir)
 
-    if "ftl" in recipe["deployment"] and dict_lookup(
-            recipe, "deployment.ftl.enabled", fallback=True):
-        run_ftl_deployment(recipe, apk_path, out_dir)
+        if "ftl" in deployment and dict_lookup(
+                recipe, "deployment.ftl.enabled", fallback=True):
+            run_ftl_deployment(recipe, apk_path, out_dir)
