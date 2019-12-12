@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "2cf5cb60_0fb1f64f",
+        "filename": "bender/bender-base/app/src/main/jni/userinterface.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-12T18:14:45Z",
+      "side": 1,
+      "message": "This should be for (auto\u0026 text_field: text_fields) {\n...",
+      "revId": "f4550c258ad3722650c6cdb35025d201f4892b54",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "03e80ff6_cb9b93ad",
         "filename": "bender/bender-base/app/src/main/jni/userinterface.h",
         "patchSetId": 4
