@@ -34,6 +34,24 @@
       "revId": "38fffe7d0e16dcd57ce5051183a9cca0c5a5e8d6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "01ffa6a2_b38f709e",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-12T17:38:01Z",
+      "side": 1,
+      "message": "I see, that also should live outside then. It\u0027s not the RG responsability.\nRenderGraph should have two primitives:\n- AddMesh(...);\n- RemoveMesh(...);\n\nHow you identify a Mesh, by index, by name or by pointer is an implementation detail. Clients use these two primitives to manipulate the render graph.",
+      "parentUuid": "4a7bb630_10d903e1",
+      "revId": "38fffe7d0e16dcd57ce5051183a9cca0c5a5e8d6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
