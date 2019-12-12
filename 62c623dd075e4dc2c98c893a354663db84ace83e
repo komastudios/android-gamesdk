@@ -16,6 +16,24 @@
       "revId": "62c623dd075e4dc2c98c893a354663db84ace83e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f229e2b9_9a4d22b7",
+        "filename": "bender/bender-base/app/src/main/jni/userinterface.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2019-12-12T21:23:56Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "cc35ac55_53be3e3b",
+      "revId": "62c623dd075e4dc2c98c893a354663db84ace83e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
