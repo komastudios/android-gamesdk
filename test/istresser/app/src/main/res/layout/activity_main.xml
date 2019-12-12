@@ -48,6 +48,42 @@
             style="@style/TableCell"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="availMem" />
+
+        <TextView
+            android:id="@+id/availMem"
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="OOM Score" />
+
+        <TextView
+            android:id="@+id/oomScore"
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="Free Memory (Java)" />
 
         <TextView
@@ -159,22 +195,6 @@
             android:layout_height="wrap_content" />
     </TableRow>
 
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TextView
-            style="@style/TableCell"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="availMem" />
-
-        <TextView
-            android:id="@+id/availMem"
-            style="@style/TableCell"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </TableRow>
 
     <TableRow
         android:layout_width="match_parent"
