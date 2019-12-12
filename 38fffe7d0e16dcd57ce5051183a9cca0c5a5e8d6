@@ -70,6 +70,24 @@
       "revId": "38fffe7d0e16dcd57ce5051183a9cca0c5a5e8d6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4d8a4e30_fd47fa42",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-12T17:55:14Z",
+      "side": 1,
+      "message": "I feel we should just get it right, but it might be over engineering it. It\u0027s your call.",
+      "parentUuid": "8f3a9c7f_c488b9bb",
+      "revId": "38fffe7d0e16dcd57ce5051183a9cca0c5a5e8d6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
