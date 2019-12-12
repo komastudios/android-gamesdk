@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "03e80ff6_cb9b93ad",
+        "filename": "bender/bender-base/app/src/main/jni/userinterface.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-12T00:43:21Z",
+      "side": 1,
+      "message": "Returning a const char* is very dangerous. Consider returning a std::string.",
+      "revId": "f4550c258ad3722650c6cdb35025d201f4892b54",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f7c3ad15_62aadb37",
+        "filename": "bender/bender-base/app/src/main/jni/userinterface.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-12T00:43:21Z",
+      "side": 1,
+      "message": "Love it! You can remove the text parameter.",
+      "revId": "f4550c258ad3722650c6cdb35025d201f4892b54",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
