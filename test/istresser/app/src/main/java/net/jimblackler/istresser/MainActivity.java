@@ -21,8 +21,14 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
@@ -32,19 +38,22 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
   /* Modify this variable when running the test locally */
-  private static final int SCENARIO_NUMBER = 26;
+  private static final int SCENARIO_NUMBER = 1;
 
-  private static final boolean APP_SWITCH_TEST = false;
   private static final String TAG = MainActivity.class.getSimpleName();
+
+  // Set BYTES_PER_MILLISECOND to zero to disable malloc testing.
+  public static final int BYTES_PER_MILLISECOND = 100 * 1024;
+
+  // Set MAX_DURATION to zero to stop the app from self-exiting.
   private static final int MAX_DURATION = 1000 * 60 * 10;
-  private static final int LAUNCH_DURATION = 1000 * 90;
+
+  // Set LAUNCH_DURATION to a value in milliseconds to trigger the launch test.
+  private static final int LAUNCH_DURATION = 0;
   private static final int RETURN_DURATION = LAUNCH_DURATION + 1000 * 20;
   private static final int MAX_SERVICE_MEMORY_MB = 500;
   private static final int BYTES_IN_MEGABYTE = 1024 * 1024;
@@ -279,9 +288,8 @@ public class MainActivity extends AppCompatActivity {
                     && Heuristics.memAvailableCheck(MainActivity.this)) {
                   releaseMemory(report, "avail2");
                 } else {
-                  int bytesPerMillisecond = 100 * 1024;
                   long sinceStart = System.currentTimeMillis() - _allocationStartedAt;
-                  long target = sinceStart * bytesPerMillisecond;
+                  long target = sinceStart * BYTES_PER_MILLISECOND;
                   int owed = (int) (target - nativeAllocatedByTest);
                   if (owed > 0) {
                     boolean succeeded = nativeConsume(owed);
@@ -294,7 +302,7 @@ public class MainActivity extends AppCompatActivity {
                 }
               }
               long timeRunning = System.currentTimeMillis() - startTime;
-              if (APP_SWITCH_TEST) {
+              if (LAUNCH_DURATION != 0) {
                 long appSwitchTimeRunning = System.currentTimeMillis() - appSwitchTimerStart;
                 if (appSwitchTimeRunning > LAUNCH_DURATION && lastLaunched < LAUNCH_DURATION) {
                   lastLaunched = appSwitchTimeRunning;
@@ -316,15 +324,14 @@ public class MainActivity extends AppCompatActivity {
                   appSwitchTimerStart = System.currentTimeMillis();
                   lastLaunched = 0;
                 }
-
-                if (timeRunning > MAX_DURATION) {
-                  try {
-                    report = standardInfo();
-                    report.put("exiting", true);
-                    resultsStream.println(report);
-                  } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                  }
+              }
+              if (timeRunning > MAX_DURATION) {
+                try {
+                  report = standardInfo();
+                  report.put("exiting", true);
+                  resultsStream.println(report);
+                } catch (JSONException e) {
+                  throw new RuntimeException(e);
                 }
               }
 
@@ -431,6 +438,9 @@ public class MainActivity extends AppCompatActivity {
           TextView availMemTextView = findViewById(R.id.availMem);
           availMemTextView.setText(memoryString(memoryInfo.availMem));
 
+          TextView oomScoreTextView = findViewById(R.id.oomScore);
+          oomScoreTextView.setText("" + Heuristics.getOomScore(this));
+
           TextView lowMemoryTextView = findViewById(R.id.lowMemory);
           lowMemoryTextView.setText(Boolean.valueOf(Heuristics.lowMemoryCheck(this)).toString());
 
@@ -497,7 +507,6 @@ public class MainActivity extends AppCompatActivity {
             freeAll();
           }
           data.clear();
-          System.gc();
           runAfterDelay(
               () -> {
                 try {
