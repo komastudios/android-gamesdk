@@ -36,10 +36,19 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
-  private static final boolean APP_SWITCH_TEST = false;
+  /* Modify this variable when running the test locally */
+  private static final int SCENARIO_NUMBER = 1;
+
   private static final String TAG = MainActivity.class.getSimpleName();
+
+  // Set BYTES_PER_MILLISECOND to zero to disable malloc testing.
+  public static final int BYTES_PER_MILLISECOND = 100 * 1024;
+
+  // Set MAX_DURATION to zero to stop the app from self-exiting.
   private static final int MAX_DURATION = 1000 * 60 * 10;
-  private static final int LAUNCH_DURATION = 1000 * 90;
+
+  // Set LAUNCH_DURATION to a value in milliseconds to trigger the launch test.
+  private static final int LAUNCH_DURATION = 0;
   private static final int RETURN_DURATION = LAUNCH_DURATION + 1000 * 20;
 
   private static final List<List<String>> groups =
@@ -74,7 +83,8 @@ public class MainActivity extends AppCompatActivity {
   private long startTime;
   private long allocationStartedAt = -1;
   private int releases;
-  private int scenario = 13;
+  private int scenario;
+  private int groupNumber;
   private long appSwitchTimerStart;
   private long lastLaunched;
 
@@ -120,13 +130,16 @@ public class MainActivity extends AppCompatActivity {
           }
         }
         scenario = launchIntent.getIntExtra("scenario", 0);
-
+      } else {
+        scenario = SCENARIO_NUMBER;
       }
+
+      groupNumber = scenario - 1;
 
       report.put("scenario", scenario);
 
       JSONArray groupsOut = new JSONArray();
-      for (String group : groups.get(scenario - 1)) {
+      for (String group : groups.get(groupNumber)) {
         groupsOut.put(group);
       }
       report.put("groups", groupsOut);
@@ -200,9 +213,8 @@ public class MainActivity extends AppCompatActivity {
             } else if (scenarioGroup("avail2") && Heuristics.memAvailableCheck(MainActivity.this)) {
               releaseMemory(report, "avail2");
             } else {
-              int bytesPerMillisecond = 100 * 1024;
               long sinceStart = System.currentTimeMillis() - _allocationStartedAt;
-              long target = sinceStart * bytesPerMillisecond;
+              long target = sinceStart * BYTES_PER_MILLISECOND;
               int owed = (int) (target - nativeAllocatedByTest);
               if (owed > 0) {
                 boolean succeeded = nativeConsume(owed);
@@ -215,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
             }
           }
           long timeRunning = System.currentTimeMillis() - startTime;
-          if (APP_SWITCH_TEST) {
+          if (LAUNCH_DURATION != 0) {
             long appSwitchTimeRunning = System.currentTimeMillis() - appSwitchTimerStart;
             if (appSwitchTimeRunning > LAUNCH_DURATION && lastLaunched < LAUNCH_DURATION) {
               lastLaunched = appSwitchTimeRunning;
@@ -233,23 +245,25 @@ public class MainActivity extends AppCompatActivity {
               appSwitchTimerStart = System.currentTimeMillis();
               lastLaunched = 0;
             }
+          }
 
-            if (timeRunning > MAX_DURATION) {
-              try {
-                report = standardInfo();
-                report.put("exiting", true);
-                resultsStream.println(report);
-              } catch (JSONException e) {
-                throw new RuntimeException(e);
-              }
+          if (timeRunning > MAX_DURATION) {
+            try {
+              report = standardInfo();
+              report.put("exiting", true);
+              resultsStream.println(report);
+            } catch (JSONException e) {
+              throw new RuntimeException(e);
             }
           }
 
           resultsStream.println(report);
 
-          if (timeRunning > MAX_DURATION) {
-            resultsStream.close();
-            finish();
+          if (MAX_DURATION > 0) {
+            if (timeRunning > MAX_DURATION) {
+              resultsStream.close();
+              finish();
+            }
           }
           updateInfo();
         } catch (JSONException e) {
@@ -313,8 +327,8 @@ public class MainActivity extends AppCompatActivity {
       updateRecords();
 
       TextView strategies = findViewById(R.id.strategies);
-      List<String> strings = groups.get(scenario - 1);
-      strategies.setText(join(strings, ", "));  // TODO .. move to onCreate()
+      List<String> strings = groups.get(groupNumber);
+      strategies.setText(join(strings, ", ")); // TODO .. move to onCreate()
 
       TextView uptime = findViewById(R.id.uptime);
       float timeRunning = (float) (System.currentTimeMillis() - startTime) / 1000;
@@ -345,6 +359,9 @@ public class MainActivity extends AppCompatActivity {
       ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(this);
       TextView availMemTextView = findViewById(R.id.availMem);
       availMemTextView.setText(memoryString(memoryInfo.availMem));
+
+      TextView oomScoreTextView = findViewById(R.id.oomScore);
+      oomScoreTextView.setText("" + Heuristics.getOomScore(this));
 
       TextView lowMemoryTextView = findViewById(R.id.lowMemory);
       lowMemoryTextView.setText(Boolean.valueOf(Heuristics.lowMemoryCheck(this)).toString());
@@ -388,7 +405,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private boolean scenarioGroup(String group) {
-    List<String> strings = groups.get(scenario - 1);
+    List<String> strings = groups.get(groupNumber);
     return strings.contains(group);
   }
 
@@ -413,7 +430,6 @@ public class MainActivity extends AppCompatActivity {
         freeAll();
       }
       data.clear();
-      System.gc();
       runAfterDelay(() -> {
         try {
           resultsStream.println(standardInfo());
