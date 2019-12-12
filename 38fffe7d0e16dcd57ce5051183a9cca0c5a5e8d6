@@ -16,6 +16,24 @@
       "revId": "38fffe7d0e16dcd57ce5051183a9cca0c5a5e8d6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4a7bb630_10d903e1",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2019-12-12T17:35:16Z",
+      "side": 1,
+      "message": "Those are used for knowing what the current selection of Material/Polyhedron is (for creation of new Meshes or for the switching to new geometry/material) - they are indexes into vector/array of Material/Geometry objects respectively\n\nIt\u0027s kinda specific to the current state of bender right now since all we have right now are a fixed set of polyhedron/materials we swap between",
+      "parentUuid": "8a4e93e1_7d78cfdb",
+      "revId": "38fffe7d0e16dcd57ce5051183a9cca0c5a5e8d6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
