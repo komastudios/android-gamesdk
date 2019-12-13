@@ -68,7 +68,7 @@ TFErrorCode TuningFork_getFidelityParameters(const CProtobufSerialization *defau
 
 // Protobuf serialization of the current annotation
 TFErrorCode TuningFork_setCurrentAnnotation(const CProtobufSerialization *annotation) {
-    if(annotation)
+    if (annotation!=nullptr)
         return tf::SetCurrentAnnotation(tf::ToProtobufSerialization(*annotation));
     else
         return TFERROR_INVALID_ANNOTATION;
@@ -103,6 +103,13 @@ TFErrorCode TuningFork_flush() {
 TFErrorCode TuningFork_destroy() {
     tf::KillDownloadThreads();
     return tf::Destroy();
+}
+
+TFErrorCode TuningFork_setFidelityParameters(const CProtobufSerialization* params) {
+    if (params!=nullptr)
+        return tf::SetFidelityParameters(tf::ToProtobufSerialization(*params));
+    else
+        return TFERROR_BAD_PARAMETER;
 }
 
 void TUNINGFORK_VERSION_SYMBOL() {

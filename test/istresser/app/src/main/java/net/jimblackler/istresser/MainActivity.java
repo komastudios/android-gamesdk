@@ -1,8 +1,13 @@
 package net.jimblackler.istresser;
 
+import static net.jimblackler.istresser.ServiceCommunicationHelper.CRASHED_BEFORE;
+import static net.jimblackler.istresser.ServiceCommunicationHelper.TOTAL_MEMORY_MB;
+
 import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -16,14 +21,8 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
@@ -33,14 +32,22 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
+
+  /* Modify this variable when running the test locally */
+  private static final int SCENARIO_NUMBER = 26;
 
   private static final boolean APP_SWITCH_TEST = false;
   private static final String TAG = MainActivity.class.getSimpleName();
   private static final int MAX_DURATION = 1000 * 60 * 10;
   private static final int LAUNCH_DURATION = 1000 * 90;
   private static final int RETURN_DURATION = LAUNCH_DURATION + 1000 * 20;
+  private static final int MAX_SERVICE_MEMORY_MB = 500;
+  private static final int BYTES_IN_MEGABYTE = 1024 * 1024;
 
   private static final List<List<String>> groups =
       ImmutableList.<List<String>>builder()
@@ -74,10 +81,22 @@ public class MainActivity extends AppCompatActivity {
   private long startTime;
   private long allocationStartedAt = -1;
   private int releases;
-  private int scenario = 13;
+  private int scenario;
+  private int groupNumber;
   private long appSwitchTimerStart;
   private long lastLaunched;
+  private int serviceTotalMb = 0;
+  private ServiceCommunicationHelper serviceCommunicationHelper;
+  private boolean isServiceCrashed = false;
 
+  enum ServiceState {
+    ALLOCATING_MEMORY,
+    ALLOCATED,
+    FREEING_MEMORY,
+    DEALLOCATED,
+  }
+
+  private ServiceState serviceState;
 
   private static String memoryString(long bytes) {
     return String.format(Locale.getDefault(), "%.1f MB", (float) bytes / (1024 * 1024));
@@ -98,8 +117,57 @@ public class MainActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+    serviceCommunicationHelper = new ServiceCommunicationHelper(this);
+    serviceState = ServiceState.DEALLOCATED;
 
     try {
+      // Setting up broadcast receiver
+      BroadcastReceiver receiver =
+          new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+              isServiceCrashed = intent.getBooleanExtra(CRASHED_BEFORE, false);
+              serviceTotalMb = intent.getIntExtra(TOTAL_MEMORY_MB, 0);
+              switch (serviceState) {
+                case ALLOCATING_MEMORY:
+                  serviceState = ServiceState.ALLOCATED;
+
+                  new Thread() {
+                    @Override
+                    public void run() {
+                      try {
+                        Thread.sleep(60 * 1000);
+                      } catch (Exception e) {
+                        e.printStackTrace();
+                      }
+                      serviceState = ServiceState.FREEING_MEMORY;
+                      serviceCommunicationHelper.freeServerMemory();
+                    }
+                  }.start();
+
+                  break;
+                case FREEING_MEMORY:
+                  serviceState = ServiceState.DEALLOCATED;
+
+                  new Thread() {
+                    @Override
+                    public void run() {
+                      try {
+                        Thread.sleep(60 * 1000);
+                      } catch (Exception e) {
+                        e.printStackTrace();
+                      }
+                      serviceState = ServiceState.ALLOCATING_MEMORY;
+                      serviceCommunicationHelper.allocateServerMemory(MAX_SERVICE_MEMORY_MB);
+                    }
+                  }.start();
+
+                  break;
+              }
+            }
+          };
+      registerReceiver(receiver, new IntentFilter("experimental.users.bkaya.memory.RETURN"));
+
       JSONObject report = new JSONObject();
 
       PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -112,21 +180,30 @@ public class MainActivity extends AppCompatActivity {
           if (logPath != null) {
             Log.i(TAG, "Log file " + logPath);
             try {
-              resultsStream = new PrintStream(
-                  Objects.requireNonNull(getContentResolver().openOutputStream(logFile)));
+              resultsStream =
+                  new PrintStream(
+                      Objects.requireNonNull(getContentResolver().openOutputStream(logFile)));
             } catch (FileNotFoundException e) {
               throw new RuntimeException(e);
             }
           }
         }
         scenario = launchIntent.getIntExtra("scenario", 0);
+      } else {
+        scenario = SCENARIO_NUMBER;
+      }
 
+      groupNumber = (scenario - 1) % groups.size();
+      if (scenario > groups.size() && scenario <= 2 * groups.size()) {
+        serviceState = ServiceState.ALLOCATING_MEMORY;
+        serviceTotalMb = 0;
+        serviceCommunicationHelper.allocateServerMemory(MAX_SERVICE_MEMORY_MB);
       }
 
       report.put("scenario", scenario);
 
       JSONArray groupsOut = new JSONArray();
-      for (String group : groups.get(scenario - 1)) {
+      for (String group : groups.get(groupNumber)) {
         groupsOut.put(group);
       }
       report.put("groups", groupsOut);
@@ -156,8 +233,8 @@ public class MainActivity extends AppCompatActivity {
       report.put("build", build);
 
       JSONObject constant = new JSONObject();
-      ActivityManager activityManager = (ActivityManager)
-          Objects.requireNonNull(getSystemService((Context.ACTIVITY_SERVICE)));
+      ActivityManager activityManager =
+          (ActivityManager) Objects.requireNonNull(getSystemService((Context.ACTIVITY_SERVICE)));
       ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(this);
       constant.put("totalMem", memoryInfo.totalMem);
       constant.put("threshold", memoryInfo.threshold);
@@ -178,86 +255,93 @@ public class MainActivity extends AppCompatActivity {
     startTime = System.currentTimeMillis();
     appSwitchTimerStart = System.currentTimeMillis();
     allocationStartedAt = startTime;
-    timer.schedule(new TimerTask() {
-      @Override
-      public void run() {
-        try {
-          JSONObject report = standardInfo();
-          long _allocationStartedAt = allocationStartedAt;
-          if (_allocationStartedAt != -1) {
-            if (scenarioGroup("oom") && Heuristics.oomCheck(MainActivity.this)) {
-              releaseMemory(report, "oom");
-            } else if (scenarioGroup("low") && Heuristics.lowMemoryCheck(MainActivity.this)) {
-              releaseMemory(report, "low");
-            } else if (scenarioGroup("try") && !tryAlloc(1024 * 1024 * 32)) {
-              releaseMemory(report, "try");
-            } else if (scenarioGroup("cl") && Heuristics.commitLimitCheck()) {
-              releaseMemory(report, "cl");
-            } else if (scenarioGroup("avail") && Heuristics.availMemCheck(MainActivity.this)) {
-              releaseMemory(report, "avail");
-            } else if (scenarioGroup("cached") && Heuristics.cachedCheck(MainActivity.this)) {
-              releaseMemory(report, "cached");
-            } else if (scenarioGroup("avail2") && Heuristics.memAvailableCheck(MainActivity.this)) {
-              releaseMemory(report, "avail2");
-            } else {
-              int bytesPerMillisecond = 100 * 1024;
-              long sinceStart = System.currentTimeMillis() - _allocationStartedAt;
-              long target = sinceStart * bytesPerMillisecond;
-              int owed = (int) (target - nativeAllocatedByTest);
-              if (owed > 0) {
-                boolean succeeded = nativeConsume(owed);
-                if (succeeded) {
-                  nativeAllocatedByTest += owed;
+    timer.schedule(
+        new TimerTask() {
+          @Override
+          public void run() {
+            try {
+              JSONObject report = standardInfo();
+              long _allocationStartedAt = allocationStartedAt;
+              if (_allocationStartedAt != -1) {
+                if (scenarioGroup("oom") && Heuristics.oomCheck(MainActivity.this)) {
+                  releaseMemory(report, "oom");
+                } else if (scenarioGroup("low") && Heuristics.lowMemoryCheck(MainActivity.this)) {
+                  releaseMemory(report, "low");
+                } else if (scenarioGroup("try") && !tryAlloc(1024 * 1024 * 32)) {
+                  releaseMemory(report, "try");
+                } else if (scenarioGroup("cl") && Heuristics.commitLimitCheck()) {
+                  releaseMemory(report, "cl");
+                } else if (scenarioGroup("avail") && Heuristics.availMemCheck(MainActivity.this)) {
+                  releaseMemory(report, "avail");
+                } else if (scenarioGroup("cached") && Heuristics.cachedCheck(MainActivity.this)) {
+                  releaseMemory(report, "cached");
+                } else if (scenarioGroup("avail2")
+                    && Heuristics.memAvailableCheck(MainActivity.this)) {
+                  releaseMemory(report, "avail2");
                 } else {
-                  report.put("allocFailed", true);
+                  int bytesPerMillisecond = 100 * 1024;
+                  long sinceStart = System.currentTimeMillis() - _allocationStartedAt;
+                  long target = sinceStart * bytesPerMillisecond;
+                  int owed = (int) (target - nativeAllocatedByTest);
+                  if (owed > 0) {
+                    boolean succeeded = nativeConsume(owed);
+                    if (succeeded) {
+                      nativeAllocatedByTest += owed;
+                    } else {
+                      report.put("allocFailed", true);
+                    }
+                  }
                 }
               }
-            }
-          }
-          long timeRunning = System.currentTimeMillis() - startTime;
-          if (APP_SWITCH_TEST) {
-            long appSwitchTimeRunning = System.currentTimeMillis() - appSwitchTimerStart;
-            if (appSwitchTimeRunning > LAUNCH_DURATION && lastLaunched < LAUNCH_DURATION) {
-              lastLaunched = appSwitchTimeRunning;
-              Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-              File file = new File(Environment.getExternalStoragePublicDirectory(
-                  Environment.DIRECTORY_PICTURES) + File.separator + "pic.jpg");
-              String authority = getApplicationContext().getPackageName() + ".provider";
-              Uri uriForFile = FileProvider.getUriForFile(MainActivity.this, authority, file);
-              intent.putExtra(MediaStore.EXTRA_OUTPUT, uriForFile);
-              startActivityForResult(intent, 1);
-            }
-            if (appSwitchTimeRunning > RETURN_DURATION && lastLaunched < RETURN_DURATION) {
-              lastLaunched = appSwitchTimeRunning;
-              finishActivity(1);
-              appSwitchTimerStart = System.currentTimeMillis();
-              lastLaunched = 0;
-            }
+              long timeRunning = System.currentTimeMillis() - startTime;
+              if (APP_SWITCH_TEST) {
+                long appSwitchTimeRunning = System.currentTimeMillis() - appSwitchTimerStart;
+                if (appSwitchTimeRunning > LAUNCH_DURATION && lastLaunched < LAUNCH_DURATION) {
+                  lastLaunched = appSwitchTimeRunning;
+                  Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                  File file =
+                      new File(
+                          Environment.getExternalStoragePublicDirectory(
+                                  Environment.DIRECTORY_PICTURES)
+                              + File.separator
+                              + "pic.jpg");
+                  String authority = getApplicationContext().getPackageName() + ".provider";
+                  Uri uriForFile = FileProvider.getUriForFile(MainActivity.this, authority, file);
+                  intent.putExtra(MediaStore.EXTRA_OUTPUT, uriForFile);
+                  startActivityForResult(intent, 1);
+                }
+                if (appSwitchTimeRunning > RETURN_DURATION && lastLaunched < RETURN_DURATION) {
+                  lastLaunched = appSwitchTimeRunning;
+                  finishActivity(1);
+                  appSwitchTimerStart = System.currentTimeMillis();
+                  lastLaunched = 0;
+                }
 
-            if (timeRunning > MAX_DURATION) {
-              try {
-                report = standardInfo();
-                report.put("exiting", true);
-                resultsStream.println(report);
-              } catch (JSONException e) {
-                throw new RuntimeException(e);
+                if (timeRunning > MAX_DURATION) {
+                  try {
+                    report = standardInfo();
+                    report.put("exiting", true);
+                    resultsStream.println(report);
+                  } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                  }
+                }
               }
+
+              resultsStream.println(report);
+
+              if (timeRunning > MAX_DURATION) {
+                resultsStream.close();
+                finish();
+              }
+              updateInfo();
+            } catch (JSONException e) {
+              throw new RuntimeException(e);
             }
           }
-
-          resultsStream.println(report);
-
-          if (timeRunning > MAX_DURATION) {
-            resultsStream.close();
-            finish();
-          }
-          updateInfo();
-        } catch (JSONException e) {
-          throw new RuntimeException(e);
-        }
-      }
-    }, 0, 1000 / 10);
-
+        },
+        0,
+        1000 / 10);
   }
 
   @Override
@@ -309,51 +393,50 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void updateInfo() {
-    runOnUiThread(() -> {
-      updateRecords();
+    runOnUiThread(
+        () -> {
+          updateRecords();
 
-      TextView strategies = findViewById(R.id.strategies);
-      List<String> strings = groups.get(scenario - 1);
-      strategies.setText(join(strings, ", "));  // TODO .. move to onCreate()
+          TextView strategies = findViewById(R.id.strategies);
+          List<String> strings = groups.get(groupNumber);
+          strategies.setText(join(strings, ", ")); // TODO .. move to onCreate()
 
-      TextView uptime = findViewById(R.id.uptime);
-      float timeRunning = (float) (System.currentTimeMillis() - startTime) / 1000;
-      uptime.setText(String.format(Locale.getDefault(), "%.2f", timeRunning));
+          TextView uptime = findViewById(R.id.uptime);
+          float timeRunning = (float) (System.currentTimeMillis() - startTime) / 1000;
+          uptime.setText(String.format(Locale.getDefault(), "%.2f", timeRunning));
 
-      TextView freeMemory = findViewById(R.id.freeMemory);
-      freeMemory.setText(memoryString(Runtime.getRuntime().freeMemory()));
+          TextView freeMemory = findViewById(R.id.freeMemory);
+          freeMemory.setText(memoryString(Runtime.getRuntime().freeMemory()));
 
-      TextView totalMemory = findViewById(R.id.totalMemory);
-      totalMemory.setText(memoryString(Runtime.getRuntime().totalMemory()));
+          TextView totalMemory = findViewById(R.id.totalMemory);
+          totalMemory.setText(memoryString(Runtime.getRuntime().totalMemory()));
 
-      TextView maxMemory = findViewById(R.id.maxMemory);
-      maxMemory.setText(memoryString(Runtime.getRuntime().maxMemory()));
+          TextView maxMemory = findViewById(R.id.maxMemory);
+          maxMemory.setText(memoryString(Runtime.getRuntime().maxMemory()));
 
-      TextView nativeHeap = findViewById(R.id.nativeHeap);
-      nativeHeap.setText(memoryString(Debug.getNativeHeapSize()));
+          TextView nativeHeap = findViewById(R.id.nativeHeap);
+          nativeHeap.setText(memoryString(Debug.getNativeHeapSize()));
 
-      TextView nativeAllocated = findViewById(R.id.nativeAllocated);
-      long nativeHeapAllocatedSize = Debug.getNativeHeapAllocatedSize();
-      nativeAllocated.setText(memoryString(nativeHeapAllocatedSize));
+          TextView nativeAllocated = findViewById(R.id.nativeAllocated);
+          long nativeHeapAllocatedSize = Debug.getNativeHeapAllocatedSize();
+          nativeAllocated.setText(memoryString(nativeHeapAllocatedSize));
 
-      TextView recordNativeAllocated = findViewById(R.id.recordNativeAllocated);
-      recordNativeAllocated.setText(memoryString(recordNativeHeapAllocatedSize));
+          TextView recordNativeAllocated = findViewById(R.id.recordNativeAllocated);
+          recordNativeAllocated.setText(memoryString(recordNativeHeapAllocatedSize));
 
-      TextView nativeAllocatedByTestTextView = findViewById(R.id.nativeAllocatedByTest);
-      nativeAllocatedByTestTextView.setText(memoryString(nativeAllocatedByTest));
+          TextView nativeAllocatedByTestTextView = findViewById(R.id.nativeAllocatedByTest);
+          nativeAllocatedByTestTextView.setText(memoryString(nativeAllocatedByTest));
 
-      ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(this);
-      TextView availMemTextView = findViewById(R.id.availMem);
-      availMemTextView.setText(memoryString(memoryInfo.availMem));
+          ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(this);
+          TextView availMemTextView = findViewById(R.id.availMem);
+          availMemTextView.setText(memoryString(memoryInfo.availMem));
 
-      TextView lowMemoryTextView = findViewById(R.id.lowMemory);
-      lowMemoryTextView.setText(Boolean.valueOf(Heuristics.lowMemoryCheck(this)).toString());
+          TextView lowMemoryTextView = findViewById(R.id.lowMemory);
+          lowMemoryTextView.setText(Boolean.valueOf(Heuristics.lowMemoryCheck(this)).toString());
 
-      TextView trimMemoryComplete = findViewById(R.id.releases);
-      trimMemoryComplete.setText(
-          String.format(Locale.getDefault(), "%d", releases));
-
-    });
+          TextView trimMemoryComplete = findViewById(R.id.releases);
+          trimMemoryComplete.setText(String.format(Locale.getDefault(), "%d", releases));
+        });
   }
 
   void jvmConsume(int bytes) {
@@ -388,7 +471,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private boolean scenarioGroup(String group) {
-    List<String> strings = groups.get(scenario - 1);
+    List<String> strings = groups.get(groupNumber);
     return strings.contains(group);
   }
 
@@ -399,30 +482,34 @@ public class MainActivity extends AppCompatActivity {
       throw new RuntimeException(e);
     }
     allocationStartedAt = -1;
-    runAfterDelay(() -> {
-      JSONObject report2;
-      try {
-        report2 = standardInfo();
-      } catch (JSONException e) {
-        throw new RuntimeException(e);
-      }
-      resultsStream.println(report2);
-      if (nativeAllocatedByTest > 0) {
-        nativeAllocatedByTest = 0;
-        releases++;
-        freeAll();
-      }
-      data.clear();
-      System.gc();
-      runAfterDelay(() -> {
-        try {
-          resultsStream.println(standardInfo());
-          allocationStartedAt = System.currentTimeMillis();
-        } catch (JSONException e) {
-          throw new RuntimeException(e);
-        }
-      }, 1000);
-    }, 1000);
+    runAfterDelay(
+        () -> {
+          JSONObject report2;
+          try {
+            report2 = standardInfo();
+          } catch (JSONException e) {
+            throw new RuntimeException(e);
+          }
+          resultsStream.println(report2);
+          if (nativeAllocatedByTest > 0) {
+            nativeAllocatedByTest = 0;
+            releases++;
+            freeAll();
+          }
+          data.clear();
+          System.gc();
+          runAfterDelay(
+              () -> {
+                try {
+                  resultsStream.println(standardInfo());
+                  allocationStartedAt = System.currentTimeMillis();
+                } catch (JSONException e) {
+                  throw new RuntimeException(e);
+                }
+              },
+              1000);
+        },
+        1000);
   }
 
   private void runAfterDelay(Runnable runnable, int delay) {
@@ -433,7 +520,8 @@ public class MainActivity extends AppCompatActivity {
           public void run() {
             runnable.run();
           }
-        }, delay);
+        },
+        delay);
   }
 
   private JSONObject standardInfo() throws JSONException {
@@ -452,7 +540,11 @@ public class MainActivity extends AppCompatActivity {
     if (lowMemory) {
       report.put("lowMemory", true);
     }
+    if (isServiceCrashed) {
+      report.put("serviceCrashed", true);
+    }
     report.put("nativeAllocatedByTest", nativeAllocatedByTest);
+    report.put("serviceTotalMemory", BYTES_IN_MEGABYTE * serviceTotalMb);
     report.put("oom_score", Heuristics.getOomScore(this));
 
     Map<String, Long> values = Heuristics.processMeminfo();

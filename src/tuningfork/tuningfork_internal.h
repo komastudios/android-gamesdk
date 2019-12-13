@@ -73,6 +73,16 @@ struct Settings {
     uint32_t ultimate_request_timeout_ms;
     int32_t loading_annotation_index;
     int32_t level_annotation_index;
+    std::string EndpointUri() const {
+        std::string uri;
+        if (c_settings.endpoint_uri_override==nullptr)
+            uri = base_uri;
+        else
+            uri = c_settings.endpoint_uri_override;
+        if (!uri.empty() && uri.back()!='/')
+            uri += '/';
+        return uri;
+    }
 };
 
 // Extra information that is uploaded with the proto.
@@ -228,5 +238,14 @@ TFErrorCode FindSettingsInApk(Settings* settings, const JniCtx& jni);
 
 // Get the current settings (TF must have been initialized)
 const Settings* GetSettings();
+
+TFErrorCode SetFidelityParameters(const ProtobufSerialization& params);
+
+// Perform a blocking call to upload debug info to a server.
+TFErrorCode UploadDebugInfo(const JniCtx& jni, Request& request);
+
+TFErrorCode FindFidelityParamsInApk(const JniCtx& jni,
+                                    const std::string& filename,
+                                    ProtobufSerialization& fp);
 
 } // namespace tuningfork

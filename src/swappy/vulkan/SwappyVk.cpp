@@ -175,8 +175,8 @@ void SwappyVk::DestroySwapchain(VkDevice                device,
         }
     }
 
-    perDeviceImplementation[device] = nullptr;
-    perSwapchainImplementation[swapchain] = nullptr;
+    perDeviceImplementation.erase(device);
+    perSwapchainImplementation.erase(swapchain);
 }
 
 void SwappyVk::SetAutoSwapInterval(bool enabled) {

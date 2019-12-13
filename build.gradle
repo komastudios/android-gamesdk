@@ -248,7 +248,7 @@ def cmake(projectFolder, workingFolder, outputFolder, arch, toolchain, stl,
     }
 
     def cxx_flags = "-DANDROID_NDK_VERSION=${toolchain.getNdkVersionNumber()}"
-    if (stl=="gnustl_static")
+    if (stl=="gnustl_static" || stl=="gnustl_shared")
         cxx_flags += " -DANDROID_GNUSTL"
 
     def cmdLine = [toolchain.getCMakePath(),

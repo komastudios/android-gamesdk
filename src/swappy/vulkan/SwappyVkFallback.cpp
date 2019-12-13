@@ -73,20 +73,30 @@ VkResult SwappyVkFallback::doQueuePresent(VkQueue                 queue,
         return result;
     }
 
+    uint32_t waitSemaphoreCount;
+    const VkSemaphore* pWaitSemaphores;
+    if (semaphore != VK_NULL_HANDLE) {
+        waitSemaphoreCount = 1;
+        pWaitSemaphores = &semaphore;
+    } else {
+        waitSemaphoreCount = pPresentInfo->waitSemaphoreCount;
+        pWaitSemaphores = pPresentInfo->pWaitSemaphores;
+    }
+
     mCommonBase.onPreSwap(handlers);
 
     VkPresentInfoKHR replacementPresentInfo = {
         pPresentInfo->sType,
         nullptr,
-        1,
-        &semaphore,
+        waitSemaphoreCount,
+        pWaitSemaphores,
         pPresentInfo->swapchainCount,
         pPresentInfo->pSwapchains,
         pPresentInfo->pImageIndices,
         pPresentInfo->pResults
     };
 
-    result = mpfnQueuePresentKHR(queue, pPresentInfo);
+    result = mpfnQueuePresentKHR(queue, &replacementPresentInfo);
 
     mCommonBase.onPostSwap(handlers);
 
