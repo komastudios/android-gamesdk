@@ -23,6 +23,9 @@
 
 namespace ancer::reporting {
     struct Datum {
+        Datum(Json custom);
+        Datum(std::string suite, std::string operation, Json custom);
+
         int issue_id;
         std::string suite_id;
         std::string operation_id;
