@@ -27,8 +27,10 @@
 
 #include "modp_b64.h"
 
-#ifdef ANDROID_GNUSTL
-// This is needed for date.h when using gnustl in the NDK
+// These string functions are needed for date.h when using gnustl in the NDK
+
+#if (defined ANDROID_GNUSTL) || ((defined ANDROID_NDK_VERSION) && ANDROID_NDK_VERSION<=17)
+
 namespace std {
 
 template <typename T>
@@ -45,6 +47,15 @@ std::wstring to_wstring(T value)
     os << value;
     return os.str();
 }
+
+} // namespace std
+
+#endif
+
+#if (defined ANDROID_GNUSTL)
+
+namespace std {
+
 long double stold( const std::string& str, std::size_t* pos = 0 ) {
     long double d;
     std::stringstream is(str);
@@ -58,6 +69,7 @@ long double stold( const std::string& str, std::size_t* pos = 0 ) {
 
 } // namespace std
 #endif
+
 // TODO(b/140155101): Move the date library into aosp/external
 #include "date/date.h"
 
