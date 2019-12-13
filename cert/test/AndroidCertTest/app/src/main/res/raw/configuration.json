@@ -10,6 +10,20 @@
   "stress_tests": [
     {
       "enabled": true,
+      "name": "Marching Cubes",
+      "description": "Tests marching cubes algorithm in a lot of permutations",
+      "duration": "25m",
+      "data_gatherer": {
+        "id": "MarchingCubesGLES3Operation",
+        "configuration": {
+          "sleep_per_iteration_min": "0ms",
+          "sleep_per_iteration_max": "4ms",
+          "permutation_execution_duration": "30s"
+        }
+      }
+    },
+    {
+      "enabled": true,
       "name": "32bit Depth Clear",
       "description": "Tests expected behavior when using a 32-bit depth buffer and clearing to different depth values",
       "duration": "1m",
@@ -330,6 +344,23 @@
         "configuration": {
           "count": 216,
           "min_fps_threshold": 15
+        }
+      },
+      "stressors": [
+      ]
+    },
+    {
+      "enabled": true,
+      "name": "Shader Blob Stressor",
+      "description": "Measures shader compile time versus to loading from binary.",
+      "host": "GLSurfaceViewHostActivity",
+      "duration": "5s",
+      "data_gatherer": {
+        "id": "ShaderBlobGLES3Operation",
+        "configuration": {
+          "debug_only": false,
+          "iterations": 8,
+          "trials": 4
         }
       },
       "stressors": [

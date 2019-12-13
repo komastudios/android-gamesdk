@@ -4,6 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+yapf = "*"
 
 [packages]
 beautifulsoup4 = "==4.8.1"
@@ -13,16 +14,17 @@ kiwisolver = "==1.1.0"
 lxml = "==4.4.1"
 matplotlib = "==3.1.1"
 numpy = "==1.17.3"
-pycairo = "==1.18.2"
+pycairo = {version = "==1.18.2",sys_platform = "== 'linux'"}
 pycodestyle = "==2.5.0"
 pycparser = "==2.19"
-PyGObject = "==3.34.0"
+PyGObject = {version = "==3.34.0",sys_platform = "== 'linux'"}
 pyparsing = "==2.4.4"
 python-dateutil = "==2.8.1"
 PyYAML = "==5.1.2"
 six = "==1.13.0"
 soupsieve = "==1.9.5"
 yapf = "==0.28.0"
+markdown2 = "*"
 
 [requires]
 python_version = "3.7"

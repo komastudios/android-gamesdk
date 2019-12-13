@@ -25,6 +25,7 @@
 
 #include "util/FpsCalculator.hpp"
 #include "util/GLHelpers.hpp"
+#include "util/Json.hpp"
 #include "util/Error.hpp"
 #include "util/Log.hpp"
 
@@ -508,6 +509,33 @@ void ancer::SetThreadAffinity(int index, ThreadAffinity affinity) {
 
 void ancer::SetThreadAffinity(ThreadAffinity affinity) {
     SetThreadAffinity(-1, affinity);
+}
+
+//------------------------------------------------------------------------------
+
+// TODO(tmillican@google.com): Not really the right place for this. Our system /
+//  etc. code could really use a good refactoring...
+std::string ancer::GetCpuInfo() {
+    Json report;
+    static constexpr const char* kAffinityNames[] = {
+        "little_cores", "middle_cores", "big_cores"
+    };
+
+    for (int affinity = 0 ; affinity < (int)ThreadAffinity::kAnyCore; ++affinity) {
+        std::vector<int> cores;
+        for (int cpu = 0; cpu < core_info.core_sizes.size(); ++cpu) {
+            if (core_info.core_sizes[cpu] == (ThreadAffinity)affinity) {
+                cores.push_back(cpu);
+            }
+        }
+
+        report[kAffinityNames[affinity]] = {
+                {"num_cores", NumCores((ThreadAffinity)affinity)},
+                {"cores", cores}
+        };
+    }
+
+    return report.dump();
 }
 
 //==============================================================================

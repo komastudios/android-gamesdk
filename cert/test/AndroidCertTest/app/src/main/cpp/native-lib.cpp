@@ -406,6 +406,12 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_getSteadyClo
     return static_cast<jlong>(n.time_since_epoch().count());
 }
 
+extern "C" JNIEXPORT jstring JNICALL
+Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_getCpuInfo(
+        JNIEnv* env, jclass instance) {
+    return env->NewStringUTF(GetCpuInfo().c_str());
+}
+
 extern "C" JNIEXPORT jint JNICALL
 Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_getCpuId(
         JNIEnv* env, jclass instance) {

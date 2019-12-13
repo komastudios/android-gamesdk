@@ -241,7 +241,7 @@ std::unique_ptr<EGL::FrameTimestamps> EGL::getFrameTimestamps(EGLDisplay dpy,
 
 EGL::FenceWaiter::FenceWaiter(std::chrono::nanoseconds fenceTimeout,
                               eglGetProcAddress_type getProcAddress)
-    : mFenceWaiter(&FenceWaiter::threadMain, this), mFenceTimeout(fenceTimeout) {
+    : mFenceTimeout(fenceTimeout) {
     std::unique_lock<std::mutex> lock(mFenceWaiterLock);
 
     eglClientWaitSyncKHR = reinterpret_cast<eglClientWaitSyncKHR_type>(
@@ -252,6 +252,8 @@ EGL::FenceWaiter::FenceWaiter(std::chrono::nanoseconds fenceTimeout,
             getProcAddress("eglDestroySyncKHR"));
     if (eglDestroySyncKHR == nullptr)
         ALOGE("Failed to load eglDestroySyncKHR");
+
+    mFenceWaiter = std::thread{&FenceWaiter::threadMain, this};
 }
 
 EGL::FenceWaiter::~FenceWaiter() {

@@ -205,6 +205,13 @@ struct TFSettings {
    *  are present and there are neither a successful download nor saved parameters.
    */
   const CProtobufSerialization* training_fidelity_params;
+  /**
+   * A null-terminated string containing the endpoint that Tuning Fork will connect
+   * to for parameter, upload and debug requests.
+   * This overrides the value in base_uri in the settings proto and is intended
+   * for debugging purposes only.
+   */
+  const char* endpoint_uri_override;
 };
 
 #ifdef __cplusplus
@@ -237,7 +244,7 @@ void TUNINGFORK_VERSION_SYMBOL();
 /**
  * @brief Initialize Tuning Fork. This must be called before any other functions.
  *
- * The app will load histogram and annotation settings from your tuningfork_settings.bin file.
+ * The library will load histogram and annotation settings from your tuningfork_settings.bin file.
  * @see TFSettings for the semantics of how other settings change initialization behaviour.
  *
  * @param settings a TFSettings structure
@@ -338,7 +345,7 @@ TFErrorCode TuningFork_endTrace(TFTraceHandle handle);
 TFErrorCode TuningFork_flush();
 
 /**
- * @brief set a callback to be called on a separate thread every time TuningFork performs an upload.
+ * @brief Set a callback to be called on a separate thread every time TuningFork performs an upload.
  * @param cbk
  * @return TFERROR_OK unless Tuning Fork wasn't initialized.
  */
@@ -349,6 +356,16 @@ TFErrorCode TuningFork_setUploadCallback(UploadCallback cbk);
  * @return TFERROR_OK unless Tuning Fork wasn't initialized.
  */
 TFErrorCode TuningFork_destroy();
+
+/**
+ * @brief Set the currently active fidelity parameters.
+ * This function overrides any parameters that have been downloaded if in experiment mode.
+ * Use when, for instance, the player has manually changed game quality  settings.
+ * This flushes (i.e. uploads) any data associated with any previous parameters.
+ * @param params The protocol buffer encoded parameters.
+ * @return TFERROR_OK if the parameters could be set.
+ */
+TFErrorCode TuningFork_setFidelityParameters(const CProtobufSerialization* params);
 
 #ifdef __cplusplus
 }

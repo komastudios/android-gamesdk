@@ -30,7 +30,9 @@ extern "C" {
 
 jint JNI_OnLoad(JavaVM* vm, void* reserved);
 
-TFErrorCode Unity_TuningFork_init(ProtoCallback fidelity_params_callback);
+TFErrorCode Unity_TuningFork_init(
+    ProtoCallback fidelity_params_callback,
+    CProtobufSerialization* training_fidelity_params);
 
 bool Unity_TuningFork_swappyIsEnabled();
 

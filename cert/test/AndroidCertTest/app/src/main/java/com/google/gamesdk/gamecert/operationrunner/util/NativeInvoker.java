@@ -47,6 +47,10 @@ public class NativeInvoker {
     public static native long getSteadyClockTimeNanos();
 
     /**
+     * Adds the CPU info to the open report file.
+     */
+    public static native String getCpuInfo();
+    /**
      * @return the id of the cpu running the calling thread
      */
     public static native int getCpuId();
@@ -69,6 +73,13 @@ public class NativeInvoker {
     public static native void closeReportFile();
 
     public static native void writeToReportFile(String msg);
+
+    /**
+     * Sets the directory that operations can use to store and load
+     * persistent files.
+     * @param path the absolute path of the directory
+     */
+    public static native void setFilesDirectory(String path);
 
     /**
      * Create an operation instance (from native-lib) by name.

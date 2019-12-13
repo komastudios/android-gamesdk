@@ -140,6 +140,8 @@ namespace ancer {
     // Sets our affinity to any/all of the cores in a group.
     void SetThreadAffinity(ThreadAffinity affinity);
 
+    std::string GetCpuInfo();
+
 
     static jclass RetrieveClass(JNIEnv* env, jobject activity, const char* className);
 

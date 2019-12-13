@@ -137,13 +137,14 @@ protected:
     };
 
     struct ThreadContext {
-        ThreadContext(std::thread t) : thread(std::move(t)) {}
+        ThreadContext(VkQueue queue) : queue(queue) {}
 
         std::thread thread;
         bool running GUARDED_BY(lock) = true;
         bool hasPendingWork GUARDED_BY(lock);
         std::mutex lock;
         std::condition_variable_any condition;
+        VkQueue queue GUARDED_BY(lock);
     };
 
     SwappyCommon     mCommonBase;
@@ -184,7 +185,7 @@ protected:
     void reclaimSignaledFences(VkQueue queue);
     bool lastFrameIsCompleted(VkQueue queue);
     std::chrono::nanoseconds getLastFenceTime(VkQueue queue);
-    void waitForFenceThreadMain(VkQueue queue);
+    void waitForFenceThreadMain(ThreadContext& thread);
 };
 
 }  // namespace swappy

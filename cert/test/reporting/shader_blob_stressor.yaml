@@ -1,9 +1,10 @@
 build:
   clean: false
-  configuration: configurations/cpu_stress_cpp.json
+  configuration: configurations/shader_blob_stressor.json
 
 systrace:
   enabled: false
+  categories: "sched freq idle am wm gfx view binder_driver hal dalvik input res"
   keywords:
     - MonitorOperation
 
@@ -18,7 +19,7 @@ deployment:
       test-robo:
         app: ../AndroidCertTest/app/build/outputs/apk/debug/app-debug.apk
         type: game-loop
-        timeout: 1500 # 25 minutes
+        timeout: 1800 # 30 minutes
         # device:
           # - {model: sawfish, version: 26}
           # - {model: hero2qltevzw, version: 26}
@@ -99,13 +100,10 @@ deployment:
           # - {model: blueline, version: 28}
       test-robo-onlypixel:
         include: [test-robo]
-        # device:
-          # - { model: sailfish, version: 28 }
+        device:
+          - { model: sailfish, version: 28 }
 
 chart:
-  enabled: true
+  enabled: false
   suites:
-    - "Calculate Pi (C++)"
-  skipping:
-    - "pi.value"
-    - "perf_info"
+    - "Shader Blob Stressor"

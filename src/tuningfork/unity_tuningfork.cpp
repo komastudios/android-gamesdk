@@ -55,6 +55,7 @@ namespace {
     void UnityTracer(const SwappyTracer* tracer) {
         SwappyBackend swappyBackend = s_unity_swappy_tracer_fn(tracer);
         ALOGI("Swappy backend: %d", swappyBackend);
+        if(swappyBackend == Swappy_None) s_swappy_enabled = false;
     }
 
     // Return swappy tracer for opengl.
@@ -123,8 +124,9 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     return JNI_VERSION_1_6;
 }
 
-
-TFErrorCode Unity_TuningFork_init(ProtoCallback fidelity_params_callback){
+TFErrorCode Unity_TuningFork_init(
+    ProtoCallback fidelity_params_callback,
+    CProtobufSerialization* training_fidelity_params){
 
     s_swappy_enabled = findSwappy();
     TFSettings settings {};
@@ -132,6 +134,7 @@ TFErrorCode Unity_TuningFork_init(ProtoCallback fidelity_params_callback){
         settings.swappy_tracer_fn = s_swappy_tracer_fn;
     }
     settings.fidelity_params_callback = fidelity_params_callback;
+    settings.training_fidelity_params = training_fidelity_params;
     return TuningFork_init(&settings, s_jni->Env(), s_jni->Ctx());
 }
 

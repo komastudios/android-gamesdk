@@ -81,6 +81,16 @@ VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(VkQueue                 que
         return res;
     }
 
+    uint32_t waitSemaphoreCount;
+    const VkSemaphore* pWaitSemaphores;
+    if (semaphore != VK_NULL_HANDLE) {
+        waitSemaphoreCount = 1;
+        pWaitSemaphores = &semaphore;
+    } else {
+        waitSemaphoreCount = pPresentInfo->waitSemaphoreCount;
+        pWaitSemaphores = pPresentInfo->pWaitSemaphores;
+    }
+
     mCommonBase.onPreSwap(handlers);
 
     VkPresentTimeGOOGLE pPresentTimes[pPresentInfo->swapchainCount];
@@ -103,8 +113,8 @@ VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(VkQueue                 que
         replacementPresentInfo = {
             pPresentInfo->sType,
             &presentTimesInfo,
-            1,
-            &semaphore,
+            waitSemaphoreCount,
+            pWaitSemaphores,
             pPresentInfo->swapchainCount,
             pPresentInfo->pSwapchains,
             pPresentInfo->pImageIndices,
@@ -115,8 +125,8 @@ VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(VkQueue                 que
         replacementPresentInfo = {
             pPresentInfo->sType,
             nullptr,
-            1,
-            &semaphore,
+            waitSemaphoreCount,
+            pWaitSemaphores,
             pPresentInfo->swapchainCount,
             pPresentInfo->pSwapchains,
             pPresentInfo->pImageIndices,
