@@ -20,17 +20,22 @@
 
 #include "Log.hpp"
 
+namespace ancer::reporting {
+    void FlushReportLogQueue();
+}
+
 
 namespace ancer {
-// To be called when something goes wrong that makes testing impossible.
-// Keep in mind these are meant to be run for/by developers, so error handling basically comes down
-// to "Log it, crash, get someone to look at it": Even a bad config file is reason to terminate.
+    // To be called when something goes wrong that makes testing impossible.
+    // Keep in mind these are meant to be run for/by developers, so error
+    // handling basically comes down to "Log it, crash, get someone to look at
+    // it": Even a bad config file is reason to terminate.
     template <typename... Args>
     [[noreturn]] void FatalError(Args&& ... args) noexcept {
         if constexpr ( sizeof...(args) > 0 ) {
             Log::F(std::forward<Args>(args)...);
         }
-        // TODO(tmillican@google.com): Flush logs?
+        reporting::FlushReportLogQueue();
         std::terminate();
     }
 } // namespace ancer
