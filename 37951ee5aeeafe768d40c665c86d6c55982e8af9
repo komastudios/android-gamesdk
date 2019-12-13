@@ -1,0 +1,174 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0ef076b1_4ee84ad8",
+        "filename": "cert/test/reporting/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-13T23:47:10Z",
+      "side": 1,
+      "message": "Not a line that you modified but found some whitespace here 😁",
+      "revId": "37951ee5aeeafe768d40c665c86d6c55982e8af9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3c48bb5d_f2922e59",
+        "filename": "cert/test/reporting/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-13T23:47:10Z",
+      "side": 1,
+      "message": "Whitespace",
+      "revId": "37951ee5aeeafe768d40c665c86d6c55982e8af9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0a1cf59e_1351da52",
+        "filename": "cert/test/reporting/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-13T23:47:10Z",
+      "side": 1,
+      "message": "Whitespace",
+      "revId": "37951ee5aeeafe768d40c665c86d6c55982e8af9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3730b0dd_858aea8b",
+        "filename": "cert/test/reporting/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-13T23:47:10Z",
+      "side": 1,
+      "message": "Whitespaces (also 173, 177, 182)",
+      "revId": "37951ee5aeeafe768d40c665c86d6c55982e8af9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0cef1330_157ee418",
+        "filename": "cert/test/reporting/TODO.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-13T23:47:10Z",
+      "side": 1,
+      "message": "Got my laundry list as well, just FYI:\n\n# Complete formatters for at least md, html and docx for now.\n# Incorporate all skipped devices and the reason why to the report.\n# Complete the Google Drive upload for the docx case.",
+      "revId": "37951ee5aeeafe768d40c665c86d6c55982e8af9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "68612cac_2ebfece8",
+        "filename": "cert/test/reporting/lib/graphers/affinity_test_suite_handler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-13T23:47:10Z",
+      "side": 1,
+      "message": "Whitespace",
+      "revId": "37951ee5aeeafe768d40c665c86d6c55982e8af9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2a572a3d_3c81f65e",
+        "filename": "cert/test/reporting/lib/graphing.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-13T23:47:10Z",
+      "side": 1,
+      "message": "This is pretty much similar to a change I\u0027m also trying in my Google Drive experiment.\n\nI\u0027m opening the game a little bit to be able to produce other formats (like .docx that Google Drive naturally treats like Google Docs).\n\nBecause of that, and just for your info, I\u0027m sparing a lib/formatters directory, with a lib/report_components.py file to hold a base formatter class (similar to, respectively, lib/graphers and lib/graph_components.py).\n\nThus, in the .yaml one specifies the summary format as an extension (e.g., format: \"html\" or format: \"docx\") and when summary time comes, the proper formatter will take over to produce the output summary document.\n\nThis is because, unlike the HTML case that implies to make markdown first, then convert, docx can be produced straight without md and/or html. But pdf, that we could possibly choose to implement at some point, would need a pipeline md -\u003e html -\u003e pdf.\nThat is to say, each format (current or future if we changed our mind at some point) has a different production strategy. 🌝",
+      "revId": "37951ee5aeeafe768d40c665c86d6c55982e8af9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2e47195a_0f5b1723",
+        "filename": "cert/test/reporting/recipes/~example_ftl.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-13T23:47:10Z",
+      "side": 1,
+      "message": "👏👏👏👏👏",
+      "revId": "37951ee5aeeafe768d40c665c86d6c55982e8af9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6288a4c5_955b2530",
+        "filename": "cert/test/reporting/run.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-13T23:47:10Z",
+      "side": 1,
+      "message": "Cool. I\u0027m adding a few more, just FYI: DPI (which has a huge impact in image size) and publish: a boolean to request the report to be uploaded to Google Drive. ✌️",
+      "revId": "37951ee5aeeafe768d40c665c86d6c55982e8af9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c3f6021a_383bc6b4",
+        "filename": "cert/test/reporting/run.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 419,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-13T23:47:10Z",
+      "side": 1,
+      "message": "All summary treatment is so much \"the same\" both in run_local than in run_ftl (we first parse the yaml for summary data and then if enabled we generate the summary) that I encapsulated all that logic on a single function perform_summary_if_enabled(recipe, out_dir).\n\nYet I feel like, both run_local and run_ftl are still structurally very similar. :-)",
+      "revId": "37951ee5aeeafe768d40c665c86d6c55982e8af9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}

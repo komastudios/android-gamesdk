@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2f358233_d2f0953c",
+        "filename": "cert/test/reporting/lib/suite_handlers/__init__.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-13T23:47:10Z",
+      "side": 0,
+      "message": "Goodbye, Lenin! 😁",
+      "revId": "f67bdc787b48774d115458fa7208d32c7abff3ab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
