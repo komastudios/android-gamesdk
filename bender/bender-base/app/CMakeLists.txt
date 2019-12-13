@@ -42,7 +42,7 @@ add_library(base SHARED
         ${SRC_DIR}/font.cc
         ${SRC_DIR}/input.cc
         ${SRC_DIR}/button.cc
-        ${SRC_DIR}/userinterface.cc)
+        ${SRC_DIR}/user_interface.cc)
 
 add_library(utils STATIC
         ${UTILS_DIR}/bender_helpers.cc)
