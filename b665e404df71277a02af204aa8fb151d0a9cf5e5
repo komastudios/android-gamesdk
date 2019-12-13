@@ -16,6 +16,24 @@
       "revId": "b665e404df71277a02af204aa8fb151d0a9cf5e5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1c447aa4_e6d6ebe7",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/proto/dev_tuningfork.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-12-13T10:18:49Z",
+      "side": 0,
+      "message": "It\u0027s not needed, but yes, I\u0027ll remove in a separate CL.",
+      "parentUuid": "9d6c9157_977179d2",
+      "revId": "b665e404df71277a02af204aa8fb151d0a9cf5e5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
