@@ -1,13 +1,14 @@
 build:
   clean: false
   release: false
-  configuration: configurations/affinity_test.json
+  configuration: recipes/configurations/affinity_test.json
 
 deployment:
   local:
     all_attached_devices: true
 
     #preflight tasks are executed before running the tests on device
+    # NOTE: preflight tasks are only supported for local deployment
     preflight:
       - {
           # copies ./tmp/foo.png to the app's private files/ folder
@@ -42,6 +43,7 @@ deployment:
 
     #postflight tasks are run after test completes -- good opportunity to
     # clean up, or copy data off device
+    # NOTE: postflight tasks are only supported for local deployment
     postflight:
       - {
           # copy foo.png from app's private files dir to ./tmp/foo.png

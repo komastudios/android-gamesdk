@@ -26,25 +26,7 @@ class AffinityTestSuiteHandler(SuiteHandler):
     def can_handle_suite(cls, suite: Suite):
         return "Affinity Test" in suite.name
 
-    def summary(self):
-        mismatches = 0
-        for cpu_id, data in self.data_by_cpu_id.items():
-            # find a cpu mismatch while work is running
-            for d in data:
-                if d.operation_id == "ScheduleAffinityOperation" and d.get_custom_field(
-                        "message") == "work_running":
-                    expected_cpu = int(d.get_custom_field_numeric("expected_cpu"))
-                    actual_cpu = d.cpu_id
-                    if expected_cpu != actual_cpu:
-                        mismatches += 1
-
-        if mismatches > 0:
-            return f"Found {mismatches} CPU affinity mismatches"
-
-        # looks like we have no mismatches to highlight
-        return None
-
-    def render_plot(self):
+    def render_plot(self) -> str:
         x_axis_seconds = self.get_x_axis_as_seconds()
         start_time_seconds = self.get_xs()[0] / NS_PER_S
         end_time_seconds = self.get_xs()[-1] / NS_PER_S
@@ -82,3 +64,24 @@ class AffinityTestSuiteHandler(SuiteHandler):
                 elif message == "work_finished":
                     label = f"work_finished"
                     fig.axvline(s, color=happy_color, label=label)
+
+        return self._generate_summary()
+    
+    def _generate_summary(self):
+        mismatches = 0
+        for cpu_id, data in self.data_by_cpu_id.items():
+            # find a cpu mismatch while work is running
+            for d in data:
+                if d.operation_id == "ScheduleAffinityOperation" and d.get_custom_field(
+                        "message") == "work_running":
+                    expected_cpu = int(d.get_custom_field_numeric("expected_cpu"))
+                    actual_cpu = d.cpu_id
+                    if expected_cpu != actual_cpu:
+                        mismatches += 1
+
+        if mismatches > 0:
+            return f"Found {mismatches} CPU affinity mismatches"
+
+        # looks like we have no mismatches to highlight
+        return None
+

@@ -90,10 +90,7 @@ class MemoryAllocationSuiteHandler(SuiteHandler):
     def can_handle_suite(cls, suite: Suite):
         return "Memory allocation" in suite.name
 
-    def summary(self):
-        return None
-
-    def render_plot(self):
+    def render_plot(self) -> str:
         x_axis_seconds = self.get_x_axis_as_seconds()
         start_time_seconds = self.get_xs()[0] / NS_PER_S
         end_time_seconds = self.get_xs()[-1] / NS_PER_S
@@ -122,3 +119,6 @@ class MemoryAllocationSuiteHandler(SuiteHandler):
             xs = np.array(xs)
             ys = np.array(ys)
             self.plotters_by_field_name[field_name](fig, xs, ys, field_name)
+
+        # no interesting summary
+        return None

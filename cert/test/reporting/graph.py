@@ -27,14 +27,8 @@ import lib.graphing
 FIGURE_DPI = 300
 
 
-def display_interactive_report(report_file: Path):
-    for suite in lib.graphing.load_suites(report_file):
-        if suite.handler:
-            suite.handler.plot(True)
-
-
-def summary_document_name(name, html):
-    return f"summary_{name}" + (".html" if html else ".md")
+def summary_document_name(name):
+    return f"summary_{name}"
 
 
 def main():
@@ -44,18 +38,9 @@ def main():
                         default=FIGURE_DPI,
                         type=int)
 
-    parser.add_argument(
-        "--interactive",
-        action="store_true",
-        default=False,
-        help=
-        "Show interactive pyplot window; only enabled for single --report input"
-    )
-
-    parser.add_argument("--html",
-                        action="store_true",
-                        default=False,
-                        help="If true, render document as html, not markdown")
+    parser.add_argument("--fmt",
+                        default="md",
+                        help="Doc formats: [\"md\", \"html\"]")
 
     parser.add_argument(
         "path",
@@ -63,11 +48,11 @@ def main():
         nargs=1,
         metavar="Path to report file or folder",
         help="Path to document or folder of documents to render")
+
     args = parser.parse_args()
-    html = args.html
-    interactive = args.interactive
     dpi = args.dpi
     path = Path(args.path[0])
+    doc_fmt = lib.graphing.DocumentFormat.from_extension(args.fmt)
 
     if not path.exists():
         print(f"File {str(path)} does not found; bailing.")
@@ -76,26 +61,16 @@ def main():
     elif path.is_dir():
         # this is a batch
         report_files = [Path(f) for f in glob.glob(str(path) + '/*.json')]
-
-        report_summary_file_name = summary_document_name(str(path.stem), html)
-
+        report_summary_file_name = summary_document_name(str(path.stem))
         report_summary_file = path.joinpath(report_summary_file_name)
+        lib.graphing.render_report_document(report_files, report_summary_file,
+                                            doc_fmt, dpi)
 
-        lib.graphing.render_report_document(report_files,
-                                            report_summary_file,
-                                            dpi=args.dpi)
     elif path.suffix == ".json":
-        if interactive:
-            display_interactive_report(path)
-        else:
-            report_summary_file_name = summary_document_name(
-                str(path.stem), html)
-
-            report_summary_file = path.parent.joinpath(report_summary_file_name)
-
-            lib.graphing.render_report_document([path],
-                                                report_summary_file,
-                                                dpi=args.dpi)
+        report_summary_file_name = summary_document_name(str(path.stem))
+        report_summary_file = path.parent.joinpath(report_summary_file_name)
+        lib.graphing.render_report_document([path], report_summary_file,
+                                            doc_fmt, dpi)
 
 
 if __name__ == "__main__":
