@@ -2,7 +2,7 @@
 // Created by Matt Wang on 2019-12-09.
 //
 
-#include "userinterface.h"
+#include "user_interface.h"
 
 std::vector<Button> UserInterface::buttons_;
 
