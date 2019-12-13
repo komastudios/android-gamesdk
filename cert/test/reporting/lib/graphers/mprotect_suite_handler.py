@@ -33,7 +33,16 @@ class MProtectSuiteHandler(SuiteHandler):
     def can_handle_suite(cls, suite: Suite):
         return "Vulkan memory write protection" in suite.name
 
-    def summary(self):
+    def render_plot(self) -> str:
+        if self.mprotect_score is not None:
+            score_color = (0, 1, 0) if self.mprotect_score == 0 else (1, 0, 0)
+            plt.xticks(np.arange(0))
+            plt.yticks(np.arange(0))
+            plt.bar(0, 1, color=score_color)
+
+        return self._generate_summary()
+
+    def _generate_summary(self):
         if self.mprotect_score is None:
             return "No mprotect results found."
         elif self.mprotect_score == 0:
@@ -55,9 +64,3 @@ class MProtectSuiteHandler(SuiteHandler):
         else:
             return f"Unexpected result: ({self.mprotect_score})"
 
-    def render_plot(self):
-        if self.mprotect_score is not None:
-            score_color = (0, 1, 0) if self.mprotect_score == 0 else (1, 0, 0)
-            plt.xticks(np.arange(0))
-            plt.yticks(np.arange(0))
-            plt.bar(0, 1, color=score_color)

@@ -31,13 +31,8 @@ class HalfFloatPrecisionSuiteHandler(SuiteHandler):
         ]
 
     @classmethod
-    def can_handle_suite(cls, suite: Suite):
+    def can_handle_suite(cls, suite: Suite) -> str:
         return "GPU Half Precision" in suite.name
-
-    def summary(self):
-        if len(self.error_datums) > 0:
-            return f"Found {len(self.error_datums)} erroneous values in dataset"
-        return None
 
     def render_plot(self):
         # gather data for simple error count histogram
@@ -49,3 +44,10 @@ class HalfFloatPrecisionSuiteHandler(SuiteHandler):
         plt.hist(xs)
         plt.xlabel("offset")
         plt.ylabel("error count")
+
+        return self._generate_summary()
+
+    def _generate_summary(self):
+        if len(self.error_datums) > 0:
+            return f"Found {len(self.error_datums)} erroneous values in dataset"
+        return None

@@ -1,6 +1,6 @@
 build:
   clean: false
-  configuration: configurations/memory.json
+  configuration: recipes/configurations/memory.json
 
 systrace:
   enabled: false

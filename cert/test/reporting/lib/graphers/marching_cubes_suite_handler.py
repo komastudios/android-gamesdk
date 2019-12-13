@@ -105,11 +105,7 @@ class MarchingCubesSuiteHandler(SuiteHandler):
     def can_handle_suite(cls, suite: Suite):
         return "Marching Cubes Permutations Test" in suite.name
 
-    def summary(self):
-        # looks like we have no mismatches to highlight
-        return None
-
-    def render_plot(self):
+    def render_plot(self) -> str:
         row_names = list(self.data_by_thread_setup_floating.keys())
         row_names.sort()
         rows = len(row_names)
@@ -160,3 +156,20 @@ class MarchingCubesSuiteHandler(SuiteHandler):
                 if row == len(row_names) - 1:
                     # only show x labels on last row
                     plt.xlabel(X_LABELS[col])
+
+        # no interesting summary
+        return None
+
+    @classmethod
+    def can_render_summarization_plot(cls, suites: List[SuiteHandler]):
+        # no point generating a multi-suite summary for one suite
+        return len(suites) > 1
+
+    @classmethod
+    def render_summarization_plot(cls, suites: List[SuiteHandler]) -> str:
+        print(f"Will render summarization plot for {len(suites)} suites")
+        plt.title("Faux plot")
+        plt.plot([10,11,12,13])
+        plt.ylabel('some summarization numbers')
+
+        return "Faux Summarization Plot"

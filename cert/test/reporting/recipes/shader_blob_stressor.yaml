@@ -1,6 +1,6 @@
 build:
   clean: false
-  configuration: configurations/shader_blob_stressor.json
+  configuration: recipes/configurations/shader_blob_stressor.json
 
 systrace:
   enabled: false
