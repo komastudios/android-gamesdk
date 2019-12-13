@@ -17,9 +17,6 @@
 #include "BaseOperation.hpp"
 
 #include <dlfcn.h>
-#include <sched.h>
-#include <thread>
-#include <sstream>
 
 #include "util/Error.hpp"
 #include "util/Json.hpp"
@@ -27,7 +24,7 @@
 using namespace ancer;
 
 
-//==================================================================================================
+//==============================================================================
 
 namespace {
     constexpr Log::Tag TAG{"operations_load"};
@@ -41,7 +38,7 @@ namespace {
         }
         return lib;
     }
-} // anonymous namespace
+}
 
 namespace ancer {
 
@@ -114,21 +111,11 @@ namespace ancer {
         _height = height;
     }
 
-    void BaseOperation::ReportImpl(const Json& custom_payload) const {
+    void BaseOperation::ReportImpl(Json&& custom_payload) const {
         if ( GetMode() == Mode::DataGatherer ) {
-            std::stringstream ss;
-            ss << std::this_thread::get_id();
-            auto t_id = ss.str();
-
-            reporting::Datum datum;
-            datum.suite_id = _suite_id;
-            datum.operation_id = _operation_id;
-            datum.cpu_id = sched_getcpu();
-            datum.thread_id = t_id;
-            datum.timestamp = SteadyClock::now();
-            datum.custom = custom_payload;
-
-            reporting::WriteToReportLog(datum);
+            reporting::WriteToReportLog(reporting::Datum{
+                _suite_id, _operation_id, std::move(custom_payload)
+            });
         }
     }
-} // namespace ancer
+}

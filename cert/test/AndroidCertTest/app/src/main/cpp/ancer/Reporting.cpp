@@ -18,6 +18,7 @@
 #include <condition_variable>
 #include <fstream>
 #include <mutex>
+#include <sstream>
 #include <thread>
 #include <variant>
 
@@ -31,10 +32,38 @@
 //==============================================================================
 
 namespace ancer::reporting {
-
     namespace {
         constexpr Log::Tag TAG{"ancer::reporting"};
+    }
+
+//==============================================================================
+
+    namespace {
+        std::string to_string(std::thread::id id) {
+            std::stringstream ss;
+            ss << id;
+            return ss.str();
+        }
+    }
+
+    Datum::Datum(Json custom) : Datum{"", "", std::move(custom)} {}
+
+    Datum::Datum(std::string suite, std::string operation, Json custom_data)
+    : suite_id(std::move(suite))
+    , operation_id(std::move(operation))
+    , timestamp(SteadyClock::now())
+    , thread_id(to_string(std::this_thread::get_id()))
+    , cpu_id(sched_getcpu())
+    , custom(std::move(custom_data)) {
+
+    }
+
+//==============================================================================
+
+    namespace {
         constexpr Milliseconds DEFAULT_FLUSH_PERIOD_MILLIS = 1000ms;
+
+        const/*expr*/ Json kFlushEvent = R"({ "report_event" : "flush" })"_json;
 
         class Writer {
         public:
@@ -218,8 +247,13 @@ namespace ancer::reporting {
                 if ( !_log_items.empty()) {
 
                     Log::V( TAG,
-                            "ReportSerializer_Periodic::Flush - writing %d items",
+                            "ReportSerializer_Periodic::Flush - writing %d(+1) items",
                             _log_items.size());
+                    // Add an extra report for this flush so testers can see if
+                    // our reporting mechanism is having any impact on their
+                    // results. (Unlikely, but putting the info out there at
+                    // least makes it easy to rule out.)
+                    _log_items.emplace_back(Datum(kFlushEvent));
 
                     auto& out = GetWriter();
                     for ( const auto& i : _log_items ) {
