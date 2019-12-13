@@ -15,9 +15,9 @@
  */
 
 #include <atomic>
-#include <condition_variable>
 #include <fstream>
 #include <mutex>
+#include <sstream>
 #include <thread>
 #include <variant>
 
@@ -31,10 +31,119 @@
 //==============================================================================
 
 namespace ancer::reporting {
-
     namespace {
         constexpr Log::Tag TAG{"ancer::reporting"};
+    }
+
+//==============================================================================
+
+    namespace {
+        std::atomic<int> _issue_id{0};
+
+        int GetNextIssueId() {
+            return _issue_id++;
+        }
+
+        std::string to_string(std::thread::id id) {
+            std::stringstream ss;
+            ss << id;
+            return ss.str();
+        }
+    }
+
+    Datum::Datum(Json custom) : Datum{"", "", std::move(custom)} {}
+
+    Datum::Datum(std::string suite, std::string operation, Json custom_data)
+    : issue_id(GetNextIssueId())
+    , suite_id(std::move(suite))
+    , operation_id(std::move(operation))
+    , timestamp(SteadyClock::now())
+    , thread_id(to_string(std::this_thread::get_id()))
+    , cpu_id(sched_getcpu())
+    , custom(std::move(custom_data)) {
+
+    }
+
+//------------------------------------------------------------------------------
+
+    namespace {
+        // Returns the number of characters needed to represent the given,
+        // integer, potentially including a negative sign.
+        template <typename T>
+        constexpr auto CharsRequired(T val, bool include_minus_sign = true)
+        -> std::enable_if_t<std::is_integral_v<T>, size_t> {
+            int len = (include_minus_sign && val < 0 ? 2 : 1);
+            while (val /= 10) {
+                ++len;
+            }
+            return len;
+        }
+
+        // Saves a datum to a JSON-style string with a newline at the end.
+        // We do this for performance reasons: Periodic reporting can result in
+        // a queue of hundreds of datums to parse, and our standard JSON setup
+        // can give a very noticeable performance hitch. We improve on this by:
+        // 1) Saving to a string to the side so we can avoid one-or-more memory
+        //    allocations for every datum-to-string conversion.
+        // 2) Skipping the JSON middleman and hard-coding the formatting to
+        //    avoid unnecessary work. We don't *really* need a generic JSON
+        //    object, just the final text that a specific type would give us.
+        void SaveReportLine(std::string& s, const Datum& d) {
+            // TODO(tmillican@google.com): Most of this could probably be a
+            //  collection of generic helpers. That's a bit excessive for now,
+            //  though.
+
+            static_assert(std::is_same_v<Timestamp::rep, long long>,
+                    "Mismatch in printf type for timestamp.");
+            static constexpr const char* fmt =
+                R"({"issue_id":"%d", "suite_id":"%s", "operation_id":"%s",)"
+                R"( "timestamp":%lld, "thread_id":"%s", "cpu_id":%d,)"
+                R"( "custom":%s})" "\n";
+            // 6 %X + 1 %lld
+            constexpr auto raw_fmt_size = std::string_view{fmt}.size();
+            static constexpr auto specifier_sz = 6*2 + 1*4;
+            static constexpr auto fmt_sz = std::string_view{fmt}.size() - specifier_sz;
+
+            const auto timestamp_ct = d.timestamp.time_since_epoch().count();
+            const auto custom_str = d.custom.dump();
+            const auto data_sz =
+                    CharsRequired(d.issue_id) +
+                    d.suite_id.size() +
+                    d.operation_id.size() +
+                    CharsRequired(timestamp_ct) +
+                    d.thread_id.size() +
+                    CharsRequired(d.cpu_id) +
+                    custom_str.size();
+            const auto string_sz = fmt_sz + data_sz;
+
+            // TODO(tmillican@google.com): Some potential for unneeded
+            //  initialization here, but I don't think there's a very good
+            //  workaround short of writing our own string type. In our
+            //  particular case it should be fairly minimal, though, and likely
+            //  a lot better performance-wise than slowly expanding the string
+            //  piece-by-piece.
+            s.resize(string_sz);
+
+            [[maybe_unused]]
+            int result = snprintf(s.data(), s.size() + 1, fmt, d.issue_id,
+                    d.suite_id.c_str(), d.operation_id.c_str(), timestamp_ct,
+                    d.thread_id.c_str(), d.cpu_id, custom_str.c_str());
+            assert(result == s.size() && string_sz == s.size());
+        }
+
+        std::string GetReportLine(const Datum& d) {
+            std::string s;
+            SaveReportLine(s, d);
+            return s;
+        }
+    }
+
+//==============================================================================
+
+    namespace {
         constexpr Milliseconds DEFAULT_FLUSH_PERIOD_MILLIS = 1000ms;
+
+        const/*expr*/ Json kFlushEvent = R"({ "report_event" : "flush" })"_json;
 
         class Writer {
         public:
@@ -72,9 +181,9 @@ namespace ancer::reporting {
 
             virtual ~ReportSerializerBase() = default;
 
-            virtual void Write(const Datum& d) = 0;
+            virtual void Write(Datum&& d) = 0;
 
-            virtual void Write(const std::string& s) = 0;
+            virtual void Write(std::string&& s) = 0;
 
             virtual void Flush() { _writer->Flush(); }
 
@@ -94,17 +203,18 @@ namespace ancer::reporting {
             explicit ReportSerializer_Immediate(Writer* writer) :
                     ReportSerializerBase(writer) {}
 
-            void Write(const Datum& d) override {
+            void Write(Datum&& d) override {
                 _worker.Run(
-                        [this, d](state* s) {
-                            auto j = Json(d);
-                            GetWriter().Write(j.dump()).Write("\n").Flush();
+                        // TODO(tmillican@google.com): std::function doesn't support move
+                        //[this, d = std::move(d)](state* s) {
+                        [this, msg = GetReportLine(d)](state* s) {
+                            GetWriter().Write(msg);
                         });
             }
 
-            void Write(const std::string& msg) override {
+            void Write(std::string&& msg) override {
                 _worker.Run(
-                        [this, msg](state* s) {
+                        [this, msg = std::move(msg)](state* s) {
                             GetWriter().Write(msg).Write("\n").Flush();
                         });
             }
@@ -128,17 +238,18 @@ namespace ancer::reporting {
             explicit ReportSerializer_Manual(Writer* writer) :
                     ReportSerializerBase(writer) {}
 
-            void Write(const Datum& d) override {
+            void Write(Datum&& d) override {
                 _worker.Run(
-                        [this, d](state* s) {
-                            auto j = Json(d);
-                            GetWriter().Write(j.dump()).Write("\n");
+                        // TODO(tmillican@google.com): std::function doesn't support move
+                        //[this, d = std::move(d)](state* s) {
+                        [this, msg = GetReportLine(d)](state* s) {
+                            GetWriter().Write(msg);
                         });
             }
 
-            void Write(const std::string& msg) override {
+            void Write(std::string&& msg) override {
                 _worker.Run(
-                        [this, msg](state* s) {
+                        [this, msg = std::move(msg)](state* s) {
                             GetWriter().Write(msg).Write("\n");
                         });
             }
@@ -200,16 +311,16 @@ namespace ancer::reporting {
             [[nodiscard]] auto
             GetFlushPeriod() const noexcept { return _flush_period; }
 
-            void Write(const Datum& d) override {
+            void Write(Datum&& d) override {
                 std::lock_guard<std::mutex> lock(_write_lock);
-                _num_writes++;
-                _log_items.emplace_back(d);
+                ++_num_writes;
+                _log_items.emplace_back(std::move(d));
             }
 
-            void Write(const std::string& msg) override {
+            void Write(std::string&& msg) override {
                 std::lock_guard<std::mutex> lock(_write_lock);
-                _num_writes++;
-                _log_items.emplace_back(msg);
+                ++_num_writes;
+                _log_items.emplace_back(std::move(msg));
             }
 
             void Flush() override {
@@ -218,18 +329,31 @@ namespace ancer::reporting {
                 if ( !_log_items.empty()) {
 
                     Log::V( TAG,
-                            "ReportSerializer_Periodic::Flush - writing %d items",
+                            "ReportSerializer_Periodic::Flush - writing %d(+1) items",
                             _log_items.size());
+                    // Add an extra report for this flush so testers can see if
+                    // our reporting mechanism is impacting their results and
+                    // adjust accordingly.
+                    _log_items.emplace_back(Datum(kFlushEvent));
+
+                    // Keep a buffer to the side for parsing datums into JSON
+                    // strings so we don't need to allocate a new string for
+                    // every datum (plus any additional allocations for capacity
+                    // growth).
+                    // 300 is just an arbitrary amount to get things started to
+                    // hopefully avoid any extra allocations at all.
+                    std::string datum_string;
+                    datum_string.reserve(300);
 
                     auto& out = GetWriter();
                     for ( const auto& i : _log_items ) {
                         std::visit(
                                 overloaded{
-                                        [&out](Datum d) {
-                                            auto j = Json(d);
-                                            out.Write(j.dump()).Write("\n");
+                                        [&out, &datum_string](const Datum& d) {
+                                            SaveReportLine(datum_string, d);
+                                            out.Write(datum_string);
                                         },
-                                        [&out](std::string s) {
+                                        [&out](const std::string& s) {
                                             out.Write(s).Write("\n");
                                         }
                                 }, i);
@@ -355,20 +479,20 @@ namespace ancer::reporting {
     }
 
 
-    void WriteToReportLog(const reporting::Datum& d) {
+    void WriteToReportLog(reporting::Datum&& d) {
         if ( !_report_serializer ) {
             FatalError(TAG, "Attempt to write to report log without opening "
                             "log first.");
         }
-        _report_serializer->Write(d);
+        _report_serializer->Write(std::move(d));
     }
 
-    void WriteToReportLog(const std::string& s) {
+    void WriteToReportLog(std::string&& s) {
         if ( !_report_serializer ) {
             FatalError(TAG, "Attempt to write to report log without opening "
                             "log first.");
         }
-        _report_serializer->Write(s);
+        _report_serializer->Write(std::move(s));
     }
 
     void FlushReportLogQueue() {
