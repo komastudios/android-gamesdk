@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DST_FILE="report.json"
+DST_FILE="out/report.json"
 DEVICE="-d"
 
 usage()
@@ -25,6 +25,8 @@ while [ "$1" != "" ]; do
     esac
     shift
 done
+
+mkdir -p out/
 
 echo "Extracing report using device" $DEVICE "to file" $DST_FILE
 adb $DEVICE shell "run-as com.google.gamesdk.gamecert.operationrunner cat /data/data/com.google.gamesdk.gamecert.operationrunner/files/report.json" > $DST_FILE

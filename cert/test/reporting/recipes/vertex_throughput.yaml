@@ -1,6 +1,6 @@
 build:
   clean: false
-  configuration: configurations/vertex_throughput.json
+  configuration: recipes/configurations/vertex_throughput.json
 
 systrace:
   enabled: false

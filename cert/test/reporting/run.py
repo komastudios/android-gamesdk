@@ -27,10 +27,8 @@ from pathlib import Path
 
 from lib.build import build_apk, APP_ID
 from lib.common import *
-from lib.report import extract_and_export, convert_json_report_to_csv, \
-    get_device_product_and_api, merge_systrace_into_csv
+from lib.report import *
 from lib.devicefarm import run_on_farm_and_collect_reports
-import lib.charting
 import lib.graphing
 import lib.tasks_runner
 
@@ -59,7 +57,7 @@ class LocalSystrace(object):
             "python2",
             os.path.expandvars(
                 "$ANDROID_HOME/platform-tools/systrace/systrace.py"),
-            "--serial",
+            "-e",
             device_id,
             "-a",
             APP_ID,
@@ -148,24 +146,7 @@ def get_systrace_config(recipe: Dict) -> (bool, List[str], List[str]):
     return enabled, keywords, categories
 
 
-def get_chart_config(recipe: Dict) -> (bool, List[str], List[str], List[str]):
-    """
-    Extracts, from the recipe, chart related arguments.
-    These are:
-
-    * enabled: a boolean telling whether charts are enabled at all.
-    * suites: if enabled, what suites are to be displayed.
-    * fields: if specified, which fields are considered (all if not).
-    * skip: if specified, which fields are excluded (none if not).
-    """
-    enabled = dict_lookup(recipe, "chart.enabled", fallback=False)
-    suites = dict_lookup(recipe, "chart.suites", [])
-    fields = dict_lookup(recipe, "chart.fields", [])
-    skip = dict_lookup(recipe, "chart.skipping", [])
-    return enabled, suites, fields, skip
-
-
-def get_summary_config(recipe: Dict) -> (bool, bool):
+def get_summary_config(recipe: Dict) -> (bool, str):
     """
     Extracts, from the recipe, summary related arguments.
     These are:
@@ -175,14 +156,15 @@ def get_summary_config(recipe: Dict) -> (bool, bool):
             markdown default.
     """
     enabled = dict_lookup(recipe, "summary.enabled", fallback=False)
-    html = dict_lookup(recipe, "summary.html", fallback=False)
+    fmt = dict_lookup(recipe, "summary.format", fallback="md")
+    fmt = lib.graphing.DocumentFormat.from_extension(fmt)
 
-    return enabled, html
+    return enabled, fmt
 
 
 def load_tasks(tasks_dict: List[Dict], task_ctors: Dict
               ) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
-    """Load tasks and create default task environment (internal, called by 
+    """Load tasks and create default task environment (internal, called by
     get_preflight_tasks and get_postflight_tasks)
     Args:
         tasks_dict: The dict from a recipe corresponding to pre or postflight
@@ -317,94 +299,70 @@ def start_test_and_wait_for_completion(local_device_id: str) -> type(None):
     time.sleep(2)
 
 
-def map_reports_to_csv(
+def process_ftl_reports(
         out_dir: Path,
-        json_files: List[Path],
+        report_files: List[Path],
         systrace_files: List[Path],
         systrace_keywords: List[str],
 ) -> List[Path]:
     """
-    Given a series of test results and associated systrace collections, this
-    function consolidates these into a list of comma-separated value files (one
-    per device).
+    Given report files (and optional systrace files) copy the files into the
+    designated output dir and normalize file names to convention, merging
+    systrace data if available
 
     Args:
         out_dir: directory where gCloud test results got downloaded.
-        json_files: list of file names (one per device).
+        report_files: list of report file names (one per device).
         systrace_files: list of associated systrace collections. May be empty
                         if systrace_enabled is False.
         systrace_keywords: systrace keywords to filter.
 
     Returns:
-        A list of CSV files per device with input data consolidated and
-        transformed.
+        A list paths to report files (per device) with input data consolidated
+        and transformed.
     """
-    csv_files = []
-    report_pairs = zip(json_files, systrace_files) if systrace_files else map(
-        lambda json_file: (json_file, None), json_files)
-    for json_file, systrace_file in report_pairs:
+    out_files = []
+    report_pairs = zip(report_files, systrace_files) if systrace_files else map(
+        lambda json_file: (json_file, None), report_files)
+    for report_file, systrace_file in report_pairs:
         # copy from the ftl dest folder into tmp
-        dst_json_file = out_dir.joinpath(json_file.name)
-        shutil.copy(json_file, dst_json_file)
+        dst_report_file = out_dir.joinpath(report_file.name)
+        shutil.copy(report_file, dst_report_file)
 
         try:
-            # convert to csv
-            json_file, csv_file = convert_json_report_to_csv(dst_json_file)
+            # normalize the file name
+            report_file = normalize_report_name(dst_report_file)
 
             if systrace_file:
                 # copy the trace.html file to basename_trace.html
                 dst_trace_file = out_dir.joinpath(
-                    f"{json_file.stem}_trace.html")
+                    f"{report_file.stem}_trace.html")
                 shutil.copy(systrace_file, dst_trace_file)
 
-                # merge the systrace data into our csv
-                csv_file = merge_systrace_into_csv(csv_file, dst_trace_file,
-                                                   systrace_keywords)
+                # merge the systrace data
+                report_file = merge_systrace(report_file, dst_trace_file,
+                                             systrace_keywords)
 
-            csv_files.append(csv_file)
+            out_files.append(report_file)
 
         except:
-            print(f"Unable to convert file {json_file} to CSV")
+            print(f"Unable to process file {report_file}")
 
-    return csv_files
-
-
-def plot_suites(suites: List[str], csv_files: List[Path], fields: List[str],
-                skipping: List[str]) -> type(None):
-    """
-    Plots a sequence of charts.
-
-    Args:
-        suites: a list of suite names to plot. If empty, all existing
-                suites are plotted.
-        csv_files: a list of paths to comma-separated value files (one per
-                   tested device) containing sampled data points.
-        fields: list of data points to include in the graph (all if empty).
-        skipping: list of data points to exclude (none if empty).
-    """
-    for csv_file in csv_files:
-        device, api_level = get_device_product_and_api(csv_file)
-        all_suites = lib.charting.load_suites(csv_file.resolve())
-        for suite in all_suites:
-            if (suite.suite_name in suites or not suites):
-                title = f"{suite.suite_name}-{device} API {api_level}"
-                suite.plot(title, fields, skipping)
+    return out_files
 
 
-def generate_report_summary(report_files_dir: Path, html: bool,
+def generate_report_summary(report_files_dir: Path,
+                            doc_fmt: str,
                             figure_dpi=600) -> Path:
     report_files = [
         Path(f) for f in glob.glob(str(report_files_dir) + '/*.json')
     ]
 
-    report_summary_file_name = f"summary_{str(report_files_dir.stem)}" + (
-        ".html" if html else ".md")
-
+    report_summary_file_name = f"summary_{str(report_files_dir.stem)}"
     report_summary_file = report_files_dir.joinpath(report_summary_file_name)
 
-    lib.graphing.render_report_document(report_files,
-                                        report_summary_file,
-                                        dpi=figure_dpi)
+    lib.graphing.render_report_document(report_files, report_summary_file,
+                                        doc_fmt, figure_dpi)
 
 
 # ------------------------------------------------------------------------------
@@ -420,10 +378,7 @@ def run_local_deployment(recipe: Dict, apk: Path, out_dir: Path):
     systrace_enabled, systrace_keywords, systrace_categories = \
         get_systrace_config(recipe)
 
-    chart_enabled, chart_suites, chart_fields, chart_skip = \
-        get_chart_config(recipe)
-
-    summary_enabled, summary_html = get_summary_config(recipe)
+    summary_enabled, summary_fmt = get_summary_config(recipe)
 
     # at present, preflight_tasks are only available for local deployment
     preflight_tasks, preflight_env = get_preflight_tasks(recipe)
@@ -450,22 +405,18 @@ def run_local_deployment(recipe: Dict, apk: Path, out_dir: Path):
         # run test!
         start_test_and_wait_for_completion(device_id)
 
-        # extract report (for now we're skipping systrace operations)
-        log_file, csv_file, sys_file = extract_and_export(
+        # extract report
+        log_file, sys_file = extract_and_export(
             device_id,
             dst_dir=out_dir,
             systrace_file=systracer.finish() if systracer else None,
-            systrace_keywords=systrace_keywords,
-            bucket=None)
+            systrace_keywords=systrace_keywords)
 
         # run postflight tasks
         lib.tasks_runner.run(postflight_tasks, device_id, postflight_env)
 
-        if chart_enabled:
-            plot_suites(chart_suites, [csv_file], chart_fields, chart_skip)
-
     if summary_enabled:
-        generate_report_summary(out_dir, summary_html)
+        generate_report_summary(out_dir, summary_fmt)
 
 
 # ------------------------------------------------------------------------------
@@ -477,7 +428,11 @@ def run_ftl_deployment(recipe: Dict, apk: Path, out_dir: Path):
     for test in args_dict:
         args_dict[test]["app"] = str(apk)
 
-    active_test = dict_lookup(recipe, "deployment.ftl.test", fallback=None)
+    tests = dict_lookup(recipe, "deployment.ftl.args", fallback=None)
+    fallback_test = list(tests.keys())[0]
+    active_test = dict_lookup(recipe,
+                              "deployment.ftl.test",
+                              fallback=fallback_test)
     flags_dict = dict_lookup(recipe, "deployment.ftl.flags", {})
 
     all_physical_devices = dict_lookup(recipe,
@@ -486,11 +441,10 @@ def run_ftl_deployment(recipe: Dict, apk: Path, out_dir: Path):
 
     systrace_enabled, systrace_keywords, systrace_categories = \
         get_systrace_config(recipe)
-    chart_enabled, chart_suites, chart_fields, chart_skip = \
-        get_chart_config(recipe)
-    summary_enabled, summary_html = get_summary_config(recipe)
 
-    json_files, systrace_files = run_on_farm_and_collect_reports(
+    summary_enabled, summary_fmt = get_summary_config(recipe)
+
+    report_files, systrace_files = run_on_farm_and_collect_reports(
         args_dict=args_dict,
         flags_dict=flags_dict,
         test=active_test,
@@ -498,14 +452,11 @@ def run_ftl_deployment(recipe: Dict, apk: Path, out_dir: Path):
         enable_all_physical=all_physical_devices,
         dst_dir=out_dir)
 
-    csv_files = map_reports_to_csv(out_dir, json_files, systrace_files,
-                                   systrace_keywords)
-
-    if chart_enabled:
-        plot_suites(chart_suites, csv_files, chart_fields, chart_skip)
+    report_files = process_ftl_reports(out_dir, report_files, systrace_files,
+                                       systrace_keywords)
 
     if summary_enabled:
-        generate_report_summary(out_dir, summary_html)
+        generate_report_summary(out_dir, summary_fmt)
 
 
 # ------------------------------------------------------------------------------
@@ -525,7 +476,7 @@ if __name__ == "__main__":
     with open(recipe_path) as recipe_file:
         recipe = yaml.load(recipe_file, Loader=yaml.FullLoader)
 
-    # ensure the out/ dir exists for storing reports/csvs/systraces
+    # ensure the out/ dir exists for storing reports/systraces/etc
     # use the name of the provided configuration, or if none, the yaml file
     # to specialize the output dir
     custom_config = dict_lookup(recipe, "build.configuration", fallback=None)
