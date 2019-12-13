@@ -19,6 +19,7 @@
 #include "stream_util/getdelim.h"
 #include "texture_test_cases.h"
 
+#include <cpu-features.h>
 #include <EGL/egl.h>
 // clang-format off
 #include <GLES3/gl32.h>
@@ -145,7 +146,15 @@ bool readCpuPossible(String& result) {
 
 // Returns true on success.
 bool readCpuIndexMax(int& result) {
-  return readFileInt32("/sys/devices/system/cpu/kernel_max", result);
+  // TODO: This is the maximum number of CPUs supported by the kernel, but the
+  //  rest of the code treats it as the actual number of CPUs.
+  //  tmillican@google.com: I'm not certain, but I *believe* even this may be
+  //  error prone: getCpuCount() actually parses 'cpu/possible' & 'cpu/present'
+  //  and treats them as though gaps are possible (i.e., '0-1, 3' is valid,
+  //  skipping CPU 2). If that ever actually occurs, it will cause issues with
+  //  any code that relies on valid CPUs being 0-n.
+  result = android_getCpuCount() - 1;
+  return true;
 }
 
 // Returns true on success.
