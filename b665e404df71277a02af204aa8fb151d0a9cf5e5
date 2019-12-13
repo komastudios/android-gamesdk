@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9d6c9157_977179d2",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/proto/dev_tuningfork.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2019-12-13T08:34:37Z",
+      "side": 0,
+      "message": "Did you mean to delete this? If it\u0027s unrelated, can you move it to a different CL?",
+      "revId": "b665e404df71277a02af204aa8fb151d0a9cf5e5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
