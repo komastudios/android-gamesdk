@@ -18,6 +18,7 @@
 #include <condition_variable>
 #include <fstream>
 #include <mutex>
+#include <sstream>
 #include <thread>
 #include <variant>
 
@@ -31,10 +32,45 @@
 //==============================================================================
 
 namespace ancer::reporting {
-
     namespace {
         constexpr Log::Tag TAG{"ancer::reporting"};
+    }
+
+//==============================================================================
+
+    namespace {
+        std::atomic<int> _issue_id{0};
+
+        int GetNextIssueId() {
+            return _issue_id++;
+        }
+
+        std::string to_string(std::thread::id id) {
+            std::stringstream ss;
+            ss << id;
+            return ss.str();
+        }
+    }
+
+    Datum::Datum(Json custom) : Datum{"", "", std::move(custom)} {}
+
+    Datum::Datum(std::string suite, std::string operation, Json custom_data)
+    : issue_id(GetNextIssueId())
+    , suite_id(std::move(suite))
+    , operation_id(std::move(operation))
+    , timestamp(SteadyClock::now())
+    , thread_id(to_string(std::this_thread::get_id()))
+    , cpu_id(sched_getcpu())
+    , custom(std::move(custom_data)) {
+
+    }
+
+//==============================================================================
+
+    namespace {
         constexpr Milliseconds DEFAULT_FLUSH_PERIOD_MILLIS = 1000ms;
+
+        const/*expr*/ Json kFlushEvent = R"({ "report_event" : "flush" })"_json;
 
         class Writer {
         public:
@@ -72,9 +108,9 @@ namespace ancer::reporting {
 
             virtual ~ReportSerializerBase() = default;
 
-            virtual void Write(const Datum& d) = 0;
+            virtual void Write(Datum&& d) = 0;
 
-            virtual void Write(const std::string& s) = 0;
+            virtual void Write(std::string&& s) = 0;
 
             virtual void Flush() { _writer->Flush(); }
 
@@ -94,17 +130,16 @@ namespace ancer::reporting {
             explicit ReportSerializer_Immediate(Writer* writer) :
                     ReportSerializerBase(writer) {}
 
-            void Write(const Datum& d) override {
+            void Write(Datum&& d) override {
                 _worker.Run(
-                        [this, d](state* s) {
-                            auto j = Json(d);
+                        [this, j = Json(d)](state* s) {
                             GetWriter().Write(j.dump()).Write("\n").Flush();
                         });
             }
 
-            void Write(const std::string& msg) override {
+            void Write(std::string&& msg) override {
                 _worker.Run(
-                        [this, msg](state* s) {
+                        [this, msg = std::move(msg)](state* s) {
                             GetWriter().Write(msg).Write("\n").Flush();
                         });
             }
@@ -128,17 +163,16 @@ namespace ancer::reporting {
             explicit ReportSerializer_Manual(Writer* writer) :
                     ReportSerializerBase(writer) {}
 
-            void Write(const Datum& d) override {
+            void Write(Datum&& d) override {
                 _worker.Run(
-                        [this, d](state* s) {
-                            auto j = Json(d);
+                        [this, j = Json(d)](state* s) {
                             GetWriter().Write(j.dump()).Write("\n");
                         });
             }
 
-            void Write(const std::string& msg) override {
+            void Write(std::string&& msg) override {
                 _worker.Run(
-                        [this, msg](state* s) {
+                        [this, msg = std::move(msg)](state* s) {
                             GetWriter().Write(msg).Write("\n");
                         });
             }
@@ -200,16 +234,16 @@ namespace ancer::reporting {
             [[nodiscard]] auto
             GetFlushPeriod() const noexcept { return _flush_period; }
 
-            void Write(const Datum& d) override {
+            void Write(Datum&& d) override {
                 std::lock_guard<std::mutex> lock(_write_lock);
-                _num_writes++;
-                _log_items.emplace_back(d);
+                ++_num_writes;
+                _log_items.emplace_back(std::move(d));
             }
 
-            void Write(const std::string& msg) override {
+            void Write(std::string&& msg) override {
                 std::lock_guard<std::mutex> lock(_write_lock);
-                _num_writes++;
-                _log_items.emplace_back(msg);
+                ++_num_writes;
+                _log_items.emplace_back(std::move(msg));
             }
 
             void Flush() override {
@@ -218,18 +252,23 @@ namespace ancer::reporting {
                 if ( !_log_items.empty()) {
 
                     Log::V( TAG,
-                            "ReportSerializer_Periodic::Flush - writing %d items",
+                            "ReportSerializer_Periodic::Flush - writing %d(+1) items",
                             _log_items.size());
+                    // Add an extra report for this flush so testers can see if
+                    // our reporting mechanism is having any impact on their
+                    // results. (Unlikely, but putting the info out there at
+                    // least makes it easy to rule out.)
+                    _log_items.emplace_back(Datum(kFlushEvent));
 
                     auto& out = GetWriter();
                     for ( const auto& i : _log_items ) {
                         std::visit(
                                 overloaded{
-                                        [&out](Datum d) {
+                                        [&out](const Datum& d) {
                                             auto j = Json(d);
                                             out.Write(j.dump()).Write("\n");
                                         },
-                                        [&out](std::string s) {
+                                        [&out](const std::string& s) {
                                             out.Write(s).Write("\n");
                                         }
                                 }, i);
@@ -355,20 +394,20 @@ namespace ancer::reporting {
     }
 
 
-    void WriteToReportLog(const reporting::Datum& d) {
+    void WriteToReportLog(reporting::Datum&& d) {
         if ( !_report_serializer ) {
             FatalError(TAG, "Attempt to write to report log without opening "
                             "log first.");
         }
-        _report_serializer->Write(d);
+        _report_serializer->Write(std::move(d));
     }
 
-    void WriteToReportLog(const std::string& s) {
+    void WriteToReportLog(std::string&& s) {
         if ( !_report_serializer ) {
             FatalError(TAG, "Attempt to write to report log without opening "
                             "log first.");
         }
-        _report_serializer->Write(s);
+        _report_serializer->Write(std::move(s));
     }
 
     void FlushReportLogQueue() {

@@ -23,6 +23,11 @@
 
 namespace ancer::reporting {
     struct Datum {
+        Datum(Json custom);
+        Datum(std::string suite, std::string operation, Json custom);
+        Datum(const Datum&) = delete; // No copy to ensure we don't reuse issue_id
+        Datum(Datum&&) = default;
+
         int issue_id;
         std::string suite_id;
         std::string operation_id;
@@ -88,12 +93,12 @@ namespace ancer::reporting {
     /*
      * Write a datum to the report log
      */
-    void WriteToReportLog(const Datum& d);
+    void WriteToReportLog(Datum&& d);
 
     /*
      * Write a string to the report log
      */
-    void WriteToReportLog(const std::string& s);
+    void WriteToReportLog(std::string&& s);
 
     /*
      * Immediately flush any pending writes to the report log
