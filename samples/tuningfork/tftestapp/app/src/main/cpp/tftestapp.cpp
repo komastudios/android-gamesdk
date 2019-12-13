@@ -28,6 +28,8 @@
 #include "Log.h"
 #include "Renderer.h"
 
+#include <random>
+
 using ::com::google::tuningfork::FidelityParams;
 using ::com::google::tuningfork::Settings;
 using ::com::google::tuningfork::Annotation;
@@ -212,4 +214,19 @@ Java_com_tuningfork_demoapp_TFTestActivity_raiseSignal(JNIEnv * env, jclass clz,
             signal, getpid(), gettid(), ss.str().c_str());
     raise(signal);
 }
+
+JNIEXPORT void JNICALL
+Java_com_tuningfork_demoapp_TFTestActivity_setFidelityParameters(JNIEnv * env, jclass clz) {
+    // Simulate the user changing quality settings in the game
+    static std::mt19937 gen;
+    static std::uniform_int_distribution<> dis(1,100);
+    FidelityParams p;
+    p.set_num_spheres(dis(gen));
+    p.set_tesselation_percent(dis(gen));
+    auto params = tf::CProtobufSerialization_Alloc(p);
+    TuningFork_setFidelityParameters(&params);
+    SetFidelityParams(&params);
+    CProtobufSerialization_Free(&params);
+}
+
 }

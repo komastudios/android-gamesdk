@@ -350,6 +350,16 @@ TFErrorCode TuningFork_setUploadCallback(UploadCallback cbk);
  */
 TFErrorCode TuningFork_destroy();
 
+/**
+ * @brief Set the currently active fidelity parameters.
+ * This function overrides any parameters that have been downloaded if in experiment mode.
+ * Use when, for instance, the player has manually changed game quality  settings.
+ * This flushes (i.e. uploads) any data associated with any previous parameters.
+ * @param params The protocol buffer encoded parameters.
+ * @return TFERROR_OK if the parameters could be set.
+ */
+TFErrorCode TuningFork_setFidelityParameters(const CProtobufSerialization* params);
+
 #ifdef __cplusplus
 }
 #endif

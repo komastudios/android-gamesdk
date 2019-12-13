@@ -229,4 +229,6 @@ TFErrorCode FindSettingsInApk(Settings* settings, const JniCtx& jni);
 // Get the current settings (TF must have been initialized)
 const Settings* GetSettings();
 
+TFErrorCode SetFidelityParameters(const ProtobufSerialization& params);
+
 } // namespace tuningfork

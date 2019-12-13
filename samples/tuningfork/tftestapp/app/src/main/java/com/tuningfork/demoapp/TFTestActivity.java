@@ -38,6 +38,7 @@ public class TFTestActivity extends AppCompatActivity implements Choreographer.F
     public static native void start();
     public static native void stop();
     public static native void raiseSignal(int signal);
+    public static native void setFidelityParameters();
 
     private SurfaceView view;
 
@@ -102,6 +103,10 @@ public class TFTestActivity extends AppCompatActivity implements Choreographer.F
          * */
 
         raiseSignal(4);
+    }
+
+    public void OnClick_SetFidelityParameters(View view) {
+        setFidelityParameters();
     }
 
     private void CheckGMS() {
