@@ -22,6 +22,14 @@ import sys
 from pathlib import Path
 from typing import List, Tuple
 
+# ------------------------------------------------------------------------------
+
+NS_PER_S = 1e9
+MS_PER_S = 1e3
+NS_PER_MS = 1e6
+
+# ------------------------------------------------------------------------------
+
 
 class Error(Exception):
     """Base class for exceptions in this module."""
@@ -38,18 +46,19 @@ class NonZeroSubprocessExitCode(Error):
     def __init__(self, message):
         self.message = message
 
-# -----------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
 
 
-def ensure_dir(file_path):
+def ensure_dir(file: Path):
     """Ensures the path leading to a file exists
     This helps ensure making a temp file in a deeply nested dir is successful
     Args:
         file_path: The path to the file in question
     """
-    directory = os.path.dirname(file_path)
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    file_dir = file.parent
+    if not os.path.exists(file_dir):
+        os.makedirs(file_dir)
 
 
 def create_output_dir(postfix: str = None):
@@ -89,32 +98,12 @@ def get_attached_devices() -> List[str]:
     return device_ids
 
 
-def upload_to_gcloud(file: Path, bucket: str):
-    """Upload a file to a gcloud bucket
-    Args:
-        file: The file to upload
-        bucket: The gcloud bucket to receive the file
-    """
-    cmdline = ["gsutil", "cp", str(file), bucket + "/"]
-
-    proc = subprocess.run(
-        cmdline,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        encoding='utf-8',
-    )
-
-    if proc.returncode != 0:
-        print(proc.stderr)
-        exit(proc.returncode)
-
-
 def run_command(command):
     """Run a shell command displaying output in real time
     Args:
         command: The shell command to execute
     Raises:
-        NonZeroSubprocessExitCode if the shell command exited with non-zero 
+        NonZeroSubprocessExitCode if the shell command exited with non-zero
             result
     """
     print(f"run_command: {command}")

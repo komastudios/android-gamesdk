@@ -1,6 +1,6 @@
 build:
   clean: false
-  configuration: configurations/gpu_half_precision.json
+  configuration: recipes/configurations/gpu_half_precision.json
 
 systrace:
   enabled: false

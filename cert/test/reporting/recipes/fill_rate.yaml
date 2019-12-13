@@ -1,6 +1,6 @@
 build:
   clean: false
-  configuration: configurations/fill_rate.json
+  configuration: recipes/configurations/fill_rate.json
 
 systrace:
   enabled: false

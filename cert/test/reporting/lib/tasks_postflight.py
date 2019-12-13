@@ -168,5 +168,5 @@ class CopyTask(Task):
             dst = dst.replace(LocalDirs.WORKSPACE, str(env.workspace_dir))
 
         dst = Path(dst).expanduser().resolve()
-        ensure_dir(str(dst))
+        ensure_dir(dst)
         return dst

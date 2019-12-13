@@ -17,7 +17,7 @@
 import math
 import sys
 
-from lib.common import Error
+from lib.common import Error, NS_PER_S
 from lib.graphing_components import *
 
 X_LABELS = ["sleep(ms) (floating)", "sleep(ms) (pinned)"]
@@ -105,11 +105,7 @@ class MarchingCubesSuiteHandler(SuiteHandler):
     def can_handle_suite(cls, suite: Suite):
         return "Marching Cubes Permutations Test" in suite.name
 
-    def summary(self):
-        # looks like we have no mismatches to highlight
-        return None
-
-    def render_plot(self):
+    def render_plot(self) -> str:
         row_names = list(self.data_by_thread_setup_floating.keys())
         row_names.sort()
         rows = len(row_names)
@@ -160,3 +156,6 @@ class MarchingCubesSuiteHandler(SuiteHandler):
                 if row == len(row_names) - 1:
                     # only show x labels on last row
                     plt.xlabel(X_LABELS[col])
+
+        # no interesting summary
+        return None

@@ -1,6 +1,6 @@
 build:
   clean: false
-  configuration: configurations/mprotect.json
+  configuration: recipes/configurations/mprotect.json
 
 systrace:
   enabled: false

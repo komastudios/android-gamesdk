@@ -26,59 +26,67 @@ class AffinityTestSuiteHandler(SuiteHandler):
     def can_handle_suite(cls, suite: Suite):
         return "Affinity Test" in suite.name
 
-    def summary(self):
-        mismatches = 0
+    def render_plot(self) -> str:
+        startup_misses_by_cpu_id = {}
+        work_running_misses_by_cpu_id = {}
+        finishing_misses_by_cpu_id = {}
+
+        buckets_by_message = {
+            "setting_affinity": startup_misses_by_cpu_id,
+            "work_running": work_running_misses_by_cpu_id,
+            "work_finished": finishing_misses_by_cpu_id,
+        }
+
         for cpu_id, data in self.data_by_cpu_id.items():
             # find a cpu mismatch while work is running
             for d in data:
-                if d.operation_id == "ScheduleAffinityOperation" and d.get_custom_field(
-                        "message") == "work_running":
-                    expected_cpu = int(d.get_custom_field_numeric("expected_cpu"))
-                    actual_cpu = d.cpu_id
-                    if expected_cpu != actual_cpu:
-                        mismatches += 1
+                if d.operation_id == "ScheduleAffinityOperation":
+                    message = d.get_custom_field("message")
+                    if message in buckets_by_message:
+                        bucket = buckets_by_message[message]
 
-        if mismatches > 0:
-            return f"Found {mismatches} CPU affinity mismatches"
+                        expected_cpu = int(
+                            d.get_custom_field_numeric("expected_cpu"))
+                        actual_cpu = d.cpu_id
+                        if expected_cpu != actual_cpu:
+                            count = bucket.get(actual_cpu, 0)
+                            bucket[actual_cpu] = count + 1
 
-        # looks like we have no mismatches to highlight
+        cpus = list(self.data_by_cpu_id.keys())
+        cpus.sort()
+
+        max_misses = 0
+        for cpu in cpus:
+            max_misses = max(
+                max_misses,
+                startup_misses_by_cpu_id.get(cpu, 0),
+                work_running_misses_by_cpu_id.get(cpu, 0),
+                finishing_misses_by_cpu_id.get(cpu, 0))
+
+        for i, cpu in enumerate(cpus):
+            plt.subplot(len(cpus), 1, i + 1)
+            plt.ylabel(f"cpu_{cpu}")
+
+            plt.gca().set_ylim([0,max(max_misses,1)])
+
+            plt.bar([0, 1, 2], [
+                startup_misses_by_cpu_id.get(cpu, 0),
+                work_running_misses_by_cpu_id.get(cpu, 0),
+                finishing_misses_by_cpu_id.get(cpu, 0)
+            ])
+
+            if i == len(cpus) - 1:
+                plt.xticks([0, 1, 2], ["Startup", "Running", "Finishing"])
+                plt.xlabel("Affinity Mismatches")
+            else:
+                plt.xticks([])
+
+        work_running_misses_total = 0
+        for count in work_running_misses_by_cpu_id.values():
+            work_running_misses_total += count
+
+        # report summary if we have misses in working period
+        if work_running_misses_total > 0:
+            return f"Found {work_running_misses_total} CPU affinity mismatches"
+
         return None
-
-    def render_plot(self):
-        x_axis_seconds = self.get_x_axis_as_seconds()
-        start_time_seconds = self.get_xs()[0] / NS_PER_S
-        end_time_seconds = self.get_xs()[-1] / NS_PER_S
-
-        happy_color = [0.2, 1, 0.2]
-        bad_color = [1, 0.2, 0.2]
-
-        # render one subplot row per CPU
-        for i, cpu_id in enumerate(self.cpu_ids):
-            fig = plt.subplot(len(self.cpu_ids), 1, i + 1)
-            fig.set_xlim(0, end_time_seconds - start_time_seconds)
-            plt.ylabel(f'cpu_{i}')
-
-            for d in self.data_by_cpu_id[cpu_id]:
-                # we only care about ScheduleAffinityOperation
-                if d.operation_id != "ScheduleAffinityOperation":
-                    continue
-
-                s = (d.timestamp / NS_PER_S) - start_time_seconds
-                y = fig.get_ylim()[1]
-
-                message = d.get_custom_field("message")
-                expected_cpu = int(d.get_custom_field_numeric("expected_cpu"))
-                actual_cpu = int(d.cpu_id)
-
-                if message == "work_running":
-                    if expected_cpu != actual_cpu:
-                        label = f"exp: {expected_cpu} act: {actual_cpu}"
-                        fig.axvline(s, color=bad_color, label=label)
-
-                elif message == "work_started":
-                    label = f"work_started"
-                    fig.axvline(s, color=happy_color, label=label)
-
-                elif message == "work_finished":
-                    label = f"work_finished"
-                    fig.axvline(s, color=happy_color, label=label)
