@@ -20,7 +20,7 @@ add_gamesdk_target(
 # This uses a pre-built gamesdk, unpacked in package/gamesdk:
 # add_gamesdk_target(
 #     PACKAGE_DIR "../../../../../package/gamesdk"
-#     ANDROID_NDK_VERSION "r17"
+#     ANDROID_NDK_VERSION "20.1.5948944"
 #     ANDROID_API_LEVEL "28"
 # )
 

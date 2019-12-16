@@ -174,7 +174,21 @@ class LocalToolchain extends Toolchain {
         if(sdkPath_ == null)
             throw new GradleException('Must set ANDROID_HOME or sdk.dir in local.properties')
 
-        ndkPath_ = System.getenv("ANDROID_NDK")
+        // Try to find a side-by-side NDK if a specific version is specified
+        def requestedNdkRevision = System.getenv("ANDROID_NDK_REVISION")
+        if (requestedNdkRevision != null) {
+            def ndkSideBySidePath = project_.joinPath(sdkPath_, 'ndk', requestedNdkRevision);
+            if (project_.file(ndkSideBySidePath).exists())
+                ndkPath_ = ndkSideBySidePath;
+
+            // Don't throw an error if not found, as the version might be the default one
+            // installed (see next lines).
+        }
+
+        // Try to find the NDK specified in ANDROID_NDK or the default one.
+        if(ndkPath_ == null) {
+            ndkPath_ = System.getenv("ANDROID_NDK")
+        }
         if(ndkPath_ == null) {
             ndkPath_ = System.getenv("ANDROID_NDK_HOME")
         }
@@ -186,10 +200,20 @@ class LocalToolchain extends Toolchain {
         if(ndkPath_ == null) {
             ndkPath_ = project_.joinPath(sdkPath_, 'ndk-bundle')
             if (!project_.file(ndkPath_).exists())
-                throw new GradleException('No NDK found in SDK: must set ANDROID_NDK')
+                throw new GradleException('No NDK found in SDK: must set ANDROID_NDK or pass GAMESDK_ANDROID_NDK_REVISION with the version of a NDK installed in the SDK "ndk" folder (NDK side-by-side).')
         }
+
+        // Get the version of the NDK that was found and sanity check that it's the proper one.
         ndkVersion_ = getNdkVersionFromPropertiesFile()
         adbPath_ = project_.joinPath(sdkPath_, 'platform-tools', 'adb')
+
+        if (project.hasProperty("GAMESDK_ANDROID_NDK_REVISION")) {
+            def requestNDKMajorVersion = project.GAMESDK_ANDROID_NDK_REVISION.findAll("[^.]+")
+            if (ndkVersion_ != requestNDKMajorVersion[0]) {
+                def expectedRevision = project.GAMESDK_ANDROID_NDK_REVISION;
+                throw new GradleException("You specified NDK $expectedRevision but only NDK $ndkVersion_ was found in $ndkPath_. Verify that you have the requested NDK installed with the SDK manager.")
+            }
+        }
     }
     String getAndroidNDKPath() {
         return ndkPath_;
