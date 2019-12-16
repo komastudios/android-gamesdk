@@ -11,7 +11,7 @@ get_filename_component(CpuFeaturesDir ${ANDROID_NDK}/sources/android/cpufeatures
 include("${GameSDKDir}/src/device_info/device_info.cmake")
 
 project(native-lib LANGUAGES C CXX)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fPIC")
 
 # TODO: Need to see about getting the GameSDK to support Windows.
 #  The one definite build issue is a phase that uses ar to merge the various components into a
