@@ -22,6 +22,30 @@
       "revId": "27e4a6d93917c33e200ba48b29e7b295084b7da2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8e92c607_dd1c41cb",
+        "filename": "cert/test/reporting/lib/common.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-12-16T21:49:14Z",
+      "side": 1,
+      "message": "I did some research and as best I can see the python datetime module only seems to support precision up to microseconds, but not nanos. Now, that being said, I think it would make sense to factor this from a constant to a function `nanoseconds_to_seconds()` to clarify the behavior. I will make a mini task in the kanban backlock to do this.",
+      "parentUuid": "3504e5fb_cc9aed7a",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 8
+      },
+      "revId": "27e4a6d93917c33e200ba48b29e7b295084b7da2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
