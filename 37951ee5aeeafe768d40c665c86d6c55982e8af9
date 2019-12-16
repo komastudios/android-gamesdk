@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "6d2cdecd_c78626fd",
+        "filename": "cert/test/reporting/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-12-16T19:21:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0ef076b1_4ee84ad8",
+      "revId": "37951ee5aeeafe768d40c665c86d6c55982e8af9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3c48bb5d_f2922e59",
         "filename": "cert/test/reporting/README.md",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "37951ee5aeeafe768d40c665c86d6c55982e8af9",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "896a8f02_85429afb",
+        "filename": "cert/test/reporting/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-12-16T19:21:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3c48bb5d_f2922e59",
+      "revId": "37951ee5aeeafe768d40c665c86d6c55982e8af9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "d956a4c6_4e9773c0",
+        "filename": "cert/test/reporting/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-12-16T19:21:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0a1cf59e_1351da52",
+      "revId": "37951ee5aeeafe768d40c665c86d6c55982e8af9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3730b0dd_858aea8b",
         "filename": "cert/test/reporting/README.md",
         "patchSetId": 1
@@ -67,6 +121,24 @@
       "revId": "37951ee5aeeafe768d40c665c86d6c55982e8af9",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b961993f_0dd068a5",
+        "filename": "cert/test/reporting/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-12-16T19:21:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3730b0dd_858aea8b",
+      "revId": "37951ee5aeeafe768d40c665c86d6c55982e8af9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -157,6 +229,24 @@
     },
     {
       "key": {
+        "uuid": "0b5fdade_e63a059a",
+        "filename": "cert/test/reporting/lib/graphing.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-12-16T19:21:31Z",
+      "side": 1,
+      "message": "I\u0027m not married to this approach - I\u0027m happy to replace it with what you\u0027re putting together when you\u0027re ready 😊",
+      "parentUuid": "2a572a3d_3c81f65e",
+      "revId": "37951ee5aeeafe768d40c665c86d6c55982e8af9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2e47195a_0f5b1723",
         "filename": "cert/test/reporting/recipes/~example_ftl.yaml",
         "patchSetId": 1
@@ -168,6 +258,24 @@
       "writtenOn": "2019-12-13T23:47:10Z",
       "side": 1,
       "message": "👏👏👏👏👏",
+      "revId": "37951ee5aeeafe768d40c665c86d6c55982e8af9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "51c0de31_3fb05351",
+        "filename": "cert/test/reporting/recipes/~example_ftl.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-12-16T19:21:31Z",
+      "side": 1,
+      "message": "👊",
+      "parentUuid": "2e47195a_0f5b1723",
       "revId": "37951ee5aeeafe768d40c665c86d6c55982e8af9",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
@@ -191,6 +299,24 @@
     },
     {
       "key": {
+        "uuid": "a732c7b0_4fdc715d",
+        "filename": "cert/test/reporting/run.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-12-16T19:21:31Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "6288a4c5_955b2530",
+      "revId": "37951ee5aeeafe768d40c665c86d6c55982e8af9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c3f6021a_383bc6b4",
         "filename": "cert/test/reporting/run.py",
         "patchSetId": 1
@@ -202,6 +328,24 @@
       "writtenOn": "2019-12-13T23:47:10Z",
       "side": 1,
       "message": "All summary treatment is so much \"the same\" both in run_local than in run_ftl (we first parse the yaml for summary data and then if enabled we generate the summary) that I encapsulated all that logic on a single function perform_summary_if_enabled(recipe, out_dir).\n\nYet I feel like, both run_local and run_ftl are still structurally very similar. :-)",
+      "revId": "37951ee5aeeafe768d40c665c86d6c55982e8af9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2fe29ef1_254910e1",
+        "filename": "cert/test/reporting/run.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 419,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-12-16T19:21:31Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "c3f6021a_383bc6b4",
       "revId": "37951ee5aeeafe768d40c665c86d6c55982e8af9",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
