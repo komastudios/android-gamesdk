@@ -16,10 +16,12 @@ set( _MY_DIR ${CMAKE_CURRENT_LIST_DIR})
 #    This must be specified if DO_LOCAL_BUILD is set.
 #  DO_LOCAL_BUILD: whether to add a custom build command to build the gamesdk (ON/OFF).
 #    default value: OFF
-#  ANDROID_NDK_VERSION: version number for the NDK (major.minor).
-#    default value: derived from ANDROID_NDK_REVISION
-#  ANDROID_API_LEVEL: android API level.
-#    default value: derived from ANDROID_PLATFORM
+#  ANDROID_NDK_VERSION: override the version number for the NDK (major.minor.patch).
+#    It's recommended to use `ndkVersion` in your build.gradle file if you want to use a specific NDK.
+#    default value: derived from ANDROID_NDK_REVISION.
+#  ANDROID_API_LEVEL: override the android API level.
+#    It's recommended to change the SDK version in your build.gradle to use a specific SDK.
+#    default value: derived from ANDROID_PLATFORM.
 #  BUILD_TYPE: type of Game SDK build libraries to use. Can be "Release" or "Debug".
 #    default value: Release
 function(add_gamesdk_target)
@@ -47,15 +49,16 @@ function(add_gamesdk_target)
 
     # Infer Android SDK/NDK and STL versions
     if (NOT DEFINED GAMESDK_ANDROID_NDK_VERSION)
-                string(REGEX REPLACE "^([^.]+).*" "\\1" GAMESDK_ANDROID_NDK_VERSION ${ANDROID_NDK_REVISION} )
+        set(GAMESDK_ANDROID_NDK_VERSION ${ANDROID_NDK_REVISION})
     endif()
+    string(REGEX REPLACE "^([^.]+).*" "\\1" GAMESDK_ANDROID_NDK_MAJOR_VERSION ${GAMESDK_ANDROID_NDK_VERSION} ) # Get NDK major version
     if (NOT DEFINED GAMESDK_ANDROID_API_LEVEL)
-                string(REGEX REPLACE "^android-([^.]+)" "\\1" GAMESDK_ANDROID_API_LEVEL ${ANDROID_PLATFORM} )
+        string(REGEX REPLACE "^android-([^.]+)" "\\1" GAMESDK_ANDROID_API_LEVEL ${ANDROID_PLATFORM} )
     endif()
     string(REPLACE "+" "p" GAMESDK_ANDROID_STL ${ANDROID_STL}) # Game SDK build names use a sanitized STL name (c++ => cpp)
 
     # Set up the "gamesdk" library
-    set(BUILD_NAME ${ANDROID_ABI}_API${GAMESDK_ANDROID_API_LEVEL}_NDK${GAMESDK_ANDROID_NDK_VERSION}_${GAMESDK_ANDROID_STL}_${GAMESDK_BUILD_TYPE})
+    set(BUILD_NAME ${ANDROID_ABI}_API${GAMESDK_ANDROID_API_LEVEL}_NDK${GAMESDK_ANDROID_NDK_MAJOR_VERSION}_${GAMESDK_ANDROID_STL}_${GAMESDK_BUILD_TYPE})
     set(GAMESDK_LIB_DIR "${GAMESDK_PACKAGE_DIR}/libs/${BUILD_NAME}")
 
     include_directories( "${GAMESDK_PACKAGE_DIR}/include" ) # Games SDK Public Includes
@@ -81,7 +84,7 @@ function(add_gamesdk_target)
             OUTPUT
                 ${DEP_LIB}
             COMMAND
-                ${GAMESDK_GRADLE_BIN} ${GAMESDK_GEN_TASK} -PGAMESDK_ANDROID_API_LEVEL=${GAMESDK_ANDROID_API_LEVEL} -PGAMESDK_BUILD_TYPE=${GAMESDK_BUILD_TYPE}
+                ${CMAKE_COMMAND} -E env ANDROID_NDK_REVISION=${GAMESDK_ANDROID_NDK_VERSION} ${GAMESDK_GRADLE_BIN} ${GAMESDK_GEN_TASK} -PGAMESDK_ANDROID_API_LEVEL=${GAMESDK_ANDROID_API_LEVEL} -PGAMESDK_BUILD_TYPE=${GAMESDK_BUILD_TYPE}
             VERBATIM
             WORKING_DIRECTORY
                 "${GAMESDK_ROOT_DIR}"
