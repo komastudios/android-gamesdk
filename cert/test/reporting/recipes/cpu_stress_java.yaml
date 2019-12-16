@@ -1,6 +1,6 @@
 build:
   clean: false
-  configuration: configurations/cpu_stress_java.json
+  configuration: recipes/configurations/cpu_stress_java.json
 
 systrace:
   enabled: false

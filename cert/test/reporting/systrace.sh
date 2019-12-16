@@ -24,5 +24,7 @@ while [ "$1" != "" ]; do
     shift
 done
 
+mkdir -p out/
+
 echo "Running systrace and saving to file" $DST_FILE
 python $ANDROID_HOME/platform-tools/systrace/systrace.py --serial $SERIAL_NO -a com.google.gamesdk.gamecert.operationrunner -o $DST_FILE sched freq idle am wm gfx view binder_driver hal dalvik input res
