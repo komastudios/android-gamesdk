@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3504e5fb_cc9aed7a",
+        "filename": "cert/test/reporting/lib/common.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1609113
+      },
+      "writtenOn": "2019-12-16T20:50:56Z",
+      "side": 1,
+      "message": "There isn\u0027t a library or something that already defines these?",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 8
+      },
+      "revId": "27e4a6d93917c33e200ba48b29e7b295084b7da2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
