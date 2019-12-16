@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "daa9bc76_4c516d71",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2019-12-16T16:45:28Z",
+      "side": 1,
+      "message": "Can we check for the ANDROID_NDK_REVISION environment variable, rather than (or as well as) passing it through?",
+      "revId": "4f1e1b4ddba76c1c247bd7eb5472074b665bd13d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
