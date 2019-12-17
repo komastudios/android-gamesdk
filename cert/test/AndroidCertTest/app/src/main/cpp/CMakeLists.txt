@@ -105,6 +105,7 @@ add_library(${PROJECT_NAME} SHARED
         operations/ThreadSchedulingOperation.cpp
         operations/VulkanMprotectCheckOperation.cpp
 
+        operations/gl/BufferStorageGLES3Operation.cpp
         operations/gl/FillRateGLES3Operation.cpp
         operations/gl/HelloGLES3Operation.cpp
         operations/gl/VertexStreamGLES3Operation.cpp
