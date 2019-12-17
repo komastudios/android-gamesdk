@@ -16,6 +16,24 @@
       "revId": "4f1e1b4ddba76c1c247bd7eb5472074b665bd13d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "095157a0_aa149a67",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-12-17T11:40:19Z",
+      "side": 1,
+      "message": "I\u0027ll check that.",
+      "parentUuid": "daa9bc76_4c516d71",
+      "revId": "4f1e1b4ddba76c1c247bd7eb5472074b665bd13d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
