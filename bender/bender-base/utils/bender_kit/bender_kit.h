@@ -15,9 +15,10 @@
 #ifndef BENDER_BASE_UTILS_BENDER_KIT_BENDER_KIT_H_
 #define BENDER_BASE_UTILS_BENDER_KIT_BENDER_KIT_H_
 
-#include <android/log.h>
 #include "device.h"
 #include "vertex_format.h"
+
+#include <android/log.h>
 
 static const char *kTAG = "BenderKit";
 #define LOGI(...) \
@@ -35,4 +36,4 @@ static const char *kTAG = "BenderKit";
         assert(false);                                                    \
     }
 
-#endif //BENDER_BASE_BENDER_KIT_HPP
+#endif // BENDER_BASE_UTILS_BENDER_KIT_BENDER_KIT_H_

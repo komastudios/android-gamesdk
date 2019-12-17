@@ -17,24 +17,24 @@
 
 //Implementation based entirely on:
 //https://github.com/SaschaWillems/Vulkan/blob/master/examples/debugmarker/debugmarker.cpp
-namespace DebugMarker {
+namespace debugmarker {
 bool active = false;
-bool extensionPresent = false;
+bool extension_present = false;
 
-void setup(VkDevice device, VkPhysicalDevice physicalDevice) {
+void Setup(VkDevice device, VkPhysicalDevice physical_device) {
   // Check if the debug marker extension is present (which is the case if run from a graphics debugger)
-  uint32_t extensionCount;
-  vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &extensionCount, nullptr);
-  std::vector<VkExtensionProperties> extensions(extensionCount);
-  vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &extensionCount, extensions.data());
+  uint32_t extension_count;
+  vkEnumerateDeviceExtensionProperties(physical_device, nullptr, &extension_count, nullptr);
+  std::vector<VkExtensionProperties> extensions(extension_count);
+  vkEnumerateDeviceExtensionProperties(physical_device, nullptr, &extension_count, extensions.data());
   for (auto extension : extensions) {
     if (strcmp(extension.extensionName, VK_EXT_DEBUG_MARKER_EXTENSION_NAME) == 0) {
-      extensionPresent = true;
+      extension_present = true;
       break;
     }
   }
 
-  if (extensionPresent) {
+  if (extension_present) {
     // The debug marker extension is not part of the core, so function pointers need to be loaded manually
     vkDebugMarkerSetObjectTagEXT = (PFN_vkDebugMarkerSetObjectTagEXT) vkGetDeviceProcAddr(device,
                                                                                           "vkDebugMarkerSetObjectTagEXT");
@@ -57,68 +57,68 @@ void setup(VkDevice device, VkPhysicalDevice physicalDevice) {
 // Sets the debug name of an object
 // All Objects in Vulkan are represented by their 64-bit handles which are passed into this function
 // along with the object type
-void setObjectName(VkDevice device,
+void SetObjectName(VkDevice device,
                    uint64_t object,
-                   VkDebugReportObjectTypeEXT objectType,
+                   VkDebugReportObjectTypeEXT object_type,
                    const char *name) {
   // Check for valid function pointer (may not be present if not running in a debugging application)
   if (!active)
     return;
 
-  VkDebugMarkerObjectNameInfoEXT nameInfo = {};
-  nameInfo.sType = VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT;
-  nameInfo.objectType = objectType;
-  nameInfo.object = object;
-  nameInfo.pObjectName = name;
-  vkDebugMarkerSetObjectNameEXT(device, &nameInfo);
+  VkDebugMarkerObjectNameInfoEXT name_info = {};
+  name_info.sType = VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT;
+  name_info.objectType = object_type;
+  name_info.object = object;
+  name_info.pObjectName = name;
+  vkDebugMarkerSetObjectNameEXT(device, &name_info);
 }
 
-void setObjectTag(VkDevice device,
+void SetObjectTag(VkDevice device,
                   uint64_t object,
-                  VkDebugReportObjectTypeEXT objectType,
+                  VkDebugReportObjectTypeEXT object_type,
                   uint64_t name,
-                  size_t tagSize,
+                  size_t tag_size,
                   const void *tag) {
   if (!active)
     return;
 
-  VkDebugMarkerObjectTagInfoEXT tagInfo = {};
-  tagInfo.sType = VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_TAG_INFO_EXT;
-  tagInfo.objectType = objectType;
-  tagInfo.object = object;
-  tagInfo.tagName = name;
-  tagInfo.tagSize = tagSize;
-  tagInfo.pTag = tag;
-  vkDebugMarkerSetObjectTagEXT(device, &tagInfo);
+  VkDebugMarkerObjectTagInfoEXT tag_info = {};
+  tag_info.sType = VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_TAG_INFO_EXT;
+  tag_info.objectType = object_type;
+  tag_info.object = object;
+  tag_info.tagName = name;
+  tag_info.tagSize = tag_size;
+  tag_info.pTag = tag;
+  vkDebugMarkerSetObjectTagEXT(device, &tag_info);
 }
 
 // Start a new debug marker region
-void beginRegion(VkCommandBuffer cmdbuffer, const char markerName[], std::array<float, 4> color) {
+void BeginRegion(VkCommandBuffer cmd_buffer, const char marker_name[], std::array<float, 4> color) {
     if (!active)
       return;
 
-    VkDebugMarkerMarkerInfoEXT markerInfo = {};
-    markerInfo.sType = VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT;
-    memcpy(markerInfo.color, &color[0], sizeof(float) * 4);
-    markerInfo.pMarkerName = markerName;
-    vkCmdDebugMarkerBeginEXT(cmdbuffer, &markerInfo);
+    VkDebugMarkerMarkerInfoEXT marker_info = {};
+    marker_info.sType = VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT;
+    memcpy(marker_info.color, &color[0], sizeof(float) * 4);
+    marker_info.pMarkerName = marker_name;
+    vkCmdDebugMarkerBeginEXT(cmd_buffer, &marker_info);
 }
 
-void insert(VkCommandBuffer cmdbuffer, const char markerName[], std::array<float, 4> color) {
+void Insert(VkCommandBuffer cmd_buffer, const char marker_name[], std::array<float, 4> color) {
   if (!active)
     return;
 
-  VkDebugMarkerMarkerInfoEXT markerInfo = {};
-  markerInfo.sType = VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT;
-  memcpy(markerInfo.color, &color[0], sizeof(float) * 4);
-  markerInfo.pMarkerName = markerName;
-  vkCmdDebugMarkerInsertEXT(cmdbuffer, &markerInfo);
+  VkDebugMarkerMarkerInfoEXT marker_info = {};
+  marker_info.sType = VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT;
+  memcpy(marker_info.color, &color[0], sizeof(float) * 4);
+  marker_info.pMarkerName = marker_name;
+  vkCmdDebugMarkerInsertEXT(cmd_buffer, &marker_info);
 }
 
-void endRegion(VkCommandBuffer cmdBuffer) {
-  // Check for valid function (may not be present if not runnin in a debugging application)
+void EndRegion(VkCommandBuffer cmd_buffer) {
+  // Check for valid function (may not be present if not running in a debugging application)
   if (vkCmdDebugMarkerEndEXT) {
-    vkCmdDebugMarkerEndEXT(cmdBuffer);
+    vkCmdDebugMarkerEndEXT(cmd_buffer);
   }
 }
 };

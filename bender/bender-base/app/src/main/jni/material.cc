@@ -107,21 +107,21 @@ void Material::createMaterialDescriptorSetLayout() {
 }
 
 void Material::createMaterialDescriptorSets() {
-  std::vector<VkDescriptorSetLayout> layouts(renderer_->getDevice().getDisplayImages().size(),
+  std::vector<VkDescriptorSetLayout> layouts(renderer_->getDevice().GetDisplayImages().size(),
                                            material_descriptors_layout_);
 
   VkDescriptorSetAllocateInfo allocInfo = {};
   allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
   allocInfo.descriptorPool = renderer_->getDescriptorPool();
-  allocInfo.descriptorSetCount = static_cast<uint32_t>(renderer_->getDevice().getDisplayImages().size());
+  allocInfo.descriptorSetCount = static_cast<uint32_t>(renderer_->getDevice().GetDisplayImages().size());
   allocInfo.pSetLayouts = layouts.data();
 
-  material_descriptor_sets_.resize(renderer_->getDevice().getDisplayImages().size());
+  material_descriptor_sets_.resize(renderer_->getDevice().GetDisplayImages().size());
   CALL_VK(vkAllocateDescriptorSets(renderer_->getVulkanDevice(), &allocInfo, material_descriptor_sets_.data()));
 
   glm::vec3 color = color_;
 
-  for (size_t i = 0; i < renderer_->getDevice().getDisplayImages().size(); i++) {
+  for (size_t i = 0; i < renderer_->getDevice().GetDisplayImages().size(); i++) {
     std::array<VkWriteDescriptorSet, MATERIAL_DESCRIPTOR_LAYOUT_SIZE> descriptorWrites = {};
 
     VkDescriptorImageInfo imageInfo = {};

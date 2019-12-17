@@ -18,22 +18,22 @@
 #include "vulkan_wrapper.h"
 #include "bender_kit.h"
 
-namespace BenderHelpers {
+namespace benderhelpers {
 
-uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties,
-                        VkPhysicalDevice gpuDevice);
+uint32_t FindMemoryType(uint32_t type_filter, VkMemoryPropertyFlags properties,
+                        VkPhysicalDevice gpu_device);
 
-void setImageLayout(VkCommandBuffer cmdBuffer, VkImage image,
-                    VkImageLayout oldImageLayout, VkImageLayout newImageLayout,
-                    VkPipelineStageFlags srcStages,
-                    VkPipelineStageFlags destStages);
+void SetImageLayout(VkCommandBuffer cmd_buffer, VkImage image,
+                    VkImageLayout old_image_layout, VkImageLayout new_image_layout,
+                    VkPipelineStageFlags src_stages,
+                    VkPipelineStageFlags dest_stages);
 
-VkFormat findSupportedFormat(BenderKit::Device *device,
+VkFormat FindSupportedFormat(benderkit::Device *device,
                              const std::vector<VkFormat> &candidates,
                              VkImageTiling tiling,
                              VkFormatFeatureFlags features);
 
-VkFormat findDepthFormat(BenderKit::Device *device);
+VkFormat FindDepthFormat(benderkit::Device *device);
 
 }
 

@@ -22,9 +22,9 @@
 #include "shader_bindings.h"
 #include "constants.h"
 
-using namespace BenderHelpers;
+using namespace benderhelpers;
 
-Renderer::Renderer(BenderKit::Device& device)
+Renderer::Renderer(benderkit::Device& device)
   : device_(device)
   , default_states_(device) {
   init();
@@ -34,10 +34,10 @@ Renderer::~Renderer() {
   vkFreeCommandBuffers(getVulkanDevice(), cmd_pool_, cmd_buffer_len_,
                        cmd_buffer_);
 
-  for (int x = 0; x < device_.getDisplayImages().size(); x++){
-    vkDestroySemaphore(device_.getDevice(), acquire_image_semaphore_[x], nullptr);
-    vkDestroySemaphore(device_.getDevice(), render_finished_semaphore_[x], nullptr);
-    vkDestroyFence(device_.getDevice(), fence_[x], nullptr);
+  for (int x = 0; x < device_.GetDisplayImages().size(); x++){
+    vkDestroySemaphore(device_.GetDevice(), acquire_image_semaphore_[x], nullptr);
+    vkDestroySemaphore(device_.GetDevice(), render_finished_semaphore_[x], nullptr);
+    vkDestroyFence(device_.GetDevice(), fence_[x], nullptr);
   }
 
   delete[] cmd_buffer_;
@@ -46,23 +46,23 @@ Renderer::~Renderer() {
   delete[] fence_;
 
   destroyPool();
-  vkDestroyDescriptorSetLayout(device_.getDevice(), lights_descriptors_layout_, nullptr);
+  vkDestroyDescriptorSetLayout(device_.GetDevice(), lights_descriptors_layout_, nullptr);
 
   vkDestroyPipelineCache(getVulkanDevice(), cache_, nullptr);
   vkDestroyCommandPool(getVulkanDevice(), cmd_pool_, nullptr);
 }
 
 void Renderer::beginFrame() {
-  Timing::timer.time("vkAcquireNextImageKHR", Timing::OTHER, [this](){
+  timing::timer.Time("vkAcquireNextImageKHR", timing::OTHER, [this](){
     uint32_t nextIndex;
-    CALL_VK(vkAcquireNextImageKHR(device_.getDevice(), device_.getSwapchain(),
+    CALL_VK(vkAcquireNextImageKHR(device_.GetDevice(), device_.GetSwapchain(),
                                   UINT64_MAX, acquire_image_semaphore_[getCurrentFrame()], VK_NULL_HANDLE,
                                   &nextIndex));
   });
 
-  Timing::timer.time("vkWaitForFences", Timing::OTHER, [this](){
-    CALL_VK(vkWaitForFences(device_.getDevice(), 1, &fence_[getCurrentFrame()], VK_TRUE, 100000000));
-    CALL_VK(vkResetFences(device_.getDevice(), 1, &fence_[getCurrentFrame()]));
+  timing::timer.Time("vkWaitForFences", timing::OTHER, [this](){
+    CALL_VK(vkWaitForFences(device_.GetDevice(), 1, &fence_[getCurrentFrame()], VK_TRUE, 100000000));
+    CALL_VK(vkResetFences(device_.GetDevice(), 1, &fence_[getCurrentFrame()]));
   });
 }
 
@@ -80,12 +80,12 @@ void Renderer::endFrame() {
       .signalSemaphoreCount = 1,
       .pSignalSemaphores = &render_finished_semaphore_[getCurrentFrame()]};
 
-  Timing::timer.time("vkQueueSubmit", Timing::OTHER, [this, submit_info](){
-    CALL_VK(vkQueueSubmit(device_.getQueue(), 1, &submit_info, fence_[getCurrentFrame()]));
+  timing::timer.Time("vkQueueSubmit", timing::OTHER, [this, submit_info](){
+    CALL_VK(vkQueueSubmit(device_.GetQueue(), 1, &submit_info, fence_[getCurrentFrame()]));
   });
 
-  Timing::timer.time("Device::Present", Timing::OTHER, [this](){
-    device_.present(&render_finished_semaphore_[getCurrentFrame()]);
+  timing::timer.Time("Device::Present", timing::OTHER, [this](){
+    device_.Present(&render_finished_semaphore_[getCurrentFrame()]);
   });
 }
 
@@ -100,8 +100,8 @@ void Renderer::beginPrimaryCommandBufferRecording() {
                                &cmd_buffer_beginInfo));
 
   // transition the display image to color attachment layout
-  setImageLayout(getCurrentCommandBuffer(),
-                 device_.getCurrentDisplayImage(),
+  SetImageLayout(getCurrentCommandBuffer(),
+                 device_.GetCurrentDisplayImage(),
                  VK_IMAGE_LAYOUT_UNDEFINED,
                  VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                  VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
@@ -109,7 +109,7 @@ void Renderer::beginPrimaryCommandBufferRecording() {
 }
 
 void Renderer::endPrimaryCommandBufferRecording() {
-  setImageLayout(getCurrentCommandBuffer(),
+  SetImageLayout(getCurrentCommandBuffer(),
                  getCurrentDisplayImage(),
                  VK_IMAGE_LAYOUT_UNDEFINED,
                  VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
@@ -126,16 +126,16 @@ void Renderer::init() {
       .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
       .queueFamilyIndex = 0,
   };
-  CALL_VK(vkCreateCommandPool(device_.getDevice(), &cmd_pool_createInfo, nullptr,
+  CALL_VK(vkCreateCommandPool(device_.GetDevice(), &cmd_pool_createInfo, nullptr,
                               &cmd_pool_));
 
-  cmd_buffer_len_ = device_.getSwapchainLength();
-  cmd_buffer_ = new VkCommandBuffer[device_.getSwapchainLength()];
-  acquire_image_semaphore_ = new VkSemaphore[device_.getSwapchainLength()];
-  render_finished_semaphore_ = new VkSemaphore[device_.getSwapchainLength()];
-  fence_ = new VkFence[device_.getSwapchainLength()];
+  cmd_buffer_len_ = device_.GetSwapchainLength();
+  cmd_buffer_ = new VkCommandBuffer[device_.GetSwapchainLength()];
+  acquire_image_semaphore_ = new VkSemaphore[device_.GetSwapchainLength()];
+  render_finished_semaphore_ = new VkSemaphore[device_.GetSwapchainLength()];
+  fence_ = new VkFence[device_.GetSwapchainLength()];
 
-  for (int i = 0; i < device_.getSwapchainLength(); ++i) {
+  for (int i = 0; i < device_.GetSwapchainLength(); ++i) {
     VkCommandBufferAllocateInfo cmd_buffer_createInfo{
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
         .pNext = nullptr,
@@ -143,10 +143,10 @@ void Renderer::init() {
         .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
         .commandBufferCount = 1,
     };
-    CALL_VK(vkAllocateCommandBuffers(device_.getDevice(), &cmd_buffer_createInfo,
+    CALL_VK(vkAllocateCommandBuffers(device_.GetDevice(), &cmd_buffer_createInfo,
                                      &cmd_buffer_[i]));
 
-    DebugMarker::setObjectName(device_.getDevice(), (uint64_t)cmd_buffer_[i],
+    debugmarker::SetObjectName(device_.GetDevice(), (uint64_t)cmd_buffer_[i],
         VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT,
         ("TEST NAME: COMMAND BUFFER" + std::to_string(i)).c_str());
 
@@ -156,12 +156,12 @@ void Renderer::init() {
         .flags = 0,
     };
 
-    CALL_VK(vkCreateSemaphore(device_.getDevice(),
+    CALL_VK(vkCreateSemaphore(device_.GetDevice(),
                               &semaphore_create_info,
                               nullptr,
                               &acquire_image_semaphore_[i]));
 
-    CALL_VK(vkCreateSemaphore(device_.getDevice(),
+    CALL_VK(vkCreateSemaphore(device_.GetDevice(),
                               &semaphore_create_info,
                               nullptr,
                               &render_finished_semaphore_[i]));
@@ -172,7 +172,7 @@ void Renderer::init() {
         .flags = VK_FENCE_CREATE_SIGNALED_BIT,
     };
     CALL_VK(
-        vkCreateFence(device_.getDevice(),
+        vkCreateFence(device_.GetDevice(),
                       &fenceCreateInfo,
                       nullptr,
                       &fence_[i]));
@@ -208,10 +208,10 @@ void Renderer::updateLights(glm::vec3 camera) {
 }
 
 void Renderer::createPool() {
-  uint32_t maxMvpBuffers = MAX_MESHES * device_.getDisplayImages().size();
-  uint32_t maxLightsBuffers = MAX_LIGHTS * device_.getDisplayImages().size();
-  uint32_t maxSamplers = MAX_SAMPLERS * device_.getDisplayImages().size();
-  uint32_t maxTexts = MAX_LINES_TEXTS * device_.getDisplayImages().size();
+  uint32_t maxMvpBuffers = MAX_MESHES * device_.GetDisplayImages().size();
+  uint32_t maxLightsBuffers = MAX_LIGHTS * device_.GetDisplayImages().size();
+  uint32_t maxSamplers = MAX_SAMPLERS * device_.GetDisplayImages().size();
+  uint32_t maxTexts = MAX_LINES_TEXTS * device_.GetDisplayImages().size();
 
   std::array<VkDescriptorPoolSize, 2> poolSizes = {};
   poolSizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -225,11 +225,11 @@ void Renderer::createPool() {
   poolInfo.pPoolSizes = poolSizes.data();
   poolInfo.maxSets = maxMvpBuffers + maxLightsBuffers + maxSamplers + maxTexts;
 
-  CALL_VK(vkCreateDescriptorPool(device_.getDevice(), &poolInfo, nullptr, &descriptor_pool_));
+  CALL_VK(vkCreateDescriptorPool(device_.GetDevice(), &poolInfo, nullptr, &descriptor_pool_));
 }
 
 void Renderer::destroyPool() {
-    vkDestroyDescriptorPool(device_.getDevice(), descriptor_pool_, nullptr);
+    vkDestroyDescriptorPool(device_.GetDevice(), descriptor_pool_, nullptr);
 }
 
 void Renderer::createLightsDescriptorSetLayout() {
@@ -247,23 +247,23 @@ void Renderer::createLightsDescriptorSetLayout() {
   layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
   layoutInfo.pBindings = bindings.data();
 
-  CALL_VK(vkCreateDescriptorSetLayout(device_.getDevice(), &layoutInfo, nullptr,
+  CALL_VK(vkCreateDescriptorSetLayout(device_.GetDevice(), &layoutInfo, nullptr,
                                       &lights_descriptors_layout_));
 }
 
 void Renderer::createLightsDescriptors() {
-  std::vector<VkDescriptorSetLayout> layouts(device_.getDisplayImages().size(), lights_descriptors_layout_);
+  std::vector<VkDescriptorSetLayout> layouts(device_.GetDisplayImages().size(), lights_descriptors_layout_);
 
   VkDescriptorSetAllocateInfo allocInfo = {};
   allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
   allocInfo.descriptorPool = descriptor_pool_;
-  allocInfo.descriptorSetCount = static_cast<uint32_t>(device_.getDisplayImages().size());
+  allocInfo.descriptorSetCount = static_cast<uint32_t>(device_.GetDisplayImages().size());
   allocInfo.pSetLayouts = layouts.data();
 
-  lights_descriptor_sets_.resize(device_.getDisplayImages().size());
-  CALL_VK(vkAllocateDescriptorSets(device_.getDevice(), &allocInfo, lights_descriptor_sets_.data()));
+  lights_descriptor_sets_.resize(device_.GetDisplayImages().size());
+  CALL_VK(vkAllocateDescriptorSets(device_.GetDevice(), &allocInfo, lights_descriptor_sets_.data()));
 
-  for (size_t i = 0; i < device_.getDisplayImages().size(); i++) {
+  for (size_t i = 0; i < device_.GetDisplayImages().size(); i++) {
     VkDescriptorBufferInfo lightBlockInfo = {};
     lightBlockInfo.buffer = lights_buffer_->getBuffer(i);
     lightBlockInfo.offset = 0;
@@ -279,7 +279,7 @@ void Renderer::createLightsDescriptors() {
     descriptorWrites[0].descriptorCount = 1;
     descriptorWrites[0].pBufferInfo = &lightBlockInfo;
 
-    vkUpdateDescriptorSets(device_.getDevice(), descriptorWrites.size(), descriptorWrites.data(),
+    vkUpdateDescriptorSets(device_.GetDevice(), descriptorWrites.size(), descriptorWrites.data(),
                            0, nullptr);
   }
 }
@@ -302,9 +302,9 @@ VkCommandBuffer Renderer::getCurrentCommandBuffer() const {
 }
 
 uint32_t Renderer::getCurrentFrame() const {
-  return device_.getCurrentFrameIndex();
+  return device_.GetCurrentFrameIndex();
 }
 
 VkImage Renderer::getCurrentDisplayImage() const {
-  return device_.getCurrentDisplayImage();
+  return device_.GetCurrentDisplayImage();
 }

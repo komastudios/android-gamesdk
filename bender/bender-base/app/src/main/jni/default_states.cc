@@ -21,19 +21,19 @@
 #include "shader_bindings.h"
 #include "constants.h"
 
-DefaultStates::DefaultStates(const BenderKit::Device &device): device_(device) {
+DefaultStates::DefaultStates(const benderkit::Device &device): device_(device) {
   viewport_ = {
           .x = 0.0f,
           .y = 0.0f,
-          .width = static_cast<float>(device_.getDisplaySize().width),
-          .height = static_cast<float>(device_.getDisplaySize().height),
+          .width = static_cast<float>(device_.GetDisplaySize().width),
+          .height = static_cast<float>(device_.GetDisplaySize().height),
           .minDepth = 0.0f,
           .maxDepth = 1.0f,
   };
 
   scissor_ = {
           .offset = {0, 0},
-          .extent = device_.getDisplaySize(),
+          .extent = device_.GetDisplaySize(),
   };
 
   attachments_ = {

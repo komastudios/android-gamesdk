@@ -19,7 +19,7 @@
 
 class DefaultStates {
 public:
-  DefaultStates(const BenderKit::Device &device);
+  DefaultStates(const benderkit::Device &device);
 
   VkPipelineViewportStateCreateInfo getPipelineViewportState() const { return pipeline_viewport_state_; }
   VkPipelineDepthStencilStateCreateInfo getDepthStencilState() const { return depth_stencil_state_; }
@@ -30,7 +30,7 @@ public:
   void fillDefaultPipelineCreateInfo(VkGraphicsPipelineCreateInfo* pipeline_create_info) const;
 
 private:
-  const BenderKit::Device &device_;
+  const benderkit::Device &device_;
 
   VkViewport viewport_;
   VkRect2D scissor_;

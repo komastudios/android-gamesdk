@@ -74,21 +74,21 @@ void Mesh::onResume(Renderer *renderer) {
 }
 
 void Mesh::createMeshDescriptors() {
-  std::vector<VkDescriptorSetLayout> layouts(renderer_->getDevice().getDisplayImages().size(),
+  std::vector<VkDescriptorSetLayout> layouts(renderer_->getDevice().GetDisplayImages().size(),
                                              mesh_descriptors_layout_);
 
   VkDescriptorSetAllocateInfo allocInfo = {};
   allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
   allocInfo.descriptorPool = renderer_->getDescriptorPool();
-  allocInfo.descriptorSetCount = renderer_->getDevice().getDisplayImages().size();
+  allocInfo.descriptorSetCount = renderer_->getDevice().GetDisplayImages().size();
   allocInfo.pSetLayouts = layouts.data();
 
-  mesh_descriptor_sets_.resize(renderer_->getDevice().getDisplayImages().size());
+  mesh_descriptor_sets_.resize(renderer_->getDevice().GetDisplayImages().size());
   CALL_VK(vkAllocateDescriptorSets(renderer_->getVulkanDevice(),
                                    &allocInfo,
                                    mesh_descriptor_sets_.data()));
 
-  for (size_t i = 0; i < renderer_->getDevice().getDisplayImages().size(); i++) {
+  for (size_t i = 0; i < renderer_->getDevice().GetDisplayImages().size(); i++) {
     VkDescriptorBufferInfo bufferInfo = {};
     bufferInfo.buffer = mesh_buffer_->getBuffer(i);
     bufferInfo.offset = 0;

@@ -8,7 +8,9 @@
 #include "vulkan_wrapper.h"
 #include "bender_kit.h"
 
-namespace BenderKit {
+#include <vector>
+
+namespace benderkit {
     enum class VertexElement { float1, float2, float3, float4 };
 
     class VertexFormat {
@@ -18,17 +20,17 @@ namespace BenderKit {
         VertexFormat(VertexFormat&& other)
                 : bindings_(std::move(other.bindings_))
                 , attributes_(std::move(other.attributes_)) {
-          fillVertexInputState();
+          FillVertexInputState();
         }
 
         VertexFormat(const VertexFormat& other) {
           bindings_ = other.bindings_;
           attributes_ = other.attributes_;
 
-          fillVertexInputState();
+          FillVertexInputState();
         }
 
-        const VkPipelineVertexInputStateCreateInfo& getVertexInputState() { return vertex_input_state_; }
+        const VkPipelineVertexInputStateCreateInfo& GetVertexInputState() { return vertex_input_state_; }
 
     private:
         VkPipelineVertexInputStateCreateInfo vertex_input_state_;
@@ -36,7 +38,7 @@ namespace BenderKit {
         std::vector<VkVertexInputBindingDescription> bindings_;
         std::vector<VkVertexInputAttributeDescription> attributes_;
 
-        void fillVertexInputState();
+        void FillVertexInputState();
     };
 }
 

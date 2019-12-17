@@ -32,7 +32,7 @@ class Material {
   VkDescriptorSet getMaterialDescriptorSet(uint_t frame_index) const { return material_descriptor_sets_[frame_index]; }
 
   static void cleanupStatic() { default_texture_->cleanup(); }
-  static void onResumeStatic(BenderKit::Device &device,
+  static void onResumeStatic(benderkit::Device &device,
                              android_app *app) { default_texture_->onResume(device, app); }
   static void defaultTextureGenerator(uint8_t *data);
 

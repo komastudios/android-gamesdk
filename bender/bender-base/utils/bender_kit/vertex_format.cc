@@ -4,9 +4,9 @@
 
 #include "vertex_format.h"
 
-using namespace BenderKit;
+using namespace benderkit;
 
-constexpr VkFormat vertexElementToFormat(VertexElement element) {
+constexpr VkFormat VertexElementToFormat(VertexElement element) {
   switch (element) {
     case VertexElement::float1: return VK_FORMAT_R32_SFLOAT;
     case VertexElement::float2: return VK_FORMAT_R32G32_SFLOAT;
@@ -17,7 +17,7 @@ constexpr VkFormat vertexElementToFormat(VertexElement element) {
   return VK_FORMAT_UNDEFINED;
 }
 
-constexpr uint32_t vertexElementToSize(VertexElement element) {
+constexpr uint32_t VertexElementToSize(VertexElement element) {
   switch (element) {
     case VertexElement::float1: return sizeof(float) * 1;
     case VertexElement::float2: return sizeof(float) * 2;
@@ -35,15 +35,15 @@ VertexFormat::VertexFormat(std::initializer_list<std::initializer_list<VertexEle
     uint32_t offset = 0;
     uint32_t location = 0;
 
-    for (auto element: stream) {
+    for (auto element : stream) {
         attributes_.push_back({
           .binding = binding,
           .location = location,
-          .format = vertexElementToFormat(element),
+          .format = VertexElementToFormat(element),
           .offset = offset,
           });
 
-      offset += vertexElementToSize(element);
+      offset += VertexElementToSize(element);
 
       ++location;
     }
@@ -57,10 +57,10 @@ VertexFormat::VertexFormat(std::initializer_list<std::initializer_list<VertexEle
     ++binding;
   }
 
-  fillVertexInputState();
+  FillVertexInputState();
 }
 
-void VertexFormat::fillVertexInputState() {
+void VertexFormat::FillVertexInputState() {
   vertex_input_state_ = {
           .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
           .vertexBindingDescriptionCount = static_cast<u_int32_t>(bindings_.size()),

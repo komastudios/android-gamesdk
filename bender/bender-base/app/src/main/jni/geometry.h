@@ -11,7 +11,7 @@
 
 class Geometry {
  public:
-  Geometry(BenderKit::Device &device,
+  Geometry(benderkit::Device &device,
            const std::vector<float> &vertexData,
            const std::vector<uint16_t> &indexData,
            std::function<void(std::vector<float> &, std::vector<uint16_t> &)> generator = nullptr);
@@ -19,7 +19,7 @@ class Geometry {
 
   void cleanup();
 
-  void onResume(BenderKit::Device &device);
+  void onResume(benderkit::Device &device);
 
   int getVertexCount() const { return vertexCount_; }
   int getIndexCount() const { return indexCount_; }
@@ -27,7 +27,7 @@ class Geometry {
   void bind(VkCommandBuffer commandBuffer) const;
 
  private:
-  BenderKit::Device &device_;
+  benderkit::Device &device_;
 
   int vertexCount_;
   VkBuffer vertexBuf_;
