@@ -4,11 +4,7 @@ build:
   configuration: recipes/configurations/affinity_test.json
 
 systrace:
-  enabled: true
-  categories: "sched freq idle am wm gfx view binder_driver hal dalvik input res"
-  keywords:
-    - "SAO::"
-    - "MonitorOperation"
+  enabled: false
 
 deployment:
   local:

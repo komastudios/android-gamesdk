@@ -1,0 +1,24 @@
+build:
+  clean: false
+  release: false
+  configuration: recipes/configurations/affinity_test.json
+
+systrace:
+  enabled: true
+  # custom categories (only supported for local deployment)
+  categories: "sched freq idle am wm gfx view input"
+
+  # all systrace lines containing these keywords will be captured
+  # and interleaved with test datums
+  keywords:
+    - Foo
+    - Bar
+    - Baz
+
+deployment:
+  local:
+    all_attached_devices: true
+
+summary:
+  enabled: true
+  format: md

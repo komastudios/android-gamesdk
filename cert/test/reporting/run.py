@@ -139,9 +139,11 @@ def get_systrace_config(recipe: Dict) -> (bool, List[str], List[str]):
     * keywords: a list of string keywords to report.
     * categories: a list of string categories to append to the command.
     """
+    cats = "sched freq idle am wm gfx view binder_driver hal dalvik input res"
+
     enabled = dict_lookup(recipe, "systrace.enabled", fallback=False)
     keywords = dict_lookup(recipe, "systrace.keywords", fallback=[])
-    categories = dict_lookup(recipe, "systrace.categories", fallback="")
+    categories = dict_lookup(recipe, "systrace.categories", fallback=cats)
     categories = [] if categories == "" else categories.split(" ")
     return enabled, keywords, categories
 
@@ -152,8 +154,9 @@ def get_summary_config(recipe: Dict) -> (bool, str):
     These are:
 
     * enabled: a boolean telling whether a summary is enabled at all.
-    * html: a boolean to specify if the summary format is html instead of its
-            markdown default.
+    * fmt: string denoting the summary format (one member of
+        lib.graphing.DocumentFormat.HTML or lib.graphing.DocumentFormat.MARKDOWN
+        )
     """
     enabled = dict_lookup(recipe, "summary.enabled", fallback=False)
     fmt = dict_lookup(recipe, "summary.format", fallback="md")

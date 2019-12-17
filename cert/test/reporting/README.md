@@ -158,8 +158,8 @@ summary:
   # if true, report will be generated
   enabled: [true|false]
 
-  # if true, the report will be in html format; otherwise, in markdown
-  html: [true|false]
+  # format for report, presently only "md" and "html" are supported
+  format: [md|html]
 
 ```
 

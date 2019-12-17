@@ -4,22 +4,12 @@ build:
 
 systrace:
   enabled: false
-  categories: "sched freq idle am wm gfx view binder_driver hal dalvik input res"
-  keywords:
-    - MonitorOperation
 
 deployment:
   local:
     all_attached_devices: true
-    # device_ids:
-    #   - 6feeb429
-    #   - 94CX1Z4AJ
 
-chart:
+summary:
   enabled: true
-  suites:
-    - "Memory allocation"
-  skipping:
-    - "timestamp"
-    - "total_allocation_mb"
-    - "perf_info"
+  format: md
+
