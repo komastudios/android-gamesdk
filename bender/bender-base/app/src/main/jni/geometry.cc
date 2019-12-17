@@ -8,9 +8,9 @@
 
 #include "bender_helpers.h"
 
-using namespace BenderHelpers;
+using namespace benderhelpers;
 
-Geometry::Geometry(BenderKit::Device &device,
+Geometry::Geometry(benderkit::Device &device,
                    const std::vector<float> &vertexData,
                    const std::vector<uint16_t> &indexData,
                    std::function<void(std::vector<float>&, std::vector<uint16_t>&)> generator)
@@ -23,14 +23,14 @@ Geometry::~Geometry() {
 }
 
 void Geometry::cleanup() {
-  vkDeviceWaitIdle(device_.getDevice());
-  vkDestroyBuffer(device_.getDevice(), vertexBuf_, nullptr);
-  vkFreeMemory(device_.getDevice(), vertexBufferDeviceMemory_, nullptr);
-  vkDestroyBuffer(device_.getDevice(), indexBuf_, nullptr);
-  vkFreeMemory(device_.getDevice(), indexBufferDeviceMemory_, nullptr);
+  vkDeviceWaitIdle(device_.GetDevice());
+  vkDestroyBuffer(device_.GetDevice(), vertexBuf_, nullptr);
+  vkFreeMemory(device_.GetDevice(), vertexBufferDeviceMemory_, nullptr);
+  vkDestroyBuffer(device_.GetDevice(), indexBuf_, nullptr);
+  vkFreeMemory(device_.GetDevice(), indexBufferDeviceMemory_, nullptr);
 }
 
-void Geometry::onResume(BenderKit::Device &device) {
+void Geometry::onResume(benderkit::Device &device) {
   device_ = device;
   if (generator_ != nullptr){
     std::vector<float> vertex_data;
@@ -45,21 +45,21 @@ void Geometry::createVertexBuffer(const std::vector<float>& vertexData, const st
   indexCount_ = indexData.size();
 
   VkDeviceSize bufferSizeVertex = sizeof(vertexData[0]) * vertexData.size();
-  device_.createBuffer(bufferSizeVertex, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+  device_.CreateBuffer(bufferSizeVertex, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
                vertexBuf_, vertexBufferDeviceMemory_);
 
   VkDeviceSize bufferSizeIndex = sizeof(indexData[0]) * indexData.size();
-  device_.createBuffer(bufferSizeIndex, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+  device_.CreateBuffer(bufferSizeIndex, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
                indexBuf_, indexBufferDeviceMemory_);
 
   void *data;
-  vkMapMemory(device_.getDevice(), vertexBufferDeviceMemory_, 0, bufferSizeVertex, 0, &data);
+  vkMapMemory(device_.GetDevice(), vertexBufferDeviceMemory_, 0, bufferSizeVertex, 0, &data);
   memcpy(data, vertexData.data(), bufferSizeVertex);
-  vkUnmapMemory(device_.getDevice(), vertexBufferDeviceMemory_);
+  vkUnmapMemory(device_.GetDevice(), vertexBufferDeviceMemory_);
 
-  vkMapMemory(device_.getDevice(), indexBufferDeviceMemory_, 0, bufferSizeIndex, 0, &data);
+  vkMapMemory(device_.GetDevice(), indexBufferDeviceMemory_, 0, bufferSizeIndex, 0, &data);
   memcpy(data, indexData.data(), bufferSizeIndex);
-  vkUnmapMemory(device_.getDevice(), indexBufferDeviceMemory_);
+  vkUnmapMemory(device_.GetDevice(), indexBufferDeviceMemory_);
 }
 
 void Geometry::bind(VkCommandBuffer commandBuffer) const {

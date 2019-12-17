@@ -24,7 +24,7 @@
 #define NS_TO_S 1.0E-9
 #define NS_TO_MS 1.0E-6
 
-namespace Timing {
+namespace timing {
 
 enum EventType {
   MAIN_LOOP,
@@ -42,30 +42,29 @@ struct Event {
   std::stack<Event *> sub_events;
 };
 
-void printEvent(Event &event);
+void PrintEvent(Event &event);
 
 class EventTiming {
  public:
   EventTiming();
-  Event *getLastMajorEvent();
-  void getFramerate(int numFrames, int mostRecentFrame, int *fps, float *frameTime);
-  void time(const char * name, EventType type, std::function<void()> eventToTime) {
-    startEvent(name, type);
-    eventToTime();
-    stopEvent();
+  Event *GetLastMajorEvent();
+  void GetFramerate(int num_frames, int most_recent_frame, int *fps, float *frame_time);
+  void Time(const char *name, EventType type, std::function<void()> event_to_time) {
+    StartEvent(name, type);
+    event_to_time();
+    StopEvent();
   }
 
  private:
-  void startEvent(const char *name, EventType type);
-  void stopEvent();
+  void StartEvent(const char *name, EventType type);
+  void StopEvent();
 
-  std::vector<Event *> major_events;
-  std::vector<std::vector<Event *>> event_buckets;
+  std::vector<Event *> major_events_;
+  std::vector<std::vector<Event *>> event_buckets_;
   int current_major_event_num_ = 0;
-  Event *current_event = nullptr;
+  Event *current_event_ = nullptr;
   std::chrono::high_resolution_clock::time_point application_start_time_;
-  std::deque<Event> eventPool;
-
+  std::deque<Event> event_pool_;
 };
 
 extern EventTiming timer;

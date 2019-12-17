@@ -5,114 +5,113 @@
 #ifndef BENDER_BASE_DEVICE_H
 #define BENDER_BASE_DEVICE_H
 
+#include "vulkan_wrapper.h"
+#include "bender_kit.h"
+
 #include <vector>
 #include <string>
 #include <array>
 
-#include "vulkan_wrapper.h"
-#include "bender_kit.h"
-
-namespace BenderKit {
+namespace benderkit {
     class Device {
     public:
         Device(ANativeWindow *window);
 
         ~Device();
 
-        bool isInitialized() { return initialized_; }
+        bool IsInitialized() { return initialized_; }
 
         void CreateImageView();
 
-        void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer &buffer,
-                          VkDeviceMemory &bufferMemory,
+        void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer &buffer,
+                          VkDeviceMemory &buffer_memory,
                           VkMemoryPropertyFlags properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-        VkDevice getDevice() const { return device_; }
+        VkDevice GetDevice() const { return device_; }
 
-        VkPhysicalDevice getPhysicalDevice() const { return gpuDevice_; }
+        VkPhysicalDevice GetPhysicalDevice() const { return gpu_device_; }
 
-        uint32_t getQueueFamilyIndex() const { return queueFamilyIndex_; }
+        uint32_t GetQueueFamilyIndex() const { return queue_family_index_; }
 
-        VkSurfaceKHR getSurface() const { return surface_; }
+        VkSurfaceKHR GetSurface() const { return surface_; }
 
-        VkQueue getQueue() const { return queue_; }
+        VkQueue GetQueue() const { return queue_; }
 
-        VkSwapchainKHR getSwapchain() const { return swapchain_; }
+        VkSwapchainKHR GetSwapchain() const { return swapchain_; }
 
-        uint getSwapchainLength() const { return swapchainLength_; }
+        uint GetSwapchainLength() const { return swapchain_length_; }
 
-        VkSurfaceTransformFlagBitsKHR getPretransformFlag() const { return pretransformFlag_; }
+        VkSurfaceTransformFlagBitsKHR GetPretransformFlag() const { return pretransform_flag_; }
 
-        VkExtent2D getDisplaySize() const { return displaySize_; }
+        VkExtent2D GetDisplaySize() const { return display_size_; }
 
-        VkExtent2D getDisplaySizeOriented() const {
-            VkExtent2D result = displaySize_;
-            if (pretransformFlag_ == VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR ||
-                pretransformFlag_ == VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR) {
-                result.width = displaySize_.height;
-                result.height = displaySize_.width;
+        VkExtent2D GetDisplaySizeOriented() const {
+            VkExtent2D result = display_size_;
+            if (pretransform_flag_ == VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR ||
+                pretransform_flag_ == VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR) {
+                result.width = display_size_.height;
+                result.height = display_size_.width;
             }
             return result;
         }
 
-        VkFormat getDisplayFormat() const { return displayFormat_; }
+        VkFormat GetDisplayFormat() const { return display_format_; }
 
-        VkPhysicalDeviceMemoryProperties getGpuMemProperties() { return gpuMemoryProperties_; }
+        VkPhysicalDeviceMemoryProperties GetGpuMemProperties() { return gpu_memory_properties_; }
 
-        const std::vector<VkImage> &getDisplayImages() { return displayImages_; }
+        const std::vector<VkImage> &GetDisplayImages() { return display_images_; }
 
-        VkImage getCurrentDisplayImage() const { return displayImages_[current_frame_index_]; }
+        VkImage GetCurrentDisplayImage() const { return display_images_[current_frame_index_]; }
 
-        uint getCurrentFrameIndex() const { return current_frame_index_; }
+        uint GetCurrentFrameIndex() const { return current_frame_index_; }
 
-        void present(VkSemaphore* wait_semaphores);
+        void Present(VkSemaphore* wait_semaphores);
 
-        void setObjectName(uint64_t object,
-                           VkDebugReportObjectTypeEXT objectType,
+        void SetObjectName(uint64_t object,
+                           VkDebugReportObjectTypeEXT object_type,
                            const char *name);
 
-        void setObjectTag(uint64_t object,
-                          VkDebugReportObjectTypeEXT objectType,
+        void SetObjectTag(uint64_t object,
+                          VkDebugReportObjectTypeEXT object_type,
                           uint64_t name,
-                          size_t tagSize,
+                          size_t tag_size,
                           const void *tag);
 
-        void beginDebugRegion(VkCommandBuffer cmdbuffer, const char *markerName,
+        void BeginDebugRegion(VkCommandBuffer cmd_buffer, const char *marker_name,
                               std::array<float, 4> color = {
                                       1.0f, 1.0f, 1.0f, 1.0f});
-        void insertDebugMarker(VkCommandBuffer cmdbuffer, const char *markerName,
+
+        void InsertDebugMarker(VkCommandBuffer cmd_buffer, const char *marker_name,
                                std::array<float, 4> color = {
                                        1.0f, 1.0f, 1.0f, 1.0f});
 
-        void endDebugRegion(VkCommandBuffer cmdBuffer);
+        void EndDebugRegion(VkCommandBuffer cmd_buffer);
 
-        void createSwapChain(VkSwapchainKHR oldSwapchain = VK_NULL_HANDLE);
+        void CreateSwapChain(VkSwapchainKHR old_swapchain = VK_NULL_HANDLE);
 
     private:
         bool initialized_;
 
         VkInstance instance_;
-        VkPhysicalDevice gpuDevice_;
-        VkPhysicalDeviceMemoryProperties gpuMemoryProperties_;
+        VkPhysicalDevice gpu_device_;
+        VkPhysicalDeviceMemoryProperties gpu_memory_properties_;
         VkDevice device_;
-        uint32_t queueFamilyIndex_;
+        uint32_t queue_family_index_;
         VkSurfaceKHR surface_;
         VkQueue queue_;
 
         VkSwapchainKHR swapchain_;
-        uint32_t swapchainLength_;
-        VkSurfaceTransformFlagBitsKHR pretransformFlag_;
+        uint32_t swapchain_length_;
+        VkSurfaceTransformFlagBitsKHR pretransform_flag_;
 
-        VkExtent2D displaySize_;
-        VkFormat displayFormat_;
+        VkExtent2D display_size_;
+        VkFormat display_format_;
 
         uint current_frame_index_ = 0;
 
-        std::vector<VkImage> displayImages_;
+        std::vector<VkImage> display_images_;
 
-        void CreateVulkanDevice(ANativeWindow *platformWindow,
-                                VkApplicationInfo *appInfo);
-
+        void CreateVulkanDevice(ANativeWindow *platform_window, VkApplicationInfo *app_info);
     };
 }
 

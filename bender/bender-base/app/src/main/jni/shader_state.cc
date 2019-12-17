@@ -14,7 +14,7 @@
 
 #include "shader_state.h"
 
-ShaderState::ShaderState(std::string shaderName, const BenderKit::VertexFormat& vertex_format, android_app &app, VkDevice appDevice)
+ShaderState::ShaderState(std::string shaderName, const benderkit::VertexFormat& vertex_format, android_app &app, VkDevice appDevice)
   : androidAppCtx(app), vertex_format_(vertex_format) {
   ShaderState::device = appDevice;
   file_name_ = shaderName;
@@ -73,7 +73,7 @@ void ShaderState::setFragmentShader(const std::string &name) {
 
 void ShaderState::fillPipelineInfo(VkGraphicsPipelineCreateInfo *pipeline_info) {
   pipeline_info->pStages = shaderStages.data();
-  pipeline_info->pVertexInputState = &vertex_format_.getVertexInputState();
+  pipeline_info->pVertexInputState = &vertex_format_.GetVertexInputState();
   pipeline_info->pInputAssemblyState = &pipelineInputAssembly;
 }
 

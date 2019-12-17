@@ -44,8 +44,8 @@
 #include <cstring>
 #include <chrono>
 
-using namespace BenderKit;
-using namespace BenderHelpers;
+using namespace benderkit;
+using namespace benderhelpers;
 
 struct AttachmentBuffer {
   VkFormat format;
@@ -98,19 +98,19 @@ void MoveBackward() {
 }
 void StrafeLeft() {
   glm::vec3 right = glm::normalize(render_graph->getCameraRotation() * glm::vec3(1.0f, 0.0f, 0.0f));
-  render_graph->translateCamera(-right * (20.0f / device->getDisplaySize().width));
+  render_graph->translateCamera(-right * (20.0f / device->GetDisplaySize().width));
 }
 void StrafeRight() {
   glm::vec3 right = glm::normalize(render_graph->getCameraRotation() * glm::vec3(1.0f, 0.0f, 0.0f));
-  render_graph->translateCamera(right * (20.0f / device->getDisplaySize().width));
+  render_graph->translateCamera(right * (20.0f / device->GetDisplaySize().width));
 }
 void StrafeUp() {
   glm::vec3 up = glm::normalize(render_graph->getCameraRotation() * glm::vec3(0.0f, 1.0f, 0.0f));
-  render_graph->translateCamera(up * (20.0f / device->getDisplaySize().height));
+  render_graph->translateCamera(up * (20.0f / device->GetDisplaySize().height));
 }
 void StrafeDown() {
   glm::vec3 up = glm::normalize(render_graph->getCameraRotation() * glm::vec3(0.0f, 1.0f, 0.0f));
-  render_graph->translateCamera(-up * (20.0f / device->getDisplaySize().height));
+  render_graph->translateCamera(-up * (20.0f / device->GetDisplaySize().height));
 }
 void CreateInstance() {
   render_graph->addMesh(std::make_shared<Mesh>(renderer,
@@ -145,7 +145,7 @@ void ChangeMaterialComplexity() {
 }
 
 void CreateButtons() {
-  Button::setScreenResolution(device->getDisplaySizeOriented());
+  Button::setScreenResolution(device->GetDisplaySizeOriented());
 
   user_interface->RegisterButton([] (Button& button) {
       button.onHold = StrafeLeft;
@@ -218,7 +218,7 @@ void CreateUserInterface() {
 }
 
 void CreateTextures() {
-  Timing::timer.time("Texture Creation", Timing::OTHER, [] {
+  timing::timer.Time("Texture Creation", timing::OTHER, [] {
     assert(android_app_ctx != nullptr);
     assert(device != nullptr);
 
@@ -232,7 +232,7 @@ void CreateTextures() {
 }
 
 void CreateMaterials() {
-  Timing::timer.time("Materials Creation", Timing::OTHER, [] {
+  timing::timer.Time("Materials Creation", timing::OTHER, [] {
     baseline_materials.push_back(std::make_shared<Material>(renderer, shaders, nullptr));
     baseline_materials.push_back(std::make_shared<Material>(renderer,
                                                            shaders,
@@ -264,14 +264,14 @@ void CreateGeometries() {
 
 void CreateFramebuffers(VkRenderPass &render_pass,
                         VkImageView depth_view = VK_NULL_HANDLE) {
-  display_views.resize(device->getDisplayImages().size());
-  for (uint32_t i = 0; i < device->getDisplayImages().size(); i++) {
+  display_views.resize(device->GetDisplayImages().size());
+  for (uint32_t i = 0; i < device->GetDisplayImages().size(); i++) {
     VkImageViewCreateInfo view_create_info = {
         .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
         .pNext = nullptr,
-        .image = device->getDisplayImages()[i],
+        .image = device->GetDisplayImages()[i],
         .viewType = VK_IMAGE_VIEW_TYPE_2D,
-        .format = device->getDisplayFormat(),
+        .format = device->GetDisplayFormat(),
         .components =
             {
                 .r = VK_COMPONENT_SWIZZLE_R,
@@ -289,12 +289,12 @@ void CreateFramebuffers(VkRenderPass &render_pass,
             },
         .flags = 0,
     };
-    CALL_VK(vkCreateImageView(device->getDevice(), &view_create_info, nullptr,
+    CALL_VK(vkCreateImageView(device->GetDevice(), &view_create_info, nullptr,
                               &display_views[i]));
   }
 
-  framebuffers.resize(device->getSwapchainLength());
-  for (uint32_t i = 0; i < device->getSwapchainLength(); i++) {
+  framebuffers.resize(device->GetSwapchainLength());
+  for (uint32_t i = 0; i < device->GetSwapchainLength(); i++) {
     VkImageView attachments[2] = {
         display_views[i], depth_view,
     };
@@ -305,11 +305,11 @@ void CreateFramebuffers(VkRenderPass &render_pass,
         .layers = 1,
         .attachmentCount = 2,  // 2 if using depth
         .pAttachments = attachments,
-        .width = static_cast<uint32_t>(device->getDisplaySize().width),
-        .height = static_cast<uint32_t>(device->getDisplaySize().height),
+        .width = static_cast<uint32_t>(device->GetDisplaySize().width),
+        .height = static_cast<uint32_t>(device->GetDisplaySize().height),
     };
 
-    CALL_VK(vkCreateFramebuffer(device->getDevice(), &framebuffer_create_info, nullptr,
+    CALL_VK(vkCreateFramebuffer(device->GetDevice(), &framebuffer_create_info, nullptr,
                                 &framebuffers[i]));
   }
 }
@@ -319,19 +319,19 @@ void UpdateCamera(Input::Data *input_data) {
       || input_data->lastButton == nullptr) {
     render_graph->rotateCameraLocal(glm::quat(glm::vec3(0.0f,
                                                         input_data->deltaX
-                                                            / device->getDisplaySize().width,
+                                                            / device->GetDisplaySize().width,
                                                         0.0f)));
     render_graph->rotateCameraGlobal(glm::quat(glm::vec3(
-        input_data->deltaY / device->getDisplaySize().height, 0.0f, 0.0f)));
+        input_data->deltaY / device->GetDisplaySize().height, 0.0f, 0.0f)));
   }
 
   glm::mat4 pre_rotate_mat = kIdentityMat4;
   glm::vec3 rotation_axis = glm::vec3(0.0f, 0.0f, -1.0f);
-  if (device->getPretransformFlag() & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR) {
+  if (device->GetPretransformFlag() & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR) {
     pre_rotate_mat = glm::rotate(pre_rotate_mat, glm::half_pi<float>(), rotation_axis);
-  } else if (device->getPretransformFlag() & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR) {
+  } else if (device->GetPretransformFlag() & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR) {
     pre_rotate_mat = glm::rotate(pre_rotate_mat, glm::three_over_two_pi<float>(), rotation_axis);
-  } else if (device->getPretransformFlag() & VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR) {
+  } else if (device->GetPretransformFlag() & VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR) {
     pre_rotate_mat = glm::rotate(pre_rotate_mat, glm::pi<float>(), rotation_axis);
   }
 
@@ -377,16 +377,16 @@ void CreateShaderState() {
   };
 
   shaders =
-      std::make_shared<ShaderState>("mesh", vertex_format, *android_app_ctx, device->getDevice());
+      std::make_shared<ShaderState>("mesh", vertex_format, *android_app_ctx, device->GetDevice());
 }
 
 void CreateDepthBuffer() {
-  depth_buffer.format = BenderHelpers::findDepthFormat(device);
+  depth_buffer.format = benderhelpers::FindDepthFormat(device);
   VkImageCreateInfo image_info = {
       .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
       .imageType = VK_IMAGE_TYPE_2D,
-      .extent.width = device->getDisplaySize().width,
-      .extent.height = device->getDisplaySize().height,
+      .extent.width = device->GetDisplaySize().width,
+      .extent.height = device->GetDisplaySize().height,
       .extent.depth = 1,
       .mipLevels = 1,
       .arrayLayers = 1,
@@ -398,22 +398,22 @@ void CreateDepthBuffer() {
       .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
   };
 
-  CALL_VK(vkCreateImage(device->getDevice(), &image_info, nullptr, &depth_buffer.image));
+  CALL_VK(vkCreateImage(device->GetDevice(), &image_info, nullptr, &depth_buffer.image));
 
   VkMemoryRequirements mem_requirements;
-  vkGetImageMemoryRequirements(device->getDevice(), depth_buffer.image, &mem_requirements);
+  vkGetImageMemoryRequirements(device->GetDevice(), depth_buffer.image, &mem_requirements);
 
   VkMemoryAllocateInfo alloc_info = {
       .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
       .allocationSize = mem_requirements.size,
-      .memoryTypeIndex = BenderHelpers::findMemoryType(mem_requirements.memoryTypeBits,
+      .memoryTypeIndex = benderhelpers::FindMemoryType(mem_requirements.memoryTypeBits,
                                                        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                                       device->getPhysicalDevice()),
+                                                       device->GetPhysicalDevice()),
   };
 
-  CALL_VK(vkAllocateMemory(device->getDevice(), &alloc_info, nullptr, &depth_buffer.device_memory))
+  CALL_VK(vkAllocateMemory(device->GetDevice(), &alloc_info, nullptr, &depth_buffer.device_memory))
 
-  vkBindImageMemory(device->getDevice(), depth_buffer.image, depth_buffer.device_memory, 0);
+  vkBindImageMemory(device->GetDevice(), depth_buffer.image, depth_buffer.device_memory, 0);
 
   VkImageViewCreateInfo view_info = {
       .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
@@ -432,33 +432,33 @@ void CreateDepthBuffer() {
       .flags = 0,
   };
 
-  CALL_VK(vkCreateImageView(device->getDevice(), &view_info, nullptr, &depth_buffer.image_view));
+  CALL_VK(vkCreateImageView(device->GetDevice(), &view_info, nullptr, &depth_buffer.image_view));
 
 }
 
 bool InitVulkan(android_app *app) {
-  Timing::timer.time("Initialization", Timing::OTHER, [app] {
+  timing::timer.Time("Initialization", timing::OTHER, [app] {
     android_app_ctx = app;
 
     device = new Device(app->window);
-    assert(device->isInitialized());
-    device->setObjectName(reinterpret_cast<uint64_t>(device->getDevice()),
+    assert(device->IsInitialized());
+    device->SetObjectName(reinterpret_cast<uint64_t>(device->GetDevice()),
                           VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, "TEST NAME: VULKAN DEVICE");
 
     render_graph = new RenderGraph();
 
     render_graph->setCameraAspectRatio(
-        device->getDisplaySize().width / (float) device->getDisplaySize().height);
+        device->GetDisplaySize().width / (float) device->GetDisplaySize().height);
     auto horizontal_fov = glm::radians(60.0f);
     auto vertical_fov =
-        static_cast<float>(2 * atan((0.5 * device->getDisplaySize().height)
-                                        / (0.5 * device->getDisplaySize().width
+        static_cast<float>(2 * atan((0.5 * device->GetDisplaySize().height)
+                                        / (0.5 * device->GetDisplaySize().width
                                             / tan(horizontal_fov / 2))));
     render_graph->setCameraFOV((render_graph->getCameraAspectRatio() > 1.0f) ? horizontal_fov
                                                                              : vertical_fov);
 
     VkAttachmentDescription color_description{
-        .format = device->getDisplayFormat(),
+        .format = device->GetDisplayFormat(),
         .samples = VK_SAMPLE_COUNT_1_BIT,
         .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
         .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
@@ -469,7 +469,7 @@ bool InitVulkan(android_app *app) {
     };
 
     VkAttachmentDescription depth_description{
-        .format = BenderHelpers::findDepthFormat(device),
+        .format = benderhelpers::FindDepthFormat(device),
         .samples = VK_SAMPLE_COUNT_1_BIT,
         .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
         .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
@@ -515,14 +515,14 @@ bool InitVulkan(android_app *app) {
         .dependencyCount = 0,
         .pDependencies = nullptr,
     };
-    CALL_VK(vkCreateRenderPass(device->getDevice(), &render_pass_create_info, nullptr,
+    CALL_VK(vkCreateRenderPass(device->GetDevice(), &render_pass_create_info, nullptr,
                                &render_pass));
 
     CreateShaderState();
 
     renderer = new Renderer(*device);
 
-    Timing::timer.time("Mesh Creation", Timing::OTHER, [] {
+    timing::timer.Time("Mesh Creation", timing::OTHER, [] {
       tex_files.push_back("textures/sample_texture.png");
       tex_files.push_back("textures/sample_texture2.png");
 
@@ -532,7 +532,7 @@ bool InitVulkan(android_app *app) {
 
       CreateGeometries();
 
-      Timing::timer.time("Create Polyhedron", Timing::OTHER, [] {
+      timing::timer.Time("Create Polyhedron", timing::OTHER, [] {
         render_graph->addMesh(std::make_shared<Mesh>(renderer,
                                                      baseline_materials[materials_idx],
                                                      geometries[poly_faces_idx]));
@@ -548,32 +548,32 @@ bool InitVulkan(android_app *app) {
     CreateUserInterface();
   });
 
-  Timing::printEvent(*Timing::timer.getLastMajorEvent());
+  timing::PrintEvent(*timing::timer.GetLastMajorEvent());
   app_initialized_once = true;
   return true;
 }
 
 bool ResumeVulkan(android_app *app) {
-  Timing::timer.time("Initialization", Timing::OTHER, [app] {
+  timing::timer.Time("Initialization", timing::OTHER, [app] {
     android_app_ctx = app;
 
     device = new Device(app->window);
-    assert(device->isInitialized());
-    device->setObjectName(reinterpret_cast<uint64_t>(device->getDevice()),
+    assert(device->IsInitialized());
+    device->SetObjectName(reinterpret_cast<uint64_t>(device->GetDevice()),
                           VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, "TEST NAME: VULKAN DEVICE");
 
     render_graph->setCameraAspectRatio(
-        device->getDisplaySize().width / (float) device->getDisplaySize().height);
+        device->GetDisplaySize().width / (float) device->GetDisplaySize().height);
     auto horizontal_fov = glm::radians(60.0f);
     auto vertical_fov =
-        static_cast<float>(2 * atan((0.5 * device->getDisplaySize().height)
-                                        / (0.5 * device->getDisplaySize().width
+        static_cast<float>(2 * atan((0.5 * device->GetDisplaySize().height)
+                                        / (0.5 * device->GetDisplaySize().width
                                             / tan(horizontal_fov / 2))));
     render_graph->setCameraFOV((render_graph->getCameraAspectRatio() > 1.0f) ? horizontal_fov
                                                                              : vertical_fov);
 
     VkAttachmentDescription color_description{
-        .format = device->getDisplayFormat(),
+        .format = device->GetDisplayFormat(),
         .samples = VK_SAMPLE_COUNT_1_BIT,
         .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
         .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
@@ -584,7 +584,7 @@ bool ResumeVulkan(android_app *app) {
     };
 
     VkAttachmentDescription depth_description{
-        .format = BenderHelpers::findDepthFormat(device),
+        .format = benderhelpers::FindDepthFormat(device),
         .samples = VK_SAMPLE_COUNT_1_BIT,
         .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
         .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
@@ -630,14 +630,14 @@ bool ResumeVulkan(android_app *app) {
         .dependencyCount = 0,
         .pDependencies = nullptr,
     };
-    CALL_VK(vkCreateRenderPass(device->getDevice(), &render_pass_create_info, nullptr,
+    CALL_VK(vkCreateRenderPass(device->GetDevice(), &render_pass_create_info, nullptr,
                                &render_pass));
 
-    shaders->onResume(device->getDevice());
+    shaders->onResume(device->GetDevice());
 
     renderer = new Renderer(*device);
 
-    Timing::timer.time("Mesh Creation", Timing::OTHER, [app] {
+    timing::timer.Time("Mesh Creation", timing::OTHER, [app] {
       for (auto &texture : textures) {
         texture->onResume(*device, android_app_ctx);
       }
@@ -668,7 +668,7 @@ bool ResumeVulkan(android_app *app) {
     user_interface->OnResume(renderer, font);
   });
 
-  Timing::printEvent(*Timing::timer.getLastMajorEvent());
+  timing::PrintEvent(*timing::timer.GetLastMajorEvent());
   return true;
 }
 
@@ -680,24 +680,24 @@ void StartVulkan(android_app *app) {
   }
 }
 
-bool IsVulkanReady(void) { return device != nullptr && device->isInitialized(); }
+bool IsVulkanReady(void) { return device != nullptr && device->IsInitialized(); }
 
 void DeleteVulkan(void) {
-  vkDeviceWaitIdle(device->getDevice());
+  vkDeviceWaitIdle(device->GetDevice());
 
   delete renderer;
   delete font;
 
-  for (int i = 0; i < device->getSwapchainLength(); i++) {
-    vkDestroyImageView(device->getDevice(), display_views[i], nullptr);
-    vkDestroyFramebuffer(device->getDevice(), framebuffers[i], nullptr);
+  for (int i = 0; i < device->GetSwapchainLength(); i++) {
+    vkDestroyImageView(device->GetDevice(), display_views[i], nullptr);
+    vkDestroyFramebuffer(device->GetDevice(), framebuffers[i], nullptr);
   }
 
-  vkDestroyImageView(device->getDevice(), depth_buffer.image_view, nullptr);
-  vkDestroyImage(device->getDevice(), depth_buffer.image, nullptr);
-  vkFreeMemory(device->getDevice(), depth_buffer.device_memory, nullptr);
+  vkDestroyImageView(device->GetDevice(), depth_buffer.image_view, nullptr);
+  vkDestroyImage(device->GetDevice(), depth_buffer.image, nullptr);
+  vkFreeMemory(device->GetDevice(), depth_buffer.device_memory, nullptr);
 
-  vkDestroyRenderPass(device->getDevice(), render_pass, nullptr);
+  vkDestroyRenderPass(device->GetDevice(), render_pass, nullptr);
 
   for (auto &mesh : render_graph->getAllMeshes()) {
     mesh->cleanup();
@@ -730,13 +730,13 @@ bool VulkanDrawFrame(Input::Data *input_data) {
   last_time = current_time;
   total_time += frame_time;
 
-  Timing::timer.time("Handle Input", Timing::OTHER, [input_data] {
+  timing::timer.Time("Handle Input", timing::OTHER, [input_data] {
     HandleInput(input_data);
   });
 
   renderer->beginFrame();
-  Timing::timer.time("Start Frame", Timing::START_FRAME, [] {
-    Timing::timer.time("PrimaryCommandBufferRecording", Timing::OTHER, [] {
+  timing::timer.Time("Start Frame", timing::START_FRAME, [] {
+    timing::timer.Time("PrimaryCommandBufferRecording", timing::OTHER, [] {
       renderer->beginPrimaryCommandBufferRecording();
 
       // Now we start a renderpass. Any draw command has to be recorded in a
@@ -754,16 +754,16 @@ bool VulkanDrawFrame(Input::Data *input_data) {
               {
                   .x = 0, .y = 0,
               },
-              .extent = device->getDisplaySize()},
+              .extent = device->GetDisplaySize()},
           .clearValueCount = static_cast<uint32_t>(clear_values.size()),
           .pClearValues = clear_values.data(),
       };
 
-      Timing::timer.time("Render Pass", Timing::OTHER, [render_pass_begin_info] {
+      timing::timer.Time("Render Pass", timing::OTHER, [render_pass_begin_info] {
         vkCmdBeginRenderPass(renderer->getCurrentCommandBuffer(), &render_pass_begin_info,
                              VK_SUBPASS_CONTENTS_INLINE);
 
-        device->insertDebugMarker(renderer->getCurrentCommandBuffer(),
+        device->InsertDebugMarker(renderer->getCurrentCommandBuffer(),
                                   "TEST MARKER: PIPELINE BINDING",
                                   {1.0f, 0.0f, 1.0f, 0.0f});
 
@@ -785,8 +785,8 @@ bool VulkanDrawFrame(Input::Data *input_data) {
 
         int fps;
         float frame_time;
-        Timing::timer.getFramerate(500,
-                                   Timing::timer.getLastMajorEvent()->number,
+        timing::timer.GetFramerate(500,
+                                   timing::timer.GetLastMajorEvent()->number,
                                    &fps,
                                    &frame_time);
         sprintf(fps_info, "%2.d FPS  %.3f ms", fps, frame_time);
@@ -797,7 +797,7 @@ bool VulkanDrawFrame(Input::Data *input_data) {
       });
       renderer->endPrimaryCommandBufferRecording();
     });
-    Timing::timer.time("End Frame", Timing::OTHER, [] {
+    timing::timer.Time("End Frame", timing::OTHER, [] {
       renderer->endFrame();
     });
   });
@@ -809,19 +809,19 @@ void ResizeCallback(ANativeActivity *activity, ANativeWindow *window) {
 }
 
 void OnOrientationChange() {
-  vkDeviceWaitIdle(device->getDevice());
+  vkDeviceWaitIdle(device->GetDevice());
 
-  for (int i = 0; i < device->getSwapchainLength(); i++) {
-    vkDestroyImageView(device->getDevice(), display_views[i], nullptr);
-    vkDestroyFramebuffer(device->getDevice(), framebuffers[i], nullptr);
+  for (int i = 0; i < device->GetSwapchainLength(); i++) {
+    vkDestroyImageView(device->GetDevice(), display_views[i], nullptr);
+    vkDestroyFramebuffer(device->GetDevice(), framebuffers[i], nullptr);
   }
-  vkDestroyImageView(device->getDevice(), depth_buffer.image_view, nullptr);
-  vkDestroyImage(device->getDevice(), depth_buffer.image, nullptr);
-  vkFreeMemory(device->getDevice(), depth_buffer.device_memory, nullptr);
+  vkDestroyImageView(device->GetDevice(), depth_buffer.image_view, nullptr);
+  vkDestroyImage(device->GetDevice(), depth_buffer.image, nullptr);
+  vkFreeMemory(device->GetDevice(), depth_buffer.device_memory, nullptr);
 
-  device->createSwapChain(device->getSwapchain());
+  device->CreateSwapChain(device->GetSwapchain());
   CreateDepthBuffer();
   CreateFramebuffers(render_pass, depth_buffer.image_view);
-  Button::setScreenResolution(device->getDisplaySizeOriented());
+  Button::setScreenResolution(device->GetDisplaySizeOriented());
   window_resized = false;
 }

@@ -15,7 +15,7 @@
 
 class UniformBuffer {
 public:
-  UniformBuffer(BenderKit::Device& device, size_t bufferSize);
+  UniformBuffer(benderkit::Device& device, size_t bufferSize);
   ~UniformBuffer();
 
   void* map(int frameIndex, size_t offset, size_t size);
@@ -24,7 +24,7 @@ public:
   VkBuffer getBuffer(int frameIndex) const { return buffers_[frameIndex]; }
 
 private:
-  BenderKit::Device& device_;
+  benderkit::Device& device_;
 
   std::vector<VkBuffer> buffers_;
   std::vector<VkDeviceMemory> bufferMemory_;
@@ -32,7 +32,7 @@ private:
 
 template <typename T> class UniformBufferObject : private UniformBuffer {
 public:
-  UniformBufferObject(BenderKit::Device& device) : UniformBuffer(device, sizeof(T)) { }
+  UniformBufferObject(benderkit::Device& device) : UniformBuffer(device, sizeof(T)) { }
 
   void update(int frameIndex, std::function<void(T& data)> updater) {
     void *data = UniformBuffer::map(frameIndex, 0, sizeof(T));

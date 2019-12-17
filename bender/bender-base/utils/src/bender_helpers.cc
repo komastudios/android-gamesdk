@@ -14,16 +14,16 @@
 
 #include "bender_helpers.h"
 
-namespace BenderHelpers {
+namespace benderhelpers {
 
-uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties,
-                        VkPhysicalDevice gpuDevice) {
-    VkPhysicalDeviceMemoryProperties memProperties;
-    vkGetPhysicalDeviceMemoryProperties(gpuDevice, &memProperties);
+uint32_t FindMemoryType(uint32_t type_filter, VkMemoryPropertyFlags properties,
+                        VkPhysicalDevice gpu_device) {
+    VkPhysicalDeviceMemoryProperties mem_properties;
+    vkGetPhysicalDeviceMemoryProperties(gpu_device, &mem_properties);
 
-    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
-        if ((typeFilter & (1 << i)) &&
-            (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+    for (uint32_t i = 0; i < mem_properties.memoryTypeCount; i++) {
+        if ((type_filter & (1 << i)) &&
+            (mem_properties.memoryTypes[i].propertyFlags & properties) == properties) {
             return i;
         }
     }
@@ -32,17 +32,17 @@ uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties,
     return -1;
 }
 
-void setImageLayout(VkCommandBuffer cmdBuffer, VkImage image,
-                    VkImageLayout oldImageLayout, VkImageLayout newImageLayout,
-                    VkPipelineStageFlags srcStages,
-                    VkPipelineStageFlags destStages) {
-    VkImageMemoryBarrier imageMemoryBarrier = {
+void SetImageLayout(VkCommandBuffer cmd_buffer, VkImage image,
+                    VkImageLayout old_image_layout, VkImageLayout new_image_layout,
+                    VkPipelineStageFlags src_stages,
+                    VkPipelineStageFlags dest_stages) {
+    VkImageMemoryBarrier image_memory_barrier = {
             .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
             .pNext = NULL,
             .srcAccessMask = 0,
             .dstAccessMask = 0,
-            .oldLayout = oldImageLayout,
-            .newLayout = newImageLayout,
+            .oldLayout = old_image_layout,
+            .newLayout = new_image_layout,
             .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
             .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
             .image = image,
@@ -56,57 +56,57 @@ void setImageLayout(VkCommandBuffer cmdBuffer, VkImage image,
                     },
     };
 
-    switch (oldImageLayout) {
+    switch (old_image_layout) {
         case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
-            imageMemoryBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+            image_memory_barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
             break;
 
         case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-            imageMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+            image_memory_barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
             break;
 
-        case VK_IMAGE_LAYOUT_PREINITIALIZED:imageMemoryBarrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT;
+        case VK_IMAGE_LAYOUT_PREINITIALIZED:image_memory_barrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT;
             break;
 
         default:break;
     }
 
-    switch (newImageLayout) {
+    switch (new_image_layout) {
         case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-            imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+            image_memory_barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
             break;
 
         case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
-            imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+            image_memory_barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
             break;
 
         case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
-            imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+            image_memory_barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
             break;
 
         case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
-            imageMemoryBarrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+            image_memory_barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
             break;
 
         case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
-            imageMemoryBarrier.dstAccessMask =
+            image_memory_barrier.dstAccessMask =
                     VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
             break;
 
         default:break;
     }
 
-    vkCmdPipelineBarrier(cmdBuffer, srcStages, destStages, 0, 0, NULL, 0, NULL, 1,
-                         &imageMemoryBarrier);
+    vkCmdPipelineBarrier(cmd_buffer, src_stages, dest_stages, 0, 0, NULL, 0, NULL, 1,
+                         &image_memory_barrier);
 }
 
-VkFormat findSupportedFormat(BenderKit::Device *device,
+VkFormat FindSupportedFormat(benderkit::Device *device,
                              const std::vector<VkFormat> &candidates,
                              VkImageTiling tiling,
                              VkFormatFeatureFlags features) {
   for (VkFormat format : candidates) {
     VkFormatProperties props;
-    vkGetPhysicalDeviceFormatProperties(device->getPhysicalDevice(), format, &props);
+    vkGetPhysicalDeviceFormatProperties(device->GetPhysicalDevice(), format, &props);
 
     if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
       return format;
@@ -119,8 +119,8 @@ VkFormat findSupportedFormat(BenderKit::Device *device,
   throw std::runtime_error("failed to find supported format!");
 }
 
-VkFormat findDepthFormat(BenderKit::Device *device) {
-  return findSupportedFormat(
+VkFormat FindDepthFormat(benderkit::Device *device) {
+  return FindSupportedFormat(
       device,
       {VK_FORMAT_D16_UNORM_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT, VK_FORMAT_D32_SFLOAT},
       VK_IMAGE_TILING_OPTIMAL,

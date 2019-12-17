@@ -49,7 +49,7 @@ void android_main(struct android_app *app) {
 
   // Main loop
   do {
-    Timing::timer.time("Main Loop", Timing::EventType::MAIN_LOOP, [&events, &source, app](){
+    timing::timer.Time("Main Loop", timing::EventType::MAIN_LOOP, [&events, &source, app](){
       if (ALooper_pollAll(IsVulkanReady() ? 1 : 0, nullptr,
                           &events, (void **) &source) >= 0) {
         if (source != NULL) source->process(app, source);

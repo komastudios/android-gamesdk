@@ -40,7 +40,7 @@ struct alignas(16) LightBlock{
 
 class Renderer {
 public:
-  Renderer(BenderKit::Device& device);
+  Renderer(benderkit::Device& device);
   ~Renderer();
 
   void beginFrame();
@@ -51,8 +51,8 @@ public:
 
   void updateLights(glm::vec3 camera);
 
-  BenderKit::Device& getDevice() const { return device_; };
-  VkDevice getVulkanDevice() const { return device_.getDevice(); }
+  benderkit::Device& getDevice() const { return device_; };
+  VkDevice getVulkanDevice() const { return device_.GetDevice(); }
   VkCommandBuffer getCurrentCommandBuffer() const;
   uint32_t getCurrentFrame() const;
 
@@ -70,7 +70,7 @@ public:
           VkRenderPass render_pass) const;
 
 private:
-  BenderKit::Device& device_;
+  benderkit::Device& device_;
 
   VkCommandPool cmd_pool_;
   VkCommandBuffer *cmd_buffer_;

@@ -21,14 +21,14 @@
 #include "bender_helpers.h"
 #include "timing.h"
 
-using namespace BenderKit;
-using namespace BenderHelpers;
+using namespace benderkit;
+using namespace benderhelpers;
 
 // **********************************************************
 // Device class member functions
 //
 Device::Device(ANativeWindow *window) {
-  Timing::timer.time("Create Bender Device", Timing::OTHER, [this, window](){
+  timing::timer.Time("Create Bender Device", timing::OTHER, [this, window](){
     if (!InitVulkan()) {
       LOGW("Vulkan is unavailable, install vulkan and re-start");
       initialized_ = false;
@@ -36,7 +36,7 @@ Device::Device(ANativeWindow *window) {
     }
 
     // parameterize version number?
-    VkApplicationInfo appInfo = {
+    VkApplicationInfo app_info = {
         .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
         .pNext = nullptr,
         .apiVersion = VK_MAKE_VERSION(1, 0, 0),
@@ -46,8 +46,8 @@ Device::Device(ANativeWindow *window) {
         .pEngineName = "bender",
     };
 
-    CreateVulkanDevice(window, &appInfo);
-    createSwapChain();
+    CreateVulkanDevice(window, &app_info);
+    CreateSwapChain();
 
     initialized_ = true;
   });
@@ -62,10 +62,10 @@ Device::~Device() {
   vkDestroyInstance(instance_, nullptr);
 }
 
-void Device::present(VkSemaphore* wait_semaphores) {
+void Device::Present(VkSemaphore* wait_semaphores) {
   VkResult result;
-  VkSwapchainKHR swapchains[] = { getSwapchain() };
-  VkPresentInfoKHR present_info{
+  VkSwapchainKHR swapchains[] = { GetSwapchain() };
+  VkPresentInfoKHR present_info {
           .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
           .pNext = nullptr,
           .swapchainCount = 1,
@@ -78,12 +78,12 @@ void Device::present(VkSemaphore* wait_semaphores) {
 
   vkQueuePresentKHR(queue_, &present_info);
 
-  current_frame_index_ = (current_frame_index_ + 1) % getDisplayImages().size();
+  current_frame_index_ = (current_frame_index_ + 1) % GetDisplayImages().size();
 }
 
-void Device::CreateVulkanDevice(ANativeWindow *platformWindow,
-                                VkApplicationInfo *appInfo) {
-  Timing::timer.time("Create Vulkan Device", Timing::OTHER, [this, platformWindow, appInfo](){
+void Device::CreateVulkanDevice(ANativeWindow *platform_window,
+                                VkApplicationInfo *app_info) {
+  timing::timer.Time("Create Vulkan Device", timing::OTHER, [this, platform_window, app_info](){
     std::vector<const char *> instance_extensions;
     std::vector<const char *> instance_layers;
     std::vector<const char *> device_extensions;
@@ -101,76 +101,76 @@ void Device::CreateVulkanDevice(ANativeWindow *platformWindow,
 
     // **********************************************************
     // Create the Vulkan instance
-    VkInstanceCreateInfo instanceCreateInfo{
+    VkInstanceCreateInfo instance_create_info {
         .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
         .pNext = nullptr,
-        .pApplicationInfo = appInfo,
+        .pApplicationInfo = app_info,
         .enabledExtensionCount =
         static_cast<uint32_t>(instance_extensions.size()),
         .ppEnabledExtensionNames = instance_extensions.data(),
         .enabledLayerCount = static_cast<uint32_t>(instance_layers.size()),
         .ppEnabledLayerNames = instance_layers.data(),
     };
-    CALL_VK(vkCreateInstance(&instanceCreateInfo, nullptr, &instance_));
-    VkAndroidSurfaceCreateInfoKHR createInfo{
+    CALL_VK(vkCreateInstance(&instance_create_info, nullptr, &instance_));
+    VkAndroidSurfaceCreateInfoKHR create_info {
         .sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR,
         .pNext = nullptr,
         .flags = 0,
-        .window = platformWindow};
+        .window = platform_window};
 
-    CALL_VK(vkCreateAndroidSurfaceKHR(instance_, &createInfo, nullptr,
+    CALL_VK(vkCreateAndroidSurfaceKHR(instance_, &create_info, nullptr,
                                       &surface_));
     // Find one GPU to use:
 
     // On Android, every GPU device is equal -- supporting
     // graphics/compute/present
     // for this sample, we use the very first GPU device found on the system
-    uint32_t gpuCount = 0;
-    CALL_VK(vkEnumeratePhysicalDevices(instance_, &gpuCount, nullptr));
-    VkPhysicalDevice tmpGpus[gpuCount];
-    CALL_VK(vkEnumeratePhysicalDevices(instance_, &gpuCount, tmpGpus));
-    gpuDevice_ = tmpGpus[0];  // Pick up the first GPU Device
-    vkGetPhysicalDeviceMemoryProperties(gpuDevice_,
-                                        &gpuMemoryProperties_);
+    uint32_t gpu_count = 0;
+    CALL_VK(vkEnumeratePhysicalDevices(instance_, &gpu_count, nullptr));
+    VkPhysicalDevice tmp_gpus[gpu_count];
+    CALL_VK(vkEnumeratePhysicalDevices(instance_, &gpu_count, tmp_gpus));
+    gpu_device_ = tmp_gpus[0];  // Pick up the first GPU Device
+    vkGetPhysicalDeviceMemoryProperties(gpu_device_,
+                                        &gpu_memory_properties_);
 
     // Find a GFX queue family
-    uint32_t queueFamilyCount;
-    vkGetPhysicalDeviceQueueFamilyProperties(gpuDevice_, &queueFamilyCount,
+    uint32_t queue_family_count;
+    vkGetPhysicalDeviceQueueFamilyProperties(gpu_device_, &queue_family_count,
                                              nullptr);
-    assert(queueFamilyCount);
-    std::vector<VkQueueFamilyProperties> queueFamilyProperties(queueFamilyCount);
-    vkGetPhysicalDeviceQueueFamilyProperties(gpuDevice_, &queueFamilyCount,
-                                             queueFamilyProperties.data());
+    assert(queue_family_count);
+    std::vector<VkQueueFamilyProperties> queue_family_properties(queue_family_count);
+    vkGetPhysicalDeviceQueueFamilyProperties(gpu_device_, &queue_family_count,
+                                             queue_family_properties.data());
 
-    uint32_t queueFamilyIndex;
-    for (queueFamilyIndex = 0; queueFamilyIndex < queueFamilyCount;
-         queueFamilyIndex++) {
-      if (queueFamilyProperties[queueFamilyIndex].queueFlags &
+    uint32_t queue_family_index;
+    for (queue_family_index = 0; queue_family_index < queue_family_count;
+         queue_family_index++) {
+      if (queue_family_properties[queue_family_index].queueFlags &
           VK_QUEUE_GRAPHICS_BIT) {
         break;
       }
     }
-    assert(queueFamilyIndex < queueFamilyCount);
-    queueFamilyIndex_ = queueFamilyIndex;
+    assert(queue_family_index < queue_family_count);
+    queue_family_index_ = queue_family_index;
 
     // Create a logical device (vulkan device)
     float priorities[] = {
         1.0f,
     };
-    VkDeviceQueueCreateInfo queueCreateInfo{
+    VkDeviceQueueCreateInfo queue_create_info {
         .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
         .pNext = nullptr,
         .flags = 0,
         .queueCount = 1,
-        .queueFamilyIndex = queueFamilyIndex,
+        .queueFamilyIndex = queue_family_index,
         .pQueuePriorities = priorities,
     };
 
-    VkDeviceCreateInfo deviceCreateInfo{
+    VkDeviceCreateInfo device_create_info {
         .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
         .pNext = nullptr,
         .queueCreateInfoCount = 1,
-        .pQueueCreateInfos = &queueCreateInfo,
+        .pQueueCreateInfos = &queue_create_info,
         .enabledLayerCount = 0,
         .ppEnabledLayerNames = nullptr,
         .enabledExtensionCount = static_cast<uint32_t>(device_extensions.size()),
@@ -178,16 +178,16 @@ void Device::CreateVulkanDevice(ANativeWindow *platformWindow,
         .pEnabledFeatures = nullptr,
     };
 
-    CALL_VK(vkCreateDevice(gpuDevice_, &deviceCreateInfo, nullptr,
+    CALL_VK(vkCreateDevice(gpu_device_, &device_create_info, nullptr,
                            &device_));
-    vkGetDeviceQueue(device_, queueFamilyIndex_, 0, &queue_);
-    DebugMarker::setup(device_, gpuDevice_);
+    vkGetDeviceQueue(device_, queue_family_index_, 0, &queue_);
+    debugmarker::Setup(device_, gpu_device_);
   });
 }
 
-void Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer &buffer,
-                  VkDeviceMemory &bufferMemory, VkMemoryPropertyFlags properties) {
-  VkBufferCreateInfo bufferInfo = {
+void Device::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer &buffer,
+                  VkDeviceMemory &buffer_memory, VkMemoryPropertyFlags properties) {
+  VkBufferCreateInfo buffer_info = {
           .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
           .pNext = nullptr,
           .size = size,
@@ -197,35 +197,35 @@ void Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer 
           .queueFamilyIndexCount = 1,
   };
 
-  CALL_VK(vkCreateBuffer(device_, &bufferInfo, nullptr, &buffer));
+  CALL_VK(vkCreateBuffer(device_, &buffer_info, nullptr, &buffer));
 
-  VkMemoryRequirements memRequirements;
-  vkGetBufferMemoryRequirements(device_, buffer, &memRequirements);
+  VkMemoryRequirements mem_requirements;
+  vkGetBufferMemoryRequirements(device_, buffer, &mem_requirements);
 
-  VkMemoryAllocateInfo allocInfo = {
+  VkMemoryAllocateInfo alloc_info = {
           .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
           .pNext = nullptr,
-          .allocationSize = memRequirements.size,
-          .memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits,
-                  properties, gpuDevice_),
+          .allocationSize = mem_requirements.size,
+          .memoryTypeIndex = FindMemoryType(mem_requirements.memoryTypeBits,
+                  properties, gpu_device_),
   };
 
-  CALL_VK(vkAllocateMemory(device_, &allocInfo, nullptr, &bufferMemory));
-  CALL_VK(vkBindBufferMemory(device_, buffer, bufferMemory, 0));
+  CALL_VK(vkAllocateMemory(device_, &alloc_info, nullptr, &buffer_memory));
+  CALL_VK(vkBindBufferMemory(device_, buffer, buffer_memory, 0));
 }
 
-void Device::createSwapChain(VkSwapchainKHR oldSwapchain) {
-  Timing::timer.time("Create Swapchain", Timing::OTHER, [this, oldSwapchain](){
+void Device::CreateSwapChain(VkSwapchainKHR oldSwapchain) {
+  timing::timer.Time("Create Swapchain", timing::OTHER, [this, oldSwapchain](){
     VkSurfaceCapabilitiesKHR surfaceCapabilities;
-    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(gpuDevice_, surface_,
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(gpu_device_, surface_,
                                               &surfaceCapabilities);
 
     uint32_t new_width = surfaceCapabilities.currentExtent.width;
     uint32_t new_height = surfaceCapabilities.currentExtent.height;
-    pretransformFlag_ = surfaceCapabilities.currentTransform;
+    pretransform_flag_ = surfaceCapabilities.currentTransform;
 
-    if (pretransformFlag_ & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR ||
-        pretransformFlag_ & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR) {
+    if (pretransform_flag_ & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR ||
+        pretransform_flag_ & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR) {
       // Do not change the swapchain dimensions
       surfaceCapabilities.currentExtent.height = new_width;
       surfaceCapabilities.currentExtent.width = new_height;
@@ -233,10 +233,10 @@ void Device::createSwapChain(VkSwapchainKHR oldSwapchain) {
 
     // Query the list of supported surface format and choose one we like
     uint32_t formatCount = 0;
-    vkGetPhysicalDeviceSurfaceFormatsKHR(gpuDevice_, surface_,
+    vkGetPhysicalDeviceSurfaceFormatsKHR(gpu_device_, surface_,
                                          &formatCount, nullptr);
     VkSurfaceFormatKHR *formats = new VkSurfaceFormatKHR[formatCount];
-    vkGetPhysicalDeviceSurfaceFormatsKHR(gpuDevice_, surface_,
+    vkGetPhysicalDeviceSurfaceFormatsKHR(gpu_device_, surface_,
                                          &formatCount, formats);
     LOGI("Got %d formats", formatCount);
 
@@ -246,8 +246,8 @@ void Device::createSwapChain(VkSwapchainKHR oldSwapchain) {
     }
     assert(chosenFormat < formatCount);
 
-    displaySize_ = surfaceCapabilities.currentExtent;
-    displayFormat_ = formats[chosenFormat].format;
+    display_size_ = surfaceCapabilities.currentExtent;
+    display_format_ = formats[chosenFormat].format;
 
     // **********************************************************
     // Create a swap chain (here we choose the minimum available number of surface
@@ -261,12 +261,12 @@ void Device::createSwapChain(VkSwapchainKHR oldSwapchain) {
         .imageColorSpace = formats[chosenFormat].colorSpace,
         .imageExtent = surfaceCapabilities.currentExtent,
         .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-        .preTransform = pretransformFlag_,
+        .preTransform = pretransform_flag_,
         .compositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR,
         .imageArrayLayers = 1,
         .imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
         .queueFamilyIndexCount = 1,
-        .pQueueFamilyIndices = &queueFamilyIndex_,
+        .pQueueFamilyIndices = &queue_family_index_,
         .presentMode = VK_PRESENT_MODE_FIFO_KHR,
         .oldSwapchain = oldSwapchain,
         .clipped = VK_FALSE,
@@ -280,45 +280,45 @@ void Device::createSwapChain(VkSwapchainKHR oldSwapchain) {
 
     // Get the length of the created swap chain
     CALL_VK(vkGetSwapchainImagesKHR(device_, swapchain_,
-                                    &swapchainLength_, nullptr));
+                                    &swapchain_length_, nullptr));
     delete[] formats;
 
     uint32_t SwapchainImagesCount = 0;
     CALL_VK(vkGetSwapchainImagesKHR(device_, swapchain_,
                                     &SwapchainImagesCount, nullptr));
-    displayImages_.resize(SwapchainImagesCount);
+    display_images_.resize(SwapchainImagesCount);
     CALL_VK(vkGetSwapchainImagesKHR(device_, swapchain_,
                                     &SwapchainImagesCount,
-                                    displayImages_.data()));
+                                    display_images_.data()));
 
     current_frame_index_ = 0;
   });
 }
 
-void Device::setObjectName(uint64_t object,
+void Device::SetObjectName(uint64_t object,
                    VkDebugReportObjectTypeEXT objectType,
                    const char *name) {
-  DebugMarker::setObjectName(getDevice(), object, objectType, name);
+  debugmarker::SetObjectName(GetDevice(), object, objectType, name);
 }
 
-void Device::setObjectTag(uint64_t object,
+void Device::SetObjectTag(uint64_t object,
                   VkDebugReportObjectTypeEXT objectType,
                   uint64_t name,
                   size_t tagSize,
                   const void *tag) {
-  DebugMarker::setObjectTag(getDevice(), object, objectType, name, tagSize, tag);
+  debugmarker::SetObjectTag(GetDevice(), object, objectType, name, tagSize, tag);
 }
 
-void Device::beginDebugRegion(VkCommandBuffer cmdbuffer, const char *pMarkerName,
+void Device::BeginDebugRegion(VkCommandBuffer cmdbuffer, const char *pMarkerName,
                               std::array<float, 4> color) {
-  DebugMarker::beginRegion(cmdbuffer, pMarkerName, color);
+  debugmarker::BeginRegion(cmdbuffer, pMarkerName, color);
 }
 
-void Device::insertDebugMarker(VkCommandBuffer cmdbuffer, const char *markerName,
+void Device::InsertDebugMarker(VkCommandBuffer cmdbuffer, const char *markerName,
                                std::array<float, 4> color) {
-  DebugMarker::insert(cmdbuffer, markerName, color);
+  debugmarker::Insert(cmdbuffer, markerName, color);
 }
 
-void Device::endDebugRegion(VkCommandBuffer cmdBuffer) {
-  DebugMarker::endRegion(cmdBuffer);
+void Device::EndDebugRegion(VkCommandBuffer cmdBuffer) {
+  debugmarker::EndRegion(cmdBuffer);
 }

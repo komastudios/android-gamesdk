@@ -5,31 +5,31 @@
 #include "uniform_buffer.h"
 
 
-UniformBuffer::UniformBuffer(BenderKit::Device& device, size_t bufferSize) :
+UniformBuffer::UniformBuffer(benderkit::Device& device, size_t bufferSize) :
         device_(device) {
-  buffers_.resize(device_.getSwapchainLength());
-  bufferMemory_.resize(device_.getSwapchainLength());
+  buffers_.resize(device_.GetSwapchainLength());
+  bufferMemory_.resize(device_.GetSwapchainLength());
 
-  for (size_t i = 0; i < device_.getSwapchainLength(); i++) {
-    device_.createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+  for (size_t i = 0; i < device_.GetSwapchainLength(); i++) {
+    device_.CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
                          buffers_[i], bufferMemory_[i]);
   }
 }
 
 UniformBuffer::~UniformBuffer() {
-  for (int i = 0; i < device_.getSwapchainLength(); ++i) {
-    vkDestroyBuffer(device_.getDevice(), buffers_[i], nullptr);
-    vkFreeMemory(device_.getDevice(), bufferMemory_[i], nullptr);
+  for (int i = 0; i < device_.GetSwapchainLength(); ++i) {
+    vkDestroyBuffer(device_.GetDevice(), buffers_[i], nullptr);
+    vkFreeMemory(device_.GetDevice(), bufferMemory_[i], nullptr);
   }
 }
 
 void* UniformBuffer::map(int frameIndex, size_t offset, size_t size) {
   void* data;
-  vkMapMemory(device_.getDevice(), bufferMemory_[frameIndex], offset, size, 0, &data);
+  vkMapMemory(device_.GetDevice(), bufferMemory_[frameIndex], offset, size, 0, &data);
   return data;
 }
 
 void UniformBuffer::unmap(int frameIndex) {
-  vkUnmapMemory(device_.getDevice(), bufferMemory_[frameIndex]);
+  vkUnmapMemory(device_.GetDevice(), bufferMemory_[frameIndex]);
 }
 
