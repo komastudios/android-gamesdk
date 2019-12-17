@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         try {
-            JSONObject build = new JSONObject();
+            JSONObject build = new JSONObject(NativeInvoker.getCpuInfo());
             build.put("ID", Build.ID);
             build.put("DISPLAY", Build.DISPLAY);
             build.put("PRODUCT", Build.PRODUCT);
