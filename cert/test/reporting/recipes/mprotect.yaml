@@ -4,9 +4,6 @@ build:
 
 systrace:
   enabled: false
-  categories: "sched freq idle am wm gfx view binder_driver hal dalvik input res"
-  keywords:
-    - MonitorOperation
 
 deployment:
   local:
@@ -14,3 +11,5 @@ deployment:
 
 summary:
   enabled: true
+  format: md
+
