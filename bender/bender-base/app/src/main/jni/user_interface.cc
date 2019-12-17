@@ -40,9 +40,9 @@ void UserInterface::DrawUserInterface(VkRenderPass render_pass) {
                          text_field.text_size,
                          text_field.x_corner,
                          text_field.y_corner,
-                         renderer_->getCurrentCommandBuffer(),
+                         renderer_->GetCurrentCommandBuffer(),
                          render_pass,
-                         renderer_->getCurrentFrame());
+                         renderer_->GetCurrentFrame());
     }
 }
 
