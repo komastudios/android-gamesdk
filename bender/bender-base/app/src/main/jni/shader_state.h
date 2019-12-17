@@ -17,47 +17,48 @@
 
 #include "vulkan_wrapper.h"
 #include "bender_kit.h"
+
 #include <android_native_app_glue.h>
 #include <string>
 #include <vector>
 #include <array>
 
-
 class ShaderState {
  public:
   enum class Type { Vertex, Fragment };
 
-  static constexpr int shaderTypesCount = static_cast<int>(Type::Fragment) + 1;
+  static constexpr int kShaderTypesCount = static_cast<int>(Type::Fragment) + 1;
 
-  // TODO: passing app and appDevice to each shader state object to just set a static member variable
+  // TODO: passing app and app_device to each shader state object to just set a static member variable
   // TODO: is bad design. Consider a different approach.
-  ShaderState(std::string shaderName, const benderkit::VertexFormat& vertex_format, android_app &app, VkDevice appDevice);
+  ShaderState(std::string shader_name, const benderkit::VertexFormat& vertex_format,
+              android_app &app, VkDevice app_device);
 
   ~ShaderState();
 
-  void cleanup();
+  void Cleanup();
 
-  void onResume(VkDevice appDevice);
+  void OnResume(VkDevice app_device);
 
-  void fillPipelineInfo(VkGraphicsPipelineCreateInfo *pipeline_info);
+  void FillPipelineInfo(VkGraphicsPipelineCreateInfo *pipeline_info);
 
 
  private:
-  android_app &androidAppCtx;
-  VkDevice device;
+  android_app &android_app_ctx_;
+  VkDevice device_;
   std::string file_name_;
 
   benderkit::VertexFormat vertex_format_;        // TODO: Consider sharing the vertex format across shader states
 
-  VkPipelineInputAssemblyStateCreateInfo pipelineInputAssembly;
+  VkPipelineInputAssemblyStateCreateInfo pipeline_input_assembly_;
 
-  std::array<VkShaderModule, shaderTypesCount> shaderModules;
-  std::array<VkPipelineShaderStageCreateInfo, shaderTypesCount> shaderStages;
+  std::array<VkShaderModule, kShaderTypesCount> shader_modules;
+  std::array<VkPipelineShaderStageCreateInfo, kShaderTypesCount> shader_stages;
 
-  void setVertexShader(const std::string &shaderFile);
-  void setFragmentShader(const std::string &shaderFile);
+  void SetVertexShader(const std::string &shader_file);
+  void SetFragmentShader(const std::string &shader_file);
 
-  VkResult loadShaderFromFile(const char *filePath, VkShaderModule *shaderOut);
+  VkResult LoadShaderFromFile(const char *file_path, VkShaderModule *shader_out);
 };
 
 #endif //BENDER_BASE_SHADER_STATE_HPP

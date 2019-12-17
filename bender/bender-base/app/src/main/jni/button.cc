@@ -47,7 +47,7 @@ void Button::drawButton(VkRenderPass render_pass, Font *font, Renderer *renderer
                    1.25f,
                    x_center_ - (label.size() / 2 * FONT_SIZE_RATIO_X),
                    y_center_ - (FONT_SIZE_RATIO_Y),
-                   renderer->getCurrentCommandBuffer(),
+                   renderer->GetCurrentCommandBuffer(),
                    render_pass,
-                   renderer->getCurrentFrame());
+                   renderer->GetCurrentFrame());
 }
