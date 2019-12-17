@@ -9,7 +9,7 @@
 #include "input.h"
 #include "constants.h"
 
-using namespace Input;
+using namespace input;
 
 struct TextField {
     std::function<void(TextField&)> updater = [] (TextField&) {};
@@ -33,11 +33,11 @@ public:
     void DrawUserInterface(VkRenderPass render_pass);
 
     static int32_t Handler(android_app *app, AInputEvent *event);
-    static void ActionDownHandler(Input::Data *input_data, std::vector<Button> &buttons);
-    static void ActionMoveHandler(Input::Data *input_data, std::vector<Button> &buttons);
-    static void ActionUpHandler(Input::Data *input_data, std::vector<Button> &buttons);
+    static void ActionDownHandler(input::Data *input_data, std::vector<Button> &buttons);
+    static void ActionMoveHandler(input::Data *input_data, std::vector<Button> &buttons);
+    static void ActionUpHandler(input::Data *input_data, std::vector<Button> &buttons);
 
-    void OnResume(Renderer *newRenderer, Font *font);
+    void OnResume(Renderer *new_renderer, Font *font);
 
 private:
     Renderer *renderer_;

@@ -145,57 +145,57 @@ void ChangeMaterialComplexity() {
 }
 
 void CreateButtons() {
-  Button::setScreenResolution(device->GetDisplaySizeOriented());
+  Button::SetScreenResolution(device->GetDisplaySizeOriented());
 
   user_interface->RegisterButton([] (Button& button) {
-      button.onHold = StrafeLeft;
-      button.setLabel("<--");
-      button.setPosition(-.7, .2, .7, .2);
+      button.on_hold_ = StrafeLeft;
+      button.SetLabel("<--");
+      button.SetPosition(-.7, .2, .7, .2);
   });
   user_interface->RegisterButton([] (Button& button) {
-    button.onHold = StrafeRight;
-    button.setLabel("-->");
-    button.setPosition(-.2, .2, .7, .2);
+    button.on_hold_ = StrafeRight;
+    button.SetLabel("-->");
+    button.SetPosition(-.2, .2, .7, .2);
   });
   user_interface->RegisterButton([] (Button& button) {
-    button.onHold = StrafeUp;
-    button.setLabel("^");
-    button.setPosition(-.47, .2, .6, .2);
+    button.on_hold_ = StrafeUp;
+    button.SetLabel("^");
+    button.SetPosition(-.47, .2, .6, .2);
   });
   user_interface->RegisterButton([] (Button& button) {
-    button.onHold = StrafeDown;
-    button.setLabel("0");
-    button.setPosition(-.47, .2, .85, .2);
+    button.on_hold_ = StrafeDown;
+    button.SetLabel("0");
+    button.SetPosition(-.47, .2, .85, .2);
   });
   user_interface->RegisterButton([] (Button& button) {
-    button.onHold = MoveForward;
-    button.setLabel("Forward");
-    button.setPosition(.43, .2, .65, .2);
+    button.on_hold_ = MoveForward;
+    button.SetLabel("Forward");
+    button.SetPosition(.43, .2, .65, .2);
   });
   user_interface->RegisterButton([] (Button& button) {
-    button.onHold = MoveBackward;
-    button.setLabel("Backward");
-    button.setPosition(.43, .2, .85, .2);
+    button.on_hold_ = MoveBackward;
+    button.SetLabel("Backward");
+    button.SetPosition(.43, .2, .85, .2);
   });
   user_interface->RegisterButton([] (Button& button) {
-    button.onUp = CreateInstance;
-    button.setLabel("+1 Mesh");
-    button.setPosition(-.2, .2, .4, .2);
+    button.on_up_ = CreateInstance;
+    button.SetLabel("+1 Mesh");
+    button.SetPosition(-.2, .2, .4, .2);
   });
   user_interface->RegisterButton([] (Button& button) {
-    button.onUp = DeleteInstance;
-    button.setLabel("-1 Mesh");
-    button.setPosition(-.7, .2, .4, .2);
+    button.on_up_ = DeleteInstance;
+    button.SetLabel("-1 Mesh");
+    button.SetPosition(-.7, .2, .4, .2);
   });
   user_interface->RegisterButton([] (Button& button) {
-    button.onUp = ChangePolyhedralComplexity;
-    button.setLabel("Poly Switch");
-    button.setPosition(.5, .2, .2, .2);
+    button.on_up_ = ChangePolyhedralComplexity;
+    button.SetLabel("Poly Switch");
+    button.SetPosition(.5, .2, .2, .2);
   });
   user_interface->RegisterButton([] (Button& button) {
-    button.onUp = ChangeMaterialComplexity;
-    button.setLabel("Tex Switch");
-    button.setPosition(.5, .2, .4, .2);
+    button.on_up_ = ChangeMaterialComplexity;
+    button.SetLabel("Tex Switch");
+    button.SetPosition(.5, .2, .4, .2);
   });
 }
 
@@ -314,15 +314,15 @@ void CreateFramebuffers(VkRenderPass &render_pass,
   }
 }
 
-void UpdateCamera(Input::Data *input_data) {
-  if ((input_data->lastButton != nullptr && input_data->lastInputCount > 1)
-      || input_data->lastButton == nullptr) {
+void UpdateCamera(input::Data *input_data) {
+  if ((input_data->last_button != nullptr && input_data->last_input_count > 1)
+      || input_data->last_button == nullptr) {
     render_graph->RotateCameraLocal(glm::quat(glm::vec3(0.0f,
-                                                        input_data->deltaX
+                                                        input_data->delta_x
                                                             / device->GetDisplaySize().width,
                                                         0.0f)));
     render_graph->RotateCameraGlobal(glm::quat(glm::vec3(
-        input_data->deltaY / device->GetDisplaySize().height, 0.0f, 0.0f)));
+        input_data->delta_y / device->GetDisplaySize().height, 0.0f, 0.0f)));
   }
 
   glm::mat4 pre_rotate_mat = kIdentityMat4;
@@ -347,7 +347,7 @@ void UpdateCamera(Input::Data *input_data) {
   render_graph->SetCameraProjMatrix(proj_matrix);
 }
 
-void UpdateInstances(Input::Data *input_data) {
+void UpdateInstances(input::Data *input_data) {
   auto all_meshes = render_graph->GetAllMeshes();
   for (int i = 0; i < all_meshes.size(); i++) {
     all_meshes[i]->rotate(glm::vec3(0.0f, 1.0f, 1.0f), 90 * frame_time);
@@ -363,7 +363,7 @@ void UpdateInstances(Input::Data *input_data) {
   renderer->UpdateLights(render_graph->GetCameraPosition());
 }
 
-void HandleInput(Input::Data *input_data) {
+void HandleInput(input::Data *input_data) {
   UpdateCamera(input_data);
   UpdateInstances(input_data);
 }
@@ -721,7 +721,7 @@ void DeleteVulkan(void) {
   device = nullptr;
 }
 
-bool VulkanDrawFrame(Input::Data *input_data) {
+bool VulkanDrawFrame(input::Data *input_data) {
   if (window_resized) {
     OnOrientationChange();
   }
@@ -822,6 +822,6 @@ void OnOrientationChange() {
   device->CreateSwapChain(device->GetSwapchain());
   CreateDepthBuffer();
   CreateFramebuffers(render_pass, depth_buffer.image_view);
-  Button::setScreenResolution(device->GetDisplaySizeOriented());
+  Button::SetScreenResolution(device->GetDisplaySizeOriented());
   window_resized = false;
 }

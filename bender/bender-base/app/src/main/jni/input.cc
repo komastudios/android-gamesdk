@@ -14,47 +14,47 @@
 
 #include "input.h"
 
-namespace Input {
+namespace input {
 
 void getPointerPosition(AInputEvent *event, int *outX, int *outY) {
   *outX = AMotionEvent_getX(event, 0);
   *outY = AMotionEvent_getY(event, 0);
 }
 
-void clearInput(Data *input) {
-  input->lastX = 0;
-  input->lastY = 0;
-  input->deltaX = 0;
-  input->deltaY = 0;
-  input->doubleTap = false;
+void ClearInput(Data *input) {
+  input->last_x = 0;
+  input->last_y = 0;
+  input->delta_x = 0;
+  input->delta_y = 0;
+  input->double_tap = false;
 }
 
-void testDoubleTap(AInputEvent *event, Data *input) {
+void TestDoubleTap(AInputEvent *event, Data *input) {
   if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_DOWN) {
-    long currTapTime = AMotionEvent_getEventTime(event);
-    long deltaTapTime = currTapTime - input->lastTapTime;
-    if (deltaTapTime < input->doubleTapThresholdTime) {
-      input->doubleTap = true;
+    long curr_tap_time = AMotionEvent_getEventTime(event);
+    long delta_tap_time = curr_tap_time - input->last_tap_time;
+    if (delta_tap_time < input->double_tap_threshold_time) {
+      input->double_tap = true;
     }
-    input->lastTapTime = currTapTime;
+    input->last_tap_time = curr_tap_time;
   }
 }
 
-void updateInputData(AInputEvent *event, Data *input) {
-  int newX, newY;
-  getPointerPosition(event, &newX, &newY);
+void UpdateInputData(AInputEvent *event, Data *input) {
+  int new_x, new_y;
+  getPointerPosition(event, &new_x, &new_y);
   if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_DOWN) {
-    input->lastX = newX;
-    input->lastY = newY;
+    input->last_x = new_x;
+    input->last_y = new_y;
   } else if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_MOVE) {
-    input->deltaX = newX - input->lastX;
-    input->deltaY = newY - input->lastY;
-    input->lastX = newX;
-    input->lastY = newY;
+    input->delta_x = new_x - input->last_x;
+    input->delta_y = new_y - input->last_y;
+    input->last_x = new_x;
+    input->last_y = new_y;
   }
 
-  input->lastInputCount = AMotionEvent_getPointerCount(event);
-  testDoubleTap(event, input);
+  input->last_input_count = AMotionEvent_getPointerCount(event);
+  TestDoubleTap(event, input);
 }
 
 }

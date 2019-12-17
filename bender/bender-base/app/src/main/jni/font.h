@@ -10,6 +10,7 @@
 #import "shader_state.h"
 #import "texture.h"
 #import "renderer.h"
+
 #import <unordered_map>
 
 #define FONT_SDF_PATH "textures/font_sdf.png"
@@ -28,8 +29,8 @@ public:
          const std::string& font_texture_path, const std::string& font_info_path);
     ~Font();
 
-    void drawString(const std::string& text, float text_size, float x, float y,
-                    VkCommandBuffer commandBuffer, VkRenderPass render_pass, uint_t frame_index);
+    void DrawString(const std::string& text, float text_size, float x, float y,
+                    VkCommandBuffer cmd_buffer, VkRenderPass render_pass, uint_t frame_index);
 private:
     Renderer& renderer_;
 
@@ -54,18 +55,18 @@ private:
     int current_frame_;
 
     typedef struct Character {
-        int x, y, width, height, xoffset, yoffset, xadvance;
+        int x, y, width, height, x_offset, y_offset, x_advance;
     } Character;
 
-    std::unordered_map<int, Font::Character> char_map;
+    std::unordered_map<int, Font::Character> char_map_;
 
-    void createFontShaders(android_app &androidAppCtx);
-    void parseFontInfo(const char* info_file_path, android_app &androidAppCtx);
-    void createSampler();
-    void createDescriptorSetLayout();
-    void createDescriptors(Renderer& renderer);
-    void createFontPipeline(VkRenderPass renderPass);
-    void updatePipeline(VkRenderPass render_pass);
+    void CreateFontShaders(android_app &android_app_ctx);
+    void ParseFontInfo(const char* info_file_path, android_app &android_app_ctx);
+    void CreateSampler();
+    void CreateDescriptorSetLayout();
+    void CreateDescriptors(Renderer& renderer);
+    void CreateFontPipeline(VkRenderPass render_pass);
+    void UpdatePipeline(VkRenderPass render_pass);
 };
 
 #endif //BENDER_BASE_FONT_H_
