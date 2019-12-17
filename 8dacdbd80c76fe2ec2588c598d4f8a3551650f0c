@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2f42ff4d_c3bd8e73",
+        "filename": "bender/bender-base/app/src/main/jni/button.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2019-12-17T20:04:58Z",
+      "side": 1,
+      "message": "is the first letter lower or uppercase in the standards?",
+      "revId": "8dacdbd80c76fe2ec2588c598d4f8a3551650f0c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
