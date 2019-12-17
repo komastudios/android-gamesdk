@@ -32,7 +32,7 @@ void DeleteVulkan(void);
 bool IsVulkanReady(void);
 
 // Ask Vulkan to Render a frame
-bool VulkanDrawFrame(Input::Data *input_data);
+bool VulkanDrawFrame(input::Data *input_data);
 
 void ResizeCallback(ANativeActivity *activity, ANativeWindow *window);
 

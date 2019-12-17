@@ -40,7 +40,7 @@ void android_main(struct android_app *app) {
   // Set the callback to process system events
   app->onAppCmd = handle_cmd;
   app->onInputEvent = UserInterface::Handler;
-  app->userData = (void *) new Input::Data;
+  app->userData = (void *) new input::Data;
   app->activity->callbacks->onNativeWindowResized = ResizeCallback;
 
   // Used to poll the events in the main loop
@@ -57,7 +57,7 @@ void android_main(struct android_app *app) {
 
       // render if vulkan is ready
       if (IsVulkanReady()) {
-        VulkanDrawFrame((Input::Data *)app->userData);
+        VulkanDrawFrame((input::Data *)app->userData);
       }
     });
   } while (app->destroyRequested == 0);

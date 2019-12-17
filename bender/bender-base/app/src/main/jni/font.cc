@@ -2,15 +2,17 @@
 // Created by chingtangyu on 11/11/2019.
 //
 
-#import <string>
-#import <sstream>
-#import <istream>
-#include <glm/ext/matrix_transform.hpp>
 #import "font.h"
 #include "shader_bindings.h"
 
+#include <glm/ext/matrix_transform.hpp>
+
+#import <string>
+#import <sstream>
+#import <istream>
+
 namespace {
-    int nextValuePair(std::stringstream *stream) {
+    int NextValuePair(std::stringstream *stream) {
         std::string pair;
         *stream >> pair;
         u_int32_t pos = pair.find('=');
@@ -19,17 +21,17 @@ namespace {
         return val;
     }
 
-    void write_vertex(float data, float **ptr) {
+    void WriteVertex(float data, float **ptr) {
         **ptr = data;
         (*ptr)++;
     }
 }
 
-void Font::parseFontInfo(const char *info_file_path, android_app &androidAppCtx) {
-    AAsset *asset = AAssetManager_open(androidAppCtx.activity->assetManager,
+void Font::ParseFontInfo(const char *info_file_path, android_app &android_app_ctx) {
+    AAsset *asset = AAssetManager_open(android_app_ctx.activity->assetManager,
                                        info_file_path, AASSET_MODE_STREAMING);
     if(asset == nullptr) {
-        LOGE("Font parseFontInfo(): font info not found [%s]", info_file_path);
+        LOGE("Font ParseFontInfo(): font info not found [%s]", info_file_path);
         return;
     }
 
@@ -46,31 +48,31 @@ void Font::parseFontInfo(const char *info_file_path, android_app &androidAppCtx)
 
     while(!istream.eof()) {
         std::string line;
-        std::stringstream lineStream;
+        std::stringstream line_stream;
         std::getline(istream, line);
-        lineStream << line;
+        line_stream << line;
 
         std::string info;
-        lineStream >> info;
+        line_stream >> info;
 
         if (info == "char") {
-            uint32_t charid = nextValuePair(&lineStream);
-            char_map[charid].x = nextValuePair(&lineStream);
-            char_map[charid].y = nextValuePair(&lineStream);
-            char_map[charid].width = nextValuePair(&lineStream);
-            char_map[charid].height = nextValuePair(&lineStream);
-            char_map[charid].xoffset = nextValuePair(&lineStream);
-            char_map[charid].yoffset = nextValuePair(&lineStream);
-            char_map[charid].xadvance = nextValuePair(&lineStream);
-            nextValuePair(&lineStream);
-            nextValuePair(&lineStream);
+            uint32_t charid = NextValuePair(&line_stream);
+            char_map_[charid].x = NextValuePair(&line_stream);
+            char_map_[charid].y = NextValuePair(&line_stream);
+            char_map_[charid].width = NextValuePair(&line_stream);
+            char_map_[charid].height = NextValuePair(&line_stream);
+            char_map_[charid].x_offset = NextValuePair(&line_stream);
+            char_map_[charid].y_offset = NextValuePair(&line_stream);
+            char_map_[charid].x_advance = NextValuePair(&line_stream);
+            NextValuePair(&line_stream);
+            NextValuePair(&line_stream);
         }
     }
 }
 
-void Font::drawString(const std::string& text, float text_size, float x, float y,
-                      VkCommandBuffer commandBuffer, VkRenderPass render_pass, uint_t frame_index) {
-    updatePipeline(render_pass);
+void Font::DrawString(const std::string& text, float text_size, float x, float y,
+                      VkCommandBuffer cmd_buffer, VkRenderPass render_pass, uint_t frame_index) {
+    UpdatePipeline(render_pass);
 
     if((int)frame_index != current_frame_) {
         offset_ = 0;
@@ -106,7 +108,7 @@ void Font::drawString(const std::string& text, float text_size, float x, float y
     float *head = (float*)data;
 
     for (auto& c : text) {
-        Character *char_info = &char_map[c];
+        Character *char_info = &char_map_[c];
 
         float dimx = (float)(char_info->width);
         float dimy = (float)(char_info->height);
@@ -116,41 +118,41 @@ void Font::drawString(const std::string& text, float text_size, float x, float y
         float ts = char_info->y / h;
         float te = (char_info->y + char_info->height) / h;
 
-        float xo = char_info->xoffset;
-        float yo = char_info->yoffset;
+        float xo = char_info->x_offset;
+        float yo = char_info->y_offset;
 
-        write_vertex((posx) + (dimx + xo) / w * text_size_x, &head);
-        write_vertex((posy) + (dimy + yo) / h * text_size_y, &head);
-        write_vertex(ue, &head);
-        write_vertex(te, &head);
+        WriteVertex((posx) + (dimx + xo) / w * text_size_x, &head);
+        WriteVertex((posy) + (dimy + yo) / h * text_size_y, &head);
+        WriteVertex(ue, &head);
+        WriteVertex(te, &head);
 
 
-        write_vertex((posx) +  (xo) / w * text_size_x, &head);
-        write_vertex((posy) + (dimy + yo) / h * text_size_y, &head);
-        write_vertex(us, &head);
-        write_vertex(te, &head);
+        WriteVertex((posx) +  (xo) / w * text_size_x, &head);
+        WriteVertex((posy) + (dimy + yo) / h * text_size_y, &head);
+        WriteVertex(us, &head);
+        WriteVertex(te, &head);
 
-        write_vertex((posx) + (xo) / w * text_size_x, &head);
-        write_vertex((posy) + (yo) / h * text_size_y, &head);
-        write_vertex(us, &head);
-        write_vertex(ts, &head);
+        WriteVertex((posx) + (xo) / w * text_size_x, &head);
+        WriteVertex((posy) + (yo) / h * text_size_y, &head);
+        WriteVertex(us, &head);
+        WriteVertex(ts, &head);
 
-        write_vertex((posx) + (xo) / w * text_size_x, &head);
-        write_vertex((posy) + (yo) / h * text_size_y, &head);
-        write_vertex(us, &head);
-        write_vertex(ts, &head);
+        WriteVertex((posx) + (xo) / w * text_size_x, &head);
+        WriteVertex((posy) + (yo) / h * text_size_y, &head);
+        WriteVertex(us, &head);
+        WriteVertex(ts, &head);
 
-        write_vertex((posx) + (dimx + xo) / w * text_size_x, &head);
-        write_vertex((posy) + (yo) / h * text_size_y, &head);
-        write_vertex(ue, &head);
-        write_vertex(ts, &head);
+        WriteVertex((posx) + (dimx + xo) / w * text_size_x, &head);
+        WriteVertex((posy) + (yo) / h * text_size_y, &head);
+        WriteVertex(ue, &head);
+        WriteVertex(ts, &head);
 
-        write_vertex((posx) + (dimx + xo) / w * text_size_x, &head);
-        write_vertex((posy) + (dimy + yo) / h * text_size_y, &head);
-        write_vertex(ue, &head);
-        write_vertex(te, &head);
+        WriteVertex((posx) + (dimx + xo) / w * text_size_x, &head);
+        WriteVertex((posy) + (dimy + yo) / h * text_size_y, &head);
+        WriteVertex(ue, &head);
+        WriteVertex(te, &head);
 
-        posx += (float)(char_info->xadvance) / w * text_size_x;
+        posx += (float)(char_info->x_advance) / w * text_size_x;
     }
 
     orientation_matrix_->update(frame_index, [this](auto &matrix) {
@@ -174,33 +176,33 @@ void Font::drawString(const std::string& text, float text_size, float x, float y
 
     vkUnmapMemory(renderer_.GetVulkanDevice(), vertexBufferDeviceMemory_);
 
-    vkCmdBindPipeline(commandBuffer,
+    vkCmdBindPipeline(cmd_buffer,
                       VK_PIPELINE_BIND_POINT_GRAPHICS,
                       pipeline_);
 
-    vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuf_, &offset_);
+    vkCmdBindVertexBuffers(cmd_buffer, 0, 1, &vertexBuf_, &offset_);
 
-    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+    vkCmdBindDescriptorSets(cmd_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                             layout_, 0, 1, &font_descriptor_sets_[frame_index], 0, nullptr);
 
-    vkCmdDraw(commandBuffer,
+    vkCmdDraw(cmd_buffer,
               text.size() * FONT_NUM_QUAD_INDICES,
               1, 0, 0);
     offset_ += sizeof(float) * text.size() * FONT_NUM_QUAD_INDICES * FONT_ATTR_COUNT;
 }
 
-Font::Font(Renderer& renderer, android_app &androidAppCtx,
+Font::Font(Renderer& renderer, android_app &android_app_ctx,
            const std::string& font_texture_path, const std::string& font_info_path) : renderer_(renderer){
-    texture_ = std::make_unique<Texture>(renderer_.GetDevice(), androidAppCtx,
+    texture_ = std::make_unique<Texture>(renderer_.GetDevice(), android_app_ctx,
                            font_texture_path.c_str(), VK_FORMAT_R8G8B8A8_SRGB);
 
     orientation_matrix_ = std::make_unique<UniformBufferObject<glm::mat4>>(renderer_.GetDevice());
 
-    createFontShaders(androidAppCtx);
-    parseFontInfo(font_info_path.c_str(), androidAppCtx);
-    createSampler();
-    createDescriptorSetLayout();
-    createDescriptors(renderer);
+    CreateFontShaders(android_app_ctx);
+    ParseFontInfo(font_info_path.c_str(), android_app_ctx);
+    CreateSampler();
+    CreateDescriptorSetLayout();
+    CreateDescriptors(renderer);
 
     VkDeviceSize bufferSizeVertex = FONT_VERTEX_BUFFER_SIZE;
     renderer_.GetDevice().CreateBuffer(bufferSizeVertex, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
@@ -221,18 +223,18 @@ Font::~Font() {
     vkDestroyDescriptorSetLayout(renderer_.GetVulkanDevice(), font_descriptors_layout_, nullptr);
 }
 
-void Font::createFontShaders(android_app &androidAppCtx) {
+void Font::CreateFontShaders(android_app &android_app_ctx) {
     benderkit::VertexFormat vertex_format{
             {
                     benderkit::VertexElement::float2,
                     benderkit::VertexElement::float2,
             },
     };
-    shader_ = std::make_shared<ShaderState>("sdf", vertex_format, androidAppCtx,
+    shader_ = std::make_shared<ShaderState>("sdf", vertex_format, android_app_ctx,
                                             renderer_.GetVulkanDevice());
 }
 
-void Font::createSampler() {
+void Font::CreateSampler() {
     const VkSamplerCreateInfo sampler_create_info = {
             .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
             .pNext = nullptr,
@@ -254,7 +256,7 @@ void Font::createSampler() {
                             &sampler_));
 }
 
-void Font::createDescriptors(Renderer& renderer) {
+void Font::CreateDescriptors(Renderer& renderer) {
     std::vector<VkDescriptorSetLayout> layouts(renderer_.GetDevice().GetDisplayImages().size(),
                                                font_descriptors_layout_);
 
@@ -302,7 +304,7 @@ void Font::createDescriptors(Renderer& renderer) {
     }
 }
 
-void Font::createDescriptorSetLayout() {
+void Font::CreateDescriptorSetLayout() {
     VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
     samplerLayoutBinding.binding = FONT_FRAG_SAMPLER_BINDING;
     samplerLayoutBinding.descriptorCount = 1;
@@ -328,7 +330,7 @@ void Font::createDescriptorSetLayout() {
                                         &font_descriptors_layout_));
 }
 
-void Font::createFontPipeline(VkRenderPass renderPass) {
+void Font::CreateFontPipeline(VkRenderPass renderPass) {
     VkViewport viewport{
             .x = 0.0f,
             .y = 0.0f,
@@ -464,10 +466,10 @@ void Font::createFontPipeline(VkRenderPass renderPass) {
                                       nullptr, &pipeline_));
 }
 
-void Font::updatePipeline(VkRenderPass renderPass) {
+void Font::UpdatePipeline(VkRenderPass renderPass) {
     if (pipeline_ != VK_NULL_HANDLE)
         return;
 
-    createFontPipeline(renderPass);
+    CreateFontPipeline(renderPass);
 }
 
