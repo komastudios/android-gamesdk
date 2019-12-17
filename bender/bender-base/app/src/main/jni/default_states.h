@@ -21,13 +21,13 @@ class DefaultStates {
 public:
   DefaultStates(const benderkit::Device &device);
 
-  VkPipelineViewportStateCreateInfo getPipelineViewportState() const { return pipeline_viewport_state_; }
-  VkPipelineDepthStencilStateCreateInfo getDepthStencilState() const { return depth_stencil_state_; }
-  VkPipelineRasterizationStateCreateInfo getPipelineRasterizationState() const { return pipeline_rasterization_state_; }
-  VkPipelineMultisampleStateCreateInfo getPipelineMultisampleState() const { return pipeline_multisample_state_;  }
-  VkPipelineColorBlendStateCreateInfo getColorBlendInfo() const { return color_blend_info_; }
+  VkPipelineViewportStateCreateInfo GetPipelineViewportState() const { return pipeline_viewport_state_; }
+  VkPipelineDepthStencilStateCreateInfo GetDepthStencilState() const { return depth_stencil_state_; }
+  VkPipelineRasterizationStateCreateInfo GetPipelineRasterizationState() const { return pipeline_rasterization_state_; }
+  VkPipelineMultisampleStateCreateInfo GetPipelineMultisampleState() const { return pipeline_multisample_state_;  }
+  VkPipelineColorBlendStateCreateInfo GetColorBlendInfo() const { return color_blend_info_; }
 
-  void fillDefaultPipelineCreateInfo(VkGraphicsPipelineCreateInfo* pipeline_create_info) const;
+  void FillDefaultPipelineCreateInfo(VkGraphicsPipelineCreateInfo* pipeline_create_info) const;
 
 private:
   const benderkit::Device &device_;
@@ -42,11 +42,11 @@ private:
   VkPipelineMultisampleStateCreateInfo pipeline_multisample_state_;
   VkPipelineColorBlendStateCreateInfo color_blend_info_;
 
-  VkPipelineViewportStateCreateInfo defaultPipelineViewportState() const;
-  VkPipelineDepthStencilStateCreateInfo defaultDepthStencilState() const;
-  VkPipelineRasterizationStateCreateInfo defaultPipelineRasterizationState() const;
-  VkPipelineMultisampleStateCreateInfo defaultPipelineMultisampleState() const;
-  VkPipelineColorBlendStateCreateInfo defaultColorBlendInfo() const;
+  VkPipelineViewportStateCreateInfo DefaultPipelineViewportState() const;
+  VkPipelineDepthStencilStateCreateInfo DefaultDepthStencilState() const;
+  VkPipelineRasterizationStateCreateInfo DefaultPipelineRasterizationState() const;
+  VkPipelineMultisampleStateCreateInfo DefaultPipelineMultisampleState() const;
+  VkPipelineColorBlendStateCreateInfo DefaultColorBlendInfo() const;
 };
 
 #endif // BENDER_BASE_DEFAULT_STATES_H_

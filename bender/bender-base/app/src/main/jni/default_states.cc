@@ -42,14 +42,14 @@ DefaultStates::DefaultStates(const benderkit::Device &device): device_(device) {
           .blendEnable = VK_FALSE,
   };
 
-  pipeline_viewport_state_ = defaultPipelineViewportState();
-  depth_stencil_state_ = defaultDepthStencilState();
-  pipeline_rasterization_state_ = defaultPipelineRasterizationState();
-  pipeline_multisample_state_ = defaultPipelineMultisampleState();
-  color_blend_info_ = defaultColorBlendInfo();
+  pipeline_viewport_state_ = DefaultPipelineViewportState();
+  depth_stencil_state_ = DefaultDepthStencilState();
+  pipeline_rasterization_state_ = DefaultPipelineRasterizationState();
+  pipeline_multisample_state_ = DefaultPipelineMultisampleState();
+  color_blend_info_ = DefaultColorBlendInfo();
 }
 
-void DefaultStates::fillDefaultPipelineCreateInfo(VkGraphicsPipelineCreateInfo* pipeline_create_info) const {
+void DefaultStates::FillDefaultPipelineCreateInfo(VkGraphicsPipelineCreateInfo* pipeline_create_info) const {
   pipeline_create_info->sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
   pipeline_create_info->pNext = nullptr;
   pipeline_create_info->flags = 0;
@@ -66,7 +66,7 @@ void DefaultStates::fillDefaultPipelineCreateInfo(VkGraphicsPipelineCreateInfo* 
   pipeline_create_info->basePipelineIndex = 0;
 }
 
-VkPipelineViewportStateCreateInfo DefaultStates::defaultPipelineViewportState() const {
+VkPipelineViewportStateCreateInfo DefaultStates::DefaultPipelineViewportState() const {
   return {
           .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
           .viewportCount = 1,
@@ -76,7 +76,7 @@ VkPipelineViewportStateCreateInfo DefaultStates::defaultPipelineViewportState() 
   };
 }
 
-VkPipelineDepthStencilStateCreateInfo DefaultStates::defaultDepthStencilState() const {
+VkPipelineDepthStencilStateCreateInfo DefaultStates::DefaultDepthStencilState() const {
   return {
           .sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
           .depthTestEnable = VK_TRUE,
@@ -89,7 +89,7 @@ VkPipelineDepthStencilStateCreateInfo DefaultStates::defaultDepthStencilState() 
   };
 }
 
-VkPipelineRasterizationStateCreateInfo DefaultStates::defaultPipelineRasterizationState() const {
+VkPipelineRasterizationStateCreateInfo DefaultStates::DefaultPipelineRasterizationState() const {
   return {
     .sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
     .depthClampEnable = VK_FALSE,
@@ -105,7 +105,7 @@ VkPipelineRasterizationStateCreateInfo DefaultStates::defaultPipelineRasterizati
   };
 }
 
-VkPipelineMultisampleStateCreateInfo DefaultStates::defaultPipelineMultisampleState() const {
+VkPipelineMultisampleStateCreateInfo DefaultStates::DefaultPipelineMultisampleState() const {
   return {
     .sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
     .pNext = nullptr,
@@ -118,7 +118,7 @@ VkPipelineMultisampleStateCreateInfo DefaultStates::defaultPipelineMultisampleSt
   };
 }
 
-VkPipelineColorBlendStateCreateInfo DefaultStates::defaultColorBlendInfo() const {
+VkPipelineColorBlendStateCreateInfo DefaultStates::DefaultColorBlendInfo() const {
   return {
     .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
     .pNext = nullptr,
