@@ -23,7 +23,7 @@ import numpy as np
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-from lib.common import ensure_dir, NS_PER_S
+from lib.common import ensure_dir, nanoseconds_to_seconds
 from lib.report import Datum, BuildInfo, Suite
 
 if platform.system == "Linux":
@@ -166,7 +166,7 @@ class SuiteHandler(object):
 
     def get_x_axis_as_seconds(self):
         xs = self.get_xs()
-        return (xs - xs[0]) / NS_PER_S
+        return nanoseconds_to_seconds(xs - xs[0])
 
     def get_ys(self) -> List[float]:
         return np.array(list(map(lambda d: d.numeric_value, self.data)))
