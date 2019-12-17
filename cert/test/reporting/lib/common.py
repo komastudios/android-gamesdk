@@ -24,9 +24,11 @@ from typing import List, Tuple
 
 # ------------------------------------------------------------------------------
 
-NS_PER_S = 1e9
-MS_PER_S = 1e3
-NS_PER_MS = 1e6
+def nanoseconds_to_seconds(ns):
+    return ns / 1e9
+
+def seconds_to_nanoseconds(s):
+    return s * 1e9
 
 # ------------------------------------------------------------------------------
 

@@ -17,7 +17,7 @@
 import math
 import sys
 
-from lib.common import Error, NS_PER_S
+from lib.common import Error, nanoseconds_to_seconds
 from lib.graphing_components import *
 
 X_LABELS = ["sleep(ms) (floating)", "sleep(ms) (pinned)"]
@@ -51,8 +51,9 @@ def y_label(datum: Datum, thread_setup):
 def voxels_per_second(datum: Datum):
     n_vox = datum.get_custom_field_numeric(
         "marching_cubes_permutation_results.num_voxels_marched_per_iteration")
-    avg_dur_s = datum.get_custom_field_numeric(
-        "marching_cubes_permutation_results.average_calc_duration") / NS_PER_S
+    avg_dur_s = nanoseconds_to_seconds(
+        datum.get_custom_field_numeric(
+            "marching_cubes_permutation_results.average_calc_duration"))
     return n_vox / avg_dur_s
 
 

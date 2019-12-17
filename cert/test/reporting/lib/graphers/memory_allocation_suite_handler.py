@@ -15,7 +15,7 @@
 #
 
 from lib.graphing_components import *
-from lib.common import NS_PER_S
+from lib.common import nanoseconds_to_seconds
 
 
 def plot_event_on_trim_level(fig, xs, ys, label):
@@ -93,8 +93,8 @@ class MemoryAllocationSuiteHandler(SuiteHandler):
 
     def render_plot(self) -> str:
         x_axis_seconds = self.get_x_axis_as_seconds()
-        start_time_seconds = self.get_xs()[0] / NS_PER_S
-        end_time_seconds = self.get_xs()[-1] / NS_PER_S
+        start_time_seconds = nanoseconds_to_seconds(self.get_xs()[0])
+        end_time_seconds = nanoseconds_to_seconds(self.get_xs()[-1])
 
         happy_color = [0.2, 1, 0.2]
         bad_color = [1, 0.2, 0.2]
@@ -113,7 +113,8 @@ class MemoryAllocationSuiteHandler(SuiteHandler):
             for datum in self.data:
                 value = datum.get_custom_field_numeric(field_name)
                 if value is not None:
-                    s = (datum.timestamp / NS_PER_S) - start_time_seconds
+                    s = nanoseconds_to_seconds(
+                        datum.timestamp) - start_time_seconds
                     xs.append(s)
                     ys.append(value)
 
