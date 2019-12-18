@@ -21,15 +21,18 @@ registered with the HANDLERS global.
 
 from .affinity_test_suite_handler import AffinityTestSuiteHandler
 from .buffer_storage_suite_handler import BufferStorageSuiteHandler
+from .file_performance_suite_handler import FilePerformanceSuiteHandler
 from .half_float_precision import HalfFloatPrecisionSuiteHandler
+from .memory_access_suite_handler import MemoryAccessSuiteHandler
 from .memory_allocation_suite_handler import MemoryAllocationSuiteHandler
 from .marching_cubes_suite_handler import MarchingCubesSuiteHandler
 from .mprotect_suite_handler import MProtectSuiteHandler
 
 HANDLERS = [
     AffinityTestSuiteHandler, BufferStorageSuiteHandler,
-    HalfFloatPrecisionSuiteHandler, MemoryAllocationSuiteHandler,
-    MarchingCubesSuiteHandler, MProtectSuiteHandler
+    FilePerformanceSuiteHandler, HalfFloatPrecisionSuiteHandler,
+    MemoryAllocationSuiteHandler, MarchingCubesSuiteHandler,
+    MProtectSuiteHandler
 ]
 """List containing all registered SuiteHandler implementations to
 render charts."""

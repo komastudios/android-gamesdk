@@ -56,6 +56,7 @@ public abstract class BaseHostActivity extends AppCompatActivity
     protected boolean _canceled;
     protected boolean _running;
     protected String _suiteId;
+    protected String _suiteDescription;
     protected Configuration.StressTest _stressTest;
     protected Handler _mainThreadPump;
     protected TextView _fpsTextView;
@@ -104,6 +105,7 @@ public abstract class BaseHostActivity extends AppCompatActivity
         _stressTest = Configuration.StressTest.fromJson(stressTestJson);
 
         _suiteId = _stressTest.getName();
+        _suiteDescription = _stressTest.getDescription();
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(_suiteId);
         }
@@ -118,18 +120,19 @@ public abstract class BaseHostActivity extends AppCompatActivity
 
         _dataGatherer = new OperationWrapper(
                 _suiteId,
+                _suiteDescription,
                 _stressTest.getDataGatherer(),
                 this,
                 BaseOperation.Mode.DATA_GATHERER);
 
         // we're not using java streams because of SDK 19 support
         for (Operation stressor : _stressTest.getStressors()) {
-            OperationWrapper wrapper = new OperationWrapper(_suiteId, stressor,this, Mode.STRESSOR);
+            OperationWrapper wrapper = new OperationWrapper(_suiteId, _suiteDescription, stressor,this, Mode.STRESSOR);
             _stressors.add(wrapper);
         }
 
         for (Operation monitor : _stressTest.getMonitors()) {
-            OperationWrapper wrapper = new OperationWrapper(_suiteId, monitor, this, Mode.DATA_GATHERER);
+            OperationWrapper wrapper = new OperationWrapper(_suiteId, _suiteDescription, monitor, this, Mode.DATA_GATHERER);
             _monitors.add(wrapper);
         }
     }
@@ -252,7 +255,7 @@ public abstract class BaseHostActivity extends AppCompatActivity
         private BaseOperation _javaOperation;
         private NativeOperationHandle _nativeOperation;
 
-        OperationWrapper(String suiteId,
+        OperationWrapper(String suiteId, String description,
                          Configuration.Operation operation,
                          BaseHostActivity activity,
                          BaseOperation.Mode mode) {
@@ -270,7 +273,8 @@ public abstract class BaseHostActivity extends AppCompatActivity
                     mode);
 
             if (_javaOperation == null) {
-                _nativeOperation = loadNativeOperation(suiteId, operation);
+                _nativeOperation = loadNativeOperation(suiteId, description,
+                        operation);
                 if (_nativeOperation == null) {
                     throw new IllegalStateException(
                             "Unable to create java or native operation of type: \""
@@ -306,9 +310,10 @@ public abstract class BaseHostActivity extends AppCompatActivity
         }
 
         private NativeOperationHandle
-        loadNativeOperation(String suiteId, Configuration.Operation operation) {
+        loadNativeOperation(String suiteId, String description,
+                            Configuration.Operation operation) {
             NativeOperationHandle h = new NativeOperationHandle();
-            h.nativeHandle = NativeInvoker.createOperation(suiteId,
+            h.nativeHandle = NativeInvoker.createOperation(suiteId, description,
                     operation.getId(),
                     _mode.getValue());
 
