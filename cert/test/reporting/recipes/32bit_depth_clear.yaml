@@ -1,0 +1,14 @@
+build:
+  clean: false
+  configuration: recipes/configurations/32bit_depth_clear.json
+
+systrace:
+  enabled: false
+
+deployment:
+  local:
+    all_attached_devices: true
+
+summary:
+  enabled: true
+  format: md
