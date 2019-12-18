@@ -1,0 +1,40 @@
+build:
+  clean: false
+  configuration: recipes/configurations/memory_access.json
+
+systrace:
+  enabled: false
+  categories: "sched freq idle am wm gfx view binder_driver hal dalvik input res"
+  keywords:
+    - MonitorOperation
+
+deployment:
+  local:
+    all_attached_devices: true
+    # device_ids:
+    #   - 6feeb429
+    #   - 94CX1Z4AJ
+  ftl:
+    test: test
+    flags:
+      project: gamesdk-testing
+      format: json
+    args:
+      test:
+        app: ../AndroidCertTest/app/build/outputs/apk/debug/app-debug.apk
+        type: game-loop
+        timeout: 1500
+        device:
+            - {model: taimen, version: 27}
+            - {model: walleye, version: 28}
+            - {model: blueline, version: 28}
+            - {model: sailfish, version: 28}
+
+graph:
+  enabled: true
+  suites:
+    - "Memory Access Test"
+  #skipping:
+  #  - "timestamp"
+  #  - "total_allocation_mb"
+  #  - "perf_info"

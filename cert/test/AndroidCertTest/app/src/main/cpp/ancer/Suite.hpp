@@ -40,7 +40,8 @@ namespace ancer::internal {
     void SetSwappyRenderer(swappy::Renderer* swappy_renderer);
 
     int CreateOperation(
-            const std::string& suite, const std::string& operation, BaseOperation::Mode mode);
+            const std::string& suite, const std::string& description,
+            const std::string& operation, BaseOperation::Mode mode);
 
     void StartOperation(int id, Duration duration, const std::string& config);
     void StopOperation(int id);

@@ -1,0 +1,123 @@
+{
+    "auto_run": false,
+    "delay_between_tests": "500ms",
+    "host": "SwappyGLHostActivity",
+    "defaultMonitors": [
+        {
+            "id": "MonitorOperation"
+        }
+    ],
+    "stress_tests": [
+        {
+            "enabled": true,
+            "name": "Workload Configuration Test",
+            "description": "Divided APK Read",
+            "duration": "0m",
+            "data_gatherer": {
+                "id": "IOPerformanceOperation",
+                "configuration": {
+                    "file_setup": "Base APK",
+                    "read_area_start": "0b",
+                    "read_area_end": "8mb",
+                    "total_read": "1gb",
+                    "thread_setup": "All Cores",
+                    "work_scheme": "Divided",
+                    "file_api": "C++ Streams",
+                    "buffer_size": "1kb",
+                    "read_align": "1kb",
+                    "report_rate": "5ms"
+                }
+            },
+            "stressors": []
+        },
+        {
+            "enabled": true,
+            "name": "Workload Configuration Test",
+            "description": "Divided OBB Read",
+            "duration": "0m",
+            "data_gatherer": {
+                "id": "IOPerformanceOperation",
+                "configuration": {
+                    "file_setup": "OBB",
+                    "read_area_start": "0b",
+                    "read_area_end": "8mb",
+                    "total_read": "1gb",
+                    "thread_setup": "All Cores",
+                    "work_scheme": "Divided",
+                    "file_api": "C++ Streams",
+                    "buffer_size": "1kb",
+                    "read_align": "1kb",
+                    "report_rate": "5ms"
+                }
+            },
+            "stressors": []
+        },
+        {
+            "enabled": true,
+            "name": "Workload Configuration Test",
+            "description": "Divided Created File Read",
+            "duration": "0m",
+            "data_gatherer": {
+                "id": "IOPerformanceOperation",
+                "configuration": {
+                    "file_setup": "Created File",
+                    "read_area_start": "0b",
+                    "read_area_end": "8mb",
+                    "created_file_size": "8mb",
+                    "total_read": "1gb",
+                    "thread_setup": "All Cores",
+                    "work_scheme": "Divided",
+                    "file_api": "C++ Streams",
+                    "buffer_size": "1kb",
+                    "read_align": "1kb",
+                    "report_rate": "5ms"
+                }
+            },
+            "stressors": []
+        },
+        {
+            "enabled": false,
+            "name": "Workload Configuration Test",
+            "description": "Interleaved APK Read",
+            "duration": "0m",
+            "data_gatherer": {
+                "id": "IOPerformanceOperation",
+                "configuration": {
+                    "file_setup": "Base APK",
+                    "read_area_start": "0b",
+                    "read_area_end": "8mb",
+                    "total_read": "1gb",
+                    "thread_setup": "All Cores",
+                    "work_scheme": "Interleaved",
+                    "file_api": "C++ Streams",
+                    "buffer_size": "1kb",
+                    "read_align": "1kb",
+                    "report_rate": "5ms"
+                }
+            },
+            "stressors": []
+        },
+        {
+            "enabled": false,
+            "name": "Workload Configuration Test",
+            "description": "Greedy APK Read",
+            "duration": "0m",
+            "data_gatherer": {
+                "id": "IOPerformanceOperation",
+                "configuration": {
+                    "file_setup": "Base APK",
+                    "read_area_start": "0b",
+                    "read_area_end": "8mb",
+                    "total_read": "1gb",
+                    "thread_setup": "All Cores",
+                    "work_scheme": "Greedy",
+                    "file_api": "C++ Streams",
+                    "buffer_size": "1kb",
+                    "read_align": "1kb",
+                    "report_rate": "5ms"
+                }
+            },
+            "stressors": []
+        }
+    ]
+}
