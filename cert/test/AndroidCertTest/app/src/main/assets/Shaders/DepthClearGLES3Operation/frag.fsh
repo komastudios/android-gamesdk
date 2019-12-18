@@ -1,3 +1,5 @@
+#version 300 es
+
 /*
  * Copyright 2019 The Android Open Source Project
  *
@@ -14,9 +16,7 @@
  * limitations under the License.
  */
 
-#version 300 es
 precision mediump float;
-
 out vec4 outColor;
 
 in vec4 vColor;
