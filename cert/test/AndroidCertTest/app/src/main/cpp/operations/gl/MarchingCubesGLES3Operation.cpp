@@ -166,10 +166,10 @@ constexpr const char* ThreadPinningSetupNames[] = {
 constexpr auto ToAffinity(ThreadAffinitySetup setup) {
   switch (setup) {
     case ThreadAffinitySetup::OneBigCore:
-    case ThreadAffinitySetup::AllBigCores:return ThreadAffinity::kBigCore;
+    case ThreadAffinitySetup::AllBigCores:return ThreadAffinity::kBig;
     case ThreadAffinitySetup::OneLittleCore:
-    case ThreadAffinitySetup::AllLittleCores:return ThreadAffinity::kLittleCore;
-    case ThreadAffinitySetup::AllCores: return ThreadAffinity::kAnyCore;
+    case ThreadAffinitySetup::AllLittleCores:return ThreadAffinity::kLittle;
+    case ThreadAffinitySetup::AllCores: return ThreadAffinity::kAll;
     default:FatalError(TAG, "Unknown thread setup %d", (int) setup);
   }
 }
