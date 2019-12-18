@@ -1016,7 +1016,7 @@ bool protoEncodeCpuFreqs(pb_ostream_t* stream, const pb_field_t* field,
                          void* const* arg) {
   const ProtoDataHolder& dataHolder = **(ProtoDataHolder**)(arg);
   const Int64Array& cpuFreqs = dataHolder.cpuFreqs;
-  for (int i = 0; i <= cpuFreqs.size; i++) {
+  for (size_t i = 0; i < cpuFreqs.size; i++) {
     androidgamesdk_deviceinfo_GameSdkDeviceInfo_CpuCore core =
         androidgamesdk_deviceinfo_GameSdkDeviceInfo_CpuCore_init_zero;
     int freq = cpuFreqs.data[i];
@@ -1292,7 +1292,13 @@ int createProto(androidgamesdk_deviceinfo_GameSdkDeviceInfoWithErrors& proto,
     info.cpu_max_index = dataHolder.cpuIndexMax;
     dataHolder.cpuFreqs.setSize(dataHolder.cpuIndexMax + 1);
     for (int cpuIndex = 0; cpuIndex <= dataHolder.cpuIndexMax; cpuIndex++) {
-      readCpuFreqMax(cpuIndex, dataHolder.cpuFreqs.data[cpuIndex]);
+      dataHolder.cpuFreqs.data[cpuIndex] = 0;
+
+      if (!readCpuFreqMax(cpuIndex, dataHolder.cpuFreqs.data[cpuIndex])) {
+        // Don't mark a missing cpu frequency as an error, as there might be CPUs
+        // with non sequential indexes. The frequency will stay to 0 and omitted
+        // when encoded to the proto.
+      }
     }
     info.cpu_core.arg = &dataHolder;
     info.cpu_core.funcs.encode = &protoEncodeCpuFreqs;
