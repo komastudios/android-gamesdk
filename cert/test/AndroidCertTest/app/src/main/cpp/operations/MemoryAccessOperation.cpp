@@ -13,16 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <ancer/BaseOperation.hpp>
+
 #include <limits>
 #include <random>
 #include <thread>
 #include <variant>
 
-#include <ancer/BaseOperation.hpp>
+#include <ancer/Reporter.hpp>
 #include <ancer/System.hpp>
 #include <ancer/util/Basics.hpp>
 #include <ancer/util/Bitmath.hpp>
 #include <ancer/util/Json.hpp>
+#include <ancer/util/ThreadSyncPoint.hpp>
 
 using namespace ancer;
 using Bytes = bitmath::Bytes;
@@ -32,22 +35,41 @@ using Bytes = bitmath::Bytes;
 
 namespace {
     constexpr Log::Tag TAG{"MemoryAccessOperation"};
-
-    using FixedBuffer = std::vector<char>;
 }
 
 //==============================================================================
 
 namespace {
-    constexpr Bytes kMaxReadWrite = 2048;
+    // We use this instead of something like std::vector to avoid the overhead
+    // of initialization: The initial write is usually something we'll actually
+    // handle as a part of the test.
+    class FixedBuffer {
+    public:
+        FixedBuffer(size_t size)
+        : _size(size)
+        , _buffer((char*)malloc(size)) {
+        }
+        FixedBuffer(const FixedBuffer&) = delete;
+        ~FixedBuffer() {
+            free(_buffer);
+        }
 
-//------------------------------------------------------------------------------
+        [[nodiscard]] auto size() const noexcept { return _size; }
+        [[nodiscard]] auto data() const noexcept { return _buffer; }
+    private:
+        size_t _size;
+        char* _buffer;
+    };
+}
 
+//==============================================================================
+
+namespace {
     enum class ThreadSetup {
         kOneCore, kAllCores, kBigCores, kLittleCores, kMiddleCores
     };
     constexpr const char* const kThreadSetupNames[] = {
-            "Single Core", "All Cores", "Big Cores", "Little Cores", "MiddleCores"
+        "Single Core", "All Cores", "Big Cores", "Little Cores", "Middle Cores"
     };
     constexpr auto ToAffinity(ThreadSetup setup) {
         switch (setup) {
@@ -146,6 +168,8 @@ namespace {
 
 
     struct BufferOpConfig {
+        std::string description;
+        bool append_graph = false;
         ReadOrWrite read_write;
         Bytes rw_size;
         BufferOpType operation_type;
@@ -154,6 +178,8 @@ namespace {
     };
 
     JSON_READER(BufferOpConfig) {
+        JSON_OPTVAR(description);
+        JSON_OPTVAR(append_graph);
         JSON_REQENUM(read_write, kReadWriteNames);
         JSON_REQVAR(rw_size);
         JSON_REQENUM(operation_type, kBufferOpTypeNames);
@@ -172,11 +198,6 @@ namespace {
                 break;
             default:
                 FatalError(TAG, "Unknown operation type %d", data.operation_type);
-        }
-
-        if (data.rw_size > kMaxReadWrite) {
-            FatalError(TAG, "rw_size(%zu) is larger than the maximum supported (%zu)",
-                       data.rw_size, kMaxReadWrite);
         }
     }
 
@@ -197,14 +218,21 @@ namespace {
 //------------------------------------------------------------------------------
 
     struct Datum {
-        // We log cumulative instead of since-last-datum so we can use the
-        // reset-to-zero point to mark where phases start without anything
-        // fancy.
-        Bytes cumulative_bytes;
+        int pass_id;
+        int thread_id;
+        Bytes bytes_update = {0};
+        Bytes bytes_cumulative = {0};
     };
 
+    void Reset(Datum& datum) {
+        datum.bytes_update = Bytes{0};
+    }
+
     JSON_WRITER(Datum) {
-        JSON_REQVAR(cumulative_bytes);
+        JSON_REQVAR(pass_id);
+        JSON_REQVAR(thread_id);
+        JSON_REQVAR(bytes_update);
+        JSON_REQVAR(bytes_cumulative);
     }
 }
 
@@ -215,64 +243,90 @@ namespace {
     // TODO(tmillican@google.com): Similar to I/O logging, and it's a bit of an
     //  ugly setup. Probably worth investing a bit of time for an "official"
     //  helper for this pattern.
-    struct RWLogger {
-        Reporter& reporter;
+    struct WRReporter {
+        Reporter<Datum> reporter;
         Milliseconds report_rate;
-        Bytes rw_bytes = 0;
-        Timestamp last_report{};
+        Timestamp last_report;
 
-        ~RWLogger() {
-            if (rw_bytes != Bytes{0}) {
-                reporter(Datum{rw_bytes});
-            }
+        ~WRReporter() {
+            reporter();
+        }
+
+        // Manual pump to give us a zero point.
+        // Not in the constructor to minimize work done after thread sync.
+        void Start() {
+            reporter();
+            last_report = SteadyClock::now();
         }
 
         void operator () (Bytes new_bytes) {
-            rw_bytes += new_bytes;
+            reporter.datum.bytes_update += new_bytes;
+            reporter.datum.bytes_cumulative += new_bytes;
             const auto now = SteadyClock::now();
-            if (last_report + report_rate < now) {
-                reporter(Datum{rw_bytes});
-                last_report = now;
+            if (CheckReportRate(last_report, report_rate)) {
+                reporter();
             }
         }
     };
 
-    struct ReadOperation {
-        RWLogger logger;
-        const FixedBuffer& buffer;
-        Bytes size;
+    class ReadOperation {
+    public:
+        ReadOperation(FixedBuffer& buffer, Bytes size)
+        : data(malloc(size.count()))
+        , buffer(buffer)
+        , size(size) {
+        }
 
-        bool operator () (Bytes offset) {
-            if ((offset + size).count() <= buffer.size()) {
-                char data[kMaxReadWrite.count()];
+        ~ReadOperation() {
+            free(data);
+        }
+
+        bool operator () (WRReporter& logger, Bytes offset) const {
+            const auto to_read = std::min(size, Bytes(buffer.size()) - offset);
+            if (to_read > Bytes{0} ) {
                 memcpy(data, buffer.data() + offset.count(), size.count());
                 logger(size);
-                return true;
-            } else {
-                return false;
             }
+            return to_read >= size;
         }
 
         [[nodiscard]] auto BufferSize() const { return Bytes(buffer.size()); }
+        [[nodiscard]] auto RWSize() const { return size; }
+
+    private:
+        void* data;
+        const FixedBuffer& buffer;
+        Bytes size;
     };
 
-    struct WriteOperation {
-        RWLogger logger;
-        FixedBuffer& buffer;
-        Bytes size;
+    class WriteOperation {
+    public:
+        WriteOperation(FixedBuffer& buffer, Bytes size)
+        : data(malloc(size.count()))
+        , buffer(buffer)
+        , size(size) {
+        }
 
-        bool operator () (Bytes offset) {
-            if ((offset + size).count() <= buffer.size()) {
-                char data[kMaxReadWrite.count()]; // Just writing garbage is fine.
+        ~WriteOperation() {
+            free(data);
+        }
+
+        bool operator () (WRReporter& logger, Bytes offset) const {
+            const auto to_read = std::min(size, Bytes(buffer.size()) - offset);
+            if (to_read > Bytes{0} ) {
                 memcpy(buffer.data() + offset.count(), data, size.count());
                 logger(size);
-                return true;
-            } else {
-                return false;
             }
+            return to_read >= size;
         }
 
         [[nodiscard]] auto BufferSize() const { return Bytes(buffer.size()); }
+        [[nodiscard]] auto RWSize() const { return size; }
+
+    private:
+        void* data;
+        FixedBuffer& buffer;
+        Bytes size;
     };
 }
 
@@ -289,14 +343,14 @@ namespace {
     template <typename ReadWrite>
     auto CheckTotalTimes(const ReadWrite& read_write, const FixedOpConfig& config) {
         const auto buffer_size = read_write.BufferSize();
-        const auto rw_size = read_write.size;
+        const auto rw_size = read_write.RWSize();
 
         const auto effective_buffer_size = buffer_size - config.initial_offset;
         const auto num_advances = (effective_buffer_size / config.advance).count();
-        const auto max_ops =
+        const auto max_ops = static_cast<decltype(config.times)>(
                 (effective_buffer_size % num_advances) > rw_size
                 ? num_advances + 1
-                : num_advances;
+                : num_advances);
         return std::min(max_ops, config.times);
     }
 
@@ -316,40 +370,54 @@ namespace {
     }
 
 
-    template <typename ReadWrite>
-    void RunEvenDivision(int cpu, int thread_count, ReadWrite& read_write,
+    template <typename ReporterCreator, typename ReadWrite>
+    void RunEvenDivision(ReporterCreator make_reporter, ThreadSyncPoint& sync_point,
+                         int cpu, int thread_count, ReadWrite& read_write,
                          const BaseOperation& op, const FixedOpConfig& config) {
         const auto total_times = CheckTotalTimes(read_write, config);
         const auto local_times = DetermineLocalTimes(cpu, thread_count, total_times);
 
+        auto reporter = make_reporter(cpu);
         int count = 0;
         auto offset = config.initial_offset +
                 TimesBeforeThread(cpu, thread_count, total_times) * config.advance;
-        while ( !op.IsStopped() && count < local_times && read_write(offset) ) {
+        sync_point.Sync();
+        reporter.Start();
+        while ( !op.IsStopped() && count++ < local_times ) {
+            if (!read_write(reporter, offset)) {
+                FatalError(TAG, "We expected to perform %d operations, but we "
+                                "only ran %d", local_times, count);
+            }
             offset += config.advance;
         }
     }
 
     //--------------
 
-    template <typename ReadWrite>
-    void RunInterleaved(int cpu, int thread_count, ReadWrite& read_write,
+    template <typename ReporterCreator, typename ReadWrite>
+    void RunInterleaved(ReporterCreator make_reporter, ThreadSyncPoint& sync_point,
+                        int cpu, int thread_count, ReadWrite& read_write,
                         const BaseOperation& op, const FixedOpConfig& config) {
+        auto reporter = make_reporter(cpu);
         auto offset = config.initial_offset + config.advance * cpu;
-        while ( !op.IsStopped() && read_write(offset) ) {
+        sync_point.Sync();
+        reporter.Start();
+        while ( !op.IsStopped() && read_write(reporter, offset) ) {
             offset += config.advance * thread_count;
         }
     }
 
     //==============
 
-    template <typename ReadWrite>
-    void Run(ReadWrite& read_write, const BaseOperation& op,
-             const FixedOpConfig& config) {
+    template <typename ReporterCreator, typename ReadWrite>
+    void Run(const BaseOperation& op, ReporterCreator make_reporter,
+             ReadWrite& read_write, const FixedOpConfig& config) {
         if (config.threads == ThreadSetup::kOneCore) {
+            auto reporter = make_reporter(0);
             int count = 0;
             auto offset = config.initial_offset;
-            while (!op.IsStopped() && count++ < config.times && read_write(offset) ) {
+            while (!op.IsStopped() && count++ < config.times &&
+                   read_write(reporter, offset) ) {
                 offset += config.advance;
             }
         } else {
@@ -358,19 +426,25 @@ namespace {
 
             const auto num_cores = NumCores(affinity);
             threads.reserve(num_cores);
+            ThreadSyncPoint sync_point{num_cores};
 
             for ( int cpu = 0 ; cpu < num_cores ; ++cpu ) {
-                threads.push_back(std::thread{[cpu, num_cores, config,
-                                               &read_write, &op] {
-                    SetThreadAffinity(cpu);
-
+                threads.push_back(std::thread{[&op, &read_write, &sync_point,
+                                               make_reporter, cpu, affinity,
+                                               num_cores, config] {
+                    SetThreadAffinity(cpu, affinity);
                     switch (config.work_scheme) {
                         case WorkScheme::kDividedEvenly:
-                            return RunEvenDivision(cpu, num_cores, read_write, op, config);
+                            return RunEvenDivision(make_reporter, sync_point,
+                                                   cpu, num_cores, read_write,
+                                                   op, config);
                         case WorkScheme::kInterleaved:
-                            return RunInterleaved(cpu, num_cores, read_write, op, config);
+                            return RunInterleaved(make_reporter, sync_point,
+                                                  cpu, num_cores, read_write,
+                                                  op, config);
                         default:
-                            FatalError(TAG, "Unknown work scheme: %d", config.work_scheme);
+                            FatalError(TAG, "Unknown work scheme: %d",
+                                       config.work_scheme);
                     }
                 }});
             }
@@ -384,9 +458,10 @@ namespace {
 //------------------------------------------------------------------------------
 // Irregular
 
-    template <typename ReadWrite>
-    void Run(ReadWrite& read_write, const BaseOperation& op,
-             const IrregularOpConfig& config) {
+    template <typename ReporterCreator, typename ReadWrite>
+    void Run(const BaseOperation& op, ReporterCreator make_reporter,
+             ReadWrite& read_write, const IrregularOpConfig& config) {
+        auto reporter = make_reporter(0);
         std::mt19937 random_generator{};
         const auto range = config.max_advance - config.min_advance;
 
@@ -404,16 +479,17 @@ namespace {
             //  are absurdly close to one another.
             offset = NextAlignedValue(offset, config.rw_align);
 
-            read_write(offset);
+            read_write(reporter, offset);
         }
     }
 
 //------------------------------------------------------------------------------
 // Random
 
-    template <typename ReadWrite>
-    void Run(ReadWrite& read_write, const BaseOperation& op,
-             const RandomOpConfig& config) {
+    template <typename ReporterCreator, typename ReadWrite>
+    void Run(const BaseOperation& op, ReporterCreator make_reporter,
+             ReadWrite read_write, const RandomOpConfig& config) {
+        auto reporter = make_reporter(0);
         std::mt19937 random_generator{};
 
         for ( int count = 0 ; count < config.times && !op.IsStopped() ; ++count ) {
@@ -424,11 +500,11 @@ namespace {
             // TODO(tmillican@google.com): This solution makes the last bit of
             //  the buffer a 'hotspot', but in practice it shouldn't matter
             //  unless the read/align are absurdly close to the buffer's size.
-            while (offset + read_write.size > read_write.BufferSize()) {
+            while (offset + read_write.RWSize() > read_write.BufferSize()) {
                 offset -= config.rw_align;
             }
 
-            read_write(offset);
+            read_write(reporter, offset);
         }
     }
 
@@ -438,20 +514,16 @@ namespace {
     // Hands out offsets to threads on a first-come-first-served basis.
     struct GreedyDispenser {
         Bytes advance;
-        std::mutex mutex;
-        Bytes next_offset = 0;
+        std::atomic_int segment = 0;
 
         auto operator () () {
-            std::scoped_lock lock{mutex};
-            auto ret = next_offset;
-            next_offset += advance;
-            return ret;
+            return segment++ * advance;
         }
     };
 
-    template <typename ReadWrite>
-    void Run(ReadWrite&& read_write, const BaseOperation& op,
-             const GreedyOpConfig& config) {
+    template <typename ReporterCreator, typename ReadWrite>
+    void Run(const BaseOperation& op, ReporterCreator make_reporter,
+             ReadWrite read_write, const GreedyOpConfig& config) {
         const auto affinity = ToAffinity(config.threads);
 
         std::vector<std::thread> threads;
@@ -460,12 +532,16 @@ namespace {
         threads.reserve(thread_count);
 
         GreedyDispenser greedy_dispenser{config.advance};
+        ThreadSyncPoint sync_point{thread_count};
         for ( int cpu = 0 ; cpu < thread_count ; ++cpu ) {
-            threads.push_back(std::thread{[cpu, affinity, config,
-                                           &read_write, &op, &greedy_dispenser] {
+            threads.push_back(std::thread{[&op, &greedy_dispenser, &sync_point,
+                                           make_reporter, cpu, affinity, config,
+                                           read_write] {
                 SetThreadAffinity(cpu, affinity);
+                auto reporter = make_reporter(cpu);
                 auto offset = greedy_dispenser();
-                while (!op.IsStopped() && read_write(offset)) {
+                sync_point.Sync();
+                while (!op.IsStopped() && read_write(reporter, offset)) {
                     offset = greedy_dispenser();
                 }
             }});
@@ -479,17 +555,17 @@ namespace {
 //------------------------------------------------------------------------------
 
     // Helper to handle the common read/write determination logic.
-    template <typename ConfigType>
-    void Run(RWLogger&& logger, ReadOrWrite read_write, FixedBuffer& buffer,
-             Bytes rw_size, const BaseOperation& op, const ConfigType& config) {
+    template <typename ReporterCreator, typename ConfigType>
+    void Run(const BaseOperation& op, ReporterCreator make_reporter, ReadOrWrite read_write,
+             FixedBuffer& buffer, Bytes rw_size, const ConfigType& config) {
         switch (read_write) {
             case ReadOrWrite::kRead: {
-                ReadOperation read{std::move(logger), buffer, rw_size};
-                return Run(read, op, config);
+                ReadOperation read{buffer, rw_size};
+                return Run(op, make_reporter, read, config);
             }
             case ReadOrWrite::kWrite: {
-                ReadOperation write{std::move(logger), buffer, rw_size};
-                return Run(write, op, config);
+                ReadOperation write{buffer, rw_size};
+                return Run(op, make_reporter, write, config);
             }
             default:
                 FatalError(TAG, "Unknown read/write value: %d", read_write);
@@ -507,35 +583,41 @@ public:
         _config = GetConfiguration<Configuration>();
 
         _thread = std::thread{[this] {
-            FixedBuffer buffer;
-            buffer.resize(_config.buffer_size.count());
+            FixedBuffer buffer(_config.buffer_size.count());
 
+            int pass_id = 0;
             for (const auto& op : _config.operations) {
                 Log::D(TAG, "%s %s", kBufferOpTypeNames[(size_t)op.operation_type],
                        kReadWriteNames[(size_t)op.read_write]);
-                Reporter reporter{*this};
-                RWLogger logger{reporter, _config.report_rate};
+                Report(Json{{"event", "New Pass"}, {"description", op.description},
+                            {"append_graph", op.append_graph}});
+
+                const auto ReporterCreator = [this, pass_id] (int thread_id) {
+                    return WRReporter{ Reporter<Datum>{*this, pass_id, thread_id},
+                                     _config.report_rate};
+                };
 
                 switch (op.operation_type) {
                     case BufferOpType::kFixedOp:
-                        Run(std::move(logger), op.read_write, buffer, op.rw_size,
-                            *this, std::get<FixedOpConfig>(op.config));
+                        Run(*this, ReporterCreator, op.read_write, buffer,
+                            op.rw_size, std::get<FixedOpConfig>(op.config));
                         break;
                     case BufferOpType::kIrregularOp:
-                        Run(std::move(logger), op.read_write, buffer, op.rw_size,
-                            *this, std::get<IrregularOpConfig>(op.config));
+                        Run(*this, ReporterCreator, op.read_write, buffer,
+                            op.rw_size, std::get<IrregularOpConfig>(op.config));
                         break;
                     case BufferOpType::kRandomOp:
-                        Run(std::move(logger), op.read_write, buffer, op.rw_size,
-                            *this, std::get<RandomOpConfig>(op.config));
+                        Run(*this, ReporterCreator, op.read_write, buffer,
+                            op.rw_size, std::get<RandomOpConfig>(op.config));
                         break;
                     case BufferOpType::kGreedyOp:
-                        Run(std::move(logger), op.read_write, buffer, op.rw_size,
-                            *this, std::get<GreedyOpConfig>(op.config));
+                        Run(*this, ReporterCreator, op.read_write, buffer,
+                            op.rw_size, std::get<GreedyOpConfig>(op.config));
                         break;
                     default:
                         FatalError(TAG, "Unknown buffer operation: %d", op.operation_type);
                 }
+                ++pass_id;
             }
         }};
     }
@@ -543,6 +625,7 @@ public:
     void Wait() override {
         _thread.join();
     }
+
 private:
     Configuration _config;
     std::thread _thread;
