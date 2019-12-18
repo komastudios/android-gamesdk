@@ -75,7 +75,7 @@ namespace ancer {
          */
         static std::shared_ptr<BaseOperation> Load(
                 const std::string& operation_id, const std::string& suite_id,
-                Mode mode);
+                const std::string& suite_description, Mode mode);
 
     public:
 
@@ -236,6 +236,7 @@ namespace ancer {
         }
 
     private:
+        template <typename T>
         friend class Reporter;
 
         void ReportImpl(const Json& custom_payload) const;
@@ -246,6 +247,7 @@ namespace ancer {
 
         Mode _mode = Mode::Stressor;
         std::string _suite_id;
+        std::string _suite_desc;
         std::string _operation_id;
         std::string _json_configuration;
 
@@ -255,17 +257,6 @@ namespace ancer {
         Timestamp _start_time;
         Duration _heartbeat_period = Duration::zero();
         Timestamp _heartbeat_timestamp;
-    };
-
-    /// Helper so reporting can be done by helper classes/functions.
-    class Reporter {
-    public:
-        Reporter(BaseOperation& op) : _op(op) {}
-
-        template <typename T>
-        void operator () (T&& payload) const { _op.ReportImpl(Json(payload)); }
-    private:
-        BaseOperation& _op;
     };
 } // namespace ancer
 

@@ -27,7 +27,7 @@
 using namespace ancer;
 
 
-//==================================================================================================
+//==============================================================================
 
 namespace {
     constexpr Log::Tag TAG{"operations_load"};
@@ -41,94 +41,119 @@ namespace {
         }
         return lib;
     }
-} // anonymous namespace
+}
 
-namespace ancer {
+//==============================================================================
 
-    std::shared_ptr<BaseOperation> BaseOperation::Load(
-            const std::string& operation_id,
-            const std::string& suite_id,
-            Mode mode) {
-        void* lib = OpenSelfLibrary();
+std::shared_ptr<BaseOperation> BaseOperation::Load(
+        const std::string& operation_id,
+        const std::string& suite_id,
+        const std::string& suite_description,
+        Mode mode) {
+    void* lib = OpenSelfLibrary();
 
-        std::string fn_name = operation_id;
-        switch ( mode ) {
-        case Mode::DataGatherer:fn_name += "_CreateDataGatherer";
-            break;
-        case Mode::Stressor:fn_name += "_CreateStressor";
-            break;
-        }
-
-        using FactoryFunction = void (*)(std::shared_ptr<BaseOperation>&);
-        auto fn = (FactoryFunction)(dlsym(lib, fn_name.c_str()));
-        if ( fn ) {
-            std::shared_ptr<BaseOperation> op;
-            fn(op);
-            op->_operation_id = operation_id;
-            op->_suite_id = suite_id;
-            op->_mode = mode;
-            return op;
-        } else {
-            FatalError(
-                    TAG, "Unable to dlsym() operation named \"" + fn_name +
-                            "\" - did you remember to EXPORT_ANCER_OPERATION() it?");
-        }
-
-        return nullptr;
+    std::string fn_name = operation_id;
+    switch ( mode ) {
+    case Mode::DataGatherer:fn_name += "_CreateDataGatherer";
+        break;
+    case Mode::Stressor:fn_name += "_CreateStressor";
+        break;
     }
 
-    BaseOperation::~BaseOperation() = default;
-
-    void BaseOperation::Start() {
-        _start_time = SteadyClock::now();
+    using FactoryFunction = void (*)(std::shared_ptr<BaseOperation>&);
+    auto fn = (FactoryFunction)(dlsym(lib, fn_name.c_str()));
+    if ( fn ) {
+        std::shared_ptr<BaseOperation> op;
+        fn(op);
+        op->_operation_id = operation_id;
+        op->_suite_id = suite_id;
+        op->_suite_desc = suite_description;
+        op->_mode = mode;
+        return op;
+    } else {
+        FatalError(
+                TAG, "Unable to dlsym() operation named \"" + fn_name +
+                        "\" - did you remember to EXPORT_ANCER_OPERATION() it?");
     }
 
-    void BaseOperation::Draw(double delta_seconds) {
-        if ( !IsStopped()) {
-            const auto now = SteadyClock::now();
+    return nullptr;
+}
 
-            // determine if it's time to invoke the heartbeat callback
-            if ( _heartbeat_timestamp == Timestamp{} ) _heartbeat_timestamp = now;
-            if ( _heartbeat_period > Duration::zero()) {
-                auto elapsed = now - _heartbeat_timestamp;
-                if ( elapsed > _heartbeat_period ) {
-                    OnHeartbeat(elapsed);
-                    // Reset timestamp to after the above finishes
-                    _heartbeat_timestamp = SteadyClock::now();
-                }
+//==============================================================================
+
+BaseOperation::~BaseOperation() = default;
+
+//==============================================================================
+
+namespace {
+    struct TestStartEvent {
+        const std::string& name;
+        const std::string& description;
+    };
+
+    JSON_WRITER(TestStartEvent) {
+        JSON_SETVAR(event, "Test Start");
+        JSON_REQVAR(name);
+        JSON_REQVAR(description);
+    }
+}
+
+void BaseOperation::Start() {
+    _start_time = SteadyClock::now();
+    Report(TestStartEvent{this->_suite_id, this->_suite_desc});
+}
+
+//==============================================================================
+
+void BaseOperation::Draw(double delta_seconds) {
+    if ( !IsStopped()) {
+        const auto now = SteadyClock::now();
+
+        // determine if it's time to invoke the heartbeat callback
+        if ( _heartbeat_timestamp == Timestamp{} ) _heartbeat_timestamp = now;
+        if ( _heartbeat_period > Duration::zero()) {
+            auto elapsed = now - _heartbeat_timestamp;
+            if ( elapsed > _heartbeat_period ) {
+                OnHeartbeat(elapsed);
+                // Reset timestamp to after the above finishes
+                _heartbeat_timestamp = SteadyClock::now();
             }
-
-            // if running in test mode, check if we've run out our clock
-            if ( GetMode() == Mode::DataGatherer ) {
-                auto duration = GetDuration();
-                if ((duration > Duration::zero()) &&
-                    (now - _start_time > duration)) {
-                    Stop();
-                }
-            }
         }
-    }
 
-    void BaseOperation::OnGlContextResized(int width, int height) {
-        _width = width;
-        _height = height;
-    }
-
-    void BaseOperation::ReportImpl(const Json& custom_payload) const {
+        // if running in test mode, check if we've run out our clock
         if ( GetMode() == Mode::DataGatherer ) {
-            std::stringstream ss;
-            ss << std::this_thread::get_id();
-            auto t_id = ss.str();
-
-            reporting::Datum datum;
-            datum.suite_id = _suite_id;
-            datum.operation_id = _operation_id;
-            datum.cpu_id = sched_getcpu();
-            datum.thread_id = t_id;
-            datum.timestamp = SteadyClock::now();
-            datum.custom = custom_payload;
-
-            reporting::WriteToReportLog(datum);
+            auto duration = GetDuration();
+            if ((duration > Duration::zero()) &&
+                (now - _start_time > duration)) {
+                Stop();
+            }
         }
     }
-} // namespace ancer
+}
+
+//==============================================================================
+
+void BaseOperation::OnGlContextResized(int width, int height) {
+    _width = width;
+    _height = height;
+}
+
+//==============================================================================
+
+void BaseOperation::ReportImpl(const Json& custom_payload) const {
+    if ( GetMode() == Mode::DataGatherer ) {
+        std::stringstream ss;
+        ss << std::this_thread::get_id();
+        auto t_id = ss.str();
+
+        reporting::Datum datum;
+        datum.suite_id = _suite_id;
+        datum.operation_id = _operation_id;
+        datum.cpu_id = sched_getcpu();
+        datum.thread_id = t_id;
+        datum.timestamp = SteadyClock::now();
+        datum.custom = custom_payload;
+
+        reporting::WriteToReportLog(datum);
+    }
+}

@@ -29,7 +29,7 @@
 using namespace ancer;
 
 
-//==================================================================================================
+//==============================================================================
 
 namespace ancer::internal {
     // For ForEachOperation
@@ -48,7 +48,7 @@ namespace {
     swappy::Renderer* _swappy_renderer = nullptr;
 }
 
-//==================================================================================================
+//==============================================================================
 
 void internal::InitializeSuite() {
     // ...
@@ -58,7 +58,7 @@ void internal::ShutdownSuite() {
     // ...
 }
 
-//==================================================================================================
+//==============================================================================
 
 void internal::SetSwappyRenderer(swappy::Renderer* swappy_renderer) {
     _swappy_renderer = swappy_renderer;
@@ -69,13 +69,13 @@ void internal::SetSwappyRenderer(swappy::Renderer* swappy_renderer) {
     }
 }
 
-//==================================================================================================
+//==============================================================================
 
 int internal::CreateOperation(
-        const std::string& suite,
+        const std::string& suite, const std::string& description,
         const std::string& operation,
         ancer::BaseOperation::Mode mode) {
-    auto op = BaseOperation::Load(operation, suite, mode);
+    auto op = BaseOperation::Load(operation, suite, description, mode);
     if ( op ) {
         {
             std::lock_guard<std::mutex> lock(_operations_lock);
@@ -90,7 +90,7 @@ int internal::CreateOperation(
     }
 }
 
-//==================================================================================================
+//==============================================================================
 
 void internal::StartOperation(
         int id,
@@ -114,7 +114,7 @@ void internal::StartOperation(
     }
 }
 
-//==================================================================================================
+//==============================================================================
 
 void internal::StopOperation(int id) {
     if ( auto pos = _operations.find(id); pos != _operations.end()) {
@@ -135,7 +135,7 @@ void internal::StopOperation(int id) {
     }
 }
 
-//==================================================================================================
+//==============================================================================
 
 bool internal::OperationIsStopped(int id) {
     std::lock_guard<std::mutex> lock(_operations_lock);
@@ -152,7 +152,7 @@ bool internal::OperationIsStopped(int id) {
     }
 }
 
-//==================================================================================================
+//==============================================================================
 
 void internal::WaitForOperation(int id) {
     auto pos = _operations.find(id);

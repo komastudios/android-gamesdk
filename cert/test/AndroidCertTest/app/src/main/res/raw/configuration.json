@@ -37,8 +37,8 @@
     },
     {
       "enabled": true,
-      "name": "MemoryAccessTest",
-      "description": "Tests accessing preallocated memory",
+      "name": "Memory Access Test",
+      "description": "Reads/writes using small & large operations",
       "duration": "0s",
       "data_gatherer": {
         "id": "MemoryAccessOperation",
@@ -47,89 +47,47 @@
           "report_rate": "5ms",
           "operations": [
             {
+              "description": "256b Divided Write",
               "read_write": "Write",
               "rw_size": "256b",
               "operation_type": "Fixed",
               "config": {
-                "threads": "Single Core",
+                "threads": "All Cores",
+                "work_scheme": "Divided",
                 "advance": "256b"
               }
             },
             {
+              "description": "256b Divided Read",
               "read_write": "Read",
               "rw_size": "256b",
               "operation_type": "Fixed",
               "config": {
                 "threads": "All Cores",
                 "work_scheme": "Divided",
-                "advance": "512b"
+                "advance": "256b"
               }
             },
             {
+              "description": "5kb Divided Write",
               "read_write": "Write",
-              "rw_size": "128b",
-              "operation_type": "Fixed",
-              "config": {
-                "threads": "All Cores",
-                "work_scheme": "Interleaved",
-                "advance": "256b",
-                "initial_offset": "1kb"
-              }
-            },
-            {
-              "read_write": "Write",
-              "rw_size": "256b",
+              "rw_size": "5kb",
               "operation_type": "Fixed",
               "config": {
                 "threads": "All Cores",
                 "work_scheme": "Divided",
-                "times": 23,
-                "advance": "512b",
-                "initial_offset": "256b"
+                "advance": "5kb"
               }
             },
             {
+              "description": "5kb Divided Read",
               "read_write": "Read",
-              "rw_size": "128b",
+              "rw_size": "5kb",
               "operation_type": "Fixed",
               "config": {
                 "threads": "All Cores",
-                "work_scheme": "Interleaved",
-                "times": 7,
-                "advance": "256b",
-                "initial_offset": "1kb"
-              }
-            },
-
-            {
-              "read_write": "Read",
-              "rw_size": "56b",
-              "operation_type": "Irregular",
-              "config": {
-                "times": 200,
-                "rw_align": "32b",
-                "min_advance": "0b",
-                "max_advance": "1000b"
-              }
-            },
-
-            {
-              "read_write": "Read",
-              "rw_size": "56b",
-              "operation_type": "Random",
-              "config": {
-                "times": 200,
-                "rw_align": "32b"
-              }
-            },
-
-            {
-              "read_write": "Read",
-              "rw_size": "56b",
-              "operation_type": "Greedy",
-              "config": {
-                "threads": "All Cores",
-                "advance": "64b"
+                "work_scheme": "Divided",
+                "advance": "5kb"
               }
             }
           ]
@@ -147,18 +105,17 @@
         "configuration": {
           "file_setup": "Base APK",
           "read_area_start": "0b",
-          "read_area_end": "1mb",
-          "total_read": "2mb",
-          "thread_setup": "Big Cores",
-          "work_scheme": "Greedy",
+          "read_area_end": "8mb",
+          "total_read": "1gb",
+          "thread_setup": "All Cores",
+          "work_scheme": "Divided",
           "file_api": "C++ Streams",
-          "buffer_size": "256b",
-          "read_align": "384b",
-          "report_rate": "10ms"
+          "buffer_size": "1kb",
+          "read_align": "1kb",
+          "report_rate": "5ms"
         }
       },
-      "stressors": [
-      ]
+      "stressors": []
     },
     {
       "enabled": true,
