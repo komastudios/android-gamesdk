@@ -127,8 +127,11 @@ abstract class Toolchain {
         return s.replaceAll(/[+]/, "p")
     }
     String findNDKTool(String name) {
-        def tools = project_.fileTree( dir: project_.joinPath(getAndroidNDKPath(), 'toolchains'),
-                                       include: ['**/bin/'+name+project_.osExecutableSuffix()])
+        def tools = project_.fileTree(project_.joinPath(getAndroidNDKPath(), 'toolchains')).matching {
+            include '**/bin/' + name + project_.osExecutableSuffix()
+            // Be sure not to use tools that would not support architectures for which we're buidling:
+            exclude "**/aarch64-*", "**/arm-*"
+        }
         if (tools==null || tools.size() == 0) {
             throw new GradleException('No ' + name + ' found in ' + ndkPath_ + '/toolchains')
         }
