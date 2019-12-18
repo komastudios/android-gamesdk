@@ -19,6 +19,7 @@ package com.google.gamesdk.gamecert.operationrunner;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ConfigurationInfo;
@@ -28,6 +29,7 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,6 +38,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -45,6 +48,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gamesdk.R;
+import com.google.gamesdk.gamecert.operationrunner.hosts.BaseHostActivity;
 import com.google.gamesdk.gamecert.operationrunner.hosts.GLSurfaceViewHostActivity;
 import com.google.gamesdk.gamecert.operationrunner.hosts.SwappyGLHostActivity;
 import com.google.gamesdk.gamecert.operationrunner.hosts.VulkanHostActivity;
@@ -95,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
     private String _reportFilePath;
     private int _reportFileDescriptor = -1;
     private boolean _finishAfterTestCompletion;
+    private PowerManager.WakeLock _wakeLock;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,16 +146,35 @@ public class MainActivity extends AppCompatActivity {
         // it will be changed to another location provided by firebase
         _reportFilePath = new File(getFilesDir(), RESULT_FILE_NAME).getAbsolutePath();
 
-        // onCreate shouldn't be called if a test is currently executing. This means the test
-        // that was launched crashed and MainActivity was restarted!
-        // If running in interactive mode show a dialog giving the operator the chance
-        // to cancel the execution without obliterating the previous report.json file
-        // NOTE: If running in game loop mode, skip this and just move forward
+
+        // Try to wake up the device if it's sleeping.
+        if (VERSION.SDK_INT >= VERSION_CODES.O) {
+            KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+            km.requestDismissKeyguard(this, null);
+        } else {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+        }
+        if (VERSION.SDK_INT >= VERSION_CODES.O_MR1) {
+            setTurnScreenOn(true);
+        } else {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+        }
+        // And keep it awake.
+        PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
+        _wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, TAG);
+        _wakeLock.acquire();
+
 
         if (isGameLoopLaunch()) {
             handleGameLoopLaunch();
         } else {
             if (isRunningTest()) {
+                // onCreate shouldn't be called if a test is currently
+                // executing. This means the test that was launched crashed and
+                // MainActivity was restarted!
+                // If running in interactive mode show a dialog giving the
+                // operator the chance to cancel the execution without
+                // obliterating the previous report.json file
                 setIsRunningTest(false);
                 new AlertDialog.Builder(this)
                     .setTitle(R.string.dialog_title_crash_warning)
@@ -227,6 +251,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void finish() {
         NativeInvoker.flushReportFile();
+        _wakeLock.release();
         super.finish();
     }
 
@@ -396,6 +421,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         switch (host) {
+            case BaseHostActivity.ID: {
+                i = BaseHostActivity.createIntent(this, stressTest);
+                break;
+            }
 
             case GLSurfaceViewHostActivity.ID: {
                 i = GLSurfaceViewHostActivity.createIntent(this, stressTest);

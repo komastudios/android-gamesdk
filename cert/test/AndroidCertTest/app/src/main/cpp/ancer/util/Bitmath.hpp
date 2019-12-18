@@ -106,16 +106,25 @@ namespace ancer::bitmath {
         const auto [l,r] = ToCommon(lhs, rhs); \
         return decltype(l){l.count() op r.count()}; \
     }
+#define BITMATH_BINARY_OP_SCALAR(op) \
+    template <typename Rep1, typename Period1, typename Rep2, typename Period2> \
+    friend constexpr auto operator op (const Size<Rep1, Period1>& lhs, \
+                                       const Size<Rep2, Period2>& rhs) { \
+        const auto [l,r] = ToCommon(lhs, rhs); \
+        return l.count() op r.count(); \
+    }
 // Op with a size on the left and scalar on the right
 #define BITMATH_RT_SCALAR_OP(op) \
-    template <typename Rep1, typename Period1> \
-    friend constexpr auto operator op (const Size<Rep1, Period1>& sz, Rep1 s) \
-    { return Size<Rep1, Period1>{sz._val op s}; }
+    template <typename Rep1, typename Period1, typename FreeRep> \
+    friend constexpr auto operator op (const Size<Rep1, Period1>& sz, FreeRep s) \
+    { return Size<Rep1, Period1>{sz._val op (Rep1)s}; }
 // Op with a size and a scalar
 #define BITMATH_SCALAR_OP(op) \
-    BITMATH_RT_SCALAR_OP(op) \
-    template <typename Rep1, typename Period1> \
-    friend constexpr auto operator op (Rep1 s, const Size<Rep1, Period1>& sz) \
+    template <typename Rep1, typename Period1, typename FreeRep> \
+    friend constexpr auto operator op (const Size<Rep1, Period1>& sz, FreeRep s) \
+    { return Size<Rep1, Period1>{sz._val op s}; } \
+    template <typename Rep1, typename Period1, typename FreeRep> \
+    friend constexpr auto operator op (FreeRep s, const Size<Rep1, Period1>& sz) \
     { return Size<Rep1, Period1>{sz._val op s}; }
 
         BITMATH_COMPARISON_OP(==)
@@ -128,8 +137,8 @@ namespace ancer::bitmath {
         BITMATH_BINARY_OP(+)
         BITMATH_BINARY_OP(-)
         BITMATH_BINARY_OP(*)
-        BITMATH_BINARY_OP(/)
-        BITMATH_BINARY_OP(%)
+        BITMATH_BINARY_OP_SCALAR(/)
+        BITMATH_BINARY_OP_SCALAR(%)
 
         BITMATH_SCALAR_OP(*)
         BITMATH_RT_SCALAR_OP(/)
@@ -173,7 +182,7 @@ namespace ancer::bitmath {
     template <typename T> using MegabytesAs = Size<T, MegabyteRatio>;
     template <typename T> using GigabytesAs = Size<T, GigabyteRatio>;
 
-    using DefaultStorage = int;
+    using DefaultStorage = long;
     using Bits      = BitsAs<DefaultStorage>;
     using Bytes     = BytesAs<DefaultStorage>;
     using Kilobytes = KilobytesAs<DefaultStorage>;
