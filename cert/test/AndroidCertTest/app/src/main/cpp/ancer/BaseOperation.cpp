@@ -41,9 +41,8 @@ namespace {
 }
 
 std::shared_ptr<BaseOperation> BaseOperation::Load(
-        const std::string &operation_id,
-        const std::string &suite_id,
-        Mode mode) {
+        const std::string &operation_id, const std::string &suite_id,
+        const std::string& suite_description, Mode mode) {
     void *lib = OpenSelfLibrary();
 
     std::string fn_name = operation_id;
@@ -63,6 +62,7 @@ std::shared_ptr<BaseOperation> BaseOperation::Load(
         fn(op);
         op->_operation_id = operation_id;
         op->_suite_id = suite_id;
+        op->_suite_desc = suite_description;
         op->_mode = mode;
         return op;
     } else {
@@ -74,10 +74,28 @@ std::shared_ptr<BaseOperation> BaseOperation::Load(
     return nullptr;
 }
 
+//==============================================================================
+
 BaseOperation::~BaseOperation() = default;
+
+//==============================================================================
+
+namespace {
+    struct TestStartEvent {
+        const std::string& name;
+        const std::string& description;
+    };
+
+    JSON_WRITER(TestStartEvent) {
+        JSON_SETVAR(event, "Test Start");
+        JSON_REQVAR(name);
+        JSON_REQVAR(description);
+    }
+}
 
 void BaseOperation::Start() {
     _start_time = SteadyClock::now();
+    Report(TestStartEvent{this->_suite_id, this->_suite_desc});
 }
 
 void BaseOperation::Draw(double delta_seconds) {
@@ -105,6 +123,8 @@ void BaseOperation::Draw(double delta_seconds) {
         }
     }
 }
+
+//==============================================================================
 
 void BaseOperation::OnGlContextResized(int width, int height) {
     _width = width;

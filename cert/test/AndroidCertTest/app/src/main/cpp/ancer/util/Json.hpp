@@ -7,15 +7,16 @@ namespace ancer {
     using Json = nlohmann::json;
 }
 
-//==================================================================================================
+//==============================================================================
 
 // Defines a function that automatically converts a given type to & from JSON.
-// If your logic requires it, the data being read/written to/from is simply named 'data'.
+// If your logic requires it, the data being read/written to/from is simply
+// named 'data'.
 //
-// namespace foo { // Our JSON lib uses ADL, so this actually needs to be in the Foo's namespace.
+// namespace foo { // Our JSON lib uses ADL, so this actually needs to be in Foo's namespace.
 //   JSON_CONVERTER(Foo) { // Defines conversions to/from JSON for Foo.
-//     JSON_REQVAR(bar);    // Foo.bar <-> json["bar"]; Fails if json["baz"] doesn't exist.
-//     JSON_OPTVAR(baz); // Foo.baz <-> json["baz"]; Won't fail if json["baz"] doesn't exist.
+//     JSON_REQVAR(bar);   // Foo.bar <-> json["bar"]; Fails if json["baz"] doesn't exist.
+//     JSON_OPTVAR(baz);   // Foo.baz <-> json["baz"]; Won't fail if json["baz"] doesn't exist.
 //   }
 // }
 #define JSON_CONVERTER(Type) \
