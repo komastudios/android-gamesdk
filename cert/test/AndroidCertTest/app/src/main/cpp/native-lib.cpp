@@ -95,6 +95,9 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_shutdownSuit
         JNIEnv* env, jclass instance) {
     internal::ShutdownSuite();
     internal::DeinitTemperatureCapture();
+    // TODO(tmillican@google.com): We stopped killing the reporter on app
+    //  shutdown due to lifetime issues. Maybe we should reinvestigate that.
+    reporting::HardFlushReportLogQueue();
     internal::DeinitSystem();
 }
 
@@ -112,15 +115,17 @@ extern "C" JNIEXPORT jint JNICALL
 Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_createOperation(
         JNIEnv* env, jclass instance,
         jstring j_suite_id,
+        jstring j_description,
         jstring j_operation_id,
         jint jMode) {
     auto suite_id = to_string(j_suite_id, env);
+    auto description = to_string(j_description, env);
     auto operation_id = to_string(j_operation_id, env);
     auto mode = jMode == 0
                 ? BaseOperation::Mode::DataGatherer
                 : BaseOperation::Mode::Stressor;
 
-    return internal::CreateOperation(suite_id, operation_id, mode);
+    return internal::CreateOperation(suite_id, description, operation_id, mode);
 }
 
 extern "C" JNIEXPORT void JNICALL

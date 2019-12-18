@@ -1,0 +1,28 @@
+build:
+  configuration: recipes/configurations/io_performance.json
+
+deployment:
+  local:
+    preflight:
+      - {
+          action: copy,
+          src: "${WORKSPACE_DIR}/files/io_performance/test.bin",
+          dst: "${APP_OOB_DATA_DIR}/test.bin"
+        }
+    postflight:
+      - {
+          action: delete,
+          files: [ "${APP_OOB_DATA_DIR}/test.bin" ]
+        }
+  ftl:
+    preflight_unsupported:
+      - {
+          action: copy,
+          src: "${WORKSPACE_DIR}/files/io_performance/test.bin",
+          dst: "${APP_OOB_DATA_DIR}/test.bin"
+        }
+    postflight_unsupported:
+      - {
+          action: delete,
+          files: [ "${APP_OOB_DATA_DIR}/test.bin" ]
+        }

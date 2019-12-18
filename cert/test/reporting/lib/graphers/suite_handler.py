@@ -63,6 +63,7 @@ class SuiteHandler(ABC):
         self.cpu_ids = list(self.data_by_cpu_id.keys())
         self.cpu_ids.sort()
 
+    # TODO: Refactor into single/multiple versions
     @abstractclassmethod
     def can_handle_suite(cls, suite: Suite):
         """Check if this SuiteHandler class can be used to handle this
@@ -104,6 +105,47 @@ class SuiteHandler(ABC):
         """
         raise NotImplementedError(
             "SuiteHandler subclass must implement render_plot() function")
+
+
+    @abstractclassmethod
+    def handles_entire_report(cls):
+        """Check if this suite handler wants to parse all suites as a single graph.
+        """
+        return False
+
+    #@abstractclassmethod
+    @classmethod
+    def can_render_single(cls):
+        """Check if this suite handler wants to draw its own plot.
+        """
+        return True
+
+    @classmethod
+    def render_entire_report(cls, suites: List['SuiteHandler'],
+                             plot_file_name: Path, dpi: int) -> str:
+        ensure_dir(plot_file_name)
+        plt.ioff()
+        # TODO(tmillican@google.com): Let report author give a name/description
+        plt.suptitle(suites[0].identifier())
+        summary_str = cls.render_report(suites)
+        plt.savefig(str(plot_file_name), dpi=dpi)
+        plt.close()
+        return summary_str
+
+    @abstractclassmethod
+    def render_report(cls, raw_suites: List['SuiteHandler']) -> str:
+        """Subclass implement this method to render multiple suites' data to matplotlib
+        Note: Don't call suptitle() that's already been done.
+        Return:
+            (optional) a summary string for a given dataset
+            If a report has some interesting data (outlier behavior,
+            failures, etc) generate a summary string here and return it.
+            Otherwise, returning None or an empty string will result in
+            nothing printed.
+        """
+        raise NotImplementedError(
+            "SuiteHandler subclass must implement render_report() function")
+
 
     def title(self):
         """The title of the figure rendered in render_plot()

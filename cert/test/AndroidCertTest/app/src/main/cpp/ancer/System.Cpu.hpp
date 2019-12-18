@@ -17,22 +17,26 @@
 #ifndef _SYSTEM_CPU_HPP
 #define _SYSTEM_CPU_HPP
 
+#include <array>
 #include <string>
 
 namespace ancer {
 
-enum class ThreadAffinity { kLittleCore, kMiddleCore, kBigCore, kAnyCore };
+enum class ThreadAffinity {
+    kLittleCore, kMiddleCore, kBigCore, kAll, kAffinityCount = kAll
+};
+constexpr std::array kAffinityNames = { "Little", "Middle", "Big", "All" };
 
 /**
  * Returns how many cores are in a given affinity category.
  */
-[[nodiscard]] int NumCores(ThreadAffinity = ThreadAffinity::kAnyCore);
+[[nodiscard]] int NumCores(ThreadAffinity = ThreadAffinity::kAll);
 
 /**
  * Sets our affinity to a specific core in the given group.
  * An index of -1 acts as SetThreadAffinity(affinity).
  */
-bool SetThreadAffinity(int index, ThreadAffinity = ThreadAffinity::kAnyCore);
+bool SetThreadAffinity(int index, ThreadAffinity = ThreadAffinity::kAll);
 
 /**
  * Sets our affinity to any/all of the cores in a group.

@@ -17,6 +17,7 @@
 package com.google.gamesdk.gamecert.operationrunner.hosts;
 
 import android.content.ComponentCallbacks2;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -46,9 +47,10 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
-public abstract class BaseHostActivity extends AppCompatActivity
+public class BaseHostActivity extends AppCompatActivity
         implements ComponentCallbacks2 {
 
+    public static final String ID = "BasicHostActivity";
     private static final String TAG = BaseHostActivity.class.getSimpleName();
     protected static final String STRESS_TEST_JSON = "STRESS_TEST_JSON";
     private static final boolean SHOW_TIMING_INFO = true;
@@ -56,6 +58,7 @@ public abstract class BaseHostActivity extends AppCompatActivity
     protected boolean _canceled;
     protected boolean _running;
     protected String _suiteId;
+    protected String _suiteDescription;
     protected Configuration.StressTest _stressTest;
     protected Handler _mainThreadPump;
     protected TextView _fpsTextView;
@@ -68,10 +71,19 @@ public abstract class BaseHostActivity extends AppCompatActivity
 
     protected SystemHelpers _systemHelpers;
 
+    public static Intent createIntent(Context ctx, Configuration.StressTest stressTest) {
+        Intent i = new Intent(ctx, BaseHostActivity.class);
+        i.putExtra(STRESS_TEST_JSON, stressTest.toJson());
+        return i;
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(getContentViewResource());
+        int viewResource = getContentViewResource();
+        if (viewResource != 0) {
+            setContentView(viewResource);
+        }
 
         _mainThreadPump = new Handler(getMainLooper());
         _systemHelpers = new SystemHelpers(this);
@@ -84,9 +96,15 @@ public abstract class BaseHostActivity extends AppCompatActivity
         _minFrameTimeTextView = findViewById(R.id.minFrameTimeTextView);
         _maxFrameTimeTextView = findViewById(R.id.maxFrameTimeTextView);
         if (!SHOW_TIMING_INFO) {
-            _fpsTextView.setVisibility(View.GONE);
-            _minFrameTimeTextView.setVisibility(View.GONE);
-            _maxFrameTimeTextView.setVisibility(View.GONE);
+            if (_fpsTextView != null) {
+                _fpsTextView.setVisibility(View.GONE);
+            }
+            if (_minFrameTimeTextView != null) {
+                _minFrameTimeTextView.setVisibility(View.GONE);
+            }
+            if (_maxFrameTimeTextView != null) {
+                _maxFrameTimeTextView.setVisibility(View.GONE);
+            }
         }
 
         //
@@ -104,6 +122,7 @@ public abstract class BaseHostActivity extends AppCompatActivity
         _stressTest = Configuration.StressTest.fromJson(stressTestJson);
 
         _suiteId = _stressTest.getName();
+        _suiteDescription = _stressTest.getDescription();
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(_suiteId);
         }
@@ -118,18 +137,19 @@ public abstract class BaseHostActivity extends AppCompatActivity
 
         _dataGatherer = new OperationWrapper(
                 _suiteId,
+                _suiteDescription,
                 _stressTest.getDataGatherer(),
                 this,
                 BaseOperation.Mode.DATA_GATHERER);
 
         // we're not using java streams because of SDK 19 support
         for (Operation stressor : _stressTest.getStressors()) {
-            OperationWrapper wrapper = new OperationWrapper(_suiteId, stressor,this, Mode.STRESSOR);
+            OperationWrapper wrapper = new OperationWrapper(_suiteId, _suiteDescription, stressor,this, Mode.STRESSOR);
             _stressors.add(wrapper);
         }
 
         for (Operation monitor : _stressTest.getMonitors()) {
-            OperationWrapper wrapper = new OperationWrapper(_suiteId, monitor, this, Mode.DATA_GATHERER);
+            OperationWrapper wrapper = new OperationWrapper(_suiteId, _suiteDescription, monitor, this, Mode.DATA_GATHERER);
             _monitors.add(wrapper);
         }
     }
@@ -175,18 +195,24 @@ public abstract class BaseHostActivity extends AppCompatActivity
 
     private void updateTimingStats() {
         if (_running) {
-            _fpsTextView.setText(
-                    String.format(Locale.getDefault(),
-                            "%.2f",
-                            NativeInvoker.getCurrentFps()));
-            _minFrameTimeTextView.setText(
-                    String.format(Locale.getDefault(),
-                            "%.3f ms",
-                            NativeInvoker.getCurrentMinFrameTimeNs() / 1e6));
-            _maxFrameTimeTextView.setText(
-                    String.format(Locale.getDefault(),
-                            "%.3f ms",
-                            NativeInvoker.getCurrentMaxFrameTimeNs() / 1e6));
+            if (_fpsTextView != null) {
+                _fpsTextView.setText(
+                        String.format(Locale.getDefault(),
+                                "%.2f",
+                                NativeInvoker.getCurrentFps()));
+            }
+            if (_minFrameTimeTextView != null) {
+                _minFrameTimeTextView.setText(
+                        String.format(Locale.getDefault(),
+                                "%.3f ms",
+                                NativeInvoker.getCurrentMinFrameTimeNs() / 1e6));
+            }
+            if (_maxFrameTimeTextView != null) {
+                _maxFrameTimeTextView.setText(
+                        String.format(Locale.getDefault(),
+                                "%.3f ms",
+                                NativeInvoker.getCurrentMaxFrameTimeNs() / 1e6));
+            }
             _mainThreadPump.postDelayed(this::updateTimingStats, 1000);
         }
     }
@@ -232,7 +258,9 @@ public abstract class BaseHostActivity extends AppCompatActivity
         }).start();
     }
 
-    protected abstract int getContentViewResource();
+    protected int getContentViewResource() {
+        return 0;
+    }
 
     protected void onFinished(boolean canceled) {
         setResult(canceled
@@ -252,7 +280,7 @@ public abstract class BaseHostActivity extends AppCompatActivity
         private BaseOperation _javaOperation;
         private NativeOperationHandle _nativeOperation;
 
-        OperationWrapper(String suiteId,
+        OperationWrapper(String suiteId, String description,
                          Configuration.Operation operation,
                          BaseHostActivity activity,
                          BaseOperation.Mode mode) {
@@ -270,7 +298,8 @@ public abstract class BaseHostActivity extends AppCompatActivity
                     mode);
 
             if (_javaOperation == null) {
-                _nativeOperation = loadNativeOperation(suiteId, operation);
+                _nativeOperation = loadNativeOperation(suiteId, description,
+                        operation);
                 if (_nativeOperation == null) {
                     throw new IllegalStateException(
                             "Unable to create java or native operation of type: \""
@@ -306,9 +335,10 @@ public abstract class BaseHostActivity extends AppCompatActivity
         }
 
         private NativeOperationHandle
-        loadNativeOperation(String suiteId, Configuration.Operation operation) {
+        loadNativeOperation(String suiteId, String description,
+                            Configuration.Operation operation) {
             NativeOperationHandle h = new NativeOperationHandle();
-            h.nativeHandle = NativeInvoker.createOperation(suiteId,
+            h.nativeHandle = NativeInvoker.createOperation(suiteId, description,
                     operation.getId(),
                     _mode.getValue());
 

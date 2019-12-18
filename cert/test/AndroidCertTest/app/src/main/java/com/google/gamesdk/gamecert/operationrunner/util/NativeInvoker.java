@@ -82,15 +82,16 @@ public class NativeInvoker {
     /**
      * Create an operation instance (from native-lib) by name.
      *
-     * @param suiteId     the name of the test suite the operation will run in
+     * @param suiteId     The name of the test suite the operation will run in
+     * @param description A description of the test suite
      * @param operationId The class name of the operation to instantiate
      * @param mode        Mode to run operation in, corresponding to
      *                    BaseOperation.Mode enum
      * @return an id to refer to the operation when calling startOperation()
      * and stopOperation()
      */
-    public static native int createOperation(String suiteId, String operationId,
-                                             int mode);
+    public static native int createOperation(String suiteId, String description,
+                                             String operationId,  int mode);
 
     /**
      * start running an operation asynchronously

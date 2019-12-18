@@ -18,6 +18,7 @@
 
 import json
 import glob
+import traceback
 from pathlib import Path
 from typing import Dict, List, Union
 
@@ -95,13 +96,40 @@ def __generate_formatted_summary_from_suites(suites_by_name: Dict[str, Suite],
 
         if suites:
             formatter.on_init(suite_name, get_readable_utc())
-
             for suite in suites:
-                base_name = suite.file.stem
-                plot_path = __make_image_path(folder, base_name, image_indexer)
-                formatter.on_device(suite.identifier(), plot_path,
-                                    plot_path.relative_to(folder),
-                                    suite.handler.plot(plot_path, figure_dpi))
+                if suite.handler.can_render_single():
+                    base_name = suite.file.stem
+                    plot_path = __make_image_path(folder, base_name, image_indexer)
+                    formatter.on_device(suite.identifier(), plot_path,
+                                        plot_path.relative_to(folder),
+                                        suite.handler.plot(plot_path, figure_dpi))
+
+
+def __generate_formatted_report_summaries(suites_by_report: Dict[str, Suite],
+                                          folder: Path,
+                                          formatter: SummaryFormatter,
+                                          figure_dpi: int) -> type(None):
+    image_indexer = Indexer()
+
+    for [report, suites_] in suites_by_report.items():
+        suites = [s for s in suites_ if s.handler]
+        if not suites:
+            continue
+
+        suites_by_handler_class = {}
+        for s in [s for s in suites if s.handler]:
+            suites_by_handler_class.setdefault(s.handler.__class__, []).append(s)
+
+        for handler_class in suites_by_handler_class:
+            if handler_class.handles_entire_report(suites):
+                plot_path = folder.joinpath("images").joinpath(report + ".png")
+                try:
+                    formatter.on_device(suites[0].identifier(), plot_path,
+                                        plot_path.relative_to(folder),
+                                        handler_class.render_entire_report(suites, plot_path, figure_dpi))
+                except:
+                    print("Warning: Failed to write report for '" + report + "'")
+                    print(traceback.format_exc())
 
 
 def __generate_formatted_cross_suite_summary(all_suites: List[Suite],
@@ -152,18 +180,23 @@ def __generate_formatted_summary_from_reports(summary_path: Path,
     the result formatted to the summary
     """
     suites_by_name = {}
+    suites_by_report = {}
     all_suites = []
     folder = summary_path.parent
 
     for report in reports:
         suites = load_suites(report)
         all_suites.extend(suites)
+        suites_by_report[report.stem] = suites
         for suite in suites:
             suites_by_name.setdefault(suite.name, []).append(suite)
 
     with formatter.create_writer(summary_path):
         __generate_formatted_summary_from_suites(suites_by_name, folder,
                                                  formatter, figure_dpi)
+
+        __generate_formatted_report_summaries(suites_by_report, folder,
+                                              formatter, figure_dpi)
 
         __generate_formatted_cross_suite_summary(all_suites, folder, formatter,
                                                  figure_dpi)
