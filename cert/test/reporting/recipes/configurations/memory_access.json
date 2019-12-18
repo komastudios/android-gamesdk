@@ -1,0 +1,155 @@
+{
+    "auto_run": false,
+    "delay_between_tests": "500ms",
+    "host": "SwappyGLHostActivity",
+    "defaultMonitors": [
+        {
+            "id": "MonitorOperation"
+        }
+    ],
+    "stress_tests": [
+        {
+            "enabled": true,
+            "name": "Memory Access Test",
+            "description": "Reads/writes using small & large operations",
+            "duration": "0s",
+            "data_gatherer": {
+                "id": "MemoryAccessOperation",
+                "configuration": {
+                    "buffer_size": "512mb",
+                    "report_rate": "5ms",
+                    "operations": [
+                        {
+                            "description": "256b Divided Write",
+                            "read_write": "Write",
+                            "rw_size": "256b",
+                            "operation_type": "Fixed",
+                            "config": {
+                                "threads": "All Cores",
+                                "work_scheme": "Divided",
+                                "advance": "256b"
+                            }
+                        },
+                        {
+                            "description": "256b Divided Read",
+                            "read_write": "Read",
+                            "rw_size": "256b",
+                            "operation_type": "Fixed",
+                            "config": {
+                                "threads": "All Cores",
+                                "work_scheme": "Divided",
+                                "advance": "256b"
+                            }
+                        },
+                        {
+                            "description": "5kb Divided Write",
+                            "read_write": "Write",
+                            "rw_size": "5kb",
+                            "operation_type": "Fixed",
+                            "config": {
+                                "threads": "All Cores",
+                                "work_scheme": "Divided",
+                                "advance": "5kb"
+                            }
+                        },
+                        {
+                            "description": "5kb Divided Read",
+                            "read_write": "Read",
+                            "rw_size": "5kb",
+                            "operation_type": "Fixed",
+                            "config": {
+                                "threads": "All Cores",
+                                "work_scheme": "Divided",
+                                "advance": "5kb"
+                            }
+                        }
+                    ]
+                }
+            },
+            "stressors": []
+        },
+        {
+            "enabled": true,
+            "name": "Memory Access Test",
+            "description": "Divided Big/Middle/Little Comparison",
+            "duration": "0s",
+            "data_gatherer": {
+                "id": "MemoryAccessOperation",
+                "configuration": {
+                    "buffer_size": "512mb",
+                    "report_rate": "5ms",
+                    "operations": [
+                        {
+                            "description": "Big/Middle/Little Write",
+                            "read_write": "Write",
+                            "rw_size": "1kb",
+                            "operation_type": "Fixed",
+                            "config": {
+                                "threads": "Big Cores",
+                                "work_scheme": "Divided",
+                                "advance": "1kb"
+                            }
+                        },
+                        {
+                            "append_graph": true,
+                            "read_write": "Write",
+                            "rw_size": "1kb",
+                            "operation_type": "Fixed",
+                            "config": {
+                                "threads": "Middle Cores",
+                                "work_scheme": "Divided",
+                                "advance": "1kb"
+                            }
+                        },
+                        {
+                            "append_graph": true,
+                            "read_write": "Write",
+                            "rw_size": "1kb",
+                            "operation_type": "Fixed",
+                            "config": {
+                                "threads": "Little Cores",
+                                "work_scheme": "Divided",
+                                "advance": "1kb"
+                            }
+                        },
+
+                        {
+                            "description": "Big/Middle/Little Read",
+                            "read_write": "Read",
+                            "rw_size": "1kb",
+                            "operation_type": "Fixed",
+                            "config": {
+                                "threads": "Big Cores",
+                                "work_scheme": "Divided",
+                                "advance": "1kb"
+                            }
+                        },
+                        {
+                            "append_graph": true,
+                            "read_write": "Read",
+                            "rw_size": "1kb",
+                            "operation_type": "Fixed",
+                            "config": {
+                                "threads": "Middle Cores",
+                                "work_scheme": "Divided",
+                                "advance": "1kb"
+                            }
+                        },
+                        {
+                            "append_graph": true,
+                            "read_write": "Read",
+                            "rw_size": "1kb",
+                            "operation_type": "Fixed",
+                            "config": {
+                                "threads": "Little Cores",
+                                "work_scheme": "Divided",
+                                "advance": "1kb"
+                            }
+                        }
+                    ]
+                }
+            },
+            "stressors": []
+        }
+    ]
+}
