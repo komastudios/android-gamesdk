@@ -16,18 +16,18 @@ Mesh::Mesh(Renderer *renderer,
   rotation_ = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
   scale_ = glm::vec3(1.0f, 1.0f, 1.0f);
 
-  mesh_buffer_ = std::make_unique<UniformBufferObject<ModelViewProjection>>(renderer_->getDevice());
-  createMeshDescriptorSetLayout();
-  createMeshDescriptors();
+  mesh_buffer_ = std::make_unique<UniformBufferObject<ModelViewProjection>>(renderer_->GetDevice());
+  CreateMeshDescriptorSetLayout();
+  CreateMeshDescriptors();
 }
 
 Mesh::Mesh(Renderer *renderer,
            std::shared_ptr<Material> material,
-           const std::vector<float> &vertexData,
-           const std::vector<uint16_t> &indexData) :
+           const std::vector<float> &vertex_data,
+           const std::vector<uint16_t> &index_data) :
     Mesh(renderer,
          material,
-         std::make_shared<Geometry>(renderer->getDevice(), vertexData, indexData)) {}
+         std::make_shared<Geometry>(renderer->GetDevice(), vertex_data, index_data)) {}
 
 Mesh::Mesh(const Mesh &other, std::shared_ptr<Material> material) :
     renderer_(other.renderer_),
@@ -36,9 +36,9 @@ Mesh::Mesh(const Mesh &other, std::shared_ptr<Material> material) :
     position_(other.position_),
     rotation_(other.rotation_),
     scale_(other.scale_){
-  mesh_buffer_ = std::make_unique<UniformBufferObject<ModelViewProjection>>(renderer_->getDevice());
-  createMeshDescriptorSetLayout();
-  createMeshDescriptors();
+  mesh_buffer_ = std::make_unique<UniformBufferObject<ModelViewProjection>>(renderer_->GetDevice());
+  CreateMeshDescriptorSetLayout();
+  CreateMeshDescriptors();
 }
 
 Mesh::Mesh(const Mesh &other, std::shared_ptr<Geometry> geometry) :
@@ -48,79 +48,81 @@ Mesh::Mesh(const Mesh &other, std::shared_ptr<Geometry> geometry) :
     position_(other.position_),
     rotation_(other.rotation_),
     scale_(other.scale_) {
-  mesh_buffer_ = std::make_unique<UniformBufferObject<ModelViewProjection>>(renderer_->getDevice());
-  createMeshDescriptorSetLayout();
-  createMeshDescriptors();
+  mesh_buffer_ = std::make_unique<UniformBufferObject<ModelViewProjection>>(renderer_->GetDevice());
+  CreateMeshDescriptorSetLayout();
+  CreateMeshDescriptors();
 }
 
 Mesh::~Mesh() {
-  cleanup();
+  Cleanup();
 }
 
-void Mesh::cleanup() {
-  vkDeviceWaitIdle(renderer_->getVulkanDevice());
-  vkDestroyPipeline(renderer_->getVulkanDevice(), pipeline_, nullptr);
-  vkDestroyPipelineLayout(renderer_->getVulkanDevice(), layout_, nullptr);
-  vkDestroyDescriptorSetLayout(renderer_->getVulkanDevice(), mesh_descriptors_layout_, nullptr);
+void Mesh::Cleanup() {
+  vkDeviceWaitIdle(renderer_->GetVulkanDevice());
+  vkDestroyPipeline(renderer_->GetVulkanDevice(), pipeline_, nullptr);
+  vkDestroyPipelineLayout(renderer_->GetVulkanDevice(), layout_, nullptr);
+  vkDestroyDescriptorSetLayout(renderer_->GetVulkanDevice(), mesh_descriptors_layout_, nullptr);
   mesh_buffer_.reset();
   pipeline_ = VK_NULL_HANDLE;
 }
 
-void Mesh::onResume(Renderer *renderer) {
+void Mesh::OnResume(Renderer *renderer) {
   renderer_ = renderer;
-  mesh_buffer_ = std::make_unique<UniformBufferObject<ModelViewProjection>>(renderer_->getDevice());
-  createMeshDescriptorSetLayout();
-  createMeshDescriptors();
+  mesh_buffer_ = std::make_unique<UniformBufferObject<ModelViewProjection>>(renderer_->GetDevice());
+  CreateMeshDescriptorSetLayout();
+  CreateMeshDescriptors();
 }
 
-void Mesh::createMeshDescriptors() {
-  std::vector<VkDescriptorSetLayout> layouts(renderer_->getDevice().getDisplayImages().size(),
+void Mesh::CreateMeshDescriptors() {
+  std::vector<VkDescriptorSetLayout> layouts(renderer_->GetDevice().GetDisplayImages().size(),
                                              mesh_descriptors_layout_);
 
-  VkDescriptorSetAllocateInfo allocInfo = {};
-  allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-  allocInfo.descriptorPool = renderer_->getDescriptorPool();
-  allocInfo.descriptorSetCount = renderer_->getDevice().getDisplayImages().size();
-  allocInfo.pSetLayouts = layouts.data();
+  VkDescriptorSetAllocateInfo alloc_info = {
+          .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+          .descriptorPool = renderer_->GetDescriptorPool(),
+          .descriptorSetCount = static_cast<uint32_t>(renderer_->GetDevice().GetDisplayImages().size()),
+          .pSetLayouts = layouts.data(),
+  };
 
-  mesh_descriptor_sets_.resize(renderer_->getDevice().getDisplayImages().size());
-  CALL_VK(vkAllocateDescriptorSets(renderer_->getVulkanDevice(),
-                                   &allocInfo,
+  mesh_descriptor_sets_.resize(renderer_->GetDevice().GetDisplayImages().size());
+  CALL_VK(vkAllocateDescriptorSets(renderer_->GetVulkanDevice(),
+                                   &alloc_info,
                                    mesh_descriptor_sets_.data()));
 
-  for (size_t i = 0; i < renderer_->getDevice().getDisplayImages().size(); i++) {
-    VkDescriptorBufferInfo bufferInfo = {};
-    bufferInfo.buffer = mesh_buffer_->getBuffer(i);
-    bufferInfo.offset = 0;
-    bufferInfo.range = sizeof(ModelViewProjection);
+  for (size_t i = 0; i < renderer_->GetDevice().GetDisplayImages().size(); i++) {
+    VkDescriptorBufferInfo buffer_info = {
+            .buffer = mesh_buffer_->GetBuffer(i),
+            .offset = 0,
+            .range = sizeof(ModelViewProjection),
+    };
 
-    std::array<VkWriteDescriptorSet, 1> descriptorWrites = {};
+    std::array<VkWriteDescriptorSet, 1> descriptor_writes = {};
 
-    descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    descriptorWrites[0].dstSet = mesh_descriptor_sets_[i];
-    descriptorWrites[0].dstBinding = VERTEX_BINDING_MODEL_VIEW_PROJECTION;
-    descriptorWrites[0].dstArrayElement = 0;
-    descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    descriptorWrites[0].descriptorCount = 1;
-    descriptorWrites[0].pBufferInfo = &bufferInfo;
+    descriptor_writes[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptor_writes[0].dstSet = mesh_descriptor_sets_[i];
+    descriptor_writes[0].dstBinding = VERTEX_BINDING_MODEL_VIEW_PROJECTION;
+    descriptor_writes[0].dstArrayElement = 0;
+    descriptor_writes[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    descriptor_writes[0].descriptorCount = 1;
+    descriptor_writes[0].pBufferInfo = &buffer_info;
 
-    vkUpdateDescriptorSets(renderer_->getVulkanDevice(),
-                           descriptorWrites.size(),
-                           descriptorWrites.data(),
+    vkUpdateDescriptorSets(renderer_->GetVulkanDevice(),
+                           descriptor_writes.size(),
+                           descriptor_writes.data(),
                            0,
                            nullptr);
 
   }
 }
 
-void Mesh::createMeshPipeline(VkRenderPass renderPass) {
+void Mesh::CreateMeshPipeline(VkRenderPass render_pass) {
   std::array<VkDescriptorSetLayout, 3> layouts;
 
   layouts[BINDING_SET_MESH] = mesh_descriptors_layout_;
-  layouts[BINDING_SET_MATERIAL] = material_->getMaterialDescriptorSetLayout();
-  layouts[BINDING_SET_LIGHTS] = renderer_->getLightsDescriptorSetLayout();
+  layouts[BINDING_SET_MATERIAL] = material_->GetMaterialDescriptorSetLayout();
+  layouts[BINDING_SET_LIGHTS] = renderer_->GetLightsDescriptorSetLayout();
 
-  VkPipelineLayoutCreateInfo pipelineLayoutInfo{
+  VkPipelineLayoutCreateInfo pipeline_layout_info {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
       .pNext = nullptr,
       .setLayoutCount = layouts.size(),
@@ -129,66 +131,68 @@ void Mesh::createMeshPipeline(VkRenderPass renderPass) {
       .pPushConstantRanges = nullptr,
   };
 
-  CALL_VK(vkCreatePipelineLayout(renderer_->getVulkanDevice(), &pipelineLayoutInfo, nullptr,
+  CALL_VK(vkCreatePipelineLayout(renderer_->GetVulkanDevice(), &pipeline_layout_info, nullptr,
                                  &layout_))
 
-  VkGraphicsPipelineCreateInfo pipelineInfo = renderer_->getDefaultPipelineInfo(
+  VkGraphicsPipelineCreateInfo pipeline_info = renderer_->GetDefaultPipelineInfo(
       layout_,
-      renderPass);
+      render_pass);
 
-  material_->fillPipelineInfo(&pipelineInfo);
+  material_->FillPipelineInfo(&pipeline_info);
 
   CALL_VK(vkCreateGraphicsPipelines(
-      renderer_->getVulkanDevice(),
-      renderer_->getPipelineCache(), 1,
-      &pipelineInfo,
+      renderer_->GetVulkanDevice(),
+      renderer_->GetPipelineCache(), 1,
+      &pipeline_info,
       nullptr, &pipeline_));
 }
 
-void Mesh::createMeshDescriptorSetLayout() {
-  VkDescriptorSetLayoutBinding uboLayoutBinding = {};
-  uboLayoutBinding.binding = VERTEX_BINDING_MODEL_VIEW_PROJECTION;
-  uboLayoutBinding.descriptorCount = 1;
-  uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-  uboLayoutBinding.pImmutableSamplers = nullptr;
-  uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+void Mesh::CreateMeshDescriptorSetLayout() {
+  VkDescriptorSetLayoutBinding ubo_layout_binding = {
+          .binding = VERTEX_BINDING_MODEL_VIEW_PROJECTION,
+          .descriptorCount = 1,
+          .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+          .pImmutableSamplers = nullptr,
+          .stageFlags = VK_SHADER_STAGE_VERTEX_BIT,
+  };
 
-  std::array<VkDescriptorSetLayoutBinding, 1> bindings = {uboLayoutBinding};
-  VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-  layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-  layoutInfo.bindingCount = bindings.size();
-  layoutInfo.pBindings = bindings.data();
+  std::array<VkDescriptorSetLayoutBinding, 1> bindings = {ubo_layout_binding};
+  VkDescriptorSetLayoutCreateInfo layout_info = {
+          .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+          .bindingCount = bindings.size(),
+          .pBindings = bindings.data(),
+  };
 
-  CALL_VK(vkCreateDescriptorSetLayout(renderer_->getVulkanDevice(), &layoutInfo, nullptr,
+  CALL_VK(vkCreateDescriptorSetLayout(renderer_->GetVulkanDevice(), &layout_info, nullptr,
                                       &mesh_descriptors_layout_));
 }
 
-void Mesh::updatePipeline(VkRenderPass renderPass) {
+void Mesh::UpdatePipeline(VkRenderPass render_pass) {
   if (pipeline_ != VK_NULL_HANDLE)
     return;
 
-  createMeshPipeline(renderPass);
+  CreateMeshPipeline(render_pass);
 }
 
-void Mesh::update(uint_t frame_index, glm::vec3 camera, glm::mat4 view, glm::mat4 proj) {
-  glm::mat4 model = getTransform();
+void Mesh::Update(uint_t frame_index, glm::vec3 camera, glm::mat4 view, glm::mat4 proj) {
+  glm::mat4 model = GetTransform();
   glm::mat4 mvp = proj * view * model;
 
-  mesh_buffer_->update(frame_index, [&mvp, &model](auto &ubo) {
+  mesh_buffer_->Update(frame_index, [&mvp, &model](auto &ubo) {
     ubo.mvp = mvp;
     ubo.model = model;
-    ubo.invTranspose = glm::transpose(glm::inverse(model));
+    ubo.inv_transpose = glm::transpose(glm::inverse(model));
   });
 }
 
-void Mesh::submitDraw(VkCommandBuffer commandBuffer, uint_t frame_index) const {
-  vkCmdBindPipeline(commandBuffer,
+void Mesh::SubmitDraw(VkCommandBuffer cmd_buffer, uint_t frame_index) const {
+  vkCmdBindPipeline(cmd_buffer,
                     VK_PIPELINE_BIND_POINT_GRAPHICS,
                     pipeline_);
 
-  geometry_->bind(commandBuffer);
+  geometry_->Bind(cmd_buffer);
 
-  vkCmdBindDescriptorSets(commandBuffer,
+  vkCmdBindDescriptorSets(cmd_buffer,
                           VK_PIPELINE_BIND_POINT_GRAPHICS,
                           layout_,
                           BINDING_SET_MESH,
@@ -197,64 +201,64 @@ void Mesh::submitDraw(VkCommandBuffer commandBuffer, uint_t frame_index) const {
                           0,
                           nullptr);
 
-  VkDescriptorSet lightsDescriptorSet = renderer_->getLightsDescriptorSet(frame_index);
+  VkDescriptorSet lights_descriptor_set = renderer_->GetLightsDescriptorSet(frame_index);
 
-  vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                          layout_, BINDING_SET_LIGHTS, 1, &lightsDescriptorSet, 0, nullptr);
+  vkCmdBindDescriptorSets(cmd_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                          layout_, BINDING_SET_LIGHTS, 1, &lights_descriptor_set, 0, nullptr);
 
-  VkDescriptorSet materialDescriptorSet = material_->getMaterialDescriptorSet(frame_index);
+  VkDescriptorSet material_descriptor_set = material_->GetMaterialDescriptorSet(frame_index);
 
-  vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                          layout_, BINDING_SET_MATERIAL, 1, &materialDescriptorSet, 0, nullptr);
+  vkCmdBindDescriptorSets(cmd_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                          layout_, BINDING_SET_MATERIAL, 1, &material_descriptor_set, 0, nullptr);
 
-  vkCmdDrawIndexed(commandBuffer,
-                   geometry_->getIndexCount(),
+  vkCmdDrawIndexed(cmd_buffer,
+                   geometry_->GetIndexCount(),
                    1, 0, 0, 0);
 }
 
-void Mesh::translate(glm::vec3 offset) {
+void Mesh::Translate(glm::vec3 offset) {
   position_ += offset;
 }
 
-void Mesh::rotate(glm::vec3 axis, float angle) {
+void Mesh::Rotate(glm::vec3 axis, float angle) {
   rotation_ *= glm::angleAxis(glm::radians(angle), axis);
   rotation_ = glm::normalize(rotation_);
 }
 
-void Mesh::scale(glm::vec3 scaling) {
+void Mesh::Scale(glm::vec3 scaling) {
   scale_ *= scaling;
 }
 
-void Mesh::setPosition(glm::vec3 position) {
+void Mesh::SetPosition(glm::vec3 position) {
   position_ = position;
 }
 
-void Mesh::setRotation(glm::vec3 axis, float angle) {
+void Mesh::SetRotation(glm::vec3 axis, float angle) {
   rotation_ = glm::angleAxis(glm::radians(angle), axis);
 }
 
-void Mesh::setScale(glm::vec3 scale) {
+void Mesh::SetScale(glm::vec3 scale) {
   scale_ = scale;
 }
 
-glm::vec3 Mesh::getPosition() const {
+glm::vec3 Mesh::GetPosition() const {
   return position_;
 }
 
-glm::quat Mesh::getRotation() const {
+glm::quat Mesh::GetRotation() const {
   return rotation_;
 }
 
-glm::vec3 Mesh::getScale() const {
+glm::vec3 Mesh::GetScale() const {
   return scale_;
 }
 
-glm::mat4 Mesh::getTransform() const {
+glm::mat4 Mesh::GetTransform() const {
   glm::mat4 position = glm::translate(glm::mat4(1.0), position_);
   glm::mat4 scale = glm::scale(glm::mat4(1.0), scale_);
   return position * glm::mat4(rotation_) * scale;
 }
 
-int Mesh::getTrianglesCount() const {
-  return geometry_->getIndexCount() / 3;
+int Mesh::GetTrianglesCount() const {
+  return geometry_->GetIndexCount() / 3;
 }

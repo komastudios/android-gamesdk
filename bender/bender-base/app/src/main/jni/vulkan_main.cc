@@ -17,18 +17,12 @@
 
 #include "vulkan_main.h"
 
-#include <android_native_app_glue.h>
-#include <cassert>
-#include <vector>
-#include <array>
-#include <cstring>
-#include <debug_marker.h>
-#include <chrono>
+#include "bender_kit.h"
+#include "vulkan_wrapper.h"
+#include "bender_helpers.h"
+#include "debug_marker.h"
 #include "timing.h"
 
-#include "vulkan_wrapper.h"
-#include "bender_kit.h"
-#include "bender_helpers.h"
 #include "renderer.h"
 #include "shader_state.h"
 #include "polyhedron.h"
@@ -37,22 +31,21 @@
 #include "font.h"
 #include "uniform_buffer.h"
 #include "button.h"
-#include "userinterface.h"
+#include "user_interface.h"
 #include "render_graph.h"
+#include "shader_bindings.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include <android_native_app_glue.h>
+#include <cassert>
+#include <vector>
+#include <array>
+#include <cstring>
+#include <chrono>
 
-#include "shader_bindings.h"
-
-using namespace BenderKit;
-using namespace BenderHelpers;
-
-/// Global Variables ...
-
-std::vector<VkImageView> displayViews_;
-std::vector<VkFramebuffer> framebuffers_;
-VkRenderPass render_pass;
+using namespace benderkit;
+using namespace benderhelpers;
 
 struct AttachmentBuffer {
   VkFormat format;
@@ -60,154 +53,156 @@ struct AttachmentBuffer {
   VkDeviceMemory device_memory;
   VkImageView image_view;
 };
-AttachmentBuffer depthBuffer;
 
-// Android Native App pointer...
-android_app *androidAppCtx = nullptr;
+android_app *android_app_ctx = nullptr;
 Device *device;
 Renderer *renderer;
 RenderGraph *render_graph;
 
-auto lastTime = std::chrono::high_resolution_clock::now();
-auto currentTime = lastTime;
-float frameTime;
-float totalTime;
+std::vector<VkImageView> display_views;
+std::vector<VkFramebuffer> framebuffers;
+VkRenderPass render_pass;
+AttachmentBuffer depth_buffer;
 
 Font *font;
 std::shared_ptr<ShaderState> shaders;
-std::vector<const char *> texFiles;
+std::vector<const char *> tex_files;
 std::vector<std::shared_ptr<Texture>> textures;
 std::vector<std::shared_ptr<Material>> materials;
-std::vector<std::shared_ptr<Material>> baselineMaterials;
+std::vector<std::shared_ptr<Material>> baseline_materials;
 std::vector<std::shared_ptr<Geometry>> geometries;
 
-const glm::mat4 identity_mat4 = glm::mat4(1.0f);
-bool windowResized = false;
-bool appInitializedOnce = false;
-uint32_t polyFacesIdx = 0;
-uint32_t materialsIdx = 0;
+auto last_time = std::chrono::high_resolution_clock::now();
+auto current_time = last_time;
+float frame_time;
+float total_time;
+
+const glm::mat4 kIdentityMat4 = glm::mat4(1.0f);
+bool window_resized = false;
+bool app_initialized_once = false;
+uint32_t poly_faces_idx = 0;
+uint32_t materials_idx = 0;
 UserInterface *user_interface;
 char mesh_info[50];
 char fps_info[50];
 
-
-void moveForward() {
+void MoveForward() {
   glm::vec3
-      forward = glm::normalize(render_graph->getCameraRotation() * glm::vec3(0.0f, 0.0f, -1.0f));
-  render_graph->translateCamera(forward * 2.0f * frameTime);
+      forward = glm::normalize(render_graph->GetCameraRotation() * glm::vec3(0.0f, 0.0f, -1.0f));
+  render_graph->TranslateCamera(forward * 2.0f * frame_time);
 }
-void moveBackward() {
+void MoveBackward() {
   glm::vec3
-      forward = glm::normalize(render_graph->getCameraRotation() * glm::vec3(0.0f, 0.0f, -1.0f));
-  render_graph->translateCamera(-forward * 2.0f * frameTime);
+      forward = glm::normalize(render_graph->GetCameraRotation() * glm::vec3(0.0f, 0.0f, -1.0f));
+  render_graph->TranslateCamera(-forward * 2.0f * frame_time);
 }
-void strafeLeft() {
-  glm::vec3 right = glm::normalize(render_graph->getCameraRotation() * glm::vec3(1.0f, 0.0f, 0.0f));
-  render_graph->translateCamera(-right * (20.0f / device->getDisplaySize().width));
+void StrafeLeft() {
+  glm::vec3 right = glm::normalize(render_graph->GetCameraRotation() * glm::vec3(1.0f, 0.0f, 0.0f));
+  render_graph->TranslateCamera(-right * (20.0f / device->GetDisplaySize().width));
 }
-void strafeRight() {
-  glm::vec3 right = glm::normalize(render_graph->getCameraRotation() * glm::vec3(1.0f, 0.0f, 0.0f));
-  render_graph->translateCamera(right * (20.0f / device->getDisplaySize().width));
+void StrafeRight() {
+  glm::vec3 right = glm::normalize(render_graph->GetCameraRotation() * glm::vec3(1.0f, 0.0f, 0.0f));
+  render_graph->TranslateCamera(right * (20.0f / device->GetDisplaySize().width));
 }
-void strafeUp() {
-  glm::vec3 up = glm::normalize(render_graph->getCameraRotation() * glm::vec3(0.0f, 1.0f, 0.0f));
-  render_graph->translateCamera(up * (20.0f / device->getDisplaySize().height));
+void StrafeUp() {
+  glm::vec3 up = glm::normalize(render_graph->GetCameraRotation() * glm::vec3(0.0f, 1.0f, 0.0f));
+  render_graph->TranslateCamera(up * (20.0f / device->GetDisplaySize().height));
 }
-void strafeDown() {
-  glm::vec3 up = glm::normalize(render_graph->getCameraRotation() * glm::vec3(0.0f, 1.0f, 0.0f));
-  render_graph->translateCamera(-up * (20.0f / device->getDisplaySize().height));
+void StrafeDown() {
+  glm::vec3 up = glm::normalize(render_graph->GetCameraRotation() * glm::vec3(0.0f, 1.0f, 0.0f));
+  render_graph->TranslateCamera(-up * (20.0f / device->GetDisplaySize().height));
 }
-void createInstance() {
-  render_graph->addMesh(std::make_shared<Mesh>(renderer,
-                                               baselineMaterials[materialsIdx],
-                                               geometries[polyFacesIdx]));
-  render_graph->getLastMesh()->translate(glm::vec3(rand() % 3,
+void CreateInstance() {
+  render_graph->AddMesh(std::make_shared<Mesh>(renderer,
+                                               baseline_materials[materials_idx],
+                                               geometries[poly_faces_idx]));
+  render_graph->GetLastMesh()->Translate(glm::vec3(rand() % 3,
                                                    rand() % 3,
                                                    rand() % 3));
 }
-void deleteInstance() {
-  render_graph->removeLastMesh();
+void DeleteInstance() {
+  render_graph->RemoveLastMesh();
 }
-void changePolyhedralComplexity() {
-  polyFacesIdx = (polyFacesIdx + 1) % allowedPolyFaces.size();
-  auto allMeshes = render_graph->getAllMeshes();
-  for (uint32_t i = 0; i < allMeshes.size(); i++) {
-    allMeshes[i] =
-        std::make_shared<Mesh>(*allMeshes[i], geometries[polyFacesIdx]);
+void ChangePolyhedralComplexity() {
+  poly_faces_idx = (poly_faces_idx + 1) % allowedPolyFaces.size();
+  auto all_meshes = render_graph->GetAllMeshes();
+  for (uint32_t i = 0; i < all_meshes.size(); i++) {
+    all_meshes[i] =
+        std::make_shared<Mesh>(*all_meshes[i], geometries[poly_faces_idx]);
   }
-  render_graph->clearMeshes();
-  render_graph->addMeshes(allMeshes);
+  render_graph->ClearMeshes();
+  render_graph->AddMeshes(all_meshes);
 }
-void changeMaterialComplexity() {
-  materialsIdx = (materialsIdx + 1) % baselineMaterials.size();
-  auto allMeshes = render_graph->getAllMeshes();
-  for (uint32_t i = 0; i < allMeshes.size(); i++) {
-    allMeshes[i] =
-        std::make_shared<Mesh>(*allMeshes[i], baselineMaterials[materialsIdx]);
+void ChangeMaterialComplexity() {
+  materials_idx = (materials_idx + 1) % baseline_materials.size();
+  auto all_meshes = render_graph->GetAllMeshes();
+  for (uint32_t i = 0; i < all_meshes.size(); i++) {
+    all_meshes[i] =
+        std::make_shared<Mesh>(*all_meshes[i], baseline_materials[materials_idx]);
   }
-  render_graph->clearMeshes();
-  render_graph->addMeshes(allMeshes);
+  render_graph->ClearMeshes();
+  render_graph->AddMeshes(all_meshes);
 }
 
-void createButtons() {
-  Button::setScreenResolution(device->getDisplaySizeOriented());
+void CreateButtons() {
+  Button::SetScreenResolution(device->GetDisplaySizeOriented());
 
   user_interface->RegisterButton([] (Button& button) {
-      button.onHold = strafeLeft;
-      button.setLabel("<--");
-      button.setPosition(-.7, .2, .7, .2);
+      button.on_hold_ = StrafeLeft;
+      button.SetLabel("<--");
+      button.SetPosition(-.7, .2, .7, .2);
   });
   user_interface->RegisterButton([] (Button& button) {
-    button.onHold = strafeRight;
-    button.setLabel("-->");
-    button.setPosition(-.2, .2, .7, .2);
+    button.on_hold_ = StrafeRight;
+    button.SetLabel("-->");
+    button.SetPosition(-.2, .2, .7, .2);
   });
   user_interface->RegisterButton([] (Button& button) {
-    button.onHold = strafeUp;
-    button.setLabel("^");
-    button.setPosition(-.47, .2, .6, .2);
+    button.on_hold_ = StrafeUp;
+    button.SetLabel("^");
+    button.SetPosition(-.47, .2, .6, .2);
   });
   user_interface->RegisterButton([] (Button& button) {
-    button.onHold = strafeDown;
-    button.setLabel("0");
-    button.setPosition(-.47, .2, .85, .2);
+    button.on_hold_ = StrafeDown;
+    button.SetLabel("0");
+    button.SetPosition(-.47, .2, .85, .2);
   });
   user_interface->RegisterButton([] (Button& button) {
-    button.onHold = moveForward;
-    button.setLabel("Forward");
-    button.setPosition(.43, .2, .65, .2);
+    button.on_hold_ = MoveForward;
+    button.SetLabel("Forward");
+    button.SetPosition(.43, .2, .65, .2);
   });
   user_interface->RegisterButton([] (Button& button) {
-    button.onHold = moveBackward;
-    button.setLabel("Backward");
-    button.setPosition(.43, .2, .85, .2);
+    button.on_hold_ = MoveBackward;
+    button.SetLabel("Backward");
+    button.SetPosition(.43, .2, .85, .2);
   });
   user_interface->RegisterButton([] (Button& button) {
-    button.onUp = createInstance;
-    button.setLabel("+1 Mesh");
-    button.setPosition(-.2, .2, .4, .2);
+    button.on_up_ = CreateInstance;
+    button.SetLabel("+1 Mesh");
+    button.SetPosition(-.2, .2, .4, .2);
   });
   user_interface->RegisterButton([] (Button& button) {
-    button.onUp = deleteInstance;
-    button.setLabel("-1 Mesh");
-    button.setPosition(-.7, .2, .4, .2);
+    button.on_up_ = DeleteInstance;
+    button.SetLabel("-1 Mesh");
+    button.SetPosition(-.7, .2, .4, .2);
   });
   user_interface->RegisterButton([] (Button& button) {
-    button.onUp = changePolyhedralComplexity;
-    button.setLabel("Poly Switch");
-    button.setPosition(.5, .2, .2, .2);
+    button.on_up_ = ChangePolyhedralComplexity;
+    button.SetLabel("Poly Switch");
+    button.SetPosition(.5, .2, .2, .2);
   });
   user_interface->RegisterButton([] (Button& button) {
-    button.onUp = changeMaterialComplexity;
-    button.setLabel("Tex Switch");
-    button.setPosition(.5, .2, .4, .2);
+    button.on_up_ = ChangeMaterialComplexity;
+    button.SetLabel("Tex Switch");
+    button.SetPosition(.5, .2, .4, .2);
   });
 }
 
-void createUserInterface() {
+void CreateUserInterface() {
   user_interface = new UserInterface(renderer, font);
 
-  createButtons();
+  CreateButtons();
   user_interface->RegisterTextField([] (TextField& field) {
       field.text = mesh_info;
       field.text_size = 1.0f;
@@ -222,29 +217,29 @@ void createUserInterface() {
   });
 }
 
-void createTextures() {
-  Timing::timer.time("Texture Creation", Timing::OTHER, []() {
-    assert(androidAppCtx != nullptr);
+void CreateTextures() {
+  timing::timer.Time("Texture Creation", timing::OTHER, [] {
+    assert(android_app_ctx != nullptr);
     assert(device != nullptr);
 
-    for (uint32_t i = 0; i < texFiles.size(); ++i) {
+    for (uint32_t i = 0; i < tex_files.size(); ++i) {
       textures.push_back(std::make_shared<Texture>(*device,
-                                                   *androidAppCtx,
-                                                   texFiles[i],
+                                                   *android_app_ctx,
+                                                   tex_files[i],
                                                    VK_FORMAT_R8G8B8A8_SRGB));
     }
   });
 }
 
-void createMaterials() {
-  Timing::timer.time("Materials Creation", Timing::OTHER, []() {
-    baselineMaterials.push_back(std::make_shared<Material>(renderer, shaders, nullptr));
-    baselineMaterials.push_back(std::make_shared<Material>(renderer,
+void CreateMaterials() {
+  timing::timer.Time("Materials Creation", timing::OTHER, [] {
+    baseline_materials.push_back(std::make_shared<Material>(renderer, shaders, nullptr));
+    baseline_materials.push_back(std::make_shared<Material>(renderer,
                                                            shaders,
                                                            nullptr,
                                                            glm::vec3(0.8, 0.0, 0.5)));
-    baselineMaterials.push_back(std::make_shared<Material>(renderer, shaders, textures[0]));
-    baselineMaterials.push_back(std::make_shared<Material>(renderer,
+    baseline_materials.push_back(std::make_shared<Material>(renderer, shaders, textures[0]));
+    baseline_materials.push_back(std::make_shared<Material>(renderer,
                                                            shaders,
                                                            textures[0],
                                                            glm::vec3(0.8, 0.0, 0.5)));
@@ -255,28 +250,28 @@ void createMaterials() {
   });
 }
 
-void createGeometries() {
-  for (int x = 0; x < allowedPolyFaces.size(); x++) {
+void CreateGeometries() {
+  for (uint32_t i = 0; i < allowedPolyFaces.size(); i++) {
     std::vector<float> vertex_data;
     std::vector<uint16_t> index_data;
-    polyhedronGenerators[x](vertex_data, index_data);
+    polyhedronGenerators[i](vertex_data, index_data);
     geometries.push_back(std::make_shared<Geometry>(*device,
                                                     vertex_data,
                                                     index_data,
-                                                    polyhedronGenerators[x]));
+                                                    polyhedronGenerators[i]));
   }
 }
 
-void createFrameBuffers(VkRenderPass &renderPass,
-                        VkImageView depthView = VK_NULL_HANDLE) {
-  displayViews_.resize(device->getDisplayImages().size());
-  for (uint32_t i = 0; i < device->getDisplayImages().size(); i++) {
-    VkImageViewCreateInfo viewCreateInfo = {
+void CreateFramebuffers(VkRenderPass &render_pass,
+                        VkImageView depth_view = VK_NULL_HANDLE) {
+  display_views.resize(device->GetDisplayImages().size());
+  for (uint32_t i = 0; i < device->GetDisplayImages().size(); i++) {
+    VkImageViewCreateInfo view_create_info = {
         .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
         .pNext = nullptr,
-        .image = device->getDisplayImages()[i],
+        .image = device->GetDisplayImages()[i],
         .viewType = VK_IMAGE_VIEW_TYPE_2D,
-        .format = device->getDisplayFormat(),
+        .format = device->GetDisplayFormat(),
         .components =
             {
                 .r = VK_COMPONENT_SWIZZLE_R,
@@ -294,86 +289,86 @@ void createFrameBuffers(VkRenderPass &renderPass,
             },
         .flags = 0,
     };
-    CALL_VK(vkCreateImageView(device->getDevice(), &viewCreateInfo, nullptr,
-                              &displayViews_[i]));
+    CALL_VK(vkCreateImageView(device->GetDevice(), &view_create_info, nullptr,
+                              &display_views[i]));
   }
 
-  framebuffers_.resize(device->getSwapchainLength());
-  for (uint32_t i = 0; i < device->getSwapchainLength(); i++) {
+  framebuffers.resize(device->GetSwapchainLength());
+  for (uint32_t i = 0; i < device->GetSwapchainLength(); i++) {
     VkImageView attachments[2] = {
-        displayViews_[i], depthView,
+        display_views[i], depth_view,
     };
-    VkFramebufferCreateInfo fbCreateInfo{
+    VkFramebufferCreateInfo framebuffer_create_info{
         .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
         .pNext = nullptr,
-        .renderPass = renderPass,
+        .renderPass = render_pass,
         .layers = 1,
         .attachmentCount = 2,  // 2 if using depth
         .pAttachments = attachments,
-        .width = static_cast<uint32_t>(device->getDisplaySize().width),
-        .height = static_cast<uint32_t>(device->getDisplaySize().height),
+        .width = static_cast<uint32_t>(device->GetDisplaySize().width),
+        .height = static_cast<uint32_t>(device->GetDisplaySize().height),
     };
 
-    CALL_VK(vkCreateFramebuffer(device->getDevice(), &fbCreateInfo, nullptr,
-                                &framebuffers_[i]));
+    CALL_VK(vkCreateFramebuffer(device->GetDevice(), &framebuffer_create_info, nullptr,
+                                &framebuffers[i]));
   }
 }
 
-void updateCamera(Input::Data *inputData) {
-  if ((inputData->lastButton != nullptr && inputData->lastInputCount > 1)
-      || inputData->lastButton == nullptr) {
-    render_graph->rotateCameraLocal(glm::quat(glm::vec3(0.0f,
-                                                        inputData->deltaX
-                                                            / device->getDisplaySize().width,
+void UpdateCamera(input::Data *input_data) {
+  if ((input_data->last_button != nullptr && input_data->last_input_count > 1)
+      || input_data->last_button == nullptr) {
+    render_graph->RotateCameraLocal(glm::quat(glm::vec3(0.0f,
+                                                        input_data->delta_x
+                                                            / device->GetDisplaySize().width,
                                                         0.0f)));
-    render_graph->rotateCameraGlobal(glm::quat(glm::vec3(
-        inputData->deltaY / device->getDisplaySize().height, 0.0f, 0.0f)));
+    render_graph->RotateCameraGlobal(glm::quat(glm::vec3(
+        input_data->delta_y / device->GetDisplaySize().height, 0.0f, 0.0f)));
   }
 
-  glm::mat4 pre_rotate_mat = identity_mat4;
+  glm::mat4 pre_rotate_mat = kIdentityMat4;
   glm::vec3 rotation_axis = glm::vec3(0.0f, 0.0f, -1.0f);
-  if (device->getPretransformFlag() & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR) {
+  if (device->GetPretransformFlag() & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR) {
     pre_rotate_mat = glm::rotate(pre_rotate_mat, glm::half_pi<float>(), rotation_axis);
-  } else if (device->getPretransformFlag() & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR) {
+  } else if (device->GetPretransformFlag() & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR) {
     pre_rotate_mat = glm::rotate(pre_rotate_mat, glm::three_over_two_pi<float>(), rotation_axis);
-  } else if (device->getPretransformFlag() & VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR) {
+  } else if (device->GetPretransformFlag() & VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR) {
     pre_rotate_mat = glm::rotate(pre_rotate_mat, glm::pi<float>(), rotation_axis);
   }
 
-  render_graph->setCameraViewMatrix(pre_rotate_mat * glm::inverse(
-      glm::translate(glm::mat4(1.0f), render_graph->getCameraPosition())
-          * glm::mat4(render_graph->getCameraRotation())));
+  render_graph->SetCameraViewMatrix(pre_rotate_mat * glm::inverse(
+      glm::translate(glm::mat4(1.0f), render_graph->GetCameraPosition())
+          * glm::mat4(render_graph->GetCameraRotation())));
 
-  glm::mat4 projMatrix = glm::perspective(render_graph->getCameraFOV(),
-                                          render_graph->getCameraAspectRatio(),
+  glm::mat4 proj_matrix = glm::perspective(render_graph->GetCameraFOV(),
+                                          render_graph->GetCameraAspectRatio(),
                                           0.1f,
                                           100.0f);
-  projMatrix[1][1] *= -1;
-  render_graph->setCameraProjMatrix(projMatrix);
+  proj_matrix[1][1] *= -1;
+  render_graph->SetCameraProjMatrix(proj_matrix);
 }
 
-void updateInstances(Input::Data *inputData) {
-  auto allMeshes = render_graph->getAllMeshes();
-  for (int x = 0; x < allMeshes.size(); x++) {
-    allMeshes[x]->rotate(glm::vec3(0.0f, 1.0f, 1.0f), 90 * frameTime);
-    allMeshes[x]->translate(.02f * glm::vec3(std::sin(2 * totalTime),
-                                             std::sin(x * totalTime),
-                                             std::cos(2 * totalTime)));
+void UpdateInstances(input::Data *input_data) {
+  auto all_meshes = render_graph->GetAllMeshes();
+  for (int i = 0; i < all_meshes.size(); i++) {
+    all_meshes[i]->Rotate(glm::vec3(0.0f, 1.0f, 1.0f), 90 * frame_time);
+    all_meshes[i]->Translate(.02f * glm::vec3(std::sin(2 * total_time),
+                                             std::sin(i * total_time),
+                                             std::cos(2 * total_time)));
 
-    allMeshes[x]->update(renderer->getCurrentFrame(),
-                         render_graph->getCameraPosition(),
-                         render_graph->getCameraViewMatrix(),
-                         render_graph->getCameraProjMatrix());
+    all_meshes[i]->Update(renderer->GetCurrentFrame(),
+                         render_graph->GetCameraPosition(),
+                         render_graph->GetCameraViewMatrix(),
+                         render_graph->GetCameraProjMatrix());
   }
-  renderer->updateLights(render_graph->getCameraPosition());
+  renderer->UpdateLights(render_graph->GetCameraPosition());
 }
 
-void handleInput(Input::Data *inputData) {
-  updateCamera(inputData);
-  updateInstances(inputData);
+void HandleInput(input::Data *input_data) {
+  UpdateCamera(input_data);
+  UpdateInstances(input_data);
 }
 
-void createShaderState() {
+void CreateShaderState() {
   VertexFormat vertex_format{{
                                  VertexElement::float3,
                                  VertexElement::float3,
@@ -382,20 +377,20 @@ void createShaderState() {
   };
 
   shaders =
-      std::make_shared<ShaderState>("mesh", vertex_format, *androidAppCtx, device->getDevice());
+      std::make_shared<ShaderState>("mesh", vertex_format, *android_app_ctx, device->GetDevice());
 }
 
-void createDepthBuffer() {
-  depthBuffer.format = BenderHelpers::findDepthFormat(device);
-  VkImageCreateInfo imageInfo = {
+void CreateDepthBuffer() {
+  depth_buffer.format = benderhelpers::FindDepthFormat(device);
+  VkImageCreateInfo image_info = {
       .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
       .imageType = VK_IMAGE_TYPE_2D,
-      .extent.width = device->getDisplaySize().width,
-      .extent.height = device->getDisplaySize().height,
+      .extent.width = device->GetDisplaySize().width,
+      .extent.height = device->GetDisplaySize().height,
       .extent.depth = 1,
       .mipLevels = 1,
       .arrayLayers = 1,
-      .format = depthBuffer.format,
+      .format = depth_buffer.format,
       .tiling = VK_IMAGE_TILING_OPTIMAL,
       .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
       .usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
@@ -403,29 +398,29 @@ void createDepthBuffer() {
       .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
   };
 
-  CALL_VK(vkCreateImage(device->getDevice(), &imageInfo, nullptr, &depthBuffer.image));
+  CALL_VK(vkCreateImage(device->GetDevice(), &image_info, nullptr, &depth_buffer.image));
 
-  VkMemoryRequirements memRequirements;
-  vkGetImageMemoryRequirements(device->getDevice(), depthBuffer.image, &memRequirements);
+  VkMemoryRequirements mem_requirements;
+  vkGetImageMemoryRequirements(device->GetDevice(), depth_buffer.image, &mem_requirements);
 
-  VkMemoryAllocateInfo allocInfo = {
+  VkMemoryAllocateInfo alloc_info = {
       .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-      .allocationSize = memRequirements.size,
-      .memoryTypeIndex = BenderHelpers::findMemoryType(memRequirements.memoryTypeBits,
+      .allocationSize = mem_requirements.size,
+      .memoryTypeIndex = benderhelpers::FindMemoryType(mem_requirements.memoryTypeBits,
                                                        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                                       device->getPhysicalDevice()),
+                                                       device->GetPhysicalDevice()),
   };
 
-  CALL_VK(vkAllocateMemory(device->getDevice(), &allocInfo, nullptr, &depthBuffer.device_memory))
+  CALL_VK(vkAllocateMemory(device->GetDevice(), &alloc_info, nullptr, &depth_buffer.device_memory))
 
-  vkBindImageMemory(device->getDevice(), depthBuffer.image, depthBuffer.device_memory, 0);
+  vkBindImageMemory(device->GetDevice(), depth_buffer.image, depth_buffer.device_memory, 0);
 
-  VkImageViewCreateInfo viewInfo = {
+  VkImageViewCreateInfo view_info = {
       .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
       .pNext = nullptr,
-      .image = depthBuffer.image,
+      .image = depth_buffer.image,
       .viewType = VK_IMAGE_VIEW_TYPE_2D,
-      .format = depthBuffer.format,
+      .format = depth_buffer.format,
       .subresourceRange =
           {
               .aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
@@ -437,33 +432,33 @@ void createDepthBuffer() {
       .flags = 0,
   };
 
-  CALL_VK(vkCreateImageView(device->getDevice(), &viewInfo, nullptr, &depthBuffer.image_view));
+  CALL_VK(vkCreateImageView(device->GetDevice(), &view_info, nullptr, &depth_buffer.image_view));
 
 }
 
 bool InitVulkan(android_app *app) {
-  Timing::timer.time("Initialization", Timing::OTHER, [app]() {
-    androidAppCtx = app;
+  timing::timer.Time("Initialization", timing::OTHER, [app] {
+    android_app_ctx = app;
 
     device = new Device(app->window);
-    assert(device->isInitialized());
-    device->setObjectName(reinterpret_cast<uint64_t>(device->getDevice()),
+    assert(device->IsInitialized());
+    device->SetObjectName(reinterpret_cast<uint64_t>(device->GetDevice()),
                           VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, "TEST NAME: VULKAN DEVICE");
 
     render_graph = new RenderGraph();
 
-    render_graph->setCameraAspectRatio(
-        device->getDisplaySize().width / (float) device->getDisplaySize().height);
+    render_graph->SetCameraAspectRatio(
+        device->GetDisplaySize().width / (float) device->GetDisplaySize().height);
     auto horizontal_fov = glm::radians(60.0f);
     auto vertical_fov =
-        static_cast<float>(2 * atan((0.5 * device->getDisplaySize().height)
-                                        / (0.5 * device->getDisplaySize().width
+        static_cast<float>(2 * atan((0.5 * device->GetDisplaySize().height)
+                                        / (0.5 * device->GetDisplaySize().width
                                             / tan(horizontal_fov / 2))));
-    render_graph->setCameraFOV((render_graph->getCameraAspectRatio() > 1.0f) ? horizontal_fov
+    render_graph->SetCameraFOV((render_graph->GetCameraAspectRatio() > 1.0f) ? horizontal_fov
                                                                              : vertical_fov);
 
     VkAttachmentDescription color_description{
-        .format = device->getDisplayFormat(),
+        .format = device->GetDisplayFormat(),
         .samples = VK_SAMPLE_COUNT_1_BIT,
         .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
         .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
@@ -474,7 +469,7 @@ bool InitVulkan(android_app *app) {
     };
 
     VkAttachmentDescription depth_description{
-        .format = BenderHelpers::findDepthFormat(device),
+        .format = benderhelpers::FindDepthFormat(device),
         .samples = VK_SAMPLE_COUNT_1_BIT,
         .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
         .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
@@ -510,7 +505,7 @@ bool InitVulkan(android_app *app) {
     std::array<VkAttachmentDescription, 2> attachment_descriptions =
         {color_description, depth_description};
 
-    VkRenderPassCreateInfo render_pass_createInfo{
+    VkRenderPassCreateInfo render_pass_create_info{
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
         .pNext = nullptr,
         .attachmentCount = static_cast<uint32_t>(attachment_descriptions.size()),
@@ -520,66 +515,65 @@ bool InitVulkan(android_app *app) {
         .dependencyCount = 0,
         .pDependencies = nullptr,
     };
-    CALL_VK(vkCreateRenderPass(device->getDevice(), &render_pass_createInfo, nullptr,
+    CALL_VK(vkCreateRenderPass(device->GetDevice(), &render_pass_create_info, nullptr,
                                &render_pass));
 
-    createShaderState();
+    CreateShaderState();
 
     renderer = new Renderer(*device);
 
-    Timing::timer.time("Mesh Creation", Timing::OTHER, []() {
-      texFiles.push_back("textures/sample_texture.png");
-      texFiles.push_back("textures/sample_texture2.png");
+    timing::timer.Time("Mesh Creation", timing::OTHER, [] {
+      tex_files.push_back("textures/sample_texture.png");
+      tex_files.push_back("textures/sample_texture2.png");
 
-      createTextures();
+      CreateTextures();
 
-      createMaterials();
+      CreateMaterials();
 
-      createGeometries();
+      CreateGeometries();
 
-      Timing::timer.time("Create Polyhedron", Timing::OTHER, []() {
-        render_graph->addMesh(std::make_shared<Mesh>(renderer,
-                                                     baselineMaterials[materialsIdx],
-                                                     geometries[polyFacesIdx]));
+      timing::timer.Time("Create Polyhedron", timing::OTHER, [] {
+        render_graph->AddMesh(std::make_shared<Mesh>(renderer,
+                                                     baseline_materials[materials_idx],
+                                                     geometries[poly_faces_idx]));
       });
     });
 
-    createDepthBuffer();
+    CreateDepthBuffer();
 
-    createFrameBuffers(render_pass, depthBuffer.image_view);
+    CreateFramebuffers(render_pass, depth_buffer.image_view);
 
-    font = new Font(*renderer, *androidAppCtx, FONT_SDF_PATH, FONT_INFO_PATH);
+    font = new Font(*renderer, *android_app_ctx, FONT_SDF_PATH, FONT_INFO_PATH);
 
-    createUserInterface();
-
+    CreateUserInterface();
   });
 
-  Timing::printEvent(*Timing::timer.getLastMajorEvent());
-  appInitializedOnce = true;
+  timing::PrintEvent(*timing::timer.GetLastMajorEvent());
+  app_initialized_once = true;
   return true;
 }
 
 bool ResumeVulkan(android_app *app) {
-  Timing::timer.time("Initialization", Timing::OTHER, [app]() {
-    androidAppCtx = app;
+  timing::timer.Time("Initialization", timing::OTHER, [app] {
+    android_app_ctx = app;
 
     device = new Device(app->window);
-    assert(device->isInitialized());
-    device->setObjectName(reinterpret_cast<uint64_t>(device->getDevice()),
+    assert(device->IsInitialized());
+    device->SetObjectName(reinterpret_cast<uint64_t>(device->GetDevice()),
                           VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, "TEST NAME: VULKAN DEVICE");
 
-    render_graph->setCameraAspectRatio(
-        device->getDisplaySize().width / (float) device->getDisplaySize().height);
+    render_graph->SetCameraAspectRatio(
+        device->GetDisplaySize().width / (float) device->GetDisplaySize().height);
     auto horizontal_fov = glm::radians(60.0f);
     auto vertical_fov =
-        static_cast<float>(2 * atan((0.5 * device->getDisplaySize().height)
-                                        / (0.5 * device->getDisplaySize().width
+        static_cast<float>(2 * atan((0.5 * device->GetDisplaySize().height)
+                                        / (0.5 * device->GetDisplaySize().width
                                             / tan(horizontal_fov / 2))));
-    render_graph->setCameraFOV((render_graph->getCameraAspectRatio() > 1.0f) ? horizontal_fov
+    render_graph->SetCameraFOV((render_graph->GetCameraAspectRatio() > 1.0f) ? horizontal_fov
                                                                              : vertical_fov);
 
     VkAttachmentDescription color_description{
-        .format = device->getDisplayFormat(),
+        .format = device->GetDisplayFormat(),
         .samples = VK_SAMPLE_COUNT_1_BIT,
         .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
         .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
@@ -590,7 +584,7 @@ bool ResumeVulkan(android_app *app) {
     };
 
     VkAttachmentDescription depth_description{
-        .format = BenderHelpers::findDepthFormat(device),
+        .format = benderhelpers::FindDepthFormat(device),
         .samples = VK_SAMPLE_COUNT_1_BIT,
         .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
         .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
@@ -626,7 +620,7 @@ bool ResumeVulkan(android_app *app) {
     std::array<VkAttachmentDescription, 2> attachment_descriptions =
         {color_description, depth_description};
 
-    VkRenderPassCreateInfo render_pass_createInfo{
+    VkRenderPassCreateInfo render_pass_create_info{
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
         .pNext = nullptr,
         .attachmentCount = static_cast<uint32_t>(attachment_descriptions.size()),
@@ -636,114 +630,114 @@ bool ResumeVulkan(android_app *app) {
         .dependencyCount = 0,
         .pDependencies = nullptr,
     };
-    CALL_VK(vkCreateRenderPass(device->getDevice(), &render_pass_createInfo, nullptr,
+    CALL_VK(vkCreateRenderPass(device->GetDevice(), &render_pass_create_info, nullptr,
                                &render_pass));
 
-    shaders->onResume(device->getDevice());
+    shaders->OnResume(device->GetDevice());
 
     renderer = new Renderer(*device);
 
-    Timing::timer.time("Mesh Creation", Timing::OTHER, [app]() {
-      for (auto &texture: textures) {
-        texture->onResume(*device, androidAppCtx);
+    timing::timer.Time("Mesh Creation", timing::OTHER, [app] {
+      for (auto &texture : textures) {
+        texture->OnResume(*device, android_app_ctx);
       }
-      Material::onResumeStatic(*device, app);
+      Material::OnResumeStatic(*device, app);
 
       for (auto &material : materials) {
-        material->onResume(renderer);
+        material->OnResume(renderer);
       }
 
-      for (auto &material : baselineMaterials) {
-        material->onResume(renderer);
+      for (auto &material : baseline_materials) {
+        material->OnResume(renderer);
       }
 
       for (auto &geometry : geometries) {
-        geometry->onResume(*device);
+        geometry->OnResume(*device);
       }
 
-      for (auto &mesh : render_graph->getAllMeshes()) {
-        mesh->onResume(renderer);
+      for (auto &mesh : render_graph->GetAllMeshes()) {
+        mesh->OnResume(renderer);
       }
     });
 
-    createDepthBuffer();
+    CreateDepthBuffer();
 
-    createFrameBuffers(render_pass, depthBuffer.image_view);
+    CreateFramebuffers(render_pass, depth_buffer.image_view);
 
-    font = new Font(*renderer, *androidAppCtx, FONT_SDF_PATH, FONT_INFO_PATH);
+    font = new Font(*renderer, *android_app_ctx, FONT_SDF_PATH, FONT_INFO_PATH);
     user_interface->OnResume(renderer, font);
   });
 
-  Timing::printEvent(*Timing::timer.getLastMajorEvent());
+  timing::PrintEvent(*timing::timer.GetLastMajorEvent());
   return true;
 }
 
 void StartVulkan(android_app *app) {
-  if (!appInitializedOnce) {
+  if (!app_initialized_once) {
     InitVulkan(app);
   } else {
     ResumeVulkan(app);
   }
 }
 
-bool IsVulkanReady(void) { return device != nullptr && device->isInitialized(); }
+bool IsVulkanReady(void) { return device != nullptr && device->IsInitialized(); }
 
 void DeleteVulkan(void) {
-  vkDeviceWaitIdle(device->getDevice());
+  vkDeviceWaitIdle(device->GetDevice());
 
   delete renderer;
   delete font;
 
-  for (int i = 0; i < device->getSwapchainLength(); ++i) {
-    vkDestroyImageView(device->getDevice(), displayViews_[i], nullptr);
-    vkDestroyFramebuffer(device->getDevice(), framebuffers_[i], nullptr);
+  for (int i = 0; i < device->GetSwapchainLength(); i++) {
+    vkDestroyImageView(device->GetDevice(), display_views[i], nullptr);
+    vkDestroyFramebuffer(device->GetDevice(), framebuffers[i], nullptr);
   }
 
-  vkDestroyImageView(device->getDevice(), depthBuffer.image_view, nullptr);
-  vkDestroyImage(device->getDevice(), depthBuffer.image, nullptr);
-  vkFreeMemory(device->getDevice(), depthBuffer.device_memory, nullptr);
+  vkDestroyImageView(device->GetDevice(), depth_buffer.image_view, nullptr);
+  vkDestroyImage(device->GetDevice(), depth_buffer.image, nullptr);
+  vkFreeMemory(device->GetDevice(), depth_buffer.device_memory, nullptr);
 
-  vkDestroyRenderPass(device->getDevice(), render_pass, nullptr);
+  vkDestroyRenderPass(device->GetDevice(), render_pass, nullptr);
 
-  for (auto &mesh : render_graph->getAllMeshes()) {
-    mesh->cleanup();
+  for (auto &mesh : render_graph->GetAllMeshes()) {
+    mesh->Cleanup();
   }
   for (auto &texture : textures) {
-    texture->cleanup();
+    texture->Cleanup();
   }
   for (auto &material : materials) {
-    material->cleanup();
+    material->Cleanup();
   }
-  for (auto &material : baselineMaterials) {
-    material->cleanup();
+  for (auto &material : baseline_materials) {
+    material->Cleanup();
   }
   for (auto &geometry : geometries) {
-    geometry->cleanup();
+    geometry->Cleanup();
   }
-  shaders->cleanup();
-  Material::cleanupStatic();
+  shaders->Cleanup();
+  Material::CleanupStatic();
 
   delete device;
   device = nullptr;
 }
 
-bool VulkanDrawFrame(Input::Data *inputData) {
-  if (windowResized) {
+bool VulkanDrawFrame(input::Data *input_data) {
+  if (window_resized) {
     OnOrientationChange();
   }
-  currentTime = std::chrono::high_resolution_clock::now();
-  frameTime = std::chrono::duration<float>(currentTime - lastTime).count();
-  lastTime = currentTime;
-  totalTime += frameTime;
+  current_time = std::chrono::high_resolution_clock::now();
+  frame_time = std::chrono::duration<float>(current_time - last_time).count();
+  last_time = current_time;
+  total_time += frame_time;
 
-  Timing::timer.time("Handle Input", Timing::OTHER, [inputData]() {
-    handleInput(inputData);
+  timing::timer.Time("Handle Input", timing::OTHER, [input_data] {
+    HandleInput(input_data);
   });
 
-  renderer->beginFrame();
-  Timing::timer.time("Start Frame", Timing::START_FRAME, []() {
-    Timing::timer.time("PrimaryCommandBufferRecording", Timing::OTHER, []() {
-      renderer->beginPrimaryCommandBufferRecording();
+  renderer->BeginFrame();
+  timing::timer.Time("Start Frame", timing::START_FRAME, [] {
+    timing::timer.Time("PrimaryCommandBufferRecording", timing::OTHER, [] {
+      renderer->BeginPrimaryCommandBufferRecording();
 
       // Now we start a renderpass. Any draw command has to be recorded in a
       // renderpass
@@ -751,83 +745,83 @@ bool VulkanDrawFrame(Input::Data *inputData) {
       clear_values[0].color = {{0.0f, 0.34f, 0.90f, 1.0}};
       clear_values[1].depthStencil = {1.0f, 0};
 
-      VkRenderPassBeginInfo render_pass_beginInfo{
+      VkRenderPassBeginInfo render_pass_begin_info{
           .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
           .pNext = nullptr,
           .renderPass = render_pass,
-          .framebuffer = framebuffers_[renderer->getCurrentFrame()],
+          .framebuffer = framebuffers[renderer->GetCurrentFrame()],
           .renderArea = {.offset =
               {
                   .x = 0, .y = 0,
               },
-              .extent = device->getDisplaySize()},
+              .extent = device->GetDisplaySize()},
           .clearValueCount = static_cast<uint32_t>(clear_values.size()),
           .pClearValues = clear_values.data(),
       };
 
-      Timing::timer.time("Render Pass", Timing::OTHER, [render_pass_beginInfo]() {
-        vkCmdBeginRenderPass(renderer->getCurrentCommandBuffer(), &render_pass_beginInfo,
+      timing::timer.Time("Render Pass", timing::OTHER, [render_pass_begin_info] {
+        vkCmdBeginRenderPass(renderer->GetCurrentCommandBuffer(), &render_pass_begin_info,
                              VK_SUBPASS_CONTENTS_INLINE);
 
-        device->insertDebugMarker(renderer->getCurrentCommandBuffer(),
+        device->InsertDebugMarker(renderer->GetCurrentCommandBuffer(),
                                   "TEST MARKER: PIPELINE BINDING",
                                   {1.0f, 0.0f, 1.0f, 0.0f});
 
         int total_triangles = 0;
-        auto allMeshes = render_graph->getAllMeshes();
-        for (int x = 0; x < allMeshes.size(); x++) {
-          allMeshes[x]->updatePipeline(render_pass);
-          allMeshes[x]->submitDraw(renderer->getCurrentCommandBuffer(),
-                                   renderer->getCurrentFrame());
-          total_triangles += allMeshes[x]->getTrianglesCount();
+        auto all_meshes = render_graph->GetAllMeshes();
+        for (uint32_t i = 0; i < all_meshes.size(); i++) {
+          all_meshes[i]->UpdatePipeline(render_pass);
+          all_meshes[i]->SubmitDraw(renderer->GetCurrentCommandBuffer(),
+                                   renderer->GetCurrentFrame());
+          total_triangles += all_meshes[i]->GetTrianglesCount();
         }
 
-        const char *meshNoun = allMeshes.size() == 1 ? "mesh" : "meshes";
-        const char *polyNoun = "faces/polyhedron";
-        const char *triangleNoun = total_triangles == 1 ? "triangle" : "triangles";
+        const char *kMeshNoun = all_meshes.size() == 1 ? "mesh" : "meshes";
+        const char *kPolyNoun = "faces/polyhedron";
+        const char *kTriangleNoun = total_triangles == 1 ? "triangle" : "triangles";
 
-        sprintf(mesh_info, "%d %s, %d %s, %d %s", (int) allMeshes.size(), meshNoun,
-                allowedPolyFaces[polyFacesIdx], polyNoun, total_triangles, triangleNoun);
+        sprintf(mesh_info, "%d %s, %d %s, %d %s", (int) all_meshes.size(), kMeshNoun,
+                allowedPolyFaces[poly_faces_idx], kPolyNoun, total_triangles, kTriangleNoun);
 
         int fps;
-        float frametime;
-        Timing::timer.getFramerate(500,
-                                   Timing::timer.getLastMajorEvent()->number,
+        float frame_time;
+        timing::timer.GetFramerate(500,
+                                   timing::timer.GetLastMajorEvent()->number,
                                    &fps,
-                                   &frametime);
-        sprintf(fps_info, "%2.d FPS  %.3f ms", fps, frametime);
+                                   &frame_time);
+        sprintf(fps_info, "%2.d FPS  %.3f ms", fps, frame_time);
 
         user_interface->DrawUserInterface(render_pass);
 
-        vkCmdEndRenderPass(renderer->getCurrentCommandBuffer());
+        vkCmdEndRenderPass(renderer->GetCurrentCommandBuffer());
       });
-      renderer->endPrimaryCommandBufferRecording();
+      renderer->EndPrimaryCommandBufferRecording();
     });
-    Timing::timer.time("End Frame", Timing::OTHER, []() {
-      renderer->endFrame();
+    timing::timer.Time("End Frame", timing::OTHER, [] {
+      renderer->EndFrame();
     });
   });
   return true;
 }
 
 void ResizeCallback(ANativeActivity *activity, ANativeWindow *window) {
-  windowResized = true;
+  window_resized = true;
 }
 
 void OnOrientationChange() {
-  vkDeviceWaitIdle(device->getDevice());
+  vkDeviceWaitIdle(device->GetDevice());
 
-  for (int i = 0; i < device->getSwapchainLength(); ++i) {
-    vkDestroyImageView(device->getDevice(), displayViews_[i], nullptr);
-    vkDestroyFramebuffer(device->getDevice(), framebuffers_[i], nullptr);
+  for (int i = 0; i < device->GetSwapchainLength(); i++) {
+    vkDestroyImageView(device->GetDevice(), display_views[i], nullptr);
+    vkDestroyFramebuffer(device->GetDevice(), framebuffers[i], nullptr);
   }
-  vkDestroyImageView(device->getDevice(), depthBuffer.image_view, nullptr);
-  vkDestroyImage(device->getDevice(), depthBuffer.image, nullptr);
-  vkFreeMemory(device->getDevice(), depthBuffer.device_memory, nullptr);
+  vkDestroyImageView(device->GetDevice(), depth_buffer.image_view, nullptr);
+  vkDestroyImage(device->GetDevice(), depth_buffer.image, nullptr);
+  vkFreeMemory(device->GetDevice(), depth_buffer.device_memory, nullptr);
 
-  device->createSwapChain(device->getSwapchain());
-  createDepthBuffer();
-  createFrameBuffers(render_pass, depthBuffer.image_view);
-  Button::setScreenResolution(device->getDisplaySizeOriented());
-  windowResized = false;
+  device->CreateSwapChain(device->GetSwapchain());
+  CreateDepthBuffer();
+  CreateFramebuffers(render_pass, depth_buffer.image_view);
+  Button::SetScreenResolution(device->GetDisplaySizeOriented());
+  window_resized = false;
 }

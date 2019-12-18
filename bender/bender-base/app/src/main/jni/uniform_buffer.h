@@ -15,36 +15,36 @@
 
 class UniformBuffer {
 public:
-  UniformBuffer(BenderKit::Device& device, size_t bufferSize);
+  UniformBuffer(benderkit::Device& device, size_t buffer_size);
   ~UniformBuffer();
 
-  void* map(int frameIndex, size_t offset, size_t size);
-  void unmap(int frameIndex);
+  void* Map(int frame_index, size_t offset, size_t size);
+  void Unmap(int frame_index);
 
-  VkBuffer getBuffer(int frameIndex) const { return buffers_[frameIndex]; }
+  VkBuffer GetBuffer(int frame_index) const { return buffers_[frame_index]; }
 
 private:
-  BenderKit::Device& device_;
+  benderkit::Device& device_;
 
   std::vector<VkBuffer> buffers_;
-  std::vector<VkDeviceMemory> bufferMemory_;
+  std::vector<VkDeviceMemory> buffer_memory_;
 };
 
 template <typename T> class UniformBufferObject : private UniformBuffer {
 public:
-  UniformBufferObject(BenderKit::Device& device) : UniformBuffer(device, sizeof(T)) { }
+  UniformBufferObject(benderkit::Device& device) : UniformBuffer(device, sizeof(T)) { }
 
-  void update(int frameIndex, std::function<void(T& data)> updater) {
-    void *data = UniformBuffer::map(frameIndex, 0, sizeof(T));
+  void Update(int frame_index, std::function<void(T& data)> updater) {
+    void *data = UniformBuffer::Map(frame_index, 0, sizeof(T));
     updater(*reinterpret_cast<T*>(data));
-    unmap(frameIndex);
+    Unmap(frame_index);
   }
 
-  T& map(int frameIndex) {
-    return *reinterpret_cast<T*>(UniformBuffer::map(frameIndex, 0, sizeof(T)));
+  T& Map(int frame_index) {
+    return *reinterpret_cast<T*>(UniformBuffer::Map(frame_index, 0, sizeof(T)));
   }
 
-  VkBuffer getBuffer(int frameIndex) const { return UniformBuffer::getBuffer(frameIndex); }
+  VkBuffer GetBuffer(int frame_index) const { return UniformBuffer::GetBuffer(frame_index); }
 };
 
 #endif //BENDER_BASE_UNIFORM_BUFFER_H

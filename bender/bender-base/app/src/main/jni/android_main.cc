@@ -11,11 +11,13 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+#include "timing.h"
+#include "vulkan_main.h"
+#include "user_interface.h"
+
 #include <android/log.h>
 #include <android_native_app_glue.h>
-#include <timing.h>
-#include "vulkan_main.h"
-#include "userinterface.h"
 
 // Process the next main command.
 void handle_cmd(android_app *app, int32_t cmd) {
@@ -38,7 +40,7 @@ void android_main(struct android_app *app) {
   // Set the callback to process system events
   app->onAppCmd = handle_cmd;
   app->onInputEvent = UserInterface::Handler;
-  app->userData = (void *) new Input::Data;
+  app->userData = (void *) new input::Data;
   app->activity->callbacks->onNativeWindowResized = ResizeCallback;
 
   // Used to poll the events in the main loop
@@ -47,7 +49,7 @@ void android_main(struct android_app *app) {
 
   // Main loop
   do {
-    Timing::timer.time("Main Loop", Timing::EventType::MAIN_LOOP, [&events, &source, app](){
+    timing::timer.Time("Main Loop", timing::EventType::MAIN_LOOP, [&events, &source, app](){
       if (ALooper_pollAll(IsVulkanReady() ? 1 : 0, nullptr,
                           &events, (void **) &source) >= 0) {
         if (source != NULL) source->process(app, source);
@@ -55,7 +57,7 @@ void android_main(struct android_app *app) {
 
       // render if vulkan is ready
       if (IsVulkanReady()) {
-        VulkanDrawFrame((Input::Data *)app->userData);
+        VulkanDrawFrame((input::Data *)app->userData);
       }
     });
   } while (app->destroyRequested == 0);

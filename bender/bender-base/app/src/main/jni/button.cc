@@ -11,20 +11,20 @@ Button::Button(float x_center,
                float y_center,
                float y_extent,
                const char *text) {
-  setPosition(x_center, x_extent, y_center, y_extent);
-  setLabel(text);
+  SetPosition(x_center, x_extent, y_center, y_extent);
+  SetLabel(text);
 
-  onUp = [] {};
-  onDown = [] {};
-  onHold = [] {};
-  updater = [] (Button&) {};
+  on_up_ = [] {};
+  on_down_ = [] {};
+  on_hold_ = [] {};
+  updater_ = [] (Button&) {};
 }
 
-void Button::setLabel(std::string text) {
+void Button::SetLabel(std::string text) {
   default_label_ = text;
 }
 
-void Button::setPosition(float x_center, float x_extent, float y_center, float y_extent) {
+void Button::SetPosition(float x_center, float x_extent, float y_center, float y_extent) {
   x_center_ = x_center;
   x_min_ = x_center - x_extent / 2;
   x_max_ = x_center + x_extent / 2;
@@ -33,7 +33,7 @@ void Button::setPosition(float x_center, float x_extent, float y_center, float y
   y_max_ = y_center + y_extent / 2;
 }
 
-bool Button::testHit(int x, int y) {
+bool Button::TestHit(int x, int y) {
   int half_width = screen_width_ / 2;
   int half_height = screen_height_ / 2;
   return x > (x_min_ * half_width) + half_width && x < (x_max_ * half_width) + half_width
@@ -41,13 +41,13 @@ bool Button::testHit(int x, int y) {
       && y < (y_max_ * half_height) + half_height;
 }
 
-void Button::drawButton(VkRenderPass render_pass, Font *font, Renderer *renderer) {
+void Button::DrawButton(VkRenderPass render_pass, Font *font, Renderer *renderer) {
   std::string label = pressed_ ? "X" : default_label_;
-  font->drawString(label,
+  font->DrawString(label,
                    1.25f,
                    x_center_ - (label.size() / 2 * FONT_SIZE_RATIO_X),
                    y_center_ - (FONT_SIZE_RATIO_Y),
-                   renderer->getCurrentCommandBuffer(),
+                   renderer->GetCurrentCommandBuffer(),
                    render_pass,
-                   renderer->getCurrentFrame());
+                   renderer->GetCurrentFrame());
 }

@@ -2,7 +2,7 @@
 // Created by Matt Wang on 2019-12-09.
 //
 
-#include "userinterface.h"
+#include "user_interface.h"
 
 std::vector<Button> UserInterface::buttons_;
 
@@ -16,8 +16,8 @@ UserInterface::UserInterface(Renderer *renderer, Font *font) : renderer_(rendere
 
 void UserInterface::RegisterButton(std::function<void(Button&)> updater) {
     Button button;
-    button.updater = updater;
-    button.update();
+    button.updater_ = updater;
+    button.Update();
     buttons_.push_back(button);
 }
 
@@ -30,31 +30,31 @@ void UserInterface::RegisterTextField(std::function<void(TextField&)> updater) {
 
 void UserInterface::DrawUserInterface(VkRenderPass render_pass) {
     for (auto& button : buttons_) {
-        button.update();
-        button.drawButton(render_pass, font_, renderer_);
+        button.Update();
+        button.DrawButton(render_pass, font_, renderer_);
     }
 
     for (auto& text_field : text_fields_) {
         text_field.update();
-        font_->drawString(text_field.text,
+        font_->DrawString(text_field.text,
                          text_field.text_size,
                          text_field.x_corner,
                          text_field.y_corner,
-                         renderer_->getCurrentCommandBuffer(),
+                         renderer_->GetCurrentCommandBuffer(),
                          render_pass,
-                         renderer_->getCurrentFrame());
+                         renderer_->GetCurrentFrame());
     }
 }
 
 int32_t UserInterface::Handler(android_app *app, AInputEvent *event) {
     if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION) {
-        Input::Data *input_data = (Input::Data *) app->userData;
-        Input::updateInputData(event, input_data);
+        input::Data *input_data = (input::Data *) app->userData;
+        input::UpdateInputData(event, input_data);
 
-        if (input_data->lastButton != nullptr
-            && !input_data->lastButton->testHit(input_data->lastX, input_data->lastY)) {
-            input_data->lastButton->onButtonUp();
-            input_data->lastButton = nullptr;
+        if (input_data->last_button != nullptr
+            && !input_data->last_button->TestHit(input_data->last_x, input_data->last_y)) {
+            input_data->last_button->OnButtonUp();
+            input_data->last_button = nullptr;
         }
 
         int action = AMotionEvent_getAction(event);
@@ -66,36 +66,36 @@ int32_t UserInterface::Handler(android_app *app, AInputEvent *event) {
     return 0;
 }
 
-void UserInterface::ActionDownHandler(Input::Data *input_data, std::vector<Button> &buttons) {
+void UserInterface::ActionDownHandler(input::Data *input_data, std::vector<Button> &buttons) {
     for (auto &button : buttons) {
-        if (button.testHit(input_data->lastX, input_data->lastY)) {
-            input_data->lastButton = &button;
-            button.onButtonDown();
+        if (button.TestHit(input_data->last_x, input_data->last_y)) {
+            input_data->last_button = &button;
+            button.OnButtonDown();
         }
     }
 }
 
-void UserInterface::ActionMoveHandler(Input::Data *input_data, std::vector<Button> &buttons) {
+void UserInterface::ActionMoveHandler(input::Data *input_data, std::vector<Button> &buttons) {
     for (auto &button : buttons) {
-        if (button.testHit(input_data->lastX, input_data->lastY)) {
-            if (input_data->lastButton == nullptr) {
-                button.onButtonDown();
+        if (button.TestHit(input_data->last_x, input_data->last_y)) {
+            if (input_data->last_button == nullptr) {
+                button.OnButtonDown();
             } else {
-                button.onButtonHold();
+                button.OnButtonHold();
             }
-            input_data->lastButton = &button;
+            input_data->last_button = &button;
         }
     }
 }
 
-void UserInterface::ActionUpHandler(Input::Data *input_data, std::vector<Button> &buttons) {
+void UserInterface::ActionUpHandler(input::Data *input_data, std::vector<Button> &buttons) {
     for (auto &button : buttons) {
-        if (button.testHit(input_data->lastX, input_data->lastY)) {
-            button.onButtonUp();
+        if (button.TestHit(input_data->last_x, input_data->last_y)) {
+            button.OnButtonUp();
         }
     }
-    input_data->lastButton = nullptr;
-    Input::clearInput(input_data);
+    input_data->last_button = nullptr;
+    input::ClearInput(input_data);
 }
 
 void UserInterface::OnResume(Renderer *newRenderer, Font *font) {

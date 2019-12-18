@@ -8,62 +8,62 @@
 
 #include "bender_helpers.h"
 
-using namespace BenderHelpers;
+using namespace benderhelpers;
 
-Geometry::Geometry(BenderKit::Device &device,
-                   const std::vector<float> &vertexData,
-                   const std::vector<uint16_t> &indexData,
+Geometry::Geometry(benderkit::Device &device,
+                   const std::vector<float> &vertex_data,
+                   const std::vector<uint16_t> &index_data,
                    std::function<void(std::vector<float>&, std::vector<uint16_t>&)> generator)
     : device_(device), generator_(generator) {
-  createVertexBuffer(vertexData, indexData);
+  CreateVertexBuffer(vertex_data, index_data);
 }
 
 Geometry::~Geometry() {
-  cleanup();
+  Cleanup();
 }
 
-void Geometry::cleanup() {
-  vkDeviceWaitIdle(device_.getDevice());
-  vkDestroyBuffer(device_.getDevice(), vertexBuf_, nullptr);
-  vkFreeMemory(device_.getDevice(), vertexBufferDeviceMemory_, nullptr);
-  vkDestroyBuffer(device_.getDevice(), indexBuf_, nullptr);
-  vkFreeMemory(device_.getDevice(), indexBufferDeviceMemory_, nullptr);
+void Geometry::Cleanup() {
+  vkDeviceWaitIdle(device_.GetDevice());
+  vkDestroyBuffer(device_.GetDevice(), vertex_buf_, nullptr);
+  vkFreeMemory(device_.GetDevice(), vertex_buffer_device_memory_, nullptr);
+  vkDestroyBuffer(device_.GetDevice(), index_buf_, nullptr);
+  vkFreeMemory(device_.GetDevice(), index_buffer_device_memory_, nullptr);
 }
 
-void Geometry::onResume(BenderKit::Device &device) {
+void Geometry::OnResume(benderkit::Device &device) {
   device_ = device;
   if (generator_ != nullptr){
     std::vector<float> vertex_data;
     std::vector<uint16_t> index_data;
     generator_(vertex_data, index_data);
-    createVertexBuffer(vertex_data, index_data);
+    CreateVertexBuffer(vertex_data, index_data);
   }
 }
 
-void Geometry::createVertexBuffer(const std::vector<float>& vertexData, const std::vector<uint16_t>& indexData) {
-  vertexCount_ = vertexData.size();
-  indexCount_ = indexData.size();
+void Geometry::CreateVertexBuffer(const std::vector<float>& vertex_data, const std::vector<uint16_t>& index_data) {
+  vertex_count_ = vertex_data.size();
+  index_count_ = index_data.size();
 
-  VkDeviceSize bufferSizeVertex = sizeof(vertexData[0]) * vertexData.size();
-  device_.createBuffer(bufferSizeVertex, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-               vertexBuf_, vertexBufferDeviceMemory_);
+  VkDeviceSize buffer_size_vertex = sizeof(vertex_data[0]) * vertex_data.size();
+  device_.CreateBuffer(buffer_size_vertex, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+               vertex_buf_, vertex_buffer_device_memory_);
 
-  VkDeviceSize bufferSizeIndex = sizeof(indexData[0]) * indexData.size();
-  device_.createBuffer(bufferSizeIndex, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-               indexBuf_, indexBufferDeviceMemory_);
+  VkDeviceSize buffer_size_index = sizeof(index_data[0]) * index_data.size();
+  device_.CreateBuffer(buffer_size_index, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+               index_buf_, index_buffer_device_memory_);
 
   void *data;
-  vkMapMemory(device_.getDevice(), vertexBufferDeviceMemory_, 0, bufferSizeVertex, 0, &data);
-  memcpy(data, vertexData.data(), bufferSizeVertex);
-  vkUnmapMemory(device_.getDevice(), vertexBufferDeviceMemory_);
+  vkMapMemory(device_.GetDevice(), vertex_buffer_device_memory_, 0, buffer_size_vertex, 0, &data);
+  memcpy(data, vertex_data.data(), buffer_size_vertex);
+  vkUnmapMemory(device_.GetDevice(), vertex_buffer_device_memory_);
 
-  vkMapMemory(device_.getDevice(), indexBufferDeviceMemory_, 0, bufferSizeIndex, 0, &data);
-  memcpy(data, indexData.data(), bufferSizeIndex);
-  vkUnmapMemory(device_.getDevice(), indexBufferDeviceMemory_);
+  vkMapMemory(device_.GetDevice(), index_buffer_device_memory_, 0, buffer_size_index, 0, &data);
+  memcpy(data, index_data.data(), buffer_size_index);
+  vkUnmapMemory(device_.GetDevice(), index_buffer_device_memory_);
 }
 
-void Geometry::bind(VkCommandBuffer commandBuffer) const {
+void Geometry::Bind(VkCommandBuffer cmd_buffer) const {
   VkDeviceSize offset = 0;
-  vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuf_, &offset);
-  vkCmdBindIndexBuffer(commandBuffer, indexBuf_, offset, VK_INDEX_TYPE_UINT16);
+  vkCmdBindVertexBuffers(cmd_buffer, 0, 1, &vertex_buf_, &offset);
+  vkCmdBindIndexBuffer(cmd_buffer, index_buf_, offset, VK_INDEX_TYPE_UINT16);
 }

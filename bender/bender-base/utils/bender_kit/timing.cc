@@ -13,104 +13,105 @@
 // limitations under the License.
 
 #include "timing.h"
-#include <string>
 #include "../../app/src/main/jni/trace.h"
+
+#include <string>
 
 static const char *kTAG = "BenderKit";
 #define LOGI(...) \
   ((void)__android_log_print(ANDROID_LOG_INFO, kTAG, __VA_ARGS__))
 
-namespace Timing {
+namespace timing {
 
 EventTiming timer;
 
 EventTiming::EventTiming() {
   application_start_time_ = std::chrono::high_resolution_clock::now();
-  event_buckets.resize(EVENT_TYPE_COUNT);
-  time("Application Start", OTHER, [](){});
+  event_buckets_.resize(EVENT_TYPE_COUNT);
+  Time("Application Start", OTHER, [](){});
 }
 
-void EventTiming::startEvent(const char *name, EventType type) {
+void EventTiming::StartEvent(const char *name, EventType type) {
   TRACE_BEGIN_SECTION(name);
-  Event newEvent;
-  newEvent.start_time = std::chrono::high_resolution_clock::now() - application_start_time_;
-  newEvent.duration = std::chrono::high_resolution_clock::duration::zero();
-  newEvent.name = name;
-  newEvent.type = type;
-  newEvent.parent_event = current_event;
-  if (current_event == nullptr) {
-    newEvent.level = 0;
-    newEvent.number = current_major_event_num_++;
-    eventPool.push_back(newEvent);
-    major_events.push_back(&eventPool.back());
-    current_event = major_events.back();
+  Event new_event;
+  new_event.start_time = std::chrono::high_resolution_clock::now() - application_start_time_;
+  new_event.duration = std::chrono::high_resolution_clock::duration::zero();
+  new_event.name = name;
+  new_event.type = type;
+  new_event.parent_event = current_event_;
+  if (current_event_ == nullptr) {
+    new_event.level = 0;
+    new_event.number = current_major_event_num_++;
+    event_pool_.push_back(new_event);
+    major_events_.push_back(&event_pool_.back());
+    current_event_ = major_events_.back();
   } else {
-    newEvent.level = current_event->level + 1;
-    eventPool.push_back(newEvent);
-    current_event->sub_events.push(&eventPool.back());
-    current_event = current_event->sub_events.top();
+    new_event.level = current_event_->level + 1;
+    event_pool_.push_back(new_event);
+    current_event_->sub_events.push(&event_pool_.back());
+    current_event_ = current_event_->sub_events.top();
   }
-  event_buckets[newEvent.type].push_back(&eventPool.back());
+  event_buckets_[new_event.type].push_back(&event_pool_.back());
 }
 
-void EventTiming::stopEvent() {
-  if (!current_event)
+void EventTiming::StopEvent() {
+  if (!current_event_)
     return;
 
   TRACE_END_SECTION();
-  current_event->duration = std::chrono::high_resolution_clock::now()
-      - (current_event->start_time + application_start_time_);
-  current_event = current_event->parent_event;
+  current_event_->duration = std::chrono::high_resolution_clock::now()
+      - (current_event_->start_time + application_start_time_);
+  current_event_ = current_event_->parent_event;
 }
 
-Event *EventTiming::getLastMajorEvent() {
-  return major_events.back();
+Event *EventTiming::GetLastMajorEvent() {
+  return major_events_.back();
 }
 
-void EventTiming::getFramerate(int numFrames, int mostRecentFrame, int *fps, float *frameTime) {
-  int mostRecentFrameMain = event_buckets[MAIN_LOOP].size() - 2;
-  mostRecentFrame = (int)event_buckets[START_FRAME].size() - 2 < mostRecentFrame ? (int)event_buckets[START_FRAME].size() - 2: mostRecentFrame;
-  int framesCount = mostRecentFrame < numFrames ? mostRecentFrame : numFrames;
+void EventTiming::GetFramerate(int num_frames, int most_recent_frame, int *fps, float *frame_time) {
+  int most_recent_frameMain = event_buckets_[MAIN_LOOP].size() - 2;
+  most_recent_frame = (int)event_buckets_[START_FRAME].size() - 2 < most_recent_frame ? (int)event_buckets_[START_FRAME].size() - 2: most_recent_frame;
+  int frames_count = most_recent_frame < num_frames ? most_recent_frame : num_frames;
 
-  float sumFPS = 0;
-  float sumFrameTime = 0;
-  for (int x = 0; x < framesCount; x++) {
-    sumFPS += event_buckets[MAIN_LOOP][mostRecentFrameMain - x]->duration.count();
-    sumFrameTime += event_buckets[START_FRAME][mostRecentFrame - x]->duration.count();
+  float sum_fps = 0;
+  float sum_frame_time = 0;
+  for (int i = 0; i < frames_count; i++) {
+    sum_fps += event_buckets_[MAIN_LOOP][most_recent_frameMain - i]->duration.count();
+    sum_frame_time += event_buckets_[START_FRAME][most_recent_frame - i]->duration.count();
   }
 
-  *fps = framesCount / (sumFPS * NS_TO_S);
-  *frameTime = (sumFrameTime * NS_TO_MS) / framesCount;
+  *fps = frames_count / (sum_fps * NS_TO_S);
+  *frame_time = (sum_frame_time * NS_TO_MS) / frames_count;
 }
 
-void printEvent(Event &event) {
+void PrintEvent(Event &event) {
   int fps;
-  float frameTime;
-  timer.getFramerate(100, event.number, &fps, &frameTime);
+  float frame_time;
+  timer.GetFramerate(100, event.number, &fps, &frame_time);
   LOGI("Event %u - %s: Duration: %.3f ms Framerate: %d FPS Average Frame Time %.3f ms",
        event.number,
        event.name,
        event.duration.count() * NS_TO_MS,
        fps,
-       frameTime);
+       frame_time);
 
-  std::stack<Event *> currentList;
+  std::stack<Event *> current_list;
   while (!event.sub_events.empty()){
-    currentList.push(event.sub_events.top());
+    current_list.push(event.sub_events.top());
     event.sub_events.pop();
   }
 
-  while (!currentList.empty()) {
-    Event *currEvent = currentList.top();
-    currentList.pop();
+  while (!current_list.empty()) {
+    Event *curr_event = current_list.top();
+    current_list.pop();
     LOGI("%s%s: \tStart Time: %.6f s \tDuration: %.3f ms",
-         std::string(currEvent->level, '\t').c_str(),
-         currEvent->name,
-         currEvent->start_time.count() * NS_TO_S,
-         currEvent->duration.count() * NS_TO_MS);
-    for (int x = 0; x < currEvent->sub_events.size(); x++) {
-      currentList.push(currEvent->sub_events.top());
-      currEvent->sub_events.pop();
+         std::string(curr_event->level, '\t').c_str(),
+         curr_event->name,
+         curr_event->start_time.count() * NS_TO_S,
+         curr_event->duration.count() * NS_TO_MS);
+    for (int i = 0; i < curr_event->sub_events.size(); i++) {
+      current_list.push(curr_event->sub_events.top());
+      curr_event->sub_events.pop();
     }
   }
 }

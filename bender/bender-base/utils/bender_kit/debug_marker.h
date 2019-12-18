@@ -20,24 +20,24 @@
 #include <string>
 #include <array>
 
-namespace DebugMarker {
-  void setup(VkDevice device, VkPhysicalDevice physicalDevice);
+namespace debugmarker {
+  void Setup(VkDevice device, VkPhysicalDevice physical_device);
 
-  void setObjectName(VkDevice device,
+  void SetObjectName(VkDevice device,
                      uint64_t object,
-                     VkDebugReportObjectTypeEXT objectType,
+                     VkDebugReportObjectTypeEXT object_type,
                      const char *name);
 
-  void setObjectTag(VkDevice device,
+  void SetObjectTag(VkDevice device,
                     uint64_t object,
-                    VkDebugReportObjectTypeEXT objectType,
+                    VkDebugReportObjectTypeEXT object_type,
                     uint64_t name,
-                    size_t tagSize,
+                    size_t tag_size,
                     const void *tag);
 
-  void beginRegion(VkCommandBuffer cmdbuffer, const char markerName[], std::array<float, 4> color = {1.0f, 1.0f, 1.0f, 1.0f });
-  void insert(VkCommandBuffer cmdbuffer, const char markerName[], std::array<float, 4> color = {1.0f, 1.0f, 1.0f, 1.0f });
-  void endRegion(VkCommandBuffer cmdBuffer);
+  void BeginRegion(VkCommandBuffer cmd_buffer, const char marker_name[], std::array<float, 4> color = {1.0f, 1.0f, 1.0f, 1.0f });
+  void Insert(VkCommandBuffer cmd_buffer, const char marker_name[], std::array<float, 4> color = {1.0f, 1.0f, 1.0f, 1.0f });
+  void EndRegion(VkCommandBuffer cmd_buffer);
 }
 
 #endif

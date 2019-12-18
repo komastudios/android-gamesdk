@@ -12,35 +12,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef BENDER_BASE_APP_SRC_MAIN_JNI_INPUT_H_
-#define BENDER_BASE_APP_SRC_MAIN_JNI_INPUT_H_
+#ifndef BENDER_BASE_INPUT_H_
+#define BENDER_BASE_INPUT_H_
+
+#include "button.h"
 
 #include <map>
 #include <vector>
 #include <functional>
 
-#include "button.h"
-
-namespace Input {
+namespace input {
 
 struct Data {
-  float lastX = 0, lastY = 0;
-  float deltaX = 0, deltaY = 0;
+  float last_x = 0, last_y = 0;
+  float delta_x = 0, delta_y = 0;
 
-  long lastTapTime = 0;
-  long doubleTapThresholdTime = 200000000;
-  bool doubleTap = false;
+  long last_tap_time = 0;
+  long double_tap_threshold_time = 200000000;
+  bool double_tap = false;
 
-  int lastInputCount = 0;
-  Button *lastButton = nullptr;
+  int last_input_count = 0;
+  Button *last_button = nullptr;
 };
 
-void getPointerPosition(AInputEvent *event, int *outX, int *outY);
-void testDoubleTap(AInputEvent *event, Data *input);
-void updateInputData(AInputEvent *event, Data *input);
-void clearInput(Data *input);
+void GetPointerPosition(AInputEvent *event, int *outX, int *outY);
+void TestDoubleTap(AInputEvent *event, Data *input);
+void UpdateInputData(AInputEvent *event, Data *input);
+void ClearInput(Data *input);
 
-int32_t handler(android_app *app, AInputEvent *event);
+int32_t Handler(android_app *app, AInputEvent *event);
 }
 
-#endif //BENDER_BASE_APP_SRC_MAIN_JNI_INPUT_H_
+#endif //BENDER_BASE_INPUT_H_

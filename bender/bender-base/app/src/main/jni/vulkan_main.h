@@ -13,10 +13,11 @@
 // limitations under the License.
 #ifndef BENDER_BASE_VULKAN_MAIN_H__
 #define BENDER_BASE_VULKAN_MAIN_H__
-#include <android_native_app_glue.h>
 
 #include "trace.h"
 #include "input.h"
+
+#include <android_native_app_glue.h>
 
 // Initialize vulkan device context
 // after return, vulkan is ready to draw
@@ -31,12 +32,12 @@ void DeleteVulkan(void);
 bool IsVulkanReady(void);
 
 // Ask Vulkan to Render a frame
-bool VulkanDrawFrame(Input::Data *inputData);
+bool VulkanDrawFrame(input::Data *input_data);
 
 void ResizeCallback(ANativeActivity *activity, ANativeWindow *window);
 
 void OnOrientationChange();
 
-#endif // __VULKANMAIN_HPP__
+#endif // BENDER_BASE_VULKAN_MAIN_H__
 
 

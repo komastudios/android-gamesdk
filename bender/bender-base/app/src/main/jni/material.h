@@ -22,19 +22,19 @@ class Material {
            const glm::vec3 color = glm::vec3(1.0, 1.0, 1.0));
   ~Material();
 
-  void cleanup();
+  void Cleanup();
 
-  void onResume(Renderer *renderer);
+  void OnResume(Renderer *renderer);
 
-  void fillPipelineInfo(VkGraphicsPipelineCreateInfo *pipeline_info);
+  void FillPipelineInfo(VkGraphicsPipelineCreateInfo *pipeline_info);
 
-  VkDescriptorSetLayout getMaterialDescriptorSetLayout() const { return material_descriptors_layout_; }
-  VkDescriptorSet getMaterialDescriptorSet(uint_t frame_index) const { return material_descriptor_sets_[frame_index]; }
+  VkDescriptorSetLayout GetMaterialDescriptorSetLayout() const { return material_descriptors_layout_; }
+  VkDescriptorSet GetMaterialDescriptorSet(uint_t frame_index) const { return material_descriptor_sets_[frame_index]; }
 
-  static void cleanupStatic() { default_texture_->cleanup(); }
-  static void onResumeStatic(BenderKit::Device &device,
-                             android_app *app) { default_texture_->onResume(device, app); }
-  static void defaultTextureGenerator(uint8_t *data);
+  static void CleanupStatic() { default_texture_->Cleanup(); }
+  static void OnResumeStatic(benderkit::Device &device,
+                             android_app *app) { default_texture_->OnResume(device, app); }
+  static void DefaultTextureGenerator(uint8_t *data);
 
  private:
   static std::shared_ptr<Texture> default_texture_;
@@ -51,12 +51,12 @@ class Material {
   VkDescriptorSetLayout material_descriptors_layout_;
   std::vector<VkDescriptorSet> material_descriptor_sets_;
 
-  std::shared_ptr<ShaderState> getShaders() const { return shaders_; }
+  std::shared_ptr<ShaderState> GetShaders() const { return shaders_; }
 
-  void createDefaultTexture(Renderer &renderer);
-  void createSampler();
-  void createMaterialDescriptorSetLayout();
-  void createMaterialDescriptorSets();
+  void CreateDefaultTexture(Renderer &renderer);
+  void CreateSampler();
+  void CreateMaterialDescriptorSetLayout();
+  void CreateMaterialDescriptorSets();
 };
 
 #endif //BENDER_BASE_MATERIAL_H

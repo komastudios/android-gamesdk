@@ -15,11 +15,12 @@
 #ifndef BENDER_BASE_RENDERER_H_
 #define BENDER_BASE_RENDERER_H_
 
-#include "glm/glm.hpp"
 #include "vulkan_wrapper.h"
 #include "bender_kit.h"
 #include "uniform_buffer.h"
 #include "default_states.h"
+
+#include "glm/glm.hpp"
 
 struct alignas(16) PointLight{
     alignas(16) glm::vec3 position;
@@ -40,37 +41,37 @@ struct alignas(16) LightBlock{
 
 class Renderer {
 public:
-  Renderer(BenderKit::Device& device);
+  Renderer(benderkit::Device& device);
   ~Renderer();
 
-  void beginFrame();
-  void endFrame();
+  void BeginFrame();
+  void EndFrame();
 
-  void beginPrimaryCommandBufferRecording();
-  void endPrimaryCommandBufferRecording();
+  void BeginPrimaryCommandBufferRecording();
+  void EndPrimaryCommandBufferRecording();
 
-  void updateLights(glm::vec3 camera);
+  void UpdateLights(glm::vec3 camera);
 
-  BenderKit::Device& getDevice() const { return device_; };
-  VkDevice getVulkanDevice() const { return device_.getDevice(); }
-  VkCommandBuffer getCurrentCommandBuffer() const;
-  uint32_t getCurrentFrame() const;
+  benderkit::Device& GetDevice() const { return device_; };
+  VkDevice GetVulkanDevice() const { return device_.GetDevice(); }
+  VkCommandBuffer GetCurrentCommandBuffer() const;
+  uint32_t GetCurrentFrame() const;
 
-  VkDescriptorPool getDescriptorPool() const { return descriptor_pool_; };
-  VkDescriptorSetLayout getLightsDescriptorSetLayout() const { return lights_descriptors_layout_; }
-  VkDescriptorSet getLightsDescriptorSet(uint_t frame_index) const { return lights_descriptor_sets_[frame_index]; }
+  VkDescriptorPool GetDescriptorPool() const { return descriptor_pool_; };
+  VkDescriptorSetLayout GetLightsDescriptorSetLayout() const { return lights_descriptors_layout_; }
+  VkDescriptorSet GetLightsDescriptorSet(uint_t frame_index) const { return lights_descriptor_sets_[frame_index]; }
 
-  const DefaultStates &getDefaultStates() const {
+  const DefaultStates &GetDefaultStates() const {
     return default_states_;
   }
 
-  VkPipelineCache getPipelineCache() const { return cache_; }
-  VkGraphicsPipelineCreateInfo getDefaultPipelineInfo(
+  VkPipelineCache GetPipelineCache() const { return cache_; }
+  VkGraphicsPipelineCreateInfo GetDefaultPipelineInfo(
           VkPipelineLayout layout,
           VkRenderPass render_pass) const;
 
 private:
-  BenderKit::Device& device_;
+  benderkit::Device& device_;
 
   VkCommandPool cmd_pool_;
   VkCommandBuffer *cmd_buffer_;
@@ -90,17 +91,17 @@ private:
 
   DefaultStates default_states_;
 
-  void init();
+  void Init();
 
-  void createPool();
+  void CreatePool();
 
-  void destroyPool();
+  void DestroyPool();
 
-  void createLightsDescriptorSetLayout();
+  void CreateLightsDescriptorSetLayout();
 
-  void createLightsDescriptors();
+  void CreateLightsDescriptors();
 
-  VkImage getCurrentDisplayImage() const;
+  VkImage GetCurrentDisplayImage() const;
 };
 
-#endif // _RENDERER_HPP_
+#endif // BENDER_BASE_RENDERER_HPP_

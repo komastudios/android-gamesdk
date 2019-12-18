@@ -23,32 +23,33 @@
 
 class Texture {
  public:
-  Texture(BenderKit::Device &device,
-          uint8_t *imgData,
-          uint32_t imgWidth,
-          uint32_t imgHeight,
-          VkFormat textureFormat,
+  Texture(benderkit::Device &device,
+          uint8_t *img_data,
+          uint32_t img_width,
+          uint32_t img_height,
+          VkFormat texture_format,
           std::function<void(uint8_t *)> generator = nullptr);
 
-  Texture(BenderKit::Device &device,
-          android_app &androidAppCtx,
-          const char *textureFileName,
-          VkFormat textureFormat,
+  Texture(benderkit::Device &device,
+          android_app &android_app_ctx,
+          const char *texture_file_name,
+          VkFormat texture_format,
           std::function<void(uint8_t *)> generator = nullptr);
 
   ~Texture();
 
-  void cleanup();
+  void Cleanup();
 
-  void onResume(BenderKit::Device &device, android_app *app);
+  void OnResume(benderkit::Device &device, android_app *app);
 
-  VkImageView getImageView() const { return view_; }
+  VkImageView GetImageView() const { return view_; }
 
-  int32_t getWidth() const { return tex_width_; };
+  int32_t GetWidth() const { return tex_width_; };
 
-  int32_t getHeight() const { return tex_height_; };
+  int32_t GetHeight() const { return tex_height_; };
+
  private:
-  BenderKit::Device &device_;
+  benderkit::Device &device_;
 
   const char *file_name_ = nullptr;
   VkImage image_;
@@ -61,9 +62,9 @@ class Texture {
 
   std::function<void(uint8_t *)> generator_ = nullptr;
 
-  unsigned char *loadFileData(android_app &app, const char *filePath);
-  VkResult createTexture(uint8_t *imgData, VkImageUsageFlags usage, VkFlags required_props);
-  void createImageView();
+  unsigned char *LoadFileData(android_app &app, const char *file_path);
+  VkResult CreateTexture(uint8_t *img_data, VkImageUsageFlags usage, VkFlags required_props);
+  void CreateImageView();
 };
 
 #endif //BENDER_BASE_TEXTURE_H
