@@ -197,7 +197,7 @@ void Renderer::Init() {
 }
 
 void Renderer::UpdateLights(glm::vec3 camera) {
-  lights_buffer_->update(GetCurrentFrame(), [&camera](auto &lights_buffer) {
+  lights_buffer_->Update(GetCurrentFrame(), [&camera](auto &lights_buffer) {
       lights_buffer.pointLight.position = {0.0f, 0.0f, 6.0f};
       lights_buffer.pointLight.color = {1.0f, 1.0f, 1.0f};
       lights_buffer.pointLight.intensity = 1.0f;
@@ -268,7 +268,7 @@ void Renderer::CreateLightsDescriptors() {
 
   for (size_t i = 0; i < device_.GetDisplayImages().size(); i++) {
     VkDescriptorBufferInfo light_block_info = {
-            .buffer = lights_buffer_->getBuffer(i),
+            .buffer = lights_buffer_->GetBuffer(i),
             .offset = 0,
             .range = sizeof(LightBlock)
     };

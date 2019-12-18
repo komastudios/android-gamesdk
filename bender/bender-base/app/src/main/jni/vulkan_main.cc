@@ -116,7 +116,7 @@ void CreateInstance() {
   render_graph->AddMesh(std::make_shared<Mesh>(renderer,
                                                baseline_materials[materials_idx],
                                                geometries[poly_faces_idx]));
-  render_graph->GetLastMesh()->translate(glm::vec3(rand() % 3,
+  render_graph->GetLastMesh()->Translate(glm::vec3(rand() % 3,
                                                    rand() % 3,
                                                    rand() % 3));
 }
@@ -350,12 +350,12 @@ void UpdateCamera(input::Data *input_data) {
 void UpdateInstances(input::Data *input_data) {
   auto all_meshes = render_graph->GetAllMeshes();
   for (int i = 0; i < all_meshes.size(); i++) {
-    all_meshes[i]->rotate(glm::vec3(0.0f, 1.0f, 1.0f), 90 * frame_time);
-    all_meshes[i]->translate(.02f * glm::vec3(std::sin(2 * total_time),
+    all_meshes[i]->Rotate(glm::vec3(0.0f, 1.0f, 1.0f), 90 * frame_time);
+    all_meshes[i]->Translate(.02f * glm::vec3(std::sin(2 * total_time),
                                              std::sin(i * total_time),
                                              std::cos(2 * total_time)));
 
-    all_meshes[i]->update(renderer->GetCurrentFrame(),
+    all_meshes[i]->Update(renderer->GetCurrentFrame(),
                          render_graph->GetCameraPosition(),
                          render_graph->GetCameraViewMatrix(),
                          render_graph->GetCameraProjMatrix());
@@ -639,24 +639,24 @@ bool ResumeVulkan(android_app *app) {
 
     timing::timer.Time("Mesh Creation", timing::OTHER, [app] {
       for (auto &texture : textures) {
-        texture->onResume(*device, android_app_ctx);
+        texture->OnResume(*device, android_app_ctx);
       }
-      Material::onResumeStatic(*device, app);
+      Material::OnResumeStatic(*device, app);
 
       for (auto &material : materials) {
-        material->onResume(renderer);
+        material->OnResume(renderer);
       }
 
       for (auto &material : baseline_materials) {
-        material->onResume(renderer);
+        material->OnResume(renderer);
       }
 
       for (auto &geometry : geometries) {
-        geometry->onResume(*device);
+        geometry->OnResume(*device);
       }
 
       for (auto &mesh : render_graph->GetAllMeshes()) {
-        mesh->onResume(renderer);
+        mesh->OnResume(renderer);
       }
     });
 
@@ -700,22 +700,22 @@ void DeleteVulkan(void) {
   vkDestroyRenderPass(device->GetDevice(), render_pass, nullptr);
 
   for (auto &mesh : render_graph->GetAllMeshes()) {
-    mesh->cleanup();
+    mesh->Cleanup();
   }
   for (auto &texture : textures) {
-    texture->cleanup();
+    texture->Cleanup();
   }
   for (auto &material : materials) {
-    material->cleanup();
+    material->Cleanup();
   }
   for (auto &material : baseline_materials) {
-    material->cleanup();
+    material->Cleanup();
   }
   for (auto &geometry : geometries) {
-    geometry->cleanup();
+    geometry->Cleanup();
   }
   shaders->Cleanup();
-  Material::cleanupStatic();
+  Material::CleanupStatic();
 
   delete device;
   device = nullptr;
@@ -770,10 +770,10 @@ bool VulkanDrawFrame(input::Data *input_data) {
         int total_triangles = 0;
         auto all_meshes = render_graph->GetAllMeshes();
         for (uint32_t i = 0; i < all_meshes.size(); i++) {
-          all_meshes[i]->updatePipeline(render_pass);
-          all_meshes[i]->submitDraw(renderer->GetCurrentCommandBuffer(),
+          all_meshes[i]->UpdatePipeline(render_pass);
+          all_meshes[i]->SubmitDraw(renderer->GetCurrentCommandBuffer(),
                                    renderer->GetCurrentFrame());
-          total_triangles += all_meshes[i]->getTrianglesCount();
+          total_triangles += all_meshes[i]->GetTrianglesCount();
         }
 
         const char *kMeshNoun = all_meshes.size() == 1 ? "mesh" : "meshes";

@@ -21,76 +21,76 @@
 #include <vector>
 
 Texture::Texture(benderkit::Device &device,
-                 uint8_t *imgData,
-                 uint32_t imgWidth,
-                 uint32_t imgHeight,
-                 VkFormat textureFormat,
+                 uint8_t *img_data,
+                 uint32_t img_width,
+                 uint32_t img_height,
+                 VkFormat texture_format,
                  std::function<void(uint8_t *)> generator)
-    : device_(device), texture_format_(textureFormat), generator_(generator) {
-  tex_width_ = imgWidth;
-  tex_height_ = imgHeight;
-  CALL_VK(createTexture(imgData, VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
-  createImageView();
+    : device_(device), texture_format_(texture_format), generator_(generator) {
+  tex_width_ = img_width;
+  tex_height_ = img_height;
+  CALL_VK(CreateTexture(img_data, VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+  CreateImageView();
 }
 
 Texture::Texture(benderkit::Device &device,
-                 android_app &androidAppCtx,
-                 const char *textureFileName,
-                 VkFormat textureFormat,
+                 android_app &android_app_ctx,
+                 const char *texture_file_name,
+                 VkFormat texture_format,
                  std::function<void(uint8_t *)> generator)
-    : device_(device), texture_format_(textureFormat), generator_(generator) {
-  unsigned char *imgData = loadFileData(androidAppCtx, textureFileName);
-  file_name_ = textureFileName;
-  CALL_VK(createTexture(imgData, VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
-  createImageView();
-  stbi_image_free(imgData);
+    : device_(device), texture_format_(texture_format), generator_(generator) {
+  unsigned char *img_data = LoadFileData(android_app_ctx, texture_file_name);
+  file_name_ = texture_file_name;
+  CALL_VK(CreateTexture(img_data, VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+  CreateImageView();
+  stbi_image_free(img_data);
 }
 
 Texture::~Texture() {
-  cleanup();
+  Cleanup();
 }
 
-void Texture::cleanup() {
+void Texture::Cleanup() {
   vkDestroyImageView(device_.GetDevice(), view_, nullptr);
   vkDestroyImage(device_.GetDevice(), image_, nullptr);
   vkFreeMemory(device_.GetDevice(), mem_, nullptr);
 }
 
-void Texture::onResume(benderkit::Device &device, android_app *app) {
+void Texture::OnResume(benderkit::Device &device, android_app *app) {
   if (generator_ != nullptr) {
     unsigned char
-        *imgData = (unsigned char *) malloc(tex_height_ * tex_width_ * 4 * sizeof(unsigned char));
-    generator_(imgData);
-    CALL_VK(createTexture(imgData,
+        *img_data = (unsigned char *) malloc(tex_height_ * tex_width_ * 4 * sizeof(unsigned char));
+    generator_(img_data);
+    CALL_VK(CreateTexture(img_data,
                           VK_IMAGE_USAGE_SAMPLED_BIT,
                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
-    createImageView();
-    delete imgData;
+    CreateImageView();
+    delete img_data;
   } else {
-    unsigned char *imgData = loadFileData(*app, file_name_);
-    CALL_VK(createTexture(imgData,
+    unsigned char *img_data = LoadFileData(*app, file_name_);
+    CALL_VK(CreateTexture(img_data,
                           VK_IMAGE_USAGE_SAMPLED_BIT,
                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
-    createImageView();
-    stbi_image_free(imgData);
+    CreateImageView();
+    stbi_image_free(img_data);
   }
 }
 
-unsigned char *Texture::loadFileData(android_app &app, const char *filePath) {
+unsigned char *Texture::LoadFileData(android_app &app, const char *file_path) {
   AAsset *file = AAssetManager_open(app.activity->assetManager,
-                                    filePath, AASSET_MODE_BUFFER);
+                                    file_path, AASSET_MODE_BUFFER);
   uint32_t img_width, img_height, n;
   unsigned char *img_data;
   if (file == nullptr) {
     img_width = 128;
     img_height = 128;
     img_data = (unsigned char *) malloc(img_width * img_height * 4 * sizeof(unsigned char));
-    for (int32_t y = 0; y < img_height; y++) {
-      for (int32_t x = 0; x < img_width; x++) {
-        img_data[(x + y * img_width) * 4] = 215;
-        img_data[(x + y * img_width) * 4 + 1] = 95;
-        img_data[(x + y * img_width) * 4 + 2] = 175;
-        img_data[(x + y * img_width) * 4 + 3] = 255;
+    for (int32_t i = 0; i < img_height; i++) {
+      for (int32_t j = 0; j < img_width; j++) {
+        img_data[(i + j * img_width) * 4] = 215;
+        img_data[(i + j * img_width) * 4 + 1] = 95;
+        img_data[(i + j * img_width) * 4 + 2] = 175;
+        img_data[(i + j * img_width) * 4 + 3] = 255;
       }
     }
   } else {
@@ -111,7 +111,7 @@ unsigned char *Texture::loadFileData(android_app &app, const char *filePath) {
   return img_data;
 }
 
-VkResult Texture::createTexture(uint8_t *imgData,
+VkResult Texture::CreateTexture(uint8_t *img_data,
                                 VkImageUsageFlags usage,
                                 VkFlags required_props) {
   if (!(usage | required_props)) {
@@ -182,10 +182,10 @@ VkResult Texture::createTexture(uint8_t *imgData,
     for (int32_t y = 0; y < tex_height_; y++) {
       unsigned char *row = (unsigned char *) ((char *) data + layout.rowPitch * y);
       for (int32_t x = 0; x < tex_width_; x++) {
-        row[x * 4] = imgData[(x + y * tex_width_) * 4];
-        row[x * 4 + 1] = imgData[(x + y * tex_width_) * 4 + 1];
-        row[x * 4 + 2] = imgData[(x + y * tex_width_) * 4 + 2];
-        row[x * 4 + 3] = imgData[(x + y * tex_width_) * 4 + 3];
+        row[x * 4] = img_data[(x + y * tex_width_) * 4];
+        row[x * 4 + 1] = img_data[(x + y * tex_width_) * 4 + 1];
+        row[x * 4 + 2] = img_data[(x + y * tex_width_) * 4 + 2];
+        row[x * 4 + 3] = img_data[(x + y * tex_width_) * 4 + 3];
       }
     }
 
@@ -257,8 +257,8 @@ VkResult Texture::createTexture(uint8_t *imgData,
   return VK_SUCCESS;
 }
 
-void Texture::createImageView() {
-  VkImageViewCreateInfo viewCreateInfo = {
+void Texture::CreateImageView() {
+  VkImageViewCreateInfo view_create_info = {
       .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
       .pNext = nullptr,
       .image = image_,
@@ -274,5 +274,5 @@ void Texture::createImageView() {
       .subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
       .flags = 0,
   };
-  CALL_VK(vkCreateImageView(device_.GetDevice(), &viewCreateInfo, nullptr, &view_));
+  CALL_VK(vkCreateImageView(device_.GetDevice(), &view_create_info, nullptr, &view_));
 }
