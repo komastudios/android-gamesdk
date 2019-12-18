@@ -1,0 +1,10 @@
+Presubmit-Ready+1: Treehugger Robot <treehugger-gerrit@google.com>
+Code-Review+2: Omar El Sheikh <theoking@google.com>
+Code-Review+1: Francesco Carucci <fcarucci@google.com>
+Autosubmit+1: Omar El Sheikh <theoking@google.com>
+Open-Source-Licensing+1: Lint 🤖 <android-build-prod-ayeaye@system.gserviceaccount.com>
+Submitted-by: Matt Wang <mattkw@google.com>
+Submitted-at: Wed, 18 Dec 2019 19:08:46 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1193169
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
