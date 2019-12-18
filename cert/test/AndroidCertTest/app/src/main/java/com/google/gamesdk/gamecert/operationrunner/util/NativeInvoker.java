@@ -51,8 +51,6 @@ public class NativeInvoker {
      */
     public static native int getCpuId();
 
-    public static native String getCpuInfo();
-
     /**
      * @return the id of the calling thread
      */

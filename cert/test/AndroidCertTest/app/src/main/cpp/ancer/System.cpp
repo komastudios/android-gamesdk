@@ -16,7 +16,6 @@
 
 #include "System.hpp"
 
-#include <algorithm>
 #include <array>
 #include <thread>
 
@@ -25,7 +24,6 @@
 
 #include "util/FpsCalculator.hpp"
 #include "util/GLHelpers.hpp"
-#include "util/Json.hpp"
 #include "util/Error.hpp"
 #include "util/Log.hpp"
 
@@ -371,96 +369,58 @@ void ancer::RunSystemGc() {
 //==============================================================================
 
 namespace {
-    // -1 for little core, 0 for medium core, 1 for big core
-    using AffinityOffset = int;
-    [[nodiscard]] constexpr AffinityOffset ToAffinityOffset(ThreadAffinity aff) {
-        assert (aff != ThreadAffinity::kAnyCore);
-        return aff == ThreadAffinity::kLittleCore ? -1 :
-               aff == ThreadAffinity::kMiddleCore ? 0 :
-               1;
-    }
-
-    [[nodiscard]] constexpr ThreadAffinity FromAffinityOffset(AffinityOffset aff) {
-        assert(-1 <= aff && aff <= 1);
-        return (ThreadAffinity)((int)ThreadAffinity::kLittleCore + aff);
-    }
-
     const auto core_info = [] {
         struct {
-            std::array<int, 4> num_cores;
-            std::vector<ThreadAffinity> core_sizes;
+            std::array<int, 3> num_cores;
+            std::vector<char> big_core; // 1 for Big, 0 for Little
         } info;
 
         androidgamesdk_deviceinfo_GameSdkDeviceInfoWithErrors proto;
         androidgamesdk_deviceinfo::ProtoDataHolder data_holder;
         createProto(proto, data_holder);
 
-        const auto num_cpus = std::min((int)data_holder.cpuFreqs.size, android_getCpuCount());
-        if (data_holder.cpuFreqs.size != android_getCpuCount()) {
-            Log::E(TAG, "GameSDK reports %d CPUs, but cpu-features reports %d.",
-                   data_holder.cpuFreqs.size, android_getCpuCount());
-        }
+        const auto num_cpus = data_holder.cpuFreqs.size;
+        assert(data_holder.cpuFreqs.size == android_getCpuCount());
 
         info.num_cores[(int)ThreadAffinity::kAnyCore] = num_cpus;
-        info.core_sizes.reserve(num_cpus);
+        info.big_core.reserve(num_cpus);
 
 
         auto min_freq = data_holder.cpuFreqs.data[0];
-        auto max_freq = data_holder.cpuFreqs.data[0];
+        auto max_freq = min_freq;
 
         for (int i = 0 ; i < num_cpus ; ++i) {
             const auto freq = data_holder.cpuFreqs.data[i];
-
-            // Found a frequency outside of existing big/little range
-            if (freq < min_freq || max_freq < freq) {
-                // Determine which end we're replacing.
-                const auto adj = ToAffinityOffset(
-                        freq < min_freq ? ThreadAffinity::kLittleCore
-                                        : ThreadAffinity::kBigCore);
-                constexpr auto kMiddleIndex = (int)ThreadAffinity::kMiddleCore;
-                if (min_freq == max_freq) {
-                    // All data so far as been recorded as middle. Take that
-                    // data and place it on the opposite end now that we've
-                    // found an opposite frequency for a big/little pair.
-                    std::swap(info.num_cores[kMiddleIndex],
-                              info.num_cores[kMiddleIndex - adj]);
-                    for (auto &size : info.core_sizes) {
-                        size = (ThreadAffinity)((int)size - adj);
-                    }
-                } else {
-                    // Since we've found a new frequency for big/little, take
-                    // what we thought was the big/little end before and merge
-                    // it with whatever's already in the middle.
-                    info.num_cores[kMiddleIndex] += info.num_cores[kMiddleIndex + adj];
-                    info.num_cores[kMiddleIndex + adj] = 0;
-                    for (auto &size : info.core_sizes) {
-                        if (size == FromAffinityOffset(adj)) {
-                            size = ThreadAffinity::kMiddleCore;
-                        }
+            // Assume the list starts with big cores so we default to all-big if
+            // there are no little cores. If we find a bigger core, swap the old
+            // results and then continue now knowing the big/little sizes.
+            if (min_freq == max_freq && freq != min_freq) {
+                if (freq > max_freq) {
+                    std::swap(info.num_cores[(int)ThreadAffinity::kBigCore],
+                              info.num_cores[(int)ThreadAffinity::kLittleCore]);
+                    for (auto& big : info.big_core) {
+                        big = !big;
                     }
                 }
+            } else if (freq != min_freq && freq != max_freq) {
+                FatalError(TAG,
+                           "More than two core speeds detected; cannot "
+                           "differentiate between big & little cores.");
             }
 
             min_freq = std::min(min_freq, freq);
             max_freq = std::max(max_freq, freq);
 
-            const auto which =
-                    ((min_freq == max_freq) ||
-                    (min_freq < freq && freq < max_freq)) ? ThreadAffinity::kMiddleCore
-                    : freq == min_freq ? ThreadAffinity::kLittleCore
-                    : ThreadAffinity::kBigCore;
-
-            Log::D(TAG, "Core %d @ %d", i, freq);
-
-            ++info.num_cores[(int)which];
-            info.core_sizes.push_back(which);
+            ++info.num_cores[(int)(max_freq == freq
+                                   ? ThreadAffinity::kBigCore
+                                   : ThreadAffinity::kLittleCore)];
+            info.big_core.push_back(max_freq == freq);
         }
 
-        Log::I(TAG, "%d cores detected : %d little @ %ld, %d big @ %ld, & %d middle)",
+        Log::D(TAG, "%d cores detected : %d @ %ld, %d @ %ld)",
                info.num_cores[(int)ThreadAffinity::kAnyCore],
-               info.num_cores[(int)ThreadAffinity::kLittleCore], min_freq,
                info.num_cores[(int)ThreadAffinity::kBigCore], max_freq,
-               info.num_cores[(int)ThreadAffinity::kMiddleCore]);
+               info.num_cores[(int)ThreadAffinity::kLittleCore], min_freq);
 
         return info;
     }();
@@ -476,21 +436,20 @@ void ancer::SetThreadAffinity(int index, ThreadAffinity affinity) {
     cpu_set_t cpuset;
     CPU_ZERO(&cpuset);
 
-    // i is real CPU index, j is the index restricted to only the given affinity
-    for (int i = 0, j = 0; i < std::size(core_info.core_sizes); ++i) {
+    // i is real CPU index, j is the index restricted to any/big/little CPUs.
+    for (int i = 0, j = 0; i < std::size(core_info.big_core); ++i) {
         if (affinity != ThreadAffinity::kAnyCore &&
-            affinity != core_info.core_sizes[i]) {
+            (affinity == ThreadAffinity::kBigCore) != core_info.big_core[i]) {
             continue;
         }
-        if (j++ == index || index == -1) {
+        if (index == -1 || j++ == index) {
             CPU_SET(i, &cpuset);
-            if (index != -1) break;
         }
     }
 
     if ( sched_setaffinity(0, sizeof(cpu_set_t), &cpuset) == -1 ) {
         std::string err;
-        switch (errno) {
+        switch ( errno) {
         case EFAULT:err = "EFAULT";
             break;
         case EINVAL:err = "EINVAL";
@@ -509,31 +468,6 @@ void ancer::SetThreadAffinity(int index, ThreadAffinity affinity) {
 
 void ancer::SetThreadAffinity(ThreadAffinity affinity) {
     SetThreadAffinity(-1, affinity);
-}
-
-//------------------------------------------------------------------------------
-
-
-// TODO(tmillican@google.com): Not really the right place for this. Our system /
-//  etc. code could really use a good refactoring...
-std::string ancer::GetCpuInfo() {
-    Json report;
-    static constexpr const char* kAffinityNames[] = {
-            "little_cores", "middle_cores", "big_cores"
-    };
-    for (int affinity = 0 ; affinity < (int)ThreadAffinity::kAnyCore; ++affinity) {
-        std::vector<int> cpus;
-        for (int cpu = 0; cpu < core_info.core_sizes.size(); ++cpu) {
-            if (core_info.core_sizes[cpu] == (ThreadAffinity)affinity) {
-                cpus.push_back(cpu);
-            }
-        }
-        report[kAffinityNames[affinity]] = {
-                {"total", NumCores((ThreadAffinity)affinity)},
-                {"cpus", cpus}
-        };
-    }
-    return report.dump();
 }
 
 //==============================================================================
