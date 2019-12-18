@@ -2,11 +2,11 @@
 set -e # Exit on error
 export ANDROID_HOME=`pwd`/../prebuilts/sdk
 export ANDROID_NDK_HOME=`pwd`/../prebuilts/ndk/r20
-if [[ $1 == "full" ]]
-    then
-        TARGET=fullSdkZip
-    else
-        TARGET=gamesdkZip
+if [ $1 == "full" ]
+then
+    TARGET=fullSdkZip
+else
+    TARGET=gamesdkZip
 fi
 ./gradlew $TARGET
 
@@ -28,7 +28,7 @@ if [[ -z dist_dir ]]
         export dist_dir=`pwd`/../
 fi
 
-if [[ $1 == "samples" ]] || [[ $1 == "full" ]]
+if [ $1 == "samples" || $1 == 'full' ]
     then
         mkdir $dist_dir/samples
         cp samples/bouncyball/app/build/outputs/apk/debug/app-debug.apk \
