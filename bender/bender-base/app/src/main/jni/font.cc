@@ -95,8 +95,8 @@ void Font::DrawString(const std::string& text, float text_size, float x, float y
     float text_size_x = text_size * resolution_ratio_x_;
     float text_size_y = text_size * resolution_ratio_y;
 
-    float w = (float)texture_->getWidth();
-    float h = (float)texture_->getHeight();
+    float w = (float)texture_->GetWidth();
+    float h = (float)texture_->GetHeight();
 
     float posx = x;
     float posy = y;
@@ -155,7 +155,7 @@ void Font::DrawString(const std::string& text, float text_size, float x, float y
         posx += (float)(char_info->x_advance) / w * text_size_x;
     }
 
-    orientation_matrix_->update(frame_index, [this](auto &matrix) {
+    orientation_matrix_->Update(frame_index, [this](auto &matrix) {
       auto transform = renderer_.GetDevice().GetPretransformFlag();
       switch (transform) {
           case VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR:
@@ -272,11 +272,11 @@ void Font::CreateDescriptors(Renderer& renderer) {
     for (size_t i = 0; i < renderer_.GetDevice().GetDisplayImages().size(); i++) {
         VkDescriptorImageInfo imageInfo = {};
         imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        imageInfo.imageView = texture_->getImageView();
+        imageInfo.imageView = texture_->GetImageView();
         imageInfo.sampler = sampler_;
 
         VkDescriptorBufferInfo bufferInfo = {};
-        bufferInfo.buffer = orientation_matrix_->getBuffer(i);
+        bufferInfo.buffer = orientation_matrix_->GetBuffer(i);
         bufferInfo.offset = 0;
         bufferInfo.range = sizeof(glm::mat4);
 

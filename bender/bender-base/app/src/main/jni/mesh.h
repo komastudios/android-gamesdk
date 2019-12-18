@@ -23,47 +23,46 @@
 struct ModelViewProjection {
   alignas(16) glm::mat4 mvp;
   alignas(16) glm::mat4 model;
-  alignas(16) glm::mat4 invTranspose;
+  alignas(16) glm::mat4 inv_transpose;
 };
 
 class Mesh {
 public:
-  Mesh(Renderer *renderer, std::shared_ptr<Material> material, std::shared_ptr<Geometry> geometryData);
+  Mesh(Renderer *renderer, std::shared_ptr<Material> material, std::shared_ptr<Geometry> geometry_data);
 
-  Mesh(Renderer *renderer, std::shared_ptr<Material> material, const std::vector<float>& vertexData,
-          const std::vector<uint16_t>& indexData);
+  Mesh(Renderer *renderer, std::shared_ptr<Material> material, const std::vector<float>& vertex_data,
+          const std::vector<uint16_t>& index_data);
 
   Mesh(const Mesh &other, std::shared_ptr<Geometry> geometry);
   Mesh(const Mesh &other, std::shared_ptr<Material> material);
 
   ~Mesh();
 
-  void cleanup();
+  void Cleanup();
 
-  void onResume(Renderer *renderer);
+  void OnResume(Renderer *renderer);
 
-  void updatePipeline(VkRenderPass renderPass);
+  void UpdatePipeline(VkRenderPass render_pass);
 
   // TODO: consolidate camera, view, proj into a camera object
-  void update(uint_t frame_index, glm::vec3 camera, glm::mat4 view, glm::mat4 proj);
-  void submitDraw(VkCommandBuffer commandBuffer, uint_t frame_index) const;
+  void Update(uint_t frame_index, glm::vec3 camera, glm::mat4 view, glm::mat4 proj);
+  void SubmitDraw(VkCommandBuffer cmd_buffer, uint_t frame_index) const;
 
+  void Translate(glm::vec3 offset);
+  void Rotate(glm::vec3 axis, float angle);
+  void Scale(glm::vec3 scaling);
 
-  void translate(glm::vec3 offset);
-  void rotate(glm::vec3 axis, float angle);
-  void scale(glm::vec3 scaling);
+  void SetPosition(glm::vec3 position);
+  void SetRotation(glm::vec3 axis, float angle);
+  void SetScale(glm::vec3 scale);
 
-  void setPosition(glm::vec3 position);
-  void setRotation(glm::vec3 axis, float angle);
-  void setScale(glm::vec3 scale);
+  glm::vec3 GetPosition() const;
+  glm::quat GetRotation() const;
+  glm::vec3 GetScale() const;
 
-  glm::vec3 getPosition() const;
-  glm::quat getRotation() const;
-  glm::vec3 getScale() const;
+  glm::mat4 GetTransform() const;
 
-  glm::mat4 getTransform() const;
-
-  int getTrianglesCount() const;
+  int GetTrianglesCount() const;
 
 private:
   std::unique_ptr<UniformBufferObject<ModelViewProjection>> mesh_buffer_;
@@ -84,10 +83,10 @@ private:
 
   std::vector<VkDescriptorSet> mesh_descriptor_sets_;
 
-  void createMeshPipeline(VkRenderPass renderPass);
+  void CreateMeshPipeline(VkRenderPass render_pass);
 
-  void createMeshDescriptorSetLayout();
-  void createMeshDescriptors();
+  void CreateMeshDescriptorSetLayout();
+  void CreateMeshDescriptors();
 };
 
 #endif //BENDER_BASE_MESH_H

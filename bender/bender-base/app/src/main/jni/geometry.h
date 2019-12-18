@@ -12,35 +12,35 @@
 class Geometry {
  public:
   Geometry(benderkit::Device &device,
-           const std::vector<float> &vertexData,
-           const std::vector<uint16_t> &indexData,
+           const std::vector<float> &vertex_data,
+           const std::vector<uint16_t> &index_data,
            std::function<void(std::vector<float> &, std::vector<uint16_t> &)> generator = nullptr);
   ~Geometry();
 
-  void cleanup();
+  void Cleanup();
 
-  void onResume(benderkit::Device &device);
+  void OnResume(benderkit::Device &device);
 
-  int getVertexCount() const { return vertexCount_; }
-  int getIndexCount() const { return indexCount_; }
+  int GetVertexCount() const { return vertex_count_; }
+  int GetIndexCount() const { return index_count_; }
 
-  void bind(VkCommandBuffer commandBuffer) const;
+  void Bind(VkCommandBuffer cmd_buffer) const;
 
  private:
   benderkit::Device &device_;
 
-  int vertexCount_;
-  VkBuffer vertexBuf_;
-  VkDeviceMemory vertexBufferDeviceMemory_;
+  int vertex_count_;
+  VkBuffer vertex_buf_;
+  VkDeviceMemory vertex_buffer_device_memory_;
 
-  int indexCount_;
-  VkBuffer indexBuf_;
-  VkDeviceMemory indexBufferDeviceMemory_;
+  int index_count_;
+  VkBuffer index_buf_;
+  VkDeviceMemory index_buffer_device_memory_;
 
   std::function<void(std::vector<float> &, std::vector<uint16_t> &)> generator_ = nullptr;
 
-  void createVertexBuffer(const std::vector<float> &vertexData,
-                          const std::vector<uint16_t> &indexData);
+  void CreateVertexBuffer(const std::vector<float> &vertex_data,
+                          const std::vector<uint16_t> &index_data);
 };
 
 #endif //BENDER_BASE_GEOMETRY_H
