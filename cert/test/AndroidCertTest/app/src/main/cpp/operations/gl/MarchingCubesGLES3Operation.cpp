@@ -170,7 +170,7 @@ constexpr auto ToAffinity(ThreadAffinitySetup setup) {
     case ThreadAffinitySetup::AllBigCores:return ThreadAffinity::kBigCore;
     case ThreadAffinitySetup::OneLittleCore:
     case ThreadAffinitySetup::AllLittleCores:return ThreadAffinity::kLittleCore;
-    case ThreadAffinitySetup::AllCores: return ThreadAffinity::kAnyCore;
+    case ThreadAffinitySetup::AllCores: return ThreadAffinity::kAll;
     default:FatalError(TAG, "Unknown thread setup %d", (int) setup);
   }
 }

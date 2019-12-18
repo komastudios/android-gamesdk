@@ -34,8 +34,9 @@ namespace ancer::internal {
     /// operations so it can pass along render calls, etc.
     void SuiteUpdateRenderer();
 
-    int CreateOperation(const std::string& suite, const std::string& operation,
-                        BaseOperation::Mode mode);
+    int CreateOperation(
+            const std::string& suite, const std::string& description,
+            const std::string& operation, BaseOperation::Mode mode);
 
     void StartOperation(int id, Duration duration, const std::string& config);
     void StopOperation(int id);
