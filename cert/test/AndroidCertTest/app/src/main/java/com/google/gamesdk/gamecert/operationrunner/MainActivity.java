@@ -121,14 +121,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onStressTestLongPressed(Configuration.StressTest stressTest) {
                 new AlertDialog.Builder(MainActivity.this)
-                        .setTitle(R.string.dialog_title_exec_then_terminate)
-                        .setMessage(getString(R.string.dialog_message_exec_then_terminate, stressTest.getName()))
-                        .setPositiveButton(R.string.dialog_button_execute_then_terminate, (dialogInterface, i) -> {
+                    .setTitle(R.string.dialog_title_exec_then_terminate)
+                    .setMessage(
+                        getString(R.string.dialog_message_exec_then_terminate,
+                            stressTest.getName()))
+                    .setPositiveButton(R.string.dialog_button_execute_then_terminate,
+                        (dialogInterface, i) -> {
                             MainActivity.this.runStressTest(stressTest, true);
                         })
-                        .setNegativeButton(android.R.string.cancel, null)
-                        .setCancelable(true)
-                        .show();
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .setCancelable(true)
+                    .show();
             }
         });
         _testsRecyclerView.setAdapter(_testsAdapter);
@@ -140,28 +143,26 @@ public class MainActivity extends AppCompatActivity {
 
         // onCreate shouldn't be called if a test is currently executing. This means the test
         // that was launched crashed and MainActivity was restarted!
-        // Show a dialog explaining the situation, reset the flag  to false so that on next
-        // run everything's fine, and exit. Otherwise, proceed as normal
+        // If running in interactive mode show a dialog giving the operator the chance
+        // to cancel the execution without obliterating the previous report.json file
+        // NOTE: If running in game loop mode, skip this and just move forward
 
-        if (isRunningTest()) {
-            new AlertDialog.Builder(this)
+        if (isGameLoopLaunch()) {
+            handleGameLoopLaunch();
+        } else {
+            if (isRunningTest()) {
+                setIsRunningTest(false);
+                new AlertDialog.Builder(this)
                     .setTitle(R.string.dialog_title_crash_warning)
                     .setMessage(R.string.dialog_message_crash_warning)
-                    .setPositiveButton(android.R.string.ok, (dialogInterface, i)->{
-                        openReportLog();
-                        if (_configuration.isAutoRun()) {
-                            startAutoRun();
-                        }
+                    .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
+                        handleInteractiveLaunch();
                     })
                     .setNegativeButton("Terminate", (dialogInterface, i) -> finish())
                     .setCancelable(false)
                     .show();
-
-            setIsRunningTest(false);
-        } else if (!handleGameLoopLaunch()) {
-            openReportLog();
-            if (_configuration.isAutoRun()) {
-                startAutoRun();
+            } else {
+                handleInteractiveLaunch();
             }
         }
     }
@@ -192,27 +193,32 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == STRESS_TEST_ACTIVITY_REQUEST_CODE) {
             switch (resultCode) {
                 case RESULT_CODE_STRESS_TEST_FINISHED_SUCCESSFULLY:
-                    Log.d(TAG, "Stress test activity completed and returned with success");
+                case RESULT_CODE_STRESS_TEST_CANCELED:
+                    Log.d(TAG, "Test activity completed and returned with success");
                     if (_configuration.isAutoRun()) {
                         if (_currentStressTestIndex < numTests() - 1) {
+                            Log.d(TAG, "Scheduling test " + _currentStressTestIndex +
+                                " to run in " + (_configuration.getDelayBetweenTestsMillis()/1000.0F) + "s");
                             _mainThreadPump.postDelayed(() -> {
                                 nextTest();
                                 runCurrentTest();
                             }, _configuration.getDelayBetweenTestsMillis());
                         } else {
                             // we've executed all tests, we're done here
-                            Log.d(TAG, "Finished running all " + numTests() + " tests - stop()-ing");
+                            Log.d(TAG,
+                                "Finished running all " + numTests() + " tests - stop()-ing");
                             finish();
                         }
+                    } else {
+                        Log.d(TAG, "Test activity completed successfully; !autoRun, so we'll wait for input.");
                     }
                     break;
-                case RESULT_CODE_STRESS_TEST_CANCELED:
-                    Log.d(TAG, "Stress test activity canceled");
-                    break;
                 default:
-                    Log.e(TAG, "Stress test activity terminated badly");
+                    Log.e(TAG, "Test activity terminated badly; shutting down.");
                     finish();
             }
+        } else {
+            Log.d(TAG, "onActivityResult - Unrecognized requestCode: " + requestCode);
         }
 
         super.onActivityResult(requestCode, resultCode, data);
@@ -231,7 +237,8 @@ public class MainActivity extends AppCompatActivity {
             NativeInvoker.openReportFile(_reportFilePath);
         } else {
             finish();
-            throw new IllegalStateException("_reportFilePath is null and _reportFileDescriptor is -1; no log file to write to");
+            throw new IllegalStateException(
+                "_reportFilePath is null and _reportFileDescriptor is -1; no log file to write to");
         }
 
         try {
@@ -268,64 +275,72 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private boolean handleGameLoopLaunch() {
+    private boolean isGameLoopLaunch() {
         Intent launchIntent = getIntent();
-        if ("com.google.intent.action.TEST_LOOP".equals(launchIntent.getAction())) {
-            Log.i(TAG, "launched via TEST_LOOP game loop mode");
+        return "com.google.intent.action.TEST_LOOP".equals(launchIntent.getAction());
+    }
 
-            Uri logFileUri = launchIntent.getData();
-            if (logFileUri != null) {
-                String logPath = logFileUri.getEncodedPath();
-                if (logPath != null) {
-                    Log.i(TAG, "TEST_LOOP: game-loop logPath: " + logPath);
+    private void handleGameLoopLaunch() {
+        Log.i(TAG, "launched via TEST_LOOP game loop mode");
 
-                    // we need to get the file descriptor for this URI
-                    // https://firebase.google.com/docs/test-lab/android/game-loop
+        Intent launchIntent = getIntent();
+        Uri logFileUri = launchIntent.getData();
+        if (logFileUri != null) {
+            String logPath = logFileUri.getEncodedPath();
+            if (logPath != null) {
+                Log.i(TAG, "TEST_LOOP: game-loop logPath: " + logPath);
+
+                // we need to get the file descriptor for this URI
+                // https://firebase.google.com/docs/test-lab/android/game-loop
+                _reportFileDescriptor = -1;
+                try {
+                    _reportFileDescriptor = getContentResolver()
+                        .openAssetFileDescriptor(logFileUri, "w")
+                        .getParcelFileDescriptor()
+                        .getFd();
+
+                    Log.i(TAG, "resolved game-loop _reportFileDescriptor: "
+                        + _reportFileDescriptor);
+                } catch (FileNotFoundException e) {
+                    Log.e(TAG,
+                        "Unable to get report file descriptor, FileNotFound: "
+                            + e.getLocalizedMessage());
+                    e.printStackTrace();
                     _reportFileDescriptor = -1;
-                    try {
-                        _reportFileDescriptor = getContentResolver()
-                                .openAssetFileDescriptor(logFileUri, "w")
-                                .getParcelFileDescriptor()
-                                .getFd();
-
-                        Log.i(TAG, "resolved game-loop _reportFileDescriptor: "
-                                + _reportFileDescriptor);
-                    } catch (FileNotFoundException e) {
-                        Log.e(TAG,
-                                "Unable to get report file descriptor, FileNotFound: "
-                                + e.getLocalizedMessage());
-                        e.printStackTrace();
-                        _reportFileDescriptor = -1;
-                    } catch (NullPointerException e) {
-                        Log.e(TAG, "Unable to get report file descriptor, NPE: "
-                                + e.getLocalizedMessage());
-                        e.printStackTrace();
-                        _reportFileDescriptor = -1;
-                    }
+                } catch (NullPointerException e) {
+                    Log.e(TAG, "Unable to get report file descriptor, NPE: "
+                        + e.getLocalizedMessage());
+                    e.printStackTrace();
+                    _reportFileDescriptor = -1;
                 }
             }
-            openReportLog();
-            startAutoRun();
-
-            return true;
         }
-        return false;
+        openReportLog();
+        startAutoRun();
+    }
+
+    private void handleInteractiveLaunch() {
+        openReportLog();
+        if (_configuration.isAutoRun()) {
+            startAutoRun();
+        }
     }
 
     private String getOpenGLVersion() {
         final ActivityManager activityManager =
-                (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+            (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         final ConfigurationInfo configurationInfo =
-                Objects.requireNonNull(activityManager).getDeviceConfigurationInfo();
+            Objects.requireNonNull(activityManager).getDeviceConfigurationInfo();
         return configurationInfo.getGlEsVersion();
     }
 
     private void startAutoRun() {
+        _currentStressTestIndex = 0;
         _configuration.setAutoRun(true);
         setTestsRecyclerViewInteractionEnabled(false);
         _mainThreadPump.postDelayed(
-                this::runCurrentTest,
-                _configuration.getDelayBetweenTestsMillis());
+            this::runCurrentTest,
+            _configuration.getDelayBetweenTestsMillis());
     }
 
 
@@ -344,8 +359,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void runStressTest(
-            Configuration.StressTest stressTest,
-            boolean finishOnCompletion) {
+        Configuration.StressTest stressTest,
+        boolean finishOnCompletion) {
 
         Intent i = null;
         String host = stressTest.getHost();
@@ -368,7 +383,7 @@ public class MainActivity extends AppCompatActivity {
                     i = SwappyGLHostActivity.createIntent(this, stressTest);
                 } else {
                     Log.i(TAG, "SwappyGLHostActivity not supported on SDK "
-                            + VERSION.SDK_INT + " using GLSurfaceViewHostActivity");
+                        + VERSION.SDK_INT + " using GLSurfaceViewHostActivity");
                     i = GLSurfaceViewHostActivity.createIntent(this, stressTest);
                 }
                 break;
@@ -421,6 +436,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     interface StressTestTapListener {
+
         void onStressTestTapped(Configuration.StressTest stressTest);
 
         void onStressTestLongPressed(Configuration.StressTest stressTest);
@@ -431,9 +447,10 @@ public class MainActivity extends AppCompatActivity {
      */
 
     private static class StressTestAdapter
-            extends RecyclerView.Adapter<StressTestAdapter.StressTestViewHolder> {
+        extends RecyclerView.Adapter<StressTestAdapter.StressTestViewHolder> {
 
         class StressTestViewHolder extends RecyclerView.ViewHolder {
+
             TextView name;
             TextView description;
             TextView host;
@@ -472,7 +489,7 @@ public class MainActivity extends AppCompatActivity {
         private boolean _interactionEnabled;
 
         StressTestAdapter(Configuration _configuration,
-                          StressTestTapListener listener) {
+            StressTestTapListener listener) {
             this._configuration = _configuration;
             this._listener = listener;
         }
@@ -490,7 +507,7 @@ public class MainActivity extends AppCompatActivity {
         public StressTestAdapter.StressTestViewHolder
         onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.stress_test_recycler_item, parent, false);
+                .inflate(R.layout.stress_test_recycler_item, parent, false);
 
             return new StressTestViewHolder(v, _listener);
         }
@@ -498,7 +515,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void
         onBindViewHolder(@NonNull StressTestAdapter.StressTestViewHolder holder,
-                         int position) {
+            int position) {
             Configuration.StressTest st = _configuration.getStressTests()[position];
             holder.bind(st);
         }
