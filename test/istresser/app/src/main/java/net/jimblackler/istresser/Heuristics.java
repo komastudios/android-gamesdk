@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.os.Debug;
+import android.os.Debug.MemoryInfo;
+import com.google.common.primitives.Ints;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -85,12 +87,37 @@ public class Heuristics {
     return output;
   }
 
+  static Map<String, Long> processStatus(Activity activity) {
+    List<Integer> pids = getPids(activity);
+    Map<String, Long> output = new HashMap<>();
+
+    try {
+      String meminfoText = readFile(("/proc/" + pids.get(0)) + "/status");
+      Pattern pattern = Pattern.compile("([a-zA-Z]+)[^\\d]*(\\d+) kB.*\n");
+      Matcher matcher = pattern.matcher(meminfoText);
+      while (matcher.find()) {
+        output.put(matcher.group(1), Long.parseLong(Objects.requireNonNull(matcher.group(2))));
+      }
+    } catch (IOException e) {
+      // Intentionally silenced
+    }
+    return output;
+  }
+
   static boolean lowMemoryCheck(Activity activity) {
     return getMemoryInfo(activity).lowMemory;
   }
 
   static boolean oomCheck(Activity activity) {
     return getOomScore(activity) > 650;
+  }
+
+  static MemoryInfo[] getDebugMemoryInfo(Activity activity) {
+    List<Integer> pids = getPids(activity);
+    ActivityManager activityManager =
+        (ActivityManager)
+            Objects.requireNonNull(activity.getSystemService((Context.ACTIVITY_SERVICE)));
+    return activityManager.getProcessMemoryInfo(Ints.toArray(pids));
   }
 
   static boolean commitLimitCheck() {

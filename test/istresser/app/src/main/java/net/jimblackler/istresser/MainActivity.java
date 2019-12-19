@@ -12,8 +12,11 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Debug;
+import android.os.Debug.MemoryInfo;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
@@ -76,6 +79,13 @@ public class MainActivity extends AppCompatActivity {
 
   private static final ImmutableList<String> MEMINFO_FIELDS =
       ImmutableList.of("Cached", "MemFree", "MemAvailable", "SwapFree");
+
+  private static final ImmutableList<String> STATUS_FIELDS =
+      ImmutableList.of("VmSize", "VmRSS", "VmData");
+
+  private static final String[] SUMMARY_FIELDS = {
+    "summary.graphics", "summary.native-heap", "summary.total-pss"
+  };
 
   static {
     System.loadLibrary("native-lib");
@@ -570,10 +580,24 @@ public class MainActivity extends AppCompatActivity {
     report.put("serviceTotalMemory", BYTES_IN_MEGABYTE * serviceTotalMb);
     report.put("oom_score", Heuristics.getOomScore(this));
 
+    if (VERSION.SDK_INT >= VERSION_CODES.M) {
+      MemoryInfo debugMemoryInfo = Heuristics.getDebugMemoryInfo(this)[0];
+      for (String key : SUMMARY_FIELDS) {
+        report.put(key, debugMemoryInfo.getMemoryStat(key));
+      }
+    }
+
     Map<String, Long> values = Heuristics.processMeminfo();
     for (Map.Entry<String, Long> pair : values.entrySet()) {
       String key = pair.getKey();
       if (MEMINFO_FIELDS.contains(key)) {
+        report.put(key, pair.getValue());
+      }
+    }
+
+    for (Map.Entry<String, Long> pair : Heuristics.processStatus(this).entrySet()) {
+      String key = pair.getKey();
+      if (STATUS_FIELDS.contains(key)) {
         report.put(key, pair.getValue());
       }
     }
