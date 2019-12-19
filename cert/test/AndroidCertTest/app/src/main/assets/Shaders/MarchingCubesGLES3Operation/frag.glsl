@@ -1,3 +1,5 @@
+#version 300 es
+
 /*
  * Copyright 2019 The Android Open Source Project
  *
@@ -13,8 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#version 300 es
 
 in vec3 vColor;
 in vec3 vNormal;
