@@ -122,11 +122,11 @@ public class Configuration {
         public int getDurationMillis() {
             try {
                 return (int) TimeParsing.parseDurationString(
-                        duration,
-                        TimeParsing.Unit.Milliseconds);
+                    duration,
+                    TimeParsing.Unit.Milliseconds);
             } catch (TimeParsing.BadFormatException bfe) {
                 Log.e(TAG, "Unable to parse duration; error: "
-                        + bfe.getLocalizedMessage());
+                    + bfe.getLocalizedMessage());
 
                 return 0;
             }
@@ -144,8 +144,8 @@ public class Configuration {
     @SerializedName("auto_run")
     private boolean autoRun;
 
-    @SerializedName("delay_between_tests_millis")
-    private int delayBetweenTestsMillis;
+    @SerializedName("delay_between_tests")
+    private String delayBetweenTests;
 
     @SerializedName("stress_tests")
     private StressTest[] stressTests;
@@ -172,7 +172,16 @@ public class Configuration {
      * between execution of stress tests
      */
     public int getDelayBetweenTestsMillis() {
-        return delayBetweenTestsMillis > 0 ? delayBetweenTestsMillis : 0;
+        try {
+            return (int) TimeParsing.parseDurationString(
+                delayBetweenTests,
+                TimeParsing.Unit.Milliseconds);
+        } catch (TimeParsing.BadFormatException bfe) {
+            Log.e(TAG, "Unable to parse duration; error: "
+                + bfe.getLocalizedMessage());
+
+            return 0;
+        }
     }
 
     public String getHost() {
@@ -248,14 +257,14 @@ public class Configuration {
      * @return The Configuration, or null if resource isn't valid
      */
     public static Configuration loadFromJsonResource(Context ctx,
-                                                     int jsonResourceId) {
+        int jsonResourceId) {
         try (InputStream is = ctx.getResources()
-                .openRawResource(jsonResourceId)) {
+            .openRawResource(jsonResourceId)) {
 
             Writer writer = new StringWriter();
             char[] buffer = new char[1024];
             Reader reader = new BufferedReader(
-                    new InputStreamReader(is, StandardCharsets.UTF_8));
+                new InputStreamReader(is, StandardCharsets.UTF_8));
             int n;
             while ((n = reader.read(buffer)) != -1) {
                 writer.write(buffer, 0, n);
@@ -263,11 +272,11 @@ public class Configuration {
             return loadFromJson(writer.toString());
         } catch (UnsupportedEncodingException e) {
             Log.d(TAG, "JSON Resource was not a properly encoded JSON file"
-                    + ", error: " + e.getLocalizedMessage());
+                + ", error: " + e.getLocalizedMessage());
             e.printStackTrace();
         } catch (IOException e) {
             Log.d(TAG, "Unable to open json resource for reading, error: "
-                    + e.getLocalizedMessage());
+                + e.getLocalizedMessage());
             e.printStackTrace();
         }
         return null;
