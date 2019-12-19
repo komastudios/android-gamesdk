@@ -390,6 +390,8 @@ typedef tAABB<int, glm::defaultp> AABBi;
 
 bool CheckGlError(const char *func_name);
 
+bool CheckGlExtension(const char *extension_name);
+
 GLuint CreateProgramSrc(const char *vtx_src, const char *frag_src);
 
 GLuint CreateShader(GLenum shader_type, const char *src);
