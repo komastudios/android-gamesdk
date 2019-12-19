@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "84d9f59f_d40bb575",
+        "filename": "cert/test/reporting/lib/common.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-12-19T23:45:20Z",
+      "side": 1,
+      "message": "Love it",
+      "revId": "f687d553b91effdfc0dc0a31d608602587a549ba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
