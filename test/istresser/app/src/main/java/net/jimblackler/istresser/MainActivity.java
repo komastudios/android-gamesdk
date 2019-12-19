@@ -12,8 +12,11 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Debug;
+import android.os.Debug.MemoryInfo;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
@@ -77,6 +80,13 @@ public class MainActivity extends AppCompatActivity {
   private static final ImmutableList<String> MEMINFO_FIELDS =
       ImmutableList.of("Cached", "MemFree", "MemAvailable", "SwapFree");
 
+  private static final ImmutableList<String> STATUS_FIELDS =
+      ImmutableList.of("VmSize", "VmRSS", "VmData");
+
+  private static final String[] SUMMARY_FIELDS = {
+    "summary.graphics", "summary.native-heap", "summary.total-pss"
+  };
+
   static {
     System.loadLibrary("native-lib");
   }
@@ -127,6 +137,8 @@ public class MainActivity extends AppCompatActivity {
     setContentView(R.layout.activity_main);
     serviceCommunicationHelper = new ServiceCommunicationHelper(this);
     serviceState = ServiceState.DEALLOCATED;
+    ActivityManager activityManager =
+        (ActivityManager) Objects.requireNonNull(getSystemService((Context.ACTIVITY_SERVICE)));
 
     try {
       // Setting up broadcast receiver
@@ -246,9 +258,7 @@ public class MainActivity extends AppCompatActivity {
       report.put("build", build);
 
       JSONObject constant = new JSONObject();
-      ActivityManager activityManager =
-          (ActivityManager) Objects.requireNonNull(getSystemService((Context.ACTIVITY_SERVICE)));
-      ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(this);
+      ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(activityManager);
       constant.put("totalMem", memoryInfo.totalMem);
       constant.put("threshold", memoryInfo.threshold);
       constant.put("memoryClass", activityManager.getMemoryClass() * 1024 * 1024);
@@ -276,20 +286,20 @@ public class MainActivity extends AppCompatActivity {
               JSONObject report = standardInfo();
               long _allocationStartedAt = allocationStartedAt;
               if (_allocationStartedAt != -1) {
-                if (scenarioGroup("oom") && Heuristics.oomCheck(MainActivity.this)) {
+                if (scenarioGroup("oom") && Heuristics.oomCheck(activityManager)) {
                   releaseMemory(report, "oom");
-                } else if (scenarioGroup("low") && Heuristics.lowMemoryCheck(MainActivity.this)) {
+                } else if (scenarioGroup("low") && Heuristics.lowMemoryCheck(activityManager)) {
                   releaseMemory(report, "low");
                 } else if (scenarioGroup("try") && !tryAlloc(1024 * 1024 * 32)) {
                   releaseMemory(report, "try");
                 } else if (scenarioGroup("cl") && Heuristics.commitLimitCheck()) {
                   releaseMemory(report, "cl");
-                } else if (scenarioGroup("avail") && Heuristics.availMemCheck(MainActivity.this)) {
+                } else if (scenarioGroup("avail") && Heuristics.availMemCheck(activityManager)) {
                   releaseMemory(report, "avail");
-                } else if (scenarioGroup("cached") && Heuristics.cachedCheck(MainActivity.this)) {
+                } else if (scenarioGroup("cached") && Heuristics.cachedCheck(activityManager)) {
                   releaseMemory(report, "cached");
                 } else if (scenarioGroup("avail2")
-                    && Heuristics.memAvailableCheck(MainActivity.this)) {
+                    && Heuristics.memAvailableCheck(activityManager)) {
                   releaseMemory(report, "avail2");
                 } else {
                   long sinceStart = System.currentTimeMillis() - _allocationStartedAt;
@@ -408,6 +418,9 @@ public class MainActivity extends AppCompatActivity {
         () -> {
           updateRecords();
 
+          ActivityManager activityManager = (ActivityManager)
+              Objects.requireNonNull(this.getSystemService((ACTIVITY_SERVICE)));
+
           TextView strategies = findViewById(R.id.strategies);
           List<String> strings = groups.get(groupNumber);
           strategies.setText(join(strings, ", ")); // TODO .. move to onCreate()
@@ -438,15 +451,15 @@ public class MainActivity extends AppCompatActivity {
           TextView nativeAllocatedByTestTextView = findViewById(R.id.nativeAllocatedByTest);
           nativeAllocatedByTestTextView.setText(memoryString(nativeAllocatedByTest));
 
-          ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(this);
+          ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(activityManager);
           TextView availMemTextView = findViewById(R.id.availMem);
           availMemTextView.setText(memoryString(memoryInfo.availMem));
 
           TextView oomScoreTextView = findViewById(R.id.oomScore);
-          oomScoreTextView.setText("" + Heuristics.getOomScore(this));
+          oomScoreTextView.setText("" + Heuristics.getOomScore(activityManager));
 
           TextView lowMemoryTextView = findViewById(R.id.lowMemory);
-          lowMemoryTextView.setText(Boolean.valueOf(Heuristics.lowMemoryCheck(this)).toString());
+          lowMemoryTextView.setText(Boolean.valueOf(Heuristics.lowMemoryCheck(activityManager)).toString());
 
           TextView trimMemoryComplete = findViewById(R.id.releases);
           trimMemoryComplete.setText(String.format(Locale.getDefault(), "%d", releases));
@@ -557,9 +570,11 @@ public class MainActivity extends AppCompatActivity {
       report.put("paused", true);
     }
 
-    ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(this);
+    ActivityManager activityManager = (ActivityManager)
+        Objects.requireNonNull(getSystemService((ACTIVITY_SERVICE)));
+    ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(activityManager);
     report.put("availMem", memoryInfo.availMem);
-    boolean lowMemory = Heuristics.lowMemoryCheck(this);
+    boolean lowMemory = Heuristics.lowMemoryCheck(activityManager);
     if (lowMemory) {
       report.put("lowMemory", true);
     }
@@ -568,12 +583,26 @@ public class MainActivity extends AppCompatActivity {
     }
     report.put("nativeAllocatedByTest", nativeAllocatedByTest);
     report.put("serviceTotalMemory", BYTES_IN_MEGABYTE * serviceTotalMb);
-    report.put("oom_score", Heuristics.getOomScore(this));
+    report.put("oom_score", Heuristics.getOomScore(activityManager));
+
+    if (VERSION.SDK_INT >= VERSION_CODES.M) {
+      MemoryInfo debugMemoryInfo = Heuristics.getDebugMemoryInfo(activityManager)[0];
+      for (String key : SUMMARY_FIELDS) {
+        report.put(key, debugMemoryInfo.getMemoryStat(key));
+      }
+    }
 
     Map<String, Long> values = Heuristics.processMeminfo();
     for (Map.Entry<String, Long> pair : values.entrySet()) {
       String key = pair.getKey();
       if (MEMINFO_FIELDS.contains(key)) {
+        report.put(key, pair.getValue());
+      }
+    }
+
+    for (Map.Entry<String, Long> pair : Heuristics.processStatus(activityManager).entrySet()) {
+      String key = pair.getKey();
+      if (STATUS_FIELDS.contains(key)) {
         report.put(key, pair.getValue());
       }
     }
