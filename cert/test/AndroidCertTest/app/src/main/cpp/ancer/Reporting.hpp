@@ -23,6 +23,7 @@
 
 namespace ancer::reporting {
     struct Datum {
+        int issue_id;
         std::string suite_id;
         std::string operation_id;
         Timestamp timestamp;
@@ -32,6 +33,7 @@ namespace ancer::reporting {
     };
 
     JSON_WRITER(Datum) {
+        JSON_REQVAR(issue_id);
         JSON_REQVAR(suite_id);
         JSON_REQVAR(operation_id);
         JSON_REQVAR(timestamp);

@@ -82,8 +82,9 @@ class Datum(object):
     """Datum maps to the datum entries in the report JSON file
     """
 
-    def __init__(self, suite_id: str, operation_id: str, thread_id: str,
+    def __init__(self, issue_id:int, suite_id: str, operation_id: str, thread_id: str,
                  cpu_id: int, timestamp: int, custom: dict):
+        self.issue_id = issue_id
         self.suite_id = suite_id
         self.operation_id = operation_id
         self.thread_id = thread_id
@@ -104,6 +105,7 @@ class Datum(object):
 
     def to_json(self) -> Dict:
         return {
+            "issue_id": self.issue_id,
             "suite_id": self.suite_id,
             "operation_id": self.operation_id,
             "thread_id": self.thread_id,
