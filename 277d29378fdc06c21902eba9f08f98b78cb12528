@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7279bab4_e5a05d72",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/BaseOperation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-12-19T21:35:05Z",
+      "side": 0,
+      "message": "NOTE: This file was not indented per the guideline\u0027s 2-space indent; since I edited it, I also applied the whitespace update.",
+      "revId": "277d29378fdc06c21902eba9f08f98b78cb12528",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
