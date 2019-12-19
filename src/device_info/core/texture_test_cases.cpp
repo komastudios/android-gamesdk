@@ -155,6 +155,9 @@ TextureTestCase* getCompressedTextureTestCase(GLenum internalformat) {
   assert(green32_dxt5_bc3_expected_rgba_len == expected_rgba_size);
   assert(green32_pvrtci_2bpp_RGB_expected_rgba_len == expected_rgba_size);
   assert(green32_pvrtci_4bpp_RGB_expected_rgba_len == expected_rgba_size);
+  // expected_rgba_size could be seen as unused when compiled in opt mode.
+  // Consider [[maybe_unused]] once C++17 is supported everywhere
+  (void)(expected_rgba_size);
 
   for (size_t i = 0; i < allCompressedTextureTestCasesCount; ++i) {
     if (allCompressedTextureTestCases[i].internalformat == internalformat) {
