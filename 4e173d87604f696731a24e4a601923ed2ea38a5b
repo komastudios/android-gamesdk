@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "68b479e5_9b5a0888",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/build.gradle",
+        "patchSetId": 5
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-12-19T11:56:31Z",
+      "side": 1,
+      "message": "Do we need this comment?",
+      "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3f65fee4_ac15a4bc",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/build.gradle",
+        "patchSetId": 5
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-12-19T11:56:31Z",
+      "side": 1,
+      "message": "Remove commented dependencies if unused",
+      "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "23d7565b_2861c695",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/main/java/com/google/tfmonitor/AnnotationsFragment.kt",
+        "patchSetId": 5
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-12-19T11:56:31Z",
+      "side": 1,
+      "message": "Why some classes have javadoc style comments, and others don\u0027t?",
+      "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eefc8e14_47141ad4",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/test/java/com/google/tfmonitor/ExampleUnitTest.kt",
+        "patchSetId": 5
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2019-12-19T11:56:31Z",
+      "side": 1,
+      "message": "If it\u0027s just an example let\u0027s remove it for now",
+      "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
