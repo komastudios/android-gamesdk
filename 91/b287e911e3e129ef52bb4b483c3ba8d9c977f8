@@ -1,0 +1,13 @@
+Open-Source-Licensing+1: Lint 🤖 <android-build-prod-ayeaye@system.gserviceaccount.com>
+Verified+1: Shamyl Zakariya <shamyl@google.com>
+Code-Review+1: Shamyl Zakariya <shamyl@google.com>
+Code-Review+1: Diego Dagum <dagum@google.com>
+Code-Review+1: Justin Loudermilk <loudermilk@google.com>
+Code-Review+2: Jeremy Newton-Smith <jeremyns@google.com>
+Autosubmit+1: Jeremy Newton-Smith <jeremyns@google.com>
+Presubmit-Verified+1: Treehugger Robot <treehugger-gerrit@google.com>
+Submitted-by: Treehugger Robot <treehugger-gerrit@google.com>
+Submitted-at: Thu, 19 Dec 2019 15:42:31 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1194412
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
