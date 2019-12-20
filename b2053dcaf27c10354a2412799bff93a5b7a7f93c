@@ -19,6 +19,40 @@
     },
     {
       "key": {
+        "uuid": "c7dbf0b2_fa4a8924",
+        "filename": "cert/test/reporting/lib/graphers/file_performance_suite_handler.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-20T19:16:19Z",
+      "side": 1,
+      "message": "(minor) whitespace in lines 43 (this one), 73 and 109",
+      "revId": "b2053dcaf27c10354a2412799bff93a5b7a7f93c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1e2cacd2_eb7f3c73",
+        "filename": "cert/test/reporting/lib/graphers/memory_access_suite_handler.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-20T19:16:19Z",
+      "side": 1,
+      "message": "Whitespace in lines 83 (this one), 129 and 137",
+      "revId": "b2053dcaf27c10354a2412799bff93a5b7a7f93c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2cf99675_018582a6",
         "filename": "cert/test/reporting/lib/graphers/memory_access_suite_handler.py",
         "patchSetId": 2
