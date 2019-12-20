@@ -159,9 +159,11 @@ public class MainActivity extends AppCompatActivity {
 
             setIsRunningTest(false);
         } else if (!handleGameLoopLaunch()) {
-            openReportLog();
-            if (_configuration.isAutoRun()) {
-                startAutoRun();
+            if (!handleCustomLaunch()) {
+                openReportLog();
+                if (_configuration.isAutoRun()) {
+                    startAutoRun();
+                }
             }
         }
     }
@@ -266,6 +268,22 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
             finish();
         }
+    }
+
+    private boolean handleCustomLaunch() {
+        Intent launchIntent = getIntent();
+        if ("android.intent.action.ACTION_RUN".equals(launchIntent.getAction())) {
+            String testName = launchIntent.getDataString();
+            // find the first test with this name
+            for (int i = 0; i < _configuration.getStressTests().length; i++) {
+                if (_configuration.getStressTests()[i].getName().equals(testName)) {
+                    _currentStressTestIndex = i;
+                    runCurrentTest();
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private boolean handleGameLoopLaunch() {
