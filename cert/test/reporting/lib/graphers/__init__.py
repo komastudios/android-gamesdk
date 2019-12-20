@@ -15,6 +15,7 @@
 #
 
 from .affinity_test_suite_handler import AffinityTestSuiteHandler
+from .buffer_storage_suite_handler import BufferStorageSuiteHandler
 from .half_float_precision import HalfFloatPrecisionSuiteHandler
 from .memory_allocation_suite_handler import MemoryAllocationSuiteHandler
 from .marching_cubes_suite_handler import MarchingCubesSuiteHandler
@@ -23,7 +24,7 @@ from .mprotect_suite_handler import MProtectSuiteHandler
 List containing all enabled handlers to render charts.
 """
 HANDLERS = [
-    AffinityTestSuiteHandler, HalfFloatPrecisionSuiteHandler,
-    MemoryAllocationSuiteHandler, MarchingCubesSuiteHandler,
-    MProtectSuiteHandler
+    AffinityTestSuiteHandler, BufferStorageSuiteHandler,
+    HalfFloatPrecisionSuiteHandler, MemoryAllocationSuiteHandler,
+    MarchingCubesSuiteHandler, MProtectSuiteHandler
 ]
