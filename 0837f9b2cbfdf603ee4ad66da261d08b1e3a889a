@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "88122b98_8b6601d1",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/BufferStorageGLES3Operation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-12-20T19:41:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da193e05_7645362b",
+      "revId": "0837f9b2cbfdf603ee4ad66da261d08b1e3a889a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "86510e7d_3ed1e6a2",
         "filename": "cert/test/AndroidCertTest/build.gradle",
         "patchSetId": 3
@@ -102,6 +120,24 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "9c563f1c_e6d1190d",
+      "revId": "0837f9b2cbfdf603ee4ad66da261d08b1e3a889a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2040cd2d_8265be52",
+        "filename": "cert/test/AndroidCertTest/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-12-20T19:41:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5c286435_992e5a6f",
       "revId": "0837f9b2cbfdf603ee4ad66da261d08b1e3a889a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
