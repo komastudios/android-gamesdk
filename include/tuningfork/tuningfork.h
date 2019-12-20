@@ -108,7 +108,8 @@ enum TFErrorCode {
 };
 
 /**
- * @defgroup TFCache Optional persistent cache object.
+ * @defgroup TFCache Tuning Fork cache utilities
+ * Optional persistent cache object to use with Tuning Fork.
  * @{
  */
 
