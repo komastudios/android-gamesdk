@@ -16,6 +16,24 @@
       "revId": "5ebc926c25fe15a8661a0a93e576ae280c5d2d53",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9d9361c1_f46feffa",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/gamesdk/gamecert/operationrunner/MainActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 273,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-12-20T21:32:01Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "700f7636_544cd528",
+      "revId": "5ebc926c25fe15a8661a0a93e576ae280c5d2d53",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
