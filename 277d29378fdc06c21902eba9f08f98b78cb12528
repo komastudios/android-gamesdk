@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "d44ed45b_ab5796ee",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/GLHelpers.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-12-20T19:06:49Z",
+      "side": 0,
+      "message": "Ack - I think it\u0027s FINE if when editing a file which isn\u0027t formatted to spec, we apply the formatting.",
+      "parentUuid": "d85323ca_05b0fcfb",
+      "revId": "277d29378fdc06c21902eba9f08f98b78cb12528",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b18383ec_722de477",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/GLHelpers.hpp",
         "patchSetId": 3
@@ -30,6 +48,24 @@
       "writtenOn": "2019-12-20T00:15:49Z",
       "side": 0,
       "message": "I\u0027m sorry. I just happened to press the wrong shortcut and got this entire file formatted as Google expects. Please go straight to the bottom of this file where the real additive change I made is (function IsExtensionSupported).",
+      "revId": "277d29378fdc06c21902eba9f08f98b78cb12528",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "06763d05_56e885d7",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/GLHelpers.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-12-20T19:06:49Z",
+      "side": 0,
+      "message": "Ack",
+      "parentUuid": "b18383ec_722de477",
       "revId": "277d29378fdc06c21902eba9f08f98b78cb12528",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
