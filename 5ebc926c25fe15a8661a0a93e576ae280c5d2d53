@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "700f7636_544cd528",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/gamesdk/gamecert/operationrunner/MainActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 273,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-20T20:54:32Z",
+      "side": 1,
+      "message": "👏👏👏👏👏!",
+      "revId": "5ebc926c25fe15a8661a0a93e576ae280c5d2d53",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
