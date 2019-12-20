@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "95fbbc24_e0785f33",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/BufferStorageGLES3Operation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-20T19:20:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6960d283_8b3e150c",
+      "revId": "0837f9b2cbfdf603ee4ad66da261d08b1e3a889a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "86510e7d_3ed1e6a2",
         "filename": "cert/test/AndroidCertTest/build.gradle",
         "patchSetId": 3
@@ -30,6 +48,24 @@
       "writtenOn": "2019-12-20T19:06:49Z",
       "side": 1,
       "message": "Whitespace!",
+      "revId": "0837f9b2cbfdf603ee4ad66da261d08b1e3a889a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9c563f1c_e6d1190d",
+        "filename": "cert/test/AndroidCertTest/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2019-12-20T19:20:15Z",
+      "side": 1,
+      "message": "\"Me too, Brutus\" (Julius Caesar).\nFixing ASAP.",
+      "parentUuid": "86510e7d_3ed1e6a2",
       "revId": "0837f9b2cbfdf603ee4ad66da261d08b1e3a889a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
