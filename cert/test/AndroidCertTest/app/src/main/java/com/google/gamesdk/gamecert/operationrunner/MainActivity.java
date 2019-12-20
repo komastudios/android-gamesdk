@@ -280,6 +280,26 @@ public class MainActivity extends AppCompatActivity {
         return "com.google.intent.action.TEST_LOOP".equals(launchIntent.getAction());
     }
 
+    private boolean isDirectLaunch() {
+        Intent launchIntent = getIntent();
+        return "android.intent.action.ACTION_RUN".equals(launchIntent.getAction()) &&
+            !TextUtils.isEmpty(launchIntent.getDataString());
+    }
+
+    private void handleDirectLaunch() {
+        Intent launchIntent = getIntent();
+        if ("android.intent.action.ACTION_RUN".equals(launchIntent.getAction())) {
+            String testName = launchIntent.getDataString();
+            // find the first test with this name
+            for (int i = 0; i < _configuration.getStressTests().length; i++) {
+                if (_configuration.getStressTests()[i].getName().equals(testName)) {
+                    _currentStressTestIndex = i;
+                    runCurrentTest();
+                }
+            }
+        }
+    }
+
     private void handleGameLoopLaunch() {
         Log.i(TAG, "launched via TEST_LOOP game loop mode");
 
@@ -321,8 +341,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleInteractiveLaunch() {
         openReportLog();
-        if (_configuration.isAutoRun()) {
-            startAutoRun();
+        if (isDirectLaunch()) {
+            handleDirectLaunch();
+        } else {
+            if (_configuration.isAutoRun()) {
+                startAutoRun();
+            }
         }
     }
 
