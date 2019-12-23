@@ -28,6 +28,7 @@ from pathlib import Path
 from lib.build import build_apk, APP_ID
 from lib.common import *
 from lib.report import *
+from lib.systrace import LocalSystrace
 from lib.devicefarm import run_on_farm_and_collect_reports
 import lib.graphing
 import lib.tasks_runner
@@ -42,53 +43,6 @@ class MissingPropertyError(Error):
 
     def __init__(self, message):
         self.message = message
-
-
-# ------------------------------------------------------------------------------
-
-
-class LocalSystrace(object):
-
-    def __init__(self, device_id: str, dst_file: Path, categories: List[str]):
-        """Start systrace on a device, blocks until systrace is ready"""
-        self._trace_file = dst_file
-
-        cmd = [
-            "python2",
-            os.path.expandvars(
-                "$ANDROID_HOME/platform-tools/systrace/systrace.py"),
-            "-e",
-            device_id,
-            "-a",
-            APP_ID,
-            "-o",
-            str(dst_file),
-        ] + categories
-
-        self.process = subprocess.Popen(cmd,
-                                        stdout=subprocess.PIPE,
-                                        stdin=subprocess.PIPE,
-                                        shell=False)
-
-        # TODO(shamyl@gmail.com): Find a way to capture "Starting
-        # tracing (stop with enter)"
-        # attempting to run the loop below blocks on the first call to
-        # readline()
-        # while True:
-        #     line = self.process.stdout.readline().decode("utf-8")
-        #     if "stop with enter" in line:
-        #         break
-
-        time.sleep(4)
-
-    def finish(self):
-        # systrace ends when it receives an "enter" input
-        print("LocalSystrace::finish - Stopping systrace.py...")
-        self.process.stdin.write(b"\n")
-        self.process.stdin.close()
-        self.process.wait()
-        print("LocalSystrace::finish - done")
-        return self._trace_file
 
 
 # ------------------------------------------------------------------------------

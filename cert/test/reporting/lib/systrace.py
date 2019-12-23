@@ -15,12 +15,25 @@
 #
 
 import json
+import os
 import re
+import subprocess
+import time
 
 from pathlib import Path
 from typing import Dict, List, Tuple
 
 from bs4 import BeautifulSoup
+
+from lib.build import APP_ID
+
+# ------------------------------------------------------------------------------
+SYSTRACE_LINE_CPU_NUMBER_REGEXP = re.compile(r'(\[\d+\])')
+SYSTRACE_LINE_TIMESTAMP_REGEXP = re.compile(r'(\d+\.?\d*:)')
+CLOCK_SYNC_MARKER = "ancer::clock_sync"
+CLOCK_SYNC_ISSUE_ID_REGEXP = re.compile(r'\(([0-9]+)\)')
+
+# ------------------------------------------------------------------------------
 
 
 def trim_to_trace(file_data):
@@ -37,9 +50,7 @@ def trim_to_trace(file_data):
     return file_data[start_pos:end_pos]
 
 
-SYSTRACE_LINE_TIMESTAMP_REGEXP = re.compile(r'(\d+\.?\d*:)')
-
-def get_systrace_line_timestamp_ns(line:str)->float:
+def get_systrace_line_timestamp_ns(line: str) -> float:
     match = SYSTRACE_LINE_TIMESTAMP_REGEXP.search(line)
     if not match.group():
         print(f"Unable to find systrace timestamp in line \"{line}\"")
@@ -48,68 +59,38 @@ def get_systrace_line_timestamp_ns(line:str)->float:
     return float(match.group()[:-1]) * 1e9
 
 
-def find_timestamp_offset(lines: List[str], trace_events: Dict) -> int:
-    # first get our clock sync data
-    clock_sync_marker_line = None
+def get_ancer_clocksync_offset_ns(line: str) -> int:
+    """Given an ancer::clock_sync line, return the clock skew
+    So given the line:
+    <...>-19979 (-----) [000] ...1 23495.016046: tracing_mark_write: C|19865|ancer::clock_sync(417)|23495016024390
+    This would return -21610 (nanoseconds)
+    Returns:
+        Nanoseconds of clock skew between the systrace clock and the
+        clock used by ancer
+    """
+
+    # get the systrace timestamp for our clock_sync line
+    st_timestamp_ns = get_systrace_line_timestamp_ns(line)
+
+    # get the reference timestamp value from this line - it's the value after |
+    last_pipe_pos = line.rfind('|')
+    ref_timestamp = line[last_pipe_pos + 1:]
+    ref_timestamp_ns = int(ref_timestamp)
+
+    skew = ref_timestamp_ns - st_timestamp_ns
+    return skew
+
+
+def find_timestamp_offset(lines: List[str]) -> Tuple[int, int]:
     for line in lines:
-        if "trace_event_clock_sync:" in line:
-            clock_sync_marker_line = line
-            break
+        if CLOCK_SYNC_MARKER in line:
+            return get_ancer_clocksync_offset_ns(line)
 
-    if not clock_sync_marker_line:
-        print("Couldn't find a trace_event_clock_sync: entry in systrace")
-        return 0
+    print(f"Couldn't find {CLOCK_SYNC_MARKER} entry in systrace")
+    return None
 
-    # get the systrace timestamp for the FIRST systrace line
-    first_st_timestamp_ns = get_systrace_line_timestamp_ns(lines[0])
-    if first_st_timestamp_ns == 0:
-        return 0
 
-    # get the systrace timestamp for the clock sync marker line
-    st_timestamp_ns = get_systrace_line_timestamp_ns(clock_sync_marker_line)
-    if st_timestamp_ns == 0:
-        return 0
-
-    if "parent_ts=" in clock_sync_marker_line:
-        # parse the marker to get the offset
-        # marker looks something like:
-        # <...>-26895 (-----) [001] ...1 518315.218945: tracing_mark_write: trace_event_clock_sync: parent_ts=516807.750000
-        # first extract the parent_ts value and convert from
-        # seconds to nanoseconds
-        parent_ts = clock_sync_marker_line[clock_sync_marker_line.
-                                           rfind("parent_ts"):].strip()
-        parent_ts_ns = float(parent_ts.split("=")[1]) * 1e9
-
-        # get the offset
-        timestamp_offset_ns = int(parent_ts_ns) - int(st_timestamp_ns)
-        return timestamp_offset_ns
-
-    elif "name=" in clock_sync_marker_line:
-        # some systraces have a json block with the timestamp in it (traceEvents)
-        # attempt to find the issue_ts with matching sync id
-        # TODO(shamyl@google.com): Work out how the skew is computed; see
-        # https://github.com/JetBrains/android/blob/master/profilers/src/com/android/tools/profilers/cpu/atrace/AtraceParser.java#L514
-        # https://source.chromium.org/chromium/chromium/src/+/master:third_party/catapult/common/py_trace_event/py_trace_event/trace_event.py;l=113?q=issue_ts%20f:%5C.py&ss=chromium&originalUrl=https:%2F%2Fcs.chromium.org%2F
-
-        delta = first_st_timestamp_ns - st_timestamp_ns
-
-        clock_sync_name = clock_sync_marker_line[clock_sync_marker_line.
-                                                 rfind("name"):].strip()
-        clock_sync_token = clock_sync_name.split("=")[1]
-
-        ts = None
-        for event in trace_events["traceEvents"]:
-            if "name" in event and event["name"] == "clock_sync":
-                if "args" in event:
-                    if event["args"]["sync_id"] == clock_sync_token:
-                        ts = event["args"]["issue_ts"]
-                if not ts and "ts" in event:
-                    ts = event["ts"]
-
-        if ts:
-            ts *= 1e6 # from milli to nanos
-            print(f"ts: {ts} delta: {delta}")
-        return 0
+# ------------------------------------------------------------------------------
 
 
 def filter_systrace_to_interested_lines(systrace_file: Path,
@@ -118,9 +99,9 @@ def filter_systrace_to_interested_lines(systrace_file: Path,
                                        ) -> Tuple[int, List[str]]:
     """Trims contents of a systrace file to subset in which we are interested
 
-    Given the systrace HTML file `systrace_file`, extract the systrace entries 
+    Given the systrace HTML file `systrace_file`, extract the systrace entries
     which contain the specified keywords or match the specified regex pattern
-    Returns tuple of time offset in nanoseconds for systrace log timestamps to 
+    Returns tuple of time offset in nanoseconds for systrace log timestamps to
     the clock used in our json report logs, and the list of
     lines which match the query
 
@@ -129,7 +110,7 @@ def filter_systrace_to_interested_lines(systrace_file: Path,
         keywords: (optional) List of keywords to look for in the file
         pattern: (optional) Regex for finding lines we are interested in
 
-    Returns: 
+    Returns:
         A tuple of a time offset for clock alignment, and list of lines from the
         systrace html data which matched the search
 
@@ -168,7 +149,7 @@ def filter_systrace_to_interested_lines(systrace_file: Path,
                 pass
 
     # get our clock sync data
-    timestamp_offset_ns = find_timestamp_offset(trace_tag_lines, trace_events)
+    timestamp_offset_ns = find_timestamp_offset(trace_tag_lines)
 
     if keywords:
         # filter to lines which interest the caller
@@ -203,9 +184,7 @@ def convert_systrace_line_to_datum(systrace_line: str,
     # lines look something like:
     # <...>-26895 (-----) [001] .... 518315.221509: sched_process_exit: comm=atrace pid=26895 prio=120
     # surfaceflinger-664   (  664) [003] ...1 518317.537935: tracing_mark_write: B|664|handleMessageInvalidate
-    cpu_number_regexp = re.compile(r'(\[\d+\])')
-    timestamp_regexp = re.compile(r'(\d+\.?\d*:)')
-    timestamp_match = timestamp_regexp.search(systrace_line)
+    timestamp_match = SYSTRACE_LINE_TIMESTAMP_REGEXP.search(systrace_line)
     if not timestamp_match:
         raise "Can't find timestamp in systrace line"
 
@@ -218,7 +197,7 @@ def convert_systrace_line_to_datum(systrace_line: str,
 
     task_name = systrace_line[:pid_break].strip()
 
-    cpu_number_match = cpu_number_regexp.search(systrace_line)
+    cpu_number_match = SYSTRACE_LINE_CPU_NUMBER_REGEXP.search(systrace_line)
     if not cpu_number_match:
         raise "Can't find cpu_id in systrace line"
 
@@ -226,7 +205,7 @@ def convert_systrace_line_to_datum(systrace_line: str,
     suite_id = "systrace"
 
     systrace_timestamp = float(timestamp_match.group()[:-1]) * 1e9
-    timestamp = systrace_timestamp + timestamp_offset_ns
+    timestamp = systrace_timestamp - timestamp_offset_ns
     suite_id = "systrace"
     operation_id = task_name
     thread_id = pid  # TODO: PID != TID, so where does this belong
@@ -235,6 +214,7 @@ def convert_systrace_line_to_datum(systrace_line: str,
     value = message[message_break + 1:].strip()
 
     return {
+        "issue_id": -1,  # systrace markers don't have and issue_id
         "timestamp": int(timestamp),
         "suite_id": suite_id,
         "operation_id": operation_id,
@@ -245,3 +225,54 @@ def convert_systrace_line_to_datum(systrace_line: str,
             "unadjusted_systrace_timestamp": systrace_timestamp
         }
     }
+
+
+# ------------------------------------------------------------------------------
+
+
+class LocalSystrace(object):
+
+    def __init__(self, device_id: str, dst_file: Path, categories: List[str]):
+        """Start systrace on a device, blocks until systrace is ready"""
+        self._trace_file = dst_file
+
+        # run_command(f'adb shell "setprop debug.atrace.app_number 1"')
+        # run_command(f'adb shell "setprop debug.atrace.app_0 {APP_ID}"')
+
+        cmd = [
+            "python2",
+            os.path.expandvars(
+                "$ANDROID_HOME/platform-tools/systrace/systrace.py"),
+            "-e",
+            device_id,
+            "-a",
+            APP_ID,
+            "-o",
+            str(dst_file),
+        ] + categories
+
+        print(f"LocalSystrace::__init__ - Starting systrace for {APP_ID}")
+        self.process = subprocess.Popen(cmd,
+                                        stdout=subprocess.PIPE,
+                                        stdin=subprocess.PIPE,
+                                        shell=False)
+
+        # TODO(shamyl@gmail.com): Find a way to capture "Starting
+        # tracing (stop with enter)"
+        # attempting to run the loop below blocks on the first call to
+        # readline()
+        # while True:
+        #     line = self.process.stdout.readline().decode("utf-8")
+        #     if "stop with enter" in line:
+        #         break
+
+        time.sleep(10)
+
+    def finish(self):
+        # systrace ends when it receives an "enter" input
+        print(f"LocalSystrace::finish - Stopping systrace for {APP_ID}...")
+        self.process.stdin.write(b"\n")
+        self.process.stdin.close()
+        self.process.wait()
+        print("LocalSystrace::finish - done")
+        return self._trace_file

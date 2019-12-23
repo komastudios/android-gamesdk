@@ -140,13 +140,38 @@ void BaseOperation::OnGlContextResized(int width, int height) {
 
 //==============================================================================
 
+namespace {
+    std::atomic<int> _datum_issue_id = 0;
+
+    int GetNextDatumIssueId() {
+        return _datum_issue_id++;
+    }
+}
+
 void BaseOperation::ReportImpl(const Json& custom_payload) const {
     if ( GetMode() == Mode::DataGatherer ) {
+        auto datum_issue_id = GetNextDatumIssueId();
+        auto now = SteadyClock::now();
+
+        {
+            // write a clock-sync trace
+            // TODO(shamyl@google.com) If we can determine *when* sytrace begins
+            // writing its buffers, we can write just one clock sync marker; but until
+            // then, we'll emit a clock sync with each datum save (fortunately, traces
+            // are cheap)
+
+            auto clock_sync_name = std::string("ancer::clock_sync(") + std::to_string(datum_issue_id) + ")";
+            auto timestamp_ns =
+                    static_cast<int64_t>(now.time_since_epoch().count());
+            gamesdk::Trace::getInstance()->setCounter(clock_sync_name.c_str(), timestamp_ns);
+        }
+
         std::stringstream ss;
         ss << std::this_thread::get_id();
         auto t_id = ss.str();
 
         reporting::Datum datum;
+        datum.issue_id = datum_issue_id;
         datum.suite_id = _suite_id;
         datum.operation_id = _operation_id;
         datum.cpu_id = sched_getcpu();
