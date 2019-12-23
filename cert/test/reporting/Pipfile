@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 yapf = "*"
+pylint = "*"
 
 [packages]
 beautifulsoup4 = "==4.8.1"
@@ -26,7 +27,8 @@ PyYAML = "==5.1.2"
 six = "==1.13.0"
 soupsieve = "==1.9.5"
 yapf = "==0.28.0"
-markdown2 = "*"
+protobuf = "*"
+python-docx = "*"
 
 [requires]
 python_version = "3.7"

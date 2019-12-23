@@ -17,7 +17,6 @@
 #
 
 import argparse
-import glob
 import shutil
 import time
 import yaml
@@ -27,10 +26,11 @@ from pathlib import Path
 
 from lib.build import build_apk, APP_ID
 from lib.common import *
+from lib.graphing import setup_report_dir
 from lib.report import *
+from lib.summary_formatters import perform_summary_if_enabled
 from lib.systrace import LocalSystrace
 from lib.devicefarm import run_on_farm_and_collect_reports
-import lib.graphing
 import lib.tasks_runner
 
 
@@ -46,37 +46,6 @@ class MissingPropertyError(Error):
 
 
 # ------------------------------------------------------------------------------
-
-
-def dict_lookup(d: Dict, key_path: str, fallback: Any) -> Any:
-    """Look up a value (possibly deep) in a dict, safely, with fallback
-
-    Performs deep lookup of a value in a dict, e.g. "foo.bar.baz" would
-    return the value d["foo"]["bar"]["baz"] or the fallback if that path
-    isn't traversable.
-
-    Args:
-        d: The dict to lookup values from
-        key_path: A string in format "foo.bar.baz"
-        fallback: If not none, the value to return if the dict lookup fails
-
-    Raises:
-        MissingPropertyError if fallback is None and the key_path wasn't
-            resolvable
-
-    """
-    keys = key_path.split(".")
-    for i, kp in enumerate(keys):
-        if kp in d:
-            if i < len(keys) - 1:
-                d = d[kp]
-            else:
-                return d[kp]
-
-    if fallback is None:
-        raise MissingPropertyError(f"Key path \"{key_path}\" is required")
-
-    return fallback
 
 
 def unpack(s):
@@ -100,23 +69,6 @@ def get_systrace_config(recipe: Dict) -> (bool, List[str], List[str]):
     categories = dict_lookup(recipe, "systrace.categories", fallback=cats)
     categories = [] if categories == "" else categories.split(" ")
     return enabled, keywords, categories
-
-
-def get_summary_config(recipe: Dict) -> (bool, str):
-    """
-    Extracts, from the recipe, summary related arguments.
-    These are:
-
-    * enabled: a boolean telling whether a summary is enabled at all.
-    * fmt: string denoting the summary format (one member of
-        lib.graphing.DocumentFormat.HTML or lib.graphing.DocumentFormat.MARKDOWN
-        )
-    """
-    enabled = dict_lookup(recipe, "summary.enabled", fallback=False)
-    fmt = dict_lookup(recipe, "summary.format", fallback="md")
-    fmt = lib.graphing.DocumentFormat.from_extension(fmt)
-
-    return enabled, fmt
 
 
 def load_tasks(tasks_dict: List[Dict], task_ctors: Dict
@@ -308,20 +260,6 @@ def process_ftl_reports(
     return out_files
 
 
-def generate_report_summary(report_files_dir: Path,
-                            doc_fmt: str,
-                            figure_dpi=600) -> Path:
-    report_files = [
-        Path(f) for f in glob.glob(str(report_files_dir) + '/*.json')
-    ]
-
-    report_summary_file_name = f"summary_{str(report_files_dir.stem)}"
-    report_summary_file = report_files_dir.joinpath(report_summary_file_name)
-
-    lib.graphing.render_report_document(report_files, report_summary_file,
-                                        doc_fmt, figure_dpi)
-
-
 # ------------------------------------------------------------------------------
 
 
@@ -334,8 +272,6 @@ def run_local_deployment(recipe: Dict, apk: Path, out_dir: Path):
 
     systrace_enabled, systrace_keywords, systrace_categories = \
         get_systrace_config(recipe)
-
-    summary_enabled, summary_fmt = get_summary_config(recipe)
 
     # at present, preflight_tasks are only available for local deployment
     preflight_tasks, preflight_env = get_preflight_tasks(recipe)
@@ -372,8 +308,7 @@ def run_local_deployment(recipe: Dict, apk: Path, out_dir: Path):
         # run postflight tasks
         lib.tasks_runner.run(postflight_tasks, device_id, postflight_env)
 
-    if summary_enabled:
-        generate_report_summary(out_dir, summary_fmt)
+    perform_summary_if_enabled(recipe, out_dir)
 
 
 # ------------------------------------------------------------------------------
@@ -399,8 +334,6 @@ def run_ftl_deployment(recipe: Dict, apk: Path, out_dir: Path):
     systrace_enabled, systrace_keywords, systrace_categories = \
         get_systrace_config(recipe)
 
-    summary_enabled, summary_fmt = get_summary_config(recipe)
-
     report_files, systrace_files = run_on_farm_and_collect_reports(
         args_dict=args_dict,
         flags_dict=flags_dict,
@@ -412,8 +345,7 @@ def run_ftl_deployment(recipe: Dict, apk: Path, out_dir: Path):
     report_files = process_ftl_reports(out_dir, report_files, systrace_files,
                                        systrace_keywords)
 
-    if summary_enabled:
-        generate_report_summary(out_dir, summary_fmt)
+    perform_summary_if_enabled(recipe, out_dir)
 
 
 # ------------------------------------------------------------------------------
@@ -442,7 +374,7 @@ if __name__ == "__main__":
     else:
         prefix = Path(recipe_path).stem
 
-    out_dir = create_output_dir(prefix)
+    out_dir = setup_report_dir(prefix)
 
     # step one: build the APK
 
@@ -451,10 +383,12 @@ if __name__ == "__main__":
         release=dict_lookup(recipe, "build.release", fallback=False),
         custom_configuration=Path(custom_config) if custom_config else None)
 
-    if "local" in recipe["deployment"] and dict_lookup(
-            recipe, "deployment.local.enabled", fallback=True):
-        run_local_deployment(recipe, apk_path, out_dir)
+    deployment = recipe.get("deployment")
+    if deployment is not None:
+        if "local" in deployment and dict_lookup(
+                recipe, "deployment.local.enabled", fallback=True):
+            run_local_deployment(recipe, apk_path, out_dir)
 
-    if "ftl" in recipe["deployment"] and dict_lookup(
-            recipe, "deployment.ftl.enabled", fallback=True):
-        run_ftl_deployment(recipe, apk_path, out_dir)
+        if "ftl" in deployment and dict_lookup(
+                recipe, "deployment.ftl.enabled", fallback=True):
+            run_ftl_deployment(recipe, apk_path, out_dir)

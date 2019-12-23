@@ -101,6 +101,8 @@ class Datum(object):
 
     @classmethod
     def from_json(cls, data):
+        if not "issue_id" in data:
+            data["issue_id"] = -1
         return cls(**data)
 
     def to_json(self) -> Dict:

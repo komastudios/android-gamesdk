@@ -21,7 +21,8 @@ import markdown2
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-from lib.common import Error
+from lib.common import create_output_dir, Error, get_readable_utc, \
+    remove_files_with_extensions
 from lib.graphing_components import BuildInfo, Datum, Suite
 from lib.graphers.loader import create_suite_handler
 
@@ -36,6 +37,28 @@ class UnsupportedReportFormatError(Error):
 
     def __init__(self, message):
         self.message = message
+
+
+# -----------------------------------------------------------------------------
+
+
+def setup_report_dir(report_subdir: str) -> Path:
+    """
+    If non-existing, creates the output directory. If non-empty, it removes any
+    existing content from previous reports.
+
+    Args:
+        report_subdir: report sub-directory name.
+
+    Returns:
+        a Path for the report directory/
+    """
+    report_dir = create_output_dir(report_subdir)
+    # TODO(dagum): uncomment next lines when ready for final CL.
+    # remove_files_with_extensions(report_dir, [".json", ".csv", ".md", ".html"])
+    # remove_files_with_extensions(report_dir.joinpath("images"), [".png"])
+
+    return report_dir
 
 
 def load_suites(report_file) -> List[Suite]:
@@ -95,104 +118,3 @@ class DocumentFormat:
             return fmt
         raise UnsupportedReportFormatError(
             f'Unrecognized document format "{fmt}"')
-
-
-def render_report_document(report_files: List[Path], report_summary_file: Path,
-                           doc_fmt: str, dpi: int):
-    """Render a report (markdown, or HTML) of the report JSON data contained
-    in report_files
-    Args:
-        report_files: List of report JSON files
-        report_summary_file: Name of file to write summary Markdown or HTML to
-        dpi: DPI for saving figures
-    """
-    markdown_str = ""
-    suites_by_name = {}
-    all_suites = []
-    folder = report_summary_file.parent
-    image_idx = 0
-
-    def next_image_idx()->int:
-        nonlocal image_idx
-        r = image_idx
-        image_idx += 1
-        return r
-
-    for report_file in report_files:
-        suites = load_suites(report_file)
-        all_suites.extend(suites)
-        for suite in suites:
-            suites_by_name.setdefault(suite.name, []).append(suite)
-
-    for suite_name in suites_by_name:
-
-        # trim suites list to just those with a handler
-        suites = [s for s in suites_by_name[suite_name] if s.handler]
-
-        if suites:
-            markdown_str += f"\n# {suite_name}\n"
-
-            for suite in suites:
-                base_name = suite.file.stem
-                title = suite.identifier()
-                plot_file = folder.joinpath("images").joinpath(
-                    f"{base_name}_{next_image_idx()}.png")
-                summary = suite.handler.plot(plot_file, dpi)
-
-                markdown_str += f"\n### {title}\n"
-                markdown_str += f"\n![{title}]({str(plot_file.relative_to(folder))})\n"
-                if summary:
-                    markdown_str += "\n" + summary + "\n"
-
-        # check that all suites handler's are same class
-        if len(set([c.__class__ for c in suites])) == 1:
-            handler_class = suites[0].handler.__class__
-            if handler_class.can_render_summarization_plot(suites):
-
-                filename = f"summary_{next_image_idx()}.png"
-                plot_file = folder.joinpath("images").joinpath(filename)
-
-                summary = handler_class.summarization_plot(
-                    suites, plot_file, dpi)
-
-                markdown_str += f"\n\n## Summary for:\n{suite_name}\n"
-                markdown_str += f"\n![{title}]({str(plot_file.relative_to(folder))})\n"
-                if summary:
-                    markdown_str += "\n" + summary + "\n"
-                markdown_str += "\n---\n"
-
-            else:
-                print("Couldn't find a common class to render summary"\
-                    f" for suites of name {suite_name}")
-
-    # now attempt to generate cross-suite summarizations by finding
-    # all the suites which use the same SuiteHandler
-    suites_by_handler_class = {}
-    for s in [s for s in all_suites if s.handler]:
-        suites_by_handler_class.setdefault(s.handler.__class__, []).append(s)
-
-    for handler_class in suites_by_handler_class:
-        suites = suites_by_handler_class[handler_class]
-        if handler_class.can_render_summarization_plot(suites):
-            filename = f"meta_summary_{next_image_idx()}.png"
-            plot_file = folder.joinpath("images").joinpath(filename)
-
-            summary = handler_class.summarization_plot(suites, plot_file, dpi)
-
-            markdown_str += f"\n\n## Meta Summary\n"
-            markdown_str += f"\n![{title}]({str(plot_file.relative_to(folder))})\n"
-            if summary:
-                markdown_str += "\n" + summary + "\n"
-            markdown_str += "\n---\n"
-
-    # ensure the correct document extension
-    if report_summary_file.suffix != DocumentFormat.extension(doc_fmt):
-        report_summary_file = report_summary_file.parent.joinpath(
-            report_summary_file.stem + DocumentFormat.extension(doc_fmt))
-
-    # save the markdown string
-    with open(report_summary_file, "w") as fp:
-        if doc_fmt == DocumentFormat.HTML:
-            fp.write(markdown2.markdown(markdown_str))
-        elif doc_fmt == DocumentFormat.MARKDOWN:
-            fp.write(markdown_str)

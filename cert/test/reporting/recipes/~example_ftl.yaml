@@ -1,6 +1,6 @@
 build:
   clean: false
-  configuration: recipes/configurations/cpu_stress_cpp.json
+  configuration: recipes/configurations/mprotect.json
 
 systrace:
   enabled: false
