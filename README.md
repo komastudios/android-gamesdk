@@ -1,4 +1,4 @@
-Android Game SDK
+Android Games SDK
 
 ## Build the Game SDK
 
