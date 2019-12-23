@@ -30,8 +30,9 @@ using namespace ancer;
 //==============================================================================
 
 namespace {
-    constexpr Log::Tag TAG{"operations_load"};
+constexpr Log::Tag TAG{"operations_load"};
 
+<<<<<<< HEAD   (a8127d Implemented first pass of I/O & Memory reports.)
     void* OpenSelfLibrary(void) {
         // TODO: Have CMake generate this.
         constexpr const char* this_lib_name = "libnative-lib.so";
@@ -42,24 +43,92 @@ namespace {
         return lib;
     }
 }
+=======
+void* OpenSelfLibrary(void) {
+  // TODO: Have CMake generate this.
+  constexpr const char* this_lib_name = "libnative-lib.so";
+  void* lib = dlopen(this_lib_name, RTLD_LAZY);
+  if (lib == nullptr) {
+    FatalError(TAG, "Failed to load self library");
+  }
+  return lib;
+}
+} // anonymous namespace
+>>>>>>> BRANCH (ec49da Merge "Added GLES3 BufferStorageEXT operation")
 
 //==============================================================================
 
 std::shared_ptr<BaseOperation> BaseOperation::Load(
+<<<<<<< HEAD   (a8127d Implemented first pass of I/O & Memory reports.)
         const std::string& operation_id,
         const std::string& suite_id,
         const std::string& suite_description,
         Mode mode) {
     void* lib = OpenSelfLibrary();
+=======
+    const std::string& operation_id,
+    const std::string& suite_id,
+    Mode mode) {
+  void* lib = OpenSelfLibrary();
+>>>>>>> BRANCH (ec49da Merge "Added GLES3 BufferStorageEXT operation")
 
+<<<<<<< HEAD   (a8127d Implemented first pass of I/O & Memory reports.)
     std::string fn_name = operation_id;
     switch ( mode ) {
     case Mode::DataGatherer:fn_name += "_CreateDataGatherer";
         break;
     case Mode::Stressor:fn_name += "_CreateStressor";
         break;
+=======
+  std::string fn_name = operation_id;
+  switch (mode) {
+    case Mode::DataGatherer:fn_name += "_CreateDataGatherer";
+      break;
+    case Mode::Stressor:fn_name += "_CreateStressor";
+      break;
+  }
+
+  using FactoryFunction = void (*)(std::shared_ptr<BaseOperation>&);
+  auto fn = (FactoryFunction) (dlsym(lib, fn_name.c_str()));
+  if (fn) {
+    std::shared_ptr<BaseOperation> op;
+    fn(op);
+    op->_operation_id = operation_id;
+    op->_suite_id = suite_id;
+    op->_mode = mode;
+    return op;
+  } else {
+    FatalError(
+        TAG, "Unable to dlsym() operation named \"" + fn_name +
+            "\" - did you remember to EXPORT_ANCER_OPERATION() it?");
+  }
+
+  return nullptr;
+}
+
+BaseOperation::~BaseOperation() = default;
+
+void BaseOperation::Start() {
+  _start_time = SteadyClock::now();
+}
+
+void BaseOperation::Draw(double delta_seconds) {
+  if (!IsStopped()) {
+    const auto now = SteadyClock::now();
+
+    // determine if it's time to invoke the heartbeat callback
+    if (_heartbeat_timestamp == Timestamp{}) _heartbeat_timestamp = now;
+    if (_heartbeat_period > Duration::zero()) {
+      auto elapsed = now - _heartbeat_timestamp;
+      if (elapsed > _heartbeat_period) {
+        OnHeartbeat(elapsed);
+        // Reset timestamp to after the above finishes
+        _heartbeat_timestamp = SteadyClock::now();
+      }
+>>>>>>> BRANCH (ec49da Merge "Added GLES3 BufferStorageEXT operation")
     }
 
+<<<<<<< HEAD   (a8127d Implemented first pass of I/O & Memory reports.)
     using FactoryFunction = void (*)(std::shared_ptr<BaseOperation>&);
     auto fn = (FactoryFunction)(dlsym(lib, fn_name.c_str()));
     if ( fn ) {
@@ -74,13 +143,74 @@ std::shared_ptr<BaseOperation> BaseOperation::Load(
         FatalError(
                 TAG, "Unable to dlsym() operation named \"" + fn_name +
                         "\" - did you remember to EXPORT_ANCER_OPERATION() it?");
+=======
+    // if running in test mode, check if we've run out our clock
+    if (GetMode() == Mode::DataGatherer) {
+      auto duration = GetDuration();
+      if ((duration > Duration::zero()) &&
+          (now - _start_time > duration)) {
+        Stop();
+      }
     }
-
-    return nullptr;
+  }
 }
 
-//==============================================================================
+void BaseOperation::OnGlContextResized(int width, int height) {
+  _width = width;
+  _height = height;
+}
 
+namespace {
+  std::atomic<int> _datum_issue_id = 0;
+
+  int GetNextDatumIssueId() {
+    return _datum_issue_id++;
+  }
+}
+
+void BaseOperation::ReportImpl(const Json& custom_payload) const {
+  if (GetMode() == Mode::DataGatherer) {
+
+    auto datum_issue_id = GetNextDatumIssueId();
+    auto now = SteadyClock::now();
+
+    {
+      // write a clock-sync trace
+      // TODO(shamyl@google.com) If we can determine *when* sytrace begins
+      // writing its buffers, we can write just one clock sync marker; but until
+      // then, we'll emit a clock sync with each datum save (fortunately, traces
+      // are cheap)
+
+      auto clock_sync_name = std::string("ancer::clock_sync(") + std::to_string(datum_issue_id) + ")";
+      auto timestamp_ns =
+          static_cast<int64_t>(now.time_since_epoch().count());
+      gamesdk::Trace::getInstance()->setCounter(clock_sync_name.c_str(), timestamp_ns);
+>>>>>>> BRANCH (ec49da Merge "Added GLES3 BufferStorageEXT operation")
+    }
+
+<<<<<<< HEAD   (a8127d Implemented first pass of I/O & Memory reports.)
+    return nullptr;
+}
+=======
+    std::stringstream ss;
+    ss << std::this_thread::get_id();
+    auto t_id = ss.str();
+>>>>>>> BRANCH (ec49da Merge "Added GLES3 BufferStorageEXT operation")
+
+<<<<<<< HEAD   (a8127d Implemented first pass of I/O & Memory reports.)
+//==============================================================================
+=======
+    reporting::Datum datum;
+    datum.issue_id = datum_issue_id;
+    datum.suite_id = _suite_id;
+    datum.operation_id = _operation_id;
+    datum.cpu_id = sched_getcpu();
+    datum.thread_id = t_id;
+    datum.timestamp = now;
+    datum.custom = custom_payload;
+>>>>>>> BRANCH (ec49da Merge "Added GLES3 BufferStorageEXT operation")
+
+<<<<<<< HEAD   (a8127d Implemented first pass of I/O & Memory reports.)
 BaseOperation::~BaseOperation() = default;
 
 //==============================================================================
@@ -157,3 +287,9 @@ void BaseOperation::ReportImpl(const Json& custom_payload) const {
         reporting::WriteToReportLog(datum);
     }
 }
+=======
+    reporting::WriteToReportLog(datum);
+  }
+}
+} // namespace ancer
+>>>>>>> BRANCH (ec49da Merge "Added GLES3 BufferStorageEXT operation")

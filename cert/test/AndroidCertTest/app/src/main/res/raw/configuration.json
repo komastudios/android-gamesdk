@@ -10,6 +10,17 @@
   "stress_tests": [
     {
       "enabled": true,
+      "name": "GLES3 Buffer Storage",
+      "description": "Tests if OpenGL ES Buffer Storage is available",
+      "duration": "100ms",
+      "data_gatherer": {
+        "id": "BufferStorageGLES3Operation",
+        "configuration": {}
+      },
+      "stressors": []
+    },
+    {
+      "enabled": true,
       "name": "Marching Cubes",
       "description": "Tests marching cubes algorithm in a lot of permutations",
       "duration": "25m",
