@@ -12,3 +12,4 @@ deployment:
 summary:
   enabled: true
   format: md
+  publish: true
