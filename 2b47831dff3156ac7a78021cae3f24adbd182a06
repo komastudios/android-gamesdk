@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ee8c9bb9_ef016da3",
+        "filename": "cert/test/reporting/run.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 385,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2019-12-26T21:31:23Z",
+      "side": 1,
+      "message": "if \"deployment\" is not in recipe, this will throw KeyError instead of returning None. I\u0027d replace this with a recipe.get(\"deployment\")",
+      "revId": "2b47831dff3156ac7a78021cae3f24adbd182a06",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
