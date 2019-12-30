@@ -43,11 +43,13 @@
  *  Keys 64000-65535 are reserved
  */
 enum InstrumentKeys {
-    TFTICK_USERDEFINED_BASE = 0,
-    TFTICK_SYSCPU = 64000, /// Frame time between ends of glSwapBuffers calls or Vulkan equivalent.
-    TFTICK_SYSGPU = 64001, /// Frame time between Swappy sync fences.
-    TFTICK_SWAPPY_WAIT_TIME = 64002, /// The time Swappy waits on sync fence.
-    TFTICK_SWAPPY_SWAP_TIME = 64003 /// Time for call of glSwapBuffers or Vulkan equivalent.
+  TFTICK_USERDEFINED_BASE = 0,
+  TFTICK_SYSCPU = 64000,  ///< Frame time between ends of glSwapBuffers calls or
+                          ///< Vulkan equivalent.
+  TFTICK_SYSGPU = 64001,  ///< Frame time between Swappy sync fences.
+  TFTICK_SWAPPY_WAIT_TIME = 64002,  ///< The time Swappy waits on sync fence.
+  TFTICK_SWAPPY_SWAP_TIME =
+      64003  ///< Time for call of glSwapBuffers or Vulkan equivalent.
 };
 
 /**
@@ -74,37 +76,55 @@ typedef uint64_t TFDuration;
  * @brief All the error codes that can be returned by Tuning Fork functions.
  */
 enum TFErrorCode {
-    TFERROR_OK = 0, /// No error
-    TFERROR_NO_SETTINGS = 1, /// No tuningfork_settings.bin found in assets/tuningfork.
-    TFERROR_NO_SWAPPY = 2, /// Not able to find the required Swappy functions.
-    TFERROR_INVALID_DEFAULT_FIDELITY_PARAMS = 3, /// fpDefaultFileNum is out of range.
-    TFERROR_NO_FIDELITY_PARAMS = 4, /// No fidelity parameters found at initialization.
-    TFERROR_TUNINGFORK_NOT_INITIALIZED = 5, /// A call was made before Tuning Fork was initialized.
-    TFERROR_INVALID_ANNOTATION = 6, /// Invalid parameter to TuningFork_setCurrentAnnotation.
-    TFERROR_INVALID_INSTRUMENT_KEY = 7, /// Invalid instrument key passed to a tick function.
-    TFERROR_INVALID_TRACE_HANDLE = 8, /// Invalid handle passed to TuningFork_endTrace
-    TFERROR_TIMEOUT = 9, /// Timeout in request for fidelity parameters.
-    TFERROR_BAD_PARAMETER = 10, /// Generic bad parameter.
-    TFERROR_B64_ENCODE_FAILED = 11, /// Could not encode a protobuf.
-    TFERROR_JNI_BAD_VERSION = 12, /// Jni error - obsolete
-    TFERROR_JNI_BAD_THREAD = 13, /// Jni error - obsolete
-    TFERROR_JNI_BAD_ENV = 14, /// Jni error - obsolete
-    TFERROR_JNI_EXCEPTION = 15, /// Jni error - an exception was thrown. See logcat output.
-    TFERROR_JNI_BAD_JVM = 16, /// Jni error - obsolete
-    TFERROR_NO_CLEARCUT = 17, /// Obsolete
-    TFERROR_NO_FIDELITY_PARAMS_IN_APK = 18, /// No dev_tuningfork_fidelityparams_#.bin found
-                                           ///  in assets/tuningfork.
-    TFERROR_COULDNT_SAVE_OR_DELETE_FPS = 19, /// Error calling TuningFork_saveOrDeleteFidelityParamsFile
-    TFERROR_PREVIOUS_UPLOAD_PENDING = 20, /// Can't upload since another request is pending.
-    TFERROR_UPLOAD_TOO_FREQUENT = 21, /// Too frequent calls to TuningFork_flush.
-    TFERROR_NO_SUCH_KEY = 22, /// No such key when accessing file cache.
-    TFERROR_BAD_FILE_OPERATION = 23, /// General file error.
-    TFERROR_BAD_SETTINGS = 24, /// Invalid tuningfork_settings.bin file.
-    TFERROR_ALREADY_INITIALIZED = 25, /// TuningFork_init was called more than once.
-    TFERROR_NO_SETTINGS_ANNOTATION_ENUM_SIZES = 26, /// Missing part of tuningfork_settings.bin.
-    TFERROR_DOWNLOAD_THREAD_ALREADY_STARTED = 27, /// TuningFork_startFidelityParamDownloadThread
-        /// was called more than once, or called when TuningFork_init has already started download.
-    TFERROR_PLATFORM_NOT_SUPPORTED = 28, /// Only used by Unity plugin.
+  TFERROR_OK = 0,  ///< No error
+  TFERROR_NO_SETTINGS =
+      1,  ///< No tuningfork_settings.bin found in assets/tuningfork.
+  TFERROR_NO_SWAPPY = 2,  ///< Not able to find the required Swappy functions.
+  TFERROR_INVALID_DEFAULT_FIDELITY_PARAMS =
+      3,  ///< `fpDefaultFileNum` is out of range.
+  TFERROR_NO_FIDELITY_PARAMS =
+      4,  ///< No fidelity parameters found at initialization.
+  TFERROR_TUNINGFORK_NOT_INITIALIZED =
+      5,  ///< A call was made before Tuning Fork was initialized.
+  TFERROR_INVALID_ANNOTATION =
+      6,  ///< Invalid parameter to `TuningFork_setCurrentAnnotation`.
+  TFERROR_INVALID_INSTRUMENT_KEY =
+      7,  ///< Invalid instrument key passed to a tick function.
+  TFERROR_INVALID_TRACE_HANDLE =
+      8,                ///< Invalid handle passed to `TuningFork_endTrace`.
+  TFERROR_TIMEOUT = 9,  ///< Timeout in request for fidelity parameters.
+  TFERROR_BAD_PARAMETER = 10,      ///< Generic bad parameter.
+  TFERROR_B64_ENCODE_FAILED = 11,  ///< Could not encode a protobuf.
+  TFERROR_JNI_BAD_VERSION = 12,    ///< Jni error - obsolete
+  TFERROR_JNI_BAD_THREAD = 13,     ///< Jni error - obsolete
+  TFERROR_JNI_BAD_ENV = 14,        ///< Jni error - obsolete
+  TFERROR_JNI_EXCEPTION =
+      15,  ///< Jni error - an exception was thrown. See logcat output.
+  TFERROR_JNI_BAD_JVM = 16,  ///< Jni error - obsolete
+  TFERROR_NO_CLEARCUT = 17,  ///< Obsolete
+  TFERROR_NO_FIDELITY_PARAMS_IN_APK =
+      18,  ///< No dev_tuningfork_fidelityparams_#.bin found in
+           ///< assets/tuningfork.
+  TFERROR_COULDNT_SAVE_OR_DELETE_FPS =
+      19,  ///< Error calling `TuningFork_saveOrDeleteFidelityParamsFile`.
+  TFERROR_PREVIOUS_UPLOAD_PENDING =
+      20,  ///< Can't upload since another request is pending.
+  TFERROR_UPLOAD_TOO_FREQUENT =
+      21,                    ///< Too frequent calls to `TuningFork_flush`.
+  TFERROR_NO_SUCH_KEY = 22,  ///< No such key when accessing file cache.
+  TFERROR_BAD_FILE_OPERATION = 23,  ///< General file error.
+  TFERROR_BAD_SETTINGS = 24,        ///< Invalid tuningfork_settings.bin file.
+  TFERROR_ALREADY_INITIALIZED =
+      25,  ///< TuningFork_init was called more than once.
+  TFERROR_NO_SETTINGS_ANNOTATION_ENUM_SIZES =
+      26,  ///< Missing part of tuningfork_settings.bin.
+  TFERROR_DOWNLOAD_THREAD_ALREADY_STARTED =
+      27,  ///< `TuningFork_startFidelityParamDownloadThread`
+           ///< was called more than once, or called when TuningFork_init has
+           ///< already started download.
+  TFERROR_PLATFORM_NOT_SUPPORTED =
+      28,  ///< The game or app is run on a platform not supporting Tuning fork.
+           ///< Only used by Unity plugin.
 };
 
 /**
