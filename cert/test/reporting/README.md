@@ -2,7 +2,7 @@
 
 This folder contains scripts for running tests on local devices and devices on the "Firebase Test Lab" (FTL), and generating reports on the data.
 
-## Setup
+## Dependencies
 
 The reporting scripts require `python3.7x` and `pipenv` to manage dependencies.
 
@@ -29,6 +29,18 @@ export $PATH=$PATH:/~/.local/bin
 ```
 
 Then run `pipenv install` from this directory to install dependencies. Finally, after doing so you can run `pipenv shell` to get a local virtualenv in your terminal, or if using VSCode or PyCharm, select the virtualenv matching this folder.
+
+## Getting Started
+
+The preferred environment for development is VS Studio Code. As such we have prepared a template settings file in `.vscode/settings.template.json`.
+
+```bash
+cp .vscode/settings.template.json .vscode/settings.json
+```
+
+Then, when starting VSCode in this directory, open a python file, and when VSCode asks for an environment to use, select the appropriate virtual env (it should have a name containing 'reporting')
+
+NOTE: Because VSCode saves a user-specific python env path in the `settings.json` file, we can't simply commit a default `settings.json` to our repo.
 
 ---
 

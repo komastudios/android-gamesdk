@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+"""Functions for parsing systrace HTML files"""
 
-import json
 import os
 import re
 import subprocess
@@ -26,6 +26,7 @@ from typing import Dict, List, Tuple
 from bs4 import BeautifulSoup
 
 from lib.build import APP_ID
+from lib.common import Error
 
 # ------------------------------------------------------------------------------
 SYSTRACE_LINE_CPU_NUMBER_REGEXP = re.compile(r'(\[\d+\])')
@@ -35,6 +36,20 @@ CLOCK_SYNC_ISSUE_ID_REGEXP = re.compile(r'\(([0-9]+)\)')
 
 # ------------------------------------------------------------------------------
 
+
+class SystraceParseError(Error):
+    """Exception raised when having trouble parsing a systrace
+
+    Attributes:
+        message -- explanation of the error
+    """
+
+    def __init__(self, message):
+        super().__init__()
+        self.message = message
+
+
+# ------------------------------------------------------------------------------
 
 def trim_to_trace(file_data):
     """Return the trace data portion of the systrace file.
@@ -51,6 +66,13 @@ def trim_to_trace(file_data):
 
 
 def get_systrace_line_timestamp_ns(line: str) -> float:
+    #pylint: disable=line-too-long
+    """Get the systrace timestamp in nanoseconds from a systrace line,
+    or 0 if not able
+    So given the line:
+    <...>-19979 (-----) [000] ...1 23495.016046: tracing_mark_write: C|19865|ancer::clock_sync(417)|23495016024390
+    this would return int("23495.016046") * 1e9
+    """
     match = SYSTRACE_LINE_TIMESTAMP_REGEXP.search(line)
     if not match.group():
         print(f"Unable to find systrace timestamp in line \"{line}\"")
@@ -60,6 +82,7 @@ def get_systrace_line_timestamp_ns(line: str) -> float:
 
 
 def get_ancer_clocksync_offset_ns(line: str) -> int:
+    #pylint: disable=line-too-long
     """Given an ancer::clock_sync line, return the clock skew
     So given the line:
     <...>-19979 (-----) [000] ...1 23495.016046: tracing_mark_write: C|19865|ancer::clock_sync(417)|23495016024390
@@ -82,6 +105,10 @@ def get_ancer_clocksync_offset_ns(line: str) -> int:
 
 
 def find_timestamp_offset(lines: List[str]) -> Tuple[int, int]:
+    """Given a systrace data section split to a line list,
+    find the first ancer clock sync marker and determine the clock offset
+    in nanoeseconds
+    """
     for line in lines:
         if CLOCK_SYNC_MARKER in line:
             return get_ancer_clocksync_offset_ns(line)
@@ -94,9 +121,8 @@ def find_timestamp_offset(lines: List[str]) -> Tuple[int, int]:
 
 
 def filter_systrace_to_interested_lines(systrace_file: Path,
-                                        keywords: List[str] = [],
-                                        pattern: str = None
-                                       ) -> Tuple[int, List[str]]:
+                                        keywords: List[str],
+                                        pattern: str) -> Tuple[int, List[str]]:
     """Trims contents of a systrace file to subset in which we are interested
 
     Given the systrace HTML file `systrace_file`, extract the systrace entries
@@ -120,8 +146,8 @@ def filter_systrace_to_interested_lines(systrace_file: Path,
 
     """
 
-    with open(systrace_file, 'rb') as fp:
-        file_data = fp.read()
+    with open(systrace_file, 'rb') as file:
+        file_data = file.read()
     trace_data = trim_to_trace(file_data)
 
     soup = BeautifulSoup(trace_data, 'lxml')
@@ -138,38 +164,31 @@ def filter_systrace_to_interested_lines(systrace_file: Path,
         if line.strip() and line[0] != '#'
     ]
 
-    # also find the traceEvents tag
-    trace_events = None
-    for tag in script_tags:
-        if "\"traceEvents\"" in tag.string:
-            try:
-                trace_events = json.loads(tag.string)
-                break
-            except:
-                pass
-
     # get our clock sync data
     timestamp_offset_ns = find_timestamp_offset(trace_tag_lines)
 
     if keywords:
         # filter to lines which interest the caller
         def _f(line: str) -> bool:
-            for kw in keywords:
-                if kw in line:
+            for keyword in keywords:
+                if keyword in line:
                     return True
             return False
 
-        return timestamp_offset_ns, list(filter(_f, trace_tag_lines))
-    elif pattern:
+        return timestamp_offset_ns, \
+                [line for line in trace_tag_lines if _f(line)]
+
+    if pattern:
         regexp = re.compile(pattern)
-        return timestamp_offset_ns, list(
-            filter(lambda l: regexp.search(l) is not None, trace_tag_lines))
+        return timestamp_offset_ns, \
+            [line for line in trace_tag_lines if regexp.search(line)]
 
     return timestamp_offset_ns, []
 
 
 def convert_systrace_line_to_datum(systrace_line: str,
                                    timestamp_offset_ns: int) -> Dict:
+    #pylint: disable=line-too-long
     """Convert a systrace line to a report datum, suitable
     for merging into datum stream
 
@@ -186,7 +205,7 @@ def convert_systrace_line_to_datum(systrace_line: str,
     # surfaceflinger-664   (  664) [003] ...1 518317.537935: tracing_mark_write: B|664|handleMessageInvalidate
     timestamp_match = SYSTRACE_LINE_TIMESTAMP_REGEXP.search(systrace_line)
     if not timestamp_match:
-        raise "Can't find timestamp in systrace line"
+        raise SystraceParseError("Can't find timestamp in systrace line")
 
     message = systrace_line[timestamp_match.end():].strip()
     message_break = message.find(":")
@@ -199,7 +218,7 @@ def convert_systrace_line_to_datum(systrace_line: str,
 
     cpu_number_match = SYSTRACE_LINE_CPU_NUMBER_REGEXP.search(systrace_line)
     if not cpu_number_match:
-        raise "Can't find cpu_id in systrace line"
+        raise SystraceParseError("Can't find cpu_id in systrace line")
 
     cpu_id = int(cpu_number_match.group()[1:-1])
     suite_id = "systrace"
@@ -230,7 +249,9 @@ def convert_systrace_line_to_datum(systrace_line: str,
 # ------------------------------------------------------------------------------
 
 
-class LocalSystrace(object):
+class LocalSystrace:
+    """Helper to start a local (over USB) systrace and blocks until ready
+    """
 
     def __init__(self, device_id: str, dst_file: Path, categories: List[str]):
         """Start systrace on a device, blocks until systrace is ready"""
@@ -269,6 +290,7 @@ class LocalSystrace(object):
         time.sleep(10)
 
     def finish(self):
+        """Stop the running systrace, blocking until its complete"""
         # systrace ends when it receives an "enter" input
         print(f"LocalSystrace::finish - Stopping systrace for {APP_ID}...")
         self.process.stdin.write(b"\n")

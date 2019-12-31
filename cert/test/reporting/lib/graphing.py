@@ -13,17 +13,41 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+"""Helper functions to load report JSON documents and generate
+reports.
+"""
 
-import sys
 import json
-import markdown2
-
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+import platform
+from typing import Dict, List
+
+import markdown2
+import matplotlib
+import matplotlib.pyplot as plt
 
 from lib.common import Error
-from lib.graphing_components import BuildInfo, Datum, Suite
+from lib.report import BuildInfo, Datum, Suite
 from lib.graphers.loader import create_suite_handler
+
+#-------------------------------------------------------------------------------
+
+if platform.system() == "Linux":
+    matplotlib.use('gtk3cairo')
+
+SMALL_SIZE = 5
+MEDIUM_SIZE = 7
+BIGGER_SIZE = 10
+
+plt.rc('font', size=SMALL_SIZE)  # controls default text sizes
+plt.rc('axes', titlesize=SMALL_SIZE)  # fontsize of the axes title
+plt.rc('axes', labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
+plt.rc('xtick', labelsize=SMALL_SIZE)  # fontsize of the tick labels
+plt.rc('ytick', labelsize=SMALL_SIZE)  # fontsize of the tick labels
+plt.rc('legend', fontsize=SMALL_SIZE)  # legend fontsize
+plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
+
+# ------------------------------------------------------------------------------
 
 
 class UnsupportedReportFormatError(Error):
@@ -35,7 +59,11 @@ class UnsupportedReportFormatError(Error):
     """
 
     def __init__(self, message):
+        super().__init__()
         self.message = message
+
+
+#-------------------------------------------------------------------------------
 
 
 def load_suites(report_file) -> List[Suite]:
@@ -49,14 +77,14 @@ def load_suites(report_file) -> List[Suite]:
     suite_data: Dict[str, List[Datum]] = {}
     suites: List[Suite] = []
 
-    with open(report_file) as f:
-        for i, line in enumerate(f):
-            jd = json.loads(line)
+    with open(report_file) as file:
+        for i, line in enumerate(file):
+            line_dict = json.loads(line)
             # first line is the build info, every other is a report datum
             if i == 0:
-                build = BuildInfo.from_json(jd)
+                build = BuildInfo.from_json(line_dict)
             else:
-                datum = Datum.from_json(jd)
+                datum = Datum.from_json(line_dict)
                 suite_data.setdefault(datum.suite_id, []).append(datum)
 
     for suite_name in suite_data:
@@ -73,17 +101,36 @@ def load_suites(report_file) -> List[Suite]:
 
 
 class DocumentFormat:
+    """DocumentFormat
+    Helper for representing supported document formats for
+    saving reports.
+    Example:
+        render_report_document(in_files, out_file, DocumentFormat.HTML)
+    """
     MARKDOWN = ".md"
     HTML = ".html"
 
     @classmethod
     def supported_formats(cls) -> List[str]:
+        """Supported document format types
+        Returns:
+            list of supported document formats
+        """
         return [cls.MARKDOWN, cls.HTML]
 
     @classmethod
     def from_extension(cls, ext) -> str:
+        """Parse a file extension to its matching document format
+        Args:
+            ext: a file extension, e.g., ".md"
+        Returns:
+            The corresponding document format
+        Raises:
+            UnsupportedReportFormatError if the document extension
+            doesn't represent a supported document format
+        """
         for fmt in cls.supported_formats():
-            if ext == fmt or ("." + ext == fmt):
+            if fmt in (ext, "." + ext):
                 return fmt
 
         raise UnsupportedReportFormatError(
@@ -91,39 +138,20 @@ class DocumentFormat:
 
     @classmethod
     def extension(cls, fmt) -> str:
+        """Get the file extension for a given document format
+        Returns:
+            the corresponding file extension for a given DocumentFormat
+        Raises:
+            UnsupportedReportFormatError for an unrecognized document format
+        """
         if fmt in cls.supported_formats():
             return fmt
         raise UnsupportedReportFormatError(
             f'Unrecognized document format "{fmt}"')
 
 
-def render_report_document(report_files: List[Path], report_summary_file: Path,
-                           doc_fmt: str, dpi: int):
-    """Render a report (markdown, or HTML) of the report JSON data contained
-    in report_files
-    Args:
-        report_files: List of report JSON files
-        report_summary_file: Name of file to write summary Markdown or HTML to
-        dpi: DPI for saving figures
-    """
+def __render_suite_reports(suites_by_name, folder, dpi, next_image_idx) -> str:
     markdown_str = ""
-    suites_by_name = {}
-    all_suites = []
-    folder = report_summary_file.parent
-    image_idx = 0
-
-    def next_image_idx()->int:
-        nonlocal image_idx
-        r = image_idx
-        image_idx += 1
-        return r
-
-    for report_file in report_files:
-        suites = load_suites(report_file)
-        all_suites.extend(suites)
-        for suite in suites:
-            suites_by_name.setdefault(suite.name, []).append(suite)
-
     for suite_name in suites_by_name:
 
         # trim suites list to just those with a handler
@@ -140,12 +168,14 @@ def render_report_document(report_files: List[Path], report_summary_file: Path,
                 summary = suite.handler.plot(plot_file, dpi)
 
                 markdown_str += f"\n### {title}\n"
-                markdown_str += f"\n![{title}]({str(plot_file.relative_to(folder))})\n"
+                markdown_str += \
+                    f"\n![{title}]({str(plot_file.relative_to(folder))})\n"
+
                 if summary:
                     markdown_str += "\n" + summary + "\n"
 
         # check that all suites handler's are same class
-        if len(set([c.__class__ for c in suites])) == 1:
+        if len({c.__class__ for c in suites}) == 1:
             handler_class = suites[0].handler.__class__
             if handler_class.can_render_summarization_plot(suites):
 
@@ -156,15 +186,23 @@ def render_report_document(report_files: List[Path], report_summary_file: Path,
                     suites, plot_file, dpi)
 
                 markdown_str += f"\n\n## Summary for:\n{suite_name}\n"
-                markdown_str += f"\n![{title}]({str(plot_file.relative_to(folder))})\n"
+                markdown_str += \
+                    f"\n![{title}]({str(plot_file.relative_to(folder))})\n"
+
                 if summary:
                     markdown_str += "\n" + summary + "\n"
+
                 markdown_str += "\n---\n"
 
             else:
                 print("Couldn't find a common class to render summary"\
                     f" for suites of name {suite_name}")
 
+    return title, markdown_str
+
+
+def __render_cross_suite_sumamrizations(all_suites, folder, title, markdown_str,
+                                        dpi, next_image_idx):
     # now attempt to generate cross-suite summarizations by finding
     # all the suites which use the same SuiteHandler
     suites_by_handler_class = {}
@@ -180,10 +218,48 @@ def render_report_document(report_files: List[Path], report_summary_file: Path,
             summary = handler_class.summarization_plot(suites, plot_file, dpi)
 
             markdown_str += f"\n\n## Meta Summary\n"
-            markdown_str += f"\n![{title}]({str(plot_file.relative_to(folder))})\n"
+            markdown_str += \
+                f"\n![{title}]({str(plot_file.relative_to(folder))})\n"
+
             if summary:
                 markdown_str += "\n" + summary + "\n"
+
             markdown_str += "\n---\n"
+
+    return markdown_str
+
+
+def render_report_document(report_files: List[Path], report_summary_file: Path,
+                           doc_fmt: str, dpi: int):
+    """Render a report (markdown, or HTML) of the report JSON data contained
+    in report_files
+    Args:
+        report_files: List of report JSON files
+        report_summary_file: Name of file to write summary Markdown or HTML to
+        dpi: DPI for saving figures
+    """
+    suites_by_name = {}
+    all_suites = []
+    folder = report_summary_file.parent
+    image_idx = 0
+
+    def next_image_idx() -> int:
+        nonlocal image_idx
+        index = image_idx
+        image_idx += 1
+        return index
+
+    for report_file in report_files:
+        suites = load_suites(report_file)
+        all_suites.extend(suites)
+        for suite in suites:
+            suites_by_name.setdefault(suite.name, []).append(suite)
+
+    title, markdown_str = __render_suite_reports(suites_by_name, folder,\
+        dpi, next_image_idx)
+
+    __render_cross_suite_sumamrizations(all_suites, folder, title,\
+        markdown_str, dpi, next_image_idx)
 
     # ensure the correct document extension
     if report_summary_file.suffix != DocumentFormat.extension(doc_fmt):
@@ -191,8 +267,8 @@ def render_report_document(report_files: List[Path], report_summary_file: Path,
             report_summary_file.stem + DocumentFormat.extension(doc_fmt))
 
     # save the markdown string
-    with open(report_summary_file, "w") as fp:
+    with open(report_summary_file, "w") as file:
         if doc_fmt == DocumentFormat.HTML:
-            fp.write(markdown2.markdown(markdown_str))
+            file.write(markdown2.markdown(markdown_str))
         elif doc_fmt == DocumentFormat.MARKDOWN:
-            fp.write(markdown_str)
+            file.write(markdown_str)

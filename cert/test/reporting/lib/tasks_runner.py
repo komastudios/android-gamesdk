@@ -13,25 +13,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+"""Entry point for loading pre- and post-flight tasks
+"""
 
-from typing import List
+from typing import Dict, List
 
-from lib.tasks import *
+from lib.tasks import Environment, Task
 import lib.tasks_preflight
 import lib.tasks_postflight
 
 #-------------------------------------------------------------------------------
 
-PREFLIGHT_TASKS = {
-    "copy" : lib.tasks_preflight.CopyTask
-}
+PREFLIGHT_TASKS = {"copy": lib.tasks_preflight.CopyTask}
+"""Preflight task classes mapped to short name"""
 
 POSTFLIGHT_TASKS = {
     "copy": lib.tasks_postflight.CopyTask,
     "delete": lib.tasks_postflight.DeleteTask
 }
+"""Postflight task classes mapped to short name"""
 
 #-------------------------------------------------------------------------------
+
 
 def run(tasks: List[Task], device_id: str, env: Environment):
     """Run a list of preflight tasks with the specified environment
@@ -44,7 +47,7 @@ def run(tasks: List[Task], device_id: str, env: Environment):
         task.run(device_id, env)
 
 
-def load(configs: List[Dict], ctors:Dict) -> List[Task]:
+def load(configs: List[Dict], ctors: Dict) -> List[Task]:
     """Loads a list of Task to run from a list of task description dictionaries
     Args:
         configs: list loaded from the recipe's deployment.local.postflight or
@@ -62,9 +65,9 @@ def load(configs: List[Dict], ctors:Dict) -> List[Task]:
 
     """
     tasks: List[Task] = []
-    for pd in configs:
-        action = pd["action"]
+    for config_dict in configs:
+        action = config_dict["action"]
         if action in ctors:
-            tasks.append(ctors[action](pd))
+            tasks.append(ctors[action](config_dict))
 
     return tasks
