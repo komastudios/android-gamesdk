@@ -13,13 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+"""Provides pre-flight task implementations:
+    CopyTask: Copies files from the local computer to device before tests
+"""
 
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Dict
 
 from lib.build import APP_ID
-from lib.common import *
-from lib.tasks import *
+from lib.common import Error, run_command
+from lib.tasks import Task, Environment, LocalDirs, DeviceDirs
 
 #-------------------------------------------------------------------------------
 
@@ -31,26 +34,26 @@ class CopyTaskError(Error):
     """
 
     def __init__(self, message):
+        super().__init__()
         self.message = message
 
 
 #-------------------------------------------------------------------------------
 
 class CopyTask(Task):
-    """Represents a copy action copying files from local filesystem to a 
+    """Represents a copy action copying files from local filesystem to a
     locally-attached device.
     Tokens:
         ${APP_FILES_DIR} refers to the app's files directory on device
         ${APP_OOB_DATA_DIR} refers to the OOB file location on device
         ${WORKSPACE_DIR} refers to the location of run.py
-
-
     """
 
     def __init__(self, config: Dict):
         super().__init__(config)
         self.src = config["src"]
         self.dst = config["dst"]
+        self.src_filename = None
 
     def run(self, device_id: str, env: Environment):
         self.src = self.resolve_src_path(env)
@@ -78,6 +81,14 @@ class CopyTask(Task):
                     f"{DeviceDirs.OOB_DATA}")
 
     def resolve_src_path(self, env: Environment) -> Path:
+        """Replace placeholder tokens in self.src with real values
+        from Environment
+        Args:
+            env: The operating environment
+        Returns:
+            self.src as a path with tokens replaced for real subpaths,
+            converted to a Path() object
+        """
         src = self.src
         if LocalDirs.WORKSPACE in src:
             src = Path(
@@ -86,16 +97,18 @@ class CopyTask(Task):
         return Path(src).expanduser().resolve()
 
     def copy_to_app_files_dir(self, dest_subpath, device_id):
-        """Copies the src file to the dest location in the app's 
+        """Copies the src file to the dest location in the app's
         protected files/ subdir
 
         The app files dir is protected, so copy requires three steps:
         1: Copy to a temp location
           adb push ./img.jpg /sdcard/img.jpg
         2: Using run-as ensure the dest subpath is available
-          adb shell run-as com.google.gamesdk.gamecert.operationrunner "mkdir -p subpath"
+          adb shell run-as com.google.gamesdk.gamecert.operationrunner \
+            "mkdir -p subpath"
         3: Move from temp to dest
-          adb shell run-as com.google.gamesdk.gamecert.operationrunner "mv /sdcard/img.jpg files/img.jpg"
+          adb shell run-as com.google.gamesdk.gamecert.operationrunner \
+            "mv /sdcard/img.jpg files/img.jpg"
         """
 
         src_file = str(self.src)
@@ -104,8 +117,12 @@ class CopyTask(Task):
         dst_file_parent = str(Path(dst_file).parent)
 
         push_command = f"adb -s {device_id} push {src_file} {tmp_file}"
-        mkdir_command = f"adb -s {device_id} shell run-as {APP_ID} \"mkdir -p {dst_file_parent}\""
-        mv_command = f"adb -s {device_id} shell run-as {APP_ID} \"mv {tmp_file} {dst_file}\""
+
+        mkdir_command = f"adb -s {device_id} shell run-as {APP_ID}" \
+            + f" \"mkdir -p {dst_file_parent}\""
+
+        mv_command = f"adb -s {device_id} shell run-as {APP_ID}" \
+            + f" \"mv {tmp_file} {dst_file}\""
 
         run_command(push_command)
         run_command(mkdir_command)
@@ -115,7 +132,7 @@ class CopyTask(Task):
         """Copies the src file to the dest location in the
         app's OOB data dir
         Maps to:
-         adb push img.jpg /storage/emulated/0/Android/obb/com.google.gamesdk.gamecert.operationrunner/img.jpg
+         adb push img.jpg /storage/emulated/0/Android/obb/APP_ID/img.jpg
         """
         src_file = str(self.src)
         dst_file = f"/storage/emulated/0/Android/obb/{APP_ID}/{dest_subpath}"
@@ -137,29 +154,3 @@ class CopyTask(Task):
         push_command = f"adb -s {device_id} push {src_file} {dst_file}"
         run_command(mkdir_command)
         run_command(push_command)
-
-
-def load(preflight: List[Dict]) -> List[Task]:
-    """Loads a list of Task to run from a list of task description dictionaries
-    Args:
-        preflight: list loaded from the recipe's deployment.local.preflight list
-        Each entry is a dictionary in form:
-        {
-            "action": name
-            "param0": a param
-            "param1": a param
-        }
-
-        The action maps to a task class, and the remainder fields are handled
-        by the appropriate task subclass
-
-    """
-    ctors = {"copy": CopyTask}
-
-    tasks: List[Task] = []
-    for pd in preflight:
-        action = pd["action"]
-        if action in ctors:
-            tasks.append(ctors[action](pd))
-
-    return tasks
