@@ -13,13 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+"""Command-line interface for generating reports from individual
+report JSON files as well as batches.
+Example operation:
+    python graphy.py --fmt html --dpi 150 path/to/report/dir
+"""
 
 import argparse
-import os
 import glob
 
 from pathlib import Path
-from typing import List
 
 import lib.graphing
 
@@ -28,10 +31,12 @@ FIGURE_DPI = 300
 
 
 def summary_document_name(name):
+    """Helper for generating a summary document file name"""
     return f"summary_{name}"
 
 
 def main():
+    """Main entry point"""
     parser = argparse.ArgumentParser()
     parser.add_argument("--dpi",
                         help="Render figures at DPI",

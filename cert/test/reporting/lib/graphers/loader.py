@@ -13,10 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+"""Provides factory function create_suite_handler which will "sniff"
+a Suite and vend the correct SuiteHandler implementation to process
+it and generate reports
+"""
 
-from typing import List
-
-from lib.graphing_components import *
+from lib.report import Suite
 
 # -----------------------------------------------------------------------------
 

@@ -13,30 +13,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+"""Common helper functions and classes"""
 
 import os
-import shlex
 import subprocess
 import sys
 
 from pathlib import Path
-from typing import List, Tuple
+from typing import Any, Dict, List
 
 # ------------------------------------------------------------------------------
 
-def nanoseconds_to_seconds(ns):
-    return ns / 1e9
 
-def seconds_to_nanoseconds(s):
-    return s * 1e9
+def nanoseconds_to_seconds(nano_seconds):
+    """Convert nano seconds to seconds"""
+    return nano_seconds / 1e9
+
+
+def seconds_to_nanoseconds(seconds):
+    """Convert seconds to nanoseconds"""
+    return seconds * 1e9
+
 
 # ------------------------------------------------------------------------------
 
 
 class Error(Exception):
     """Base class for exceptions in this module."""
-    pass
-
 
 class NonZeroSubprocessExitCode(Error):
     """Exception raised when a subprocess returns other than 0
@@ -46,10 +49,56 @@ class NonZeroSubprocessExitCode(Error):
     """
 
     def __init__(self, message):
+        super().__init__()
+        self.message = message
+
+
+class MissingPropertyError(Error):
+    """Exception raised when a required property in the recipe is missing
+
+    Attributes:
+        message -- explanation of the error
+    """
+
+    def __init__(self, message):
+        super().__init__()
         self.message = message
 
 
 # ------------------------------------------------------------------------------
+
+
+def dict_lookup(src: Dict, key_path: str, fallback: Any) -> Any:
+    """Look up a value (possibly deep) in a dict, safely, with fallback
+
+    Performs deep lookup of a value in a dict, e.g. "foo.bar.baz" would
+    return the value src["foo"]["bar"]["baz"] or the fallback if that path
+    isn't traversable.
+
+    Args:
+        dict: The dict to lookup values from
+        key_path: A string in format "foo.bar.baz"
+        fallback: If not none, the value to return if the dict lookup fails
+
+    Raises:
+        MissingPropertyError if fallback is None and the key_path wasn't
+            resolvable
+
+    """
+    keys = key_path.split(".")
+    for i, sub_key_path in enumerate(keys):
+        if sub_key_path in src:
+            if i < len(keys) - 1:
+                src = src[sub_key_path]
+            else:
+                return src[sub_key_path]
+        else:
+            break
+
+    if fallback is None:
+        raise MissingPropertyError(f"Key path \"{key_path}\" is required")
+
+    return fallback
 
 
 def ensure_dir(file: Path):
@@ -86,19 +135,21 @@ def get_attached_devices() -> List[str]:
     proc = subprocess.run(cmdline,
                           stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE,
+                          check=False,
                           encoding='utf-8')
 
     if proc.returncode != 0:
         print(proc.stderr)
-        exit(proc.returncode)
+        sys.exit(proc.returncode)
 
     device_ids = []
     for device in proc.stdout.splitlines()[1:]:
-        t = device.split()
-        if t is not None and len(t) == 2:
-            device_ids.append(t[0])
+        tokens = device.split()
+        if tokens is not None and len(tokens) == 2:
+            device_ids.append(tokens[0])
     return device_ids
 
+RET_CODE_SUCCESS = 0
 
 def run_command(command):
     """Run a shell command displaying output in real time
@@ -116,7 +167,9 @@ def run_command(command):
             break
         sys.stdout.write(line)
 
-    rc = process.wait()
-    if rc is not 0:
+    ret_code = process.wait()
+    process.stdout.close()
+
+    if ret_code is not RET_CODE_SUCCESS:
         raise NonZeroSubprocessExitCode(
-            f"Command {command} exited with non-zero {rc} return code")
+            f"Command {command} exited with non-zero {ret_code} return code")

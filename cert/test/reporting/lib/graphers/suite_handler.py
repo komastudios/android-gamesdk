@@ -13,40 +13,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+"""Provides base class SuiteHandler
 
-import os
-import platform
-import matplotlib
+When processing report data, lib.reporting.Suite instances are created
+which respectively contain report datums of homogenous suite_id. To process
+and analyze the contents of these suites, implement subclasses of SuiteHandler
+to have a domain-specific analysis of the suite's data.
+"""
+
+from abc import ABC, abstractclassmethod, abstractmethod
+from pathlib import Path
+from typing import List
+
 import matplotlib.pyplot as plt
 import numpy as np
 
-from pathlib import Path
-from typing import Any, Dict, List, Tuple
-
 from lib.common import ensure_dir, nanoseconds_to_seconds
-from lib.report import Datum, BuildInfo, Suite
+from lib.report import Suite
 
-if platform.system == "Linux":
-    matplotlib.use('gtk3cairo')
-
-# ------------------------------------------------------------------------------
-
-SMALL_SIZE = 5
-MEDIUM_SIZE = 7
-BIGGER_SIZE = 10
-
-plt.rc('font', size=SMALL_SIZE)  # controls default text sizes
-plt.rc('axes', titlesize=SMALL_SIZE)  # fontsize of the axes title
-plt.rc('axes', labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
-plt.rc('xtick', labelsize=SMALL_SIZE)  # fontsize of the tick labels
-plt.rc('ytick', labelsize=SMALL_SIZE)  # fontsize of the tick labels
-plt.rc('legend', fontsize=SMALL_SIZE)  # legend fontsize
-plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
-
-# ------------------------------------------------------------------------------
-
-
-class SuiteHandler(object):
+class SuiteHandler(ABC):
     """SuiteHandler is handles data for a report suite
     Custom suite handler implemenations may select to render analysis
     and plots, etc, of collections of Datum instances of the same suite
@@ -62,6 +47,7 @@ class SuiteHandler(object):
     """
 
     def __init__(self, suite: Suite):
+        super().__init__()
         self.suite = suite
 
         # all data
@@ -76,8 +62,9 @@ class SuiteHandler(object):
         self.cpu_ids = list(self.data_by_cpu_id.keys())
         self.cpu_ids.sort()
 
-    @classmethod
+    @abstractclassmethod
     def can_handle_suite(cls, suite: Suite):
+        #pylint: disable=unused-argument
         """Check if this SuiteHandler class can be used to handle this
         suite's data
         Args:
@@ -86,7 +73,8 @@ class SuiteHandler(object):
             True if this SuiteHandler class should handle
                 the contents of the provided Suite instance
         """
-        return False
+        raise NotImplementedError(
+            "SuiteHandler subclass must implement can_handle_suite() function")
 
     def plot(self, plot_file_name: Path, dpi: int):
         """Plot this suite's graph
@@ -102,15 +90,17 @@ class SuiteHandler(object):
         plt.close()
         return summary_str
 
+    @abstractmethod
     def render_plot(self) -> str:
         """Subclasses implement this method to render their data to matplotlib
         Note: Don't call plt.suptitle() or title() - that's already been done.
         You're just rendering data to 1 or more figures.
         Return:
             (optional) a summary string for a given dataset
-            If a report has some interesting data (outlier behavior, failures, etc)
-            generate a summary string here and return it. Otherwise, returning
-            None or an empty string will result in nothing printed.
+            If a report has some interesting data (outlier behavior,
+            failures, etc) generate a summary string here and return it.
+            Otherwise, returning None or an empty string will result in
+            nothing printed.
         """
         plt.plot([1, 2, 3, 4])
         plt.ylabel('some numbers')
@@ -120,9 +110,10 @@ class SuiteHandler(object):
         """The title of the figure rendered in render_plot()"""
         return self.suite.description()
 
-    @classmethod
+    @abstractclassmethod
     def can_render_summarization_plot(cls,
                                       suites: List['SuiteHandler']) -> bool:
+        #pylint: disable=unused-argument
         """Subclasses should return True to indicate that they can
         render a summarization plot for a collection of suites of same
         SuiteHandler class
@@ -133,10 +124,14 @@ class SuiteHandler(object):
         Return:
             True to indicate that a summarization plot can be rendered
         """
-        return False
+        raise NotImplementedError(
+            "SuiteHandler subclass must implement "\
+                "can_render_summarization_plot() function"
+        )
 
-    @classmethod
+    @abstractclassmethod
     def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
+        #pylint: disable=unused-argument
         """Subclasses render a summarization plot of the
         data represented by multiple suites
         Args:
@@ -146,12 +141,16 @@ class SuiteHandler(object):
         Return:
             summary string for display in the document
         """
-        return None
+        raise NotImplementedError(
+            "SuiteHandler subclass must implement "\
+                "render_summarization_plot() function"
+        )
 
     @classmethod
     def summarization_plot(cls, suites: List['SuiteHandler'],
                            plot_file_name: Path, dpi: int) -> str:
-
+        """Generates a summarization plot from the provided suites,
+        calling this class's render_summarization_plot implementation"""
         ensure_dir(plot_file_name)
         plt.ioff()
         summary_str = cls.render_summarization_plot(suites)
@@ -161,12 +160,15 @@ class SuiteHandler(object):
 
     # convenience functions
 
-    def get_xs(self) -> List[int]:
-        return np.array(list(map(lambda d: d.timestamp, self.data)))
+    def get_xs_as_nanoseconds(self) -> List[int]:
+        """Helper function to get an array of datum timestamps as nanoseconds"""
+        return np.array([d.timestamp for d in self.data])
 
     def get_x_axis_as_seconds(self):
-        xs = self.get_xs()
-        return nanoseconds_to_seconds(xs - xs[0])
+        """Helper function to get an array of datum timestamps as seconds"""
+        x_values = self.get_xs_as_nanoseconds()
+        return nanoseconds_to_seconds(x_values - x_values[0])
 
     def get_ys(self) -> List[float]:
-        return np.array(list(map(lambda d: d.numeric_value, self.data)))
+        """Helper function to get an array of datum numeric values"""
+        return np.array([d.numeric_value for d in self.data])

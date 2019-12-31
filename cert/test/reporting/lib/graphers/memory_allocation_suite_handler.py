@@ -14,31 +14,47 @@
 # limitations under the License.
 #
 
-from lib.graphing_components import *
+"""SuiteHandler implementation for "Memory allocation" test
+"""
+
+from typing import List
+
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+
 from lib.common import nanoseconds_to_seconds
+from lib.graphers.suite_handler import SuiteHandler
+from lib.report import Suite
 
 
 def plot_event_on_trim_level(fig, xs, ys, label):
+    """Plot on_trim events
+    Args:
+        xs: Seconds
+        ys: OnTrim event levels
+    """
     for x, y in zip(xs, ys):
         label = f"on_trim: level {int(y)}"
         color = [1, 0, 0]
-        line = fig.axvline(x, color=color, label=label)
+        fig.axvline(x, color=color, label=label)
 
 
 def plot_event_is_free(fig, xs, ys, label):
+    #pylint: disable=unused-argument
+    """Plot is_free events
+    Args:
+        xs: Seconds
+    """
     mid = (fig.get_ylim()[1] + fig.get_ylim()[0]) / 2
     for x in xs:
         color = [0.2, 1, 0.2]
         fig.scatter(x, mid, color=color, s=10)
 
 
-def plot_event_is_malloc_fail(fig, xs, ys, label):
-    pass
-
-
 def plot_default(fig, xs, ys, label, scale_factor=None, y_label_format=None):
-    """
-    In its simplest form, this function plots the renderer data as is.
+    #pylint: disable=unused-argument
+    """In its simplest form, this function plots the renderer data as is.
     If a scale factor is passed, the y values are adjusted by it.
     If a format is passed, the y labels are formatted based on it.
     """
@@ -53,8 +69,7 @@ def plot_default(fig, xs, ys, label, scale_factor=None, y_label_format=None):
 
 
 def plot_boolean(fig, xs, ys, label):
-    """
-    Plots boolean values as "Yes" / "No".
+    """Plots boolean values as "Yes" / "No".
     """
     plt.yticks([0, 1], ["No", "Yes"])
     plot_default(fig, xs, ys, label)
@@ -64,14 +79,15 @@ BYTES_PER_MEGABYTE = 1024 * 1024
 
 
 def plot_memory_as_mb(fig, xs, ys, label):
-    """
-    Given a renderer loaded with memory data in bytes, plots the data as
+    """Given a renderer loaded with memory data in bytes, plots the data as
     megabytes.
     """
     plot_default(fig, xs, ys, label, BYTES_PER_MEGABYTE, "%d mb")
 
 
 class MemoryAllocationSuiteHandler(SuiteHandler):
+    """SuiteHandler for Memory Allocation tests
+    """
 
     def __init__(self, suite):
         super().__init__(suite)
@@ -80,7 +96,6 @@ class MemoryAllocationSuiteHandler(SuiteHandler):
         self.plotters_by_field_name = {
             "on_trim_level": plot_event_on_trim_level,
             "is_free": plot_event_is_free,
-            #"is_malloc_fail": plot_event_is_malloc_fail,
             "sys_mem_info.available_memory": plot_memory_as_mb,
             "sys_mem_info.native_allocated": plot_memory_as_mb,
             "sys_mem_info.low_memory": plot_boolean,
@@ -91,13 +106,18 @@ class MemoryAllocationSuiteHandler(SuiteHandler):
     def can_handle_suite(cls, suite: Suite):
         return "Memory allocation" in suite.name
 
-    def render_plot(self) -> str:
-        x_axis_seconds = self.get_x_axis_as_seconds()
-        start_time_seconds = nanoseconds_to_seconds(self.get_xs()[0])
-        end_time_seconds = nanoseconds_to_seconds(self.get_xs()[-1])
+    @classmethod
+    def can_render_summarization_plot(cls,
+                                      suites: List['SuiteHandler']) -> bool:
+        return False
 
-        happy_color = [0.2, 1, 0.2]
-        bad_color = [1, 0.2, 0.2]
+    @classmethod
+    def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
+        return None
+
+    def render_plot(self) -> str:
+        start_time_seconds = self.get_x_axis_as_seconds()[0]
+        end_time_seconds = self.get_x_axis_as_seconds()[-1]
 
         rows = len(self.plotters_by_field_name)
         keys = list(self.plotters_by_field_name.keys())

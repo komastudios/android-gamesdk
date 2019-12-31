@@ -13,52 +13,54 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+"""Helper functions and classes for loading and parsing report JSON files
+"""
 
-import argparse
 import json
 import os
-import re as regex
+import re
 import shutil
 import subprocess
-import tempfile
+import sys
 
 from pathlib import Path
-from re import match
-from typing import Any, List, Tuple
+from typing import Any, Dict, List, Tuple
 
 from lib.build import APP_ID
-from lib.common import *
-from lib.systrace import *
+from lib.common import ensure_dir
+from lib.systrace import filter_systrace_to_interested_lines,\
+    convert_systrace_line_to_datum
 
-NANOSEC_EXPRESSION = "^(\d+) (nanoseconds|ns|nsec)$"
-MILLISEC_EXPRESSION = "^(\d+) (milliseconds|ms|msec)$"
-SEC_EXPRESSION = "^(\d+) (seconds|s|sec)$"
+NANOSEC_EXPRESSION = r"^(\d+) (nanoseconds|ns|nsec)$"
+MILLISEC_EXPRESSION = r"^(\d+) (milliseconds|ms|msec)$"
+SEC_EXPRESSION = r"^(\d+) (seconds|s|sec)$"
 TIME_EXPRESSIONS = [NANOSEC_EXPRESSION, MILLISEC_EXPRESSION, SEC_EXPRESSION]
 
 
-def to_float(v: Any) -> float:
+def to_float(val: Any) -> float:
     """Convenience function for converting Datum numeric values to float"""
     try:
-        return float(v)
+        return float(val)
     except ValueError:
-        if v == "True":
+        if val == "True":
             return 1
-        elif v == "False":
+
+        if val == "False":
             return 0
-        else:
-            for e in TIME_EXPRESSIONS:
-                match = regex.search(e, v)
-                if match is not None and \
-                    len(match.groups()) > 1:
-                    return float(match.group(1))
+
+        for expr in TIME_EXPRESSIONS:
+            result = re.search(expr, val)
+            if result is not None and \
+                len(result.groups()) > 1:
+                return float(result.group(1))
 
     return None
 
 
-def flatten_dict(d: dict) -> List[Tuple[str, Any]]:
+def flatten_dict(src_dict: dict) -> List[Tuple[str, Any]]:
     """Recursively flatten a dict to a list of (pathname,value) tuples
     Args:
-        d: the dict to flatten
+        src_dict: the dict to flatten
     Returns:
         List of tuples where the 0th element is the full path name of the leaf
             value, and the 1th element is the value
@@ -66,14 +68,14 @@ def flatten_dict(d: dict) -> List[Tuple[str, Any]]:
         doesn't attempt to handle cycles so be careful
     """
     result = []
-    for k in d:
-        v = d[k]
-        if type(v) is dict:
-            for r in flatten_dict(v):
-                p = k + "." + r[0]
-                result.append((p, r[1]))
+    for k in src_dict:
+        value = src_dict[k]
+        if isinstance(value, dict):
+            for sub_path in flatten_dict(value):
+                key_path = k + "." + sub_path[0]
+                result.append((key_path, sub_path[1]))
         else:
-            result.append((k, v))
+            result.append((k, value))
 
     return result
 
@@ -82,8 +84,8 @@ class Datum(object):
     """Datum maps to the datum entries in the report JSON file
     """
 
-    def __init__(self, issue_id:int, suite_id: str, operation_id: str, thread_id: str,
-                 cpu_id: int, timestamp: int, custom: dict):
+    def __init__(self, issue_id: int, suite_id: str, operation_id: str,
+                 thread_id: str, cpu_id: int, timestamp: int, custom: dict):
         self.issue_id = issue_id
         self.suite_id = suite_id
         self.operation_id = operation_id
@@ -99,11 +101,29 @@ class Datum(object):
         for field_name, field_value in flatten_dict(custom):
             self.custom_fields_flattened[field_name] = field_value
 
+    def __eq__(self, other):
+        if isinstance(other, Datum):
+            return self.issue_id == other.issue_id and \
+                self.suite_id == other.suite_id and \
+                self.operation_id == other.operation_id and \
+                self.thread_id == other.thread_id and \
+                self.cpu_id == other.cpu_id and \
+                self.timestamp == other.timestamp and \
+                self.custom == other.custom
+        return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     @classmethod
     def from_json(cls, data):
+        """Inflate a Datum from a dict"""
+        if not "issue_id" in data:
+            data["issue_id"] = -1
         return cls(**data)
 
     def to_json(self) -> Dict:
+        """Convert a Datum to a dict suitable for serializing to JSON"""
         return {
             "issue_id": self.issue_id,
             "suite_id": self.suite_id,
@@ -115,34 +135,71 @@ class Datum(object):
         }
 
     def get_custom_field(self, name) -> Any:
+        """Get the value from a datum's `custom` field; for example,
+        the Datum may have a custom field like so:
+        custom {
+            "foo": {
+                "bar": 1,
+                "baz": {
+                    "qux": 2
+                }
+            }
+        }
+        Calling get_custom_field("foo.bar") returns 1,
+        and calling get_custom_field("foo.baz.qux") returns 2
+        """
         if name in self.custom_fields_flattened:
             return self.custom_fields_flattened[name]
         return None
 
     def get_custom_field_numeric(self, name) -> float:
+        """Get the value from a datum's `custom` field, parsed as
+        a number. See get_custom_field(). Returns None if not parsable
+        to a number.
+        """
         if name in self.custom_fields_flattened:
             return to_float(self.custom_fields_flattened[name])
         return None
 
 
 class BuildInfo(object):
-    """BuildInfo maps to the first line of the report JSON files
+    """BuildInfo maps to the first line of the report JSON files; just
+    a dictionary of build info key/pairs for device/os identification
     """
 
     def __init__(self, d: Dict[str, str]):
         self._d = d
 
     def get(self, feature: str) -> str:
+        """Simple getter
+        Example:
+            build_info.get("MANUFACTURER")
+        """
         return self._d[feature]
 
     def __getitem__(self, key):
         return self._d[key]
 
+    def __contains__(self, key):
+        return key in self._d
+
+    def __eq__(self, other):
+        if isinstance(other, BuildInfo):
+            return self.contents() == other.contents()
+        return False
+
     @classmethod
     def from_json(cls, data):
+        """Load a BuildInfo from a dict"""
         return cls(data)
 
     def to_json(self) -> Dict:
+        """Convert a BuildInfo instance to a dict suitable for
+        passing to json encoding"""
+        return self._d
+
+    def contents(self)->Dict:
+        """Get underlying dict"""
         return self._d
 
 
@@ -159,37 +216,42 @@ class Suite(object):
         self.handler = None
 
     def identifier(self):
+        """Sniff the build info and vend a suitable identifier for the dataset
+        """
         return self.build["MANUFACTURER"] + " " + self.build[
             "DEVICE"] + " SDK " + str(self.build["SDK_INT"])
 
     def description(self):
+        """Sniff the build info and vend a human-readable description
+        of the dataset
+        """
         return self.name + " (" + self.build["MANUFACTURER"] + " " + self.build[
             "DEVICE"] + " SDK " + str(self.build["SDK_INT"]) + ")"
 
 
-def load_report(file: Path) -> (BuildInfo, List[Datum]):
+def load_report(report_file: Path) -> (BuildInfo, List[Datum]):
     """Loads a report file, parses it, and returns a tuple of BuildInfo,
         List[Datum]
     Args:
-        file: Path to a report json file
+        report_file: Path to a report json report_file
     Returns:
         tuple of BuildInfo, list of Datum
     """
     build: BuildInfo = None
     data: List[Datum] = []
 
-    with open(file) as f:
-        for i, line in enumerate(f):
-            jd = json.loads(line)
+    with open(report_file) as file:
+        for i, line in enumerate(file):
+            json_dict = json.loads(line)
             # first line is the build info, every other is a report datum
             if i == 0:
-                build = BuildInfo.from_json(jd)
+                build = BuildInfo.from_json(json_dict)
             else:
-                datum = Datum.from_json(jd)
+                datum = Datum.from_json(json_dict)
                 data.append(datum)
 
     if build is None:
-        device_patterns = match(r"^(.+)-(\d+)-.+$", file.name)
+        device_patterns = re.match(r"^(.+)-(\d+)-.+$", report_file.name)
         build = {
             "PRODUCT": device_patterns.group(1),
             "SDK_INT": device_patterns.group(2)
@@ -201,34 +263,35 @@ def load_report(file: Path) -> (BuildInfo, List[Datum]):
     return build, data
 
 
-def save_report(file: Path, build_info: BuildInfo, data: List[Datum]):
+def save_report(report_file: Path, build_info: BuildInfo, data: List[Datum]):
     """Write a report file
     Args:
-        file: The file to save the report to
-        build_info: The BuildInfo object which will be the first line of the report
+        report_file: The file path to save the report to
+        build_info: The BuildInfo object which will be the first line
+            of the report
         data: List of datum objects to fill out the report
     """
-    with open(file, "w") as f:
+    with open(report_file, "w") as file:
         # write build info
-        f.write(json.dumps(build_info.to_json()))
-        f.write("\n")
+        file.write(json.dumps(build_info.to_json()))
+        file.write("\n")
 
         # write each datum
-        for d in data:
-            f.write(json.dumps(d.to_json()))
-            f.write("\n")
+        for datum in data:
+            file.write(json.dumps(datum.to_json()))
+            file.write("\n")
 
 
-def merge_datums(input: List[List[Datum]]) -> List[Datum]:
+def merge_datums(lines: List[List[Datum]]) -> List[Datum]:
     """Flattens lists of lists of Datum into one sorted list
     Args:
-        input: List of list of Datum
+        lines: List of list of Datum
     Returns:
         List of Datum, sorted by timestamp
     """
     flat = []
-    for d in input:
-        flat.extend(d)
+    for datum in lines:
+        flat.extend(datum)
 
     flat = sorted(flat, key=lambda c: c.timestamp)
     return flat
@@ -242,7 +305,7 @@ def normalize_report_name(report_file: Path) -> Path:
     Returns:
         Path of renamed report file
     """
-    device_info, data = load_report(report_file)
+    device_info, _ = load_report(report_file)
     device_identifier = device_info["PRODUCT"] + \
         "_" + str(device_info["SDK_INT"])
 
@@ -264,23 +327,27 @@ def extract_log_from_device(device_id: str, dst_dir: Path) -> Path:
     dst_file = dst_dir.joinpath(f"report_device_{device_id}.json")
     ensure_dir(dst_file)
 
-    cmdline = f"adb -s {device_id} shell \"run-as {APP_ID} cat /data/data/{APP_ID}/files/report.json\" > {dst_file}"
+    cmdline = f"adb -s {device_id} shell \"run-as {APP_ID}"
+    cmdline += f" cat /data/data/{APP_ID}/files/report.json\" > {dst_file}"
 
     proc = subprocess.run(cmdline,
                           stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE,
                           encoding='utf-8',
+                          check=False,
                           shell=True)
 
     if proc.returncode != 0:
         print(proc.stderr)
-        exit(proc.returncode)
+        sys.exit(proc.returncode)
+        return None
 
     if dst_file.exists and os.path.getsize(dst_file) > 0:
         return dst_file
-    else:
-        print(f"Unable to extract report from device {device_id}")
-        exit()
+
+    print(f"Unable to extract report from device {device_id}")
+    sys.exit()
+    return None
 
 
 def merge_systrace(report_file: Path, systrace_file: Path,
@@ -295,7 +362,7 @@ def merge_systrace(report_file: Path, systrace_file: Path,
             of the keywords will be mapped into the csv
     """
     offset_ns, useful_lines = filter_systrace_to_interested_lines(
-        systrace_file, keywords=systrace_keywords)
+        systrace_file, keywords=systrace_keywords, pattern=None)
 
     systrace_datums = []
     for line in useful_lines:
@@ -321,7 +388,8 @@ def extract_and_export(device_id: str, dst_dir: Path, systrace_file: Path,
         systrace_file: If !None, the contents filtered against systrace_keywords
             will be merged into the datum stream in the report
         systrace_keywords: Keywords used to filter systrace lines
-        bucket: If !None, result file(s) will be uploaded to specified bucket/path
+        bucket: If !None, result file(s) will be uploaded to specified
+            bucket/path
     """
     log_file = extract_log_from_device(device_id, dst_dir)
     log_file = normalize_report_name(log_file)
@@ -333,7 +401,8 @@ def extract_and_export(device_id: str, dst_dir: Path, systrace_file: Path,
         systrace_file = new_systrace_file
 
     print(
-        f"Saved log file to: {log_file} (systrace: {systrace_file if systrace_file else None})"
+        f"Saved log file to: {log_file}" \
+             + f" (systrace: {systrace_file if systrace_file else None})"
     )
 
     if systrace_file and systrace_file.exists():
@@ -343,11 +412,10 @@ def extract_and_export(device_id: str, dst_dir: Path, systrace_file: Path,
 
 
 def get_device_product_and_api(report_path: Path) -> (str, int):
+    """Given a report path, infers from it its device and api level.
     """
-    Given a report path, infers from it its device and api level.
-    """
-    device_patterns = match(r"^report_(.+)_(\d+)\.(csv|json)$",
-                            report_path.name)
+    device_patterns = re.match(r"^report_(.+)_(\d+)\.(csv|json)$",
+                               report_path.name)
     result = ("UNKNOWN", 0) if device_patterns is None \
     else device_patterns.group(1), int(device_patterns.group(2))
 

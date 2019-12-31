@@ -13,12 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+"""Implements HalfFloatPrecisionSuiteHandler to process
+reports for the half float precision test
+"""
+from typing import List
+import matplotlib.pyplot as plt
 
-from lib.graphing_components import *
+from lib.graphers.suite_handler import SuiteHandler
+from lib.report import Suite
 
 
 class HalfFloatPrecisionSuiteHandler(SuiteHandler):
-
+    """Implements SuiteHandler for processing half float precision
+    test results
+    """
     def __init__(self, suite):
         super().__init__(suite)
         self.our_data = [
@@ -27,24 +35,33 @@ class HalfFloatPrecisionSuiteHandler(SuiteHandler):
         ]
         self.error_datums = [
             d for d in self.our_data
-            if d.get_custom_field("half_precision.is_correct") == False
+            if not d.get_custom_field("half_precision.is_correct")
         ]
 
     @classmethod
     def can_handle_suite(cls, suite: Suite) -> str:
         return "GPU Half Precision" in suite.name
 
+    @classmethod
+    def can_render_summarization_plot(cls,
+                                      suites: List['SuiteHandler']) -> bool:
+        return False
+
+    @classmethod
+    def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
+        return None
+
     def render_plot(self):
         # gather data for simple error count histogram
         xs = []
-        for d in self.error_datums:
-            v = int(d.get_custom_field_numeric("half_precision.offset"))
-            xs.append(v)
+        for datum in self.error_datums:
+            val = int(datum.get_custom_field_numeric("half_precision.offset"))
+            xs.append(val)
 
         plt.hist(xs)
         plt.xlabel("offset")
         plt.ylabel("error count")
 
-        if len(self.error_datums) > 0:
+        if self.error_datums:
             return f"Found {len(self.error_datums)} erroneous values in dataset"
         return None
