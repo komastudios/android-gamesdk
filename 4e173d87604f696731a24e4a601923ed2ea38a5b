@@ -36,6 +36,29 @@
     },
     {
       "key": {
+        "uuid": "9be3a90a_9ad7af91",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/build.gradle",
+        "patchSetId": 5
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-12-31T10:21:49Z",
+      "side": 1,
+      "message": "Why not use full protobuf here?",
+      "range": {
+        "startLine": 51,
+        "startChar": 0,
+        "endLine": 51,
+        "endChar": 61
+      },
+      "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "23d7565b_2861c695",
         "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/main/java/com/google/tfmonitor/AnnotationsFragment.kt",
         "patchSetId": 5
@@ -53,6 +76,282 @@
     },
     {
       "key": {
+        "uuid": "d06fa303_5bd55c54",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/main/java/com/google/tfmonitor/MonitorViewModel.kt",
+        "patchSetId": 5
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-12-31T10:21:49Z",
+      "side": 1,
+      "message": "Do you need this?",
+      "range": {
+        "startLine": 41,
+        "startChar": 4,
+        "endLine": 43,
+        "endChar": 5
+      },
+      "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f00fedb0_31a17b9f",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/main/java/com/google/tfmonitor/RequestListener.kt",
+        "patchSetId": 5
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-12-31T10:21:49Z",
+      "side": 1,
+      "message": "appKey\nsame for requestString",
+      "range": {
+        "startLine": 26,
+        "startChar": 33,
+        "endLine": 26,
+        "endChar": 40
+      },
+      "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5cc3a83e_8e6b56ec",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/main/java/com/google/tfmonitor/TuningForkRequestServer.kt",
+        "patchSetId": 5
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-12-31T10:21:49Z",
+      "side": 1,
+      "message": "Don\u0027t use wildcard imports\nhttps://developer.android.com/kotlin/style-guide#import_statements",
+      "range": {
+        "startLine": 24,
+        "startChar": 15,
+        "endLine": 24,
+        "endChar": 16
+      },
+      "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3cc61318_3ade0c7d",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/main/java/com/google/tfmonitor/TuningForkRequestServer.kt",
+        "patchSetId": 5
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-12-31T10:21:49Z",
+      "side": 1,
+      "message": "\"contentLenght\"",
+      "range": {
+        "startLine": 135,
+        "startChar": 24,
+        "endLine": 135,
+        "endChar": 38
+      },
+      "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "07329e82_eef66961",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/main/java/com/google/tfmonitor/TuningForkRequestServer.kt",
+        "patchSetId": 5
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-12-31T10:21:49Z",
+      "side": 1,
+      "message": "use full name, \"builder\" or \" stringBuilder\" etc",
+      "range": {
+        "startLine": 168,
+        "startChar": 19,
+        "endLine": 168,
+        "endChar": 20
+      },
+      "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "418f1c0a_19f49cf1",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/main/java/com/google/tfmonitor/TuningForkRequestServer.kt",
+        "patchSetId": 5
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-12-31T10:21:49Z",
+      "side": 1,
+      "message": "nit: arr should contains \"indexes\"\nfor(i in arr.indexes) ...",
+      "range": {
+        "startLine": 169,
+        "startChar": 30,
+        "endLine": 169,
+        "endChar": 33
+      },
+      "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a62c3ce8_4a6342c9",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/main/java/com/google/tuningfork/AppKey.kt",
+        "patchSetId": 5
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-12-31T10:21:49Z",
+      "side": 1,
+      "message": "Can you use groups instead? \nit will be something like \"/?applications/((\\\\w+||\\\\.+)+)/apks/(\\\\d+)\"",
+      "range": {
+        "startLine": 23,
+        "startChar": 12,
+        "endLine": 38,
+        "endChar": 28
+      },
+      "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a876bbe5_2a76041c",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/main/java/com/google/tuningfork/Datastore.kt",
+        "patchSetId": 5
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-12-31T10:21:49Z",
+      "side": 1,
+      "message": "nit: i think empty braces could be removed",
+      "range": {
+        "startLine": 19,
+        "startChar": 16,
+        "endLine": 20,
+        "endChar": 1
+      },
+      "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "74459ac9_105c7fc0",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/main/java/com/google/tuningfork/Deserializer.kt",
+        "patchSetId": 5
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-12-31T10:21:49Z",
+      "side": 1,
+      "message": "remove commented part",
+      "range": {
+        "startLine": 154,
+        "startChar": 5,
+        "endLine": 162,
+        "endChar": 7
+      },
+      "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a6c68582_53208ecc",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/main/java/com/google/tuningfork/Deserializer.kt",
+        "patchSetId": 5
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-12-31T10:21:49Z",
+      "side": 1,
+      "message": "Can you add to other todos the same - todo(ldap) or todo(b/number)?",
+      "range": {
+        "startLine": 226,
+        "startChar": 11,
+        "endLine": 226,
+        "endChar": 27
+      },
+      "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f16900a4_04692149",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/main/proto/performanceparameters.proto",
+        "patchSetId": 5
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-12-31T10:21:49Z",
+      "side": 1,
+      "message": "nit: remove commented",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 35,
+        "endChar": 3
+      },
+      "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "315f0516_2a445f06",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/main/proto/tuningfork.proto",
+        "patchSetId": 5
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-12-31T10:21:49Z",
+      "side": 1,
+      "message": "This proto is in tuningfork sources too, can you put a link to it too same as for previous protos?",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 18
+      },
+      "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "eefc8e14_47141ad4",
         "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/test/java/com/google/tfmonitor/ExampleUnitTest.kt",
         "patchSetId": 5
@@ -64,6 +363,52 @@
       "writtenOn": "2019-12-19T11:56:31Z",
       "side": 1,
       "message": "If it\u0027s just an example let\u0027s remove it for now",
+      "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1899f418_50f40e32",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/build.gradle",
+        "patchSetId": 5
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-12-31T10:21:49Z",
+      "side": 1,
+      "message": "nit:remove extra line",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 8
+      },
+      "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6413e628_2ae25100",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/build.gradle",
+        "patchSetId": 5
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2019-12-31T10:21:49Z",
+      "side": 1,
+      "message": "nit:remove extra line",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 8
+      },
       "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
