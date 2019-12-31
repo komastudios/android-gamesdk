@@ -1,0 +1,10 @@
+Code-Review+2: Victor Repetskyi <vrepets@google.com>
+Autosubmit+1: Florian Rival <florianrival@google.com>
+Presubmit-Verified-1: Treehugger Robot <treehugger-gerrit@google.com>
+Open-Source-Licensing+1: Lint 🤖 <android-build-prod-ayeaye@system.gserviceaccount.com>
+Lint+1: Lint 🤖 <android-build-prod-ayeaye@system.gserviceaccount.com>
+Submitted-by: Florian Rival <florianrival@google.com>
+Submitted-at: Tue, 31 Dec 2019 12:02:41 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1198419
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
