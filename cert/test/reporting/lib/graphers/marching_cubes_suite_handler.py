@@ -13,42 +13,59 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+"""Implements MarchingCubesSuiteHandler for processing
+reports from marching cubes operation.
+"""
+
+
+from typing import List, Tuple
 
 import math
-import sys
+import matplotlib.pyplot as plt
 
 from lib.common import Error, nanoseconds_to_seconds
-from lib.graphing_components import *
+from lib.report import Datum, Suite
+from lib.graphers.suite_handler import SuiteHandler
+
+SLEEP_DUR = \
+    "marching_cubes_permutation_results.configuration.sleep_per_iteration"
 
 X_LABELS = ["sleep(ms) (floating)", "sleep(ms) (pinned)"]
-THREAD_SETUPS = ["One", "OnePerBigCore", "OnePerLittleCore", "OnePerCore"]
+
+THREAD_SETUPS = [
+    "One", "OnePerBigCore", "OnePerLittleCore", "OnePerCore"
+]
 
 
 def y_label(datum: Datum, thread_setup):
+    """Generate a y-label desciption for plotting based on the thread setup"""
+    desc = None
     if datum:
         n_threads = int(
             datum.get_custom_field_numeric(
                 "marching_cubes_permutation_results.num_threads_used"))
         if thread_setup == "One":
-            return "One Core"
+            desc = "One Core"
         elif thread_setup == "OnePerBigCore":
-            return f"{n_threads} Big Cores"
+            desc = f"{n_threads} Big Cores"
         elif thread_setup == "OnePerLittleCore":
-            return f"{n_threads} Little Cores"
+            desc = f"{n_threads} Little Cores"
         elif thread_setup == "OnePerCore":
-            return f"All {n_threads} Cores"
-    else:
-        if thread_setup == "One":
-            return "One Core"
-        elif thread_setup == "OnePerBigCore":
-            return f"Big Cores"
-        elif thread_setup == "OnePerLittleCore":
-            return f"Little Cores"
-        elif thread_setup == "OnePerCore":
-            return f"All Cores"
+            desc = f"All {n_threads} Cores"
+    elif thread_setup == "One":
+        desc = "One Core"
+    elif thread_setup == "OnePerBigCore":
+        desc = "Big Cores"
+    elif thread_setup == "OnePerLittleCore":
+        desc = "Little Cores"
+    elif thread_setup == "OnePerCore":
+        desc = "All Cores"
+
+    return desc
 
 
 def voxels_per_second(datum: Datum):
+    """Look up the voxels-per-second for the provided datum"""
     n_vox = datum.get_custom_field_numeric(
         "marching_cubes_permutation_results.num_voxels_marched_per_iteration")
     avg_dur_s = nanoseconds_to_seconds(
@@ -57,11 +74,12 @@ def voxels_per_second(datum: Datum):
     return n_vox / avg_dur_s
 
 
-def min_max_voxels_per_second(data: List[Datum]):
+def min_max_voxels_per_second(data: List[Datum]) -> Tuple[float, float]:
+    """Determine the min and max voxels-per-second of a list of datums"""
     min_vps = float('inf')
     max_vps = 0
-    for d in data:
-        vps = voxels_per_second(d)
+    for datum in data:
+        vps = voxels_per_second(datum)
         min_vps = min(min_vps, vps)
         max_vps = max(max_vps, vps)
     min_vps = 0 if math.isinf(min_vps) else min_vps
@@ -69,12 +87,16 @@ def min_max_voxels_per_second(data: List[Datum]):
 
 
 class DataConsistencyError(Error):
+    """Error raised to represent some kind of data inconstency"""
 
     def __init__(self, message):
+        super().__init__()
         self.message = message
 
 
 class MarchingCubesSuiteHandler(SuiteHandler):
+    """SuiteHandler implementation for processing data from
+    MarchingCubesGLES3Operation"""
 
     def __init__(self, suite):
         super().__init__(suite)
@@ -90,21 +112,30 @@ class MarchingCubesSuiteHandler(SuiteHandler):
             self.data_by_thread_setup_floating[thread_setup] = []
             self.data_by_thread_setup_pinned[thread_setup] = []
 
-        for d in my_data:
-            thread_setup = d.get_custom_field(
+        for datum in my_data:
+            thread_setup = datum.get_custom_field(
                 "marching_cubes_permutation_results.configuration.thread_setup")
 
-            pin_state = d.get_custom_field(
+            pin_state = datum.get_custom_field(
                 "marching_cubes_permutation_results.configuration.pinned")
 
             if pin_state:
-                self.data_by_thread_setup_pinned[thread_setup].append(d)
+                self.data_by_thread_setup_pinned[thread_setup].append(datum)
             else:
-                self.data_by_thread_setup_floating[thread_setup].append(d)
+                self.data_by_thread_setup_floating[thread_setup].append(datum)
 
     @classmethod
     def can_handle_suite(cls, suite: Suite):
         return "Marching Cubes Permutations Test" in suite.name
+
+    @classmethod
+    def can_render_summarization_plot(cls,
+                                      suites: List['SuiteHandler']) -> bool:
+        return False
+
+    @classmethod
+    def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
+        return None
 
     def render_plot(self) -> str:
         row_names = list(self.data_by_thread_setup_floating.keys())
@@ -121,20 +152,18 @@ class MarchingCubesSuiteHandler(SuiteHandler):
 
                 data = data_by_thread_setup[thread_setup]
                 if data:
-                    ys_by_sleep_dur = {}
-                    for d in data:
-                        vps = voxels_per_second(d)
-                        sleep_dur = d.get_custom_field_numeric(
-                            "marching_cubes_permutation_results.configuration.sleep_per_iteration"
-                        )
-                        ys_by_sleep_dur[sleep_dur] = vps
+                    y_values_by_sleep_dur = {}
+                    for datum in data:
+                        vps = voxels_per_second(datum)
+                        sleep_dur = datum.get_custom_field_numeric(SLEEP_DUR)
+                        y_values_by_sleep_dur[sleep_dur] = vps
 
-                    durs = list(ys_by_sleep_dur.keys())
+                    durs = list(y_values_by_sleep_dur.keys())
                     durs.sort()
 
-                    ys = list(map(lambda dur: ys_by_sleep_dur[dur], durs))
-                    min_y = min(ys)
-                    max_y = max(ys)
+                    y_values = [y_values_by_sleep_dur[dur] for dur in durs]
+                    min_y = min(y_values)
+                    max_y = max(y_values)
                     y_range = max(
                         max_y - min_y,
                         10)  # a little padding in case we have one data point
@@ -142,7 +171,7 @@ class MarchingCubesSuiteHandler(SuiteHandler):
                     max_y += y_range * 0.25
 
                     plt.gca().set_ylim([min_y, max_y])
-                    plt.bar(durs, ys)
+                    plt.bar(durs, y_values)
 
                     plt.xticks(durs, [str(int(d)) for d in durs])
                 else:

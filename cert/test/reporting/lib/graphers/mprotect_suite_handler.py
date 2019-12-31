@@ -13,25 +13,42 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+"""Provides MProtectSuiteHandler which processes report data
+from the Vulkan Mprotect test
+"""
+
+from typing import List
 
 import matplotlib.pyplot as plt
 import numpy as np
 
-from lib.graphing_components import Suite, SuiteHandler
-
+from lib.graphers.suite_handler import SuiteHandler
+from lib.report import Suite
 
 class MProtectSuiteHandler(SuiteHandler):
+    """Implementation of SuiteHandler to process report data
+    from the Vulkan Mprotect test
+    """
 
     def __init__(self, suite):
         super().__init__(suite)
 
-        for d in self.data:
-            if d.operation_id == "VulkanMprotectCheckOperation":
-                self.mprotect_score = d.get_custom_field("mprotect.rank")
+        for datum in self.data:
+            if datum.operation_id == "VulkanMprotectCheckOperation":
+                self.mprotect_score = datum.get_custom_field("mprotect.rank")
 
     @classmethod
     def can_handle_suite(cls, suite: Suite):
         return "Vulkan memory write protection" in suite.name
+
+    @classmethod
+    def can_render_summarization_plot(cls,
+                                      suites: List['SuiteHandler']) -> bool:
+        return False
+
+    @classmethod
+    def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
+        return None
 
     def render_plot(self) -> str:
         if self.mprotect_score is not None:
@@ -40,23 +57,27 @@ class MProtectSuiteHandler(SuiteHandler):
             plt.yticks(np.arange(0))
             plt.bar(0, 1, color=score_color)
 
+        msg = ""
+
         if self.mprotect_score is None:
-            return "No mprotect results found."
+            msg = "No mprotect results found."
         elif self.mprotect_score == 0:
-            return "PASSED."
+            msg = "PASSED."
         elif self.mprotect_score == 1:
-            return "R/W protect fail."
+            msg = "R/W protect fail."
         elif self.mprotect_score == 2:
-            return "Unexpected violation."
+            msg = "Unexpected violation."
         elif self.mprotect_score == 3:
-            return "Read protect fail."
+            msg = "Read protect fail."
         elif self.mprotect_score == 4:
-            return "Missing violation."
+            msg = "Missing violation."
         elif self.mprotect_score == 5:
-            return "Mem mapping fail."
+            msg = "Mem mapping fail."
         elif self.mprotect_score == 6:
-            return "Mem alloc fail."
+            msg = "Mem alloc fail."
         elif self.mprotect_score == 7:
-            return "No mappable memory."
+            msg = "No mappable memory."
         else:
-            return f"Unexpected result: ({self.mprotect_score})"
+            msg = f"Unexpected result: ({self.mprotect_score})"
+
+        return msg
