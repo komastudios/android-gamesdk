@@ -59,6 +59,30 @@
     },
     {
       "key": {
+        "uuid": "9be43b55_6e030cbd",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/build.gradle",
+        "patchSetId": 5
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-12-31T10:47:42Z",
+      "side": 1,
+      "message": "The protobuf-lite runtime is the recommended one for Android apps (see https://github.com/google/protobuf-gradle-plugin#default-outputs and https://github.com/protocolbuffers/protobuf/blob/v3.9.0/java/lite.md - the code size of the library is \"much smaller\"). Seems best to stick with the recommendation if lite is sufficient for our use case.",
+      "parentUuid": "9be3a90a_9ad7af91",
+      "range": {
+        "startLine": 51,
+        "startChar": 0,
+        "endLine": 51,
+        "endChar": 61
+      },
+      "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "23d7565b_2861c695",
         "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/main/java/com/google/tfmonitor/AnnotationsFragment.kt",
         "patchSetId": 5
@@ -93,6 +117,23 @@
         "endLine": 43,
         "endChar": 5
       },
+      "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "63c5ff32_52ea41c3",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/main/java/com/google/tfmonitor/MonitorViewModel.kt",
+        "patchSetId": 5
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-12-31T10:47:42Z",
+      "side": 1,
+      "message": "nit: I see inconsistent spacing between operators, might be a good idea to have Android Studio auto formatting applied on all files?",
       "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -162,6 +203,23 @@
         "endLine": 135,
         "endChar": 38
       },
+      "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3aa0da42_3c366298",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/main/java/com/google/tfmonitor/TuningForkRequestServer.kt",
+        "patchSetId": 5
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2019-12-31T10:47:42Z",
+      "side": 1,
+      "message": "nit: Not a Kotlin specialist, but you might want to take a look at joinToString  https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/join-to-string.html and maybe dropLast:\n\narr.dropLast(1).joinToString(separator \u003d \u0027\u0027)\n\nto avoid this helper method entirely?",
       "revId": "4e173d87604f696731a24e4a601923ed2ea38a5b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
