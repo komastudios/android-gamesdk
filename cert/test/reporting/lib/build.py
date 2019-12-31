@@ -13,10 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+"""Provides helper function build_apk() which builds the AndroidCertTest
+with optional custom configuration JSON
+"""
 
 import os
 import shutil
-import time
 
 from pathlib import Path
 
@@ -33,6 +35,7 @@ class BuildError(Error):
     """
 
     def __init__(self, message):
+        super().__init__()
         self.message = message
 
 
@@ -54,7 +57,17 @@ def _restore_configuration(backup: Path):
     os.remove(backup)
 
 
-def build_apk(clean: bool, release: bool,
+def get_apk_path(release: bool) -> Path:
+    """Get a path to the APK that will be build by build_apk()"""
+    artifact_path = \
+        "../AndroidCertTest/app/build/outputs/apk/release/app-release.apk" \
+        if release else \
+            "../AndroidCertTest/app/build/outputs/apk/debug/app-debug.apk"
+    return Path(artifact_path).resolve()
+
+
+def build_apk(clean: bool,
+              release: bool,
               custom_configuration: Path = None) -> Path:
     """Builds the AndroidCertTest APK
 
@@ -73,7 +86,7 @@ def build_apk(clean: bool, release: bool,
 
     if custom_configuration and not custom_configuration.exists():
         raise BuildError(
-            f"specified custom configuration file {custom_configuration} missing"
+            f"missing configuration file {custom_configuration}"
         )
 
     # if a custom config is provided, copy it over
@@ -84,18 +97,22 @@ def build_apk(clean: bool, release: bool,
     os.chdir("../AndroidCertTest")
 
     task = ["./gradlew"]
-    if clean:
-        task.append("clean")
 
-    task.append("assembleRelease" if release else "assembleDebug")
+    #TODO(shamyl@google.com) Determine why "clean" builds fail on
+    # cmdline but not android studio
+
+    if clean:
+        pass
+    #     task.append("clean")
+
+    task.append("app:assembleRelease" if release else "app:assembleDebug")
     task_cmd = " ".join(task)
 
-    artifact_path = "../AndroidCertTest/app/build/outputs/apk/release/app-release.apk" \
-        if release else "../AndroidCertTest/app/build/outputs/apk/debug/app-debug.apk"
+    artifact_path = get_apk_path(release)
 
     try:
         run_command(task_cmd)
-        return Path(artifact_path).resolve()
+        return artifact_path
     finally:
         # cleanup
         os.chdir(cwd)

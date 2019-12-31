@@ -13,23 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+"""Helper functions for pushing to the devicefarm, and pulling results back
+"""
 
 from datetime import datetime
-import argparse
 import json
+from pathlib import Path
 import re
 import subprocess
-import sys
 import tempfile
-import shutil
-import os
-import yaml
-
-from pathlib import Path
 from typing import Dict, List, Tuple
-
-from lib.report import *
-from lib.build import *
+import yaml
 
 
 def get_all_physical_devices(flags_yaml):
@@ -56,6 +50,7 @@ def get_all_physical_devices(flags_yaml):
     proc = subprocess.run(cmdline,
                           stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE,
+                          check=False,
                           encoding='utf-8')
     if proc.returncode != 0:
         print(proc.stderr)
@@ -81,6 +76,19 @@ def get_all_physical_devices(flags_yaml):
 
 def run_test(flags_file: Path, args_yaml: Path, test_name: str, enable_systrace,
              run_on_all_physical_devices):
+    """Executes an android test deployment on firebase test lab
+    Args:
+        flags_file: Path to the flags file expected by ftl
+        args_yaml: Path to the arguments yaml file expected by ftl
+        test_name: The name of the test execution as will be displayed in the
+            firebase dashboard
+        enable_systrace: if true, cause FTL to record a systrace during exec
+        run_on_all_physical_devices: if true, overrides any specified devices
+            in the args_yaml file and tells firebase to run the test on all
+            devices which are backed by actual physical hardware
+    Returns:
+        tuple of stdout and sterr
+    """
     gcloud_name = (
         '/google/bin/releases/android-games/devicefarm/systrace/gcloud.par'
         if enable_systrace else 'gcloud')
@@ -108,6 +116,7 @@ def run_test(flags_file: Path, args_yaml: Path, test_name: str, enable_systrace,
     proc = subprocess.run(cmdline,
                           stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE,
+                          check=False,
                           encoding='utf-8')
 
     if proc.returncode != 0:
@@ -116,10 +125,18 @@ def run_test(flags_file: Path, args_yaml: Path, test_name: str, enable_systrace,
     return proc.stdout, proc.stderr
 
 
-def display_test_results(stdout, stderr, dst_dir):
+def display_test_results(stdout, stderr, dst_dir: Path):
+    """Helper function to display output from execution on FTL
+    Args:
+        stdout: The stdout from run_test()
+        sterr: The stderr from run_test()
+        dst_dir: Path to the directory where output will be stored
+    """
+    #pylint: disable=unused-argument
     result = json.loads(stdout)
-    if len(result) == 0:
+    if not result:
         return
+
     fields = ['axis_value', 'outcome', 'test_details']
     max_width = {f: max(len(res[f]) for res in result) for f in fields}
     for line in result:
@@ -135,7 +152,18 @@ def display_test_results(stdout, stderr, dst_dir):
             with open(args_file, "w") as write_file:
                 json.dump(line, write_file)
 
+
 def get_test_info(stderr):
+    """Helper function to get test info from an FTL execution
+    Args:
+        stderr: The stderr from run_test()
+    Returns:
+        dictionary of {
+            "url_storage" : google cloud storage
+            "matrix_id" : the name of the execution as shown in ftl dashboard
+            "url_info" : human readable info about the url
+        }
+    """
     pattern = (r'^.*GCS bucket at \[(https.*?)\]' + r'.*Test \[(matrix-.*?)\]' +
                r'.*streamed to \[(https.*?)\]')
     re_matches = re.match(pattern, stderr, flags=re.DOTALL)
@@ -147,12 +175,20 @@ def get_test_info(stderr):
 
 
 def display_test_info(test_info):
+    """Helper function to display the output of get_test_info()
+    """
     print('GCS:    {}'.format(test_info['url_storage']))
     print('Info:   {}'.format(test_info['url_info']))
     print('Matrix: {}\n'.format(test_info['matrix_id']))
 
 
-def download_cloud_artifacts(test_info, file_pattern, dst) -> List[Path]:
+def download_cloud_artifacts(test_info, file_pattern, dst: Path) -> List[Path]:
+    """Helper function to download ftl exeuction artifacts
+    Args:
+        test_info: output from get_test_info()
+        file_pattern: name of the remote file to download
+        dst: Path to the destination folder where artifacts will be downloaded
+    """
     pattern = r'^.*storage\/browser\/(.*)'
     re_match = re.match(pattern, test_info['url_storage'])
     gs_dir = re_match.group(1)
@@ -161,6 +197,7 @@ def download_cloud_artifacts(test_info, file_pattern, dst) -> List[Path]:
     proc = subprocess.run(cmdline,
                           stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE,
+                          check=False,
                           encoding='utf-8')
     if proc.returncode != 0:
         print(proc.stderr)
@@ -176,7 +213,7 @@ def download_cloud_artifacts(test_info, file_pattern, dst) -> List[Path]:
         outfiles.append(Path(outfile))
 
         cmdline = ['gsutil', 'cp', line, outfile]
-        proc = subprocess.run(cmdline)
+        proc = subprocess.run(cmdline, check=False)
 
     return outfiles
 
@@ -185,26 +222,28 @@ def run_on_farm_and_collect_reports(args_dict: Dict, flags_dict: Dict,
                                     test: str, enable_systrace,
                                     enable_all_physical, dst_dir: Path
                                    ) -> Tuple[List[Path], List[Path]]:
-    """Runs the tests on FTL, returning a tuple of lists of result json, and result systrace.
+    """Runs the tests on FTL, returning a tuple of lists of result
+    json, and result systrace.
     Args:
         args_dict: the contents that ftl expects for the args.yaml parameter
         flags_dict: the contents that ftl expects for the flags file
         test: the top-level test to run as described in args_dict
         enable_systrace: if true, collect systrace from ftl
-        enable_all_physical: if true, overrides the devices specified in args_dict for all physical devices available on ftl
+        enable_all_physical: if true, overrides the devices specified in
+            args_dict for all physical devices available on ftl
         dst_dir: the directory into which result data will be copied
     """
 
     try:
         args_file: Path = dst_dir.joinpath("args.yaml")
-        with open(args_file, "w") as f:
-            yaml.dump(args_dict, f)
+        with open(args_file, "w") as file:
+            yaml.dump(args_dict, file)
 
         flags_file: Path = dst_dir.joinpath("flags.txt")
-        with open(flags_file, "w") as f:
+        with open(flags_file, "w") as file:
             for k in flags_dict:
                 line = f"--{k}: {flags_dict[k]}\n"
-                f.write(line)
+                file.write(line)
 
         stdout, stderr = run_test(
             flags_file,
