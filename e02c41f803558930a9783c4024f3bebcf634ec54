@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f2dbbb1d_ce0b74c7",
+        "filename": "cert/test/reporting/lib/graphers/affinity_test_suite_handler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-02T18:44:39Z",
+      "side": 1,
+      "message": "Note: Linter requires abstract methods to be concretely implemented, even if it\u0027s default.",
+      "revId": "e02c41f803558930a9783c4024f3bebcf634ec54",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
