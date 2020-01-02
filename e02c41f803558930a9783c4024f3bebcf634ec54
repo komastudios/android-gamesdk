@@ -16,6 +16,41 @@
       "revId": "e02c41f803558930a9783c4024f3bebcf634ec54",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "55150752_c1c91e16",
+        "filename": "cert/test/reporting/lib/graphers/affinity_test_suite_handler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-01-02T22:15:19Z",
+      "side": 1,
+      "message": "Yup. I think that the reason is that the language committee added object orientation as syntactic sugar.\nThe Python interpreter, as far as I know, doesn\u0027t really care much about objects or inheritance (in fact, you must explicit call super.__init__() or initialization of super class inherited properties just won\u0027t happen)\n\nHence, when decorating a function as @classmethod or even @abstractclassmethod, the interpreter still expects a definition or it won\u0027t pass.\nYet, as these decorators are officially part of the language, IDE \u0026 lint tool makers leverage that to properly raise flags.   ;-)",
+      "parentUuid": "f2dbbb1d_ce0b74c7",
+      "revId": "e02c41f803558930a9783c4024f3bebcf634ec54",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "187a3209_e3134627",
+        "filename": "cert/test/reporting/lib/graphers/marching_cubes_suite_handler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-01-02T22:15:19Z",
+      "side": 1,
+      "message": "While aspects like f\"Big Cores\" were in the original line (the very change is to assign to a variable rather than returning), I encourage the removal of the f. Just \"Big Cores\", \"Little Cores\", etc.\n\nThe interpreter calls its inner \"sprintf\" function as a consequence of having the preceding f. No big deal but unnecessary (and a bad habit if Python newcomers happen to learn Python by maintaining this code).",
+      "revId": "e02c41f803558930a9783c4024f3bebcf634ec54",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
