@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "83b52f36_e0783c1e",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/BaseOperation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-02T17:31:30Z",
+      "side": 0,
+      "message": "You\u0027ve deleted the assignment to Datum::issue_id, but haven\u0027t replaced it anywhere else I can see?",
+      "revId": "dce6857ecff7528be34da817158d5431351af901",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}

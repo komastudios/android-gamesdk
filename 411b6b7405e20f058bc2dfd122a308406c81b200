@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "69f870d3_d6bec51b",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/Reporting.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-02T17:31:30Z",
+      "side": 1,
+      "message": "Perhaps move assignment of issue_id to the ctor? Now that we have one that would be the logical place for it to live.",
+      "revId": "411b6b7405e20f058bc2dfd122a308406c81b200",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
