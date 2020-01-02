@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e84483e2_d4418bc9",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/ThreadSyncPoint.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-02T17:33:40Z",
+      "side": 1,
+      "message": "Seems like a good idea - but I\u0027d recommend a simple example usage in the comment block",
+      "revId": "d754eefe0d44495687f9336260b0111d3bcfbc37",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
