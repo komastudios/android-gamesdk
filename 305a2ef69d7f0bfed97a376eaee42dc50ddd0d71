@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "688abb38_d6733c74",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/ThreadSyncPoint.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-01-02T18:54:13Z",
+      "side": 1,
+      "message": "Minor observation: if somebody \"doxygens\" this file, the above TODO will be flushed into the html output. This TODO should be a classic \"//\" internal comment, outside the Javadoc-like comment.",
+      "revId": "305a2ef69d7f0bfed97a376eaee42dc50ddd0d71",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
