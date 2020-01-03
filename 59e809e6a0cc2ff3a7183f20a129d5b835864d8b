@@ -16,6 +16,24 @@
       "revId": "59e809e6a0cc2ff3a7183f20a129d5b835864d8b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cb28c93d_1d408b8e",
+        "filename": "cert/test/reporting/lib/graphing.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-03T18:42:07Z",
+      "side": 1,
+      "message": "Oof!",
+      "parentUuid": "90917b34_2d50e5d8",
+      "revId": "59e809e6a0cc2ff3a7183f20a129d5b835864d8b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
