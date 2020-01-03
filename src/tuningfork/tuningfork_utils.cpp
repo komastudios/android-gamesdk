@@ -179,7 +179,10 @@ bool GetDebuggable(const JniCtx& jni_ctx) {
     auto package_info = pm.getPackageInfo(package_name.C(),0);
     CHECK_FOR_JNI_EXCEPTION_AND_RETURN(false);
     if (!package_info.valid()) return false;
-    return package_info.applicationInfo().flags()
+    auto application_info = package_info.applicationInfo();
+    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(false);
+    if (!application_info.valid()) return false;
+    return application_info.flags()
             & android::content::pm::ApplicationInfo::FLAG_DEBUGGABLE;
 }
 
