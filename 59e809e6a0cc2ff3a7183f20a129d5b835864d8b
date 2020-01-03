@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "90917b34_2d50e5d8",
+        "filename": "cert/test/reporting/lib/graphing.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-01-03T01:26:58Z",
+      "side": 1,
+      "message": "Beware of the typo in \"summarizations\" (also affects line 261 below).",
+      "revId": "59e809e6a0cc2ff3a7183f20a129d5b835864d8b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
