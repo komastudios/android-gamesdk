@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c7211da2_1a9dd7c0",
+        "filename": "src/tuningfork/tuningfork_utils.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-01-03T12:25:11Z",
+      "side": 1,
+      "message": "Note that in case ApplicationInfo class is minified, GetDebuggable won\u0027t find it.. but this seems ok as we\u0027ll return false?\n\nI wonder if we should includes (automatically or in a documentation page) a proguard file with recommended rules?",
+      "revId": "ef0b25e8e69a02cf0472c8cb155b6c1d42dca4d9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
