@@ -25,7 +25,8 @@ subprojects {
             sourceSets {
                 main {
                     manifest.srcFile '../src/main/AndroidManifest.xml'
-                    java.srcDirs = ['../src/main/java']
+                    java.srcDirs = ['../src/main/java',
+                                    '../src/mainandroidx']
                 }
             }
         }
