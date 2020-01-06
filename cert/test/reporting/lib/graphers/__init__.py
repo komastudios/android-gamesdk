@@ -13,6 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+"""The Graphers Module
+
+All SuiteHandler implementations live here. Each must have its class
+registered with the HANDLERS global.
+"""
 
 from .affinity_test_suite_handler import AffinityTestSuiteHandler
 from .buffer_storage_suite_handler import BufferStorageSuiteHandler
@@ -20,11 +25,11 @@ from .half_float_precision import HalfFloatPrecisionSuiteHandler
 from .memory_allocation_suite_handler import MemoryAllocationSuiteHandler
 from .marching_cubes_suite_handler import MarchingCubesSuiteHandler
 from .mprotect_suite_handler import MProtectSuiteHandler
-"""
-List containing all enabled handlers to render charts.
-"""
+
 HANDLERS = [
     AffinityTestSuiteHandler, BufferStorageSuiteHandler,
     HalfFloatPrecisionSuiteHandler, MemoryAllocationSuiteHandler,
     MarchingCubesSuiteHandler, MProtectSuiteHandler
 ]
+"""List containing all registered SuiteHandler implementations to
+render charts."""
