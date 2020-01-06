@@ -34,6 +34,7 @@ class MProtectSuiteHandler(SuiteHandler):
         return "Vulkan memory write protection" in suite.name
 
     def render_plot(self) -> str:
+        plt.gcf().set_figheight(1.5)
         if self.mprotect_score is not None:
             score_color = (0, 1, 0) if self.mprotect_score == 0 else (1, 0, 0)
             plt.xticks(np.arange(0))
