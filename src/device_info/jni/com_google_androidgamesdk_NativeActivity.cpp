@@ -1,0 +1,819 @@
+/*
+ * Copyright (C) 2010 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#define LOG_TAG "NativeActivity"
+#include "Log.h"
+
+#include <poll.h>
+#include <dlfcn.h>
+#include <fcntl.h>
+
+#include <memory>
+#include <unistd.h>
+#include <errno.h>
+
+
+#include "device_info/com_google_androidgamesdk_NativeActivity.h"
+
+#include <android/asset_manager.h>
+#include <android/looper.h>
+#include <android/surface_control.h>
+#include <android/input.h>
+#include <android/window.h>
+
+#include <android/native_activity.h>
+#include <android/native_window_jni.h>
+#include <android/rect.h>
+#include <android/surface_control.h>
+#include <android/native_window.h>
+
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
+
+#include <util/RefBase.h>
+
+using namespace android::RSC;
+
+#define SLOGW_IF(a, b, c)  (a) ? ALOGW((b), (c)) : 0
+#define LOG_ALWAYS_FATAL_IF(a, b, c)
+
+namespace android
+{
+
+static const bool kLogTrace = false;
+
+static struct {
+    jmethodID finish;
+    jmethodID setWindowFlags;
+    jmethodID setWindowFormat;
+    jmethodID showIme;
+    jmethodID hideIme;
+} gNativeActivityClassInfo;
+
+// ------------------------------------------------------------------------
+
+struct ActivityWork {
+    int32_t cmd;
+    int32_t arg1;
+    int32_t arg2;
+};
+
+enum {
+    CMD_FINISH = 1,
+    CMD_SET_WINDOW_FORMAT,
+    CMD_SET_WINDOW_FLAGS,
+    CMD_SHOW_SOFT_INPUT,
+    CMD_HIDE_SOFT_INPUT,
+};
+
+static void write_work(int fd, int32_t cmd, int32_t arg1=0, int32_t arg2=0) {
+    ActivityWork work;
+    work.cmd = cmd;
+    work.arg1 = arg1;
+    work.arg2 = arg2;
+
+    if (kLogTrace) {
+        ALOGW("write_work: cmd=%d", cmd);
+    }
+
+restart:
+    int res = write(fd, &work, sizeof(work));
+    if (res < 0 && errno == EINTR) {
+        goto restart;
+    }
+    
+    if (res == sizeof(work)) return;
+    
+    if (res < 0) ALOGW("Failed writing to work fd: %s", strerror(errno));
+    else ALOGW("Truncated writing to work fd: %d", res);
+}
+
+static bool read_work(int fd, ActivityWork* outWork) {
+    int res = read(fd, outWork, sizeof(ActivityWork));
+    // no need to worry about EINTR, poll loop will just come back again.
+    if (res == sizeof(ActivityWork)) return true;
+    
+    if (res < 0) ALOGW("Failed reading work fd: %s", strerror(errno));
+    else ALOGW("Truncated reading work fd: %d", res);
+    return false;
+}
+
+/*
+ * Native state for interacting with the NativeActivity class.
+ */
+struct NativeCode : public ANativeActivity {
+    NativeCode(void* _dlhandle, ANativeActivity_createFunc* _createFunc) {
+        memset((ANativeActivity*)this, 0, sizeof(ANativeActivity));
+        memset(&callbacks, 0, sizeof(callbacks));
+        dlhandle = _dlhandle;
+        createActivityFunc = _createFunc;
+        nativeWindow = NULL;
+        mainWorkRead = mainWorkWrite = -1;
+    }
+    
+    ~NativeCode() {
+        if (callbacks.onDestroy != NULL) {
+            callbacks.onDestroy(this);
+        }
+        if (env != NULL) {
+          if (clazz != NULL) {
+            env->DeleteGlobalRef(clazz);
+          }
+          if (javaAssetManager != NULL) {
+            env->DeleteGlobalRef(javaAssetManager);
+          }
+        }
+//        if (messageQueue != NULL && mainWorkRead >= 0) {
+//            messageQueue->getLooper()->removeFd(mainWorkRead);
+//        }
+        if (looper != NULL && mainWorkRead >= 0) {
+            ALooper_removeFd(looper, mainWorkRead);
+        }
+        setSurface(NULL);
+        if (mainWorkRead >= 0) close(mainWorkRead);
+        if (mainWorkWrite >= 0) close(mainWorkWrite);
+        if (dlhandle != NULL) {
+            // for now don't unload...  we probably should clean this
+            // up and only keep one open dlhandle per proc, since there
+            // is really no benefit to unloading the code.
+            //dlclose(dlhandle);
+        }
+    }
+    
+    void setSurface(jobject _surface) {
+        if (nativeWindow != NULL) {
+            ANativeWindow_release(nativeWindow);
+        }
+        if (_surface != NULL) {
+            //TODO(idries@) verify that these are equivilant
+            //nativeWindow = android_view_Surface_getNativeWindow(env, _surface);
+            nativeWindow = ANativeWindow_fromSurface(env, _surface);
+        } else {
+            nativeWindow = NULL;
+        }
+    }
+    
+    ANativeActivityCallbacks callbacks;
+    
+    void* dlhandle;
+    ANativeActivity_createFunc* createActivityFunc;
+    
+    std::string internalDataPathObj;
+    std::string externalDataPathObj;
+    std::string obbPathObj;
+    
+    ANativeWindow* nativeWindow;
+    int32_t lastWindowWidth;
+    int32_t lastWindowHeight;
+
+    // These are used to wake up the main thread to process work.
+    int mainWorkRead;
+    int mainWorkWrite;
+//    std::shared_ptr<MessageQueue> messageQueue;
+    ALooper* looper;
+
+    // Need to hold on to a reference here in case the upper layers destroy our
+    // AssetManager.
+    jobject javaAssetManager;
+};
+
+void android_NativeActivity_finish(ANativeActivity* activity) {
+    NativeCode* code = static_cast<NativeCode*>(activity);
+    write_work(code->mainWorkWrite, CMD_FINISH, 0);
+}
+
+void android_NativeActivity_setWindowFormat(
+        ANativeActivity* activity, int32_t format) {
+    NativeCode* code = static_cast<NativeCode*>(activity);
+    write_work(code->mainWorkWrite, CMD_SET_WINDOW_FORMAT, format);
+}
+
+void android_NativeActivity_setWindowFlags(
+        ANativeActivity* activity, int32_t values, int32_t mask) {
+    NativeCode* code = static_cast<NativeCode*>(activity);
+    write_work(code->mainWorkWrite, CMD_SET_WINDOW_FLAGS, values, mask);
+}
+
+void android_NativeActivity_showSoftInput(
+        ANativeActivity* activity, int32_t flags) {
+    NativeCode* code = static_cast<NativeCode*>(activity);
+    write_work(code->mainWorkWrite, CMD_SHOW_SOFT_INPUT, flags);
+}
+
+void android_NativeActivity_hideSoftInput(
+        ANativeActivity* activity, int32_t flags) {
+    NativeCode* code = static_cast<NativeCode*>(activity);
+    write_work(code->mainWorkWrite, CMD_HIDE_SOFT_INPUT, flags);
+}
+
+// ------------------------------------------------------------------------
+
+void raiseException(JNIEnv* env, const char* msg, jthrowable exceptionObj) {
+    // TODO(idries@): right now we're just logging here, but we should probably do something 
+    // much more complex. See the original implementation in frameworks/base/core/jni/android_os_MessageQueue.cpp
+    ALOGE("Exception: %s", msg);
+}
+
+bool raiseAndClearException(JNIEnv* env, const char* msg) {
+    if (env->ExceptionCheck()) {
+        jthrowable exceptionObj = env->ExceptionOccurred();
+        env->ExceptionClear();
+        raiseException(env, msg, exceptionObj);
+        env->DeleteLocalRef(exceptionObj);
+        return true;
+    }
+    return false;
+}
+
+/*
+ * Callback for handling native events on the application's main thread.
+ */
+static int mainWorkCallback(int fd, int events, void* data) {
+    NativeCode* code = (NativeCode*)data;
+    if ((events & POLLIN) == 0) {
+        return 1;
+    }
+    
+    ActivityWork work;
+    if (!read_work(code->mainWorkRead, &work)) {
+        return 1;
+    }
+
+    if (kLogTrace) {
+        ALOGW("mainWorkCallback: cmd=%d", work.cmd);
+    }
+
+    switch (work.cmd) {
+        case CMD_FINISH: {
+            code->env->CallVoidMethod(code->clazz, gNativeActivityClassInfo.finish);
+//            code->messageQueue->raiseAndClearException(code->env, "finish");
+            raiseAndClearException(code->env, "finish");
+        } break;
+        case CMD_SET_WINDOW_FORMAT: {
+            code->env->CallVoidMethod(code->clazz,
+                    gNativeActivityClassInfo.setWindowFormat, work.arg1);
+//            code->messageQueue->raiseAndClearException(code->env, "setWindowFormat");
+            raiseAndClearException(code->env, "setWindowFormat");
+        } break;
+        case CMD_SET_WINDOW_FLAGS: {
+            code->env->CallVoidMethod(code->clazz,
+                    gNativeActivityClassInfo.setWindowFlags, work.arg1, work.arg2);
+//            code->messageQueue->raiseAndClearException(code->env, "setWindowFlags");
+            raiseAndClearException(code->env, "setWindowFlags");
+        } break;
+        case CMD_SHOW_SOFT_INPUT: {
+            code->env->CallVoidMethod(code->clazz,
+                    gNativeActivityClassInfo.showIme, work.arg1);
+//            code->messageQueue->raiseAndClearException(code->env, "showIme");
+            raiseAndClearException(code->env, "showIme");
+        } break;
+        case CMD_HIDE_SOFT_INPUT: {
+            code->env->CallVoidMethod(code->clazz,
+                    gNativeActivityClassInfo.hideIme, work.arg1);
+//            code->messageQueue->raiseAndClearException(code->env, "hideIme");
+            raiseAndClearException(code->env, "hideIme");
+        } break;
+        default:
+            ALOGW("Unknown work command: %d", work.cmd);
+            break;
+    }
+    
+    return 1;
+}
+
+// ------------------------------------------------------------------------
+
+static thread_local std::string g_error_msg;
+
+// TODO(idries@): I cribbed this from cts/tests/signature/dex-checker/dex-checker.cpp
+class ScopedUtfChars {
+ public:
+  ScopedUtfChars(JNIEnv* env, jstring s) : env_(env), string_(s) {
+    if (s == NULL) {
+      utf_chars_ = NULL;
+    } else {
+      utf_chars_ = env->GetStringUTFChars(s, NULL);
+    }
+  }
+
+  ~ScopedUtfChars() {
+    if (utf_chars_) {
+      env_->ReleaseStringUTFChars(string_, utf_chars_);
+    }
+  }
+
+  const char* c_str() const {
+    return utf_chars_;
+  }
+
+ private:
+  JNIEnv* env_;
+  jstring string_;
+  const char* utf_chars_;
+};
+
+static jlong
+loadNativeCode_native(JNIEnv* env, jobject clazz, jstring path, jstring funcName,
+        jobject messageQueue, jstring internalDataDir, jstring obbDir,
+        jstring externalDataDir, jint sdkVersion, jobject jAssetMgr,
+        jbyteArray savedState, jobject classLoader, jstring libraryPath) {
+    if (kLogTrace) {
+        ALOGW("loadNativeCode_native");
+    }
+
+    ScopedUtfChars pathStr(env, path);
+    std::unique_ptr<NativeCode> code;
+    bool needs_native_bridge = false;
+
+    char* nativeloader_error_msg = nullptr;
+    /*
+    void* handle = OpenNativeLibrary(env,
+                                     sdkVersion,
+                                     pathStr.c_str(),
+                                     classLoader,
+                                     nullptr,
+                                     libraryPath,
+                                     &needs_native_bridge,
+                                     &nativeloader_error_msg);
+    */
+    // TODO(idries@): I doubt that this is functionally equivilant to the 
+    // line above
+    void* handle = dlopen(pathStr.c_str(), 0);
+
+    if (handle == nullptr) {
+        g_error_msg = nativeloader_error_msg;
+        //NativeLoaderFreeErrorMessage(nativeloader_error_msg);
+        free(nativeloader_error_msg);
+        ALOGW("NativeActivity LoadNativeLibrary(\"%s\") failed: %s",
+              pathStr.c_str(),
+              g_error_msg.c_str());
+        return 0;
+    }
+
+    void* funcPtr = NULL;
+    const char* funcStr = env->GetStringUTFChars(funcName, NULL);
+    if (needs_native_bridge) {
+        ALOGE("Needed Native Bridge!");
+//        funcPtr = NativeBridgeGetTrampoline(handle, funcStr, NULL, 0);
+    } else {
+        funcPtr = dlsym(handle, funcStr);
+    }
+
+    code.reset(new NativeCode(handle, (ANativeActivity_createFunc*)funcPtr));
+    env->ReleaseStringUTFChars(funcName, funcStr);
+
+    if (code->createActivityFunc == NULL) {
+        //g_error_msg = needs_native_bridge ? NativeBridgeGetError() : dlerror();
+
+        if (needs_native_bridge) {
+            ALOGE("Needed Native Bridge!");
+            //g_error_msg = NativeBridgeGetError()
+        } else {
+            g_error_msg = dlerror();
+        }
+
+        ALOGW("ANativeActivity_onCreate not found: %s", g_error_msg.c_str());
+        return 0;
+    }
+
+/*
+    code->messageQueue = android_os_MessageQueue_getMessageQueue(env, messageQueue);
+    if (code->messageQueue == NULL) {
+        g_error_msg = "Unable to retrieve native MessageQueue";
+        ALOGW("%s", g_error_msg.c_str());
+        return 0;
+    }
+*/
+    // TODO(idries@): does this get the right looper? It's not totally clear which thread this will be
+    // called from but it's unlikely to be the same one that was previously returned by android_os_MessageQueue_getMessageQueue
+    // might be better to see if there's a way to extract the looper from the looper that is passed into this function? 
+    //
+    // also... we might need to use ALooper_acquire()
+    code->looper = ALooper_forThread();
+    if (code->looper == NULL) {
+        g_error_msg = "Unable to retrieve native looper";
+        ALOGW("%s", g_error_msg.c_str());
+        return 0;
+    }
+
+    int msgpipe[2];
+    if (pipe(msgpipe)) {
+        g_error_msg = "could not create pipe: ";
+        g_error_msg.append(strerror(errno));
+        ALOGW("%s", g_error_msg.c_str());
+        return 0;
+    }
+    code->mainWorkRead = msgpipe[0];
+    code->mainWorkWrite = msgpipe[1];
+    int result = fcntl(code->mainWorkRead, F_SETFL, O_NONBLOCK);
+    SLOGW_IF(result != 0, "Could not make main work read pipe "
+            "non-blocking: %s", strerror(errno));
+    result = fcntl(code->mainWorkWrite, F_SETFL, O_NONBLOCK);
+    SLOGW_IF(result != 0, "Could not make main work write pipe "
+            "non-blocking: %s", strerror(errno));
+//    code->messageQueue->getLooper()->addFd(
+//            code->mainWorkRead, 0, ALOOPER_EVENT_INPUT, mainWorkCallback, code.get());
+    ALooper_addFd(code->looper, code->mainWorkRead, 0, ALOOPER_EVENT_INPUT, mainWorkCallback, code.get());
+
+    code->ANativeActivity::callbacks = &code->callbacks;
+    if (env->GetJavaVM(&code->vm) < 0) {
+        g_error_msg = "NativeActivity GetJavaVM failed";
+        ALOGW("%s", g_error_msg.c_str());
+        return 0;
+    }
+    code->env = env;
+    code->clazz = env->NewGlobalRef(clazz);
+
+    const char* dirStr = env->GetStringUTFChars(internalDataDir, NULL);
+    code->internalDataPathObj = dirStr;
+    code->internalDataPath = code->internalDataPathObj.c_str();
+    env->ReleaseStringUTFChars(internalDataDir, dirStr);
+
+    if (externalDataDir != NULL) {
+        dirStr = env->GetStringUTFChars(externalDataDir, NULL);
+        code->externalDataPathObj = dirStr;
+        env->ReleaseStringUTFChars(externalDataDir, dirStr);
+    }
+    code->externalDataPath = code->externalDataPathObj.c_str();
+
+    code->sdkVersion = sdkVersion;
+
+    code->javaAssetManager = env->NewGlobalRef(jAssetMgr);
+//    code->assetManager = NdkAssetManagerForJavaObject(env, jAssetMgr);
+    code->assetManager = AAssetManager_fromJava(env, jAssetMgr);
+
+    if (obbDir != NULL) {
+        dirStr = env->GetStringUTFChars(obbDir, NULL);
+        code->obbPathObj = dirStr;
+        env->ReleaseStringUTFChars(obbDir, dirStr);
+    }
+    code->obbPath = code->obbPathObj.c_str();
+
+    jbyte* rawSavedState = NULL;
+    jsize rawSavedSize = 0;
+    if (savedState != NULL) {
+        rawSavedState = env->GetByteArrayElements(savedState, NULL);
+        rawSavedSize = env->GetArrayLength(savedState);
+    }
+
+    code->createActivityFunc(code.get(), rawSavedState, rawSavedSize);
+
+    if (rawSavedState != NULL) {
+        env->ReleaseByteArrayElements(savedState, rawSavedState, 0);
+    }
+
+    return (jlong)code.release();
+}
+
+static jstring getDlError_native(JNIEnv* env, jobject clazz) {
+  jstring result = env->NewStringUTF(g_error_msg.c_str());
+  g_error_msg.clear();
+  return result;
+}
+
+static void
+unloadNativeCode_native(JNIEnv* env, jobject clazz, jlong handle)
+{
+    if (kLogTrace) {
+        ALOGW("unloadNativeCode_native");
+    }
+    if (handle != 0) {
+        NativeCode* code = (NativeCode*)handle;
+        delete code;
+    }
+}
+
+static void
+onStart_native(JNIEnv* env, jobject clazz, jlong handle)
+{
+    if (kLogTrace) {
+        ALOGW("onStart_native");
+    }
+    if (handle != 0) {
+        NativeCode* code = (NativeCode*)handle;
+        if (code->callbacks.onStart != NULL) {
+            code->callbacks.onStart(code);
+        }
+    }
+}
+
+static void
+onResume_native(JNIEnv* env, jobject clazz, jlong handle)
+{
+    if (kLogTrace) {
+        ALOGW("onResume_native");
+    }
+    if (handle != 0) {
+        NativeCode* code = (NativeCode*)handle;
+        if (code->callbacks.onResume != NULL) {
+            code->callbacks.onResume(code);
+        }
+    }
+}
+
+static jbyteArray
+onSaveInstanceState_native(JNIEnv* env, jobject clazz, jlong handle)
+{
+    if (kLogTrace) {
+        ALOGW("onSaveInstanceState_native");
+    }
+
+    jbyteArray array = NULL;
+
+    if (handle != 0) {
+        NativeCode* code = (NativeCode*)handle;
+        if (code->callbacks.onSaveInstanceState != NULL) {
+            size_t len = 0;
+            jbyte* state = (jbyte*)code->callbacks.onSaveInstanceState(code, &len);
+            if (len > 0) {
+                array = env->NewByteArray(len);
+                if (array != NULL) {
+                    env->SetByteArrayRegion(array, 0, len, state);
+                }
+            }
+            if (state != NULL) {
+                free(state);
+            }
+        }
+    }
+
+    return array;
+}
+
+static void
+onPause_native(JNIEnv* env, jobject clazz, jlong handle)
+{
+    if (kLogTrace) {
+        ALOGW("onPause_native");
+    }
+    if (handle != 0) {
+        NativeCode* code = (NativeCode*)handle;
+        if (code->callbacks.onPause != NULL) {
+            code->callbacks.onPause(code);
+        }
+    }
+}
+
+static void
+onStop_native(JNIEnv* env, jobject clazz, jlong handle)
+{
+    if (kLogTrace) {
+        ALOGW("onStop_native");
+    }
+    if (handle != 0) {
+        NativeCode* code = (NativeCode*)handle;
+        if (code->callbacks.onStop != NULL) {
+            code->callbacks.onStop(code);
+        }
+    }
+}
+
+static void
+onConfigurationChanged_native(JNIEnv* env, jobject clazz, jlong handle)
+{
+    if (kLogTrace) {
+        ALOGW("onConfigurationChanged_native");
+    }
+    if (handle != 0) {
+        NativeCode* code = (NativeCode*)handle;
+        if (code->callbacks.onConfigurationChanged != NULL) {
+            code->callbacks.onConfigurationChanged(code);
+        }
+    }
+}
+
+static void
+onLowMemory_native(JNIEnv* env, jobject clazz, jlong handle)
+{
+    if (kLogTrace) {
+        ALOGW("onLowMemory_native");
+    }
+    if (handle != 0) {
+        NativeCode* code = (NativeCode*)handle;
+        if (code->callbacks.onLowMemory != NULL) {
+            code->callbacks.onLowMemory(code);
+        }
+    }
+}
+
+static void
+onWindowFocusChanged_native(JNIEnv* env, jobject clazz, jlong handle, jboolean focused)
+{
+    if (kLogTrace) {
+        ALOGW("onWindowFocusChanged_native");
+    }
+    if (handle != 0) {
+        NativeCode* code = (NativeCode*)handle;
+        if (code->callbacks.onWindowFocusChanged != NULL) {
+            code->callbacks.onWindowFocusChanged(code, focused ? 1 : 0);
+        }
+    }
+}
+
+static void
+onSurfaceCreated_native(JNIEnv* env, jobject clazz, jlong handle, jobject surface)
+{
+    if (kLogTrace) {
+        ALOGW("onSurfaceCreated_native");
+    }
+    if (handle != 0) {
+        NativeCode* code = (NativeCode*)handle;
+        code->setSurface(surface);
+        if (code->nativeWindow != NULL && code->callbacks.onNativeWindowCreated != NULL) {
+            code->callbacks.onNativeWindowCreated(code,
+                    code->nativeWindow);
+        }
+    }
+}
+
+static void
+onSurfaceChanged_native(JNIEnv* env, jobject clazz, jlong handle, jobject surface,
+        jint format, jint width, jint height)
+{
+    if (kLogTrace) {
+        ALOGW("onSurfaceChanged_native");
+    }
+    if (handle != 0) {
+        NativeCode* code = (NativeCode*)handle;
+        ANativeWindow* oldNativeWindow = code->nativeWindow;
+        code->setSurface(surface);
+        if (oldNativeWindow != code->nativeWindow) {
+            if (oldNativeWindow != NULL && code->callbacks.onNativeWindowDestroyed != NULL) {
+                code->callbacks.onNativeWindowDestroyed(code,
+                        oldNativeWindow);
+            }
+            if (code->nativeWindow != NULL) {
+                if (code->callbacks.onNativeWindowCreated != NULL) {
+                    code->callbacks.onNativeWindowCreated(code,
+                            code->nativeWindow);
+                }
+//                code->lastWindowWidth = getWindowProp(code->nativeWindow.get(),
+//                        NATIVE_WINDOW_WIDTH);
+                code->lastWindowWidth = ANativeWindow_getWidth(code->nativeWindow);
+//                code->lastWindowHeight = getWindowProp(code->nativeWindow.get(),
+//                        NATIVE_WINDOW_HEIGHT);
+                code->lastWindowHeight = ANativeWindow_getHeight(code->nativeWindow);
+            }
+        } else {
+            // Maybe it resized?
+            int32_t newWidth = ANativeWindow_getWidth(code->nativeWindow);
+            int32_t newHeight = ANativeWindow_getHeight(code->nativeWindow);
+            if (newWidth != code->lastWindowWidth
+                    || newHeight != code->lastWindowHeight) {
+                if (code->callbacks.onNativeWindowResized != NULL) {
+                    code->callbacks.onNativeWindowResized(code,
+                            code->nativeWindow);
+                }
+            }
+        }
+
+        if (oldNativeWindow != NULL) {
+            ANativeWindow_release(oldNativeWindow);
+        }
+    }
+}
+
+static void
+onSurfaceRedrawNeeded_native(JNIEnv* env, jobject clazz, jlong handle)
+{
+    if (kLogTrace) {
+        ALOGW("onSurfaceRedrawNeeded_native");
+    }
+    if (handle != 0) {
+        NativeCode* code = (NativeCode*)handle;
+        if (code->nativeWindow != NULL && code->callbacks.onNativeWindowRedrawNeeded != NULL) {
+            code->callbacks.onNativeWindowRedrawNeeded(code, code->nativeWindow);
+        }
+    }
+}
+
+static void
+onSurfaceDestroyed_native(JNIEnv* env, jobject clazz, jlong handle, jobject surface)
+{
+    if (kLogTrace) {
+        ALOGW("onSurfaceDestroyed_native");
+    }
+    if (handle != 0) {
+        NativeCode* code = (NativeCode*)handle;
+        if (code->nativeWindow != NULL && code->callbacks.onNativeWindowDestroyed != NULL) {
+            code->callbacks.onNativeWindowDestroyed(code,
+                    code->nativeWindow);
+        }
+        code->setSurface(NULL);
+    }
+}
+
+static void
+onInputQueueCreated_native(JNIEnv* env, jobject clazz, jlong handle, jlong queuePtr)
+{
+    if (kLogTrace) {
+        ALOGW("onInputChannelCreated_native");
+    }
+    if (handle != 0) {
+        NativeCode* code = (NativeCode*)handle;
+        if (code->callbacks.onInputQueueCreated != NULL) {
+            AInputQueue* queue = reinterpret_cast<AInputQueue*>(queuePtr);
+            code->callbacks.onInputQueueCreated(code, queue);
+        }
+    }
+}
+
+static void
+onInputQueueDestroyed_native(JNIEnv* env, jobject clazz, jlong handle, jlong queuePtr)
+{
+    if (kLogTrace) {
+        ALOGW("onInputChannelDestroyed_native");
+    }
+    if (handle != 0) {
+        NativeCode* code = (NativeCode*)handle;
+        if (code->callbacks.onInputQueueDestroyed != NULL) {
+            AInputQueue* queue = reinterpret_cast<AInputQueue*>(queuePtr);
+            code->callbacks.onInputQueueDestroyed(code, queue);
+        }
+    }
+}
+
+static void
+onContentRectChanged_native(JNIEnv* env, jobject clazz, jlong handle,
+        jint x, jint y, jint w, jint h)
+{
+    if (kLogTrace) {
+        ALOGW("onContentRectChanged_native");
+    }
+    if (handle != 0) {
+        NativeCode* code = (NativeCode*)handle;
+        if (code->callbacks.onContentRectChanged != NULL) {
+            ARect rect;
+            rect.left = x;
+            rect.top = y;
+            rect.right = x+w;
+            rect.bottom = y+h;
+            code->callbacks.onContentRectChanged(code, &rect);
+        }
+    }
+}
+
+/*
+static const JNINativeMethod g_methods[] = {
+    { "loadNativeCode",
+        "(Ljava/lang/String;Ljava/lang/String;Landroid/os/MessageQueue;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILandroid/content/res/AssetManager;[BLjava/lang/ClassLoader;Ljava/lang/String;)J",
+        (void*)loadNativeCode_native },
+    { "getDlError", "()Ljava/lang/String;", (void*) getDlError_native },
+    { "unloadNativeCode", "(J)V", (void*)unloadNativeCode_native },
+    { "onStartNative", "(J)V", (void*)onStart_native },
+    { "onResumeNative", "(J)V", (void*)onResume_native },
+    { "onSaveInstanceStateNative", "(J)[B", (void*)onSaveInstanceState_native },
+    { "onPauseNative", "(J)V", (void*)onPause_native },
+    { "onStopNative", "(J)V", (void*)onStop_native },
+    { "onConfigurationChangedNative", "(J)V", (void*)onConfigurationChanged_native },
+    { "onLowMemoryNative", "(J)V", (void*)onLowMemory_native },
+    { "onWindowFocusChangedNative", "(JZ)V", (void*)onWindowFocusChanged_native },
+    { "onSurfaceCreatedNative", "(JLandroid/view/Surface;)V", (void*)onSurfaceCreated_native },
+    { "onSurfaceChangedNative", "(JLandroid/view/Surface;III)V", (void*)onSurfaceChanged_native },
+    { "onSurfaceRedrawNeededNative", "(JLandroid/view/Surface;)V", (void*)onSurfaceRedrawNeeded_native },
+    { "onSurfaceDestroyedNative", "(J)V", (void*)onSurfaceDestroyed_native },
+    { "onInputQueueCreatedNative", "(JJ)V",
+        (void*)onInputQueueCreated_native },
+    { "onInputQueueDestroyedNative", "(JJ)V",
+        (void*)onInputQueueDestroyed_native },
+    { "onContentRectChangedNative", "(JIIII)V", (void*)onContentRectChanged_native },
+};
+
+static const char* const kNativeActivityPathName = "android/app/NativeActivity";
+
+static inline jclass FindClassOrDie(JNIEnv* env, const char* class_name) {
+    jclass clazz = env->FindClass(class_name);
+    LOG_ALWAYS_FATAL_IF(clazz == NULL, "Unable to find class %s", class_name);
+    return clazz;
+}
+
+int register_android_app_NativeActivity(JNIEnv* env)
+{
+    //ALOGD("register_android_app_NativeActivity");
+    jclass clazz = FindClassOrDie(env, kNativeActivityPathName);
+
+    gNativeActivityClassInfo.finish = GetMethodIDOrDie(env, clazz, "finish", "()V");
+    gNativeActivityClassInfo.setWindowFlags = GetMethodIDOrDie(env, clazz, "setWindowFlags",
+                                                               "(II)V");
+    gNativeActivityClassInfo.setWindowFormat = GetMethodIDOrDie(env, clazz, "setWindowFormat",
+                                                                "(I)V");
+    gNativeActivityClassInfo.showIme = GetMethodIDOrDie(env, clazz, "showIme", "(I)V");
+    gNativeActivityClassInfo.hideIme = GetMethodIDOrDie(env, clazz, "hideIme", "(I)V");
+
+    return RegisterMethodsOrDie(env, kNativeActivityPathName, g_methods, NELEM(g_methods));
+}
+*/
+} // namespace android

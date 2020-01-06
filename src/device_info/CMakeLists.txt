@@ -13,6 +13,7 @@ include_directories( ${_MY_DIR}/../../include )
 include_directories( ${_MY_DIR}/../../include/third_party/nanopb )
 include_directories( ${THIRD_PARTY_LOCATION}/stream_util/include )
 include_directories( ${_MY_DIR}/../common )
+include_directories( ${ANDROID_NDK}/toolchains/renderscript/prebuilt/linux-x86_64/platform/rs/cpp/ )
 
 include_directories( ${PROTO_GENS_DIR} )
 include_directories( ${PROTOBUF_INCLUDE_DIR} )
@@ -41,6 +42,7 @@ add_library( game_sdk_device_info_jni
              SHARED
 
              ${SOURCE_LOCATION}/jni/device_info_jni.cpp
+             ${SOURCE_LOCATION}/jni/com_google_androidgamesdk_NativeActivity.cpp
              )
 
 
