@@ -41,6 +41,7 @@ add_library( game_sdk_device_info_jni
              SHARED
 
              ${SOURCE_LOCATION}/jni/device_info_jni.cpp
+             ${SOURCE_LOCATION}/jni/com_google_androidgamesdk_NativeActivity.cpp
              )
 
 
