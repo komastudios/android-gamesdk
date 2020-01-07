@@ -73,6 +73,24 @@
     },
     {
       "key": {
+        "uuid": "bc15da5d_3a449a63",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 14
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-01-07T18:43:29Z",
+      "side": 1,
+      "message": "int32 indices are significantly slower to process on any GPU, especially mobile",
+      "parentUuid": "221edb0f_78fb7fcf",
+      "revId": "bfbecfeef9780b7a28abf42e8b1729376698522c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ee6617ac_77f164a3",
         "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
         "patchSetId": 14
