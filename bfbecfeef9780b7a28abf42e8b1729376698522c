@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "23808ed5_401f5b4e",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 14
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-01-07T18:36:16Z",
+      "side": 1,
+      "message": "If a model is bigger than 65k verts, cut it in sub meshes that are smaller than 65k on loading.",
+      "parentUuid": "d73ca7aa_10e4f7bb",
+      "revId": "bfbecfeef9780b7a28abf42e8b1729376698522c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ee6617ac_77f164a3",
         "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
         "patchSetId": 14
@@ -66,6 +84,24 @@
       "side": 1,
       "message": "I don\u0027t think this calculation can be cached? This is taking the bounding box of the basic geometry and then calculating a new bounding box based on this specific mesh instance\u0027s rotation/position, which is changing every frame so it has to be done every frame\n\nThe base bounding box of the Geometry is already cached within the geometry instance, this function is just applying the instance\u0027s transformation to get the instance-specific bounding box",
       "parentUuid": "ee6617ac_77f164a3",
+      "revId": "bfbecfeef9780b7a28abf42e8b1729376698522c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fd880b7a_3a2de4a0",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 14
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-01-07T18:36:16Z",
+      "side": 1,
+      "message": "Ah! You are right. Can you change the name of the method to make it clearer that this is not the BB in object space?",
+      "parentUuid": "647c098a_ef6f1364",
       "revId": "bfbecfeef9780b7a28abf42e8b1729376698522c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
