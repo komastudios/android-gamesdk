@@ -16,6 +16,24 @@
       "revId": "d754eefe0d44495687f9336260b0111d3bcfbc37",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "19da5397_5bd187ed",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/ThreadSyncPoint.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1597621
+      },
+      "writtenOn": "2020-01-07T17:44:25Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "e84483e2_d4418bc9",
+      "revId": "d754eefe0d44495687f9336260b0111d3bcfbc37",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
