@@ -21,7 +21,6 @@ for subsequent processing
 Meant to be called from ./run.py
 """
 
-import glob
 import os
 from pathlib import Path
 import shutil
@@ -32,7 +31,9 @@ from typing import Tuple, Dict, List
 from lib.build import APP_ID
 from lib.common import run_command, NonZeroSubprocessExitCode, \
     get_attached_devices, dict_lookup
-from lib.report import extract_and_export, normalize_report_name, merge_systrace
+from lib.report import extract_and_export, normalize_report_name, \
+    merge_systrace
+from lib.summary import perform_summary_if_enabled
 from lib.systrace import LocalSystrace, SystraceParseError
 from lib.devicefarm import run_on_farm_and_collect_reports
 import lib.graphing
@@ -60,22 +61,6 @@ def get_systrace_config(recipe_dict: Dict) -> (bool, List[str], List[str]):
     categories = dict_lookup(recipe_dict, "systrace.categories", fallback=cats)
     categories = [] if not categories else categories.split(" ")
     return enabled, keywords, categories
-
-
-def get_summary_config(recipe: Dict) -> (bool, str):
-    """Extracts, from the recipe, summary related arguments.
-    These are:
-
-    * enabled: a boolean telling whether a summary is enabled at all.
-    * fmt: string denoting the summary format (one member of
-        lib.graphing.DocumentFormat.HTML or lib.graphing.DocumentFormat.MARKDOWN
-        )
-    """
-    enabled = dict_lookup(recipe, "summary.enabled", fallback=False)
-    fmt = dict_lookup(recipe, "summary.format", fallback="md")
-    fmt = lib.graphing.DocumentFormat.from_extension(fmt)
-
-    return enabled, fmt
 
 
 def load_tasks(
@@ -270,27 +255,6 @@ def process_ftl_reports(
     return out_files
 
 
-def generate_report_summary(report_files_dir: Path,
-                            doc_fmt: str,
-                            figure_dpi=600) -> Path:
-    """Scans for report JSON files in the specified directory
-    and generates reports.
-    Args:
-        report_files_dir: Path to a folder containing report JSON files
-        doc_fmt: "html" or "md" to denote requested document format
-        figure_dpi: DPI to save matplotlib figures
-    """
-    report_files = [
-        Path(f) for f in glob.glob(str(report_files_dir) + '/*.json')
-    ]
-
-    report_summary_file_name = f"summary_{str(report_files_dir.stem)}"
-    report_summary_file = report_files_dir.joinpath(report_summary_file_name)
-
-    lib.graphing.render_report_document(report_files, report_summary_file,
-                                        doc_fmt, figure_dpi)
-
-
 # ------------------------------------------------------------------------------
 
 
@@ -310,8 +274,6 @@ def run_local_deployment(recipe: Dict, apk: Path, out_dir: Path):
 
     systrace_enabled, systrace_keywords, systrace_categories = \
         get_systrace_config(recipe)
-
-    summary_enabled, summary_fmt = get_summary_config(recipe)
 
     # at present, preflight_tasks are only available for local deployment
     preflight_tasks, preflight_env = get_preflight_tasks(recipe)
@@ -348,8 +310,7 @@ def run_local_deployment(recipe: Dict, apk: Path, out_dir: Path):
         # run postflight tasks
         lib.tasks_runner.run(postflight_tasks, device_id, postflight_env)
 
-    if summary_enabled:
-        generate_report_summary(out_dir, summary_fmt)
+    perform_summary_if_enabled(recipe, out_dir)
 
 
 # ------------------------------------------------------------------------------
@@ -382,8 +343,6 @@ def run_ftl_deployment(recipe: Dict, apk: Path, out_dir: Path):
     systrace_enabled, systrace_keywords, _ = \
         get_systrace_config(recipe)
 
-    summary_enabled, summary_fmt = get_summary_config(recipe)
-
     report_files, systrace_files = run_on_farm_and_collect_reports(
         args_dict=args_dict,
         flags_dict=flags_dict,
@@ -395,5 +354,4 @@ def run_ftl_deployment(recipe: Dict, apk: Path, out_dir: Path):
     report_files = process_ftl_reports(out_dir, report_files, systrace_files,
                                        systrace_keywords)
 
-    if summary_enabled:
-        generate_report_summary(out_dir, summary_fmt)
+    perform_summary_if_enabled(recipe, out_dir)

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "aec75241cbbaa81e735fb5cdb128527dcb88a7a3bcdcfa479416889234f3d622"
+            "sha256": "7700778c34da38378543ac5730389a55f39abc49a345f55502b76825b542fdf2"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -146,14 +146,6 @@
             "index": "pypi",
             "version": "==4.4.1"
         },
-        "markdown2": {
-            "hashes": [
-                "sha256:7ff88e00b396c02c8e1ecd8d176cfa418fb01fe81234dcea77803e7ce4f05dbe",
-                "sha256:882d3607fc023cdea0ac2cd0e1147617fcb0361cb1133d3ff095417f995ff270"
-            ],
-            "index": "pypi",
-            "version": "==2.3.8"
-        },
         "matplotlib": {
             "hashes": [
                 "sha256:1febd22afe1489b13c6749ea059d392c03261b2950d1d45c17e3aed812080c93",
@@ -242,6 +234,13 @@
             ],
             "index": "pypi",
             "version": "==2.8.1"
+        },
+        "python-docx": {
+            "hashes": [
+                "sha256:bc76ecac6b2d00ce6442a69d03a6f35c71cd72293cd8405a7472dfe317920024"
+            ],
+            "index": "pypi",
+            "version": "==0.8.10"
         },
         "pyyaml": {
             "hashes": [

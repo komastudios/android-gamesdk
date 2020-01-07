@@ -24,7 +24,7 @@ python-dateutil = "==2.8.1"
 PyYAML = "==5.1.2"
 six = "==1.13.0"
 soupsieve = "==1.9.5"
-markdown2 = "*"
+python-docx = "*"
 
 [requires]
 python_version = "3.7"
