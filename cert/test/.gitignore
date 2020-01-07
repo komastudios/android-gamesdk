@@ -101,8 +101,6 @@ lint/tmp/
 devicefarm/*/
 tmp/
 out/
-report.json
-report.csv
 configuration_backup.json
 
 __pycache__

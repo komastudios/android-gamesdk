@@ -13,27 +13,42 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+"""Implements BufferStorageSuiteHandler for processing
+reports from BufferStorageGLES3Operation
+"""
+
+from typing import List
 
 import matplotlib.pyplot as plt
 import numpy as np
-from typing import List
 
-from lib.graphing_components import Suite, SuiteHandler
+from lib.report import Suite
+from lib.graphers.suite_handler import SuiteHandler
 
 
 class BufferStorageSuiteHandler(SuiteHandler):
-
+    '''Implement SuiteHandler for BufferStorageGLES3Operation
+    '''
     def __init__(self, suite):
         super().__init__(suite)
 
-        for d in self.data:
-            if d.operation_id == "BufferStorageGLES3Operation":
-                self.test_result_status = d.get_custom_field(
+        for datum in self.data:
+            if datum.operation_id == "BufferStorageGLES3Operation":
+                self.test_result_status = datum.get_custom_field(
                     "buffer_storage.status")
 
     @classmethod
     def can_handle_suite(cls, suite: Suite):
         return "GLES3 Buffer Storage" in suite.name
+
+    @classmethod
+    def can_render_summarization_plot(cls,
+                                      suites: List['SuiteHandler']) -> bool:
+        return False
+
+    @classmethod
+    def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
+        return None
 
     def render_plot(self) -> str:
         plt.gcf().set_figheight(1.5)
@@ -44,21 +59,24 @@ class BufferStorageSuiteHandler(SuiteHandler):
             plt.yticks(np.arange(0))
             plt.bar(0, 1, color=score_color)
 
+        msg = ''
         if self.test_result_status is None:
-            return "Test result status not found."
+            msg = "Test result status not found."
         elif self.test_result_status == 0:
-            return "Passed."
+            msg = "Passed."
         elif self.test_result_status == 1:
-            return "Feature not found as OpenGL ES extension."
+            msg = "Feature not found as OpenGL ES extension."
         elif self.test_result_status == 2:
-            return "Feature not found in OpenGL ES driver library."
+            msg = "Feature not found in OpenGL ES driver library."
         elif self.test_result_status == 3:
-            return "Issues allocating a mutable bufffer store."
+            msg = "Issues allocating a mutable bufffer store."
         elif self.test_result_status == 4:
-            return "Issues deallocating a mutable bufffer store."
+            msg = "Issues deallocating a mutable bufffer store."
         elif self.test_result_status == 5:
-            return "Issues allocating an immutable bufffer store."
+            msg = "Issues allocating an immutable bufffer store."
         elif self.test_result_status == 6:
-            return "Unexpected success deallocating an immutable buffer store."
+            msg = "Unexpected success deallocating an immutable buffer store."
         else:
-            return f"Unexpected result: ({self.test_result_status})"
+            msg = f"Unexpected result: ({self.test_result_status})"
+
+        return msg

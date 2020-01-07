@@ -1,17 +1,17 @@
 preflight:
   - {
       action: copy,
-      src: "${WORKSPACE_DIR}/test/data/tasks/hello.txt",
+      src: "${WORKSPACE_DIR}/test/unit/data/tasks/hello.txt",
       dst: "${APP_FILES_DIR}/hello.txt",
     }
   - {
       action: copy,
-      src: "${WORKSPACE_DIR}/test/data/tasks/hello.txt",
+      src: "${WORKSPACE_DIR}/test/unit/data/tasks/hello.txt",
       dst: "${APP_OOB_DATA_DIR}/hello.txt",
     }
   - {
       action: copy,
-      src: "${WORKSPACE_DIR}/test/data/tasks/hello.txt",
+      src: "${WORKSPACE_DIR}/test/unit/data/tasks/hello.txt",
       dst: "${DEVICE_ROOT}/sdcard/hello.txt",
     }
 
