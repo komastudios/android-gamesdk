@@ -16,6 +16,24 @@
       "revId": "b81c20e6726e7724bdd116832e17a7ecafa11ba4",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "78955549_84c2bdd4",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/Reporting.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1597621
+      },
+      "writtenOn": "2020-01-07T17:44:54Z",
+      "side": 1,
+      "message": "Yep, this gets rid of the large flatline we were occasionally seeing in the graphs. I imagine there\u0027s still *some* stalling there if you actually look at the timestamps and start counting nanoseconds, but it\u0027s nowhere near what it was before.",
+      "parentUuid": "de6220b9_a6f9c8f6",
+      "revId": "b81c20e6726e7724bdd116832e17a7ecafa11ba4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
