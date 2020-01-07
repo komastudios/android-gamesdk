@@ -96,6 +96,8 @@ namespace {
 
     // Returns the filename component of a file path.
     std::string GetFilename(const std::string& path) {
+        // TODO(tmillican@google.com): Duplicated code, should probably use
+        //  std::filesystem anyway.
         const size_t pos = path.find_last_of("/");
         if (pos > path.size()) {
             return path;

@@ -47,7 +47,7 @@ namespace ancer {
          * Returns a vulkan_info struct with data pertaining to the current
          * operation.
          */
-        VulkanInfo &GetInfo();
+        vulkan::VulkanInfo &GetInfo();
 
         /**
          * Retrieves a Vulkan device handle, if available.
@@ -56,7 +56,7 @@ namespace ancer {
 
     private:
         bool _vulkan_initialized = false;
-        VulkanInfo _operationInfo;
+        vulkan::VulkanInfo _operationInfo;
         const Log::Tag _testTag;
     };
 }

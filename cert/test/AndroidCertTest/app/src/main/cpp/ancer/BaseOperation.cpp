@@ -32,8 +32,8 @@ using namespace ancer;
 namespace {
 constexpr Log::Tag TAG{"operations_load"};
 
-void* OpenSelfLibrary(void) {
-  // TODO: Have CMake generate this.
+void* OpenSelfLibrary() {
+  // TODO(tmillican@google.com): Have CMake generate this.
   constexpr const char* this_lib_name = "libnative-lib.so";
   void* lib = dlopen(this_lib_name, RTLD_LAZY);
   if (lib == nullptr) {
@@ -72,9 +72,8 @@ std::shared_ptr<BaseOperation> BaseOperation::Load(
     FatalError(
         TAG, "Unable to dlsym() operation named \"" + fn_name +
             "\" - did you remember to EXPORT_ANCER_OPERATION() it?");
+    return nullptr;
   }
-
-  return nullptr;
 }
 
 BaseOperation::~BaseOperation() = default;

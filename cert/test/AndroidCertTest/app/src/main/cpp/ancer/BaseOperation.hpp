@@ -33,13 +33,12 @@
 #include "util/GLHelpers.hpp"
 #include "util/Json.hpp"
 #include "util/Log.hpp"
+#include "util/Preprocessor.hpp"
 #include "util/Time.hpp"
 
 
-#define CONCAT_IMPL(x, y) x##y
-#define MACRO_CONCAT(x, y) CONCAT_IMPL( x, y )
 #define ANCER_SCOPED_TRACE(desc) \
-    gamesdk::ScopedTrace MACRO_CONCAT( trace_, __COUNTER__ )( desc )
+    gamesdk::ScopedTrace ANCER_CONCAT( trace_, __COUNTER__ )( desc )
 
 
 namespace ancer {
@@ -158,6 +157,7 @@ namespace ancer {
          * NOTE: ALWAYS call inherited implementation
          * NOTE: Non-OpenGL operations can ignore this.
          * @param delta_seconds elapsed time in seconds since last draw call
+         * TODO(tmillican@google.com): Review changing to ancer::time.
          */
         virtual void Draw(double delta_seconds);
 

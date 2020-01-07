@@ -50,9 +50,10 @@ namespace ancer {
             TerminateThread();
         }
 
-        void Run(Work work) {
+        template <typename Func>
+        void Run(Func&& work) {
             std::lock_guard<std::mutex> workLock(_work_mutex);
-            _work_queue.emplace(std::move(work));
+            _work_queue.emplace(std::forward<Func>(work));
             _work_condition.notify_all();
         }
 

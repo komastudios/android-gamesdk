@@ -15,8 +15,7 @@
  */
 
 #include <atomic>
-#include <condition_variable>
-#include <fstream>
+#include <cstdio>
 #include <mutex>
 #include <thread>
 #include <variant>
@@ -31,10 +30,9 @@
 //==============================================================================
 
 namespace ancer::reporting {
-
     namespace {
         constexpr Log::Tag TAG{"ancer::reporting"};
-        constexpr Milliseconds DEFAULT_FLUSH_PERIOD_MILLIS = 1000ms;
+        constexpr Milliseconds kDefaultFlushPeriod = 1000ms;
 
         class Writer {
         public:
@@ -81,7 +79,6 @@ namespace ancer::reporting {
             Writer& GetWriter() { return *_writer; }
 
         private:
-
             Writer* _writer;
         };
 
@@ -244,7 +241,7 @@ namespace ancer::reporting {
             using log_item = std::variant<Datum, std::string>;
 
             std::atomic<bool> _alive{true};
-            Duration _flush_period = DEFAULT_FLUSH_PERIOD_MILLIS;
+            Duration _flush_period = kDefaultFlushPeriod;
             std::vector<log_item> _log_items;
             std::mutex _write_lock;
             std::thread _write_thread;
@@ -278,7 +275,7 @@ namespace ancer::reporting {
         ReportFlushMode _report_flush_mode = ReportFlushMode::Periodic;
         std::unique_ptr<ReportSerializerBase> _report_serializer;
         Duration _periodic_report_serializer_flush_period =
-                DEFAULT_FLUSH_PERIOD_MILLIS;
+                kDefaultFlushPeriod;
     }
 
     void OpenReportLog(const std::string &file) {
@@ -343,9 +340,8 @@ namespace ancer::reporting {
         _periodic_report_serializer_flush_period = duration;
         switch ( _report_flush_mode ) {
         case ReportFlushMode::Periodic:
-            dynamic_cast<ReportSerializer_Periodic*>(
-                    _report_serializer.get())->SetFlushPeriod(
-                        _periodic_report_serializer_flush_period);
+            static_cast<ReportSerializer_Periodic*>(_report_serializer.get())
+                    ->SetFlushPeriod(_periodic_report_serializer_flush_period);
         default:break;
         }
     }
