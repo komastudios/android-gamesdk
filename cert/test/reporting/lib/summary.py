@@ -143,8 +143,8 @@ def __generate_formatted_summary_from_reports(summary_path: Path,
         __generate_formatted_summary_from_suites(suites_by_name, folder,
                                                  formatter, figure_dpi)
 
-    __generate_formatted_cross_suite_summary(all_suites, folder, formatter,
-                                             figure_dpi)
+        __generate_formatted_cross_suite_summary(all_suites, folder, formatter,
+                                                 figure_dpi)
 
 
 def generate_summary(reports: List[Path], output_format: str,

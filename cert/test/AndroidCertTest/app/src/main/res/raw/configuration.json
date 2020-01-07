@@ -9,6 +9,23 @@
   ],
   "stress_tests": [
     {
+      "enabled": false,
+      "name": "FakeOperation",
+      "description": "Fake operation for integration testing",
+      "duration": "5s",
+      "data_gatherer": {
+        "id": "FakeOperation",
+        "configuration": {
+          "report_period": "500ms",
+          "int_value": 32768,
+          "duration_value": "123ms",
+          "bool_value": true,
+          "string_value": "Hello World"
+        }
+      },
+      "stressors": []
+    },
+    {
       "enabled": true,
       "name": "GLES3 Buffer Storage",
       "description": "Tests if OpenGL ES Buffer Storage is available",

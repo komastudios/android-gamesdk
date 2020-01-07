@@ -19,12 +19,8 @@
 
 import argparse
 from pathlib import Path
-import yaml
 
-from lib.build import build_apk
-from lib.common import dict_lookup
-from lib.deployment import run_local_deployment, run_ftl_deployment
-from lib.graphing import setup_report_dir
+from lib.deployment import run_recipe
 
 # ------------------------------------------------------------------------------
 
@@ -41,40 +37,7 @@ def main():
                         required=True)
 
     args = parser.parse_args()
-
-    # load recipe
-    recipe_path = Path(args.recipe)
-    with open(recipe_path) as recipe_file:
-        recipe = yaml.load(recipe_file, Loader=yaml.FullLoader)
-
-    # ensure the out/ dir exists for storing reports/systraces/etc
-    # use the name of the provided configuration, or if none, the yaml file
-    # to specialize the output dir
-    custom_config = dict_lookup(recipe, "build.configuration", fallback=None)
-    if custom_config:
-        prefix = Path(custom_config).stem
-    else:
-        prefix = Path(recipe_path).stem
-
-    out_dir = setup_report_dir(prefix)
-
-    # build the APK
-    apk_path = build_apk(
-        clean=dict_lookup(recipe, "build.clean", fallback=False),
-        release=dict_lookup(recipe, "build.release", fallback=False),
-        custom_configuration=Path(custom_config) if custom_config else None)
-
-    deployment = recipe.get("deployment")
-    if deployment is not None:
-        # deploy locally
-        if "local" in deployment and dict_lookup(
-                recipe, "deployment.local.enabled", fallback=True):
-            run_local_deployment(recipe, apk_path, out_dir)
-
-        # deploy on ftl
-        if "ftl" in deployment and dict_lookup(
-                recipe, "deployment.ftl.enabled", fallback=True):
-            run_ftl_deployment(recipe, apk_path, out_dir)
+    run_recipe(Path(args.recipe))
 
 
 if __name__ == "__main__":
