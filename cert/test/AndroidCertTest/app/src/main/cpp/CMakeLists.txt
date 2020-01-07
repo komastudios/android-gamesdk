@@ -117,6 +117,9 @@ add_library(${PROJECT_NAME} SHARED
         operations/gl/marching_cubes/MarchingCubes.cpp
         operations/gl/marching_cubes/Storage.cpp
 
+        # integration testing
+        operations/integration/FakeOperation.cpp
+
 
         # some external deps
         ${CpuFeaturesDir}/cpu-features.c

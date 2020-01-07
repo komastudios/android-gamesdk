@@ -28,10 +28,11 @@ import shutil
 import subprocess
 import time
 from typing import Tuple, Dict, List
+import yaml
 
-from lib.build import APP_ID
+from lib.build import APP_ID, build_apk
 from lib.common import run_command, NonZeroSubprocessExitCode, \
-    get_attached_devices, dict_lookup
+    get_attached_devices, dict_lookup, create_output_dir
 from lib.report import extract_and_export, normalize_report_name, merge_systrace
 from lib.systrace import LocalSystrace, SystraceParseError
 from lib.devicefarm import run_on_farm_and_collect_reports
@@ -39,6 +40,7 @@ import lib.graphing
 import lib.tasks_runner
 
 # ------------------------------------------------------------------------------
+
 
 def unpack(s):
     """Convenience string join function"""
@@ -397,3 +399,43 @@ def run_ftl_deployment(recipe: Dict, apk: Path, out_dir: Path):
 
     if summary_enabled:
         generate_report_summary(out_dir, summary_fmt)
+
+
+def run_recipe(recipe_path: Path, out_dir: Path = None):
+    '''Executes the deployment specified in the recipe
+    Args:
+        recipe_path: path to recipe yaml file
+        out_dir: if specified, reports will be saved to this folder; otherwise
+            a default will be created via lib.common.create_output_dir()
+    '''
+
+    with open(recipe_path) as recipe_file:
+        recipe = yaml.load(recipe_file, Loader=yaml.FullLoader)
+
+    # ensure the out/ dir exists for storing reports/systraces/etc
+    # use the name of the provided configuration, or if none, the yaml file
+    # to specialize the output dir
+    custom_config = dict_lookup(recipe, "build.configuration", fallback=None)
+
+    if not out_dir:
+        if custom_config:
+            prefix = Path(custom_config).stem
+        else:
+            prefix = Path(recipe_path).stem
+        out_dir = create_output_dir(prefix)
+
+    # build the APK
+    apk_path = build_apk(
+        clean=dict_lookup(recipe, "build.clean", fallback=False),
+        release=dict_lookup(recipe, "build.release", fallback=False),
+        custom_configuration=Path(custom_config) if custom_config else None)
+
+    # deploy locally
+    if "local" in recipe["deployment"] and dict_lookup(
+            recipe, "deployment.local.enabled", fallback=True):
+        run_local_deployment(recipe, apk_path, out_dir)
+
+    # deploy on ftl
+    if "ftl" in recipe["deployment"] and dict_lookup(
+            recipe, "deployment.ftl.enabled", fallback=True):
+        run_ftl_deployment(recipe, apk_path, out_dir)

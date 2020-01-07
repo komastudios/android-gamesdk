@@ -35,7 +35,7 @@ class TestLibTasksRunner(unittest.TestCase):
 
     def setUp(self):
         """setup a recipe to load from, and prep environment"""
-        with open(Path("./test/data/tasks/tasks.yaml")) as recipe_file:
+        with open(Path("./test/unit/data/tasks/tasks.yaml")) as recipe_file:
             tasks_dicts = yaml.load(recipe_file, Loader=yaml.FullLoader)
             self.preflight = tasks_dicts["preflight"]
             self.postflight = tasks_dicts["postflight"]
@@ -85,7 +85,7 @@ class TestLibTasksRunner(unittest.TestCase):
 
         device_id = lib.common.get_attached_devices()[0]
         env = lib.tasks.Environment()
-        src_file = Path("./test/data/tasks/hello.txt")
+        src_file = Path("./test/unit/data/tasks/hello.txt")
         self.assertTrue(src_file.exists())
 
         # each device->local copy task copies to this location
@@ -108,7 +108,7 @@ class TestLibTasksRunner(unittest.TestCase):
         local_deletion_tasks = lib.tasks_runner.load(
             self.local_deletion, lib.tasks_runner.POSTFLIGHT_TASKS)
 
-        src_file = Path("./test/data/tasks/hello.txt")
+        src_file = Path("./test/unit/data/tasks/hello.txt")
         dst_file = Path("./tmp/hello.txt")
         self.assertTrue(src_file.exists())
 
