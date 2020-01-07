@@ -38,7 +38,7 @@ namespace ancer {
  */
 class ThreadPool {
  private:
-  ancer::Log::Tag TAG{"ThreadPool"};
+  static constexpr ancer::Log::Tag TAG{"ThreadPool"};
 
  public:
   /*
@@ -48,11 +48,11 @@ class ThreadPool {
    * max_thread_count: allow setting # cpus to a smaller value than the
    *   number of cores in the affinity group
    */
-  ThreadPool(ancer::ThreadAffinity affinity,
+  ThreadPool(ThreadAffinity affinity,
              bool pin_threads,
-             int max_thread_count = std::numeric_limits<int>().max()) {
+             int max_thread_count = std::numeric_limits<int>::max()) {
     auto count = std::max(std::min(
-        ancer::NumCores(affinity), max_thread_count), 1);
+        NumCores(affinity), max_thread_count), 1);
 
     for (auto i = 0; i < count; ++i) {
       auto cpu_idx = pin_threads ? i : -1;

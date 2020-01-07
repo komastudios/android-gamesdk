@@ -69,9 +69,8 @@ std::shared_ptr<BaseOperation> BaseOperation::Load(
         FatalError(
                 TAG, "Unable to dlsym() operation named \"" + fn_name +
                      "\" - did you remember to EXPORT_ANCER_OPERATION() it?");
+        return nullptr;
     }
-
-    return nullptr;
 }
 
 BaseOperation::~BaseOperation() = default;

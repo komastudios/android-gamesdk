@@ -59,7 +59,7 @@ namespace ancer {
         }
     }
 
-    VulkanInfo &BaseVulkanOperation::GetInfo() {
+    vulkan::VulkanInfo &BaseVulkanOperation::GetInfo() {
         return this->_operationInfo;
     }
 
