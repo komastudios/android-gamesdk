@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "221edb0f_78fb7fcf",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 14
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-01-07T18:42:35Z",
+      "side": 1,
+      "message": "I see - I\u0027ll update the CL and change things back to uint16\n\nIs the reason mostly for space efficiency purposes? Or are there optimizations for unit16 that can\u0027t be done with uint32 on the GPU?",
+      "parentUuid": "23808ed5_401f5b4e",
+      "revId": "bfbecfeef9780b7a28abf42e8b1729376698522c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ee6617ac_77f164a3",
         "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
         "patchSetId": 14
@@ -105,6 +123,24 @@
       "revId": "bfbecfeef9780b7a28abf42e8b1729376698522c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5399ce48_5d32d4e0",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 14
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-01-07T18:42:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fd880b7a_3a2de4a0",
+      "revId": "bfbecfeef9780b7a28abf42e8b1729376698522c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
