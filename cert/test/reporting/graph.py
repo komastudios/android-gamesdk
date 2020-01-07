@@ -24,7 +24,7 @@ import glob
 
 from pathlib import Path
 
-import lib.graphing
+from lib.summary import generate_summary
 
 # DPI to save figure graphics; higher looks better but is slower
 FIGURE_DPI = 300
@@ -45,7 +45,7 @@ def main():
 
     parser.add_argument("--fmt",
                         default="md",
-                        help="Doc formats: [\"md\", \"html\"]")
+                        help="Doc formats: [\"md\", \"html\", \"docx\"]")
 
     parser.add_argument(
         "path",
@@ -57,24 +57,18 @@ def main():
     args = parser.parse_args()
     dpi = args.dpi
     path = Path(args.path[0])
-    doc_fmt = lib.graphing.DocumentFormat.from_extension(args.fmt)
+    doc_fmt = args.fmt
 
     if not path.exists():
         print(f"File {str(path)} does not found; bailing.")
 
     elif path.is_dir():
         # this is a batch
-        report_files = [Path(f) for f in glob.glob(str(path) + '/*.json')]
-        report_summary_file_name = summary_document_name(str(path.stem))
-        report_summary_file = path.joinpath(report_summary_file_name)
-        lib.graphing.render_report_document(report_files, report_summary_file,
-                                            doc_fmt, dpi)
+        reports = [Path(f) for f in glob.glob(str(path) + '/*.json')]
+        generate_summary(reports, doc_fmt, dpi)
 
     elif path.suffix == ".json":
-        report_summary_file_name = summary_document_name(str(path.stem))
-        report_summary_file = path.parent.joinpath(report_summary_file_name)
-        lib.graphing.render_report_document([path], report_summary_file,
-                                            doc_fmt, dpi)
+        generate_summary([path], doc_fmt, dpi)
 
 
 if __name__ == "__main__":
