@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "d73ca7aa_10e4f7bb",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 14
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-01-07T18:33:11Z",
+      "side": 1,
+      "message": "The reason I changed all this to uint32 is because most of the time the models I was loading had more than 65535 vertices, so there were indices that could not fit within a unit16 - so doesn\u0027t this need to be a uint32?",
+      "parentUuid": "83230a7a_90ceac6e",
+      "revId": "bfbecfeef9780b7a28abf42e8b1729376698522c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ee6617ac_77f164a3",
         "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
         "patchSetId": 14
@@ -30,6 +48,24 @@
       "writtenOn": "2020-01-07T18:22:39Z",
       "side": 1,
       "message": "This calculation should be cached.",
+      "revId": "bfbecfeef9780b7a28abf42e8b1729376698522c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "647c098a_ef6f1364",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 14
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-01-07T18:33:11Z",
+      "side": 1,
+      "message": "I don\u0027t think this calculation can be cached? This is taking the bounding box of the basic geometry and then calculating a new bounding box based on this specific mesh instance\u0027s rotation/position, which is changing every frame so it has to be done every frame\n\nThe base bounding box of the Geometry is already cached within the geometry instance, this function is just applying the instance\u0027s transformation to get the instance-specific bounding box",
+      "parentUuid": "ee6617ac_77f164a3",
       "revId": "bfbecfeef9780b7a28abf42e8b1729376698522c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
