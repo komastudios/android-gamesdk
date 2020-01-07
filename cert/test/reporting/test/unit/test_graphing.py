@@ -35,7 +35,7 @@ class TestLibGraphing(unittest.TestCase):
 
     def test_load_suites(self):
         """Test that load_suites works as expected"""
-        report_file = Path("./test/data/graphing/report.json")
+        report_file = Path("./test/unit/data/graphing/report.json")
         suites = lib.graphing.load_suites(report_file)
 
         # the report_file is a synthetic report with contents
