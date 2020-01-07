@@ -87,6 +87,7 @@ add_library(${PROJECT_NAME} SHARED
         ancer/SwappyRenderer.cpp
         ancer/System.cpp
         ancer/util/GLHelpers.cpp
+        ancer/util/ThreadSyncPoint.cpp
         ancer/util/Time.cpp
         ancer/util/vulkan/VkHelpersImpl.cpp
         ancer/util/VkHelpers.cpp
