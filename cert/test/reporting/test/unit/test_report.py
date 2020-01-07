@@ -82,7 +82,7 @@ class TestLibReport(unittest.TestCase):
         """Test report loading functionality"""
 
         # this is a standard report JSON file, but short for convenience
-        report_file = Path("./test/data/report/report.json")
+        report_file = Path("./test/unit/data/report/report.json")
         build_info, data = lib.report.load_report(report_file)
 
         # just verify build info exists and has an expected field
@@ -105,7 +105,7 @@ class TestLibReport(unittest.TestCase):
 
     def test_datum_serialization(self):
         """Test datum serialization and load"""
-        report_file = Path("./test/data/report/report.json")
+        report_file = Path("./test/unit/data/report/report.json")
         _, data = lib.report.load_report(report_file)
 
         for datum in data:
@@ -115,7 +115,7 @@ class TestLibReport(unittest.TestCase):
 
     def test_report_save(self):
         """Test that we write reports correctly"""
-        report_file = Path("./test/data/report/report.json")
+        report_file = Path("./test/unit/data/report/report.json")
         build_info, data = lib.report.load_report(report_file)
 
         # copy loaded report data to a tmp file
@@ -134,7 +134,7 @@ class TestLibReport(unittest.TestCase):
         """Test lib.report.normalize_report_name and
         lib.report.get_device_product_and_api
         """
-        report_file = Path("./test/data/report/report.json")
+        report_file = Path("./test/unit/data/report/report.json")
         tmp_report_file = Path("./tmp/report.json")
         shutil.copy(report_file, tmp_report_file)
 

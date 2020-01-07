@@ -1,4 +1,5 @@
 {
+    "python.pythonPath": "/usr/local/google/home/shamyl/.local/share/virtualenvs/reporting-pTrp1Zk_/bin/python",
     "python.linting.enabled": true,
     "python.linting.pylintUseMinimalCheckers": false,
     "python.linting.pylintEnabled": true,
@@ -17,7 +18,9 @@
     "python.testing.unittestArgs": [
         "-v",
         "-s",
-        "./test",
+        "./test/unit",
+        "-s",
+        "./test/integration",
         "-p",
         "test_*.py"
     ],
