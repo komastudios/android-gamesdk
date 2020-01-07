@@ -26,10 +26,10 @@
 namespace ancer {
     class FpsCalculator {
     public:
-
         FpsCalculator() {
             Reset();
         }
+        FpsCalculator(const FpsCalculator&) = delete;
 
         void Reset() {
             _last_timestamp = SteadyClock::now();
