@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b9266b26_ac7703e7",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-01-08T14:21:13Z",
+      "side": 1,
+      "message": "maybe you should move them to the bottom, next to where the other native functions are",
+      "range": {
+        "startLine": 123,
+        "startChar": 0,
+        "endLine": 128,
+        "endChar": 38
+      },
+      "revId": "4a3e00c85e2e6e32f9ce2fb7a710571742d5b417",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fbcff454_30218b6e",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/TestRenderer.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-01-08T14:21:13Z",
+      "side": 1,
+      "message": "can you add a comment here to show what the numbers here represent, or put them in a variable?",
+      "range": {
+        "startLine": 15,
+        "startChar": 23,
+        "endLine": 15,
+        "endChar": 46
+      },
+      "revId": "4a3e00c85e2e6e32f9ce2fb7a710571742d5b417",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ecfe206b_e8792eb7",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/TestRenderer.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-01-08T14:21:13Z",
+      "side": 1,
+      "message": "same as above",
+      "range": {
+        "startLine": 22,
+        "startChar": 22,
+        "endLine": 22,
+        "endChar": 26
+      },
+      "revId": "4a3e00c85e2e6e32f9ce2fb7a710571742d5b417",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b683fa5d_dff0c0f9",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/TestSurface.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-01-08T14:21:13Z",
+      "side": 1,
+      "message": "can you add a comment here to show what the numbers here represent, or put them in a variable?",
+      "range": {
+        "startLine": 14,
+        "startChar": 31,
+        "endLine": 14,
+        "endChar": 32
+      },
+      "revId": "4a3e00c85e2e6e32f9ce2fb7a710571742d5b417",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8c9b974_8ce00023",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/TestSurface.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-01-08T14:21:13Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 15,
+        "startChar": 24,
+        "endLine": 15,
+        "endChar": 41
+      },
+      "revId": "4a3e00c85e2e6e32f9ce2fb7a710571742d5b417",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
