@@ -226,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void finish() {
-        NativeInvoker.closeReportFile();
+        NativeInvoker.flushReportFile();
         super.finish();
     }
 

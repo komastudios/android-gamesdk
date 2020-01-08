@@ -68,7 +68,7 @@ public class NativeInvoker {
 
     public static native void openReportFileDescriptor(int fileDescriptor);
 
-    public static native void closeReportFile();
+    public static native void flushReportFile();
 
     public static native void writeToReportFile(String msg);
 
