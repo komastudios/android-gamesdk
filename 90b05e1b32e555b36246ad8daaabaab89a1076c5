@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0fec3bc8_c2460a6a",
+        "filename": "bender/bender-base/app/src/main/jni/render_graph.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-01-08T17:59:19Z",
+      "side": 1,
+      "message": "I\u0027d be very interested in timing this code.",
+      "revId": "90b05e1b32e555b36246ad8daaabaab89a1076c5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5086a46d_4da93e3e",
+        "filename": "bender/bender-base/app/src/main/jni/render_graph.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-01-08T17:59:19Z",
+      "side": 1,
+      "message": "I would rather pass the vector by reference to avoid a copy that could be rather large. Also, this method should be const.",
+      "revId": "90b05e1b32e555b36246ad8daaabaab89a1076c5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "24f66ea3_717f9d3c",
+        "filename": "bender/bender-base/app/src/main/jni/render_graph.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-01-08T17:59:19Z",
+      "side": 1,
+      "message": "Same as above.",
+      "revId": "90b05e1b32e555b36246ad8daaabaab89a1076c5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9cbb7614_36f15c18",
+        "filename": "bender/bender-base/app/src/main/jni/render_graph.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-01-08T17:59:19Z",
+      "side": 1,
+      "message": "I would move these methods to the implementation file.",
+      "revId": "90b05e1b32e555b36246ad8daaabaab89a1076c5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
