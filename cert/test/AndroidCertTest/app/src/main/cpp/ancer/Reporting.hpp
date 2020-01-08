@@ -68,12 +68,6 @@ namespace ancer::reporting {
     void OpenReportLog(int file_descriptor);
 
     /*
-     * Close the currently open report file. Any calls to WriteReport()
-     * without re-opening will terminate.
-     */
-    void CloseReportLog();
-
-    /*
      * Set the flushing mode for the report writer thread
      */
     void SetReportLogFlushMode(ReportFlushMode mode);

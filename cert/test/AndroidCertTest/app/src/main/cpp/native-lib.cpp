@@ -387,9 +387,9 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_openReportFi
 
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_closeReportFile(
+Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_flushReportFile(
         JNIEnv* env, jclass instance) {
-    reporting::CloseReportLog();
+    reporting::FlushReportLogQueue();
 }
 
 extern "C" JNIEXPORT void JNICALL

@@ -317,15 +317,6 @@ namespace ancer::reporting {
         }
     }
 
-
-    void CloseReportLog() {
-        if ( _report_serializer ) {
-            _report_serializer->Flush();
-            _report_serializer = nullptr;
-        }
-        _writer = nullptr;
-    }
-
     void SetReportLogFlushMode(ReportFlushMode mode) {
         if ( mode != _report_flush_mode ) {
             _report_flush_mode = mode;
