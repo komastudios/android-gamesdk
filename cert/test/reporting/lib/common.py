@@ -19,6 +19,7 @@ import os
 import subprocess
 import sys
 
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -125,6 +126,22 @@ def create_output_dir(postfix: str = None):
     return Path(out_dir)
 
 
+def remove_files_with_extensions(directory: Path, extensions: List[str]):
+    """Deletes all files at a directory with some specific extensions.
+
+    Args:
+        directory: where at.
+        extensions: list of file extensions to remove.
+    """
+    if directory.is_dir():
+        for file_name in os.listdir(directory):
+            if Path(file_name).suffix in extensions:
+                os.unlink(directory.joinpath(file_name))
+
+
+# -----------------------------------------------------------------------------
+
+
 def get_attached_devices() -> List[str]:
     """Get a list of device ids of attached android devices
     Returns:
@@ -173,3 +190,21 @@ def run_command(command):
     if ret_code is not RET_CODE_SUCCESS:
         raise NonZeroSubprocessExitCode(
             f"Command {command} exited with non-zero {ret_code} return code")
+
+
+# -----------------------------------------------------------------------------
+
+
+def get_readable_utc() -> str:
+    """Returns the current timestamp in a time zone-agnostic, readable format.
+    """
+    return datetime.utcnow().strftime("%A, %B %d, %Y %H:%M UTC")
+
+
+def get_indexable_utc() -> str:
+    """Returns the current timestamp as an alphanumeric index such that if
+    "right now" is earlier than "a couple more minutes", then
+    get_indexable_utc() at "right now" is order before get_indexable_utc() at
+    "a couple more minutes".
+    """
+    return datetime.utcnow().strftime("%Y%m%d-%H%M%S")

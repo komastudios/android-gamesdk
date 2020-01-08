@@ -13,27 +13,43 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+"""Implements a suite handler to process reports for OpenGL ES buffer storage
+compliance tests.
+"""
 
+from typing import List
 import matplotlib.pyplot as plt
 import numpy as np
-from typing import List
 
-from lib.graphing_components import Suite, SuiteHandler
+from lib.graphers.suite_handler import SuiteHandler
+from lib.report import Suite
 
 
 class BufferStorageSuiteHandler(SuiteHandler):
+    """Implements SuiteHandler for OpenGL ES buffer storage compliance test
+    results.
+    """
 
     def __init__(self, suite):
         super().__init__(suite)
 
-        for d in self.data:
-            if d.operation_id == "BufferStorageGLES3Operation":
-                self.test_result_status = d.get_custom_field(
+        for datum in self.data:
+            if datum.operation_id == "BufferStorageGLES3Operation":
+                self.test_result_status = datum.get_custom_field(
                     "buffer_storage.status")
 
     @classmethod
     def can_handle_suite(cls, suite: Suite):
         return "GLES3 Buffer Storage" in suite.name
+
+    @classmethod
+    def can_render_summarization_plot(cls,
+                                      suites: List['SuiteHandler']) -> bool:
+        return False
+
+    @classmethod
+    def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
+        return None
 
     def render_plot(self) -> str:
         plt.gcf().set_figheight(1.5)

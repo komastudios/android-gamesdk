@@ -22,8 +22,9 @@ from pathlib import Path
 import yaml
 
 from lib.build import build_apk
-from lib.common import create_output_dir, dict_lookup
+from lib.common import dict_lookup
 from lib.deployment import run_local_deployment, run_ftl_deployment
+from lib.graphing import setup_report_dir
 
 # ------------------------------------------------------------------------------
 
@@ -55,7 +56,7 @@ def main():
     else:
         prefix = Path(recipe_path).stem
 
-    out_dir = create_output_dir(prefix)
+    out_dir = setup_report_dir(prefix)
 
     # build the APK
     apk_path = build_apk(
@@ -63,15 +64,17 @@ def main():
         release=dict_lookup(recipe, "build.release", fallback=False),
         custom_configuration=Path(custom_config) if custom_config else None)
 
-    # deply locally
-    if "local" in recipe["deployment"] and dict_lookup(
-            recipe, "deployment.local.enabled", fallback=True):
-        run_local_deployment(recipe, apk_path, out_dir)
+    deployment = recipe.get("deployment")
+    if deployment is not None:
+        # deploy locally
+        if "local" in deployment and dict_lookup(
+                recipe, "deployment.local.enabled", fallback=True):
+            run_local_deployment(recipe, apk_path, out_dir)
 
-    # deploy on ftl
-    if "ftl" in recipe["deployment"] and dict_lookup(
-            recipe, "deployment.ftl.enabled", fallback=True):
-        run_ftl_deployment(recipe, apk_path, out_dir)
+        # deploy on ftl
+        if "ftl" in deployment and dict_lookup(
+                recipe, "deployment.ftl.enabled", fallback=True):
+            run_ftl_deployment(recipe, apk_path, out_dir)
 
 
 if __name__ == "__main__":
