@@ -28,8 +28,8 @@ class ServiceCommunicationHelper {
     Intent intent = new Intent();
     intent.setComponent(
         new ComponentName(
-            "experimental.users.bkaya.grabber",
-            "experimental.users.bkaya.grabber.MemoryPressureService"));
+            "com.google.gamesdk.grabber",
+            "com.google.gamesdk.grabber.MemoryPressureService"));
     intent.putExtra(ACTION_TYPE, ALLOCATE_MEMORY_ACTION);
     intent.putExtra(TOTAL_MEMORY_MB, megabytes);
     intent.putExtra(FIRST_TIME, isFirstTime);
@@ -41,8 +41,8 @@ class ServiceCommunicationHelper {
     Intent intent = new Intent();
     intent.setComponent(
         new ComponentName(
-            "experimental.users.bkaya.grabber",
-            "experimental.users.bkaya.grabber.MemoryPressureService"));
+            "com.google.gamesdk.grabber",
+            "com.google.gamesdk.grabber.MemoryPressureService"));
     intent.putExtra(ACTION_TYPE, QUERY_ACTION);
     intent.putExtra(FIRST_TIME, isFirstTime);
     isFirstTime = false;
@@ -53,8 +53,8 @@ class ServiceCommunicationHelper {
     Intent intent = new Intent();
     intent.setComponent(
         new ComponentName(
-            "experimental.users.bkaya.grabber",
-            "experimental.users.bkaya.grabber.MemoryPressureService"));
+            "com.google.gamesdk.grabber",
+            "com.google.gamesdk.grabber.MemoryPressureService"));
     intent.putExtra(ACTION_TYPE, FREE_MEMORY_ACTION);
     intent.putExtra(FIRST_TIME, isFirstTime);
     isFirstTime = false;
