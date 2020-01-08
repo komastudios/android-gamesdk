@@ -20,19 +20,26 @@ class RenderGraph {
     glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
     float aspect_ratio;
     float fov;
+    float near = .1f;
+    float far = 100.0f;
+    float nearPlaneWidth, nearPlaneHeight, farPlaneWidth, farPlaneHeight;
     glm::mat4 view;
     glm::mat4 proj;
+    bool prerotated = false;
+  };
+  struct Plane {
+    glm::vec3 point;
+    glm::vec3 normal;
+  };
+  enum FrustumPlanes {
+    TOP = 0, BOTTOM, LEFT,
+    RIGHT, NEARP, FARP
   };
 
  public:
-  std::vector<std::shared_ptr<Mesh>> GetAllMeshes() { return meshes_; }
-  std::shared_ptr<Mesh> GetLastMesh() {
-    if (meshes_.size() > 0) {
-      return meshes_.back();
-    } else {
-      return nullptr;
-    }
-  }
+  void GetVisibleMeshes(std::vector<std::shared_ptr<Mesh>> &meshes) const;
+  void GetAllMeshes(std::vector<std::shared_ptr<Mesh>> &meshes) const { meshes = meshes_; }
+  std::shared_ptr<Mesh> GetLastMesh();
 
   void AddMesh(std::shared_ptr<Mesh> new_mesh) { meshes_.push_back(new_mesh); }
   void AddMeshes(std::vector<std::shared_ptr<Mesh>> new_meshes) {
@@ -56,15 +63,19 @@ class RenderGraph {
   glm::mat4 GetCameraProjMatrix() { return camera_.proj; }
   float GetCameraAspectRatio() { return camera_.aspect_ratio; };
   float GetCameraFOV() { return camera_.fov; }
+  float GetCameraNearPlane() { return camera_.near; }
+  float GetCameraFarPlane() { return camera_.far; }
 
-  void SetCameraFOV(float fov) { camera_.fov = fov; }
-  void SetCameraAspectRatio(float aspect_ratio) { camera_.aspect_ratio = aspect_ratio; }
+  void SetCameraPrerotated(bool prerotated);
+  void SetCameraFOV(float fov);
+  void SetCameraAspectRatio(float aspect_ratio);
   void SetCameraViewMatrix(glm::mat4 view_mat) { camera_.view = view_mat; }
   void SetCameraProjMatrix(glm::mat4 proj_mat) { camera_.proj = proj_mat; }
 
  private:
   Camera camera_;
   std::vector<std::shared_ptr<Mesh>> meshes_;
+  void UpdateCameraPlanes();
 };
 
 #endif //BENDER_BASE_APP_SRC_MAIN_JNI_RENDER_GRAPH_H_
