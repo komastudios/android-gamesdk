@@ -16,6 +16,24 @@
       "revId": "dce6857ecff7528be34da817158d5431351af901",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c8f4f34a_a9086935",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/BaseOperation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-08T18:37:04Z",
+      "side": 0,
+      "message": "Done",
+      "parentUuid": "83b52f36_e0783c1e",
+      "revId": "dce6857ecff7528be34da817158d5431351af901",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
