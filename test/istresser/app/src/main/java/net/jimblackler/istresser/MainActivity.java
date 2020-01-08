@@ -20,6 +20,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -39,12 +40,12 @@ import org.json.JSONObject;
 public class MainActivity extends AppCompatActivity {
 
   /* Modify this variable when running the test locally */
-  private static final int SCENARIO_NUMBER = 1;
+  private static final int SCENARIO_NUMBER = 2;
 
   private static final String TAG = MainActivity.class.getSimpleName();
 
   // Set BYTES_PER_MILLISECOND to zero to disable malloc testing.
-  public static final int BYTES_PER_MILLISECOND = 100 * 1024;
+  public static final int BYTES_PER_MILLISECOND = 0; // 100 * 1024;
 
   // Set MAX_DURATION to zero to stop the app from self-exiting.
   private static final int MAX_DURATION = 1000 * 60 * 10;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
   private static final int RETURN_DURATION = LAUNCH_DURATION + 1000 * 20;
   private static final int MAX_SERVICE_MEMORY_MB = 500;
   private static final int BYTES_IN_MEGABYTE = 1024 * 1024;
+  private static final boolean GL_TEST = true;
 
   private static final List<List<String>> groups =
       ImmutableList.<List<String>>builder()
@@ -74,6 +76,12 @@ public class MainActivity extends AppCompatActivity {
 
   private static final ImmutableList<String> MEMINFO_FIELDS =
       ImmutableList.of("Cached", "MemFree", "MemAvailable", "SwapFree");
+
+  private static final ImmutableList<String> STATUS_FIELDS =
+      ImmutableList.of("VmSize", "VmRSS", "VmData");
+  private static final String[] SUMMARY_FIELDS = {
+    "summary.graphics", "summary.native-heap", "summary.total-pss"
+  };
 
   static {
     System.loadLibrary("native-lib");
@@ -118,6 +126,12 @@ public class MainActivity extends AppCompatActivity {
     }
     return stringBuilder.toString();
   }
+
+  public static native void initGl();
+
+  public static native void nativeDraw();
+
+  public static native void release();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -175,6 +189,11 @@ public class MainActivity extends AppCompatActivity {
       registerReceiver(receiver, new IntentFilter("experimental.users.bkaya.memory.RETURN"));
 
       JSONObject report = new JSONObject();
+
+      if (!GL_TEST) {
+        TestSurface testSurface = findViewById(R.id.glsurfaceView);
+        testSurface.setVisibility(View.GONE);
+      }
 
       PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
       report.put("version", packageInfo.versionCode);
@@ -504,6 +523,16 @@ public class MainActivity extends AppCompatActivity {
             freeAll();
           }
           data.clear();
+          if (GL_TEST) {
+            TestSurface testSurface = findViewById(R.id.glsurfaceView);
+            if (testSurface != null) {
+              testSurface.queueEvent(
+                  () -> {
+                    TestRenderer renderer = testSurface.getRenderer();
+                    renderer.release();
+                  });
+            }
+          }
           runAfterDelay(
               () -> {
                 try {
@@ -553,8 +582,7 @@ public class MainActivity extends AppCompatActivity {
     report.put("serviceTotalMemory", BYTES_IN_MEGABYTE * serviceTotalMb);
     report.put("oom_score", Heuristics.getOomScore(this));
 
-    Map<String, Long> values = Heuristics.processMeminfo();
-    for (Map.Entry<String, Long> pair : values.entrySet()) {
+    for (Map.Entry<String, Long> pair : Heuristics.processMeminfo().entrySet()) {
       String key = pair.getKey();
       if (MEMINFO_FIELDS.contains(key)) {
         report.put(key, pair.getValue());
