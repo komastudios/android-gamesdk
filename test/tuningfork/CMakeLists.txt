@@ -61,6 +61,7 @@ target_compile_options(protobuf-static PUBLIC "-Wno-tautological-constant-compar
                                               "-Wno-enum-compare-switch")
 
 target_link_libraries(tuningfork_test
+  android
   gtest
   tuningfork_static
   protobuf-static

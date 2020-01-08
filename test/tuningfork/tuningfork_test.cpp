@@ -247,7 +247,7 @@ static const std::string session_context = R"TF(
     "cpu_core_freqs_hz": [],
     "fingerprint": "",
     "gles_version": {
-      "major": 2,
+      "major": 0,
       "minor": 0
     },
     "total_memory_bytes": 0
