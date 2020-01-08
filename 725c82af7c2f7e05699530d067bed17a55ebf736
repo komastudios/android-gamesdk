@@ -19,6 +19,23 @@
     },
     {
       "key": {
+        "uuid": "1f972bb9_3d6d084c",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-01-08T18:21:29Z",
+      "side": 1,
+      "message": "Minor typo in \"compatibility\". Marking self-resolved so just address this if and only if you need to re-patch for another reason.",
+      "revId": "725c82af7c2f7e05699530d067bed17a55ebf736",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "86395037_9254d25d",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/GLPixelBuffer.hpp",
         "patchSetId": 1
@@ -30,6 +47,40 @@
       "writtenOn": "2020-01-08T17:55:36Z",
       "side": 1,
       "message": "This is great. It might be useful to add support for reading depth and stencil down the road, but I\u0027m really glad you got this here, now, for color.",
+      "revId": "725c82af7c2f7e05699530d067bed17a55ebf736",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "51eaecf5_925d60c0",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/GLPixelBuffer.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-01-08T18:21:29Z",
+      "side": 1,
+      "message": "Upper-right would be (Width()-1,Height()-1)\n\n(self-resolved comment, no big deal ;-)",
+      "revId": "725c82af7c2f7e05699530d067bed17a55ebf736",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f7ac5e01_40cb55ad",
+        "filename": "cert/test/AndroidCertTest/app/src/main/res/raw/configuration.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 385,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-01-08T18:21:29Z",
+      "side": 1,
+      "message": "Out of curiosity, what\u0027s the effect of this? Isn\u0027t there any risk that the test gets shot before performing (even if short lived)?\nJust curious about it.",
       "revId": "725c82af7c2f7e05699530d067bed17a55ebf736",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
