@@ -86,13 +86,14 @@ add_library(${PROJECT_NAME} SHARED
         ancer/Suite.cpp
         ancer/SwappyRenderer.cpp
         ancer/System.cpp
-        ancer/util/GLHelpers.cpp
-        ancer/util/ThreadSyncPoint.cpp
-        ancer/util/Time.cpp
-        ancer/util/vulkan/VkHelpersImpl.cpp
-        ancer/util/VkHelpers.cpp
         ancer/util/Basics.cpp
         ancer/util/Bitmath.cpp
+        ancer/util/GLHelpers.cpp
+        ancer/util/GLPixelBuffer.cpp
+        ancer/util/ThreadSyncPoint.cpp
+        ancer/util/Time.cpp
+        ancer/util/VkHelpers.cpp
+        ancer/util/vulkan/VkHelpersImpl.cpp
 
         # Operations
         operations/CalculatePIOperation.cpp
@@ -107,16 +108,17 @@ add_library(${PROJECT_NAME} SHARED
         operations/VulkanMprotectCheckOperation.cpp
 
         operations/gl/BufferStorageGLES3Operation.cpp
-        operations/gl/FillRateGLES3Operation.cpp
-        operations/gl/HelloGLES3Operation.cpp
-        operations/gl/VertexStreamGLES3Operation.cpp
-        operations/gl/ShaderBlobGLES3Operation.cpp
-        operations/gl/TeapotRendererGLES3Operation.cpp
-        operations/gl/HalfFloatPrecisionGLES3Operation.cpp
         operations/gl/DepthClearGLES3Operation.cpp
+        operations/gl/DualSourceBlendingGLES3Operation.cpp
+        operations/gl/FillRateGLES3Operation.cpp
+        operations/gl/HalfFloatPrecisionGLES3Operation.cpp
+        operations/gl/HelloGLES3Operation.cpp
         operations/gl/MarchingCubesGLES3Operation.cpp
         operations/gl/marching_cubes/MarchingCubes.cpp
         operations/gl/marching_cubes/Storage.cpp
+        operations/gl/ShaderBlobGLES3Operation.cpp
+        operations/gl/TeapotRendererGLES3Operation.cpp
+        operations/gl/VertexStreamGLES3Operation.cpp
 
 
         # some external deps
