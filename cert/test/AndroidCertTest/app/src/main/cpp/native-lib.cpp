@@ -51,10 +51,6 @@ using namespace ancer;
 namespace {
     constexpr Log::Tag TAG{"NativeInvoker"};
 
-    // TODO: Move to System?
-    // Renderer in general should probably be more generic too...
-    std::unique_ptr<swappy::Renderer> _swappy_renderer;
-
     std::string to_string(jstring jstr, JNIEnv* env) {
         const char* utf = env->GetStringUTFChars(jstr, nullptr);
         std::string str(utf);
@@ -258,9 +254,9 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_swappyGLHost
     GLContextConfig fallbackConfig =
         ancer::BridgeGLContextConfiguration(fallbackCtxConfiguration);
 
-    _swappy_renderer = swappy::Renderer::Create(
-        preferredConfig, fallbackConfig
-        );
+    // TODO(shamyl@google.com): Remove this once Java-side double-create is fixed.
+    internal::DestroyRenderer();
+    internal::CreateRenderer<SwappyRenderer>(preferredConfig, fallbackConfig);
 
     SwappyGL_init(env, activity);
 
@@ -273,10 +269,14 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_swappyGLHost
     tracers.userData = nullptr;
     tracers.swapIntervalChanged = SwapIntervalChangedCallback;
     SwappyGL_injectTracer(&tracers);
+}
 
-    // Init is called at end of SwappyGLHostActivity::OnCreate, and all
-    // operations have already been created
-    internal::SetSwappyRenderer(_swappy_renderer.get());
+namespace {
+    // TODO(tmillican@google.com): Review how much of this should be made
+    //  a part of the generic renderer.
+    auto* GetSwappyRenderer() {
+        return static_cast<SwappyRenderer*>(internal::GetRenderer());
+    }
 }
 
 extern "C" JNIEXPORT void JNICALL
@@ -287,7 +287,7 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_swappyGLHost
         jint width,
         jint height) {
     ANativeWindow* window = ANativeWindow_fromSurface(env, surface);
-    _swappy_renderer->SetWindow(window,
+    GetSwappyRenderer()->SetWindow(window,
             static_cast<int32_t>(width), static_cast<int32_t>(height));
 }
 
@@ -297,25 +297,29 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_swappyGLHost
         jclass instance) {
     ancer::GetFpsCalculator().Reset();
     // start the render thread
-    _swappy_renderer->Start();
+    GetSwappyRenderer()->Start();
 }
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_swappyGLHost_1StopRenderer(
         JNIEnv* env,
         jclass instance) {
-    // stop the render thread
-    _swappy_renderer->Stop();
-    internal::SetSwappyRenderer(nullptr);
-    _swappy_renderer = nullptr;
-    SwappyGL_destroy();
+    // TODO(shamyl@google.com): Remove this once Java-side double-create is fixed.
+    if (auto* renderer = GetSwappyRenderer()) {
+        GetSwappyRenderer()->Stop();
+        internal::DestroyRenderer();
+        SwappyGL_destroy();
+    }
 }
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_swappyGLHost_1ClearSurface(
         JNIEnv* env,
         jclass instance) {
-    _swappy_renderer->SetWindow(nullptr, 0, 0);
+    // TODO(shamyl@google.com): Remove this once Java-side double-create is fixed.
+    if (auto* renderer = GetSwappyRenderer()) {
+        renderer->SetWindow(nullptr, 0, 0);
+    }
 }
 
 extern "C" JNIEXPORT void JNICALL
