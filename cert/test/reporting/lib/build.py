@@ -98,12 +98,8 @@ def build_apk(clean: bool,
 
     task = ["./gradlew"]
 
-    #TODO(shamyl@google.com) Determine why "clean" builds fail on
-    # cmdline but not android studio
-
     if clean:
-        pass
-    #     task.append("clean")
+        task.append("clean")
 
     task.append("app:assembleRelease" if release else "app:assembleDebug")
     task_cmd = " ".join(task)
