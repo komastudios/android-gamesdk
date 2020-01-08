@@ -20,6 +20,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
   private static final int RETURN_DURATION = LAUNCH_DURATION + 1000 * 20;
   private static final int MAX_SERVICE_MEMORY_MB = 500;
   private static final int BYTES_IN_MEGABYTE = 1024 * 1024;
+  private static final boolean GL_TEST = true;
 
   private static final List<List<String>> groups =
       ImmutableList.<List<String>>builder()
@@ -175,6 +177,11 @@ public class MainActivity extends AppCompatActivity {
       registerReceiver(receiver, new IntentFilter("experimental.users.bkaya.memory.RETURN"));
 
       JSONObject report = new JSONObject();
+
+      if (!GL_TEST) {
+        TestSurface testSurface = findViewById(R.id.glsurfaceView);
+        testSurface.setVisibility(View.GONE);
+      }
 
       PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
       report.put("version", packageInfo.versionCode);
@@ -504,6 +511,16 @@ public class MainActivity extends AppCompatActivity {
             freeAll();
           }
           data.clear();
+          if (GL_TEST) {
+            TestSurface testSurface = findViewById(R.id.glsurfaceView);
+            if (testSurface != null) {
+              testSurface.queueEvent(
+                  () -> {
+                    TestRenderer renderer = testSurface.getRenderer();
+                    renderer.release();
+                  });
+            }
+          }
           runAfterDelay(
               () -> {
                 try {
@@ -562,6 +579,12 @@ public class MainActivity extends AppCompatActivity {
     }
     return report;
   }
+
+  public static native void initGl();
+
+  public static native void nativeDraw();
+
+  public static native void release();
 
   public native void freeAll();
 
