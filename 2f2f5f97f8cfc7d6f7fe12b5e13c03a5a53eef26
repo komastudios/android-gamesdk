@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0bd03904_001d6899",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/integration/FakeOperation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-01-08T17:45:07Z",
+      "side": 1,
+      "message": "This is great. In some future we could leverage some form of conditional compilation so that this FakeOperation, maybe its entry in configuration.json as well, don\u0027t get included in a release build, but they do in debug builds.\nSelf-resolved comment.",
+      "revId": "2f2f5f97f8cfc7d6f7fe12b5e13c03a5a53eef26",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "72a9436b_526d52a9",
+        "filename": "cert/test/AndroidCertTest/app/src/main/res/raw/configuration.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-01-08T17:45:07Z",
+      "side": 1,
+      "message": "Just curiosity: we may skip this one, right? Tests actually leverage test/integration/data/recipes/fake_operation.json, am I wrong?\n(self-resolved, just curious)",
+      "revId": "2f2f5f97f8cfc7d6f7fe12b5e13c03a5a53eef26",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "03ab771e_699c4faf",
+        "filename": "cert/test/reporting/run.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-01-08T17:45:07Z",
+      "side": 1,
+      "message": "👏👏👏",
+      "revId": "2f2f5f97f8cfc7d6f7fe12b5e13c03a5a53eef26",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5437c1e4_6d6de850",
+        "filename": "cert/test/reporting/test/integration/test_report_generation.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-01-08T17:45:07Z",
+      "side": 1,
+      "message": "👏👏👏👏!!",
+      "revId": "2f2f5f97f8cfc7d6f7fe12b5e13c03a5a53eef26",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
