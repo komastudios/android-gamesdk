@@ -157,18 +157,16 @@ Json::object TelemetryReportJson(const ProngCache& prong_cache,
                                  bool& empty, Duration& duration) {
     std::vector<Json::object> render_histograms;
     std::vector<Json::object> loading_histograms;
-    std::vector<Json::object> loading_events;
+    std::vector<int> loading_events_times; // Ignore fractional milliseconds
     duration = Duration::zero();
     for(auto& p: prong_cache.prongs()) {
         if (p.get()!=nullptr && p->Count()>0 && p->annotation_==annotation) {
             if (p->histogram_.GetMode() != Histogram::Mode::HISTOGRAM) {
-                std::vector<int> events; // Ignore fractional milliseconds
                 for(auto c: p->histogram_.samples()) {
                     auto v = static_cast<int>(c);
                     if (v != 0)
-                        events.push_back(v);
+                        loading_events_times.push_back(v);
                 }
-                loading_events.push_back(Json::object{{"times_ms", events}});
             }
             else {
                 std::vector<int32_t> counts;
@@ -188,7 +186,7 @@ Json::object TelemetryReportJson(const ProngCache& prong_cache,
             duration += p->duration_;
         }
     }
-    int total_size = render_histograms.size() + loading_histograms.size() + loading_events.size();
+    int total_size = render_histograms.size() + loading_histograms.size() + loading_events_times.size();
     empty = (total_size==0);
     // Use the average duration for this annotation
     if (!empty)
@@ -199,13 +197,13 @@ Json::object TelemetryReportJson(const ProngCache& prong_cache,
             {"render_time_histogram", render_histograms }
         };
     }
-    if (loading_histograms.size()>0 || loading_events.size()>0) {
+    if (loading_histograms.size()>0 || loading_events_times.size()>0) {
         Json::object loading;
         if (loading_histograms.size()>0) {
             loading["loading_time_histogram"] = loading_histograms;
         }
-        if (loading_events.size()>0) {
-            loading["loading_events"] = loading_events;
+        if (loading_events_times.size()>0) {
+            loading["loading_events"] = Json::object{{"times_ms", loading_events_times}};
         }
         ret["loading"] = loading;
     }

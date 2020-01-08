@@ -76,6 +76,57 @@ std::string report_start = R"TF({
   "telemetry": [)TF";
 std::string report_end = "]}";
 
+std::string single_tick_with_loading = R"TF({
+  "context": {
+    "annotations": "",
+    "duration": "0.765s",
+    "tuning_parameters": {
+      "experiment_id": "expt",
+      "serialized_fidelity_parameters": ""
+    }
+  },
+  "report": {
+    "loading": {
+      "loading_events": {
+        "times_ms": [1500]
+      }
+    },
+    "rendering": {
+      "render_time_histogram": [{
+        "counts": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                   0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        "instrument_id": 1
+      }]
+    }
+  }
+})TF";
+
+TEST(SerializationTest, SerializationWithLoading) {
+    ProngCache prong_cache(2/*size*/, 2/*max_instrumentation_keys*/, {DefaultHistogram()},
+                           [](uint64_t){ return SerializedAnnotation(); },
+                           [](uint64_t id){ return id == 0; });
+    ProtobufSerialization fidelity_params;
+    ExtraUploadInfo device_info;
+    std::string evt_ser;
+    GESerializer::SerializeEvent(prong_cache, fidelity_params, test_device_info, evt_ser);
+    auto empty_report = report_start + report_end;
+    EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, empty_report))
+        << evt_ser << "\n!=\n" << empty_report;
+
+    // Fill in some data
+    auto p1 = prong_cache.Get(0);
+    EXPECT_NE(p1, nullptr);
+    p1->Trace(milliseconds(1500));
+
+    auto p2 = prong_cache.Get(1);
+    EXPECT_NE(p2, nullptr);
+    p2->Trace(milliseconds(30));
+
+    GESerializer::SerializeEvent(prong_cache, fidelity_params, test_device_info, evt_ser);
+    auto report = report_start + single_tick_with_loading + report_end;
+    EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, report)) << evt_ser << "\n!=\n" << report;
+}
+
 std::string single_tick = R"TF({
   "context": {
     "annotations": "",
