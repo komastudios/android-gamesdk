@@ -127,7 +127,8 @@ void DeleteInstance() {
 }
 void ChangePolyhedralComplexity() {
   poly_faces_idx = (poly_faces_idx + 1) % allowedPolyFaces.size();
-  auto all_meshes = render_graph->GetAllMeshes();
+  std::vector<std::shared_ptr<Mesh>> all_meshes;
+  render_graph->GetAllMeshes(all_meshes);
   for (uint32_t i = 0; i < all_meshes.size(); i++) {
     all_meshes[i] =
         std::make_shared<Mesh>(*all_meshes[i], geometries[poly_faces_idx]);
@@ -137,7 +138,8 @@ void ChangePolyhedralComplexity() {
 }
 void ChangeMaterialComplexity() {
   materials_idx = (materials_idx + 1) % baseline_materials.size();
-  auto all_meshes = render_graph->GetAllMeshes();
+  std::vector<std::shared_ptr<Mesh>> all_meshes;
+  render_graph->GetAllMeshes(all_meshes);
   for (uint32_t i = 0; i < all_meshes.size(); i++) {
     all_meshes[i] =
         std::make_shared<Mesh>(*all_meshes[i], baseline_materials[materials_idx]);
@@ -343,15 +345,16 @@ void UpdateCamera(input::Data *input_data) {
           * glm::mat4(render_graph->GetCameraRotation())));
 
   glm::mat4 proj_matrix = glm::perspective(render_graph->GetCameraFOV(),
-                                          render_graph->GetCameraAspectRatio(),
-                                          0.1f,
-                                          100.0f);
+                                           render_graph->GetCameraAspectRatio(),
+                                           render_graph->GetCameraNearPlane(),
+                                           render_graph->GetCameraFarPlane());
   proj_matrix[1][1] *= -1;
   render_graph->SetCameraProjMatrix(proj_matrix);
 }
 
 void UpdateInstances(input::Data *input_data) {
-  auto all_meshes = render_graph->GetAllMeshes();
+  std::vector<std::shared_ptr<Mesh>> all_meshes;
+  render_graph->GetAllMeshes(all_meshes);
   for (int i = 0; i < all_meshes.size(); i++) {
     all_meshes[i]->Rotate(glm::vec3(0.0f, 1.0f, 1.0f), 90 * frame_time);
     all_meshes[i]->Translate(.02f * glm::vec3(std::sin(2 * total_time),
@@ -658,7 +661,9 @@ bool ResumeVulkan(android_app *app) {
         geometry->OnResume(*device);
       }
 
-      for (auto &mesh : render_graph->GetAllMeshes()) {
+      std::vector<std::shared_ptr<Mesh>> all_meshes;
+      render_graph->GetAllMeshes(all_meshes);
+      for (auto &mesh : all_meshes) {
         mesh->OnResume(renderer);
       }
     });
@@ -702,7 +707,9 @@ void DeleteVulkan(void) {
 
   vkDestroyRenderPass(device->GetDevice(), render_pass, nullptr);
 
-  for (auto &mesh : render_graph->GetAllMeshes()) {
+  std::vector<std::shared_ptr<Mesh>> all_meshes;
+  render_graph->GetAllMeshes(all_meshes);
+  for (auto &mesh : all_meshes) {
     mesh->Cleanup();
   }
   for (auto &texture : textures) {
@@ -771,7 +778,8 @@ bool VulkanDrawFrame(input::Data *input_data) {
                                   {1.0f, 0.0f, 1.0f, 0.0f});
 
         int total_triangles = 0;
-        auto all_meshes = render_graph->GetAllMeshes();
+        std::vector<std::shared_ptr<Mesh>> all_meshes;
+        render_graph->GetVisibleMeshes(all_meshes);
         for (uint32_t i = 0; i < all_meshes.size(); i++) {
           all_meshes[i]->UpdatePipeline(render_pass);
           all_meshes[i]->SubmitDraw(renderer->GetCurrentCommandBuffer(),
@@ -826,5 +834,8 @@ void OnOrientationChange() {
   CreateDepthBuffer();
   CreateFramebuffers(render_pass, depth_buffer.image_view);
   Button::SetScreenResolution(device->GetDisplaySizeOriented());
+  render_graph->SetCameraPrerotated(
+      device->GetPretransformFlag() & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR
+          || device->GetPretransformFlag() & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR);
   window_resized = false;
 }
