@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "438d75f9_8d21bbb3",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 730,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-01-08T23:24:08Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "484da95e_9d262bc5",
+      "revId": "725c82af7c2f7e05699530d067bed17a55ebf736",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1f972bb9_3d6d084c",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.hpp",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2020-01-08T18:21:29Z",
       "side": 1,
       "message": "Minor typo in \"compatibility\". Marking self-resolved so just address this if and only if you need to re-patch for another reason.",
+      "revId": "725c82af7c2f7e05699530d067bed17a55ebf736",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "eecf8238_3df530bf",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-01-08T23:24:08Z",
+      "side": 1,
+      "message": "Thanks for catching that. There are a couple other small changes, so I can patch this in.",
+      "parentUuid": "1f972bb9_3d6d084c",
       "revId": "725c82af7c2f7e05699530d067bed17a55ebf736",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "2e8f0c30_bcd1e988",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/GLPixelBuffer.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-01-08T23:24:08Z",
+      "side": 1,
+      "message": "That\u0027s a good point. However we do it, I think we\u0027ll want to find a way to make sure we don\u0027t take an unnecessary performance hit if we only need to sample one of those sources.",
+      "parentUuid": "86395037_9254d25d",
+      "revId": "725c82af7c2f7e05699530d067bed17a55ebf736",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "51eaecf5_925d60c0",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/GLPixelBuffer.hpp",
         "patchSetId": 1
@@ -70,6 +124,24 @@
     },
     {
       "key": {
+        "uuid": "deefd8bf_30edcb22",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/GLPixelBuffer.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-01-08T23:24:08Z",
+      "side": 1,
+      "message": "Good catch!",
+      "parentUuid": "51eaecf5_925d60c0",
+      "revId": "725c82af7c2f7e05699530d067bed17a55ebf736",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f7ac5e01_40cb55ad",
         "filename": "cert/test/AndroidCertTest/app/src/main/res/raw/configuration.json",
         "patchSetId": 1
@@ -81,6 +153,24 @@
       "writtenOn": "2020-01-08T18:21:29Z",
       "side": 1,
       "message": "Out of curiosity, what\u0027s the effect of this? Isn\u0027t there any risk that the test gets shot before performing (even if short lived)?\nJust curious about it.",
+      "revId": "725c82af7c2f7e05699530d067bed17a55ebf736",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "44661ae5_7bffc33d",
+        "filename": "cert/test/AndroidCertTest/app/src/main/res/raw/configuration.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 385,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-01-08T23:24:08Z",
+      "side": 1,
+      "message": "According to BaseOperation.hpp, if the duration is 0, it will run until `Stop()` is called.",
+      "parentUuid": "f7ac5e01_40cb55ad",
       "revId": "725c82af7c2f7e05699530d067bed17a55ebf736",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
