@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
               }
             }
           };
-      registerReceiver(receiver, new IntentFilter("experimental.users.bkaya.memory.RETURN"));
+      registerReceiver(receiver, new IntentFilter("com.google.gamesdk.grabber.RETURN"));
 
       JSONObject report = new JSONObject();
 
