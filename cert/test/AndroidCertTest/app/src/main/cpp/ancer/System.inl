@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 The Android Open Source Project
+ * Copyright 2020 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,24 +15,31 @@
  */
 
 #pragma once
+#include "System.hpp"
 
-#include "Suite.hpp"
-
-#include <map>
 #include <memory>
+
+namespace ancer::internal {
+    // In suite.hpp, re-declared here to avoid includes.
+    void SuiteUpdateRenderer();
+}
 
 
 namespace ancer::internal {
-    inline std::mutex _operations_lock;
-    inline std::map<int, std::unique_ptr<BaseOperation>> _operations;
-}
+    inline std::unique_ptr<Renderer> _system_renderer;
 
-template <typename Func>
-void ancer::internal::ForEachOperation(Func&& func) {
-    std::lock_guard<std::mutex> lock(_operations_lock);
-    for ( auto& op : _operations ) {
-        if ( !op.second->IsStopped()) {
-            func(*op.second);
-        }
+    template <typename T, typename... Args>
+    void CreateRenderer(Args&&... args) {
+        assert(_system_renderer == nullptr);
+        _system_renderer = T::Create(std::forward<Args>(args)...);
+        SuiteUpdateRenderer();
+    }
+
+    inline Renderer* GetRenderer() {
+        return _system_renderer.get();
+    }
+
+    inline void DestroyRenderer() {
+        _system_renderer.reset();
     }
 }

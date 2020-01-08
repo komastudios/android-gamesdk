@@ -113,10 +113,10 @@ constexpr auto MAX_COLS = 255;
 constexpr auto B = M_PI*0.0125;
 constexpr auto C = M_PI*0.025;
 
-class Renderer {
+class StreamRenderer {
  public:
 
-  Renderer(int rows, int cols, int left, int top, int width, int height) :
+  StreamRenderer(int rows, int cols, int left, int top, int width, int height) :
       _width(width), _height(height), VERTICES_PER_ROW(cols + 1),
       _rows(std::min(rows, MAX_ROWS)), _cols(std::min(cols, MAX_COLS)),
       R(std::min(_width, _height)/64), _time(0), _steps(0),
@@ -222,7 +222,7 @@ class Renderer {
     }
   }
 
-  ~Renderer() {
+  ~StreamRenderer() {
     if (_vbo_state > 0) glDeleteVertexArrays(1, &_vbo_state);
     if (_vertex_vbo_id > 0) glDeleteBuffers(1, &_vertex_vbo_id);
     if (_index_vbo_id > 0) glDeleteBuffers(1, &_index_vbo_id);
@@ -500,7 +500,7 @@ class VertexStreamGLES3Operation : public BaseGLES3Operation {
       int height = shader_height - 2*inset;
 
       _renderers.push_back(
-          std::make_shared<Renderer>(
+          std::make_unique<StreamRenderer>(
               _configuration.rows, _configuration.cols,
               left, top, width, height
           ));
@@ -522,7 +522,7 @@ class VertexStreamGLES3Operation : public BaseGLES3Operation {
   // internal state
   bool _context_ready = false;
   Duration _heartbeat_time;
-  std::vector<std::shared_ptr<Renderer>> _renderers;
+  std::vector<std::unique_ptr<StreamRenderer>> _renderers;
   int _layout_dimension = 1;
   size_t _renderer_count = 1;
 };

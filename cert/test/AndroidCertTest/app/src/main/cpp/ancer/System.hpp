@@ -24,6 +24,8 @@
 #include <jni.h>
 #include <sstream>
 
+#include "Renderer.hpp"
+
 namespace ancer {
     class FpsCalculator;
 }
@@ -37,6 +39,11 @@ namespace ancer {
         void InitSystem(jobject activity, jstring internal_data_path,
                         jstring raw_data_path, jstring obb_path);
         void DeinitSystem();
+
+        template <typename T, typename... Args>
+        void CreateRenderer(Args&&...);
+        Renderer* GetRenderer();
+        void DestroyRenderer();
     }
 
     // TODO(tmillican@google.com): Would prefer to return filesystem::path, but
@@ -197,6 +204,6 @@ namespace ancer {
      * instance
     */
     GLContextConfig BridgeGLContextConfiguration(jobject src_config);
-
-
 } // namespace ancer
+
+#include "System.inl"
