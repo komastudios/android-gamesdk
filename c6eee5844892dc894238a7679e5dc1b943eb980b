@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "75072faa_8a550bcc",
+        "filename": "cert/test/reporting/lib/graphing.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-08T00:26:48Z",
+      "side": 1,
+      "message": "Do you want to uncomment the cleanup code below? Or is it vestigial?",
+      "revId": "c6eee5844892dc894238a7679e5dc1b943eb980b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1d2228ac_7cc85f20",
+        "filename": "cert/test/reporting/lib/summary.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-08T00:26:48Z",
+      "side": 1,
+      "message": "TODO(@dagum) 😊",
+      "revId": "c6eee5844892dc894238a7679e5dc1b943eb980b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0ae1ce7a_7cc1bab5",
+        "filename": "cert/test/reporting/lib/summary.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-08T00:26:48Z",
+      "side": 1,
+      "message": "This is way nicer. Good work!",
+      "revId": "c6eee5844892dc894238a7679e5dc1b943eb980b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
