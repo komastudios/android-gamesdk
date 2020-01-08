@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "e4c1edd3_10377281",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-01-08T15:45:59Z",
+      "side": 1,
+      "message": "Sure. I think they were positioned differently because they were static.",
+      "parentUuid": "b9266b26_ac7703e7",
+      "range": {
+        "startLine": 123,
+        "startChar": 0,
+        "endLine": 128,
+        "endChar": 38
+      },
+      "revId": "4a3e00c85e2e6e32f9ce2fb7a710571742d5b417",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fbcff454_30218b6e",
         "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/TestRenderer.java",
         "patchSetId": 2
@@ -36,6 +60,30 @@
       "writtenOn": "2020-01-08T14:21:13Z",
       "side": 1,
       "message": "can you add a comment here to show what the numbers here represent, or put them in a variable?",
+      "range": {
+        "startLine": 15,
+        "startChar": 23,
+        "endLine": 15,
+        "endChar": 46
+      },
+      "revId": "4a3e00c85e2e6e32f9ce2fb7a710571742d5b417",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4d9d467b_40479181",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/TestRenderer.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-01-08T15:45:59Z",
+      "side": 1,
+      "message": "Lets just take the clear commands out, they\u0027re not actually needed as nothing is drawn.",
+      "parentUuid": "fbcff454_30218b6e",
       "range": {
         "startLine": 15,
         "startChar": 23,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "fa03e4b2_4db37767",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/TestRenderer.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-01-08T15:45:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ecfe206b_e8792eb7",
+      "range": {
+        "startLine": 22,
+        "startChar": 22,
+        "endLine": 22,
+        "endChar": 26
+      },
+      "revId": "4a3e00c85e2e6e32f9ce2fb7a710571742d5b417",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b683fa5d_dff0c0f9",
         "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/TestSurface.java",
         "patchSetId": 2
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "9e8b5412_4aec630e",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/TestSurface.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-01-08T15:45:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b683fa5d_dff0c0f9",
+      "range": {
+        "startLine": 14,
+        "startChar": 31,
+        "endLine": 14,
+        "endChar": 32
+      },
+      "revId": "4a3e00c85e2e6e32f9ce2fb7a710571742d5b417",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a8c9b974_8ce00023",
         "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/TestSurface.java",
         "patchSetId": 2
@@ -114,6 +210,30 @@
       "revId": "4a3e00c85e2e6e32f9ce2fb7a710571742d5b417",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dccf085a_1fdf4448",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/TestSurface.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-01-08T15:45:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a8c9b974_8ce00023",
+      "range": {
+        "startLine": 15,
+        "startChar": 24,
+        "endLine": 15,
+        "endChar": 41
+      },
+      "revId": "4a3e00c85e2e6e32f9ce2fb7a710571742d5b417",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
