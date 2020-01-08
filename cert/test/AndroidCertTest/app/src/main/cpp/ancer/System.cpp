@@ -84,6 +84,29 @@ namespace {
 
 //==============================================================================
 
+namespace {
+    class managed_jobject_collection {
+    public:
+
+        explicit managed_jobject_collection(JNIEnv *env) : _env(env) {}
+
+        ~managed_jobject_collection() {
+            std::reverse(_objects.begin(), _objects.end());
+            for (const auto &obj : _objects) {
+                _env->DeleteLocalRef(obj);
+            }
+        }
+
+        void add(jobject obj) { _objects.push_back(obj); }
+
+    private:
+        std::vector<jobject> _objects;
+        JNIEnv *_env;
+    };
+} // anonymous namespace
+
+//==============================================================================
+
 void ancer::internal::SetJavaVM(JavaVM* vm) {
     _java_vm = vm;
 }
@@ -109,7 +132,7 @@ void ancer::internal::DeinitSystem() {
     });
 }
 
-//==================================================================================================
+//==============================================================================
 
 std::string ancer::InternalDataPath() {
     return _internal_data_path.string();
@@ -619,3 +642,154 @@ GLContextConfig ancer::BridgeGLContextConfiguration(jobject src_config)
   return dst_config;
 }
 
+//==============================================================================
+
+jobject GetEnumField(JNIEnv* env, const std::string& class_signature, const std::string& field_name) {
+    const jclass cls = env->FindClass(class_signature.c_str());
+    if (cls == nullptr) return nullptr;
+
+    const jfieldID field_id = env->GetStaticFieldID(cls, field_name.c_str(), ("L" + class_signature + ";").c_str());
+    if (field_id == nullptr) return nullptr;
+
+    return env->GetStaticObjectField(cls, field_id);
+}
+
+//==============================================================================
+
+std::vector<unsigned char> ancer::PNGEncodeRGBABytes(unsigned int width,
+        unsigned int height, const std::vector<unsigned char>& bytes) {
+
+    std::vector<unsigned char> data;
+
+    JniCallInAttachedThread(
+        [&width, &height, &bytes, &data](JNIEnv* env) {
+            managed_jobject_collection objects(env);
+
+            // Bitmap config
+            jobject argb8888_value = GetEnumField(env,
+                    "android/graphics/Bitmap$Config", "ARGB_8888");
+            if (argb8888_value == nullptr) return;
+            objects.add(argb8888_value);
+
+            // Bitmap
+            jclass bitmap_class = env->FindClass("android/graphics/Bitmap");
+            if (bitmap_class == nullptr) return;
+
+            jmethodID create_bitmap_method_id = env->GetStaticMethodID(
+                    bitmap_class, "createBitmap",
+                    "(IILandroid/graphics/Bitmap$Config;Z)Landroid/graphics/Bitmap;");
+            if (create_bitmap_method_id == nullptr) return;
+
+            jobject bitmap_object = env->CallStaticObjectMethod(bitmap_class,
+                    create_bitmap_method_id, width, height, argb8888_value, true);
+            if (bitmap_object == nullptr) return;
+            objects.add(bitmap_object);
+
+            // Set pixel data
+            // (Note, we could try to use `setPixels` instead, but we would
+            // still need to convert four bytes into a 32-bit jint.)
+            jmethodID set_pixel_method_id = env->GetMethodID(bitmap_class,
+                    "setPixel", "(III)V");
+            if (set_pixel_method_id == nullptr) return;
+
+            size_t offset = 0;
+            for (int y = 0; y < height; ++y) {
+                for (int x = 0; x < width; ++x) {
+                    const unsigned char r = bytes[offset++];
+                    const unsigned char g = bytes[offset++];
+                    const unsigned char b = bytes[offset++];
+                    const unsigned char a = bytes[offset++];
+                    const uint32_t c = static_cast<uint32_t>(a) << 24U
+                                       | static_cast<uint32_t>(r) << 16U
+                                       | static_cast<uint32_t>(g) << 8U
+                                       | static_cast<uint32_t>(b);
+                    const jint color = static_cast<jint>(c);
+                    env->CallVoidMethod(bitmap_object, set_pixel_method_id, x, y, color);
+                }
+            }
+
+            // PNG compression format
+            jobject png_format_value = GetEnumField(env,
+                    "android/graphics/Bitmap$CompressFormat", "PNG");
+            if (png_format_value == nullptr) return;
+            objects.add(png_format_value);
+
+            // Make output stream
+            jclass byte_array_os_class = env->FindClass(
+                    "java/io/ByteArrayOutputStream");
+            if (byte_array_os_class == nullptr) return;
+
+            jmethodID byte_array_os_init_id = env->GetMethodID(
+                    byte_array_os_class, "<init>", "()V");
+            if (byte_array_os_init_id == nullptr) return;
+
+            jobject byte_array_os = env->NewObject(byte_array_os_class,
+                    byte_array_os_init_id);
+            if (byte_array_os == nullptr) return;
+            objects.add(byte_array_os);
+
+            // Compress as PNG
+            jmethodID compress_method_id = env->GetMethodID(bitmap_class,
+                    "compress",
+                    "(Landroid/graphics/Bitmap$CompressFormat;ILjava/io/OutputStream;)Z");
+            if (compress_method_id == nullptr) return;
+
+            const jboolean compress_result = env->CallBooleanMethod(bitmap_object,
+                    compress_method_id, png_format_value, 100, byte_array_os);
+            if (!compress_result) return;
+
+            // Get byte array data
+            jmethodID to_byte_array_method_id = env->GetMethodID(
+                    byte_array_os_class, "toByteArray", "()[B");
+            if (to_byte_array_method_id == nullptr) return;
+
+            auto byte_result = (jbyteArray)env->CallObjectMethod(byte_array_os,
+                    to_byte_array_method_id);
+            if (byte_result == nullptr) return;
+            objects.add(byte_result);
+
+            const jsize byte_result_length = env->GetArrayLength(byte_result);
+            data.resize(static_cast<size_t>(byte_result_length));
+            env->GetByteArrayRegion(byte_result, 0, byte_result_length,
+                    reinterpret_cast<jbyte*>(data.data()));
+        });
+
+    return data;
+}
+
+std::string ancer::Base64EncodeBytes(const unsigned char* bytes, int length) {
+    std::string encoded;
+
+    JniCallInAttachedThread(
+        [&bytes, &length, &encoded](JNIEnv* env) {
+            jclass base64_class = env->FindClass("android/util/Base64");
+            if (base64_class == nullptr) return;
+
+            jmethodID encode_to_string_method_id = env->GetStaticMethodID(
+                    base64_class, "encodeToString", "([BIII)Ljava/lang/String;");
+            if (encode_to_string_method_id == nullptr) return;
+
+            jbyteArray bytes_array = env->NewByteArray(length);
+            if (bytes_array == nullptr) return;
+
+            env->SetByteArrayRegion(bytes_array, 0, length,
+                    reinterpret_cast<const jbyte*>(bytes));
+
+            auto str = (jstring)env->CallStaticObjectMethod(base64_class,
+                    encode_to_string_method_id, bytes_array, 0, length, 0);
+            if (str == nullptr) {
+                env->DeleteLocalRef(bytes_array);
+                return;
+            }
+
+            const char *cstr = env->GetStringUTFChars(str, nullptr);
+            if (cstr != nullptr) {
+                encoded = std::string(cstr);
+                env->ReleaseStringUTFChars(str, cstr);
+            }
+
+            env->DeleteLocalRef(bytes_array);
+    });
+
+    return encoded;
+}
