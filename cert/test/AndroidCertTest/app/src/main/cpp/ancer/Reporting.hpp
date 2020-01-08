@@ -23,24 +23,20 @@
 
 namespace ancer::reporting {
     struct Datum {
+        Datum(Json custom);
+        Datum(std::string suite, std::string operation, Json custom);
+        Datum(const Datum&) = delete; // No copy to ensure we don't reuse issue_id
+        Datum(Datum&&) = default;
+
+        // NOTE: Be sure to update SaveReportLine if you add any new members.
         int issue_id;
         std::string suite_id;
         std::string operation_id;
         Timestamp timestamp;
         std::string thread_id;
-        int cpu_id = 0;
+        int cpu_id;
         Json custom;
     };
-
-    JSON_WRITER(Datum) {
-        JSON_REQVAR(issue_id);
-        JSON_REQVAR(suite_id);
-        JSON_REQVAR(operation_id);
-        JSON_REQVAR(timestamp);
-        JSON_REQVAR(thread_id);
-        JSON_REQVAR(cpu_id);
-        JSON_REQVAR(custom);
-    }
 
     enum class ReportFlushMode {
         /*
@@ -88,12 +84,12 @@ namespace ancer::reporting {
     /*
      * Write a datum to the report log
      */
-    void WriteToReportLog(const Datum& d);
+    void WriteToReportLog(Datum&& d);
 
     /*
      * Write a string to the report log
      */
-    void WriteToReportLog(const std::string& s);
+    void WriteToReportLog(std::string&& s);
 
     /*
      * Immediately flush any pending writes to the report log

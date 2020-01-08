@@ -238,7 +238,7 @@ namespace ancer {
     private:
         friend class Reporter;
 
-        void ReportImpl(const Json& custom_payload) const;
+        void ReportImpl(Json&& custom_payload) const;
 
     private:
 
