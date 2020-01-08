@@ -45,7 +45,7 @@ void* OpenSelfLibrary(void) {
 
 namespace ancer {
 
-std::shared_ptr<BaseOperation> BaseOperation::Load(
+std::unique_ptr<BaseOperation> BaseOperation::Load(
     const std::string& operation_id,
     const std::string& suite_id,
     Mode mode) {
@@ -59,10 +59,10 @@ std::shared_ptr<BaseOperation> BaseOperation::Load(
       break;
   }
 
-  using FactoryFunction = void (*)(std::shared_ptr<BaseOperation>&);
+  using FactoryFunction = void (*)(std::unique_ptr<BaseOperation>&);
   auto fn = (FactoryFunction) (dlsym(lib, fn_name.c_str()));
   if (fn) {
-    std::shared_ptr<BaseOperation> op;
+    std::unique_ptr<BaseOperation> op;
     fn(op);
     op->_operation_id = operation_id;
     op->_suite_id = suite_id;
