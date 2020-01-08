@@ -4,7 +4,7 @@ for i in `seq 1 26`;
     do
         gcloud beta firebase test android run --type=game-loop \
             --app=app/build/outputs/apk/debug/app-debug.apk \
-            --additional-apks=~/grabber.apk \
+            --additional-apks=../grabber/app/build/outputs/apk/debug/app-debug.apk \
             --scenario-numbers=$i \
             --async \
             --timeout 15m \
