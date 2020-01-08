@@ -34,6 +34,24 @@
       "revId": "b81c20e6726e7724bdd116832e17a7ecafa11ba4",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "11ba0b59_87008824",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/Reporting.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-08T18:00:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "78955549_84c2bdd4",
+      "revId": "b81c20e6726e7724bdd116832e17a7ecafa11ba4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
