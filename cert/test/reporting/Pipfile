@@ -25,6 +25,8 @@ PyYAML = "==5.1.2"
 six = "==1.13.0"
 soupsieve = "==1.9.5"
 python-docx = "*"
+markdown2 = "*"
+protobuf = "*"
 
 [requires]
 python_version = "3.7"
