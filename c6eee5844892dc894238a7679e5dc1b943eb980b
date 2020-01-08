@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "933ac5a8_64394943",
+        "filename": "cert/test/reporting/lib/graphing.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-01-08T00:48:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bb3fb8ef_5d5676a0",
+      "revId": "c6eee5844892dc894238a7679e5dc1b943eb980b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1d2228ac_7cc85f20",
         "filename": "cert/test/reporting/lib/summary.py",
         "patchSetId": 1
@@ -69,6 +87,24 @@
       "revId": "c6eee5844892dc894238a7679e5dc1b943eb980b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c9e498f0_0051ebad",
+        "filename": "cert/test/reporting/lib/summary.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-01-08T00:48:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0f9d43bf_0f36f9a2",
+      "revId": "c6eee5844892dc894238a7679e5dc1b943eb980b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
