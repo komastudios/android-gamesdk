@@ -343,9 +343,9 @@ void UpdateCamera(input::Data *input_data) {
           * glm::mat4(render_graph->GetCameraRotation())));
 
   glm::mat4 proj_matrix = glm::perspective(render_graph->GetCameraFOV(),
-                                          render_graph->GetCameraAspectRatio(),
-                                          0.1f,
-                                          100.0f);
+                                           render_graph->GetCameraAspectRatio(),
+                                           render_graph->GetCameraNearPlane(),
+                                           render_graph->GetCameraFarPlane());
   proj_matrix[1][1] *= -1;
   render_graph->SetCameraProjMatrix(proj_matrix);
 }
@@ -771,7 +771,7 @@ bool VulkanDrawFrame(input::Data *input_data) {
                                   {1.0f, 0.0f, 1.0f, 0.0f});
 
         int total_triangles = 0;
-        auto all_meshes = render_graph->GetAllMeshes();
+        auto all_meshes = render_graph->GetVisibleMeshes();
         for (uint32_t i = 0; i < all_meshes.size(); i++) {
           all_meshes[i]->UpdatePipeline(render_pass);
           all_meshes[i]->SubmitDraw(renderer->GetCurrentCommandBuffer(),
@@ -826,5 +826,8 @@ void OnOrientationChange() {
   CreateDepthBuffer();
   CreateFramebuffers(render_pass, depth_buffer.image_view);
   Button::SetScreenResolution(device->GetDisplaySizeOriented());
+  render_graph->SetCameraPrerotated(
+      device->GetPretransformFlag() & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR
+          || device->GetPretransformFlag() & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR);
   window_resized = false;
 }
