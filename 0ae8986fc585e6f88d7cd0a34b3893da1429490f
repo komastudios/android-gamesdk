@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7f7616ea_5e92f070",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/Heuristics.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-01-09T14:32:59Z",
+      "side": 1,
+      "message": "Looking at this file again, most of the methods here could use a short description of what the heuristic is about; for example what does oom mean and how you\u0027re getting it, what does getPids do, what is in proc/meminfo and how you\u0027re extracting it.",
+      "revId": "0ae8986fc585e6f88d7cd0a34b3893da1429490f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4da568c2_86b093d1",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/Heuristics.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-01-09T14:32:59Z",
+      "side": 1,
+      "message": "A comment here to explain whats pids.get(0) and what is the pattern you\u0027re trying to match would be nice.",
+      "range": {
+        "startLine": 94,
+        "startChar": 9,
+        "endLine": 96,
+        "endChar": 75
+      },
+      "revId": "0ae8986fc585e6f88d7cd0a34b3893da1429490f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "58b1c921_df788af8",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/Heuristics.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-01-09T14:32:59Z",
+      "side": 1,
+      "message": "you could at least log something on verbose level if this happens, telling why it\u0027s being silenced as well would be nice. Same for the other silenced catch blocks.",
+      "range": {
+        "startLine": 102,
+        "startChar": 6,
+        "endLine": 102,
+        "endChar": 31
+      },
+      "revId": "0ae8986fc585e6f88d7cd0a34b3893da1429490f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
