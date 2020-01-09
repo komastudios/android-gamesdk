@@ -58,6 +58,7 @@ class AssetManagerHelper {
         jclass cls = env->FindClass("android/content/Context");
         jmethodID get_assets = env->GetMethodID(cls, "getAssets",
                                                 "()Landroid/content/res/AssetManager;");
+        env->DeleteLocalRef(cls);
         if(get_assets==nullptr) {
             ALOGE("No Context.getAssets() method");
             return;
@@ -80,7 +81,8 @@ class AssetManagerHelper {
             return nullptr;
     }
     ~AssetManagerHelper() {
-        env_->DeleteLocalRef(jmgr_);
+        if (jmgr_)
+            env_->DeleteLocalRef(jmgr_);
     }
 };
 
@@ -228,6 +230,10 @@ std::string GetAppCacheDir(const JniCtx& jni_ctx) {
     std::string temp_folder( path_chars );
     env->ReleaseStringUTFChars( path_string, path_chars );
 
+    env->DeleteLocalRef(fileClass);
+    env->DeleteLocalRef(cache_dir);
+    env->DeleteLocalRef(contextClass);
+
     return temp_folder;
 }
 bool DeleteFile(const std::string& path) {
@@ -315,6 +321,8 @@ std::string UniqueId(JNIEnv* env) {
     const char *uuid_chars = env->GetStringUTFChars( uuid_string, NULL );
     std::string temp_uuid( uuid_chars );
     env->ReleaseStringUTFChars( uuid_string, uuid_chars );
+    env->DeleteLocalRef(uuid);
+    env->DeleteLocalRef(uuid_class);
     return temp_uuid;
 }
 

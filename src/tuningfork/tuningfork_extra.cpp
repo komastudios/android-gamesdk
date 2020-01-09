@@ -148,6 +148,7 @@ TFErrorCode StartFidelityParamDownloadThread(const ProtobufSerialization& defaul
                 waitTime *= 2; // back off
             }
         }
+        tuningfork::GetJniCtx().Detach();
     });
     return TFERROR_OK;
 }

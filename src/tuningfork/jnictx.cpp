@@ -47,4 +47,9 @@ JNIEnv* JniCtx::Env() const {
     return env;
 }
 
+void JniCtx::Detach() const {
+    if (jvm_ != nullptr)
+        jvm_->DetachCurrentThread();
+}
+
 } // namespace tuningfork
