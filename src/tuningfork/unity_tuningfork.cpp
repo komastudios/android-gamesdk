@@ -126,7 +126,8 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 
 TFErrorCode Unity_TuningFork_init(
     ProtoCallback fidelity_params_callback,
-    CProtobufSerialization* training_fidelity_params){
+    CProtobufSerialization* training_fidelity_params,
+    char* endpoint_uri_override){
 
     s_swappy_enabled = findSwappy();
     TFSettings settings {};
@@ -135,6 +136,7 @@ TFErrorCode Unity_TuningFork_init(
     }
     settings.fidelity_params_callback = fidelity_params_callback;
     settings.training_fidelity_params = training_fidelity_params;
+    settings.endpoint_uri_override = endpoint_uri_override;
     return TuningFork_init(&settings, s_jni->Env(), s_jni->Ctx());
 }
 
