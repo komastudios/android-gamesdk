@@ -86,14 +86,14 @@ class Helper {
 
     JNIEnv* env() const { return env_; }
 
-    jclass FindClass(const char* class_name) const;
+    jclass FindClass(const char* class_name);
 
     ClassAndObject NewObjectV(const char * cclz, const char* ctorSig, va_list argptr);
     ClassAndObject NewObject(const char * cclz, const char* ctorSig, ...);
     jni::String NewString(const std::string& s) const;
 
     // If clz is empty, get the class from the object
-    ClassAndObject Cast(jobject o, const std::string& clz="") const;
+    ClassAndObject Cast(jobject o, const std::string& clz="");
 
     // These methods take a variable number of arguments and have the return the type indicated.
     // The arguments are passed directly to JNI and it's not type-safe, so:

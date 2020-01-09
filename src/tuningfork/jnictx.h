@@ -34,6 +34,9 @@ class JniCtx {
     // Calling Env() will call AttachCurrentThread automatically.
     JNIEnv* Env() const;
     bool IsValid() const { return jvm_!=nullptr && jctx_!=nullptr; }
+    // Only call once when the thread exits. This implementation does not
+    // allow reattaching.
+    void Detach() const;
 };
 
 } // namespace tuningfork

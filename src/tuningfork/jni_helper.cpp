@@ -37,13 +37,16 @@ Helper::Helper(JNIEnv* env, jobject activity) : env_(env) {
 
     find_class_ = env->GetMethodID(
         class_loader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
+    env->DeleteLocalRef(activity_clazz);
+    env->DeleteLocalRef(class_loader);
+    objs_.push_back(activity_class_loader_);
 }
 Helper::~Helper() {
     for(auto& o: objs_)
         env_->DeleteLocalRef(o);
 }
 
-jclass Helper::FindClass(const char* class_name) const {
+jclass Helper::FindClass(const char* class_name) {
     jclass jni_class = env_->FindClass(class_name);
 
     if (jni_class == NULL) {
@@ -54,6 +57,8 @@ jclass Helper::FindClass(const char* class_name) const {
                 (jclass)(env_->CallObjectMethod(activity_class_loader_, find_class_, class_jname));
         env_->DeleteLocalRef(class_jname);
     }
+    if (jni_class != NULL)
+        objs_.push_back(jni_class);
     return jni_class;
 }
 
@@ -102,11 +107,15 @@ String Helper::CallStringMethod(const ClassAndObject& obj, const char* name,
     String s(env_, (jstring)o);
     return s;
     }
-Helper::ClassAndObject Helper::Cast(jobject o, const std::string& clz) const {
-    if(clz.empty())
-        return {env_->GetObjectClass(o), o};
-    else
-        return {FindClass(clz.c_str()), o};
+Helper::ClassAndObject Helper::Cast(jobject o, const std::string& clz) {
+    jclass new_class;
+    if(clz.empty()) {
+        new_class = env_->GetObjectClass(o);
+        objs_.push_back(new_class);
+    } else {
+      new_class = FindClass(clz.c_str());
+    }
+    return {new_class, o};
 }
 void Helper::CallVoidMethod(const ClassAndObject& obj, const char* name, const char* sig, ...) {
     jmethodID mid = env_->GetMethodID(obj.clz, name, sig);
@@ -138,6 +147,7 @@ std::string Helper::GetExceptionMessage() {
     msg = utf;
     env_->ReleaseStringUTFChars(s, utf);
     env_->DeleteLocalRef(s);
+    env_->DeleteLocalRef(exception);
     return msg;
 }
 bool Helper::CheckForException(std::string& msg) {
