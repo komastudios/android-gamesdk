@@ -25,7 +25,7 @@ from typing import Dict, List
 import matplotlib
 import matplotlib.pyplot as plt
 
-from lib.common import create_output_dir, Error, remove_files_with_extensions
+from lib.common import create_output_dir, remove_files_with_extensions
 from lib.report import BuildInfo, Datum, Suite
 from lib.graphers.loader import create_suite_handler
 
@@ -49,17 +49,10 @@ plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 # ------------------------------------------------------------------------------
 
 
-class UnsupportedReportFormatError(Error):
+class UnsupportedReportFormatError(Exception):
     """Exception raised when a requesting an unsupported format for
-    saving the report
-
-    Attributes:
-        message -- explanation of the error
+    saving the report.
     """
-
-    def __init__(self, message):
-        super().__init__()
-        self.message = message
 
 
 #-------------------------------------------------------------------------------
