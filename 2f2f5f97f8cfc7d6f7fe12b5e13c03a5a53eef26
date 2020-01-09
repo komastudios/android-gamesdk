@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "e3d659a8_77590744",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/integration/FakeOperation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-09T18:55:41Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "0bd03904_001d6899",
+      "revId": "2f2f5f97f8cfc7d6f7fe12b5e13c03a5a53eef26",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "72a9436b_526d52a9",
         "filename": "cert/test/AndroidCertTest/app/src/main/res/raw/configuration.json",
         "patchSetId": 3
@@ -30,6 +48,24 @@
       "writtenOn": "2020-01-08T17:45:07Z",
       "side": 1,
       "message": "Just curiosity: we may skip this one, right? Tests actually leverage test/integration/data/recipes/fake_operation.json, am I wrong?\n(self-resolved, just curious)",
+      "revId": "2f2f5f97f8cfc7d6f7fe12b5e13c03a5a53eef26",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c1a0b1d4_01156a68",
+        "filename": "cert/test/AndroidCertTest/app/src/main/res/raw/configuration.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-09T18:55:41Z",
+      "side": 1,
+      "message": "Good point. I\u0027m going to leave it in, but make it disabled.",
+      "parentUuid": "72a9436b_526d52a9",
       "revId": "2f2f5f97f8cfc7d6f7fe12b5e13c03a5a53eef26",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "9e92fbec_ceaf51e6",
+        "filename": "cert/test/reporting/run.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-09T18:55:41Z",
+      "side": 1,
+      "message": "When everything\u0027s a library, everything is testable 😎",
+      "parentUuid": "03ab771e_699c4faf",
+      "revId": "2f2f5f97f8cfc7d6f7fe12b5e13c03a5a53eef26",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5437c1e4_6d6de850",
         "filename": "cert/test/reporting/test/integration/test_report_generation.py",
         "patchSetId": 3
@@ -64,6 +118,24 @@
       "writtenOn": "2020-01-08T17:45:07Z",
       "side": 1,
       "message": "👏👏👏👏!!",
+      "revId": "2f2f5f97f8cfc7d6f7fe12b5e13c03a5a53eef26",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "31a42e27_d2629bfc",
+        "filename": "cert/test/reporting/test/integration/test_report_generation.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-09T18:55:41Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "5437c1e4_6d6de850",
       "revId": "2f2f5f97f8cfc7d6f7fe12b5e13c03a5a53eef26",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
