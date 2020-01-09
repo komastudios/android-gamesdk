@@ -21,14 +21,17 @@ void Material::CreateDefaultTexture(Renderer &renderer) {
 }
 
 Material::Material(Renderer *renderer, std::shared_ptr<ShaderState> shaders,
-                   std::shared_ptr<Texture> texture, const MaterialAttributes &attrs) :
+                   std::vector<std::shared_ptr<Texture>> &texture, const MaterialAttributes &attrs) :
     renderer_(renderer) {
   shaders_ = shaders;
-  if (texture == nullptr) {
-    CreateDefaultTexture(*renderer);
-    texture_ = default_texture_;
-  } else {
-    texture_ = texture;
+  for (auto currTexture : texture) {
+    if (currTexture == nullptr){
+      CreateDefaultTexture(*renderer);
+      texture_.push_back(default_texture_);
+    }
+    else{
+      texture_.push_back(currTexture);
+    }
   }
   material_attributes_ = attrs;
   material_buffer_ = std::make_unique<UniformBufferObject<MaterialAttributes>>(renderer_->GetDevice());
@@ -83,24 +86,28 @@ void Material::FillPipelineInfo(VkGraphicsPipelineCreateInfo *pipeline_info) {
 }
 
 void Material::CreateMaterialDescriptorSetLayout() {
-  VkDescriptorSetLayoutBinding sampler_layout_binding = {
-          .binding = FRAGMENT_BINDING_SAMPLER,
-          .descriptorCount = 1,
-          .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-          .pImmutableSamplers = nullptr,
-          .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
-  };
+  std::vector<VkDescriptorSetLayoutBinding>
+      bindings(texture_.size() + FRAGMENT_BINDING_MATERIAL_COUNT);
 
   VkDescriptorSetLayoutBinding attributes_layout_binding = {
-          .binding = FRAGMENT_BINDING_MATERIAL_ATTRIBUTES,
-          .descriptorCount = 1,
-          .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-          .pImmutableSamplers = nullptr,
-          .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
+      .binding = FRAGMENT_BINDING_MATERIAL_ATTRIBUTES,
+      .descriptorCount = 1,
+      .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+      .pImmutableSamplers = nullptr,
+      .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
   };
+  bindings[0] = attributes_layout_binding;
 
-  std::array<VkDescriptorSetLayoutBinding, MATERIAL_DESCRIPTOR_LAYOUT_SIZE> bindings =
-          {sampler_layout_binding, attributes_layout_binding};
+  for (uint32_t x = 0; x < texture_.size(); x++) {
+    VkDescriptorSetLayoutBinding currSampler = {
+        .binding = x + FRAGMENT_BINDING_MATERIAL_COUNT,
+        .descriptorCount = 1,
+        .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+        .pImmutableSamplers = nullptr,
+        .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
+    };
+    bindings[x + FRAGMENT_BINDING_MATERIAL_COUNT] = currSampler;
+  }
 
   VkDescriptorSetLayoutCreateInfo layout_info = {
           .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
@@ -129,41 +136,44 @@ void Material::CreateMaterialDescriptorSets() {
   MaterialAttributes attrs = material_attributes_;
 
   for (size_t i = 0; i < renderer_->GetDevice().GetDisplayImages().size(); i++) {
-    std::array<VkWriteDescriptorSet, MATERIAL_DESCRIPTOR_LAYOUT_SIZE> descriptor_writes = {};
+    std::vector<VkWriteDescriptorSet>
+        descriptor_writes(texture_.size() + FRAGMENT_BINDING_MATERIAL_COUNT);
 
-    VkDescriptorImageInfo image_info = {
-            .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-            .imageView = texture_->GetImageView(),
-            .sampler = sampler_,
+    material_buffer_->Update(i, [&attrs](auto &ubo) {
+      ubo.ambient = attrs.ambient;
+      ubo.specular = attrs.specular;
+      ubo.diffuse = attrs.diffuse;
+    });
+
+    VkDescriptorBufferInfo material_buffer_info = {
+        .buffer = material_buffer_->GetBuffer(i),
+        .offset = 0,
+        .range = sizeof(MaterialAttributes),
     };
 
     descriptor_writes[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     descriptor_writes[0].dstSet = material_descriptor_sets_[i];
-    descriptor_writes[0].dstBinding = FRAGMENT_BINDING_SAMPLER;
+    descriptor_writes[0].dstBinding = FRAGMENT_BINDING_MATERIAL_ATTRIBUTES;
     descriptor_writes[0].dstArrayElement = 0;
-    descriptor_writes[0].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    descriptor_writes[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     descriptor_writes[0].descriptorCount = 1;
-    descriptor_writes[0].pImageInfo = &image_info;
+    descriptor_writes[0].pBufferInfo = &material_buffer_info;
 
-    material_buffer_->Update(i, [&attrs](auto& ubo) {
-        ubo.ambient = attrs.ambient;
-        ubo.specular = attrs.specular;
-        ubo.diffuse = attrs.diffuse;
-    });
+    std::vector<VkDescriptorImageInfo> image_info(texture_.size());
+    for (int x = 0; x < texture_.size(); x++){
+      image_info[x].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+      image_info[x].imageView = texture_[x]->GetImageView(),
+      image_info[x].sampler = sampler_;
 
-    VkDescriptorBufferInfo material_buffer_info = {
-            .buffer = material_buffer_->GetBuffer(i),
-            .offset = 0,
-            .range = sizeof(MaterialAttributes),
-    };
-
-    descriptor_writes[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    descriptor_writes[1].dstSet = material_descriptor_sets_[i];
-    descriptor_writes[1].dstBinding = FRAGMENT_BINDING_MATERIAL_ATTRIBUTES;
-    descriptor_writes[1].dstArrayElement = 0;
-    descriptor_writes[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    descriptor_writes[1].descriptorCount = 1;
-    descriptor_writes[1].pBufferInfo = &material_buffer_info;
+      int arrayIdx = x + FRAGMENT_BINDING_MATERIAL_COUNT;
+      descriptor_writes[arrayIdx].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+      descriptor_writes[arrayIdx].dstSet = material_descriptor_sets_[i];
+      descriptor_writes[arrayIdx].dstBinding = arrayIdx;
+      descriptor_writes[arrayIdx].dstArrayElement = 0;
+      descriptor_writes[arrayIdx].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+      descriptor_writes[arrayIdx].descriptorCount = 1;
+      descriptor_writes[arrayIdx].pImageInfo = &image_info[x];
+    }
 
     vkUpdateDescriptorSets(renderer_->GetVulkanDevice(), descriptor_writes.size(), descriptor_writes.data(),
                            0, nullptr);
