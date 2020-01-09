@@ -14,15 +14,15 @@ struct AmbientLight {
     float intensity;
 };
 
-layout(set = BINDING_SET_MATERIAL, binding = FRAGMENT_BINDING_SAMPLER)
-uniform sampler2D texSampler;
-
 layout(set = BINDING_SET_MATERIAL, binding = FRAGMENT_BINDING_MATERIAL_ATTRIBUTES)
 uniform MaterialAttributes {
     vec3 ambient;
     vec3 diffuse;
     vec4 specular;
 } materialAttr;
+
+layout(set = BINDING_SET_MATERIAL, binding = 1)
+uniform sampler2D map_Kd;
 
 layout(set = BINDING_SET_LIGHTS, binding = FRAGMENT_BINDING_LIGHTS)
 uniform LightBlock {
@@ -46,7 +46,7 @@ vec3 calcPointLight(PointLight light){
     float attenuation = light.intensity / length(lightDiff);
 
     float diffuseTerm = max(dot(lightDir, fragNormal), 0.0);
-    vec3 diffuse = diffuseTerm * light.color * attenuation * texture(texSampler, fragTexCoord).xyz;
+    vec3 diffuse = diffuseTerm * light.color * attenuation * texture(map_Kd, fragTexCoord).xyz;
     float specularTerm = pow(max(dot(fragNormal, halfwayDir), 0.0), materialAttr.specular.w);
     vec3 specular = specularTerm * light.color * attenuation * materialAttr.specular.xyz;
     return diffuse + specular;

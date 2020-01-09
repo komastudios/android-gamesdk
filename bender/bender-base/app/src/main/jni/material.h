@@ -23,7 +23,7 @@ class Material {
  public:
   Material(Renderer *renderer,
            std::shared_ptr<ShaderState> shaders,
-           std::shared_ptr<Texture> texture,
+           std::vector<std::shared_ptr<Texture>> &texture,
            const MaterialAttributes &attrs = MaterialAttributes());
   ~Material();
 
@@ -47,7 +47,7 @@ class Material {
   Renderer *renderer_;
 
   std::shared_ptr<ShaderState> shaders_;
-  std::shared_ptr<Texture> texture_;
+  std::vector<std::shared_ptr<Texture>> texture_;
   MaterialAttributes material_attributes_;
   VkSampler sampler_;
 

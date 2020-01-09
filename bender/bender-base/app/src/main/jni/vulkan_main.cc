@@ -239,18 +239,22 @@ void CreateMaterials() {
     defaultMaterial.specular = {0.8f, 0.0f, 0.5f, 128.0f};
     defaultMaterial.diffuse = {0.8f, 0.0f, 0.5f};
     defaultMaterial.ambient = {0.8f, 0.0f, 0.5f};
-    baseline_materials.push_back(std::make_shared<Material>(renderer, shaders, nullptr));
+    std::vector<std::shared_ptr<Texture>> materialTextures = {nullptr, nullptr};
+    baseline_materials.push_back(std::make_shared<Material>(renderer, shaders, materialTextures));
     baseline_materials.push_back(std::make_shared<Material>(renderer,
                                                            shaders,
-                                                           nullptr,
+                                                           materialTextures,
                                                            defaultMaterial));
-    baseline_materials.push_back(std::make_shared<Material>(renderer, shaders, textures[0]));
+
+    materialTextures = {textures[0], textures[1]};
+    baseline_materials.push_back(std::make_shared<Material>(renderer, shaders, materialTextures));
     baseline_materials.push_back(std::make_shared<Material>(renderer,
                                                            shaders,
-                                                           textures[0],
+                                                           materialTextures,
                                                            defaultMaterial));
     for (uint32_t i = 0; i < textures.size(); ++i) {
-      materials.push_back(std::make_shared<Material>(renderer, shaders, textures[i]));
+      materialTextures = {textures[i], nullptr};
+      materials.push_back(std::make_shared<Material>(renderer, shaders, materialTextures));
     }
   });
 }
