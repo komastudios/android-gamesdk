@@ -1,0 +1,5 @@
+# These two files contain sensitive info related to the team share drive in
+# Google Drive.
+/client_secrets.json
+/gdrive.json
+/gdrive.creds

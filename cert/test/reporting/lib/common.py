@@ -39,31 +39,14 @@ def seconds_to_nanoseconds(seconds):
 # ------------------------------------------------------------------------------
 
 
-class Error(Exception):
-    """Base class for exceptions in this module."""
-
-class NonZeroSubprocessExitCode(Error):
-    """Exception raised when a subprocess returns other than 0
-
-    Attributes:
-        message -- explanation of the error
+class NonZeroSubprocessExitCode(Exception):
+    """Exception raised when a subprocess returns other than 0.
     """
 
-    def __init__(self, message):
-        super().__init__()
-        self.message = message
 
-
-class MissingPropertyError(Error):
-    """Exception raised when a required property in the recipe is missing
-
-    Attributes:
-        message -- explanation of the error
+class MissingPropertyError(Exception):
+    """Exception raised when a required property in the recipe is missing.
     """
-
-    def __init__(self, message):
-        super().__init__()
-        self.message = message
 
 
 # ------------------------------------------------------------------------------

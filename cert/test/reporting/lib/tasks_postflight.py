@@ -21,32 +21,18 @@ from pathlib import Path
 from typing import Dict
 
 from lib.build import APP_ID
-from lib.common import Error, run_command, NonZeroSubprocessExitCode, ensure_dir
+from lib.common import run_command, NonZeroSubprocessExitCode, ensure_dir
 from lib.tasks import Task, Environment, LocalDirs, DeviceDirs
 
 
-class CopyTaskError(Error):
-    """Exception raised when CopyTask fails
-
-    Attributes:
-        message -- explanation of the error
+class CopyTaskError(Exception):
+    """Exception raised when CopyTask fails.
     """
 
-    def __init__(self, message):
-        super().__init__()
-        self.message = message
 
-
-class DeleteTaskError(Error):
-    """Exception raised when DeleteTask fails
-
-    Attributes:
-        message -- explanation of the error
+class DeleteTaskError(Exception):
+    """Exception raised when DeleteTask fails.
     """
-
-    def __init__(self, message):
-        super().__init__()
-        self.message = message
 
 
 #-------------------------------------------------------------------------------
@@ -90,7 +76,7 @@ class DeleteTask(Task):
             file = file.replace(LocalDirs.WORKSPACE, str(env.workspace_dir))
 
         file = Path(file).expanduser().resolve()
-        print(f"[DeleteTask] - Deleting {str(file)}")
+        print(f"[DeleteTask] - Deleting {file}")
         if self.ENABLED and file.exists():
             if file.is_dir():
                 file.rmdir()
@@ -113,7 +99,7 @@ class DeleteTask(Task):
             run_command(delete_command)
         except NonZeroSubprocessExitCode as ex:
             raise DeleteTaskError(f"Unable to delete file {device_path} from "\
-                f"device {device_id} error: {ex.message}")
+                f"device {device_id} error: {repr(ex)}")
 
     def delete_oob_file(self, file: str, device_id: str, env: Environment):
         """Deletes a file from the app's OOB file storage
@@ -129,7 +115,7 @@ class DeleteTask(Task):
             run_command(delete_command)
         except NonZeroSubprocessExitCode as ex:
             raise DeleteTaskError(f"Unable to delete file {device_path} from "\
-                f"device {device_id} error: {ex.message}")
+                f"device {device_id} error: {repr(ex)}")
 
     def delete_device_file(self, file: str, device_id: str, env: Environment):
         """Deletes a file from the device's public file storage, e.g., /sdcard
@@ -145,7 +131,7 @@ class DeleteTask(Task):
             run_command(delete_command)
         except NonZeroSubprocessExitCode as ex:
             raise DeleteTaskError(f"Unable to delete file {device_path} from "\
-                f"device {device_id} error: {ex.message}")
+                f"device {device_id} error: {repr(ex)}")
 
 
 class CopyTask(Task):
@@ -182,13 +168,13 @@ class CopyTask(Task):
         """
         src = "files/" + src.replace(DeviceDirs.APP_FILES + "/", "")
         copy_cmd = f"adb -s {device_id} shell \"run-as {APP_ID}" \
-            + f" cat '{src}'\" > \"{str(dst)}\""
+            + f" cat '{src}'\" > \"{dst}\""
 
         try:
             run_command(copy_cmd)
         except NonZeroSubprocessExitCode as ex:
             raise CopyTaskError(
-                f"Error copying {src} from device; error: {ex.message}")
+                f"Error copying {src} from device; error: {repr(ex)}")
 
     def copy_from_app_oob_dir(self, device_id: str, src: str, dst: Path):
         """Copies a file from the app's OOB storage location
@@ -200,13 +186,13 @@ class CopyTask(Task):
         """
         src = src.replace(DeviceDirs.OOB_DATA + "/", "")
         src = f"/storage/emulated/0/Android/obb/{APP_ID}/{src}"
-        copy_cmd = f"adb -s {device_id} shell \"cat '{src}'\" > \"{str(dst)}\""
+        copy_cmd = f"adb -s {device_id} shell \"cat '{src}'\" > \"{dst}\""
 
         try:
             run_command(copy_cmd)
         except NonZeroSubprocessExitCode as ex:
             raise CopyTaskError(
-                f"Error copying {src} from device; error: {ex.message}")
+                f"Error copying {src} from device; error: {repr(ex)}")
 
     def copy_from_other_dir(self, device_id: str, src: str, dst: Path):
         """Copies a file from an arbitrary location on device to local storage
@@ -215,13 +201,13 @@ class CopyTask(Task):
             src: device path relative to root, e.g., /sdcard/foo.txt
             dst: The location on the local filesystem to copy the file to
         """
-        copy_cmd = f"adb -s {device_id} shell \"cat '{src}'\" > \"{str(dst)}\""
+        copy_cmd = f"adb -s {device_id} shell \"cat '{src}'\" > \"{dst}\""
 
         try:
             run_command(copy_cmd)
         except NonZeroSubprocessExitCode as ex:
             raise CopyTaskError(
-                f"Error copying {src} from device; error: {ex.message}")
+                f"Error copying {src} from device; error: {repr(ex)}")
 
     def resolve_dest_path(self, dst: str, env: Environment) -> Path:
         """Replace placeholder tokens in path with real values from Environment
