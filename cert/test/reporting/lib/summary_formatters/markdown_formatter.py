@@ -47,7 +47,7 @@ class MarkdownFormatter(SummaryFormatter):
         self.__writer.write(f"""
 ### {device_id}
 
-<img src="{str(plot_path_relative)}" width="90%" alt="{device_id}" />
+<img src="{plot_path_relative}" width="90%" alt="{device_id}" />
 
 {summary if summary else ""}
 
@@ -60,7 +60,7 @@ class MarkdownFormatter(SummaryFormatter):
 
 ## Meta Summary
 
-<img src="{str(plot_path_relative)}" width="90%" alt="Meta Summary" />
+<img src="{plot_path_relative}" width="90%" alt="Meta Summary" />
 
 {summary if summary else ""}
 

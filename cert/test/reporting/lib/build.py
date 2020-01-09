@@ -22,21 +22,14 @@ import shutil
 
 from pathlib import Path
 
-from lib.common import run_command, Error
+from lib.common import run_command
 
 APP_ID = "com.google.gamesdk.gamecert.operationrunner"
 
 
-class BuildError(Error):
-    """Exception raised when a build fails
-
-    Attributes:
-        message -- explanation of the error
+class BuildError(Exception):
+    """Exception raised when a build fails.
     """
-
-    def __init__(self, message):
-        super().__init__()
-        self.message = message
 
 
 def _copy_configuration(configuration: Path) -> Path:
