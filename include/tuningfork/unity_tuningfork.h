@@ -32,7 +32,8 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved);
 
 TFErrorCode Unity_TuningFork_init(
     ProtoCallback fidelity_params_callback,
-    CProtobufSerialization* training_fidelity_params);
+    const CProtobufSerialization* training_fidelity_params,
+    const char* endpoint_uri_override);
 
 bool Unity_TuningFork_swappyIsEnabled();
 
