@@ -1,3 +1,4 @@
+#include "TestRenderer.h"
 #include <android/log.h>
 #include <jni.h>
 #include <list>
@@ -8,6 +9,7 @@ constexpr auto appname = "istresser";
 
 std::list<char *> allocated;
 std::mutex mtx;
+TestRenderer* testRenderer;
 
 extern "C" JNIEXPORT bool JNICALL
 Java_net_jimblackler_istresser_MainActivity_nativeConsume(JNIEnv *env, jobject instance,
@@ -50,4 +52,24 @@ Java_net_jimblackler_istresser_MainActivity_tryAlloc(JNIEnv *env, jobject thiz, 
     return true;
   }
   return false;
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_net_jimblackler_istresser_MainActivity_initGl(JNIEnv* env,
+                                                   jclass thiz,
+                                                   jobject assets) {
+  testRenderer = new TestRenderer();
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_net_jimblackler_istresser_MainActivity_nativeDraw(JNIEnv* env,
+                                                       jclass clazz) {
+  testRenderer->render();
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_net_jimblackler_istresser_MainActivity_release(JNIEnv* env, jclass clazz) {
+  testRenderer->release();
 }
