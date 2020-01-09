@@ -20,6 +20,7 @@ import glob
 from pathlib import Path
 from typing import Dict, List, Union
 
+from lib.gdrive import GDrive, GoogleDriveRelatedError
 from lib.common import dict_lookup, get_indexable_utc, get_readable_utc
 from lib.graphing import load_suites
 from lib.report import Suite
@@ -167,7 +168,7 @@ def generate_summary(reports: List[Path], output_format: str,
     reports_dir = reports[0].parent
 
     summary_file_name = \
-        f"summary_{get_indexable_utc()}_{str(reports_dir.stem)}" \
+        f"summary_{get_indexable_utc()}_{reports_dir.stem}" \
             f".{output_format}"
     summary_path = reports_dir.joinpath(summary_file_name)
 
@@ -197,9 +198,13 @@ def perform_summary_if_enabled(recipe: Dict, reports_dir: Path) -> type(None):
     summary = __get_summary_config(recipe)
     if summary[0]:  # enabled
         summary_path = generate_summary(
-            [Path(f) for f in glob.glob(str(reports_dir) + '/*.json')],
-            summary[1], summary[2])
+            [Path(f) for f in glob.glob(f"{reports_dir}/*.json")], summary[1],
+            summary[2])
 
         if summary[3]:  # publish to Google Drive
-            # TODO(dagum): gdrive.publish(summary_path)
-            print(f"Summary ready for publishing at {summary_path}")
+            try:
+                GDrive().publish(summary_path)
+                print(f"{summary_path} published to Google Drive.")
+            except GoogleDriveRelatedError as error:
+                print(f"""{summary_path} publishing to Google Drive failure:
+{repr(error)}""")
