@@ -39,6 +39,10 @@ class RenderGraph {
     meshes_.insert(meshes_.end(), new_meshes.begin(), new_meshes.end());
   }
 
+  void CreateMeshInstance(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material) {
+
+  }
+
   void RemoveLastMesh() { if (meshes_.size() > 0) meshes_.pop_back(); }
   void ClearMeshes() { meshes_.clear(); }
 
