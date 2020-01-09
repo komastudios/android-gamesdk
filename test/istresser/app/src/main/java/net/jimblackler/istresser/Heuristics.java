@@ -88,39 +88,4 @@ public class Heuristics {
   static boolean lowMemoryCheck(Activity activity) {
     return getMemoryInfo(activity).lowMemory;
   }
-
-  static boolean oomCheck(Activity activity) {
-    return getOomScore(activity) > 650;
-  }
-
-  static boolean commitLimitCheck() {
-    Long value = processMeminfo().get("CommitLimit");
-    if (value == null) {
-      return false;
-    }
-    return Debug.getNativeHeapAllocatedSize() / 1024 > value;
-  }
-
-  static boolean availMemCheck(Activity activity) {
-    ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activity);
-    return memoryInfo.availMem < memoryInfo.threshold * 2;
-  }
-
-  static boolean cachedCheck(Activity activity) {
-    Long value = processMeminfo().get("Cached");
-    if (value == null || value == 0) {
-      return false;
-    }
-    ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activity);
-    return value < memoryInfo.threshold / 1024;
-  }
-
-  static boolean memAvailableCheck(Activity activity) {
-    Long value = processMeminfo().get("MemAvailable");
-    if (value == null || value == 0) {
-      return false;
-    }
-    ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activity);
-    return value < memoryInfo.threshold * 2 / 1024;
-  }
 }
