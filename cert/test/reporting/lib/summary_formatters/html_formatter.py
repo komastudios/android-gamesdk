@@ -49,7 +49,7 @@ class HtmlFormatter(SummaryFormatter):
                   summary: Union[str, type(None)]) -> type(None):
         self.__writer.write(f"""
 <h3>{device_id}</h3>
-<img src="{str(plot_path_relative)}" width="90%" alt="{device_id}" />
+<img src="{plot_path_relative}" width="90%" alt="{device_id}" />
 <p>{summary if summary else ""}</p>
 <hr/>
 """)
@@ -58,7 +58,7 @@ class HtmlFormatter(SummaryFormatter):
                        summary: Union[str, type(None)]) -> type(None):
         self.__writer.write(f"""
 <h2>Meta Summary</h2>
-<img src="{str(plot_path_relative)}" width="90%" alt="Meta Summary" />
+<img src="{plot_path_relative}" width="90%" alt="Meta Summary" />
 <p>{summary if summary else ""}</p>
 <hr/>
 """)
