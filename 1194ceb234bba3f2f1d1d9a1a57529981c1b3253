@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f6679173_87945562",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-01-10T21:38:17Z",
+      "side": 1,
+      "message": "we should start using constants for texture bindings, like:\nlayout(set \u003d BINDING_SET_MATERIAL, binding \u003d SAMPLER_DIFFUSE)\nlayout(set \u003d BINDING_SET_MATERIAL, binding \u003d SAMPLER_SPECULAR)\n// etc",
+      "revId": "1194ceb234bba3f2f1d1d9a1a57529981c1b3253",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "23901a8a_5ca1f0e8",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-01-10T21:38:17Z",
+      "side": 1,
+      "message": "can you give a more descriptive name? I guess this is the diffuse texture, right?",
+      "revId": "1194ceb234bba3f2f1d1d9a1a57529981c1b3253",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
