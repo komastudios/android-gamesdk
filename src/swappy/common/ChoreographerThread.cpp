@@ -190,7 +190,7 @@ void NDKChoreographerThread::looperThread()
     while (mThreadRunning) {
         // mutex should be unlocked before sleeping on pollAll
         mWaitingMutex.unlock();
-        ALooper_pollAll(-1, &outFd, &outEvents, &outData);
+        ALooper_pollAll(1000, &outFd, &outEvents, &outData);
         mWaitingMutex.lock();
     }
     ALOGI("Terminating Looper thread");
