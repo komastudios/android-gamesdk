@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "92382af8_d7e25305",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 783,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-01-10T23:48:06Z",
+      "side": 1,
+      "message": "I\u0027m concerned about this; the extra param is b/c the pipeline needs to know about the material descriptor set layout. However, this isn\u0027t rigorous, I don\u0027t know if we can get some sort of singular material layout.\n\nAlso, have raised this to Fran; this line only executes on the first DrawFrame per mesh b/c it only creates a pipeline if one does not already exist. So it\u0027s not really updating if the material descriptor set layout were to change.",
+      "revId": "43b93bece5c304166bb5e30dd8c627657d526afc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
