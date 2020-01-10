@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "34bb66c1_d983d10e",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-01-10T22:57:55Z",
+      "side": 1,
+      "message": "Right, I might not have been super clear before - I knew that\u0027s how we were doing it before - it\u0027s just that right now in the application code those constants can\u0027t really be used since I am using a for loop to iterate through the vector of passed in textures - and the loop control variable I am using to set the binding value (so the constants aren\u0027t coming into play there at all)",
+      "parentUuid": "69cd62c3_0e186a17",
+      "revId": "1194ceb234bba3f2f1d1d9a1a57529981c1b3253",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "23901a8a_5ca1f0e8",
         "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
         "patchSetId": 2
@@ -102,6 +120,24 @@
       "side": 1,
       "message": "That\u0027s still pretty cryptic. I\u0027d be more explicit:\n- diffuse_sampler\n- specular_sampler\n- normal_sampler\n- etc",
       "parentUuid": "5eae1b21_eb606fb0",
+      "revId": "1194ceb234bba3f2f1d1d9a1a57529981c1b3253",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4c2909c9_0008db70",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-01-10T22:57:55Z",
+      "side": 1,
+      "message": "In the most recent patchset I changed it to textureDiffuse - would samplerDiffuse be more accurate of a name?",
+      "parentUuid": "02b0689f_d40a2a29",
       "revId": "1194ceb234bba3f2f1d1d9a1a57529981c1b3253",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
