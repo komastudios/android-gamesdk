@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4552147f_f5c38f61",
+        "filename": "include/tuningfork/unity_tuningfork.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-01-10T09:55:24Z",
+      "side": 1,
+      "message": "These should be const pointers - they are input parameters",
+      "range": {
+        "startLine": 35,
+        "startChar": 0,
+        "endLine": 36,
+        "endChar": 31
+      },
+      "revId": "7950aa91faace70d3fda9da885362d8ab384984e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
