@@ -14,6 +14,7 @@
 
 #include "tuningfork/protobuf_util.h"
 #include "tuningfork/tuningfork.h"
+#include "tuningfork/tuningfork_extra.h"
 #include "swappy/swappyGL.h"
 #include "swappy/swappyGL_extra.h"
 #include "full/tuningfork.pb.h"
@@ -91,7 +92,7 @@ void SetAnnotations() {
 std::mutex mutex;
 std::condition_variable cv;
 bool setFPs = false;
-extern "C" void SetFidelityParams(const CProtobufSerialization* params) {
+extern "C" void SetFidelityParamsCallback(const CProtobufSerialization* params) {
     FidelityParams p;
     // Set default values
     p.set_num_spheres(20);
@@ -122,10 +123,20 @@ void InitTf(JNIEnv* env, jobject activity) {
     if (swappy_enabled) {
         settings.swappy_tracer_fn = &SwappyGL_injectTracer;
     }
-    settings.fidelity_params_callback = SetFidelityParams;
+    settings.fidelity_params_callback = SetFidelityParamsCallback;
 #ifndef NDEBUG
     settings.endpoint_uri_override = "http://localhost:9000";
 #endif
+    // This overrides the value in default_fidelity_parameters_filename
+    //  in tuningfork_settings, if it is there.
+    CProtobufSerialization fps = {};
+    const char* filename = "dev_tuningfork_fidelityparams_3.bin";
+    if (TuningFork_findFidelityParamsInApk(env, activity, filename, &fps)
+          == TFERROR_OK)
+        settings.training_fidelity_params = &fps;
+    else
+      ALOGE("Couldn't load fidelity params from %s", filename);
+
     TFErrorCode err = TuningFork_init(&settings, env, activity);
     if (err==TFERROR_OK) {
         TuningFork_setUploadCallback(UploadCallback);
@@ -133,10 +144,14 @@ void InitTf(JNIEnv* env, jobject activity) {
     } else {
         ALOGW("Error initializing TuningFork: %d", err);
     }
+    // Free any fidelity params we got from the APK
+    CProtobufSerialization_Free(&fps);
+
     // If we don't wait for fidelity params here, the download thread will set them after we
     //   have already started rendering with a different set of parameters.
     // In a real game, we'd initialize all the other assets before waiting.
     WaitForFidelityParams();
+
 }
 
 void InitTfFromNewThread(JavaVM* vm) {
@@ -228,7 +243,7 @@ Java_com_tuningfork_demoapp_TFTestActivity_setFidelityParameters(JNIEnv * env, j
     p.set_tesselation_percent(dis(gen));
     auto params = tf::CProtobufSerialization_Alloc(p);
     TuningFork_setFidelityParameters(&params);
-    SetFidelityParams(&params);
+    SetFidelityParamsCallback(&params);
     CProtobufSerialization_Free(&params);
 }
 

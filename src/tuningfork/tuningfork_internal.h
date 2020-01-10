@@ -217,7 +217,7 @@ TFErrorCode Flush();
 TFErrorCode Destroy();
 
 // The default histogram that is used if the user doesn't specify one in Settings
-TFHistogram DefaultHistogram();
+TFHistogram DefaultHistogram(InstrumentationKey ikey);
 
 // Get the object that holds JNI env and context.
 // Tuning fork must have been initialized.

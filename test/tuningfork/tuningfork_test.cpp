@@ -81,6 +81,7 @@ public:
                                   const ProtobufSerialization* training_mode_params,
                                   ProtobufSerialization &fidelity_params,
                                   std::string& experiment_id) override {
+      ALOGI("A_GFP");
         n_times_called_++;
         if (expected_training_params_ != nullptr) {
             EXPECT_NE(training_mode_params, nullptr);
@@ -88,11 +89,14 @@ public:
         } else {
             EXPECT_EQ(training_mode_params, nullptr);
         }
+      ALOGI("B_GFP");
         if (n_times_called_ > wait_count_ && download_params_!=nullptr) {
+      ALOGI("_GFP");
             fidelity_params = *download_params_;
             return TFERROR_OK;
         }
         else {
+      ALOGI("D_GFP");
             return TFERROR_NO_FIDELITY_PARAMS;
         }
     }
@@ -201,7 +205,7 @@ TuningForkLogEvent TestEndToEndWithAnnotation() {
     // {3} is the number of values in the Level enum in tuningfork_extensions.proto
     auto settings = TestSettings(Settings::AggregationStrategy::Submission::TICK_BASED, NTICKS - 1,
                                  2, {3});
-    TuningForkTest test(settings);
+    TuningForkTest test(settings, std::chrono::milliseconds(10));
     Annotation ann;
     ann.set_level(com::google::tuningfork::LEVEL_1);
     tuningfork::SetCurrentAnnotation(Serialize(ann));
@@ -282,8 +286,13 @@ TEST(TuningForkTest, EndToEnd) {
       "rendering": {
         "render_time_histogram": [{
          "counts": [
-           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0,
-           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "instrument_id": 64000
         }]
       }
@@ -303,7 +312,7 @@ TEST(TuningForkTest, TestEndToEndWithAnnotation) {
   "telemetry": [{
     "context": {
       "annotations": "CAE=",
-      "duration": "2s",
+      "duration": "1s",
       "tuning_parameters": {
         "experiment_id": "",
         "serialized_fidelity_parameters": ""
@@ -313,8 +322,13 @@ TEST(TuningForkTest, TestEndToEndWithAnnotation) {
       "rendering": {
         "render_time_histogram": [{
          "counts": [
-           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0,
-           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "instrument_id": 64001
         }]
       }
@@ -384,18 +398,25 @@ void TestFidelityParamDownloadThread() {
 
     auto r = TuningFork_startFidelityParamDownloadThread(nullptr, FidelityParamsCallback);
     EXPECT_EQ(r, TFERROR_BAD_PARAMETER);
+ALOGI("Hello %p", (void*)params_loader.get());
     std::unique_lock<std::mutex> lock(fp_mutex);
     r = TuningFork_startFidelityParamDownloadThread(&c_default_fps, FidelityParamsCallback);
     EXPECT_EQ(r, TFERROR_OK);
+    ALOGI("Hello");
     // Wait for the download thread. We have one initial callback with the defaults and
     //  one with the ones from the loader.
     for(int i=0;i<2;++i) {
         EXPECT_TRUE(fp_cv.wait_for(lock, s_test_wait_time)!=std::cv_status::timeout) << "Timeout";
+        ALOGI("Hello");
     }
+    ALOGI("Hello");
     EXPECT_EQ(fp_n_callbacks_called, 2);
+    ALOGI("Hello");
     EXPECT_EQ(params_loader->n_times_called_, 4);
+    ALOGI("Hello");
 
     CProtobufSerialization_Free(&c_default_fps);
+    ALOGI("Hello");
 
 }
 TEST(TuningForkTest, TestFidelityParamDownloadThread) {
