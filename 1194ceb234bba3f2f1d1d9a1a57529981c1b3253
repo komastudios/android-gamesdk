@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "69cd62c3_0e186a17",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-01-10T22:52:10Z",
+      "side": 1,
+      "message": "You can use header files to sync constants, same as we do for bindings.",
+      "parentUuid": "10346079_724ad7a0",
+      "revId": "1194ceb234bba3f2f1d1d9a1a57529981c1b3253",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "23901a8a_5ca1f0e8",
         "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
         "patchSetId": 2
@@ -66,6 +84,24 @@
       "side": 1,
       "message": "I can change the name, sure! Here I was just following the naming convention found in OBJ files (map_Kd, map_Ns, map_Bump, etc)",
       "parentUuid": "23901a8a_5ca1f0e8",
+      "revId": "1194ceb234bba3f2f1d1d9a1a57529981c1b3253",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "02b0689f_d40a2a29",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-01-10T22:52:10Z",
+      "side": 1,
+      "message": "That\u0027s still pretty cryptic. I\u0027d be more explicit:\n- diffuse_sampler\n- specular_sampler\n- normal_sampler\n- etc",
+      "parentUuid": "5eae1b21_eb606fb0",
       "revId": "1194ceb234bba3f2f1d1d9a1a57529981c1b3253",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
