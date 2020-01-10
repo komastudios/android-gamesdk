@@ -45,7 +45,7 @@ target_compile_options(protobuf-static PUBLIC "-Wno-tautological-constant-compar
 
 add_library( native-lib
              SHARED
-             src/main/cpp/expertballs.cpp
+             src/main/cpp/scaledballs.cpp
              ../../common/Renderer.cpp
              ../../common/Scene.cpp
              ${PROTO_GENS_DIR}/full/dev_tuningfork.pb.cc
