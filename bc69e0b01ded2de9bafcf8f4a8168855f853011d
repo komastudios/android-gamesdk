@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1ffa10b1_8dc6d21c",
+        "filename": "src/swappy/vulkan/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-01-10T18:16:41Z",
+      "side": 1,
+      "message": "I wonder if we should introduce a new API for DestroyDevice instead of doing this logic here.\nThis way the client will be responsible to manage Device vs. Swapchain lifecycle. It is especially confusing if the client\nhas a single swapchain that needs to be recreated (due to OUT_OF_DATE for example) but the device stays.",
+      "revId": "bc69e0b01ded2de9bafcf8f4a8168855f853011d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
