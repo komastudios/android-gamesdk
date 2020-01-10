@@ -200,7 +200,7 @@ TuningForkLogEvent TestEndToEndWithAnnotation() {
     // {3} is the number of values in the Level enum in tuningfork_extensions.proto
     auto settings = TestSettings(Settings::AggregationStrategy::Submission::TICK_BASED, NTICKS - 1,
                                  2, {3});
-    TuningForkTest test(settings);
+    TuningForkTest test(settings, std::chrono::milliseconds(10));
     Annotation ann;
     ann.set_level(com::google::tuningfork::LEVEL_1);
     tuningfork::SetCurrentAnnotation(Serialize(ann));
@@ -281,8 +281,13 @@ TEST(TuningForkTest, EndToEnd) {
       "rendering": {
         "render_time_histogram": [{
          "counts": [
-           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0,
-           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "instrument_id": 64000
         }]
       }
@@ -302,7 +307,7 @@ TEST(TuningForkTest, TestEndToEndWithAnnotation) {
   "telemetry": [{
     "context": {
       "annotations": "CAE=",
-      "duration": "2s",
+      "duration": "1s",
       "tuning_parameters": {
         "experiment_id": "",
         "serialized_fidelity_parameters": ""
@@ -312,8 +317,13 @@ TEST(TuningForkTest, TestEndToEndWithAnnotation) {
       "rendering": {
         "render_time_histogram": [{
          "counts": [
-           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0,
-           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "instrument_id": 64001
         }]
       }
@@ -395,8 +405,8 @@ void TestFidelityParamDownloadThread() {
     EXPECT_EQ(params_loader->n_times_called_, 4);
 
     CProtobufSerialization_Free(&c_default_fps);
-
 }
+
 TEST(TuningForkTest, TestFidelityParamDownloadThread) {
     TestFidelityParamDownloadThread();
 }

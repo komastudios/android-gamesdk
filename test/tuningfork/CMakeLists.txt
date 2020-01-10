@@ -95,6 +95,7 @@ target_link_libraries(tuningfork_test
   protobuf-static
   log
   GLESv2
+  android
 )
 target_link_libraries(tuningfork_test_lib
   android

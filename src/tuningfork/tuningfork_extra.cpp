@@ -127,7 +127,9 @@ TFErrorCode StartFidelityParamDownloadThread(const ProtobufSerialization& defaul
                     SaveFidelityParams(params);
                 CProtobufSerialization cpbs;
                 ToCProtobufSerialization(params, cpbs);
-                fidelity_params_callback(&cpbs);
+                if (fidelity_params_callback) {
+                    fidelity_params_callback(&cpbs);
+                }
                 CProtobufSerialization_Free(&cpbs);
                 break;
             } else {
@@ -135,7 +137,8 @@ TFErrorCode StartFidelityParamDownloadThread(const ProtobufSerialization& defaul
                 if (first_time) {
                     CProtobufSerialization cpbs;
                     ToCProtobufSerialization(default_params, cpbs);
-                    fidelity_params_callback(&cpbs);
+                    if (fidelity_params_callback)
+                        fidelity_params_callback(&cpbs);
                     CProtobufSerialization_Free(&cpbs);
                     first_time = false;
                 }
