@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "10346079_724ad7a0",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-01-10T22:32:42Z",
+      "side": 1,
+      "message": "Sure I can make a constant for these, although at the moment in the application code this wouldn\u0027t really be used since the way I wrote support for multiple texture is that the binding value is set based on that texture\u0027s position/index in the passed in vector of textures\n\nI thought about using an enum of some kind, but GLSL does not support enums so I wouldn\u0027t be able to synchronize the constants across the shader and application code without even more bookkeeping",
+      "parentUuid": "f6679173_87945562",
+      "revId": "1194ceb234bba3f2f1d1d9a1a57529981c1b3253",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "23901a8a_5ca1f0e8",
         "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "1194ceb234bba3f2f1d1d9a1a57529981c1b3253",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5eae1b21_eb606fb0",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-01-10T22:32:42Z",
+      "side": 1,
+      "message": "I can change the name, sure! Here I was just following the naming convention found in OBJ files (map_Kd, map_Ns, map_Bump, etc)",
+      "parentUuid": "23901a8a_5ca1f0e8",
+      "revId": "1194ceb234bba3f2f1d1d9a1a57529981c1b3253",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
