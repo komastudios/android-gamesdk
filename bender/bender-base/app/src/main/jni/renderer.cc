@@ -198,7 +198,7 @@ void Renderer::Init() {
 
 void Renderer::UpdateLights(glm::vec3 camera) {
   lights_buffer_->Update(GetCurrentFrame(), [&camera](auto &lights_buffer) {
-      lights_buffer.pointLight.position = {0.0f, 0.0f, 6.0f};
+      lights_buffer.pointLight.position = {0.0f, 5.0f, 1.0f};
       lights_buffer.pointLight.color = {1.0f, 1.0f, 1.0f};
       lights_buffer.pointLight.intensity = 1.0f;
       lights_buffer.ambientLight.color = {1.0f, 1.0f, 1.0f};
@@ -238,7 +238,7 @@ void Renderer::CreateLightsDescriptorSetLayout() {
           .descriptorCount = 1,
           .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
           .pImmutableSamplers = nullptr,
-          .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT
+          .stageFlags = VK_SHADER_STAGE_VERTEX_BIT
   };
 
   std::array<VkDescriptorSetLayoutBinding, 1> bindings = {light_block_layout_binding};

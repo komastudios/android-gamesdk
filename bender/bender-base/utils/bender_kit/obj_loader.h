@@ -44,7 +44,7 @@ for (auto currMTL : mtllib) {
   addTexture(currMTL.second.map_Kd_);
   addTexture(currMTL.second.map_Ks_);
   addTexture(currMTL.second.map_Ns_);
-  addTexture(currMTL.second.map_bump_);
+  addTexture(currMTL.second.map_Bump_);
   MaterialAttributes newMTL;
   newMTL.ambient_ = currMTL.second.ambient_;
   newMTL.specular_ = glm::vec4(currMTL.second.specular_, currMTL.second.specular_exponent_);
@@ -70,12 +70,14 @@ struct MTL {
   glm::vec3 diffuse_;
   glm::vec3 specular_;
   float specular_exponent_;
+  float bump_multiplier = 1.0f;
 
   std::string map_Ka_ = "";
   std::string map_Kd_ = "";
+  std::string map_Ke_ = "";
   std::string map_Ks_ = "";
   std::string map_Ns_ = "";
-  std::string map_bump_ = "";
+  std::string map_Bump_ = "";
 };
 
 struct OBJ {
