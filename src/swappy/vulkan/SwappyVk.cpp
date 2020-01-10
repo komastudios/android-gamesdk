@@ -166,16 +166,24 @@ VkResult SwappyVk::QueuePresent(VkQueue                 queue,
 void SwappyVk::DestroySwapchain(VkDevice                device,
                                 VkSwapchainKHR          swapchain)
 {
-    auto it = perQueueFamilyIndex.begin();
-    while (it != perQueueFamilyIndex.end()) {
-        if (it->second.device == device) {
-            it = perQueueFamilyIndex.erase(it);
-        } else {
-            ++it;
+    auto pImpl = perSwapchainImplementation[swapchain].get();
+    // Count the number of swapchains using this implementation.
+    int n = std::count_if(perSwapchainImplementation.begin(), perSwapchainImplementation.end(),
+                      [pImpl](const std::pair<VkSwapchainKHR, std::shared_ptr<SwappyVkBase>>& it) {
+                          return it.second.get()==pImpl;
+                      });
+    // Remove the device if there are no other swapchains referring to it.
+    if (n==1) {
+        auto it = perQueueFamilyIndex.begin();
+        while (it != perQueueFamilyIndex.end()) {
+            if (it->second.device == device) {
+                it = perQueueFamilyIndex.erase(it);
+            } else {
+                ++it;
+            }
         }
+        perDeviceImplementation.erase(device);
     }
-
-    perDeviceImplementation.erase(device);
     perSwapchainImplementation.erase(swapchain);
 }
 
