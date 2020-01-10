@@ -30,6 +30,7 @@ protobuf_generate_full_cpp( ${CMAKE_CURRENT_SOURCE_DIR}/src/main/proto src/main/
 include_directories(${PROTO_GENS_DIR})
 include_directories(${PROTOBUF_SRC_DIR})
 include_directories(${PROTOBUF_NANO_SRC_DIR})
+include_directories(../../common)
 include_directories(../../../../src)
 include_directories(../../../common/include)
 include_directories(../../../../include)
@@ -45,8 +46,8 @@ target_compile_options(protobuf-static PUBLIC "-Wno-tautological-constant-compar
 add_library( native-lib
              SHARED
              src/main/cpp/expertballs.cpp
-             src/main/cpp/Renderer.cpp
-             src/main/cpp/Scene.cpp
+             ../../common/Renderer.cpp
+             ../../common/Scene.cpp
              ${PROTO_GENS_DIR}/full/dev_tuningfork.pb.cc
              ${PROTO_GENS_DIR}/full/tuningfork.pb.cc
              ${PROTO_GENS_DIR}/full/tuningfork_clearcut_log.pb.cc

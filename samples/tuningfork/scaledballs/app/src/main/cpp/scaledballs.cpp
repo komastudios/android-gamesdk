@@ -14,6 +14,7 @@
 
 #include "tuningfork/protobuf_util.h"
 #include "tuningfork/tuningfork.h"
+#include "tuningfork/tuningfork_extra.h"
 #include "swappy/swappyGL.h"
 #include "swappy/swappyGL_extra.h"
 #include "full/tuningfork.pb.h"
@@ -24,7 +25,7 @@
 #include <unistd.h>
 #include <android/native_window_jni.h>
 
-#define LOG_TAG "expertballs"
+#define LOG_TAG "scaledballs"
 #include "Log.h"
 #include "Renderer.h"
 
@@ -126,6 +127,16 @@ void InitTf(JNIEnv* env, jobject activity) {
 #ifndef NDEBUG
     settings.endpoint_uri_override = "http://localhost:9000";
 #endif
+    // This overrides the value in default_fidelity_parameters_filename
+    //  in tuningfork_settings, if it is there.
+    CProtobufSerialization fps = {};
+    const char* filename = "dev_tuningfork_fidelityparams_3.bin";
+    if (TuningFork_findFidelityParamsInApk(env, activity, filename, &fps)
+          == TFERROR_OK)
+        settings.training_fidelity_params = &fps;
+    else
+      ALOGE("Couldn't load fidelity params from %s", filename);
+
     TFErrorCode err = TuningFork_init(&settings, env, activity);
     if (err==TFERROR_OK) {
         TuningFork_setUploadCallback(UploadCallback);
@@ -133,10 +144,14 @@ void InitTf(JNIEnv* env, jobject activity) {
     } else {
         ALOGW("Error initializing TuningFork: %d", err);
     }
+    // Free any fidelity params we got from the APK
+    CProtobufSerialization_Free(&fps);
+
     // If we don't wait for fidelity params here, the download thread will set them after we
     //   have already started rendering with a different set of parameters.
     // In a real game, we'd initialize all the other assets before waiting.
     WaitForFidelityParams();
+
 }
 
 void InitTfFromNewThread(JavaVM* vm) {
@@ -151,7 +166,7 @@ extern "C" {
 
 // initFromNewThread parameter is for testing
 JNIEXPORT void JNICALL
-Java_com_tuningfork_expertballs_TFTestActivity_initTuningFork(
+Java_com_tuningfork_scaledballs_TFTestActivity_initTuningFork(
     JNIEnv *env, jobject activity, jboolean initFromNewThread) {
     if(initFromNewThread) {
         tf_activity = env->NewGlobalRef(activity);
@@ -164,7 +179,7 @@ Java_com_tuningfork_expertballs_TFTestActivity_initTuningFork(
 }
 
 JNIEXPORT void JNICALL
-Java_com_tuningfork_expertballs_TFTestActivity_onChoreographer(JNIEnv */*env*/, jclass clz, jlong /*frameTimeNanos*/) {
+Java_com_tuningfork_scaledballs_TFTestActivity_onChoreographer(JNIEnv */*env*/, jclass clz, jlong /*frameTimeNanos*/) {
     TuningFork_frameTick(TFTICK_CHOREOGRAPHER);
     // Switch levels and loading state according to the number of ticks we've had.
     constexpr int COUNT_NEXT_LEVEL_START_LOADING = 80;
@@ -187,22 +202,22 @@ Java_com_tuningfork_expertballs_TFTestActivity_onChoreographer(JNIEnv */*env*/, 
     }
 }
 JNIEXPORT void JNICALL
-Java_com_tuningfork_expertballs_TFTestActivity_resize(JNIEnv *env, jclass /*clz*/, jobject surface, jint width, jint height) {
+Java_com_tuningfork_scaledballs_TFTestActivity_resize(JNIEnv *env, jclass /*clz*/, jobject surface, jint width, jint height) {
     ANativeWindow *window = ANativeWindow_fromSurface(env, surface);
     Renderer::getInstance()->setWindow(window,
                                        static_cast<int32_t>(width),
                                        static_cast<int32_t>(height));
 }
 JNIEXPORT void JNICALL
-Java_com_tuningfork_expertballs_TFTestActivity_clearSurface(JNIEnv */*env*/, jclass /*clz*/ ) {
+Java_com_tuningfork_scaledballs_TFTestActivity_clearSurface(JNIEnv */*env*/, jclass /*clz*/ ) {
     Renderer::getInstance()->setWindow(nullptr, 0, 0);
 }
 JNIEXPORT void JNICALL
-Java_com_tuningfork_expertballs_TFTestActivity_start(JNIEnv */*env*/, jclass /*clz*/ ) {
+Java_com_tuningfork_scaledballs_TFTestActivity_start(JNIEnv */*env*/, jclass /*clz*/ ) {
     Renderer::getInstance()->start();
 }
 JNIEXPORT void JNICALL
-Java_com_tuningfork_expertballs_TFTestActivity_stop(JNIEnv */*env*/, jclass /*clz*/ ) {
+Java_com_tuningfork_scaledballs_TFTestActivity_stop(JNIEnv */*env*/, jclass /*clz*/ ) {
     Renderer::getInstance()->stop();
     // Call flush here to upload any histograms when the app goes to the background.
     auto ret = TuningFork_flush();
@@ -210,7 +225,7 @@ Java_com_tuningfork_expertballs_TFTestActivity_stop(JNIEnv */*env*/, jclass /*cl
 }
 
 JNIEXPORT void JNICALL
-Java_com_tuningfork_expertballs_TFTestActivity_raiseSignal(JNIEnv * env, jclass clz, jint signal) {
+Java_com_tuningfork_scaledballs_TFTestActivity_raiseSignal(JNIEnv * env, jclass clz, jint signal) {
     std::stringstream ss;
     ss << std::this_thread::get_id();
     ALOGI("raiseSignal %d: [pid: %d], [tid: %d], [thread_id: %s])",
@@ -219,7 +234,7 @@ Java_com_tuningfork_expertballs_TFTestActivity_raiseSignal(JNIEnv * env, jclass 
 }
 
 JNIEXPORT void JNICALL
-Java_com_tuningfork_expertballs_TFTestActivity_setFidelityParameters(JNIEnv * env, jclass clz) {
+Java_com_tuningfork_scaledballs_TFTestActivity_setFidelityParameters(JNIEnv * env, jclass clz) {
     // Simulate the user changing quality settings in the game
     static std::mt19937 gen;
     static std::uniform_int_distribution<> dis(1,100);
