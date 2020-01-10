@@ -16,6 +16,24 @@
       "revId": "cd35988e0e7129decd22c77cd2ffc8ce75dd2379",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7940d6ec_d042f771",
+        "filename": "src/swappy/common/ChoreographerThread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-01-10T23:54:04Z",
+      "side": 1,
+      "message": "If you look in the bug https://b.corp.google.com/issues/147411622 you\u0027ll see the issue that the user was reporting. Maybe they are not using the API correctly or maybe we are missing a wake, but having an infinite wait here seems to be asking for trouble.",
+      "parentUuid": "13b7d06a_de9e274b",
+      "revId": "cd35988e0e7129decd22c77cd2ffc8ce75dd2379",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
