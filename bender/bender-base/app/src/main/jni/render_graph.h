@@ -10,6 +10,7 @@
 #include "material.h"
 #include "geometry.h"
 #include "mesh.h"
+#include "mesh_instance.h"
 #include "device.h"
 #include "renderer.h"
 #include "input.h"
@@ -26,11 +27,13 @@ class RenderGraph {
 
  public:
   std::vector<std::shared_ptr<Mesh>> GetAllMeshes() { return meshes_; }
-  std::shared_ptr<Mesh> GetLastMesh() {
-    if (meshes_.size() > 0) {
-      return meshes_.back();
+
+  std::vector<std::shared_ptr<MeshInstance>> GetAllMeshInstances() { return mesh_instances_; }
+  std::shared_ptr<MeshInstance> GetLastMeshInstance() {
+    if (mesh_instances_.size() > 0) {
+        return mesh_instances_.back();
     } else {
-      return nullptr;
+        return nullptr;
     }
   }
 
@@ -39,8 +42,19 @@ class RenderGraph {
     meshes_.insert(meshes_.end(), new_meshes.begin(), new_meshes.end());
   }
 
+  void AddMeshInstance(std::shared_ptr<MeshInstance> new_mesh_instance) {
+      mesh_instances_.push_back(new_mesh_instance);
+  }
+  void AddMeshInstances(std::vector<std::shared_ptr<MeshInstance>> new_instances) {
+      mesh_instances_.insert(mesh_instances_.end(), new_instances.begin(), new_instances.end());
+  }
+
   void RemoveLastMesh() { if (meshes_.size() > 0) meshes_.pop_back(); }
-  void ClearMeshes() { meshes_.clear(); }
+  void RemoveLastMeshInstance() { if (mesh_instances_.size() > 0) mesh_instances_.pop_back(); }
+  void ClearMeshes() {
+      mesh_instances_.clear();
+      meshes_.clear();
+  }
 
   void TranslateCamera(glm::vec3 translation) { camera_.position += translation; }
   void RotateCameraLocal(glm::quat rotation) {
@@ -65,6 +79,7 @@ class RenderGraph {
  private:
   Camera camera_;
   std::vector<std::shared_ptr<Mesh>> meshes_;
+  std::vector<std::shared_ptr<MeshInstance>> mesh_instances_;
 };
 
 #endif //BENDER_BASE_APP_SRC_MAIN_JNI_RENDER_GRAPH_H_

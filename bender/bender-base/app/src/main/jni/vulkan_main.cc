@@ -29,6 +29,7 @@
 #include "shader_state.h"
 #include "polyhedron.h"
 #include "mesh.h"
+#include "mesh_instance.h"
 #include "texture.h"
 #include "font.h"
 #include "uniform_buffer.h"
@@ -71,6 +72,8 @@ std::shared_ptr<ShaderState> shaders;
 std::vector<const char *> tex_files;
 std::vector<std::shared_ptr<Texture>> textures;
 std::vector<std::shared_ptr<Material>> materials;
+
+std::shared_ptr<Mesh> baseline_mesh;
 std::vector<std::shared_ptr<Material>> baseline_materials;
 std::vector<std::shared_ptr<Geometry>> geometries;
 
@@ -115,35 +118,36 @@ void StrafeDown() {
   render_graph->TranslateCamera(-up * (20.0f / device->GetDisplaySize().height));
 }
 void CreateInstance() {
-  render_graph->AddMesh(std::make_shared<Mesh>(renderer,
-                                               baseline_materials[materials_idx],
-                                               geometries[poly_faces_idx]));
-  render_graph->GetLastMesh()->Translate(glm::vec3(rand() % 3,
+  render_graph->AddMeshInstance(std::make_shared<MeshInstance>(renderer, *baseline_mesh, baseline_materials[materials_idx]));
+  render_graph->GetLastMeshInstance()->Translate(glm::vec3(rand() % 3,
                                                    rand() % 3,
                                                    rand() % 3));
 }
 void DeleteInstance() {
-  render_graph->RemoveLastMesh();
+  render_graph->RemoveLastMeshInstance();
 }
 void ChangePolyhedralComplexity() {
   poly_faces_idx = (poly_faces_idx + 1) % allowedPolyFaces.size();
-  auto all_meshes = render_graph->GetAllMeshes();
-  for (uint32_t i = 0; i < all_meshes.size(); i++) {
-    all_meshes[i] =
-        std::make_shared<Mesh>(*all_meshes[i], geometries[poly_faces_idx]);
+  baseline_mesh = std::make_shared<Mesh>(renderer, geometries[poly_faces_idx]);
+  auto all_instances = render_graph->GetAllMeshInstances();
+  for (uint32_t i = 0; i < all_instances.size(); i++) {
+    all_instances[i] =
+        std::make_shared<MeshInstance>(*all_instances[i], *baseline_mesh);
   }
   render_graph->ClearMeshes();
-  render_graph->AddMeshes(all_meshes);
+  render_graph->AddMesh(baseline_mesh);
+  render_graph->AddMeshInstances(all_instances);
 }
 void ChangeMaterialComplexity() {
   materials_idx = (materials_idx + 1) % baseline_materials.size();
-  auto all_meshes = render_graph->GetAllMeshes();
-  for (uint32_t i = 0; i < all_meshes.size(); i++) {
-    all_meshes[i] =
-        std::make_shared<Mesh>(*all_meshes[i], baseline_materials[materials_idx]);
+  auto all_instances = render_graph->GetAllMeshInstances();
+  for (uint32_t i = 0; i < all_instances.size(); i++) {
+    all_instances[i] =
+        std::make_shared<MeshInstance>(*all_instances[i], baseline_materials[materials_idx]);
   }
   render_graph->ClearMeshes();
-  render_graph->AddMeshes(all_meshes);
+  render_graph->AddMesh(baseline_mesh);
+  render_graph->AddMeshInstances(all_instances);
 }
 
 void CreateButtons() {
@@ -351,14 +355,14 @@ void UpdateCamera(input::Data *input_data) {
 }
 
 void UpdateInstances(input::Data *input_data) {
-  auto all_meshes = render_graph->GetAllMeshes();
+  auto all_meshes = render_graph->GetAllMeshInstances();
   for (int i = 0; i < all_meshes.size(); i++) {
     all_meshes[i]->Rotate(glm::vec3(0.0f, 1.0f, 1.0f), 90 * frame_time);
     all_meshes[i]->Translate(.02f * glm::vec3(std::sin(2 * total_time),
                                              std::sin(i * total_time),
                                              std::cos(2 * total_time)));
 
-    all_meshes[i]->Update(renderer->GetCurrentFrame(),
+    all_meshes[i]->UpdateMVP(renderer->GetCurrentFrame(),
                          render_graph->GetCameraPosition(),
                          render_graph->GetCameraViewMatrix(),
                          render_graph->GetCameraProjMatrix());
@@ -536,9 +540,9 @@ bool InitVulkan(android_app *app) {
       CreateGeometries();
 
       timing::timer.Time("Create Polyhedron", timing::OTHER, [] {
-        render_graph->AddMesh(std::make_shared<Mesh>(renderer,
-                                                     baseline_materials[materials_idx],
-                                                     geometries[poly_faces_idx]));
+        baseline_mesh = std::make_shared<Mesh>(renderer, geometries[poly_faces_idx]);
+        render_graph->AddMesh(baseline_mesh);
+        render_graph->AddMeshInstance(std::make_shared<MeshInstance>(renderer, *baseline_mesh, baseline_materials[materials_idx]));
       });
     });
 
@@ -702,6 +706,9 @@ void DeleteVulkan(void) {
 
   vkDestroyRenderPass(device->GetDevice(), render_pass, nullptr);
 
+  for (auto &mesh_instance : render_graph->GetAllMeshInstances()) {
+    mesh_instance->Cleanup();
+  }
   for (auto &mesh : render_graph->GetAllMeshes()) {
     mesh->Cleanup();
   }
@@ -773,10 +780,14 @@ bool VulkanDrawFrame(input::Data *input_data) {
         int total_triangles = 0;
         auto all_meshes = render_graph->GetAllMeshes();
         for (uint32_t i = 0; i < all_meshes.size(); i++) {
-          all_meshes[i]->UpdatePipeline(render_pass);
-          all_meshes[i]->SubmitDraw(renderer->GetCurrentCommandBuffer(),
-                                   renderer->GetCurrentFrame());
-          total_triangles += all_meshes[i]->GetTrianglesCount();
+          all_meshes[i]->UpdatePipeline(render_pass, baseline_materials[0]);
+          all_meshes[i]->SetupDraw(renderer->GetCurrentCommandBuffer(),
+                  renderer->GetCurrentFrame());
+        }
+        auto all_instances = render_graph->GetAllMeshInstances();
+        for (uint32_t i = 0; i < all_instances.size(); i++) {
+            all_instances[i]->SubmitDraw(renderer->GetCurrentFrame());
+            total_triangles += all_instances[i]->GetTrianglesCount();
         }
 
         const char *kMeshNoun = all_meshes.size() == 1 ? "mesh" : "meshes";
