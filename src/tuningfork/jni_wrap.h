@@ -358,7 +358,6 @@ class PackageManager : public java::Object {
             for (int i=0; i<n; ++i) {
                 FeatureInfo f(Object(env->GetObjectArrayElement(features, i), jni_));
                 ret.push_back(f);
-                f.release();
             }
         }
         return ret;
