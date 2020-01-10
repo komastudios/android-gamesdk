@@ -18,6 +18,58 @@
 
 namespace swappy {
 
+class DefaultSwappyVkFunctionProvider {
+  public:
+
+    static bool Init() {
+        if (!mLibVulkan) {
+            // This is the first time we've been called
+            mLibVulkan = dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL);
+            if (!mLibVulkan)
+            {
+                // If Vulkan doesn't exist, bail-out early:
+                return false;
+            }
+        }
+        return true;
+    }
+    static void* GetProcAddr(const char* name) {
+        if (!mLibVulkan && !Init())
+                return nullptr;
+        return dlsym(mLibVulkan, name);
+    }
+    static void Close() {
+        if (mLibVulkan) {
+            dlclose(mLibVulkan);
+            mLibVulkan = nullptr;
+        }
+    }
+  private:
+    static void* mLibVulkan;
+};
+
+void* DefaultSwappyVkFunctionProvider::mLibVulkan;
+
+/**
+ * Static member
+ */
+const SwappyVkFunctionProvider* SwappyVk::pFunctionProvider = nullptr;
+
+void SwappyVk::InitFunctions() {
+    if (pFunctionProvider == nullptr) {
+        static SwappyVkFunctionProvider c_provider;
+        c_provider.init = &DefaultSwappyVkFunctionProvider::Init;
+        c_provider.getProcAddr = &DefaultSwappyVkFunctionProvider::GetProcAddr;
+        c_provider.close = &DefaultSwappyVkFunctionProvider::Close;
+        pFunctionProvider = &c_provider;
+    }
+    pFunctionProvider->init();
+    LoadVulkanFunctions(pFunctionProvider);
+}
+void SwappyVk::SetFunctionProvider(const SwappyVkFunctionProvider* functionProvider) {
+    pFunctionProvider = functionProvider;
+}
+
 /**
  * Generic/Singleton implementation of swappyVkDetermineDeviceExtensions.
  */
@@ -74,16 +126,8 @@ bool SwappyVk::GetRefreshCycleDuration(JNIEnv           *env,
 {
     auto& pImplementation = perDeviceImplementation[device];
     if (!pImplementation) {
-        // We have not seen this device yet.
-        if (!mLibVulkan) {
-            // This is the first time we've been called--initialize function pointers:
-            mLibVulkan = dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL);
-            if (!mLibVulkan)
-            {
-                // If Vulkan doesn't exist, bail-out early:
-                return false;
-            }
-        }
+
+        InitFunctions();
 
 #if (not defined ANDROID_NDK_VERSION) || ANDROID_NDK_VERSION>=15
         // First, based on whether VK_GOOGLE_display_timing is available
@@ -91,13 +135,13 @@ bool SwappyVk::GetRefreshCycleDuration(JNIEnv           *env,
         // determine which derived class to use to implement the rest of the API
         if (doesPhysicalDeviceHaveGoogleDisplayTiming[physicalDevice]) {
             pImplementation = std::make_shared<SwappyVkGoogleDisplayTiming>
-                    (env, jactivity, physicalDevice, device, mLibVulkan);
+                    (env, jactivity, physicalDevice, device, pFunctionProvider);
             ALOGV("SwappyVk initialized for VkDevice %p using VK_GOOGLE_display_timing on Android", device);
         } else
 #endif
         {
             pImplementation = std::make_shared<SwappyVkFallback>
-                    (env, jactivity, physicalDevice, device, mLibVulkan);
+                    (env, jactivity, physicalDevice, device, pFunctionProvider);
             ALOGV("SwappyVk initialized for VkDevice %p using Android fallback", device);
         }
 

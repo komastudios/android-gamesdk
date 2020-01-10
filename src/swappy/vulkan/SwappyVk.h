@@ -48,9 +48,13 @@ public:
         return instance;
     }
 
+    static void SetFunctionProvider(const SwappyVkFunctionProvider* pFunctionProvider);
+    static void InitFunctions();
+
     ~SwappyVk() {
-        if(mLibVulkan)
-            dlclose(mLibVulkan);
+        if (pFunctionProvider) {
+            pFunctionProvider->close();
+        }
     }
 
     void swappyVkDetermineDeviceExtensions(VkPhysicalDevice       physicalDevice,
@@ -94,7 +98,7 @@ private:
     };
     std::map<VkQueue, QueueFamilyIndex> perQueueFamilyIndex;
 
-    void *mLibVulkan     = nullptr;
+    static const SwappyVkFunctionProvider* pFunctionProvider;
 
 private:
     SwappyVk() {} // Need to implement this constructor

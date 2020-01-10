@@ -58,7 +58,6 @@ add_library( swappy_static
              ${SOURCE_LOCATION_OPENGL}/EGL.cpp
              ${SOURCE_LOCATION_OPENGL}/swappyGL_c.cpp
              ${SOURCE_LOCATION_OPENGL}/SwappyGL.cpp
-             ${ANDROID_NDK}/sources/third_party/vulkan/src/common/vulkan_wrapper.cpp
              ${SOURCE_LOCATION_VULKAN}/swappyVk_c.cpp
              ${SOURCE_LOCATION_VULKAN}/SwappyVk.cpp
              ${SOURCE_LOCATION_VULKAN}/SwappyVkBase.cpp

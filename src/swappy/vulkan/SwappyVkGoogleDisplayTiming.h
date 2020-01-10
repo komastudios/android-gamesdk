@@ -64,7 +64,7 @@ public:
                                 jobject          jactivity,
                                 VkPhysicalDevice physicalDevice,
                                 VkDevice         device,
-                                void             *libVulkan);
+                                const SwappyVkFunctionProvider* provider);
 
     virtual bool doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
                                            uint64_t*      pRefreshDuration) override;
