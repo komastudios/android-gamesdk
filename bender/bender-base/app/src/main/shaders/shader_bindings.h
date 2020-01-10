@@ -11,7 +11,8 @@
 //// Next bindings for texture
 #define SAMPLER_DIFFUSE 1
 #define SAMPLER_SPECULAR 2
-#define SAMPLER_NORMAL 3
+#define SAMPLER_EMISSIVE 3
+#define SAMPLER_NORMAL 4
 
 //////// LIGHTS BINDINGS
 
