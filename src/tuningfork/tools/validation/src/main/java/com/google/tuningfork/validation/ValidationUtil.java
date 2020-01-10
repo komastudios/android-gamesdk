@@ -82,15 +82,10 @@ final class ValidationUtil {
 
   /*
    * Validate Histograms
-   * Settings should contains at least one histogram
+   * No restrictions since Tuning Fork Scaled allows empty settings.
    * */
   public static void validateSettingsHistograms(Settings settings, ErrorCollector errors) {
 
-    if (settings.getHistogramsCount() == 0) {
-      errors.addError(
-          ErrorType.HISTOGRAM_EMPTY,
-          "\tuningfork_settings.bin\" should contains at least one histogram");
-    }
   }
 
   /*
