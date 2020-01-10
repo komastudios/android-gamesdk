@@ -16,6 +16,24 @@
       "revId": "bc69e0b01ded2de9bafcf8f4a8168855f853011d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "23d79e53_eb0f5f74",
+        "filename": "src/swappy/vulkan/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-01-10T23:52:02Z",
+      "side": 1,
+      "message": "Yes, that makes sense. Do you want to do that in a separate CL or would you like me to do it here?",
+      "parentUuid": "1ffa10b1_8dc6d21c",
+      "revId": "bc69e0b01ded2de9bafcf8f4a8168855f853011d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
