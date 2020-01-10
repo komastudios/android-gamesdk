@@ -166,16 +166,25 @@ VkResult SwappyVk::QueuePresent(VkQueue                 queue,
 void SwappyVk::DestroySwapchain(VkDevice                device,
                                 VkSwapchainKHR          swapchain)
 {
-    auto it = perQueueFamilyIndex.begin();
-    while (it != perQueueFamilyIndex.end()) {
-        if (it->second.device == device) {
-            it = perQueueFamilyIndex.erase(it);
-        } else {
-            ++it;
-        }
+    auto pImpl = perSwapchainImplementation[swapchain].get();
+    // Count the number of swapchains using this implementation.
+    // NB std::count_if isn't present in earlier NDKs :(
+    int n = 0;
+    for (auto& it: perSwapchainImplementation) {
+        if (it.second.get()==pImpl) ++n;
     }
-
-    perDeviceImplementation.erase(device);
+    // Remove the device if there are no other swapchains referring to it.
+    if (n==1) {
+        auto it = perQueueFamilyIndex.begin();
+        while (it != perQueueFamilyIndex.end()) {
+            if (it->second.device == device) {
+                it = perQueueFamilyIndex.erase(it);
+            } else {
+                ++it;
+            }
+        }
+        perDeviceImplementation.erase(device);
+    }
     perSwapchainImplementation.erase(swapchain);
 }
 
