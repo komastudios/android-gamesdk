@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9de57db0_c499bc74",
+        "filename": "src/swappy/vulkan/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-01-10T20:15:11Z",
+      "side": 1,
+      "message": "Why not static member of SwappyVk ?",
+      "revId": "f052cab8e2f531b60b6469d3b7c35d9b8bcc596c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
