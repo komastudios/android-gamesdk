@@ -22,15 +22,69 @@
 
 namespace swappy {
 
+PFN_vkCreateCommandPool vkCreateCommandPool = nullptr;
+PFN_vkDestroyCommandPool vkDestroyCommandPool = nullptr;
+PFN_vkCreateFence vkCreateFence = nullptr;
+PFN_vkDestroyFence vkDestroyFence = nullptr;
+PFN_vkWaitForFences vkWaitForFences = nullptr;
+PFN_vkResetFences vkResetFences = nullptr;
+PFN_vkCreateSemaphore vkCreateSemaphore = nullptr;
+PFN_vkDestroySemaphore vkDestroySemaphore = nullptr;
+PFN_vkCreateEvent vkCreateEvent = nullptr;
+PFN_vkDestroyEvent vkDestroyEvent = nullptr;
+PFN_vkCmdSetEvent vkCmdSetEvent = nullptr;
+PFN_vkAllocateCommandBuffers vkAllocateCommandBuffers = nullptr;
+PFN_vkFreeCommandBuffers vkFreeCommandBuffers = nullptr;
+PFN_vkBeginCommandBuffer vkBeginCommandBuffer = nullptr;
+PFN_vkEndCommandBuffer vkEndCommandBuffer = nullptr;
+PFN_vkQueueSubmit vkQueueSubmit = nullptr;
+
+void LoadVulkanFunctions(const SwappyVkFunctionProvider* pFunctionProvider) {
+    if (vkCreateCommandPool == nullptr) {
+        vkCreateCommandPool = reinterpret_cast<PFN_vkCreateCommandPool>(
+            pFunctionProvider->getProcAddr("vkCreateCommandPool"));
+        vkDestroyCommandPool = reinterpret_cast<PFN_vkDestroyCommandPool>(
+            pFunctionProvider->getProcAddr("vkDestroyCommandPool"));
+        vkCreateFence = reinterpret_cast<PFN_vkCreateFence>(
+            pFunctionProvider->getProcAddr("vkCreateFence"));
+        vkDestroyFence = reinterpret_cast<PFN_vkDestroyFence>(
+            pFunctionProvider->getProcAddr("vkDestroyFence"));
+        vkWaitForFences = reinterpret_cast<PFN_vkWaitForFences>(
+            pFunctionProvider->getProcAddr("vkWaitForFences"));
+        vkResetFences = reinterpret_cast<PFN_vkResetFences>(
+            pFunctionProvider->getProcAddr("vkResetFences"));
+        vkCreateSemaphore = reinterpret_cast<PFN_vkCreateSemaphore>(
+            pFunctionProvider->getProcAddr("vkCreateSemaphore"));
+        vkDestroySemaphore = reinterpret_cast<PFN_vkDestroySemaphore>(
+            pFunctionProvider->getProcAddr("vkDestroySemaphore"));
+        vkCreateEvent = reinterpret_cast<PFN_vkCreateEvent>(
+            pFunctionProvider->getProcAddr("vkCreateEvent"));
+        vkDestroyEvent = reinterpret_cast<PFN_vkDestroyEvent>(
+            pFunctionProvider->getProcAddr("vkDestroyEvent"));
+        vkCmdSetEvent = reinterpret_cast<PFN_vkCmdSetEvent>(
+            pFunctionProvider->getProcAddr("vkCmdSetEvent"));
+        vkAllocateCommandBuffers = reinterpret_cast<PFN_vkAllocateCommandBuffers>(
+            pFunctionProvider->getProcAddr("vkAllocateCommandBuffers"));
+        vkFreeCommandBuffers = reinterpret_cast<PFN_vkFreeCommandBuffers>(
+            pFunctionProvider->getProcAddr("vkFreeCommandBuffers"));
+        vkBeginCommandBuffer = reinterpret_cast<PFN_vkBeginCommandBuffer>(
+            pFunctionProvider->getProcAddr("vkBeginCommandBuffer"));
+        vkEndCommandBuffer = reinterpret_cast<PFN_vkEndCommandBuffer>(
+            pFunctionProvider->getProcAddr("vkEndCommandBuffer"));
+        vkQueueSubmit = reinterpret_cast<PFN_vkQueueSubmit>(
+            pFunctionProvider->getProcAddr("vkQueueSubmit"));
+    }
+}
+
 SwappyVkBase::SwappyVkBase(JNIEnv           *env,
                            jobject          jactivity,
                            VkPhysicalDevice physicalDevice,
                            VkDevice         device,
-                           void             *libVulkan) :
+                           const SwappyVkFunctionProvider* pFunctionProvider) :
     mCommonBase(env, jactivity),
     mPhysicalDevice(physicalDevice),
     mDevice(device),
-    mLibVulkan(libVulkan),
+    mpFunctionProvider(pFunctionProvider),
     mInitialized(false),
     mEnabled(false)
 {
@@ -39,11 +93,9 @@ SwappyVkBase::SwappyVkBase(JNIEnv           *env,
         return;
     }
 
-    InitVulkan();
-
     mpfnGetDeviceProcAddr =
             reinterpret_cast<PFN_vkGetDeviceProcAddr>(
-                dlsym(mLibVulkan, "vkGetDeviceProcAddr"));
+                mpFunctionProvider->getProcAddr("vkGetDeviceProcAddr"));
     mpfnQueuePresentKHR =
             reinterpret_cast<PFN_vkQueuePresentKHR>(
                 mpfnGetDeviceProcAddr(mDevice, "vkQueuePresentKHR"));
