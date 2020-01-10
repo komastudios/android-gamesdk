@@ -503,8 +503,11 @@ TFErrorCode TuningForkImpl::GetFidelityParameters(
                                              settings_.api_key, timeout));
         auto result = loader_->GetFidelityParams(web_request, training_mode_params_.get(),
                                                  params_ser, experiment_id);
+        if (result!=TFERROR_OK && training_mode_params_.get()) {
+            params_ser = *training_mode_params_;
+        }
         upload_thread_.SetCurrentFidelityParams(params_ser, experiment_id);
-        if (Debugging()) {
+        if (Debugging() && jni_.IsValid()) {
             UploadDebugInfo(jni_, web_request);
         }
         return result;
@@ -630,21 +633,33 @@ TFErrorCode TuningForkImpl::CheckForSubmit(TimePoint t, Prong *prong) {
     return ret_code;
 }
 
-TFHistogram DefaultHistogram() {
-    TFHistogram default_histogram;
-    default_histogram.instrument_key = -1;
-    default_histogram.bucket_min = 10;
-    default_histogram.bucket_max = 40;
-    default_histogram.n_buckets = Histogram::kDefaultNumBuckets;
-    return default_histogram;
-}
-
 void TuningForkImpl::InitHistogramSettings() {
-    TFHistogram default_histogram = DefaultHistogram();
-    for(uint32_t i=0; i<settings_.aggregation_strategy.max_instrumentation_keys; ++i) {
-        if(settings_.histograms.size()<=i) {
+    auto max_keys = settings_.aggregation_strategy.max_instrumentation_keys;
+    if (max_keys!=settings_.histograms.size()) {
+        InstrumentationKey default_keys[] = {64000, 64001, 64002, 64003};
+        // Add histograms that are missing
+        auto key_present = [this](InstrumentationKey k) {
+                               for(auto& h: settings_.histograms) {
+                                   if (k==h.instrument_key) return true;
+                               }
+                               return false;
+                           };
+        std::vector<InstrumentationKey> to_add;
+        for(auto& k : default_keys) {
+            if (!key_present(k)) {
+                if (settings_.histograms.size() < max_keys) {
+                    ALOGI("Couldn't get histogram for key index %d. Using default histogram", k);
+                    settings_.histograms.push_back(DefaultHistogram(k));
+                } else {
+                    ALOGE("Can't fit default histograms: change max_instrumentation_keys");
+                }
+            }
+        }
+    }
+    for(uint32_t i=0; i<max_keys; ++i) {
+        if (i > settings_.histograms.size()) {
             ALOGW("Couldn't get histogram for key index %d. Using default histogram", i);
-            settings_.histograms.push_back(default_histogram);
+            settings_.histograms.push_back(DefaultHistogram(-1));
         }
         else {
             int index;
@@ -717,7 +732,10 @@ bool TuningForkImpl::Debugging() const {
     return true;
 #else
     // Otherwise, check the APK and system settings
-    return apk_utils::GetDebuggable(jni_);
+    if (jni_.IsValid())
+        return apk_utils::GetDebuggable(jni_);
+    else
+        return false;
 #endif
 }
 

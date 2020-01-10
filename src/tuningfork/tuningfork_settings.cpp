@@ -16,6 +16,7 @@
 
 #include "tuningfork_internal.h"
 #include "tuningfork_utils.h"
+#include "histogram.h"
 
 #define LOG_TAG "TuningFork"
 #include "Log.h"
@@ -59,6 +60,17 @@ void CheckSettings(Settings &settings, const std::string& save_dir) {
         settings.base_uri = kPerformanceParametersBaseUri;
     if (settings.base_uri.back()!='/')
         settings.base_uri += '/';
+    if (settings.aggregation_strategy.intervalms_or_count==0) {
+        settings.aggregation_strategy.method
+            = Settings::AggregationStrategy::Submission::TIME_BASED;
+#ifndef NDEBUG
+        // For debug builds, upload every 10 seconds
+        settings.aggregation_strategy.intervalms_or_count = 10000;
+#else
+        // For non-debug builds, upload every 2 hours
+        settings.aggregation_strategy.intervalms_or_count = 7200000;
+#endif
+    }
     if (settings.initial_request_timeout_ms==0)
         settings.initial_request_timeout_ms = 1000;
     if (settings.ultimate_request_timeout_ms==0)
@@ -171,6 +183,27 @@ TFErrorCode FindSettingsInApk(Settings* settings, const JniCtx& jni) {
     } else {
         return TFERROR_BAD_PARAMETER;
     }
+}
+
+// Default histogram, used e.g. for TF Scaled or when a histogram is missing in the settings.
+TFHistogram DefaultHistogram(InstrumentationKey ikey) {
+    TFHistogram default_histogram;
+    if (ikey==TFTICK_SYSCPU) {
+        default_histogram.bucket_min = 6.54f;
+        default_histogram.bucket_max = 60.0f;
+        default_histogram.n_buckets = Histogram::kDefaultNumBuckets;
+    } else {
+        default_histogram.bucket_min = 0.0f;
+        default_histogram.bucket_max = 20.0f;
+        default_histogram.n_buckets = Histogram::kDefaultNumBuckets;
+    }
+    if (ikey>=TFTICK_SYSCPU) {
+        // Fill in the well-known keys
+        default_histogram.instrument_key = ikey;
+    } else {
+        default_histogram.instrument_key = -1;
+    }
+    return default_histogram;
 }
 
 // Structures and functions needed for the decoding of a dev_tuningfork.descriptor.

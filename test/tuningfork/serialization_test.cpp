@@ -169,6 +169,10 @@ void CheckProngCaches(const ProngCache& pc0, const ProngCache& pc1) {
     EXPECT_EQ(p0->histogram_, p1->histogram_);
 }
 
+TFHistogram DefaultHistogram() {
+    return {-1,10,40,30};
+}
+
 TEST(SerializationTest, GEDeserialization) {
     ProngCache prong_cache(1/*size*/, 1/*max_instrumentation_keys*/, {DefaultHistogram()},
                            [](uint64_t){ return SerializedAnnotation(); },

@@ -48,7 +48,7 @@ class Histogram {
 
   public:
 
-    static constexpr int kDefaultNumBuckets = 30;
+    static constexpr int kDefaultNumBuckets = 200;
 
     explicit Histogram(float start_ms = 0, float end_ms = 0, int num_buckets_between = kDefaultNumBuckets,
                        bool never_bucket = false);
