@@ -92,6 +92,10 @@ add_library(${PROJECT_NAME} SHARED
         ancer/util/VkHelpers.cpp
         ancer/util/Basics.cpp
         ancer/util/Bitmath.cpp
+        ancer/vulkan/vulkan_base.cc
+        ancer/vulkan/context.cc
+        ancer/vulkan/swapchain.cc
+        ancer/vulkan/android_helper.cc
 
         # Operations
         operations/CalculatePIOperation.cpp

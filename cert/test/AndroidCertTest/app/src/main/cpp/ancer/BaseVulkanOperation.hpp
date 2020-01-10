@@ -16,47 +16,47 @@
 
 #pragma once
 
-#include "ancer/util/VkHelpers.hpp"
+#include "ancer/vulkan/vulkan_base.h"
 
 #include "BaseOperation.hpp"
 
 using namespace ancer;
-
+using namespace ancer::vulkan;
 
 namespace ancer {
-    /**
-     * BaseVulkanOperation
-     * Base class for operations which intend to render Vulkan output
-     */
-    class BaseVulkanOperation : public BaseOperation {
-    public:
-        BaseVulkanOperation(const Log::Tag testTag);
 
-        virtual ~BaseVulkanOperation();
+/**
+ * BaseVulkanOperation
+ * Base class for operations which intend to render Vulkan output
+ */
+class BaseVulkanOperation : public BaseOperation {
+ public:
+  BaseVulkanOperation(const Log::Tag testTag);
 
-        void Wait() override {}
+  virtual ~BaseVulkanOperation();
 
-    protected:
+  void Wait() override {}
 
-        /**
-         * Returns true iff Vulkan was successfully initialized
-         */
-        bool IsVulkanAvailable() const { return _vulkan_initialized; }
+ protected:
+  /**
+   * Returns true iff Vulkan was successfully initialized
+   */
+  bool IsVulkanAvailable() const { return _vulkan_initialized; }
 
-        /**
-         * Returns a vulkan_info struct with data pertaining to the current
-         * operation.
-         */
-        VulkanInfo &GetInfo();
+  /**
+   * This is protected so operations can access the vulkan functions
+   */
+  Vulkan _vk;
 
-        /**
-         * Retrieves a Vulkan device handle, if available.
-         */
-        const VkDevice &GetDevice();
+  /**
+   * Allow an operation to specify requirements (extensions, physical device
+   * features)
+   */
+  virtual void FillVulkanRequirements(VulkanRequirements & requirements) { }
 
-    private:
-        bool _vulkan_initialized = false;
-        VulkanInfo _operationInfo;
-        const Log::Tag _testTag;
-    };
+ private:
+  bool _vulkan_initialized = false;
+  const Log::Tag _testTag;
+};
+
 }
