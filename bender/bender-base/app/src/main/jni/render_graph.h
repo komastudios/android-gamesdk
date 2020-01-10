@@ -10,6 +10,7 @@
 #include "material.h"
 #include "geometry.h"
 #include "mesh.h"
+#include "mesh_instance.h"
 #include "device.h"
 #include "renderer.h"
 #include "input.h"
@@ -33,6 +34,8 @@ class RenderGraph {
       return nullptr;
     }
   }
+
+  std::vector<std::shared_ptr<MeshInstance>> GetAllMeshInstances() { return mesh_instances_; }
 
   void AddMesh(std::shared_ptr<Mesh> new_mesh) { meshes_.push_back(new_mesh); }
   void AddMeshes(std::vector<std::shared_ptr<Mesh>> new_meshes) {
@@ -65,6 +68,7 @@ class RenderGraph {
  private:
   Camera camera_;
   std::vector<std::shared_ptr<Mesh>> meshes_;
+  std::vector<std::shared_ptr<MeshInstance>> mesh_instances_;
 };
 
 #endif //BENDER_BASE_APP_SRC_MAIN_JNI_RENDER_GRAPH_H_

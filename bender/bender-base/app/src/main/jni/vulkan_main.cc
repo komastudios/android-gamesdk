@@ -29,6 +29,7 @@
 #include "shader_state.h"
 #include "polyhedron.h"
 #include "mesh.h"
+#include "mesh_instance.h"
 #include "texture.h"
 #include "font.h"
 #include "uniform_buffer.h"
@@ -351,14 +352,14 @@ void UpdateCamera(input::Data *input_data) {
 }
 
 void UpdateInstances(input::Data *input_data) {
-  auto all_meshes = render_graph->GetAllMeshes();
+  auto all_meshes = render_graph->GetAllMeshInstances();
   for (int i = 0; i < all_meshes.size(); i++) {
     all_meshes[i]->Rotate(glm::vec3(0.0f, 1.0f, 1.0f), 90 * frame_time);
     all_meshes[i]->Translate(.02f * glm::vec3(std::sin(2 * total_time),
                                              std::sin(i * total_time),
                                              std::cos(2 * total_time)));
 
-    all_meshes[i]->Update(renderer->GetCurrentFrame(),
+    all_meshes[i]->UpdateMVP(renderer->GetCurrentFrame(),
                          render_graph->GetCameraPosition(),
                          render_graph->GetCameraViewMatrix(),
                          render_graph->GetCameraProjMatrix());
@@ -702,6 +703,9 @@ void DeleteVulkan(void) {
 
   vkDestroyRenderPass(device->GetDevice(), render_pass, nullptr);
 
+  for (auto &mesh_instance : render_graph->GetAllMeshInstances()) {
+    mesh_instance->Cleanup();
+  }
   for (auto &mesh : render_graph->GetAllMeshes()) {
     mesh->Cleanup();
   }
@@ -774,9 +778,13 @@ bool VulkanDrawFrame(input::Data *input_data) {
         auto all_meshes = render_graph->GetAllMeshes();
         for (uint32_t i = 0; i < all_meshes.size(); i++) {
           all_meshes[i]->UpdatePipeline(render_pass);
-          all_meshes[i]->SubmitDraw(renderer->GetCurrentCommandBuffer(),
-                                   renderer->GetCurrentFrame());
-          total_triangles += all_meshes[i]->GetTrianglesCount();
+          all_meshes[i]->SetupDraw(renderer->GetCurrentCommandBuffer(),
+                  renderer->GetCurrentFrame());
+        }
+        auto all_instances = render_graph->GetAllMeshInstances();
+        for (uint32_t i = 0; i < all_instances.size(); i++) {
+            all_instances[i]->SubmitDraw(renderer->GetCurrentFrame());
+            total_triangles += all_instances[i]->GetTrianglesCount();
         }
 
         const char *kMeshNoun = all_meshes.size() == 1 ? "mesh" : "meshes";
