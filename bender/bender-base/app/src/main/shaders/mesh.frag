@@ -16,6 +16,8 @@ struct AmbientLight {
 
 layout(set = BINDING_SET_MATERIAL, binding = FRAGMENT_BINDING_SAMPLER)
 uniform sampler2D texSampler;
+//layout(set = BINDING_SET_MATERIAL, binding = 2)
+//uniform sampler2D map_Bump;
 
 layout(set = BINDING_SET_MATERIAL, binding = FRAGMENT_BINDING_MATERIAL_ATTRIBUTES)
 uniform MaterialAttributes {
@@ -34,17 +36,20 @@ uniform LightBlock {
 layout(location = 0) in vec3 fragPos;
 layout(location = 1) in vec3 fragNormal;
 layout(location = 2) in vec2 fragTexCoord;
+layout(location = 3) in mat3 fragWorldToTangent;
 
 layout(location = 0) out vec4 outColor;
 
 vec3 calcPointLight(PointLight light){
-    vec3 lightDir = normalize(light.position - fragPos);
-    vec3 viewDir = normalize(lightBlock.cameraPos - fragPos);
-    vec3 halfwayDir = normalize(lightDir + viewDir);
+    vec3 lightDir = fragWorldToTangent * normalize(light.position - fragPos);
+    vec3 viewDir = fragWorldToTangent * normalize(lightBlock.cameraPos - fragPos);
+    vec3 halfwayDir = fragWorldToTangent * normalize(lightDir + viewDir);
 
     vec3 lightDiff = light.position - fragPos;
     float attenuation = light.intensity / length(lightDiff);
 
+//    vec3 normal = texture(map_Bump, fragTexCoord).xyz;
+//    normal = normalize(normal * 2.0 - 1.0);
     float diffuseTerm = max(dot(lightDir, fragNormal), 0.0);
     vec3 diffuse = diffuseTerm * light.color * attenuation * texture(texSampler, fragTexCoord).xyz;
     float specularTerm = pow(max(dot(fragNormal, halfwayDir), 0.0), materialAttr.specular.w);
