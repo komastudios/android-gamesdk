@@ -21,9 +21,18 @@ void addVertex(glm::vec3 &currVert,
                std::unordered_map<glm::vec3, uint16_t> &fileVertToIndex,
                std::vector<glm::vec3> &position,
                std::vector<glm::vec3> &normal,
-               std::vector<glm::vec2> &texCoord) {
+               std::vector<glm::vec2> &texCoord,
+               glm::vec3 tangent,
+               glm::vec3 bitangent) {
   if (fileVertToIndex.find(currVert) != fileVertToIndex.end()) {
-    currOBJ.index_buffer_.push_back(currOBJ.vert_to_index_[currVert]);
+    uint16_t index = currOBJ.vert_to_index_[currVert];
+    currOBJ.index_buffer_.push_back(index);
+    currOBJ.vertex_buffer_[index * 14 + 6] += tangent.x;
+    currOBJ.vertex_buffer_[index * 14 + 7] += tangent.y;
+    currOBJ.vertex_buffer_[index * 14 + 8] += tangent.z;
+    currOBJ.vertex_buffer_[index * 14 + 9] += bitangent.x;
+    currOBJ.vertex_buffer_[index * 14 + 10] += bitangent.y;
+    currOBJ.vertex_buffer_[index * 14 + 11] += bitangent.z;
     return;
   }
 
@@ -38,6 +47,14 @@ void addVertex(glm::vec3 &currVert,
   currOBJ.vertex_buffer_.push_back(normal[trueIndex(currVert.z, normal.size())].x);
   currOBJ.vertex_buffer_.push_back(normal[trueIndex(currVert.z, normal.size())].y);
   currOBJ.vertex_buffer_.push_back(normal[trueIndex(currVert.z, normal.size())].z);
+
+  currOBJ.vertex_buffer_.push_back(tangent.x);
+  currOBJ.vertex_buffer_.push_back(tangent.y);
+  currOBJ.vertex_buffer_.push_back(tangent.z);
+
+  currOBJ.vertex_buffer_.push_back(bitangent.x);
+  currOBJ.vertex_buffer_.push_back(bitangent.y);
+  currOBJ.vertex_buffer_.push_back(bitangent.z);
 
   currOBJ.vertex_buffer_.push_back(texCoord[trueIndex(currVert.y, texCoord.size())].x);
   currOBJ.vertex_buffer_.push_back(texCoord[trueIndex(currVert.y, texCoord.size())].y);
@@ -57,6 +74,7 @@ void LoadMTL(AAssetManager *mgr,
   data << fileContent;
   std::string label;
   std::string currentMaterialName = "";
+  std::string skip;
 
   while (data >> label) {
     if (label == "newmtl") {
@@ -76,16 +94,19 @@ void LoadMTL(AAssetManager *mgr,
       data >> mtllib[currentMaterialName].specular_.x >>
            mtllib[currentMaterialName].specular_.y >>
            mtllib[currentMaterialName].specular_.z;
-    } else if (label == "map_Ka_") {
+    } else if (label == "map_Ka") {
       data >> mtllib[currentMaterialName].map_Ka_;
-    } else if (label == "map_Ks_") {
+    } else if (label == "map_Ks") {
       data >> mtllib[currentMaterialName].map_Ks_;
-    } else if (label == "map_Kd_") {
+    } else if (label == "map_Ke") {
+      data >> mtllib[currentMaterialName].map_Ke_;
+    } else if (label == "map_Kd") {
       data >> mtllib[currentMaterialName].map_Kd_;
-    } else if (label == "map_Ns_") {
+    } else if (label == "map_Ns") {
       data >> mtllib[currentMaterialName].map_Ns_;
-    } else if (label == "map_bump_") {
-      data >> mtllib[currentMaterialName].map_bump_;
+    } else if (label == "map_Bump") {
+      data >> skip >> mtllib[currentMaterialName].bump_multiplier
+           >> mtllib[currentMaterialName].map_Bump_;
     }
   }
 }
@@ -145,9 +166,30 @@ void LoadOBJ(AAssetManager *mgr,
       data >> vertex1.x >> skip >> vertex1.y >> skip >> vertex1.z;
       data >> vertex2.x >> skip >> vertex2.y >> skip >> vertex2.z;
       data >> vertex3.x >> skip >> vertex3.y >> skip >> vertex3.z;
-      addVertex(vertex3, modelData.back(), fileVertToIndex, position, normal, texCoord);
-      addVertex(vertex2, modelData.back(), fileVertToIndex, position, normal, texCoord);
-      addVertex(vertex1, modelData.back(), fileVertToIndex, position, normal, texCoord);
+
+      glm::vec3 posVec1 = position[trueIndex(vertex1.x, position.size())];
+      glm::vec3 posVec2 = position[trueIndex(vertex2.x, position.size())];
+      glm::vec3 posVec3 = position[trueIndex(vertex3.x, position.size())];
+
+      glm::vec2 texVec1 = texCoord[trueIndex(vertex1.y, texCoord.size())];
+      glm::vec2 texVec2 = texCoord[trueIndex(vertex2.y, texCoord.size())];
+      glm::vec2 texVec3 = texCoord[trueIndex(vertex3.y, texCoord.size())];
+
+      glm::vec3 edge1 = posVec2 - posVec1;
+      glm::vec3 edge2 = posVec3 - posVec1;
+
+      float x1 = texVec2.x - texVec1.x;
+      float x2 = texVec3.x - texVec1.x;
+      float y1 = texVec2.y - texVec1.y;
+      float y2 = texVec3.y - texVec1.y;
+      float r = 1.0F / (x1 * y2 - x2 * y1);
+
+      glm::vec3 tangent = (edge1 * y2 - edge2 * y1) * r;
+      glm::vec3 bitangent = (edge2 * x1 - edge1 * x2) * r;
+
+      addVertex(vertex3, modelData.back(), fileVertToIndex, position, normal, texCoord, tangent, bitangent);
+      addVertex(vertex2, modelData.back(), fileVertToIndex, position, normal, texCoord, tangent, bitangent);
+      addVertex(vertex1, modelData.back(), fileVertToIndex, position, normal, texCoord, tangent, bitangent);
     }
   }
 }
