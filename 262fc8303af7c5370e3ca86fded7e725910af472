@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "c9337c99_53b1901c",
+        "filename": "src/tuningfork/jni_helper.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-01-10T10:33:02Z",
+      "side": 1,
+      "message": "Yes, good spot - I was using this while debugging.",
+      "parentUuid": "3d0711d2_7ebd22a5",
+      "revId": "262fc8303af7c5370e3ca86fded7e725910af472",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4efd5b66_69146a06",
         "filename": "src/tuningfork/jni_helper.cpp",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "262fc8303af7c5370e3ca86fded7e725910af472",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2cde780a_ac83e32c",
+        "filename": "src/tuningfork/jni_helper.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-01-10T10:33:02Z",
+      "side": 1,
+      "message": "Doing it this way reduces the number of places in the code we need to remember to push the class object.",
+      "parentUuid": "4efd5b66_69146a06",
+      "revId": "262fc8303af7c5370e3ca86fded7e725910af472",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
