@@ -1,0 +1,12 @@
+build:
+  clean: false
+  release: false
+  configuration: test/integration/data/recipes/fake_operation.json
+
+deployment:
+  local:
+    all_attached_devices: true
+
+summary:
+  enabled: true
+  format: md
