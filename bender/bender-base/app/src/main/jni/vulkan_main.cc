@@ -45,6 +45,8 @@
 #include <array>
 #include <cstring>
 #include <chrono>
+#include <set>
+#include <obj_loader.h>
 
 using namespace benderkit;
 using namespace benderhelpers;
@@ -148,6 +150,111 @@ void ChangeMaterialComplexity() {
   render_graph->AddMeshes(all_meshes);
 }
 
+void generate(std::vector<float> vertexData, std::vector<uint16_t> indexData, std::vector<float> &out){
+  out.resize((vertexData.size() / 8) * 14);
+  std::set<uint16_t> completed;
+
+  for (int x = 0; x < indexData.size(); x += 3){
+    uint16_t idx1, idx2, idx3;
+    idx1 = indexData[x];
+    idx2 = indexData[x+1];
+    idx3 = indexData[x+2];
+
+    glm::vec3 posVec1 = {vertexData[idx1 * 8], vertexData[idx1 * 8 + 1], vertexData[idx1 * 8 + 2]};
+    glm::vec3 posVec2 = {vertexData[idx2 * 8], vertexData[idx2 * 8 + 1], vertexData[idx2 * 8 + 2]};
+    glm::vec3 posVec3 = {vertexData[idx3 * 8], vertexData[idx3 * 8 + 1], vertexData[idx3 * 8 + 2]};
+
+    glm::vec2 texVec1 = {vertexData[idx1 * 8 + 6], vertexData[idx1 * 8 + 7]};
+    glm::vec2 texVec2 = {vertexData[idx2 * 8 + 6], vertexData[idx2 * 8 + 7]};
+    glm::vec2 texVec3 = {vertexData[idx3 * 8 + 6], vertexData[idx3 * 8 + 7]};
+
+    glm::vec3 edge1 = posVec2 - posVec1;
+    glm::vec3 edge2 = posVec3 - posVec1;
+    glm::vec2 deltaUV1 = texVec2 - texVec1;
+    glm::vec2 deltaUV2 = texVec3 - texVec1;
+
+    float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+    glm::vec3 tangent, bitangent;
+    tangent.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+    tangent.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+    tangent.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+    tangent = glm::normalize(tangent);
+
+    bitangent.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+    bitangent.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+    bitangent.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+    bitangent = glm::normalize(bitangent);
+
+    if (completed.find(idx1) == completed.end()){
+      out[idx1 * 14] = posVec1.x;
+      out[idx1 * 14 + 1] = posVec1.y;
+      out[idx1 * 14 + 2] = posVec1.z;
+      out[idx1 * 14 + 3] = vertexData[idx1 * 8 + 3];
+      out[idx1 * 14 + 4] = vertexData[idx1 * 8 + 4];
+      out[idx1 * 14 + 5] = vertexData[idx1 * 8 + 5];
+      out[idx1 * 14 + 6] = tangent.x;
+      out[idx1 * 14 + 7] = tangent.y;
+      out[idx1 * 14 + 8] = tangent.z;
+      out[idx1 * 14 + 9] = bitangent.x;
+      out[idx1 * 14 + 10] = bitangent.y;
+      out[idx1 * 14 + 11] = bitangent.z;
+      out[idx1 * 14 + 12] = texVec1.x;
+      out[idx1 * 14 + 13] = texVec1.y;
+      completed.insert(idx1);
+    }
+
+    if (completed.find(idx2) == completed.end()){
+      out[idx2 * 14] = posVec2.x;
+      out[idx2 * 14 + 1] = posVec2.y;
+      out[idx2 * 14 + 2] = posVec2.z;
+      out[idx2 * 14 + 3] = vertexData[idx2 * 8 + 3];
+      out[idx2 * 14 + 4] = vertexData[idx2 * 8 + 4];
+      out[idx2 * 14 + 5] = vertexData[idx2 * 8 + 5];
+      out[idx2 * 14 + 6] = tangent.x;
+      out[idx2 * 14 + 7] = tangent.y;
+      out[idx2 * 14 + 8] = tangent.z;
+      out[idx2 * 14 + 9] = bitangent.x;
+      out[idx2 * 14 + 10] = bitangent.y;
+      out[idx2 * 14 + 11] = bitangent.z;
+      out[idx2 * 14 + 12] = texVec2.x;
+      out[idx2 * 14 + 13] = texVec2.y;
+      completed.insert(idx2);
+    }
+
+    if (completed.find(idx3) == completed.end()){
+      out[idx3 * 14] = posVec3.x;
+      out[idx3 * 14 + 1] = posVec3.y;
+      out[idx3 * 14 + 2] = posVec3.z;
+      out[idx3 * 14 + 3] = vertexData[idx3 * 8 + 3];
+      out[idx3 * 14 + 4] = vertexData[idx3 * 8 + 4];
+      out[idx3 * 14 + 5] = vertexData[idx3 * 8 + 5];
+      out[idx3 * 14 + 6] = tangent.x;
+      out[idx3 * 14 + 7] = tangent.y;
+      out[idx3 * 14 + 8] = tangent.z;
+      out[idx3 * 14 + 9] = bitangent.x;
+      out[idx3 * 14 + 10] = bitangent.y;
+      out[idx3 * 14 + 11] = bitangent.z;
+      out[idx3 * 14 + 12] = texVec3.x;
+      out[idx3 * 14 + 13] = texVec3.y;
+      completed.insert(idx3);
+    }
+  }
+}
+
+std::map<std::string, std::shared_ptr<Texture>> loadedTextures;
+std::map<std::string, std::shared_ptr<Material>> loadedMaterials;
+
+void addTexture(std::string fileName){
+  if (loadedTextures.find(fileName) == loadedTextures.end()){
+    loadedTextures[fileName] = std::make_shared<Texture>(*device,
+                                                         *android_app_ctx,
+                                                         fileName.c_str(),
+                                                         VK_FORMAT_R8G8B8A8_SRGB);
+  }
+}
+
+
+
 void CreateButtons() {
   Button::SetScreenResolution(device->GetDisplaySizeOriented());
 
@@ -206,7 +313,7 @@ void CreateButtons() {
 void CreateUserInterface() {
   user_interface = new UserInterface(renderer, font);
 
-  CreateButtons();
+  //CreateButtons();
   user_interface->RegisterTextField([] (TextField& field) {
       field.text = mesh_info;
       field.text_size = 1.0f;
@@ -370,6 +477,8 @@ void HandleInput(input::Data *input_data) {
 
 void CreateShaderState() {
   VertexFormat vertex_format{{
+                                 VertexElement::float3,
+                                 VertexElement::float3,
                                  VertexElement::float3,
                                  VertexElement::float3,
                                  VertexElement::float2,
@@ -539,21 +648,42 @@ bool InitVulkan(android_app *app) {
 
     renderer = new Renderer(*device);
 
-    timing::timer.Time("Mesh Creation", timing::OTHER, [] {
-      tex_files.push_back("textures/sample_texture.png");
-      tex_files.push_back("textures/sample_texture2.png");
+    timing::timer.Time("Mesh Creation", timing::OTHER, [app] {
+      std::vector<OBJLoader::OBJ> modelData;
+      std::unordered_map<std::string, OBJLoader::MTL> mtllib;
+      OBJLoader::LoadOBJ(app->activity->assetManager,
+                         "models/starship_command_center_triangle.obj",
+                         mtllib,
+                         modelData);
 
-      CreateTextures();
-
-      CreateMaterials();
-
-      CreateGeometries();
-
-      timing::timer.Time("Create Polyhedron", timing::OTHER, [] {
+      for (auto currMTL : mtllib) {
+        addTexture(currMTL.second.map_Ka_);
+        addTexture(currMTL.second.map_Kd_);
+        addTexture(currMTL.second.map_Ks_);
+        addTexture(currMTL.second.map_Ns_);
+        addTexture(currMTL.second.map_Ke_);
+        addTexture(currMTL.second.map_bump_);
+        MaterialAttributes newMTL;
+        newMTL.ambient = currMTL.second.ambient_;
+        newMTL.specular = glm::vec4(currMTL.second.specular_, currMTL.second.specular_exponent_);
+        newMTL.diffuse = currMTL.second.diffuse_;
+        newMTL.bump_multiplier = currMTL.second.bump_multiplier;
+        std::vector<std::shared_ptr<Texture>> mTextures = {loadedTextures[currMTL.second.map_Kd_],
+                                                           loadedTextures[currMTL.second.map_Ks_],
+                                                           loadedTextures[currMTL.second.map_Ke_],
+                                                           loadedTextures[currMTL.second.map_bump_]};
+        loadedMaterials[currMTL.first] = std::make_shared<Material>(renderer,
+                                                                    shaders,
+                                                                    mTextures,
+                                                                    newMTL);
+      }
+      for (auto obj : modelData) {
         render_graph->AddMesh(std::make_shared<Mesh>(renderer,
-                                                     baseline_materials[materials_idx],
-                                                     geometries[poly_faces_idx]));
-      });
+                                                     loadedMaterials[obj.material_name_],
+                                                     std::make_shared<Geometry>(*device,
+                                                                                obj.vertex_buffer_,
+                                                                                obj.index_buffer_)));
+      }
     });
 
     CreateDepthBuffer();

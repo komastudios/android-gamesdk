@@ -70,9 +70,11 @@ struct MTL {
   glm::vec3 diffuse_;
   glm::vec3 specular_;
   float specular_exponent_;
+  float bump_multiplier;
 
   std::string map_Ka_ = "";
   std::string map_Kd_ = "";
+  std::string map_Ke_ = "";
   std::string map_Ks_ = "";
   std::string map_Ns_ = "";
   std::string map_bump_ = "";

@@ -17,6 +17,7 @@ struct alignas(16) MaterialAttributes {
   alignas(16) glm::vec3 ambient;
   alignas(16) glm::vec3 diffuse;
   alignas(16) glm::vec4 specular;
+  alignas(16) float bump_multiplier;
 };
 
 class Material {
