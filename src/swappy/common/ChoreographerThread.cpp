@@ -131,19 +131,19 @@ NDKChoreographerThread::NDKChoreographerThread(Callback onChoreographer) :
 NDKChoreographerThread::~NDKChoreographerThread()
 {
     ALOGI("Destroying NDKChoreographerThread");
-
     if (mLibAndroid != nullptr)
-      dlclose(mLibAndroid);
-
-    if (!mLooper) {
-        return;
+        dlclose(mLibAndroid);
+    {
+        std::lock_guard<std::mutex> lock(mWaitingMutex);
+        if (!mLooper) {
+            return;
+        }
+        ALooper_acquire(mLooper);
+        mThreadRunning = false;
+        ALooper_wake(mLooper);
     }
-
-    ALooper_acquire(mLooper);
-    mThreadRunning = false;
-    ALooper_wake(mLooper);
-    ALooper_release(mLooper);
     mThread.join();
+    ALooper_release(mLooper);
 }
 
 void NDKChoreographerThread::looperThread()
