@@ -34,6 +34,24 @@
       "revId": "bc69e0b01ded2de9bafcf8f4a8168855f853011d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fb79e15a_d888151d",
+        "filename": "src/swappy/vulkan/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-01-11T00:02:15Z",
+      "side": 1,
+      "message": "Don\u0027t have bandwidth for that at the moment :(",
+      "parentUuid": "23d79e53_eb0f5f74",
+      "revId": "bc69e0b01ded2de9bafcf8f4a8168855f853011d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
