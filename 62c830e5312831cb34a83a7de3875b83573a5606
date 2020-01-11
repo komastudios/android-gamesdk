@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2c3da8a8_f9b5bb44",
+        "filename": "cert/test/reporting/recipes/32bit_depth_clear.yaml",
+        "patchSetId": 2
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-01-11T01:54:18Z",
+      "side": 1,
+      "message": "AMAZING!!\n\nI tell you an additional idea that you may want to consider.\n\nWe can think about implicit .yamls in the following way:\n\nImagine that this 32bit_depth_clear.yaml file doesn\u0027t exist at all. However, we could launch namely\n\n    $ python run --recipe 32bit_depth_clear.yaml --ftl\n\nfor that non-existent .yaml. The app would realize that the .yaml doesn\u0027t exist but, instead of failing, it would assume an implicit implementation as\n\n    f\"\"\"build:\n      configuration: recipes/configurations/{recipe_path.stem}.json\n    \"\"\"\n\nThis way, for the upcoming tests (Q1, etc.) we wouldn\u0027t have to worry about trivial .yaml files. We would even delete all these existing trivial .yamls.\n\nI mark this suggestion self-resolved so I don\u0027t block the merge of this CL. If you consider this suggestion worth applying but not right now, we can shelve it until the next round of improvements.",
+      "revId": "62c830e5312831cb34a83a7de3875b83573a5606",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
