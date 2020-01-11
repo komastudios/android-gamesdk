@@ -20,7 +20,7 @@ import glob
 from pathlib import Path
 from typing import Dict, List, Union
 
-from lib.common import dict_lookup, get_indexable_utc, get_readable_utc
+from lib.common import get_indexable_utc, get_readable_utc, Recipe
 from lib.graphing import load_suites
 from lib.report import Suite
 from lib.summary_formatters.formatter import SummaryFormatter
@@ -28,7 +28,7 @@ from lib.summary_formatters.loader \
     import create_summary_formatter, get_summary_formatter_type
 
 
-def __get_summary_config(recipe: Dict) -> (bool, str, int):
+def __get_summary_config(recipe: Recipe) -> (bool, str, int):
     """
     Extracts, from the recipe, summary related arguments.
     These are:
@@ -40,11 +40,10 @@ def __get_summary_config(recipe: Dict) -> (bool, str, int):
     * publish: a boolean to indicate that the resulting document must be
                uploaded to Google Drive.
     """
-    if "summary" in recipe and dict_lookup(
-            recipe, "summary.enabled", fallback=False):
-        output_format = dict_lookup(recipe, "summary.format", fallback="md")
-        dpi = dict_lookup(recipe, "summary.image-resolution", fallback=300)
-        publish = dict_lookup(recipe, "summary.publish", fallback=False)
+    if recipe.lookup("summary.enabled", fallback=False):
+        output_format = recipe.lookup("summary.format", fallback="md")
+        dpi = recipe.lookup("summary.image-resolution", fallback=300)
+        publish = recipe.lookup("summary.publish", fallback=False)
 
         my_type = get_summary_formatter_type(output_format)
 
@@ -184,7 +183,7 @@ def generate_summary(reports: List[Path], output_format: str,
 #------------------------------------------------------------------------------
 
 
-def perform_summary_if_enabled(recipe: Dict, reports_dir: Path) -> type(None):
+def perform_summary_if_enabled(recipe: Recipe, reports_dir: Path) -> type(None):
     """
     When the recipe enables summary, this function performs all the steps to
     get it produced.

@@ -20,7 +20,7 @@ import glob
 import os
 from pathlib import Path
 import shutil
-from typing import List
+from typing import Dict, List
 import unittest
 
 import matplotlib.pyplot as plt
@@ -32,6 +32,7 @@ import lib.graphers
 
 from lib.report import Suite
 from lib.graphers.suite_handler import SuiteHandler
+from run import RECIPE_DEFAULTS
 
 
 class FakeOperationSuiteHandler(SuiteHandler):
@@ -149,9 +150,11 @@ class TestReportGeneration(unittest.TestCase):
         """Confirm test runs on local device(s)"""
 
         recipe_path = Path(
-            './test/integration/data/recipes/fake_operation_local.yaml')
+            './test/integration/data/recipes/fake_operation.yaml')
 
-        report_files = self.run_operation(recipe_path)
+        recipe = lib.common.Recipe(recipe_path, Path(RECIPE_DEFAULTS))
+        args = {"local": True}
+        report_files = self.run_operation(recipe, args)
         attached_devices = lib.common.get_attached_devices()
 
         # we should have one report per attached device
@@ -168,19 +171,21 @@ class TestReportGeneration(unittest.TestCase):
         '''Confirms test runs on ftl'''
 
         recipe_path = Path(
-            './test/integration/data/recipes/fake_operation_ftl.yaml')
+            './test/integration/data/recipes/fake_operation.yaml')
 
-        report_files = self.run_operation(recipe_path)
+        recipe = lib.common.Recipe(recipe_path, Path(RECIPE_DEFAULTS))
+        args = {"ftl": True}
+        report_files = self.run_operation(recipe, args)
         for report_file in report_files:
             self.verify_report_file_contents(report_file, False)
 
         # render a report, verify it exists, etc
         self.verify_summary(verify_cross_suite_summary=True)
 
-    def run_operation(self, recipe_path: Path) -> List[Path]:
+    def run_operation(self, recipe_path: Path, args: Dict) -> List[Path]:
         '''run the fake operation recipe and return generated report json files
         '''
-        lib.deployment.run_recipe(recipe_path, self.out_dir)
+        lib.deployment.run_recipe(recipe_path, args, self.out_dir)
 
         # confirm that expected files exist
         report_files = [
