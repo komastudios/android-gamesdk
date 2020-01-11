@@ -34,6 +34,24 @@
       "revId": "cd35988e0e7129decd22c77cd2ffc8ce75dd2379",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5fab1834_d2995be1",
+        "filename": "src/swappy/common/ChoreographerThread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-01-11T00:08:06Z",
+      "side": 1,
+      "message": "based on the bug we have a race condition between ~NDKChoreographerThread() and looperThread()\n\nWhat if we change ~NDKChoreographerThread() to:\n\nNDKChoreographerThread::~NDKChoreographerThread()\n{\n    ALOGI(\"Destroying NDKChoreographerThread\");\n\n    if (mLibAndroid !\u003d nullptr)\n      dlclose(mLibAndroid);\n\n    {\n        std::lock_guard\u003cstd::mutex\u003e lock(mWaitingMutex);\n    \n        if (!mLooper) {\n            return;\n        }\n\n        ALooper_acquire(mLooper);\n        mThreadRunning \u003d false;\n        ALooper_wake(mLooper);\n    }\n    mThread.join();\n    ALooper_release(mLooper);\n}",
+      "parentUuid": "7940d6ec_d042f771",
+      "revId": "cd35988e0e7129decd22c77cd2ffc8ce75dd2379",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
