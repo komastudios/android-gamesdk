@@ -1,0 +1,22 @@
+{
+    "auto_run": false,
+    "delay_between_tests": "5000ms",
+    "host": "GLSurfaceViewHostActivity",
+    "defaultMonitors": [
+        {
+            "id": "MonitorOperation"
+        }
+    ],
+    "stress_tests": [
+        {
+            "enabled": true,
+            "name": "Dual Source Blending",
+            "description": "",
+            "duration": "0s",
+            "data_gatherer": {
+                "id": "DualSourceBlendingGLES3Operation"
+            },
+            "stressors": []
+        }
+    ]
+}

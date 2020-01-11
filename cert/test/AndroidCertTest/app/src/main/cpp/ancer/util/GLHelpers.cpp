@@ -131,6 +131,18 @@ bool CheckGlError(const char *func_name) {
   return false;
 }
 
+bool CheckGlExtension(const char *extension_name) {
+    GLint extension_count = 0;
+    glGetIntegerv(GL_NUM_EXTENSIONS, &extension_count);
+    for (int i = 0; i < extension_count; ++i) {
+        const char* ext = reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i));
+        if (strcmp(ext, extension_name) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
 GLuint CreateProgramSrc(const char *vtx_src, const char *frag_src) {
   GLuint vtx_shader = 0;
   GLuint frag_shader = 0;

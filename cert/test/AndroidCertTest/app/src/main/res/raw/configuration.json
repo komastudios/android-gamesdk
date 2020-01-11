@@ -386,9 +386,24 @@
       "data_gatherer": {
         "id": "ShaderBlobGLES3Operation",
         "configuration": {
-          "debug_only": false,
+          "debug_only": true,
           "iterations": 8,
           "trials": 4
+        }
+      },
+      "stressors": [
+      ]
+    },
+    {
+      "enabled": true,
+      "name": "Dual Source Blending",
+      "description": "Check for dual source blending existence and accuracy.",
+      "host": "GLSurfaceViewHostActivity",
+      "duration": "0s",
+      "data_gatherer": {
+        "id": "DualSourceBlendingGLES3Operation",
+        "configuration": {
+          "reference_screenshot_mode": false
         }
       },
       "stressors": [

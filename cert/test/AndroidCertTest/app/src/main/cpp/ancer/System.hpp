@@ -198,5 +198,20 @@ namespace ancer {
     */
     GLContextConfig BridgeGLContextConfiguration(jobject src_config);
 
+    /*
+     * Encodes raw color data into a compressed PNG.
+     * Each pixel is grouped in four consecutive bytes, ordered RGBA.
+     * `bytes` should have (4 * width * height) elements, where the first
+     * (4 * width) elements are the top row of pixels in the output image.
+     */
+    std::vector<unsigned char> PNGEncodeRGBABytes(unsigned int width,
+            unsigned int height, const std::vector<unsigned char>& bytes);
+
+    /*
+     * Convert byte array into Base64-encoded string.
+     * `length` is the number of bytes (given as an int for compatibility
+     * with the Java libraries that are used).
+     */
+    std::string Base64EncodeBytes(const unsigned char* bytes, int length);
 
 } // namespace ancer
