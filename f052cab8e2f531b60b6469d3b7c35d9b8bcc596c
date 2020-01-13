@@ -16,6 +16,24 @@
       "revId": "f052cab8e2f531b60b6469d3b7c35d9b8bcc596c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ed6a67a0_4dbf5ff0",
+        "filename": "src/swappy/vulkan/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-01-13T13:53:27Z",
+      "side": 1,
+      "message": "\u003e Why not static member of SwappyVk ?\n\nI think you mean why not a non-static member of the static SwappyVk object? I\u0027ve reworked to make it so.",
+      "parentUuid": "9de57db0_c499bc74",
+      "revId": "f052cab8e2f531b60b6469d3b7c35d9b8bcc596c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
