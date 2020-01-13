@@ -96,6 +96,30 @@
     },
     {
       "key": {
+        "uuid": "c8f6626e_83b123f2",
+        "filename": "src/tuningfork/tuningfork.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 637,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-01-13T14:43:30Z",
+      "side": 1,
+      "message": "Do developer need to set \"max_instrumentation_keys\" for TF Scaled? if max_instrumentation_key is set to 0 and histograms are empty (and that combination should pass validation) then sys_cpu/etc histograms will not be added.\n\n\u003e\u003e if (max_keys!\u003dsettings_.histograms.size()) {\nThat line is mostly confusing, as max_keys are set in build time, but histograms are changing in runtime. Should we increase max_key then too with adding histograms what are missing?\n\nAlso, how Play will know which histograms the app is using? What if default histograms will be changed for next version of tuningfork?",
+      "parentUuid": "551fabcb_142e0e4c",
+      "range": {
+        "startLine": 637,
+        "startChar": 51,
+        "endLine": 637,
+        "endChar": 75
+      },
+      "revId": "9719784984f4994d2dcdfabe5eaec58ec32e6a11",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "9fd3594a_9748d11d",
         "filename": "test/tuningfork/tuningfork_test.cpp",
         "patchSetId": 1
