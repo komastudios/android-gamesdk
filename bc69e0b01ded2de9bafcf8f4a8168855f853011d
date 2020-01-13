@@ -52,6 +52,24 @@
       "revId": "bc69e0b01ded2de9bafcf8f4a8168855f853011d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3975ea02_e627f4b8",
+        "filename": "src/swappy/vulkan/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-01-13T14:01:45Z",
+      "side": 1,
+      "message": "So we\u0027re saying that people would need to call a new function \u0027SwappyVk_destroyDevice\u0027 as well as SwappyVk_destroySwapchain. This would be a breaking change and a change in the documentation, so I propose we do it in a separate CL. Are you OK with that, Victor? If so, please +2.",
+      "parentUuid": "fb79e15a_d888151d",
+      "revId": "bc69e0b01ded2de9bafcf8f4a8168855f853011d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
