@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f4c61267_e50c075d",
+        "filename": "test/istresser/test.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-01-13T14:31:16Z",
+      "side": 1,
+      "message": "Can you update test_service.sh as well?",
+      "revId": "f06f427c26792e3436b2227c7963852ce767358b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
