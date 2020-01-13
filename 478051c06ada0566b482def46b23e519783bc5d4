@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "3f1ee63b_3828fdbd",
+        "filename": "bender/bender-base/app/src/main/jni/render_graph.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-01-13T17:41:22Z",
+      "side": 1,
+      "message": "This feels like an unnecessary copy. But I wouldn\u0027t mind this too much now because we still needs to clarify who owns the instances. At the moment ownership is shared and I don\u0027t like it. Let\u0027s solve that first and then come back to this API.",
+      "parentUuid": "9075d9b3_d771e5fc",
+      "revId": "478051c06ada0566b482def46b23e519783bc5d4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0cc5b12f_68989dee",
         "filename": "bender/bender-base/app/src/main/jni/render_graph.h",
         "patchSetId": 2
