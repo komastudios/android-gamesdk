@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9fd3594a_9748d11d",
+        "filename": "test/tuningfork/tuningfork_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-01-13T10:13:51Z",
+      "side": 1,
+      "message": "Extra logs ;)",
+      "revId": "9719784984f4994d2dcdfabe5eaec58ec32e6a11",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "421d4408_a6886731",
+        "filename": "test/tuningfork/tuningfork_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 401,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-01-13T10:13:51Z",
+      "side": 1,
+      "message": "Hello 👋 ;)",
+      "revId": "9719784984f4994d2dcdfabe5eaec58ec32e6a11",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
