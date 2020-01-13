@@ -37,6 +37,40 @@
     },
     {
       "key": {
+        "uuid": "b242ceae_be337581",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-01-13T17:39:34Z",
+      "side": 1,
+      "message": "Is this the BB in object space or world space?",
+      "revId": "43b93bece5c304166bb5e30dd8c627657d526afc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "000fc4cd_19c0a02b",
+        "filename": "bender/bender-base/app/src/main/jni/mesh_instance.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-01-13T17:39:34Z",
+      "side": 1,
+      "message": "I don\u0027t think the mesh instance should hold the descriptors and mesh_buffer (down). The reason is that in the case of instancing, for example, these resources will be hold by another entity that performs the rendering and submit the draws. MeshInstance should only draw all the information necessary (MVP and Material properties) for another entity to submit the correct draw.",
+      "revId": "43b93bece5c304166bb5e30dd8c627657d526afc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "021998d8_e4c93a1c",
         "filename": "bender/bender-base/app/src/main/jni/mesh_instance.h",
         "patchSetId": 2
