@@ -2,6 +2,40 @@
   "comments": [
     {
       "key": {
+        "uuid": "9aceb7e9_42e1348a",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-01-13T17:29:45Z",
+      "side": 1,
+      "message": "Is there a case where the Mesh gets destroyed before all the mesh instances? If the Mesh is destroyed should it destroy all associated MeshInstances?",
+      "revId": "43b93bece5c304166bb5e30dd8c627657d526afc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "021998d8_e4c93a1c",
+        "filename": "bender/bender-base/app/src/main/jni/mesh_instance.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-01-13T17:29:45Z",
+      "side": 1,
+      "message": "Should this end up being a shared_ptr?",
+      "revId": "43b93bece5c304166bb5e30dd8c627657d526afc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "92382af8_d7e25305",
         "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
         "patchSetId": 2
@@ -13,6 +47,23 @@
       "writtenOn": "2020-01-10T23:48:06Z",
       "side": 1,
       "message": "I\u0027m concerned about this; the extra param is b/c the pipeline needs to know about the material descriptor set layout. However, this isn\u0027t rigorous, I don\u0027t know if we can get some sort of singular material layout.\n\nAlso, have raised this to Fran; this line only executes on the first DrawFrame per mesh b/c it only creates a pipeline if one does not already exist. So it\u0027s not really updating if the material descriptor set layout were to change.",
+      "revId": "43b93bece5c304166bb5e30dd8c627657d526afc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "502e5d6b_33672335",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 790,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-01-13T17:29:45Z",
+      "side": 1,
+      "message": "Summary of quick discussion we had before:\n\nSo this right now still has us making a single draw call for every MeshInstance\nFor instanced rendering we want a single draw call for every Mesh (geometry + material)\nand instances are differentiated via their MVP matrix\nSo we can define vertex attributes to be per-vertex and per-instance I believe\nWhich may let us refactor this so that we can make this a single draw call per Mesh rather than per MeshInstance\n\nThe refactor might involve something like having Mesh own an array of MVP structs that we can use to create the instanced data and then iterate over all the Meshes and have the Mesh make the instanced draw call?",
       "revId": "43b93bece5c304166bb5e30dd8c627657d526afc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
