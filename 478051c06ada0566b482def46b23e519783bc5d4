@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "7ba8d58f_50dc840a",
+        "filename": "bender/bender-base/app/src/main/jni/render_graph.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-01-13T18:02:35Z",
+      "side": 1,
+      "message": "Yea I wasn\u0027t entirely sure how to avoid the unnecessary copies - this function did return a vector before but that vector was a local variable to the function so it would do another copy of that vector to return to - with this at least I can write the data directly to the returned variable\n\nBut I agree this discussion might want to wait until we figure out how instances are stored and represented!",
+      "parentUuid": "78bd0858_4ffb7579",
+      "revId": "478051c06ada0566b482def46b23e519783bc5d4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0cc5b12f_68989dee",
         "filename": "bender/bender-base/app/src/main/jni/render_graph.h",
         "patchSetId": 2
@@ -69,6 +87,24 @@
       "revId": "478051c06ada0566b482def46b23e519783bc5d4",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "99fc511d_c4331b4b",
+        "filename": "bender/bender-base/app/src/main/jni/render_graph.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-01-13T18:02:35Z",
+      "side": 1,
+      "message": "This is a good idea I\u0027ll take care of that now",
+      "parentUuid": "0cc5b12f_68989dee",
+      "revId": "478051c06ada0566b482def46b23e519783bc5d4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
