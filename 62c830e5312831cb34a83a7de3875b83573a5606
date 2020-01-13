@@ -16,6 +16,24 @@
       "revId": "62c830e5312831cb34a83a7de3875b83573a5606",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d456ea01_ca0177a8",
+        "filename": "cert/test/reporting/recipes/32bit_depth_clear.yaml",
+        "patchSetId": 2
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-13T18:44:30Z",
+      "side": 1,
+      "message": "This is a good idea - easily implemented down the road.",
+      "parentUuid": "2c3da8a8_f9b5bb44",
+      "revId": "62c830e5312831cb34a83a7de3875b83573a5606",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
