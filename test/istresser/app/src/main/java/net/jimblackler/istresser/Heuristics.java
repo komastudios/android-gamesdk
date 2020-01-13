@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -31,8 +32,11 @@ public class Heuristics {
    */
   private static Collection<Integer> getPids(ActivityManager activityManager) {
     Collection<Integer> pids = new ArrayList<>();
-    for (RunningAppProcessInfo runningAppProcessInfo : activityManager.getRunningAppProcesses()) {
-      pids.add(runningAppProcessInfo.pid);
+    List<RunningAppProcessInfo> runningAppProcessInfos = activityManager.getRunningAppProcesses();
+    if (runningAppProcessInfos != null) {
+      for (RunningAppProcessInfo runningAppProcessInfo : runningAppProcessInfos) {
+        pids.add(runningAppProcessInfo.pid);
+      }
     }
     return pids;
   }
@@ -169,17 +173,6 @@ public class Heuristics {
   }
 
   /**
-   * Returns 'true' if the OOM score for the activity is above a level that requires memory to be
-   * freed to prevent the application from being killed.
-   *
-   * @param activityManager The ActivityManager.
-   * @return The status value.
-   */
-  static boolean oomCheck(ActivityManager activityManager) {
-    return getOomScore(activityManager) > 650;
-  }
-
-  /**
    * Returns the process memory info for the application.
    *
    * @param activityManager The ActivityManager.
@@ -187,61 +180,5 @@ public class Heuristics {
    */
   static MemoryInfo[] getDebugMemoryInfo(ActivityManager activityManager) {
     return activityManager.getProcessMemoryInfo(Ints.toArray(getPids(activityManager)));
-  }
-
-  /**
-   * Returns 'true' if the commit limit is above a level that requires memory to be freed to prevent
-   * the application from being killed.
-   */
-  static boolean commitLimitCheck() {
-    Long value = processMeminfo().get("CommitLimit");
-    if (value == null) {
-      return false;
-    }
-    return Debug.getNativeHeapAllocatedSize() / 1024 > value;
-  }
-
-  /**
-   * Returns 'true' if the availMem value is below a level that requires memory to be freed to
-   * prevent the application from being killed.
-   *
-   * @param activityManager The ActivityManager.
-   * @return The status value.
-   */
-  static boolean availMemCheck(ActivityManager activityManager) {
-    ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
-    return memoryInfo.availMem < memoryInfo.threshold * 2;
-  }
-
-  /**
-   * Returns 'true' if the cached value is at a level that requires memory to be freed to prevent
-   * the application from being killed.
-   *
-   * @param activityManager The ActivityManager.
-   * @return The status value.
-   */
-  static boolean cachedCheck(ActivityManager activityManager) {
-    Long value = processMeminfo().get("Cached");
-    if (value == null || value == 0) {
-      return false;
-    }
-    ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
-    return value < memoryInfo.threshold / 1024;
-  }
-
-  /**
-   * Returns 'true' if the MemAvailable value is at a level that requires memory to be freed to
-   * prevent the application from being killed.
-   *
-   * @param activityManager The ActivityManager.
-   * @return The status value.
-   */
-  static boolean memAvailableCheck(ActivityManager activityManager) {
-    Long value = processMeminfo().get("MemAvailable");
-    if (value == null || value == 0) {
-      return false;
-    }
-    ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
-    return value < memoryInfo.threshold * 2 / 1024;
   }
 }

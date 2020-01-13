@@ -1,5 +1,13 @@
 package net.jimblackler.istresser;
 
+import static net.jimblackler.istresser.Heuristic.Identifier.AVAIL;
+import static net.jimblackler.istresser.Heuristic.Identifier.AVAIL2;
+import static net.jimblackler.istresser.Heuristic.Identifier.CACHED;
+import static net.jimblackler.istresser.Heuristic.Identifier.CL;
+import static net.jimblackler.istresser.Heuristic.Identifier.LOW;
+import static net.jimblackler.istresser.Heuristic.Identifier.OOM;
+import static net.jimblackler.istresser.Heuristic.Identifier.TRIM;
+import static net.jimblackler.istresser.Heuristic.Identifier.TRY;
 import static net.jimblackler.istresser.ServiceCommunicationHelper.CRASHED_BEFORE;
 import static net.jimblackler.istresser.ServiceCommunicationHelper.TOTAL_MEMORY_MB;
 
@@ -36,6 +44,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
+import net.jimblackler.istresser.Heuristic.Identifier;
+import net.jimblackler.istresser.Heuristic.Indicator;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,21 +70,21 @@ public class MainActivity extends AppCompatActivity {
   private static final int BYTES_IN_MEGABYTE = 1024 * 1024;
   private static final boolean GL_TEST = true;
 
-  private static final List<List<String>> groups =
-      ImmutableList.<List<String>>builder()
-          .add(ImmutableList.of(""))
-          .add(ImmutableList.of("trim"))
-          .add(ImmutableList.of("oom"))
-          .add(ImmutableList.of("low"))
-          .add(ImmutableList.of("try"))
-          .add(ImmutableList.of("cl"))
-          .add(ImmutableList.of("avail"))
-          .add(ImmutableList.of("cached"))
-          .add(ImmutableList.of("avail2"))
-          .add(ImmutableList.of("cl", "avail", "avail2"))
-          .add(ImmutableList.of("cl", "avail", "avail2", "low"))
-          .add(ImmutableList.of("trim", "try", "cl", "avail", "avail2"))
-          .add(ImmutableList.of("trim", "low", "try", "cl", "avail", "avail2"))
+  private static final List<List<Identifier>> groups =
+      ImmutableList.<List<Identifier>>builder()
+          .add(ImmutableList.of())
+          .add(ImmutableList.of(TRIM))
+          .add(ImmutableList.of(OOM))
+          .add(ImmutableList.of(LOW))
+          .add(ImmutableList.of(TRY))
+          .add(ImmutableList.of(CL))
+          .add(ImmutableList.of(AVAIL))
+          .add(ImmutableList.of(CACHED))
+          .add(ImmutableList.of(AVAIL2))
+          .add(ImmutableList.of(CL, AVAIL, AVAIL2))
+          .add(ImmutableList.of(CL, AVAIL, AVAIL2, LOW))
+          .add(ImmutableList.of(TRIM, TRY, CL, AVAIL, AVAIL2))
+          .add(ImmutableList.of(TRIM, LOW, TRY, CL, AVAIL, AVAIL2))
           .build();
 
   private static final ImmutableList<String> MEMINFO_FIELDS =
@@ -84,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
       ImmutableList.of("VmSize", "VmRSS", "VmData");
 
   private static final String[] SUMMARY_FIELDS = {
-    "summary.graphics", "summary.native-heap", "summary.total-pss"
+      "summary.graphics", "summary.native-heap", "summary.total-pss"
   };
 
   static {
@@ -228,9 +238,12 @@ public class MainActivity extends AppCompatActivity {
       report.put("scenario", scenario);
 
       JSONArray groupsOut = new JSONArray();
-      for (String group : groups.get(groupNumber)) {
-        groupsOut.put(group);
+      for (Identifier identifier : groups.get(groupNumber)) {
+        groupsOut.put(identifier.name());
       }
+      TextView strategies = findViewById(R.id.strategies);
+      strategies.setText(groupsOut.toString());
+
       report.put("groups", groupsOut);
 
       JSONObject build = new JSONObject();
@@ -286,22 +299,16 @@ public class MainActivity extends AppCompatActivity {
               JSONObject report = standardInfo();
               long _allocationStartedAt = allocationStartedAt;
               if (_allocationStartedAt != -1) {
-                if (scenarioGroup("oom") && Heuristics.oomCheck(activityManager)) {
-                  releaseMemory(report, "oom");
-                } else if (scenarioGroup("low") && Heuristics.lowMemoryCheck(activityManager)) {
-                  releaseMemory(report, "low");
-                } else if (scenarioGroup("try") && !tryAlloc(1024 * 1024 * 32)) {
-                  releaseMemory(report, "try");
-                } else if (scenarioGroup("cl") && Heuristics.commitLimitCheck()) {
-                  releaseMemory(report, "cl");
-                } else if (scenarioGroup("avail") && Heuristics.availMemCheck(activityManager)) {
-                  releaseMemory(report, "avail");
-                } else if (scenarioGroup("cached") && Heuristics.cachedCheck(activityManager)) {
-                  releaseMemory(report, "cached");
-                } else if (scenarioGroup("avail2")
-                    && Heuristics.memAvailableCheck(activityManager)) {
-                  releaseMemory(report, "avail2");
-                } else {
+                boolean memoryReleased = false;
+                for (Heuristic heuristic : Heuristic.availableHeuristics) {
+                  if (groups.get(groupNumber).contains(heuristic.getIdentifier())
+                      && heuristic.getSignal(activityManager) == Indicator.RED) {
+                    releaseMemory(report, heuristic.getIdentifier().toString());
+                    memoryReleased = true;
+                    break;
+                  }
+                }
+                if (!memoryReleased) {
                   long sinceStart = System.currentTimeMillis() - _allocationStartedAt;
                   long target = sinceStart * BYTES_PER_MILLISECOND;
                   int owed = (int) (target - nativeAllocatedByTest);
@@ -324,7 +331,7 @@ public class MainActivity extends AppCompatActivity {
                   File file =
                       new File(
                           Environment.getExternalStoragePublicDirectory(
-                                  Environment.DIRECTORY_PICTURES)
+                              Environment.DIRECTORY_PICTURES)
                               + File.separator
                               + "pic.jpg");
                   String authority = getApplicationContext().getPackageName() + ".provider";
@@ -421,10 +428,6 @@ public class MainActivity extends AppCompatActivity {
           ActivityManager activityManager = (ActivityManager)
               Objects.requireNonNull(this.getSystemService((ACTIVITY_SERVICE)));
 
-          TextView strategies = findViewById(R.id.strategies);
-          List<String> strings = groups.get(groupNumber);
-          strategies.setText(join(strings, ", ")); // TODO .. move to onCreate()
-
           TextView uptime = findViewById(R.id.uptime);
           float timeRunning = (float) (System.currentTimeMillis() - startTime) / 1000;
           uptime.setText(String.format(Locale.getDefault(), "%.2f", timeRunning));
@@ -485,8 +488,8 @@ public class MainActivity extends AppCompatActivity {
       JSONObject report = standardInfo();
       report.put("onTrimMemory", level);
 
-      if (scenarioGroup("trim")) {
-        releaseMemory(report, "trim");
+      if (groups.get(groupNumber).contains(TRIM)) {
+        releaseMemory(report, TRIM.name());
       }
       resultsStream.println(report);
 
@@ -495,11 +498,6 @@ public class MainActivity extends AppCompatActivity {
     } catch (JSONException e) {
       throw new RuntimeException(e);
     }
-  }
-
-  private boolean scenarioGroup(String group) {
-    List<String> strings = groups.get(groupNumber);
-    return strings.contains(group);
   }
 
   private void releaseMemory(JSONObject report, String trigger) {
@@ -618,6 +616,4 @@ public class MainActivity extends AppCompatActivity {
   public native void freeAll();
 
   public native boolean nativeConsume(int bytes);
-
-  public native boolean tryAlloc(int bytes);
 }
