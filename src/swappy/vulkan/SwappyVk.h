@@ -49,8 +49,9 @@ public:
     }
 
     ~SwappyVk() {
-        if(mLibVulkan)
-            dlclose(mLibVulkan);
+        if (pFunctionProvider) {
+            pFunctionProvider->close();
+        }
     }
 
     void swappyVkDetermineDeviceExtensions(VkPhysicalDevice       physicalDevice,
@@ -83,7 +84,10 @@ public:
 
     void addTracer(const SwappyTracer *t);
 
-private:
+    void SetFunctionProvider(const SwappyVkFunctionProvider* pFunctionProvider);
+    bool InitFunctions();
+
+ private:
     std::map<VkPhysicalDevice, bool> doesPhysicalDeviceHaveGoogleDisplayTiming;
     std::map<VkDevice, std::shared_ptr<SwappyVkBase>> perDeviceImplementation;
     std::map<VkSwapchainKHR, std::shared_ptr<SwappyVkBase>> perSwapchainImplementation;
@@ -94,7 +98,7 @@ private:
     };
     std::map<VkQueue, QueueFamilyIndex> perQueueFamilyIndex;
 
-    void *mLibVulkan     = nullptr;
+    const SwappyVkFunctionProvider* pFunctionProvider = nullptr;
 
 private:
     SwappyVk() {} // Need to implement this constructor

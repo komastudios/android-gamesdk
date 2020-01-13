@@ -125,4 +125,10 @@ void SwappyVk_injectTracer(const SwappyTracer *t){
     swappy.addTracer(t);
 }
 
+void SwappyVk_setFunctionProvider(const SwappyVkFunctionProvider* pSwappyVkFunctionProvider) {
+    TRACE_CALL();
+    swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
+    swappy.SetFunctionProvider(pSwappyVkFunctionProvider);
+}
+
 }  // extern "C"

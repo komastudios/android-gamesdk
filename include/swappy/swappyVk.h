@@ -26,11 +26,8 @@
 
 #include "jni.h"
 
-#if (defined ANDROID) && (defined SWAPPYVK_USE_WRAPPER)
-#include <vulkan_wrapper.h>
-#else
+#define VK_NO_PROTOTYPES 1
 #include <vulkan/vulkan.h>
-#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -150,7 +147,8 @@ static inline bool SwappyVk_initAndGetRefreshCycleDuration(
     // This call ensures that the header and the linked library are from the same version
     // (if not, a linker error will be triggered because of an undefined symbol).
     SWAPPY_VERSION_SYMBOL();
-    return SwappyVk_initAndGetRefreshCycleDuration_internal(env, jactivity, physicalDevice, device, swapchain, pRefreshDuration);
+    return SwappyVk_initAndGetRefreshCycleDuration_internal(env, jactivity, physicalDevice, device,
+                                           swapchain, pRefreshDuration);
 }
 
 /**
@@ -254,6 +252,30 @@ uint64_t SwappyVk_getFenceTimeoutNS();
  * @param[in]  tracer - Collection of callback functions
  */
 void SwappyVk_injectTracer(const SwappyTracer *tracer);
+
+/**
+ * A structure to enable you to provide your own Vulkan function wrappers.
+ */
+struct SwappyVkFunctionProvider {
+    // Called before any functions are requested. E.g. so you can call dlopen on
+    // the Vulkan library.
+    bool (*init)();
+    // Called to get the address of a Vulkan function.
+    void* (*getProcAddr)(const char* name);
+    // Called when no more functions will be requested, e.g. so you can call
+    // dlclose on the Vulkan library.
+    void (*close)();
+};
+
+/**
+ * @brief Set the Vulkan function provider.
+ *
+ * This enables you to provide an object that will be used to look up Vulkan functions.
+ * To use this functionality, you *must* call this function before any others.
+ *
+ * @param[in] provider - provider object
+ */
+void SwappyVk_setFunctionProvider(const struct SwappyVkFunctionProvider* pSwappyVkFunctionProvider);
 
 #ifdef __cplusplus
 }  // extern "C"

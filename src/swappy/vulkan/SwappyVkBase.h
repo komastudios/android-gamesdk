@@ -39,7 +39,6 @@
 
 #pragma once
 
-#define SWAPPYVK_USE_WRAPPER
 #include <swappy/swappyVk.h>
 
 #include <unistd.h>
@@ -91,6 +90,25 @@ using PFN_AChoreographer_postFrameCallbackDelayed = void (*)(AChoreographer* cho
                                                              void* data,
                                                              long delayMillis);
 
+extern PFN_vkCreateCommandPool vkCreateCommandPool;
+extern PFN_vkDestroyCommandPool vkDestroyCommandPool;
+extern PFN_vkCreateFence vkCreateFence;
+extern PFN_vkDestroyFence vkDestroyFence;
+extern PFN_vkWaitForFences vkWaitForFences;
+extern PFN_vkResetFences vkResetFences;
+extern PFN_vkCreateSemaphore vkCreateSemaphore;
+extern PFN_vkDestroySemaphore vkDestroySemaphore;
+extern PFN_vkCreateEvent vkCreateEvent;
+extern PFN_vkDestroyEvent vkDestroyEvent;
+extern PFN_vkCmdSetEvent vkCmdSetEvent;
+extern PFN_vkAllocateCommandBuffers vkAllocateCommandBuffers;
+extern PFN_vkFreeCommandBuffers vkFreeCommandBuffers;
+extern PFN_vkBeginCommandBuffer vkBeginCommandBuffer;
+extern PFN_vkEndCommandBuffer vkEndCommandBuffer;
+extern PFN_vkQueueSubmit vkQueueSubmit;
+
+void LoadVulkanFunctions(const SwappyVkFunctionProvider* pFunctionProvider);
+
 class SwappyVkBase
 {
 public:
@@ -98,7 +116,7 @@ public:
                  jobject          jactivity,
                  VkPhysicalDevice physicalDevice,
                  VkDevice         device,
-                 void             *libVulkan);
+                 const SwappyVkFunctionProvider* pFunctionProvider);
 
     virtual ~SwappyVkBase();
 
@@ -150,7 +168,7 @@ protected:
     SwappyCommon     mCommonBase;
     VkPhysicalDevice mPhysicalDevice;
     VkDevice         mDevice;
-    void*            mLibVulkan;
+    const SwappyVkFunctionProvider* mpFunctionProvider;
     bool             mInitialized;
     bool             mEnabled;
 

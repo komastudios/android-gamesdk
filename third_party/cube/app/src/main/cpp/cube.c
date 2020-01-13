@@ -104,6 +104,7 @@ void DbgMsg(char *fmt, ...) {
 
 #elif defined __ANDROID__
 #include <android/log.h>
+#include <dlfcn.h>
 #define ERR_EXIT(err_msg, err_class)                                    \
     do {                                                                \
         ((void)__android_log_print(ANDROID_LOG_INFO, "Cube", err_msg)); \
@@ -3086,6 +3087,36 @@ static VkBool32 demo_check_layers(uint32_t check_count, char **check_names, uint
     return 1;
 }
 
+/*
+ * Start SwappyVkFunctionProvider test functions.
+ */
+
+static void* sLibVulkan = NULL;
+
+static bool FunctionProviderInit() {
+    if (sLibVulkan==NULL) {
+        sLibVulkan = dlopen("libvulkan.so", RTLD_LOCAL);
+    }
+    return sLibVulkan!=NULL;
+}
+static void* FunctionProviderGetProcAddr(const char* fname) {
+    return dlsym(sLibVulkan, fname);
+}
+static void FunctionProviderClose() {
+    dlclose(sLibVulkan);
+    sLibVulkan = NULL;
+}
+
+static struct SwappyVkFunctionProvider theVkFunctionProvider = {
+    FunctionProviderInit,
+    FunctionProviderGetProcAddr,
+    FunctionProviderClose
+};
+
+/*
+ * End SwappyVkFunctionProvider test functions
+ */
+
 static void demo_init_vk(struct demo *demo) {
     VkResult err;
     uint32_t instance_extension_count = 0;
@@ -3102,6 +3133,9 @@ static void demo_init_vk(struct demo *demo) {
     char *instance_validation_layers_alt2[] = {"VK_LAYER_GOOGLE_threading", "VK_LAYER_LUNARG_parameter_validation",
                                                "VK_LAYER_LUNARG_object_tracker", "VK_LAYER_LUNARG_core_validation",
                                                "VK_LAYER_GOOGLE_unique_objects"};
+
+    /* Initialize Swappy function provider */
+    SwappyVk_setFunctionProvider(&theVkFunctionProvider);
 
     /* Look for validation layers */
     VkBool32 validation_found = 0;

@@ -28,8 +28,8 @@ SwappyVkGoogleDisplayTiming::SwappyVkGoogleDisplayTiming(JNIEnv           *env,
                                                          jobject          jactivity,
                                                          VkPhysicalDevice physicalDevice,
                                                          VkDevice         device,
-                                                         void             *libVulkan) :
-    SwappyVkBase(env, jactivity, physicalDevice, device, libVulkan) {}
+                                                         const SwappyVkFunctionProvider* provider) :
+    SwappyVkBase(env, jactivity, physicalDevice, device, provider) {}
 
 bool SwappyVkGoogleDisplayTiming::doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
                                                             uint64_t*      pRefreshDuration) {
