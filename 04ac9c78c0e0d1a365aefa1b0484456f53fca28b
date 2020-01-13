@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0c50c78e_75d63e6d",
+        "filename": "src/tuningfork/tools/validation/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-01-13T14:19:26Z",
+      "side": 1,
+      "message": "nit: Line length",
+      "revId": "04ac9c78c0e0d1a365aefa1b0484456f53fca28b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
