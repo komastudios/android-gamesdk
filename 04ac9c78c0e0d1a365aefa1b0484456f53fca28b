@@ -16,6 +16,24 @@
       "revId": "04ac9c78c0e0d1a365aefa1b0484456f53fca28b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "721d97ef_5de4d04e",
+        "filename": "src/tuningfork/tools/validation/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-01-13T14:39:31Z",
+      "side": 1,
+      "message": "Fixed. I left command lines on a single line without breaks to allow easier copy-paste.\n\nAlso removed extra \\ that where showing in the markdown without a line break.",
+      "parentUuid": "0c50c78e_75d63e6d",
+      "revId": "04ac9c78c0e0d1a365aefa1b0484456f53fca28b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
