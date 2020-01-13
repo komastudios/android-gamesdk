@@ -2,6 +2,52 @@
   "comments": [
     {
       "key": {
+        "uuid": "a19e4cc0_0a7bbd77",
+        "filename": "samples/tuningfork/tftestapp/app/src/main/cpp/tftestapp.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-01-13T10:45:28Z",
+      "side": 1,
+      "message": "nit: \"FidelityParamsCallback\"",
+      "range": {
+        "startLine": 95,
+        "startChar": 16,
+        "endLine": 95,
+        "endChar": 41
+      },
+      "revId": "9719784984f4994d2dcdfabe5eaec58ec32e6a11",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "002a183b_52a6e6ba",
+        "filename": "src/tuningfork/tuningfork.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 637,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-01-13T10:45:28Z",
+      "side": 1,
+      "message": "Do we need \u0027max_instrumentation_keys\u0027? Can settings.histograms.size() be used instead of this everywhere?\nIt might be confusing here if the apk will pass validation(valid max_key), but in init it will not add all required instrumentation keys.",
+      "range": {
+        "startLine": 637,
+        "startChar": 51,
+        "endLine": 637,
+        "endChar": 75
+      },
+      "revId": "9719784984f4994d2dcdfabe5eaec58ec32e6a11",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "9fd3594a_9748d11d",
         "filename": "test/tuningfork/tuningfork_test.cpp",
         "patchSetId": 1
