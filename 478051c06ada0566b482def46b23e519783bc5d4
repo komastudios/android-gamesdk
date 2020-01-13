@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9075d9b3_d771e5fc",
+        "filename": "bender/bender-base/app/src/main/jni/render_graph.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-01-13T17:38:38Z",
+      "side": 1,
+      "message": "Is there a reason why you\u0027re deciding to change this to populate the passed in std::vector instead of returning it? It\u0027s good that this is consistent with GetVisibleMeshes, but then it\u0027s not with GetLastMesh()?",
+      "revId": "478051c06ada0566b482def46b23e519783bc5d4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0cc5b12f_68989dee",
+        "filename": "bender/bender-base/app/src/main/jni/render_graph.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-01-13T17:38:38Z",
+      "side": 1,
+      "message": "Since you added a .cc, do you want to move this function to that since it takes quite a few lines?",
+      "revId": "478051c06ada0566b482def46b23e519783bc5d4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
