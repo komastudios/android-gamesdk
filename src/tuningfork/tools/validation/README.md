@@ -6,9 +6,12 @@ To create a jar file:
 `./gradlew createJar`
 
 To run validation:
-`java -jar TuningforkApkValidationTool.jar \
+`java -jar build/libs/TuningforkApkValidationTool.jar \
   --tuningforkPath $PATH_TO_FOLDER \
   --protoCompiler $PATH_TO_PROTO_BINARY`
+
+> As an example, to run the validation tool on the Tuning Fork sample *tftestapp* with the Linux Proto Compiler:
+> `java -jar build/libs/TuningforkApkValidationTool.jar --tuningforkPath ../../../../samples/tuningfork/tftestapp/app/src/main/assets/tuningfork --protoCompiler ../../../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc`
 
 ## tuningfork_settings
 
