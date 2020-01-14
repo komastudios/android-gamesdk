@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 #
 # Copyright 2019 The Android Open Source Project
 #
@@ -41,6 +39,7 @@ import lib.tasks_runner
 
 # ------------------------------------------------------------------------------
 
+
 def unpack(s):
     """Convenience string join function"""
     return " ".join([str(i) for i in s])
@@ -61,9 +60,8 @@ def get_systrace_config(recipe: Recipe) -> (bool, List[str], List[str]):
     return enabled, keywords, categories
 
 
-def load_tasks(
-        tasks_dict: List[Dict],
-        task_ctors: Dict) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
+def load_tasks(tasks_dict: List[Dict], task_ctors: Dict
+              ) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
     """Load tasks and create default task environment (internal, called by
     get_preflight_tasks and get_postflight_tasks)
     Args:
@@ -76,8 +74,8 @@ def load_tasks(
     return lib.tasks_runner.load(tasks_dict, task_ctors), env
 
 
-def get_preflight_tasks(
-        recipe: Recipe) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
+def get_preflight_tasks(recipe: Recipe
+                       ) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
     """Load preflight tasks from the local deployment block of the recipe,
     and generate preflight environment
     """
@@ -85,8 +83,8 @@ def get_preflight_tasks(
     return load_tasks(preflight, lib.tasks_runner.PREFLIGHT_TASKS)
 
 
-def get_postflight_tasks(
-        recipe: Recipe) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
+def get_postflight_tasks(recipe: Recipe
+                        ) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
     """Load postflight tasks from the local deployment block of the recipe,
     and generate preflight environment
     """
@@ -103,7 +101,7 @@ def uninstall_apk_from_device(device_id: str) -> type(None):
         # uninstall is expected to fail if the APK is not currently installed
         print(
             f"uninstall_apk_from_device[{device_id}] - unable to uninstall"\
-                f": {ex.message}"
+                f": {repr(ex)}"
         )
 
 
@@ -245,7 +243,7 @@ def process_ftl_reports(
             out_files.append(report_file)
 
         except SystraceParseError as ex:
-            print(f"Unable to parse systrace data, error: {ex.message}")
+            print(f"Unable to parse systrace data, error: {repr(ex)}")
 
         except Exception as _:
             print(f"Unable to process file {report_file}")

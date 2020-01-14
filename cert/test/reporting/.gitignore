@@ -1,0 +1,5 @@
+# These files contain sensitive info related to the team share drive in
+# Google Drive. Follow project onboarding steps to get them.
+/client_secrets.json
+/gdrive.json
+/gdrive.creds

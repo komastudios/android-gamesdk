@@ -60,11 +60,11 @@ def main():
     doc_fmt = args.fmt
 
     if not path.exists():
-        print(f"File {str(path)} does not found; bailing.")
+        print(f"File {path} does not found; bailing.")
 
     elif path.is_dir():
         # this is a batch
-        reports = [Path(f) for f in glob.glob(str(path) + '/*.json')]
+        reports = [Path(f) for f in glob.glob(f"{path}/*.json")]
         generate_summary(reports, doc_fmt, dpi)
 
     elif path.suffix == ".json":
