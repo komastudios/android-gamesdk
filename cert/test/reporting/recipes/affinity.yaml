@@ -1,15 +1,2 @@
 build:
-  clean: false
-  release: false
   configuration: recipes/configurations/affinity_test.json
-
-systrace:
-  enabled: false
-
-deployment:
-  local:
-    all_attached_devices: true
-
-summary:
-  enabled: true
-  format: md

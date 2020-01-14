@@ -60,21 +60,24 @@ class BufferStorageSuiteHandler(SuiteHandler):
             plt.yticks(np.arange(0))
             plt.bar(0, 1, color=score_color)
 
+        msg = None
         if self.test_result_status is None:
-            return "Test result status not found."
+            msg = "Test result status not found."
         elif self.test_result_status == 0:
-            return "Passed."
+            msg = "Passed."
         elif self.test_result_status == 1:
-            return "Feature not found as OpenGL ES extension."
+            msg = "Feature not found as OpenGL ES extension."
         elif self.test_result_status == 2:
-            return "Feature not found in OpenGL ES driver library."
+            msg = "Feature not found in OpenGL ES driver library."
         elif self.test_result_status == 3:
-            return "Issues allocating a mutable bufffer store."
+            msg = "Issues allocating a mutable bufffer store."
         elif self.test_result_status == 4:
-            return "Issues deallocating a mutable bufffer store."
+            msg = "Issues deallocating a mutable bufffer store."
         elif self.test_result_status == 5:
-            return "Issues allocating an immutable bufffer store."
+            msg = "Issues allocating an immutable bufffer store."
         elif self.test_result_status == 6:
-            return "Unexpected success deallocating an immutable buffer store."
+            msg = "Unexpected success deallocating an immutable buffer store."
         else:
-            return f"Unexpected result: ({self.test_result_status})"
+            msg = f"Unexpected result: ({self.test_result_status})"
+
+        return msg
