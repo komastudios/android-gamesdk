@@ -16,11 +16,14 @@
 """Helper functions and classes for generating and formatting test summaries.
 """
 
+import json
 import glob
 from pathlib import Path
 from typing import Dict, List, Union
 
 from lib.common import get_indexable_utc, get_readable_utc, Recipe
+from lib.device import DeviceCatalog
+from lib.gdrive import GDrive, GoogleDriveRelatedError
 from lib.graphing import load_suites
 from lib.report import Suite
 from lib.summary_formatters.formatter import SummaryFormatter
@@ -49,7 +52,8 @@ def __get_summary_config(recipe: Recipe) -> (bool, str, int):
 
         if publish is True and my_type is not None:
             if my_type.is_gdrive_compatible() is False:
-                print(f"Format {format} invalid for publishing. Skipping.")
+                print(f"Format {output_format} invalid for publishing. "
+                      "Skipping.")
                 publish = False
 
         return True, output_format, dpi, publish
@@ -121,8 +125,27 @@ def __generate_formatted_cross_suite_summary(all_suites: List[Suite],
                                                  plot_path, figure_dpi))
 
 
+def __generate_formatted_summary_from_errors(excluded: List[Path],
+                                             formatter: SummaryFormatter
+                                            ) -> type(None):
+    """Flushes through the formatter all the info pertaining to devices whose
+    runs finished abnormally."""
+    if len(excluded) < 1:
+        return
+
+    formatter.on_errors_available("Failed Tests")
+    for excluded_path in excluded:
+        with open(excluded_path, "r") as excluded_file:
+            exclusion_data = json.load(excluded_file)
+            device_info = DeviceCatalog()[exclusion_data["codename"]]
+            formatter.on_device_error(
+                repr(device_info), f'{exclusion_data["outcome"]}: '
+                f'{exclusion_data["test_details"]}')
+
+
 def __generate_formatted_summary_from_reports(summary_path: Path,
                                               reports: List[Path],
+                                              excluded: List[Path],
                                               formatter: SummaryFormatter,
                                               figure_dpi: int) -> type(None):
     """Iterates through a list of JSON reports, creating graphics and appending
@@ -145,15 +168,18 @@ def __generate_formatted_summary_from_reports(summary_path: Path,
         __generate_formatted_cross_suite_summary(all_suites, folder, formatter,
                                                  figure_dpi)
 
+        __generate_formatted_summary_from_errors(excluded, formatter)
 
-def generate_summary(reports: List[Path], output_format: str,
-                     figure_dpi: int) -> Union[Path, None]:
+
+def generate_summary(reports: List[Path], excluded: List[Path],
+                     output_format: str, figure_dpi: int) -> Union[Path, None]:
     """
     Creates a single doc holding results for all involved devices. Great for a
     comparative, all-up analysis.
 
     Args:
-        reports: path to the folder holding per-device data.
+        reports: list of paths to successful device test reports.
+        excluded: list of paths to device test run errors.
         output_format: summary format.
         figure_dpi: image resolution.
 
@@ -166,14 +192,15 @@ def generate_summary(reports: List[Path], output_format: str,
     reports_dir = reports[0].parent
 
     summary_file_name = \
-        f"summary_{get_indexable_utc()}_{str(reports_dir.stem)}" \
+        f"summary_{get_indexable_utc()}_{reports_dir.stem}" \
             f".{output_format}"
     summary_path = reports_dir.joinpath(summary_file_name)
 
     summary_formatter = create_summary_formatter(output_format)
     if summary_formatter is not None:
         __generate_formatted_summary_from_reports(summary_path, reports,
-                                                  summary_formatter, figure_dpi)
+                                                  excluded, summary_formatter,
+                                                  figure_dpi)
     else:
         print(f'No summary formatter for format "{output_format}".')
 
@@ -195,10 +222,15 @@ def perform_summary_if_enabled(recipe: Recipe, reports_dir: Path) -> type(None):
     """
     summary = __get_summary_config(recipe)
     if summary[0]:  # enabled
-        summary_path = generate_summary(
-            [Path(f) for f in glob.glob(str(reports_dir) + '/*.json')],
-            summary[1], summary[2])
+        summary_path = generate_summary([
+            Path(f) for f in sorted(glob.glob(f"{reports_dir}/*_report.json"))
+        ], [Path(f) for f in sorted(glob.glob(f"{reports_dir}/*_error.json"))],
+                                        summary[1], summary[2])
 
         if summary[3]:  # publish to Google Drive
-            # TODO(dagum): gdrive.publish(summary_path)
-            print(f"Summary ready for publishing at {summary_path}")
+            try:
+                GDrive().publish(summary_path)
+                print(f"{summary_path} published to Google Drive.")
+            except GoogleDriveRelatedError as error:
+                print(f"""{summary_path} publishing to Google Drive failure:
+{repr(error)}""")
