@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "d58003be_101c5d9a",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/vulkan/context.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-01-14T20:46:55Z",
+      "side": 1,
+      "message": "Is there an advantage to explicitly freeing the command buffers? They should be freed automatically when the command pool they were allocated from is destroyed.",
+      "revId": "33bb9eb8a17535080463ba03113f34ad81ad113a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a51a3bc6_8e5fa42a",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/vulkan/vulkan_base.h",
         "patchSetId": 1
@@ -30,6 +47,23 @@
       "writtenOn": "2020-01-10T21:43:59Z",
       "side": 1,
       "message": "this is a good place to put in a TODO(sarahburns@google.com) so we can keep track",
+      "revId": "33bb9eb8a17535080463ba03113f34ad81ad113a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ac5d874c_d7524ef6",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/vulkan/vulkan_base.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 219,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-01-14T20:46:55Z",
+      "side": 1,
+      "message": "Is `Intance` a typo here, or deliberate for some reason that escapes me?",
       "revId": "33bb9eb8a17535080463ba03113f34ad81ad113a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
