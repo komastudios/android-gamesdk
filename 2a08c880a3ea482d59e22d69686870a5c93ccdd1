@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "af583e1c_c0b77764",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 514,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-01-15T12:28:24Z",
+      "side": 1,
+      "message": "I\u0027m a bit late but excluding CMakeLists.txt was maybe not necessary as overriden by CMakeLists.for-samples-in-archive.txt",
+      "revId": "2a08c880a3ea482d59e22d69686870a5c93ccdd1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
