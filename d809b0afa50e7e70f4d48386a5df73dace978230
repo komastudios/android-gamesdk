@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "136d416b_5f23ffcb",
+        "filename": "src/tuningfork/jni_helper.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2020-01-16T16:43:55Z",
+      "side": 1,
+      "message": "I suggest to remove it, we can save the sniplet for on-device unit tests",
+      "revId": "d809b0afa50e7e70f4d48386a5df73dace978230",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "09e3506d_3c301b15",
+        "filename": "src/tuningfork/jni_helper.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2020-01-16T16:43:55Z",
+      "side": 1,
+      "message": "Should it be j_str?",
+      "revId": "d809b0afa50e7e70f4d48386a5df73dace978230",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5f370634_48bba59a",
+        "filename": "src/tuningfork/jni_wrap.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2020-01-16T16:43:55Z",
+      "side": 1,
+      "message": "Introduce local variable?\nauto env \u003d Env();",
+      "revId": "d809b0afa50e7e70f4d48386a5df73dace978230",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5ffb4fb4_9d4cc1d0",
+        "filename": "src/tuningfork/jni_wrap.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 340,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2020-01-16T16:43:55Z",
+      "side": 1,
+      "message": "Is it used?",
+      "revId": "d809b0afa50e7e70f4d48386a5df73dace978230",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
