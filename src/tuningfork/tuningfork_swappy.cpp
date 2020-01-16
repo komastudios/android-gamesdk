@@ -21,7 +21,7 @@
 
 namespace tuningfork {
 
-SwappyTraceWrapper::SwappyTraceWrapper(const Settings& settings, const JniCtx& jni)
+SwappyTraceWrapper::SwappyTraceWrapper(const Settings& settings)
         : swappyTracerFn_(settings.c_settings.swappy_tracer_fn),
           trace_({}) {
     trace_.startFrame = StartFrameCallback;

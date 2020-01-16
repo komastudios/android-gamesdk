@@ -19,7 +19,7 @@
 #include "tuningfork/protobuf_util.h"
 #include "tuningfork_internal.h"
 #include "tuningfork_utils.h"
-#include <jni.h>
+#include "jni_helper.h"
 
 #include <cstdlib>
 #include <cstring>
@@ -27,6 +27,7 @@
 extern "C" {
 
 namespace tf = tuningfork;
+namespace jni = tuningfork::jni;
 
 TFErrorCode TuningFork_init_internal(const TFSettings *c_settings_in, JNIEnv* env,
                                      jobject context) {
@@ -34,18 +35,18 @@ TFErrorCode TuningFork_init_internal(const TFSettings *c_settings_in, JNIEnv* en
     if (c_settings_in != nullptr) {
         settings.c_settings = *c_settings_in;
     }
-    tf::JniCtx jni {env, context};
-    TFErrorCode err = FindSettingsInApk(&settings, jni);
+    jni::Init(env, context);
+    TFErrorCode err = FindSettingsInApk(&settings);
     if (err!=TFERROR_OK)
         return err;
-    std::string default_save_dir = tf::file_utils::GetAppCacheDir(jni) + "/tuningfork";
+    std::string default_save_dir = tf::file_utils::GetAppCacheDir() + "/tuningfork";
     CheckSettings(settings, default_save_dir);
-    err = tf::Init(settings, jni);
+    err = tf::Init(settings);
     if (err!=TFERROR_OK)
         return err;
     if ( !(settings.default_fidelity_parameters_filename.empty()
            || settings.c_settings.fidelity_params_callback==nullptr) ) {
-        err = GetDefaultsFromAPKAndDownloadFPs(settings, jni);
+        err = GetDefaultsFromAPKAndDownloadFPs(settings);
     }
     return err;
 }
