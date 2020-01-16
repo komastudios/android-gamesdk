@@ -80,7 +80,9 @@ float frame_time;
 float total_time;
 
 const glm::mat4 kIdentityMat4 = glm::mat4(1.0f);
-bool window_resized = false;
+const glm::mat4 prerotate_90 = glm::rotate(kIdentityMat4,  glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
+const glm::mat4 prerotate_270 = glm::rotate(kIdentityMat4, glm::three_over_two_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
+const glm::mat4 prerotate_180 = glm::rotate(kIdentityMat4, glm::pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
 bool app_initialized_once = false;
 uint32_t poly_faces_idx = 0;
 uint32_t materials_idx = 0;
@@ -332,17 +334,7 @@ void UpdateCamera(input::Data *input_data) {
         glm::quat(glm::vec3(input_data->delta_y / device->GetDisplaySize().height, 0.0f, 0.0f)));
   }
 
-  glm::mat4 pre_rotate_mat = kIdentityMat4;
-  glm::vec3 rotation_axis = glm::vec3(0.0f, 0.0f, -1.0f);
-  if (device->GetPretransformFlag() & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR) {
-    pre_rotate_mat = glm::rotate(pre_rotate_mat, glm::half_pi<float>(), rotation_axis);
-  } else if (device->GetPretransformFlag() & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR) {
-    pre_rotate_mat = glm::rotate(pre_rotate_mat, glm::three_over_two_pi<float>(), rotation_axis);
-  } else if (device->GetPretransformFlag() & VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR) {
-    pre_rotate_mat = glm::rotate(pre_rotate_mat, glm::pi<float>(), rotation_axis);
-  }
-
-  render_graph->SetCameraViewMatrix(pre_rotate_mat * glm::inverse(
+  render_graph->SetCameraViewMatrix(glm::inverse(
       glm::translate(glm::mat4(1.0f), render_graph->GetCameraPosition())
           * glm::mat4(render_graph->GetCameraRotation())));
 
@@ -365,7 +357,8 @@ void UpdateInstances(input::Data *input_data) {
     all_meshes[i]->Update(renderer->GetCurrentFrame(),
                          render_graph->GetCameraPosition(),
                          render_graph->GetCameraViewMatrix(),
-                         render_graph->GetCameraProjMatrix());
+                         render_graph->GetCameraProjMatrix(),
+                         render_graph->GetCameraPrerotationMatrix());
   }
   renderer->UpdateLights(render_graph->GetCameraPosition());
 }
@@ -443,6 +436,31 @@ void CreateDepthBuffer() {
 
 }
 
+void UpdateCameraParameters(){
+  render_graph->SetCameraAspectRatio(
+      device->GetDisplaySizeOriented().width / (float) device->GetDisplaySizeOriented().height);
+
+  auto horizontal_fov = glm::radians(60.0f);
+  auto vertical_fov = static_cast<float>(2
+      * atan(tan(horizontal_fov / 2) * (1.0 / render_graph->GetCameraAspectRatio())));
+  render_graph->SetCameraFOV((render_graph->GetCameraAspectRatio() > 1.0f) ? horizontal_fov
+                                                                           : vertical_fov);
+  switch (device->GetPretransformFlag()) {
+    case VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR:
+      render_graph->SetCameraPrerotationMatrix(prerotate_90);
+      break;
+    case VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR:
+      render_graph->SetCameraPrerotationMatrix(prerotate_180);
+      break;
+    case VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR:
+      render_graph->SetCameraPrerotationMatrix(prerotate_270);
+      break;
+    default:
+      render_graph->SetCameraPrerotationMatrix(kIdentityMat4);
+      break;
+  }
+}
+
 bool InitVulkan(android_app *app) {
   timing::timer.Time("Initialization", timing::OTHER, [app] {
     android_app_ctx = app;
@@ -454,15 +472,7 @@ bool InitVulkan(android_app *app) {
 
     render_graph = new RenderGraph();
 
-    render_graph->SetCameraAspectRatio(
-        device->GetDisplaySize().width / (float) device->GetDisplaySize().height);
-    auto horizontal_fov = glm::radians(60.0f);
-    auto vertical_fov =
-        static_cast<float>(2 * atan((0.5 * device->GetDisplaySize().height)
-                                        / (0.5 * device->GetDisplaySize().width
-                                            / tan(horizontal_fov / 2))));
-    render_graph->SetCameraFOV((render_graph->GetCameraAspectRatio() > 1.0f) ? horizontal_fov
-                                                                             : vertical_fov);
+    UpdateCameraParameters();
 
     VkAttachmentDescription color_description{
         .format = device->GetDisplayFormat(),
@@ -569,15 +579,7 @@ bool ResumeVulkan(android_app *app) {
     device->SetObjectName(reinterpret_cast<uint64_t>(device->GetDevice()),
                           VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, "TEST NAME: VULKAN DEVICE");
 
-    render_graph->SetCameraAspectRatio(
-        device->GetDisplaySize().width / (float) device->GetDisplaySize().height);
-    auto horizontal_fov = glm::radians(60.0f);
-    auto vertical_fov =
-        static_cast<float>(2 * atan((0.5 * device->GetDisplaySize().height)
-                                        / (0.5 * device->GetDisplaySize().width
-                                            / tan(horizontal_fov / 2))));
-    render_graph->SetCameraFOV((render_graph->GetCameraAspectRatio() > 1.0f) ? horizontal_fov
-                                                                             : vertical_fov);
+    UpdateCameraParameters();
 
     VkAttachmentDescription color_description{
         .format = device->GetDisplayFormat(),
@@ -729,7 +731,7 @@ void DeleteVulkan(void) {
 }
 
 bool VulkanDrawFrame(input::Data *input_data) {
-  if (window_resized) {
+  if (device->GetWindowResized()) {
     OnOrientationChange();
   }
   current_time = std::chrono::high_resolution_clock::now();
@@ -811,10 +813,6 @@ bool VulkanDrawFrame(input::Data *input_data) {
   return true;
 }
 
-void ResizeCallback(ANativeActivity *activity, ANativeWindow *window) {
-  window_resized = true;
-}
-
 void OnOrientationChange() {
   vkDeviceWaitIdle(device->GetDevice());
 
@@ -830,5 +828,6 @@ void OnOrientationChange() {
   CreateDepthBuffer();
   CreateFramebuffers(render_pass, depth_buffer.image_view);
   Button::SetScreenResolution(device->GetDisplaySizeOriented());
-  window_resized = false;
+  UpdateCameraParameters();
+  device->SetWindowResized(false);
 }
