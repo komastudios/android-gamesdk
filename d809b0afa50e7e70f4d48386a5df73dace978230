@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "dd4fb64e_d57959fe",
+        "filename": "src/tuningfork/jni_helper.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-01-16T16:56:03Z",
+      "side": 1,
+      "message": "It\u0027s useful to have around when debugging customer issues and doesn\u0027t cause any code bloat in Release builds. Why not keep it?",
+      "parentUuid": "136d416b_5f23ffcb",
+      "revId": "d809b0afa50e7e70f4d48386a5df73dace978230",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "09e3506d_3c301b15",
         "filename": "src/tuningfork/jni_helper.h",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "d809b0afa50e7e70f4d48386a5df73dace978230",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "79087b35_6ba57eb5",
+        "filename": "src/tuningfork/jni_helper.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-01-16T16:56:03Z",
+      "side": 1,
+      "message": "Yes, good spot!",
+      "parentUuid": "09e3506d_3c301b15",
+      "revId": "d809b0afa50e7e70f4d48386a5df73dace978230",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "0183c47b_19f25360",
+        "filename": "src/tuningfork/jni_wrap.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-01-16T16:56:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5f370634_48bba59a",
+      "revId": "d809b0afa50e7e70f4d48386a5df73dace978230",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5ffb4fb4_9d4cc1d0",
         "filename": "src/tuningfork/jni_wrap.h",
         "patchSetId": 2
@@ -67,6 +121,24 @@
       "revId": "d809b0afa50e7e70f4d48386a5df73dace978230",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1133cc25_24445a88",
+        "filename": "src/tuningfork/jni_wrap.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 340,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-01-16T16:56:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5ffb4fb4_9d4cc1d0",
+      "revId": "d809b0afa50e7e70f4d48386a5df73dace978230",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
