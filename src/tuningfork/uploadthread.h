@@ -58,7 +58,7 @@ class UploadThread : protected Runnable {
     }
 
     // Note that this won't include a valid experiment_id
-    static ExtraUploadInfo BuildExtraUploadInfo(const JniCtx& jni);
+    static ExtraUploadInfo BuildExtraUploadInfo();
 
 };
 

@@ -40,26 +40,24 @@ TFErrorCode Request::Send(const std::string& rpc_name, const std::string& reques
     return TFERROR_OK;
 }
 
-WebRequest::WebRequest(const JniCtx& jni, const Request& inner) :
-        Request(inner), jni_(jni) {
+WebRequest::WebRequest(const Request& inner) :
+        Request(inner) {
 }
 
 WebRequest::WebRequest(const WebRequest& rhs) :
-        Request(rhs), jni_(rhs.jni_) {
+        Request(rhs) {
 }
 
 
 TFErrorCode WebRequest::Send(const std::string& rpc_name, const std::string& request_json,
                  int& response_code, std::string& response_body) {
+    if (!jni::IsValid()) return TFERROR_JNI_BAD_ENV;
     auto uri = GetURL(rpc_name);
     ALOGI("Connecting to: %s", uri.c_str());
 
     using namespace jni;
 
-    Helper jni(jni_.Env(), jni_.Ctx());
-
-    // url = new URL(uri)
-    auto url = java::net::URL(uri, jni);
+    auto url = java::net::URL(uri);
     CHECK_FOR_JNI_EXCEPTION_AND_RETURN(TFERROR_JNI_EXCEPTION); // Malformed URL
 
     // Open connection and set properties
@@ -78,10 +76,10 @@ TFErrorCode WebRequest::Send(const std::string& rpc_name, const std::string& req
     connection.setRequestProperty( "Content-Type", "application/json");
 
     std::string package_name;
-    apk_utils::GetVersionCode(jni_, &package_name);
+    apk_utils::GetVersionCode(&package_name);
     if (!package_name.empty())
       connection.setRequestProperty( "X-Android-Package", package_name);
-    auto signature = apk_utils::GetSignature(jni_);
+    auto signature = apk_utils::GetSignature();
     if (!signature.empty())
       connection.setRequestProperty( "X-Android-Cert", signature);
 

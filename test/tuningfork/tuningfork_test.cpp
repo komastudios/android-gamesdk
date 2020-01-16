@@ -40,7 +40,6 @@ typedef std::string TuningForkLogEvent;
 
 static const std::string kCacheDir = "/data/local/tmp/tuningfork_test";
 const Duration s_test_wait_time = std::chrono::seconds(1);
-const JniCtx s_jni {NULL, NULL};
 
 class TestBackend : public Backend {
 public:
@@ -139,7 +138,7 @@ class TuningForkTest {
                      = std::make_shared<TestParamsLoader>())
             : test_backend_(cv_, rmutex_), params_loader_(params_loader),
               time_provider_(tick_size), extra_upload_info_({}) {
-        init_return_value_ = tuningfork::Init(settings, s_jni, &extra_upload_info_, &test_backend_,
+        init_return_value_ = tuningfork::Init(settings, &extra_upload_info_, &test_backend_,
                                               params_loader_.get(),
                                               &time_provider_);
         EXPECT_EQ(init_return_value_, TFERROR_OK) << "Bad Init";
