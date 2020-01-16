@@ -18,6 +18,7 @@
 #include "tuningfork/protobuf_util.h"
 #include "tuningfork_internal.h"
 #include "tuningfork_utils.h"
+#include "jni_helper.h"
 
 #include <cinttypes>
 #include <dlfcn.h>
@@ -40,15 +41,15 @@ namespace tuningfork {
 
 // Get the name of the tuning fork save file. Returns true if the directory
 //  for the file exists and false on error.
-bool GetSavedFileName(const JniCtx& jni, std::string& name) {
+bool GetSavedFileName(std::string& name) {
 
     // Create tuningfork/version folder if it doesn't exist
     std::stringstream tf_path_str;
-    tf_path_str << file_utils::GetAppCacheDir(jni) << "/tuningfork";
+    tf_path_str << file_utils::GetAppCacheDir() << "/tuningfork";
     if (!file_utils::CheckAndCreateDir(tf_path_str.str())) {
         return false;
     }
-    tf_path_str << "/V" << apk_utils::GetVersionCode(jni);
+    tf_path_str << "/V" << apk_utils::GetVersionCode();
     if (!file_utils::CheckAndCreateDir(tf_path_str.str())) {
         return false;
     }
@@ -58,9 +59,9 @@ bool GetSavedFileName(const JniCtx& jni, std::string& name) {
 }
 
 // Get a previously save fidelity param serialization.
-bool GetSavedFidelityParams(const JniCtx& jni, ProtobufSerialization& params) {
+bool GetSavedFidelityParams(ProtobufSerialization& params) {
     std::string save_filename;
-    if (GetSavedFileName(jni, save_filename)) {
+    if (GetSavedFileName(save_filename)) {
         CProtobufSerialization c_params;
         if (file_utils::LoadBytesFromFile(save_filename, &c_params)) {
             ALOGI("Loaded fps from %s (%u bytes)", save_filename.c_str(), c_params.size);
@@ -74,9 +75,9 @@ bool GetSavedFidelityParams(const JniCtx& jni, ProtobufSerialization& params) {
 }
 
 // Save fidelity params to the save file.
-bool SaveFidelityParams(const JniCtx& jni, const ProtobufSerialization& params) {
+bool SaveFidelityParams(const ProtobufSerialization& params) {
     std::string save_filename;
-    if (GetSavedFileName(jni, save_filename)) {
+    if (GetSavedFileName(save_filename)) {
         std::ofstream save_file(save_filename, std::ios::binary);
         if (save_file.good()) {
             save_file.write(reinterpret_cast<const char*>(params.data()), params.size());
@@ -89,9 +90,9 @@ bool SaveFidelityParams(const JniCtx& jni, const ProtobufSerialization& params) 
 }
 
 // Check if we have saved fidelity params.
-bool SavedFidelityParamsFileExists(const JniCtx& jni) {
+bool SavedFidelityParamsFileExists() {
     std::string save_filename;
-    if (GetSavedFileName(jni, save_filename)) {
+    if (GetSavedFileName(save_filename)) {
         return file_utils::FileExists(save_filename);
     }
     return false;
@@ -122,8 +123,8 @@ TFErrorCode StartFidelityParamDownloadThread(const ProtobufSerialization& defaul
                                              params, waitTime.count());
             if (err==TFERROR_OK) {
                 ALOGI("Got fidelity params from server");
-                if (tuningfork::GetJniCtx().IsValid())
-                    SaveFidelityParams(tuningfork::GetJniCtx(), params);
+                if (jni::IsValid())
+                    SaveFidelityParams(params);
                 CProtobufSerialization cpbs;
                 ToCProtobufSerialization(params, cpbs);
                 fidelity_params_callback(&cpbs);
@@ -148,7 +149,8 @@ TFErrorCode StartFidelityParamDownloadThread(const ProtobufSerialization& defaul
                 waitTime *= 2; // back off
             }
         }
-        tuningfork::GetJniCtx().Detach();
+        if (jni::IsValid())
+            jni::DetachThread();
     });
     return TFERROR_OK;
 }
@@ -156,12 +158,11 @@ TFErrorCode StartFidelityParamDownloadThread(const ProtobufSerialization& defaul
 // Load fidelity params from assets/tuningfork/<filename>
 // Ownership of serializations is passed to the caller: call
 //  CProtobufSerialization_Free to deallocate any memory.
-TFErrorCode FindFidelityParamsInApk(const JniCtx& jni,
-                                    const std::string& filename,
+TFErrorCode FindFidelityParamsInApk(const std::string& filename,
                                     ProtobufSerialization& fp) {
     std::stringstream full_filename;
     full_filename << "tuningfork/" << filename;
-    if (!apk_utils::GetAssetAsSerialization(jni, full_filename.str().c_str(), fp)) {
+    if (!apk_utils::GetAssetAsSerialization(full_filename.str().c_str(), fp)) {
         ALOGE("Can't find %s", full_filename.str().c_str());
         return TFERROR_NO_FIDELITY_PARAMS;
     }
@@ -178,12 +179,12 @@ std::unique_ptr<ProtobufSerialization> GetTrainingParams(const Settings& setting
     return training_params;
 }
 
-TFErrorCode GetDefaultsFromAPKAndDownloadFPs(const Settings& settings, const JniCtx& jni) {
+TFErrorCode GetDefaultsFromAPKAndDownloadFPs(const Settings& settings) {
     ProtobufSerialization default_params;
     // Use the saved params as default, if they exist
-    if (SavedFidelityParamsFileExists(jni)) {
+    if (SavedFidelityParamsFileExists()) {
         ALOGI("Using saved default params");
-        GetSavedFidelityParams(jni, default_params);
+        GetSavedFidelityParams(default_params);
     } else {
         // Use the training mode params if they are present
         auto training_params = GetTrainingParams(settings);
@@ -194,9 +195,9 @@ TFErrorCode GetDefaultsFromAPKAndDownloadFPs(const Settings& settings, const Jni
             // Try to get the parameters from file.
             if (settings.default_fidelity_parameters_filename.empty())
                 return TFERROR_INVALID_DEFAULT_FIDELITY_PARAMS;
-            auto err = FindFidelityParamsInApk(jni,
-                                           settings.default_fidelity_parameters_filename.c_str(),
-                                           default_params);
+            auto err = FindFidelityParamsInApk(
+                settings.default_fidelity_parameters_filename.c_str(),
+                default_params);
             if (err!=TFERROR_OK)
                 return err;
             ALOGI("Using file %s for default params",
@@ -248,9 +249,9 @@ TFErrorCode TuningFork_findFidelityParamsInApk(JNIEnv* env, jobject context,
                                                const char* filename,
                                                CProtobufSerialization* c_fps) {
     if (c_fps==nullptr) return TFERROR_BAD_PARAMETER;
-    JniCtx jni(env, context);
+    jni::Init(env, context);
     ProtobufSerialization fps;
-    auto err = FindFidelityParamsInApk(jni, filename, fps);
+    auto err = FindFidelityParamsInApk(filename, fps);
     if (err != TFERROR_OK) return err;
     ToCProtobufSerialization(fps, *c_fps);
     return TFERROR_OK;
@@ -262,13 +263,13 @@ TFErrorCode TuningFork_setUploadCallback(UploadCallback cbk) {
 
 TFErrorCode TuningFork_saveOrDeleteFidelityParamsFile(JNIEnv* env, jobject context,
                                                       const CProtobufSerialization* fps) {
-    JniCtx jni(env, context);
+    jni::Init(env, context);
     if(fps) {
-        if (SaveFidelityParams(jni, ToProtobufSerialization(*fps)))
+        if (SaveFidelityParams(ToProtobufSerialization(*fps)))
             return TFERROR_OK;
     } else {
         std::string save_filename;
-        if (GetSavedFileName(jni, save_filename)) {
+        if (GetSavedFileName(save_filename)) {
             if (file_utils::DeleteFile(save_filename))
                 return TFERROR_OK;
         }
