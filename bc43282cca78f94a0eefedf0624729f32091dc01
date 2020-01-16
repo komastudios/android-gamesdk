@@ -16,6 +16,24 @@
       "revId": "bc43282cca78f94a0eefedf0624729f32091dc01",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "724c2ca2_2a0b967c",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-01-16T17:20:19Z",
+      "side": 1,
+      "message": "Yea I tried it, but the change to render_graph would be a little large and outside the scope of this CL specifically (since currently the Camera struct it private to RenderGraph) so I was thinking about doing it in another CL later",
+      "parentUuid": "ff440c1c_d276e7a6",
+      "revId": "bc43282cca78f94a0eefedf0624729f32091dc01",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
