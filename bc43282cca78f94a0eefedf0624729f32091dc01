@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ff440c1c_d276e7a6",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-01-16T00:47:57Z",
+      "side": 1,
+      "message": "We should consider consolidating these matrices into a MVP struct or just pass the camera to the mesh update.",
+      "revId": "bc43282cca78f94a0eefedf0624729f32091dc01",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
