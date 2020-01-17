@@ -1,0 +1,31 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000001392505",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1205358?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "235a681f_063dd781",
+        "filename": "bender/bender-base/external/vgc/vcg/math/camera.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-01-17T17:01:07Z",
+      "side": 1,
+      "message": "This file contains a set of conflict markers.If this is a false alarm, add IGNORE_MERGE_CONFLICT_CHECK\u003d\u003d\u003creason\u003e to your commit message.",
+      "range": {
+        "startLine": 94,
+        "startChar": 1,
+        "endLine": 94,
+        "endChar": 7
+      },
+      "revId": "519a4281c6d48f8b8354986529a4e4ff053ea07e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
