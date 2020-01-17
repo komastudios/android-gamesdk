@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2a3c2d93_53525cb0",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/FpsCalculator.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-17T19:32:48Z",
+      "side": 1,
+      "message": "Good call.",
+      "revId": "162e082507ea594924229938ea29ed53827b4237",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f88b8b01_9442d4f9",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/Preprocessor.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-17T19:32:48Z",
+      "side": 1,
+      "message": "Excellent",
+      "revId": "162e082507ea594924229938ea29ed53827b4237",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
