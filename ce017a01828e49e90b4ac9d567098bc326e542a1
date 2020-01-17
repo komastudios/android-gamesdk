@@ -16,6 +16,24 @@
       "revId": "ce017a01828e49e90b4ac9d567098bc326e542a1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4676c27f_f7dc777f",
+        "filename": "src/tuningfork/jni_helper.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-01-17T10:31:03Z",
+      "side": 1,
+      "message": "Thanks, done.",
+      "parentUuid": "520cf1a6_a48628e5",
+      "revId": "ce017a01828e49e90b4ac9d567098bc326e542a1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
