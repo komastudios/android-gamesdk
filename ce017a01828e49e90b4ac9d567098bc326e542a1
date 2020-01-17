@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "520cf1a6_a48628e5",
+        "filename": "src/tuningfork/jni_helper.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-01-17T09:54:19Z",
+      "side": 1,
+      "message": "You\u0027re not initializing c_str_?",
+      "revId": "ce017a01828e49e90b4ac9d567098bc326e542a1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
