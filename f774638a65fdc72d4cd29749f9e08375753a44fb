@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "765e6bc6_01f9f96b",
+        "filename": "cert/test/reporting/lib/build.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-17T21:16:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d526e451_e7b5e1e9",
+      "revId": "f774638a65fdc72d4cd29749f9e08375753a44fb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7839c248_a7b3a20b",
         "filename": "cert/test/reporting/lib/tasks_postflight.py",
         "patchSetId": 5
@@ -30,6 +48,24 @@
       "writtenOn": "2020-01-13T18:42:03Z",
       "side": 1,
       "message": "This is good technique to learn - I\u0027ll be using this from now on. (self-resolved)",
+      "revId": "f774638a65fdc72d4cd29749f9e08375753a44fb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b21351d4_56e400a2",
+        "filename": "cert/test/reporting/lib/tasks_postflight.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-17T21:16:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7839c248_a7b3a20b",
       "revId": "f774638a65fdc72d4cd29749f9e08375753a44fb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false

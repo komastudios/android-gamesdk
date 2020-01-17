@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "65752ed5_759cd229",
+        "filename": "cert/test/reporting/lib/summary_formatters/formatter.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-17T21:16:44Z",
+      "side": 1,
+      "message": "Fantastic! (self resolved)",
+      "revId": "f97c1e582f8aed4f29cf8b5637fda92cd3fc2caa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
