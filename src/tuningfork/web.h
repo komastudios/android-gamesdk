@@ -25,9 +25,8 @@ const uint64_t HISTOGRAMS_PAUSED = 0;
 const uint64_t HISTOGRAMS_UPLOADING = 1;
 
 class WebRequest : public Request {
-    JniCtx jni_;
   public:
-    WebRequest(const JniCtx& jni, const Request& inner);
+    WebRequest(const Request& inner);
     WebRequest(const WebRequest&);
     WebRequest(WebRequest&& rq) = delete;
     WebRequest& operator=(const WebRequest& rq) = delete;

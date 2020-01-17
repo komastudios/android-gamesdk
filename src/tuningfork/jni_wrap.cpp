@@ -16,18 +16,13 @@
 
 #include "jni_wrap.h"
 
-
 namespace tuningfork {
 
 namespace jni {
 
-namespace java {
-
-Class Object::getClass() const {
-    return {obj_.clz, jni_};
+android::content::Context AppContext() {
+    return Env()->NewLocalRef(AppContextGlobalRef());
 }
-
-} // namespace java
 
 } // namespace jni
 
