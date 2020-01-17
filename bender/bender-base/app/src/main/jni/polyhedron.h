@@ -10,7 +10,7 @@
 
 #import "vulkan_wrapper.h"
 #import "bender_kit.h"
-#import "mesh.h"
+#import "geometry.h"
 #import "shader_state.h"
 
 bool populatePolyhedron(std::vector<float> &vertex_data, std::vector<uint16_t> &index_data, int faces);

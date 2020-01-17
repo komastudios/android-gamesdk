@@ -15,7 +15,8 @@ namespace benderkit {
 
     class VertexFormat {
     public:
-        VertexFormat(std::initializer_list<std::initializer_list<VertexElement>> format);
+        VertexFormat(std::initializer_list<std::initializer_list<VertexElement>> format,
+                     std::initializer_list<VkVertexInputRate> input_rates);
 
         VertexFormat(VertexFormat&& other)
                 : bindings_(std::move(other.bindings_))

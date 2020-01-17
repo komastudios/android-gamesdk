@@ -224,12 +224,13 @@ Font::~Font() {
 }
 
 void Font::CreateFontShaders(android_app &android_app_ctx) {
-    benderkit::VertexFormat vertex_format{
+    benderkit::VertexFormat vertex_format({
             {
                     benderkit::VertexElement::float2,
                     benderkit::VertexElement::float2,
             },
-    };
+    },
+            { VK_VERTEX_INPUT_RATE_VERTEX });
     shader_ = std::make_shared<ShaderState>("sdf", vertex_format, android_app_ctx,
                                             renderer_.GetVulkanDevice());
 }
