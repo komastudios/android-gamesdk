@@ -9,7 +9,7 @@
 #include "texture.h"
 #include "material.h"
 #include "geometry.h"
-#include "mesh.h"
+#include "mesh_renderer.h"
 #include "device.h"
 #include "renderer.h"
 #include "input.h"
@@ -26,8 +26,8 @@ class RenderGraph {
   };
 
  public:
-  std::vector<std::shared_ptr<Mesh>> GetAllMeshes() { return meshes_; }
-  std::shared_ptr<Mesh> GetLastMesh() {
+  std::vector<std::shared_ptr<MeshRenderer>> GetAllMeshes() { return meshes_; }
+  std::shared_ptr<MeshRenderer> GetLastMesh() {
     if (meshes_.size() > 0) {
       return meshes_.back();
     } else {
@@ -35,8 +35,8 @@ class RenderGraph {
     }
   }
 
-  void AddMesh(std::shared_ptr<Mesh> new_mesh) { meshes_.push_back(new_mesh); }
-  void AddMeshes(std::vector<std::shared_ptr<Mesh>> new_meshes) {
+  void AddMesh(std::shared_ptr<MeshRenderer> new_mesh) { meshes_.push_back(new_mesh); }
+  void AddMeshes(std::vector<std::shared_ptr<MeshRenderer>> new_meshes) {
     meshes_.insert(meshes_.end(), new_meshes.begin(), new_meshes.end());
   }
 
@@ -67,7 +67,7 @@ class RenderGraph {
 
  private:
   Camera camera_;
-  std::vector<std::shared_ptr<Mesh>> meshes_;
+  std::vector<std::shared_ptr<MeshRenderer>> meshes_;
 };
 
 #endif //BENDER_BASE_APP_SRC_MAIN_JNI_RENDER_GRAPH_H_

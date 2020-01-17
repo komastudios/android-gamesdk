@@ -38,7 +38,7 @@ add_library(base SHARED
         ${SRC_DIR}/texture.cc
         ${SRC_DIR}/uniform_buffer.cc
         ${SRC_DIR}/material.cc
-        ${SRC_DIR}/mesh.cc
+        ${SRC_DIR}/mesh_renderer.cc
         ${SRC_DIR}/polyhedron.cc
         ${SRC_DIR}/font.cc
         ${SRC_DIR}/input.cc

@@ -28,7 +28,7 @@
 #include "renderer.h"
 #include "shader_state.h"
 #include "polyhedron.h"
-#include "mesh.h"
+#include "mesh_renderer.h"
 #include "texture.h"
 #include "font.h"
 #include "uniform_buffer.h"
@@ -117,7 +117,7 @@ void StrafeDown() {
   render_graph->TranslateCamera(-up * (20.0f / device->GetDisplaySize().height));
 }
 void CreateInstance() {
-  render_graph->AddMesh(std::make_shared<Mesh>(renderer,
+  render_graph->AddMesh(std::make_shared<MeshRenderer>(renderer,
                                                baseline_materials[materials_idx],
                                                geometries[poly_faces_idx]));
   render_graph->GetLastMesh()->Translate(glm::vec3(rand() % 3,
@@ -132,7 +132,7 @@ void ChangePolyhedralComplexity() {
   auto all_meshes = render_graph->GetAllMeshes();
   for (uint32_t i = 0; i < all_meshes.size(); i++) {
     all_meshes[i] =
-        std::make_shared<Mesh>(*all_meshes[i], geometries[poly_faces_idx]);
+        std::make_shared<MeshRenderer>(*all_meshes[i], geometries[poly_faces_idx]);
   }
   render_graph->ClearMeshes();
   render_graph->AddMeshes(all_meshes);
@@ -142,7 +142,7 @@ void ChangeMaterialComplexity() {
   auto all_meshes = render_graph->GetAllMeshes();
   for (uint32_t i = 0; i < all_meshes.size(); i++) {
     all_meshes[i] =
-        std::make_shared<Mesh>(*all_meshes[i], baseline_materials[materials_idx]);
+        std::make_shared<MeshRenderer>(*all_meshes[i], baseline_materials[materials_idx]);
   }
   render_graph->ClearMeshes();
   render_graph->AddMeshes(all_meshes);
@@ -369,12 +369,30 @@ void HandleInput(input::Data *input_data) {
 }
 
 void CreateShaderState() {
-  VertexFormat vertex_format{{
+  VertexFormat vertex_format({{
                                  VertexElement::float3,
                                  VertexElement::float3,
                                  VertexElement::float2,
+                              },
+                              {
+                                 VertexElement::float4,
+                                 VertexElement::float4,
+                                 VertexElement::float4,
+                                 VertexElement::float4,
+                                 VertexElement::float4,
+                                 VertexElement::float4,
+                                 VertexElement::float4,
+                                 VertexElement::float4,
+                                 VertexElement::float4,
+                                 VertexElement::float4,
+                                 VertexElement::float4,
+                                 VertexElement::float4,
+                              },
                              },
-  };
+                             {
+                                VK_VERTEX_INPUT_RATE_VERTEX,
+                                VK_VERTEX_INPUT_RATE_INSTANCE,
+                             });
 
   shaders =
       std::make_shared<ShaderState>("mesh", vertex_format, *android_app_ctx, device->GetDevice());
@@ -550,7 +568,7 @@ bool InitVulkan(android_app *app) {
       CreateGeometries();
 
       timing::timer.Time("Create Polyhedron", timing::OTHER, [] {
-        render_graph->AddMesh(std::make_shared<Mesh>(renderer,
+        render_graph->AddMesh(std::make_shared<MeshRenderer>(renderer,
                                                      baseline_materials[materials_idx],
                                                      geometries[poly_faces_idx]));
       });

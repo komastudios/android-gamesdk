@@ -28,8 +28,12 @@ constexpr uint32_t VertexElementToSize(VertexElement element) {
   return 0;
 }
 
-VertexFormat::VertexFormat(std::initializer_list<std::initializer_list<VertexElement>> format) {
+VertexFormat::VertexFormat(std::initializer_list<std::initializer_list<VertexElement>> format,
+        std::initializer_list<VkVertexInputRate> input_rates) {
+  assert(format.size() == input_rates.size());
+
   uint32_t binding = 0;
+  auto input_rate = input_rates.begin();
 
   for (auto stream : format) {
     uint32_t offset = 0;
@@ -51,7 +55,7 @@ VertexFormat::VertexFormat(std::initializer_list<std::initializer_list<VertexEle
     bindings_.push_back({
       .binding = binding,
       .stride = offset,
-      .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,  // TODO: support different input rates for instancing
+      .inputRate = *input_rate++,
       });
 
     ++binding;
