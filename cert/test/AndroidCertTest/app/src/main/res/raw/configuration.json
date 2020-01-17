@@ -9,6 +9,28 @@
   ],
   "stress_tests": [
     {
+      "enabled": true,
+      "name": "GLES3 External Framebuffer",
+      "description": "",
+      "duration": "5s",
+      "data_gatherer": {
+        "id": "ExternalBufferGLES3Operation",
+        "configuration": {}
+      },
+      "stressors": []
+    },
+    {
+      "enabled": true,
+      "name": "Get GLES3 Extensions",
+      "description": "Gets a list of GLES and EGL extensions available on the device",
+      "duration": "0s",
+      "data_gatherer": {
+        "id": "GetExtensionsGLES3Operation",
+        "configuration": {}
+      },
+      "stressors": []
+    },
+    {
       "enabled": false,
       "name": "FakeOperation",
       "description": "Fake operation for integration testing",

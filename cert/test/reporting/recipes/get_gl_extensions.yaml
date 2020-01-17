@@ -1,0 +1,25 @@
+build:
+  clean: false
+  configuration: recipes/configurations/get_gl_extensions.json
+
+systrace:
+  enabled: false
+  categories: "sched freq idle am wm gfx view binder_driver hal dalvik input res"
+  keywords:
+    - MonitorOperation
+
+deployment:
+  ftl:
+    test: test-robo
+    all-physical-devices: true
+    flags:
+      project: gamesdk-testing
+      format: json
+    args:
+      test-robo:
+        type: game-loop
+        timeout: 60 # 1 minute
+
+summary:
+  enabled: true
+  format: md

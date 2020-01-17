@@ -76,6 +76,7 @@ find_library(log-lib
 add_definitions(-DVK_USE_PLATFORM_ANDROID_KHR)
 
 add_library(${PROJECT_NAME} SHARED
+        ${ANDROID_NDK}/sources/third_party/vulkan/src/common/vulkan_wrapper.cpp
         # Java-Native glue & super-fundamental code
         native-lib.cpp
 
@@ -110,7 +111,9 @@ add_library(${PROJECT_NAME} SHARED
         operations/gl/BufferStorageGLES3Operation.cpp
         operations/gl/DepthClearGLES3Operation.cpp
         operations/gl/DualSourceBlendingGLES3Operation.cpp
+        operations/gl/ExternalBufferGLES3Operation.cpp
         operations/gl/FillRateGLES3Operation.cpp
+        operations/gl/GetExtensionsGLES3Operation.cpp
         operations/gl/HalfFloatPrecisionGLES3Operation.cpp
         operations/gl/HelloGLES3Operation.cpp
         operations/gl/MarchingCubesGLES3Operation.cpp
