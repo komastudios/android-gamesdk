@@ -18,6 +18,8 @@
 #include "Error.hpp"
 #include "Log.hpp"
 
+#include <EGL/egl.h>
+
 namespace ancer::glh {
 namespace {
 constexpr Log::Tag TAG{"GLHelpers"};
@@ -242,6 +244,40 @@ glm::mat4 Ortho2d(float left, float top, float right, float bottom) {
   );
 
   return result*glm::scale(glm::mat4(1), glm::vec3(1, -1, 1));
+}
+
+std::vector<std::string> GetGlExtensions() {
+  std::vector<std::string> extensions;
+
+  GLint count = 0;
+  glGetIntegerv(GL_NUM_EXTENSIONS, &count);
+  for (GLint i = 0; i < count; ++i) {
+    const GLubyte *s = glGetStringi(GL_EXTENSIONS, i);
+    extensions.push_back(reinterpret_cast<const char *>(s));
+  }
+
+  return extensions;
+}
+
+std::vector<std::string> GetEglExtensions() {
+  std::vector<std::string> extensions;
+
+  const EGLDisplay display = eglGetCurrentDisplay();
+  const char *s = eglQueryString(display, EGL_EXTENSIONS);
+  const size_t s_len = strlen(s);
+
+  size_t begin = 0;
+  for (size_t i = 0; i < s_len + 1; ++i) {
+    if (isspace(s[i]) || s[i] == '\0') {
+      const std::string str(s + begin, i - begin);
+      begin = i + 1;
+      if (!str.empty()) {
+        extensions.push_back(str);
+      }
+    }
+  }
+
+  return extensions;
 }
 
 bool IsExtensionSupported(const char *gl_extension) {
