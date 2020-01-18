@@ -148,39 +148,60 @@ class PlaneVolumeSampler : public IVolumeSampler {
 //==============================================================================
 
 enum class ThreadAffinitySetup {
-  One, OnePerBigCore, OnePerLittleCore, OnePerCore
+  OneBigCore, OneLittleCore, AllBigCores, AllLittleCores, AllCores
 };
 
 constexpr const char* ThreadAffinitySetupNames[] = {
-    "One", "OnePerBigCore", "OnePerLittleCore", "OnePerCore"
+    "OneBigCore", "OneLittleCore", "AllBigCores", "AllLittleCores", "AllCores"
 };
 
 constexpr auto ToAffinity(ThreadAffinitySetup setup) {
   switch (setup) {
-    case ThreadAffinitySetup::OnePerBigCore: return ThreadAffinity::kBigCore;
-    case ThreadAffinitySetup::OnePerLittleCore: return ThreadAffinity::kLittleCore;
-    case ThreadAffinitySetup::One:
-    case ThreadAffinitySetup::OnePerCore: return ThreadAffinity::kAnyCore;
+    case ThreadAffinitySetup::OneBigCore:
+    case ThreadAffinitySetup::AllBigCores:return ThreadAffinity::kBigCore;
+    case ThreadAffinitySetup::OneLittleCore:
+    case ThreadAffinitySetup::AllLittleCores:return ThreadAffinity::kLittleCore;
+    case ThreadAffinitySetup::AllCores: return ThreadAffinity::kAnyCore;
     default:FatalError(TAG, "Unknown thread setup %d", (int) setup);
   }
 }
 
+struct configuration_thread_setup {
+  ThreadAffinitySetup thread_setup;
+};
+
+JSON_CONVERTER(configuration_thread_setup) {
+  JSON_REQENUM(thread_setup, ThreadAffinitySetupNames);
+}
+
 struct configuration {
-  Milliseconds sleep_per_iteration_min = 0ms;
-  Milliseconds sleep_per_iteration_max = 0ms;
-  Milliseconds permutation_execution_duration = 10s;
+  std::vector<configuration_thread_setup> thread_setups = {
+      {ThreadAffinitySetup::OneBigCore},
+      {ThreadAffinitySetup::AllBigCores},
+      {ThreadAffinitySetup::OneLittleCore},
+      {ThreadAffinitySetup::AllLittleCores},
+      {ThreadAffinitySetup::AllCores}
+  };
+  Duration warm_up_time = 5s;
+  Duration sleep_per_iteration_min = 0ms;
+  Duration sleep_per_iteration_max = 0ms;
+  Duration sleep_per_iteration_increment = 500000ns; // 0.5ms
+  Duration permutation_execution_duration = 10s;
 };
 
 JSON_CONVERTER(configuration) {
+  JSON_OPTVAR(warm_up_time);
+  JSON_REQVAR(thread_setups);
   JSON_REQVAR(sleep_per_iteration_min);
   JSON_REQVAR(sleep_per_iteration_max);
+  JSON_REQVAR(sleep_per_iteration_increment);
   JSON_REQVAR(permutation_execution_duration);
 }
 
 struct execution_configuration {
   ThreadAffinitySetup thread_setup;
   bool pinned;
-  Milliseconds sleep_per_iteration;
+  Duration sleep_per_iteration;
 };
 
 JSON_CONVERTER(execution_configuration) {
@@ -189,18 +210,18 @@ JSON_CONVERTER(execution_configuration) {
   JSON_REQVAR(sleep_per_iteration);
 }
 
+/*
+ * Generate all permutations of a provided configuration
+ */
 std::vector<execution_configuration> Permute(const configuration config) {
   std::vector<execution_configuration> permutations;
-  auto thread_setups = std::vector<ThreadAffinitySetup>{
-      ThreadAffinitySetup::One, ThreadAffinitySetup::OnePerBigCore,
-      ThreadAffinitySetup::OnePerLittleCore, ThreadAffinitySetup::OnePerCore};
-
-  for (auto thread_setup : thread_setups) {
-    for (auto i = 0; i < 2; i++) {
+  for (auto thread_setup : config.thread_setups) {
+    for (auto i = 0; i < 2; i++) { // (0: floating, 1: pinned)
       bool affinity = i == 1;
-      for (Milliseconds ms = config.sleep_per_iteration_min;
-           ms < config.sleep_per_iteration_max; ms += 1ms) {
-        permutations.push_back({thread_setup, affinity, ms});
+      for (Duration dur = config.sleep_per_iteration_min;
+           dur <= config.sleep_per_iteration_max;
+           dur += config.sleep_per_iteration_increment) {
+        permutations.push_back({thread_setup.thread_setup, affinity, dur});
       }
     }
   }
@@ -344,7 +365,24 @@ class MarchingCubesGLES3Operation : public BaseGLES3Operation {
       _marcher->March();
       auto end_time = SteadyClock::now();
 
-      _march_durations.push_back(end_time - start_time);
+      if (_warming_up) {
+        if (!_recorded_first_step_timestamp) {
+          Log::D(TAG, "Warm up starting");
+          _first_step_timestamp = SteadyClock::now();
+          _recorded_first_step_timestamp = true;
+        } else {
+          auto elapsed_since_first_step =
+              SteadyClock::now() - _first_step_timestamp;
+          if (elapsed_since_first_step >= _configuration.warm_up_time) {
+            Log::D(TAG, "Warm up finished, will start recording perf timings");
+            _warming_up = false;
+          }
+        }
+      }
+
+      if (!_warming_up) {
+        _march_durations.push_back(end_time - start_time);
+      }
     }
   }
 
@@ -424,7 +462,10 @@ class MarchingCubesGLES3Operation : public BaseGLES3Operation {
   void BuildExecConfiguration(execution_configuration ex_config) {
     auto affinity = ToAffinity(ex_config.thread_setup);
     auto max_thread_count = NumCores(affinity);
-    if (ex_config.thread_setup == ThreadAffinitySetup::One) {
+
+    if (ex_config.thread_setup == ThreadAffinitySetup::OneBigCore ||
+        ex_config.thread_setup == ThreadAffinitySetup::OneLittleCore
+        ) {
       max_thread_count = 1;
     }
 
@@ -452,6 +493,10 @@ class MarchingCubesGLES3Operation : public BaseGLES3Operation {
     // now create the marcher
     _marcher = std::make_unique<marching_cubes::ThreadedMarcher>(
         _volume, tcs, std::move(pool), _volume_transform, false);
+
+    // trigger a new warmup for the next test pass
+    _warming_up = true;
+    _recorded_first_step_timestamp = false;
   }
 
   /*
@@ -507,6 +552,10 @@ class MarchingCubesGLES3Operation : public BaseGLES3Operation {
   size_t _num_voxels_marched = 0;
   size_t _num_threads_used = 0;
   std::vector<Duration> _march_durations;
+
+  bool _warming_up = true;
+  bool _recorded_first_step_timestamp = false;
+  Timestamp _first_step_timestamp{};
 };
 
 EXPORT_ANCER_OPERATION(MarchingCubesGLES3Operation)

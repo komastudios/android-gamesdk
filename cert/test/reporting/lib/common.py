@@ -35,6 +35,14 @@ def seconds_to_nanoseconds(seconds):
     """Convert seconds to nanoseconds"""
     return seconds * 1e9
 
+def nanoseconds_to_milliseconds(nano_seconds):
+    """Convert nano seconds to milliseconds"""
+    return nano_seconds / 1e6
+
+
+def milliseconds_to_nanoseconds(milliseconds):
+    """Convert milliseconds to nanoseconds"""
+    return milliseconds * 1e6
 
 # ------------------------------------------------------------------------------
 

@@ -22,7 +22,9 @@ android {
             cmake {
                 version "3.10.2"
                 // make gamesdk location available to our cmake build
-                arguments = ["-DGAMESDK_DIR=${gamesdkDir}".toString()]
+                arguments = [
+                        "-DGAMESDK_DIR=${gamesdkDir}".toString()
+                ]
             }
         }
     }
@@ -32,12 +34,24 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 
                 'proguard-rules.pro'
         }
+
+        optimizedNative {
+            initWith debug
+
+            externalNativeBuild {
+                cmake {
+                    // compile native-lib optimized
+                    arguments << '-DCMAKE_BUILD_TYPE:STRING=Release'
+                }
+            }
+        }
     }
+
     compileOptions {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
     }
-    flavorDimensions 'mode'
+
     externalNativeBuild {
         cmake {
             version "3.10.2"
