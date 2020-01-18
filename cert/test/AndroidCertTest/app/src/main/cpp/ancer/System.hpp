@@ -136,9 +136,9 @@ namespace ancer {
 
     // Sets our affinity to a specific core in the given group.
     // An index of -1 acts as SetThreadAffinity(affinity).
-    void SetThreadAffinity(int index, ThreadAffinity = ThreadAffinity::kAnyCore);
+    bool SetThreadAffinity(int index, ThreadAffinity = ThreadAffinity::kAnyCore);
     // Sets our affinity to any/all of the cores in a group.
-    void SetThreadAffinity(ThreadAffinity affinity);
+    bool SetThreadAffinity(ThreadAffinity affinity);
 
     [[nodiscard]] std::string GetCpuInfo();
 

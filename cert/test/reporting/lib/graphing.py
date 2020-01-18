@@ -101,8 +101,11 @@ def load_suites(report_file) -> List[Suite]:
         suite = Suite(suite_name, build, data, report_file)
 
         suite.handler = create_suite_handler(suite)
-        if not suite.handler:
-            print(f"Found no handler for suite_id {suite.name}")
+        if suite.name and not suite.handler:
+            print(
+                f"[INFO]\tFound no handler for suite_id" \
+                f" \"{suite.name}\" in \"{report_file}\""
+            )
 
         suites.append(suite)
 

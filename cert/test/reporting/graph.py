@@ -65,10 +65,10 @@ def main():
     elif path.is_dir():
         # this is a batch
         reports = [Path(f) for f in glob.glob(f"{path}/*.json")]
-        generate_summary(reports, doc_fmt, dpi)
+        generate_summary(reports, [], doc_fmt, dpi)
 
     elif path.suffix == ".json":
-        generate_summary([path], doc_fmt, dpi)
+        generate_summary([path], [], doc_fmt, dpi)
 
 
 if __name__ == "__main__":
