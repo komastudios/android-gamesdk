@@ -39,6 +39,7 @@ namespace {
     // Acceptable names for support time types.
     // The first entry should be some sort of full name since that's what we use for output.
     template <typename Period> constexpr std::string_view time_names[] = {};
+    template <> constexpr std::string_view time_names<Minutes>[] = {"minutes", "m", "min"};
     template <> constexpr std::string_view time_names<Seconds>[] = {"seconds", "s", "sec"};
     template <> constexpr std::string_view time_names<Milliseconds>[] = {"milliseconds", "ms"};
     template <> constexpr std::string_view time_names<Nanoseconds>[] = {"nanoseconds", "ns"};
@@ -94,6 +95,7 @@ namespace {
 
     template <typename T>
     T TimeFromString(const std::string& str) {
+        if (auto from_min = TryGetTimeStringAndCast<T, Minutes>(str)) return *from_min;
         if (auto from_sec = TryGetTimeStringAndCast<T, Seconds>(str)) return *from_sec;
         if (auto from_ms = TryGetTimeStringAndCast<T, Milliseconds>(str)) return *from_ms;
         if (auto from_ns = TryGetTimeStringAndCast<T, Nanoseconds>(str)) return *from_ns;
@@ -115,6 +117,8 @@ namespace nlohmann {
     { j = std::to_string(t.count()).append(" ").append(time_names<Type>[0]); } \
     void adl_serializer<Type>::from_json(const json& j, Type& t) \
     { t = TimeFromString<Type>(j.get<std::string>()); }
+
+    TIME_SERIALIZER(Minutes)
 
     TIME_SERIALIZER(Seconds)
 

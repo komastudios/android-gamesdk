@@ -10,17 +10,17 @@
     "stress_tests": [
         {
             "enabled": true,
-            "name": "MC AllbigCores (Floating, Swappy)",
-            "description": "Tests marching cubes using all big cores, floating threads, swappygl",
+            "name": "MC AllbigCores (Pinned, GLSV)",
+            "description": "Tests marching cubes using all big cores, pinned threads, glsurfaceview",
             "duration": "60m",
-            "host": "SwappyGLHostActivity",
+            "host": "GLSurfaceViewHostActivity",
             "data_gatherer": {
                 "id": "MarchingCubesGLES3Operation",
                 "configuration": {
                     "thread_setups": [
                         {
                             "thread_setup": "AllBigCores",
-                            "pinning": "Floating"
+                            "pinning": "Pinned"
                         }
                     ],
                     "warm_up_time": "5s",

@@ -10,8 +10,8 @@
     "stress_tests": [
         {
             "enabled": true,
-            "name": "MC AllbigCores (Floating, Swappy)",
-            "description": "Tests marching cubes using all big cores, floating threads, swappygl",
+            "name": "MC AllLittleCores (Floating, Swappy)",
+            "description": "Tests marching cubes using all little cores, floating threads, swappygl",
             "duration": "60m",
             "host": "SwappyGLHostActivity",
             "data_gatherer": {
@@ -19,7 +19,7 @@
                 "configuration": {
                     "thread_setups": [
                         {
-                            "thread_setup": "AllBigCores",
+                            "thread_setup": "AllLittleCores",
                             "pinning": "Floating"
                         }
                     ],

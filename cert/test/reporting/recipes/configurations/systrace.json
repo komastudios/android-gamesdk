@@ -10,24 +10,22 @@
     "stress_tests": [
         {
             "enabled": true,
-            "name": "MC AllbigCores (Floating, Swappy)",
-            "description": "Tests marching cubes using all big cores, floating threads, swappygl",
-            "duration": "60m",
+            "name": "Marching Cubes Permutations Test (GLSV)",
+            "description": "Tests marching cubes algorithm in a lot of permutations",
+            "duration": "2m",
             "host": "SwappyGLHostActivity",
             "data_gatherer": {
                 "id": "MarchingCubesGLES3Operation",
                 "configuration": {
                     "thread_setups": [
                         {
-                            "thread_setup": "AllBigCores",
-                            "pinning": "Floating"
+                            "thread_setup": "AllBigCores"
                         }
                     ],
-                    "warm_up_time": "5s",
                     "sleep_per_iteration_min": "0ms",
-                    "sleep_per_iteration_max": "1.5ms",
-                    "sleep_per_iteration_increment": "0.5ms",
-                    "permutation_execution_duration": "1m"
+                    "sleep_per_iteration_max": "1ms",
+                    "sleep_per_iteration_increment": "1ms",
+                    "permutation_execution_duration": "5s"
                 }
             }
         }
