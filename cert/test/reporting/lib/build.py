@@ -50,23 +50,23 @@ def _restore_configuration(backup: Path):
     os.remove(backup)
 
 
-def get_apk_path(release: bool) -> Path:
+def get_apk_path(build_task: str) -> Path:
     """Get a path to the APK that will be build by build_apk()"""
-    artifact_path = \
-        "../AndroidCertTest/app/build/outputs/apk/release/app-release.apk" \
-        if release else \
-            "../AndroidCertTest/app/build/outputs/apk/debug/app-debug.apk"
+
+    artifact_path = "../AndroidCertTest/app/build/outputs/apk/"
+    artifact_path += build_task + "/app-" + build_task + ".apk"
+
     return Path(artifact_path).resolve()
 
 
 def build_apk(clean: bool,
-              release: bool,
+              build_task: str,
               custom_configuration: Path = None) -> Path:
     """Builds the AndroidCertTest APK
 
     Args:
         clean: if true, clean and rebuild
-        release: if true, make a release build
+        build_task: gradle task, e.g., "assembleDebug" or "assembleOptmizedNative"
         custom_configuration: if provided and exists, is a custom
             configuration.json to build into the ACT app APK
 
@@ -78,9 +78,7 @@ def build_apk(clean: bool,
     """
 
     if custom_configuration and not custom_configuration.exists():
-        raise BuildError(
-            f"missing configuration file {custom_configuration}"
-        )
+        raise BuildError(f"missing configuration file {custom_configuration}")
 
     # if a custom config is provided, copy it over
     prev_configuration: Path = _copy_configuration(
@@ -94,10 +92,12 @@ def build_apk(clean: bool,
     if clean:
         task.append("clean")
 
-    task.append("app:assembleRelease" if release else "app:assembleDebug")
+    gradle_build_task = "app:assemble" + build_task[0].capitalize(
+    ) + build_task[1:]
+    task.append(gradle_build_task)
     task_cmd = " ".join(task)
 
-    artifact_path = get_apk_path(release)
+    artifact_path = get_apk_path(build_task)
 
     try:
         run_command(task_cmd)

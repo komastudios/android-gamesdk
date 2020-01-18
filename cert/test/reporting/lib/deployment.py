@@ -374,7 +374,7 @@ def run_recipe(recipe: Recipe, args: Dict, out_dir: Path = None):
     # build the APK
     apk_path = build_apk(
         clean=recipe.lookup("build.clean", fallback=False),
-        release=recipe.lookup("build.release", fallback=False),
+        build_task=recipe.lookup("build.task", fallback="assembleDebug"),
         custom_configuration=Path(custom_config) if custom_config else None)
 
     if args.get("local"):

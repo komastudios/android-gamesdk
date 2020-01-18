@@ -495,7 +495,7 @@ int ancer::NumCores(ThreadAffinity affinity) {
 }
 
 
-void ancer::SetThreadAffinity(int index, ThreadAffinity affinity) {
+bool ancer::SetThreadAffinity(int index, ThreadAffinity affinity) {
     cpu_set_t cpuset;
     CPU_ZERO(&cpuset);
 
@@ -525,13 +525,15 @@ void ancer::SetThreadAffinity(int index, ThreadAffinity affinity) {
         default:err = "(errno: " + std::to_string(errno) + ")";
             break;
         }
-        FatalError(TAG, "error setting thread affinity, error: " + err);
+        Log::E(TAG, "SetThreadAffinity() - unable to set; error: " + err);
+        return false;
     }
+    return true;
 }
 
 
-void ancer::SetThreadAffinity(ThreadAffinity affinity) {
-    SetThreadAffinity(-1, affinity);
+bool ancer::SetThreadAffinity(ThreadAffinity affinity) {
+    return SetThreadAffinity(-1, affinity);
 }
 
 //------------------------------------------------------------------------------
