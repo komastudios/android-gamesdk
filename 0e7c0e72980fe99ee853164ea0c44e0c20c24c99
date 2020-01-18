@@ -16,6 +16,24 @@
       "revId": "0e7c0e72980fe99ee853164ea0c44e0c20c24c99",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8618de62_948a50eb",
+        "filename": "cert/test/reporting/lib/build.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-18T01:22:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cde5921d_4048b018",
+      "revId": "0e7c0e72980fe99ee853164ea0c44e0c20c24c99",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
