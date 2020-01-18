@@ -33,12 +33,12 @@ class TestLibBuild(unittest.TestCase):
     def test_builds_apk(self):
         """Confirm an APK is built"""
         clean = True
-        release = False
-        expected_apk_path = lib.build.get_apk_path(release)
+        build_type = "debug"
+        expected_apk_path = lib.build.get_apk_path(build_type)
         if expected_apk_path.exists():
             expected_apk_path.unlink()
 
-        apk_path = lib.build.build_apk(clean=clean, release=release)
+        apk_path = lib.build.build_apk(clean=clean, build_type=build_type)
 
         self.assertEqual(expected_apk_path, apk_path)
         self.assertTrue(apk_path.exists())
