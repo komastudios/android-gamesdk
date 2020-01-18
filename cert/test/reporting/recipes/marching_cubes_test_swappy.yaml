@@ -1,0 +1,2 @@
+build:
+  configuration: recipes/configurations/marching_cubes_test_swappy.json
