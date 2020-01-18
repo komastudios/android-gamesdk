@@ -12,29 +12,23 @@
             "enabled": true,
             "name": "Marching Cubes Permutations Test (Swappy)",
             "description": "Tests marching cubes algorithm in a lot of permutations",
-            "duration": "30m",
+            "duration": "60m",
             "host": "SwappyGLHostActivity",
             "data_gatherer": {
                 "id": "MarchingCubesGLES3Operation",
                 "configuration": {
+                    "thread_setups": [
+                        {
+                            "thread_setup": "OneBigCore"
+                        },
+                        {
+                            "thread_setup": "AllBigCores"
+                        }
+                    ],
                     "sleep_per_iteration_min": "0ms",
-                    "sleep_per_iteration_max": "4ms",
-                    "permutation_execution_duration": "4s"
-                }
-            }
-        },
-        {
-            "enabled": true,
-            "name": "Marching Cubes Permutations Test (GLSV)",
-            "description": "Tests marching cubes algorithm in a lot of permutations",
-            "duration": "30m",
-            "host":"GLSurfaceViewHostActivity",
-            "data_gatherer": {
-                "id": "MarchingCubesGLES3Operation",
-                "configuration": {
-                    "sleep_per_iteration_min": "0ms",
-                    "sleep_per_iteration_max": "4ms",
-                    "permutation_execution_duration": "4s"
+                    "sleep_per_iteration_max": "1.5ms",
+                    "sleep_per_iteration_increment": "0.5ms",
+                    "permutation_execution_duration": "30s"
                 }
             }
         }

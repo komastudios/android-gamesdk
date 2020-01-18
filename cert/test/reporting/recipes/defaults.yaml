@@ -1,6 +1,6 @@
 build:
   clean: false
-  release: false
+  task: optimizedNative
 
 systrace:
   enabled: false
