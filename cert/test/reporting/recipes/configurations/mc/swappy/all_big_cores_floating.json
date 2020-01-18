@@ -27,7 +27,7 @@
                     "sleep_per_iteration_min": "0ms",
                     "sleep_per_iteration_max": "1.5ms",
                     "sleep_per_iteration_increment": "0.5ms",
-                    "permutation_execution_duration": "1m"
+                    "permutation_execution_duration": "5m"
                 }
             }
         }

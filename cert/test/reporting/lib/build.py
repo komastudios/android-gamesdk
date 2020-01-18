@@ -19,10 +19,10 @@ with optional custom configuration JSON
 
 import os
 import shutil
-
+import time
 from pathlib import Path
 
-from lib.common import run_command
+from lib.common import run_command, ensure_dir
 
 APP_ID = "com.google.gamesdk.gamecert.operationrunner"
 
@@ -50,23 +50,35 @@ def _restore_configuration(backup: Path):
     os.remove(backup)
 
 
-def get_apk_path(release: bool) -> Path:
+def get_apk_path(build_type: str) -> Path:
     """Get a path to the APK that will be build by build_apk()"""
-    artifact_path = \
-        "../AndroidCertTest/app/build/outputs/apk/release/app-release.apk" \
-        if release else \
-            "../AndroidCertTest/app/build/outputs/apk/debug/app-debug.apk"
+
+    artifact_path = "../AndroidCertTest/app/build/outputs/apk/"
+    artifact_path += build_type + "/app-" + build_type + ".apk"
+
     return Path(artifact_path).resolve()
 
 
+def _wait_for_sentinel(sentinel_file: Path):
+    tick = 0
+    while sentinel_file.exists():
+        count = tick % 4
+        ellipsis = "." * count
+        ellipsis += " " * (4 - count)
+        print(f"Waiting for existing build to finish{ellipsis}", end='\r')
+        tick += 1
+        time.sleep(0.25)
+
+
 def build_apk(clean: bool,
-              release: bool,
+              build_type: str,
               custom_configuration: Path = None) -> Path:
     """Builds the AndroidCertTest APK
 
     Args:
         clean: if true, clean and rebuild
-        release: if true, make a release build
+        build_type: build type defined in app/build.gradle e.g.,
+            "debug" or "optimizedNative"
         custom_configuration: if provided and exists, is a custom
             configuration.json to build into the ACT app APK
 
@@ -78,13 +90,19 @@ def build_apk(clean: bool,
     """
 
     if custom_configuration and not custom_configuration.exists():
-        raise BuildError(
-            f"missing configuration file {custom_configuration}"
-        )
+        raise BuildError(f"missing configuration file {custom_configuration}")
+
+    # create a sentinel file to mark that we're building the project
+    sentinel = Path("./tmp/build_active")
+    _wait_for_sentinel(sentinel)
+
+    ensure_dir(sentinel)
+    sentinel.touch()
 
     # if a custom config is provided, copy it over
     prev_configuration: Path = _copy_configuration(
         custom_configuration) if custom_configuration else None
+
 
     cwd = os.getcwd()
     os.chdir("../AndroidCertTest")
@@ -94,10 +112,12 @@ def build_apk(clean: bool,
     if clean:
         task.append("clean")
 
-    task.append("app:assembleRelease" if release else "app:assembleDebug")
+    gradle_build_task = "app:assemble" + build_type[0].capitalize(
+    ) + build_type[1:]
+    task.append(gradle_build_task)
     task_cmd = " ".join(task)
 
-    artifact_path = get_apk_path(release)
+    artifact_path = get_apk_path(build_type)
 
     try:
         run_command(task_cmd)
@@ -107,3 +127,5 @@ def build_apk(clean: bool,
         os.chdir(cwd)
         if prev_configuration is not None:
             _restore_configuration(prev_configuration)
+
+        sentinel.unlink()

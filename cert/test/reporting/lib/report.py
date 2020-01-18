@@ -216,6 +216,11 @@ class Suite:
         self.file = file
         self.handler = None
 
+        self.data_by_operation_id = {}
+        for datum in data:
+            self.data_by_operation_id.setdefault(datum.operation_id,
+                                                 []).append(datum)
+
         if DeviceCatalog()[self.build["DEVICE"]] is None:
             homologate_build_info(self.build["DEVICE"], self.build["SDK_INT"],
                                   self.build)
