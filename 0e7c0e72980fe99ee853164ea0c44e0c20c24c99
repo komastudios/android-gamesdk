@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cde5921d_4048b018",
+        "filename": "cert/test/reporting/lib/build.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-01-18T00:57:08Z",
+      "side": 1,
+      "message": "This is really helpful, although I feel it breaks test_build.py, which still assumes this argument is boolean. Could it be the case?\nSame concern applies for next function build_apk(...)",
+      "revId": "0e7c0e72980fe99ee853164ea0c44e0c20c24c99",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
