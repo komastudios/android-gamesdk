@@ -148,39 +148,70 @@ class PlaneVolumeSampler : public IVolumeSampler {
 //==============================================================================
 
 enum class ThreadAffinitySetup {
-  One, OnePerBigCore, OnePerLittleCore, OnePerCore
+  OneBigCore, OneLittleCore, AllBigCores, AllLittleCores, AllCores
 };
 
 constexpr const char* ThreadAffinitySetupNames[] = {
-    "One", "OnePerBigCore", "OnePerLittleCore", "OnePerCore"
+    "OneBigCore", "OneLittleCore", "AllBigCores", "AllLittleCores", "AllCores"
+};
+
+enum class ThreadPinningSetup {
+  Unspecified, Pinned, Floating
+};
+
+constexpr const char* ThreadPinningSetupNames[] = {
+    "Unspecified", "Pinned", "Floating"
 };
 
 constexpr auto ToAffinity(ThreadAffinitySetup setup) {
   switch (setup) {
-    case ThreadAffinitySetup::OnePerBigCore: return ThreadAffinity::kBigCore;
-    case ThreadAffinitySetup::OnePerLittleCore: return ThreadAffinity::kLittleCore;
-    case ThreadAffinitySetup::One:
-    case ThreadAffinitySetup::OnePerCore: return ThreadAffinity::kAnyCore;
+    case ThreadAffinitySetup::OneBigCore:
+    case ThreadAffinitySetup::AllBigCores:return ThreadAffinity::kBigCore;
+    case ThreadAffinitySetup::OneLittleCore:
+    case ThreadAffinitySetup::AllLittleCores:return ThreadAffinity::kLittleCore;
+    case ThreadAffinitySetup::AllCores: return ThreadAffinity::kAnyCore;
     default:FatalError(TAG, "Unknown thread setup %d", (int) setup);
   }
 }
 
+struct configuration_thread_setup {
+  ThreadAffinitySetup thread_setup;
+  ThreadPinningSetup pinning;
+};
+
+JSON_CONVERTER(configuration_thread_setup) {
+  JSON_REQENUM(thread_setup, ThreadAffinitySetupNames);
+  JSON_OPTENUM(pinning, ThreadPinningSetupNames);
+}
+
 struct configuration {
-  Milliseconds sleep_per_iteration_min = 0ms;
-  Milliseconds sleep_per_iteration_max = 0ms;
-  Milliseconds permutation_execution_duration = 10s;
+  std::vector<configuration_thread_setup> thread_setups = {
+      {ThreadAffinitySetup::OneBigCore},
+      {ThreadAffinitySetup::AllBigCores},
+      {ThreadAffinitySetup::OneLittleCore},
+      {ThreadAffinitySetup::AllLittleCores},
+      {ThreadAffinitySetup::AllCores}
+  };
+  Duration warm_up_time = 5s;
+  Duration sleep_per_iteration_min = 0ms;
+  Duration sleep_per_iteration_max = 0ms;
+  Duration sleep_per_iteration_increment = 500000ns; // 0.5ms
+  Duration permutation_execution_duration = 10s;
 };
 
 JSON_CONVERTER(configuration) {
+  JSON_OPTVAR(warm_up_time);
+  JSON_REQVAR(thread_setups);
   JSON_REQVAR(sleep_per_iteration_min);
   JSON_REQVAR(sleep_per_iteration_max);
+  JSON_REQVAR(sleep_per_iteration_increment);
   JSON_REQVAR(permutation_execution_duration);
 }
 
 struct execution_configuration {
   ThreadAffinitySetup thread_setup;
   bool pinned;
-  Milliseconds sleep_per_iteration;
+  Duration sleep_per_iteration;
 };
 
 JSON_CONVERTER(execution_configuration) {
@@ -189,20 +220,30 @@ JSON_CONVERTER(execution_configuration) {
   JSON_REQVAR(sleep_per_iteration);
 }
 
+/*
+ * Generate all permutations of a provided configuration
+ */
 std::vector<execution_configuration> Permute(const configuration config) {
   std::vector<execution_configuration> permutations;
-  auto thread_setups = std::vector<ThreadAffinitySetup>{
-      ThreadAffinitySetup::One, ThreadAffinitySetup::OnePerBigCore,
-      ThreadAffinitySetup::OnePerLittleCore, ThreadAffinitySetup::OnePerCore};
-
-  for (auto thread_setup : thread_setups) {
-    for (auto i = 0; i < 2; i++) {
-      bool affinity = i == 1;
-      for (Milliseconds ms = config.sleep_per_iteration_min;
-           ms < config.sleep_per_iteration_max; ms += 1ms) {
-        permutations.push_back({thread_setup, affinity, ms});
+  for (auto thread_setup : config.thread_setups) {
+    if (thread_setup.pinning == ThreadPinningSetup::Unspecified) {
+      for (auto i = 0; i < 2; i++) { // (0: floating, 1: pinned)
+        bool pinned = i == 1;
+        for (Duration dur = config.sleep_per_iteration_min;
+             dur <= config.sleep_per_iteration_max;
+             dur += config.sleep_per_iteration_increment) {
+          permutations.push_back({thread_setup.thread_setup, pinned, dur});
+        }
+      }
+    } else {
+      bool pinned = thread_setup.pinning == ThreadPinningSetup::Pinned;
+      for (Duration dur = config.sleep_per_iteration_min;
+           dur <= config.sleep_per_iteration_max;
+           dur += config.sleep_per_iteration_increment) {
+        permutations.push_back({thread_setup.thread_setup, pinned, dur});
       }
     }
+
   }
   return permutations;
 }
@@ -218,6 +259,11 @@ struct result {
   Duration min_calc_duration{0};
   Duration max_calc_duration{0};
   Duration average_calc_duration{0};
+  Duration median_calc_duration{0};
+  Duration fifth_percentile_duration{0};
+  Duration twentyfifth_percentile_duration{0};
+  Duration seventyfifth_percentile_duration{0};
+  Duration ninetyfifth_percentile_duration{0};
 };
 
 JSON_CONVERTER(result) {
@@ -228,6 +274,11 @@ JSON_CONVERTER(result) {
   JSON_REQVAR(min_calc_duration);
   JSON_REQVAR(max_calc_duration);
   JSON_REQVAR(average_calc_duration);
+  JSON_REQVAR(median_calc_duration);
+  JSON_REQVAR(fifth_percentile_duration);
+  JSON_REQVAR(twentyfifth_percentile_duration);
+  JSON_REQVAR(seventyfifth_percentile_duration);
+  JSON_REQVAR(ninetyfifth_percentile_duration);
 }
 
 struct datum {
@@ -245,6 +296,12 @@ class MarchingCubesGLES3Operation : public BaseGLES3Operation {
  public:
 
   MarchingCubesGLES3Operation() = default;
+
+  ~MarchingCubesGLES3Operation() {
+    if (!_march_durations.empty()) {
+      ReportPerformanceData();
+    }
+  }
 
   void OnGlContextReady(const GLContextConfig& ctx_config) override {
     _configuration = GetConfiguration<configuration>();
@@ -344,7 +401,24 @@ class MarchingCubesGLES3Operation : public BaseGLES3Operation {
       _marcher->March();
       auto end_time = SteadyClock::now();
 
-      _march_durations.push_back(end_time - start_time);
+      if (_warming_up) {
+        if (!_recorded_first_step_timestamp) {
+          Log::D(TAG, "Warm up starting");
+          _first_step_timestamp = SteadyClock::now();
+          _recorded_first_step_timestamp = true;
+        } else {
+          auto elapsed_since_first_step =
+              SteadyClock::now() - _first_step_timestamp;
+          if (elapsed_since_first_step >= _configuration.warm_up_time) {
+            Log::D(TAG, "Warm up finished, will start recording perf timings");
+            _warming_up = false;
+          }
+        }
+      }
+
+      if (!_warming_up) {
+        _march_durations.push_back(end_time - start_time);
+      }
     }
   }
 
@@ -362,28 +436,69 @@ class MarchingCubesGLES3Operation : public BaseGLES3Operation {
  private:
 
   void ReportPerformanceData() {
-    Duration min_duration{Duration::max()};
-    Duration max_duration{0};
-    Duration accumulator{0};
-
-    for (auto& d : _march_durations) {
-      if (d > max_duration) { max_duration = d; }
-      if (d < min_duration) { min_duration = d; }
-      accumulator += d;
+    if (_march_durations.empty()) {
+      Log::E(TAG, "ReportPerformanceData - _march_durations is empty");
+      return;
     }
-    Duration avg_duration = accumulator / _march_durations.size();
 
-    result r{
+    const auto avg_duration =
+        std::accumulate(_march_durations.begin(),
+                        _march_durations.end(),
+                        Duration{0})
+            / _march_durations.size();
+
+    // compute min/max/median
+    std::sort(_march_durations.begin(), _march_durations.end());
+
+    const auto min_duration = _march_durations.front();
+    const auto max_duration = _march_durations.back();
+
+    const auto median_duration = [this]() {
+      if (_march_durations.size() % 2 == 1) {
+        return _march_durations[_march_durations.size() / 2];
+      } else {
+        size_t center = _march_durations.size() / 2;
+        return (_march_durations[std::max<size_t>(center - 1, 0)]
+            + _march_durations[center]) / 2;
+      }
+    }();
+
+    // compute percentiles
+    auto find_percentile = [this](int percentile) -> Duration {
+      percentile = min(max(percentile, 0), 100);
+      auto fractional_percentile = static_cast<double>(percentile) / 100.0;
+      auto idx = fractional_percentile * (_march_durations.size() - 1);
+      auto fractional = fract(idx);
+      if (fractional > 0.0) {
+        // if we landed between two indices, use the latter
+        return _march_durations[static_cast<size_t>(ceil(idx))];
+      } else {
+        // if we landed on an index, use the average of it and the one following
+        auto i_idx = static_cast<size_t>(floor(idx));
+        auto j_idx = min(i_idx + 1, _march_durations.size() - 1);
+        return (_march_durations[i_idx] + _march_durations[j_idx]) / 2;
+      }
+    };
+
+    const auto fifth_percentile_duration = find_percentile(5);
+    const auto twentyfifth_percentile_duration = find_percentile(25);
+    const auto seventyfifth_percentile_duration = find_percentile(75);
+    const auto ninetyfifth_percentile_duration = find_percentile(95);
+
+    Report(datum{result{
         _configuration_permutations[_current_configuration_permutation],
         _num_threads_used,
         _num_voxels_marched,
         _march_durations.size(),
         min_duration,
         max_duration,
-        avg_duration
-    };
-
-    Report(datum{r});
+        avg_duration,
+        median_duration,
+        fifth_percentile_duration,
+        twentyfifth_percentile_duration,
+        seventyfifth_percentile_duration,
+        ninetyfifth_percentile_duration
+    }});
   }
 
   void ResetPerformanceData() {
@@ -424,7 +539,10 @@ class MarchingCubesGLES3Operation : public BaseGLES3Operation {
   void BuildExecConfiguration(execution_configuration ex_config) {
     auto affinity = ToAffinity(ex_config.thread_setup);
     auto max_thread_count = NumCores(affinity);
-    if (ex_config.thread_setup == ThreadAffinitySetup::One) {
+
+    if (ex_config.thread_setup == ThreadAffinitySetup::OneBigCore ||
+        ex_config.thread_setup == ThreadAffinitySetup::OneLittleCore
+        ) {
       max_thread_count = 1;
     }
 
@@ -452,6 +570,10 @@ class MarchingCubesGLES3Operation : public BaseGLES3Operation {
     // now create the marcher
     _marcher = std::make_unique<marching_cubes::ThreadedMarcher>(
         _volume, tcs, std::move(pool), _volume_transform, false);
+
+    // trigger a new warmup for the next test pass
+    _warming_up = true;
+    _recorded_first_step_timestamp = false;
   }
 
   /*
@@ -507,6 +629,10 @@ class MarchingCubesGLES3Operation : public BaseGLES3Operation {
   size_t _num_voxels_marched = 0;
   size_t _num_threads_used = 0;
   std::vector<Duration> _march_durations;
+
+  bool _warming_up = true;
+  bool _recorded_first_step_timestamp = false;
+  Timestamp _first_step_timestamp{};
 };
 
 EXPORT_ANCER_OPERATION(MarchingCubesGLES3Operation)

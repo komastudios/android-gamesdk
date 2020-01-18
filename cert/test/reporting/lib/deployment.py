@@ -28,7 +28,7 @@ from typing import Tuple, Dict, List
 
 from lib.build import APP_ID, build_apk
 from lib.common import run_command, NonZeroSubprocessExitCode, \
-    get_attached_devices, Recipe
+    get_attached_devices, Recipe, get_indexable_utc, ensure_dir
 from lib.report import extract_and_export, normalize_report_name, \
     merge_systrace
 from lib.summary import perform_summary_if_enabled
@@ -371,10 +371,16 @@ def run_recipe(recipe: Recipe, args: Dict, out_dir: Path = None):
 
         out_dir = lib.graphing.setup_report_dir(prefix)
 
+    # append a timestamped subfolder
+    timestamped_folder = get_indexable_utc()
+    out_dir = out_dir / timestamped_folder
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+
     # build the APK
     apk_path = build_apk(
         clean=recipe.lookup("build.clean", fallback=False),
-        release=recipe.lookup("build.release", fallback=False),
+        build_type=recipe.lookup("build.type", fallback="assembleDebug"),
         custom_configuration=Path(custom_config) if custom_config else None)
 
     if args.get("local"):

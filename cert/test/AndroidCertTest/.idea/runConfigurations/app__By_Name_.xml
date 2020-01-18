@@ -7,7 +7,7 @@
     <option name="ARTIFACT_NAME" value="" />
     <option name="PM_INSTALL_OPTIONS" value="" />
     <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
-    <option name="ACTIVITY_EXTRA_FLAGS" value="-a &quot;android.intent.action.ACTION_RUN&quot; -d &quot;Marching Cubes&quot;" />
+    <option name="ACTIVITY_EXTRA_FLAGS" value="-a &quot;android.intent.action.ACTION_RUN&quot; -d &quot;MC&quot;" />
     <option name="MODE" value="default_activity" />
     <option name="CLEAR_LOGCAT" value="false" />
     <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />

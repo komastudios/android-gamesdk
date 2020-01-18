@@ -1,2 +1,0 @@
-build:
-  configuration: recipes/configurations/marching_cubes_test.json
