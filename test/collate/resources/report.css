@@ -1,0 +1,36 @@
+table, td, th {
+  border: 1px solid;
+  text-align: left;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 5px;
+}
+
+section {
+  margin: 20px;
+}
+
+div.graph {
+  margin: 20px;
+}
+
+td.best {
+  background: lightgreen;
+}
+
+td.unacceptable {
+  text-decoration: line-through;
+}
+
+td.serviceCrashed {
+  font-weight: bold;
+}
+
+a {
+  text-decoration: none;
+}
