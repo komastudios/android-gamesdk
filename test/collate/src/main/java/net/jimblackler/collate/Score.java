@@ -19,7 +19,6 @@ import org.json.JSONObject;
 
 public class Score {
   private static final boolean USE_DEVICE = false;
-  private static final float MEMORY_FREE_THRESHOLD = 0.9f;
 
   private static final List<List<String>> baseGroups =
       ImmutableList.<List<String>>builder()
@@ -72,8 +71,6 @@ public class Score {
           }
           builds.put(id, build);
 
-          long previousNativeAllocated = -1;
-          long previousNativeAllocatedTime = -1;
           long lowestTop = Long.MAX_VALUE;
           boolean exited = false;
           boolean allocFailed = false;
@@ -102,22 +99,16 @@ public class Score {
             }
             long nativeAllocated = row.getLong("nativeAllocated");
             long time = row.getLong("time");
-            assert time >= previousNativeAllocatedTime;
-            if (previousNativeAllocated != -1) {
-              if (nativeAllocated < previousNativeAllocated * MEMORY_FREE_THRESHOLD) {
-                long top = previousNativeAllocated;
-                if (top < lowestTop) {
-                  lowestTop = top;
-                }
+
+            if (row.has("trigger")) {
+              long top = nativeAllocated;
+              if (top < lowestTop) {
+                lowestTop = top;
               }
             }
-            previousNativeAllocated = nativeAllocated;
-            previousNativeAllocatedTime = time;
           }
-          if (lowestTop == Long.MAX_VALUE) {
-            lowestTop = previousNativeAllocated;
-          }
-          float score = (float) lowestTop / (1024 * 1024);
+
+          float score = lowestTop == Long.MAX_VALUE ? 0 : (float) lowestTop / (1024 * 1024);
           List<Result> results0;
           if (out.containsKey(id)) {
             results0 = out.get(id);
