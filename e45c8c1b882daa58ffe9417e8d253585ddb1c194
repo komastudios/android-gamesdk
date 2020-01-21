@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2f855d38_a09ba8a5",
+        "filename": "samples/common/src/Thread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-01-21T14:14:15Z",
+      "side": 1,
+      "message": "These statics always make me anxious 😄 \nI guess it\u0027s fine because it\u0027s initialised on demand and destroyed at program exit - in which case running threads will also be destroyed so no risk of a ThreadManager method trying to be used after the singleton was destroyed already?\nFlagging this to be sure you\u0027re 100% confident with this implementation (even if this is a sample app, so risk/impact are low).",
+      "revId": "e45c8c1b882daa58ffe9417e8d253585ddb1c194",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0bf3d8c8_a4c1c325",
+        "filename": "samples/common/src/Thread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-01-21T14:14:15Z",
+      "side": 1,
+      "message": "nit: this could be made const it seems - though this is probably not super relevant or useful in our case so marking this as resolved already.",
+      "revId": "e45c8c1b882daa58ffe9417e8d253585ddb1c194",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "995e2cae_c2fe0a8e",
+        "filename": "src/swappy/common/ChoreographerThread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 334,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-01-21T14:14:15Z",
+      "side": 1,
+      "message": "nit: space before Thread",
+      "revId": "e45c8c1b882daa58ffe9417e8d253585ddb1c194",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
