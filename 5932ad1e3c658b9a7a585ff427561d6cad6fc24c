@@ -16,6 +16,24 @@
       "revId": "5932ad1e3c658b9a7a585ff427561d6cad6fc24c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "06a5b1ec_6eda101b",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/Suite.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1597621
+      },
+      "writtenOn": "2020-01-21T16:40:57Z",
+      "side": 1,
+      "message": "Mostly I didn\u0027t want to poke at the overall logic too much at this point, especially since there\u0027s an issue with this stuff not being called correctly from the Java side of things.",
+      "parentUuid": "a6f6b8e2_6698eb44",
+      "revId": "5932ad1e3c658b9a7a585ff427561d6cad6fc24c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
