@@ -23,6 +23,7 @@
 
 #include <deque>
 #include <string>
+#include <thread>
 
 #include "Settings.h"
 #include "Thread.h"
@@ -134,7 +135,7 @@ void ChoreographerFilter::launchThreadsLocked() {
 
     const int32_t numThreads = getNumCpus() > 2 ? 2 : 1;
     for (int32_t thread = 0; thread < numThreads; ++thread) {
-        mThreadPool.push_back(std::thread([this, thread]() { threadMain(mUseAffinity, thread); }));
+        mThreadPool.push_back(Thread([this, thread]() { threadMain(mUseAffinity, thread); }));
     }
 }
 
