@@ -50,4 +50,5 @@ class TestLibGraphing(unittest.TestCase):
             self.assertEqual(suite.build["MANUFACTURER"], "Google")
             self.assertEqual(suite.file, report_file)
             self.assertEqual(len(suite.data), 16)
-            self.assertEqual(suite.identifier(), "Google blueline SDK 29")
+            self.assertEqual(suite.identifier(),
+                             "Google Pixel 3 (blueline) SDK 29")

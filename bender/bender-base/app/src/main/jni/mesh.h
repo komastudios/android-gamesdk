@@ -45,7 +45,7 @@ public:
   void UpdatePipeline(VkRenderPass render_pass);
 
   // TODO: consolidate camera, view, proj into a camera object
-  void Update(uint_t frame_index, glm::vec3 camera, glm::mat4 view, glm::mat4 proj);
+  void Update(uint_t frame_index, glm::vec3 camera, glm::mat4 view, glm::mat4 proj, glm::mat4 prerotation);
   void SubmitDraw(VkCommandBuffer cmd_buffer, uint_t frame_index) const;
 
   void Translate(glm::vec3 offset);

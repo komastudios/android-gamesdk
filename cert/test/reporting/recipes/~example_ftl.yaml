@@ -19,4 +19,5 @@ deployment:
 
 summary:
   enabled: true
-  format: md
+  format: docx
+  publish: true

@@ -16,40 +16,63 @@
 
 #include "jnictx.h"
 
+#include <memory>
+
+#include "Log.h"
+#define LOG_TAG "JniCtx"
+
 namespace tuningfork {
 
-JniCtx::JniCtx(JNIEnv* env, jobject ctx) {
-    if (env) {
-        jctx_ = env->NewGlobalRef(ctx);
-        env->GetJavaVM(&jvm_);
-    }
+namespace jni {
+
+static std::unique_ptr<Ctx> theCtx;
+static thread_local JNIEnv* theEnv = nullptr;
+
+/*static*/ const Ctx* Ctx::Init(JNIEnv* env, jobject ctx) {
+  theCtx = std::unique_ptr<Ctx>(new Ctx(env, ctx, ConstructorTag{}));
+  theEnv = env;
+  return theCtx.get();
 }
-JniCtx::JniCtx(const JniCtx& rhs) : jvm_(rhs.jvm_) {
+
+/*static*/ const Ctx* Ctx::Instance() {
+  if (theCtx.get() == nullptr) {
+    ALOGE("You must call jni::Ctx::Init before using any jni::Ctx methods");
+  }
+  return theCtx.get();
+}
+
+/*static*/ void Ctx::Destroy() {
+  theCtx.reset();
+}
+
+Ctx::Ctx(JNIEnv* env, jobject ctx, ConstructorTag) {
+  if (env) {
+    jctx_ = env->NewGlobalRef(ctx);
+    env->GetJavaVM(&jvm_);
+  }
+}
+
+Ctx::~Ctx() {
+  if (jctx_) {
     JNIEnv* env = Env();
     if (env) {
-        jctx_ = env->NewGlobalRef(rhs.Ctx());
+      env->DeleteGlobalRef(jctx_);
     }
-
+  }
 }
-JniCtx::~JniCtx() {
-    if (jctx_) {
-        JNIEnv* env = Env();
-        if (env) {
-            env->DeleteGlobalRef(jctx_);
-        }
-    }
-}
-JNIEnv* JniCtx::Env() const {
-    static thread_local JNIEnv* env = nullptr;
-    if (jvm_ != nullptr && env == nullptr) {
-        jvm_->AttachCurrentThread(&env, NULL);
-    }
-    return env;
+JNIEnv* Ctx::Env() const {
+  if (theEnv == nullptr && jvm_ != nullptr) {
+    jvm_->AttachCurrentThread(&theEnv, NULL);
+  }
+  return theEnv;
 }
 
-void JniCtx::Detach() const {
-    if (jvm_ != nullptr)
-        jvm_->DetachCurrentThread();
+void Ctx::DetachThread() const {
+  if (jvm_ != nullptr)
+    jvm_->DetachCurrentThread();
+  theEnv = nullptr;
 }
+
+} // namespace jni
 
 } // namespace tuningfork

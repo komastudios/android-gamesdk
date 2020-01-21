@@ -41,7 +41,6 @@ void android_main(struct android_app *app) {
   app->onAppCmd = handle_cmd;
   app->onInputEvent = UserInterface::Handler;
   app->userData = (void *) new input::Data;
-  app->activity->callbacks->onNativeWindowResized = ResizeCallback;
 
   // Used to poll the events in the main loop
   int events;
