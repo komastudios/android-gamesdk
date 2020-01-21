@@ -509,8 +509,8 @@ def copySamples(outFolder, includeTuningForkSamples = true) {
 
     if (includeTuningForkSamples) {
 	copy {
-            from file(joinPath('samples', "tuningfork", "tftestapp"))
-            into file(joinPath(buildFolder, 'samples', "tuningfork", "tftestapp"))
+            from file(joinPath('samples', "tuningfork", "expertballs"))
+            into file(joinPath(buildFolder, 'samples', "tuningfork", "expertballs"))
             exclude '**/build', '**/out', "local.properties", "**/.externalNativeBuild", "**/.gradle",
 		"**/OWNERS", "**/.idea", '**/CMakeLists.txt'
             rename 'CMakeLists.for-samples-in-archive.txt', 'CMakeLists.txt'
