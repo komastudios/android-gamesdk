@@ -16,8 +16,14 @@
 
 #include "Thread.h"
 
+#include "swappy/swappy_common.h"
+
 #include <sched.h>
 #include <unistd.h>
+#include <thread>
+
+#define LOG_TAG "SwappyThread"
+#include "Log.h"
 
 namespace swappy {
 
@@ -68,4 +74,66 @@ void setAffinity(Affinity affinity) {
     sched_setaffinity(gettid(), sizeof(cpuSet), &cpuSet);
 }
 
+static const SwappyThreadFunctions* s_ext_thread_manager = nullptr;
+
+struct ExtThreadImpl : public ThreadImpl {
+    std::function<void()> fn_;
+    SwappyThreadId id_;
+  public:
+    ExtThreadImpl(std::function<void()>&& fn) : fn_(std::move(fn)) {
+        if (s_ext_thread_manager->start(&id_, startThread, this) != 0) {
+            ALOGE("Couldn't create thread");
+        }
+    }
+    void join() { s_ext_thread_manager->join(id_); }
+    bool joinable() { return s_ext_thread_manager->joinable(id_); }
+    static void *startThread(void* x) {
+        ExtThreadImpl* impl = (ExtThreadImpl*)x;
+        impl->fn_();
+        return nullptr;
+    }
+};
+
+struct StlThreadImpl : public ThreadImpl {
+    std::thread thread_;
+  public:
+    StlThreadImpl(std::function<void()>&& fn) : thread_(std::move(fn)) {}
+    void join() { thread_.join(); }
+    bool joinable() { return thread_.joinable(); }
+};
+
+Thread::Thread() {}
+
+Thread::Thread(std::function<void()>&& fn) noexcept {
+    if ( s_ext_thread_manager != nullptr) {
+        impl_ = std::make_unique<ExtThreadImpl>(std::move(fn));
+    } else {
+        impl_ = std::make_unique<StlThreadImpl>(std::move(fn));
+    }
+}
+
+Thread::Thread(Thread&& rhs) noexcept : impl_(std::move(rhs.impl_)) {
+}
+
+Thread& Thread::operator=(Thread&& rhs) noexcept {
+    if (&rhs != this) {
+        impl_ = std::move(rhs.impl_);
+    }
+    return *this;
+}
+
+void Thread::join() {
+    if (impl_.get()) {
+        impl_->join();
+    }
+}
+
+bool Thread::joinable() {
+    return (impl_.get()!=nullptr && impl_->joinable());
+}
+
 } // namespace swappy
+
+extern "C" void Swappy_setThreadFunctions(const SwappyThreadFunctions* mgr) {
+    swappy::s_ext_thread_manager = mgr;
+}
