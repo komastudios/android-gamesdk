@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 The Android Open Source Project
+ * Copyright 2020 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-#include "gtest/gtest.h"
+#include <jni.h>
+#include <string>
 
-int main(int argc, char * argv[]) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+// From the tuningfork_test_lib shared library in ${ANDROID_GAMES_SDK}/test/tuningfork
+extern "C" int shared_main(int argc, char * argv[]);
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_com_tuningfork_testapp_MainActivity_stringFromJNI(
+        JNIEnv* env,
+        jobject /* this */) {
+    int argc = 1;
+    char *argv[] = {"testapp"};
+    shared_main(argc, argv);
+
+    std::string hello = "Unit tests ran successfully";
+    return env->NewStringUTF(hello.c_str());
 }
