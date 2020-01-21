@@ -79,5 +79,5 @@ function(build_shared libname version)
   set_link_options(${libname} ${version})
 endfunction()
 
-build_shared( tuningfork "tuningfork/version.script")
-build_shared( unitytuningfork "tuningfork/unity_version.script")
+build_shared( tuningfork "${CMAKE_CURRENT_LIST_DIR}/version.script")
+build_shared( unitytuningfork "${CMAKE_CURRENT_LIST_DIR}/unity_version.script")
