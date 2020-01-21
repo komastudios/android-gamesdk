@@ -487,7 +487,7 @@ TFErrorCode TuningForkImpl::GetFidelityParameters(
                                                  params_ser, experiment_id);
         if (result==TFERROR_OK)
             upload_thread_.SetCurrentFidelityParams(params_ser, experiment_id);
-        if (Debugging()) {
+        if (Debugging() && jni::IsValid()) {
             UploadDebugInfo(web_request);
         }
         return result;

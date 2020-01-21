@@ -8,6 +8,7 @@ set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGOOGLE_PROTOBUF_NO_RTTI -DHAVE_PTHREAD")
 
 set(ANDROID_GTEST_DIR "../../../external/googletest")
+set(ANDROID_GTEST_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../external/googletest" PARENT_SCOPE)
 add_subdirectory("${ANDROID_GTEST_DIR}/googletest"
   googletest-build
 )
@@ -42,8 +43,7 @@ include_directories(
   ${PROTOBUF_SRC_DIR}/..
 )
 
-add_executable(tuningfork_test
-  main.cpp
+set(TEST_SRCS
   file_cache_test.cpp
   histogram_test.cpp
   tuningfork_test.cpp
@@ -54,6 +54,19 @@ add_executable(tuningfork_test
   ${PGENS_DIR}/full/dev_tuningfork.pb.cc
   ${PGENS_DIR}/full/tuningfork.pb.cc
 )
+
+add_executable(tuningfork_test
+  main.cpp
+  ${TEST_SRCS}
+)
+
+# This has to be a shared library because otherwise the linker doesn't see the tests.
+add_library(tuningfork_test_lib
+  SHARED
+  shared_main.cpp
+  ${TEST_SRCS}
+)
+
 add_library( protobuf-static
   STATIC ${PROTOBUF_LITE_SRCS} ${PROTOBUF_SRCS}
 )
@@ -61,6 +74,14 @@ target_compile_options(protobuf-static PUBLIC "-Wno-tautological-constant-compar
                                               "-Wno-enum-compare-switch")
 
 target_link_libraries(tuningfork_test
+  android
+  gtest
+  tuningfork_static
+  protobuf-static
+  log
+  GLESv2
+)
+target_link_libraries(tuningfork_test_lib
   android
   gtest
   tuningfork_static
