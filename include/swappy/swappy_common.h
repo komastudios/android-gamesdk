@@ -39,13 +39,35 @@
 
 // Internal macros to track Swappy version, do not use directly.
 #define SWAPPY_MAJOR_VERSION 1
-#define SWAPPY_MINOR_VERSION 1
+#define SWAPPY_MINOR_VERSION 2
 #define SWAPPY_PACKED_VERSION ((SWAPPY_MAJOR_VERSION<<16)|(SWAPPY_MINOR_VERSION))
 
 // Internal macros to generate a symbol to track Swappy version, do not use directly.
 #define SWAPPY_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR) PREFIX ## _ ## MAJOR ## _ ## MINOR
 #define SWAPPY_VERSION_CONCAT(PREFIX, MAJOR, MINOR) SWAPPY_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR)
 #define SWAPPY_VERSION_SYMBOL SWAPPY_VERSION_CONCAT(Swappy_version, SWAPPY_MAJOR_VERSION, SWAPPY_MINOR_VERSION)
+
+/** @brief Id of a thread returned by an external thread manager. */
+typedef uint64_t SwappyThreadId;
+
+/**
+ * @brief Thread management functions.
+ */
+typedef struct SwappyThreadFunctions {
+    /**
+     * Called to start thread_func on a new thread with the single argument given.
+     * Should return 0 if the thread was started and also set the thread_id.
+     */
+    int (*start)(SwappyThreadId* thread_id, void *(*thread_func)(void*), void* user_data);
+    /**
+     * Called to join the thread with given id.
+     */
+    void (*join)(SwappyThreadId thread_id);
+    /**
+     * Return whether the thread with the given id is joinable.
+     */
+    bool (*joinable)(SwappyThreadId thread_id);
+} SwappyThreadFunctions;
 
 #ifdef __cplusplus
 extern "C" {
@@ -62,6 +84,11 @@ void SWAPPY_VERSION_SYMBOL();
  * @brief Return the version of the Swappy library at runtime.
  */
 uint32_t Swappy_version();
+
+/**
+ * @brief Call this before any other functions in order to use a custom thread manager.
+ */
+void Swappy_setThreadFunctions(const SwappyThreadFunctions* thread_functions);
 
 #ifdef __cplusplus
 }  // extern "C"

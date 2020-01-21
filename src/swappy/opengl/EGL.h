@@ -19,7 +19,6 @@
 #include <chrono>
 #include <condition_variable>
 #include <mutex>
-#include <thread>
 #include <memory>
 #include <atomic>
 
@@ -114,7 +113,7 @@ class EGL {
         eglDestroySyncKHR_type eglDestroySyncKHR = nullptr;
 
         void threadMain();
-        std::thread mFenceWaiter GUARDED_BY(mFenceWaiterLock);
+        Thread mFenceWaiter GUARDED_BY(mFenceWaiterLock);
         std::mutex mFenceWaiterLock;
         std::condition_variable_any mFenceWaiterCondition;
         bool mFenceWaiterRunning GUARDED_BY(mFenceWaiterLock) = true;

@@ -17,7 +17,6 @@
 #include "SwappyGL.h"
 
 #include <cmath>
-#include <thread>
 #include <cstdlib>
 #include <cinttypes>
 

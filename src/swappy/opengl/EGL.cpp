@@ -253,7 +253,7 @@ EGL::FenceWaiter::FenceWaiter(std::chrono::nanoseconds fenceTimeout,
     if (eglDestroySyncKHR == nullptr)
         ALOGE("Failed to load eglDestroySyncKHR");
 
-    mFenceWaiter = std::thread{&FenceWaiter::threadMain, this};
+    mFenceWaiter = Thread([this]() { threadMain(); });
 }
 
 EGL::FenceWaiter::~FenceWaiter() {

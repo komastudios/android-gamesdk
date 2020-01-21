@@ -19,7 +19,6 @@
 
 #include "Thread.h"
 
-#include <thread>
 #include <mutex>
 
 namespace swappy {

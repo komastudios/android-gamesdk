@@ -157,7 +157,7 @@ protected:
     struct ThreadContext {
         ThreadContext(VkQueue queue) : queue(queue) {}
 
-        std::thread thread;
+        Thread thread;
         bool running GUARDED_BY(lock) = true;
         bool hasPendingWork GUARDED_BY(lock);
         std::mutex lock;
