@@ -21,21 +21,14 @@ from pathlib import Path
 from typing import Dict
 
 from lib.build import APP_ID
-from lib.common import Error, run_command
+from lib.common import run_command
 from lib.tasks import Task, Environment, LocalDirs, DeviceDirs
 
 #-------------------------------------------------------------------------------
 
-class CopyTaskError(Error):
-    """Exception raised when CopyTask can't do it's thing
-
-    Attributes:
-        message -- explanation of the error
+class CopyTaskError(Exception):
+    """Exception raised when CopyTask can't do it's thing.
     """
-
-    def __init__(self, message):
-        super().__init__()
-        self.message = message
 
 
 #-------------------------------------------------------------------------------
@@ -59,7 +52,7 @@ class CopyTask(Task):
         self.src = self.resolve_src_path(env)
 
         if not self.src.exists():
-            raise CopyTaskError(f"Missing src file {str(self.src)}")
+            raise CopyTaskError(f"Missing src file {self.src}")
 
         self.src_filename = str(self.src.name)
 

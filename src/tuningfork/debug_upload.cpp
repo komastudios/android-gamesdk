@@ -46,16 +46,16 @@ static void add_params(const ProtobufSerialization& params, Json::object& obj,
 }
 
 
-static std::string RequestJson(const JniCtx& jni) {
+static std::string RequestJson() {
     Json::object request_obj = Json::object {};
     // Add in other info for the debug monitor
     ProtobufSerialization descriptor_ser;
-    if (apk_utils::GetAssetAsSerialization(jni, "tuningfork/dev_tuningfork.descriptor",
+    if (apk_utils::GetAssetAsSerialization("tuningfork/dev_tuningfork.descriptor",
                                            descriptor_ser)) {
         add_params(descriptor_ser, request_obj, "dev_tuningfork_descriptor");
     }
     ProtobufSerialization settings_ser;
-    if (apk_utils::GetAssetAsSerialization(jni, "tuningfork/tuningfork_settings.bin",
+    if (apk_utils::GetAssetAsSerialization("tuningfork/tuningfork_settings.bin",
                                            settings_ser)) {
         add_params(settings_ser, request_obj, "settings");
     }
@@ -64,7 +64,7 @@ static std::string RequestJson(const JniCtx& jni) {
         std::stringstream str;
         str << "dev_tuningfork_fidelityparams_" << i << ".bin";
         ProtobufSerialization fp;
-        if (FindFidelityParamsInApk(jni, str.str(), fp)==TFERROR_OK) {
+        if (FindFidelityParamsInApk(str.str(), fp)==TFERROR_OK) {
             std::string fp_b64;
             encode_b64(fp, fp_b64);
             fps.push_back(fp_b64);
@@ -84,10 +84,10 @@ static std::string RequestJson(const JniCtx& jni) {
     return result;
 }
 
-TFErrorCode UploadDebugInfo(const JniCtx& jni, Request& request) {
+TFErrorCode UploadDebugInfo(Request& request) {
     int response_code;
     std::string body;
-    TFErrorCode ret = request.Send(kRpcName, RequestJson(jni),
+    TFErrorCode ret = request.Send(kRpcName, RequestJson(),
                                    response_code, body);
     if (ret!=TFERROR_OK)
         return ret;

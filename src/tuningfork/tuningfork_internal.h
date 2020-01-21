@@ -25,9 +25,6 @@
 #include <string>
 #include <chrono>
 #include <vector>
-#include <jni.h>
-
-#include "jnictx.h"
 
 class AAsset;
 
@@ -164,7 +161,7 @@ class SwappyTraceWrapper {
     TFTraceHandle waitTraceHandle_ = 0;
     TFTraceHandle swapTraceHandle_ = 0;
 public:
-    SwappyTraceWrapper(const Settings& settings, const JniCtx& jni);
+    SwappyTraceWrapper(const Settings& settings);
     // Swappy trace callbacks
     static void StartFrameCallback(void* userPtr, int /*currentFrame*/,
                                          long /*currentFrameTimeStampMs*/);
@@ -177,7 +174,7 @@ public:
 // If no backend is passed, the default backend, which uploads to the google endpoint is used.
 // If no timeProvider is passed, std::chrono::steady_clock is used.
 // If no env is passed, there can be no upload or download.
-TFErrorCode Init(const Settings& settings, const JniCtx& jni,
+TFErrorCode Init(const Settings& settings,
                  const ExtraUploadInfo* extra_info = 0,
                  Backend* backend = 0, ParamsLoader* loader = 0,
                  ITimeProvider* time_provider = 0);
@@ -219,13 +216,9 @@ TFErrorCode Destroy();
 // The default histogram that is used if the user doesn't specify one in Settings
 TFHistogram DefaultHistogram();
 
-// Get the object that holds JNI env and context.
-// Tuning fork must have been initialized.
-const JniCtx& GetJniCtx();
-
 // Load default fidelity params from either the saved file or the file in
 //  settings.default_fidelity_parameters_filename, then start the download thread.
-TFErrorCode GetDefaultsFromAPKAndDownloadFPs(const Settings& settings, const JniCtx& jni);
+TFErrorCode GetDefaultsFromAPKAndDownloadFPs(const Settings& settings);
 
 TFErrorCode KillDownloadThreads();
 
@@ -234,7 +227,7 @@ TFErrorCode KillDownloadThreads();
 //  TFSettings_Free to deallocate data stored in the struct.
 // Returns TFERROR_OK and fills 'settings' if the file could be loaded.
 // Returns TFERROR_NO_SETTINGS if the file was not found.
-TFErrorCode FindSettingsInApk(Settings* settings, const JniCtx& jni);
+TFErrorCode FindSettingsInApk(Settings* settings);
 
 // Get the current settings (TF must have been initialized)
 const Settings* GetSettings();
@@ -242,10 +235,9 @@ const Settings* GetSettings();
 TFErrorCode SetFidelityParameters(const ProtobufSerialization& params);
 
 // Perform a blocking call to upload debug info to a server.
-TFErrorCode UploadDebugInfo(const JniCtx& jni, Request& request);
+TFErrorCode UploadDebugInfo(Request& request);
 
-TFErrorCode FindFidelityParamsInApk(const JniCtx& jni,
-                                    const std::string& filename,
+TFErrorCode FindFidelityParamsInApk(const std::string& filename,
                                     ProtobufSerialization& fp);
 
 } // namespace tuningfork

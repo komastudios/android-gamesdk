@@ -43,14 +43,14 @@ namespace benderkit {
 
         VkSurfaceTransformFlagBitsKHR GetPretransformFlag() const { return pretransform_flag_; }
 
-        VkExtent2D GetDisplaySize() const { return display_size_; }
+        VkExtent2D GetDisplaySize() const { return display_size_identity_; }
 
         VkExtent2D GetDisplaySizeOriented() const {
-            VkExtent2D result = display_size_;
+            VkExtent2D result = display_size_identity_;
             if (pretransform_flag_ == VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR ||
                 pretransform_flag_ == VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR) {
-                result.width = display_size_.height;
-                result.height = display_size_.width;
+                result.width = display_size_identity_.height;
+                result.height = display_size_identity_.width;
             }
             return result;
         }
@@ -64,6 +64,10 @@ namespace benderkit {
         VkImage GetCurrentDisplayImage() const { return display_images_[current_frame_index_]; }
 
         uint GetCurrentFrameIndex() const { return current_frame_index_; }
+
+        bool GetWindowResized() const { return window_resized_; }
+
+        void SetWindowResized(bool resized) { window_resized_ = resized; }
 
         void Present(VkSemaphore* wait_semaphores);
 
@@ -104,8 +108,9 @@ namespace benderkit {
         uint32_t swapchain_length_;
         VkSurfaceTransformFlagBitsKHR pretransform_flag_;
 
-        VkExtent2D display_size_;
+        VkExtent2D display_size_identity_;
         VkFormat display_format_;
+        bool window_resized_ = false;
 
         uint current_frame_index_ = 0;
 

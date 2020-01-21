@@ -47,6 +47,20 @@ Device::Device(ANativeWindow *window) {
     };
 
     CreateVulkanDevice(window, &app_info);
+
+    VkSurfaceCapabilitiesKHR surfaceCapabilities;
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(gpu_device_, surface_,
+                                              &surfaceCapabilities);
+    uint32_t new_width = surfaceCapabilities.currentExtent.width;
+    uint32_t new_height = surfaceCapabilities.currentExtent.height;
+    if (surfaceCapabilities.currentTransform & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR ||
+        surfaceCapabilities.currentTransform & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR) {
+      // Do not change the swapchain dimensions
+      surfaceCapabilities.currentExtent.height = new_width;
+      surfaceCapabilities.currentExtent.width = new_height;
+    }
+    display_size_identity_ = surfaceCapabilities.currentExtent;
+
     CreateSwapChain();
 
     initialized_ = true;
@@ -76,8 +90,10 @@ void Device::Present(VkSemaphore* wait_semaphores) {
           .pResults = &result,
   };
 
-  vkQueuePresentKHR(queue_, &present_info);
-
+  auto res = vkQueuePresentKHR(queue_, &present_info);
+  if (res == VK_SUBOPTIMAL_KHR){
+    window_resized_ = true;
+  }
   current_frame_index_ = (current_frame_index_ + 1) % GetDisplayImages().size();
 }
 
@@ -219,17 +235,7 @@ void Device::CreateSwapChain(VkSwapchainKHR oldSwapchain) {
     VkSurfaceCapabilitiesKHR surfaceCapabilities;
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(gpu_device_, surface_,
                                               &surfaceCapabilities);
-
-    uint32_t new_width = surfaceCapabilities.currentExtent.width;
-    uint32_t new_height = surfaceCapabilities.currentExtent.height;
     pretransform_flag_ = surfaceCapabilities.currentTransform;
-
-    if (pretransform_flag_ & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR ||
-        pretransform_flag_ & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR) {
-      // Do not change the swapchain dimensions
-      surfaceCapabilities.currentExtent.height = new_width;
-      surfaceCapabilities.currentExtent.width = new_height;
-    }
 
     // Query the list of supported surface format and choose one we like
     uint32_t formatCount = 0;
@@ -246,7 +252,6 @@ void Device::CreateSwapChain(VkSwapchainKHR oldSwapchain) {
     }
     assert(chosenFormat < formatCount);
 
-    display_size_ = surfaceCapabilities.currentExtent;
     display_format_ = formats[chosenFormat].format;
 
     // **********************************************************
@@ -259,7 +264,7 @@ void Device::CreateSwapChain(VkSwapchainKHR oldSwapchain) {
         .minImageCount = surfaceCapabilities.minImageCount,
         .imageFormat = formats[chosenFormat].format,
         .imageColorSpace = formats[chosenFormat].colorSpace,
-        .imageExtent = surfaceCapabilities.currentExtent,
+        .imageExtent = display_size_identity_,
         .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
         .preTransform = pretransform_flag_,
         .compositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR,
