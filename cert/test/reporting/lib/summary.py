@@ -186,10 +186,10 @@ def generate_summary(reports: List[Path], excluded: List[Path],
     Returns:
         a path to the reported summary.
     """
-    if len(reports) == 0:
+    if len(reports) + len(excluded) == 0:
         return None
 
-    reports_dir = reports[0].parent
+    reports_dir = reports[0].parent if len(reports) > 0 else excluded[0].parent
 
     summary_file_name = \
         f"summary_{get_indexable_utc()}_{reports_dir.stem}" \
