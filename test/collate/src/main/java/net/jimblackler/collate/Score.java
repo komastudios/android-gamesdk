@@ -127,7 +127,8 @@ public class Score {
                   score,
                   Main.writeGraphs(directory, results1),
                   exited && !allocFailed,
-                  serviceCrashed));
+                  serviceCrashed,
+                  scenario - 1 >= baseGroups.size() ? 1 : 0));
         };
 
     if (USE_DEVICE) {
@@ -177,10 +178,12 @@ public class Score {
           .append(build.getString("RELEASE"))
           .append("</td>");
 
-      float maxScore = Float.MIN_VALUE;
+      float[] maxScore = {Float.MIN_VALUE, Float.MIN_VALUE};
+
       for (Result result : row.getValue()) {
         if (result != null && result.isAcceptable()) {
-          maxScore = Math.max(result.getScore(), maxScore);
+          int group = result.getGroup();
+          maxScore[group] = Math.max(result.getScore(), maxScore[group]);
         }
       }
 
@@ -190,7 +193,8 @@ public class Score {
           continue;
         }
         Collection<String> classes = new ArrayList<>();
-        if (result.getScore() == maxScore && result.isAcceptable()) {
+        int group = result.getGroup();
+        if (result.getScore() == maxScore[group] && result.isAcceptable()) {
           classes.add("best");
         }
         if (!result.isAcceptable()) {
@@ -232,12 +236,14 @@ public class Score {
     private final URI uri;
     private final boolean acceptable;
     private final boolean serviceCrashed;
+    private final int group;
 
-    Result(float score, URI uri, boolean acceptable, boolean serviceCrashed) {
+    Result(float score, URI uri, boolean acceptable, boolean serviceCrashed, int group) {
       this.score = score;
       this.uri = uri;
       this.acceptable = acceptable;
       this.serviceCrashed = serviceCrashed;
+      this.group = group;
     }
 
     float getScore() {
@@ -254,6 +260,10 @@ public class Score {
 
     boolean isServiceCrashed() {
       return serviceCrashed;
+    }
+
+    int getGroup() {
+      return group;
     }
   }
 }
