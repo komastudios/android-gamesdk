@@ -19,8 +19,14 @@
 
 import argparse
 from pathlib import Path
+import sys
 
+from lib.common import Recipe
 from lib.deployment import run_recipe
+
+# ------------------------------------------------------------------------------
+
+RECIPE_DEFAULTS = "./recipes/defaults.yaml"
 
 # ------------------------------------------------------------------------------
 
@@ -36,8 +42,28 @@ def main():
                         help="Path to yaml file describing the run task",
                         required=True)
 
+    parser.add_argument("--local",
+                        help="Run local deployment",
+                        default=False,
+                        action="store_true")
+
+    parser.add_argument("--ftl",
+                        help="Run FTL deployment",
+                        default=False,
+                        action="store_true")
+
     args = parser.parse_args()
-    run_recipe(Path(args.recipe))
+
+    extra_args = {"local": args.local, "ftl": args.ftl}
+
+    if not args.local and not args.ftl:
+        print("At least one of 'local' and 'ftl' must be set"\
+            ", else this script does nothing.")
+        parser.print_help()
+        sys.exit(1)
+
+    recipe = Recipe(Path(args.recipe), Path(RECIPE_DEFAULTS))
+    run_recipe(recipe, extra_args)
 
 
 if __name__ == "__main__":

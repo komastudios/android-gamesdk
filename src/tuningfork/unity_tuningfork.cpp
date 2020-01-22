@@ -15,6 +15,7 @@
  */
 #include "tuningfork/tuningfork.h"
 #include "tuningfork_utils.h"
+#include "jni_helper.h"
 
 #include <jni.h>
 #include <dlfcn.h>
@@ -98,10 +99,9 @@ namespace {
 
 } // anonymous namespace
 
+namespace jni = tuningfork::jni;
 
 extern "C" {
-
-static JniCtx* s_jni;
 
 jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 
@@ -120,7 +120,7 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     jobject activityThreadObj = env->CallStaticObjectMethod(activityThread, currentActivityThread);
     jobject context = env->CallObjectMethod(activityThreadObj, getApplication);
 
-    s_jni = new JniCtx(env, context);
+    jni::Init(env, context);
     return JNI_VERSION_1_6;
 }
 
@@ -137,7 +137,7 @@ TFErrorCode Unity_TuningFork_init(
     settings.fidelity_params_callback = fidelity_params_callback;
     settings.training_fidelity_params = training_fidelity_params;
     settings.endpoint_uri_override = endpoint_uri_override;
-    return TuningFork_init(&settings, s_jni->Env(), s_jni->Ctx());
+    return TuningFork_init(&settings, jni::Env(), jni::AppContextGlobalRef());
 }
 
 bool Unity_TuningFork_swappyIsEnabled(){
@@ -146,10 +146,10 @@ bool Unity_TuningFork_swappyIsEnabled(){
 
 TFErrorCode Unity_TuningFork_findFidelityParamsInApk(
         const char* filename, CProtobufSerialization* fp) {
-    return TuningFork_findFidelityParamsInApk(s_jni->Env(), s_jni->Ctx(), filename, fp);
+    return TuningFork_findFidelityParamsInApk(jni::Env(), jni::AppContextGlobalRef(), filename, fp);
 }
 
 TFErrorCode Unity_TuningFork_saveOrDeleteFidelityParamsFile(CProtobufSerialization* fps) {
-    return TuningFork_saveOrDeleteFidelityParamsFile(s_jni->Env(), s_jni->Ctx(), fps);
+    return TuningFork_saveOrDeleteFidelityParamsFile(jni::Env(), jni::AppContextGlobalRef(), fps);
 }
 } // extern "C" {

@@ -1,17 +1,2 @@
 build:
-  clean: false
   configuration: recipes/configurations/buffer_storage.json
-
-systrace:
-  enabled: false
-  categories: "sched freq idle am wm gfx view binder_driver hal dalvik input res"
-  keywords:
-    - MonitorOperation
-
-deployment:
-  local:
-    all_attached_devices: true
-
-summary:
-  enabled: true
-  format: md

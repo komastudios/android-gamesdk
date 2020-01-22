@@ -23,7 +23,7 @@ from typing import List, Tuple
 import math
 import matplotlib.pyplot as plt
 
-from lib.common import Error, nanoseconds_to_seconds
+from lib.common import nanoseconds_to_seconds
 from lib.report import Datum, Suite
 from lib.graphers.suite_handler import SuiteHandler
 
@@ -86,12 +86,8 @@ def min_max_voxels_per_second(data: List[Datum]) -> Tuple[float, float]:
     return round(min_vps), round(max_vps)
 
 
-class DataConsistencyError(Error):
-    """Error raised to represent some kind of data inconstency"""
-
-    def __init__(self, message):
-        super().__init__()
-        self.message = message
+class DataConsistencyError(Exception):
+    """Error raised to represent some kind of data inconstency."""
 
 
 class MarchingCubesSuiteHandler(SuiteHandler):

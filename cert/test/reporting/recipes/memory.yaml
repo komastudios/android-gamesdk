@@ -1,15 +1,2 @@
 build:
-  clean: false
   configuration: recipes/configurations/memory.json
-
-systrace:
-  enabled: false
-
-deployment:
-  local:
-    all_attached_devices: true
-
-summary:
-  enabled: true
-  format: md
-
