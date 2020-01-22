@@ -59,8 +59,8 @@ class SummaryFormatter(ABC):
             "SummaryFormatter subclass must implement on_init()")
 
     @abstractmethod
-    def on_device(self, device_id: str,
-                  plot_path: Path, plot_path_relative: Path,
+    def on_device(self, device_id: str, plot_path: Path,
+                  plot_path_relative: Path,
                   summary: Union[str, type(None)]) -> type(None):
         """Writes formatted results for a given device.
 
@@ -89,6 +89,27 @@ class SummaryFormatter(ABC):
         """
         raise NotImplementedError(
             "SummaryFormatter subclass must implement on_cross_suite()")
+
+    @abstractmethod
+    def on_errors_available(self, title: str) -> type(None):
+        """Writes a title for a section on failed tests.
+
+        Args:
+            title: Failed tests header.
+        """
+        raise NotImplementedError(
+            "SummaryFormatter subclass must implement on_errors_available()")
+
+    @abstractmethod
+    def on_device_error(self, device_id: str, summary: str) -> type(None):
+        """Writes formatted error results for a given device.
+
+        Args:
+            device_id: the device manufacturer, model and API level.
+            summary: a string containing some description about the failure.
+        """
+        raise NotImplementedError(
+            "SummaryFormatter subclass must implement on_device_error()")
 
     def on_finish(self) -> type(None):
         """(Optional) Writes formatted closing marks to the summary."""

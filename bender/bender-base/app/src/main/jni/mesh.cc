@@ -174,12 +174,12 @@ void Mesh::UpdatePipeline(VkRenderPass render_pass) {
   CreateMeshPipeline(render_pass);
 }
 
-void Mesh::Update(uint_t frame_index, glm::vec3 camera, glm::mat4 view, glm::mat4 proj) {
+void Mesh::Update(uint_t frame_index, glm::vec3 camera, glm::mat4 view, glm::mat4 proj, glm::mat4 prerotation) {
   glm::mat4 model = GetTransform();
   glm::mat4 mvp = proj * view * model;
 
-  mesh_buffer_->Update(frame_index, [&mvp, &model](auto &ubo) {
-    ubo.mvp = mvp;
+  mesh_buffer_->Update(frame_index, [&mvp, &model, &prerotation](auto &ubo) {
+    ubo.mvp = prerotation * mvp;
     ubo.model = model;
     ubo.inv_transpose = glm::transpose(glm::inverse(model));
   });

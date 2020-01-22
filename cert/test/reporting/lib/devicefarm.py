@@ -26,8 +26,10 @@ from typing import Dict, List, Tuple
 import yaml
 
 from lib.common import NonZeroSubprocessExitCode
+from lib.device import DeviceCatalog, DeviceInfo
 
-def get_all_physical_devices(flags_yaml):
+
+def populate_device_catalog_from_gcloud(flags_yaml):
     """Get a list of all physical devices availabe for use on FTL
     Returns:
         Tuple of (list of args for passing on shell command, and JSON
@@ -56,22 +58,27 @@ def get_all_physical_devices(flags_yaml):
     if proc.returncode != 0:
         raise NonZeroSubprocessExitCode(proc.stderr)
 
-    result_args_list = []
-    result_json_list = []
+    device_catalog = DeviceCatalog()
     devices = json.loads(proc.stdout)
     for device in devices:
+        device_info = DeviceInfo(device['codename'], device['brand'],
+                                 device['name'],
+                                 device['supportedVersionIds'][-1])
+        device_catalog.push(device_info)
+
+    return device_catalog
+
+
+def make_device_args_list_from_catalog() -> str:
+    """Turns the device catalog into a string of --device model/version
+    arguments for gcloud."""
+    result_args_list = []
+    for device in DeviceCatalog():
         result_args_list.append('--device')
         result_args_list.append('model={},version={}'.format(
-            device['codename'], device['supportedVersionIds'][-1]))
+            device.codename, device.sdk_version))
 
-        result_json_list.append({
-            "model": device['codename'],
-            "version": device['supportedVersionIds'][-1]
-        })
-
-    result_json = json.dumps(result_json_list)
-
-    return result_args_list, result_json
+    return result_args_list
 
 
 def run_test(flags_file: Path, args_yaml: Path, test_name: str, enable_systrace,
@@ -108,9 +115,9 @@ def run_test(flags_file: Path, args_yaml: Path, test_name: str, enable_systrace,
         str(args_yaml.resolve()) + ":" + test_name
     ]
 
+    populate_device_catalog_from_gcloud(flags_file)
     if run_on_all_physical_devices:
-        device_args_list, _ = get_all_physical_devices(flags_file)
-        cmdline.extend(device_args_list)
+        cmdline.extend(make_device_args_list_from_catalog())
 
     print('Stand by...\n')
     proc = subprocess.run(cmdline,
@@ -136,7 +143,7 @@ def display_test_results(stdout, stderr, dst_dir: Path):
     if not result:
         return
 
-    fields = ['axis_value', 'outcome', 'test_details']
+    fields = ["axis_value", "outcome", "test_details"]
     max_width = {f: max(len(res[f]) for res in result) for f in fields}
     for line in result:
         for field in fields:
@@ -144,9 +151,13 @@ def display_test_results(stdout, stderr, dst_dir: Path):
         print()
     print()
 
-    for line in result:
-        if line['outcome'] == 'Skipped':
-            file_name = 'skipped_' + line['axis_value'] + '.json'
+    for line in filter(lambda line: line["outcome"] != "Passed", result):
+        device_parts = re.match(r"^(.+)-(\d+)-(.+)$", line["axis_value"])
+        if device_parts is not None and len(device_parts.groups()) >= 2:
+            line["codename"] = device_parts.group(1)
+            device_info = DeviceCatalog()[line["codename"]]
+            file_name = f"{device_info.brand}_{device_info.model}_" \
+                f"{device_parts.group(2)}_error.json"
             args_file: Path = dst_dir.joinpath(file_name)
             with open(args_file, "w") as write_file:
                 json.dump(line, write_file)

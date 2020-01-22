@@ -48,78 +48,56 @@ std::string Base16(const std::vector<char>& bytes) {
 
 namespace apk_utils {
 
-class AssetManagerHelper {
-    AAssetManager* mgr_;
-    jobject jmgr_;
-    JNIEnv* env_;
+class NativeAsset {
+     AAsset* asset;
   public:
-    AssetManagerHelper(JNIEnv* env, jobject context) : mgr_(nullptr), jmgr_(nullptr),
-                                                       env_(env) {
-        jclass cls = env->FindClass("android/content/Context");
-        jmethodID get_assets = env->GetMethodID(cls, "getAssets",
-                                                "()Landroid/content/res/AssetManager;");
-        env->DeleteLocalRef(cls);
-        if(get_assets==nullptr) {
-            ALOGE("No Context.getAssets() method");
-            return;
-        }
-        jmgr_ = env->CallObjectMethod(context, get_assets);
-        if (jmgr_ == nullptr) {
-            ALOGE("No java asset manager");
-            return;
-        }
-        mgr_ = AAssetManager_fromJava(env, jmgr_);
-        if (mgr_ == nullptr) {
-            ALOGE("No asset manager");
-            return;
+    NativeAsset(const char* name) {
+        auto java_asset_manager = jni::AppContext().getAssets();
+        AAssetManager* mgr = AAssetManager_fromJava(jni::Env(), (jobject)java_asset_manager.obj_);
+        asset = AAssetManager_open(mgr, name, AASSET_MODE_BUFFER);
+        if (asset == nullptr) {
+            ALOGW("Can't find %s in APK", name);
         }
     }
-    AAsset* GetAsset(const char* name) {
-        if (mgr_)
-            return AAssetManager_open(mgr_, name, AASSET_MODE_BUFFER);
-        else
-            return nullptr;
+    NativeAsset(NativeAsset&& a) : asset(a.asset) {
+        a.asset = nullptr;
     }
-    ~AssetManagerHelper() {
-        if (jmgr_)
-            env_->DeleteLocalRef(jmgr_);
+    NativeAsset& operator=(NativeAsset&& a) {
+        asset = a.asset;
+        a.asset = nullptr;
+        return *this;
     }
+    NativeAsset(const NativeAsset& a) = delete;
+    NativeAsset& operator=(const NativeAsset& a) = delete;
+    ~NativeAsset() {
+        if (asset != nullptr) {
+            AAsset_close(asset);
+        }
+    }
+    bool IsValid() const {
+        return asset!=nullptr;
+    }
+    operator AAsset*() { return asset; }
 };
 
-// Get an asset from this APK's asset directory.
-// Returns NULL if the asset could not be found.
-// Asset_close must be called once the asset is no longer needed.
-AAsset* GetAsset(const JniCtx& jni, const char* name) {
-    AssetManagerHelper mgr(jni.Env(), jni.Ctx());
-    AAsset* asset = mgr.GetAsset(name);
-    if (asset == nullptr) {
-        ALOGW("Can't find %s in APK", name);
-        return nullptr;
-    }
-    return asset;
-}
-
-bool GetAssetAsSerialization(const JniCtx& jni, const char* name,
+bool GetAssetAsSerialization(const char* name,
                              ProtobufSerialization& out) {
-
-    AAsset* asset = GetAsset(jni, name);
-    if (asset==nullptr) return false;
+    NativeAsset asset(name);
+    if (!asset.IsValid()) return false;
     uint64_t size = AAsset_getLength64(asset);
     out.resize(size);
     memcpy(const_cast<uint8_t*>(out.data()), AAsset_getBuffer(asset), size);
-    AAsset_close(asset);
     return true;
 }
 
 // Get the app's version code. Also fills packageNameStr with the package name
 //  if it is non-null.
-int GetVersionCode(const JniCtx& jni_ctx, std::string* packageNameStr, uint32_t* gl_es_version) {
+int GetVersionCode(std::string* packageNameStr, uint32_t* gl_es_version) {
     using namespace jni;
-    Helper jni(jni_ctx.Env(), jni_ctx.Ctx());
-    android::content::Context context(jni_ctx.Ctx(), jni);
-    auto pm = context.getPackageManager();
+    auto app_context = AppContext();
+    auto pm = app_context.getPackageManager();
     CHECK_FOR_JNI_EXCEPTION_AND_RETURN(0);
-    std::string package_name = context.getPackageName().C();
+    std::string package_name = app_context.getPackageName().C();
     CHECK_FOR_JNI_EXCEPTION_AND_RETURN(0);
     auto package_info = pm.getPackageInfo(package_name, 0x0);
     CHECK_FOR_JNI_EXCEPTION_AND_RETURN(0);
@@ -131,7 +109,7 @@ int GetVersionCode(const JniCtx& jni_ctx, std::string* packageNameStr, uint32_t*
     if(gl_es_version != nullptr) {
         auto features = pm.getSystemAvailableFeatures();
         CHECK_FOR_JNI_EXCEPTION_AND_RETURN(0);
-        for (auto f : features) {
+        for (auto& f : features) {
             if(f.name.empty()) {
                 if (f.reqGlEsVersion !=
                                 android::content::pm::FeatureInfo::GL_ES_VERSION_UNDEFINED) {
@@ -146,13 +124,12 @@ int GetVersionCode(const JniCtx& jni_ctx, std::string* packageNameStr, uint32_t*
     return code;
 }
 
-std::string GetSignature(const JniCtx& jni_ctx) {
+std::string GetSignature() {
     using namespace jni;
-    Helper jni(jni_ctx.Env(), jni_ctx.Ctx());
-    android::content::Context context(jni_ctx.Ctx(), jni);
-    auto pm = context.getPackageManager();
+    auto app_context = AppContext();
+    auto pm = app_context.getPackageManager();
     CHECK_FOR_JNI_EXCEPTION_AND_RETURN("");
-    auto package_name = context.getPackageName();
+    auto package_name = app_context.getPackageName();
     CHECK_FOR_JNI_EXCEPTION_AND_RETURN("");
     auto package_info = pm.getPackageInfo(package_name.C(),
                                           android::content::pm::PackageManager::GET_SIGNATURES);
@@ -162,7 +139,7 @@ std::string GetSignature(const JniCtx& jni_ctx) {
     CHECK_FOR_JNI_EXCEPTION_AND_RETURN("");
     if (sigs.size()==0) return "";
     auto sig = sigs[0];
-    java::security::MessageDigest md("SHA1", jni);
+    java::security::MessageDigest md("SHA1");
     CHECK_FOR_JNI_EXCEPTION_AND_RETURN("");
     auto padded_sig = md.digest(sigs[0]);
     CHECK_FOR_JNI_EXCEPTION_AND_RETURN("");
@@ -170,13 +147,13 @@ std::string GetSignature(const JniCtx& jni_ctx) {
 }
 
 
-bool GetDebuggable(const JniCtx& jni_ctx) {
+bool GetDebuggable() {
     using namespace jni;
-    Helper jni(jni_ctx.Env(), jni_ctx.Ctx());
-    android::content::Context context(jni_ctx.Ctx(), jni);
-    auto pm = context.getPackageManager();
+    if (!jni::IsValid()) return false;
+    auto app_context = AppContext();
+    auto pm = app_context.getPackageManager();
     CHECK_FOR_JNI_EXCEPTION_AND_RETURN(false);
-    auto package_name = context.getPackageName();
+    auto package_name = app_context.getPackageName();
     CHECK_FOR_JNI_EXCEPTION_AND_RETURN(false);
     auto package_info = pm.getPackageInfo(package_name.C(),0);
     CHECK_FOR_JNI_EXCEPTION_AND_RETURN(false);
@@ -215,26 +192,9 @@ bool FileExists(const std::string& fname) {
     struct stat buffer;
     return (stat(fname.c_str(), &buffer)==0);
 }
-std::string GetAppCacheDir(const JniCtx& jni_ctx) {
-    JNIEnv* env = jni_ctx.Env();
-    jclass contextClass = env->GetObjectClass(jni_ctx.Ctx());
-    jmethodID getCacheDir = env->GetMethodID( contextClass, "getCacheDir",
-                                              "()Ljava/io/File;" );
-    jobject cache_dir = env->CallObjectMethod( jni_ctx.Ctx(), getCacheDir );
-
-    jclass fileClass = env->FindClass( "java/io/File" );
-    jmethodID getPath = env->GetMethodID( fileClass, "getPath", "()Ljava/lang/String;" );
-    jstring path_string = (jstring)env->CallObjectMethod( cache_dir, getPath );
-
-    const char *path_chars = env->GetStringUTFChars( path_string, NULL );
-    std::string temp_folder( path_chars );
-    env->ReleaseStringUTFChars( path_string, path_chars );
-
-    env->DeleteLocalRef(fileClass);
-    env->DeleteLocalRef(cache_dir);
-    env->DeleteLocalRef(contextClass);
-
-    return temp_folder;
+std::string GetAppCacheDir() {
+    jni::String path = jni::AppContext().getCacheDir().getPath();
+    return path.C();
 }
 bool DeleteFile(const std::string& path) {
     if (FileExists(path))
@@ -311,19 +271,9 @@ Json::object DeviceSpecJson(const ExtraUploadInfo& request_info) {
 
 } // namespace json_utils
 
-std::string UniqueId(JNIEnv* env) {
-    jclass uuid_class = env->FindClass("java/util/UUID");
-    jmethodID randomUUID = env->GetStaticMethodID( uuid_class, "randomUUID",
-                                                   "()Ljava/util/UUID;");
-    jobject uuid = env->CallStaticObjectMethod(uuid_class, randomUUID);
-    jmethodID toString = env->GetMethodID( uuid_class, "toString", "()Ljava/lang/String;");
-    jstring uuid_string = (jstring)env->CallObjectMethod(uuid, toString);
-    const char *uuid_chars = env->GetStringUTFChars( uuid_string, NULL );
-    std::string temp_uuid( uuid_chars );
-    env->ReleaseStringUTFChars( uuid_string, uuid_chars );
-    env->DeleteLocalRef(uuid);
-    env->DeleteLocalRef(uuid_class);
-    return temp_uuid;
+std::string UniqueId() {
+    using namespace jni;
+    return java::util::UUID::randomUUID().toString().C();
 }
 
 } // namespace tuningfork

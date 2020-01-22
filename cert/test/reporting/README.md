@@ -49,10 +49,21 @@ NOTE: Because VSCode saves a user-specific python env path in the `settings.json
 ### `run.py`
 
 ``` bash
-python run.py --recipe path/to/recipe.yaml
+# this will run the recipe on all local devices as well as on FTL
+python run.py --local --ftl --recipe path/to/recipe.yaml
+
+# this will run the recipe on just local devices
+python run.py --local --recipe path/to/recipe.yaml
+
 ```
 
 The entrypoint for the pipeline is `run.py` , which consumes a "recipe" YAML file. Usage is simple: `python run.py --recipe whatever.yaml` . The recipe file structure is as follows:
+
+NOTE: defaults are sourced from `recipes/defaults.yaml`, meaning a minimal valid recipe may simply consist of:
+```yaml
+build:
+  configuration: path/to/configuration.json
+```
 
 ``` yaml
 build:

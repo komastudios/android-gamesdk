@@ -508,8 +508,41 @@ def copySamples(outFolder, includeTuningForkSamples = true) {
     }
 
     if (includeTuningForkSamples) {
-        throw new UnsupportedOperationException(
-	    "Including samples for TuningFork is not yet supported.");
+	copy {
+            from file(joinPath('samples', "tuningfork", "tftestapp"))
+            into file(joinPath(buildFolder, 'samples', "tuningfork", "tftestapp"))
+            exclude '**/build', '**/out', "local.properties", "**/.externalNativeBuild", "**/.gradle",
+		"**/OWNERS", "**/.idea", '**/CMakeLists.txt'
+            rename 'CMakeLists.for-samples-in-archive.txt', 'CMakeLists.txt'
+            includeEmptyDirs = false
+	}
+	copy {
+            from file(joinPath('src', 'protobuf'))
+            into file(joinPath(buildFolder, 'src', 'protobuf'))
+            includeEmptyDirs = false
+	}
+	copy {
+            from file(joinPath('third_party', 'protobuf-3.0.0'))
+            into file(joinPath(buildFolder, 'third_party', 'protobuf-3.0.0'))
+            includeEmptyDirs = false
+	}
+	copy {
+            from file(joinPath('..', 'external', 'nanopb-c'))
+            into file(joinPath(buildFolder, 'external', 'nanopb-c'))
+            includeEmptyDirs = false
+	}
+	copy {
+            from file(joinPath('src', 'tuningfork', 'tools', 'validation'))
+            into file(joinPath(buildFolder, 'src', 'tuningfork', 'tools', 'validation'))
+            exclude '**/build'
+            includeEmptyDirs = false
+	}
+	copy {
+            from file(joinPath('src', 'tuningfork', 'proto'))
+            into file(joinPath(buildFolder, 'src', 'tuningfork', 'proto'))
+            include 'tuningfork.proto'
+            includeEmptyDirs = false
+	}
     }
 }
 
@@ -626,8 +659,8 @@ task fullSdkBuild(type: BuildTask) {
     ext.withSharedLibs = true
     ext.withStaticLibs = true
     ext.withFullBuildKey = true
-    ext.withSamples = false
-    ext.buildType = defaultBuildType();
+    ext.withSamples = true
+    ext.buildType = "Release"
     ext.nativeBuild = { tf,bt -> sdkNativeBuild(tf,bt) }
 }
 

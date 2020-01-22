@@ -166,7 +166,7 @@ std::string getSystemPropViaGet(const char* key) {
 }
 
 /* static */
-ExtraUploadInfo UploadThread::BuildExtraUploadInfo(const JniCtx& jni_) {
+ExtraUploadInfo UploadThread::BuildExtraUploadInfo() {
     ExtraUploadInfo extra_info;
     // Total memory
     std::string s = slurpFile("/proc/meminfo");
@@ -194,8 +194,8 @@ ExtraUploadInfo UploadThread::BuildExtraUploadInfo(const JniCtx& jni_) {
     extra_info.build_version_sdk = getSystemPropViaGet("ro.build.version.sdk");
     extra_info.build_fingerprint = getSystemPropViaGet("ro.build.fingerprint");
 
-    if (jni_.IsValid())
-        extra_info.session_id = UniqueId(jni_.Env());
+    if (jni::IsValid())
+        extra_info.session_id = UniqueId();
 
     extra_info.cpu_max_freq_hz.clear();
     for(int index = 1;;++index) {
@@ -210,8 +210,8 @@ ExtraUploadInfo UploadThread::BuildExtraUploadInfo(const JniCtx& jni_) {
         extra_info.cpu_max_freq_hz.push_back(freq*1000); // File is in kHz
     }
 
-    if (jni_.IsValid()) {
-        extra_info.apk_version_code = apk_utils::GetVersionCode(jni_,
+    if (jni::IsValid()) {
+        extra_info.apk_version_code = apk_utils::GetVersionCode(
                                        &extra_info.apk_package_name,
                                        &extra_info.gl_es_version);
     }

@@ -34,8 +34,6 @@ bool IsVulkanReady(void);
 // Ask Vulkan to Render a frame
 bool VulkanDrawFrame(input::Data *input_data);
 
-void ResizeCallback(ANativeActivity *activity, ANativeWindow *window);
-
 void OnOrientationChange();
 
 #endif // BENDER_BASE_VULKAN_MAIN_H__

@@ -19,8 +19,6 @@ package com.google.tuningfork
 import org.json.JSONObject
 import android.util.Base64
 import java.lang.Exception
-import java.time.Duration
-import java.time.Instant
 
 // These classes are needed because of the lack of Json deserialization in protobuf lite
 
@@ -54,7 +52,7 @@ data class TuningParameters(
 
 data class TelemetryContext(
     val annotations: ByteArray, val tuning_parameters: TuningParameters,
-    val duration: Duration
+    val duration_ms: Long // NB java.time.Duration is not available for SDK<26
 )
 
 data class Telemetry(val context: TelemetryContext, val report: TelemetryReport)
@@ -73,7 +71,8 @@ data class UploadTelemetryRequest(
     val telemetry: Array<Telemetry>
 )
 
-data class TimePeriod(val start_time: Instant, val end_time: Instant)
+// Note we don't use java.time.Instant here because it is only available in SDK>=26.
+data class TimePeriod(val start_time: String, val end_time: String)
 
 data class LoadingEvents(val times_ms: IntArray)
 
@@ -164,8 +163,8 @@ class Deserializer {
         val ctx_json = json.getJSONObject(field_name)
         val annotations = getByteArray(ctx_json, "annotations")
         val tuning_parameters = getTuningParameters(ctx_json, "tuning_parameters")
-        val duration = getDuration(ctx_json, "duration")
-        return TelemetryContext(annotations, tuning_parameters, duration)
+        val duration_ms = getDurationMs(ctx_json, "duration")
+        return TelemetryContext(annotations, tuning_parameters, duration_ms)
     }
 
     fun getTuningParameters(json: JSONObject, field_name: String): TuningParameters {
@@ -178,13 +177,13 @@ class Deserializer {
         return TuningParameters(experiment_id, serialized_fidelity_parameters)
     }
 
-    fun getDuration(json: JSONObject, field_name: String): Duration {
+    fun getDurationMs(json: JSONObject, field_name: String): Long {
         val dur_str = json.getString(field_name)
         if (dur_str.endsWith('s')) {
             val secs = dur_str.substring(0, dur_str.length - 1).toFloat()
-            return Duration.ofMillis((secs * 1000).toLong())
+            return (secs * 1000).toLong()
         } else {
-            return Duration.ofSeconds(0)
+            return 0
         }
     }
 
@@ -246,9 +245,8 @@ class Deserializer {
 
     fun getTimePeriod(json: JSONObject, field_name: String): TimePeriod {
         val time_json = json.getJSONObject(field_name)
-        // TODO(willosborn): replace this so we can go lower than API 26
-        val start_time = Instant.parse(time_json.getString("start_time"))
-        val end_time = Instant.parse(time_json.getString("end_time"))
+        val start_time = time_json.getString("start_time")
+        val end_time = time_json.getString("end_time")
         return TimePeriod(start_time, end_time)
     }
 }

@@ -30,6 +30,7 @@ from lib.build import APP_ID
 from lib.common import ensure_dir
 from lib.systrace import filter_systrace_to_interested_lines,\
     convert_systrace_line_to_datum
+from lib.device import DeviceCatalog, DeviceInfo
 
 NANOSEC_EXPRESSION = r"^(\d+) (nanoseconds|ns|nsec)$"
 MILLISEC_EXPRESSION = r"^(\d+) (milliseconds|ms|msec)$"
@@ -198,7 +199,7 @@ class BuildInfo:
         passing to json encoding"""
         return self._d
 
-    def contents(self)->Dict:
+    def contents(self) -> Dict:
         """Get underlying dict"""
         return self._d
 
@@ -215,18 +216,55 @@ class Suite:
         self.file = file
         self.handler = None
 
-    def identifier(self):
-        """Sniff the build info and vend a suitable identifier for the dataset
-        """
-        return self.build["MANUFACTURER"] + " " + self.build[
-            "DEVICE"] + " SDK " + str(self.build["SDK_INT"])
+        if DeviceCatalog()[self.build["DEVICE"]] is None:
+            homologate_build_info(self.build["DEVICE"], self.build["SDK_INT"],
+                                  self.build)
 
-    def description(self):
-        """Sniff the build info and vend a human-readable description
-        of the dataset
-        """
-        return self.name + " (" + self.build["MANUFACTURER"] + " " + self.build[
-            "DEVICE"] + " SDK " + str(self.build["SDK_INT"]) + ")"
+    def identifier(self) -> str:
+        """Composes a suitable identifier for the dataset."""
+        return f'{DeviceCatalog()[self.build["DEVICE"]]}'
+
+    def description(self) -> str:
+        """Composes a human-readable description of the dataset."""
+        return f"""{self.name}
+{self.identifier()}"""
+
+
+def homologate_build_info(codename: str, api_level: str,
+                          build_info: BuildInfo) -> BuildInfo:
+    """BuildInfo is expected to come from the first line of a device report.
+    However, before a crash, that info could be missing. Happily, there's a
+    chance that such info is available in the device catalog. If so, it's
+    leveraged.
+    Conversely, there are occasions where the device info is not available. If
+    the build info is available, then the device info is populated from the
+    build info.
+
+    Args:
+        codename: the device codename.
+        api_level: the SDK available.
+        build_info: a BuildInfo structure.
+
+    Returns: a BuildInfo homologated with the device info.
+    """
+    device_info = DeviceCatalog()[codename]
+    if build_info is None:
+        build_info = {}
+        build_info["DEVICE"] = codename
+        build_info["SDK_INT"] = api_level
+        if device_info is None:
+            build_info["BRAND"] = "Unknown"
+            build_info["MODEL"] = "Unknown"
+        else:
+            build_info["BRAND"] = device_info.brand
+            build_info["MODEL"] = device_info.model
+
+    if device_info is None:  # build_info is not None
+        DeviceCatalog().push(
+            DeviceInfo(build_info["DEVICE"], build_info["BRAND"],
+                       build_info["MODEL"], build_info["SDK_INT"]))
+
+    return build_info
 
 
 def load_report(report_file: Path) -> (BuildInfo, List[Datum]):
@@ -239,6 +277,9 @@ def load_report(report_file: Path) -> (BuildInfo, List[Datum]):
     """
     build: BuildInfo = None
     data: List[Datum] = []
+    device_patterns = re.match(r"^(.+)-(\d+)-.+$", report_file.name)
+    codename = device_patterns.group(1)
+    api_level = device_patterns.group(2)
 
     with open(report_file) as file:
         for i, line in enumerate(file):
@@ -250,15 +291,7 @@ def load_report(report_file: Path) -> (BuildInfo, List[Datum]):
                 datum = Datum.from_json(json_dict)
                 data.append(datum)
 
-    if build is None:
-        device_patterns = re.match(r"^(.+)-(\d+)-.+$", report_file.name)
-        build = {
-            "PRODUCT": device_patterns.group(1),
-            "SDK_INT": device_patterns.group(2)
-        } if device_patterns is not None else {
-            "PRODUCT": "Unknown",
-            "SDK_INT": "00"
-        }
+    build = homologate_build_info(codename, api_level, build)
 
     return build, data
 
@@ -305,13 +338,11 @@ def normalize_report_name(report_file: Path) -> Path:
     Returns:
         Path of renamed report file
     """
-    device_info, _ = load_report(report_file)
-    device_identifier = device_info["PRODUCT"] + \
-        "_" + str(device_info["SDK_INT"])
-
-    renamed_report_file: Path = report_file.with_name("report_" +
-                                                      device_identifier +
-                                                      ".json")
+    build_info, _ = load_report(report_file)
+    device_info = DeviceCatalog()[build_info["DEVICE"]]
+    renamed_report_file: Path = \
+        report_file.with_name(f"{device_info.brand}_{device_info.model}"\
+            f"_{device_info.sdk_version}_report.json")
     shutil.move(report_file, renamed_report_file)
     return renamed_report_file
 
@@ -324,7 +355,7 @@ def extract_log_from_device(device_id: str, dst_dir: Path) -> Path:
     Returns:
         Path to the saved report file
     """
-    dst_file = dst_dir.joinpath(f"report_device_{device_id}.json")
+    dst_file = dst_dir.joinpath(f"{device_id}-00-local_report.json")
     ensure_dir(dst_file)
 
     cmdline = f"adb -s {device_id} shell \"run-as {APP_ID}"
@@ -409,14 +440,3 @@ def extract_and_export(device_id: str, dst_dir: Path, systrace_file: Path,
         log_file = merge_systrace(log_file, systrace_file, systrace_keywords)
 
     return log_file, systrace_file
-
-
-def get_device_product_and_api(report_path: Path) -> (str, int):
-    """Given a report path, infers from it its device and api level.
-    """
-    device_patterns = re.match(r"^report_(.+)_(\d+)\.(csv|json)$",
-                               report_path.name)
-    result = ("UNKNOWN", 0) if device_patterns is None \
-    else device_patterns.group(1), int(device_patterns.group(2))
-
-    return result

@@ -17,12 +17,6 @@ add_gamesdk_target(
     PACKAGE_DIR "../../../../../package/localtf"
     GEN_TASK "localTfBuild"
 )
-# This uses a pre-built gamesdk, unpacked in package/gamesdk:
-# add_gamesdk_target(
-#     PACKAGE_DIR "../../../../../package/gamesdk"
-#     ANDROID_NDK_VERSION "20.1.5948944"
-#     ANDROID_API_LEVEL "28"
-# )
 
 # Uncomment to add the Game SDK sources as part of the project sources, allowing to develop
 # (with auto completions) and debug Tuning Fork from Android Studio using this sample.

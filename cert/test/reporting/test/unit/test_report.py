@@ -82,7 +82,7 @@ class TestLibReport(unittest.TestCase):
         """Test report loading functionality"""
 
         # this is a standard report JSON file, but short for convenience
-        report_file = Path("./test/unit/data/report/report.json")
+        report_file = Path("./test/unit/data/report/blueline-29-report.json")
         build_info, data = lib.report.load_report(report_file)
 
         # just verify build info exists and has an expected field
@@ -105,7 +105,7 @@ class TestLibReport(unittest.TestCase):
 
     def test_datum_serialization(self):
         """Test datum serialization and load"""
-        report_file = Path("./test/unit/data/report/report.json")
+        report_file = Path("./test/unit/data/report/blueline-29-report.json")
         _, data = lib.report.load_report(report_file)
 
         for datum in data:
@@ -115,11 +115,11 @@ class TestLibReport(unittest.TestCase):
 
     def test_report_save(self):
         """Test that we write reports correctly"""
-        report_file = Path("./test/unit/data/report/report.json")
+        report_file = Path("./test/unit/data/report/blueline-29-report.json")
         build_info, data = lib.report.load_report(report_file)
 
         # copy loaded report data to a tmp file
-        tmp_report_file = Path("./tmp/report.json")
+        tmp_report_file = Path("./tmp/blueline-29-report.json")
         lib.common.ensure_dir(tmp_report_file)
         lib.report.save_report(tmp_report_file, build_info, data)
 
@@ -134,15 +134,11 @@ class TestLibReport(unittest.TestCase):
         """Test lib.report.normalize_report_name and
         lib.report.get_device_product_and_api
         """
-        report_file = Path("./test/unit/data/report/report.json")
-        tmp_report_file = Path("./tmp/report.json")
+        report_file = Path("./test/unit/data/report/blueline-29-report.json")
+        tmp_report_file = Path("./tmp/blueline-29-report.json")
         shutil.copy(report_file, tmp_report_file)
 
         tmp_report_file = lib.report.normalize_report_name(tmp_report_file)
-        self.assertEqual(tmp_report_file.name, "report_blueline_29.json")
-
-        product, api = lib.report.get_device_product_and_api(tmp_report_file)
-        self.assertEqual(product, "blueline")
-        self.assertEqual(api, 29)
+        self.assertEqual(tmp_report_file.name, "Google_Pixel 3_29_report.json")
 
         tmp_report_file.unlink()

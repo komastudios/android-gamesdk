@@ -76,6 +76,7 @@ find_library(log-lib
 add_definitions(-DVK_USE_PLATFORM_ANDROID_KHR)
 
 add_library(${PROJECT_NAME} SHARED
+        ${ANDROID_NDK}/sources/third_party/vulkan/src/common/vulkan_wrapper.cpp
         # Java-Native glue & super-fundamental code
         native-lib.cpp
 
