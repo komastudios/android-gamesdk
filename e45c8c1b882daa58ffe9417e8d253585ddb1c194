@@ -104,6 +104,23 @@
       "revId": "e45c8c1b882daa58ffe9417e8d253585ddb1c194",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "04dd315c_b97c1a95",
+        "filename": "src/swappy/common/Thread.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-01-22T21:09:19Z",
+      "side": 1,
+      "message": "why not class Thread : public ThreadImpl {} ?",
+      "revId": "e45c8c1b882daa58ffe9417e8d253585ddb1c194",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
