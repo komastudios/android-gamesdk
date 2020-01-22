@@ -7,20 +7,14 @@ set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D _LIBCPP_ENABLE_THREAD_SAFETY_ANNOTAT
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGOOGLE_PROTOBUF_NO_RTTI -DHAVE_PTHREAD")
 
+set( PROTOBUF_NANO_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/../../external/nanopb-c")
+
 set( GAMESDK_BUILD_TUNINGFORK ON)
 include("../../../gamesdk.cmake")
 
-# This builds the gamesdk in package/localtf and adds a gamesdk static library target
-add_gamesdk_target(
-    DO_LOCAL_BUILD
-    ROOT_DIR "../../../.."
-    PACKAGE_DIR "../../../../../package/localtf"
-    GEN_TASK "localTfBuild"
-)
-
-# Uncomment to add the Game SDK sources as part of the project sources, allowing to develop
-# (with auto completions) and debug Tuning Fork from Android Studio using this sample.
-#add_gamesdk_sources()
+# This uses Tuningfork as a static library from the Game SDK package. Make sure the Android
+# SDK and NDK versions that you are using are supported by the Game SDK.
+add_gamesdk_target(PACKAGE_DIR "../../../../" BUILD_TYPE "Release")
 
 include("../../../../src/protobuf/protobuf.cmake")
 
@@ -44,7 +38,7 @@ target_compile_options(protobuf-static PUBLIC "-Wno-tautological-constant-compar
 
 add_library( native-lib
              SHARED
-             src/main/cpp/tftestapp.cpp
+             src/main/cpp/expertballs.cpp
              src/main/cpp/Renderer.cpp
              src/main/cpp/Scene.cpp
              ${PROTO_GENS_DIR}/full/dev_tuningfork.pb.cc

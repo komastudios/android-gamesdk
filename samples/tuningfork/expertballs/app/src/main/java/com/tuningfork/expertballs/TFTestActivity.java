@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package com.tuningfork.demoapp;
+package com.tuningfork.expertballs;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -48,6 +48,7 @@ public class TFTestActivity extends AppCompatActivity implements Choreographer.F
         // gLView = new TFTestGLSurfaceView(this);
         view = new SurfaceView(this);
         setContentView(view);
+        getSupportActionBar().setTitle(R.string.main_heading);
         view.getHolder().addCallback(this);
         View buttons = getWindow().getLayoutInflater().inflate(R.layout.buttons, null);
         addContentView(buttons, new ViewGroup.LayoutParams(view.getLayoutParams()));

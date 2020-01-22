@@ -24,7 +24,7 @@
 #include <unistd.h>
 #include <android/native_window_jni.h>
 
-#define LOG_TAG "tftestapp"
+#define LOG_TAG "expertballs"
 #include "Log.h"
 #include "Renderer.h"
 
@@ -151,7 +151,7 @@ extern "C" {
 
 // initFromNewThread parameter is for testing
 JNIEXPORT void JNICALL
-Java_com_tuningfork_demoapp_TFTestActivity_initTuningFork(
+Java_com_tuningfork_expertballs_TFTestActivity_initTuningFork(
     JNIEnv *env, jobject activity, jboolean initFromNewThread) {
     if(initFromNewThread) {
         tf_activity = env->NewGlobalRef(activity);
@@ -164,7 +164,7 @@ Java_com_tuningfork_demoapp_TFTestActivity_initTuningFork(
 }
 
 JNIEXPORT void JNICALL
-Java_com_tuningfork_demoapp_TFTestActivity_onChoreographer(JNIEnv */*env*/, jclass clz, jlong /*frameTimeNanos*/) {
+Java_com_tuningfork_expertballs_TFTestActivity_onChoreographer(JNIEnv */*env*/, jclass clz, jlong /*frameTimeNanos*/) {
     TuningFork_frameTick(TFTICK_CHOREOGRAPHER);
     // Switch levels and loading state according to the number of ticks we've had.
     constexpr int COUNT_NEXT_LEVEL_START_LOADING = 80;
@@ -187,22 +187,22 @@ Java_com_tuningfork_demoapp_TFTestActivity_onChoreographer(JNIEnv */*env*/, jcla
     }
 }
 JNIEXPORT void JNICALL
-Java_com_tuningfork_demoapp_TFTestActivity_resize(JNIEnv *env, jclass /*clz*/, jobject surface, jint width, jint height) {
+Java_com_tuningfork_expertballs_TFTestActivity_resize(JNIEnv *env, jclass /*clz*/, jobject surface, jint width, jint height) {
     ANativeWindow *window = ANativeWindow_fromSurface(env, surface);
     Renderer::getInstance()->setWindow(window,
                                        static_cast<int32_t>(width),
                                        static_cast<int32_t>(height));
 }
 JNIEXPORT void JNICALL
-Java_com_tuningfork_demoapp_TFTestActivity_clearSurface(JNIEnv */*env*/, jclass /*clz*/ ) {
+Java_com_tuningfork_expertballs_TFTestActivity_clearSurface(JNIEnv */*env*/, jclass /*clz*/ ) {
     Renderer::getInstance()->setWindow(nullptr, 0, 0);
 }
 JNIEXPORT void JNICALL
-Java_com_tuningfork_demoapp_TFTestActivity_start(JNIEnv */*env*/, jclass /*clz*/ ) {
+Java_com_tuningfork_expertballs_TFTestActivity_start(JNIEnv */*env*/, jclass /*clz*/ ) {
     Renderer::getInstance()->start();
 }
 JNIEXPORT void JNICALL
-Java_com_tuningfork_demoapp_TFTestActivity_stop(JNIEnv */*env*/, jclass /*clz*/ ) {
+Java_com_tuningfork_expertballs_TFTestActivity_stop(JNIEnv */*env*/, jclass /*clz*/ ) {
     Renderer::getInstance()->stop();
     // Call flush here to upload any histograms when the app goes to the background.
     auto ret = TuningFork_flush();
@@ -210,7 +210,7 @@ Java_com_tuningfork_demoapp_TFTestActivity_stop(JNIEnv */*env*/, jclass /*clz*/ 
 }
 
 JNIEXPORT void JNICALL
-Java_com_tuningfork_demoapp_TFTestActivity_raiseSignal(JNIEnv * env, jclass clz, jint signal) {
+Java_com_tuningfork_expertballs_TFTestActivity_raiseSignal(JNIEnv * env, jclass clz, jint signal) {
     std::stringstream ss;
     ss << std::this_thread::get_id();
     ALOGI("raiseSignal %d: [pid: %d], [tid: %d], [thread_id: %s])",
@@ -219,7 +219,7 @@ Java_com_tuningfork_demoapp_TFTestActivity_raiseSignal(JNIEnv * env, jclass clz,
 }
 
 JNIEXPORT void JNICALL
-Java_com_tuningfork_demoapp_TFTestActivity_setFidelityParameters(JNIEnv * env, jclass clz) {
+Java_com_tuningfork_expertballs_TFTestActivity_setFidelityParameters(JNIEnv * env, jclass clz) {
     // Simulate the user changing quality settings in the game
     static std::mt19937 gen;
     static std::uniform_int_distribution<> dis(1,100);
