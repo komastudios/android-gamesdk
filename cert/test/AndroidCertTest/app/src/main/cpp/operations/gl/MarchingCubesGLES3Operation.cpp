@@ -20,6 +20,7 @@
 #include <condition_variable>
 
 #include <ancer/BaseGLES3Operation.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/util/GLHelpers.hpp>
 #include <ancer/util/Json.hpp>
 #include <ancer/util/UnownedPtr.hpp>
@@ -214,11 +215,18 @@ struct execution_configuration {
   Duration sleep_per_iteration;
 };
 
-JSON_CONVERTER(execution_configuration) {
+void WriteDatum(report_writers::Struct w, const execution_configuration& c) {
+  // TODO(tmillican@google.com): Switch once we have better enum-to-string
+  //  support.
+  w.AddItem("thread_setup", ThreadAffinitySetupNames[(int)c.thread_setup]);
+  ADD_DATUM_MEMBER(w, c, pinned);
+  ADD_DATUM_MEMBER(w, c, sleep_per_iteration);
+}
+/*JSON_CONVERTER(execution_configuration) {
   JSON_REQENUM(thread_setup, ThreadAffinitySetupNames);
   JSON_REQVAR(pinned);
   JSON_REQVAR(sleep_per_iteration);
-}
+}*/
 
 /*
  * Generate all permutations of a provided configuration
@@ -266,27 +274,27 @@ struct result {
   Duration ninetyfifth_percentile_duration{0};
 };
 
-JSON_CONVERTER(result) {
-  JSON_REQVAR(configuration);
-  JSON_REQVAR(num_threads_used);
-  JSON_REQVAR(num_voxels_marched_per_iteration);
-  JSON_REQVAR(num_iterations);
-  JSON_REQVAR(min_calc_duration);
-  JSON_REQVAR(max_calc_duration);
-  JSON_REQVAR(average_calc_duration);
-  JSON_REQVAR(median_calc_duration);
-  JSON_REQVAR(fifth_percentile_duration);
-  JSON_REQVAR(twentyfifth_percentile_duration);
-  JSON_REQVAR(seventyfifth_percentile_duration);
-  JSON_REQVAR(ninetyfifth_percentile_duration);
+void WriteDatum(report_writers::Struct w, const result& r) {
+  ADD_DATUM_MEMBER(w, r, configuration);
+  ADD_DATUM_MEMBER(w, r, num_threads_used);
+  ADD_DATUM_MEMBER(w, r, num_voxels_marched_per_iteration);
+  ADD_DATUM_MEMBER(w, r, num_iterations);
+  ADD_DATUM_MEMBER(w, r, min_calc_duration);
+  ADD_DATUM_MEMBER(w, r, max_calc_duration);
+  ADD_DATUM_MEMBER(w, r, average_calc_duration);
+  ADD_DATUM_MEMBER(w, r, median_calc_duration);
+  ADD_DATUM_MEMBER(w, r, fifth_percentile_duration);
+  ADD_DATUM_MEMBER(w, r, twentyfifth_percentile_duration);
+  ADD_DATUM_MEMBER(w, r, seventyfifth_percentile_duration);
+  ADD_DATUM_MEMBER(w, r, ninetyfifth_percentile_duration);
 }
 
 struct datum {
   result marching_cubes_permutation_results;
 };
 
-JSON_WRITER(datum) {
-  JSON_REQVAR(marching_cubes_permutation_results);
+void WriteDatum(report_writers::Struct w, const datum& d) {
+  ADD_DATUM_MEMBER(w, d, marching_cubes_permutation_results);
 }
 } // anonymous namespace
 

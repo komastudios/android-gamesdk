@@ -103,6 +103,7 @@ namespace ancer {
         Unknown = -1 // added for unsupported API/devices
     };
 
+    // TODO(tmillican@google.com): No reason these need to be std::strings.
     inline std::string to_string(ThermalStatus status) {
         switch ( status ) {
         case ThermalStatus::None: return "none";

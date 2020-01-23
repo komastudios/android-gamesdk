@@ -20,6 +20,7 @@
 
 #include <condition_variable>
 #include <ancer/BaseGLES3Operation.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/System.hpp>
 #include <ancer/util/Json.hpp>
 
@@ -49,19 +50,21 @@ struct datum {
   int measured_alpha;
 };
 
-JSON_WRITER(datum) {
-  JSON_REQVAR(success);
-  JSON_REQVAR(measured_red);
-  JSON_REQVAR(measured_green);
-  JSON_REQVAR(measured_blue);
-  JSON_REQVAR(measured_alpha);
+void WriteDatum(report_writers::Struct w, const datum& d) {
+  ADD_DATUM_MEMBER(w, d, success);
+  ADD_DATUM_MEMBER(w, d, measured_red);
+  ADD_DATUM_MEMBER(w, d, measured_green);
+  ADD_DATUM_MEMBER(w, d, measured_blue);
+  ADD_DATUM_MEMBER(w, d, measured_alpha);
 }
 
 struct error_message_datum {
   std::string error_message;
 };
 
-JSON_WRITER(error_message_datum) { JSON_REQVAR(error_message); }
+void WriteDatum(report_writers::Struct w, const error_message_datum& d) {
+  ADD_DATUM_MEMBER(w, d, error_message);
+}
 
 }  // anonymous namespace
 
