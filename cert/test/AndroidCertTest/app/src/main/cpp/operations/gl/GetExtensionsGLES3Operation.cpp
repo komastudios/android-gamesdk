@@ -22,6 +22,7 @@
 
 #include <condition_variable>
 #include <ancer/BaseGLES3Operation.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/System.hpp>
 #include <ancer/util/Json.hpp>
 
@@ -42,9 +43,9 @@ namespace {
     std::vector<std::string> egl_extensions;
   };
 
-  JSON_WRITER(datum) {
-    JSON_REQVAR(gl_extensions);
-    JSON_REQVAR(egl_extensions);
+  void WriteDatum(report_writers::Struct w, const datum& d) {
+    ADD_DATUM_MEMBER(w, d, gl_extensions);
+    ADD_DATUM_MEMBER(w, d, egl_extensions);
   }
 
 }  // anonymous namespace

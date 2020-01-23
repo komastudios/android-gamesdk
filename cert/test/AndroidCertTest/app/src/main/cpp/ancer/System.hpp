@@ -52,7 +52,6 @@ void DestroyRenderer();
  * Load the text from a file in the application's assets/ folder
  */
 std::string LoadText(const char *file_name);
-
 } // namespace ancer
 
 #include "System.inl"

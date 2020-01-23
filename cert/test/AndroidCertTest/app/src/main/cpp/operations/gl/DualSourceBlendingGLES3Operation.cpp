@@ -23,6 +23,7 @@
 #include <GLES2/gl2ext.h>
 
 #include <ancer/BaseGLES3Operation.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/System.hpp>
 #include <ancer/util/GLPixelBuffer.hpp>
 #include <ancer/util/Json.hpp>
@@ -69,10 +70,10 @@ struct feature_report_datum {
   bool shaders_compiled;
 };
 
-JSON_WRITER(feature_report_datum) {
-  JSON_REQVAR(gl_ext_blend_func_available);
-  JSON_REQVAR(arb_blend_func_available);
-  JSON_REQVAR(shaders_compiled);
+void WriteDatum(report_writers::Struct w, const feature_report_datum& d) {
+  ADD_DATUM_MEMBER(w, d, gl_ext_blend_func_available);
+  ADD_DATUM_MEMBER(w, d, arb_blend_func_available);
+  ADD_DATUM_MEMBER(w, d, shaders_compiled);
 }
 
 struct datum {
@@ -82,11 +83,11 @@ struct datum {
   int max_variance;
 };
 
-JSON_WRITER(datum) {
-  JSON_REQVAR(name);
-  JSON_REQVAR(success);
-  JSON_REQVAR(epsilon);
-  JSON_REQVAR(max_variance);
+void WriteDatum(report_writers::Struct w, const datum& d) {
+  ADD_DATUM_MEMBER(w, d, name);
+  ADD_DATUM_MEMBER(w, d, success);
+  ADD_DATUM_MEMBER(w, d, epsilon);
+  ADD_DATUM_MEMBER(w, d, max_variance);
 }
 
 struct sampled_image_datum {
@@ -99,14 +100,14 @@ struct sampled_image_datum {
   std::string src_palette_last_color;
 };
 
-JSON_WRITER(sampled_image_datum) {
-  JSON_REQVAR(base64_image);
-  JSON_REQVAR(blend_mode);
-  JSON_REQVAR(src_blend_factor);
-  JSON_REQVAR(dst_blend_factor);
-  JSON_REQVAR(dst_color);
-  JSON_REQVAR(src_1_color);
-  JSON_REQVAR(src_palette_last_color);
+void WriteDatum(report_writers::Struct w, const sampled_image_datum& d) {
+  ADD_DATUM_MEMBER(w, d, base64_image);
+  ADD_DATUM_MEMBER(w, d, blend_mode);
+  ADD_DATUM_MEMBER(w, d, src_blend_factor);
+  ADD_DATUM_MEMBER(w, d, dst_blend_factor);
+  ADD_DATUM_MEMBER(w, d, dst_color);
+  ADD_DATUM_MEMBER(w, d, src_1_color);
+  ADD_DATUM_MEMBER(w, d, src_palette_last_color);
 }
 }  // end anonymous namespace
 

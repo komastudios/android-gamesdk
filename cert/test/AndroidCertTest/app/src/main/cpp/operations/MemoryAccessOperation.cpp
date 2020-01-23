@@ -19,6 +19,7 @@
 #include <variant>
 
 #include <ancer/BaseOperation.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/System.hpp>
 #include <ancer/util/Basics.hpp>
 #include <ancer/util/Bitmath.hpp>
@@ -203,8 +204,8 @@ namespace {
         Bytes cumulative_bytes;
     };
 
-    JSON_WRITER(Datum) {
-        JSON_REQVAR(cumulative_bytes);
+    void WriteDatum(report_writers::Struct w, const Datum& d) {
+        ADD_DATUM_MEMBER(w, d, cumulative_bytes);
     }
 }
 

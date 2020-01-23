@@ -28,6 +28,7 @@
 
 #include <condition_variable>
 #include <ancer/BaseGLES3Operation.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/System.hpp>
 #include <ancer/util/Json.hpp>
 
@@ -82,11 +83,11 @@ namespace {
         float compile_time_milliseconds = 0.0F;
         float cache_load_time_milliseconds = 0.0F; };
 
-    JSON_WRITER(datum) {
-        JSON_REQVAR(trial);
-        JSON_REQVAR(shader_program_count);
-        JSON_REQVAR(compile_time_milliseconds);
-        JSON_REQVAR(cache_load_time_milliseconds);
+    void WriteDatum(report_writers::Struct w, const datum& d) {
+        ADD_DATUM_MEMBER(w, d, trial);
+        ADD_DATUM_MEMBER(w, d, shader_program_count);
+        ADD_DATUM_MEMBER(w, d, compile_time_milliseconds);
+        ADD_DATUM_MEMBER(w, d, cache_load_time_milliseconds);
     }
 }
 
