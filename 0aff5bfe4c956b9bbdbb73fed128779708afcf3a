@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d23ffbbb_95410c8a",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/ExternalBufferGLES3Operation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-01-23T18:20:05Z",
+      "side": 1,
+      "message": "I strongly encourage you to have all functions in this anonymous namespace (LoadLibrary, ... GetAndroidLibrary, ... GetEGLLibrary, ...) in one or more homogeneous helper libraries.\n\nThese all are convenience functions that sooner or later other operations could need. In particular, the logic in LoadLibrary is already repeated around.",
+      "revId": "0aff5bfe4c956b9bbdbb73fed128779708afcf3a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
