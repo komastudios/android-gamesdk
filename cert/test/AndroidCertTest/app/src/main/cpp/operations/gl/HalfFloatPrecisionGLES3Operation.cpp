@@ -21,17 +21,17 @@
 #pragma ide diagnostic ignored "cppcoreguidelines-avoid-magic-numbers"
 #pragma ide diagnostic ignored "misc-non-private-member-variables-in-classes"
 
-#include <cmath>
-#include <thread>
-#include <mutex>
 #include <condition_variable>
+#include <cmath>
+#include <iostream>
+#include <list>
+#include <mutex>
+#include <thread>
 
 #include <ancer/BaseGLES3Operation.hpp>
-#include <ancer/util/Json.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/System.hpp>
-#include <iostream>
-
-#include <list>
+#include <ancer/util/Json.hpp>
 
 using namespace ancer;
 
@@ -67,25 +67,28 @@ struct half_precision {
     int actual_a;
 };
 
+void WriteDatum(report_writers::Struct w, const half_precision& p) {
+    ADD_DATUM_MEMBER(w, p, is_correct);
+    ADD_DATUM_MEMBER(w, p, offset);
+
+    ADD_DATUM_MEMBER(w, p, expected_r);
+    ADD_DATUM_MEMBER(w, p, expected_g);
+    ADD_DATUM_MEMBER(w, p, expected_b);
+    ADD_DATUM_MEMBER(w, p, expected_a);
+
+    ADD_DATUM_MEMBER(w, p, actual_r);
+    ADD_DATUM_MEMBER(w, p, actual_g);
+    ADD_DATUM_MEMBER(w, p, actual_b);
+    ADD_DATUM_MEMBER(w, p, actual_a);
+}
+
+
 struct datum {
     half_precision half_precision;
 };
 
-JSON_WRITER(half_precision) {
-    JSON_REQVAR(is_correct);
-    JSON_REQVAR(offset);
-    JSON_OPTVAR(expected_r);
-    JSON_OPTVAR(expected_g);
-    JSON_OPTVAR(expected_b);
-    JSON_OPTVAR(expected_a);
-    JSON_OPTVAR(actual_r);
-    JSON_OPTVAR(actual_g);
-    JSON_OPTVAR(actual_b);
-    JSON_OPTVAR(actual_a);
-}
-
-JSON_WRITER(datum) {
-    JSON_REQVAR(half_precision);
+void WriteDatum(report_writers::Struct w, const datum& d) {
+    ADD_DATUM_MEMBER(w, d, half_precision);
 }
 }
 

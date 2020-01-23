@@ -17,12 +17,13 @@
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "misc-non-private-member-variables-in-classes"
 
-#include <ancer/BaseVulkanOperation.hpp>
-#include <ancer/util/Json.hpp>
-
 #include <cassert>
 #include <sys/mman.h>
 #include <sys/user.h>
+
+#include <ancer/BaseVulkanOperation.hpp>
+#include <ancer/DatumReporting.hpp>
+#include <ancer/util/Json.hpp>
 
 using namespace ancer;
 using namespace ancer::vulkan;
@@ -96,18 +97,20 @@ namespace {
     }
   };
 
+  void WriteDatum(ancer::report_writers::Struct w, const mprotect_info& i) {
+    ADD_DATUM_MEMBER(w, i, available);
+    ADD_DATUM_MEMBER(w, i, rank);
+  }
+
+
   struct datum {
     mprotect_info mprotect;
   };
 
-  JSON_WRITER(mprotect_info) {
-    JSON_REQVAR(available);
-    JSON_REQVAR(rank);
+  void WriteDatum(ancer::report_writers::Struct w, const datum& d) {
+    ADD_DATUM_MEMBER(w, d, mprotect);
   }
 
-  JSON_WRITER(datum) {
-    JSON_REQVAR(mprotect);
-  }
 
   constexpr Log::Tag TAG{"VulkanMprotectCheckOperation"};
 

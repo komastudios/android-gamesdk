@@ -182,7 +182,7 @@
           "file_api": "C++ Streams",
           "buffer_size": "256b",
           "read_align": "384b",
-          "report_rate": "10ms"
+          "report_rate": "50ms"
         }
       },
       "stressors": [

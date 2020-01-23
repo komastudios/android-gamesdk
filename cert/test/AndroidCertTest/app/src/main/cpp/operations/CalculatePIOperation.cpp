@@ -20,6 +20,7 @@
 #include <sstream>
 
 #include <ancer/BaseOperation.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/System.hpp>
 #include <ancer/util/Json.hpp>
 
@@ -60,9 +61,21 @@ namespace {
         double error;
     };
 
+    void WriteDatum(report_writers::Struct w, const pi& d) {
+        ADD_DATUM_MEMBER(w, d, duration);
+        ADD_DATUM_MEMBER(w, d, iterations);
+        ADD_DATUM_MEMBER(w, d, value);
+        ADD_DATUM_MEMBER(w, d, error);
+    }
+
+
     struct datum {
         pi pi;
     };
+
+    void WriteDatum(report_writers::Struct w, const datum& d) {
+        ADD_DATUM_MEMBER(w, d, pi);
+    }
 
     JSON_WRITER(pi) {
         JSON_REQVAR(duration);
