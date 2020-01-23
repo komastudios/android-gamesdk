@@ -278,10 +278,21 @@ JavaChoreographerThread::~JavaChoreographerThread()
     }
 
     JNIEnv *env;
-    mJVM->AttachCurrentThread(&env, nullptr);
+    // Check if we need to attach and only detach if we do.
+    jint result = mJVM->GetEnv(reinterpret_cast<void **>(&env), JNI_VERSION_1_2);
+    if (result != JNI_OK) {
+        if (result == JNI_EVERSION){
+            result = mJVM->GetEnv(reinterpret_cast<void **>(&env), JNI_VERSION_1_1);
+        }
+        if (result == JNI_EDETACHED) {
+            mJVM->AttachCurrentThread(&env, nullptr);
+        }
+    }
     env->CallVoidMethod(mJobj, mJterminate);
     env->DeleteGlobalRef(mJobj);
-    mJVM->DetachCurrentThread();
+    if (result == JNI_EDETACHED){
+        mJVM->DetachCurrentThread();
+    }
 }
 
 void JavaChoreographerThread::scheduleNextFrameCallback()
