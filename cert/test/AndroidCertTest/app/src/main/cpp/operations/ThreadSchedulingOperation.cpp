@@ -19,6 +19,7 @@
 #include <sstream>
 
 #include <ancer/BaseOperation.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/System.hpp>
 #include <ancer/util/Json.hpp>
 
@@ -61,9 +62,9 @@ namespace {
         Nanoseconds execution_start_time_error;
     };
 
-    JSON_WRITER(datum) {
-        JSON_REQVAR(execution_start_time);
-        JSON_REQVAR(execution_start_time_error);
+    void WriteDatum(report_writers::Struct w, const datum& d) {
+        ADD_DATUM_MEMBER(w, d, execution_start_time);
+        ADD_DATUM_MEMBER(w, d, execution_start_time_error);
     }
 }
 

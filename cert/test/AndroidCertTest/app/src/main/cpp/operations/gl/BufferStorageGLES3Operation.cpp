@@ -15,6 +15,7 @@
  */
 
 #include <ancer/BaseGLES3Operation.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/util/Json.hpp>
 
 #include "./buffer_storage/GLESBufferObject.inl"
@@ -38,17 +39,18 @@ struct buffer_storage_info {
   BufferStorageStatus status;
 };
 
+void WriteDatum(report_writers::Struct w, const buffer_storage_info& i) {
+  ADD_DATUM_MEMBER(w, i, available);
+  ADD_DATUM_MEMBER(w, i, status);
+}
+
+
 struct datum {
   buffer_storage_info buffer_storage;
 };
 
-JSON_WRITER(datum) {
-  JSON_REQVAR(buffer_storage);
-}
-
-JSON_WRITER(buffer_storage_info) {
-  JSON_REQVAR(available);
-  JSON_REQVAR(status);
+void WriteDatum(report_writers::Struct w, const datum& d) {
+  ADD_DATUM_MEMBER(w, d, buffer_storage);
 }
 
 /**

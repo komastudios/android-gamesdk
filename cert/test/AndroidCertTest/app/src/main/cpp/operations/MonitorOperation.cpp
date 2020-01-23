@@ -19,13 +19,14 @@
 #include <sstream>
 
 #include <ancer/BaseOperation.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/System.hpp>
 #include <ancer/util/Json.hpp>
 
 using namespace ancer;
 
 
-//==================================================================================================
+//==============================================================================
 
 namespace {
     constexpr auto TAG = "MonitorOperation";
@@ -38,7 +39,7 @@ namespace {
         JSON_OPTVAR(sample_period);
     }
 
-//--------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
     struct perf_info {
         double fps{0.0};
@@ -46,24 +47,26 @@ namespace {
         Nanoseconds max_frame_time{0};
     };
 
-    JSON_WRITER(perf_info) {
-        JSON_REQVAR(fps);
-        JSON_REQVAR(min_frame_time);
-        JSON_REQVAR(max_frame_time);
+    void WriteDatum(report_writers::Struct w, const perf_info& p) {
+        ADD_DATUM_MEMBER(w, p, fps);
+        ADD_DATUM_MEMBER(w, p, min_frame_time);
+        ADD_DATUM_MEMBER(w, p, max_frame_time);
     }
 
-//--------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
     struct thermal_info {
         ThermalStatus status;
     };
 
-    JSON_WRITER(thermal_info) {
-        JSON_SETVAR(status_msg, to_string(data.status));
-        JSON_REQVAR(status);
+    void WriteDatum(report_writers::Struct w, const thermal_info& i) {
+        // TODO(tmillican@google.com): Switch once we have better enum-to-string
+        //  support.
+        w.AddItem("status_msg", to_string(i.status));
+        w.AddItem("status", (int)i.status);
     }
 
-//--------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
     struct sys_mem_info {
         long native_allocated = 0;
@@ -71,19 +74,22 @@ namespace {
         bool low_memory = false;
         int oom_score = 0;
 
-        explicit sys_mem_info(const MemoryInfo& i) :
-                native_allocated(i.native_heap_allocation_size), available_memory(i.available_memory)
-                , oom_score(i._oom_score), low_memory(i.low_memory) {}
+        explicit sys_mem_info(const MemoryInfo& i)
+        : native_allocated(i.native_heap_allocation_size)
+        , available_memory(i.available_memory)
+        , oom_score(i._oom_score)
+        , low_memory(i.low_memory) {
+        }
     };
 
-    JSON_WRITER(sys_mem_info) {
-        JSON_REQVAR(native_allocated);
-        JSON_REQVAR(available_memory);
-        JSON_REQVAR(oom_score);
-        JSON_REQVAR(low_memory);
+    void WriteDatum(report_writers::Struct w, const sys_mem_info& i) {
+        ADD_DATUM_MEMBER(w, i, native_allocated);
+        ADD_DATUM_MEMBER(w, i, available_memory);
+        ADD_DATUM_MEMBER(w, i, oom_score);
+        ADD_DATUM_MEMBER(w, i, low_memory);
     }
 
-//--------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
     struct datum {
         sys_mem_info memory_state;
@@ -91,14 +97,14 @@ namespace {
         thermal_info thermal_info;
     };
 
-    JSON_WRITER(datum) {
-        JSON_REQVAR(memory_state);
-        JSON_REQVAR(perf_info);
-        JSON_REQVAR(thermal_info);
+    void WriteDatum(report_writers::Struct w, const datum& d) {
+        ADD_DATUM_MEMBER(w, d, memory_state);
+        ADD_DATUM_MEMBER(w, d, perf_info);
+        ADD_DATUM_MEMBER(w, d, thermal_info);
     }
 } // anonymous namespace
 
-//==================================================================================================
+//==============================================================================
 
 /*
  * MonitorOperation

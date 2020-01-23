@@ -20,6 +20,7 @@
 #include <condition_variable>
 
 #include <ancer/BaseGLES3Operation.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/util/Json.hpp>
 
 using namespace ancer;
@@ -45,10 +46,10 @@ bool operator!=(const rgb& lhs, const rgb& rhs) {
   return lhs.r != rhs.r || lhs.g != rhs.g || lhs.b != rhs.b;
 }
 
-JSON_WRITER(rgb) {
-  JSON_REQVAR(r);
-  JSON_REQVAR(g);
-  JSON_REQVAR(b);
+void WriteDatum(report_writers::Struct w, const rgb& d) {
+  ADD_DATUM_MEMBER(w, d, r);
+  ADD_DATUM_MEMBER(w, d, g);
+  ADD_DATUM_MEMBER(w, d, b);
 }
 
 //------------------------------------------------------------------------------
@@ -126,31 +127,31 @@ struct datum {
 
 };
 
-JSON_WRITER(datum) {
-  switch (data.kind) {
+void WriteDatum(report_writers::Struct w, const datum& d) {
+  switch (d.kind) {
     case datum::Kind::create_info_message:
-      JSON_REQVAR(has_requested_context);
-      JSON_REQVAR(depth_bits);
+      ADD_DATUM_MEMBER(w, d, has_requested_context);
+      ADD_DATUM_MEMBER(w, d, depth_bits);
       break;
     case datum::Kind::success:
-      JSON_REQVAR(writes_passed_as_expected);
-      JSON_REQVAR(depth_clear_value);
+      ADD_DATUM_MEMBER(w, d, writes_passed_as_expected);
+      ADD_DATUM_MEMBER(w, d, depth_clear_value);
       break;
     case datum::Kind::incorrect_fragment_pass:
-      JSON_REQVAR(writes_passed_as_expected);
-      JSON_REQVAR(error_incorrect_fragment_pass);
-      JSON_REQVAR(fragment_depth);
-      JSON_REQVAR(depth_clear_value);
-      JSON_REQVAR(expected_rgb_value);
-      JSON_REQVAR(actual_rgb_value);
+      ADD_DATUM_MEMBER(w, d, writes_passed_as_expected);
+      ADD_DATUM_MEMBER(w, d, error_incorrect_fragment_pass);
+      ADD_DATUM_MEMBER(w, d, fragment_depth);
+      ADD_DATUM_MEMBER(w, d, depth_clear_value);
+      ADD_DATUM_MEMBER(w, d, expected_rgb_value);
+      ADD_DATUM_MEMBER(w, d, actual_rgb_value);
       break;
     case datum::Kind::incorrect_fragment_reject:
-      JSON_REQVAR(writes_passed_as_expected);
-      JSON_REQVAR(error_incorrect_fragment_rejection);
-      JSON_REQVAR(fragment_depth);
-      JSON_REQVAR(depth_clear_value);
-      JSON_REQVAR(expected_rgb_value);
-      JSON_REQVAR(actual_rgb_value);
+      ADD_DATUM_MEMBER(w, d, writes_passed_as_expected);
+      ADD_DATUM_MEMBER(w, d, error_incorrect_fragment_rejection);
+      ADD_DATUM_MEMBER(w, d, fragment_depth);
+      ADD_DATUM_MEMBER(w, d, depth_clear_value);
+      ADD_DATUM_MEMBER(w, d, expected_rgb_value);
+      ADD_DATUM_MEMBER(w, d, actual_rgb_value);
       break;
   }
 }

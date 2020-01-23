@@ -20,6 +20,7 @@
 #include <tuple>
 
 #include <ancer/BaseGLES3Operation.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/System.hpp>
 #include <ancer/util/Error.hpp>
 #include <ancer/util/Json.hpp>
@@ -80,19 +81,19 @@ struct fill_rate_performance {
   int pixels_per_quad = 0;
 };
 
-JSON_WRITER(fill_rate_performance) {
-  JSON_REQVAR(num_quads);
-  JSON_REQVAR(quad_size);
-  JSON_REQVAR(pixels_per_second);
-  JSON_REQVAR(pixels_per_quad);
+void WriteDatum(report_writers::Struct w, const fill_rate_performance& p) {
+  ADD_DATUM_MEMBER(w, p, num_quads);
+  ADD_DATUM_MEMBER(w, p, quad_size);
+  ADD_DATUM_MEMBER(w, p, pixels_per_second);
+  ADD_DATUM_MEMBER(w, p, pixels_per_quad);
 }
 
 struct datum {
   fill_rate_performance fill_rate;
 };
 
-JSON_WRITER(datum) {
-  JSON_REQVAR(fill_rate);
+void WriteDatum(report_writers::Struct w, const datum& d) {
+  ADD_DATUM_MEMBER(w, d, fill_rate);
 }
 }
 
