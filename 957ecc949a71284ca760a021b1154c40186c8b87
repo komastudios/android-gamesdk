@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ad983359_31330389",
+        "filename": "bender/bender-base/app/src/main/jni/render_graph.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-01-23T18:16:50Z",
+      "side": 1,
+      "message": "Make sure meshes is cleared before you start.",
+      "revId": "957ecc949a71284ca760a021b1154c40186c8b87",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a5e6bb0c_79dea8db",
+        "filename": "bender/bender-base/app/src/main/jni/render_graph.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-01-23T18:16:50Z",
+      "side": 1,
+      "message": "Coding convention: frustum_planes.",
+      "revId": "957ecc949a71284ca760a021b1154c40186c8b87",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6c2b1eaa_3eb06ce3",
+        "filename": "bender/bender-base/app/src/main/jni/render_graph.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-01-23T18:16:50Z",
+      "side": 1,
+      "message": "Extract this bunch of code related to frustumPlanes in a method.",
+      "revId": "957ecc949a71284ca760a021b1154c40186c8b87",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3a361484_ba894551",
+        "filename": "bender/bender-base/app/src/main/jni/render_graph.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-01-23T18:16:50Z",
+      "side": 1,
+      "message": "coding convention",
+      "revId": "957ecc949a71284ca760a021b1154c40186c8b87",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "38f2b990_86fd42eb",
+        "filename": "bender/bender-base/app/src/main/jni/render_graph.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-01-23T18:16:50Z",
+      "side": 1,
+      "message": "let\u0027s follow convention: near_plane_width, etc",
+      "revId": "957ecc949a71284ca760a021b1154c40186c8b87",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8bd54636_05d57643",
+        "filename": "bender/bender-base/app/src/main/jni/render_graph.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-01-23T18:16:50Z",
+      "side": 1,
+      "message": "I would collect all these methods in a camera object and then the client requests the camera object and works with it.",
+      "revId": "957ecc949a71284ca760a021b1154c40186c8b87",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
