@@ -21,6 +21,7 @@
 #include <utility>
 
 #include <ancer/BaseGLES3Operation.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/System.hpp>
 #include <ancer/util/Error.hpp>
 #include <ancer/util/Json.hpp>
@@ -56,8 +57,8 @@ namespace {
         int model_count = 0;
     };
 
-    JSON_WRITER(datum) {
-        JSON_REQVAR(model_count);
+    void WriteDatum(report_writers::Struct w, const datum& d) {
+        ADD_DATUM_MEMBER(w, d, model_count);
     }
 }
 

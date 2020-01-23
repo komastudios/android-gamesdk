@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+#include "Reporting.hpp"
+
 #include <atomic>
 #include <fstream>
 #include <mutex>
@@ -21,476 +23,365 @@
 #include <thread>
 #include <variant>
 
-#include "Reporting.hpp"
 #include "util/Error.hpp"
 #include "util/Json.hpp"
 #include "util/Log.hpp"
 #include "util/WorkerThread.hpp"
+#include "Reporting.inl"
+
+using namespace ancer;
+using namespace ancer::reporting;
+
+using PreallocatedReport = internal::PreallocatedReport;
+using ReportWriter = internal::ReportWriter;
+using ReportSerializer = internal::ReportSerializer;
 
 
 //==============================================================================
 
-namespace ancer::reporting {
-    namespace {
-        constexpr Log::Tag TAG{"ancer::reporting"};
-    }
+namespace {
+    constexpr Log::Tag TAG{"ancer::reporting"};
 
-//==============================================================================
-
-    namespace {
-        std::atomic<int> _issue_id{0};
-
-        int GetNextIssueId() {
-            return _issue_id++;
-        }
-
-        std::string to_string(std::thread::id id) {
-            std::stringstream ss;
-            ss << id;
-            return ss.str();
-        }
-    }
-
-    Datum::Datum(Json custom) : Datum{"", "", std::move(custom)} {}
-
-    Datum::Datum(std::string suite, std::string operation, Json custom_data)
-    : issue_id(GetNextIssueId())
-    , suite_id(std::move(suite))
-    , operation_id(std::move(operation))
-    , timestamp(SteadyClock::now())
-    , thread_id(to_string(std::this_thread::get_id()))
-    , cpu_id(sched_getcpu())
-    , custom(std::move(custom_data)) {
-
-    }
+    std::unique_ptr<internal::ReportSerializer> _report_serializer;
+    // So serializer can just handle changes at create/destroy and/or we can
+    // set these before actually opening the file..
+    FILE* _file = nullptr;
+    ReportFlushMode _flush_mode = ReportFlushMode::Periodic;
+}
 
 //------------------------------------------------------------------------------
 
-    namespace {
-        // Returns the number of characters needed to represent the given,
-        // integer, potentially including a negative sign.
-        template <typename T>
-        constexpr auto CharsRequired(T val, bool include_minus_sign = true)
-        -> std::enable_if_t<std::is_integral_v<T>, size_t> {
-            int len = (include_minus_sign && val < 0 ? 2 : 1);
-            while (val /= 10) {
-                ++len;
-            }
-            return len;
-        }
+ReportSerializer& reporting::internal::GetReportSerializer() {
+    assert(_report_serializer);
+    return *_report_serializer;
+}
 
-        // Saves a datum to a JSON-style string with a newline at the end.
-        // We do this for performance reasons: Periodic reporting can result in
-        // a queue of hundreds of datums to parse, and our standard JSON setup
-        // can give a very noticeable performance hitch. We improve on this by:
-        // 1) Saving to a string to the side so we can avoid one-or-more memory
-        //    allocations for every datum-to-string conversion.
-        // 2) Skipping the JSON middleman and hard-coding the formatting to
-        //    avoid unnecessary work. We don't *really* need a generic JSON
-        //    object, just the final text that a specific type would give us.
-        void SaveReportLine(std::string& s, const Datum& d) {
-            // TODO(tmillican@google.com): Most of this could probably be a
-            //  collection of generic helpers. That's a bit excessive for now,
-            //  though.
-
-            static_assert(std::is_same_v<Timestamp::rep, long long>,
-                    "Mismatch in printf type for timestamp.");
-            static constexpr const char* fmt =
-                R"({"issue_id":"%d", "suite_id":"%s", "operation_id":"%s",)"
-                R"( "timestamp":%lld, "thread_id":"%s", "cpu_id":%d,)"
-                R"( "custom":%s})" "\n";
-            static constexpr auto specifier_sz = 6*2 + 1*4; // 6 '%X', 1 '%lld'
-            static constexpr auto fmt_sz = std::string_view{fmt}.size() - specifier_sz;
-
-            const auto timestamp_ct = d.timestamp.time_since_epoch().count();
-            const auto custom_str = d.custom.dump();
-            const auto data_sz =
-                    CharsRequired(d.issue_id) +
-                    d.suite_id.size() +
-                    d.operation_id.size() +
-                    CharsRequired(timestamp_ct) +
-                    d.thread_id.size() +
-                    CharsRequired(d.cpu_id) +
-                    custom_str.size();
-            const auto string_sz = fmt_sz + data_sz;
-
-            // TODO(tmillican@google.com): Some potential for unneeded
-            //  initialization here, but I don't think there's a very good
-            //  workaround short of writing our own string type. In our
-            //  particular case it should be fairly minimal, though, and likely
-            //  a lot better performance-wise than slowly expanding the string
-            //  piece-by-piece.
-            s.resize(string_sz);
-
-            // size + 1 is for null terminator, which std::string doesn't
-            // include in size() but is always guaranteed to have.
-            [[maybe_unused]]
-            int result = snprintf(s.data(), s.size() + 1, fmt, d.issue_id,
-                    d.suite_id.c_str(), d.operation_id.c_str(), timestamp_ct,
-                    d.thread_id.c_str(), d.cpu_id, custom_str.c_str());
-            assert(result == s.size() && string_sz == s.size());
-        }
-
-        std::string GetReportLine(const Datum& d) {
-            std::string s;
-            SaveReportLine(s, d);
-            return s;
-        }
+void reporting::OpenReportLog(const std::string& file) {
+    if (_report_serializer) {
+        Log::I(TAG, "OpenReportLog - File was already open, refrained from "
+                    "opening \'%s\'.", file.c_str());
+    } else {
+        _file = fopen(file.c_str(), "w");
+        _report_serializer = std::make_unique<ReportSerializer>(_file, _flush_mode);
+        Log::I(TAG, "OpenReportLog - Opened report log file \"%s\"",
+               file.c_str());
     }
+}
+
+void reporting::OpenReportLog(int file_descriptor) {
+    if (_report_serializer) {
+        Log::I(TAG, "OpenReportLog - File was already open, refrained from "
+                    "opening \'%d\'.", file_descriptor);
+    } else {
+        _file = fdopen(file_descriptor, "w");
+        _report_serializer = std::make_unique<ReportSerializer>(_file, _flush_mode);
+        Log::I(TAG, "OpenReportLog - Opened report log file \"%d\"",
+               file_descriptor);
+    }
+}
+
+void reporting::SetReportLogFlushMode(ReportFlushMode mode) {
+    if ( mode != _flush_mode ) {
+        _flush_mode = mode;
+        _report_serializer = std::make_unique<ReportSerializer>(_file, _flush_mode);;
+    }
+}
+
+ReportFlushMode reporting::GetReportLogFlushMode() {
+    return _flush_mode;
+}
+
+void reporting::SetPeriodicFlushModePeriod(Duration duration) {
+    assert(_report_serializer);
+    _report_serializer->SetFlushPeriod(duration);
+}
+
+Duration reporting::GetPeriodicFlushModePeriod() noexcept {
+    assert(_report_serializer);
+    return _report_serializer->GetFlushPeriod();
+}
+
+void reporting::FlushReportLogQueue() {
+    if ( !_report_serializer ) {
+        FatalError(TAG, "Attempt to flush report queue without an open log.");
+    } else {
+        _report_serializer->Flush();
+    }
+}
+
+void reporting::HardFlushReportLogQueue() {
+    if ( !_report_serializer ) {
+        FatalError(TAG, "Attempt to flush report queue without an open log.");
+    } else {
+        _report_serializer->Flush(true);
+    }
+}
 
 //==============================================================================
 
-    namespace {
-        constexpr Milliseconds DEFAULT_FLUSH_PERIOD_MILLIS = 1000ms;
+namespace {
+    constexpr Milliseconds kDefaultFlushPeriod = 500ms;
+    constexpr int kDefaultSmallReportQueueSize = 32;
+    constexpr int kDefaultLargeReportQueueSize = 5120;
+}
 
-        const/*expr*/ Json kFlushEvent = R"({ "report_event" : "flush" })"_json;
+//------------------------------------------------------------------------------
 
-        class Writer {
-        public:
-            Writer(const std::string& file) :
-                    _file(fopen(file.c_str(), "w")) {}
+namespace {
+    std::atomic<int> _issue_id{0};
+}
 
-            Writer(int file_descriptor) :
-                    _file(fdopen(file_descriptor, "w")) {}
+ReportWriter::DatumParams::DatumParams(const char* st, const char* op)
+: suite(st)
+, operation(op)
+, issue_id(_issue_id++)
+, timestamp(SteadyClock::now().time_since_epoch().count())
+, thread_id(std::this_thread::get_id())
+, cpu_id(sched_getcpu()) {
+}
 
-            ~Writer() {
-                fflush(_file);
-                fclose(_file);
-            }
+//------------------------------------------------------------------------------
 
-            Writer& Write(const std::string& str) {
-                fwrite(str.data(), sizeof(str[0]), str.length(), _file);
-                return *this;
-            }
+ReportWriter::ReportWriter(ReportSerializer& s)
+: _serializer(s)
+, _first_report(_serializer.GetNextReport(false))
+, _current_report(&_first_report) {
+    assert(IsClear(*_current_report));
+}
 
-            void Flush() {
-                fflush(_file);
-            }
+ReportWriter::~ReportWriter() {
+    _serializer.ReportFinished(_first_report);
+}
 
-        private:
-            FILE* _file;
-        };
+//------------------------------------------------------------------------------
 
+void ReportWriter::PrintDatumBoilerplate(const DatumParams& params) {
+    // TODO(tmillican@google.com): Verify this doesn't allocate. It might fall
+    //  under small-string optimization, but I don't know if that's guaranteed
+    //  for stringstream or not.
+    std::stringstream ts;
+    ts << params.thread_id;
 
-        // ---------------------------------------------------------------------
+    static constexpr const char* fmt =
+            R"({"issue_id":%d, "timestamp":%lld, "thread_id":"%s", "cpu_id":%d,)"
+            R"("suite_id":"%s", "operation_id":"%s",custom:)";
+    int result = snprintf(Buffer() + Offset(), BufLeft(),
+                          fmt, params.issue_id, params.timestamp,
+                          ts.str().c_str(), params.cpu_id, params.suite,
+                          params.operation);
+    if (result < 0) {
+        FatalError(TAG, "Error '%d' encountered when trying to parse a string.",
+                   result);
+    } else if (result > BufLeft()) {
+        // This should be the first thing we write, so we'd better have enough
+        // space.
+        FatalError(TAG, "Tried to write %d characters into a string that's only "
+                        "has %z free characters left.",
+                        result, (size_t)BufLeft());
+    } else {
+        Offset() += result;
+    }
+}
 
+//------------------------------------------------------------------------------
 
-        class ReportSerializerBase {
-        public:
-            explicit ReportSerializerBase(Writer* w) : _writer(w) {}
+void ReportWriter::Print(const char c) {
+    if (BufLeft() == 0) {
+        ExtendReport();
+    }
+    Buffer()[Offset()++] = c;
+}
 
-            virtual ~ReportSerializerBase() = default;
+void ReportWriter::PrintData(const char* data, size_t data_left) {
+    size_t data_off = 0;
+    while (data_left != 0) {
+        const auto to_copy = std::min(data_left, BufLeft());
+        memcpy(Buffer() + Offset(), data + data_off, to_copy);
+        data_off  += to_copy;
+        data_left -= to_copy;
+        Offset() += to_copy;
+        if (data_left != 0) {
+            ExtendReport();
+        }
+    }
+}
 
-            virtual void Write(Datum&& d) = 0;
+//------------------------------------------------------------------------------
 
-            virtual void Write(std::string&& s) = 0;
+void ReportWriter::ExtendReport() {
+    assert(_current_report->info.next == nullptr);
+    if (_current_report->info.offset == 0) {
+        // Probably an infinite loop, not good.
+        FatalError(TAG, "Trying to extend an empty report???");
+    }
+    Log::D(TAG, "Extending report");
+    _current_report = _current_report->info.next = &_serializer.GetNextReport(true);
+    assert(IsClear(*_current_report));
+}
 
-            virtual void Flush() { _writer->Flush(); }
+//------------------------------------------------------------------------------
 
-            Writer& GetWriter() { return *_writer; }
+// Returns if we should try again.
+bool ReportWriter::CheckResult(const std::to_chars_result result) {
+    if (result.ec != std::errc{}) {
+        Log::E(TAG, "Error '%d' encountered when calling ToChars.", (int)result.ec);
+        return false;
+    } else if (const auto newoff = (size_t)(result.ptr - Buffer()) ;
+               newoff >= BufSz()) {
+        ExtendReport();
+        return true;
+    } else {
+        Offset() = newoff;
+        return false;
+    }
+}
 
-        private:
+//==============================================================================
 
-            Writer* _writer;
-        };
+namespace {
+    [[nodiscard]] constexpr auto NumReports(ReportFlushMode mode) noexcept {
+        switch (mode) {
+            case ReportFlushMode::Immediate:
+                return kDefaultSmallReportQueueSize;
+            case ReportFlushMode::Periodic:
+            case ReportFlushMode::Manual:
+                return kDefaultLargeReportQueueSize;
+        }
+    }
 
-        /**
-         * ReportSerializer_Immediate - writes logs immediately
-         * to the specified Writer, flushing after every write
-         */
-        class ReportSerializer_Immediate : public ReportSerializerBase {
-        public:
-            explicit ReportSerializer_Immediate(Writer* writer) :
-                    ReportSerializerBase(writer) {}
+    // A bit weird API-wise, but passing in mode to avoid accidental typos.
+    // This should really be a proper iterator type at some point...
+    [[nodiscard]] constexpr int CircNext(int i, ReportFlushMode mode) noexcept {
+        assert(0 <= i && i < NumReports(mode));
+        if (++i == NumReports(mode))
+            i = 0;
+        return i;
+    }
 
-            void Write(Datum&& d) override {
-                _worker.Run(
-                        // TODO(tmillican@google.com): std::function doesn't support move
-                        //[this, d = std::move(d)](state* s) {
-                        [this, msg = GetReportLine(d)](state* s) {
-                            GetWriter().Write(msg);
-                        });
-            }
+    constexpr void CircInc(int& i, ReportFlushMode mode) noexcept {
+        i = CircNext(i, mode);
+    }
+}
 
-            void Write(std::string&& msg) override {
-                _worker.Run(
-                        [this, msg = std::move(msg)](state* s) {
-                            GetWriter().Write(msg).Write("\n").Flush();
-                        });
-            }
+//------------------------------------------------------------------------------
 
-        private:
-            struct state {
-            };
-            WorkerThread<state> _worker = {
-                    "ReportSerializer_Immediate",
-                    samples::Affinity::Odd
-            };
-        };
-
-        /**
-         * ReportSerializer_Manual - sends report data to ofstream
-         * (which may flush when OS wants to), but explicitly flushed
-         * when flush() is called.
-         */
-        class ReportSerializer_Manual : public ReportSerializerBase {
-        public:
-            explicit ReportSerializer_Manual(Writer* writer) :
-                    ReportSerializerBase(writer) {}
-
-            void Write(Datum&& d) override {
-                _worker.Run(
-                        // TODO(tmillican@google.com): std::function doesn't support move
-                        //[this, d = std::move(d)](state* s) {
-                        [this, msg = GetReportLine(d)](state* s) {
-                            GetWriter().Write(msg);
-                        });
-            }
-
-            void Write(std::string&& msg) override {
-                _worker.Run(
-                        [this, msg = std::move(msg)](state* s) {
-                            GetWriter().Write(msg).Write("\n");
-                        });
-            }
-
-        private:
-            struct state {
-            };
-            WorkerThread<state> _worker = {
-                    "ReportSerializer_Manual",
-                    samples::Affinity::Odd
-            };
-        };
-
-        // from https://en.cppreference.com/w/cpp/utility/variant/visit
-        template <class... Ts>
-        struct overloaded : Ts ... { using Ts::operator()...; };
-        template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
-
-        /**
-         * ReportSerializer_Periodic - stores writes in memory, serializing and
-         * flushing periodically. See SetFlushPeriod()
-         */
-        class ReportSerializer_Periodic : public ReportSerializerBase {
-        public:
-            explicit ReportSerializer_Periodic(Writer* writer) :
-                    ReportSerializerBase(writer) {
-
-                _write_thread = std::thread(
-                        [this]() {
-
-                            while ( _alive.load(std::memory_order_relaxed)) {
-                                auto start_time = std::chrono::steady_clock::now();
-                                Flush();
-                                auto end_time = std::chrono::steady_clock::now();
-                                auto elapsed = end_time - start_time;
-                                auto sleep_time = _flush_period - elapsed;
-                                if ( sleep_time > Duration::zero()) {
-                                    std::this_thread::sleep_for(sleep_time);
-                                }
-                            }
-                        });
-            }
-
-            ~ReportSerializer_Periodic() override {
-                Log::V(
-                        TAG,
-                        "ReportSerializer_Periodic::dtor - _numWrites: %d - "
-                        "stopping write thread...",
-                        _num_writes);
-                _alive.store(false, std::memory_order_relaxed);
-                _write_thread.join();
-                Log::V(TAG, "ReportSerializer_Periodic::dtor - DONE");
-            }
-
-            void SetFlushPeriod(Duration duration) {
-                _flush_period = duration;
-            }
-
-            [[nodiscard]] auto
-            GetFlushPeriod() const noexcept { return _flush_period; }
-
-            void Write(Datum&& d) override {
-                std::lock_guard<std::mutex> lock(_write_lock);
-                ++_num_writes;
-                _log_items.emplace_back(std::move(d));
-            }
-
-            void Write(std::string&& msg) override {
-                std::lock_guard<std::mutex> lock(_write_lock);
-                ++_num_writes;
-                _log_items.emplace_back(std::move(msg));
-            }
-
-            void Flush() override {
-                std::lock_guard<std::mutex> lock(_write_lock);
-
-                if ( !_log_items.empty()) {
-
-                    Log::V( TAG,
-                            "ReportSerializer_Periodic::Flush - writing %d(+1) items",
-                            _log_items.size());
-                    // Add an extra report for this flush so testers can see if
-                    // our reporting mechanism is impacting their results and
-                    // adjust accordingly.
-                    _log_items.emplace_back(Datum(kFlushEvent));
-
-                    // Keep a buffer to the side for parsing datums into JSON
-                    // strings so we don't need to allocate a new string for
-                    // every datum (plus any additional allocations for capacity
-                    // growth).
-                    // 300 is just an arbitrary amount to get things started to
-                    // hopefully avoid any extra allocations at all.
-                    std::string datum_string;
-                    datum_string.reserve(300);
-
-                    auto& out = GetWriter();
-                    for ( const auto& i : _log_items ) {
-                        std::visit(
-                                overloaded{
-                                        [&out, &datum_string](const Datum& d) {
-                                            SaveReportLine(datum_string, d);
-                                            out.Write(datum_string);
-                                        },
-                                        [&out](const std::string& s) {
-                                            out.Write(s).Write("\n");
-                                        }
-                                }, i);
-                    }
-
-                    _log_items.clear();
-                    out.Flush();
+ReportSerializer::ReportSerializer(FILE* file, ReportFlushMode mode)
+: _file(file)
+, _mode(mode)
+, _flush_period(kDefaultFlushPeriod)
+, _reports(new PreallocatedReport[NumReports(_mode)]) {
+    if (mode == ReportFlushMode::Periodic) {
+        _periodic_thread = std::thread([this]() {
+            while (_alive.load(std::memory_order_relaxed)) {
+                const auto start_time = SteadyClock::now();
+                Flush();
+                const auto end_time = SteadyClock::now();
+                const auto elapsed = end_time - start_time;
+                const auto sleep_time = _flush_period - elapsed;
+                if (sleep_time > Duration::zero()) {
+                    std::this_thread::sleep_for(sleep_time);
                 }
             }
+        });
+    }
+}
 
-        private:
-            using log_item = std::variant<Datum, std::string>;
+//------------------------------------------------------------------------------
 
-            std::atomic<bool> _alive{true};
-            Duration _flush_period = DEFAULT_FLUSH_PERIOD_MILLIS;
-            std::vector<log_item> _log_items;
-            std::mutex _write_lock;
-            std::thread _write_thread;
-            size_t _num_writes = 0;
-        };
+ReportSerializer::~ReportSerializer() {
+    if (_periodic_thread.joinable()) {
+        Log::V(TAG, "Stopping write thread...");
+        _alive.store(false, std::memory_order_relaxed);
+        _periodic_thread.join();
+        Log::V(TAG, "...and done!");
+    }
 
+    Flush(true);
+}
 
-        // ---------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
+void ReportSerializer::Flush(bool hard_flush) {
+    // TODO(tmillican@google.com): Block new reports from starting during a hard
+    //  flush?
+    // TODO(tmillican@google.com): Swap buffers to avoid blocking further
+    //  reports during a flush?
 
-        std::unique_ptr<ReportSerializerBase>
-        MakeReportSerializer(ReportFlushMode mode, Writer* writer) {
-            switch ( mode ) {
-            case ReportFlushMode::Immediate:
-                return std::move(
-                        std::make_unique<ReportSerializer_Immediate>(writer));
-            case ReportFlushMode::Manual:
-                return std::move(
-                        std::make_unique<ReportSerializer_Manual>(writer));
-            case ReportFlushMode::Periodic:
-                auto p = std::make_unique<ReportSerializer_Periodic>(
-                        writer);
-                p->SetFlushPeriod(GetPeriodicFlushModePeriod());
-                return std::move(p);
+    do {
+        std::scoped_lock lock{_report_mutex};
+        while (_allocated_beg != _pending_end) {
+            auto& report = _reports.get()[_allocated_beg];
+            if (report.info.pending) {
+                for (auto* rep = &report ; rep != nullptr ; ) {
+                    fwrite(rep->buffer, sizeof(rep->buffer[0]), rep->info.offset,
+                           _file);
+                    auto& prev = *rep;
+                    rep = rep->info.next;
+                    Clear(prev);
+                }
             }
+            CircInc(_allocated_beg, _mode);
         }
+    } while (hard_flush && _allocated_beg != _allocated_end);
 
-        // ---------------------------------------------------------------------
-
-        std::unique_ptr<Writer> _writer;
-        ReportFlushMode _report_flush_mode = ReportFlushMode::Periodic;
-        std::unique_ptr<ReportSerializerBase> _report_serializer;
-        Duration _periodic_report_serializer_flush_period =
-                DEFAULT_FLUSH_PERIOD_MILLIS;
+    if (hard_flush) {
+        fflush(_file);
     }
+}
 
-    void OpenReportLog(const std::string &file) {
-        if (_writer) {
-            // It's fine if it happens that the report writer is already
-            // instantiated. Instantiation happens upon Android MainActivity
-            // creation, that at times is recycled and re-created as Android
-            // takes allocated resources back.
-            Log::I(TAG, "OpenReportLog - File \"%s\" was already open.",
-                   file.c_str());
-        } else {
-            _writer = std::make_unique<Writer>(file);
-            Log::I(TAG, "OpenReportLog - Opened report log file \"%s\"",
-                   file.c_str());
+//------------------------------------------------------------------------------
+
+PreallocatedReport& ReportSerializer::GetNextReport(bool append) {
+    // TODO(tmillican@google.com): Slightly different logic for append w.r.t.
+    //  errors, locks, etc.?
+
+    PreallocatedReport* report;
+    {
+        std::scoped_lock lock{_report_mutex};
+
+        // If the buffer is entirely used, wait for a slot to free up.
+        // TODO(tmillican@google.com): Handle this more gracefully
+        while (CircNext(_allocated_end, _mode) == _allocated_beg) {
+            _report_mutex.unlock();
+            Log::W(TAG, "Ran out of preallocated report slots! Consider "
+                        "increasing the report rate or reporting less "
+                        "frequently.");
+            Flush();
+            _report_mutex.lock();
         }
 
-        if (_report_serializer==nullptr) {
-            _report_serializer =
-                  MakeReportSerializer(_report_flush_mode, _writer.get());
-        }
+        report = &_reports.get()[_allocated_end];
+        assert(IsClear(*report));
+        CircInc(_allocated_end, _mode);
     }
+    return *report;
+}
 
-    void OpenReportLog(int file_descriptor) {
-        if (_writer) {
-            Log::I(TAG, "OpenReportLog - File \"%d\" was already open.",
-                   file_descriptor);
-        } else {
-            _writer = std::make_unique<Writer>(file_descriptor);
-            Log::I(TAG, "OpenReportLog - Opened report log using file "
-                        "descriptor %d", file_descriptor);
-        }
+//------------------------------------------------------------------------------
 
-        if (_report_serializer==nullptr) {
-            _report_serializer =
-                  MakeReportSerializer(_report_flush_mode, _writer.get());
-        }
-    }
+void ReportSerializer::ReportFinished(PreallocatedReport& base) {
+    // If this report is the next claimed-but-unwritten one, we can advance the
+    // pending iterator.
+    bool advance_pending = false;
+    {
+        std::scoped_lock lock{_report_mutex};
+        advance_pending = (_pending_end == (int)(&base - _reports.get()));
 
-    void SetReportLogFlushMode(ReportFlushMode mode) {
-        if ( mode != _report_flush_mode ) {
-            _report_flush_mode = mode;
-            if (_writer) {
-                _report_serializer = MakeReportSerializer(mode, _writer.get());
-            }
+        for (auto* report = &base ; report != nullptr ; report = report->info.next) {
+            report->info.pending = true;
         }
     }
 
-    ReportFlushMode GetReportLogFlushMode() {
-        return _report_flush_mode;
-    }
+    if (advance_pending) {
+        while (_pending_end != _allocated_end) {
+            auto& report = _reports.get()[_pending_end];
+            if (!report.info.pending)
+                break;
+            CircInc(_pending_end, _mode);
+        }
 
-    void SetPeriodicFlushModePeriod(Duration duration) {
-        _periodic_report_serializer_flush_period = duration;
-        switch ( _report_flush_mode ) {
-        case ReportFlushMode::Periodic:
-            dynamic_cast<ReportSerializer_Periodic*>(
-                    _report_serializer.get())->SetFlushPeriod(
-                        _periodic_report_serializer_flush_period);
-        default:break;
+        if (_mode == ReportFlushMode::Immediate) {
+            Flush();
         }
     }
-
-    Duration GetPeriodicFlushModePeriod() noexcept {
-        return _periodic_report_serializer_flush_period;
-    }
-
-
-    void WriteToReportLog(reporting::Datum&& d) {
-        if ( !_report_serializer ) {
-            FatalError(TAG, "Attempt to write to report log without opening "
-                            "log first.");
-        }
-        _report_serializer->Write(std::move(d));
-    }
-
-    void WriteToReportLog(std::string&& s) {
-        if ( !_report_serializer ) {
-            FatalError(TAG, "Attempt to write to report log without opening "
-                            "log first.");
-        }
-        _report_serializer->Write(std::move(s));
-    }
-
-    void FlushReportLogQueue() {
-        if ( !_report_serializer ) {
-            FatalError(TAG, "Attempt to write to report log without opening "
-                            "log first.");
-        }
-        _report_serializer->Flush();
-    }
-} // namespace ancer::reporting
+}
