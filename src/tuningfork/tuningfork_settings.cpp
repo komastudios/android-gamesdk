@@ -16,6 +16,7 @@
 
 #include "tuningfork_internal.h"
 #include "tuningfork_utils.h"
+#include "jni_helper.h"
 
 #define LOG_TAG "TuningFork"
 #include "Log.h"
@@ -45,8 +46,15 @@ bool GetEnumSizesFromDescriptors( std::vector<uint32_t>& enum_sizes);
 // Use the default persister if the one passed in is null
 static void CheckPersister(const TFCache*& persister, std::string save_dir) {
     if (persister == nullptr) {
-        if (save_dir.empty())
-            save_dir = "/data/local/tmp/tuningfork";
+        if (save_dir.empty()) {
+            // If the save_dir is empty, try the app's cache dir or tmp storage.
+            if (jni::IsValid()) {
+                save_dir = file_utils::GetAppCacheDir();
+            }
+            if (save_dir.empty())
+                save_dir = "/data/local/tmp";
+            save_dir += "/tuningfork";
+        }
         ALOGI("Using local file cache at %s", save_dir.c_str());
         sFileCache.SetDir(save_dir);
         persister = sFileCache.GetCCache();
