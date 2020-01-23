@@ -121,6 +121,24 @@
       "revId": "e45c8c1b882daa58ffe9417e8d253585ddb1c194",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a7632eec_96f45b8e",
+        "filename": "src/swappy/common/Thread.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-01-23T10:54:01Z",
+      "side": 1,
+      "message": "The thread implementation is set at run time, which is why we need ThreadImpl. I don\u0027t think you normally inherit from the impl class in the pimpl pattern. I\u0027ll hide the implementation interface to make it clearer that this is the pattern.",
+      "parentUuid": "04dd315c_b97c1a95",
+      "revId": "e45c8c1b882daa58ffe9417e8d253585ddb1c194",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
