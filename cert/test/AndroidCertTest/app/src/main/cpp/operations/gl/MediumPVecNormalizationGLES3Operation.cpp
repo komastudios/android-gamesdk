@@ -26,6 +26,7 @@
 #include <condition_variable>
 
 #include <ancer/BaseGLES3Operation.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/util/GLPixelBuffer.hpp>
 #include <ancer/util/Json.hpp>
 #include <ancer/System.hpp>
@@ -69,10 +70,10 @@ bool operator!=(const rgb_u8& lhs, const rgb_u8& rhs) {
   return lhs.r != rhs.r || lhs.g != rhs.g || lhs.b != rhs.b;
 }
 
-JSON_WRITER(rgb_u8) {
-  JSON_REQVAR(r);
-  JSON_REQVAR(g);
-  JSON_REQVAR(b);
+void WriteDatum(report_writers::Struct w, const rgb_u8& d) {
+  ADD_DATUM_MEMBER(w, d, r);
+  ADD_DATUM_MEMBER(w, d, g);
+  ADD_DATUM_MEMBER(w, d, b);
 }
 
 //==============================================================================
@@ -129,22 +130,22 @@ struct result {
   float squared_magnitude;
 };
 
-JSON_WRITER(result) {
-  JSON_REQVAR(test);
-  JSON_REQVAR(failure);
-  JSON_REQVAR(expected_failure);
-  JSON_REQVAR(expected_rgb8);
-  JSON_REQVAR(actual_rgb8);
-  JSON_REQVAR(offset);
-  JSON_REQVAR(squared_magnitude);
+void WriteDatum(report_writers::Struct w, const result& d) {
+  ADD_DATUM_MEMBER(w, d, test);
+  ADD_DATUM_MEMBER(w, d, failure);
+  ADD_DATUM_MEMBER(w, d, expected_failure);
+  ADD_DATUM_MEMBER(w, d, expected_rgb8);
+  ADD_DATUM_MEMBER(w, d, actual_rgb8);
+  ADD_DATUM_MEMBER(w, d, offset);
+  ADD_DATUM_MEMBER(w, d, squared_magnitude);
 }
 
 struct datum {
   result mediump_vec_normalization_result;
 };
 
-JSON_WRITER(datum) {
-  JSON_REQVAR(mediump_vec_normalization_result);
+void WriteDatum(report_writers::Struct w, const datum& d) {
+  ADD_DATUM_MEMBER(w, d, mediump_vec_normalization_result);
 }
 
 //------------------------------------------------------------------------------

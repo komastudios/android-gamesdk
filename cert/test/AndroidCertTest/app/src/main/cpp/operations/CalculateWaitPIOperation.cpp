@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
+#include <array>
 #include <cmath>
-#include <thread>
 #include <mutex>
 #include <sstream>
-#include <array>
 
 #include <ancer/BaseOperation.hpp>
-#include <ancer/util/ThreadSyncPoint.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/System.hpp>
+#include <ancer/util/ThreadSyncPoint.hpp>
 #include <ancer/util/Json.hpp>
-#include <unistd.h>
 
 using namespace ancer;
 
@@ -49,9 +48,9 @@ constexpr auto PI = 3.14159265358979323846;
 //==============================================================================
 
 namespace {
-const std::string wait_mutex_name = "mutex";
-const std::string wait_sleep_name = "sleep";
-const std::string wait_spinlock_name = "spinlock";
+constexpr std::string_view wait_mutex_name = "mutex";
+constexpr std::string_view wait_sleep_name = "sleep";
+constexpr std::string_view wait_spinlock_name = "spinlock";
 
 enum class WaitMethod { Mutex, Sleep, Spinlock };
 }  // end anonymous namespace
@@ -91,10 +90,10 @@ struct pi_datum {
   uint64_t last_half_iterations;
 };
 
-JSON_WRITER(pi_datum) {
-  JSON_REQVAR(iterations);
-  JSON_REQVAR(first_half_iterations);
-  JSON_REQVAR(last_half_iterations);
+void WriteDatum(report_writers::Struct w, const pi_datum& p) {
+    ADD_DATUM_MEMBER(w, p, iterations);
+    ADD_DATUM_MEMBER(w, p, first_half_iterations);
+    ADD_DATUM_MEMBER(w, p, last_half_iterations);
 }
 
 //------------------------------------------------------------------------------
@@ -106,16 +105,19 @@ struct core_sample_datum {
   explicit core_sample_datum(int id) { core_id = id; }
 };
 
-JSON_WRITER(core_sample_datum) {
-  JSON_REQVAR(iterations);
-  JSON_REQVAR(core_id);
+void WriteDatum(report_writers::Struct w, const core_sample_datum& d) {
+    ADD_DATUM_MEMBER(w, d, iterations);
+    ADD_DATUM_MEMBER(w, d, core_id);
 }
 
 struct core_performance_samples {
   std::vector<core_sample_datum> cores;
 };
 
-JSON_WRITER(core_performance_samples) { JSON_REQVAR(cores); }
+void WriteDatum(report_writers::Struct w, const core_performance_samples& s) {
+    ADD_DATUM_MEMBER(w, s, cores);
+}
+
 }  // end anonymous namespace
 
 //==============================================================================

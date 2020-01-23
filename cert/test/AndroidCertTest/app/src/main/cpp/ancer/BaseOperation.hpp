@@ -230,18 +230,19 @@ namespace ancer {
         //
         //  Helper functions
         //
+        friend class Reporter;
+
+        // NOTE: If applicable, consider calling Report(std::move(datum)) to cut
+        // down on unnecessary copies.
         template <typename T>
-        void Report(const T& payload) const {
-            ReportImpl(Json(payload));
+        void Report(T&& payload) const {
+            if (GetMode() == Mode::DataGatherer) {
+                reporting::WriteToReportLog(_suite_id, _operation_id,
+                                            std::forward<T>(payload));
+            }
         }
 
     private:
-        friend class Reporter;
-
-        void ReportImpl(Json&& custom_payload) const;
-
-    private:
-
         std::atomic<bool> _stop_ordered{false};
 
         Mode _mode = Mode::Stressor;
@@ -262,8 +263,10 @@ namespace ancer {
     public:
         Reporter(BaseOperation& op) : _op(op) {}
 
+        // NOTE: If applicable, consider calling Report(std::move(datum)) to cut
+        // down on unnecessary copies.
         template <typename T>
-        void operator () (T&& payload) const { _op.ReportImpl(Json(payload)); }
+        void operator () (T&& payload) const { _op.Report(std::forward<T>(payload)); }
     private:
         BaseOperation& _op;
     };
