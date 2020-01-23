@@ -30,7 +30,7 @@ fi
 
 if [[ $1 == "samples" ]] || [[ $1 == "full" ]]
     then
-        mkdir $dist_dir/samples
+        mkdir -p $dist_dir/samples
         cp samples/bouncyball/app/build/outputs/apk/debug/app-debug.apk \
             $dist_dir/samples/bouncyball.apk
         cp samples/tuningfork/expertballs/app/build/outputs/apk/debug/app-debug.apk \
