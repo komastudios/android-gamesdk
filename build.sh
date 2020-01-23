@@ -21,6 +21,9 @@ popd
 pushd samples/tuningfork/expertballs
 ./gradlew build
 popd
+pushd test/tuningfork/testapp
+./gradlew build
+popd
 
 dist_dir=$DIST_DIR
 if [[ -z dist_dir ]]
