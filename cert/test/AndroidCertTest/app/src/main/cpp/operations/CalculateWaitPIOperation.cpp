@@ -15,14 +15,15 @@
  */
 
 #include <cmath>
-#include <thread>
 #include <mutex>
 #include <sstream>
+#include <thread>
+#include <unistd.h>
 
 #include <ancer/BaseOperation.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/System.hpp>
 #include <ancer/util/Json.hpp>
-#include <unistd.h>
 
 using namespace ancer;
 
@@ -52,7 +53,6 @@ namespace {
         JSON_REQVAR(affinity);
         JSON_REQVAR(iteration_wait_count_);
         JSON_REQVAR(iteration_wait_time_);
-
     }
 
 //--------------------------------------------------------------------------------------------------
@@ -64,16 +64,17 @@ namespace {
         double error;
     };
 
+    void WriteDatum(report_writers::Struct w, const pi& p) {
+        ADD_DATUM_MEMBER(w, p, iterations);
+    }
+
+
     struct datum {
         pi pi;
     };
 
-    JSON_WRITER(pi) {
-        JSON_REQVAR(iterations);
-    }
-
-    JSON_WRITER(datum) {
-        JSON_REQVAR(pi);
+    void WriteDatum(report_writers::Struct w, const datum& d) {
+        ADD_DATUM_MEMBER(w, d, pi);
     }
 }
 

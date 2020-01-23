@@ -21,7 +21,7 @@
 #include "Log.hpp"
 
 namespace ancer::reporting {
-    void FlushReportLogQueue();
+    void HardFlushReportLogQueue();
 }
 
 
@@ -35,7 +35,7 @@ namespace ancer {
         if constexpr ( sizeof...(args) > 0 ) {
             Log::F(std::forward<Args>(args)...);
         }
-        reporting::FlushReportLogQueue();
+        reporting::HardFlushReportLogQueue();
         std::terminate();
     }
 } // namespace ancer

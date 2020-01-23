@@ -19,6 +19,7 @@
 #include <tuple>
 
 #include <ancer/BaseGLES3Operation.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/System.hpp>
 #include <ancer/util/Error.hpp>
 #include <ancer/util/Json.hpp>
@@ -74,19 +75,19 @@ struct vertex_throughput {
   size_t renderers;
 };
 
-JSON_WRITER(vertex_throughput) {
-  JSON_REQVAR(vertices_per_second);
-  JSON_REQVAR(components_per_vertex);
-  JSON_REQVAR(vertices_per_renderer);
-  JSON_REQVAR(renderers);
+void WriteDatum(report_writers::Struct w, const vertex_throughput& t) {
+  ADD_DATUM_MEMBER(w, t, vertices_per_second);
+  ADD_DATUM_MEMBER(w, t, components_per_vertex);
+  ADD_DATUM_MEMBER(w, t, vertices_per_renderer);
+  ADD_DATUM_MEMBER(w, t, renderers);
 }
 
 struct datum {
   vertex_throughput vertex_throughput;
 };
 
-JSON_WRITER(datum) {
-  JSON_REQVAR(vertex_throughput);
+void WriteDatum(report_writers::Struct w, const datum& d) {
+  ADD_DATUM_MEMBER(w, d, vertex_throughput);
 }
 }
 
