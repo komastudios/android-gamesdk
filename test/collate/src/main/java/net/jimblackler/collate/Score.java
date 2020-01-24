@@ -98,7 +98,6 @@ public class Score {
               continue;
             }
             long nativeAllocated = row.getLong("nativeAllocated");
-            long time = row.getLong("time");
 
             if (row.has("trigger")) {
               long top = nativeAllocated;
@@ -143,10 +142,16 @@ public class Score {
     body.append("<table>")
         .append("<thead>")
         .append("<th>")
-        .append("Device")
+        .append("Manufacturer")
         .append("</th>")
         .append("<th>")
-        .append("Android")
+        .append("Model")
+        .append("</th>")
+        .append("<th>")
+        .append("SDK")
+        .append("</th>")
+        .append("<th>")
+        .append("Release")
         .append("</th>");
     for (int scenario = 1; scenario != groups.size() + 1; scenario++) {
       body.append("<th>").append(String.join("<br/>", groups.get(scenario - 1))).append("</th>");
@@ -160,9 +165,13 @@ public class Score {
       JSONObject build = builds.get(id);
 
       body.append("<td>")
-          .append(capitalizeFirstLetter(build.getString("MANUFACTURER")))
-          .append(" ")
+          .append(build.getString("MANUFACTURER"))
+          .append("</td>")
+          .append("<td>")
           .append(build.getString("MODEL"))
+          .append("</td>")
+          .append("<td>")
+          .append(build.getInt("SDK_INT"))
           .append("</td>")
           .append("<td>")
           .append(build.getString("RELEASE"))
