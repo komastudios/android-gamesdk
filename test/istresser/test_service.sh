@@ -10,56 +10,102 @@ for i in `seq 1 26`;
             --async \
             --timeout 15m \
             --results-history-name=$uuid \
+            --device model=A0001,version=22 \
             --device model=A1N_sprout,version=26 \
+            --device model=ASUS_Z01H_1,version=26 \
+            --device model=F8331,version=26 \
+            --device model=F8332,version=26 \
             --device model=FRT,version=27 \
+            --device model=G8142,version=25 \
             --device model=G8142,version=26 \
             --device model=G8441,version=26 \
+            --device model=H8216,version=28 \
             --device model=H8296,version=28 \
             --device model=H8324,version=26 \
             --device model=HWCOR,version=27 \
-            --device model=Nexus5X,version=26 \
-            --device model=Nexus6P,version=26 \
-            --device model=Nexus6P,version=27 \
-            --device model=Nexus7_clone_16_9,version=26 \
-            --device model=NexusLowRes,version=26 \
-            --device model=NexusLowRes,version=27 \
-            --device model=NexusLowRes,version=28 \
+            --device model=HWMHA,version=24 \
             --device model=OnePlus3T,version=26 \
             --device model=OnePlus5,version=26 \
+            --device model=OnePlus5T,version=28 \
             --device model=OnePlus6T,version=28 \
-            --device model=Pixel2,version=26 \
-            --device model=Pixel2,version=27 \
-            --device model=Pixel2,version=28 \
+            --device model=SOV33,version=26 \
+            --device model=a5y17lte,version=24 \
             --device model=a9y18qlte,version=26 \
+            --device model=addison,version=26 \
             --device model=albus,version=26 \
             --device model=aljeter_n,version=26 \
+            --device model=astarqltechn,version=26 \
+            --device model=astarqlteskt,version=26 \
+            --device model=athene,version=23 \
+            --device model=athene_f,version=23 \
+            --device model=aura,version=27 \
             --device model=beyond1,version=28 \
             --device model=blueline,version=28 \
-            --device model=blueline,version=Q-beta-3 \
+            --device model=blueline,version=29 \
+            --device model=cheryl,version=25 \
             --device model=crownlte,version=28 \
             --device model=crownqlteue,version=27 \
+            --device model=cruiserltesq,version=26 \
             --device model=deen_sprout,version=28 \
             --device model=dream2lte,version=26 \
             --device model=dream2qlteue,version=26 \
             --device model=dreamqlteue,version=26 \
+            --device model=equuleus,version=28 \
+            --device model=flame,version=29 \
+            --device model=g3,version=19 \
+            --device model=grandpplte,version=23 \
             --device model=greatlte,version=28 \
+            --device model=greatqlte,version=26 \
+            --device model=griffin,version=24 \
+            --device model=hammerhead,version=21 \
+            --device model=hammerhead,version=23 \
+            --device model=harpia,version=23 \
+            --device model=hero2lte,version=23 \
+            --device model=hero2qltevzw,version=26 \
+            --device model=heroqltetmo,version=26 \
             --device model=heroqltevzw,version=26 \
+            --device model=hlte,version=19 \
+            --device model=htc_m8,version=19 \
             --device model=htc_ocedugl,version=26 \
+            --device model=htc_ocmdugl,version=26 \
             --device model=htc_ocndugl,version=26 \
+            --device model=hwALE-H,version=21 \
+            --device model=j1acevelte,version=22 \
+            --device model=j7xelte,version=23 \
             --device model=james,version=26 \
+            --device model=jeter,version=26 \
+            --device model=k61v1_basic_ref,version=29 \
+            --device model=lithium,version=26 \
+            --device model=lucye,version=24 \
+            --device model=lv0,version=23 \
+            --device model=m0,version=18 \
+            --device model=mata,version=25 \
+            --device model=mlv1,version=23 \
+            --device model=nitrogen,version=28 \
+            --device model=platina,version=28 \
             --device model=poseidonlteatt,version=26 \
+            --device model=potter,version=24 \
+            --device model=sailfish,version=25 \
             --device model=sailfish,version=26 \
             --device model=sailfish,version=27 \
             --device model=sailfish,version=28 \
-            --device model=sawfish,version=26 \
+            --device model=seoul,version=26 \
+            --device model=shamu,version=21 \
+            --device model=shamu,version=22 \
+            --device model=shamu,version=23 \
+            --device model=star2lteks,version=28 \
             --device model=star2qltechn,version=26 \
             --device model=star2qlteue,version=26 \
             --device model=starlte,version=26 \
+            --device model=starlteks,version=28 \
             --device model=starqltechn,version=26 \
             --device model=starqlteue,version=26 \
             --device model=taimen,version=26 \
             --device model=taimen,version=27 \
+            --device model=tissot_sprout,version=28 \
+            --device model=victara,version=19 \
             --device model=walleye,version=26 \
             --device model=walleye,version=27 \
-            --device model=walleye,version=28
+            --device model=walleye,version=28 \
+            --device model=zeroflte,version=23
     done
