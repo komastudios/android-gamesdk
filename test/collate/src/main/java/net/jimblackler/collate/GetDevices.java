@@ -60,6 +60,12 @@ public class GetDevices {
     Set<String> d2 = new TreeSet<>();
     for (int idx = 0; idx != devices.length(); idx++) {
       JSONObject device = devices.getJSONObject(idx);
+      if (!device.getString("formFactor").equals("PHONE")) {
+        continue;
+      }
+      if (!device.getString("form").equals("PHYSICAL")) {
+        continue;
+      }
       String id = device.getString("id");
       assert id.equals(device.getString("codename"));
       if (USE_WHITELIST && !whitelist.contains(id)) {
