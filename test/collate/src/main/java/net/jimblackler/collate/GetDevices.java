@@ -15,6 +15,7 @@ import org.json.JSONTokener;
 
 public class GetDevices {
   private static final boolean USE_WHITELIST = false;
+  private static final int MIN_VERSION = 26;
 
   public static void main(String[] args) throws IOException {
 
@@ -60,6 +61,12 @@ public class GetDevices {
     Set<String> d2 = new TreeSet<>();
     for (int idx = 0; idx != devices.length(); idx++) {
       JSONObject device = devices.getJSONObject(idx);
+      if (!device.getString("formFactor").equals("PHONE")) {
+        continue;
+      }
+      if (!device.getString("form").equals("PHYSICAL")) {
+        continue;
+      }
       String id = device.getString("id");
       assert id.equals(device.getString("codename"));
       if (USE_WHITELIST && !whitelist.contains(id)) {
@@ -68,9 +75,12 @@ public class GetDevices {
       JSONArray supportedVersionIds = device.getJSONArray("supportedVersionIds");
       for (int idx2 = 0; idx2 != supportedVersionIds.length(); idx2++) {
 
-        String versionId = supportedVersionIds.getString(idx2);
+        int versionId = supportedVersionIds.getInt(idx2);
+        if (versionId < MIN_VERSION) {
+          continue;
+        }
         //noinspection HardcodedFileSeparator
-        System.out.println(String.format("--device model=%s,version=%s \\", id, versionId));
+        System.out.println(String.format("--device model=%s,version=%d \\", id, versionId));
         d2.add(id);
       }
     }
