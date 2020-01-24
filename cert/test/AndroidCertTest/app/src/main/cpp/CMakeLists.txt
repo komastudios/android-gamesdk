@@ -95,6 +95,10 @@ add_library(${PROJECT_NAME} SHARED
         ancer/util/Time.cpp
         ancer/util/VkHelpers.cpp
         ancer/util/vulkan/VkHelpersImpl.cpp
+        ancer/vulkan/android_helper.cc
+        ancer/vulkan/vulkan_base.cc
+        ancer/vulkan/context.cc
+        ancer/vulkan/swapchain.cc
 
         # Operations
         operations/CalculatePIOperation.cpp
