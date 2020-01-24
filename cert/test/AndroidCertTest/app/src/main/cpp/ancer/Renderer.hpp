@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 The Android Open Source Project
+ * Copyright 2020 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,23 @@
 
 #pragma once
 
-#include "Suite.hpp"
-
-#include <map>
 #include <memory>
 
-
-namespace ancer::internal {
-    inline std::mutex _operations_lock;
-    inline std::map<int, std::unique_ptr<BaseOperation>> _operations;
+namespace ancer {
+    class BaseOperation;
 }
 
-template <typename Func>
-void ancer::internal::ForEachOperation(Func&& func) {
-    std::lock_guard<std::mutex> lock(_operations_lock);
-    for ( auto& op : _operations ) {
-        if ( !op.second->IsStopped()) {
-            func(*op.second);
-        }
-    }
+
+namespace ancer {
+    class Renderer {
+    public:
+        virtual ~Renderer() {};
+
+        virtual void AddOperation(BaseOperation& operation) = 0;
+        virtual void RemoveOperation(BaseOperation& operation) = 0;
+        virtual void ClearOperations() = 0;
+
+        // Where 'T' is something that can be converted to unique_ptr<Renderer>:
+        // static T Create(...);
+    };
 }

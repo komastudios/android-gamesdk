@@ -22,54 +22,56 @@
 #include <set>
 
 #include "BaseOperation.hpp"
+#include "Renderer.hpp"
 #include "Reporting.hpp"
-#include "SwappyRenderer.hpp"
+#include "System.hpp"
 #include "util/Error.hpp"
 
 using namespace ancer;
+using namespace ancer::internal;
 
 
-//==================================================================================================
-
-namespace ancer::internal {
-    // For ForEachOperation
-    std::mutex _operations_lock;
-    std::map<int, std::shared_ptr<BaseOperation>> _operations;
-}
+//==============================================================================
 
 namespace {
     Log::Tag TAG{"ancer::suite"};
 
     int _id_counter = 0;
-
     std::set<int> _stopped_operations;
-
-    // TODO(tmillican@google.com): Refactor this to better separate concerns
-    swappy::Renderer* _swappy_renderer = nullptr;
 }
 
-//==================================================================================================
+//==============================================================================
 
 void internal::InitializeSuite() {
-    // ...
+    assert(_operations.empty() && _stopped_operations.empty());
+    _id_counter = 0;
 }
 
 void internal::ShutdownSuite() {
-    // ...
+    if ( auto* renderer = GetRenderer() ) {
+        renderer->ClearOperations();
+    }
+
+    // TODO(tmillican@google.com): Operation lifetime management should really
+    //  be under Suite so we can call Stop/Wait here.
+
+    _stopped_operations.clear();
+    _operations.clear();
 }
 
-//==================================================================================================
+//==============================================================================
 
-void internal::SetSwappyRenderer(swappy::Renderer* swappy_renderer) {
-    _swappy_renderer = swappy_renderer;
-    if ( _swappy_renderer ) {
+void internal::SuiteUpdateRenderer() {
+    if ( auto* renderer = GetRenderer() ) {
+        // TODO(tmillican@google.com): Tie to StartOperation() to match the
+        //  removal when StopOperation() is called.
         for ( auto& op : _operations ) {
-            _swappy_renderer->AddOperation(op.second);
+            renderer->AddOperation(*op.second);
         }
     }
 }
 
-//==================================================================================================
+//==============================================================================
 
 int internal::CreateOperation(
         const std::string& suite,
@@ -77,65 +79,53 @@ int internal::CreateOperation(
         ancer::BaseOperation::Mode mode) {
     auto op = BaseOperation::Load(operation, suite, mode);
     if ( op ) {
-        {
-            std::lock_guard<std::mutex> lock(_operations_lock);
-            int id = _id_counter++;
-            _operations[id] = op;
-            return id;
-        }
+        std::lock_guard<std::mutex> lock(_operations_lock);
+        int id = _id_counter++;
+        _operations[id] = std::move(op);
+        return id;
     } else {
-        FatalError(
-                TAG, "createOperation - Unable to load operation named \""
-                        + operation + "\"");
+        FatalError(TAG, "CreateOperation - Unable to load operation named \"%s\"",
+                   operation.c_str());
     }
 }
 
-//==================================================================================================
+//==============================================================================
 
-void internal::StartOperation(
-        int id,
-        Duration duration,
-        const std::string& config) {
-    if ( auto pos = _operations.find(id); pos != _operations.end()) {
+void internal::StartOperation(int id, Duration duration,
+                              const std::string& config) {
+    if (auto pos = _operations.find(id); pos != _operations.end()) {
         auto& op = *pos->second;
 
-        Log::I(
-                TAG,
-                "starting operation id: " + std::to_string(id) + " mode: " +
-                        (op.GetMode() == BaseOperation::Mode::DataGatherer
-                         ? "DATA_GATHERER" : "STRESSOR"));
+        Log::I(TAG, "Starting operation id: %d mode %s", id,
+               op.GetMode() == BaseOperation::Mode::DataGatherer
+                   ? "DATA_GATHERER" : "STRESSOR");
 
         op.Init(duration, config);
         op.Start();
     } else {
-        FatalError(
-                TAG,
-                "startOperation - No operation with id " + std::to_string(id));
+        FatalError(TAG, "StartOperation - No operation with id %d", id);
     }
 }
 
-//==================================================================================================
+//==============================================================================
 
 void internal::StopOperation(int id) {
     if ( auto pos = _operations.find(id); pos != _operations.end()) {
+        if ( auto* renderer = GetRenderer() ) {
+            renderer->RemoveOperation(*pos->second);
+        }
 
         {
             std::lock_guard<std::mutex> lock(_operations_lock);
             _stopped_operations.insert(id);
             pos->second->Stop();
         }
-
-        if ( _swappy_renderer ) {
-            _swappy_renderer->RemoveOperation(pos->second);
-        }
     } else {
-        FatalError(
-                TAG,
-                "stopOperation - No operation with id " + std::to_string(id));
+        FatalError(TAG,"StopOperation - No operation with id %d", id);
     }
 }
 
-//==================================================================================================
+//==============================================================================
 
 bool internal::OperationIsStopped(int id) {
     std::lock_guard<std::mutex> lock(_operations_lock);
@@ -145,14 +135,12 @@ bool internal::OperationIsStopped(int id) {
     } else if ( _stopped_operations.count(id)) {
         return true;
     } else {
-        FatalError(
-                TAG,
-                "isOperationStopped - No active or stopped operation with id "
-                        + std::to_string(id));
+        FatalError(TAG, "OperationIsStopped - No active or stopped operation with id %d",
+                   id);
     }
 }
 
-//==================================================================================================
+//==============================================================================
 
 void internal::WaitForOperation(int id) {
     auto pos = _operations.find(id);
@@ -160,15 +148,16 @@ void internal::WaitForOperation(int id) {
         pos->second->Wait();
         reporting::FlushReportLogQueue();
 
+        if ( auto* renderer = GetRenderer() ) {
+            renderer->RemoveOperation(*pos->second);
+        }
+
         {
             std::lock_guard<std::mutex> lock(_operations_lock);
             _stopped_operations.insert(id);
             _operations.erase(pos);
         }
-
     } else {
-        FatalError(
-                TAG, "waitForOperation - No operation with id "
-                        + std::to_string(id));
+        FatalError(TAG, "WaitForOperation - No operation with id %d", id);
     }
 }

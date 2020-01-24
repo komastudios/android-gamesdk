@@ -73,7 +73,7 @@ namespace ancer {
          * BaseOperation::Mode)
          * @return instance of the operation, or nullptr
          */
-        static std::shared_ptr<BaseOperation> Load(
+        static std::unique_ptr<BaseOperation> Load(
                 const std::string& operation_id, const std::string& suite_id,
                 Mode mode);
 
@@ -271,8 +271,8 @@ namespace ancer {
 
 #define EXPORT_ANCER_OPERATION(name) \
     extern "C" __attribute__((visibility ("default"))) \
-    void name ## _CreateDataGatherer(std::shared_ptr<BaseOperation> &into){ \
-        into = std::make_shared<name>(); } \
+    void name ## _CreateDataGatherer(std::unique_ptr<BaseOperation> &into){ \
+        into = std::make_unique<name>(); } \
     extern "C" __attribute__((visibility ("default"))) \
-    void name ## _CreateStressor(std::shared_ptr<BaseOperation> &into){ \
-        into = std::make_shared<name>(); } \
+    void name ## _CreateStressor(std::unique_ptr<BaseOperation> &into){ \
+        into = std::make_unique<name>(); } \

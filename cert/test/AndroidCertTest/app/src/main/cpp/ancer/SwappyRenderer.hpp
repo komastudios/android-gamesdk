@@ -23,97 +23,96 @@
 #include <thread>
 #include <EGL/egl.h>
 
+#include "Renderer.hpp"
 #include "System.hpp"
 #include "Thread.h"
 #include "util/WorkerThread.hpp"
 #include "util/FpsCalculator.hpp"
 
 namespace ancer {
-class BaseOperation;
+    class BaseOperation;
 }
 
-namespace ancer::swappy {
 
-class Renderer {
-  // Allows construction with std::unique_ptr from a static method, but disallows construction
-  // outside of the class since no one else can construct a ConstructorTag
-  struct ConstructorTag {
-  };
+namespace ancer {
+    class SwappyRenderer : public Renderer {
+        // Allows construction via make_unique(), but only internally since
+        // no-one else can create a ConstructorTag.
+        struct ConstructorTag {
+        };
 
-  class ThreadState {
-   public:
-    ThreadState(GLContextConfig preferred_ctx_config,
-                GLContextConfig fallback_ctx_config);
+        class ThreadState {
+        public:
+            ThreadState(GLContextConfig preferred_ctx_config,
+                        GLContextConfig fallback_ctx_config);
 
-    ~ThreadState();
+            ~ThreadState();
 
-    void ClearSurface();
+            void ClearSurface();
 
-    bool ConfigHasAttribute(EGLint attribute, EGLint value);
+            bool ConfigHasAttribute(EGLint attribute, EGLint value);
 
-    EGLBoolean MakeCurrent(EGLSurface surface);
+            EGLBoolean MakeCurrent(EGLSurface surface);
 
-    EGLDisplay display = EGL_NO_DISPLAY;
-    EGLConfig config = static_cast<EGLConfig>(0);
-    EGLSurface surface = EGL_NO_SURFACE;
-    EGLContext context = EGL_NO_CONTEXT;
+            EGLDisplay display = EGL_NO_DISPLAY;
+            EGLConfig config = static_cast<EGLConfig>(0);
+            EGLSurface surface = EGL_NO_SURFACE;
+            EGLContext context = EGL_NO_CONTEXT;
 
-    bool is_started = false;
-    int32_t width = 0;
-    int32_t height = 0;
-    GLContextConfig using_gl_context_config;
-   private:
-    bool TryCreateContext(GLContextConfig config);
-  };
+            bool is_started = false;
+            int32_t width = 0;
+            int32_t height = 0;
+            GLContextConfig using_gl_context_config;
+            private:
+            bool TryCreateContext(GLContextConfig config);
+        };
 
- public:
-  explicit Renderer(ConstructorTag,
-                    const GLContextConfig& preferred_ctx_config,
-                    const GLContextConfig& fallback_ctx_config) :
-      _preferred_ctx_config(preferred_ctx_config),
-      _fallback_ctx_config(fallback_ctx_config),
-      _worker_thread(
+    public:
+        explicit SwappyRenderer(ConstructorTag,
+                                const GLContextConfig& preferred_ctx_config,
+                                const GLContextConfig& fallback_ctx_config) :
+          _preferred_ctx_config(preferred_ctx_config),
+          _fallback_ctx_config(fallback_ctx_config),
+          _worker_thread(
+              "Renderer",
 
-          "Renderer",
+              // TODO(shamyl@google.com): Find a better way to assign render thread core
+              samples::Affinity::Odd,
 
-          // TODO(shamyl@google.com): Find a better way to assign render thread core
-          samples::Affinity::Odd,
+              [preferred_ctx_config, fallback_ctx_config]() {
+                return ThreadState{preferred_ctx_config, fallback_ctx_config};
+              }
+          ) {}
 
-          [preferred_ctx_config, fallback_ctx_config]() {
-            return ThreadState{preferred_ctx_config, fallback_ctx_config};
-          }
-      ) {}
+        static std::unique_ptr<SwappyRenderer> Create(
+                const GLContextConfig& preferred_ctx_config,
+                const GLContextConfig& fallback_ctx_config);
 
-  static std::unique_ptr<Renderer> Create(
-      const GLContextConfig& preferred_ctx_config,
-      const GLContextConfig& fallback_ctx_config);
+        // Sets the active window to render into
+        // Takes ownership of window and will release its reference
+        void SetWindow(ANativeWindow* window, int32_t width, int32_t height);
 
-  // Sets the active window to render into
-  // Takes ownership of window and will release its reference
-  void SetWindow(ANativeWindow* window, int32_t width, int32_t height);
+        void Start();
 
-  void Start();
+        void Stop();
 
-  void Stop();
+        void RequestDraw();
 
-  void RequestDraw();
+        void AddOperation(BaseOperation& operation);
 
-  void AddOperation(const std::shared_ptr<BaseOperation>& operation);
+        void RemoveOperation(BaseOperation& operation);
 
-  void RemoveOperation(const std::shared_ptr<BaseOperation>& operation);
+        void ClearOperations();
 
-  void ClearOperations();
+        private:
 
- private:
+        void Draw(ThreadState* thread_state);
 
-  void Draw(ThreadState* thread_state);
-
-  WorkerThread<ThreadState> _worker_thread;
-  std::mutex _operations_lock;
-  std::vector<std::shared_ptr<BaseOperation>> _operations;
-  FpsCalculator _fps_calculator;
-  GLContextConfig _preferred_ctx_config;
-  GLContextConfig _fallback_ctx_config;
-
-};
-} // namespace ancer::swappy
+        WorkerThread<ThreadState> _worker_thread;
+        std::mutex _operations_lock;
+        std::vector<BaseOperation*> _operations;
+        FpsCalculator _fps_calculator;
+        GLContextConfig _preferred_ctx_config;
+        GLContextConfig _fallback_ctx_config;
+    };
+}
