@@ -38,6 +38,7 @@
 #include "ancer/Suite.hpp"
 #include "ancer/System.hpp"
 #include "ancer/util/Error.hpp"
+#include "ancer/util/JNIHelpers.hpp"
 #include "ancer/util/Log.hpp"
 #include "ancer/util/FpsCalculator.hpp"
 #include "ancer/util/TestResultPrinter.hpp"
@@ -98,7 +99,7 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_shutdownSuit
 //==============================================================================
 
 JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
-    internal::SetJavaVM(vm);
+    jni::SetJavaVM(vm);
     return JNI_VERSION_1_6;
 }
 
