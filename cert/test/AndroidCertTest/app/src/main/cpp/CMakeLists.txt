@@ -91,6 +91,7 @@ add_library(${PROJECT_NAME} SHARED
         ancer/util/Bitmath.cpp
         ancer/util/GLHelpers.cpp
         ancer/util/GLPixelBuffer.cpp
+        ancer/util/JNIHelpers.cpp
         ancer/util/ThreadSyncPoint.cpp
         ancer/util/Time.cpp
         ancer/util/VkHelpers.cpp
