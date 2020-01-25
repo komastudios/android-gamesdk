@@ -33,8 +33,6 @@ namespace ancer {
 
 namespace ancer {
     namespace internal {
-        void SetJavaVM(JavaVM*);
-
         // init/deinit calls for the framework.
         void InitSystem(jobject activity, jstring internal_data_path,
                         jstring raw_data_path, jstring obb_path);
@@ -149,8 +147,6 @@ namespace ancer {
 
     [[nodiscard]] std::string GetCpuInfo();
 
-
-    static jclass RetrieveClass(JNIEnv* env, jobject activity, const char* className);
 
     FpsCalculator& GetFpsCalculator();
 
