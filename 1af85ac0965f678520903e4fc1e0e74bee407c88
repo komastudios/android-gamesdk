@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0cab1afe_9826986c",
+        "filename": "cert/test/AndroidCertTest/app/build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-27T18:50:15Z",
+      "side": 1,
+      "message": "Is there a specific reason to lock to this NDK? I\u0027m fine with this version (it\u0027s the one I\u0027m using too) but I think our onboarding specifies 20.1.something now...",
+      "revId": "1af85ac0965f678520903e4fc1e0e74bee407c88",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
