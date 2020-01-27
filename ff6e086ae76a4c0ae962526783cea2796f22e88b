@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "5c9da320_58a51cba",
+        "filename": "cert/test/AndroidCertTest/app/src/main/res/raw/configuration.json",
+        "patchSetId": 7
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-27T22:10:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "17fc20a1_d844e884",
+      "revId": "ff6e086ae76a4c0ae962526783cea2796f22e88b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8f755738_020fa3c0",
         "filename": "cert/test/reporting/lib/build.py",
         "patchSetId": 7
@@ -66,6 +84,24 @@
       "writtenOn": "2020-01-27T19:24:07Z",
       "side": 1,
       "message": "This sentinel file technique is a great candidate, in a future iteration, to become a ContextManager subclass (https://docs.python.org/3/library/contextlib.html). In plain English, in build_apk you\u0027ll be able to say\n\n  def build_apk(...):\n    ...\n    with SentinelFile(\"./tmp/build_active\"):\n      # do the gradle thing without caring about creating/destroying the sentinel ;-)\n      ...",
+      "revId": "ff6e086ae76a4c0ae962526783cea2796f22e88b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b2e1e7c6_89c40321",
+        "filename": "cert/test/reporting/lib/build.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-27T22:10:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8f755738_020fa3c0",
       "revId": "ff6e086ae76a4c0ae962526783cea2796f22e88b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
@@ -89,6 +125,24 @@
     },
     {
       "key": {
+        "uuid": "a1d566c2_f63b602f",
+        "filename": "cert/test/reporting/lib/build.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-27T22:10:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1913ecb3_f7780e0f",
+      "revId": "ff6e086ae76a4c0ae962526783cea2796f22e88b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "01fc72b2_2bfd2d84",
         "filename": "cert/test/reporting/lib/graphing.py",
         "patchSetId": 7
@@ -100,6 +154,24 @@
       "writtenOn": "2020-01-27T19:24:07Z",
       "side": 1,
       "message": "Recommended: I\u0027d make it explicitly an [INFO]. I got used to this sentence already but the first time I read it I thought something went wrong with the report. It\u0027s my understanding that this is closer to an informational message than an error. Is that the case?",
+      "revId": "ff6e086ae76a4c0ae962526783cea2796f22e88b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4668eb6b_42226011",
+        "filename": "cert/test/reporting/lib/graphing.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-27T22:10:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "01fc72b2_2bfd2d84",
       "revId": "ff6e086ae76a4c0ae962526783cea2796f22e88b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
@@ -134,6 +206,24 @@
       "writtenOn": "2020-01-27T19:24:07Z",
       "side": 1,
       "message": "I promise that the next long weekend I\u0027ll implement that implicit config feature where a missing\n\n  recipes/path/to/some_recipe.yaml\n\nis resolved as\n\n  build:\n    configuration: recipes/configurations/path/to/some_recipe.json\n\n😊",
+      "revId": "ff6e086ae76a4c0ae962526783cea2796f22e88b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7c91e4fc_0e1532e5",
+        "filename": "cert/test/reporting/recipes/mc/swappy/one_little_core_pinned.yaml",
+        "patchSetId": 7
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-27T22:10:08Z",
+      "side": 1,
+      "message": "👍 - yes, this is the worst!",
+      "parentUuid": "23ad6c99_d40ec1c7",
       "revId": "ff6e086ae76a4c0ae962526783cea2796f22e88b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
