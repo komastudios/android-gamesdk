@@ -70,6 +70,24 @@
       "revId": "1af85ac0965f678520903e4fc1e0e74bee407c88",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9ba220ed_94e38f31",
+        "filename": "cert/test/AndroidCertTest/app/build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-01-27T23:42:14Z",
+      "side": 1,
+      "message": "Actually noticed that I was missing that version that the onboarding doc talks about, I just got it installed and switched to it so we won\u0027t need this file changed in this CL after all 😉\n\nI\u0027m still opening a ticket for the compile error when using the latest NDK.",
+      "parentUuid": "6b030870_e0ca92f8",
+      "revId": "1af85ac0965f678520903e4fc1e0e74bee407c88",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
