@@ -52,6 +52,24 @@
       "revId": "1af85ac0965f678520903e4fc1e0e74bee407c88",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6b030870_e0ca92f8",
+        "filename": "cert/test/AndroidCertTest/app/build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-27T22:24:57Z",
+      "side": 1,
+      "message": "Well, at least it builds with the NDK most of us are using. Do you mind updating the onboarding doc to ensure it references this version of the NDK?",
+      "parentUuid": "220e07bc_44fcb724",
+      "revId": "1af85ac0965f678520903e4fc1e0e74bee407c88",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
