@@ -34,6 +34,24 @@
       "revId": "1af85ac0965f678520903e4fc1e0e74bee407c88",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "220e07bc_44fcb724",
+        "filename": "cert/test/AndroidCertTest/app/build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-01-27T19:40:11Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "0c3def1d_d26751d7",
+      "revId": "1af85ac0965f678520903e4fc1e0e74bee407c88",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
