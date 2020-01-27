@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "a20bb263_5983be63",
+        "filename": "cert/test/AndroidCertTest/app/src/main/res/raw/configuration.json",
+        "patchSetId": 7
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-27T19:36:28Z",
+      "side": 1,
+      "message": "Yeah, that\u0027s correct. I\u0027ll fix it!",
+      "parentUuid": "8cb8a1fa_5206d8f8",
+      "revId": "ff6e086ae76a4c0ae962526783cea2796f22e88b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8f755738_020fa3c0",
         "filename": "cert/test/reporting/lib/build.py",
         "patchSetId": 7
