@@ -27,6 +27,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <cmath>
+#include <thread>
 
 #include <sched.h>
 #include <pthread.h>
@@ -82,7 +83,7 @@ private:
     PFN_AChoreographer_postFrameCallback mAChoreographer_postFrameCallback = nullptr;
     PFN_AChoreographer_postFrameCallbackDelayed mAChoreographer_postFrameCallbackDelayed = nullptr;
     void *mLibAndroid = nullptr;
-    std::thread mThread;
+    Thread mThread;
     std::condition_variable mWaitingCondition;
     ALooper *mLooper GUARDED_BY(mWaitingMutex) = nullptr;
     bool mThreadRunning GUARDED_BY(mWaitingMutex) = false;
@@ -120,7 +121,7 @@ NDKChoreographerThread::NDKChoreographerThread(Callback onChoreographer) :
     std::unique_lock<std::mutex> lock(mWaitingMutex);
     // create a new ALooper thread to get Choreographer events
     mThreadRunning = true;
-    mThread = std::thread([this]() { looperThread(); });
+    mThread = Thread([this]() { looperThread(); });
     mWaitingCondition.wait(lock, [&]() REQUIRES(mWaitingMutex) {
         return mChoreographer != nullptr;
     });
@@ -330,7 +331,7 @@ private:
     void looperThread();
     void onSettingsChanged();
 
-    std::thread mThread;
+    Thread mThread;
     bool mThreadRunning GUARDED_BY(mWaitingMutex);
     std::condition_variable_any mWaitingCondition GUARDED_BY(mWaitingMutex);
     std::chrono::nanoseconds mRefreshPeriod GUARDED_BY(mWaitingMutex);
@@ -341,7 +342,7 @@ NoChoreographerThread::NoChoreographerThread(Callback onChoreographer) :
     std::unique_lock<std::mutex> lock(mWaitingMutex);
     Settings::getInstance()->addListener([this]() { onSettingsChanged(); });
     mThreadRunning = true;
-    mThread = std::thread([this]() { looperThread(); });
+    mThread = Thread([this]() { looperThread(); });
     mInitialized = true;
 }
 

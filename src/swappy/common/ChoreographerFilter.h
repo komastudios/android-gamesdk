@@ -17,11 +17,11 @@
 
 #pragma once
 
-#include <thread>
 #include <vector>
 #include <mutex>
 #include <condition_variable>
 #include "Settings.h"
+#include "Thread.h"
 
 namespace swappy {
 
@@ -46,7 +46,7 @@ class ChoreographerFilter {
 
     std::mutex mThreadPoolMutex;
     bool mUseAffinity = true;
-    std::vector<std::thread> mThreadPool;
+    std::vector<Thread> mThreadPool;
 
     std::mutex mMutex;
     std::condition_variable mCondition;

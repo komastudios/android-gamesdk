@@ -221,7 +221,7 @@ VkResult SwappyVkBase::initializeVkSyncObjects(VkQueue   queue,
 
     // Start the thread
     std::lock_guard<std::mutex> lock(threadContext->lock);
-    threadContext->thread = std::thread([&]() {
+    threadContext->thread = Thread([&]() {
         waitForFenceThreadMain(*threadContext);
     });
     return VK_SUCCESS;
