@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3efbca19_9368d3e7",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/BaseOperation.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-01-28T17:52:40Z",
+      "side": 1,
+      "message": "(Self-resolved) I wonder if there\u0027s a way in C++ to declare a function so that it will \"std::move\" its argument even if not explicitly asked so.\nWhen move semantics were introduced 10 years ago, I thought that the \"\u0026\u0026\" notation on a declaration made \"std::move\" to forcefully happen. Looks like it\u0027s just half of the story but the caller must explicitly \"std::move\" to truly materialize the intention.",
+      "revId": "4657848e899dd85063f0d98ef2b9a70faa04383a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "315da503_e8269572",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/CalculatePIOperation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-01-28T17:52:40Z",
+      "side": 1,
+      "message": "Do we still need the JSON_WRITER(...) fragment now that we have the WriteDatum(...)? I noticed that, in the other source files, WriteDatum(...) superseded JSON_WRITER(...).\nSounds a lot like lines 80 to 90 should go away.",
+      "revId": "4657848e899dd85063f0d98ef2b9a70faa04383a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
