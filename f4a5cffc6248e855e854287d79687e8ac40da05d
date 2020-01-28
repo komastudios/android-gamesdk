@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "26ea0269_950f02e6",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/Bitmath.hpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-01-28T17:36:24Z",
+      "side": 1,
+      "message": "Hey @Tyler, if you try and compile this with the most recent NDK version (21.0.6113669, we\u0027re currently using its direct predecessor 20.1.5948944), you\u0027ll get \"redefinition of operator\u003d\u003d\", \"... operator!\u003d\", \"...\" for each operator.\n\nI\u0027d opened a low-priority ticket https://b.corp.google.com/issues/148410007 a few days ago. You may want to give a try.",
+      "revId": "f4a5cffc6248e855e854287d79687e8ac40da05d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
