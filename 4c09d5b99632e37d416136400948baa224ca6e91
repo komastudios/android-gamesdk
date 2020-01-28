@@ -16,6 +16,24 @@
       "revId": "4c09d5b99632e37d416136400948baa224ca6e91",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b74f4ceb_c4c44feb",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 10
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-01-28T17:38:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2af6f1e5_9bfbb53d",
+      "revId": "4c09d5b99632e37d416136400948baa224ca6e91",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
