@@ -33,6 +33,23 @@
       "revId": "4657848e899dd85063f0d98ef2b9a70faa04383a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5365f32d_5f394e46",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/BufferStorageGLES3Operation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-28T18:27:33Z",
+      "side": 1,
+      "message": "Why isn\u0027t this available via the ADD_DATUM_MEMBER macro?",
+      "revId": "4657848e899dd85063f0d98ef2b9a70faa04383a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
