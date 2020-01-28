@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "827c30c1_629e735a",
+        "filename": "bender/bender-base/app/src/main/jni/render_graph.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-01-28T02:16:25Z",
+      "side": 1,
+      "message": "you can move this method to the camera object",
+      "revId": "e2586e218e3ac24c93f7c6660f6d12d075e29c06",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a1a851a4_4c63d3ec",
+        "filename": "bender/bender-base/app/src/main/jni/render_graph.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-01-28T02:16:25Z",
+      "side": 1,
+      "message": "you can move this method to the camera object",
+      "revId": "e2586e218e3ac24c93f7c6660f6d12d075e29c06",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fbf2ff7a_8d9a5456",
+        "filename": "bender/bender-base/app/src/main/jni/render_graph.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-01-28T02:16:25Z",
+      "side": 1,
+      "message": "I would also move the planes to the camera.",
+      "revId": "e2586e218e3ac24c93f7c6660f6d12d075e29c06",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
