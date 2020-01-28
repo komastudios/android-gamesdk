@@ -64,8 +64,8 @@ void Material::CreateSampler() {
   const VkSamplerCreateInfo sampler_Create_info = {
     .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
     .pNext = nullptr,
-    .magFilter = VK_FILTER_NEAREST,
-    .minFilter = VK_FILTER_NEAREST,
+    .magFilter = VK_FILTER_LINEAR,
+    .minFilter = VK_FILTER_LINEAR,
     .mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST,
     .addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
     .addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,

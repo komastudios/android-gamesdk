@@ -241,21 +241,21 @@ void CreateMaterials() {
     defaultMaterial.specular = {0.8f, 0.0f, 0.5f, 128.0f};
     defaultMaterial.diffuse = {0.8f, 0.0f, 0.5f};
     defaultMaterial.ambient = {0.8f, 0.0f, 0.5f};
-    std::vector<std::shared_ptr<Texture>> materialTextures = {nullptr};
+    std::vector<std::shared_ptr<Texture>> materialTextures = {nullptr, nullptr, nullptr, nullptr};
     baseline_materials.push_back(std::make_shared<Material>(renderer, shaders, materialTextures));
     baseline_materials.push_back(std::make_shared<Material>(renderer,
                                                            shaders,
                                                            materialTextures,
                                                            defaultMaterial));
 
-    materialTextures = {textures[0]};
+    materialTextures = {textures[0], nullptr, nullptr, nullptr};
     baseline_materials.push_back(std::make_shared<Material>(renderer, shaders, materialTextures));
     baseline_materials.push_back(std::make_shared<Material>(renderer,
                                                            shaders,
                                                            materialTextures,
                                                            defaultMaterial));
     for (uint32_t i = 0; i < textures.size(); ++i) {
-      materialTextures = {textures[i]};
+      materialTextures = {textures[i], nullptr, nullptr, nullptr};
       materials.push_back(std::make_shared<Material>(renderer, shaders, materialTextures));
     }
   });
@@ -370,6 +370,8 @@ void HandleInput(input::Data *input_data) {
 
 void CreateShaderState() {
   VertexFormat vertex_format{{
+                                 VertexElement::float3,
+                                 VertexElement::float3,
                                  VertexElement::float3,
                                  VertexElement::float3,
                                  VertexElement::float2,
