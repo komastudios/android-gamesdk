@@ -32,7 +32,7 @@ class Texture {
 
   Texture(benderkit::Device &device,
           android_app &android_app_ctx,
-          const char *texture_file_name,
+          const std::string &texture_file_name,
           VkFormat texture_format,
           std::function<void(uint8_t *)> generator = nullptr);
 
@@ -51,7 +51,7 @@ class Texture {
  private:
   benderkit::Device &device_;
 
-  const char *file_name_ = nullptr;
+  std::string file_name_;
   VkImage image_;
   VkImageLayout image_layout_;
   VkDeviceMemory mem_;
