@@ -45,6 +45,7 @@
 #include <array>
 #include <cstring>
 #include <chrono>
+#include <obj_loader.h>
 
 using namespace benderkit;
 using namespace benderhelpers;
@@ -93,28 +94,28 @@ char fps_info[50];
 void MoveForward() {
   glm::vec3
       forward = glm::normalize(render_graph->GetCamera().rotation * glm::vec3(0.0f, 0.0f, -1.0f));
-  render_graph->TranslateCamera(forward * 2.0f * frame_time);
+  render_graph->TranslateCamera(forward * 200.0f * frame_time);
 }
 void MoveBackward() {
   glm::vec3
       forward = glm::normalize(render_graph->GetCamera().rotation * glm::vec3(0.0f, 0.0f, -1.0f));
-  render_graph->TranslateCamera(-forward * 2.0f * frame_time);
+  render_graph->TranslateCamera(-forward * 200.0f * frame_time);
 }
 void StrafeLeft() {
   glm::vec3 right = glm::normalize(render_graph->GetCamera().rotation * glm::vec3(1.0f, 0.f, 0.f));
-  render_graph->TranslateCamera(-right * (20.0f / device->GetDisplaySize().width));
+  render_graph->TranslateCamera(-right * (2000.0f / device->GetDisplaySize().width));
 }
 void StrafeRight() {
   glm::vec3 right = glm::normalize(render_graph->GetCamera().rotation * glm::vec3(1.0f, 0.f, 0.f));
-  render_graph->TranslateCamera(right * (20.0f / device->GetDisplaySize().width));
+  render_graph->TranslateCamera(right * (2000.0f / device->GetDisplaySize().width));
 }
 void StrafeUp() {
   glm::vec3 up = glm::normalize(render_graph->GetCamera().rotation * glm::vec3(0.0f, 1.0f, 0.0f));
-  render_graph->TranslateCamera(up * (20.0f / device->GetDisplaySize().height));
+  render_graph->TranslateCamera(up * (2000.0f / device->GetDisplaySize().height));
 }
 void StrafeDown() {
   glm::vec3 up = glm::normalize(render_graph->GetCamera().rotation * glm::vec3(0.0f, 1.0f, 0.0f));
-  render_graph->TranslateCamera(-up * (20.0f / device->GetDisplaySize().height));
+  render_graph->TranslateCamera(-up * (2000.0f / device->GetDisplaySize().height));
 }
 void CreateInstance() {
   render_graph->AddMesh(std::make_shared<Mesh>(renderer,
@@ -183,26 +184,26 @@ void CreateButtons() {
     button.SetLabel("Backward");
     button.SetPosition(.43, .2, .85, .2);
   });
-  user_interface->RegisterButton([] (Button& button) {
-    button.on_up_ = CreateInstance;
-    button.SetLabel("+1 Mesh");
-    button.SetPosition(-.2, .2, .4, .2);
-  });
-  user_interface->RegisterButton([] (Button& button) {
-    button.on_up_ = DeleteInstance;
-    button.SetLabel("-1 Mesh");
-    button.SetPosition(-.7, .2, .4, .2);
-  });
-  user_interface->RegisterButton([] (Button& button) {
-    button.on_up_ = ChangePolyhedralComplexity;
-    button.SetLabel("Poly Switch");
-    button.SetPosition(.5, .2, .2, .2);
-  });
-  user_interface->RegisterButton([] (Button& button) {
-    button.on_up_ = ChangeMaterialComplexity;
-    button.SetLabel("Tex Switch");
-    button.SetPosition(.5, .2, .4, .2);
-  });
+//  user_interface->RegisterButton([] (Button& button) {
+//    button.on_up_ = CreateInstance;
+//    button.SetLabel("+1 Mesh");
+//    button.SetPosition(-.2, .2, .4, .2);
+//  });
+//  user_interface->RegisterButton([] (Button& button) {
+//    button.on_up_ = DeleteInstance;
+//    button.SetLabel("-1 Mesh");
+//    button.SetPosition(-.7, .2, .4, .2);
+//  });
+//  user_interface->RegisterButton([] (Button& button) {
+//    button.on_up_ = ChangePolyhedralComplexity;
+//    button.SetLabel("Poly Switch");
+//    button.SetPosition(.5, .2, .2, .2);
+//  });
+//  user_interface->RegisterButton([] (Button& button) {
+//    button.on_up_ = ChangeMaterialComplexity;
+//    button.SetLabel("Tex Switch");
+//    button.SetPosition(.5, .2, .4, .2);
+//  });
 }
 
 void CreateUserInterface() {
@@ -237,27 +238,39 @@ void CreateTextures() {
   });
 }
 
+std::map<std::string, std::shared_ptr<Texture>> loadedTextures;
+std::map<std::string, std::shared_ptr<Material>> loadedMaterials;
+
+void addTexture(std::string fileName){
+  if (fileName != "" && loadedTextures.find(fileName) == loadedTextures.end()){
+    loadedTextures[fileName] = std::make_shared<Texture>(*device,
+                                                         *android_app_ctx,
+                                                         ("textures/" + fileName).c_str(),
+                                                         VK_FORMAT_R8G8B8A8_SRGB);
+  }
+}
+
 void CreateMaterials() {
   timing::timer.Time("Materials Creation", timing::OTHER, [] {
     MaterialAttributes defaultMaterial;
     defaultMaterial.specular = {0.8f, 0.0f, 0.5f, 128.0f};
     defaultMaterial.diffuse = {0.8f, 0.0f, 0.5f};
     defaultMaterial.ambient = {0.8f, 0.0f, 0.5f};
-    std::vector<std::shared_ptr<Texture>> materialTextures = {nullptr, nullptr, nullptr, nullptr};
+    std::vector<std::shared_ptr<Texture>> materialTextures = {nullptr, nullptr, nullptr, nullptr, nullptr};
     baseline_materials.push_back(std::make_shared<Material>(renderer, shaders, materialTextures));
     baseline_materials.push_back(std::make_shared<Material>(renderer,
                                                            shaders,
                                                            materialTextures,
                                                            defaultMaterial));
 
-    materialTextures = {textures[0], nullptr, nullptr, nullptr};
+    materialTextures = {textures[0], nullptr, nullptr, nullptr, nullptr};
     baseline_materials.push_back(std::make_shared<Material>(renderer, shaders, materialTextures));
     baseline_materials.push_back(std::make_shared<Material>(renderer,
                                                            shaders,
                                                            materialTextures,
                                                            defaultMaterial));
     for (uint32_t i = 0; i < textures.size(); ++i) {
-      materialTextures = {textures[i], nullptr, nullptr, nullptr};
+      materialTextures = {textures[i], nullptr, nullptr, nullptr, nullptr};
       materials.push_back(std::make_shared<Material>(renderer, shaders, materialTextures));
     }
   });
@@ -353,10 +366,10 @@ void UpdateInstances(input::Data *input_data) {
   Camera camera = render_graph->GetCamera();
   render_graph->GetAllMeshes(all_meshes);
   for (int i = 0; i < all_meshes.size(); i++) {
-    all_meshes[i]->Rotate(glm::vec3(0.0f, 1.0f, 1.0f), 90 * frame_time);
-    all_meshes[i]->Translate(.02f * glm::vec3(std::sin(2 * total_time),
-                                             std::sin(i * total_time),
-                                             std::cos(2 * total_time)));
+//    all_meshes[i]->Rotate(glm::vec3(0.0f, 1.0f, 0.0f), 90 * frame_time);
+//    all_meshes[i]->Translate(.02f * glm::vec3(std::sin(2 * total_time),
+//                                             std::sin(i * total_time),
+//                                             std::cos(2 * total_time)));
 
     all_meshes[i]->Update(renderer->GetCurrentFrame(), camera);
   }
@@ -541,21 +554,56 @@ bool InitVulkan(android_app *app) {
 
     renderer = new Renderer(*device);
 
-    timing::timer.Time("Mesh Creation", timing::OTHER, [] {
-      tex_files.push_back("textures/sample_texture.png");
-      tex_files.push_back("textures/sample_texture2.png");
+    timing::timer.Time("Mesh Creation", timing::OTHER, [app] {
+      AAssetDir *dir = AAssetManager_openDir(app->activity->assetManager, "models");
+      const char *fileName;
+      fileName = AAssetDir_getNextFileName(dir);
+      while(fileName != nullptr) {
+        LOGE("%s", fileName);
+        std::string fileNameString(fileName);
+        if (fileNameString.find(".mtl") != -1){
+          fileName = AAssetDir_getNextFileName(dir);
+          continue;
+        }
 
-      CreateTextures();
+        std::vector<OBJLoader::OBJ> modelData;
+        std::unordered_map<std::string, OBJLoader::MTL> mtllib;
+        OBJLoader::LoadOBJ(app->activity->assetManager,
+                           ("models/" + fileNameString).c_str(),
+                           mtllib,
+                           modelData);
 
-      CreateMaterials();
-
-      CreateGeometries();
-
-      timing::timer.Time("Create Polyhedron", timing::OTHER, [] {
-        render_graph->AddMesh(std::make_shared<Mesh>(renderer,
-                                                     baseline_materials[materials_idx],
-                                                     geometries[poly_faces_idx]));
-      });
+        for (auto obj : modelData) {
+          std::string mtlName = obj.material_name_;
+          if (loadedMaterials.find(mtlName) == loadedMaterials.end()) {
+            OBJLoader::MTL currMTL = mtllib[obj.material_name_];
+            addTexture(currMTL.map_Ka_);
+            addTexture(currMTL.map_Kd_);
+            addTexture(currMTL.map_Ks_);
+            addTexture(currMTL.map_Ns_);
+            addTexture(currMTL.map_Bump_);
+            MaterialAttributes newMTL;
+            newMTL.ambient = currMTL.ambient_;
+            newMTL.specular = glm::vec4(currMTL.specular_, currMTL.specular_exponent_);
+            newMTL.diffuse = currMTL.diffuse_;
+            std::vector<std::shared_ptr<Texture>> myTextures = {loadedTextures[currMTL.map_Kd_],
+                                                                loadedTextures[currMTL.map_Ks_],
+                                                                loadedTextures[currMTL.map_Ke_],
+                                                                loadedTextures[currMTL.map_Ns_],
+                                                                loadedTextures[currMTL.map_Bump_]};
+            loadedMaterials[mtlName] = std::make_shared<Material>(renderer,
+                                                                  shaders,
+                                                                  myTextures,
+                                                                  newMTL);
+          }
+          render_graph->AddMesh(std::make_shared<Mesh>(renderer,
+                                                       loadedMaterials[mtlName],
+                                                       std::make_shared<Geometry>(*device,
+                                                                                  obj.vertex_buffer_,
+                                                                                  obj.index_buffer_)));
+        }
+        fileName = AAssetDir_getNextFileName(dir);
+      }
     });
 
     CreateDepthBuffer();
@@ -801,7 +849,7 @@ bool VulkanDrawFrame(input::Data *input_data) {
 
         int fps;
         float frame_time;
-        timing::timer.GetFramerate(500,
+        timing::timer.GetFramerate(100,
                                    timing::timer.GetLastMajorEvent()->number,
                                    &fps,
                                    &frame_time);
@@ -827,12 +875,8 @@ void OnOrientationChange() {
     vkDestroyImageView(device->GetDevice(), display_views[i], nullptr);
     vkDestroyFramebuffer(device->GetDevice(), framebuffers[i], nullptr);
   }
-  vkDestroyImageView(device->GetDevice(), depth_buffer.image_view, nullptr);
-  vkDestroyImage(device->GetDevice(), depth_buffer.image, nullptr);
-  vkFreeMemory(device->GetDevice(), depth_buffer.device_memory, nullptr);
 
   device->CreateSwapChain(device->GetSwapchain());
-  CreateDepthBuffer();
   CreateFramebuffers(render_pass, depth_buffer.image_view);
   Button::SetScreenResolution(device->GetDisplaySizeOriented());
   UpdateCameraParameters();
