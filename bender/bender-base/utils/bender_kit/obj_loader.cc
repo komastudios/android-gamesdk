@@ -9,114 +9,58 @@
 
 namespace OBJLoader {
 
-int trueIndex(int idx, int size) {
-  if (idx < 0) {
-    return size + idx;
-  } else {
-    return idx - 1;
-  }
-}
-
-void addVertex(glm::vec3 &currVert,
+void AddVertex(glm::vec3 &currVert,
                OBJ &currOBJ,
-               std::unordered_map<glm::vec3, uint16_t> &fileVertToIndex,
                std::vector<glm::vec3> &position,
                std::vector<glm::vec3> &normal,
                std::vector<glm::vec2> &texCoord,
                glm::vec3 tangent,
                glm::vec3 bitangent) {
-  if (fileVertToIndex.find(currVert) != fileVertToIndex.end()) {
-    uint16_t index = currOBJ.vert_to_index_[currVert];
-    currOBJ.index_buffer_.push_back(index);
-    currOBJ.vertex_buffer_[index * 14 + 6] += tangent.x;
-    currOBJ.vertex_buffer_[index * 14 + 7] += tangent.y;
-    currOBJ.vertex_buffer_[index * 14 + 8] += tangent.z;
-    currOBJ.vertex_buffer_[index * 14 + 9] += bitangent.x;
-    currOBJ.vertex_buffer_[index * 14 + 10] += bitangent.y;
-    currOBJ.vertex_buffer_[index * 14 + 11] += bitangent.z;
+  if (currOBJ.vert_to_index.find(currVert) != currOBJ.vert_to_index.end()) {
+    uint16_t index = currOBJ.vert_to_index[currVert];
+    currOBJ.index_buffer.push_back(index);
+    currOBJ.vertex_buffer[index * 14 + 6] += tangent.x;
+    currOBJ.vertex_buffer[index * 14 + 7] += tangent.y;
+    currOBJ.vertex_buffer[index * 14 + 8] += tangent.z;
+    currOBJ.vertex_buffer[index * 14 + 9] += bitangent.x;
+    currOBJ.vertex_buffer[index * 14 + 10] += bitangent.y;
+    currOBJ.vertex_buffer[index * 14 + 11] += bitangent.z;
     return;
   }
 
-  fileVertToIndex[currVert] = fileVertToIndex.size();
-  currOBJ.index_buffer_.push_back(currOBJ.vert_to_index_.size());
-  currOBJ.vert_to_index_[currVert] = currOBJ.vert_to_index_.size();
+  currOBJ.index_buffer.push_back(currOBJ.vert_to_index.size());
+  currOBJ.vert_to_index[currVert] = currOBJ.vert_to_index.size();
 
-  currOBJ.vertex_buffer_.push_back(position[trueIndex(currVert.x, position.size())].x);
-  currOBJ.vertex_buffer_.push_back(position[trueIndex(currVert.x, position.size())].y);
-  currOBJ.vertex_buffer_.push_back(position[trueIndex(currVert.x, position.size())].z);
+  currOBJ.vertex_buffer.push_back(position[TrueIndex(currVert.x, position.size())].x);
+  currOBJ.vertex_buffer.push_back(position[TrueIndex(currVert.x, position.size())].y);
+  currOBJ.vertex_buffer.push_back(position[TrueIndex(currVert.x, position.size())].z);
 
-  currOBJ.vertex_buffer_.push_back(normal[trueIndex(currVert.z, normal.size())].x);
-  currOBJ.vertex_buffer_.push_back(normal[trueIndex(currVert.z, normal.size())].y);
-  currOBJ.vertex_buffer_.push_back(normal[trueIndex(currVert.z, normal.size())].z);
+  currOBJ.vertex_buffer.push_back(normal[TrueIndex(currVert.z, normal.size())].x);
+  currOBJ.vertex_buffer.push_back(normal[TrueIndex(currVert.z, normal.size())].y);
+  currOBJ.vertex_buffer.push_back(normal[TrueIndex(currVert.z, normal.size())].z);
 
-  currOBJ.vertex_buffer_.push_back(tangent.x);
-  currOBJ.vertex_buffer_.push_back(tangent.y);
-  currOBJ.vertex_buffer_.push_back(tangent.z);
+  currOBJ.vertex_buffer.push_back(tangent.x);
+  currOBJ.vertex_buffer.push_back(tangent.y);
+  currOBJ.vertex_buffer.push_back(tangent.z);
 
-  currOBJ.vertex_buffer_.push_back(bitangent.x);
-  currOBJ.vertex_buffer_.push_back(bitangent.y);
-  currOBJ.vertex_buffer_.push_back(bitangent.z);
+  currOBJ.vertex_buffer.push_back(bitangent.x);
+  currOBJ.vertex_buffer.push_back(bitangent.y);
+  currOBJ.vertex_buffer.push_back(bitangent.z);
 
-  currOBJ.vertex_buffer_.push_back(texCoord[trueIndex(currVert.y, texCoord.size())].x);
-  currOBJ.vertex_buffer_.push_back(texCoord[trueIndex(currVert.y, texCoord.size())].y);
+  currOBJ.vertex_buffer.push_back(texCoord[TrueIndex(currVert.y, texCoord.size())].x);
+  currOBJ.vertex_buffer.push_back(texCoord[TrueIndex(currVert.y, texCoord.size())].y);
 }
 
 void LoadMTL(AAssetManager *mgr,
              const std::string &fileName,
              std::unordered_map<std::string, MTL> &mtllib) {
 
-  AAsset *file = AAssetManager_open(mgr, ("models/" + fileName).c_str(), AASSET_MODE_BUFFER);
-  size_t fileLength = AAsset_getLength(file);
+  AAsset *file = AAssetManager_open(mgr, "models/starship_command_center_triangle.mtl", AASSET_MODE_BUFFER);
+  const char *fileContent = static_cast<const char *>(AAsset_getBuffer(file));
 
-  char *fileContent = new char[fileLength];
-  AAsset_read(file, fileContent, fileLength);
+  std::stringstream data(std::string(fileContent, AAsset_getLength(file)));
 
-  std::stringstream data;
-  data << fileContent;
-  std::string label;
-  std::string currentMaterialName = "";
-  std::string skip;
-
-  while (data >> label) {
-    if (label == "newmtl") {
-      data >> currentMaterialName;
-      mtllib[currentMaterialName] = MTL();
-    } else if (label == "Ns") {
-      data >> mtllib[currentMaterialName].specular_exponent_;
-    } else if (label == "Ka") {
-      data >> mtllib[currentMaterialName].ambient_.x >>
-           mtllib[currentMaterialName].ambient_.y >>
-           mtllib[currentMaterialName].ambient_.z;
-    } else if (label == "Kd") {
-      data >> mtllib[currentMaterialName].diffuse_.x >>
-           mtllib[currentMaterialName].diffuse_.y >>
-           mtllib[currentMaterialName].diffuse_.z;
-    } else if (label == "Ks") {
-      data >> mtllib[currentMaterialName].specular_.x >>
-           mtllib[currentMaterialName].specular_.y >>
-           mtllib[currentMaterialName].specular_.z;
-    } else if (label == "map_Ka") {
-      data >> mtllib[currentMaterialName].map_Ka_;
-    } else if (label == "map_Ks") {
-      data >> mtllib[currentMaterialName].map_Ks_;
-    } else if (label == "map_Ke") {
-      data >> mtllib[currentMaterialName].map_Ke_;
-    } else if (label == "map_Kd") {
-      data >> mtllib[currentMaterialName].map_Kd_;
-    } else if (label == "map_Ns") {
-      data >> mtllib[currentMaterialName].map_Ns_;
-    } else if (label == "map_Bump") {
-      skip = data.get();
-      skip = data.peek();
-      if (skip == "-"){
-        data >> skip >> mtllib[currentMaterialName].bump_multiplier
-             >> mtllib[currentMaterialName].map_Bump_;
-      }
-      else{
-        data >> mtllib[currentMaterialName].map_Bump_;
-      }
-    }
-  }
+  ParseMTL(data, mtllib);
 }
 
 // There is a global vertex buffer for an OBJ file
@@ -133,55 +77,53 @@ void LoadOBJ(AAssetManager *mgr,
   std::vector<glm::vec3> position;
   std::vector<glm::vec3> normal;
   std::vector<glm::vec2> texCoord;
-  std::unordered_map<glm::vec3, uint16_t> fileVertToIndex;
 
   AAsset *file = AAssetManager_open(mgr, fileName.c_str(), AASSET_MODE_BUFFER);
-  size_t fileLength = AAsset_getLength(file);
+  const char *fileContent = static_cast<const char *>(AAsset_getBuffer(file));
 
-  char *fileContent = new char[fileLength];
-  AAsset_read(file, fileContent, fileLength);
+  std::stringstream data(std::string(fileContent, AAsset_getLength(file)));
 
-  std::stringstream data;
-  data << fileContent;
-  std::string label;
-
-  while (data >> label) {
+  std::string line;
+  while (std::getline(data, line) && !data.eof()) {
+    std::stringstream lineStream(line);
+    std::string label;
+    lineStream >> label;
     if (label == "mtllib") {
       std::string mtllibName;
-      data >> mtllibName;
+      lineStream >> mtllibName;
       LoadMTL(mgr, mtllibName, mtllib);
     } else if (label == "v") {
       float x, y, z;
-      data >> x >> y >> z;
+      lineStream >> x >> y >> z;
       position.push_back({x, y, z});
     } else if (label == "vt") {
       float x, y;
-      data >> x >> y;
+      lineStream >> x >> y;
       texCoord.push_back({x, 1-y});
     } else if (label == "vn") {
       float x, y, z;
-      data >> x >> y >> z;
+      lineStream >> x >> y >> z;
       normal.push_back({x, y, z});
     } else if (label == "usemtl") {
       std::string materialName;
-      data >> materialName;
+      lineStream >> materialName;
       OBJ curr;
-      curr.material_name_ = materialName;
+      curr.material_name = materialName;
       modelData.push_back(curr);
     } else if (label == "f") {
       glm::vec3 vertex1, vertex2, vertex3;
       char skip;
-      data >> vertex1.x >> skip >> vertex1.y >> skip >> vertex1.z;
-      data >> vertex2.x >> skip >> vertex2.y >> skip >> vertex2.z;
-      data >> vertex3.x >> skip >> vertex3.y >> skip >> vertex3.z;
+      lineStream >> vertex1.x >> skip >> vertex1.y >> skip >> vertex1.z;
+      lineStream >> vertex2.x >> skip >> vertex2.y >> skip >> vertex2.z;
+      lineStream >> vertex3.x >> skip >> vertex3.y >> skip >> vertex3.z;
 
-      glm::vec3 posVec1 = position[trueIndex(vertex1.x, position.size())];
-      glm::vec3 posVec2 = position[trueIndex(vertex2.x, position.size())];
-      glm::vec3 posVec3 = position[trueIndex(vertex3.x, position.size())];
+      glm::vec3 posVec1 = position[TrueIndex(vertex1.x, position.size())];
+      glm::vec3 posVec2 = position[TrueIndex(vertex2.x, position.size())];
+      glm::vec3 posVec3 = position[TrueIndex(vertex3.x, position.size())];
 
-      glm::vec2 texVec1 = texCoord[trueIndex(vertex1.y, texCoord.size())];
-      glm::vec2 texVec2 = texCoord[trueIndex(vertex2.y, texCoord.size())];
-      glm::vec2 texVec3 = texCoord[trueIndex(vertex3.y, texCoord.size())];
+      glm::vec2 texVec1 = texCoord[TrueIndex(vertex1.y, texCoord.size())];
+      glm::vec2 texVec2 = texCoord[TrueIndex(vertex2.y, texCoord.size())];
+      glm::vec2 texVec3 = texCoord[TrueIndex(vertex3.y, texCoord.size())];
 
       glm::vec3 edge1 = posVec2 - posVec1;
       glm::vec3 edge2 = posVec3 - posVec1;
@@ -193,11 +135,18 @@ void LoadOBJ(AAssetManager *mgr,
       tangent = f * (deltaUV2.y * edge1 - deltaUV1.y * edge2);
       bitangent = f * (-deltaUV2.x * edge1 + deltaUV1.x * edge2);
 
-      addVertex(vertex3, modelData.back(), fileVertToIndex, position, normal, texCoord, tangent, bitangent);
-      addVertex(vertex2, modelData.back(), fileVertToIndex, position, normal, texCoord, tangent, bitangent);
-      addVertex(vertex1, modelData.back(), fileVertToIndex, position, normal, texCoord, tangent, bitangent);
+      AddVertex(vertex3, modelData.back(), position, normal, texCoord, tangent, bitangent);
+      AddVertex(vertex2, modelData.back(), position, normal, texCoord, tangent, bitangent);
+      AddVertex(vertex1, modelData.back(), position, normal, texCoord, tangent, bitangent);
+
+      if (modelData.back().vert_to_index.size() > 65500){
+        OBJ curr;
+        curr.material_name = modelData.back().material_name;
+        modelData.push_back(curr);
+      }
     }
   }
+  AAsset_close(file);
 }
 
 void generateTSpacePolyhedra(std::vector<float> vertexData, std::vector<uint16_t> indexData, std::vector<float> &out){

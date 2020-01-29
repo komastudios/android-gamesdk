@@ -64,6 +64,7 @@ void Mesh::Cleanup() {
   vkDestroyDescriptorSetLayout(renderer_->GetVulkanDevice(), mesh_descriptors_layout_, nullptr);
   mesh_buffer_.reset();
   pipeline_ = VK_NULL_HANDLE;
+  layout_ = VK_NULL_HANDLE;
 }
 
 void Mesh::OnResume(Renderer *renderer) {
@@ -273,10 +274,12 @@ BoundingBox Mesh::GetBoundingBoxWorldSpace() const {
   glm::vec3 zMin = finalTransform[2] * (originalBox.min.z);
   glm::vec3 zMax = finalTransform[2] * (originalBox.max.z);
 
-  return BoundingBox{
+  BoundingBox result {
       .min = glm::min(xMin, xMax) + glm::min(yMin ,yMax) + glm::min(zMin, zMax) + glm::vec3(finalTransform[3]),
       .max = glm::max(xMin, xMax) + glm::max(yMin ,yMax) + glm::max(zMin, zMax) + glm::vec3(finalTransform[3]),
   };
+  result.center = (result.min + result.max) * .5f;
+  return result;
 }
 
 int Mesh::GetTrianglesCount() const {

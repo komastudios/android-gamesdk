@@ -17,10 +17,10 @@ Geometry::Geometry(benderkit::Device &device,
     : device_(device), generator_(generator) {
   CreateVertexBuffer(vertex_data, index_data);
 
-  for (int x = 0; x < vertex_data.size() / 8; x++){
-    float xCoord = vertex_data[x * 8];
-    float yCoord = vertex_data[x * 8 + 1];
-    float zCoord = vertex_data[x * 8 + 2];
+  for (int x = 0; x < vertex_data.size() / 14; x++){
+    float xCoord = vertex_data[x * 14];
+    float yCoord = vertex_data[x * 14 + 1];
+    float zCoord = vertex_data[x * 14 + 2];
 
     if (xCoord > bounding_box_.max.x) bounding_box_.max.x = xCoord;
     if (xCoord < bounding_box_.min.x) bounding_box_.min.x = xCoord;
@@ -29,6 +29,7 @@ Geometry::Geometry(benderkit::Device &device,
     if (zCoord > bounding_box_.max.z) bounding_box_.max.z = zCoord;
     if (zCoord < bounding_box_.min.z) bounding_box_.min.z = zCoord;
   }
+  bounding_box_.center = (bounding_box_.max + bounding_box_.min) * .5f;
 }
 
 Geometry::~Geometry() {
@@ -43,13 +44,16 @@ void Geometry::Cleanup() {
   vkFreeMemory(device_.GetDevice(), index_buffer_device_memory_, nullptr);
 }
 
-void Geometry::OnResume(benderkit::Device &device) {
+void Geometry::OnResume(benderkit::Device &device, const std::vector<float> &vert_data, const std::vector<uint16_t> &indexes) {
   device_ = device;
   if (generator_ != nullptr){
     std::vector<float> vertex_data;
     std::vector<uint16_t> index_data;
     generator_(vertex_data, index_data);
     CreateVertexBuffer(vertex_data, index_data);
+  }
+  else {
+    CreateVertexBuffer(vert_data, indexes);
   }
 }
 
