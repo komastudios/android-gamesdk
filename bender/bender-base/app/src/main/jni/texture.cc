@@ -35,11 +35,11 @@ Texture::Texture(benderkit::Device &device,
 
 Texture::Texture(benderkit::Device &device,
                  android_app &android_app_ctx,
-                 const char *texture_file_name,
+                 const std::string &texture_file_name,
                  VkFormat texture_format,
                  std::function<void(uint8_t *)> generator)
     : device_(device), texture_format_(texture_format), generator_(generator) {
-  unsigned char *img_data = LoadFileData(android_app_ctx, texture_file_name);
+  unsigned char *img_data = LoadFileData(android_app_ctx, texture_file_name.c_str());
   file_name_ = texture_file_name;
   CALL_VK(CreateTexture(img_data, VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
   CreateImageView();
@@ -67,7 +67,7 @@ void Texture::OnResume(benderkit::Device &device, android_app *app) {
     CreateImageView();
     delete img_data;
   } else {
-    unsigned char *img_data = LoadFileData(*app, file_name_);
+    unsigned char *img_data = LoadFileData(*app, file_name_.c_str());
     CALL_VK(CreateTexture(img_data,
                           VK_IMAGE_USAGE_SAMPLED_BIT,
                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));

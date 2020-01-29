@@ -80,7 +80,7 @@ private:
 
   VkDescriptorSetLayout mesh_descriptors_layout_;
 
-  VkPipelineLayout layout_;
+  VkPipelineLayout layout_ = VK_NULL_HANDLE;
   VkPipeline pipeline_ = VK_NULL_HANDLE;
 
   std::vector<VkDescriptorSet> mesh_descriptor_sets_;

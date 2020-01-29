@@ -196,14 +196,14 @@ void Renderer::Init() {
   CreateLightsDescriptors();
 }
 
-void Renderer::UpdateLights(glm::vec3 camera) {
-  lights_buffer_->Update(GetCurrentFrame(), [&camera](auto &lights_buffer) {
-      lights_buffer.pointLight.position = {0.0f, 0.0f, 6.0f};
+void Renderer::UpdateLights(glm::vec3 camera_pos) {
+  lights_buffer_->Update(GetCurrentFrame(), [&camera_pos](auto &lights_buffer) {
+      lights_buffer.pointLight.position = camera_pos;
       lights_buffer.pointLight.color = {1.0f, 1.0f, 1.0f};
-      lights_buffer.pointLight.intensity = 1.0f;
+      lights_buffer.pointLight.intensity = 50.0f;
       lights_buffer.ambientLight.color = {1.0f, 1.0f, 1.0f};
       lights_buffer.ambientLight.intensity = 0.1f;
-      lights_buffer.cameraPos = camera;
+      lights_buffer.cameraPos = camera_pos;
   });
 }
 
