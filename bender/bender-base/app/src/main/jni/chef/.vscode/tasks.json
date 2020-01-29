@@ -1,0 +1,19 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "msvc build",
+        "type": "shell",
+        "command": "cl.exe",
+        "args": ["/std:c++17", "/EHsc", "/Zi", "/Fe:", "build/chef.exe", "chef.cc"],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "presentation": {
+          "reveal": "always"
+        },
+        "problemMatcher": "$msCompile"
+      }
+    ]
+}
