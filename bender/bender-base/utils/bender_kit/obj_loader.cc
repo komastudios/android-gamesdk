@@ -19,13 +19,12 @@ int trueIndex(int idx, int size) {
 
 void addVertex(glm::vec3 &currVert,
                OBJ &currOBJ,
-               std::unordered_map<glm::vec3, uint16_t> &fileVertToIndex,
                std::vector<glm::vec3> &position,
                std::vector<glm::vec3> &normal,
                std::vector<glm::vec2> &texCoord,
                glm::vec3 tangent,
                glm::vec3 bitangent) {
-  if (fileVertToIndex.find(currVert) != fileVertToIndex.end()) {
+  if (currOBJ.vert_to_index_.find(currVert) != currOBJ.vert_to_index_.end()) {
     uint16_t index = currOBJ.vert_to_index_[currVert];
     currOBJ.index_buffer_.push_back(index);
     currOBJ.vertex_buffer_[index * 14 + 6] += tangent.x;
@@ -36,8 +35,8 @@ void addVertex(glm::vec3 &currVert,
     currOBJ.vertex_buffer_[index * 14 + 11] += bitangent.z;
     return;
   }
-
-  fileVertToIndex[currVert] = fileVertToIndex.size();
+  static int hit = 0;
+  hit++;
   currOBJ.index_buffer_.push_back(currOBJ.vert_to_index_.size());
   currOBJ.vert_to_index_[currVert] = currOBJ.vert_to_index_.size();
 
@@ -65,7 +64,7 @@ void LoadMTL(AAssetManager *mgr,
              const std::string &fileName,
              std::unordered_map<std::string, MTL> &mtllib) {
 
-  AAsset *file = AAssetManager_open(mgr, ("models/" + fileName).c_str(), AASSET_MODE_BUFFER);
+  AAsset *file = AAssetManager_open(mgr, "models/starship_command_center_triangle.mtl", AASSET_MODE_BUFFER);
   size_t fileLength = AAsset_getLength(file);
 
   char *fileContent = new char[fileLength];
@@ -133,7 +132,6 @@ void LoadOBJ(AAssetManager *mgr,
   std::vector<glm::vec3> position;
   std::vector<glm::vec3> normal;
   std::vector<glm::vec2> texCoord;
-  std::unordered_map<glm::vec3, uint16_t> fileVertToIndex;
 
   AAsset *file = AAssetManager_open(mgr, fileName.c_str(), AASSET_MODE_BUFFER);
   size_t fileLength = AAsset_getLength(file);
@@ -193,9 +191,15 @@ void LoadOBJ(AAssetManager *mgr,
       tangent = f * (deltaUV2.y * edge1 - deltaUV1.y * edge2);
       bitangent = f * (-deltaUV2.x * edge1 + deltaUV1.x * edge2);
 
-      addVertex(vertex3, modelData.back(), fileVertToIndex, position, normal, texCoord, tangent, bitangent);
-      addVertex(vertex2, modelData.back(), fileVertToIndex, position, normal, texCoord, tangent, bitangent);
-      addVertex(vertex1, modelData.back(), fileVertToIndex, position, normal, texCoord, tangent, bitangent);
+      addVertex(vertex3, modelData.back(), position, normal, texCoord, tangent, bitangent);
+      addVertex(vertex2, modelData.back(), position, normal, texCoord, tangent, bitangent);
+      addVertex(vertex1, modelData.back(), position, normal, texCoord, tangent, bitangent);
+
+      if (modelData.back().vert_to_index_.size() > 65531){
+        OBJ curr;
+        curr.material_name_ = modelData.back().material_name_;
+        modelData.push_back(curr);
+      }
     }
   }
 }

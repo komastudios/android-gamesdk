@@ -45,6 +45,7 @@
 #include <array>
 #include <cstring>
 #include <chrono>
+#include <obj_loader.h>
 
 using namespace benderkit;
 using namespace benderhelpers;
@@ -93,28 +94,28 @@ char fps_info[50];
 void MoveForward() {
   glm::vec3
       forward = glm::normalize(render_graph->GetCameraRotation() * glm::vec3(0.0f, 0.0f, -1.0f));
-  render_graph->TranslateCamera(forward * 2.0f * frame_time);
+  render_graph->TranslateCamera(forward * 200.0f * frame_time);
 }
 void MoveBackward() {
   glm::vec3
       forward = glm::normalize(render_graph->GetCameraRotation() * glm::vec3(0.0f, 0.0f, -1.0f));
-  render_graph->TranslateCamera(-forward * 2.0f * frame_time);
+  render_graph->TranslateCamera(-forward * 200.0f * frame_time);
 }
 void StrafeLeft() {
   glm::vec3 right = glm::normalize(render_graph->GetCameraRotation() * glm::vec3(1.0f, 0.0f, 0.0f));
-  render_graph->TranslateCamera(-right * (20.0f / device->GetDisplaySize().width));
+  render_graph->TranslateCamera(-right * (2000.0f / device->GetDisplaySize().width));
 }
 void StrafeRight() {
   glm::vec3 right = glm::normalize(render_graph->GetCameraRotation() * glm::vec3(1.0f, 0.0f, 0.0f));
-  render_graph->TranslateCamera(right * (20.0f / device->GetDisplaySize().width));
+  render_graph->TranslateCamera(right * (2000.0f / device->GetDisplaySize().width));
 }
 void StrafeUp() {
   glm::vec3 up = glm::normalize(render_graph->GetCameraRotation() * glm::vec3(0.0f, 1.0f, 0.0f));
-  render_graph->TranslateCamera(up * (20.0f / device->GetDisplaySize().height));
+  render_graph->TranslateCamera(up * (2000.0f / device->GetDisplaySize().height));
 }
 void StrafeDown() {
   glm::vec3 up = glm::normalize(render_graph->GetCameraRotation() * glm::vec3(0.0f, 1.0f, 0.0f));
-  render_graph->TranslateCamera(-up * (20.0f / device->GetDisplaySize().height));
+  render_graph->TranslateCamera(-up * (2000.0f / device->GetDisplaySize().height));
 }
 void CreateInstance() {
   render_graph->AddMesh(std::make_shared<Mesh>(renderer,
@@ -235,27 +236,39 @@ void CreateTextures() {
   });
 }
 
+std::map<std::string, std::shared_ptr<Texture>> loadedTextures;
+std::map<std::string, std::shared_ptr<Material>> loadedMaterials;
+
+void addTexture(std::string fileName){
+  if (fileName != "" && loadedTextures.find(fileName) == loadedTextures.end()){
+    loadedTextures[fileName] = std::make_shared<Texture>(*device,
+                                                         *android_app_ctx,
+                                                         ("textures/" + fileName).c_str(),
+                                                         VK_FORMAT_R8G8B8A8_SRGB);
+  }
+}
+
 void CreateMaterials() {
   timing::timer.Time("Materials Creation", timing::OTHER, [] {
     MaterialAttributes defaultMaterial;
     defaultMaterial.specular = {0.8f, 0.0f, 0.5f, 128.0f};
     defaultMaterial.diffuse = {0.8f, 0.0f, 0.5f};
     defaultMaterial.ambient = {0.8f, 0.0f, 0.5f};
-    std::vector<std::shared_ptr<Texture>> materialTextures = {nullptr, nullptr, nullptr, nullptr};
+    std::vector<std::shared_ptr<Texture>> materialTextures = {nullptr, nullptr, nullptr, nullptr, nullptr};
     baseline_materials.push_back(std::make_shared<Material>(renderer, shaders, materialTextures));
     baseline_materials.push_back(std::make_shared<Material>(renderer,
                                                            shaders,
                                                            materialTextures,
                                                            defaultMaterial));
 
-    materialTextures = {textures[0], nullptr, nullptr, nullptr};
+    materialTextures = {textures[0], nullptr, nullptr, nullptr, nullptr};
     baseline_materials.push_back(std::make_shared<Material>(renderer, shaders, materialTextures));
     baseline_materials.push_back(std::make_shared<Material>(renderer,
                                                            shaders,
                                                            materialTextures,
                                                            defaultMaterial));
     for (uint32_t i = 0; i < textures.size(); ++i) {
-      materialTextures = {textures[i], nullptr, nullptr, nullptr};
+      materialTextures = {textures[i], nullptr, nullptr, nullptr, nullptr};
       materials.push_back(std::make_shared<Material>(renderer, shaders, materialTextures));
     }
   });
@@ -341,7 +354,7 @@ void UpdateCamera(input::Data *input_data) {
   glm::mat4 proj_matrix = glm::perspective(render_graph->GetCameraFOV(),
                                           render_graph->GetCameraAspectRatio(),
                                           0.1f,
-                                          100.0f);
+                                          1000.0f);
   proj_matrix[1][1] *= -1;
   render_graph->SetCameraProjMatrix(proj_matrix);
 }
@@ -349,10 +362,10 @@ void UpdateCamera(input::Data *input_data) {
 void UpdateInstances(input::Data *input_data) {
   auto all_meshes = render_graph->GetAllMeshes();
   for (int i = 0; i < all_meshes.size(); i++) {
-    all_meshes[i]->Rotate(glm::vec3(0.0f, 1.0f, 1.0f), 90 * frame_time);
-    all_meshes[i]->Translate(.02f * glm::vec3(std::sin(2 * total_time),
-                                             std::sin(i * total_time),
-                                             std::cos(2 * total_time)));
+//    all_meshes[i]->Rotate(glm::vec3(0.0f, 1.0f, 0.0f), 90 * frame_time);
+//    all_meshes[i]->Translate(.02f * glm::vec3(std::sin(2 * total_time),
+//                                             std::sin(i * total_time),
+//                                             std::cos(2 * total_time)));
 
     all_meshes[i]->Update(renderer->GetCurrentFrame(),
                          render_graph->GetCameraPosition(),
@@ -541,21 +554,45 @@ bool InitVulkan(android_app *app) {
 
     renderer = new Renderer(*device);
 
-    timing::timer.Time("Mesh Creation", timing::OTHER, [] {
-      tex_files.push_back("textures/sample_texture.png");
-      tex_files.push_back("textures/sample_texture2.png");
+    timing::timer.Time("Mesh Creation", timing::OTHER, [app] {
+      for (int x = 0; x < 30; x++){
+        std::vector<OBJLoader::OBJ> modelData;
+        std::unordered_map<std::string, OBJLoader::MTL> mtllib;
+        OBJLoader::LoadOBJ(app->activity->assetManager,
+                           ("models/testOut" + std::to_string(x) + ".obj").c_str(),
+                           mtllib,
+                           modelData);
 
-      CreateTextures();
-
-      CreateMaterials();
-
-      CreateGeometries();
-
-      timing::timer.Time("Create Polyhedron", timing::OTHER, [] {
-        render_graph->AddMesh(std::make_shared<Mesh>(renderer,
-                                                     baseline_materials[materials_idx],
-                                                     geometries[poly_faces_idx]));
-      });
+        for (auto obj : modelData) {
+          std::string mtlName = obj.material_name_;
+          if (loadedMaterials.find(mtlName) == loadedMaterials.end()) {
+            OBJLoader::MTL currMTL = mtllib[obj.material_name_];
+            addTexture(currMTL.map_Ka_);
+            addTexture(currMTL.map_Kd_);
+            addTexture(currMTL.map_Ks_);
+            addTexture(currMTL.map_Ns_);
+            addTexture(currMTL.map_Bump_);
+            MaterialAttributes newMTL;
+            newMTL.ambient = currMTL.ambient_;
+            newMTL.specular = glm::vec4(currMTL.specular_, currMTL.specular_exponent_);
+            newMTL.diffuse = currMTL.diffuse_;
+            std::vector<std::shared_ptr<Texture>> myTextures = {loadedTextures[currMTL.map_Kd_],
+                                                                loadedTextures[currMTL.map_Ks_],
+                                                                loadedTextures[currMTL.map_Ke_],
+                                                                loadedTextures[currMTL.map_Ns_],
+                                                                loadedTextures[currMTL.map_Bump_]};
+            loadedMaterials[mtlName] = std::make_shared<Material>(renderer,
+                                                                  shaders,
+                                                                  myTextures,
+                                                                  newMTL);
+          }
+          render_graph->AddMesh(std::make_shared<Mesh>(renderer,
+                                                       loadedMaterials[mtlName],
+                                                       std::make_shared<Geometry>(*device,
+                                                                                  obj.vertex_buffer_,
+                                                                                  obj.index_buffer_)));
+        }
+      }
     });
 
     CreateDepthBuffer();

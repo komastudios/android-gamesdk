@@ -16,7 +16,7 @@
 
 class RenderGraph {
   struct Camera {
-    glm::vec3 position = glm::vec3(0.0f, 0.0f, 3.0f);
+    glm::vec3 position = glm::vec3(0.0f, 0.0f, -703.0f);
     glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
     float aspect_ratio;
     float fov;
