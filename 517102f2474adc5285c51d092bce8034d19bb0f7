@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0e371e06_fed61447",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ScheduleAffinityOperation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-29T17:16:16Z",
+      "side": 1,
+      "message": "You\u0027re missing thread_affinity_set here",
+      "revId": "517102f2474adc5285c51d092bce8034d19bb0f7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
