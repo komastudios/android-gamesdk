@@ -13,6 +13,7 @@
 struct BoundingBox {
   glm::vec3 min {MAXFLOAT, MAXFLOAT, MAXFLOAT};
   glm::vec3 max {-MAXFLOAT, -MAXFLOAT, -MAXFLOAT};
+  glm::vec3 center {0, 0, 0};
 };
 
 class Geometry {
@@ -25,7 +26,7 @@ class Geometry {
 
   void Cleanup();
 
-  void OnResume(benderkit::Device &device);
+  void OnResume(benderkit::Device &device, const std::vector<float> &vertex_data = {}, const std::vector<uint16_t> &index_data = {});
 
   int GetVertexCount() const { return vertex_count_; }
   int GetIndexCount() const { return index_count_; }

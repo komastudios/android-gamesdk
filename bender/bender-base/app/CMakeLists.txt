@@ -25,7 +25,6 @@ add_library(bender-kit STATIC
         ${KIT_DIR}/vertex_format.cc
         ${KIT_DIR}/debug_marker.cc
         ${KIT_DIR}/timing.cc
-        ${KIT_DIR}/obj_loader.cc
         ${WRAPPER_DIR}/vulkan_wrapper.cc)
 
 add_library(base SHARED
@@ -48,6 +47,8 @@ add_library(base SHARED
         ${SRC_DIR}/camera.cc)
 
 add_library(utils STATIC
+        ${UTILS_DIR}/obj_loader.cc
+        ${UTILS_DIR}/mesh_helpers.cc
         ${UTILS_DIR}/bender_helpers.cc)
 
 target_link_libraries(base bender-kit)

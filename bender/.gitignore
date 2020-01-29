@@ -7,6 +7,9 @@
 **/captures
 **/build
 **/assets
+**/.vscode
+**/output
+**/input
 
 .temp
 .externalNativeBuild
