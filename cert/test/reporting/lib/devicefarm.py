@@ -21,6 +21,7 @@ import json
 from pathlib import Path
 import re
 import subprocess
+import sys
 import tempfile
 from typing import Dict, List, Tuple
 import yaml
@@ -69,20 +70,35 @@ def populate_device_catalog_from_gcloud(flags_yaml):
     return device_catalog
 
 
-def make_device_args_list_from_catalog() -> str:
+def make_device_args_list_from_catalog(subset: List[Dict]) -> str:
     """Turns the device catalog into a string of --device model/version
-    arguments for gcloud."""
+    arguments for gcloud.
+    Args:
+        subset: List of dict (e.g. { model: "sawfish", version: 26 }) describing
+        a subset of the device catalog to deploy to. If empty, all devices
+        in the catalog will be used
+
+    """
     result_args_list = []
     for device in DeviceCatalog():
-        result_args_list.append('--device')
-        result_args_list.append('model={},version={}'.format(
-            device.codename, device.sdk_version))
+        include = False
+        for subset_device in subset:
+            if device.codename == subset_device[
+                    "model"] and device.sdk_version == str(
+                        subset_device["version"]):
+                include = True
+                break
+
+        if not subset or include:
+            result_args_list.append('--device')
+            result_args_list.append('model={},version={}'.format(
+                device.codename, device.sdk_version))
 
     return result_args_list
 
 
-def run_test(flags_file: Path, args_yaml: Path, test_name: str, enable_systrace,
-             run_on_all_physical_devices):
+def run_test(flags_file: Path, args_yaml: Path, test_name: str,
+             enable_systrace: bool, devices: List[Dict]):
     """Executes an android test deployment on firebase test lab
     Args:
         flags_file: Path to the flags file expected by ftl
@@ -90,9 +106,8 @@ def run_test(flags_file: Path, args_yaml: Path, test_name: str, enable_systrace,
         test_name: The name of the test execution as will be displayed in the
             firebase dashboard
         enable_systrace: if true, cause FTL to record a systrace during exec
-        run_on_all_physical_devices: if true, overrides any specified devices
-            in the args_yaml file and tells firebase to run the test on all
-            devices which are backed by actual physical hardware
+        devices: list of dicts describing devices to deploy to, in form
+            of { model: "sawfish", version: 26 }
     Returns:
         tuple of stdout and sterr
     """
@@ -116,8 +131,17 @@ def run_test(flags_file: Path, args_yaml: Path, test_name: str, enable_systrace,
     ]
 
     populate_device_catalog_from_gcloud(flags_file)
-    if run_on_all_physical_devices:
-        cmdline.extend(make_device_args_list_from_catalog())
+    device_args_list = make_device_args_list_from_catalog(subset=devices)
+    if not device_args_list:
+        if devices:
+            print("[INFO] - no hardware devices from provided devices list"\
+                  " present on FTL")
+            sys.exit(1)
+        else:
+            print("[INFO] - no hardware devices present on FTL."\
+                  " Something is terribly wrong.")
+
+    cmdline.extend(device_args_list)
 
     print('Stand by...\n')
     proc = subprocess.run(cmdline,
@@ -227,10 +251,9 @@ def download_cloud_artifacts(test_info, file_pattern, dst: Path) -> List[Path]:
     return outfiles
 
 
-def run_on_farm_and_collect_reports(args_dict: Dict, flags_dict: Dict,
-                                    test: str, enable_systrace,
-                                    enable_all_physical, dst_dir: Path
-                                   ) -> Tuple[List[Path], List[Path]]:
+def run_on_farm_and_collect_reports(
+        args_dict: Dict, flags_dict: Dict, test: str, enable_systrace,
+        devices: List[Dict], dst_dir: Path) -> Tuple[List[Path], List[Path]]:
     """Runs the tests on FTL, returning a tuple of lists of result
     json, and result systrace.
     Args:
@@ -238,8 +261,11 @@ def run_on_farm_and_collect_reports(args_dict: Dict, flags_dict: Dict,
         flags_dict: the contents that ftl expects for the flags file
         test: the top-level test to run as described in args_dict
         enable_systrace: if true, collect systrace from ftl
-        enable_all_physical: if true, overrides the devices specified in
-            args_dict for all physical devices available on ftl
+        devices: List of dict (e.g. { model: "sawfish", version: 26 })
+            describing a subset of the available physical devices to run on;
+            if empty, all physical devices available on FTL will be deployed to.
+            If no physical devices match those in the list, deployment will be
+            canceled.
         dst_dir: the directory into which result data will be copied
     """
 
@@ -254,12 +280,11 @@ def run_on_farm_and_collect_reports(args_dict: Dict, flags_dict: Dict,
                 line = f"--{k}: {flags_dict[k]}\n"
                 file.write(line)
 
-        stdout, stderr = run_test(
-            flags_file,
-            args_file,
-            test,
-            enable_systrace=enable_systrace,
-            run_on_all_physical_devices=enable_all_physical)
+        stdout, stderr = run_test(flags_file,
+                                  args_file,
+                                  test,
+                                  enable_systrace=enable_systrace,
+                                  devices=devices)
 
         display_test_results(stdout, stderr, dst_dir)
         test_info = get_test_info(stderr)

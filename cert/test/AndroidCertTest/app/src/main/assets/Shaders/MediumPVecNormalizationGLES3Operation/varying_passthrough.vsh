@@ -16,16 +16,21 @@
  * limitations under the License.
  */
 
-out vec4 outColor;
-uniform float offset;
+precision mediump float;
+
+layout (location = 0) in vec3 inPos;
+layout (location = 1) in vec3 inBaseColor;
+layout (location = 2) in vec3 inColorOffset;
+
+uniform float uOffsetScale;
+
+out vec3 vSummedColor;
 
 void main()
 {
-    mediump vec3 startValue = vec3(1.0f, 0.0f, 0.0f);
-
-    startValue.x += offset;
-    startValue = normalize(startValue);
-
-    outColor = vec4(startValue, 1.0);
+    vec3 v = inBaseColor;
+    v += inColorOffset * uOffsetScale;
+    vSummedColor = v;
+    gl_Position = vec4(inPos.x, inPos.y, inPos.z, 1.0);
 }
 
