@@ -16,6 +16,11 @@ deployment:
       test-robo:
         type: game-loop
         timeout: 1500 # 25 minutes
+        # specify certain devices to run on
+        # this is ignored if all-physical-devices is true
+        device:
+          - { model: "flo", version: 21 }
+          - { model: "mlv1", version: 23 }
 
 summary:
   enabled: true
