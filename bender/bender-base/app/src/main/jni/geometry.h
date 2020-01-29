@@ -25,7 +25,7 @@ class Geometry {
 
   void Cleanup();
 
-  void OnResume(benderkit::Device &device);
+  void OnResume(benderkit::Device &device, std::vector<float> &vertex_data, std::vector<uint16_t> &index_data);
 
   int GetVertexCount() const { return vertex_count_; }
   int GetIndexCount() const { return index_count_; }
