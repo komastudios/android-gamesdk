@@ -17,10 +17,10 @@ Geometry::Geometry(benderkit::Device &device,
     : device_(device), generator_(generator) {
   CreateVertexBuffer(vertex_data, index_data);
 
-  for (int x = 0; x < vertex_data.size() / 8; x++){
-    float xCoord = vertex_data[x * 8];
-    float yCoord = vertex_data[x * 8 + 1];
-    float zCoord = vertex_data[x * 8 + 2];
+  for (int x = 0; x < vertex_data.size() / 14; x++){
+    float xCoord = vertex_data[x * 14];
+    float yCoord = vertex_data[x * 14 + 1];
+    float zCoord = vertex_data[x * 14 + 2];
 
     if (xCoord > bounding_box_.max.x) bounding_box_.max.x = xCoord;
     if (xCoord < bounding_box_.min.x) bounding_box_.min.x = xCoord;
