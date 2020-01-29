@@ -31,6 +31,23 @@
       "stressors": []
     },
     {
+      "name": "WaitForPI",
+      "description": "Testing out Pi and waiting: This will make the phone hot!",
+      "duration": "2440s",
+      "data_gatherer": {
+        "id": "CalculateWaitPIOperation",
+        "enabled": true,
+        "configuration": {
+          "affinity": true,
+          "heat_time": "300000ms",
+          "interval_between_samples": "120s",
+          "wait_method_name": "sleep",
+          "wait_period": "16ms",
+          "interval_between_wait_periods": "1000ms"
+        }
+      }
+    },
+    {
       "enabled": false,
       "name": "FakeOperation",
       "description": "Fake operation for integration testing",
@@ -243,30 +260,6 @@
         }
       },
       "stressors": [
-      ]
-    },
-    {
-      "enabled": true,
-      "name": "WaitForPI",
-      "description": "Testing out Pi and waiting: This will make the phone hot!",
-      "duration": "20000ms",
-      "data_gatherer":
-      {
-        "id": "CalculateWaitPIOperation",
-        "enabled": true,
-        "configuration": {
-          "affinity": true,
-          "performance_sample_period": "1000ms",
-          "iteration_wait_count_": 10000,
-          "iteration_wait_time_": 0
-        }
-      },
-      "stressors": [
-      {
-        "id": "HelloGLES3Operation",
-        "configuration": {
-        }
-      }
       ]
     },
     {
