@@ -64,6 +64,7 @@ void Mesh::Cleanup() {
   vkDestroyDescriptorSetLayout(renderer_->GetVulkanDevice(), mesh_descriptors_layout_, nullptr);
   mesh_buffer_.reset();
   pipeline_ = VK_NULL_HANDLE;
+  layout_ = VK_NULL_HANDLE;
 }
 
 void Mesh::OnResume(Renderer *renderer) {
