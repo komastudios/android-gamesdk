@@ -1,0 +1,17 @@
+build:
+  configuration: recipes/configurations/mediump_vec_norm.json
+
+# deployment:
+#   ftl:
+#     test: test-troubled
+#     all-physical-devices: false
+#     flags:
+#       project: gamesdk-testing
+#       format: json
+#     args:
+#       test-troubled:
+#         type: game-loop
+#         timeout: 60 # 1 minute
+#         device:
+#           - { model: "flo", version: 21 }
+#           - { model: "mlv1", version: 23 }

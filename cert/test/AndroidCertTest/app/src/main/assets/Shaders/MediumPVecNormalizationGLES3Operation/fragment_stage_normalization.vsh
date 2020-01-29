@@ -1,4 +1,5 @@
 #version 300 es
+precision mediump float;
 
 /*
  * Copyright 2019 The Android Open Source Project
@@ -16,10 +17,17 @@
  * limitations under the License.
  */
 
-layout (location = 0) in vec3 aPos;
+layout (location = 0) in vec3 inPos;
+layout (location = 1) in vec3 inBaseColor;
+layout (location = 2) in vec3 inColorOffset;
+
+out vec3 vBaseColor;
+out vec3 vColorOffset;
 
 void main()
 {
-    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+    vBaseColor = inBaseColor;
+    vColorOffset = inColorOffset;
+    gl_Position = vec4(inPos.x, inPos.y, inPos.z, 1.0);
 }
 

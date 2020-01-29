@@ -63,6 +63,8 @@ GLPixelBuffer::GLPixelBuffer() {
     FatalError(TAG, "unsupported pixel type");
   }
 
+  Log::I(TAG, "_type: %#010x _format: %#010x _components: %d", _type, _format, _components);
+
   const auto size = static_cast<size_t>(_width * _height * _components);
   _pixels = (GLubyte*)malloc(size);
   if (!_pixels) {
