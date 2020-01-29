@@ -87,6 +87,10 @@ add_library(${PROJECT_NAME} SHARED
         ancer/Suite.cpp
         ancer/SwappyRenderer.cpp
         ancer/System.cpp
+        ancer/System.Cpu.cpp
+        ancer/System.Gpu.cpp
+        ancer/System.Memory.cpp
+        ancer/System.Temperature.cpp
         ancer/util/Basics.cpp
         ancer/util/Bitmath.cpp
         ancer/util/GLHelpers.cpp

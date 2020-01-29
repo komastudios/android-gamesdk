@@ -28,74 +28,77 @@ using namespace ancer;
 //==================================================================================================
 
 namespace {
-    constexpr auto TAG = "MonitorOperation";
+constexpr auto TAG = "MonitorOperation";
 
-    struct configuration {
-        Milliseconds sample_period = 500ms;
-    };
+struct configuration {
+  Milliseconds sample_period = 500ms;
+};
 
-    JSON_READER(configuration) {
-        JSON_OPTVAR(sample_period);
-    }
-
-//--------------------------------------------------------------------------------------------------
-
-    struct perf_info {
-        double fps{0.0};
-        Nanoseconds min_frame_time{0};
-        Nanoseconds max_frame_time{0};
-    };
-
-    JSON_WRITER(perf_info) {
-        JSON_REQVAR(fps);
-        JSON_REQVAR(min_frame_time);
-        JSON_REQVAR(max_frame_time);
-    }
+JSON_READER(configuration) {
+  JSON_OPTVAR(sample_period);
+}
 
 //--------------------------------------------------------------------------------------------------
 
-    struct thermal_info {
-        ThermalStatus status;
-    };
+struct perf_info {
+  double fps{0.0};
+  Nanoseconds min_frame_time{0};
+  Nanoseconds max_frame_time{0};
+};
 
-    JSON_WRITER(thermal_info) {
-        JSON_SETVAR(status_msg, to_string(data.status));
-        JSON_REQVAR(status);
-    }
-
-//--------------------------------------------------------------------------------------------------
-
-    struct sys_mem_info {
-        long native_allocated = 0;
-        long available_memory = 0;
-        bool low_memory = false;
-        int oom_score = 0;
-
-        explicit sys_mem_info(const MemoryInfo& i) :
-                native_allocated(i.native_heap_allocation_size), available_memory(i.available_memory)
-                , oom_score(i._oom_score), low_memory(i.low_memory) {}
-    };
-
-    JSON_WRITER(sys_mem_info) {
-        JSON_REQVAR(native_allocated);
-        JSON_REQVAR(available_memory);
-        JSON_REQVAR(oom_score);
-        JSON_REQVAR(low_memory);
-    }
+JSON_WRITER(perf_info) {
+  JSON_REQVAR(fps);
+  JSON_REQVAR(min_frame_time);
+  JSON_REQVAR(max_frame_time);
+}
 
 //--------------------------------------------------------------------------------------------------
 
-    struct datum {
-        sys_mem_info memory_state;
-        perf_info perf_info;
-        thermal_info thermal_info;
-    };
+struct temperature_info {
+  ThermalStatus thermal_status;
+  std::vector<TemperatureInCelsiusMillis> temperatures_in_celsius_millis;
+};
 
-    JSON_WRITER(datum) {
-        JSON_REQVAR(memory_state);
-        JSON_REQVAR(perf_info);
-        JSON_REQVAR(thermal_info);
-    }
+JSON_WRITER(temperature_info) {
+  JSON_SETVAR(status_msg, to_string(data.thermal_status));
+  JSON_REQVAR(thermal_status);
+  JSON_REQVAR(temperatures_in_celsius_millis);
+}
+
+//--------------------------------------------------------------------------------------------------
+
+struct sys_mem_info {
+  long native_allocated = 0;
+  long available_memory = 0;
+  bool low_memory = false;
+  int oom_score = 0;
+
+  explicit sys_mem_info(const MemoryInfo &i) :
+      native_allocated(i.native_heap_allocation_size), available_memory(i.available_memory),
+      oom_score(i._oom_score), low_memory(i.low_memory) {
+  }
+};
+
+JSON_WRITER(sys_mem_info) {
+  JSON_REQVAR(native_allocated);
+  JSON_REQVAR(available_memory);
+  JSON_REQVAR(oom_score);
+  JSON_REQVAR(low_memory);
+}
+
+//--------------------------------------------------------------------------------------------------
+
+struct datum {
+  sys_mem_info memory_state;
+  perf_info perf_info;
+  temperature_info temperature_info;
+};
+
+JSON_WRITER(datum) {
+  JSON_REQVAR(memory_state);
+  JSON_REQVAR(perf_info);
+  JSON_REQVAR(temperature_info);
+}
 } // anonymous namespace
 
 //==================================================================================================
@@ -107,48 +110,45 @@ namespace {
  * time of the actual scheduled execution
  */
 class MonitorOperation : public BaseOperation {
-public:
+ public:
 
-    MonitorOperation() = default;
+  MonitorOperation() = default;
 
-    void Start() override {
-        BaseOperation::Start();
-        _configuration = GetConfiguration<configuration>();
-        SetHeartbeatPeriod(_configuration.sample_period);
+  void Start() override {
+    BaseOperation::Start();
+    _configuration = GetConfiguration<configuration>();
+    SetHeartbeatPeriod(_configuration.sample_period);
+  }
+
+  void Stop() override {
+    BaseOperation::Stop();
+    std::lock_guard<std::mutex> guard(_stop_mutex);
+    _stop_signal.notify_one();
+  }
+
+  void Wait() override {
+    if (!IsStopped()) {
+      std::unique_lock<std::mutex> lock(_stop_mutex);
+      _stop_signal.wait(lock);
     }
+  }
 
-    void Stop() override {
-        BaseOperation::Stop();
-        std::lock_guard<std::mutex> guard(_stop_mutex);
-        _stop_signal.notify_one();
-    }
+  void OnHeartbeat(Duration elapsed) override {
+    BaseOperation::OnHeartbeat(elapsed);
+    auto &c = GetFpsCalculator();
+    Report(
+        datum{
+            sys_mem_info{GetMemoryInfo()},
+            perf_info{c.GetAverageFps(), c.GetMinFrameTime(), c.GetMinFrameTime()},
+            temperature_info{ancer::GetThermalStatus(), ancer::CaptureTemperatures()}
+        });
+  }
 
-    void Wait() override {
-        if ( !IsStopped()) {
-            std::unique_lock<std::mutex> lock(_stop_mutex);
-            _stop_signal.wait(lock);
-        }
-    }
+ private:
 
-    void OnHeartbeat(Duration elapsed) override {
-        BaseOperation::OnHeartbeat(elapsed);
-        auto& c = GetFpsCalculator();
-        Report(
-                datum{
-                        sys_mem_info{GetMemoryInfo()},
-                        perf_info{c.GetAverageFps(),
-                                c.GetMinFrameTime(),
-                                c.GetMinFrameTime(),
-                        },
-                        thermal_info{GetThermalStatus()}
-                });
-    }
-
-private:
-
-    std::mutex _stop_mutex;
-    std::condition_variable _stop_signal;
-    configuration _configuration;
+  std::mutex _stop_mutex;
+  std::condition_variable _stop_signal;
+  configuration _configuration;
 };
 
 EXPORT_ANCER_OPERATION(MonitorOperation);
