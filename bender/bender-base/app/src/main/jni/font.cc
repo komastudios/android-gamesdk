@@ -194,7 +194,7 @@ void Font::DrawString(const std::string& text, float text_size, float x, float y
 Font::Font(Renderer& renderer, android_app &android_app_ctx,
            const std::string& font_texture_path, const std::string& font_info_path) : renderer_(renderer){
     texture_ = std::make_unique<Texture>(renderer_.GetDevice(), android_app_ctx,
-                           font_texture_path.c_str(), VK_FORMAT_R8G8B8A8_SRGB);
+                           font_texture_path, VK_FORMAT_R8G8B8A8_SRGB);
 
     orientation_matrix_ = std::make_unique<UniformBufferObject<glm::mat4>>(renderer_.GetDevice());
 

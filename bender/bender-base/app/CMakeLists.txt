@@ -26,6 +26,7 @@ add_library(bender-kit STATIC
         ${KIT_DIR}/debug_marker.cc
         ${KIT_DIR}/timing.cc
         ${KIT_DIR}/obj_loader.cc
+        ${KIT_DIR}/mesh_helpers.cc
         ${WRAPPER_DIR}/vulkan_wrapper.cc)
 
 add_library(base SHARED
