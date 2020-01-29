@@ -330,8 +330,9 @@ def run_ftl_deployment(recipe: Recipe, apk: Path, out_dir: Path):
     active_test = recipe.lookup("deployment.ftl.test", fallback=fallback_test)
     flags_dict = recipe.lookup("deployment.ftl.flags", {})
 
-    all_physical_devices = recipe.lookup("deployment.ftl.all-physical-devices",
-                                         fallback=False)
+    devices = recipe.lookup("deployment.ftl.devices", fallback=[])
+    if devices is None:
+        devices = []
 
     systrace_enabled, systrace_keywords, _ = \
         get_systrace_config(recipe)
@@ -341,7 +342,7 @@ def run_ftl_deployment(recipe: Recipe, apk: Path, out_dir: Path):
         flags_dict=flags_dict,
         test=active_test,
         enable_systrace=systrace_enabled,
-        enable_all_physical=all_physical_devices,
+        devices=devices,
         dst_dir=out_dir)
 
     report_files = process_ftl_reports(out_dir, report_files, systrace_files,

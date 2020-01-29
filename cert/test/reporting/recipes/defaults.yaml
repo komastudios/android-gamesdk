@@ -17,7 +17,6 @@ deployment:
     all_attached_devices: true
   ftl:
     test: test-gameloop
-    all-physical-devices: true
     flags:
       project: gamesdk-testing
       format: json

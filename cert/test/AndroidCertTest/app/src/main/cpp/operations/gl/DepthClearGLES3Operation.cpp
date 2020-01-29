@@ -31,21 +31,21 @@ namespace {
 constexpr Log::Tag TAG{"DepthClearGLES3Operation"};
 constexpr GLContextConfig RequiredGLContextConfiguration = {8, 8, 8, 8, 32, 0};
 
-struct rgb {
+struct rgb_u8 {
   GLubyte r = 0;
   GLubyte g = 0;
   GLubyte b = 0;
 };
 
-bool operator==(const rgb& lhs, const rgb& rhs) {
+bool operator==(const rgb_u8& lhs, const rgb_u8& rhs) {
   return lhs.r == rhs.r && lhs.g == rhs.g && lhs.b == rhs.b;
 }
 
-bool operator!=(const rgb& lhs, const rgb& rhs) {
+bool operator!=(const rgb_u8& lhs, const rgb_u8& rhs) {
   return lhs.r != rhs.r || lhs.g != rhs.g || lhs.b != rhs.b;
 }
 
-JSON_WRITER(rgb) {
+JSON_WRITER(rgb_u8) {
   JSON_REQVAR(r);
   JSON_REQVAR(g);
   JSON_REQVAR(b);
@@ -79,8 +79,8 @@ struct datum {
   bool error_incorrect_fragment_rejection = false;
   float depth_clear_value = 0;
   float fragment_depth = 0;
-  rgb expected_rgb_value;
-  rgb actual_rgb_value;
+  rgb_u8 expected_rgb_value;
+  rgb_u8 actual_rgb_value;
 
   static datum create_ctx_info_message(bool is_requested_ctx, int depth_bits) {
     auto d = datum{Kind::create_info_message};
@@ -98,8 +98,8 @@ struct datum {
 
   static datum create_error_incorrect_fragment_pass(float fragment_depth,
                                                     float clear_value,
-                                                    rgb expected_value,
-                                                    rgb actual_value) {
+                                                    rgb_u8 expected_value,
+                                                    rgb_u8 actual_value) {
     auto d = datum{Kind::incorrect_fragment_pass};
     d.writes_passed_as_expected = false;
     d.error_incorrect_fragment_pass = true;
@@ -112,8 +112,8 @@ struct datum {
 
   static datum create_error_incorrect_fragment_rejection(float fragment_depth,
                                                          float clear_value,
-                                                         rgb expected_value,
-                                                         rgb actual_value) {
+                                                         rgb_u8 expected_value,
+                                                         rgb_u8 actual_value) {
     auto d = datum{Kind::incorrect_fragment_reject};
     d.writes_passed_as_expected = false;
     d.error_incorrect_fragment_rejection = true;
@@ -159,7 +159,7 @@ JSON_WRITER(datum) {
 
 struct Vertex {
   vec3 pos;
-  rgb color;
+  rgb_u8 color;
 };
 
 enum class Attributes : GLuint {
@@ -171,7 +171,7 @@ struct Probe {
   ivec2 pos;
   float clip_z;
   float depth;
-  rgb written_value;
+  rgb_u8 written_value;
 };
 
 } // anonymous namespace
@@ -209,7 +209,7 @@ class DepthClearGLES3Operation : public BaseGLES3Operation {
       // depth buffer representation
       _num_slices = _depth_bits * 3;
       _depth_clear_increment = 1.0F / static_cast<float>(_depth_bits * 7);
-      _clear_color = rgb{0, 0, 255};
+      _clear_color = rgb_u8{0, 0, 255};
 
       CreateProgram();
       SetHeartbeatPeriod(100ms);
@@ -288,7 +288,7 @@ class DepthClearGLES3Operation : public BaseGLES3Operation {
                    GL_RGB,
                    GL_UNSIGNED_BYTE,
                    storage.data());
-      rgb value{storage[0], storage[1], storage[2]};
+      rgb_u8 value{storage[0], storage[1], storage[2]};
 
       if (_depth_clear_value >= s.depth) {
         if (value != s.written_value) {
@@ -373,7 +373,7 @@ class DepthClearGLES3Operation : public BaseGLES3Operation {
       auto b = vec3(left, top, z);
       auto c = vec3(right, top, z);
       auto d = vec3(right, bottom, z);
-      auto color = rgb{static_cast<GLubyte>(depth_n * 255),
+      auto color = rgb_u8{static_cast<GLubyte>(depth_n * 255),
                        static_cast<GLubyte>(depth_n * 255),
                        static_cast<GLubyte>(depth_n * 255)};
 
@@ -475,7 +475,7 @@ class DepthClearGLES3Operation : public BaseGLES3Operation {
   bool _perform_test = false;
 
   std::vector<Probe> _probes;
-  rgb _clear_color;
+  rgb_u8 _clear_color;
 
   // GL
   GLuint _program = 0;
