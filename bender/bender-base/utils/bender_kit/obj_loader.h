@@ -6,6 +6,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/glm.hpp"
 #include "glm/gtx/hash.hpp"
+#include "mesh_helpers.h"
 #include <string>
 #include <sstream>
 #include <vector>
@@ -64,21 +65,6 @@ for (auto obj : modelData) {
  */
 
 namespace OBJLoader {
-
-struct MTL {
-  glm::vec3 ambient_;
-  glm::vec3 diffuse_;
-  glm::vec3 specular_;
-  float specular_exponent_;
-  float bump_multiplier = 1.0f;
-
-  std::string map_Ka_ = "";
-  std::string map_Kd_ = "";
-  std::string map_Ke_ = "";
-  std::string map_Ks_ = "";
-  std::string map_Ns_ = "";
-  std::string map_Bump_ = "";
-};
 
 struct OBJ {
   std::string name_;
