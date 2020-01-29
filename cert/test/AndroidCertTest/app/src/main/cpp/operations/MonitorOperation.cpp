@@ -132,7 +132,7 @@ public:
 
     void OnHeartbeat(Duration elapsed) override {
         BaseOperation::OnHeartbeat(elapsed);
-        auto c = GetFpsCalculator();
+        auto& c = GetFpsCalculator();
         Report(
                 datum{
                         sys_mem_info{GetMemoryInfo()},

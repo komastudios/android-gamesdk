@@ -41,27 +41,15 @@ namespace color {
 // cribbed from https://stackoverflow.com/questions/3018313/algorithm-to-convert-rgb-to-hsv-and-hsv-to-rgb-in-range-0-255-for-both
 
 struct rgb {
-  float r;       // a fraction between 0 and 1
-  float g;       // a fraction between 0 and 1
-  float b;       // a fraction between 0 and 1
-
-  rgb() :
-      r(0), g(0), b(0) {}
-
-  rgb(float R, float G, float B) :
-      r(R), g(G), b(B) {}
+  float r = 0.0f; // a fraction between 0 and 1
+  float g = 0.0f; // a fraction between 0 and 1
+  float b = 0.0f; // a fraction between 0 and 1
 };
 
 struct hsv {
-  float h;       // angle in degrees (0,360)
-  float s;       // a fraction between 0 and 1
-  float v;       // a fraction between 0 and 1
-
-  hsv() :
-      h(0), s(0), v(0) {}
-
-  hsv(float H, float S, float V) :
-      h(H), s(S), v(V) {}
+  float h = 0.0f; // angle in degrees (0,360)
+  float s = 0.0f; // a fraction between 0 and 1
+  float v = 0.0f; // a fraction between 0 and 1
 };
 
 hsv rgb2hsv(rgb in);
@@ -137,11 +125,11 @@ class tAABB {
   */
   void Invalidate(void) {
     min.x = std::numeric_limits<T>::max();
-    max.x = -std::numeric_limits<T>::max();
+    max.x = std::numeric_limits<T>::lowest();
     min.y = std::numeric_limits<T>::max();
-    max.y = -std::numeric_limits<T>::max();
+    max.y = std::numeric_limits<T>::lowest();
     min.z = std::numeric_limits<T>::max();
-    max.z = -std::numeric_limits<T>::max();
+    max.z = std::numeric_limits<T>::lowest();
   }
 
   /*

@@ -15,8 +15,11 @@
  */
 
 #include "GLHelpers.hpp"
+
 #include "Error.hpp"
 #include "Log.hpp"
+#include "Raii.hpp"
+
 
 namespace ancer::glh {
 namespace {
@@ -26,17 +29,15 @@ constexpr Log::Tag TAG{"GLHelpers"};
 namespace color {
 
 hsv rgb2hsv(rgb in) {
-  hsv out;
-  float min, max, delta;
-
-  min = in.r < in.g ? in.r : in.g;
+  float min = in.r < in.g ? in.r : in.g;
   min = min < in.b ? min : in.b;
 
-  max = in.r > in.g ? in.r : in.g;
+  float max = in.r > in.g ? in.r : in.g;
   max = max > in.b ? max : in.b;
 
+  hsv out;
   out.v = max;                                // v
-  delta = max - min;
+  const float delta = max - min;
   if (delta < 0.00001F) {
     out.s = 0;
     out.h = 0; // undefined, maybe nan?
@@ -67,66 +68,38 @@ hsv rgb2hsv(rgb in) {
 }
 
 rgb hsv2rgb(hsv in) {
-  float hh, p, q, t, ff;
-  long i;
   rgb out;
 
-  if (in.s <= 0.0) {       // < is bogus, just shuts up warnings
-    out.r = in.v;
-    out.g = in.v;
-    out.b = in.v;
-    return out;
+  if (in.s <= 0.0f) { // < is bogus, just shuts up warnings
+    return {in.v, in.v, in.v};
   }
-  hh = in.h;
-  if (hh >= 360.0F) hh = 0.0;
-  hh /= 60.0F;
-  i = (long) hh;
-  ff = hh - i;
-  p = in.v*(1.0F - in.s);
-  q = in.v*(1.0F - (in.s*ff));
-  t = in.v*(1.0F - (in.s*(1.0F - ff)));
+  const float hh = (in.h < 360.0f ? in.h : 0.0f) / 60.0f;
+  const auto i = static_cast<long>(hh);
+  const float ff = hh - i;
+  const float p = in.v*(1.0F - in.s);
+  const float q = in.v*(1.0F - (in.s*ff));
+  const float t = in.v*(1.0F - (in.s*(1.0F - ff)));
 
   switch (i) {
-    case 0:out.r = in.v;
-      out.g = t;
-      out.b = p;
-      break;
-    case 1:out.r = q;
-      out.g = in.v;
-      out.b = p;
-      break;
-    case 2:out.r = p;
-      out.g = in.v;
-      out.b = t;
-      break;
-
-    case 3:out.r = p;
-      out.g = q;
-      out.b = in.v;
-      break;
-    case 4:out.r = t;
-      out.g = p;
-      out.b = in.v;
-      break;
-    case 5:
-    default:out.r = in.v;
-      out.g = p;
-      out.b = q;
-      break;
+    case 0: return {in.v, t, p};
+    case 1: return {q, in.v, p};
+    case 2: return {p, in.v, t};
+    case 3: return {p, q, in.v};
+    case 4: return {t, p, in.v};
+    case 5: return {in.v, p, q};
+    default: return {};
   }
-  return out;
 }
 } // namespace color
 
 bool CheckGlError(const char *func_name) {
 #ifndef NDEBUG
-  GLint err = glGetError();
-  if (err!=GL_NO_ERROR) {
-    // TODO: Need to review if this should be fatal or not.
+  if (GLint err = glGetError() ; err!=GL_NO_ERROR) {
+    // TODO(tmillican@google.com): Make this fatal and re-introduce checks in
+    //  the few (if any?) places where it makes sense to continue.
     Log::E(TAG, "GL error after %s(): 0x%08x\n", func_name, err);
     return true;
   }
-  return false;
 #endif
   return false;
 }
@@ -144,28 +117,26 @@ bool CheckGlExtension(const char *extension_name) {
 }
 
 GLuint CreateProgramSrc(const char *vtx_src, const char *frag_src) {
-  GLuint vtx_shader = 0;
-  GLuint frag_shader = 0;
-  GLuint program = 0;
-  GLint linked = GL_FALSE;
-
-  vtx_shader = CreateShader(GL_VERTEX_SHADER, vtx_src);
+  const GLuint vtx_shader = CreateShader(GL_VERTEX_SHADER, vtx_src);
+  ANCER_AT_SCOPE([&] { glDeleteShader(vtx_shader); });
   if (!vtx_shader)
-    goto exit;
+    return 0;
 
-  frag_shader = CreateShader(GL_FRAGMENT_SHADER, frag_src);
+  const GLuint frag_shader = CreateShader(GL_FRAGMENT_SHADER, frag_src);
+  ANCER_AT_SCOPE([&] {glDeleteShader(frag_shader); });
   if (!frag_shader)
-    goto exit;
+    return 0;
 
-  program = glCreateProgram();
+  const GLuint program = glCreateProgram();
   if (!program) {
     CheckGlError("glCreateProgram");
-    goto exit;
+    return program;
   }
   glAttachShader(program, vtx_shader);
   glAttachShader(program, frag_shader);
 
   glLinkProgram(program);
+  GLint linked = GL_FALSE;
   glGetProgramiv(program, GL_LINK_STATUS, &linked);
   if (!linked) {
     GLint info_log_len = 0;
@@ -179,13 +150,10 @@ GLuint CreateProgramSrc(const char *vtx_src, const char *frag_src) {
       }
     }
     glDeleteProgram(program);
-    program = 0;
     FatalError(TAG, "Could not link program");
+    return 0;
   }
 
-  exit:
-  glDeleteShader(vtx_shader);
-  glDeleteShader(frag_shader);
   return program;
 }
 
