@@ -45,6 +45,7 @@
 #include <array>
 #include <cstring>
 #include <chrono>
+#include <obj_loader.h>
 
 using namespace benderkit;
 using namespace benderhelpers;
@@ -68,19 +69,22 @@ AttachmentBuffer depth_buffer;
 
 Font *font;
 std::shared_ptr<ShaderState> shaders;
-std::vector<const char *> tex_files;
+std::vector<std::string> tex_files;
 std::vector<std::shared_ptr<Texture>> textures;
 std::vector<std::shared_ptr<Material>> materials;
 std::vector<std::shared_ptr<Material>> baseline_materials;
 std::vector<std::shared_ptr<Geometry>> geometries;
+
+std::map<std::string, std::shared_ptr<Texture>> loaded_textures;
+std::map<std::string, std::shared_ptr<Material>> loaded_materials;
 
 auto last_time = std::chrono::high_resolution_clock::now();
 auto current_time = last_time;
 float frame_time;
 float total_time;
 
-const float kCameraMoveSpeed = 2.0;
-const float kCameraStrafeSpeed = 20.0;
+const float kCameraMoveSpeed = 200.0;
+const float kCameraStrafeSpeed = 2000.0;
 
 const glm::mat4 kIdentityMat4 = glm::mat4(1.0f);
 const glm::mat4 prerotate_90 = glm::rotate(kIdentityMat4,  glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -186,26 +190,26 @@ void CreateButtons() {
     button.SetLabel("Backward");
     button.SetPosition(.43, .2, .85, .2);
   });
-  user_interface->RegisterButton([] (Button& button) {
-    button.on_up_ = CreateInstance;
-    button.SetLabel("+1 Mesh");
-    button.SetPosition(-.2, .2, .4, .2);
-  });
-  user_interface->RegisterButton([] (Button& button) {
-    button.on_up_ = DeleteInstance;
-    button.SetLabel("-1 Mesh");
-    button.SetPosition(-.7, .2, .4, .2);
-  });
-  user_interface->RegisterButton([] (Button& button) {
-    button.on_up_ = ChangePolyhedralComplexity;
-    button.SetLabel("Poly Switch");
-    button.SetPosition(.5, .2, .2, .2);
-  });
-  user_interface->RegisterButton([] (Button& button) {
-    button.on_up_ = ChangeMaterialComplexity;
-    button.SetLabel("Tex Switch");
-    button.SetPosition(.5, .2, .4, .2);
-  });
+//  user_interface->RegisterButton([] (Button& button) {
+//    button.on_up_ = CreateInstance;
+//    button.SetLabel("+1 Mesh");
+//    button.SetPosition(-.2, .2, .4, .2);
+//  });
+//  user_interface->RegisterButton([] (Button& button) {
+//    button.on_up_ = DeleteInstance;
+//    button.SetLabel("-1 Mesh");
+//    button.SetPosition(-.7, .2, .4, .2);
+//  });
+//  user_interface->RegisterButton([] (Button& button) {
+//    button.on_up_ = ChangePolyhedralComplexity;
+//    button.SetLabel("Poly Switch");
+//    button.SetPosition(.5, .2, .2, .2);
+//  });
+//  user_interface->RegisterButton([] (Button& button) {
+//    button.on_up_ = ChangeMaterialComplexity;
+//    button.SetLabel("Tex Switch");
+//    button.SetPosition(.5, .2, .4, .2);
+//  });
 }
 
 void CreateUserInterface() {
@@ -240,27 +244,36 @@ void CreateTextures() {
   });
 }
 
+void addTexture(std::string fileName){
+  if (fileName != "" && loaded_textures.find(fileName) == loaded_textures.end()){
+      loaded_textures[fileName] = std::make_shared<Texture>(*device,
+                                                            *android_app_ctx,
+                                                         "textures/" + fileName,
+                                                            VK_FORMAT_R8G8B8A8_SRGB);
+  }
+}
+
 void CreateMaterials() {
   timing::timer.Time("Materials Creation", timing::OTHER, [] {
     MaterialAttributes defaultMaterial;
     defaultMaterial.specular = {0.8f, 0.0f, 0.5f, 128.0f};
     defaultMaterial.diffuse = {0.8f, 0.0f, 0.5f};
     defaultMaterial.ambient = {0.8f, 0.0f, 0.5f};
-    std::vector<std::shared_ptr<Texture>> materialTextures = {nullptr, nullptr, nullptr, nullptr};
+    std::vector<std::shared_ptr<Texture>> materialTextures = {nullptr, nullptr, nullptr, nullptr, nullptr};
     baseline_materials.push_back(std::make_shared<Material>(renderer, shaders, materialTextures));
     baseline_materials.push_back(std::make_shared<Material>(renderer,
                                                            shaders,
                                                            materialTextures,
                                                            defaultMaterial));
 
-    materialTextures = {textures[0], nullptr, nullptr, nullptr};
+    materialTextures = {textures[0], nullptr, nullptr, nullptr, nullptr};
     baseline_materials.push_back(std::make_shared<Material>(renderer, shaders, materialTextures));
     baseline_materials.push_back(std::make_shared<Material>(renderer,
                                                            shaders,
                                                            materialTextures,
                                                            defaultMaterial));
     for (uint32_t i = 0; i < textures.size(); ++i) {
-      materialTextures = {textures[i], nullptr, nullptr, nullptr};
+      materialTextures = {textures[i], nullptr, nullptr, nullptr, nullptr};
       materials.push_back(std::make_shared<Material>(renderer, shaders, materialTextures));
     }
   });
@@ -356,10 +369,10 @@ void UpdateInstances(input::Data *input_data) {
   Camera camera = render_graph->GetCamera();
   render_graph->GetAllMeshes(all_meshes);
   for (int i = 0; i < all_meshes.size(); i++) {
-    all_meshes[i]->Rotate(glm::vec3(0.0f, 1.0f, 1.0f), 90 * frame_time);
-    all_meshes[i]->Translate(.02f * glm::vec3(std::sin(2 * total_time),
-                                             std::sin(i * total_time),
-                                             std::cos(2 * total_time)));
+//    all_meshes[i]->Rotate(glm::vec3(0.0f, 1.0f, 0.0f), 90 * frame_time);
+//    all_meshes[i]->Translate(.02f * glm::vec3(std::sin(2 * total_time),
+//                                             std::sin(i * total_time),
+//                                             std::cos(2 * total_time)));
 
     all_meshes[i]->Update(renderer->GetCurrentFrame(), camera);
   }
@@ -544,21 +557,55 @@ bool InitVulkan(android_app *app) {
 
     renderer = new Renderer(*device);
 
-    timing::timer.Time("Mesh Creation", timing::OTHER, [] {
-      tex_files.push_back("textures/sample_texture.png");
-      tex_files.push_back("textures/sample_texture2.png");
+    timing::timer.Time("Mesh Creation", timing::OTHER, [app] {
+      AAssetDir *dir = AAssetManager_openDir(app->activity->assetManager, "models");
+      const char *fileName;
+      fileName = AAssetDir_getNextFileName(dir);
+      while(fileName != nullptr) {
+        LOGE("%s", fileName);
+        std::string fileNameString(fileName);
+        if (fileNameString.find(".mtl") != -1){
+          fileName = AAssetDir_getNextFileName(dir);
+          continue;
+        }
 
-      CreateTextures();
+        std::vector<OBJLoader::OBJ> modelData;
+        std::unordered_map<std::string, MTL> mtllib;
+        OBJLoader::LoadOBJ(app->activity->assetManager,
+                           ("models/" + fileNameString).c_str(),
+                           mtllib,
+                           modelData);
 
-      CreateMaterials();
-
-      CreateGeometries();
-
-      timing::timer.Time("Create Polyhedron", timing::OTHER, [] {
-        render_graph->AddMesh(std::make_shared<Mesh>(renderer,
-                                                     baseline_materials[materials_idx],
-                                                     geometries[poly_faces_idx]));
-      });
+        for (auto obj : modelData) {
+          std::string mtlName = obj.material_name;
+          if (loaded_materials.find(mtlName) == loaded_materials.end()) {
+            MTL currMTL = mtllib[obj.material_name];
+            addTexture(currMTL.map_Ka);
+            addTexture(currMTL.map_Kd);
+            addTexture(currMTL.map_Ks);
+            addTexture(currMTL.map_Ns);
+            addTexture(currMTL.map_Bump);
+            MaterialAttributes newMTL;
+            newMTL.ambient = currMTL.ambient;
+            newMTL.specular = glm::vec4(currMTL.specular, currMTL.specular_exponent);
+            newMTL.diffuse = currMTL.diffuse;
+            std::vector<std::shared_ptr<Texture>> myTextures = {loaded_textures[currMTL.map_Kd],
+                                                                loaded_textures[currMTL.map_Ks],
+                                                                loaded_textures[currMTL.map_Ke],
+                                                                loaded_textures[currMTL.map_Ns],
+                                                                loaded_textures[currMTL.map_Bump]};
+              loaded_materials[mtlName] = std::make_shared<Material>(renderer,
+                                                                     shaders,
+                                                                     myTextures,
+                                                                     newMTL);
+          }
+          geometries.push_back(std::make_shared<Geometry>(*device, obj.vertex_buffer, obj.index_buffer));
+          render_graph->AddMesh(std::make_shared<Mesh>(renderer,
+                                                       loaded_materials[mtlName],
+                                                       geometries.back()));
+        }
+        fileName = AAssetDir_getNextFileName(dir);
+      }
     });
 
     CreateDepthBuffer();
@@ -655,7 +702,15 @@ bool ResumeVulkan(android_app *app) {
       for (auto &texture : textures) {
         texture->OnResume(*device, android_app_ctx);
       }
+      for (auto &texture : loaded_textures) {
+        if (texture.second != nullptr) texture.second->OnResume(*device, android_app_ctx);
+      }
+
       Material::OnResumeStatic(*device, app);
+
+      for (auto &material : loaded_materials) {
+        material.second->OnResume(renderer);
+      }
 
       for (auto &material : materials) {
         material->OnResume(renderer);
@@ -665,8 +720,29 @@ bool ResumeVulkan(android_app *app) {
         material->OnResume(renderer);
       }
 
-      for (auto &geometry : geometries) {
-        geometry->OnResume(*device);
+      AAssetDir *dir = AAssetManager_openDir(android_app_ctx->activity->assetManager, "models");
+      const char *fileName;
+      fileName = AAssetDir_getNextFileName(dir);
+      int geoIdx = 0;
+      while(fileName != nullptr) {
+        LOGE("%s", fileName);
+        std::string fileNameString(fileName);
+        if (fileNameString.find(".mtl") != -1) {
+          fileName = AAssetDir_getNextFileName(dir);
+          continue;
+        }
+
+        std::vector<OBJLoader::OBJ> modelData;
+        std::unordered_map<std::string, MTL> mtllib;
+        OBJLoader::LoadOBJ(android_app_ctx->activity->assetManager,
+                           ("models/" + fileNameString).c_str(),
+                           mtllib,
+                           modelData);
+
+        for (auto obj : modelData)
+          geometries[geoIdx++]->OnResume(*device, obj.vertex_buffer, obj.index_buffer);
+
+        fileName = AAssetDir_getNextFileName(dir);
       }
 
       std::vector<std::shared_ptr<Mesh>> all_meshes;
@@ -720,8 +796,14 @@ void DeleteVulkan(void) {
   for (auto &mesh : all_meshes) {
     mesh->Cleanup();
   }
+  for (auto &texture : loaded_textures){
+    if (texture.second != nullptr) texture.second->Cleanup();
+  }
   for (auto &texture : textures) {
     texture->Cleanup();
+  }
+  for (auto &material : loaded_materials){
+    material.second->Cleanup();
   }
   for (auto &material : materials) {
     material->Cleanup();
@@ -806,7 +888,7 @@ bool VulkanDrawFrame(input::Data *input_data) {
 
         int fps;
         float frame_time;
-        timing::timer.GetFramerate(500,
+        timing::timer.GetFramerate(100,
                                    timing::timer.GetLastMajorEvent()->number,
                                    &fps,
                                    &frame_time);
@@ -832,12 +914,8 @@ void OnOrientationChange() {
     vkDestroyImageView(device->GetDevice(), display_views[i], nullptr);
     vkDestroyFramebuffer(device->GetDevice(), framebuffers[i], nullptr);
   }
-  vkDestroyImageView(device->GetDevice(), depth_buffer.image_view, nullptr);
-  vkDestroyImage(device->GetDevice(), depth_buffer.image, nullptr);
-  vkFreeMemory(device->GetDevice(), depth_buffer.device_memory, nullptr);
 
   device->CreateSwapChain(device->GetSwapchain());
-  CreateDepthBuffer();
   CreateFramebuffers(render_pass, depth_buffer.image_view);
   Button::SetScreenResolution(device->GetDisplaySizeOriented());
   UpdateCameraParameters();

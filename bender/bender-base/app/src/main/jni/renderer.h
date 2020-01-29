@@ -50,7 +50,7 @@ public:
   void BeginPrimaryCommandBufferRecording();
   void EndPrimaryCommandBufferRecording();
 
-  void UpdateLights(glm::vec3 camera);
+  void UpdateLights(glm::vec3 camera_pos);
 
   benderkit::Device& GetDevice() const { return device_; };
   VkDevice GetVulkanDevice() const { return device_.GetDevice(); }
