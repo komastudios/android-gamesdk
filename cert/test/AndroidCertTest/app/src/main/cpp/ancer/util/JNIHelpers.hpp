@@ -427,10 +427,49 @@ using JNIFunction = std::function<void(LocalJNIEnv *)>;
 
 /**
  * A native call to a JNI function that ensures no local reference leakage.
+ *
  * @param func the JNI function to invoke.
  */
 void SafeJNICall(JNIFunction &&func);
 
+/**
+ * Initializes some global JNI variables. This is typically executed before an operation test.
+ *
+ * @param env a local-savvy JNI environment pointer.
+ * @param activity a JNI reference to the Android activity in execution.
+ */
+void Init(LocalJNIEnv *env, const jobject activity);
+
+/**
+ * Undoes Init().
+ *
+ * @param env a local-savvy JNI environment pointer.
+ */
+void Deinit(LocalJNIEnv *env);
+
+/**
+ * Returns a weak reference to the activity used to initiate this JNI module.
+ */
+jobject GetActivityWeakGlobalRef();
+
+/**
+ * Retrieves a class using the Java class loader.
+ *
+ * @param env a local-savvy JNI environment pointer.
+ * @param class_name the fully qualified name for the class to load
+ * @return a jclass local reference to loaded class.
+ */
+jclass LoadClass(LocalJNIEnv *env, jobject activity, const char *class_name);
+
+/**
+ * Retrieves an entry from a Java enum type.
+ *
+ * @param env a local-savvy JNI environment pointer.
+ * @param class_name the fully qualified name for the class to load
+ * @param field_name name of the enum entry to retrieve.
+ * @return a jobject local reference to the Java enum field.
+ */
+jobject GetEnumField(jni::LocalJNIEnv *env, const char *class_name, const char *field_name);
 }
 }
 

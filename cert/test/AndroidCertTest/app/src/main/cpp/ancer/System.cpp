@@ -37,7 +37,6 @@ using namespace ancer;
 
 namespace {
 Log::Tag TAG{"ancer::system"};
-jobject _activity_weak_global_ref;
 
 std::filesystem::path _internal_data_path;
 std::filesystem::path _raw_data_path;
@@ -46,30 +45,10 @@ std::filesystem::path _obb_path;
 
 //==============================================================================
 
-namespace {
-jclass RetrieveClass(jni::LocalJNIEnv *env, jobject activity,
-                     const char *className) {
-  jclass activity_class = env->GetObjectClass(activity);
-  jmethodID get_class_loader = env->GetMethodID(
-      activity_class, "getClassLoader", "()Ljava/lang/ClassLoader;");
-  jobject cls = env->CallObjectMethod(activity, get_class_loader);
-  jclass class_loader = env->FindClass("java/lang/ClassLoader");
-  jmethodID find_class = env->GetMethodID(
-      class_loader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
-
-  jstring jstr_class_name = env->NewStringUTF(className);
-  auto class_retrieved =
-      (jclass) env->CallObjectMethod(cls, find_class, jstr_class_name);
-  return class_retrieved;
-}
-} // anonymous namespace
-
-//==============================================================================
-
 void ancer::internal::InitSystem(jobject activity, jstring internal_data_path,
                                  jstring raw_data_path, jstring obb_path) {
   jni::SafeJNICall([&](jni::LocalJNIEnv *env) {
-    _activity_weak_global_ref = env->NewWeakGlobalRef(activity);
+    jni::Init(env, activity);
 
     _internal_data_path = std::filesystem::path(
         env->GetStringUTFChars(internal_data_path, nullptr));
@@ -82,7 +61,7 @@ void ancer::internal::InitSystem(jobject activity, jstring internal_data_path,
 
 void ancer::internal::DeinitSystem() {
   jni::SafeJNICall([](jni::LocalJNIEnv *env) {
-    env->DeleteWeakGlobalRef(_activity_weak_global_ref);
+    jni::Deinit(env);
   });
 }
 
@@ -107,7 +86,7 @@ std::string ancer::LoadText(const char *file_name) {
   jni::SafeJNICall(
       [file_name, &text](jni::LocalJNIEnv *env) {
         jstring name = env->NewStringUTF(file_name);
-        jobject activity = env->NewLocalRef(_activity_weak_global_ref);
+        jobject activity = env->NewLocalRef(jni::GetActivityWeakGlobalRef());
         jclass activity_class = env->GetObjectClass(activity);
 
         jmethodID get_asset_helpers_mid = env->GetMethodID(
@@ -158,37 +137,31 @@ GLuint ancer::LoadTexture(
       [&tex, &out_width, &out_height, &has_alpha, file_name]
           (jni::LocalJNIEnv *env) {
         jstring name = env->NewStringUTF(file_name);
-        jobject activity = env->NewLocalRef(_activity_weak_global_ref);
+        jobject activity = env->NewLocalRef(jni::GetActivityWeakGlobalRef());
         jclass activity_class = env->GetObjectClass(activity);
 
         glGenTextures(1, &tex);
         glBindTexture(GL_TEXTURE_2D, tex);
-        glTexParameterf(GL_TEXTURE_2D,
-                        GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D,
-                        GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         jmethodID get_asset_helpers_mid = env->GetMethodID(
             activity_class,
             "getSystemHelpers",
             "()Lcom/google/gamesdk/gamecert/operationrunner/util/SystemHelpers;"
         );
-        jobject asset_helpers_instance = env->CallObjectMethod(
-            activity,
-            get_asset_helpers_mid);
-        jclass asset_helpers_class =
-            env->GetObjectClass(asset_helpers_instance);
+        jobject asset_helpers_instance = env->CallObjectMethod(activity, get_asset_helpers_mid);
+        jclass asset_helpers_class = env->GetObjectClass(asset_helpers_instance);
 
         jmethodID load_texture_mid = env->GetMethodID(
             asset_helpers_class, "loadTexture",
             "(Ljava/lang/String;)Lcom/google/gamesdk/gamecert/operationrunner/"
             "util/SystemHelpers$TextureInformation;");
 
-        jobject out = env->CallObjectMethod(asset_helpers_instance,
-                                            load_texture_mid, name);
+        jobject out = env->CallObjectMethod(asset_helpers_instance, load_texture_mid, name);
 
         // extract TextureInformation from out
-        jclass java_cls = RetrieveClass(
+        jclass java_cls = LoadClass(
             env, activity,
             "com/google/gamesdk/gamecert/operationrunner/util/"
             "SystemHelpers$TextureInformation");
@@ -221,142 +194,6 @@ GLuint ancer::LoadTexture(
       });
 
   return tex;
-}
-
-//==============================================================================
-
-MemoryInfo ancer::GetMemoryInfo() {
-  auto info = MemoryInfo{};
-  jni::SafeJNICall(
-      [&info](jni::LocalJNIEnv *env) {
-        jobject activity = env->NewLocalRef(_activity_weak_global_ref);
-        jclass activity_class = env->GetObjectClass(activity);
-
-        // get the memory info object from our activity
-
-        jmethodID get_system_helpers_mid = env->GetMethodID(
-            activity_class,
-            "getSystemHelpers",
-            "()Lcom/google/gamesdk/gamecert/operationrunner/util/SystemHelpers;"
-        );
-        jobject system_helpers_instance = env->CallObjectMethod(
-            activity,
-            get_system_helpers_mid);
-        jclass system_helpers_class =
-            env->GetObjectClass(system_helpers_instance);
-
-        jmethodID get_memory_info_mid = env->GetMethodID(
-            system_helpers_class, "getMemoryInfo",
-            "()Lcom/google/gamesdk/gamecert/operationrunner/util/"
-            "SystemHelpers$MemoryInformation;");
-
-        jobject j_info_obj = env->CallObjectMethod(system_helpers_instance,
-                                                   get_memory_info_mid);
-
-        // get the field ids for the object
-
-        jclass java_cls = RetrieveClass(
-            env, activity,
-            "com/google/gamesdk/gamecert/operationrunner/util/"
-            "SystemHelpers$MemoryInformation");
-        jfieldID fid_oom_score = env->GetFieldID(java_cls, "oomScore", "I");
-        jfieldID fid_native_heap_allocation_size = env->GetFieldID(
-            java_cls,
-            "nativeHeapAllocationSize", "J");
-        jfieldID fid_commit_limit = env->GetFieldID(java_cls, "commitLimit",
-                                                    "J");
-        jfieldID fid_total_memory = env->GetFieldID(java_cls, "totalMemory",
-                                                    "J");
-        jfieldID fid_available_memory = env->GetFieldID(java_cls,
-                                                        "availableMemory", "J");
-        jfieldID fid_threshold = env->GetFieldID(java_cls, "threshold", "J");
-        jfieldID fid_low_memory = env->GetFieldID(java_cls, "lowMemory", "Z");
-
-        // finally fill out the struct
-
-        info._oom_score = env->GetIntField(j_info_obj, fid_oom_score);
-        info.native_heap_allocation_size = static_cast<long>(env->GetLongField(
-            j_info_obj,
-            fid_native_heap_allocation_size));
-        info.commit_limit =
-            static_cast<long>(env->GetLongField(j_info_obj, fid_commit_limit));
-        info.total_memory =
-            static_cast<long>(env->GetLongField(j_info_obj, fid_total_memory));
-        info.available_memory = static_cast<long>(env->GetLongField(
-            j_info_obj,
-            fid_available_memory));
-        info.low_memory_threshold = static_cast<long>(env->GetLongField(
-            j_info_obj, fid_threshold));
-        info.low_memory = env->GetBooleanField(j_info_obj, fid_low_memory);
-      });
-  return info;
-}
-
-//==============================================================================
-
-ThermalStatus ancer::GetThermalStatus() {
-  ThermalStatus status = ThermalStatus::Unknown;
-
-  jni::SafeJNICall(
-      [&status](jni::LocalJNIEnv *env) {
-        jobject activity = env->NewLocalRef(_activity_weak_global_ref);
-        jclass activity_class = env->GetObjectClass(activity);
-
-        // get the memory info object from our activity
-
-        jmethodID get_system_helpers_mid = env->GetMethodID(
-            activity_class,
-            "getSystemHelpers",
-            "()Lcom/google/gamesdk/gamecert/operationrunner/util/SystemHelpers;"
-        );
-        jobject system_helpers_instance = env->CallObjectMethod(
-            activity,
-            get_system_helpers_mid);
-        jclass system_helpers_class =
-            env->GetObjectClass(system_helpers_instance);
-
-        jmethodID get_thermal_status_mid = env->GetMethodID(
-            system_helpers_class, "getCurrentThermalStatus", "()I");
-
-        // we assume that the java api will return one of the defined thermal
-        // status values, but the api is new as of Q and AFAIK only supported on
-        // pixel
-        jint status_int =
-            env->CallIntMethod(system_helpers_instance, get_thermal_status_mid);
-        if (status_int >= 0 && status_int <= 6) {
-          status = static_cast<ThermalStatus>(status_int);
-        }
-      });
-
-  return status;
-}
-
-//==============================================================================
-
-void ancer::RunSystemGc() {
-  jni::SafeJNICall(
-      [](jni::LocalJNIEnv *env) {
-        jobject activity = env->NewLocalRef(_activity_weak_global_ref);
-        jclass activity_class = env->GetObjectClass(activity);
-
-        // get the memory info object from our activity
-
-        jmethodID get_system_helpers_mid = env->GetMethodID(
-            activity_class,
-            "getSystemHelpers",
-            "()Lcom/google/gamesdk/gamecert/operationrunner/util/SystemHelpers;"
-        );
-        jobject system_helpers_instance = env->CallObjectMethod(
-            activity,
-            get_system_helpers_mid);
-        jclass system_helpers_class =
-            env->GetObjectClass(system_helpers_instance);
-
-        jmethodID run_gc_mid =
-            env->GetMethodID(system_helpers_class, "runGc", "()V");
-
-        env->CallVoidMethod(system_helpers_instance, run_gc_mid);
-      });
 }
 
 //==============================================================================
@@ -462,46 +299,45 @@ int ancer::NumCores(ThreadAffinity affinity) {
   return core_info.num_cores[(int) affinity];
 }
 
-
 bool ancer::SetThreadAffinity(int index, ThreadAffinity affinity) {
-    cpu_set_t cpuset;
-    CPU_ZERO(&cpuset);
+  cpu_set_t cpuset;
+  CPU_ZERO(&cpuset);
 
-    // i is real CPU index, j is the index restricted to only the given affinity
-    for (int i = 0, j = 0; i < std::size(core_info.core_sizes); ++i) {
-        if (affinity != ThreadAffinity::kAnyCore &&
-            affinity != core_info.core_sizes[i]) {
-            continue;
-        }
-        if (j++ == index || index == -1) {
-            CPU_SET(i, &cpuset);
-            if (index != -1) break;
-        }
+  // i is real CPU index, j is the index restricted to only the given affinity
+  for (int i = 0, j = 0; i < std::size(core_info.core_sizes); ++i) {
+    if (affinity!=ThreadAffinity::kAnyCore &&
+        affinity!=core_info.core_sizes[i]) {
+      continue;
     }
+    if (j++==index || index==-1) {
+      CPU_SET(i, &cpuset);
+      if (index!=-1)
+        break;
+    }
+  }
 
-    if ( sched_setaffinity(0, sizeof(cpu_set_t), &cpuset) == -1 ) {
-        std::string err;
-        switch (errno) {
-        case EFAULT:err = "EFAULT";
-            break;
-        case EINVAL:err = "EINVAL";
-            break;
-        case EPERM:err = "EPERM";
-            break;
-        case ESRCH:err = "ESRCH";
-            break;
-        default:err = "(errno: " + std::to_string(errno) + ")";
-            break;
-        }
-        Log::E(TAG, "SetThreadAffinity() - unable to set; error: " + err);
-        return false;
+  if (sched_setaffinity(0, sizeof(cpu_set_t), &cpuset)==-1) {
+    std::string err;
+    switch (errno) {
+      case EFAULT:err = "EFAULT";
+        break;
+      case EINVAL:err = "EINVAL";
+        break;
+      case EPERM:err = "EPERM";
+        break;
+      case ESRCH:err = "ESRCH";
+        break;
+      default:err = "(errno: " + std::to_string(errno) + ")";
+        break;
     }
-    return true;
+    Log::E(TAG, "SetThreadAffinity() - unable to set; error: " + err);
+    return false;
+  }
+  return true;
 }
 
-
 bool ancer::SetThreadAffinity(ThreadAffinity affinity) {
-    return SetThreadAffinity(-1, affinity);
+  return SetThreadAffinity(-1, affinity);
 }
 
 //------------------------------------------------------------------------------
@@ -541,9 +377,9 @@ void ancer::BridgeGLContextConfiguration(GLContextConfig src_config,
                                          jobject dst_config) {
   jni::SafeJNICall(
       [src_config, dst_config](jni::LocalJNIEnv *env) {
-        jobject activity = env->NewLocalRef(_activity_weak_global_ref);
+        jobject activity = env->NewLocalRef(jni::GetActivityWeakGlobalRef());
 
-        jclass java_cls = RetrieveClass(
+        jclass java_cls = LoadClass(
             env, activity,
             "com/google/gamesdk/gamecert/operationrunner/hosts/"
             "BaseGLHostActivity$GLContextConfiguration");
@@ -568,9 +404,9 @@ GLContextConfig ancer::BridgeGLContextConfiguration(jobject src_config) {
   GLContextConfig dst_config;
   jni::SafeJNICall(
       [src_config, &dst_config](jni::LocalJNIEnv *env) {
-        jobject activity = env->NewLocalRef(_activity_weak_global_ref);
+        jobject activity = env->NewLocalRef(jni::GetActivityWeakGlobalRef());
 
-        jclass java_cls = RetrieveClass(
+        jclass java_cls = LoadClass(
             env, activity,
             "com/google/gamesdk/gamecert/operationrunner/hosts/"
             "BaseGLHostActivity$GLContextConfiguration");
@@ -595,23 +431,6 @@ GLContextConfig ancer::BridgeGLContextConfiguration(jobject src_config) {
 
 //==============================================================================
 
-jobject GetEnumField(jni::LocalJNIEnv *env, const std::string &class_signature,
-                     const std::string &field_name) {
-  const jclass cls = env->FindClass(class_signature.c_str());
-  if (cls==nullptr)
-    return nullptr;
-
-  const jfieldID field_id =
-      env->GetStaticFieldID(cls, field_name.c_str(),
-                            ("L" + class_signature + ";").c_str());
-  if (field_id==nullptr)
-    return nullptr;
-
-  return env->GetStaticObjectField(cls, field_id);
-}
-
-//==============================================================================
-
 std::vector<unsigned char> ancer::PNGEncodeRGBABytes(
     unsigned int width, unsigned int height,
     const std::vector<unsigned char> &bytes) {
@@ -620,9 +439,8 @@ std::vector<unsigned char> ancer::PNGEncodeRGBABytes(
   jni::SafeJNICall(
       [&width, &height, &bytes, &data](jni::LocalJNIEnv *env) {
         // Bitmap config
-        jobject argb8888_value = GetEnumField(env,
-                                              "android/graphics/Bitmap$Config",
-                                              "ARGB_8888");
+        jobject argb8888_value =
+            jni::GetEnumField(env, "android/graphics/Bitmap$Config", "ARGB_8888");
         if (argb8888_value==nullptr)
           return;
 
@@ -646,8 +464,7 @@ std::vector<unsigned char> ancer::PNGEncodeRGBABytes(
         // Set pixel data
         // (Note, we could try to use `setPixels` instead, but we would
         // still need to convert four bytes into a 32-bit jint.)
-        jmethodID set_pixel_method_id = env->GetMethodID(bitmap_class,
-                                                         "setPixel", "(III)V");
+        jmethodID set_pixel_method_id = env->GetMethodID(bitmap_class, "setPixel", "(III)V");
         if (set_pixel_method_id==nullptr)
           return;
 
@@ -670,7 +487,7 @@ std::vector<unsigned char> ancer::PNGEncodeRGBABytes(
 
         // PNG compression format
         jobject png_format_value =
-            GetEnumField(env, "android/graphics/Bitmap$CompressFormat", "PNG");
+            jni::GetEnumField(env, "android/graphics/Bitmap$CompressFormat", "PNG");
         if (png_format_value==nullptr)
           return;
 
@@ -745,13 +562,11 @@ std::string ancer::Base64EncodeBytes(const unsigned char *bytes, int length) {
           return;
         }
 
-        env->SetByteArrayRegion(bytes_array, 0, length,
-                                reinterpret_cast<const jbyte *>(bytes));
+        env->SetByteArrayRegion(bytes_array, 0, length, reinterpret_cast<const jbyte *>(bytes));
 
-        auto str =
-            (jstring) env->CallStaticObjectMethod(base64_class,
-                                                  encode_to_string_method_id,
-                                                  bytes_array, 0, length, 0);
+        auto str = (jstring) env->CallStaticObjectMethod(base64_class,
+                                                         encode_to_string_method_id,
+                                                         bytes_array, 0, length, 0);
         if (str!=nullptr) {
           const char *cstr = env->GetStringUTFChars(str, nullptr);
           if (cstr!=nullptr) {
