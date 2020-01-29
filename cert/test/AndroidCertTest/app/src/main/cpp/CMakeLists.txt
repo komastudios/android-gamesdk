@@ -116,7 +116,7 @@ add_library(${PROJECT_NAME} SHARED
         operations/gl/DepthClearGLES3Operation.cpp
         operations/gl/DualSourceBlendingGLES3Operation.cpp
         operations/gl/FillRateGLES3Operation.cpp
-        operations/gl/HalfFloatPrecisionGLES3Operation.cpp
+        operations/gl/MediumPVecNormalizationGLES3Operation.cpp
         operations/gl/HelloGLES3Operation.cpp
         operations/gl/MarchingCubesGLES3Operation.cpp
         operations/gl/marching_cubes/MarchingCubes.cpp
