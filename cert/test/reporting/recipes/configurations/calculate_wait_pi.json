@@ -1,0 +1,26 @@
+{
+    "auto_run": false,
+    "delay_between_tests": "5000ms",
+    "host": "SwappyGLHostActivity",
+    "defaultMonitors": [],
+    "stress_tests": [
+        {
+            "enabled": true,
+            "name": "WaitForPI",
+            "description": "Testing out Pi and waiting: This will make the phone hot!",
+            "duration": "1240s",
+            "data_gatherer": {
+                "id": "CalculateWaitPIOperation",
+                "enabled": true,
+                "configuration": {
+                    "affinity": true,
+                    "heat_time": "300000ms",
+                    "interval_between_samples": "120s",
+                    "wait_method_name": "mutex",
+                    "wait_period": "16ms",
+                    "interval_between_wait_periods": "1000ms"
+                }
+            }
+        }
+    ]
+}

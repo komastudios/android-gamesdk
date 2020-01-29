@@ -18,48 +18,78 @@
 
 #include <condition_variable>
 #include <mutex>
-
+#include <thread>
+#include <unordered_set>
 
 namespace ancer {
     /**
-     * Helper to synchronizing the "real work" portion of multi-threaded operations.
-     * A good example of this kind of work is the I/O and memory tests where
-     * the different cores' simultaneous performance is part of the test.
+     * Helps synchronize an arbitrary set of threads so they can resume
+     * execution at the same time.
+     * 
+     * Any thread may participate in synchronization by calling this class's
+     * `Sync` method. However, if the total number of threads that call `Sync`
+     * does not *exactly* match `_num_threads`, the waiting threads will be
+     * blocked indefinitely.
      *
-     * While we can't *guarantee* the device won't still stall a thread, we can
-     * at least avoid having one thread charge ahead while others are still
-     * being created or still doing pre-operation setup.
+     * `Sync` can be called multiple times by a thread, but care must be taken
+     * to ensure that all threads call `Sync` the same number of times, or else
+     * some threads may become blocked indefinitely. (Note: if sync is used in
+     * this way, it is *not* necessary to call `Reset`; one can simply call
+     * `Sync` as many times as needed, as long as _num_threads is invariant.)
      *
-     * TODO(tmillican@google.com): A mechanism like this should probably a core
-     * part of BaseOperation so we have this kind of "setup/work/shutdown"
-     * paradigm across all operations.
+     * A typical use case might involve each thread doing its own initialization
+     * routine, then calling `Sync` to wait until all threads have initialized,
+     * allowing them to start their "real work" (post-initialization) in unison.
+     * This can be useful when measuring and comparing performance across cores,
+     * such as during I/O and memory tests.
      *
+     * (While we can't *guarantee* the device won't subsequently stall a thread,
+     * we can at least avoid having one thread charging ahead while others are
+     * still being created or still doing pre-operation setup.)
      *
-     * EXAMPLE
+     * EXAMPLE 1:
      * void SpawnWorkers() {
-     *     // Example: If thread spawning is slow or we're spawning a lot of
-     *     // threads, early threads may start their work before later threads
-     *     // have even been created.
      *     const int num_threads = 100;
      *     ThreadSyncPoint sync_point{num_threads};
      *
      *     for (int i = 0 ; i < num_threads ; ++i) {
      *         _threads.push_back(std::thread([&sync_point] {
-     *             // Example: There's a decent amount of setup work that can
-     *             // lead to desync due to factors we don't care about in this
-     *             // test. (e.g., we're loading example data from disk, but the
-     *             // test is actually about processing that data with different
-     *             // multi-threaded setups: The I/O side of things doesn't
-     *             // matter for this test.)
      *             InitializeStuff();
      *
-     *             // Sync up...
-     *             sync_point.Sync();
-     *             // ...then continue with everyone at the same known point.
+     *             // Wait for other threads to finish spawning/initializing.
+     *             sync_point.Sync(std::this_thread::get_id());
+     *
+     *             // Everyone continues at the same known point.
      *             DoThingWeCareAbout();
      *         });
      *     }
      * }
+     *
+     * EXAMPLE 2:
+     * void SpawnWorkers() {
+     *     const int num_threads = 8;
+     *     ThreadSyncPoint sync_point{num_threads};
+     *
+     *     for (int i = 0 ; i < num_threads ; ++i) {
+     *         _threads.push_back(std::thread([&sync_point] {
+     *             // Wait for all threads to spawn
+     *             sync_point.Sync(std::this_thread::get_id());
+     *             FirstWorkBatch();
+     *
+     *             // Sync between batches
+     *             sync_point.Sync(std::this_thread::get_id());
+     *             SecondWorkBatch();
+     *
+     *             // Sync again
+     *             sync_point.Sync(std::this_thread::get_id());
+     *             ThirdWorkBatch();
+     *         });
+     *     }
+     * }
+     *
+     * TODO(tmillican@google.com): A mechanism like this should probably a core
+     * part of BaseOperation so we have this kind of "setup/work/shutdown"
+     * paradigm across all operations.
      */
      class ThreadSyncPoint {
      public:
@@ -68,15 +98,15 @@ namespace ancer {
          ThreadSyncPoint(ThreadSyncPoint&&) = delete;
          ~ThreadSyncPoint();
 
-         // Resets the sync point for another run.
+         // Resets the sync point for reuse.
          void Reset(int num_threads);
          void Reset();
-         void Sync();
+         void Sync(std::thread::id id);
      private:
          void ForceDone();
 
          int _num_threads;
-         int _sync_count = 0;
+         std::unordered_set<std::thread::id> _waiting_threads;
 
          std::mutex _mutex;
          std::condition_variable _cond_var;
