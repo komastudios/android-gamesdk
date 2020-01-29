@@ -1,0 +1,40 @@
+{
+  "auto_run": false,
+  "delay_between_tests": "5000ms",
+  "host": "SwappyGLHostActivity",
+  "defaultMonitors": [
+    {
+      "id": "MonitorOperation"
+    }
+  ],
+  "stress_tests": [
+    {
+      "enabled": true,
+      "name": "MediumPVecNormalizationGLES3Operation",
+      "description": "Test normalization of mediump vec3 with large component values",
+      "duration": "5m",
+      "data_gatherer": {
+        "id": "MediumPVecNormalizationGLES3Operation",
+        "configuration": {
+          "vertex_stage_configuration": {
+            "enabled": true,
+            "offset_steps": 16,
+            "offset_scale": 220
+          },
+          "fragment_stage_configuration": {
+            "enabled": true,
+            "offset_steps": 16,
+            "offset_scale": 220
+          },
+          "varying_configuration": {
+            "enabled": true,
+            "offset_steps": 16,
+            "offset_scale": 220
+          }
+        }
+      },
+      "stressors": [
+      ]
+    }
+  ]
+}

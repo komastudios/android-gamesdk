@@ -16,10 +16,16 @@
  * limitations under the License.
  */
 
-layout (location = 0) in vec3 aPos;
+precision mediump float;
+
+out vec4 outColor;
+
+in vec3 vSummedColor;
 
 void main()
 {
-    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+    vec3 v = vSummedColor;
+    v = normalize(v);
+    outColor = vec4(v, 1.0);
 }
 

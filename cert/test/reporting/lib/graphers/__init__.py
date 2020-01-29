@@ -25,11 +25,12 @@ from .half_float_precision import HalfFloatPrecisionSuiteHandler
 from .memory_allocation_suite_handler import MemoryAllocationSuiteHandler
 from .marching_cubes_suite_handler import MarchingCubesSuiteHandler
 from .mprotect_suite_handler import MProtectSuiteHandler
+from .mediump_vec_norm_suite_handler import MediumPVecNormSuiteHandler
 
 HANDLERS = [
     AffinityTestSuiteHandler, BufferStorageSuiteHandler,
     HalfFloatPrecisionSuiteHandler, MemoryAllocationSuiteHandler,
-    MarchingCubesSuiteHandler, MProtectSuiteHandler
+    MarchingCubesSuiteHandler, MProtectSuiteHandler, MediumPVecNormSuiteHandler
 ]
 """List containing all registered SuiteHandler implementations to
 render charts."""

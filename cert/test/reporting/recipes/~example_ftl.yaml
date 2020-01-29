@@ -8,7 +8,12 @@ systrace:
 deployment:
   ftl:
     test: test-robo
-    all-physical-devices: true
+    # specify certain devices to run on or leave out to run on all
+    # physical devices available to FTL
+    devices:
+      - { model: "flo", version: 21 }
+      - { model: "mlv1", version: 23 }
+
     flags:
       project: gamesdk-testing
       format: json
