@@ -18,6 +18,7 @@
 
 #include <cstddef>
 #include <filesystem>
+#include <map>
 #include <string>
 
 #include <GLES3/gl32.h>
@@ -25,6 +26,7 @@
 #include <sstream>
 
 #include "Renderer.hpp"
+#include "System.Temperature.hpp"
 
 namespace ancer {
     class FpsCalculator;
@@ -87,47 +89,6 @@ namespace ancer {
      * from the host activity, via BaseHostActivity.getMemoryHelper().getMemoryInfo()
      */
     MemoryInfo GetMemoryInfo();
-
-    /*
-     * ThermalStatus - direct mapping of the thermal constants defined here:
-     * https://developer.android.com/reference/android/os/PowerManager.html#THERMAL_STATUS_NONE
-     */
-    enum class ThermalStatus {
-        None = 0,
-        Light = 1,
-        Moderate = 2,
-        Severe = 3,
-        Critical = 4,
-        Emergency = 5,
-        Shutdown = 6,
-        Unknown = -1 // added for unsupported API/devices
-    };
-
-    inline std::string to_string(ThermalStatus status) {
-        switch ( status ) {
-        case ThermalStatus::None: return "none";
-        case ThermalStatus::Light: return "light";
-        case ThermalStatus::Moderate: return "moderate";
-        case ThermalStatus::Severe: return "severe";
-        case ThermalStatus::Critical: return "critical";
-        case ThermalStatus::Emergency: return "emergency";
-        case ThermalStatus::Shutdown: return "shutdown";
-        case ThermalStatus::Unknown: return "unknown";
-        }
-    }
-
-    inline std::ostream& operator<<(std::ostream& os, ThermalStatus status) {
-        os << to_string(status);
-        return os;
-    }
-
-    /*
-     * Get the current thermal status as reported by the android powermanager.
-     * Note, this only returns valid data on android Q and up (and on pixel devices at present?)
-     * Returns -1 for pre-q devices;
-     * TODO(shamyl@google.com): Confirm this return value for non-pixel Q devices?
-     */
-    ThermalStatus GetThermalStatus();
 
     /*
      * Run the java vm garbage collector

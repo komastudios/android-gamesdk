@@ -54,13 +54,15 @@ namespace {
 
 //--------------------------------------------------------------------------------------------------
 
-    struct thermal_info {
-        ThermalStatus status;
+    struct temperature_info {
+      ThermalStatus thermal_status;
+      std::vector<TemperatureInCelsiusMillis> temperatures_in_celsius_millis;
     };
 
-    JSON_WRITER(thermal_info) {
-        JSON_SETVAR(status_msg, to_string(data.status));
-        JSON_REQVAR(status);
+    JSON_WRITER(temperature_info) {
+        JSON_SETVAR(status_msg, to_string(data.thermal_status));
+        JSON_REQVAR(thermal_status);
+        JSON_OPTVAR(temperatures_in_celsius_millis);
     }
 
 //--------------------------------------------------------------------------------------------------
@@ -88,13 +90,13 @@ namespace {
     struct datum {
         sys_mem_info memory_state;
         perf_info perf_info;
-        thermal_info thermal_info;
+        temperature_info temperature_info;
     };
 
     JSON_WRITER(datum) {
         JSON_REQVAR(memory_state);
         JSON_REQVAR(perf_info);
-        JSON_REQVAR(thermal_info);
+        JSON_REQVAR(temperature_info);
     }
 } // anonymous namespace
 
@@ -140,7 +142,10 @@ public:
                                 c.GetMinFrameTime(),
                                 c.GetMinFrameTime(),
                         },
-                        thermal_info{GetThermalStatus()}
+                        temperature_info{
+                          ancer::GetThermalStatus(),
+                          ancer::CaptureTemperatures()
+                        }
                 });
     }
 

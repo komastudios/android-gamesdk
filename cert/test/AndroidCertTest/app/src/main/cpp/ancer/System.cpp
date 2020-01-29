@@ -294,6 +294,8 @@ MemoryInfo ancer::GetMemoryInfo() {
 
 //==============================================================================
 
+// TODO(dagum): move this to System.Temperature.cpp
+//              (requires _activity_weak_global_ref to be visible -> getter)
 ThermalStatus ancer::GetThermalStatus() {
   ThermalStatus status = ThermalStatus::Unknown;
 

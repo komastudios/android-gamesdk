@@ -34,9 +34,9 @@ JavaVM *_java_vm;
 //==============================================================================
 
 namespace {
-class BoundJNIEnvImpl final : public jni::LocalJNIEnv {
+class LocalJNIEnvImpl final : public jni::LocalJNIEnv {
  public:
-  BoundJNIEnvImpl() {
+  LocalJNIEnvImpl() {
     auto attachment_status = _java_vm->GetEnv((void **) &_env, JNI_VERSION_1_6);
     if (attachment_status==JNI_EDETACHED) {
       if (_java_vm->AttachCurrentThread(&_env, nullptr)!=0) {
@@ -47,7 +47,7 @@ class BoundJNIEnvImpl final : public jni::LocalJNIEnv {
     _detach_on_destroy = false;
   }
 
-  ~BoundJNIEnvImpl() {
+  ~LocalJNIEnvImpl() {
     for (const auto &local_ref : _local_refs) {
       _env->DeleteLocalRef(local_ref);
     }
@@ -806,8 +806,8 @@ void ancer::jni::SetJavaVM(JavaVM *vm) {
 
 void ancer::jni::SafeJNICall(JNIFunction &&func) {
   try {
-    BoundJNIEnvImpl bound_jni_env{};
-    return func(&bound_jni_env);
+    LocalJNIEnvImpl local_jni_env{};
+    return func(&local_jni_env);
   } catch (const std::exception &e) {
     FatalError(TAG, e.what());
   }
