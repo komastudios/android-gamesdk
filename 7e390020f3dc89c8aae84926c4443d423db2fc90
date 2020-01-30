@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "428fdb6b_d1e110e5",
+        "filename": "cert/test/.gitignore",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-01-30T22:10:10Z",
+      "side": 1,
+      "message": "(Self-resolved)\nMaybe not bad idea to switch all previous .idea lines to AndroidCertTest/.idea or, even better, split this .gitignore in two halves: one in AndroidCertTest and containing everything to be ignored about an Android Studio project, another in reporting and containing everything to be ignored about a Python project 😉",
+      "revId": "7e390020f3dc89c8aae84926c4443d423db2fc90",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "182024cd_08ac6065",
+        "filename": "cert/test/AndroidCertTest/app/src/main/assets/Shaders/MediumPVecNormalizationGLES3Operation/fragment_stage_normalization.fsh",
+        "patchSetId": 3
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-01-30T22:10:10Z",
+      "side": 1,
+      "message": "(Self-resolved)\nI know that #version can\u0027t be after the copyright but, is that the case with line 2 (precision)? Otherwise maybe not bad to keep the copyright notice as upfront as possible. If you find worth moving these downward, all the other shaders in this CL have the same.",
+      "revId": "7e390020f3dc89c8aae84926c4443d423db2fc90",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d3d26574_f502a3cf",
+        "filename": "cert/test/reporting/recipes/mediump_vec_norm.yaml",
+        "patchSetId": 3
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-01-30T22:10:10Z",
+      "side": 1,
+      "message": "I think it\u0027s safe to remove all this deployment section, right? Since run.py must get either --local or --ftl, this became redundant (likely invalid, to the best of my memory).",
+      "revId": "7e390020f3dc89c8aae84926c4443d423db2fc90",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
