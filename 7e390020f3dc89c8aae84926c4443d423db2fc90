@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "97a0b7bd_dbdf038c",
+        "filename": "cert/test/.gitignore",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-30T22:36:25Z",
+      "side": 1,
+      "message": "I\u0027m not certain about the best approach here - I want that file to exist, because it\u0027s a useful template for our team. What\u0027s the best way to have it in the repo but have changes to it be hidden?",
+      "parentUuid": "428fdb6b_d1e110e5",
+      "revId": "7e390020f3dc89c8aae84926c4443d423db2fc90",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "182024cd_08ac6065",
         "filename": "cert/test/AndroidCertTest/app/src/main/assets/Shaders/MediumPVecNormalizationGLES3Operation/fragment_stage_normalization.fsh",
         "patchSetId": 3
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "91200d19_9a4a59aa",
+        "filename": "cert/test/AndroidCertTest/app/src/main/assets/Shaders/MediumPVecNormalizationGLES3Operation/fragment_stage_normalization.fsh",
+        "patchSetId": 3
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-30T22:36:25Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "182024cd_08ac6065",
+      "revId": "7e390020f3dc89c8aae84926c4443d423db2fc90",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d3d26574_f502a3cf",
         "filename": "cert/test/reporting/recipes/mediump_vec_norm.yaml",
         "patchSetId": 3
@@ -47,6 +83,24 @@
       "writtenOn": "2020-01-30T22:10:10Z",
       "side": 1,
       "message": "I think it\u0027s safe to remove all this deployment section, right? Since run.py must get either --local or --ftl, this became redundant (likely invalid, to the best of my memory).",
+      "revId": "7e390020f3dc89c8aae84926c4443d423db2fc90",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b72f463c_67add781",
+        "filename": "cert/test/reporting/recipes/mediump_vec_norm.yaml",
+        "patchSetId": 3
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-30T22:36:25Z",
+      "side": 1,
+      "message": "I put it in to let me specify \"flo\" and \"mlv1\" devices; but honestly, it makes me feel we need a mechanism complementary to \"all-physical-devices\" which does this without needing to specify a full ftl deployment dict.",
+      "parentUuid": "d3d26574_f502a3cf",
       "revId": "7e390020f3dc89c8aae84926c4443d423db2fc90",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
