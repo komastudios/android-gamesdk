@@ -7,6 +7,9 @@
 
 constexpr auto appname = "istresser";
 
+static const int PRIME_1 = 214013;
+static const int PRIME_2 = 2531011;
+
 std::list<char *> allocated;
 std::mutex mtx;
 TestRenderer* testRenderer;
@@ -20,8 +23,11 @@ Java_net_jimblackler_istresser_MainActivity_nativeConsume(JNIEnv *env, jobject i
 
   if (data) {
     allocated.push_back(data);
+    int value = rand();
     for (int count = 0; count < byte_count; count++) {
-      data[count] = (char) count;
+      value *= PRIME_1;
+      value += PRIME_2;
+      data[count] = (char) value;
     }
   } else {
     __android_log_print(ANDROID_LOG_WARN, appname, "Could not allocate");
