@@ -38,12 +38,14 @@ import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.TreeSet;
 import net.jimblackler.istresser.Heuristic.Identifier;
 import net.jimblackler.istresser.Heuristic.Indicator;
 import org.json.JSONArray;
@@ -69,23 +71,9 @@ public class MainActivity extends AppCompatActivity {
   private static final int MAX_SERVICE_MEMORY_MB = 500;
   private static final int BYTES_IN_MEGABYTE = 1024 * 1024;
   private static final boolean GL_TEST = true;
+  public static final int NUMBER_MAIN_GROUPS = 9;
 
-  private static final List<List<Identifier>> groups =
-      ImmutableList.<List<Identifier>>builder()
-          .add(ImmutableList.of())
-          .add(ImmutableList.of(TRIM))
-          .add(ImmutableList.of(OOM))
-          .add(ImmutableList.of(LOW))
-          .add(ImmutableList.of(TRY))
-          .add(ImmutableList.of(CL))
-          .add(ImmutableList.of(AVAIL))
-          .add(ImmutableList.of(CACHED))
-          .add(ImmutableList.of(AVAIL2))
-          .add(ImmutableList.of(CL, AVAIL, AVAIL2))
-          .add(ImmutableList.of(CL, AVAIL, AVAIL2, LOW))
-          .add(ImmutableList.of(TRIM, TRY, CL, AVAIL, AVAIL2))
-          .add(ImmutableList.of(TRIM, LOW, TRY, CL, AVAIL, AVAIL2))
-          .build();
+  private final Collection<Identifier> activeGroups = new TreeSet<>();
 
   private static final ImmutableList<String> MEMINFO_FIELDS =
       ImmutableList.of("Cached", "MemFree", "MemAvailable", "SwapFree");
@@ -109,8 +97,6 @@ public class MainActivity extends AppCompatActivity {
   private long startTime;
   private long allocationStartedAt = -1;
   private int releases;
-  private int scenario;
-  private int groupNumber;
   private long appSwitchTimerStart;
   private long lastLaunched;
   private int serviceTotalMb = 0;
@@ -208,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
       PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
       report.put("version", packageInfo.versionCode);
       Intent launchIntent = getIntent();
+      int scenario;
       if ("com.google.intent.action.TEST_LOOP".equals(launchIntent.getAction())) {
         Uri logFile = launchIntent.getData();
         if (logFile != null) {
@@ -228,17 +215,48 @@ public class MainActivity extends AppCompatActivity {
         scenario = SCENARIO_NUMBER;
       }
 
-      groupNumber = (scenario - 1) % groups.size();
-      if (scenario > groups.size() && scenario <= 2 * groups.size()) {
+      report.put("scenario", scenario);
+
+      int useScenario = scenario;
+      if (scenario > NUMBER_MAIN_GROUPS) {
         serviceState = ServiceState.ALLOCATING_MEMORY;
         serviceTotalMb = 0;
         serviceCommunicationHelper.allocateServerMemory(MAX_SERVICE_MEMORY_MB);
+        report.put("service", true);
+        useScenario -= NUMBER_MAIN_GROUPS;
       }
 
-      report.put("scenario", scenario);
+      switch (useScenario) {
+        case 1:
+          break;
+        case 2:
+          activeGroups.add(TRIM);
+          break;
+        case 3:
+          activeGroups.add(OOM);
+          break;
+        case 4:
+          activeGroups.add(LOW);
+          break;
+        case 5:
+          activeGroups.add(TRY);
+          break;
+        case 6:
+          activeGroups.add(CL);
+          break;
+        case 7:
+          activeGroups.add(AVAIL);
+          break;
+        case 8:
+          activeGroups.add(CACHED);
+          break;
+        case 9:
+          activeGroups.add(AVAIL2);
+          break;
+      }
 
       JSONArray groupsOut = new JSONArray();
-      for (Identifier identifier : groups.get(groupNumber)) {
+      for (Identifier identifier : activeGroups) {
         groupsOut.put(identifier.name());
       }
       TextView strategies = findViewById(R.id.strategies);
@@ -301,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
               if (_allocationStartedAt != -1) {
                 boolean memoryReleased = false;
                 for (Heuristic heuristic : Heuristic.availableHeuristics) {
-                  if (groups.get(groupNumber).contains(heuristic.getIdentifier())
+                  if (activeGroups.contains(heuristic.getIdentifier())
                       && heuristic.getSignal(activityManager) == Indicator.RED) {
                     releaseMemory(report, heuristic.getIdentifier().toString());
                     memoryReleased = true;
@@ -462,7 +480,8 @@ public class MainActivity extends AppCompatActivity {
           oomScoreTextView.setText("" + Heuristics.getOomScore(activityManager));
 
           TextView lowMemoryTextView = findViewById(R.id.lowMemory);
-          lowMemoryTextView.setText(Boolean.valueOf(Heuristics.lowMemoryCheck(activityManager)).toString());
+          lowMemoryTextView
+              .setText(Boolean.valueOf(Heuristics.lowMemoryCheck(activityManager)).toString());
 
           TextView trimMemoryComplete = findViewById(R.id.releases);
           trimMemoryComplete.setText(String.format(Locale.getDefault(), "%d", releases));
@@ -488,7 +507,7 @@ public class MainActivity extends AppCompatActivity {
       JSONObject report = standardInfo();
       report.put("onTrimMemory", level);
 
-      if (groups.get(groupNumber).contains(TRIM)) {
+      if (activeGroups.contains(TRIM)) {
         releaseMemory(report, TRIM.name());
       }
       resultsStream.println(report);
