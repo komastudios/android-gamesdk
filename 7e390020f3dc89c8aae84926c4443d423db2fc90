@@ -72,6 +72,24 @@
     },
     {
       "key": {
+        "uuid": "bbc66a40_3ac8c5fd",
+        "filename": "cert/test/AndroidCertTest/app/src/main/assets/Shaders/MediumPVecNormalizationGLES3Operation/fragment_stage_normalization.fsh",
+        "patchSetId": 3
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-30T22:53:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "91200d19_9a4a59aa",
+      "revId": "7e390020f3dc89c8aae84926c4443d423db2fc90",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d3d26574_f502a3cf",
         "filename": "cert/test/reporting/recipes/mediump_vec_norm.yaml",
         "patchSetId": 3
@@ -101,6 +119,24 @@
       "side": 1,
       "message": "I put it in to let me specify \"flo\" and \"mlv1\" devices; but honestly, it makes me feel we need a mechanism complementary to \"all-physical-devices\" which does this without needing to specify a full ftl deployment dict.",
       "parentUuid": "d3d26574_f502a3cf",
+      "revId": "7e390020f3dc89c8aae84926c4443d423db2fc90",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "29a4882b_ad2b4796",
+        "filename": "cert/test/reporting/recipes/mediump_vec_norm.yaml",
+        "patchSetId": 3
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-01-30T22:53:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b72f463c_67add781",
       "revId": "7e390020f3dc89c8aae84926c4443d423db2fc90",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
