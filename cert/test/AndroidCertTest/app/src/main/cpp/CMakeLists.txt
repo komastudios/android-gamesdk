@@ -76,6 +76,7 @@ find_library(log-lib
 add_definitions(-DVK_USE_PLATFORM_ANDROID_KHR)
 
 add_library(${PROJECT_NAME} SHARED
+        ${ANDROID_NDK}/sources/third_party/vulkan/src/common/vulkan_wrapper.cpp
         # Java-Native glue & super-fundamental code
         native-lib.cpp
 
@@ -90,10 +91,15 @@ add_library(${PROJECT_NAME} SHARED
         ancer/util/Bitmath.cpp
         ancer/util/GLHelpers.cpp
         ancer/util/GLPixelBuffer.cpp
+        ancer/util/JNIHelpers.cpp
         ancer/util/ThreadSyncPoint.cpp
         ancer/util/Time.cpp
         ancer/util/VkHelpers.cpp
         ancer/util/vulkan/VkHelpersImpl.cpp
+        ancer/vulkan/android_helper.cc
+        ancer/vulkan/vulkan_base.cc
+        ancer/vulkan/context.cc
+        ancer/vulkan/swapchain.cc
 
         # Operations
         operations/CalculatePIOperation.cpp

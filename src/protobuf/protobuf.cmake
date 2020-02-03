@@ -22,16 +22,16 @@ set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffunction-sections -fdata-sections" )
 
 function(set_link_options libname versionscript)
   if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
-  set_target_properties( ${libname} PROPERTIES LINK_FLAGS "-Wl,--version-script=${CMAKE_SOURCE_DIR}/${versionscript}")
+  set_target_properties( ${libname} PROPERTIES LINK_FLAGS "-Wl,--version-script=${versionscript}")
   endif (${CMAKE_BUILD_TYPE} STREQUAL "Release")
 endfunction()
 
 function(extra_pb_link_options libname)
-  set_link_options(${libname} "protobuf/protobuf_version.script")
+  set_link_options(${libname} "${CMAKE_CURRENT_LIST_DIR}/protobuf_version.script")
 endfunction()
 
 function(extra_pb_nano_link_options libname)
-  set_link_options(${libname} "protobuf/protobuf_nano_version.script")
+  set_link_options(${libname} "${CMAKE_CURRENT_LIST_DIR}/protobuf_nano_version.script")
 endfunction()
 
 set(PROTO_GENS_DIR ${CMAKE_BINARY_DIR}/gens)

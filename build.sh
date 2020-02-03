@@ -18,7 +18,10 @@ popd
 pushd samples/cube
 ./gradlew build
 popd
-pushd samples/tuningfork/tftestapp
+pushd samples/tuningfork/expertballs
+./gradlew build
+popd
+pushd test/tuningfork/testapp
 ./gradlew build
 popd
 
@@ -30,9 +33,9 @@ fi
 
 if [[ $1 == "samples" ]] || [[ $1 == "full" ]]
     then
-        mkdir $dist_dir/samples
+        mkdir -p $dist_dir/samples
         cp samples/bouncyball/app/build/outputs/apk/debug/app-debug.apk \
             $dist_dir/samples/bouncyball.apk
-        cp samples/tuningfork/tftestapp/app/build/outputs/apk/debug/app-debug.apk \
-            $dist_dir/samples/tuningfork.apk
+        cp samples/tuningfork/expertballs/app/build/outputs/apk/debug/app-debug.apk \
+            $dist_dir/samples/expertballs.apk
 fi

@@ -26,30 +26,22 @@ from typing import Dict, List, Tuple
 from bs4 import BeautifulSoup
 
 from lib.build import APP_ID
-from lib.common import Error
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 SYSTRACE_LINE_CPU_NUMBER_REGEXP = re.compile(r'(\[\d+\])')
 SYSTRACE_LINE_TIMESTAMP_REGEXP = re.compile(r'(\d+\.?\d*:)')
 CLOCK_SYNC_MARKER = "ancer::clock_sync"
 CLOCK_SYNC_ISSUE_ID_REGEXP = re.compile(r'\(([0-9]+)\)')
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
-class SystraceParseError(Error):
-    """Exception raised when having trouble parsing a systrace
-
-    Attributes:
-        message -- explanation of the error
+class SystraceParseError(Exception):
+    """Exception raised when having trouble parsing a systrace.
     """
 
-    def __init__(self, message):
-        super().__init__()
-        self.message = message
 
-
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 def trim_to_trace(file_data):
     """Return the trace data portion of the systrace file.

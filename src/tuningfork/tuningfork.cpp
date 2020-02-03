@@ -98,12 +98,10 @@ private:
     ITimeProvider *time_provider_;
     std::vector<InstrumentationKey> ikeys_;
     std::atomic<int> next_ikey_;
-    JniCtx jni_;
     TimePoint loading_start_;
     std::unique_ptr<ProtobufSerialization> training_mode_params_;
 public:
     TuningForkImpl(const Settings& settings,
-                   const JniCtx& jni,
                    const ExtraUploadInfo& extra_upload_info,
                    Backend *backend,
                    ParamsLoader *loader,
@@ -136,10 +134,6 @@ public:
     TFErrorCode Flush();
 
     TFErrorCode Flush(TimePoint t, bool upload);
-
-    const JniCtx& GetJniCtx() const {
-        return jni_;
-    }
 
     const Settings& GetSettings() const {
         return settings_;
@@ -196,7 +190,6 @@ static ExtraUploadInfo s_extra_upload_info;
 static std::unique_ptr<SwappyTraceWrapper> s_swappy_tracer;
 
 TFErrorCode Init(const Settings &settings,
-                 const JniCtx& jni,
                  const ExtraUploadInfo* extra_upload_info,
                  Backend *backend,
                  ParamsLoader *loader,
@@ -206,12 +199,12 @@ TFErrorCode Init(const Settings &settings,
         return TFERROR_ALREADY_INITIALIZED;
 
     if (extra_upload_info == nullptr) {
-        s_extra_upload_info = UploadThread::BuildExtraUploadInfo(jni);
+        s_extra_upload_info = UploadThread::BuildExtraUploadInfo();
         extra_upload_info = &s_extra_upload_info;
     }
 
     if (backend == nullptr) {
-        TFErrorCode err = s_backend.Init(jni, settings, *extra_upload_info);
+        TFErrorCode err = s_backend.Init(settings, *extra_upload_info);
         if (err == TFERROR_OK) {
             ALOGI("TuningFork.GoogleEndpoint: OK");
             backend = &s_backend;
@@ -226,13 +219,13 @@ TFErrorCode Init(const Settings &settings,
         time_provider = s_chrono_time_provider.get();
     }
 
-    s_impl = std::make_unique<TuningForkImpl>(settings, jni, *extra_upload_info,
+    s_impl = std::make_unique<TuningForkImpl>(settings, *extra_upload_info,
                                               backend, loader, time_provider);
 
     // Set up the Swappy tracer after TuningFork is initialized
     if (settings.c_settings.swappy_tracer_fn != nullptr) {
         s_swappy_tracer = std::unique_ptr<SwappyTraceWrapper>(
-            new SwappyTraceWrapper(settings, jni));
+            new SwappyTraceWrapper(settings));
     }
     return TFERROR_OK;
 }
@@ -318,15 +311,6 @@ TFErrorCode Destroy() {
     }
 }
 
-const JniCtx& GetJniCtx() {
-    if (!s_impl) {
-        static JniCtx empty_jni(nullptr, nullptr);
-        return empty_jni;
-    } else {
-        return s_impl->GetJniCtx();
-    }
-}
-
 const Settings* GetSettings() {
     if (!s_impl) return nullptr;
     else return &s_impl->GetSettings();
@@ -338,7 +322,6 @@ TFErrorCode SetFidelityParameters(const ProtobufSerialization& params) {
 }
 
 TuningForkImpl::TuningForkImpl(const Settings& settings,
-                               const JniCtx& jni,
                                const ExtraUploadInfo& extra_upload_info,
                                Backend *backend,
                                ParamsLoader *loader,
@@ -352,7 +335,6 @@ TuningForkImpl::TuningForkImpl(const Settings& settings,
                                      time_provider_(time_provider),
                                      ikeys_(settings.aggregation_strategy.max_instrumentation_keys),
                                      next_ikey_(0),
-                                     jni_(jni),
                                      loading_start_(TimePoint::min()) {
     ALOGI("TuningFork Settings:\n  method: %d\n  interval: %d\n  n_ikeys: %d\n  n_annotations: %zu"
           "\n  n_histograms: %zu\n  base_uri: %s\n  api_key: %s\n  fp filename: %s\n  itimeout: %d"
@@ -495,17 +477,18 @@ TFErrorCode TuningForkImpl::GetFidelityParameters(
           ALOGE("The API key in Tuning Fork TFSettings is invalid");
           return TFERROR_BAD_PARAMETER;
         }
-        ExtraUploadInfo info = UploadThread::BuildExtraUploadInfo(jni_);
+        ExtraUploadInfo info = UploadThread::BuildExtraUploadInfo();
         Duration timeout = (timeout_ms<=0)
                            ? std::chrono::milliseconds(settings_.initial_request_timeout_ms)
                            : std::chrono::milliseconds(timeout_ms);
-        WebRequest web_request(jni_, Request(info, settings_.EndpointUri(),
+        WebRequest web_request(Request(info, settings_.EndpointUri(),
                                              settings_.api_key, timeout));
         auto result = loader_->GetFidelityParams(web_request, training_mode_params_.get(),
                                                  params_ser, experiment_id);
-        upload_thread_.SetCurrentFidelityParams(params_ser, experiment_id);
-        if (Debugging()) {
-            UploadDebugInfo(jni_, web_request);
+        if (result==TFERROR_OK)
+            upload_thread_.SetCurrentFidelityParams(params_ser, experiment_id);
+        if (Debugging() && jni::IsValid()) {
+            UploadDebugInfo(web_request);
         }
         return result;
     }
@@ -717,7 +700,7 @@ bool TuningForkImpl::Debugging() const {
     return true;
 #else
     // Otherwise, check the APK and system settings
-    return apk_utils::GetDebuggable(jni_);
+    return apk_utils::GetDebuggable();
 #endif
 }
 

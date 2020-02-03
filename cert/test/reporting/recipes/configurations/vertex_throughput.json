@@ -4,10 +4,7 @@
   "host": "SwappyGLHostActivity",
   "defaultMonitors": [
     {
-      "id": "MonitorOperation",
-      "configuration": {
-          "sample_period": "1s"
-      }
+      "id": "MonitorOperation"
     }
   ],
   "stress_tests": [

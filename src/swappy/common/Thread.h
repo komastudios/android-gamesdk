@@ -17,6 +17,8 @@
 #pragma once
 
 #include <cstdint>
+#include <functional>
+#include <memory>
 
 // Enable thread safety attributes only with clang.
 // The attributes can be safely erased when compiling with other compilers.
@@ -56,5 +58,21 @@ enum class Affinity {
 int32_t getNumCpus();
 void setAffinity(int32_t cpu);
 void setAffinity(Affinity affinity);
+
+struct ThreadImpl;
+
+class Thread {
+    std::unique_ptr<ThreadImpl> impl_;
+  public:
+    Thread() noexcept;
+    Thread(std::function<void()>&& fn) noexcept;
+    Thread(Thread&& rhs) noexcept;
+    Thread(const Thread&) = delete;
+    Thread& operator=(Thread&& rhs) noexcept;
+    Thread& operator=(const Thread& rhs) = delete;
+    ~Thread();
+    void join();
+    bool joinable();
+};
 
 } // namespace swappy {

@@ -1,0 +1,6 @@
+build:
+  configuration: test/integration/data/recipes/fake_operation.json
+
+summary:
+  enabled: true
+  format: md

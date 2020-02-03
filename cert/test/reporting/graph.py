@@ -60,15 +60,19 @@ def main():
     doc_fmt = args.fmt
 
     if not path.exists():
-        print(f"File {str(path)} does not found; bailing.")
+        print(f"File {path} does not found; bailing.")
 
     elif path.is_dir():
         # this is a batch
-        reports = [Path(f) for f in glob.glob(str(path) + '/*.json')]
-        generate_summary(reports, doc_fmt, dpi)
+        reports = [Path(f) for f in sorted(glob.glob(f"{path}/*_report.json"))]
+        errors = [Path(f) for f in sorted(glob.glob(f"{path}/*_error.json"))]
+        generate_summary(reports, errors, doc_fmt, dpi)
 
-    elif path.suffix == ".json":
-        generate_summary([path], doc_fmt, dpi)
+    elif path.stem.endswith("_report"):
+        generate_summary([path], [], doc_fmt, dpi)
+
+    elif path.stem.endswith("_error"):
+        generate_summary([], [path], doc_fmt, dpi)
 
 
 if __name__ == "__main__":

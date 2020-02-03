@@ -30,6 +30,18 @@ public class MemoryPressureService extends Service {
     if (intent.getBooleanExtra(FIRST_TIME, false)) {
       crashedBefore = false;
     }
+    NotificationManager notificationManager =
+        (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+    notificationManager.createNotificationChannel(
+        new NotificationChannel(
+            NOTIFICATION_CHANNEL, NOTIFICATION_CHANNEL, NotificationManager.IMPORTANCE_HIGH));
+    notification =
+        new Notification.Builder(this, NOTIFICATION_CHANNEL)
+            .setSmallIcon(R.drawable.ic_launcher_background)
+            .setContentTitle("Last memory request proceeding")
+            .setContentText("Total memory used: " + mb + " megabytes")
+            .build();
+    startForeground(startId, notification);
 
     boolean success = false;
 
@@ -51,19 +63,6 @@ public class MemoryPressureService extends Service {
       freeAll();
       mb = 0;
     }
-
-    NotificationManager notificationManager =
-        (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-    notificationManager.createNotificationChannel(
-        new NotificationChannel(
-            NOTIFICATION_CHANNEL, NOTIFICATION_CHANNEL, NotificationManager.IMPORTANCE_HIGH));
-    notification =
-        new Notification.Builder(this, NOTIFICATION_CHANNEL)
-            .setSmallIcon(R.drawable.ic_launcher_background)
-            .setContentTitle("Last memory request " + (success ? "succeeded" : "failed"))
-            .setContentText("Total memory used: " + mb + " megabytes")
-            .build();
-    startForeground(startId, notification);
 
     Intent returnIntent = new Intent("com.google.gamesdk.grabber.RETURN");
     returnIntent.putExtra(TOTAL_MEMORY_MB, mb);

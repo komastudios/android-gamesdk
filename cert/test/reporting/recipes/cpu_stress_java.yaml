@@ -1,15 +1,2 @@
 build:
-  clean: false
   configuration: recipes/configurations/cpu_stress_java.json
-
-systrace:
-  enabled: false
-
-deployment:
-  local:
-    all_attached_devices: true
-
-summary:
-  enabled: true
-  format: md
-

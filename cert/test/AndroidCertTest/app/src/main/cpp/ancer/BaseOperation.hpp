@@ -33,13 +33,12 @@
 #include "util/GLHelpers.hpp"
 #include "util/Json.hpp"
 #include "util/Log.hpp"
+#include "util/Preprocessor.hpp"
 #include "util/Time.hpp"
 
 
-#define CONCAT_IMPL(x, y) x##y
-#define MACRO_CONCAT(x, y) CONCAT_IMPL( x, y )
 #define ANCER_SCOPED_TRACE(desc) \
-    gamesdk::ScopedTrace MACRO_CONCAT( trace_, __COUNTER__ )( desc )
+    gamesdk::ScopedTrace ANCER_CONCAT( trace_, __COUNTER__ )( desc )
 
 
 namespace ancer {
@@ -73,7 +72,7 @@ namespace ancer {
          * BaseOperation::Mode)
          * @return instance of the operation, or nullptr
          */
-        static std::shared_ptr<BaseOperation> Load(
+        static std::unique_ptr<BaseOperation> Load(
                 const std::string& operation_id, const std::string& suite_id,
                 Mode mode);
 
@@ -158,6 +157,7 @@ namespace ancer {
          * NOTE: ALWAYS call inherited implementation
          * NOTE: Non-OpenGL operations can ignore this.
          * @param delta_seconds elapsed time in seconds since last draw call
+         * TODO(tmillican@google.com): Review changing to ancer::time.
          */
         virtual void Draw(double delta_seconds);
 
@@ -271,8 +271,8 @@ namespace ancer {
 
 #define EXPORT_ANCER_OPERATION(name) \
     extern "C" __attribute__((visibility ("default"))) \
-    void name ## _CreateDataGatherer(std::shared_ptr<BaseOperation> &into){ \
-        into = std::make_shared<name>(); } \
+    void name ## _CreateDataGatherer(std::unique_ptr<BaseOperation> &into){ \
+        into = std::make_unique<name>(); } \
     extern "C" __attribute__((visibility ("default"))) \
-    void name ## _CreateStressor(std::shared_ptr<BaseOperation> &into){ \
-        into = std::make_shared<name>(); } \
+    void name ## _CreateStressor(std::unique_ptr<BaseOperation> &into){ \
+        into = std::make_unique<name>(); } \

@@ -19,7 +19,6 @@
 #include <condition_variable>
 #include <memory>
 #include <mutex>
-#include <thread>
 #include "Thread.h"
 
 namespace swappy {
@@ -40,7 +39,7 @@ private:
 
     std::mutex mMutex;
     std::condition_variable_any mCond GUARDED_BY(mMutex);
-    std::unique_ptr<std::thread> mThread;
+    std::unique_ptr<Thread> mThread;
     bool mRunning GUARDED_BY(mMutex) = true;
     bool mTrace GUARDED_BY(mMutex) = false;
 };

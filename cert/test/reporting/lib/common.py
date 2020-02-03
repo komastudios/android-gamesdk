@@ -18,10 +18,10 @@
 import os
 import subprocess
 import sys
-
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List
+import yaml
 
 # ------------------------------------------------------------------------------
 
@@ -35,35 +35,26 @@ def seconds_to_nanoseconds(seconds):
     """Convert seconds to nanoseconds"""
     return seconds * 1e9
 
+def nanoseconds_to_milliseconds(nano_seconds):
+    """Convert nano seconds to milliseconds"""
+    return nano_seconds / 1e6
+
+
+def milliseconds_to_nanoseconds(milliseconds):
+    """Convert milliseconds to nanoseconds"""
+    return milliseconds * 1e6
 
 # ------------------------------------------------------------------------------
 
 
-class Error(Exception):
-    """Base class for exceptions in this module."""
-
-class NonZeroSubprocessExitCode(Error):
-    """Exception raised when a subprocess returns other than 0
-
-    Attributes:
-        message -- explanation of the error
+class NonZeroSubprocessExitCode(Exception):
+    """Exception raised when a subprocess returns other than 0.
     """
 
-    def __init__(self, message):
-        super().__init__()
-        self.message = message
 
-
-class MissingPropertyError(Error):
-    """Exception raised when a required property in the recipe is missing
-
-    Attributes:
-        message -- explanation of the error
+class MissingPropertyError(Exception):
+    """Exception raised when a required property in the recipe is missing.
     """
-
-    def __init__(self, message):
-        super().__init__()
-        self.message = message
 
 
 # ------------------------------------------------------------------------------
@@ -99,7 +90,7 @@ def dict_lookup(src: Dict, key_path: str, fallback: Any) -> Any:
     if fallback is None:
         raise MissingPropertyError(f"Key path \"{key_path}\" is required")
 
-    return fallback
+    return fallback() if callable(fallback) else fallback
 
 
 def ensure_dir(file: Path):
@@ -166,7 +157,9 @@ def get_attached_devices() -> List[str]:
             device_ids.append(tokens[0])
     return device_ids
 
+
 RET_CODE_SUCCESS = 0
+
 
 def run_command(command):
     """Run a shell command displaying output in real time
@@ -208,3 +201,50 @@ def get_indexable_utc() -> str:
     "a couple more minutes".
     """
     return datetime.utcnow().strftime("%Y%m%d-%H%M%S")
+
+
+# -----------------------------------------------------------------------------
+
+
+class Recipe():
+    """Represents a union of two recipe files, the primary and the fallback
+    """
+
+    def __init__(self, recipe: Path, default_recipe: Path):
+        self._recipe_path = recipe
+        self._default_recipe_path = default_recipe
+
+        with open(recipe) as recipe_file:
+            self._recipe = yaml.load(recipe_file, Loader=yaml.FullLoader)
+
+        with open(default_recipe) as recipe_file:
+            self._default_recipe = yaml.load(recipe_file,
+                                             Loader=yaml.FullLoader)
+
+    def get_recipe_path(self) -> Path:
+        """Get the path to the primary recipe"""
+        return self._recipe_path
+
+    def get_default_recipe_path(self) -> Path:
+        """Get the path to the default/fallback recipe"""
+        return self._default_recipe_path
+
+    def get_recipe(self) -> Dict:
+        """Get the primary recipe"""
+        return self._recipe
+
+    def get_default_recipe(self) -> Dict:
+        """Get the default/fallback recipe"""
+        return self._recipe
+
+    def lookup(self, key_path: str, fallback: Any = None) -> Any:
+        """Looks up a value in a the recipe file, using the value from
+        default_recipe as a fallback if not present in src
+        Args:
+            key_path: A path to lookup, e.g.,
+                "deployment.local.all_attached_devices"
+        """
+        def fallback_default():
+            return dict_lookup(self._default_recipe, key_path, fallback=fallback)
+
+        return dict_lookup(self._recipe, key_path, fallback=fallback_default)

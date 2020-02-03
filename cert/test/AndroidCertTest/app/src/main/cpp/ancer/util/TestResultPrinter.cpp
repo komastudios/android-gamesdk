@@ -18,8 +18,8 @@
 
 #include <cstdio>
 
-// TODO(tmillican@google.com): Investigate if this is the
-// best way to reduce reimplementation
+// TODO(tmillican@google.com): Investigate if this is the best way to reduce
+//  reimplementation
 #include <gtest/internal/gtest-port.h>
 #include <../src/gtest-internal-inl.h>
 

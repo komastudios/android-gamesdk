@@ -22,6 +22,7 @@ class RenderGraph {
     float fov;
     glm::mat4 view;
     glm::mat4 proj;
+    glm::mat4 prerotation;
   };
 
  public:
@@ -54,6 +55,7 @@ class RenderGraph {
   glm::quat GetCameraRotation() { return camera_.rotation; }
   glm::mat4 GetCameraViewMatrix() { return camera_.view; }
   glm::mat4 GetCameraProjMatrix() { return camera_.proj; }
+  glm::mat4 GetCameraPrerotationMatrix() { return camera_.prerotation; }
   float GetCameraAspectRatio() { return camera_.aspect_ratio; };
   float GetCameraFOV() { return camera_.fov; }
 
@@ -61,6 +63,7 @@ class RenderGraph {
   void SetCameraAspectRatio(float aspect_ratio) { camera_.aspect_ratio = aspect_ratio; }
   void SetCameraViewMatrix(glm::mat4 view_mat) { camera_.view = view_mat; }
   void SetCameraProjMatrix(glm::mat4 proj_mat) { camera_.proj = proj_mat; }
+  void SetCameraPrerotationMatrix(glm::mat3 prerot ) { camera_.prerotation = prerot; }
 
  private:
   Camera camera_;

@@ -24,6 +24,8 @@
 #include <jni.h>
 #include <sstream>
 
+#include "Renderer.hpp"
+
 namespace ancer {
     class FpsCalculator;
 }
@@ -31,12 +33,15 @@ namespace ancer {
 
 namespace ancer {
     namespace internal {
-        void SetJavaVM(JavaVM*);
-
         // init/deinit calls for the framework.
         void InitSystem(jobject activity, jstring internal_data_path,
                         jstring raw_data_path, jstring obb_path);
         void DeinitSystem();
+
+        template <typename T, typename... Args>
+        void CreateRenderer(Args&&...);
+        Renderer* GetRenderer();
+        void DestroyRenderer();
     }
 
     // TODO(tmillican@google.com): Would prefer to return filesystem::path, but
@@ -136,14 +141,12 @@ namespace ancer {
 
     // Sets our affinity to a specific core in the given group.
     // An index of -1 acts as SetThreadAffinity(affinity).
-    void SetThreadAffinity(int index, ThreadAffinity = ThreadAffinity::kAnyCore);
+    bool SetThreadAffinity(int index, ThreadAffinity = ThreadAffinity::kAnyCore);
     // Sets our affinity to any/all of the cores in a group.
-    void SetThreadAffinity(ThreadAffinity affinity);
+    bool SetThreadAffinity(ThreadAffinity affinity);
 
     [[nodiscard]] std::string GetCpuInfo();
 
-
-    static jclass RetrieveClass(JNIEnv* env, jobject activity, const char* className);
 
     FpsCalculator& GetFpsCalculator();
 
@@ -215,3 +218,5 @@ namespace ancer {
     std::string Base64EncodeBytes(const unsigned char* bytes, int length);
 
 } // namespace ancer
+
+#include "System.inl"

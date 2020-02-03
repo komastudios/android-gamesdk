@@ -5,7 +5,6 @@
 
 #include "tuningfork/protobuf_util.h"
 
-#include "jni_helper.h"
 #include "runnable.h"
 #include "web.h"
 #include "tuningfork_utils.h"
@@ -58,7 +57,7 @@ class UltimateUploader : public Runnable {
     }
 };
 
-TFErrorCode GEBackend::Init(const JniCtx& jni, const Settings& settings,
+TFErrorCode GEBackend::Init(const Settings& settings,
                            const ExtraUploadInfo& extra_upload_info) {
 
     if (settings.EndpointUri().empty()) {
@@ -71,7 +70,7 @@ TFErrorCode GEBackend::Init(const JniCtx& jni, const Settings& settings,
     }
 
     Request rq(extra_upload_info, settings.EndpointUri(), settings.api_key, kRequestTimeout);
-    WebRequest web_request(jni, rq);
+    WebRequest web_request(rq);
 
     persister_ = settings.c_settings.persistent_cache;
 

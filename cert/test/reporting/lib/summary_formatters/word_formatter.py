@@ -50,8 +50,8 @@ class WordFormatter(SummaryFormatter):
         self.__writer.add_heading(title, 0)
         self.__writer.add_paragraph(summary_utc)
 
-    def on_device(self, device_id: str,
-                  plot_path: Path, plot_path_relative: Path,
+    def on_device(self, device_id: str, plot_path: Path,
+                  plot_path_relative: Path,
                   summary: Union[str, type(None)]) -> type(None):
         self.__writer.add_heading(device_id, 3)
         self.__writer.add_picture(str(plot_path), Inches(6.18))
@@ -66,3 +66,10 @@ class WordFormatter(SummaryFormatter):
         self.__writer.add_picture(str(plot_path), Inches(6.18))
         if summary is not None:
             self.__writer.add_paragraph(summary)
+
+    def on_errors_available(self, title: str) -> type(None):
+        self.__writer.add_heading(title, 1)
+
+    def on_device_error(self, device_id: str, summary: str) -> type(None):
+        self.__writer.add_heading(device_id, 3)
+        self.__writer.add_paragraph(summary)
