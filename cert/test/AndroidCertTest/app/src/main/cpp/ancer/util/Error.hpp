@@ -34,6 +34,8 @@ namespace ancer {
     [[noreturn]] void FatalError(Args&& ... args) noexcept {
         if constexpr ( sizeof...(args) > 0 ) {
             Log::F(std::forward<Args>(args)...);
+        } else {
+            Log::F(Log::Tag{"ERROR"}, "%s", "A fatal error has occurred.");
         }
         reporting::FlushReportLogQueue();
         std::terminate();

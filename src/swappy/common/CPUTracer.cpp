@@ -48,7 +48,7 @@ void CPUTracer::startTrace() {
         std::lock_guard<std::mutex> lock(mMutex);
         if (!mThread) {
             mRunning = true;
-            mThread = std::make_unique<std::thread>(&CPUTracer::threadMain, this);
+            mThread = std::make_unique<Thread>([this]() { threadMain(); });
         }
         mTrace = true;
         mCond.notify_one();

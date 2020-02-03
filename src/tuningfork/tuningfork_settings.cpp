@@ -16,6 +16,7 @@
 
 #include "tuningfork_internal.h"
 #include "tuningfork_utils.h"
+#include "jni_helper.h"
 
 #define LOG_TAG "TuningFork"
 #include "Log.h"
@@ -40,13 +41,20 @@ constexpr char kPerformanceParametersBaseUri[] =
         "https://performanceparameters.googleapis.com/v1/";
 
 // Forward declaration
-bool GetEnumSizesFromDescriptors( const JniCtx& jni, std::vector<uint32_t>& enum_sizes);
+bool GetEnumSizesFromDescriptors( std::vector<uint32_t>& enum_sizes);
 
 // Use the default persister if the one passed in is null
 static void CheckPersister(const TFCache*& persister, std::string save_dir) {
     if (persister == nullptr) {
-        if (save_dir.empty())
-            save_dir = "/data/local/tmp/tuningfork";
+        if (save_dir.empty()) {
+            // If the save_dir is empty, try the app's cache dir or tmp storage.
+            if (jni::IsValid()) {
+                save_dir = file_utils::GetAppCacheDir();
+            }
+            if (save_dir.empty())
+                save_dir = "/data/local/tmp";
+            save_dir += "/tuningfork";
+        }
         ALOGI("Using local file cache at %s", save_dir.c_str());
         sFileCache.SetDir(save_dir);
         persister = sFileCache.GetCCache();
@@ -134,31 +142,16 @@ static TFErrorCode DeserializeSettings(const ProtobufSerialization& settings_ser
     return TFERROR_OK;
 }
 
-// Gets the serialized settings from the APK.
-// Returns false if there was an error.
-static bool GetAssetSerialization(const std::string& name, const JniCtx& jni,
-                                  ProtobufSerialization& settings_ser) {
-    auto asset = apk_utils::GetAsset(jni, name.c_str());
-    if (asset == nullptr )
-        return false;
-    // Get serialized proto from assets
-    uint64_t size = AAsset_getLength64(asset);
-    settings_ser.resize(size);
-    memcpy(const_cast<uint8_t*>(settings_ser.data()), AAsset_getBuffer(asset), size);
-    AAsset_close(asset);
-    return true;
-}
-
-TFErrorCode FindSettingsInApk(Settings* settings, const JniCtx& jni) {
+TFErrorCode FindSettingsInApk(Settings* settings) {
     if (settings) {
         ProtobufSerialization settings_ser;
-        if (GetAssetSerialization("tuningfork/tuningfork_settings.bin", jni, settings_ser)) {
+        if (apk_utils::GetAssetAsSerialization("tuningfork/tuningfork_settings.bin", settings_ser)) {
             ALOGI("Got settings from tuningfork/tuningfork_settings.bin");
             TFErrorCode err = DeserializeSettings(settings_ser, settings);
             if (err!=TFERROR_OK) return err;
             if (settings->aggregation_strategy.annotation_enum_size.size()==0) {
                 // If enum sizes are missing, use the descriptor in dev_tuningfork.descriptor
-                if (!GetEnumSizesFromDescriptors(jni,
+                if (!GetEnumSizesFromDescriptors(
                                           settings->aggregation_strategy.annotation_enum_size)) {
                     return TFERROR_NO_SETTINGS_ANNOTATION_ENUM_SIZES;
                 }
@@ -271,9 +264,9 @@ static bool DecodeFile(pb_istream_t* stream, const pb_field_t *field, void** arg
 
 // Parse the dev_tuningfork.descriptor file in order to find enum sizes.
 // Returns true is successful, false if not.
-bool GetEnumSizesFromDescriptors( const JniCtx& jni, std::vector<uint32_t>& enum_sizes) {
+bool GetEnumSizesFromDescriptors( std::vector<uint32_t>& enum_sizes) {
     ProtobufSerialization descriptor_ser;
-    if (!GetAssetSerialization("tuningfork/dev_tuningfork.descriptor", jni, descriptor_ser))
+    if (!apk_utils::GetAssetAsSerialization("tuningfork/dev_tuningfork.descriptor", descriptor_ser))
         return false;
     ByteStream str {const_cast<uint8_t*>(descriptor_ser.data()), descriptor_ser.size(), 0};
     pb_istream_t stream = {ByteStream::Read, &str, descriptor_ser.size()};

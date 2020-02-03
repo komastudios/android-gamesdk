@@ -23,8 +23,8 @@
 
 
 namespace ancer::internal {
-    extern std::mutex _operations_lock;
-    extern std::map<int, std::shared_ptr<BaseOperation>> _operations;
+    inline std::mutex _operations_lock;
+    inline std::map<int, std::unique_ptr<BaseOperation>> _operations;
 }
 
 template <typename Func>

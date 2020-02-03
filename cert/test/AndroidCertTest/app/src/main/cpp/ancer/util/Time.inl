@@ -29,6 +29,12 @@ namespace nlohmann {
     };
 
     template <>
+    struct adl_serializer<ancer::Minutes> {
+      static void to_json(json& j, const ancer::Minutes& t);
+      static void from_json(const json& j, ancer::Minutes& t);
+    };
+
+    template <>
     struct adl_serializer<ancer::Seconds> {
         static void to_json(json& j, const ancer::Seconds& t);
         static void from_json(const json& j, ancer::Seconds& t);

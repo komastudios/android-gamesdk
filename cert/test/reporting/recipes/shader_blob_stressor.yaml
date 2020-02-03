@@ -1,22 +1,2 @@
 build:
-  clean: false
   configuration: recipes/configurations/shader_blob_stressor.json
-
-systrace:
-  enabled: false
-
-deployment:
-  ftl:
-    test: test-robo
-    all-physical-devices: true
-    flags:
-      project: gamesdk-testing
-      format: json
-    args:
-      test-robo:
-        type: game-loop
-        timeout: 1800 # 30 minutes
-
-summary:
-  enabled: true
-  format: md

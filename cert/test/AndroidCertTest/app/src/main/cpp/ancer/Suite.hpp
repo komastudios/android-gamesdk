@@ -21,7 +21,7 @@
 #include "BaseOperation.hpp"
 #include "util/Time.hpp"
 
-namespace ancer::swappy {
+namespace ancer {
     class Renderer;
 }
 
@@ -30,17 +30,12 @@ namespace ancer::internal {
     void InitializeSuite();
     void ShutdownSuite();
 
-    /**
-     * Assign the current SwappyRenderer instance to enable gl lifecycle
-     * dispatching.
-     * TODO(shamyl@google.com, tmillican@google.com): Let's investigate a
-     * better mechanism for this managing this dependency
-     * @param swappy_renderer
-     */
-    void SetSwappyRenderer(swappy::Renderer* swappy_renderer);
+    /// If the renderer changes, we need to make sure it knows about all of our
+    /// operations so it can pass along render calls, etc.
+    void SuiteUpdateRenderer();
 
-    int CreateOperation(
-            const std::string& suite, const std::string& operation, BaseOperation::Mode mode);
+    int CreateOperation(const std::string& suite, const std::string& operation,
+                        BaseOperation::Mode mode);
 
     void StartOperation(int id, Duration duration, const std::string& config);
     void StopOperation(int id);
@@ -50,6 +45,6 @@ namespace ancer::internal {
 
     template <typename Func>
     void ForEachOperation(Func&&);
-} // namespace ancer::internal
+}
 
 #include "Suite.inl"

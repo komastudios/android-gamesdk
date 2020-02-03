@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 #
 # Copyright 2019 The Android Open Source Project
 #
@@ -27,11 +25,10 @@ import shutil
 import subprocess
 import time
 from typing import Tuple, Dict, List
-import yaml
 
 from lib.build import APP_ID, build_apk
 from lib.common import run_command, NonZeroSubprocessExitCode, \
-    get_attached_devices, dict_lookup
+    get_attached_devices, Recipe, get_indexable_utc, ensure_dir
 from lib.report import extract_and_export, normalize_report_name, \
     merge_systrace
 from lib.summary import perform_summary_if_enabled
@@ -48,7 +45,7 @@ def unpack(s):
     return " ".join([str(i) for i in s])
 
 
-def get_systrace_config(recipe_dict: Dict) -> (bool, List[str], List[str]):
+def get_systrace_config(recipe: Recipe) -> (bool, List[str], List[str]):
     """Extracts, from the recipe, systrace related arguments.
     These are:
 
@@ -56,18 +53,15 @@ def get_systrace_config(recipe_dict: Dict) -> (bool, List[str], List[str]):
     * keywords: a list of string keywords to report.
     * categories: a list of string categories to append to the command.
     """
-    cats = "sched freq idle am wm gfx view binder_driver hal dalvik input res"
-
-    enabled = dict_lookup(recipe_dict, "systrace.enabled", fallback=False)
-    keywords = dict_lookup(recipe_dict, "systrace.keywords", fallback=[])
-    categories = dict_lookup(recipe_dict, "systrace.categories", fallback=cats)
+    enabled = recipe.lookup("systrace.enabled")
+    keywords = recipe.lookup("systrace.keywords")
+    categories = recipe.lookup("systrace.categories")
     categories = [] if not categories else categories.split(" ")
     return enabled, keywords, categories
 
 
-def load_tasks(
-        tasks_dict: List[Dict],
-        task_ctors: Dict) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
+def load_tasks(tasks_dict: List[Dict], task_ctors: Dict
+              ) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
     """Load tasks and create default task environment (internal, called by
     get_preflight_tasks and get_postflight_tasks)
     Args:
@@ -80,21 +74,21 @@ def load_tasks(
     return lib.tasks_runner.load(tasks_dict, task_ctors), env
 
 
-def get_preflight_tasks(
-        recipe: Dict) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
+def get_preflight_tasks(recipe: Recipe
+                       ) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
     """Load preflight tasks from the local deployment block of the recipe,
     and generate preflight environment
     """
-    preflight = dict_lookup(recipe, "deployment.local.preflight", fallback=[])
+    preflight = recipe.lookup("deployment.local.preflight", fallback=[])
     return load_tasks(preflight, lib.tasks_runner.PREFLIGHT_TASKS)
 
 
-def get_postflight_tasks(
-        recipe: Dict) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
+def get_postflight_tasks(recipe: Recipe
+                        ) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
     """Load postflight tasks from the local deployment block of the recipe,
     and generate preflight environment
     """
-    postflight = dict_lookup(recipe, "deployment.local.postflight", fallback=[])
+    postflight = recipe.lookup("deployment.local.postflight", fallback=[])
     return load_tasks(postflight, lib.tasks_runner.POSTFLIGHT_TASKS)
 
 
@@ -107,7 +101,7 @@ def uninstall_apk_from_device(device_id: str) -> type(None):
         # uninstall is expected to fail if the APK is not currently installed
         print(
             f"uninstall_apk_from_device[{device_id}] - unable to uninstall"\
-                f": {ex.message}"
+                f": {repr(ex)}"
         )
 
 
@@ -249,7 +243,7 @@ def process_ftl_reports(
             out_files.append(report_file)
 
         except SystraceParseError as ex:
-            print(f"Unable to parse systrace data, error: {ex.message}")
+            print(f"Unable to parse systrace data, error: {repr(ex)}")
 
         except Exception as _:
             print(f"Unable to process file {report_file}")
@@ -260,7 +254,7 @@ def process_ftl_reports(
 # ------------------------------------------------------------------------------
 
 
-def run_local_deployment(recipe: Dict, apk: Path, out_dir: Path):
+def run_local_deployment(recipe: Recipe, apk: Path, out_dir: Path):
     """Execute a local deployment (to device(s) attached over USB)
     Args:
         recipe: The recipe dict describing the deployment
@@ -268,8 +262,8 @@ def run_local_deployment(recipe: Dict, apk: Path, out_dir: Path):
         out_dir: Path to a location to save result JSON reports
     """
 
-    if not dict_lookup(recipe, "deployment.local.all_attached_devices", False):
-        devices = dict_lookup(recipe, "deployment.local.device_ids", None)
+    if not recipe.lookup("deployment.local.all_attached_devices", False):
+        devices = recipe.lookup("deployment.local.device_ids", None)
         devices = list(set(devices) & set(get_attached_devices()))
     else:
         devices = get_attached_devices()
@@ -318,7 +312,7 @@ def run_local_deployment(recipe: Dict, apk: Path, out_dir: Path):
 # ------------------------------------------------------------------------------
 
 
-def run_ftl_deployment(recipe: Dict, apk: Path, out_dir: Path):
+def run_ftl_deployment(recipe: Recipe, apk: Path, out_dir: Path):
     """Execute a remote deployment (to devices on Firebase test lab (FTL))
     Args:
         recipe: The recipe dict describing the deployment
@@ -327,20 +321,17 @@ def run_ftl_deployment(recipe: Dict, apk: Path, out_dir: Path):
     """
 
     # first step is to save out an args.yaml file to pass on to gsutil API
-    args_dict = dict_lookup(recipe, "deployment.ftl.args", fallback=None)
+    args_dict = recipe.lookup("deployment.ftl.args", fallback=None)
     for test in args_dict:
         args_dict[test]["app"] = str(apk)
 
-    tests = dict_lookup(recipe, "deployment.ftl.args", fallback=None)
+    tests = recipe.lookup("deployment.ftl.args", fallback=None)
     fallback_test = list(tests.keys())[0]
-    active_test = dict_lookup(recipe,
-                              "deployment.ftl.test",
-                              fallback=fallback_test)
-    flags_dict = dict_lookup(recipe, "deployment.ftl.flags", {})
+    active_test = recipe.lookup("deployment.ftl.test", fallback=fallback_test)
+    flags_dict = recipe.lookup("deployment.ftl.flags", {})
 
-    all_physical_devices = dict_lookup(recipe,
-                                       "deployment.ftl.all-physical-devices",
-                                       fallback=False)
+    all_physical_devices = recipe.lookup("deployment.ftl.all-physical-devices",
+                                         fallback=False)
 
     systrace_enabled, systrace_keywords, _ = \
         get_systrace_config(recipe)
@@ -358,7 +349,8 @@ def run_ftl_deployment(recipe: Dict, apk: Path, out_dir: Path):
 
     perform_summary_if_enabled(recipe, out_dir)
 
-def run_recipe(recipe_path: Path, out_dir: Path = None):
+
+def run_recipe(recipe: Recipe, args: Dict, out_dir: Path = None):
     '''Executes the deployment specified in the recipe
     Args:
         recipe_path: path to recipe yaml file
@@ -366,36 +358,32 @@ def run_recipe(recipe_path: Path, out_dir: Path = None):
             a default will be created via lib.graphing.setup_report_dir()
     '''
 
-    with open(recipe_path) as recipe_file:
-        recipe = yaml.load(recipe_file, Loader=yaml.FullLoader)
-
     # ensure the out/ dir exists for storing reports/systraces/etc
     # use the name of the provided configuration, or if none, the yaml file
     # to specialize the output dir
-    custom_config = dict_lookup(recipe, "build.configuration", fallback=None)
+    custom_config = recipe.lookup("build.configuration", fallback=None)
 
     if not out_dir:
         if custom_config:
             prefix = Path(custom_config).stem
         else:
-            prefix = Path(recipe_path).stem
+            prefix = Path(recipe.get_recipe_path()).stem
 
         out_dir = lib.graphing.setup_report_dir(prefix)
 
+    # append a timestamped subfolder
+    timestamped_folder = get_indexable_utc()
+    out_dir = out_dir / timestamped_folder
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+
     # build the APK
     apk_path = build_apk(
-        clean=dict_lookup(recipe, "build.clean", fallback=False),
-        release=dict_lookup(recipe, "build.release", fallback=False),
+        clean=recipe.lookup("build.clean", fallback=False),
+        build_type=recipe.lookup("build.type", fallback="assembleDebug"),
         custom_configuration=Path(custom_config) if custom_config else None)
 
-    deployment = recipe.get("deployment")
-    if deployment is not None:
-        # deploy locally
-        if "local" in deployment and dict_lookup(
-                recipe, "deployment.local.enabled", fallback=True):
-            run_local_deployment(recipe, apk_path, out_dir)
-
-        # deploy on ftl
-        if "ftl" in deployment and dict_lookup(
-                recipe, "deployment.ftl.enabled", fallback=True):
-            run_ftl_deployment(recipe, apk_path, out_dir)
+    if args.get("local"):
+        run_local_deployment(recipe, apk_path, out_dir)
+    if args.get("ftl"):
+        run_ftl_deployment(recipe, apk_path, out_dir)

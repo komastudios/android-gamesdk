@@ -14,18 +14,28 @@
  * limitations under the License.
  */
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "cppcoreguidelines-avoid-magic-numbers"
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
+#include "VkHelpers.hpp"
 
 #include <cstdlib>
 #include <cassert>
 #include <cstring>
-#include "VkHelpers.hpp"
 
-using namespace std;
+#include <ancer/util/Log.hpp>
 
-VkResult InitGlobalExtensionProperties(LayerProperties &layerProps) {
+using namespace ancer;
+using namespace ancer::vulkan;
+
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "cppcoreguidelines-avoid-magic-numbers"
+#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
+
+
+namespace {
+    constexpr Log::Tag TAG{"VkHelpers"};
+}
+
+
+VkResult vulkan::InitGlobalExtensionProperties(LayerProperties &layerProps) {
     VkExtensionProperties *instanceExtensions;
     uint32_t instanceExtensionCount;
     VkResult res;
@@ -53,7 +63,7 @@ VkResult InitGlobalExtensionProperties(LayerProperties &layerProps) {
     return res;
 }
 
-VkResult InitGlobalLayerProperties(struct VulkanInfo &info) {
+VkResult vulkan::InitGlobalLayerProperties(struct VulkanInfo &info) {
     uint32_t instanceLayerCount;
     VkLayerProperties *vkProps = nullptr;
     VkResult res;
@@ -61,10 +71,10 @@ VkResult InitGlobalLayerProperties(struct VulkanInfo &info) {
     // Here, we are going to open Vulkan.so on the device and retrieve function
     // pointers using vulkan_wrapper helper.
     if (!InitVulkan()) {
-        LOGE("Failed initializing Vulkan APIs!");
+        Log::E(TAG, "Failed initializing Vulkan APIs!");
         return VK_ERROR_INITIALIZATION_FAILED;
     }
-    LOGI("Loaded Vulkan APIs.");
+    Log::I(TAG, "Loaded Vulkan APIs.");
 
     /*
      * It's possible, though very rare, that the number of
@@ -108,8 +118,8 @@ VkResult InitGlobalLayerProperties(struct VulkanInfo &info) {
     return res;
 }
 
-VkResult InitDeviceExtensionProperties(struct VulkanInfo &info,
-                                       LayerProperties &layerProps) {
+VkResult vulkan::InitDeviceExtensionProperties(struct VulkanInfo &info,
+                                               LayerProperties &layerProps) {
     VkExtensionProperties *deviceExtensions;
     uint32_t deviceExtensionCount;
     VkResult res;
@@ -141,8 +151,8 @@ VkResult InitDeviceExtensionProperties(struct VulkanInfo &info,
  * Return 1 (true) if all layer names specified in check_names
  * can be found in given layer properties.
  */
-VkBool32 DemoCheckLayers(const std::vector<LayerProperties> &layerProps,
-                         const std::vector<const char *> &layerNames) {
+VkBool32 vulkan::DemoCheckLayers(const std::vector<LayerProperties> &layerProps,
+                                 const std::vector<const char *> &layerNames) {
     auto checkCount = static_cast<uint32_t>(layerNames.size());
     auto layerCount = static_cast<uint32_t>(layerProps.size());
     for (uint32_t i = 0; i < checkCount; i++) {
@@ -160,13 +170,13 @@ VkBool32 DemoCheckLayers(const std::vector<LayerProperties> &layerProps,
     return 1;
 }
 
-void InitInstanceExtensionNames(struct VulkanInfo &info) {
+void vulkan::InitInstanceExtensionNames(struct VulkanInfo &info) {
     info.instanceExtensionNames.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
     info.instanceExtensionNames.push_back(
             VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);
 }
 
-VkResult InitInstance(struct VulkanInfo &info,
+VkResult vulkan::InitInstance(struct VulkanInfo &info,
                       char const *const appShortName) {
     VkApplicationInfo appInfo = {};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -197,11 +207,11 @@ VkResult InitInstance(struct VulkanInfo &info,
     return res;
 }
 
-void InitDeviceExtensionNames(struct VulkanInfo &info) {
+void vulkan::InitDeviceExtensionNames(struct VulkanInfo &info) {
     info.deviceExtensionNames.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 }
 
-VkResult InitDevice(struct VulkanInfo &info) {
+VkResult vulkan::InitDevice(struct VulkanInfo &info) {
     VkResult res;
     VkDeviceQueueCreateInfo queueInfo = {};
 
@@ -230,7 +240,7 @@ VkResult InitDevice(struct VulkanInfo &info) {
     return res;
 }
 
-VkResult InitEnumerateDevice(struct VulkanInfo &info, uint32_t gpuCount) {
+VkResult vulkan::InitEnumerateDevice(struct VulkanInfo &info, uint32_t gpuCount) {
     uint32_t const U_ASSERT_ONLY reqCount = gpuCount;
     VkResult res{vkEnumeratePhysicalDevices(info.inst, &gpuCount, nullptr)};
     assert(gpuCount);
@@ -260,7 +270,7 @@ VkResult InitEnumerateDevice(struct VulkanInfo &info, uint32_t gpuCount) {
     return res;
 }
 
-void InitQueueFamilyIndex(struct VulkanInfo &info) {
+void vulkan::InitQueueFamilyIndex(struct VulkanInfo &info) {
     /* This routine simply finds a graphics queue for a later vkCreateDevice,
      * without consideration for which queue family can present an image.
      * Do not use this if your intent is to present later in your sample,
@@ -290,8 +300,8 @@ void InitQueueFamilyIndex(struct VulkanInfo &info) {
     assert(found);
 }
 
-VkResult InitDebugReportCallback(struct VulkanInfo &info,
-                                 PFN_vkDebugReportCallbackEXT dbgFunc) {
+VkResult vulkan::InitDebugReportCallback(struct VulkanInfo &info,
+                                         PFN_vkDebugReportCallbackEXT dbgFunc) {
     VkResult res;
     VkDebugReportCallbackEXT debugReportCallback;
 
@@ -346,7 +356,7 @@ VkResult InitDebugReportCallback(struct VulkanInfo &info,
     return res;
 }
 
-void DestroyDebugReportCallback(struct VulkanInfo &info) {
+void vulkan::DestroyDebugReportCallback(struct VulkanInfo &info) {
     while (!info.debugReportCallbacks.empty()) {
         info.dbgDestroyDebugReportCallback(info.inst,
                                            info.debugReportCallbacks.back(),
@@ -355,19 +365,19 @@ void DestroyDebugReportCallback(struct VulkanInfo &info) {
     }
 }
 
-void InitConnection(struct VulkanInfo &info) {}
+void vulkan::InitConnection(struct VulkanInfo &info) {}
 
 // Android implementation.
-void InitWindow(struct VulkanInfo &info) {}
+void vulkan::InitWindow(struct VulkanInfo &info) {}
 
-void DestroyWindow(struct VulkanInfo &info) {}
+void vulkan::DestroyWindow(struct VulkanInfo &info) {}
 
-void InitWindowSize(struct VulkanInfo &info, int32_t default_width,
+void vulkan::InitWindowSize(struct VulkanInfo &info, int32_t default_width,
                     int32_t default_height) {
     AndroidGetWindowSize(&info.width, &info.height);
 }
 
-void InitDepthBuffer(struct VulkanInfo &info) {
+void vulkan::InitDepthBuffer(struct VulkanInfo &info) {
     VkResult U_ASSERT_ONLY res;
     bool U_ASSERT_ONLY pass;
     VkImageCreateInfo imageInfo = {};
@@ -399,7 +409,7 @@ void InitDepthBuffer(struct VulkanInfo &info) {
     imageInfo.extent.depth = 1;
     imageInfo.mipLevels = 1;
     imageInfo.arrayLayers = 1;
-    imageInfo.samples = NUM_SAMPLES;
+    imageInfo.samples = kNumSamples;
     imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     imageInfo.queueFamilyIndexCount = 0;
     imageInfo.pQueueFamilyIndices = nullptr;
@@ -465,7 +475,7 @@ void InitDepthBuffer(struct VulkanInfo &info) {
     assert(res == VK_SUCCESS);
 }
 
-void InitSwapchainExtension(struct VulkanInfo &info) {
+void vulkan::InitSwapchainExtension(struct VulkanInfo &info) {
     /* DEPENDS on InitConnection() and InitWindow() */
 
     VkResult U_ASSERT_ONLY res;
@@ -550,7 +560,7 @@ void InitSwapchainExtension(struct VulkanInfo &info) {
     free(surfFormats);
 }
 
-void InitPresentableImage(struct VulkanInfo &info) {
+void vulkan::InitPresentableImage(struct VulkanInfo &info) {
     /* DEPENDS on InitSwapChain() */
 
     VkResult U_ASSERT_ONLY res;
@@ -571,8 +581,8 @@ void InitPresentableImage(struct VulkanInfo &info) {
     assert(!res);
 }
 
-void ExecuteQueueCmdbuf(struct VulkanInfo &info,
-                        const VkCommandBuffer *cmd_bufs, VkFence &fence) {
+void vulkan::ExecuteQueueCmdbuf(struct VulkanInfo &info,
+                                const VkCommandBuffer *cmd_bufs, VkFence &fence) {
     VkResult U_ASSERT_ONLY res;
 
     VkPipelineStageFlags pipe_stage_flags =
@@ -594,7 +604,7 @@ void ExecuteQueueCmdbuf(struct VulkanInfo &info,
     assert(!res);
 }
 
-void ExecutePrePresentBarrier(struct VulkanInfo &info) {
+void vulkan::ExecutePrePresentBarrier(struct VulkanInfo &info) {
     /* DEPENDS on InitSwapChain() */
     /* Add mem barrier to change layout to present */
 
@@ -619,7 +629,7 @@ void ExecutePrePresentBarrier(struct VulkanInfo &info) {
                          0, nullptr, 1, &prePresentBarrier);
 }
 
-void ExecutePresentImage(struct VulkanInfo &info) {
+void vulkan::ExecutePresentImage(struct VulkanInfo &info) {
     /* DEPENDS on InitPresentableImage() and InitSwapChain()*/
     /* Present the image in the window */
 
@@ -638,7 +648,7 @@ void ExecutePresentImage(struct VulkanInfo &info) {
     assert(!res);
 }
 
-void InitSwapChain(struct VulkanInfo &info, VkImageUsageFlags usageFlags) {
+void vulkan::InitSwapChain(struct VulkanInfo &info, VkImageUsageFlags usageFlags) {
     /* DEPENDS on info.cmd and info.queue initialized */
 
     VkResult U_ASSERT_ONLY res;
@@ -805,7 +815,7 @@ void InitSwapChain(struct VulkanInfo &info, VkImageUsageFlags usageFlags) {
     }
 }
 
-void InitUniformBuffer(struct VulkanInfo &info) {
+void vulkan::InitUniformBuffer(struct VulkanInfo &info) {
     VkResult U_ASSERT_ONLY res;
     bool U_ASSERT_ONLY pass;
     float fov = glm::radians(45.0F);
@@ -880,9 +890,9 @@ void InitUniformBuffer(struct VulkanInfo &info) {
 }
 
 void
-InitDescriptorAndPipelineLayouts(struct VulkanInfo &info, bool useTexture,
-                                 VkDescriptorSetLayoutCreateFlags
-                                 descSetLayoutCreateFlags) {
+vulkan::InitDescriptorAndPipelineLayouts(struct VulkanInfo &info, bool useTexture,
+                                         VkDescriptorSetLayoutCreateFlags
+                                         descSetLayoutCreateFlags) {
     VkDescriptorSetLayoutBinding layoutBindings[2];
     layoutBindings[0].binding = 0;
     layoutBindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -911,7 +921,7 @@ InitDescriptorAndPipelineLayouts(struct VulkanInfo &info, bool useTexture,
 
     VkResult U_ASSERT_ONLY res;
 
-    info.descLayout.resize(NUM_DESCRIPTOR_SETS);
+    info.descLayout.resize(kNumDescriptorSets);
     res = vkCreateDescriptorSetLayout(info.device, &descriptorLayout, nullptr,
                                       info.descLayout.data());
     assert(res == VK_SUCCESS);
@@ -923,7 +933,7 @@ InitDescriptorAndPipelineLayouts(struct VulkanInfo &info, bool useTexture,
     pPipelineLayoutCreateInfo.pNext = nullptr;
     pPipelineLayoutCreateInfo.pushConstantRangeCount = 0;
     pPipelineLayoutCreateInfo.pPushConstantRanges = nullptr;
-    pPipelineLayoutCreateInfo.setLayoutCount = NUM_DESCRIPTOR_SETS;
+    pPipelineLayoutCreateInfo.setLayoutCount = kNumDescriptorSets;
     pPipelineLayoutCreateInfo.pSetLayouts = info.descLayout.data();
 
     res = vkCreatePipelineLayout(info.device, &pPipelineLayoutCreateInfo,
@@ -932,15 +942,15 @@ InitDescriptorAndPipelineLayouts(struct VulkanInfo &info, bool useTexture,
     assert(res == VK_SUCCESS);
 }
 
-void InitRenderpass(struct VulkanInfo &info, bool includeDepth, bool clear,
-                    VkImageLayout finalLayout) {
+void vulkan::InitRenderpass(struct VulkanInfo &info, bool includeDepth, bool clear,
+                            VkImageLayout finalLayout) {
     /* DEPENDS on InitSwapChain() and InitDepthBuffer() */
 
     VkResult U_ASSERT_ONLY res;
     /* Need attachments for render target and depth buffer */
     VkAttachmentDescription attachments[2];
     attachments[0].format = info.format;
-    attachments[0].samples = NUM_SAMPLES;
+    attachments[0].samples = kNumSamples;
     attachments[0].loadOp = clear ? VK_ATTACHMENT_LOAD_OP_CLEAR
                                   : VK_ATTACHMENT_LOAD_OP_LOAD;
     attachments[0].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -952,7 +962,7 @@ void InitRenderpass(struct VulkanInfo &info, bool includeDepth, bool clear,
 
     if (includeDepth) {
         attachments[1].format = info.depth.format;
-        attachments[1].samples = NUM_SAMPLES;
+        attachments[1].samples = kNumSamples;
         attachments[1].loadOp = clear ? VK_ATTACHMENT_LOAD_OP_CLEAR
                                       : VK_ATTACHMENT_LOAD_OP_LOAD;
         attachments[1].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -999,7 +1009,7 @@ void InitRenderpass(struct VulkanInfo &info, bool includeDepth, bool clear,
     assert(res == VK_SUCCESS);
 }
 
-void InitFramebuffers(struct VulkanInfo &info, bool includeDepth) {
+void vulkan::InitFramebuffers(struct VulkanInfo &info, bool includeDepth) {
     /* DEPENDS on InitDepthBuffer(), InitRenderpass() and
      * InitSwapchainExtension() */
 
@@ -1030,7 +1040,7 @@ void InitFramebuffers(struct VulkanInfo &info, bool includeDepth) {
     }
 }
 
-void InitCommandPool(struct VulkanInfo &info) {
+void vulkan::InitCommandPool(struct VulkanInfo &info) {
     /* DEPENDS on InitSwapchainExtension() */
     VkResult U_ASSERT_ONLY res;
 
@@ -1045,7 +1055,7 @@ void InitCommandPool(struct VulkanInfo &info) {
     assert(res == VK_SUCCESS);
 }
 
-void InitCommandBuffer(struct VulkanInfo &info) {
+void vulkan::InitCommandBuffer(struct VulkanInfo &info) {
     /* DEPENDS on InitSwapchainExtension() and InitCommandPool() */
     VkResult U_ASSERT_ONLY res;
 
@@ -1060,7 +1070,7 @@ void InitCommandBuffer(struct VulkanInfo &info) {
     assert(res == VK_SUCCESS);
 }
 
-void ExecuteBeginCommandBuffer(struct VulkanInfo &info) {
+void vulkan::ExecuteBeginCommandBuffer(struct VulkanInfo &info) {
     /* DEPENDS on InitCommandBuffer() */
     VkResult U_ASSERT_ONLY res;
 
@@ -1074,14 +1084,14 @@ void ExecuteBeginCommandBuffer(struct VulkanInfo &info) {
     assert(res == VK_SUCCESS);
 }
 
-void ExecuteEndCommandBuffer(struct VulkanInfo &info) {
+void vulkan::ExecuteEndCommandBuffer(struct VulkanInfo &info) {
     VkResult U_ASSERT_ONLY res;
 
     res = vkEndCommandBuffer(info.cmd);
     assert(res == VK_SUCCESS);
 }
 
-void ExecuteQueueCommandBuffer(struct VulkanInfo &info) {
+void vulkan::ExecuteQueueCommandBuffer(struct VulkanInfo &info) {
     VkResult U_ASSERT_ONLY res;
 
     /* Queue the command buffer for execution */
@@ -1111,14 +1121,14 @@ void ExecuteQueueCommandBuffer(struct VulkanInfo &info) {
 
     do {
         res = vkWaitForFences(info.device, 1, &drawFence, VK_TRUE,
-                              FENCE_TIMEOUT);
+                              kFenceTimeout);
     } while (res == VK_TIMEOUT);
     assert(res == VK_SUCCESS);
 
     vkDestroyFence(info.device, drawFence, nullptr);
 }
 
-void InitDeviceQueue(struct VulkanInfo &info) {
+void vulkan::InitDeviceQueue(struct VulkanInfo &info) {
     /* DEPENDS on InitSwapchainExtension() */
 
     vkGetDeviceQueue(info.device, info.graphicsQueueFamilyIndex, 0,
@@ -1131,7 +1141,7 @@ void InitDeviceQueue(struct VulkanInfo &info) {
     }
 }
 
-void InitVertexBuffer(struct VulkanInfo &info, const void *vertexData,
+void vulkan::InitVertexBuffer(struct VulkanInfo &info, const void *vertexData,
                       uint32_t dataSize, uint32_t dataStride,
                       bool useTexture) {
     VkResult U_ASSERT_ONLY res;
@@ -1200,7 +1210,7 @@ void InitVertexBuffer(struct VulkanInfo &info, const void *vertexData,
     info.viAttribs[1].offset = 16;
 }
 
-void InitDescriptorPool(struct VulkanInfo &info, bool use_texture) {
+void vulkan::InitDescriptorPool(struct VulkanInfo &info, bool use_texture) {
     /* DEPENDS on InitUniformBuffer() and
      * InitDescriptorAndPipelineLayouts() */
 
@@ -1225,7 +1235,7 @@ void InitDescriptorPool(struct VulkanInfo &info, bool use_texture) {
     assert(res == VK_SUCCESS);
 }
 
-void InitDescriptorSet(struct VulkanInfo &info, bool useTexture) {
+void vulkan::InitDescriptorSet(struct VulkanInfo &info, bool useTexture) {
     /* DEPENDS on InitDescriptorPool() */
 
     VkResult U_ASSERT_ONLY res;
@@ -1234,10 +1244,10 @@ void InitDescriptorSet(struct VulkanInfo &info, bool useTexture) {
     allocInfo[0].sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     allocInfo[0].pNext = nullptr;
     allocInfo[0].descriptorPool = info.descPool;
-    allocInfo[0].descriptorSetCount = NUM_DESCRIPTOR_SETS;
+    allocInfo[0].descriptorSetCount = kNumDescriptorSets;
     allocInfo[0].pSetLayouts = info.descLayout.data();
 
-    info.descSet.resize(NUM_DESCRIPTOR_SETS);
+    info.descSet.resize(kNumDescriptorSets);
     res = vkAllocateDescriptorSets(info.device, allocInfo,
                                    info.descSet.data());
     assert(res == VK_SUCCESS);
@@ -1269,7 +1279,7 @@ void InitDescriptorSet(struct VulkanInfo &info, bool useTexture) {
                            nullptr);
 }
 
-void InitShaders(struct VulkanInfo &info, const char *vertShaderText,
+void vulkan::InitShaders(struct VulkanInfo &info, const char *vertShaderText,
                  const char *fragShaderText) {
     VkResult U_ASSERT_ONLY res;
     bool U_ASSERT_ONLY retVal;
@@ -1330,7 +1340,7 @@ void InitShaders(struct VulkanInfo &info, const char *vertShaderText,
     FinalizeGlslang();
 }
 
-void InitPipelineCache(struct VulkanInfo &info) {
+void vulkan::InitPipelineCache(struct VulkanInfo &info) {
     VkResult U_ASSERT_ONLY res;
 
     VkPipelineCacheCreateInfo pipelineCache;
@@ -1344,7 +1354,7 @@ void InitPipelineCache(struct VulkanInfo &info) {
     assert(res == VK_SUCCESS);
 }
 
-void InitPipeline(struct VulkanInfo &info, VkBool32 include_depth,
+void vulkan::InitPipeline(struct VulkanInfo &info, VkBool32 include_depth,
                   VkBool32 include_vi) {
     VkResult U_ASSERT_ONLY res;
 
@@ -1429,8 +1439,8 @@ void InitPipeline(struct VulkanInfo &info, VkBool32 include_depth,
     scissor.extent.height = static_cast<uint32_t>(info.height);
     scissor.offset.x = 0;
     scissor.offset.y = 0;
-    vp.viewportCount = NUM_VIEWPORTS;
-    vp.scissorCount = NUM_SCISSORS;
+    vp.viewportCount = kNumViewports;
+    vp.scissorCount = kNumScissors;
     vp.pScissors = &scissor;
     vp.pViewports = &viewports;
     VkPipelineDepthStencilStateCreateInfo ds;
@@ -1459,7 +1469,7 @@ void InitPipeline(struct VulkanInfo &info, VkBool32 include_depth,
     ms.pNext = nullptr;
     ms.flags = 0;
     ms.pSampleMask = nullptr;
-    ms.rasterizationSamples = NUM_SAMPLES;
+    ms.rasterizationSamples = kNumSamples;
     ms.sampleShadingEnable = VK_FALSE;
     ms.alphaToCoverageEnable = VK_FALSE;
     ms.alphaToOneEnable = VK_FALSE;
@@ -1491,7 +1501,7 @@ void InitPipeline(struct VulkanInfo &info, VkBool32 include_depth,
     assert(res == VK_SUCCESS);
 }
 
-void InitSampler(struct VulkanInfo &info, VkSampler &sampler) {
+void vulkan::InitSampler(struct VulkanInfo &info, VkSampler &sampler) {
     VkResult U_ASSERT_ONLY res;
 
     VkSamplerCreateInfo samplerCreateInfo = {};
@@ -1516,9 +1526,9 @@ void InitSampler(struct VulkanInfo &info, VkSampler &sampler) {
     assert(res == VK_SUCCESS);
 }
 
-void InitImage(struct VulkanInfo &info, TextureObject &texObj,
-               const char *textureName, VkImageUsageFlags extraUsages,
-               VkFormatFeatureFlags extraFeatures) {
+void vulkan::InitImage(struct VulkanInfo &info, TextureObject &texObj,
+                       const char *textureName, VkImageUsageFlags extraUsages,
+                       VkFormatFeatureFlags extraFeatures) {
     VkResult U_ASSERT_ONLY res;
     bool U_ASSERT_ONLY pass;
     std::string filename = GetBaseDataDir();
@@ -1569,7 +1579,7 @@ void InitImage(struct VulkanInfo &info, TextureObject &texObj,
     imageCreateInfo.extent.depth = 1;
     imageCreateInfo.mipLevels = 1;
     imageCreateInfo.arrayLayers = 1;
-    imageCreateInfo.samples = NUM_SAMPLES;
+    imageCreateInfo.samples = kNumSamples;
     imageCreateInfo.tiling = VK_IMAGE_TILING_LINEAR;
     imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_PREINITIALIZED;
     imageCreateInfo.usage =
@@ -1656,7 +1666,7 @@ void InitImage(struct VulkanInfo &info, TextureObject &texObj,
     /* Make sure command buffer is finished before mapping */
     do {
         res = vkWaitForFences(info.device, 1, &cmdFence, VK_TRUE,
-                              FENCE_TIMEOUT);
+                              kFenceTimeout);
     } while (res == VK_TIMEOUT);
     assert(res == VK_SUCCESS);
 
@@ -1802,9 +1812,9 @@ void InitImage(struct VulkanInfo &info, TextureObject &texObj,
     assert(res == VK_SUCCESS);
 }
 
-void InitTexture(struct VulkanInfo &info, const char *textureName,
-                 VkImageUsageFlags extraUsages,
-                 VkFormatFeatureFlags extraFeatures) {
+void vulkan::InitTexture(struct VulkanInfo &info, const char *textureName,
+                         VkImageUsageFlags extraUsages,
+                         VkFormatFeatureFlags extraFeatures) {
     struct TextureObject texObj{};
 
     /* create image */
@@ -1822,17 +1832,17 @@ void InitTexture(struct VulkanInfo &info, const char *textureName,
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 }
 
-void InitViewports(struct VulkanInfo &info) {
+void vulkan::InitViewports(struct VulkanInfo &info) {
 // Disable dynamic viewport on Android. Some drive has an issue with the dynamic
 // viewport feature.
 }
 
-void InitScissors(struct VulkanInfo &info) {
+void vulkan::InitScissors(struct VulkanInfo &info) {
 // Disable dynamic viewport on Android. Some drive has an issue with the dynamic
 // scissors feature.
 }
 
-void InitFence(struct VulkanInfo &info, VkFence &fence) {
+void vulkan::InitFence(struct VulkanInfo &info, VkFence &fence) {
     VkFenceCreateInfo fenceInfo;
     fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
     fenceInfo.pNext = nullptr;
@@ -1840,8 +1850,8 @@ void InitFence(struct VulkanInfo &info, VkFence &fence) {
     vkCreateFence(info.device, &fenceInfo, nullptr, &fence);
 }
 
-void InitSubmitInfo(struct VulkanInfo &info, VkSubmitInfo &submitInfo,
-                    VkPipelineStageFlags &pipeStageFlags) {
+void vulkan::InitSubmitInfo(struct VulkanInfo &info, VkSubmitInfo &submitInfo,
+                            VkPipelineStageFlags &pipeStageFlags) {
     submitInfo.pNext = nullptr;
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     submitInfo.waitSemaphoreCount = 1;
@@ -1853,7 +1863,7 @@ void InitSubmitInfo(struct VulkanInfo &info, VkSubmitInfo &submitInfo,
     submitInfo.pSignalSemaphores = nullptr;
 }
 
-void InitPresentInfo(struct VulkanInfo &info, VkPresentInfoKHR &present) {
+void vulkan::InitPresentInfo(struct VulkanInfo &info, VkPresentInfoKHR &present) {
     present.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
     present.pNext = nullptr;
     present.swapchainCount = 1;
@@ -1864,8 +1874,8 @@ void InitPresentInfo(struct VulkanInfo &info, VkPresentInfoKHR &present) {
     present.pResults = nullptr;
 }
 
-void InitClearColorAndDepth(struct VulkanInfo &info,
-                            VkClearValue *clearValues) {
+void vulkan::InitClearColorAndDepth(struct VulkanInfo &info,
+                                    VkClearValue *clearValues) {
     clearValues[0].color.float32[0] = 0.2F;
     clearValues[0].color.float32[1] = 0.2F;
     clearValues[0].color.float32[2] = 0.2F;
@@ -1874,8 +1884,8 @@ void InitClearColorAndDepth(struct VulkanInfo &info,
     clearValues[1].depthStencil.stencil = 0;
 }
 
-void InitRenderPassBeginInfo(struct VulkanInfo &info,
-                             VkRenderPassBeginInfo &rp_begin) {
+void vulkan::InitRenderPassBeginInfo(struct VulkanInfo &info,
+                                     VkRenderPassBeginInfo &rp_begin) {
     rp_begin.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     rp_begin.pNext = nullptr;
     rp_begin.renderPass = info.renderPass;
@@ -1888,82 +1898,82 @@ void InitRenderPassBeginInfo(struct VulkanInfo &info,
     rp_begin.pClearValues = nullptr;
 }
 
-void DestroyPipeline(struct VulkanInfo &info) {
+void vulkan::DestroyPipeline(struct VulkanInfo &info) {
     vkDestroyPipeline(info.device, info.pipeline, nullptr);
 }
 
-void DestroyPipelineCache(struct VulkanInfo &info) {
+void vulkan::DestroyPipelineCache(struct VulkanInfo &info) {
     vkDestroyPipelineCache(info.device, info.pipelineCache, nullptr);
 }
 
-void DestroyUniformBuffer(struct VulkanInfo &info) {
+void vulkan::DestroyUniformBuffer(struct VulkanInfo &info) {
     vkDestroyBuffer(info.device, info.uniformData.buf, nullptr);
     vkFreeMemory(info.device, info.uniformData.mem, nullptr);
 }
 
-void DestroyDescriptorAndPipelineLayouts(struct VulkanInfo &info) {
-    for (int i = 0; i < NUM_DESCRIPTOR_SETS; i++)
+void vulkan::DestroyDescriptorAndPipelineLayouts(struct VulkanInfo &info) {
+    for (int i = 0; i < kNumDescriptorSets; i++)
         vkDestroyDescriptorSetLayout(info.device, info.descLayout[i], nullptr);
     vkDestroyPipelineLayout(info.device, info.pipelineLayout, nullptr);
 }
 
-void DestroyDescriptorPool(struct VulkanInfo &info) {
+void vulkan::DestroyDescriptorPool(struct VulkanInfo &info) {
     vkDestroyDescriptorPool(info.device, info.descPool, nullptr);
 }
 
-void DestroyShaders(struct VulkanInfo &info) {
+void vulkan::DestroyShaders(struct VulkanInfo &info) {
     vkDestroyShaderModule(info.device, info.shaderStages[0].module, nullptr);
     vkDestroyShaderModule(info.device, info.shaderStages[1].module, nullptr);
 }
 
-void DestroyCommandBuffer(struct VulkanInfo &info) {
+void vulkan::DestroyCommandBuffer(struct VulkanInfo &info) {
     VkCommandBuffer cmdBufs[1] = {info.cmd};
     vkFreeCommandBuffers(info.device, info.cmdPool, 1, cmdBufs);
 }
 
-void DestroyCommandPool(struct VulkanInfo &info) {
+void vulkan::DestroyCommandPool(struct VulkanInfo &info) {
     vkDestroyCommandPool(info.device, info.cmdPool, nullptr);
 }
 
-void DestroyDepthBuffer(struct VulkanInfo &info) {
+void vulkan::DestroyDepthBuffer(struct VulkanInfo &info) {
     vkDestroyImageView(info.device, info.depth.view, nullptr);
     vkDestroyImage(info.device, info.depth.image, nullptr);
     vkFreeMemory(info.device, info.depth.mem, nullptr);
 }
 
-void DestroyVertexBuffer(struct VulkanInfo &info) {
+void vulkan::DestroyVertexBuffer(struct VulkanInfo &info) {
     vkDestroyBuffer(info.device, info.vertexBuffer.buf, nullptr);
     vkFreeMemory(info.device, info.vertexBuffer.mem, nullptr);
 }
 
-void DestroySwapChain(struct VulkanInfo &info) {
+void vulkan::DestroySwapChain(struct VulkanInfo &info) {
     for (uint32_t i = 0; i < info.swapchainImageCount; i++) {
         vkDestroyImageView(info.device, info.buffers[i].view, nullptr);
     }
     vkDestroySwapchainKHR(info.device, info.swapChain, nullptr);
 }
 
-void DestroyFramebuffers(struct VulkanInfo &info) {
+void vulkan::DestroyFramebuffers(struct VulkanInfo &info) {
     for (uint32_t i = 0; i < info.swapchainImageCount; i++) {
         vkDestroyFramebuffer(info.device, info.framebuffers[i], nullptr);
     }
     free(info.framebuffers);
 }
 
-void DestroyRenderpass(struct VulkanInfo &info) {
+void vulkan::DestroyRenderpass(struct VulkanInfo &info) {
     vkDestroyRenderPass(info.device, info.renderPass, nullptr);
 }
 
-void DestroyDevice(struct VulkanInfo &info) {
+void vulkan::DestroyDevice(struct VulkanInfo &info) {
     vkDeviceWaitIdle(info.device);
     vkDestroyDevice(info.device, nullptr);
 }
 
-void DestroyInstance(struct VulkanInfo &info) {
+void vulkan::DestroyInstance(struct VulkanInfo &info) {
     vkDestroyInstance(info.inst, nullptr);
 }
 
-void DestroyTextures(struct VulkanInfo &info) {
+void vulkan::DestroyTextures(struct VulkanInfo &info) {
     for (size_t i = 0; i < info.textures.size(); i++) {
         vkDestroySampler(info.device, info.textures[i].sampler, nullptr);
         vkDestroyImageView(info.device, info.textures[i].view, nullptr);

@@ -32,6 +32,7 @@ namespace ancer {
     using Timestamp = SteadyClock::time_point;
     using Duration = decltype(std::declval<Timestamp>() - std::declval<Timestamp>());
 
+    using Minutes = std::chrono::minutes;
     using Seconds = std::chrono::seconds;
     using Milliseconds = std::chrono::milliseconds;
     using Nanoseconds = std::chrono::nanoseconds;

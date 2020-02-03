@@ -1,0 +1,324 @@
+<html lang="en">
+<head>
+  <script src="https://www.gstatic.com/external_hosted/dygraphs/dygraph-combined.js"></script>
+  <title>Memory report</title>
+</head>
+<style>/*css*/</style>
+<script type="module">
+
+  const capitalizeFirstLetter =
+      str => str.charAt(0).toUpperCase() + str.slice(1);
+
+  const onTrimCodes = {
+    0: "TRIM_MEMORY_UNKNOWN",
+    5: "TRIM_MEMORY_RUNNING_MODERATE",
+    10: "TRIM_MEMORY_RUNNING_LOW",
+    15: "TRIM_MEMORY_RUNNING_CRITICAL",
+    20: "TRIM_MEMORY_UI_HIDDEN",
+    40: "TRIM_MEMORY_BACKGROUND",
+    60: "TRIM_MEMORY_MODERATE",
+    80: "TRIM_MEMORY_COMPLETE"
+  };
+
+  const data = [/*data*/];
+  for (const result of data) {
+
+    const first = result[0];
+
+    result.sort((a, b) => a.time > b.time ? 1 : -1);
+
+    const section = document.createElement("section");
+    document.body.appendChild(section);
+
+    const build = first["build"];
+    const constant = first["constant"];
+
+    const heading = document.createElement("h1");
+    section.appendChild(heading);
+    heading.appendChild(document.createTextNode(
+        capitalizeFirstLetter(build.MANUFACTURER) + " " + build.MODEL));
+
+    const table = document.createElement("table");
+    section.appendChild(table);
+
+    for (const [key, value] of Object.entries(build)) {
+      const row = document.createElement("tr");
+      table.appendChild(row);
+      {
+        const cell = document.createElement("td");
+        row.appendChild(cell);
+        const node = document.createTextNode(key);
+        cell.appendChild(node);
+      }
+      {
+        const cell = document.createElement("td");
+        row.appendChild(cell);
+        const node = document.createTextNode(value);
+        cell.appendChild(node);
+      }
+    }
+
+    {
+      const paragraph = document.createElement("p");
+      section.appendChild(paragraph);
+      paragraph.appendChild(document.createTextNode(`Strategies: ${first.groups.join(", ")}`));
+    }
+
+    if ("extra" in first) {
+      const extra = first.extra;
+      {
+        const paragraph = document.createElement("p");
+        section.appendChild(paragraph);
+        const anchor = document.createElement("a");
+        paragraph.appendChild(anchor);
+        anchor.href = extra.resultsPage;
+        anchor.appendChild(document.createTextNode("Results page"));
+      }
+      {
+        const paragraph = document.createElement("p");
+        section.appendChild(paragraph);
+        const anchor = document.createElement("a");
+        paragraph.appendChild(anchor);
+        anchor.href = extra.logs;
+        anchor.appendChild(document.createTextNode("Logs"));
+      }
+    }
+
+    const graphDiv = document.createElement("div");
+    section.appendChild(graphDiv);
+    graphDiv.classList.add("graph");
+
+    const fields = [
+      "time",
+      // proc/meminfo block
+      "CommitLimit",
+      "Cached",
+      "MemFree",
+      "MemAvailable",
+      "SwapFree",
+
+      // ActivityManager blockw
+      "availMem", "totalMem", "threshold",
+      // Runtime / Debug block
+      "nativeAllocated",
+      "serviceTotalMemory",
+      // proc/pid block
+      "oom_score",
+      //
+      "memoryClass",
+
+      "VmSize",
+      "VmRSS",
+      "VmData",
+
+      "summary.graphics", "summary.native-heap", "summary.total-pss"
+
+    ];
+
+    const memoryFieldsBytes = new Set(
+        ["nativeHeap", "recordNativeHeap", "nativeAllocated", "nativeAllocatedByTest",
+          "serviceTotalMemory", "maxMemory",  "freeMemory", "availMem", "totalMem", "threshold",
+          "lowMemory", "memoryClass", "availMemPlusNativeAllocated"
+        ]);
+    const memoryFieldsKb = new Set(["MemTotal", "MemAvailable", "Buffers", "Cached",
+      "SwapCached", "Active", "Inactive", "Active(anon)",
+      "Inactive(anon)", "Active(file)", "Inactive(file)", "Unevictable",
+      "Mlocked", "SwapTotal", "SwapFree", "Dirty",
+      "Writeback", "AnonPages", "Mapped", "Shmem",
+      "Slab", "SReclaimable", "SUnreclaim", "KernelStack",
+      "PageTables", "NFS_Unstable", "Bounce", "WritebackTmp",
+      "CommitLimit", "Committed_AS", "VmallocTotal", "VmallocUsed",
+      "VmallocChunk", "CmaTotal", "CmaFree", "MemFree",
+      "nativePrivateDirty", "nativePss", "nativeSharedDirty",
+      "totalPss", "totalPrivateDirty", "totalSharedDirty",
+
+      "VmSize", "VmStk", "VmRSS", "VmLck", "VmPin", "VmLib", "VmHWM", "VmSwap", "VmPTE", "VmExe",
+      "VmData", "VmPeak",
+
+      "summary.graphics", "summary.native-heap", "summary.native-heap", "summary.total-pss"
+
+    ]);
+    const highlights = [];
+
+    const annotations = [];
+    let pausedStart = -1;
+    let lowMemoryStart = -1;
+    let serviceCrashedStart = -1;
+    let allocFailedStart = -1;
+    let activityPausedStart = -1;
+    const graphData = [];
+
+    let time = 0;
+
+    for (const row of result) {
+      if (!("time" in row)) {
+        continue;
+      }
+      if ("availMem" in row && "nativeAllocated" in row) {
+        row.availMemPlusNativeAllocated = row.availMem + row.nativeAllocated;
+      }
+      const rowOut = [];
+
+      let doneOne = false;
+      for (const field of fields) {
+        let combined = {...row, ...constant};
+        if (field in combined) {
+          let value = combined[field];
+          if (memoryFieldsBytes.has(field)) {
+            value /= 1024 * 1024; // MB
+          } else if (memoryFieldsKb.has(field)) {
+            value /= 1024; // MB
+          } else if (field === "time") {
+            value /= 1000;
+          }
+          rowOut.push(value);
+          doneOne = true;
+        } else {
+          rowOut.push(0)
+        }
+      }
+
+      if (doneOne) {
+        graphData.push(rowOut);
+      }
+      time = rowOut[0];
+      if ("exiting" in row) {
+        annotations.push(
+            {
+              series: "nativeAllocated",
+              x: time,
+              shortText: "E",
+              text: "Exiting"
+            }
+        );
+      }
+      if ("onDestroy" in row) {
+        annotations.push(
+            {
+              series: "nativeAllocated",
+              x: time,
+              shortText: "D",
+              text: "onDestroy"
+            }
+        );
+      }
+      if ("onTrimMemory" in row) {
+        annotations.push(
+            {
+              series: "nativeAllocated",
+              x: time,
+              shortText: row.onTrimMemory,
+              text: onTrimCodes[row.onTrimMemory]
+            }
+        );
+      }
+
+      if ("trigger" in row) {
+        annotations.push(
+            {
+              series: "nativeAllocated",
+              x: time,
+              shortText: row.trigger,
+              text: row.trigger
+            }
+        );
+      }
+
+      if ("activityPaused" in row) {
+        if (row["activityPaused"]) {
+          if (activityPausedStart === -1) {
+            activityPausedStart = time;
+          }
+        } else if (activityPausedStart !== -1) {
+          highlights.push([activityPausedStart, time, "lightgrey"]);
+          activityPausedStart = -1;
+        }
+      }
+
+      let paused = !!row["paused"];
+      if (paused && pausedStart === -1) {
+        pausedStart = time;
+      } else if (!row.paused && pausedStart !== -1) {
+        highlights.push([pausedStart, time, "yellow"]);
+        pausedStart = -1;
+      }
+
+      let lowMemory = !!row["lowMemory"];
+      if (lowMemory && lowMemoryStart === -1) {
+        lowMemoryStart = time;
+      } else if (!lowMemory && lowMemoryStart !== -1) {
+        highlights.push([lowMemoryStart, time, "pink"]);
+        lowMemoryStart = -1;
+      }
+
+      let serviceCrashed = !!row["serviceCrashed"];
+      if (serviceCrashed && serviceCrashedStart === -1) {
+        serviceCrashedStart = time;
+      } else if (!serviceCrashed && serviceCrashedStart !== -1) {
+        highlights.push([serviceCrashedStart, time, "cyan"]);
+        serviceCrashedStart = -1;
+      }
+
+      let allocFailed = !!row["allocFailed"];
+      if (allocFailed && allocFailedStart === -1) {
+        allocFailedStart = time;
+      } else if (!allocFailed && allocFailedStart !== -1) {
+        highlights.push([allocFailedStart, time, "lightblue"]);
+        allocFailedStart = -1;
+      }
+    }
+
+    if (activityPausedStart !== -1) {
+      highlights.push([activityPausedStart, time, "lightgrey"]);
+      allocFailedStart = -1;
+    }
+    if (pausedStart !== -1) {
+      highlights.push([pausedStart, time, "yellow"]);
+    }
+    if (lowMemoryStart !== -1) {
+      highlights.push([lowMemoryStart, time, "pink"]);
+    }
+    if (serviceCrashedStart !== -1) {
+      highlights.push([serviceCrashedStart, time, "cyan"]);
+    }
+    if (allocFailedStart !== -1) {
+      highlights.push([allocFailedStart, time, "lightblue"]);
+    }
+
+    const graph = new Dygraph(graphDiv, graphData, {
+      height: 800,
+      labels: fields,
+      highlightCircleSize: 4,
+      strokeWidth: 1,
+      strokeBorderWidth: 1,
+      highlightSeriesOpts:
+          {strokeWidth: 2, strokeBorderWidth: 1, highlightCircleSize: 5},
+      series: {
+        nativeAllocated: {strokeWidth: 4, color: 'black'},
+        oom_score: {axis: "y2"},
+      },
+      axes: {
+        x: {drawGrid: false},
+        y: {independentTicks: true},
+        y2: {valueRange: [0, 1000], independentTicks: true}
+      },
+      ylabel: 'MB',
+      y2label: 'OOM Score',
+
+      underlayCallback: (canvas, area, g) => {
+        for (const [start, end, fillStyle] of highlights) {
+          canvas.fillStyle = fillStyle;
+          canvas.fillRect(g.toDomCoords(start, 0)[0], area.y,
+              g.toDomCoords(end, 0)[0] - g.toDomCoords(start, 0)[0], area.h);
+        }
+      },
+      pointClickCallback: (e, p) => {
+        alert(p.name);
+      },
+
+    });
+
+    graph.ready(() => graph.setAnnotations(annotations));
+  }
+</script>
+</html>
