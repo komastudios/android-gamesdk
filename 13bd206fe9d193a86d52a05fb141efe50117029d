@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "05ab3847_a5a7cbf9",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-02-03T12:17:35Z",
+      "side": 1,
+      "message": "I thought this was simpler.",
+      "parentUuid": "d920bacc_a491c11c",
+      "range": {
+        "startLine": 221,
+        "startChar": 10,
+        "endLine": 221,
+        "endChar": 39
+      },
+      "revId": "13bd206fe9d193a86d52a05fb141efe50117029d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "41a8163d_959b77e1",
         "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
         "patchSetId": 2
@@ -36,6 +60,30 @@
       "writtenOn": "2020-02-03T11:28:43Z",
       "side": 1,
       "message": "Why did you decide to remove the scenarios where we try multiple strategies?",
+      "range": {
+        "startLine": 229,
+        "startChar": 28,
+        "endLine": 255,
+        "endChar": 16
+      },
+      "revId": "13bd206fe9d193a86d52a05fb141efe50117029d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1a605925_00b13e5b",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-02-03T12:17:35Z",
+      "side": 1,
+      "message": "I\u0027m not really finished yet. This is preparing for the next stage will be more programmatic.",
+      "parentUuid": "41a8163d_959b77e1",
       "range": {
         "startLine": 229,
         "startChar": 28,
@@ -68,6 +116,30 @@
       "revId": "13bd206fe9d193a86d52a05fb141efe50117029d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d830cd48_33ed1b43",
+        "filename": "test/istresser/test.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-02-03T12:17:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1470c70a_1fa46b3a",
+      "range": {
+        "startLine": 3,
+        "startChar": 16,
+        "endLine": 3,
+        "endChar": 18
+      },
+      "revId": "13bd206fe9d193a86d52a05fb141efe50117029d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
