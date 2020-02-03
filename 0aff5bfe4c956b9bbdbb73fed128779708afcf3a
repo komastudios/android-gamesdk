@@ -52,6 +52,24 @@
       "revId": "0aff5bfe4c956b9bbdbb73fed128779708afcf3a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dabc745f_c62f7622",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/ExternalBufferGLES3Operation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-02-03T19:42:34Z",
+      "side": 1,
+      "message": "👍",
+      "parentUuid": "b7bc6d93_07e3cebd",
+      "revId": "0aff5bfe4c956b9bbdbb73fed128779708afcf3a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
