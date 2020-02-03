@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d9333ce3_8a26af8f",
+        "filename": "cert/test/reporting/lib/build.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-03T17:38:17Z",
+      "side": 1,
+      "message": "🍷",
+      "revId": "8f09cb2dddfd4471de9d595ec9db85c2ad8188ea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
