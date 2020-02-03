@@ -16,6 +16,24 @@
       "revId": "0aff5bfe4c956b9bbdbb73fed128779708afcf3a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cbc3e9ed_42045edf",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/ExternalBufferGLES3Operation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-02-03T19:37:24Z",
+      "side": 1,
+      "message": "That\u0027s a fair point. The main reason I avoided it was because I\u0027m not sure what level of error reporting another user of this code might need, or whether it might make sense to memoize the library and symbol pointers (and what the impact of that might be). I suppose I can just move the code into another file as-is and let a future user be the one to cross that bridge if/when they come to it. How does that sound?",
+      "parentUuid": "d23ffbbb_95410c8a",
+      "revId": "0aff5bfe4c956b9bbdbb73fed128779708afcf3a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
