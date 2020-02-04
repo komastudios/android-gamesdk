@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ac81db4d_1c0ce7e8",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/CalculateWaitPIOperation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-02-04T17:57:19Z",
+      "side": 1,
+      "message": "Stylistic note: this constructor probably should be marked \"explicit\" (self resolved because this is a nitpick, not a problem)",
+      "revId": "a6224d1e2cbd99559fcff722d969d7b267340cc4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
