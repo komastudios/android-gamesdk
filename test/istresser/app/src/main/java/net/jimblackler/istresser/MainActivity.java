@@ -69,9 +69,15 @@ public class MainActivity extends AppCompatActivity {
   private static final int LAUNCH_DURATION = 0;
   private static final int RETURN_DURATION = LAUNCH_DURATION + 1000 * 20;
   private static final int MAX_SERVICE_MEMORY_MB = 500;
+  private static final int SERVICE_PERIOD_SECONDS = 60;
   private static final int BYTES_IN_MEGABYTE = 1024 * 1024;
   private static final boolean GL_TEST = true;
   public static final int NUMBER_MAIN_GROUPS = 9;
+
+  private static final String MEMORY_BLOCKER = "MemoryBlockCommand";
+  private static final String ALLOCATE_ACTION = "Allocate";
+  private static final String FREE_ACTION = "Free";
+
 
   private final Collection<Identifier> activeGroups = new TreeSet<>();
 
@@ -152,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                       try {
-                        Thread.sleep(60 * 1000);
+                        Thread.sleep(SERVICE_PERIOD_SECONDS * 1000);
                       } catch (Exception e) {
                         e.printStackTrace();
                       }
@@ -169,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                       try {
-                        Thread.sleep(60 * 1000);
+                        Thread.sleep(SERVICE_PERIOD_SECONDS * 1000);
                       } catch (Exception e) {
                         e.printStackTrace();
                       }
@@ -218,12 +224,33 @@ public class MainActivity extends AppCompatActivity {
       report.put("scenario", scenario);
 
       int useScenario = scenario;
-      if (scenario > NUMBER_MAIN_GROUPS) {
+      if (NUMBER_MAIN_GROUPS < scenario && scenario <= 2 * NUMBER_MAIN_GROUPS) {
         serviceState = ServiceState.ALLOCATING_MEMORY;
         serviceTotalMb = 0;
         serviceCommunicationHelper.allocateServerMemory(MAX_SERVICE_MEMORY_MB);
         report.put("service", true);
         useScenario -= NUMBER_MAIN_GROUPS;
+      } else if (2 * NUMBER_MAIN_GROUPS < scenario) {
+        new Thread() {
+          @Override
+          public void run() {
+            while (true) {
+              Log.v(MEMORY_BLOCKER, ALLOCATE_ACTION + " " + MAX_SERVICE_MEMORY_MB);
+              try {
+                Thread.sleep(SERVICE_PERIOD_SECONDS * 1000);
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
+              Log.v(MEMORY_BLOCKER, FREE_ACTION);
+              try {
+                Thread.sleep(SERVICE_PERIOD_SECONDS * 1000);
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
+            }
+          }
+        }.start();
+        useScenario -= 2 * NUMBER_MAIN_GROUPS;
       }
 
       switch (useScenario) {
