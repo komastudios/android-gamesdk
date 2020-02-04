@@ -1,2 +1,0 @@
-build:
-  configuration: recipes/configurations/gpu_half_precision.json

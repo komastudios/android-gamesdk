@@ -148,9 +148,11 @@ deployment:
     # definition in -args:
     test: test-definition
 
-    # if true, the selected test's -device: list will be ignored
-    # for a selection of all physical hardware devices available on ftl
-    all-physical-devices: [true|false]
+    # specify certain devices to run on or leave field out to run on all
+    # physical devices available to FTL
+    devices:
+      - { model: "flo", version: 21 }
+      - { model: "mlv1", version: 23 }
 
     # flags: this maps directly to the `--flags-file` argument
     # when performing ftl deployment
@@ -170,11 +172,6 @@ deployment:
       test-definition:
         type: game-loop
         timeout: 1500 # 25 minutes
-        device:
-
-            - {model: taimen, version: 27}
-            - {model: walleye, version: 28}
-            - {model: blueline, version: 28}
 
 # generation of summary report
 summary:
