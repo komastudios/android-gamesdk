@@ -193,7 +193,9 @@ VkResult SwappyVk_queuePresent(
  * @brief Destroy SwappyVk instance associated to the swapchain
  *
  * This API is expected to be called before calling to vkDestroySwapchainKHR()
- * so Swappy could cleanup its internal state.
+ * so Swappy can cleanup its internal state.
+ * Note that if you only have one swapchain for the device,
+ * this function will also clean up any resources associated with the device.
  *
  * @param[in]  device     - The VkDevice associated with SwappyVk
  * @param[in]  swapchain - The VkSwapchainKHR the application wants Swappy to swap
