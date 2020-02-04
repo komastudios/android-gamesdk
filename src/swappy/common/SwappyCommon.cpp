@@ -42,6 +42,9 @@ SwappyCommon::SwappyCommon(JNIEnv *env, jobject jactivity)
           mSwapDuration(nanoseconds(0)),
           mAutoSwapInterval(1),
           mValid(false) {
+
+    ALOGI("Swappy version %d.%d", SWAPPY_MAJOR_VERSION, SWAPPY_MINOR_VERSION);
+
     jclass activityClass = env->FindClass("android/app/NativeActivity");
     jclass windowManagerClass = env->FindClass("android/view/WindowManager");
     jclass displayClass = env->FindClass("android/view/Display");
