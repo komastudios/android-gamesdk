@@ -96,6 +96,8 @@ add_library(${PROJECT_NAME} SHARED
         ancer/util/GLHelpers.cpp
         ancer/util/GLPixelBuffer.cpp
         ancer/util/JNIHelpers.cpp
+        ancer/util/LibAndroid.cpp
+        ancer/util/LibEGL.cpp
         ancer/util/ThreadSyncPoint.cpp
         ancer/util/Time.cpp
         ancer/util/VkHelpers.cpp
@@ -130,6 +132,7 @@ add_library(${PROJECT_NAME} SHARED
 
         operations/gl/BufferStorageGLES3Operation.cpp
         operations/gl/DepthClearGLES3Operation.cpp
+        operations/gl/DisplayTimingGLES3Operation.cpp
         operations/gl/DualSourceBlendingGLES3Operation.cpp
         operations/gl/ExternalBufferGLES3Operation.cpp
         operations/gl/FillRateGLES3Operation.cpp

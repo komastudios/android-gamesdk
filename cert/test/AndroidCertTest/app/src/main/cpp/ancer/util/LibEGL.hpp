@@ -20,15 +20,35 @@
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 
-#include "LibLoader.hpp"
+namespace libegl {
+void *GetLib();
 
-namespace {
-void *GetEGLLibrary() { return LoadLibrary("libEGL.so"); }
+typedef PFNEGLGETNATIVECLIENTBUFFERANDROIDPROC FP_GET_NATIVE_CLIENT_BUFFER;
 
-typedef PFNEGLGETNATIVECLIENTBUFFERANDROIDPROC PFN_GET_EGLBUFFER;
+FP_GET_NATIVE_CLIENT_BUFFER GetFP_GetNativeClientBuffer();
 
-PFN_GET_EGLBUFFER GetPFN_CreateEGLBuffer() {
-  return reinterpret_cast<PFN_GET_EGLBUFFER>(
-      LoadSymbol(GetEGLLibrary(), "eglGetNativeClientBufferANDROID"));
-}
-}
+// typedef PFNEGLGETCOMPOSITORTIMINGSUPPORTEDANDROIDPROC
+//     FP_GET_COMPOSITOR_TIMING_SUPPORTED;
+// typedef PFNEGLGETCOMPOSITORTIMINGANDROIDPROC FP_GET_COMPOSITOR_TIMING;
+typedef PFNEGLGETFRAMETIMESTAMPSUPPORTEDANDROIDPROC
+    FP_GET_FRAME_TIMESTAMP_SUPPORTED;
+typedef PFNEGLGETFRAMETIMESTAMPSANDROIDPROC FP_GET_FRAME_TIMESTAMPS;
+typedef PFNEGLGETNEXTFRAMEIDANDROIDPROC FP_GET_NEXT_FRAME_ID;
+
+// FP_GET_COMPOSITOR_TIMING_SUPPORTED GetFP_GetCompositorTimingSupported() {
+//   return reinterpret_cast<FP_GET_COMPOSITOR_TIMING_SUPPORTED>(
+//       LoadSymbol(GetLib(), "eglGetCompositorTimingSupportedANDROID"));
+// }
+
+// FP_GET_COMPOSITOR_TIMING GetFP_GetCompositorTiming() {
+//   return reinterpret_cast<FP_GET_COMPOSITOR_TIMING>(
+//       LoadSymbol(GetLib(), "eglGetCompositorTimingANDROID"));
+// }
+
+FP_GET_FRAME_TIMESTAMP_SUPPORTED GetFP_GetFrameTimestampSupported();
+
+FP_GET_FRAME_TIMESTAMPS GetFP_GetFrameTimestamps();
+
+FP_GET_NEXT_FRAME_ID GetFP_GetNextFrameId();
+
+}  // namespace libegl
