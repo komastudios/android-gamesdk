@@ -69,7 +69,9 @@ def load_tasks(tasks_dict: List[Dict], task_ctors: Dict
         task_ctors: Dict mapping task action to task constructor
     """
     env = lib.tasks.Environment()
-    env.workspace_dir = Path(os.path.realpath(__file__)).parent
+
+    # set the workspace dir to the parent folder (folder containing run.py)
+    env.workspace_dir = Path(os.path.realpath(__file__)).parents[1]
 
     return lib.tasks_runner.load(tasks_dict, task_ctors), env
 
