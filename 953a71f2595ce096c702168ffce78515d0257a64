@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "90ee9121_b714617f",
+        "filename": "samples/tuningfork/expertballs/app/CMakeLists.txt",
+        "patchSetId": 6
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-02-04T11:42:08Z",
+      "side": 1,
+      "message": "s/I/you/ :)",
+      "parentUuid": "49343fd0_ef1e43ef",
+      "revId": "953a71f2595ce096c702168ffce78515d0257a64",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "9cbe9853_98bd718d",
         "filename": "samples/tuningfork/scaledballs/app/CMakeLists.for-samples-in-archive.txt",
         "patchSetId": 6
