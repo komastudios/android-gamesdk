@@ -1,0 +1,7 @@
+build:
+  configuration: recipes/configurations/egl_display_timing.json
+
+systrace:
+  enabled: true
+  # custom categories (only supported for local deployment)
+  categories: "sched freq idle am wm gfx view input"

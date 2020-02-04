@@ -150,6 +150,8 @@ namespace ancer {
 
     FpsCalculator& GetFpsCalculator();
 
+    uint64_t GetElapsedRealtimeNanos();
+
     /*
     * Configuration params for opengl contexts
     */

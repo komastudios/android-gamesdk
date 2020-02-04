@@ -10,6 +10,18 @@
   "stress_tests": [
     {
       "enabled": true,
+      "name": "EGL Display Timing",
+      "description": "Tests display timing extension against systrace",
+      "duration": "1s",
+      "data_gatherer": {
+        "id": "DisplayTimingGLES3Operation",
+        "configuration": {}
+      },
+      "host": "GLSurfaceViewHostActivity",
+      "stressors": []
+    },
+    {
+      "enabled": true,
       "name": "GLES3 External Framebuffer",
       "description": "Determine if a native hardware buffer can be created and used as render target.",
       "duration": "5s",
