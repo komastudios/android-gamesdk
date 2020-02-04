@@ -205,3 +205,40 @@ std::string ancer::GetCpuInfo() {
   }
   return report.dump();
 }
+
+//------------------------------------------------------------------------------
+
+uint64_t ancer::GetUptimeMillis() {
+  uint64_t elapsed = 0;
+
+  jni::SafeJNICall([&elapsed](jni::LocalJNIEnv *env) {
+    jclass system_clock_class = env->FindClass("android/os/SystemClock");
+    if (system_clock_class == nullptr) return;
+
+    jmethodID uptime_method =
+        env->GetStaticMethodID(system_clock_class, "uptimeMillis", "()J");
+    if (uptime_method == nullptr) return;
+
+    elapsed = env->CallStaticLongMethod(system_clock_class, uptime_method);
+  });
+
+  return elapsed;
+}
+
+uint64_t ancer::GetElapsedRealtimeNanos() {
+  uint64_t elapsed = 0;
+
+  jni::SafeJNICall([&elapsed](jni::LocalJNIEnv *env) {
+    jclass system_clock_class = env->FindClass("android/os/SystemClock");
+    if (system_clock_class == nullptr) return;
+
+    jmethodID elapsed_realtime_method = env->GetStaticMethodID(
+        system_clock_class, "elapsedRealtimeNanos", "()J");
+    if (elapsed_realtime_method == nullptr) return;
+
+    elapsed =
+        env->CallStaticLongMethod(system_clock_class, elapsed_realtime_method);
+  });
+
+  return elapsed;
+}

@@ -19,35 +19,21 @@
 #include <android/hardware_buffer.h>
 #include <android/hardware_buffer_jni.h>
 
-#include "LibLoader.hpp"
+namespace libandroid {
+void *GetLib();
 
-namespace {
-void *GetAndroidLibrary() { return LoadLibrary("libandroid.so"); }
+typedef int (*FP_AHB_ALLOCATE)(const AHardwareBuffer_Desc *,
+                               AHardwareBuffer **);
+typedef void (*FP_AHB_RELEASE)(AHardwareBuffer *);
+typedef int (*FP_AHB_LOCK)(AHardwareBuffer *, uint64_t, int32_t, const ARect *,
+                           void **);
+typedef int (*FP_AHB_UNLOCK)(AHardwareBuffer *, int32_t *);
 
-typedef int (*PFN_AHB_ALLOCATE)(const AHardwareBuffer_Desc *,
-                                AHardwareBuffer **);
-typedef void (*PFN_AHB_RELEASE)(AHardwareBuffer *);
-typedef int (*PFN_AHB_LOCK)(AHardwareBuffer *, uint64_t, int32_t, const ARect *,
-                            void **);
-typedef int (*PFN_AHB_UNLOCK)(AHardwareBuffer *, int32_t *);
+FP_AHB_ALLOCATE GetFP_AHardwareBuffer_Allocate();
 
-PFN_AHB_ALLOCATE GetPFN_AHardwareBuffer_Allocate() {
-  return reinterpret_cast<PFN_AHB_ALLOCATE>(
-      LoadSymbol(GetAndroidLibrary(), "AHardwareBuffer_allocate"));
-}
+FP_AHB_RELEASE GetFP_AHardwareBuffer_Release();
 
-PFN_AHB_RELEASE GetPFN_AHardwareBuffer_Release() {
-  return reinterpret_cast<PFN_AHB_RELEASE>(
-      LoadSymbol(GetAndroidLibrary(), "AHardwareBuffer_release"));
-}
+FP_AHB_LOCK GetFP_AHardwareBuffer_Lock();
 
-PFN_AHB_LOCK GetPFN_AHardwareBuffer_Lock() {
-  return reinterpret_cast<PFN_AHB_LOCK>(
-      LoadSymbol(GetAndroidLibrary(), "AHardwareBuffer_lock"));
-}
-
-PFN_AHB_UNLOCK GetPFN_AHardwareBuffer_Unlock() {
-  return reinterpret_cast<PFN_AHB_UNLOCK>(
-      LoadSymbol(GetAndroidLibrary(), "AHardwareBuffer_unlock"));
-}
-}
+FP_AHB_UNLOCK GetFP_AHardwareBuffer_Unlock();
+}  // namespace libandroid

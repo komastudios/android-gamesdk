@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
+#include <condition_variable>
+
 #include <GLES/gl.h>
 #define GL_GLEXT_PROTOTYPES
 #include <GLES/glext.h>
 
-#include <condition_variable>
 #include <ancer/BaseGLES3Operation.hpp>
 #include <ancer/DatumReporting.hpp>
 #include <ancer/System.hpp>
 #include <ancer/util/Json.hpp>
-
-#include <ancer/util/LibLoader.hpp>
 #include <ancer/util/LibAndroid.hpp>
 #include <ancer/util/LibEGL.hpp>
 
@@ -50,7 +49,7 @@ struct datum {
   int measured_alpha;
 };
 
-void WriteDatum(report_writers::Struct w, const datum& d) {
+void WriteDatum(report_writers::Struct w, const datum &d) {
   ADD_DATUM_MEMBER(w, d, success);
   ADD_DATUM_MEMBER(w, d, measured_red);
   ADD_DATUM_MEMBER(w, d, measured_green);
@@ -62,7 +61,7 @@ struct error_message_datum {
   std::string error_message;
 };
 
-void WriteDatum(report_writers::Struct w, const error_message_datum& d) {
+void WriteDatum(report_writers::Struct w, const error_message_datum &d) {
   ADD_DATUM_MEMBER(w, d, error_message);
 }
 
@@ -131,8 +130,9 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
   }
 
   bool CreateNativeClientBuffer() {
-    PFN_AHB_ALLOCATE pfn_alloc = GetPFN_AHardwareBuffer_Allocate();
-    if (pfn_alloc == nullptr) {
+    libandroid::FP_AHB_ALLOCATE fp_alloc =
+        libandroid::GetFP_AHardwareBuffer_Allocate();
+    if (fp_alloc == nullptr) {
       ReportError("Failed to locate symbol for AHardwareBuffer_allocate");
       return false;
     }
@@ -146,20 +146,21 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
                    AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN |
                    AHARDWAREBUFFER_USAGE_CPU_WRITE_OFTEN;
 
-    pfn_alloc(&h_desc, &_hardware_buffer);
+    fp_alloc(&h_desc, &_hardware_buffer);
     if (_hardware_buffer == nullptr) {
       ReportError("Failed to allocate AHardwareBuffer");
       return false;
     }
 
-    PFN_GET_EGLBUFFER pfn_get_egl_buffer = GetPFN_CreateEGLBuffer();
-    if (pfn_get_egl_buffer == nullptr) {
+    libegl::FP_GET_NATIVE_CLIENT_BUFFER fp_get_native_client_buffer =
+        libegl::GetFP_GetNativeClientBuffer();
+    if (fp_get_native_client_buffer == nullptr) {
       ReportError(
           "Failed to locate symbol for eglGetNativeClientBufferANDROID");
       return false;
     }
 
-    _egl_buffer = pfn_get_egl_buffer(_hardware_buffer);
+    _egl_buffer = fp_get_native_client_buffer(_hardware_buffer);
     if (_egl_buffer == nullptr) {
       DestroyNativeClientBuffer();
       ReportError("Failed to get native client buffer");
@@ -170,13 +171,14 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
   }
 
   bool DestroyNativeClientBuffer() {
-    PFN_AHB_RELEASE pfn_release = GetPFN_AHardwareBuffer_Release();
-    if (pfn_release == nullptr) {
+    libandroid::FP_AHB_RELEASE fp_release =
+        libandroid::GetFP_AHardwareBuffer_Release();
+    if (fp_release == nullptr) {
       ReportError("Failed to locate symbol for AHardwareBuffer_release");
       return false;
     }
 
-    pfn_release(_hardware_buffer);
+    fp_release(_hardware_buffer);
     _hardware_buffer = nullptr;
 
     return true;
@@ -279,22 +281,23 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
   }
 
   bool ReadAHardwareBuffer() {
-    PFN_AHB_LOCK pfn_lock = GetPFN_AHardwareBuffer_Lock();
-    if (pfn_lock == nullptr) {
+    libandroid::FP_AHB_LOCK fp_lock = libandroid::GetFP_AHardwareBuffer_Lock();
+    if (fp_lock == nullptr) {
       ReportError("Failed to load symbol for AHardwareBuffer_lock");
       return false;
     }
 
-    PFN_AHB_UNLOCK pfn_unlock = GetPFN_AHardwareBuffer_Unlock();
-    if (pfn_unlock == nullptr) {
+    libandroid::FP_AHB_UNLOCK fp_unlock =
+        libandroid::GetFP_AHardwareBuffer_Unlock();
+    if (fp_unlock == nullptr) {
       ReportError("Failed to load symbol for AHardwareBuffer_unlock");
       return false;
     }
 
     void *buffer;
     const int lock_result =
-        pfn_lock(_hardware_buffer, AHARDWAREBUFFER_USAGE_CPU_READ_MASK, -1,
-                 nullptr, &buffer);
+        fp_lock(_hardware_buffer, AHARDWAREBUFFER_USAGE_CPU_READ_MASK, -1,
+                nullptr, &buffer);
     if (lock_result != 0) {
       ReportError("Failed to lock AHardwareBuffer : " +
                   std::to_string(lock_result));
@@ -326,7 +329,7 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
     d.measured_alpha = static_cast<int>(a);
     Report(d);
 
-    const int unlock_result = pfn_unlock(_hardware_buffer, nullptr);
+    const int unlock_result = fp_unlock(_hardware_buffer, nullptr);
     if (unlock_result != 0) {
       ReportError("Failed to unlock AHardwareBuffer : " +
                   std::to_string(unlock_result));

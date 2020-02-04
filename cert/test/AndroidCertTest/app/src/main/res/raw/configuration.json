@@ -10,6 +10,21 @@
   "stress_tests": [
     {
       "enabled": true,
+      "name": "EGL Get Frame Timestamps",
+      "description": "Determine if EGL frame timestamps extension is present and works.",
+      "duration": "2s",
+      "data_gatherer": {
+        "id": "EGLGetFrameTimestampsGLES3Operation",
+        "configuration": {
+          "first_frame_id": 20,
+          "last_frame_id": 21
+        }
+      },
+      "host": "GLSurfaceViewHostActivity",
+      "stressors": []
+    },
+    {
+      "enabled": true,
       "name": "Sane CPUSET",
       "description": "Checks CPUSET availability and big.LITTLE consistence.",
       "duration": "10s",

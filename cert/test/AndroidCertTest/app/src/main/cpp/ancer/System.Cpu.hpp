@@ -50,6 +50,11 @@ bool SetThreadAffinity(ThreadAffinity affinity);
 const std::vector<ThreadAffinity> &GetCoreSizes();
 
 [[nodiscard]] std::string GetCpuInfo();
+
+uint64_t GetUptimeMillis();
+
+uint64_t GetElapsedRealtimeNanos();
+
 }
 
 #endif  // _SYSTEM_CPU_HPP
