@@ -50,6 +50,7 @@ bool SetThreadAffinity(ThreadAffinity affinity);
 const std::vector<ThreadAffinity> &GetCoreSizes();
 
 [[nodiscard]] std::string GetCpuInfo();
+
 }
 
 #endif  // _SYSTEM_CPU_HPP

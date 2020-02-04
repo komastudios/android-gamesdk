@@ -484,6 +484,14 @@ std::vector<std::string> GetGlExtensions();
 std::vector<std::string> GetEglExtensions();
 
 /**
+ * Checks if an extension (e.g., "EGL_KHR_wait_sync") is available.
+ * Must be called from a context with a valid EGL display.
+ *
+ * @return true if extension is available
+ */
+bool CheckEglExtension(const std::string& name);
+
+/**
  * Checks whether the OpenGL ES driver and hardware on the device support a given extension.
  * This function could be expensive, and results are constant. Ideally, for a given argument, call
  * it once from one single place and store the result.
