@@ -13,11 +13,11 @@ namespace vulkan {
 struct AndroidHelper {
   static void Initialize();
 
-  static ANativeWindow *Window();
+  static ANativeWindow * Window();
 
-  static void WindowSize(uint32_t &width, uint32_t &height);
+  static void WindowSize(uint32_t & width, uint32_t & height);
 
-  static FILE *Fopen(const char *fname, const char *mode);
+  static FILE * Fopen(const char * fname, const char * mode);
 };
 
 }

@@ -97,9 +97,20 @@ add_library(${PROJECT_NAME} SHARED
         ancer/util/VkHelpers.cpp
         ancer/util/vulkan/VkHelpersImpl.cpp
         ancer/vulkan/android_helper.cc
-        ancer/vulkan/vulkan_base.cc
+        ancer/vulkan/blend_mode.cc
+        ancer/vulkan/buffer.cc
         ancer/vulkan/context.cc
+        ancer/vulkan/depth_mode.cc
+        ancer/vulkan/format.cc
+        ancer/vulkan/graphics_pipeline.cc
+        ancer/vulkan/image.cc
+        ancer/vulkan/render_pass.cc
+        ancer/vulkan/resources.cc
+        ancer/vulkan/sampler.cc
+        ancer/vulkan/shader_module.cc
         ancer/vulkan/swapchain.cc
+        ancer/vulkan/upload.cc
+        ancer/vulkan/vulkan_base.cc
 
         # Operations
         operations/CalculatePIOperation.cpp
@@ -119,7 +130,6 @@ add_library(${PROJECT_NAME} SHARED
         operations/gl/ExternalBufferGLES3Operation.cpp
         operations/gl/FillRateGLES3Operation.cpp
         operations/gl/GetExtensionsGLES3Operation.cpp
-        operations/gl/HalfFloatPrecisionGLES3Operation.cpp
         operations/gl/HelloGLES3Operation.cpp
         operations/gl/MarchingCubesGLES3Operation.cpp
         operations/gl/marching_cubes/MarchingCubes.cpp
