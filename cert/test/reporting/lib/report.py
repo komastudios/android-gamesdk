@@ -347,7 +347,16 @@ def normalize_report_name(report_file: Path) -> Path:
     device_info = DeviceCatalog()[build_info["DEVICE"]]
     renamed_report_file: Path = \
         report_file.with_name(f"{device_info.brand}_{device_info.model}"\
-            f"_{device_info.sdk_version}_report.json")
+            f"_{device_info.sdk_version}_report.json".replace(" ", "_"))
+
+    # it' spossible the test ran on multiple devices of same type,
+    # so assign an incrementing index to subsequent names
+    idx = 2
+    while renamed_report_file.exists():
+        renamed_report_file = report_file.with_name(f"{device_info.brand}_{device_info.model}"\
+            f"_{device_info.sdk_version}_report({idx}).json".replace(" ", "_"))
+        idx += 1
+
     shutil.move(report_file, renamed_report_file)
     return renamed_report_file
 
