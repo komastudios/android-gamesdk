@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "86f507eb_e5365d60",
+        "filename": "samples/tuningfork/expertballs/app/CMakeLists.txt",
+        "patchSetId": 6
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-02-05T10:51:00Z",
+      "side": 1,
+      "message": "Good catch.",
+      "parentUuid": "90ee9121_b714617f",
+      "revId": "953a71f2595ce096c702168ffce78515d0257a64",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9cbe9853_98bd718d",
         "filename": "samples/tuningfork/scaledballs/app/CMakeLists.for-samples-in-archive.txt",
         "patchSetId": 6
@@ -77,6 +95,30 @@
     },
     {
       "key": {
+        "uuid": "dbac7f66_d2ab6b5d",
+        "filename": "samples/tuningfork/scaledballs/app/src/main/proto/tuningfork_clearcut_log.proto",
+        "patchSetId": 6
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-02-05T10:51:00Z",
+      "side": 1,
+      "message": "No. Removed. Thanks.",
+      "parentUuid": "79ef7491_b43e732c",
+      "range": {
+        "startLine": 1,
+        "startChar": 42,
+        "endLine": 1,
+        "endChar": 65
+      },
+      "revId": "953a71f2595ce096c702168ffce78515d0257a64",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bc3c3184_fd783269",
         "filename": "samples/tuningfork/scaledballs/protobuf_size_comparisons.txt",
         "patchSetId": 6
@@ -91,6 +133,24 @@
       "revId": "953a71f2595ce096c702168ffce78515d0257a64",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7de03c17_3248bbb1",
+        "filename": "samples/tuningfork/scaledballs/protobuf_size_comparisons.txt",
+        "patchSetId": 6
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-02-05T10:51:00Z",
+      "side": 1,
+      "message": "Added in error. Removed.",
+      "parentUuid": "bc3c3184_fd783269",
+      "revId": "953a71f2595ce096c702168ffce78515d0257a64",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
