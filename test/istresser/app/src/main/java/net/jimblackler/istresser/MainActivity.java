@@ -39,6 +39,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.Collection;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -292,27 +293,8 @@ public class MainActivity extends AppCompatActivity {
       report.put("groups", groupsOut);
 
       JSONObject build = new JSONObject();
-      build.put("ID", Build.ID);
-      build.put("DISPLAY", Build.DISPLAY);
-      build.put("PRODUCT", Build.PRODUCT);
-      build.put("DEVICE", Build.DEVICE);
-      build.put("BOARD", Build.BOARD);
-      build.put("MANUFACTURER", Build.MANUFACTURER);
-      build.put("BRAND", Build.BRAND);
-      build.put("MODEL", Build.MODEL);
-      build.put("BOOTLOADER", Build.BOOTLOADER);
-      build.put("HARDWARE", Build.HARDWARE);
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        build.put("BASE_OS", Build.VERSION.BASE_OS);
-      }
-      build.put("CODENAME", Build.VERSION.CODENAME);
-      build.put("INCREMENTAL", Build.VERSION.INCREMENTAL);
-      build.put("RELEASE", Build.VERSION.RELEASE);
-      build.put("SDK_INT", Build.VERSION.SDK_INT);
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        build.put("PREVIEW_SDK_INT", Build.VERSION.PREVIEW_SDK_INT);
-        build.put("SECURITY_PATCH", Build.VERSION.SECURITY_PATCH);
-      }
+      getStaticFields(build, Build.class);
+      getStaticFields(build, Build.VERSION.class);
       report.put("build", build);
 
       JSONObject constant = new JSONObject();
@@ -415,6 +397,20 @@ public class MainActivity extends AppCompatActivity {
         },
         0,
         1000 / 10);
+  }
+
+  private static void getStaticFields(JSONObject object, Class<?> aClass) throws JSONException {
+
+    for (Field field : aClass.getFields()) {
+      if (!java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+        continue;
+      }
+      try {
+        object.put(field.getName(), JSONObject.wrap(field.get(null)));
+      } catch (IllegalAccessException e) {
+        // Silent by design.
+      }
+    }
   }
 
   @Override

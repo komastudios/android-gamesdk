@@ -4,11 +4,15 @@ import static net.jimblackler.istresser.Heuristics.getMemoryInfo;
 import static net.jimblackler.istresser.Heuristics.processMeminfo;
 
 import android.app.ActivityManager;
+import android.app.ActivityManager.MemoryInfo;
 import android.os.Debug;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 
 public abstract class Heuristic {
+
+  private static final long AVAIL_THRESHOLD_1 = 1024 * 1024 * 300;
+  private static final long AVAIL_THRESHOLD_2 = 1024 * 1024 * 200;
 
   public enum Indicator {
     GREEN,
@@ -17,18 +21,42 @@ public abstract class Heuristic {
   }
 
   public enum Identifier {
+    VMSIZE,
     TRIM,
     OOM,
     LOW,
     TRY,
     CL,
+    CL2,
     AVAIL,
     CACHED,
     AVAIL2
   }
 
-  static List<Heuristic> availableHeuristics =
+  static final List<Heuristic> availableHeuristics =
       ImmutableList.of(
+          /*
+           * Checks the OOM Score of the app; returns RED if the score is over 650, GREEN otherwise.
+           */
+          new Heuristic(Identifier.VMSIZE) {
+
+
+            @Override
+            public Indicator getSignal(ActivityManager activityManager) {
+              long value = processMeminfo().get("CommitLimit");
+              long vmSize = Heuristics.processStatus(activityManager).get("VmSize");
+
+              Indicator indicator;
+              if (vmSize > value * 0.95f) {
+                indicator = Indicator.RED;
+              } else {
+                indicator = Indicator.GREEN;
+              }
+;
+              return indicator;
+
+            }
+          },
           /*
            * Checks the OOM Score of the app; returns RED if the score is over 650, GREEN otherwise.
            */
@@ -76,6 +104,19 @@ public abstract class Heuristic {
                   : Indicator.GREEN;
             }
           },
+
+          new Heuristic(Identifier.CL2) {
+            @Override
+            public Indicator getSignal(ActivityManager activityManager) {
+              Long value = processMeminfo().get("CommitLimit");
+              if (value == null) {
+                return Indicator.GREEN;
+              }
+              return Debug.getNativeHeapAllocatedSize() / 1024 > value * 0.90f
+                  ? Indicator.RED
+                  : Indicator.GREEN;
+            }
+          },
           /*
            * Returns RED if the availMem value is below a level that requires memory to be freed
            * to prevent the application from being killed, GREEN otherwise.
@@ -83,8 +124,8 @@ public abstract class Heuristic {
           new Heuristic(Identifier.AVAIL) {
             @Override
             public Indicator getSignal(ActivityManager activityManager) {
-              ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
-              return memoryInfo.availMem < memoryInfo.threshold * 2
+              MemoryInfo memoryInfo = getMemoryInfo(activityManager);
+              return memoryInfo.availMem < AVAIL_THRESHOLD_1
                   ? Indicator.RED
                   : Indicator.GREEN;
             }
@@ -100,7 +141,7 @@ public abstract class Heuristic {
               if (value == null || value == 0) {
                 return Indicator.GREEN;
               }
-              ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
+              MemoryInfo memoryInfo = getMemoryInfo(activityManager);
               return value < memoryInfo.threshold / 1024 ? Indicator.RED : Indicator.GREEN;
             }
           },
@@ -111,12 +152,12 @@ public abstract class Heuristic {
           new Heuristic(Identifier.AVAIL2) {
             @Override
             public Indicator getSignal(ActivityManager activityManager) {
+              MemoryInfo memoryInfo = getMemoryInfo(activityManager);
               Long value = processMeminfo().get("MemAvailable");
               if (value == null || value == 0) {
                 return Indicator.GREEN;
               }
-              ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
-              return value < memoryInfo.threshold * 2 / 1024 ? Indicator.RED : Indicator.GREEN;
+              return value < AVAIL_THRESHOLD_1 ? Indicator.RED : Indicator.GREEN;
             }
           });
 
