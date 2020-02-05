@@ -59,8 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
   private static final String TAG = MainActivity.class.getSimpleName();
 
-  // Set BYTES_PER_MILLISECOND to zero to disable malloc testing.
-  public static final int BYTES_PER_MILLISECOND = 100 * 1024;
+  public static final int BYTES_PER_MILLISECOND = 40 * 1024;
 
   // Set MAX_DURATION to zero to stop the app from self-exiting.
   private static final int MAX_DURATION = 1000 * 60 * 10;
@@ -71,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
   private static final int MAX_SERVICE_MEMORY_MB = 500;
   private static final int SERVICE_PERIOD_SECONDS = 60;
   private static final int BYTES_IN_MEGABYTE = 1024 * 1024;
-  private static final boolean GL_TEST = true;
   public static final int NUMBER_MAIN_GROUPS = 9;
 
   private static final String MEMORY_BLOCKER = "MemoryBlockCommand";
@@ -108,6 +106,8 @@ public class MainActivity extends AppCompatActivity {
   private int serviceTotalMb = 0;
   private ServiceCommunicationHelper serviceCommunicationHelper;
   private boolean isServiceCrashed = false;
+  private boolean glTestActive;
+  private boolean mallocTestActive;
 
   enum ServiceState {
     ALLOCATING_MEMORY,
@@ -192,10 +192,8 @@ public class MainActivity extends AppCompatActivity {
 
       JSONObject report = new JSONObject();
 
-      if (!GL_TEST) {
-        TestSurface testSurface = findViewById(R.id.glsurfaceView);
-        testSurface.setVisibility(View.GONE);
-      }
+      TestSurface testSurface = findViewById(R.id.glsurfaceView);
+      testSurface.setVisibility(View.GONE);
 
       PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
       report.put("version", packageInfo.versionCode);
@@ -253,6 +251,8 @@ public class MainActivity extends AppCompatActivity {
         useScenario -= 2 * NUMBER_MAIN_GROUPS;
       }
 
+      activateMallocTest();
+
       switch (useScenario) {
         case 1:
           break;
@@ -290,6 +290,8 @@ public class MainActivity extends AppCompatActivity {
       strategies.setText(groupsOut.toString());
 
       report.put("groups", groupsOut);
+      report.put("mallocTest", mallocTestActive);
+      report.put("glTest", glTestActive);
 
       JSONObject build = new JSONObject();
       build.put("ID", Build.ID);
@@ -353,7 +355,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                   }
                 }
-                if (!memoryReleased) {
+                if (mallocTestActive && !memoryReleased) {
                   long sinceStart = System.currentTimeMillis() - _allocationStartedAt;
                   long target = sinceStart * BYTES_PER_MILLISECOND;
                   int owed = (int) (target - nativeAllocatedByTest);
@@ -415,6 +417,16 @@ public class MainActivity extends AppCompatActivity {
         },
         0,
         1000 / 10);
+  }
+
+  private void activateMallocTest() {
+    mallocTestActive = true;
+  }
+
+  private void activateGlTest() {
+    TestSurface testSurface = findViewById(R.id.glsurfaceView);
+    testSurface.setVisibility(View.VISIBLE);
+    glTestActive = true;
   }
 
   @Override
@@ -568,7 +580,7 @@ public class MainActivity extends AppCompatActivity {
             freeAll();
           }
           data.clear();
-          if (GL_TEST) {
+          if (glTestActive) {
             TestSurface testSurface = findViewById(R.id.glsurfaceView);
             if (testSurface != null) {
               testSurface.queueEvent(
@@ -655,7 +667,7 @@ public class MainActivity extends AppCompatActivity {
 
   public static native void initGl();
 
-  public static native void nativeDraw();
+  public static native int nativeDraw();
 
   public static native void release();
 
