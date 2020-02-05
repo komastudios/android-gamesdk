@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c37dfb5b_e184a8d1",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 426,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-02-05T18:18:54Z",
+      "side": 1,
+      "message": "Is this never called?",
+      "revId": "3db5ad508e0ccfb01dd876a9a4d198ce9335ca7c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
