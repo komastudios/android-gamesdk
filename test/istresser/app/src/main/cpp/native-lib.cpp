@@ -69,10 +69,10 @@ Java_net_jimblackler_istresser_MainActivity_initGl(JNIEnv* env,
 }
 
 extern "C"
-JNIEXPORT void JNICALL
+JNIEXPORT int JNICALL
 Java_net_jimblackler_istresser_MainActivity_nativeDraw(JNIEnv* env,
                                                        jclass clazz) {
-  testRenderer->render();
+  return testRenderer->render();
 }
 extern "C"
 JNIEXPORT void JNICALL
