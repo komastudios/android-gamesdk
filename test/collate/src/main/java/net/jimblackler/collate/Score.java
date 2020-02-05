@@ -1,7 +1,6 @@
 package net.jimblackler.collate;
 
 import com.google.api.client.util.Lists;
-import com.google.common.collect.ImmutableList;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
@@ -19,31 +18,14 @@ import org.json.JSONObject;
 
 public class Score {
   private static final boolean USE_DEVICE = false;
-
-  private static final List<List<String>> baseGroups =
-      ImmutableList.<List<String>>builder()
-          .add(ImmutableList.of(""))
-          .add(ImmutableList.of("trim"))
-          .add(ImmutableList.of("oom"))
-          .add(ImmutableList.of("low"))
-          .add(ImmutableList.of("try"))
-          .add(ImmutableList.of("cl"))
-          .add(ImmutableList.of("avail"))
-          .add(ImmutableList.of("cached"))
-          .add(ImmutableList.of("avail2"))
-          .add(ImmutableList.of("cl", "avail", "avail2"))
-          .add(ImmutableList.of("cl", "avail", "avail2", "low"))
-          .add(ImmutableList.of("trim", "try", "cl", "avail", "avail2"))
-          .add(ImmutableList.of("trim", "low", "try", "cl", "avail", "avail2"))
-          .build();
-
-  private static final List<List<String>> groups =
-      ImmutableList.<List<String>>builder().addAll(baseGroups).addAll(baseGroups).build();
+  private static final int DEVICE_SCENARIOS = 1;
 
   public static void main(String[] args) throws IOException, InterruptedException {
     Map<String, List<Result>> out = new HashMap<>();
     Map<String, JSONObject> builds = new HashMap<>();
     Path directory = Files.createTempDirectory("report-");
+    final int[] numberScenarios = {0};
+    Map<Integer, JSONArray> groups = new HashMap<>();
     Consumer<JSONArray> collect =
         result -> {
           if (result.isEmpty()) {
@@ -56,9 +38,11 @@ public class Score {
           }
 
           int scenario = first.getInt("scenario");
-          if (scenario > groups.size()) {
-            return;
+          if (scenario > numberScenarios[0]) {
+            numberScenarios[0] = scenario;
           }
+          groups.put(scenario, first.getJSONArray("groups"));
+
           assert first.has("build");
           JSONObject build = first.getJSONObject("build");
           String id = build.toString();
@@ -120,6 +104,9 @@ public class Score {
           }
           JSONArray results1 = new JSONArray();
           results1.put(result);
+          while (results0.size() <= numberScenarios[0] - 1) {
+            results0.add(null);
+          }
           assert results0.get(scenario - 1) == null;
           results0.set(
               scenario - 1,
@@ -128,11 +115,11 @@ public class Score {
                   Main.writeGraphs(directory, results1),
                   exited && !allocFailed,
                   serviceCrashed,
-                  scenario - 1 >= baseGroups.size() ? 1 : 0));
+                  first.has("service") ? 1 : 0));
         };
 
     if (USE_DEVICE) {
-      for (int scenario = 1; scenario <= groups.size(); scenario++) {
+      for (int scenario = 1; scenario <= DEVICE_SCENARIOS; scenario++) {
         Collector.deviceCollect(collect, scenario);
       }
     } else {
@@ -154,8 +141,17 @@ public class Score {
         .append("<th>")
         .append("Release")
         .append("</th>");
-    for (int scenario = 1; scenario != groups.size() + 1; scenario++) {
-      body.append("<th>").append(String.join("<br/>", groups.get(scenario - 1))).append("</th>");
+    for (int scenario = 1; scenario <= numberScenarios[0]; scenario++) {
+      JSONArray _groups = groups.getOrDefault(scenario, new JSONArray());
+      StringBuilder groupsString = new StringBuilder();
+
+      for (int idx = 0; idx < _groups.length(); idx++) {
+        if (idx > 0) {
+          groupsString.append(", ");
+        }
+        groupsString.append(_groups.getString(idx).toLowerCase());
+      }
+      body.append("<th>").append(String.join("<br/>", groupsString)).append("</th>");
     }
     body.append("</thead>");
 
