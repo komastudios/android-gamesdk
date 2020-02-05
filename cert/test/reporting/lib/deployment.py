@@ -19,6 +19,7 @@ for subsequent processing
 Meant to be called from ./run.py
 """
 
+import concurrent.futures
 import os
 from pathlib import Path
 import shutil
@@ -28,7 +29,7 @@ from typing import Tuple, Dict, List
 
 from lib.build import APP_ID, build_apk
 from lib.common import run_command, NonZeroSubprocessExitCode, \
-    get_attached_devices, Recipe, get_indexable_utc, ensure_dir
+    get_attached_devices, Recipe, get_indexable_utc
 from lib.report import extract_and_export, normalize_report_name, \
     merge_systrace
 from lib.summary import perform_summary_if_enabled
@@ -60,8 +61,9 @@ def get_systrace_config(recipe: Recipe) -> (bool, List[str], List[str]):
     return enabled, keywords, categories
 
 
-def load_tasks(tasks_dict: List[Dict], task_ctors: Dict
-              ) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
+def load_tasks(
+        tasks_dict: List[Dict],
+        task_ctors: Dict) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
     """Load tasks and create default task environment (internal, called by
     get_preflight_tasks and get_postflight_tasks)
     Args:
@@ -74,8 +76,8 @@ def load_tasks(tasks_dict: List[Dict], task_ctors: Dict
     return lib.tasks_runner.load(tasks_dict, task_ctors), env
 
 
-def get_preflight_tasks(recipe: Recipe
-                       ) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
+def get_preflight_tasks(
+        recipe: Recipe) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
     """Load preflight tasks from the local deployment block of the recipe,
     and generate preflight environment
     """
@@ -83,8 +85,8 @@ def get_preflight_tasks(recipe: Recipe
     return load_tasks(preflight, lib.tasks_runner.PREFLIGHT_TASKS)
 
 
-def get_postflight_tasks(recipe: Recipe
-                        ) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
+def get_postflight_tasks(
+        recipe: Recipe) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
     """Load postflight tasks from the local deployment block of the recipe,
     and generate preflight environment
     """
@@ -96,7 +98,7 @@ def uninstall_apk_from_device(device_id: str) -> type(None):
     """Uninstalls the APK from the specified device
     """
     try:
-        run_command(f"adb -s {device_id} uninstall {APP_ID}")
+        run_command(f"adb -s {device_id} uninstall {APP_ID}", quiet=True)
     except NonZeroSubprocessExitCode as ex:
         # uninstall is expected to fail if the APK is not currently installed
         print(
@@ -113,7 +115,7 @@ def push_apk_to_device(apk: Path, device_id: str) -> type(None):
         device_id: the device serial identifier.
     """
     # install the APK
-    run_command(f"adb -s {device_id} install -r {str(apk)}")
+    run_command(f"adb -s {device_id} install -r {str(apk)}", quiet=True)
 
 
 def block_for_systrace(device_id: str, out_dir: Path,
@@ -167,30 +169,35 @@ def poll_app_active(device_id: str, app_id: str):
     return False
 
 
-def start_test_and_wait_for_completion(local_device_id: str) -> type(None):
+def start_test_and_wait_for_completion(
+        local_device_id: str, display_wait_message: bool) -> type(None):
     """Launches the test on the device. Doesn't return control until execution
     has finished.
 
     Args:
         local_device_id: local device serial identifier.
+        display_wait_message: if true, display a "Waiting..." message to stdout
     """
     # launch the activity in GAME_LOOP mode
     command = (f"adb -s {local_device_id} shell am start"
                f" -n \"{APP_ID}/.MainActivity\""
                f" -a \"com.google.intent.action.TEST_LOOP\"")
-    run_command(command)
+    run_command(command, quiet=True)
 
     # wait for the GAME_LOOP to complete
     tick = 0
     while poll_app_active(local_device_id, APP_ID):
-        count = tick % 4
-        ellipsis = "." * count
-        ellipsis += " " * (4 - count)
-        print(f"Waiting on app to finish tests{ellipsis}", end='\r')
-        tick += 1
         time.sleep(0.25)
+        if display_wait_message:
+            count = tick % 4
+            ellipsis = "." * count
+            ellipsis += " " * (4 - count)
+            print(f"Waiting on app to finish tests{ellipsis}", end='\r')
+            tick += 1
 
-    print("\n")
+    if display_wait_message:
+        print("\n")
+
     time.sleep(2)
 
 
@@ -281,20 +288,16 @@ def run_local_deployment(recipe: Recipe, apk: Path, out_dir: Path):
     print(f"\tSystrace: {systrace_enabled} systrace_keywords: " +
           unpack(systrace_keywords) + "\n\n")
 
-    for device_id in devices:
-        uninstall_apk_from_device(device_id)
-        push_apk_to_device(apk, device_id)
-
-        # run preflight tasks
-        lib.tasks_runner.run(preflight_tasks, device_id, preflight_env)
-
+    def run_and_collect_results(device_id: str, display_wait_message: bool):
+        '''execute apk and collect result report'''
         # if enabled, start systrace and wait for it
+
         systracer = block_for_systrace(
             device_id, out_dir,
             systrace_categories) if systrace_enabled else None
 
         # run test!
-        start_test_and_wait_for_completion(device_id)
+        start_test_and_wait_for_completion(device_id, display_wait_message)
 
         # extract report
         extract_and_export(
@@ -303,8 +306,39 @@ def run_local_deployment(recipe: Recipe, apk: Path, out_dir: Path):
             systrace_file=systracer.finish() if systracer else None,
             systrace_keywords=systrace_keywords)
 
-        # run postflight tasks
-        lib.tasks_runner.run(postflight_tasks, device_id, postflight_env)
+    # run install and preflight in serial
+    for device_id in devices:
+        print(f"[INFO] Installing APK on device {device_id}")
+        uninstall_apk_from_device(device_id)
+        push_apk_to_device(apk, device_id)
+
+        # run preflight tasks
+        if preflight_tasks:
+            print(f"[INFO] Running preflight tasks for device {device_id}")
+            lib.tasks_runner.run(preflight_tasks, device_id, preflight_env)
+
+    # run the test in parallel if possible
+    # TODO(shamyl@google.com) for now, don't run in parallel if systrace enabled
+    can_run_in_parallel = len(devices) > 1 and not systrace_enabled
+    if can_run_in_parallel:
+        print(f"[INFO] Waiting for test to run on {len(devices)} devices...")
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            for device_id in devices:
+                executor.submit(run_and_collect_results, device_id, False)
+
+        print(f"[INFO] All devices finished")
+
+    else:
+        for device_id in devices:
+            run_and_collect_results(device_id, True)
+
+    # run the postflight tasks in serial
+    if postflight_tasks:
+        for device_id in devices:
+            # run postflight tasks
+            print(f"[INFO] Running postflight tasks for device {device_id}")
+            lib.tasks_runner.run(postflight_tasks, device_id, postflight_env)
 
     perform_summary_if_enabled(recipe, out_dir)
 
@@ -351,12 +385,14 @@ def run_ftl_deployment(recipe: Recipe, apk: Path, out_dir: Path):
     perform_summary_if_enabled(recipe, out_dir)
 
 
-def run_recipe(recipe: Recipe, args: Dict, out_dir: Path = None):
+def run_recipe(recipe: Recipe, args: Dict, out_dir: Path = None)->Path:
     '''Executes the deployment specified in the recipe
     Args:
         recipe_path: path to recipe yaml file
         out_dir: if specified, reports will be saved to this folder; otherwise
             a default will be created via lib.graphing.setup_report_dir()
+
+    Returns: The directory where result data is stored
     '''
 
     # ensure the out/ dir exists for storing reports/systraces/etc
@@ -388,3 +424,5 @@ def run_recipe(recipe: Recipe, args: Dict, out_dir: Path = None):
         run_local_deployment(recipe, apk_path, out_dir)
     if args.get("ftl"):
         run_ftl_deployment(recipe, apk_path, out_dir)
+
+    return out_dir

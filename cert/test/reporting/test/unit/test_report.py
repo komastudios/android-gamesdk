@@ -134,11 +134,14 @@ class TestLibReport(unittest.TestCase):
         """Test lib.report.normalize_report_name and
         lib.report.get_device_product_and_api
         """
+
+        lib.common.remove_files_with_extensions(Path("./tmp"), [".json"])
+
         report_file = Path("./test/unit/data/report/blueline-29-report.json")
         tmp_report_file = Path("./tmp/blueline-29-report.json")
         shutil.copy(report_file, tmp_report_file)
 
         tmp_report_file = lib.report.normalize_report_name(tmp_report_file)
-        self.assertEqual(tmp_report_file.name, "Google_Pixel 3_29_report.json")
+        self.assertEqual(tmp_report_file.name, "Google_Pixel_3_29_report.json")
 
         tmp_report_file.unlink()

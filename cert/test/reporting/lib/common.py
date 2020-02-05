@@ -35,6 +35,7 @@ def seconds_to_nanoseconds(seconds):
     """Convert seconds to nanoseconds"""
     return seconds * 1e9
 
+
 def nanoseconds_to_milliseconds(nano_seconds):
     """Convert nano seconds to milliseconds"""
     return nano_seconds / 1e6
@@ -43,6 +44,7 @@ def nanoseconds_to_milliseconds(nano_seconds):
 def milliseconds_to_nanoseconds(milliseconds):
     """Convert milliseconds to nanoseconds"""
     return milliseconds * 1e6
+
 
 # ------------------------------------------------------------------------------
 
@@ -161,21 +163,25 @@ def get_attached_devices() -> List[str]:
 RET_CODE_SUCCESS = 0
 
 
-def run_command(command):
+def run_command(command, quiet: bool = False):
     """Run a shell command displaying output in real time
     Args:
         command: The shell command to execute
+        quiet: If true, no output will be displayed on stdout
     Raises:
         NonZeroSubprocessExitCode if the shell command exited with non-zero
             result
     """
-    print(f"run_command: {command}")
+    if not quiet:
+        print(f"run_command: {command}")
+
     process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
     while True:
         line = process.stdout.readline().decode("utf-8")
         if not line:
             break
-        sys.stdout.write(line)
+        if not quiet:
+            sys.stdout.write(line)
 
     ret_code = process.wait()
     process.stdout.close()
@@ -244,7 +250,10 @@ class Recipe():
             key_path: A path to lookup, e.g.,
                 "deployment.local.all_attached_devices"
         """
+
         def fallback_default():
-            return dict_lookup(self._default_recipe, key_path, fallback=fallback)
+            return dict_lookup(self._default_recipe,
+                               key_path,
+                               fallback=fallback)
 
         return dict_lookup(self._recipe, key_path, fallback=fallback_default)
