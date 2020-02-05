@@ -11,6 +11,7 @@ public class TestRenderer implements GLSurfaceView.Renderer {
   private static final int VIEWPORT_X = 0;
   private static final int VIEWPORT_Y = 0;
   private final AtomicBoolean intialized = new AtomicBoolean(false);
+  private static long allocated;
 
   @Override
   public void onSurfaceCreated(GL10 unused, EGLConfig config) {
@@ -24,10 +25,15 @@ public class TestRenderer implements GLSurfaceView.Renderer {
   }
 
   public void onDrawFrame(GL10 unused) {
-    MainActivity.nativeDraw();
+    allocated += MainActivity.nativeDraw();
   }
 
   public void release() {
+    allocated = 0;
     MainActivity.release();
+  }
+
+  public long getAllocated() {
+    return allocated;
   }
 }

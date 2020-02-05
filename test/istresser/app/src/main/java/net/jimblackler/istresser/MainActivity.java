@@ -625,6 +625,10 @@ public class MainActivity extends AppCompatActivity {
     report.put("serviceTotalMemory", BYTES_IN_MEGABYTE * serviceTotalMb);
     report.put("oom_score", Heuristics.getOomScore(activityManager));
 
+    TestSurface testSurface = findViewById(R.id.glsurfaceView);
+    TestRenderer renderer = testSurface.getRenderer();
+    report.put("gl_allocated", renderer.getAllocated());
+
     if (VERSION.SDK_INT >= VERSION_CODES.M) {
       MemoryInfo debugMemoryInfo = Heuristics.getDebugMemoryInfo(activityManager)[0];
       for (String key : SUMMARY_FIELDS) {
@@ -651,7 +655,7 @@ public class MainActivity extends AppCompatActivity {
 
   public static native void initGl();
 
-  public static native void nativeDraw();
+  public static native int nativeDraw();
 
   public static native void release();
 
