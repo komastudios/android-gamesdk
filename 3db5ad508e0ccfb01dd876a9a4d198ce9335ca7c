@@ -34,6 +34,24 @@
       "revId": "3db5ad508e0ccfb01dd876a9a4d198ce9335ca7c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "10bc6456_76f53ea6",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 426,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-02-06T14:50:20Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "5a6474e3_531856b1",
+      "revId": "3db5ad508e0ccfb01dd876a9a4d198ce9335ca7c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
