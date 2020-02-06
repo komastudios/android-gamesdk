@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Trace;
-import android.preference.ListPreference;
 import android.preference.PreferenceManager;
 import android.text.Layout;
 import android.util.Log;
@@ -41,13 +40,19 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Queue;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatTextView;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class OrbitActivity extends AppCompatActivity implements Choreographer.FrameCallback, SurfaceHolder.Callback {
 
@@ -195,10 +200,69 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
         }
     }
 
+    class TestCase {
+        boolean use_affinity;
+        boolean hot_pocket;
+        boolean use_auto_swap_interval;
+        int workload;
+        int duration;
+        Timer timer;
+    }
+    private List<TestCase> testCases;
+
+    private boolean loadScript(String s) {
+        try {
+            testCases = new ArrayList<TestCase>();
+            JSONArray ja = new JSONArray(s);
+            for (int i=0; i< ja.length(); ++i) {
+                JSONObject o = ja.getJSONObject(i);
+                TestCase t = new TestCase();
+                if (o.has("use_affinity")) t.use_affinity = o.getBoolean("use_affinity");
+                if (o.has("hot_pocket")) t.hot_pocket = o.getBoolean("hot_pocket");
+                if (o.has("use_auto_swap_interval")) t.use_auto_swap_interval = o.getBoolean("use_auto_swap_interval");
+                if (o.has("workload")) t.workload = o.getInt("workload");
+                if (o.has("duration")) t.duration = o.getInt("duration");
+                testCases.add(t);
+            }
+            return true;
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Couldn't parse test script");
+            return false;
+        }
+    }
+
+    private void runScript() {
+        if (testCases != null) {
+            int ms = 1000;
+            for (TestCase t : testCases) {
+                t.timer = new Timer();
+                t.timer.schedule(new TimerTask() {
+                    public void run() {
+                        nSetPreference("use_affinity", t.use_affinity ? "true" : "false");
+                        nSetPreference("hot_pocket", t.hot_pocket ? "true" : "false");
+                        nSetAutoSwapInterval(t.use_auto_swap_interval);
+                        nSetWorkload(t.workload);
+                        Log.i(LOG_TAG, String.format("Task: auto swap = %d, workload = %d", t.use_auto_swap_interval?1:0, t.workload));
+                    }
+                }, ms);
+                ms += t.duration * 1000;
+
+            }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_orbit);
+
+        // See if there is an intent with a test script
+        Intent start_intent = getIntent();
+        if (start_intent.hasExtra("TEST_SCRIPT")) {
+            String test_data = start_intent.getStringExtra("TEST_SCRIPT");
+            Log.i(LOG_TAG, String.format("Intent test script (%d) %s", test_data.length(), test_data));
+            loadScript(test_data);
+        }
 
         // Get display metrics
 
@@ -229,6 +293,8 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
         // Initialize the native renderer
 
         nInit();
+
+        runScript();
     }
 
     private void infoOverlayToggle() {
