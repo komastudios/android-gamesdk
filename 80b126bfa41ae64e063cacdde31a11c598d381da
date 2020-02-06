@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "5be5b33c_f6f6fbeb",
+        "filename": "cert/test/reporting/lib/deployment.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-02-06T19:46:23Z",
+      "side": 1,
+      "message": "I think you\u0027re correct. Will do.",
+      "parentUuid": "2207bb8a_fb66eab1",
+      "revId": "80b126bfa41ae64e063cacdde31a11c598d381da",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "faffafd8_02a36965",
         "filename": "cert/test/reporting/lib/report.py",
         "patchSetId": 2
@@ -67,6 +85,24 @@
       "revId": "80b126bfa41ae64e063cacdde31a11c598d381da",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c4742b44_181fe952",
+        "filename": "cert/test/reporting/lib/summary.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-02-06T19:46:23Z",
+      "side": 1,
+      "message": "You know, you\u0027re 100% right here. I\u0027m going to dig in to where the error.jsno files are created and make the same naming policy. I think better now, than lose data later.",
+      "parentUuid": "372a744b_9b75d0b1",
+      "revId": "80b126bfa41ae64e063cacdde31a11c598d381da",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
