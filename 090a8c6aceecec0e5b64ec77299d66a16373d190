@@ -34,6 +34,24 @@
       "revId": "090a8c6aceecec0e5b64ec77299d66a16373d190",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6218e7b0_ddcce7d0",
+        "filename": "bender/bender-base/app/src/main/jni/camera.h",
+        "patchSetId": 7
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-02-06T17:50:24Z",
+      "side": 1,
+      "message": "Got it; that makes sense, I was just unsure if dynamically setting the depth was on the table. Cool!",
+      "parentUuid": "16bb0c57_304b9375",
+      "revId": "090a8c6aceecec0e5b64ec77299d66a16373d190",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
