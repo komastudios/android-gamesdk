@@ -14,9 +14,118 @@
  * limitations under the License.
  */
 
+#include <set>
+#include <algorithm>
+#include <string>
+#include <sstream>
+
 #include "gtest/gtest.h"
 
-extern "C" int shared_main(int argc, char * argv[]) {
+#include "tuningfork/jni_helper.h"
+
+using ::testing::EmptyTestEventListener;
+using ::testing::InitGoogleTest;
+using ::testing::Test;
+using ::testing::TestCase;
+using ::testing::TestEventListeners;
+using ::testing::TestInfo;
+using ::testing::TestPartResult;
+using ::testing::UnitTest;
+
+namespace {
+
+static JNIEnv* s_env = 0;
+static jobject s_context = 0;
+
+// Record the output of googletest tests
+class GTestRecorder : public EmptyTestEventListener {
+    std::set<std::string> tests_started;
+    std::set<std::string> tests_completed;
+    std::vector<std::string> success_invocations; // Only from SUCCESS macros
+    std::vector<std::string> failed_invocations; // From any failed EXPECT or ASSERT
+    bool overall_success;
+ private:
+    // Called before any test activity starts.
+    void OnTestProgramStart(const UnitTest& /* unit_test */) override {
+        overall_success = false;
+    }
+
+    // Called after all test activities have ended.
+    void OnTestProgramEnd(const UnitTest& unit_test) override {
+        overall_success = unit_test.Passed();
+    }
+
+    // Called before a test starts.
+    void OnTestStart(const TestInfo& test_info) override {
+        tests_started.insert(std::string(test_info.test_case_name()) + "." + test_info.name());
+    }
+
+    // Called after a failed assertion or a SUCCEED() invocation.
+    void OnTestPartResult(const TestPartResult& test_part_result) override {
+        std::stringstream record;
+        record << test_part_result.file_name() << ":" << test_part_result.line_number() << '\n' <<
+               test_part_result.summary() << '\n';
+        if (test_part_result.failed()) {
+            failed_invocations.push_back(record.str());
+        } else {
+            success_invocations.push_back(record.str());
+        }
+    }
+
+    // Called after a test ends.
+    void OnTestEnd(const TestInfo& test_info) override {
+        tests_completed.insert(std::string(test_info.test_case_name()) + "." + test_info.name());
+    }
+ public:
+    std::string GetResult() const {
+        std::stringstream result;
+        result << "TESTS " << (overall_success ? "SUCCEEDED" : "FAILED") << '\n';
+        result << "\nTests that ran to completion:\n";
+        for(auto s: tests_completed) { result << s << '\n'; }
+        std::set<std::string> not_completed;
+        std::set_difference(tests_started.begin(), tests_started.end(),
+            tests_completed.begin(), tests_completed.end(),
+            std::inserter(not_completed, not_completed.end()));
+        if (not_completed.size()>0) {
+            result << "\nTests that started but failed to complete:\n";
+            for (auto s: not_completed) { result << s << '\n'; }
+        }
+        if (!failed_invocations.empty()) {
+            result << "\nFailures:\n";
+            for (auto s: failed_invocations) result << s << '\n';
+        }
+        if (!success_invocations.empty()) {
+            result << "\nExplicitly recorded successes:\n";
+            for (auto s: success_invocations) result << s << '\n';
+        }
+        return result.str();
+    }
+};  // class GTestRecorder
+
+}
+
+extern "C" bool init_jni_for_tests() {
+  tuningfork::jni::Init(s_env, s_context);
+  return true;
+}
+
+extern "C" int shared_main(int argc, char * argv[], JNIEnv* env, jobject context,
+                           std::string& messages) {
     ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+
+    // Set up Java env
+    s_env = env;
+    s_context = context;
+
+    // Set up result recorder
+    UnitTest& unit_test = *UnitTest::GetInstance();
+    TestEventListeners& listeners = unit_test.listeners();
+    delete listeners.Release(listeners.default_result_printer());
+    auto recorder = std::make_shared<GTestRecorder>();
+    listeners.Append(recorder.get());
+
+    // Run tests
+    int result = RUN_ALL_TESTS();
+    messages = recorder->GetResult();
+    return result;
 }

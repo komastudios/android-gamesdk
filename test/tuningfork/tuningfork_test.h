@@ -14,26 +14,14 @@
  * limitations under the License.
  */
 
-#include <jni.h>
-#include <string>
+#pragma once
 
-#include "tuningfork_test.h"
-#define LOG_TAG "TestApp"
-#include "Log.h"
+// This function must be declared externally and should call jni::Init and return true if a java
+// environment is available. If there is no Java env available, return false.
+extern "C" bool init_jni_for_tests();
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_com_tuningfork_testapp_MainActivity_runTests(
-        JNIEnv* env,
-        jobject ctx) {
-    int argc = 1;
-    char appName[] = "testapp";
-    char *argv[] = { appName };
-    std::string full_record;
-    int ret_code = shared_main(argc, argv, env, ctx, full_record);
-    if (ret_code == 0 ) {
-        ALOGV("%s", full_record.c_str());
-    } else {
-        ALOGE("%s", full_record.c_str());
-    }
-    return env->NewStringUTF((full_record).c_str());
-}
+// This function is exported by the test library and should be called to run the tests if you have a
+// Java env.
+// messages is filled with a summary of the tests run, including failure messages.
+extern "C" int shared_main(int argc, char * argv[], JNIEnv* env, jobject context,
+                           std::string& messages);

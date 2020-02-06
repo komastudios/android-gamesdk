@@ -16,6 +16,11 @@
 
 #include "gtest/gtest.h"
 
+// No jni tests when running on the command-line
+extern "C" bool init_jni_for_tests() {
+  return false;
+}
+
 int main(int argc, char * argv[]) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
