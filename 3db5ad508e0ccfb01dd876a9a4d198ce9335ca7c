@@ -16,6 +16,24 @@
       "revId": "3db5ad508e0ccfb01dd876a9a4d198ce9335ca7c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5a6474e3_531856b1",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 426,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-02-06T11:08:12Z",
+      "side": 1,
+      "message": "Not in this form, the idea is that you edit the code to change the configuration.",
+      "parentUuid": "c37dfb5b_e184a8d1",
+      "revId": "3db5ad508e0ccfb01dd876a9a4d198ce9335ca7c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
