@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bbf66560_646bdae9",
+        "filename": "bender/bender-base/app/src/main/jni/camera.h",
+        "patchSetId": 7
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-02-06T17:34:20Z",
+      "side": 1,
+      "message": "Nit are these constants? Do we expect them to change ever (idk if they\u0027re necessary like named constants but maybe at least declare them const?)",
+      "revId": "090a8c6aceecec0e5b64ec77299d66a16373d190",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
