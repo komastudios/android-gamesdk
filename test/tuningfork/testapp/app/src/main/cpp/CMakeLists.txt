@@ -16,7 +16,12 @@
 
 cmake_minimum_required(VERSION 3.4.1)
 
-add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/../../../../.." test_dir)
+set (TEST_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../../..")
+add_subdirectory( "${TEST_DIR}" test_dir)
+
+include_directories("${TEST_DIR}"
+        "${TEST_DIR}/../../samples/common/include"
+        )
 
 add_library( native-lib
 
