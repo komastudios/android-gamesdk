@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "189b4a42_b1f4ee9d",
+        "filename": "cert/test/reporting/lib/common.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-06T19:13:19Z",
+      "side": 1,
+      "message": "Thanks! (S/R -\u003e self-resolved)",
+      "revId": "80b126bfa41ae64e063cacdde31a11c598d381da",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2207bb8a_fb66eab1",
+        "filename": "cert/test/reporting/lib/deployment.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-06T19:13:19Z",
+      "side": 1,
+      "message": "(S/R) An observation to make is that `quiet` is false by default. But then it seems that all calls to run_command specify it as true. Maybe the default should be true?",
+      "revId": "80b126bfa41ae64e063cacdde31a11c598d381da",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "faffafd8_02a36965",
+        "filename": "cert/test/reporting/lib/report.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 358,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-06T19:13:19Z",
+      "side": 1,
+      "message": "Great catch, Shamyl. 🖖\n(S/R)",
+      "revId": "80b126bfa41ae64e063cacdde31a11c598d381da",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "372a744b_9b75d0b1",
+        "filename": "cert/test/reporting/lib/summary.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-06T19:13:19Z",
+      "side": 1,
+      "message": "I actually believe that *_error.json should also be \"post-asterisked\". If we run with two or more devices of same brand and model in parallel with such bad luck that two or more of them crash, the same issue that could happened with *_report.json files would occur with *_error.json counterparts; my guess.\n(S/R)",
+      "revId": "80b126bfa41ae64e063cacdde31a11c598d381da",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
