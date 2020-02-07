@@ -79,13 +79,19 @@
       "enabled": true,
       "name": "Marching Cubes",
       "description": "Tests marching cubes algorithm in a lot of permutations",
-      "duration": "25m",
+      "duration": "5m",
       "data_gatherer": {
         "id": "MarchingCubesGLES3Operation",
         "configuration": {
-          "sleep_per_iteration_min": "0ms",
-          "sleep_per_iteration_max": "4ms",
-          "permutation_execution_duration": "30s"
+          "thread_affinity": "AllBigCores",
+          "thread_pinned": true,
+          "warm_up_time": "5s",
+          "sleep_config": {
+            "period": "4ms",
+            "duration": "0.5ms",
+            "method": "Spinlock"
+          },
+          "job_batching_setup": "OneNodePerJob"
         }
       }
     },
