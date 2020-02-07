@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "42f0f507_22c99cfa",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.hpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-02-07T19:04:37Z",
+      "side": 1,
+      "message": "Fantastic 👍(s/r)",
+      "revId": "51edf9ce438609c177a61468b062e62719d47dea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
