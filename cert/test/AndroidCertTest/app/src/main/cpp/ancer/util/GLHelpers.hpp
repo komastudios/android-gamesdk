@@ -17,8 +17,9 @@
 #pragma once
 
 #include <algorithm>
-#include <vector>
+#include <array>
 #include <string>
+#include <vector>
 
 #include <GLES3/gl32.h>
 
@@ -83,25 +84,26 @@ class tAABB {
         max(-std::numeric_limits<T>::max()) {
   }
 
-  tAABB(const tAABB<T, P> &other)
+  template<typename V, glm::precision Q>
+  tAABB(const tAABB<V, Q>& other)
       : min(other.min), max(other.max) {
   }
 
-  tAABB(const glm::tvec3<T, P> &min, const glm::tvec3<T, P> &max)
+  tAABB(const glm::tvec3<T, P>& min, const glm::tvec3<T, P>& max)
       : min(min), max(max) {
   }
 
-  tAABB(const glm::tvec3<T, P> &c, const T radius)
+  tAABB(const glm::tvec3<T, P>& c, const T radius)
       : min(c.x - radius, c.y - radius, c.z - radius),
         max(c.x + radius, c.y + radius, c.z + radius) {
   }
 
-  bool operator==(const tAABB<T, P> &other) const {
-    return min==other.min && max==other.max;
+  bool operator==(const tAABB<T, P>& other) const {
+    return min == other.min && max == other.max;
   }
 
-  bool operator!=(const tAABB<T, P> &other) const {
-    return min!=other.min || max!=other.max;
+  bool operator!=(const tAABB<T, P>& other) const {
+    return min != other.min || max != other.max;
   }
 
   /*
@@ -140,9 +142,9 @@ class tAABB {
   */
   glm::tvec3<T, P> Center(void) const {
     return glm::tvec3<T, P>(
-        (min.x + max.x)/2,
-        (min.y + max.y)/2,
-        (min.z + max.z)/2);
+        (min.x + max.x) / 2,
+        (min.y + max.y) / 2,
+        (min.z + max.z) / 2);
   }
 
   /*
@@ -155,7 +157,7 @@ class tAABB {
     ySize /= 2;
     zSize /= 2;
 
-    return sqrt(xSize*xSize + ySize*ySize + zSize*zSize);
+    return sqrt(xSize * xSize + ySize * ySize + zSize * zSize);
   }
 
   /*
@@ -168,9 +170,17 @@ class tAABB {
   }
 
   /*
+   * return the volume of the AABB (width * height * depth)
+   */
+  T Volume() const {
+    auto sz = Size();
+    return sz.x * sz.y * sz.z;
+  }
+
+  /*
       return tAABB containing both
   */
-  const tAABB<T, P> operator+(const tAABB<T, P> &a) const {
+  const tAABB<T, P> operator+(const tAABB<T, P>& a) const {
     return tAABB<T, P>(
         std::min<T>(min.x, a.min.x),
         std::max<T>(max.x, a.max.x),
@@ -183,7 +193,7 @@ class tAABB {
   /*
       return tAABB containing both this tAABB and the point
   */
-  const tAABB<T, P> operator+(const glm::tvec3<T, P> &p) const {
+  const tAABB<T, P> operator+(const glm::tvec3<T, P>& p) const {
     return tAABB<T, P>(
         std::min<T>(min.x, p.x),
         std::max<T>(max.x, p.x),
@@ -216,7 +226,7 @@ class tAABB {
   /*
       Make this tAABB become the add of it and the other tAABB
   */
-  tAABB<T, P> &operator+=(const tAABB<T, P> &a) {
+  tAABB<T, P>& operator+=(const tAABB<T, P>& a) {
     min.x = std::min(min.x, a.min.x),
     max.x = std::max(max.x, a.max.x),
     min.y = std::min(min.y, a.min.y),
@@ -230,7 +240,7 @@ class tAABB {
   /*
       Make this tAABB become the union of it and the other tAABB
   */
-  void add(const tAABB<T, P> &a) {
+  void add(const tAABB<T, P>& a) {
     min.x = std::min(min.x, a.min.x),
     max.x = std::max(max.x, a.max.x),
     min.y = std::min(min.y, a.min.y),
@@ -242,7 +252,7 @@ class tAABB {
   /*
       Expand this tAABB ( if necessary ) to contain the given point
   */
-  tAABB<T, P> &operator+=(const glm::tvec3<T, P> &p) {
+  tAABB<T, P>& operator+=(const glm::tvec3<T, P>& p) {
     min.x = std::min(min.x, p.x);
     max.x = std::max(max.x, p.x);
     min.y = std::min(min.y, p.y);
@@ -256,7 +266,7 @@ class tAABB {
   /*
       Expand this tAABB ( if necessary ) to contain the given point
   */
-  void add(const glm::tvec3<T, P> &p) {
+  void add(const glm::tvec3<T, P>& p) {
     min.x = std::min(min.x, p.x);
     max.x = std::max(max.x, p.x);
     min.y = std::min(min.y, p.y);
@@ -268,7 +278,7 @@ class tAABB {
   /*
       Expand this tAABB ( if necessary ) ton contain the given sphere
   */
-  void add(const glm::tvec3<T, P> &p, T radius) {
+  void add(const glm::tvec3<T, P>& p, T radius) {
     min.x = std::min(min.x, p.x - radius);
     max.x = std::max(max.x, p.x + radius);
     min.y = std::min(min.y, p.y - radius);
@@ -280,7 +290,7 @@ class tAABB {
   /*
       Outset this tAABB by scalar factor
   */
-  tAABB<T, P> &operator+=(const T d) {
+  tAABB<T, P>& operator+=(const T d) {
     min.x -= d;
     max.x += d;
     min.y -= d;
@@ -306,7 +316,7 @@ class tAABB {
   /*
       Inset this tAABB by scalar factor
   */
-  tAABB<T, P> &operator-=(const T d) {
+  tAABB<T, P>& operator-=(const T d) {
     min.x += d;
     max.x -= d;
     min.y += d;
@@ -328,7 +338,7 @@ class tAABB {
   /*
       Transform this tAABB by p
   */
-  void Translate(const glm::tvec3<T, P> &p) {
+  void Translate(const glm::tvec3<T, P>& p) {
     min += p;
     max += p;
   }
@@ -336,7 +346,7 @@ class tAABB {
   /*
       return true if point is in this tAABB
   */
-  bool Contains(const glm::tvec3<T, P> &point) const {
+  bool Contains(const glm::tvec3<T, P>& point) const {
     return (point.x >= min.x && point.x <= max.x && point.y >= min.y
         && point.y <= max.y && point.z >= min.z && point.z <= max.z);
   }
@@ -344,7 +354,7 @@ class tAABB {
   /*
       return the intersection type of this tAABB with other
   */
-  Intersection Intersect(const tAABB<T, P> &other) const {
+  Intersection Intersect(const tAABB<T, P>& other) const {
     // Check first to see if 'other' is completely inside this tAABB.
     // If it is, return Inside.
 
@@ -368,8 +378,72 @@ class tAABB {
       return the intersection type of this tAABB with the sphere at
       center with given radius
   */
-  Intersection Intersect(const glm::tvec3<T, P> &center, T radius) const {
+  Intersection Intersect(const glm::tvec3<T, P>& center, T radius) const {
     return Intersect(tAABB<T, P>(center, radius));
+  }
+
+  std::array<glm::tvec3<T, P>, 8> Corners() const {
+    return std::array<glm::tvec3<T, P>, 8>{
+        glm::tvec3<T, P>(min.x, min.y, min.z),
+        glm::tvec3<T, P>(min.x, min.y, max.z),
+        glm::tvec3<T, P>(max.x, min.y, max.z),
+        glm::tvec3<T, P>(max.x, min.y, min.z),
+        glm::tvec3<T, P>(min.x, max.y, min.z),
+        glm::tvec3<T, P>(min.x, max.y, max.z),
+        glm::tvec3<T, P>(max.x, max.y, max.z),
+        glm::tvec3<T, P>(max.x, max.y, min.z)
+    };
+  }
+
+  void Corners(std::array<glm::tvec3<T, P>, 8>& c) const {
+    c[0] = glm::tvec3<T, P>(min.x, min.y, min.z);
+    c[1] = glm::tvec3<T, P>(min.x, min.y, max.z);
+    c[2] = glm::tvec3<T, P>(max.x, min.y, max.z);
+    c[3] = glm::tvec3<T, P>(max.x, min.y, min.z);
+    c[4] = glm::tvec3<T, P>(min.x, max.y, min.z);
+    c[5] = glm::tvec3<T, P>(min.x, max.y, max.z);
+    c[6] = glm::tvec3<T, P>(max.x, max.y, max.z);
+    c[7] = glm::tvec3<T, P>(max.x, max.y, min.z);
+  }
+
+  /**
+* Subdivides this AABB into 8 child AABBs
+*/
+  void OctreeSubdivide(std::array<tAABB<T, P>, 8>& into) const {
+    auto min = this->min;
+    auto size = this->Size();
+
+    // no divide exists for glm::ivec3, so we do it explicitly
+    auto hx = size.x / 2;
+    auto hy = size.y / 2;
+    auto hz = size.z / 2;
+    auto hs = glm::tvec3<T, P>(hx, hy, hz);
+
+    auto a = min + glm::tvec3<T, P>(+0, 0, +0);
+    auto b = min + glm::tvec3<T, P>(+hx, 0, +0);
+    auto c = min + glm::tvec3<T, P>(+hx, 0, +hz);
+    auto d = min + glm::tvec3<T, P>(+0, 0, +hz);
+
+    auto e = min + glm::tvec3<T, P>(+0, +hy, +0);
+    auto f = min + glm::tvec3<T, P>(+hx, +hy, +0);
+    auto g = min + glm::tvec3<T, P>(+hx, +hy, +hz);
+    auto h = min + glm::tvec3<T, P>(+0, +hy, +hz);
+
+    into[0] = tAABB<T, P>(a, a + hs);
+    into[1] = tAABB<T, P>(b, b + hs);
+    into[2] = tAABB<T, P>(c, c + hs);
+    into[3] = tAABB<T, P>(d, d + hs);
+
+    into[4] = tAABB<T, P>(e, e + hs);
+    into[5] = tAABB<T, P>(f, f + hs);
+    into[6] = tAABB<T, P>(g, g + hs);
+    into[7] = tAABB<T, P>(h, h + hs);
+  }
+
+  std::array<tAABB<T, P>, 8> OctreeSubdivide() const {
+    auto store = std::array<tAABB<T, P>, 8>{};
+    OctreeSubdivide(store);
+    return store;
   }
 
  public:
@@ -379,13 +453,13 @@ class tAABB {
 typedef tAABB<float, glm::defaultp> AABB;
 typedef tAABB<int, glm::defaultp> AABBi;
 
-bool CheckGlError(const char *func_name);
+bool CheckGlError(const char* func_name);
 
-bool CheckGlExtension(const char *extension_name);
+bool CheckGlExtension(const char* extension_name);
 
-GLuint CreateProgramSrc(const char *vtx_src, const char *frag_src);
+GLuint CreateProgramSrc(const char* vtx_src, const char* frag_src);
 
-GLuint CreateShader(GLenum shader_type, const char *src);
+GLuint CreateShader(GLenum shader_type, const char* src);
 
 /**
  * Creates an ortho projection with (0,0) at top-left,
@@ -417,5 +491,5 @@ std::vector<std::string> GetEglExtensions();
  * @param gl_extension a C-string containing the extension name.
  * @return true if the extension is in GLES extensions list; false otherwise.
  */
-bool IsExtensionSupported(const char *gl_extension);
+bool IsExtensionSupported(const char* gl_extension);
 }  // namespace ancer::glh
