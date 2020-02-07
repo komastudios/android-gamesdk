@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+#include <array>
 #include <cmath>
-#include <thread>
-#include <mutex>
 #include <condition_variable>
+#include <mutex>
+#include <random>
+#include <thread>
 
 #include <ancer/BaseGLES3Operation.hpp>
 #include <ancer/util/GLHelpers.hpp>
@@ -26,126 +28,31 @@
 
 #include "operations/gl/marching_cubes/MarchingCubes.hpp"
 #include "operations/gl/marching_cubes/Volume.hpp"
+#include "operations/gl/marching_cubes/VolumeSamplers.hpp"
+#include "operations/gl/marching_cubes/Demos.hpp"
+
+using std::make_unique;
+using std::unique_ptr;
+using ancer::unowned_ptr;
 
 using namespace ancer;
-using namespace marching_cubes;
-
-
-//==============================================================================
+namespace mc = marching_cubes;
 
 namespace {
+
+//
+//  Constants
+//
+
 constexpr Log::Tag TAG{"MarchingCubesGLES3Operation"};
 constexpr float NEAR_PLANE = 0.1f;
 constexpr float FAR_PLANE = 1000.0f;
 constexpr float FOV_DEGREES = 50.0F;
+constexpr float OCTREE_NODE_VISUAL_INSET_FACTOR = 0.0025F;
 
-struct ProgramState {
-  GLuint program = 0;
-  GLint uniform_loc_MVP = -1;
-  GLint uniform_loc_Model = -1;
-
-  ~ProgramState() {
-    if (program > 0) {
-      glDeleteProgram(program);
-    }
-  }
-
-  bool Build(const std::string& vertFile, const std::string& fragFile) {
-    auto vertSrc = LoadText(vertFile.c_str());
-    auto fragSrc = LoadText(fragFile.c_str());
-    program = glh::CreateProgramSrc(vertSrc.c_str(), fragSrc.c_str());
-    if (program == 0) {
-      return false;
-    }
-    uniform_loc_MVP = glGetUniformLocation(program, "uMVP");
-    uniform_loc_Model = glGetUniformLocation(program, "uModel");
-    return true;
-  }
-};
-
-/*
- * Volume sampler for sphere
- */
-class SphereVolumeSampler : public IVolumeSampler {
- public:
-  SphereVolumeSampler(vec3 position, float radius, Mode mode)
-      : IVolumeSampler(mode), _position(position), _radius(radius) {
-  }
-
-  ~SphereVolumeSampler() override = default;
-
-  float ValueAt(const vec3& p, float falloff_threshold) const override {
-    float d2 = distance2(p, _position);
-    float min2 = _radius * _radius;
-    if (d2 < min2) {
-      return 1;
-    }
-
-    float max2 = (_radius + falloff_threshold) * (_radius + falloff_threshold);
-    if (d2 > max2) {
-      return 0;
-    }
-
-    float d = sqrt(d2) - _radius;
-    return 1 - (d / falloff_threshold);
-  }
-
-  void SetPosition(const vec3& center) { _position = center; }
-  void SetRadius(float radius) { _radius = max<float>(radius, 0); }
-  vec3 GetPosition() const { return _position; }
-  float GetRadius() const { return _radius; }
-
- private:
-  vec3 _position;
-  float _radius;
-};
-
-/*
- * Volume sampler for plane
- */
-class PlaneVolumeSampler : public IVolumeSampler {
- public:
-  PlaneVolumeSampler(vec3 plane_origin,
-                     vec3 plane_normal,
-                     float plane_thickness,
-                     Mode mode)
-      : IVolumeSampler(mode),
-        _origin(plane_origin),
-        _normal(::normalize(plane_normal)),
-        _thickness(std::max<float>(plane_thickness, 0)) {
-  }
-
-  float ValueAt(const vec3& p, float falloff_threshold) const override {
-    // distance of p from plane
-    float dist = abs(dot(_normal, p - _origin));
-
-    if (dist <= _thickness) {
-      return 1;
-    } else if (dist > _thickness + falloff_threshold) {
-      return 0;
-    }
-    dist -= _thickness;
-    return 1 - (dist / falloff_threshold);
-  }
-
-  void SetOrigin(const vec3 plane_origin) { _origin = plane_origin; }
-  vec3 GetOrigin() const { return _origin; }
-
-  void SetNormal(const vec3 plane_normal) {
-    _normal = normalize(plane_normal);
-  }
-  vec3 GetNormal() const { return _normal; }
-
-  void SetThickness(float thickness) { _thickness = max<float>(thickness, 0); }
-  float GetThickness() const { return _thickness; }
-
- private:
-  vec3 _origin;
-  vec3 _normal;
-  float _thickness;
-};
-
-//==============================================================================
+//
+//  Configuration
+//
 
 enum class ThreadAffinitySetup {
   OneBigCore, OneLittleCore, AllBigCores, AllLittleCores, AllCores
@@ -155,12 +62,13 @@ constexpr const char* ThreadAffinitySetupNames[] = {
     "OneBigCore", "OneLittleCore", "AllBigCores", "AllLittleCores", "AllCores"
 };
 
-enum class ThreadPinningSetup {
-  Unspecified, Pinned, Floating
+enum class JobBatchingSetup {
+  OneNodePerJob, ManyNodesPerJob, AutoBalancedNodesPerJob, AutoQueuedNodesPerJob
 };
 
-constexpr const char* ThreadPinningSetupNames[] = {
-    "Unspecified", "Pinned", "Floating"
+constexpr const char* JobBatchingSetupNames[] = {
+    "OneNodePerJob", "ManyNodesPerJob", "AutoBalancedNodesPerJob",
+    "AutoQueuedNodesPerJob"
 };
 
 constexpr auto ToAffinity(ThreadAffinitySetup setup) {
@@ -174,111 +82,53 @@ constexpr auto ToAffinity(ThreadAffinitySetup setup) {
   }
 }
 
-struct configuration_thread_setup {
-  ThreadAffinitySetup thread_setup;
-  ThreadPinningSetup pinning;
-};
-
-JSON_CONVERTER(configuration_thread_setup) {
-  JSON_REQENUM(thread_setup, ThreadAffinitySetupNames);
-  JSON_OPTENUM(pinning, ThreadPinningSetupNames);
-}
-
 struct configuration {
-  std::vector<configuration_thread_setup> thread_setups = {
-      {ThreadAffinitySetup::OneBigCore},
-      {ThreadAffinitySetup::AllBigCores},
-      {ThreadAffinitySetup::OneLittleCore},
-      {ThreadAffinitySetup::AllLittleCores},
-      {ThreadAffinitySetup::AllCores}
-  };
   Duration warm_up_time = 5s;
-  Duration sleep_per_iteration_min = 0ms;
-  Duration sleep_per_iteration_max = 0ms;
-  Duration sleep_per_iteration_increment = 500000ns; // 0.5ms
-  Duration permutation_execution_duration = 10s;
+  ThreadAffinitySetup thread_affinity = ThreadAffinitySetup::AllBigCores;
+  bool thread_pinned = true;
+  Duration sleep_duration = 0ns;
+  JobBatchingSetup
+      job_batching_setup = JobBatchingSetup::AutoBalancedNodesPerJob;
 };
 
 JSON_CONVERTER(configuration) {
   JSON_OPTVAR(warm_up_time);
-  JSON_REQVAR(thread_setups);
-  JSON_REQVAR(sleep_per_iteration_min);
-  JSON_REQVAR(sleep_per_iteration_max);
-  JSON_REQVAR(sleep_per_iteration_increment);
-  JSON_REQVAR(permutation_execution_duration);
+  JSON_REQENUM(thread_affinity, ThreadAffinitySetupNames);
+  JSON_REQVAR(thread_pinned);
+  JSON_REQVAR(sleep_duration);
+  JSON_REQENUM(job_batching_setup, JobBatchingSetupNames);
 }
 
-struct execution_configuration {
-  ThreadAffinitySetup thread_setup;
-  bool pinned;
-  Duration sleep_per_iteration;
-};
-
-JSON_CONVERTER(execution_configuration) {
-  JSON_REQENUM(thread_setup, ThreadAffinitySetupNames);
-  JSON_REQVAR(pinned);
-  JSON_REQVAR(sleep_per_iteration);
-}
-
-/*
- * Generate all permutations of a provided configuration
- */
-std::vector<execution_configuration> Permute(const configuration config) {
-  std::vector<execution_configuration> permutations;
-  for (auto thread_setup : config.thread_setups) {
-    if (thread_setup.pinning == ThreadPinningSetup::Unspecified) {
-      for (auto i = 0; i < 2; i++) { // (0: floating, 1: pinned)
-        bool pinned = i == 1;
-        for (Duration dur = config.sleep_per_iteration_min;
-             dur <= config.sleep_per_iteration_max;
-             dur += config.sleep_per_iteration_increment) {
-          permutations.push_back({thread_setup.thread_setup, pinned, dur});
-        }
-      }
-    } else {
-      bool pinned = thread_setup.pinning == ThreadPinningSetup::Pinned;
-      for (Duration dur = config.sleep_per_iteration_min;
-           dur <= config.sleep_per_iteration_max;
-           dur += config.sleep_per_iteration_increment) {
-        permutations.push_back({thread_setup.thread_setup, pinned, dur});
-      }
-    }
-
-  }
-  return permutations;
-}
-
-
-//------------------------------------------------------------------------------
+//
+//  Reporting Data
+//
 
 struct result {
-  execution_configuration configuration;
+  configuration exec_configuration;
   size_t num_threads_used = 0;
-  size_t num_voxels_marched_per_iteration = 0;
   size_t num_iterations = 0;
-  Duration min_calc_duration{0};
-  Duration max_calc_duration{0};
-  Duration average_calc_duration{0};
-  Duration median_calc_duration{0};
-  Duration fifth_percentile_duration{0};
-  Duration twentyfifth_percentile_duration{0};
-  Duration seventyfifth_percentile_duration{0};
-  Duration ninetyfifth_percentile_duration{0};
+  double min_vps = 0;
+  double max_vps = 0;
+  double average_vps = 0;
+  double median_vps = 0;
+  double fifth_percentile_vps = 0;
+  double twentyfifth_percentile_vps = 0;
+  double seventyfifth_percentile_vps = 0;
+  double ninetyfifth_percentile_vps = 0;
 };
 
 JSON_CONVERTER(result) {
-  JSON_REQVAR(configuration);
+  JSON_REQVAR(exec_configuration);
   JSON_REQVAR(num_threads_used);
-  JSON_REQVAR(num_voxels_marched_per_iteration);
   JSON_REQVAR(num_iterations);
-  JSON_REQVAR(min_calc_duration);
-  JSON_REQVAR(max_calc_duration);
-  JSON_REQVAR(average_calc_duration);
-  JSON_REQVAR(median_calc_duration);
-  JSON_REQVAR(fifth_percentile_duration);
-  JSON_REQVAR(twentyfifth_percentile_duration);
-  JSON_REQVAR(seventyfifth_percentile_duration);
-  JSON_REQVAR(ninetyfifth_percentile_duration);
+  JSON_REQVAR(min_vps);
+  JSON_REQVAR(max_vps);
+  JSON_REQVAR(average_vps);
+  JSON_REQVAR(median_vps);
+  JSON_REQVAR(fifth_percentile_vps);
+  JSON_REQVAR(twentyfifth_percentile_vps);
+  JSON_REQVAR(seventyfifth_percentile_vps);
+  JSON_REQVAR(ninetyfifth_percentile_vps);
 }
 
 struct datum {
@@ -288,6 +138,7 @@ struct datum {
 JSON_WRITER(datum) {
   JSON_REQVAR(marching_cubes_permutation_results);
 }
+
 } // anonymous namespace
 
 //==============================================================================
@@ -297,32 +148,32 @@ class MarchingCubesGLES3Operation : public BaseGLES3Operation {
 
   MarchingCubesGLES3Operation() = default;
 
-  ~MarchingCubesGLES3Operation() {
-    if (!_march_durations.empty()) {
+  ~MarchingCubesGLES3Operation() override {
+    if (!_march_performance_data.empty()) {
       ReportPerformanceData();
     }
   }
 
   void OnGlContextReady(const GLContextConfig& ctx_config) override {
     _configuration = GetConfiguration<configuration>();
-    _configuration_permutations = Permute(_configuration);
-    Log::I(TAG,
-           "Generated %d execution configurations, expect run time "
-           "duration of %d seconds",
-           _configuration_permutations.size(),
-           _configuration_permutations.size()
-               * duration_cast<SecondsAs<int>>(
-                   _configuration.permutation_execution_duration)
-    );
 
-    auto vertFile = "Shaders/MarchingCubesGLES3Operation/vert.glsl";
-    auto fragFile = "Shaders/MarchingCubesGLES3Operation/frag.glsl";
-    if (!_program.Build(vertFile, fragFile)) {
-      Stop();
-      return;
+    {
+      auto vert_file = "Shaders/MarchingCubesGLES3Operation/volume.vsh";
+      auto frag_file = "Shaders/MarchingCubesGLES3Operation/volume.fsh";
+      if (!_volume_program.Build(vert_file, frag_file)) {
+        Stop();
+        return;
+      }
     }
 
-    BuildVolume();
+    {
+      auto vert_file = "Shaders/MarchingCubesGLES3Operation/line.vsh";
+      auto frag_file = "Shaders/MarchingCubesGLES3Operation/line.fsh";
+      if (!_line_program.Build(vert_file, frag_file)) {
+        Stop();
+        return;
+      }
+    }
 
     glClearColor(0.2F, 0.2F, 0.22F, 0.0F);
     glEnable(GL_DEPTH_TEST);
@@ -331,21 +182,18 @@ class MarchingCubesGLES3Operation : public BaseGLES3Operation {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    SetCurrentConfigurationPermutation(_current_configuration_permutation);
-    SetHeartbeatPeriod(_configuration.permutation_execution_duration);
+    BuildExecConfiguration();
   }
 
   void OnGlContextResized(int width, int height) override {
     BaseOperation::OnGlContextResized(width, height);
-    auto aspect = static_cast<float>(width) / static_cast<float>(height);
-    _proj = perspective(radians(FOV_DEGREES), aspect, NEAR_PLANE, FAR_PLANE);
+    _aspect = static_cast<float>(width) / static_cast<float>(height);
   }
 
   void Draw(double delta_seconds) override {
     BaseGLES3Operation::Draw(delta_seconds);
 
-    auto sleep_dur =
-        _configuration_permutations[_current_configuration_permutation].sleep_per_iteration;
+    auto sleep_dur = _configuration.sleep_duration;
     if (sleep_dur > 0ms) {
       std::this_thread::sleep_for(sleep_dur);
     }
@@ -354,282 +202,405 @@ class MarchingCubesGLES3Operation : public BaseGLES3Operation {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glUseProgram(_program.program);
+    const auto mvp = MVP();
 
-    auto model = rotate(mat4(1), radians(45.0F), vec3(0, 1, 0));
-    auto view = lookAt(vec3(0, 0, _camera_z_position),
-                       vec3(0, 0, 0),
-                       vec3(0, 1, 0));
+    _volume_program.Bind(mvp, _model);
 
-    auto mvp = _proj * view * model;
-
-    glUniformMatrix4fv(_program.uniform_loc_MVP,
-                       1,
-                       GL_FALSE,
-                       value_ptr(mvp));
-
-    glUniformMatrix4fv(_program.uniform_loc_Model,
-                       1,
-                       GL_FALSE,
-                       value_ptr(model));
-
+    glDepthMask(GL_TRUE);
     for (auto& tc : _triangle_consumers) {
       tc->Draw();
     }
+
+    glDepthMask(GL_FALSE);
+    _line_program.Bind(mvp, _model);
+    _node_aabb_line_buffer.Draw();
+
+    glDepthMask(GL_TRUE);
   }
 
   void Step(double delta_seconds) {
-    if (_marcher) {
+    _animation_time += static_cast<float>(delta_seconds);
+    if (_volume && _current_demo) {
 
-      const float plane_speed = 3;
-      auto origin = _sampler_cutout_plane->GetOrigin();
-      auto min_y = -4 * _sampler_cutout_plane->GetThickness();
-      auto max_y = _volume.Size().y + 4 * _sampler_cutout_plane->GetThickness();
-      if (origin.y < min_y) {
-        origin.y = max_y;
-      }
+      // make camera orbit about y, with a gently bobbing up and down
+      float orbit_y = _animation_time * glm::pi<float>() * 0.125F;
+      float orbit_tilt_phase = _animation_time * glm::pi<float>() * 0.0625F;
+      float orbit_tilt = sin(orbit_tilt_phase) * glm::pi<float>() * 0.125F;
+      _trackball_rotation =
+          glm::rotate(glm::rotate(mat4{1}, orbit_tilt, vec3(1, 0, 0)),
+                      orbit_y,
+                      vec3(0, 1, 0));
 
-      _sampler_cutout_plane->SetOrigin(origin + vec3(0, -1, 0) * plane_speed
-          * static_cast<float>(delta_seconds));
+      // update demo animation cycle
+      _current_demo->Step(_animation_time);
 
-      float angle = static_cast<float>(M_PI * origin.y / _volume.Size().y);
-      vec3 normal{rotate(mat4(1), angle, vec3(1, 0, 0)) * vec4(0, 1, 0, 1)};
-
-      _sampler_cutout_plane->SetNormal(normal);
-
-      auto start_time = SteadyClock::now();
-      _marcher->March();
-      auto end_time = SteadyClock::now();
-
-      if (_warming_up) {
-        if (!_recorded_first_step_timestamp) {
-          Log::D(TAG, "Warm up starting");
-          _first_step_timestamp = SteadyClock::now();
-          _recorded_first_step_timestamp = true;
-        } else {
-          auto elapsed_since_first_step =
-              SteadyClock::now() - _first_step_timestamp;
-          if (elapsed_since_first_step >= _configuration.warm_up_time) {
-            Log::D(TAG, "Warm up finished, will start recording perf timings");
-            _warming_up = false;
-          }
-        }
-      }
-
-      if (!_warming_up) {
-        _march_durations.push_back(end_time - start_time);
-      }
+      // update geometry for rendering
+      MarchVolume();
     }
   }
 
-  void OnHeartbeat(Duration elapsed) override {
-    if (HasMoreConfigurationPermutations()) {
-      ReportPerformanceData();
-      ResetPerformanceData();
-      NextConfigurationPermutation();
-    } else {
-      Log::I(TAG, "Have run all configuration permutations; Stopping.");
-      Stop();
-    }
+  void Stop() override {
+    BaseGLES3Operation::Stop();
+    ReportPerformanceData();
   }
 
  private:
 
+  /*
+   * Create a model-view-projection matrix for rendering the current frame
+   */
+  mat4 MVP() const {
+    // extract trackball Z and Y for building view matrix via lookAt
+    auto trackball_y =
+        glm::vec3{_trackball_rotation[0][1], _trackball_rotation[1][1],
+                  _trackball_rotation[2][1]};
+    auto trackball_z =
+        glm::vec3{_trackball_rotation[0][2], _trackball_rotation[1][2],
+                  _trackball_rotation[2][2]};
+    mat4 view, proj;
+
+    if (_use_ortho_projection) {
+      auto bounds = _volume->GetBounds();
+      auto size = length(bounds.Size());
+
+      auto scaleMin = 0.1F;
+      auto scaleMax = 5.0F;
+      auto scale = mix(scaleMin, scaleMax, pow(_dolly, 2.5F));
+
+      auto width = scale * _aspect * size;
+      auto height = scale * size;
+
+      auto distance = FAR_PLANE / 2;
+      view = lookAt(-distance * trackball_z, vec3(0), trackball_y);
+
+      proj = glm::ortho(-width / 2,
+                        width / 2,
+                        -height / 2,
+                        height / 2,
+                        NEAR_PLANE,
+                        FAR_PLANE);
+    } else {
+      auto bounds = _volume->GetBounds();
+      auto minDistance = 0.1F;
+      auto maxDistance = length(bounds.Size()) * 2;
+
+      auto distance = mix(minDistance, maxDistance, pow<float>(_dolly, 2));
+      view = lookAt(-distance * trackball_z, vec3(0), trackball_y);
+
+      proj = glm::perspective(radians(FOV_DEGREES),
+                              _aspect,
+                              NEAR_PLANE,
+                              FAR_PLANE);
+    }
+    return proj * view * _model;
+  }
+
   void ReportPerformanceData() {
-    if (_march_durations.empty()) {
+    if (_march_performance_data.empty()) {
       Log::E(TAG, "ReportPerformanceData - _march_durations is empty");
       return;
     }
 
-    const auto avg_duration =
-        std::accumulate(_march_durations.begin(),
-                        _march_durations.end(),
-                        Duration{0})
-            / _march_durations.size();
+    // transform our perf datums into an array of voxels per second
+    std::vector<double> voxels_per_second;
+    voxels_per_second.resize(_march_performance_data.size());
+    std::transform(_march_performance_data.begin(),
+                   _march_performance_data.end(), voxels_per_second.begin(),
+                   [](const PerfDatum& d) {
+                     return d.VoxelsPerSecond();
+                   });
+
+    // compute the average
+    const auto avg_vps = std::accumulate(
+        voxels_per_second.begin(), voxels_per_second.end(), 0.0
+    ) / voxels_per_second.size();
 
     // compute min/max/median
-    std::sort(_march_durations.begin(), _march_durations.end());
+    std::sort(voxels_per_second.begin(), voxels_per_second.end());
+    const auto min_vps = voxels_per_second.front();
+    const auto max_vps = voxels_per_second.back();
 
-    const auto min_duration = _march_durations.front();
-    const auto max_duration = _march_durations.back();
-
-    const auto median_duration = [this]() {
-      if (_march_durations.size() % 2 == 1) {
-        return _march_durations[_march_durations.size() / 2];
+    const auto median_vps = [&voxels_per_second]() {
+      if (voxels_per_second.size() % 2 == 1) {
+        return voxels_per_second[voxels_per_second.size() / 2];
       } else {
-        size_t center = _march_durations.size() / 2;
-        return (_march_durations[std::max<size_t>(center - 1, 0)]
-            + _march_durations[center]) / 2;
+        size_t center = voxels_per_second.size() / 2;
+        return (voxels_per_second[std::max<size_t>(center - 1, 0)]
+            + voxels_per_second[center]) / 2;
       }
     }();
 
     // compute percentiles
-    auto find_percentile = [this](int percentile) -> Duration {
+    auto find_percentile = [&voxels_per_second](int percentile) -> double {
       percentile = min(max(percentile, 0), 100);
       auto fractional_percentile = static_cast<double>(percentile) / 100.0;
-      auto idx = fractional_percentile * (_march_durations.size() - 1);
+      auto idx = fractional_percentile * (voxels_per_second.size() - 1);
       auto fractional = fract(idx);
       if (fractional > 0.0) {
         // if we landed between two indices, use the latter
-        return _march_durations[static_cast<size_t>(ceil(idx))];
+        return voxels_per_second[static_cast<size_t>(ceil(idx))];
       } else {
         // if we landed on an index, use the average of it and the one following
         auto i_idx = static_cast<size_t>(floor(idx));
-        auto j_idx = min(i_idx + 1, _march_durations.size() - 1);
-        return (_march_durations[i_idx] + _march_durations[j_idx]) / 2;
+        auto j_idx = min(i_idx + 1, voxels_per_second.size() - 1);
+        return (voxels_per_second[i_idx] + voxels_per_second[j_idx]) / 2;
       }
     };
 
-    const auto fifth_percentile_duration = find_percentile(5);
-    const auto twentyfifth_percentile_duration = find_percentile(25);
-    const auto seventyfifth_percentile_duration = find_percentile(75);
-    const auto ninetyfifth_percentile_duration = find_percentile(95);
+    const auto fifth_percentile_vps = find_percentile(5);
+    const auto twentyfifth_percentile_vps = find_percentile(25);
+    const auto seventyfifth_percentile_vps = find_percentile(75);
+    const auto ninetyfifth_percentile_vps = find_percentile(95);
 
     Report(datum{result{
-        _configuration_permutations[_current_configuration_permutation],
+        _configuration,
         _num_threads_used,
-        _num_voxels_marched,
-        _march_durations.size(),
-        min_duration,
-        max_duration,
-        avg_duration,
-        median_duration,
-        fifth_percentile_duration,
-        twentyfifth_percentile_duration,
-        seventyfifth_percentile_duration,
-        ninetyfifth_percentile_duration
+        _march_performance_data.size(),
+        min_vps,
+        max_vps,
+        avg_vps,
+        median_vps,
+        fifth_percentile_vps,
+        twentyfifth_percentile_vps,
+        seventyfifth_percentile_vps,
+        ninetyfifth_percentile_vps
     }});
+
+    _march_performance_data.clear();
   }
 
-  void ResetPerformanceData() {
-    _march_durations.clear();
-  }
+  void BuildExecConfiguration() {
 
-  bool HasMoreConfigurationPermutations() const {
-    return _current_configuration_permutation
-        < _configuration_permutations.size() - 1;
-  }
-
-  void NextConfigurationPermutation() {
-    SetCurrentConfigurationPermutation(
-        _current_configuration_permutation + 1);
-  }
-
-  /*
-   * Set the current execution_configuration and re-build the
-   * marching stuff.
-   */
-  void SetCurrentConfigurationPermutation(size_t idx) {
-
-    Log::I(TAG,
-           "Switching to configuration %d of %d",
-           idx,
-           _configuration_permutations.size());
-
-    _current_configuration_permutation = idx;
-
-    BuildExecConfiguration(_configuration_permutations[idx]);
-  }
-
-  /*
-   * Called each time SetCurrentConfigurationPermutation
-   * is called; configures the ThreadedMarcher & ThreadPool
-   * for the current execution_configuration
-   */
-  void BuildExecConfiguration(execution_configuration ex_config) {
-    auto affinity = ToAffinity(ex_config.thread_setup);
+    //
+    //  Create the job queue with our configuration's
+    //  affinity, pinning, count
+    //
+    auto affinity = ToAffinity(_configuration.thread_affinity);
+    auto pinned = _configuration.thread_pinned;
     auto max_thread_count = NumCores(affinity);
 
-    if (ex_config.thread_setup == ThreadAffinitySetup::OneBigCore ||
-        ex_config.thread_setup == ThreadAffinitySetup::OneLittleCore
-        ) {
+    if (_configuration.thread_affinity == ThreadAffinitySetup::OneBigCore ||
+        _configuration.thread_affinity == ThreadAffinitySetup::OneLittleCore) {
       max_thread_count = 1;
     }
 
-    auto pool = std::make_unique<ThreadPool>(
-        affinity, ex_config.pinned, max_thread_count);
+    _job_queue = std::make_unique<mc::job::JobQueue>(
+        affinity, pinned, max_thread_count);
 
-    _num_threads_used = pool->NumThreads();
+    _num_threads_used = _job_queue->NumThreads();
 
-    // create one triangle consumer per thread, and unowned_ptrs
-    // for the ThreadedMarcher to access
-    std::vector<unowned_ptr<ITriangleConsumer>> tcs;
+    //
+    //  We need ONE ITriangleConsumer per thread, so that each thread
+    //  processing the volume can safely write to its dedicated store.
+    //  We own the triangle consumers, so we make unowned_ptrs to hand
+    //  to the _volume
+    //
+
+    std::vector<unowned_ptr<mc::ITriangleConsumer>> tcs;
     _triangle_consumers.clear();
     for (auto i = 0; i < _num_threads_used; i++) {
-      auto tc = std::make_unique<TriangleConsumer>();
+      auto tc = make_unique<mc::TriangleConsumer>();
       tcs.emplace_back(tc.get());
       _triangle_consumers.push_back(std::move(tc));
     }
 
-    Log::I(TAG, "Using %d %s threads (%s) to march volume; sleep_dur: %d ms",
-           _num_threads_used, ex_config.pinned ? "pinned" : "floating",
-           ThreadAffinitySetupNames[static_cast<int>(ex_config.thread_setup)],
-           ex_config.sleep_per_iteration
+    Log::I(TAG,
+           "Using %d %s threads (%s) to march volume; sleep_dur: %d ns; batching: %s",
+           _num_threads_used,
+           pinned ? "pinned" : "floating",
+           ThreadAffinitySetupNames[static_cast<int>(_configuration.thread_affinity)],
+           _configuration.sleep_duration,
+           JobBatchingSetupNames[static_cast<int>(_configuration.job_batching_setup)]
     );
 
-    // now create the marcher
-    _marcher = std::make_unique<marching_cubes::ThreadedMarcher>(
-        _volume, tcs, std::move(pool), _volume_transform, false);
+    //
+    //  Build the volume and demo to render into it
+    //
 
-    // trigger a new warmup for the next test pass
+    _volume = make_unique<mc::OctreeVolume>(64, 1.0F, 4, _job_queue.get(), tcs);
+    _model = glm::translate(mat4{1}, -vec3(_volume->GetBounds().Center()));
+
+    _current_demo = make_unique<mc::demos::CompoundShapesDemo>(10, 10);
+    _current_demo->Build(_volume.get());
+
+    //
+    //  Trigger a warmup phase for the next test pass
+    //
+
     _warming_up = true;
     _recorded_first_step_timestamp = false;
   }
 
   /*
-   * Called once at setup time; builds the volume which will be marched
+   * Helper for visualation of the octree - generates a unique
+   * color for an octree node based on its depth
    */
-  void BuildVolume() {
-    auto size = vec3(_volume.Size());
-    auto center = size / 2.0F;
+  vec4 GetNodeColor(int atDepth) const {
+    using namespace ancer::glh::color;
+    static std::vector<vec4> nodeColors;
 
-    _volume.Add(std::make_unique<SphereVolumeSampler>(
-        center,
-        length(size) * 0.25F,
-        IVolumeSampler::Mode::Additive));
+    auto depth = _volume->GetDepth();
+    if (nodeColors.size() != depth) {
+      nodeColors.clear();
+      const float hueStep = 360.0F / depth;
+      for (auto i = 0U; i <= depth; i++) {
+        const hsv hC{i * hueStep, 0.6F, 1.0F};
+        const auto rgbC = hsv2rgb(hC);
+        nodeColors.emplace_back(rgbC.r,
+                                rgbC.g,
+                                rgbC.b,
+                                mix<float>(0.6F,
+                                           0.25F,
+                                           static_cast<float>(i) / depth));
+      }
+    }
 
-    _sampler_cutout_plane =
-        _volume.Add(std::make_unique<PlaneVolumeSampler>(
-            center,
-            vec3(0, 1, 0),
-            1,
-            IVolumeSampler::Mode::Subtractive));
+    return nodeColors[atDepth];
+  }
 
-    // create a transform to map our _volume to the origin,
-    // and be of reasonable size
-    auto volume_size = length(vec3(_volume.Size()));
-    _volume_transform = glm::scale(mat4(1), vec3(2.5F / volume_size))
-        * glm::translate(mat4(1), -vec3(_volume.Size()) / 2.0F);
+  /*
+   * March the volume, recording a PerfDatum
+   */
+  void MarchVolume() {
 
-    // record the number of voxels that will be marched
-    _num_voxels_marched = static_cast<size_t>(
-        _volume.Size().x * _volume.Size().y * _volume.Size().z);
+    _node_aabb_line_buffer.Clear();
+    const auto start_time = SteadyClock::now();
+    size_t num_voxels = 0;
+    auto batch_size = 0;
+    switch (_configuration.job_batching_setup) {
+      case JobBatchingSetup::AutoBalancedNodesPerJob:
+        batch_size = mc::OctreeVolume::BATCH_USING_BALANCED_LOAD;
+        break;
+      case JobBatchingSetup::AutoQueuedNodesPerJob:
+        batch_size = mc::OctreeVolume::BATCH_USING_QUEUE;
+        break;
+      case JobBatchingSetup::OneNodePerJob:
+        batch_size = 1;
+        break;
+      case JobBatchingSetup::ManyNodesPerJob:
+        batch_size = 32;
+        break;
+    }
+
+    _volume->March(false, batch_size,
+                   [this, &num_voxels](mc::OctreeVolume::Node* node) {
+                     {
+                       // we add each node to our line buffer so we can visualize marched nodes
+                       auto bounds = node->bounds;
+                       bounds.Inset(
+                           node->depth * OCTREE_NODE_VISUAL_INSET_FACTOR);
+                       _node_aabb_line_buffer.Add(bounds,
+                                                  GetNodeColor(node->depth));
+                     }
+
+                     // record # of voxels marched
+                     num_voxels += static_cast<size_t>(node->bounds.Volume());
+                   });
+
+    const auto end_time = SteadyClock::now();
+
+    // we don't record timestamps until we've been running for a while
+    if (_warming_up) {
+      if (!_recorded_first_step_timestamp) {
+        Log::D(TAG, "Warm up starting");
+        _first_step_timestamp = SteadyClock::now();
+        _recorded_first_step_timestamp = true;
+      } else {
+        auto elapsed_since_first_step =
+            SteadyClock::now() - _first_step_timestamp;
+        if (elapsed_since_first_step >= _configuration.warm_up_time) {
+          Log::D(TAG, "Warm up finished, will start recording perf timings");
+          _warming_up = false;
+        }
+      }
+    }
+
+    if (!_warming_up) {
+      _march_performance_data.emplace_back(end_time - start_time, num_voxels);
+    }
+
   }
 
  private:
 
+  struct ProgramState {
+   private:
+    GLuint _program = 0;
+    GLint _uniform_loc_MVP = -1;
+    GLint _uniform_loc_Model = -1;
+
+   public:
+    ProgramState() = default;
+    ProgramState(const ProgramState& other) = delete;
+    ProgramState(const ProgramState&& other) = delete;
+    ~ProgramState() {
+      if (_program > 0) {
+        glDeleteProgram(_program);
+      }
+    }
+
+    bool Build(const std::string& vert_file, const std::string& frag_file) {
+      auto vert_src = LoadText(vert_file.c_str());
+      auto frag_src = LoadText(frag_file.c_str());
+      _program = glh::CreateProgramSrc(vert_src.c_str(), frag_src.c_str());
+      if (_program == 0) {
+        return false;
+      }
+      _uniform_loc_MVP = glGetUniformLocation(_program, "uMVP");
+      _uniform_loc_Model = glGetUniformLocation(_program, "uModel");
+      return true;
+    }
+
+    void Bind(const mat4& mvp, const mat4& model) {
+      glUseProgram(_program);
+      glUniformMatrix4fv(_uniform_loc_MVP, 1, GL_FALSE, value_ptr(mvp));
+      glUniformMatrix4fv(_uniform_loc_Model, 1, GL_FALSE, value_ptr(model));
+    }
+
+  };
+
+  struct PerfDatum {
+   private:
+    Duration _duration = Duration{0};
+    size_t _num_voxels = 0;
+
+   public:
+    PerfDatum() = default;
+
+    PerfDatum(Duration duration, size_t num_voxels)
+        : _duration(duration), _num_voxels(num_voxels) {}
+
+    PerfDatum(const PerfDatum&) = default;
+    PerfDatum(PerfDatum&&) = default;
+
+    double VoxelsPerSecond() const {
+      auto elapsed_seconds = duration_cast<SecondsAs<double>>(_duration);
+      return static_cast<double>(_num_voxels) / elapsed_seconds.count();
+    }
+  };
+
   // configuration state
   configuration _configuration;
-  std::vector<execution_configuration> _configuration_permutations;
-  size_t _current_configuration_permutation = 0;
 
   // render state
-  ProgramState _program;
-  mat4 _proj{1};
-  float _camera_z_position = -4;
+  ProgramState _volume_program, _line_program;
+  bool _use_ortho_projection = false;
+  mat4 _model{1};
+  mat4 _trackball_rotation{1};
+  float _dolly = 0.9F; // camera distance, ranges [0,1], remapped in MVP()
+  float _aspect = 1; // apsect ratio of the framebuffer
+  float _animation_time = 0;
+  mc::LineSegmentBuffer _node_aabb_line_buffer;
 
   // marching cubes state
-  Volume _volume{vec3(25), 2};
-  mat4 _volume_transform{1};
-  std::vector<std::unique_ptr<ITriangleConsumer>> _triangle_consumers;
-  unowned_ptr<PlaneVolumeSampler> _sampler_cutout_plane;
-  std::unique_ptr<marching_cubes::ThreadedMarcher> _marcher;
+  unique_ptr<mc::job::JobQueue> _job_queue;
+  unique_ptr<mc::OctreeVolume> _volume;
+  std::vector<unique_ptr<mc::ITriangleConsumer>> _triangle_consumers;
+  unique_ptr<mc::demos::Demo> _current_demo;
 
   // perf recording state
-  size_t _num_voxels_marched = 0;
   size_t _num_threads_used = 0;
-  std::vector<Duration> _march_durations;
-
+  std::vector<PerfDatum> _march_performance_data;
   bool _warming_up = true;
   bool _recorded_first_step_timestamp = false;
   Timestamp _first_step_timestamp{};
