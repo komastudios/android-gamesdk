@@ -19,6 +19,7 @@
 
 #include <sched.h>
 
+#include <atomic>
 #include <condition_variable>
 #include <deque>
 #include <functional>
@@ -27,6 +28,7 @@
 #include <random>
 #include <thread>
 
+#include <ancer/util/Time.hpp>
 #include <ancer/util/Log.hpp>
 #include <ancer/System.hpp>
 
@@ -41,23 +43,75 @@ class ThreadPool {
   static constexpr ancer::Log::Tag TAG{"ThreadPool"};
 
  public:
+
+  /*
+   * SleepConfig is a specification for if/how to periodically sleep
+   * worker threads to mitigate core(s) overheating and being throttled
+   * by the OS. By default, ThreadPool uses SleepConfig::None(), which is
+   * does nothing and allows threads to run at full bore.
+   * But! It's been observed that a little periodic sleeping of threads
+   * can, *in some cases* result in improved performance for long running tasks.
+   * By making sleep optional/configurable for ThreadPool we can experiment
+   * with different sleep scenarios, to plot best practices.
+   */
+  struct SleepConfig {
+    enum class Method {
+      None, Sleep, Spinlock
+    };
+
+    // how often each thread will be slept; each thread will sleep
+    // after it's done this much work.
+    const Duration period{0};
+
+    // when a thread has worked for `period`, it will be slept for
+    // this long
+    const Duration duration{0};
+
+    // the technique used to sleep the thread; if Method::None,
+    // sleep is a no-op
+    const Method method{Method::None};
+
+    SleepConfig(Duration period, Duration duration, Method method) :
+        period(period), duration(duration), method(method) {}
+
+    SleepConfig(const SleepConfig&) = default;
+
+    SleepConfig(SleepConfig&&) = default;
+
+    // convenience function to create a default no-op sleep config
+    static SleepConfig None() {
+      return SleepConfig{Duration{0}, Duration{0}, Method::None};
+    }
+  };
+
+  /*
+   * Signature for work threads. The int parameter is the id
+   * of the thread in the thread pool, a value from [0,N) where
+   * N is the number of threads in the thread pool.
+   */
+  typedef std::function<void(int)> WorkFn;
+
   /*
    * Create a ThreadPool
    * affinity: The thread affinity (big core, little core, etc)
    * pin_threads: if true, pin threads to the CPU they're on
    * max_thread_count: allow setting # cpus to a smaller value than the
    *   number of cores in the affinity group
+   * sleep_config: A sleep configuration to use to periodically sleep
+   *   each thread, to mitigate core overheating/throttling
    */
   ThreadPool(ThreadAffinity affinity,
              bool pin_threads,
-             int max_thread_count = std::numeric_limits<int>::max()) {
-    auto count = std::max(std::min(
-        NumCores(affinity), max_thread_count), 1);
+             int max_thread_count = std::numeric_limits<int>::max(),
+             SleepConfig sleep_config = SleepConfig::None())
+      : _sleep_config(sleep_config) {
+    auto count = std::max(std::min(NumCores(affinity), max_thread_count), 1);
 
     for (auto i = 0; i < count; ++i) {
       auto cpu_idx = pin_threads ? i : -1;
+      _elapsed_work_times.push_back(Duration{0});
       _workers.emplace_back([this, i, affinity, cpu_idx]() {
-        ThreadLoop(affinity, cpu_idx);
+        ThreadLoop(affinity, cpu_idx, i);
       });
     }
   }
@@ -77,13 +131,25 @@ class ThreadPool {
   size_t NumThreads() const { return _workers.size(); }
 
   /*
-   * Enqueue a job to run
+   * Enqueue a job to run; job signature is:
+   * void fn(int thread_idx) where thread_idx is an int
+   * from [0,NumThreads-1] stably identifying the thread
+   * executing the job
    */
   template<class F>
   void Enqueue(F&& f) {
     std::unique_lock<std::mutex> lock(_queue_mutex);
     _tasks.emplace_back(std::forward<F>(f));
     _cv_task.notify_one();
+  }
+
+  /*
+   * Enqeue several jobs at once.
+   */
+  void EnqueueAll(const std::vector<WorkFn>& fns) {
+    std::unique_lock<std::mutex> lock(_queue_mutex);
+    std::copy(fns.begin(), fns.end(), std::back_inserter(_tasks));
+    _cv_task.notify_all();
   }
 
   /*
@@ -97,7 +163,7 @@ class ThreadPool {
 
  private:
 
-  void ThreadLoop(ancer::ThreadAffinity affinity, int cpu_idx) {
+  void ThreadLoop(ancer::ThreadAffinity affinity, int cpu_idx, int thread_idx) {
     ancer::SetThreadAffinity(cpu_idx, affinity);
 
     while (true) {
@@ -115,7 +181,31 @@ class ThreadPool {
         latch.unlock();
 
         // run function outside context
-        fn();
+        const auto start_time = SteadyClock::now();
+
+        fn(thread_idx);
+
+        const auto end_time = SteadyClock::now();
+        _elapsed_work_times[thread_idx] += (end_time - start_time);
+
+        if (_sleep_config.method != SleepConfig::Method::None &&
+          _sleep_config.duration > Duration{0} &&
+          !_sleeping) {
+          _sleeping = true;
+
+          // work out how long to sleep; we sleep for SleepConfig::duration
+          // per SleepConfig::period of work; if a thread di something really
+          // time intensive, we don't want to sleep forever, so max out at 3
+          // sleep periods (this is arbitrary)
+          auto ref =_elapsed_work_times[thread_idx];
+          auto duration = (ref / _sleep_config.period) * _sleep_config.duration;
+          duration = std::min<Duration>(duration, 3 * duration);
+
+          Sleep(duration);
+          _elapsed_work_times[thread_idx] = Duration{0};
+
+          _sleeping = false;
+        }
 
         latch.lock();
         --_busy;
@@ -128,11 +218,34 @@ class ThreadPool {
 
  private:
 
+  void Sleep(Duration duration)
+  {
+    switch(_sleep_config.method){
+
+      case SleepConfig::Method::None:break;
+      case SleepConfig::Method::Sleep:
+        std::this_thread::sleep_for(duration);
+        break;
+      case SleepConfig::Method::Spinlock: {
+        auto now = SteadyClock::now();
+        while ((SteadyClock::now() - now) < duration) {
+          std::this_thread::yield();
+        }
+        break;
+      }
+    }
+  }
+
+ private:
+
   std::vector<std::thread> _workers;
-  std::deque<std::function<void()>> _tasks;
+  std::vector<Duration> _elapsed_work_times;
+  std::deque<WorkFn> _tasks;
   std::mutex _queue_mutex;
   std::condition_variable _cv_task;
   std::condition_variable _cv_finished;
+  SleepConfig _sleep_config;
+  std::atomic_bool _sleeping;
   unsigned int _busy = 0;
   bool _stop_requested = false;
 
