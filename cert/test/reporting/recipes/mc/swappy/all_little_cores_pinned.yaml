@@ -1,2 +1,0 @@
-build:
-  configuration: recipes/configurations/mc/swappy/all_little_cores_pinned.json

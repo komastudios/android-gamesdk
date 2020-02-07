@@ -17,12 +17,11 @@
 reports from marching cubes operation.
 """
 
-from typing import List, Tuple
+from typing import List, Union
 
-import math
 import matplotlib.pyplot as plt
 
-from lib.common import nanoseconds_to_seconds, nanoseconds_to_milliseconds
+from lib.common import nanoseconds_to_milliseconds
 from lib.report import Datum, Suite
 from lib.graphers.suite_handler import SuiteHandler
 
@@ -86,81 +85,10 @@ def apply_bar_value_labels(axis, rects):
             va='bottom')
 
 
-def min_voxels_per_second(datum: Datum):
-    """Look up the min voxels-per-second for the provided datum"""
-    n_vox = datum.get_custom_field_numeric(
-        "marching_cubes_permutation_results.num_voxels_marched_per_iteration")
-    max_dur_s = nanoseconds_to_seconds(
-        datum.get_custom_field_numeric(
-            "marching_cubes_permutation_results.max_calc_duration"))
-    return n_vox / max_dur_s
-
-
-def max_voxels_per_second(datum: Datum):
-    """Look up the min voxels-per-second for the provided datum"""
-    n_vox = datum.get_custom_field_numeric(
-        "marching_cubes_permutation_results.num_voxels_marched_per_iteration")
-    min_dur_s = nanoseconds_to_seconds(
-        datum.get_custom_field_numeric(
-            "marching_cubes_permutation_results.min_calc_duration"))
-    return n_vox / min_dur_s
-
-
-def avg_voxels_per_second(datum: Datum):
-    """Look up the voxels-per-second for the provided datum"""
-    n_vox = datum.get_custom_field_numeric(
-        "marching_cubes_permutation_results.num_voxels_marched_per_iteration")
-    avg_dur_s = nanoseconds_to_seconds(
-        datum.get_custom_field_numeric(
-            "marching_cubes_permutation_results.average_calc_duration"))
-    return n_vox / avg_dur_s
-
-
-def median_voxels_per_second(datum: Datum):
-    """Look up the median voxels-per-second for the provided datum"""
-    n_vox = datum.get_custom_field_numeric(
-        "marching_cubes_permutation_results.num_voxels_marched_per_iteration")
-    median_dur_s = nanoseconds_to_seconds(
-        datum.get_custom_field_numeric(
-            "marching_cubes_permutation_results.median_calc_duration"))
-    return n_vox / median_dur_s
-
-
-def fifth_percentile_voxels_per_second(datum: Datum):
-    """Look up the fifth percentil voxels-per-second for the provided datum"""
-    n_vox = datum.get_custom_field_numeric(
-        "marching_cubes_permutation_results.num_voxels_marched_per_iteration")
-    # fifth percentile vps is fifth percentile *slowest* so we use the 95th
-    # percentile duration
-    dur_s = nanoseconds_to_seconds(
-        datum.get_custom_field_numeric(
-            "marching_cubes_permutation_results.ninetyfifth_percentile_duration"
-        ))
-    return n_vox / dur_s
-
-
-def ninetyfifth_percentile_voxels_per_second(datum: Datum):
-    """Look up the ninetyfifth percentile voxels-per-second for the provided datum"""
-    n_vox = datum.get_custom_field_numeric(
-        "marching_cubes_permutation_results.num_voxels_marched_per_iteration")
-    # ninetyfifth percentile vps is ninetyfifth percentile *fastest* so we
-    # use the 5th percentile duration
-    dur_s = nanoseconds_to_seconds(
-        datum.get_custom_field_numeric(
-            "marching_cubes_permutation_results.fifth_percentile_duration"))
-    return n_vox / dur_s
-
-
-def min_max_voxels_per_second(data: List[Datum]) -> Tuple[float, float]:
-    """Determine the min and max voxels-per-second of a list of datums"""
-    min_vps = float('inf')
-    max_vps = 0
-    for datum in data:
-        vps = avg_voxels_per_second(datum)
-        min_vps = min(min_vps, vps)
-        max_vps = max(max_vps, vps)
-    min_vps = 0 if math.isinf(min_vps) else min_vps
-    return round(min_vps), round(max_vps)
+def get_datum_value(datum: Datum, key: str) -> Union[int, float]:
+    '''Helper to look up values in MarchingCubesGLES3Operation results'''
+    return datum.get_custom_field_numeric(
+        f"marching_cubes_permutation_results.{key}")
 
 
 class DataConsistencyError(Exception):
@@ -174,23 +102,19 @@ class MarchingCubesSuiteHandler(SuiteHandler):
     def __init__(self, suite):
         super().__init__(suite)
 
-        my_data = [
-            d for d in self.data
-            if d.operation_id == "MarchingCubesGLES3Operation"
-        ]
-
         self.data_by_thread_setup_floating = {}
         self.data_by_thread_setup_pinned = {}
+
         for thread_setup in THREAD_SETUPS:
             self.data_by_thread_setup_floating[thread_setup] = []
             self.data_by_thread_setup_pinned[thread_setup] = []
 
-        for datum in my_data:
+        for datum in suite.data_by_operation_id["MarchingCubesGLES3Operation"]:
             thread_setup = datum.get_custom_field(
-                "marching_cubes_permutation_results.configuration.thread_setup")
+                "marching_cubes_permutation_results.exec_configuration.thread_affinity")
 
             pin_state = datum.get_custom_field(
-                "marching_cubes_permutation_results.configuration.pinned")
+                "marching_cubes_permutation_results.exec_configuration.thread_pinned")
 
             if pin_state:
                 self.data_by_thread_setup_pinned[thread_setup].append(datum)
@@ -230,7 +154,7 @@ class MarchingCubesSuiteHandler(SuiteHandler):
                 if data:
                     y_values_by_sleep_dur = {}
                     for datum in data:
-                        vps = avg_voxels_per_second(datum)
+                        vps = get_datum_value(datum, "median_vps")
                         sleep_dur = nanoseconds_to_milliseconds(
                             datum.get_custom_field_numeric(SLEEP_DUR))
                         y_values_by_sleep_dur[sleep_dur] = vps
