@@ -41,7 +41,7 @@ namespace ancer {
     // more convenient (e.g., rendering code that's written with a delta in seconds).
     // Not that JSON serialization to/from these types is not currently supported; this can change
     // if it becomes an issue.
-    template <typename T> using SecondsAs      = std::chrono::duration<T, Seconds::period>;
+    template <typename T> using SecondsAs = std::chrono::duration<T, Seconds::period>;
     template <typename T> using MillisecondsAs = std::chrono::duration<T, Milliseconds::period>;
     template <typename T> using NanosecondsAs  = std::chrono::duration<T, Nanoseconds::period>;
 
