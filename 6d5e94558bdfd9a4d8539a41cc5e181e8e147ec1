@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0aff3e1d_549c1e28",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/vulkan/image.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-02-07T17:56:33Z",
+      "side": 1,
+      "message": "Wouldn\u0027t this only be a 3D image if the depth is \u003e 1?",
+      "revId": "6d5e94558bdfd9a4d8539a41cc5e181e8e147ec1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a49f4acb_32880de9",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/vulkan/vulkan_base.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-02-07T17:56:33Z",
+      "side": 1,
+      "message": "I think we should probably avoid borrowing the \"Vk\" prefix if at all possible since it makes things look like proper Vulkan API members. I\u0027m open to hearing a compelling reason for it, but to me it seems like it\u0027s mixing namespaces, and even though it may *technically* be in a different namespace, one cannot tell from the function signatures (i.e., we see `VkResourceUse ruse` and not `ancer::vulkan::VkResourceUse ruse`).",
+      "revId": "6d5e94558bdfd9a4d8539a41cc5e181e8e147ec1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
