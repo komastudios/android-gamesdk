@@ -57,7 +57,7 @@ class ThreadPool {
     for (auto i = 0; i < count; ++i) {
       auto cpu_idx = pin_threads ? i : -1;
       _workers.emplace_back([this, i, affinity, cpu_idx]() {
-        ThreadLoop(affinity, cpu_idx);
+        ThreadLoop(affinity, cpu_idx, i);
       });
     }
   }
@@ -77,7 +77,10 @@ class ThreadPool {
   size_t NumThreads() const { return _workers.size(); }
 
   /*
-   * Enqueue a job to run
+   * Enqueue a job to run; job signature is:
+   * void fn(int thread_idx) where thread_idx is an int
+   * from [0,NumThreads-1] stably identifying the thread
+   * executing the job
    */
   template<class F>
   void Enqueue(F&& f) {
@@ -97,7 +100,7 @@ class ThreadPool {
 
  private:
 
-  void ThreadLoop(ancer::ThreadAffinity affinity, int cpu_idx) {
+  void ThreadLoop(ancer::ThreadAffinity affinity, int cpu_idx, int thread_idx) {
     ancer::SetThreadAffinity(cpu_idx, affinity);
 
     while (true) {
@@ -115,7 +118,7 @@ class ThreadPool {
         latch.unlock();
 
         // run function outside context
-        fn();
+        fn(thread_idx);
 
         latch.lock();
         --_busy;
@@ -129,7 +132,7 @@ class ThreadPool {
  private:
 
   std::vector<std::thread> _workers;
-  std::deque<std::function<void()>> _tasks;
+  std::deque<std::function<void(int)>> _tasks;
   std::mutex _queue_mutex;
   std::condition_variable _cv_task;
   std::condition_variable _cv_finished;

@@ -83,9 +83,17 @@
       "data_gatherer": {
         "id": "MarchingCubesGLES3Operation",
         "configuration": {
+          "thread_setups": [
+            {
+              "thread_setup": "AllCores",
+              "pinning": "Pinned"
+            }
+          ],
+          "warm_up_time": "5s",
           "sleep_per_iteration_min": "0ms",
-          "sleep_per_iteration_max": "4ms",
-          "permutation_execution_duration": "30s"
+          "sleep_per_iteration_max": "1.5ms",
+          "sleep_per_iteration_increment": "0.5ms",
+          "permutation_execution_duration": "5m"
         }
       }
     },
