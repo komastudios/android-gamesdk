@@ -67,6 +67,15 @@ Java_net_jimblackler_istresser_MainActivity_mmapConsume(JNIEnv *env, jobject ins
     return addr != MAP_FAILED ? byte_count : 0;
 }
 
+extern "C" JNIEXPORT void JNICALL
+Java_net_jimblackler_istresser_MainActivity_freeLastAllocation(JNIEnv *env, jobject instance) {
+  mtx.lock();
+  __android_log_print(ANDROID_LOG_INFO, appname, "Freeing last entry");
+  free(allocated.front());
+  allocated.pop_front();
+  mtx.unlock();
+}
+
 extern "C"
 JNIEXPORT bool JNICALL
 Java_net_jimblackler_istresser_Heuristic_tryAlloc(JNIEnv *env, jobject thiz, jint bytes) {

@@ -35,9 +35,10 @@ public abstract class Heuristic {
           new Heuristic(Identifier.OOM) {
             @Override
             public Indicator getSignal(ActivityManager activityManager) {
-              return Heuristics.getOomScore(activityManager) <= 650
-                  ? Indicator.GREEN
-                  : Indicator.RED;
+              int oomScore = Heuristics.getOomScore(activityManager);
+              if (oomScore < 300 ) return Indicator.GREEN;
+              else if (oomScore <= 400) return Indicator.YELLOW;
+              else return Indicator.RED;
             }
           },
           /*
@@ -47,7 +48,9 @@ public abstract class Heuristic {
           new Heuristic(Identifier.TRY) {
             @Override
             public Indicator getSignal(ActivityManager activityManager) {
-              return tryAlloc(1024 * 1024 * 32) ? Indicator.GREEN : Indicator.RED;
+              if (tryAlloc(1024 * 1024 * 64)) return Indicator.GREEN;
+              else if (tryAlloc(1024 * 1024)) return Indicator.YELLOW;
+              else return Indicator.RED;
             }
           },
           /*
