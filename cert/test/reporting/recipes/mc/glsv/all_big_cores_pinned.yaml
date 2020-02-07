@@ -1,2 +1,0 @@
-build:
-  configuration: recipes/configurations/mc/glsv/all_big_cores_pinned.json
