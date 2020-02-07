@@ -61,6 +61,22 @@ Result Vulkan::Initialize(const VulkanRequirements & requirements) {
                                         requirements._concurrent_uploads,
                                         requirements._upload_buffer_size));
 
+  {
+    // initialize empty pipeline layout
+    VkPipelineLayoutCreateInfo pipeline_layout_create_info = {
+        /* sType                  */ VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+        /* pNext                  */ nullptr,
+        /* flags                  */ 0,
+        /* setLayoutCount         */ 0,
+        /* pSetLayouts            */ nullptr,
+        /* pushConstantRangeCount */ 0,
+        /* pPushConstantRanges    */ nullptr
+    };
+    VK_GOTO_FAIL(vk->createPipelineLayout(vk->device,
+                                          &pipeline_layout_create_info,
+                                          nullptr, &vk->empty_pipeline_layout));
+  }
+
   if(false) {
 fail:
     Shutdown();

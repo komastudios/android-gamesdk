@@ -665,6 +665,9 @@ class Vulkan {
     // resources
     ResourcesStore *resources_store;
 
+    // for piplines that do not require resources
+    VkPipelineLayout empty_pipeline_layout;
+
     // 1.0 core functions
     PFN_vkCreateInstance createInstance;
     PFN_vkDestroyInstance destroyInstance;

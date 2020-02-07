@@ -139,6 +139,8 @@ add_library(${PROJECT_NAME} SHARED
         operations/gl/TeapotRendererGLES3Operation.cpp
         operations/gl/VertexStreamGLES3Operation.cpp
 
+        operations/vulkan/VulkanVaryingsTestOperation.cpp
+
         # integration testing
         operations/integration/FakeOperation.cpp
 

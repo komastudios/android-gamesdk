@@ -10,6 +10,18 @@
   "stress_tests": [
     {
       "enabled": true,
+      "name": "Vulkan Varyings Blocks",
+      "description": "Test Vulkan implementations for large varying interface blocks",
+      "host": "VulkanHostActivity",
+      "duration": "100ms",
+      "data_gatherer": {
+        "id": "VulkanVaryingsTestOperation",
+        "configuration": {}
+      },
+      "stressors": []
+    },
+    {
+      "enabled": true,
       "name": "GLES3 External Framebuffer",
       "description": "Determine if a native hardware buffer can be created and used as render target.",
       "duration": "5s",

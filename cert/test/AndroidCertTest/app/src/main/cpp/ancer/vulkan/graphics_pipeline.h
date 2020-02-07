@@ -52,13 +52,24 @@ struct [[nodiscard]] Builder {
   Builder &BlendMode(const BlendMode & blend_mode);
   Builder &Layout(VkPipelineLayout pipeline_layout);
   Builder &RenderPass(const RenderPass &render_pass, uint32_t subpass);
+  Builder &DynamicViewport(bool value = true);
+  Builder &DynamicScissor(bool value = true);
+  Builder &DynamicLineWidth(bool value = true);
+  Builder &DynamicDepthBias(bool value = true);
+  Builder &DynamicBlendConstants(bool value = true);
+  Builder &DynamicDepthBounds(bool value = true);
+  Builder &DynamicStencilCompareMask(bool value = true);
+  Builder &DynamicStencilWriteMask(bool value = true);
+  Builder &DynamicStencilReference(bool value = true);
 
   Result Build(Vulkan &vk);
 
  private:
   GraphicsPipeline &_graphics_pipeline;
 
-  std::vector<VkPipelineShaderStageCreateInfo> _shader_stage;
+  void SetDynamicState(VkDynamicState dstate, bool add);
+
+  std::vector<VkPipelineShaderStageCreateInfo> _shader_stages;
   std::vector<VkVertexInputBindingDescription> _vertex_bindings;
   std::vector<VkVertexInputAttributeDescription> _vertex_attributes;
   VkPipelineVertexInputStateCreateInfo _vertex_input_state;
@@ -73,6 +84,7 @@ struct [[nodiscard]] Builder {
   VkPipelineDepthStencilStateCreateInfo _depth_stencil_state;
   VkPipelineColorBlendAttachmentState _blend_attachments[BlendMode::MAX_ATTACHMENTS];
   VkPipelineColorBlendStateCreateInfo _color_blend_state;
+  std::vector<VkDynamicState> _dynamic_states;
   VkPipelineDynamicStateCreateInfo _dynamic_state;
   VkGraphicsPipelineCreateInfo _create_info;
 

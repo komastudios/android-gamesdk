@@ -39,6 +39,9 @@ DepthMode &DepthMode::DepthBounds(float min, float max) {
   return *this;
 }
 
+DepthMode DepthMode::kNoDepth = DepthMode()
+  .DepthCompare(VK_COMPARE_OP_ALWAYS);
+
 DepthMode DepthMode::kLessThan = DepthMode()
   .DepthTest()
   .DepthWrite()

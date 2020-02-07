@@ -28,6 +28,7 @@ class DepthMode {
     return _create_info;
   }
 
+  static DepthMode kNoDepth;
   static DepthMode kLessThan;
 
  private:

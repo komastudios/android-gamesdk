@@ -1,12 +1,34 @@
 #include "graphics_pipeline.h"
 
+#include "render_pass.h"
+
 namespace ancer {
 namespace vulkan {
 
 namespace graphics_pipeline {
 
 Builder::Builder(GraphicsPipeline &graphics_pipeline) :
-  _graphics_pipeline(graphics_pipeline) {
+    _graphics_pipeline(graphics_pipeline) {
+
+#define CLEAR(S, T) do { \
+  memset(&S, 0, sizeof(S)); \
+  S.sType = VK_STRUCTURE_TYPE_ ## T; \
+} while(false)
+
+  CLEAR(_vertex_input_state, PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO);
+  CLEAR(_input_assembly_state, PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO);
+  CLEAR(_tessellation_state, PIPELINE_TESSELLATION_STATE_CREATE_INFO);
+  CLEAR(_viewport_state, PIPELINE_VIEWPORT_STATE_CREATE_INFO);
+  CLEAR(_rasterization_state, PIPELINE_RASTERIZATION_STATE_CREATE_INFO);
+  CLEAR(_multisample_state, PIPELINE_MULTISAMPLE_STATE_CREATE_INFO);
+  CLEAR(_depth_stencil_state, PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO);
+  CLEAR(_color_blend_state, PIPELINE_COLOR_BLEND_STATE_CREATE_INFO);
+  CLEAR(_dynamic_state, PIPELINE_DYNAMIC_STATE_CREATE_INFO);
+  CLEAR(_create_info, GRAPHICS_PIPELINE_CREATE_INFO);
+
+#undef CLEAR
+
+  RasterizationState().lineWidth = 1.0f;
 }
 
 Builder &Builder::DisableOptimization(bool value) {
@@ -34,7 +56,43 @@ Builder &Builder::Derivative(bool value) {
 }
 
 Builder &Builder::Shader(ShaderModule &shader_module) {
-  // TODO
+  VkShaderStageFlagBits stage = shader_module.Stage();
+
+  // TODO(sarahburns@google.com) only allow some states to be created from
+  // here?
+
+  // touch states required
+  switch(stage) {
+  case VK_SHADER_STAGE_VERTEX_BIT:
+    VertexInputState();
+    InputAssemblyState();
+    break;
+  case VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT:
+    /* fallthrough */
+  case VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT:
+    TessellationState();
+    break;
+  case VK_SHADER_STAGE_FRAGMENT_BIT:
+    /* nothing */
+    break;
+  case VK_SHADER_STAGE_COMPUTE_BIT:
+    // cannot build a compute shader into a graphics pipeline
+    assert(false);
+  default:
+    // unknown shader stage being built into a graphics pipeline
+    assert(false);
+  }
+
+  _shader_stages.push_back(VkPipelineShaderStageCreateInfo {
+    /* sType               */
+                           VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+    /* pNext               */ nullptr,
+    /* flags               */ 0,
+    /* stage               */ stage,
+    /* module              */ shader_module.Handle(),
+    /* pName               */ shader_module.Name(),
+    /* pSpecializationInfo */ shader_module.SpecializationInfo()
+  });
   return *this;
 }
 
@@ -192,11 +250,121 @@ Builder &Builder::Layout(VkPipelineLayout pipeline_layout) {
 
 Builder &Builder::RenderPass(const class RenderPass &render_pass,
                              uint32_t subpass) {
+  _create_info.renderPass = render_pass.Handle();
+  _create_info.subpass = subpass;
   return *this;
 }
 
+Builder &Builder::DynamicViewport(bool value) {
+  SetDynamicState(VK_DYNAMIC_STATE_VIEWPORT, value);
+  return *this;
+}
+
+Builder &Builder::DynamicScissor(bool value) {
+  SetDynamicState(VK_DYNAMIC_STATE_SCISSOR, value);
+  return *this;
+}
+
+Builder &Builder::DynamicLineWidth(bool value) {
+  SetDynamicState(VK_DYNAMIC_STATE_LINE_WIDTH, value);
+  return *this;
+}
+
+Builder &Builder::DynamicDepthBias(bool value) {
+  SetDynamicState(VK_DYNAMIC_STATE_DEPTH_BIAS, value);
+  return *this;
+}
+
+Builder &Builder::DynamicBlendConstants(bool value) {
+  SetDynamicState(VK_DYNAMIC_STATE_BLEND_CONSTANTS, value);
+  return *this;
+}
+
+Builder &Builder::DynamicDepthBounds(bool value) {
+  SetDynamicState(VK_DYNAMIC_STATE_DEPTH_BOUNDS, value);
+  return *this;
+}
+
+Builder &Builder::DynamicStencilCompareMask(bool value) {
+  SetDynamicState(VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK, value);
+  return *this;
+}
+
+Builder &Builder::DynamicStencilWriteMask(bool value) {
+  SetDynamicState(VK_DYNAMIC_STATE_STENCIL_WRITE_MASK, value);
+  return *this;
+}
+
+Builder &Builder::DynamicStencilReference(bool value) {
+  SetDynamicState(VK_DYNAMIC_STATE_STENCIL_REFERENCE, value);
+  return *this;
+}
+
+void Builder::SetDynamicState(VkDynamicState dstate, bool add) {
+  std::size_t i = 0;
+  std::size_t e = _dynamic_states.size();
+  while(i < e) {
+    if(_dynamic_states[i] == dstate)
+      break;
+    ++i;
+  }
+  if(i >= e && add)
+    _dynamic_states.push_back(dstate);
+  else if(i != e && !add) {
+    std::iter_swap(_dynamic_states.begin() + i, _dynamic_states.end() - 1);
+    _dynamic_states.pop_back();
+  }
+}
+
 Result Builder::Build(Vulkan &vk) {
-  // finalize create info?
+  _create_info.stageCount = static_cast<uint32_t>(_shader_stages.size());
+  _create_info.pStages = _shader_stages.data();
+
+  if(_vertex_bindings.size() > 0) {
+    auto & vistate = VertexInputState();
+    vistate.vertexBindingDescriptionCount =
+                                static_cast<uint32_t>(_vertex_bindings.size());
+    vistate.pVertexBindingDescriptions = _vertex_bindings.data();
+  }
+
+  if(_vertex_attributes.size() > 0) {
+    auto & vistate = VertexInputState();
+    vistate.vertexAttributeDescriptionCount =
+                              static_cast<uint32_t>(_vertex_attributes.size());
+    vistate.pVertexAttributeDescriptions = _vertex_attributes.data();
+  }
+
+  auto & vstate = ViewportState();
+  if(_viewports.size() > 0) {
+    SetDynamicState(VK_DYNAMIC_STATE_VIEWPORT, false);
+    SetDynamicState(VK_DYNAMIC_STATE_SCISSOR, false);
+    vstate.viewportCount = static_cast<uint32_t>(_viewports.size());
+    vstate.pViewports = _viewports.data();
+    vstate.scissorCount = static_cast<uint32_t>(_scissors.size());
+    vstate.pScissors = _scissors.data();
+  } else {
+    SetDynamicState(VK_DYNAMIC_STATE_VIEWPORT, true);
+    SetDynamicState(VK_DYNAMIC_STATE_SCISSOR, true);
+    vstate.viewportCount = 1;
+    vstate.pViewports = nullptr;
+    vstate.scissorCount = 1;
+    vstate.pScissors = nullptr;
+  }
+
+  auto & rstate = RasterizationState();
+  if(rstate.rasterizerDiscardEnable == VK_FALSE) {
+    // touch states required for rasterization
+    MultisampleState();
+  }
+
+  if(_dynamic_states.size() > 0) {
+    auto & dstate = DynamicState();
+    dstate.dynamicStateCount = static_cast<uint32_t>(_dynamic_states.size());
+    dstate.pDynamicStates = _dynamic_states.data();
+  }
+
+  if(_create_info.layout == VK_NULL_HANDLE)
+    _create_info.layout = vk->empty_pipeline_layout;
 
   _graphics_pipeline._vk = vk;
 
