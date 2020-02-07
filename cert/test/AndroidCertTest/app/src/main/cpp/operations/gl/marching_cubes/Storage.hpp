@@ -23,13 +23,17 @@
 using namespace glm;
 
 #include <vector>
+#include <ancer/util/GLHelpers.hpp>
 
 namespace marching_cubes {
 
+/*
+ * The Vertex primitive we'll be using, just position, color and normal
+ */
 struct Vertex {
-  vec3 pos;
-  vec3 color{1};
-  vec3 normal;
+  vec3 pos{0};
+  vec4 color{1};
+  vec3 normal { 0,1,0};
 
   enum class AttributeLayout : GLuint {
     Pos = 0,
@@ -44,6 +48,9 @@ struct Vertex {
   static void BindVertexAttributes();
 };
 
+/*
+ * A simple triangle composed of 3 vertices
+ */
 struct Triangle {
   Vertex a, b, c;
 
@@ -107,6 +114,13 @@ class VertexStorage {
 
 //------------------------------------------------------------------------------
 
+/*
+ * Base class for things which consume triangles.
+ * In our marching cubes code, the marching cubes alg just generates a
+ * big honking soup of triangles. We'll use an implementation of
+ * ITriangleConsumer to receive those triangles and send them to the
+ * GPU via VertexStorage
+ */
 class ITriangleConsumer {
  public:
   ITriangleConsumer() = default;
@@ -131,34 +145,6 @@ class ITriangleConsumer {
    Draw the internal storage of triangles
    */
   virtual void Draw() const = 0;
-};
-
-/*
- TriangleConsumer which does nothing but record how many triangles were
- delivered between start() and end();
- meant for profiling, testing, etc.
- */
-class CountingTriangleConsumer : public ITriangleConsumer {
- public:
-  CountingTriangleConsumer() = default;
-
-  void Start() override {
-    _triangle_count = 0;
-  }
-
-  void AddTriangle(const Triangle& t) override {
-    _triangle_count++;
-  }
-
-  void Finish() override {
-  }
-
-  void Draw() const override {}
-
-  size_t GetNumTriangles() const { return _triangle_count; }
-
- private:
-  size_t _triangle_count = 0;
 };
 
 //------------------------------------------------------------------------------
@@ -186,6 +172,107 @@ class TriangleConsumer : public ITriangleConsumer {
 
   const VertexStorage& GetStorage() const { return _gpu_storage; }
   VertexStorage& GetStorage() { return _gpu_storage; }
+};
+
+//------------------------------------------------------------------------------
+
+/*
+ * Helper class for drawing line segments, e.g.
+ * (a->b), (c->d), (e->f)
+ */
+class LineSegmentBuffer {
+ public:
+  LineSegmentBuffer() = default;
+  LineSegmentBuffer(const LineSegmentBuffer&) = delete;
+  LineSegmentBuffer(const LineSegmentBuffer&&) = delete;
+  ~LineSegmentBuffer() = default;
+
+  void Clear() {
+    _vertices.clear();
+    _dirty = true;
+  }
+
+  void Add(const Vertex& a, const Vertex& b) {
+    _vertices.push_back(a);
+    _vertices.push_back(b);
+    _dirty = true;
+  }
+
+  template<typename T, glm::precision P>
+  inline void Add(const ancer::glh::tAABB<T, P>& bounds, const glm::vec4& color) {
+    auto corners = bounds.Corners();
+
+    // trace bottom
+    Add(Vertex{corners[0], color}, Vertex{corners[1], color});
+    Add(Vertex{corners[1], color}, Vertex{corners[2], color});
+    Add(Vertex{corners[2], color}, Vertex{corners[3], color});
+    Add(Vertex{corners[3], color}, Vertex{corners[0], color});
+
+    // trace top
+    Add(Vertex{corners[4], color}, Vertex{corners[5], color});
+    Add(Vertex{corners[5], color}, Vertex{corners[6], color});
+    Add(Vertex{corners[6], color}, Vertex{corners[7], color});
+    Add(Vertex{corners[7], color}, Vertex{corners[4], color});
+
+    // add bars connecting bottom to top
+    Add(Vertex{corners[0], color}, Vertex{corners[4], color});
+    Add(Vertex{corners[1], color}, Vertex{corners[5], color});
+    Add(Vertex{corners[2], color}, Vertex{corners[6], color});
+    Add(Vertex{corners[3], color}, Vertex{corners[7], color});
+  }
+
+  void Draw() {
+    if (_dirty) {
+      _gpuStorage.Update(_vertices);
+      _dirty = false;
+    }
+    _gpuStorage.Draw();
+  }
+
+ private:
+  bool _dirty = false;
+  std::vector<Vertex> _vertices;
+  VertexStorage _gpuStorage{GL_LINES};
+};
+
+/*
+ * Helper class for drawing line strips, e.g.:
+ * (a->b->c->d->e)
+ */
+class LineStripBuffer {
+ public:
+  LineStripBuffer() = default;
+  LineStripBuffer(const LineStripBuffer&) = delete;
+  LineStripBuffer(const LineStripBuffer&&) = delete;
+  ~LineStripBuffer() = default;
+
+  void Clear() {
+    _vertices.clear();
+    _dirty = true;
+  }
+
+  void Add(const Vertex& a) {
+    _vertices.push_back(a);
+    _dirty = true;
+  }
+
+  void Close() {
+    _vertices.push_back(_vertices.front());
+    _dirty = true;
+  }
+
+  void Draw() {
+    if (_dirty) {
+      _gpuStorage.Update(_vertices);
+      _dirty = false;
+    }
+    _gpuStorage.Draw();
+  }
+
+ private:
+  bool _dirty = false;
+  std::vector<Vertex> _vertices;
+  VertexStorage _gpuStorage{GL_LINE_STRIP};
 };
 
 } // namespace marching_cubes
