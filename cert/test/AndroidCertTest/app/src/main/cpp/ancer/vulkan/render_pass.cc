@@ -83,7 +83,7 @@ AttachmentBuilder &AttachmentBuilder::FinalLayout(VkImageLayout layout) {
 }
 
 Builder &AttachmentBuilder::End() {
-  if(_builder._attachments.size() < _index)
+  if(_builder._attachments.size() <= _index)
     _builder._attachments.resize(_index + 1);
   _builder._attachments[_index] = _attachment;
   return _builder;
@@ -149,7 +149,7 @@ Builder &SubpassBuilder::End() {
   if(_description.pDepthStencilAttachment != nullptr)
     _builder._references.push_back(_depth_stencil);
 
-  if(_builder._subpasses.size() < _index)
+  if(_builder._subpasses.size() <= _index)
     _builder._subpasses.resize(_index + 1);
   _builder._subpasses[_index] = _description;
 
@@ -183,7 +183,7 @@ SubpassBuilder Builder::Subpass(uint32_t index) {
 Result Builder::Build(Vulkan &vk) {
   // fix the attachments in the subpasses
   VkAttachmentReference *references = _references.data();
-  for(auto subpass : _subpasses) {
+  for(auto && subpass : _subpasses) {
     if(subpass.inputAttachmentCount > 0) {
       subpass.pInputAttachments = references;
       references += subpass.inputAttachmentCount;
