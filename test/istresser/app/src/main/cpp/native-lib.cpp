@@ -4,6 +4,8 @@
 #include <list>
 #include <mutex>
 #include <string>
+#include <sys/mman.h>
+#include <unistd.h>
 
 constexpr auto appname = "istresser";
 
@@ -46,6 +48,23 @@ Java_net_jimblackler_istresser_MainActivity_freeAll(JNIEnv *env, jobject instanc
     allocated.pop_front();
   }
   mtx.unlock();
+}
+
+extern "C" JNIEXPORT size_t JNICALL
+Java_net_jimblackler_istresser_MainActivity_mmapConsume(JNIEnv *env, jobject instance, jint bytes) {
+    auto byte_count = (size_t) bytes;
+    // Actual mmapped length will always be a multiple of the page size, so we round up to that in
+    // order to account properly.
+    long page_size_align = sysconf(_SC_PAGE_SIZE) - 1;
+    byte_count = (byte_count + page_size_align) & ~page_size_align;
+
+    auto addr = mmap(NULL, byte_count, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    if (addr == MAP_FAILED) {
+        __android_log_print(ANDROID_LOG_WARN, appname, "Could not mmap");
+    } else {
+        __android_log_print(ANDROID_LOG_INFO, appname, "mmapped %u bytes at %p", byte_count, addr);
+    }
+    return addr != MAP_FAILED ? byte_count : 0;
 }
 
 extern "C"

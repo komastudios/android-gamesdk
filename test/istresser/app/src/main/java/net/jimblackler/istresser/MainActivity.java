@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
   private static final int MAX_SERVICE_MEMORY_MB = 500;
   private static final int SERVICE_PERIOD_SECONDS = 60;
   private static final int BYTES_IN_MEGABYTE = 1024 * 1024;
+  private static final int MMAP_BLOCK_BYTES = 128 * BYTES_IN_MEGABYTE;
   public static final int NUMBER_MAIN_GROUPS = 9;
 
   private static final String MEMORY_BLOCKER = "MemoryBlockCommand";
@@ -97,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
   private final Timer timer = new Timer();
   private final List<byte[]> data = Lists.newArrayList();
   private long nativeAllocatedByTest;
+  private long mmapAllocatedByTest;
   private long recordNativeHeapAllocatedSize;
   private PrintStream resultsStream = System.out;
   private long startTime;
@@ -109,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
   private boolean isServiceCrashed = false;
   private boolean glTestActive;
   private boolean mallocTestActive;
+  private boolean mmapTestActive;
 
   enum ServiceState {
     ALLOCATING_MEMORY,
@@ -252,7 +255,8 @@ public class MainActivity extends AppCompatActivity {
         useScenario -= 2 * NUMBER_MAIN_GROUPS;
       }
 
-      activateMallocTest();
+//      activateMallocTest();
+      activateMmapTest();
 
       switch (useScenario) {
         case 1:
@@ -293,6 +297,7 @@ public class MainActivity extends AppCompatActivity {
       report.put("groups", groupsOut);
       report.put("mallocTest", mallocTestActive);
       report.put("glTest", glTestActive);
+      report.put("mmapTest", mmapTestActive);
 
       JSONObject build = new JSONObject();
       getStaticFields(build, Build.class);
@@ -347,6 +352,19 @@ public class MainActivity extends AppCompatActivity {
                       nativeAllocatedByTest += owed;
                     } else {
                       report.put("allocFailed", true);
+                    }
+                  }
+                }
+                if (mmapTestActive) {
+                  long sinceStart = System.currentTimeMillis() - _allocationStartedAt;
+                  long target = sinceStart * BYTES_PER_MILLISECOND;
+                  int owed = (int) (target - mmapAllocatedByTest);
+                  if (owed > MMAP_BLOCK_BYTES) {
+                    long allocated = mmapConsume(owed);
+                    if (allocated != 0) {
+                      mmapAllocatedByTest += allocated;
+                    } else {
+                      report.put("mmapFailed", true);
                     }
                   }
                 }
@@ -409,6 +427,10 @@ public class MainActivity extends AppCompatActivity {
     TestSurface testSurface = findViewById(R.id.glsurfaceView);
     testSurface.setVisibility(View.VISIBLE);
     glTestActive = true;
+  }
+
+  private void activateMmapTest() {
+    mmapTestActive = true;
   }
 
   private static void getStaticFields(JSONObject object, Class<?> aClass) throws JSONException {
@@ -506,6 +528,9 @@ public class MainActivity extends AppCompatActivity {
 
           TextView nativeAllocatedByTestTextView = findViewById(R.id.nativeAllocatedByTest);
           nativeAllocatedByTestTextView.setText(memoryString(nativeAllocatedByTest));
+
+          TextView mmapAllocatedByTestTextView = findViewById(R.id.mmapAllocatedByTest);
+          mmapAllocatedByTestTextView.setText(memoryString(mmapAllocatedByTest));
 
           ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(activityManager);
           TextView availMemTextView = findViewById(R.id.availMem);
@@ -634,6 +659,7 @@ public class MainActivity extends AppCompatActivity {
       report.put("serviceCrashed", true);
     }
     report.put("nativeAllocatedByTest", nativeAllocatedByTest);
+    report.put("mmapAllocatedByTest", mmapAllocatedByTest);
     report.put("serviceTotalMemory", BYTES_IN_MEGABYTE * serviceTotalMb);
     report.put("oom_score", Heuristics.getOomScore(activityManager));
 
@@ -674,4 +700,6 @@ public class MainActivity extends AppCompatActivity {
   public native void freeAll();
 
   public native boolean nativeConsume(int bytes);
+
+  public native long mmapConsume(int bytes);
 }
