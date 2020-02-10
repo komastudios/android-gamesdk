@@ -1,7 +1,5 @@
-#version 300 es
-
 /*
- * Copyright 2019 The Android Open Source Project
+ * Copyright 2020 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +14,17 @@
  * limitations under the License.
  */
 
-layout (location = 0) in vec3 aPos;
+#pragma once
 
-void main()
-{
-    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+#include <dlfcn.h>
+
+namespace {
+void *LoadLibrary(const char *lib_name) {
+  return dlopen(lib_name, RTLD_NOW | RTLD_LOCAL);
 }
 
+void *LoadSymbol(void *lib, const char *function_name) {
+  if (lib == nullptr) return nullptr;
+  return dlsym(lib, function_name);
+}
+}

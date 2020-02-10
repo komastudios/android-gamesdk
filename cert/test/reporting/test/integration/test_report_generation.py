@@ -20,7 +20,7 @@ import glob
 import os
 from pathlib import Path
 import shutil
-from typing import Dict, List
+from typing import Dict, List, Tuple
 import unittest
 
 import matplotlib.pyplot as plt
@@ -154,7 +154,7 @@ class TestReportGeneration(unittest.TestCase):
 
         recipe = lib.common.Recipe(recipe_path, Path(RECIPE_DEFAULTS))
         args = {"local": True}
-        report_files = self.run_operation(recipe, args)
+        report_files, out_dir = self.run_operation(recipe, args)
         attached_devices = lib.common.get_attached_devices()
 
         # we should have one report per attached device
@@ -165,7 +165,7 @@ class TestReportGeneration(unittest.TestCase):
             self.verify_report_file_contents(report_file, True)
 
         # render a report, verify it exists, etc
-        self.verify_summary(verify_cross_suite_summary=False)
+        self.verify_summary(out_dir, verify_cross_suite_summary=False)
 
     def test_ftl_deployment(self):
         '''Confirms test runs on ftl'''
@@ -175,24 +175,25 @@ class TestReportGeneration(unittest.TestCase):
 
         recipe = lib.common.Recipe(recipe_path, Path(RECIPE_DEFAULTS))
         args = {"ftl": True}
-        report_files = self.run_operation(recipe, args)
+        report_files, out_dir = self.run_operation(recipe, args)
         for report_file in report_files:
             self.verify_report_file_contents(report_file, False)
 
         # render a report, verify it exists, etc
-        self.verify_summary(verify_cross_suite_summary=True)
+        self.verify_summary(out_dir, verify_cross_suite_summary=True)
 
-    def run_operation(self, recipe_path: Path, args: Dict) -> List[Path]:
+    def run_operation(self, recipe_path: Path,
+                      args: Dict) -> Tuple[List[Path], Path]:
         '''run the fake operation recipe and return generated report json files
         '''
-        lib.deployment.run_recipe(recipe_path, args, self.out_dir)
+        out_dir = lib.deployment.run_recipe(recipe_path, args, self.out_dir)
 
         # confirm that expected files exist
         report_files = [
-            Path(f) for f in glob.glob(str(self.out_dir) + '/*.json')
+            Path(f) for f in glob.glob(str(out_dir) + '/*report*.json')
         ]
 
-        return report_files
+        return report_files, out_dir
 
     def verify_report_file_contents(self, report_file: Path,
                                     verify_event_counts: bool):
@@ -254,19 +255,18 @@ class TestReportGeneration(unittest.TestCase):
                 self.assertEqual(wait_start_count, 1)
                 self.assertGreaterEqual(heartbeat_count, 1)
 
-    def verify_summary(self, verify_cross_suite_summary):
+    def verify_summary(self, out_dir: Path, verify_cross_suite_summary: bool):
         '''verifies a summary document was created;
         looks for images and keywords. Does not validate that
         correct markdown was generated. More of a sniff-test.
         Args:
+            out_dir: The Path where the summary document should be found
             verify_cross_suite_summary: If true, looks for the
             cross-suite summary section as well
 
         '''
 
-        summary_files = [
-            Path(f) for f in glob.glob(str(self.out_dir) + '/*.md')
-        ]
+        summary_files = [Path(f) for f in glob.glob(str(out_dir) + '/*.md')]
 
         self.assertEqual(len(summary_files), 1)
         summary_file = summary_files[0]
@@ -274,7 +274,7 @@ class TestReportGeneration(unittest.TestCase):
         # the above will have created a report file; we can
         # search that file for expected content
 
-        images_dir = self.out_dir / "images"
+        images_dir = out_dir / "images"
         image_files = [Path(f) for f in glob.glob(str(images_dir) + '/*.png')]
         needles = {image.name for image in image_files}
         needles.add('# FakeOperation')

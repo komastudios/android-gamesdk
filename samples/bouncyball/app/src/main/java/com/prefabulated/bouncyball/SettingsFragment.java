@@ -43,6 +43,7 @@ public class SettingsFragment
         implements SharedPreferences.OnSharedPreferenceChangeListener {
     private ListPreference mSwapIntervalPreference;
     private String mSwapIntervalKey;
+    @TargetApi(Build.VERSION_CODES.M)
     private Display.Mode mCurrentMode;
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -51,11 +52,9 @@ public class SettingsFragment
                 mode.getPhysicalWidth() == mCurrentMode.getPhysicalWidth();
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         Display display = getActivity().getWindowManager().getDefaultDisplay();
-        mCurrentMode = display.getMode();
 
         mSwapIntervalKey = getResources().getString(R.string.swap_interval_key);
         addPreferencesFromResource(R.xml.preferences);
@@ -71,7 +70,8 @@ public class SettingsFragment
 
         // fill the swap interval list based on the screen refresh rate(s)
         TreeSet<Integer> fpsSet = new TreeSet<Integer>();
-        if (Build.VERSION.SDK_INT >= 21) {
+        if (Build.VERSION.SDK_INT >= 23) {
+            mCurrentMode = display.getMode();
             Display.Mode[] supportedModes =
                     getActivity().getWindowManager().getDefaultDisplay().getSupportedModes();
             for (Display.Mode mode : supportedModes) {

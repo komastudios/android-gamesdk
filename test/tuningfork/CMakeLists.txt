@@ -65,6 +65,7 @@ set(TEST_SRCS
   annotation_test.cpp
   serialization_test.cpp
   tf_test_utils.cpp
+  jni_test.cpp
   ${PGENS_DIR}/nano/dev_tuningfork.pb.c
   ${PGENS_DIR}/full/dev_tuningfork.pb.cc
   ${PGENS_DIR}/full/tuningfork.pb.cc
@@ -95,6 +96,7 @@ target_link_libraries(tuningfork_test
   protobuf-static
   log
   GLESv2
+  android
 )
 target_link_libraries(tuningfork_test_lib
   android

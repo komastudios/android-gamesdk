@@ -49,6 +49,13 @@ TEST(Annotation, EncodeDecodeGood) {
     CheckEncodeDecode( 2, radix_mult, "Second");
     CheckEncodeDecode( 3, radix_mult, "Third");
 }
+void CheckDecodeEncode(SerializedAnnotation ser,
+                       const std::vector<uint32_t>& radix_mult, const std::string& err) {
+    auto id = DecodeAnnotationSerialization( ser, radix_mult);
+    SerializedAnnotation ser_out;
+    EXPECT_EQ(SerializeAnnotationId(id, ser_out, radix_mult), 0) << err << ": error serializing";
+    EXPECT_EQ(ser, ser_out) << err;
+}
 void CheckGood(SerializedAnnotation ser, AnnotationId id,
                const std::vector<uint32_t>& radix_mult) {
     auto back = DecodeAnnotationSerialization( ser, radix_mult);
@@ -71,4 +78,20 @@ TEST(Annotation, Decode) {
     CheckGood( {1<<3, 2 }, 2, radix_mult);
     CheckGood( {1<<3, 1, 2<<3, 1}, 4, radix_mult);
     CheckGood( {1<<3, 2, 2<<3, 3, 3<<3, 4}, 59, radix_mult);
+}
+
+void FullCheck(SerializedAnnotation ser, AnnotationId id,
+               const std::vector<uint32_t>& radix_mult, const std::string& err) {
+    CheckGood(ser, id, radix_mult);
+    CheckEncodeDecode( id, radix_mult, err+"_ED");
+    CheckDecodeEncode( ser, radix_mult, err+"_DE");
+}
+
+TEST(Annotation, RealWorldUnity) {
+    auto radix_mult = TestSetup( {10, 3, 2, 3}, {11, 44, 132, 528} );
+
+    FullCheck( {8,6,16,1,24,1,32,2}, 325, radix_mult, "Unity1");
+    FullCheck( {8,7,16,2,24,1,32,2}, 337, radix_mult, "Unity2");
+    FullCheck( {8,8,16,1,24,1,32,2}, 327, radix_mult, "Unity3");
+
 }

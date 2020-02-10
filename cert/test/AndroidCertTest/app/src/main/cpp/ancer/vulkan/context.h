@@ -2,6 +2,7 @@
 #define AGDC_ANCER_GRAPHICSCONTEXT_H_
 
 #include "vulkan_base.h"
+#include "render_pass.h"
 
 #include <cstdarg>
 
@@ -17,7 +18,7 @@ class Context {
   void Shutdown();
 
   inline VkCommandBuffer CommandBuffer() const {
-    return command_buffers[current_buffer];
+    return _command_buffers[_current_buffer];
   }
 
   /**
@@ -33,7 +34,7 @@ class Context {
   /**
    * Fill a VkSubmitInfo struct for submitting this command buffer to a queue
    */
-  void SubmitInfo(VkSubmitInfo &submit_info) const;
+  void SubmitInfo(VkSubmitInfo & submit_info) const;
 
   /**
    * Add a semaphore and stage to wait on to the wait list, meaning synchronize
@@ -46,7 +47,7 @@ class Context {
    * Create or get a semaphore that signals the completion of this command
    * buffer on different queues.
    */
-  Result CompletedSignal(VkSemaphore &semaphore);
+  Result CompletedSignal(VkSemaphore & semaphore);
 
   /**
    * Add this semaphore to the list to signal when completed.
@@ -54,24 +55,24 @@ class Context {
   void Signal(VkSemaphore semaphore);
 
  protected:
-  Result Initialize(Vulkan &vk, uint32_t num_buffers,
-                    uint32_t qfi, const char *name);
+  Result Initialize(Vulkan & vk, uint32_t num_buffers,
+                    uint32_t qfi, const char * name);
 
-  Vulkan vk;
+  Vulkan _vk;
 
  private:
-  uint32_t qfi;
-  std::vector<VkCommandPool> pools;
-  std::vector<VkCommandBuffer> command_buffers;
-  std::vector<Fence> command_buffer_fence;
-  uint32_t current_buffer;
+  uint32_t _qfi;
+  std::vector<VkCommandPool> _pools;
+  std::vector<VkCommandBuffer> _command_buffers;
+  std::vector<Fence> _command_buffer_fence;
+  uint32_t _current_buffer;
 
-  bool begin;
-  bool end;
-  std::vector<VkSemaphore> wait_semaphores;
-  std::vector<VkPipelineStageFlags> wait_stage_masks;
-  std::vector<VkSemaphore> signal_semaphores;
-  VkSemaphore completed_signal;
+  bool _begin;
+  bool _end;
+  std::vector<VkSemaphore> _wait_semaphores;
+  std::vector<VkPipelineStageFlags> _wait_stage_masks;
+  std::vector<VkSemaphore> _signal_semaphores;
+  VkSemaphore _completed_signal;
 };
 
 /**
@@ -81,10 +82,21 @@ class Context {
  */
 class GraphicsContext : public Context {
  public:
-  inline Result Initialize(Vulkan &vk, uint32_t num_buffers, const char *name) {
-    return Context::Initialize(vk, num_buffers,
-                               vk.vk->graphics_queue_family_index, name);
+  inline Result Initialize(Vulkan & vk, uint32_t num_buffers,
+                           const char * name) {
+    return Context::Initialize(vk, num_buffers, vk->graphics.family_index,
+                               name);
   }
+
+  /**
+   * Gets or creates a compatible VkFramebuffer and starts the RenderPass with
+   * it
+   */
+  Result BeginRenderPass(RenderPass &render_pass,
+                         uint32_t width, uint32_t height,
+                         uint32_t layers,
+                         std::initializer_list<VkImageView> image_views,
+                         std::initializer_list<VkClearValue> clear_values);
 };
 
 /**
@@ -94,9 +106,10 @@ class GraphicsContext : public Context {
  */
 class ComputeContext : public Context {
  public:
-  inline Result Initialize(Vulkan &vk, uint32_t num_buffers, const char *name) {
-    return Context::Initialize(vk, num_buffers,
-                               vk.vk->compute_queue_family_index, name);
+  inline Result Initialize(Vulkan & vk, uint32_t num_buffers,
+                           const char * name) {
+    return Context::Initialize(vk, num_buffers, vk->compute.family_index,
+                               name);
   }
 };
 
@@ -107,9 +120,10 @@ class ComputeContext : public Context {
  */
 class TransferContext : public Context {
  public:
-  inline Result Initialize(Vulkan &vk, uint32_t num_buffers, const char *name) {
-    return Context::Initialize(vk, num_buffers,
-                               vk.vk->transfer_queue_family_index, name);
+  inline Result Initialize(Vulkan & vk, uint32_t num_buffers,
+                           const char * name) {
+    return Context::Initialize(vk, num_buffers, vk->transfer.family_index,
+                               name);
   }
 };
 

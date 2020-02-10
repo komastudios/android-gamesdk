@@ -40,7 +40,7 @@ void ThreadSyncPoint::Reset(int num_threads) {
     {
         std::lock_guard _guard{_mutex};
         _num_threads = num_threads;
-        _sync_count = 0;
+        _waiting_threads.clear();
     }
 }
 
@@ -48,31 +48,33 @@ void ThreadSyncPoint::Reset() {
     ForceDone();
     {
         std::lock_guard _guard{_mutex};
-        _sync_count = 0;
+        _waiting_threads.clear();
     }
 }
 
 //==============================================================================
 
-void ThreadSyncPoint::Sync() {
+void ThreadSyncPoint::Sync(std::thread::id id) {
     {
         std::lock_guard _guard{_mutex};
-        ++_sync_count;
+        _waiting_threads.insert(id);
+
+        if (_waiting_threads.size() == _num_threads) {
+            _waiting_threads.clear();
+        }
     }
     std::unique_lock lock{_mutex};
-    _cond_var.wait(lock, [this] { return _num_threads <= _sync_count; });
+    _cond_var.wait(lock, [this, id] {
+        // Only block a thread as long as its thread_id is in the list.
+        return _waiting_threads.find(id) == _waiting_threads.end();
+    });
     _cond_var.notify_all();
 }
 
 //==============================================================================
 
 void ThreadSyncPoint::ForceDone() {
-    if (_sync_count < _num_threads)
-    {
-        {
-            std::lock_guard _guard{_mutex};
-            _sync_count = _num_threads;
-        }
-        _cond_var.notify_all();
-    }
+    std::lock_guard _guard{_mutex};
+    _waiting_threads.clear();
+    _cond_var.notify_all();
 }

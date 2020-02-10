@@ -1,0 +1,4 @@
+aggregation_strategy: {max_instrumentation_keys: 5, annotation_enum_size: [3,4]}
+api_key: "enter-your-api-key-here-"
+loading_annotation_index: 1
+level_annotation_index: 2

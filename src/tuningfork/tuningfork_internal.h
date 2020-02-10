@@ -214,7 +214,7 @@ TFErrorCode Flush();
 TFErrorCode Destroy();
 
 // The default histogram that is used if the user doesn't specify one in Settings
-TFHistogram DefaultHistogram();
+TFHistogram DefaultHistogram(InstrumentationKey ikey);
 
 // Load default fidelity params from either the saved file or the file in
 //  settings.default_fidelity_parameters_filename, then start the download thread.

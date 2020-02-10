@@ -9,6 +9,45 @@
   ],
   "stress_tests": [
     {
+      "enabled": true,
+      "name": "GLES3 External Framebuffer",
+      "description": "Determine if a native hardware buffer can be created and used as render target.",
+      "duration": "5s",
+      "data_gatherer": {
+        "id": "ExternalBufferGLES3Operation",
+        "configuration": {}
+      },
+      "stressors": []
+    },
+    {
+      "enabled": true,
+      "name": "Get GLES3 Extensions",
+      "description": "Gets a list of GLES and EGL extensions available on the device",
+      "duration": "0s",
+      "data_gatherer": {
+        "id": "GetExtensionsGLES3Operation",
+        "configuration": {}
+      },
+      "stressors": []
+    },
+    {
+      "name": "WaitForPI",
+      "description": "Testing out Pi and waiting: This will make the phone hot!",
+      "duration": "2440s",
+      "data_gatherer": {
+        "id": "CalculateWaitPIOperation",
+        "enabled": true,
+        "configuration": {
+          "affinity": true,
+          "heat_time": "300000ms",
+          "interval_between_samples": "120s",
+          "wait_method_name": "sleep",
+          "wait_period": "16ms",
+          "interval_between_wait_periods": "1000ms"
+        }
+      }
+    },
+    {
       "enabled": false,
       "name": "FakeOperation",
       "description": "Fake operation for integration testing",
@@ -225,30 +264,6 @@
     },
     {
       "enabled": true,
-      "name": "WaitForPI",
-      "description": "Testing out Pi and waiting: This will make the phone hot!",
-      "duration": "20000ms",
-      "data_gatherer":
-      {
-        "id": "CalculateWaitPIOperation",
-        "enabled": true,
-        "configuration": {
-          "affinity": true,
-          "performance_sample_period": "1000ms",
-          "iteration_wait_count_": 10000,
-          "iteration_wait_time_": 0
-        }
-      },
-      "stressors": [
-      {
-        "id": "HelloGLES3Operation",
-        "configuration": {
-        }
-      }
-      ]
-    },
-    {
-      "enabled": true,
       "name": "Java test, c++ Stressor",
       "description": "Single java test, single c++ stressor",
       "duration": "10sec",
@@ -429,16 +444,27 @@
     },
     {
       "enabled": true,
-      "name": "HalfFloatPrecisionGLES3Operation",
-      "description": "Draw Squad and test with Half precision",
-      "duration": "0.5m",
+      "name": "MediumPVecNormalizationGLES3Operation",
+      "description": "Test normalization of mediump vec3 with large component values",
+      "duration": "5m",
       "data_gatherer": {
-        "id": "HalfFloatPrecisionGLES3Operation",
+        "id": "MediumPVecNormalizationGLES3Operation",
         "configuration": {
-          "alloc_size_bytes": 10485760,
-          "alloc_period": "100ms",
-          "restart_pause": "1000ms",
-          "on_trim_triggers_free": true
+          "vertex_stage_configuration": {
+            "enabled": true,
+            "offset_steps": 16,
+            "offset_scale": 250
+          },
+          "fragment_stage_configuration": {
+            "enabled": true,
+            "offset_steps": 16,
+            "offset_scale": 250
+          },
+          "varying_configuration": {
+            "enabled": true,
+            "offset_steps": 16,
+            "offset_scale": 250
+          }
         }
       },
       "stressors": [

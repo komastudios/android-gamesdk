@@ -11,6 +11,6 @@ public:
   TestRenderer();
   virtual ~TestRenderer();
 
-  void render();
+  long render();
   void release();
 };
