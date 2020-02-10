@@ -143,5 +143,5 @@ def build_apk(clean: bool,
 
         artifact_path = get_apk_path(build_type)
 
-        run_command(task_cmd)
+        run_command(task_cmd, display_output=True)
         return artifact_path

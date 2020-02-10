@@ -181,7 +181,16 @@ def display_test_results(stdout, stderr, dst_dir: Path):
             line["codename"] = device_parts.group(1)
             device_info = DeviceCatalog()[line["codename"]]
             file_name = f"{device_info.brand}_{device_info.model}_" \
-                f"{device_parts.group(2)}_error.json"
+                f"{device_parts.group(2)}_error.json".replace(" ", "_")
+
+            # ensure we don't overwrite an existing file of this name
+            idx = 2
+            while Path(file_name).exists():
+                file_name = f"{device_info.brand}_{device_info.model}_" \
+                    f"{device_parts.group(2)}_error({idx}).json" \
+                    .replace(" ", "_")
+                idx += 1
+
             args_file: Path = dst_dir.joinpath(file_name)
             with open(args_file, "w") as write_file:
                 json.dump(line, write_file)
