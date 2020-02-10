@@ -292,7 +292,7 @@ namespace {
         const auto rw_size = read_write.size;
 
         const auto effective_buffer_size = buffer_size - config.initial_offset;
-        const auto num_advances = (effective_buffer_size / config.advance).count();
+        const auto num_advances = effective_buffer_size / config.advance;
         const auto max_ops =
                 (effective_buffer_size % num_advances) > rw_size
                 ? num_advances + 1
@@ -418,7 +418,7 @@ namespace {
 
         for ( int count = 0 ; count < config.times && !op.IsStopped() ; ++count ) {
             const auto rand = Bytes(random_generator());
-            auto offset = NextAlignedValue(rand % read_write.BufferSize(),
+            auto offset = NextAlignedValue(rand % read_write.BufferSize().count(),
                                            config.rw_align);
             // We might have landed / aligned too close to the end.
             // TODO(tmillican@google.com): This solution makes the last bit of
