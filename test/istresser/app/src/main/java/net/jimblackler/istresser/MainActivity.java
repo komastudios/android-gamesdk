@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
   private boolean isServiceCrashed = false;
   private boolean glTestActive;
   private boolean mallocTestActive;
-  private boolean mmapTestActive;
+  private boolean mmapAnonTestActive;
 
   enum ServiceState {
     ALLOCATING_MEMORY,
@@ -297,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
       report.put("groups", groupsOut);
       report.put("mallocTest", mallocTestActive);
       report.put("glTest", glTestActive);
-      report.put("mmapTest", mmapTestActive);
+      report.put("mmapTest", mmapAnonTestActive);
 
       JSONObject build = new JSONObject();
       getStaticFields(build, Build.class);
@@ -355,12 +355,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                   }
                 }
-                if (mmapTestActive) {
+                if (mmapAnonTestActive) {
                   long sinceStart = System.currentTimeMillis() - _allocationStartedAt;
                   long target = sinceStart * BYTES_PER_MILLISECOND;
                   int owed = (int) (target - mmapAllocatedByTest);
                   if (owed > MMAP_BLOCK_BYTES) {
-                    long allocated = mmapConsume(owed);
+                    long allocated = mmapAnonConsume(owed);
                     if (allocated != 0) {
                       mmapAllocatedByTest += allocated;
                     } else {
@@ -430,7 +430,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void activateMmapTest() {
-    mmapTestActive = true;
+    mmapAnonTestActive = true;
   }
 
   private static void getStaticFields(JSONObject object, Class<?> aClass) throws JSONException {
@@ -701,5 +701,5 @@ public class MainActivity extends AppCompatActivity {
 
   public native boolean nativeConsume(int bytes);
 
-  public native long mmapConsume(int bytes);
+  public native long mmapAnonConsume(int bytes);
 }
