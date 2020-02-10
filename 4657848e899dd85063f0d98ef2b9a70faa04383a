@@ -90,6 +90,24 @@
     },
     {
       "key": {
+        "uuid": "4331f7b3_36f1eeb4",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/CalculatePIOperation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1597621
+      },
+      "writtenOn": "2020-02-10T18:58:05Z",
+      "side": 1,
+      "message": "Yep, it\u0027s an oversight. I\u0027ll do a quick review.\n\nI\u0027m going to keep the macro around for now just because removing it is outside the scope of this change and it may have value in the future (e.g., writing a test file or outputting a default configuration).",
+      "parentUuid": "06c325b5_0051a530",
+      "revId": "4657848e899dd85063f0d98ef2b9a70faa04383a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5365f32d_5f394e46",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/BufferStorageGLES3Operation.cpp",
         "patchSetId": 1

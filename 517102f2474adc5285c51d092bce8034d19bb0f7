@@ -34,6 +34,24 @@
       "revId": "517102f2474adc5285c51d092bce8034d19bb0f7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4cb9006e_2edc6faa",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ScheduleAffinityOperation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1597621
+      },
+      "writtenOn": "2020-02-10T18:58:05Z",
+      "side": 1,
+      "message": "So was the original code. I\u0027ll add it in, though.",
+      "parentUuid": "0e371e06_fed61447",
+      "revId": "517102f2474adc5285c51d092bce8034d19bb0f7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
