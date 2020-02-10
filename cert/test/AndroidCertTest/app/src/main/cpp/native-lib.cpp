@@ -86,6 +86,7 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_initializeSu
         JNIEnv* env, jclass instance, jobject activity, jstring internal_data_path,
         jstring raw_data_path, jstring obb_path) {
     internal::InitSystem(activity, internal_data_path, raw_data_path, obb_path);
+    internal::InitTemperatureCapture(false);
     internal::InitializeSuite();
 }
 
@@ -93,6 +94,7 @@ extern "C" JNIEXPORT void JNICALL
 Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_shutdownSuite(
         JNIEnv* env, jclass instance) {
     internal::ShutdownSuite();
+    internal::DeinitTemperatureCapture();
     internal::DeinitSystem();
 }
 
