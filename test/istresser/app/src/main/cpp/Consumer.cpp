@@ -10,6 +10,7 @@
 #define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, "GlUtils", __VA_ARGS__)
 
 Consumer::Consumer(int bytes) {
+  used = 0;
   vertexBuffer = 0;
   glGenBuffers(1, &vertexBuffer);
   checkGlError("glGenBuffers");
@@ -24,7 +25,11 @@ Consumer::Consumer(int bytes) {
   _vertices.resize(vertices);
   auto size = (GLsizeiptr) _vertices.size() * sizeof(GLfloat);
   glBufferData(GL_ARRAY_BUFFER, size, &_vertices[0], GL_STATIC_DRAW);
-  checkGlError("glBufferData");
+  if (checkGlError("glBufferData")) {
+    ALOGE("Could not create buffers.");
+    return;
+  }
+  used = bytes;
 }
 
 Consumer::~Consumer() {
@@ -34,4 +39,8 @@ Consumer::~Consumer() {
   }
   glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
   glDeleteBuffers(1, &vertexBuffer);
+}
+
+int Consumer::getUsed() {
+  return used;
 }

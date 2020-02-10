@@ -16,8 +16,11 @@
 
 #pragma once
 
-#include <GLES3/gl32.h>
 #include <algorithm>
+#include <vector>
+#include <string>
+
+#include <GLES3/gl32.h>
 
 #define GLM_FORCE_RADIANS
 
@@ -389,6 +392,22 @@ GLuint CreateShader(GLenum shader_type, const char *src);
  * (+width,+height) at bottom right
  */
 glm::mat4 Ortho2d(float left, float top, float right, float bottom);
+
+/**
+ * Queries for all OpenGL ES extensions supported on the device.
+ * Must be called from valid GL context.
+ *
+ * @return names of extensions (for example, "GL_EXT_copy_image")
+ */
+std::vector<std::string> GetGlExtensions();
+
+/**
+ * Queries for all EGL extensions supported for the current display.
+ * Must be called from a context with a valid EGL display.
+ *
+ * @return names of extensions (for example, "EGL_KHR_wait_sync")
+ */
+std::vector<std::string> GetEglExtensions();
 
 /**
  * Checks whether the OpenGL ES driver and hardware on the device support a given extension.

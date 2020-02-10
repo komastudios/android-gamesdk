@@ -101,15 +101,21 @@ AnnotationId DecodeAnnotationSerialization(const SerializedAnnotation &ser,
 ErrorCode SerializeAnnotationId(uint64_t id, SerializedAnnotation& ser,
                           const std::vector<uint32_t>& radix_mult) {
     uint64_t x = id;
-    for (int i = 0; i < radix_mult.size(); ++i) {
-        auto r = ::lldiv(x, (uint64_t)radix_mult[i]);
-        int value = r.rem;
+    size_t n = radix_mult.size();
+    std::vector<uint32_t> v(n);
+    for (int i = n-1; i>0; --i) {
+        auto r = ::lldiv(x, (uint64_t)radix_mult[i-1]);
+        v[i] = r.quot;
+        x = r.rem;
+    }
+    v[0] = x;
+    for (int i = 0; i < n; ++i) {
+        auto value = v[i];
         if (value > 0) {
             int key = (i + 1) << 3;
             ser.push_back(key);
             WriteBase128IntToStream(value, ser);
         }
-        x = r.quot;
     }
     return NO_ERROR;
 }

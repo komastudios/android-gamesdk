@@ -13,27 +13,13 @@
 #include "device.h"
 #include "renderer.h"
 #include "input.h"
+#include "camera.h"
 
 class RenderGraph {
-  struct Camera {
-    glm::vec3 position = glm::vec3(0.0f, 0.0f, 3.0f);
-    glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-    float aspect_ratio;
-    float fov;
-    glm::mat4 view;
-    glm::mat4 proj;
-    glm::mat4 prerotation;
-  };
-
  public:
-  std::vector<std::shared_ptr<Mesh>> GetAllMeshes() { return meshes_; }
-  std::shared_ptr<Mesh> GetLastMesh() {
-    if (meshes_.size() > 0) {
-      return meshes_.back();
-    } else {
-      return nullptr;
-    }
-  }
+  void GetVisibleMeshes(std::vector<std::shared_ptr<Mesh>> &meshes) const;
+  void GetAllMeshes(std::vector<std::shared_ptr<Mesh>> &meshes) const { meshes = meshes_; }
+  std::shared_ptr<Mesh> GetLastMesh() const;
 
   void AddMesh(std::shared_ptr<Mesh> new_mesh) { meshes_.push_back(new_mesh); }
   void AddMeshes(std::vector<std::shared_ptr<Mesh>> new_meshes) {
@@ -51,16 +37,10 @@ class RenderGraph {
     camera_.rotation = normalize(rotation * camera_.rotation);
   }
 
-  glm::vec3 GetCameraPosition() { return camera_.position; }
-  glm::quat GetCameraRotation() { return camera_.rotation; }
-  glm::mat4 GetCameraViewMatrix() { return camera_.view; }
-  glm::mat4 GetCameraProjMatrix() { return camera_.proj; }
-  glm::mat4 GetCameraPrerotationMatrix() { return camera_.prerotation; }
-  float GetCameraAspectRatio() { return camera_.aspect_ratio; };
-  float GetCameraFOV() { return camera_.fov; }
+  Camera GetCamera() { return camera_; }
 
-  void SetCameraFOV(float fov) { camera_.fov = fov; }
-  void SetCameraAspectRatio(float aspect_ratio) { camera_.aspect_ratio = aspect_ratio; }
+  void SetCameraFOV(float fov);
+  void SetCameraAspectRatio(float aspect_ratio);
   void SetCameraViewMatrix(glm::mat4 view_mat) { camera_.view = view_mat; }
   void SetCameraProjMatrix(glm::mat4 proj_mat) { camera_.proj = proj_mat; }
   void SetCameraPrerotationMatrix(glm::mat3 prerot ) { camera_.prerotation = prerot; }

@@ -79,7 +79,7 @@ std::string report_end = "]}";
 std::string single_tick_with_loading = R"TF({
   "context": {
     "annotations": "",
-    "duration": "0.765s",
+    "duration": "0.755s",
     "tuning_parameters": {
       "experiment_id": "expt",
       "serialized_fidelity_parameters": ""
@@ -92,17 +92,25 @@ std::string single_tick_with_loading = R"TF({
       }
     },
     "rendering": {
-      "render_time_histogram": [{
-        "counts": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                   0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "instrument_id": 1
+      "render_time_histogram": [{"counts": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                            0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "instrument_id": 1
       }]
     }
   }
 })TF";
 
 TEST(SerializationTest, SerializationWithLoading) {
-    ProngCache prong_cache(2/*size*/, 2/*max_instrumentation_keys*/, {DefaultHistogram()},
+    ProngCache prong_cache(2/*size*/, 2/*max_instrumentation_keys*/, {DefaultHistogram(1)},
                            [](uint64_t){ return SerializedAnnotation(); },
                            [](uint64_t id){ return id == 0; });
     ProtobufSerialization fidelity_params;
@@ -120,7 +128,7 @@ TEST(SerializationTest, SerializationWithLoading) {
 
     auto p2 = prong_cache.Get(1);
     EXPECT_NE(p2, nullptr);
-    p2->Trace(milliseconds(30));
+    p2->Trace(milliseconds(10));
 
     GESerializer::SerializeEvent(prong_cache, fidelity_params, test_device_info, evt_ser);
     auto report = report_start + single_tick_with_loading + report_end;
@@ -167,6 +175,10 @@ void CheckProngCaches(const ProngCache& pc0, const ProngCache& pc1) {
     Prong* p1 = pc1.Get(0);
     EXPECT_TRUE(p0!=nullptr && p1!=nullptr);
     EXPECT_EQ(p0->histogram_, p1->histogram_);
+}
+
+TFHistogram DefaultHistogram() {
+    return {-1,10,40,30};
 }
 
 TEST(SerializationTest, GEDeserialization) {

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 uuid=$(uuidgen)
 cp ../grabber/app/build/outputs/apk/debug/app-debug.apk ../grabber/app/build/outputs/apk/debug/grabber.apk
-for i in `seq 1 26`;
+for i in `seq 1 18`;
     do
         gcloud beta firebase test android run --type=game-loop \
             --app=app/build/outputs/apk/debug/app-debug.apk \

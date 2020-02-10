@@ -17,18 +17,23 @@
 #include <jni.h>
 #include <string>
 
-// From the tuningfork_test_lib shared library in ${ANDROID_GAMES_SDK}/test/tuningfork
-extern "C" int shared_main(int argc, char * argv[]);
+#include "tuningfork_test.h"
+#define LOG_TAG "TestApp"
+#include "Log.h"
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_tuningfork_testapp_MainActivity_runTests(
         JNIEnv* env,
-        jobject /* this */) {
+        jobject ctx) {
     int argc = 1;
     char appName[] = "testapp";
     char *argv[] = { appName };
-    shared_main(argc, argv);
-
-    std::string hello = "Unit tests ran successfully";
-    return env->NewStringUTF(hello.c_str());
+    std::string full_record;
+    int ret_code = shared_main(argc, argv, env, ctx, full_record);
+    if (ret_code == 0 ) {
+        ALOGV("%s", full_record.c_str());
+    } else {
+        ALOGE("%s", full_record.c_str());
+    }
+    return env->NewStringUTF((full_record).c_str());
 }

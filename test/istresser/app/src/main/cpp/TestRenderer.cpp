@@ -12,10 +12,14 @@ void TestRenderer::release() {
   consumers.clear();
 }
 
-void TestRenderer::render() {
+long TestRenderer::render() {
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+  int allocated = 0;
   for (int count = 0; count != 1 << 8U; count++) {
-    auto* consumer = new Consumer(1 << 14U);
+    int toAllocate = 1 << 14U;
+    auto* consumer = new Consumer(toAllocate);
     consumers.emplace_back(consumer);
+    allocated += consumer->getUsed();
   }
+  return allocated;
 }

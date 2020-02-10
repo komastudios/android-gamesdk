@@ -64,8 +64,8 @@ def main():
 
     elif path.is_dir():
         # this is a batch
-        reports = [Path(f) for f in sorted(glob.glob(f"{path}/*_report.json"))]
-        errors = [Path(f) for f in sorted(glob.glob(f"{path}/*_error.json"))]
+        reports = [Path(f) for f in sorted(glob.glob(f"{path}/*_report*.json"))]
+        errors = [Path(f) for f in sorted(glob.glob(f"{path}/*_error*.json"))]
         generate_summary(reports, errors, doc_fmt, dpi)
 
     elif path.stem.endswith("_report"):

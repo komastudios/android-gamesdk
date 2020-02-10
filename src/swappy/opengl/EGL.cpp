@@ -136,8 +136,10 @@ void EGL::resetSyncFence(EGLDisplay display) {
 
     mSyncFence = eglCreateSyncKHR(display, EGL_SYNC_FENCE_KHR, nullptr);
 
-    // kick of the thread work to wait for the fence and measure its time
-    mFenceWaiter.onFenceCreation(display, mSyncFence);
+    if (mSyncFence != EGL_NO_SYNC_KHR) {
+        // kick of the thread work to wait for the fence and measure its time
+        mFenceWaiter.onFenceCreation(display, mSyncFence);
+    }
 }
 
 bool EGL::lastFrameIsComplete(EGLDisplay display) {

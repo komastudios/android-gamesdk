@@ -85,7 +85,7 @@ public class SwappyDisplayManager implements DisplayManager.DisplayListener {
                     System.loadLibrary(nativeLibName);
                 }
             }
-        } catch (PackageManager.NameNotFoundException e) {
+        } catch (java.lang.Throwable e) {
             Log.e(LOG_TAG, e.getMessage());
         }
 

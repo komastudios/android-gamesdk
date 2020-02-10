@@ -5,6 +5,8 @@ class Consumer {
   Consumer(int bytes);
   ~Consumer();
 
+  int getUsed();
  private:
   GLuint vertexBuffer;
+  int used;
 };

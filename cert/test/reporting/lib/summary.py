@@ -223,8 +223,8 @@ def perform_summary_if_enabled(recipe: Recipe, reports_dir: Path) -> type(None):
     summary = __get_summary_config(recipe)
     if summary[0]:  # enabled
         summary_path = generate_summary([
-            Path(f) for f in sorted(glob.glob(f"{reports_dir}/*_report.json"))
-        ], [Path(f) for f in sorted(glob.glob(f"{reports_dir}/*_error.json"))],
+            Path(f) for f in sorted(glob.glob(f"{reports_dir}/*_report*.json"))
+        ], [Path(f) for f in sorted(glob.glob(f"{reports_dir}/*_error*.json"))],
                                         summary[1], summary[2])
 
         if summary[3]:  # publish to Google Drive

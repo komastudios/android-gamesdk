@@ -26,11 +26,19 @@ struct SwapchainImage {
  */
 class Swapchain {
  public:
-  Result Initialize(Vulkan &vulkan, VkImageUsageFlags usage_flags);
+  Result Initialize(Vulkan & vulkan, VkImageUsageFlags usage_flags);
   void Shutdown();
 
   inline VkFormat Format() const {
     return format;
+  }
+
+  inline uint32_t Width() const {
+    return width;
+  }
+
+  inline uint32_t Height() const {
+    return height;
   }
 
   inline uint32_t NumImages() const {
@@ -48,20 +56,22 @@ class Swapchain {
   /**
    * Acquire an image from the VkSwapchain, filling a SwapchainImage struct
    */
-  Result Acquire(SwapchainImage &image);
+  Result Acquire(SwapchainImage & image);
 
   /**
    * Schedule a SwapchainImage to be shown on the display. The optional
    * parameter render_semaphore can be used to sync the end of the rendering to
    * the presentation to the display.
    */
-  Result Present(SwapchainImage &image,
+  Result Present(SwapchainImage & image,
                  VkSemaphore render_semaphore = VK_NULL_HANDLE);
 
  private:
   Vulkan vulkan;
 
   VkFormat format;
+  uint32_t width;
+  uint32_t height;
 
   VkSwapchainKHR swapchain;
   std::vector<VkImage> images;

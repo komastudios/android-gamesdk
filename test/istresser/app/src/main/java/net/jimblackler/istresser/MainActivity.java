@@ -38,12 +38,15 @@ import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.util.Collection;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.TreeSet;
 import net.jimblackler.istresser.Heuristic.Identifier;
 import net.jimblackler.istresser.Heuristic.Indicator;
 import org.json.JSONArray;
@@ -57,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
 
   private static final String TAG = MainActivity.class.getSimpleName();
 
-  // Set BYTES_PER_MILLISECOND to zero to disable malloc testing.
   public static final int BYTES_PER_MILLISECOND = 100 * 1024;
 
   // Set MAX_DURATION to zero to stop the app from self-exiting.
@@ -67,25 +69,17 @@ public class MainActivity extends AppCompatActivity {
   private static final int LAUNCH_DURATION = 0;
   private static final int RETURN_DURATION = LAUNCH_DURATION + 1000 * 20;
   private static final int MAX_SERVICE_MEMORY_MB = 500;
+  private static final int SERVICE_PERIOD_SECONDS = 60;
   private static final int BYTES_IN_MEGABYTE = 1024 * 1024;
-  private static final boolean GL_TEST = true;
+  private static final int MMAP_BLOCK_BYTES = 128 * BYTES_IN_MEGABYTE;
+  public static final int NUMBER_MAIN_GROUPS = 9;
 
-  private static final List<List<Identifier>> groups =
-      ImmutableList.<List<Identifier>>builder()
-          .add(ImmutableList.of())
-          .add(ImmutableList.of(TRIM))
-          .add(ImmutableList.of(OOM))
-          .add(ImmutableList.of(LOW))
-          .add(ImmutableList.of(TRY))
-          .add(ImmutableList.of(CL))
-          .add(ImmutableList.of(AVAIL))
-          .add(ImmutableList.of(CACHED))
-          .add(ImmutableList.of(AVAIL2))
-          .add(ImmutableList.of(CL, AVAIL, AVAIL2))
-          .add(ImmutableList.of(CL, AVAIL, AVAIL2, LOW))
-          .add(ImmutableList.of(TRIM, TRY, CL, AVAIL, AVAIL2))
-          .add(ImmutableList.of(TRIM, LOW, TRY, CL, AVAIL, AVAIL2))
-          .build();
+  private static final String MEMORY_BLOCKER = "MemoryBlockCommand";
+  private static final String ALLOCATE_ACTION = "Allocate";
+  private static final String FREE_ACTION = "Free";
+
+
+  private final Collection<Identifier> activeGroups = new TreeSet<>();
 
   private static final ImmutableList<String> MEMINFO_FIELDS =
       ImmutableList.of("Cached", "MemFree", "MemAvailable", "SwapFree");
@@ -104,18 +98,20 @@ public class MainActivity extends AppCompatActivity {
   private final Timer timer = new Timer();
   private final List<byte[]> data = Lists.newArrayList();
   private long nativeAllocatedByTest;
+  private long mmapAllocatedByTest;
   private long recordNativeHeapAllocatedSize;
   private PrintStream resultsStream = System.out;
   private long startTime;
   private long allocationStartedAt = -1;
   private int releases;
-  private int scenario;
-  private int groupNumber;
   private long appSwitchTimerStart;
   private long lastLaunched;
   private int serviceTotalMb = 0;
   private ServiceCommunicationHelper serviceCommunicationHelper;
   private boolean isServiceCrashed = false;
+  private boolean glTestActive;
+  private boolean mallocTestActive;
+  private boolean mmapTestActive;
 
   enum ServiceState {
     ALLOCATING_MEMORY,
@@ -166,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                       try {
-                        Thread.sleep(60 * 1000);
+                        Thread.sleep(SERVICE_PERIOD_SECONDS * 1000);
                       } catch (Exception e) {
                         e.printStackTrace();
                       }
@@ -183,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                       try {
-                        Thread.sleep(60 * 1000);
+                        Thread.sleep(SERVICE_PERIOD_SECONDS * 1000);
                       } catch (Exception e) {
                         e.printStackTrace();
                       }
@@ -200,14 +196,13 @@ public class MainActivity extends AppCompatActivity {
 
       JSONObject report = new JSONObject();
 
-      if (!GL_TEST) {
-        TestSurface testSurface = findViewById(R.id.glsurfaceView);
-        testSurface.setVisibility(View.GONE);
-      }
+      TestSurface testSurface = findViewById(R.id.glsurfaceView);
+      testSurface.setVisibility(View.GONE);
 
       PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
       report.put("version", packageInfo.versionCode);
       Intent launchIntent = getIntent();
+      int scenario;
       if ("com.google.intent.action.TEST_LOOP".equals(launchIntent.getAction())) {
         Uri logFile = launchIntent.getData();
         if (logFile != null) {
@@ -228,46 +223,85 @@ public class MainActivity extends AppCompatActivity {
         scenario = SCENARIO_NUMBER;
       }
 
-      groupNumber = (scenario - 1) % groups.size();
-      if (scenario > groups.size() && scenario <= 2 * groups.size()) {
+      report.put("scenario", scenario);
+
+      int useScenario = scenario;
+      if (NUMBER_MAIN_GROUPS < scenario && scenario <= 2 * NUMBER_MAIN_GROUPS) {
         serviceState = ServiceState.ALLOCATING_MEMORY;
         serviceTotalMb = 0;
         serviceCommunicationHelper.allocateServerMemory(MAX_SERVICE_MEMORY_MB);
+        report.put("service", true);
+        useScenario -= NUMBER_MAIN_GROUPS;
+      } else if (2 * NUMBER_MAIN_GROUPS < scenario) {
+        new Thread() {
+          @Override
+          public void run() {
+            while (true) {
+              Log.v(MEMORY_BLOCKER, ALLOCATE_ACTION + " " + MAX_SERVICE_MEMORY_MB);
+              try {
+                Thread.sleep(SERVICE_PERIOD_SECONDS * 1000);
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
+              Log.v(MEMORY_BLOCKER, FREE_ACTION);
+              try {
+                Thread.sleep(SERVICE_PERIOD_SECONDS * 1000);
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
+            }
+          }
+        }.start();
+        useScenario -= 2 * NUMBER_MAIN_GROUPS;
       }
 
-      report.put("scenario", scenario);
+//      activateMallocTest();
+      activateMmapTest();
+
+      switch (useScenario) {
+        case 1:
+          break;
+        case 2:
+          activeGroups.add(TRIM);
+          break;
+        case 3:
+          activeGroups.add(OOM);
+          break;
+        case 4:
+          activeGroups.add(LOW);
+          break;
+        case 5:
+          activeGroups.add(TRY);
+          break;
+        case 6:
+          activeGroups.add(CL);
+          break;
+        case 7:
+          activeGroups.add(AVAIL);
+          break;
+        case 8:
+          activeGroups.add(CACHED);
+          break;
+        case 9:
+          activeGroups.add(AVAIL2);
+          break;
+      }
 
       JSONArray groupsOut = new JSONArray();
-      for (Identifier identifier : groups.get(groupNumber)) {
+      for (Identifier identifier : activeGroups) {
         groupsOut.put(identifier.name());
       }
       TextView strategies = findViewById(R.id.strategies);
       strategies.setText(groupsOut.toString());
 
       report.put("groups", groupsOut);
+      report.put("mallocTest", mallocTestActive);
+      report.put("glTest", glTestActive);
+      report.put("mmapTest", mmapTestActive);
 
       JSONObject build = new JSONObject();
-      build.put("ID", Build.ID);
-      build.put("DISPLAY", Build.DISPLAY);
-      build.put("PRODUCT", Build.PRODUCT);
-      build.put("DEVICE", Build.DEVICE);
-      build.put("BOARD", Build.BOARD);
-      build.put("MANUFACTURER", Build.MANUFACTURER);
-      build.put("BRAND", Build.BRAND);
-      build.put("MODEL", Build.MODEL);
-      build.put("BOOTLOADER", Build.BOOTLOADER);
-      build.put("HARDWARE", Build.HARDWARE);
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        build.put("BASE_OS", Build.VERSION.BASE_OS);
-      }
-      build.put("CODENAME", Build.VERSION.CODENAME);
-      build.put("INCREMENTAL", Build.VERSION.INCREMENTAL);
-      build.put("RELEASE", Build.VERSION.RELEASE);
-      build.put("SDK_INT", Build.VERSION.SDK_INT);
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        build.put("PREVIEW_SDK_INT", Build.VERSION.PREVIEW_SDK_INT);
-        build.put("SECURITY_PATCH", Build.VERSION.SECURITY_PATCH);
-      }
+      getStaticFields(build, Build.class);
+      getStaticFields(build, Build.VERSION.class);
       report.put("build", build);
 
       JSONObject constant = new JSONObject();
@@ -301,14 +335,14 @@ public class MainActivity extends AppCompatActivity {
               if (_allocationStartedAt != -1) {
                 boolean memoryReleased = false;
                 for (Heuristic heuristic : Heuristic.availableHeuristics) {
-                  if (groups.get(groupNumber).contains(heuristic.getIdentifier())
+                  if (activeGroups.contains(heuristic.getIdentifier())
                       && heuristic.getSignal(activityManager) == Indicator.RED) {
                     releaseMemory(report, heuristic.getIdentifier().toString());
                     memoryReleased = true;
                     break;
                   }
                 }
-                if (!memoryReleased) {
+                if (mallocTestActive && !memoryReleased) {
                   long sinceStart = System.currentTimeMillis() - _allocationStartedAt;
                   long target = sinceStart * BYTES_PER_MILLISECOND;
                   int owed = (int) (target - nativeAllocatedByTest);
@@ -318,6 +352,19 @@ public class MainActivity extends AppCompatActivity {
                       nativeAllocatedByTest += owed;
                     } else {
                       report.put("allocFailed", true);
+                    }
+                  }
+                }
+                if (mmapTestActive) {
+                  long sinceStart = System.currentTimeMillis() - _allocationStartedAt;
+                  long target = sinceStart * BYTES_PER_MILLISECOND;
+                  int owed = (int) (target - mmapAllocatedByTest);
+                  if (owed > MMAP_BLOCK_BYTES) {
+                    long allocated = mmapConsume(owed);
+                    if (allocated != 0) {
+                      mmapAllocatedByTest += allocated;
+                    } else {
+                      report.put("mmapFailed", true);
                     }
                   }
                 }
@@ -370,6 +417,34 @@ public class MainActivity extends AppCompatActivity {
         },
         0,
         1000 / 10);
+  }
+
+  private void activateMallocTest() {
+    mallocTestActive = true;
+  }
+
+  private void activateGlTest() {
+    TestSurface testSurface = findViewById(R.id.glsurfaceView);
+    testSurface.setVisibility(View.VISIBLE);
+    glTestActive = true;
+  }
+
+  private void activateMmapTest() {
+    mmapTestActive = true;
+  }
+
+  private static void getStaticFields(JSONObject object, Class<?> aClass) throws JSONException {
+
+    for (Field field : aClass.getFields()) {
+      if (!java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+        continue;
+      }
+      try {
+        object.put(field.getName(), JSONObject.wrap(field.get(null)));
+      } catch (IllegalAccessException e) {
+        // Silent by design.
+      }
+    }
   }
 
   @Override
@@ -454,6 +529,9 @@ public class MainActivity extends AppCompatActivity {
           TextView nativeAllocatedByTestTextView = findViewById(R.id.nativeAllocatedByTest);
           nativeAllocatedByTestTextView.setText(memoryString(nativeAllocatedByTest));
 
+          TextView mmapAllocatedByTestTextView = findViewById(R.id.mmapAllocatedByTest);
+          mmapAllocatedByTestTextView.setText(memoryString(mmapAllocatedByTest));
+
           ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(activityManager);
           TextView availMemTextView = findViewById(R.id.availMem);
           availMemTextView.setText(memoryString(memoryInfo.availMem));
@@ -462,7 +540,8 @@ public class MainActivity extends AppCompatActivity {
           oomScoreTextView.setText("" + Heuristics.getOomScore(activityManager));
 
           TextView lowMemoryTextView = findViewById(R.id.lowMemory);
-          lowMemoryTextView.setText(Boolean.valueOf(Heuristics.lowMemoryCheck(activityManager)).toString());
+          lowMemoryTextView
+              .setText(Boolean.valueOf(Heuristics.lowMemoryCheck(activityManager)).toString());
 
           TextView trimMemoryComplete = findViewById(R.id.releases);
           trimMemoryComplete.setText(String.format(Locale.getDefault(), "%d", releases));
@@ -488,7 +567,7 @@ public class MainActivity extends AppCompatActivity {
       JSONObject report = standardInfo();
       report.put("onTrimMemory", level);
 
-      if (groups.get(groupNumber).contains(TRIM)) {
+      if (activeGroups.contains(TRIM)) {
         releaseMemory(report, TRIM.name());
       }
       resultsStream.println(report);
@@ -522,7 +601,7 @@ public class MainActivity extends AppCompatActivity {
             freeAll();
           }
           data.clear();
-          if (GL_TEST) {
+          if (glTestActive) {
             TestSurface testSurface = findViewById(R.id.glsurfaceView);
             if (testSurface != null) {
               testSurface.queueEvent(
@@ -580,8 +659,13 @@ public class MainActivity extends AppCompatActivity {
       report.put("serviceCrashed", true);
     }
     report.put("nativeAllocatedByTest", nativeAllocatedByTest);
+    report.put("mmapAllocatedByTest", mmapAllocatedByTest);
     report.put("serviceTotalMemory", BYTES_IN_MEGABYTE * serviceTotalMb);
     report.put("oom_score", Heuristics.getOomScore(activityManager));
+
+    TestSurface testSurface = findViewById(R.id.glsurfaceView);
+    TestRenderer renderer = testSurface.getRenderer();
+    report.put("gl_allocated", renderer.getAllocated());
 
     if (VERSION.SDK_INT >= VERSION_CODES.M) {
       MemoryInfo debugMemoryInfo = Heuristics.getDebugMemoryInfo(activityManager)[0];
@@ -609,11 +693,13 @@ public class MainActivity extends AppCompatActivity {
 
   public static native void initGl();
 
-  public static native void nativeDraw();
+  public static native int nativeDraw();
 
   public static native void release();
 
   public native void freeAll();
 
   public native boolean nativeConsume(int bytes);
+
+  public native long mmapConsume(int bytes);
 }

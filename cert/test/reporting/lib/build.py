@@ -70,7 +70,6 @@ def _wait_for_sentinel(sentinel_file: Path):
         tick += 1
         time.sleep(0.25)
 
-
 #-------------------------------------------------------------------------------
 
 
@@ -94,16 +93,17 @@ def _managed_build(configuration: Path):
     cwd = os.getcwd()
     os.chdir("../AndroidCertTest")
 
-    yield
+    try:
+        yield
 
-    # cleanup, return to previous cwd,
-    # restore the previous configuration
-    # and delete the sentinel file
-    os.chdir(cwd)
-    if prev_configuration is not None:
-        _restore_configuration(prev_configuration)
+    finally:
+        # putting the cleanup in finally handles ctrl-c and other
+        # unexpected termination events
+        os.chdir(cwd)
+        if prev_configuration is not None:
+            _restore_configuration(prev_configuration)
 
-    sentinel.unlink()
+        sentinel.unlink()
 
 #-------------------------------------------------------------------------------
 
@@ -143,5 +143,5 @@ def build_apk(clean: bool,
 
         artifact_path = get_apk_path(build_type)
 
-        run_command(task_cmd)
+        run_command(task_cmd, display_output=True)
         return artifact_path

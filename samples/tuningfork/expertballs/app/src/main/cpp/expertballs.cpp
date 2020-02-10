@@ -91,7 +91,7 @@ void SetAnnotations() {
 std::mutex mutex;
 std::condition_variable cv;
 bool setFPs = false;
-extern "C" void SetFidelityParams(const CProtobufSerialization* params) {
+extern "C" void FidelityParamsCallback(const CProtobufSerialization* params) {
     FidelityParams p;
     // Set default values
     p.set_num_spheres(20);
@@ -122,7 +122,7 @@ void InitTf(JNIEnv* env, jobject activity) {
     if (swappy_enabled) {
         settings.swappy_tracer_fn = &SwappyGL_injectTracer;
     }
-    settings.fidelity_params_callback = SetFidelityParams;
+    settings.fidelity_params_callback = FidelityParamsCallback;
 #ifndef NDEBUG
     settings.endpoint_uri_override = "http://localhost:9000";
 #endif
@@ -228,7 +228,7 @@ Java_com_tuningfork_expertballs_TFTestActivity_setFidelityParameters(JNIEnv * en
     p.set_tesselation_percent(dis(gen));
     auto params = tf::CProtobufSerialization_Alloc(p);
     TuningFork_setFidelityParameters(&params);
-    SetFidelityParams(&params);
+    FidelityParamsCallback(&params);
     CProtobufSerialization_Free(&params);
 }
 

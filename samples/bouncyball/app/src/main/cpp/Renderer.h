@@ -68,7 +68,7 @@ private:
 
         void clearSurface();
 
-        bool configHasAttribute(EGLint attribute, EGLint value);
+        bool configHasAttribute(EGLConfig config, EGLint attribute, EGLint value);
 
         EGLBoolean makeCurrent(EGLSurface surface);
 

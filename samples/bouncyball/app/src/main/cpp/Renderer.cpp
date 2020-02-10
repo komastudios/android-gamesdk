@@ -107,10 +107,10 @@ Renderer::ThreadState::ThreadState() {
     // Choose a config, either a match if possible or the first config otherwise
 
     const auto configMatches = [&](EGLConfig config) {
-        if (!configHasAttribute(EGL_RED_SIZE, 8)) return false;
-        if (!configHasAttribute(EGL_GREEN_SIZE, 8)) return false;
-        if (!configHasAttribute(EGL_BLUE_SIZE, 8)) return false;
-        return configHasAttribute(EGL_DEPTH_SIZE, 0);
+        if (!configHasAttribute(config, EGL_RED_SIZE, 8)) return false;
+        if (!configHasAttribute(config, EGL_GREEN_SIZE, 8)) return false;
+        if (!configHasAttribute(config, EGL_BLUE_SIZE, 8)) return false;
+        return configHasAttribute(config, EGL_DEPTH_SIZE, 0);
     };
 
     const auto configIter = std::find_if(supportedConfigs.cbegin(), supportedConfigs.cend(),
@@ -148,7 +148,7 @@ void Renderer::ThreadState::clearSurface() {
     surface = EGL_NO_SURFACE;
 }
 
-bool Renderer::ThreadState::configHasAttribute(EGLint attribute, EGLint value) {
+bool Renderer::ThreadState::configHasAttribute(EGLConfig config, EGLint attribute, EGLint value) {
     EGLint outValue = 0;
     EGLBoolean result = eglGetConfigAttrib(display, config, attribute, &outValue);
     return result && (outValue == value);
