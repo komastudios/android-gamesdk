@@ -70,6 +70,30 @@
       "revId": "500bee24278bba8b19077e57bc1258bfea827c4e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e8082f2c_a704a69f",
+        "filename": "test/istresser/app/src/main/cpp/native-lib.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-02-11T10:44:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2ce57c85_3f35a035",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 31
+      },
+      "revId": "500bee24278bba8b19077e57bc1258bfea827c4e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
