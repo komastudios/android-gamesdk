@@ -31,8 +31,13 @@ data class DeserializedTuningForkDescriptor(
     val annotations: List<Annotation>
 )
 
-// Info about and from the app
+// Info about the app from debugInfo messages.
 data class AppData(
     val desc: DeserializedTuningForkDescriptor,
     val settings: Settings
+)
+
+// Data from uploadTelemetry requests.
+data class AppTelemetry (
+    val telemetry: Array<Telemetry>
 )
