@@ -17,9 +17,6 @@
 package com.google.tfmonitor
 
 import android.net.Uri
-import com.google.tfmonitor.RequestListener.debugInfo
-import com.google.tfmonitor.RequestListener.generateTuningParameters
-import com.google.tfmonitor.RequestListener.uploadTelemetry
 import com.google.tuningfork.AppKey
 import java.io.DataInputStream
 import java.io.DataOutputStream
@@ -40,7 +37,7 @@ import java.util.TimeZone
 fun String.HeaderTrim() =
     this.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1].trim { it <= ' ' }
 
-class TuningForkRequestServer(ip: String, port: Int) : Thread() {
+class TuningForkRequestServer(ip: String, port: Int, val requestListener: RequestListener) : Thread() {
     private val serverSocket: ServerSocket
     private var isStart = true
     private var keepAlive = true
@@ -57,7 +54,7 @@ class TuningForkRequestServer(ip: String, port: Int) : Thread() {
             try {
                 //wait for new connection on port
                 val newSocket = serverSocket.accept()
-                val newClient = ResponseThread(newSocket)
+                val newClient = ResponseThread(newSocket, requestListener)
                 newClient.start()
             } catch (s: SocketTimeoutException) {
             } catch (e: IOException) {
@@ -66,7 +63,7 @@ class TuningForkRequestServer(ip: String, port: Int) : Thread() {
         }
     }
 
-    inner class ResponseThread(protected var socket: Socket) : Thread() {
+    inner class ResponseThread(protected var socket: Socket, val requestListener: RequestListener) : Thread() {
 
         internal val TAG = "AppApis"
 
@@ -161,7 +158,8 @@ class TuningForkRequestServer(ip: String, port: Int) : Thread() {
                                     str.append(recData)
                                     postData = str.toString()
                                 }
-                                postData = postData.substring(0, contentLength)
+                                if (contentLength < postData.length)
+                                    postData = postData.substring(0, contentLength)
                             }
                         }
 
@@ -220,9 +218,9 @@ class TuningForkRequestServer(ip: String, port: Int) : Thread() {
                 val postData = qparms["_POST"]
                 val resultBody = if (postData != null) {
                     when (function) {
-                        "generateTuningParameters" -> generateTuningParameters(app, postData)
-                        "uploadTelemetry" -> uploadTelemetry(app, postData)
-                        "debugInfo" -> debugInfo(app, postData)
+                        "generateTuningParameters" -> requestListener.generateTuningParameters(app, postData)
+                        "uploadTelemetry" -> requestListener.uploadTelemetry(app, postData)
+                        "debugInfo" -> requestListener.debugInfo(app, postData)
                         else -> errorResult()
                     }
                 } else errorResult()
@@ -282,11 +280,11 @@ class TuningForkRequestServer(ip: String, port: Int) : Thread() {
         var isStart = false
         private var server: TuningForkRequestServer? = null
 
-        fun startServer(ip: String, port: Int) {
+        fun startServer(ip: String, port: Int, requestListener: RequestListener) {
             try {
 
                 if (!isStart) {
-                    server = TuningForkRequestServer(ip, port)
+                    server = TuningForkRequestServer(ip, port, requestListener)
                     val eh =
                         UncaughtExceptionHandler { server, e -> println("Uncaught exception!") }
                     server?.uncaughtExceptionHandler = eh

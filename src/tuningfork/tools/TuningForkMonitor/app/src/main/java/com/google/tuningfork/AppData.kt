@@ -36,3 +36,7 @@ data class AppData(
     val desc: DeserializedTuningForkDescriptor,
     val settings: Settings
 )
+
+data class AppTelemetry (
+    val telemetry: Array<Telemetry>
+)

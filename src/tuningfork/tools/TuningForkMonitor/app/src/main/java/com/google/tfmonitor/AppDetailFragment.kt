@@ -22,15 +22,36 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.*
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.google.tuningfork.*
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
-class AppDetailFragment : Fragment() {
+
+class AppDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private var listener: OnFragmentInteractionListener? = null
 
     private lateinit var appNameTextView: TextView
     private lateinit var appNumberTextView: TextView
+
+    private lateinit var modeGroup: RadioGroup
+    private lateinit var expertResponseParameters: View
+
+    private lateinit var instrument_key_spinner: Spinner
+    private lateinit var last_update_time: TextView
+    private lateinit var x_min_label: TextView
+    private lateinit var x_max_label: TextView
+
+    private var paused = false
+
+    private var known_instrument_keys = ArrayList<Int>()
+
+    private lateinit var datastore: Datastore;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,8 +77,134 @@ class AppDetailFragment : Fragment() {
         appNameTextView = view.findViewById(R.id.app_name_text_view)
         appNameTextView.text = getViewModel().getActiveApp()?.name ?: "???"
         appNumberTextView = view.findViewById(R.id.app_number_text_view)
-        appNumberTextView.text = getViewModel().getActiveApp()?.version.toString() ?: "?"
+        appNumberTextView.text = getViewModel().getActiveApp()?.version?.toString() ?: "?"
+        modeGroup = view.findViewById(R.id.modeGroup)
+        expertResponseParameters = view.findViewById(R.id.expertResponseParameters)
+        instrument_key_spinner = view.findViewById(R.id.instrument_key_spinner)
+        instrument_key_spinner.onItemSelectedListener = this
+        last_update_time = view.findViewById(R.id.last_update_time)
+        x_min_label = view.findViewById(R.id.x_min_label)
+        x_max_label = view.findViewById(R.id.x_max_label)
+
+        view.findViewById<ToggleButton>(R.id.play_pause_button).setOnClickListener { v ->
+            paused = !(v as ToggleButton).isChecked
+        }
+        modeGroup.setOnCheckedChangeListener({ _, checked ->
+            run {
+                if (checked == R.id.scaledButton) {
+                    expertResponseParameters.visibility = View.GONE;
+                } else {
+                    expertResponseParameters.visibility = View.VISIBLE;
+                }
+            }
+        })
+        val mode_retrieval_name = getViewModel().getActiveApp()?.name
+        if (mode_retrieval_name != null && savedInstanceState != null) {
+            modeGroup.check((savedInstanceState[mode_retrieval_name] ?: R.id.scaledButton) as Int)
+        } else {
+            modeGroup.check(R.id.scaledButton)
+        }
+
+        datastore = Datastore(this.context!!)
+
+        getViewModel().getActiveAppTelemetry()?.observe(this, Observer<AppTelemetry> { data ->
+            updateFromDatabase(this.view!!)
+        })
+
+        updateFromDatabase(view)
+
         return view
+    }
+
+    fun updateFromDatabase(view: View) {
+        updateInstrumentKeys(view)
+        updateHistograms(view)
+    }
+
+    fun updateInstrumentKeys(view: View) {
+        getViewModel().getActiveApp()?.let { app ->
+            val ikeys = datastore.getInstrumentKeysForApp(app)
+            for (key in ikeys)
+                addInstrumentKey(key)
+        }
+    }
+
+    fun addInstrumentKey(key: Int) {
+        if (!known_instrument_keys.contains(key)) {
+            known_instrument_keys.add(key)
+            val spinnerArray = known_instrument_keys.map { x -> x.toString() }.toTypedArray()
+            val spinnerArrayAdapter = ArrayAdapter<String>(
+                this.context!!, android.R.layout.simple_spinner_item,
+                spinnerArray
+            ) //selected item will look like a spinner set from XML
+            spinnerArrayAdapter.setDropDownViewResource(
+                android.R.layout
+                    .simple_spinner_dropdown_item
+            )
+            instrument_key_spinner.setAdapter(spinnerArrayAdapter)
+        }
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        updateHistograms(this.view!!)
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+    }
+
+    fun localTimeString(t: Date): String {
+        val format = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
+        return format.format(t)
+    }
+
+    fun updateHistograms(view: View) {
+        var widget = view.findViewById<HistogramWidget>(R.id.histogram)
+        var barColour = ContextCompat.getColor(this.context!!, DEFAULT_COLOUR_ID)
+        val ix = instrument_key_spinner.selectedItemId.toInt()
+        if (ix < known_instrument_keys.size) {
+            val key = known_instrument_keys[ix]
+            val th = datastore.getLatestHistogramForInstrumentKey(key)
+            if (th == null) {
+                widget!!.setData(ArrayList<HistogramBarMetaData>(0))
+            } else {
+                val h = th.second
+                var n = h.counts.size
+                if (n > 0) {
+                    last_update_time.text = localTimeString(th.first)
+                    val barDataList = ArrayList<HistogramBarMetaData>(n)
+                    var name = 0
+                    var counts = h.counts!!;
+                    var max_value = counts.max()?.toFloat() ?: 1.0f
+                    for (q in 0 until n) {
+                        var height = (counts[q].toFloat()) / max_value
+                        val barData = HistogramBarMetaData(
+                            q, // This is ignored inside setData
+                            height,
+                            barColour,
+                            ColorHelper.getContrastColor(barColour),
+                            name.toString()
+                        )
+                        barDataList.add(barData)
+                        name++
+                    }
+                    widget!!.setData(barDataList)
+                    // Update x-axis labels
+                    x_min_label.text = "?????"
+                    x_max_label.text = "?????"
+                    getViewModel().getActiveApp()?.let {
+                        datastore.getLatestSettingsForApp(it)?.let { settings ->
+                            for (settings_h in settings.histogramsList) {
+                                if (settings_h.instrumentKey == h.instrument_id) {
+                                    x_min_label.text = settings_h.bucketMin.toString()
+                                    x_max_label.text = settings_h.bucketMax.toString()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            widget.invalidate()
+        }
     }
 
     override fun onStart() {
@@ -111,5 +258,7 @@ class AppDetailFragment : Fragment() {
                     // No arguments
                 }
             }
+
+        private const val DEFAULT_COLOUR_ID = R.color.colorAccent
     }
 }

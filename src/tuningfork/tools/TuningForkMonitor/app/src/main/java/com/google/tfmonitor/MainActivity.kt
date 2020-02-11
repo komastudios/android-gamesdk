@@ -29,8 +29,11 @@ import java.io.File
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import com.google.tuningfork.AppKey
+import com.google.tuningfork.Datastore
+import com.google.tuningfork.Deserializer
 
-private class AsyncWebServer(val applicationContext: Context, val port: Int) :
+private class AsyncWebServer(val applicationContext: Context, val port: Int, val requestListener: RequestListener) :
     AsyncTask<Unit, Unit, Unit>() {
 
     private var idir: File? = null;
@@ -48,20 +51,41 @@ private class AsyncWebServer(val applicationContext: Context, val port: Int) :
     }
 
     override fun doInBackground(vararg params: Unit?) {
-        TuningForkRequestServer.startServer("localhost", port)
+        TuningForkRequestServer.startServer("localhost", port, requestListener)
     }
 }
 
 class MainActivity : AppCompatActivity(), AppChoiceFragment.OnFragmentInteractionListener,
     AppDetailFragment.OnFragmentInteractionListener,
     FidelityParametersFragment.OnFragmentInteractionListener,
-    AnnotationsFragment.OnFragmentInteractionListener {
+    AnnotationsFragment.OnFragmentInteractionListener, RequestListener {
 
     private var navController: NavController? = null
+    private lateinit var datastore : Datastore
 
     private fun getViewModel(): MonitorViewModel {
         val factory = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
         return ViewModelProvider(viewModelStore, factory).get(MonitorViewModel::class.java)
+    }
+
+    override fun generateTuningParameters(appKey: AppKey, requestString: String): String {
+        val deser = Deserializer()
+        val req = deser.parseGenerateTuningParametersRequest(requestString)
+        return getViewModel().generateTuningParameters(appKey, req)
+    }
+
+    override fun uploadTelemetry(appKey: AppKey, requetString: String): String {
+        val deser = Deserializer()
+        val req = deser.parseUploadTelemetryRequest(requetString)
+        datastore.uploadTelemetryRequest(appKey, req)
+        return getViewModel().uploadTelemetry(appKey, req)
+    }
+
+    override fun debugInfo(appKey: AppKey, requetString: String): String {
+        val deser = Deserializer()
+        val req = deser.parseDebugInfoRequest(requetString)
+        datastore.debugInfoRequest(appKey, req)
+        return getViewModel().debugInfo(appKey, req)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,12 +93,13 @@ class MainActivity : AppCompatActivity(), AppChoiceFragment.OnFragmentInteractio
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        // Initialize Handler.
-        createUpdateUiHandler();
+        datastore = Datastore(this.applicationContext)
+
+        loadStoredApps()
 
         navController = findNavController(R.id.nav_controller_view_tag)
 
-        AsyncWebServer(applicationContext, 9000).execute();
+        AsyncWebServer(applicationContext, 9000, this).execute();
 
     }
 
@@ -108,14 +133,15 @@ class MainActivity : AppCompatActivity(), AppChoiceFragment.OnFragmentInteractio
         }
     }
 
-    /* Create Handler object in main thread. */
-    private fun createUpdateUiHandler() {
-        val model = getViewModel()
-        RequestListener.setViewModel(model)
-    }
-
     override fun onFragmentInteraction(uri: Uri): Unit {
         System.out.println(uri.toString())
+    }
+
+    fun loadStoredApps() {
+        val apps = datastore.getAllKnownApps()
+        for (a in apps) {
+            getViewModel().addAppMaybe(a, MonitorViewModel.AppType.STORED)
+        }
     }
 
 }
