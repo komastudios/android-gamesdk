@@ -129,40 +129,6 @@ class TrackedTemperatureFile {
 std::vector<TrackedTemperatureFile> _tracked_temperature_files;
 
 //------------------------------------------------------------------------------
-// Regular expressions to detect temperature file candidates.
-
-/**
- * Any temperature candidate path that matches any of these words (battery, camera, etc.) is
- * discarded as a possible CPU temperature value.
- */
-const std::vector<std::regex> REGEX_BLACKLIST{
-    std::regex{"\\."},
-    std::regex{"\\.\\."},
-    std::regex{"(.*)trip(.*)", std::regex::icase},
-    std::regex{"(.*)batt(.*)", std::regex::icase},
-    std::regex{"(.*)usb(.*)", std::regex::icase},
-    std::regex{"(.*)camera(.*)", std::regex::icase},
-    std::regex{"(.*)lcd(.*)", std::regex::icase},
-    std::regex{"(.*)gpu(.*)", std::regex::icase},
-    std::regex{"(.*)display(.*)", std::regex::icase},
-    std::regex{"(.*)firmware(.*)", std::regex::icase},
-    std::regex{"(.*)ambien(.*)", std::regex::icase},
-    std::regex{"(.*)emul(.*)", std::regex::icase},
-    std::regex{"(.*)thermistor(.*)", std::regex::icase},
-    std::regex{"(.*)sensor(.*)", std::regex::icase}
-};
-
-/**
- * By overwhelming evidence, temperature file names contain, at least, the word "temp".
- */
-const std::vector<std::regex> TEMPERATURE_FILE_REGEX{
-    std::regex{"(.*)temp(.*)"}  // case-sensitive
-};
-
-/**
- * Temperature file candidates contain a number (possibly negative).
- */
-const std::regex TEMPERATURE_MEASUREMENT_REGEX{"-?\\d+(\\.\\d*)?"};
 
 /**
  * CPU temperatures are typically around certain range in Celsius millidegrees. During analysis of
@@ -268,6 +234,25 @@ bool RetrieveTemperatureFileListFromCatalog() {
  * CPU temperature files.
  */
 bool NotBlacklisted(const std::string &name) {
+  // Any temperature candidate path that matches any of these words (battery, camera, etc.) is
+  // discarded as a possible CPU temperature value.
+  static const std::vector<std::regex> REGEX_BLACKLIST{
+      std::regex{R"(\.)"},
+      std::regex{R"(\.\.)"},
+      std::regex{"(.*)trip(.*)", std::regex::icase},
+      std::regex{"(.*)batt(.*)", std::regex::icase},
+      std::regex{"(.*)usb(.*)", std::regex::icase},
+      std::regex{"(.*)camera(.*)", std::regex::icase},
+      std::regex{"(.*)lcd(.*)", std::regex::icase},
+      std::regex{"(.*)gpu(.*)", std::regex::icase},
+      std::regex{"(.*)display(.*)", std::regex::icase},
+      std::regex{"(.*)firmware(.*)", std::regex::icase},
+      std::regex{"(.*)ambien(.*)", std::regex::icase},
+      std::regex{"(.*)emul(.*)", std::regex::icase},
+      std::regex{"(.*)thermistor(.*)", std::regex::icase},
+      std::regex{"(.*)sensor(.*)", std::regex::icase}
+  };
+
   bool resolution{true};
 
   for (const auto &blacklisted_word : REGEX_BLACKLIST) {
@@ -284,6 +269,9 @@ bool NotBlacklisted(const std::string &name) {
  * Given a file name, returns true, if it's compatible with the temperature file name pattern.
  */
 bool LooksLikeTemperatureFilename(const FileSystemPath &filename) {
+  // By overwhelming evidence, temperature file names contain, at least, the lowercase word "temp".
+  static const std::vector<std::regex> TEMPERATURE_FILE_REGEX{std::regex{"(.*)temp(.*)"}};
+
   bool resolution{false};
 
   for (const auto &temperature_file_pattern : TEMPERATURE_FILE_REGEX) {
@@ -310,6 +298,9 @@ bool LooksLikeCPUTemperatureFile(const FileSystemPath &filename) {
  * @return true if compatible; false otherwise.
  */
 bool IsContentCompatibleWithReasonableCelsiusMillis(const FileSystemPath &temperature_candidate) {
+  // Temperature file candidates contain a number (possibly negative).
+  static const std::regex TEMPERATURE_MEASUREMENT_REGEX{R"(-?\d+(\.\d*)?)"};
+
   bool resolution{false};
 
   std::ifstream candidate_stream{temperature_candidate};
@@ -381,7 +372,7 @@ void ScanDirectory_SingleLevel(const FileSystemPath &full_directory,
           if (LooksLikeCPUTemperatureFile(entry->d_name)) {
             const FileSystemPath temperature_candidate{make_absolute(entry->d_name)};
             if (IsContentCompatibleWithReasonableCelsiusMillis(temperature_candidate)) {
-              _tracked_temperature_files.emplace_back(std::move(temperature_candidate));
+              _tracked_temperature_files.emplace_back(temperature_candidate);
             }
           }
           break;
@@ -392,6 +383,8 @@ void ScanDirectory_SingleLevel(const FileSystemPath &full_directory,
         }
       }
     }
+  } else {
+    Log::V(TAG, "Access to directory %s error: %d", full_directory.c_str(), errno);
   }
 
   closedir(directory);
@@ -467,7 +460,7 @@ void ancer::internal::DeinitTemperatureCapture() {
   }
 
   if (_tracked_temperature_files.size()!=new_list.size()) {
-    if (new_list.size()!=0) {
+    if (not new_list.empty()) {
       _tracked_temperature_files = std::move(new_list);
       StoreTemperatureFileListToCatalog();
     } else {

@@ -288,13 +288,17 @@ def load_report(report_file: Path) -> (BuildInfo, List[Datum]):
 
     with open(report_file) as file:
         for i, line in enumerate(file):
-            json_dict = json.loads(line)
-            # first line is the build info, every other is a report datum
-            if i == 0:
-                build = BuildInfo.from_json(json_dict)
-            else:
-                datum = Datum.from_json(json_dict)
-                data.append(datum)
+            try:
+                json_dict = json.loads(line)
+                # first line is the build info, every other is a report datum
+                if i == 0:
+                    build = BuildInfo.from_json(json_dict)
+                else:
+                    datum = Datum.from_json(json_dict)
+                    data.append(datum)
+            except json.decoder.JSONDecodeError as ex:
+                print(f'Report file {report_file}, line {i}: skipping due to '
+                      f'a JSON parsing error "{ex}":\n{line}')
 
     build = homologate_build_info(codename, api_level, build)
 

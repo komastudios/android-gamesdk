@@ -18,6 +18,7 @@
 #define _SYSTEM_CPU_HPP
 
 #include <string>
+#include <vector>
 
 namespace ancer {
 
@@ -39,8 +40,15 @@ bool SetThreadAffinity(int index, ThreadAffinity = ThreadAffinity::kAnyCore);
  */
 bool SetThreadAffinity(ThreadAffinity affinity);
 
-[[nodiscard]] std::string GetCpuInfo();
+/**
+ * Returns a vector where entry i, corresponding to CPU core i, contains the
+ * type of that core. For example, if the device has three cores, 0 being
+ * middle, 1 being little and 2 being big, then the returned vector would be
+ * {kMiddleCore, kLittleCore, kBigCore}.
+ */
+const std::vector<ThreadAffinity> &GetCoreSizes();
 
+[[nodiscard]] std::string GetCpuInfo();
 }
 
 #endif  // _SYSTEM_CPU_HPP

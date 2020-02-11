@@ -176,6 +176,10 @@ bool ancer::SetThreadAffinity(ThreadAffinity affinity) {
   return SetThreadAffinity(-1, affinity);
 }
 
+const std::vector<ThreadAffinity> &ancer::GetCoreSizes() {
+  return core_info.core_sizes;
+}
+
 //------------------------------------------------------------------------------
 
 

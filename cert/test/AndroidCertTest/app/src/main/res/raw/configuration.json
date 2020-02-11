@@ -10,6 +10,26 @@
   "stress_tests": [
     {
       "enabled": true,
+      "name": "Sane CPUSET",
+      "description": "Checks CPUSET availability and big.LITTLE consistence.",
+      "duration": "10s",
+      "data_gatherer": {
+        "id": "SaneCpusetOperation",
+        "configuration": {
+          "checkpoint_frequency": "200ms"
+        }
+      },
+      "stressors": [
+        {
+          "id": "JsonManipulatorOperation",
+          "configuration": {
+            "json_asset_name": "JsonManipulatorOperation.json"
+          }
+        }
+      ]
+    },
+    {
+      "enabled": true,
       "name": "GLES3 External Framebuffer",
       "description": "Determine if a native hardware buffer can be created and used as render target.",
       "duration": "5s",
