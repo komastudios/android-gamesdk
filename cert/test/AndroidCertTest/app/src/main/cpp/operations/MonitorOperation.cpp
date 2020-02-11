@@ -29,7 +29,7 @@ using namespace ancer;
 //==============================================================================
 
 namespace {
-constexpr auto TAG = "MonitorOperation";
+constexpr Log::Tag TAG{"MonitorOperation"};
 
 struct configuration {
   Milliseconds sample_period = 500ms;
@@ -47,7 +47,7 @@ struct perf_info {
   Nanoseconds max_frame_time{0};
 };
 
-void WriteDatum(report_writers::Struct w, const perf_info& p) {
+void WriteDatum(report_writers::Struct w, const perf_info &p) {
   ADD_DATUM_MEMBER(w, p, fps);
   ADD_DATUM_MEMBER(w, p, min_frame_time);
   ADD_DATUM_MEMBER(w, p, max_frame_time);
@@ -60,7 +60,7 @@ struct temperature_info {
   std::vector<TemperatureInCelsiusMillis> temperatures_in_celsius_millis;
 };
 
-void WriteDatum(report_writers::Struct w, const temperature_info& i) {
+void WriteDatum(report_writers::Struct w, const temperature_info &i) {
   // TODO(tmillican@google.com): Switch once we have better enum-to-string
   //  support.
   w.AddItem("status_msg", to_string(i.thermal_status));
@@ -82,7 +82,7 @@ struct sys_mem_info {
   }
 };
 
-void WriteDatum(report_writers::Struct w, const sys_mem_info& i) {
+void WriteDatum(report_writers::Struct w, const sys_mem_info &i) {
   ADD_DATUM_MEMBER(w, i, native_allocated);
   ADD_DATUM_MEMBER(w, i, available_memory);
   ADD_DATUM_MEMBER(w, i, oom_score);
@@ -97,7 +97,7 @@ struct datum {
   temperature_info temperature_info;
 };
 
-void WriteDatum(report_writers::Struct w, const datum& d) {
+void WriteDatum(report_writers::Struct w, const datum &d) {
   ADD_DATUM_MEMBER(w, d, memory_state);
   ADD_DATUM_MEMBER(w, d, perf_info);
   ADD_DATUM_MEMBER(w, d, temperature_info);
