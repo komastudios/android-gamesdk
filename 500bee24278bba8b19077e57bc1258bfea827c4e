@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6c5f6148_a33752df",
+        "filename": "test/istresser/app/src/main/cpp/native-lib.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-02-11T00:31:44Z",
+      "side": 1,
+      "message": "Can you explain why the change in algorithm to create the pseudorandom values? It seems this version would create the same sequence for every page, which is what I was trying to avoid.",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 31
+      },
+      "revId": "500bee24278bba8b19077e57bc1258bfea827c4e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
