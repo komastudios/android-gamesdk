@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "39cd0aa2_fa60ff88",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/vulkan/shader_module.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-12T22:55:17Z",
+      "side": 1,
+      "message": "(self-resolved) We should take, as a convention, that log tags won\u0027t look like C++ namespaced names. This one, for example, should be just ShaderModule or, if we like, AncerShaderModule.\n\nThe deal is that it\u0027s possible to output the logcat to the terminal by just restricting to a tag, error-level.\n\nNamely,\n\n$ adb logcat -s ShaderModule:W\n\ndumps in the workstation terminal all ShaderModule traces whose error level is warning or higher (i.e., warnings or errors, in this case).\n\nIf the tag is ancer::vulkan::ShaderModule, there\u0027s no way to enter the adb-logcat command in the terminal and make it work. I already found that trying to filter traces for other ancer modules. I tried surrounding between apostrophes and other combinations. Just didn\u0027t like it.\n\nWe should take the convention to abolish this tagging bad habit because filtered adb-logcat is a very powerful weapon when investigating issues.",
+      "revId": "aae268ae869170d2f3c777af5cfaaf3f1c645870",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
