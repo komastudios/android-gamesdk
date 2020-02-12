@@ -6,6 +6,21 @@
 <style>/*css*/</style>
 <script type="module">
 
+  function flattenParams(params1) {
+    debugger;
+    let params = {};
+    const coordinates = params1.coordinates;
+    const tests = params1.tests;
+
+    for (let coordinateNumber = 0; coordinateNumber !== coordinates.length; coordinateNumber++) {
+      const dimensionParams = tests[coordinateNumber][coordinates[coordinateNumber]];
+      for (const [key, value] of Object.entries(dimensionParams)) {
+        params[key] = value;
+      }
+    }
+    return params;
+  }
+
   const capitalizeFirstLetter =
       str => str.charAt(0).toUpperCase() + str.slice(1);
 
@@ -61,7 +76,8 @@
     {
       const paragraph = document.createElement("p");
       section.appendChild(paragraph);
-      paragraph.appendChild(document.createTextNode(`Strategies: ${first.groups.join(", ")}`));
+      paragraph.appendChild(
+              document.createTextNode(`Params: ${JSON.stringify(flattenParams(first.params))}`));
     }
 
     if ("extra" in first) {

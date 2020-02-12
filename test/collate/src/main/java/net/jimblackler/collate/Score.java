@@ -10,38 +10,74 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Score {
   private static final boolean USE_DEVICE = false;
   private static final int DEVICE_SCENARIOS = 1;
 
+  private static JSONObject flattenParams(JSONObject params1) {
+    JSONObject params = new JSONObject();
+    try {
+      JSONArray coordinates = params1.getJSONArray("coordinates");
+      JSONArray tests = params1.getJSONArray("tests");
+
+      for (int coordinateNumber = 0; coordinateNumber != coordinates.length(); coordinateNumber++) {
+        JSONArray jsonArray = tests.getJSONArray(coordinateNumber);
+        JSONObject jsonObject = jsonArray.getJSONObject(coordinates.getInt(coordinateNumber));
+        Iterator<String> keys = jsonObject.keys();
+        while (keys.hasNext()) {
+          String key = keys.next();
+          params.put(key, jsonObject.get(key));
+        }
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+      System.out.println(params1.toString());
+    }
+    return params;
+  }
+
   public static void main(String[] args) throws IOException, InterruptedException {
     Map<String, List<Result>> out = new HashMap<>();
     Map<String, JSONObject> builds = new HashMap<>();
     Path directory = Files.createTempDirectory("report-");
-    final int[] numberScenarios = {0};
-    Map<Integer, JSONArray> groups = new HashMap<>();
+    final int[] variations = {0};
+    Map<Integer, JSONObject> paramsMap = new HashMap<>();
     Consumer<JSONArray> collect =
         result -> {
           if (result.isEmpty()) {
             return;
           }
           JSONObject first = result.getJSONObject(0);
-          if (!first.has("scenario")) {
-            System.out.println("No scenario");
-            return;
-          }
+          JSONObject params = first.getJSONObject("params");
 
-          int scenario = first.getInt("scenario");
-          if (scenario > numberScenarios[0]) {
-            numberScenarios[0] = scenario;
+          JSONArray coordinates = params.getJSONArray("coordinates");
+          JSONArray tests = params.getJSONArray("tests");
+          int total = 1;
+          int variationNumber = 0;
+          for (int coordinateNumber = coordinates.length() - 1;
+              coordinateNumber >= 0;
+              coordinateNumber--) {
+            int bound = tests.getJSONArray(coordinateNumber).length();
+            int value = coordinates.getInt(coordinateNumber);
+            variationNumber += value * total;
+            total *= bound;
           }
-          groups.put(scenario, first.getJSONArray("groups"));
+          if (variations[0] == 0) {
+            variations[0] = total;
+          } else {
+            assert variations[0] == total;
+          }
+          JSONObject params2 = new JSONObject(params.toString());
+          params2.remove("launcher");
+          paramsMap.put(variationNumber, params2);
 
           assert first.has("build");
           JSONObject build = first.getJSONObject("build");
@@ -97,19 +133,19 @@ public class Score {
             results0 = out.get(id);
           } else {
             results0 = new ArrayList<>();
-            while (results0.size() < groups.size()) {
+            while (results0.size() < variations[0]) {
               results0.add(null);
             }
             out.put(id, results0);
           }
           JSONArray results1 = new JSONArray();
           results1.put(result);
-          while (results0.size() <= numberScenarios[0] - 1) {
+          while (results0.size() <= variations[0] - 1) {
             results0.add(null);
           }
-          assert results0.get(scenario - 1) == null;
+          assert results0.get(variationNumber) == null;
           results0.set(
-              scenario - 1,
+              variationNumber,
               new Result(
                   score,
                   Main.writeGraphs(directory, results1),
@@ -141,17 +177,17 @@ public class Score {
         .append("<th>")
         .append("Release")
         .append("</th>");
-    for (int scenario = 1; scenario <= numberScenarios[0]; scenario++) {
-      JSONArray _groups = groups.getOrDefault(scenario, new JSONArray());
-      StringBuilder groupsString = new StringBuilder();
-
-      for (int idx = 0; idx < _groups.length(); idx++) {
-        if (idx > 0) {
-          groupsString.append(", ");
-        }
-        groupsString.append(_groups.getString(idx).toLowerCase());
+    for (int variation = 0; variation < variations[0]; variation++) {
+      if (paramsMap.containsKey(variation)) {
+        JSONObject params = flattenParams(paramsMap.get(variation));
+        String paramString =
+            params.toString().replace("{", "").replace("}", "")
+                .replace("\"", "").replace(":true", "").replace(":", " ").replace("heuristics", "")
+                .replace(",", " ");
+        body.append("<th>").append(paramString).append("</th>");
+      } else {
+        body.append("<th>").append("</th>");
       }
-      body.append("<th>").append(String.join("<br/>", groupsString)).append("</th>");
     }
     body.append("</thead>");
 
@@ -190,8 +226,11 @@ public class Score {
         }
         Collection<String> classes = new ArrayList<>();
         int group = result.getGroup();
-        if (result.getScore() == maxScore[group] && result.isAcceptable()) {
-          classes.add("best");
+        if (result.isAcceptable()) {
+          float max = maxScore[group];
+          if (result.getScore() == max) {
+            classes.add("best");
+          }
         }
         if (!result.isAcceptable()) {
           classes.add("unacceptable");
