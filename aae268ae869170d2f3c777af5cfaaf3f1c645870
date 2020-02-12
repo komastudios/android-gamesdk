@@ -16,6 +16,23 @@
       "revId": "aae268ae869170d2f3c777af5cfaaf3f1c645870",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b9f23ad8_1318ff4c",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/vulkan/VulkanVaryingsTestOperation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-02-12T23:21:21Z",
+      "side": 1,
+      "message": "Still, this whole thing is pretty elegant. Nice work.",
+      "revId": "aae268ae869170d2f3c777af5cfaaf3f1c645870",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
