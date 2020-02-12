@@ -1,0 +1,39 @@
+[
+  [
+    {
+      "malloc": 40
+    },
+    {
+      "glTest": true
+    }
+  ],
+  [
+    {},
+    {
+      "blocker": true
+    }
+  ],
+  [
+    {},
+    {
+      "heuristics": [
+        "TRIM"
+      ]
+    },
+    {
+      "heuristics": [
+        "LOW"
+      ]
+    },
+    {
+      "heuristics": [
+        "CL"
+      ]
+    },
+    {
+      "heuristics": [
+        "CL2"
+      ]
+    }
+  ]
+]

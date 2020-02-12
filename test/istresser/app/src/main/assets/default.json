@@ -1,0 +1,41 @@
+{
+  "tests": [
+    [
+      {},
+      {
+        "malloc": 40
+      }
+    ],
+    [
+      {},
+      {
+        "blocker": true
+      }
+    ],
+    [
+      {},
+      {
+        "heuristics": [
+          "TRIM"
+        ]
+      },
+      {
+        "heuristics": [
+          "LOW"
+        ]
+      },
+      {
+        "heuristics": [
+          "CL"
+        ]
+      }
+    ]
+  ],
+  "coordinates": [
+    1,
+    0,
+    1
+  ],
+  "run": "43a57d56-7fc1-49f1-89fc-9da39bb5be91",
+  "started": 1581508211344
+}
