@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 The Android Open Source Project
+ * Copyright 2020 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,77 +16,51 @@
 
 #pragma once
 
+#include <charconv>
 #include <string>
 
 #include "util/Time.hpp"
-#include "util/Json.hpp"
+
 
 namespace ancer::reporting {
-    struct Datum {
-        Datum(Json custom);
-        Datum(std::string suite, std::string operation, Json custom);
-        Datum(const Datum&) = delete; // No copy to ensure we don't reuse issue_id
-        Datum(Datum&&) = default;
-
-        // NOTE: Be sure to update SaveReportLine if you add any new members.
-        int issue_id;
-        std::string suite_id;
-        std::string operation_id;
-        Timestamp timestamp;
-        std::string thread_id;
-        int cpu_id;
-        Json custom;
-    };
-
     enum class ReportFlushMode {
-        /*
-         * Writes to the report log will be immediately written and flushed
-         */
+        // Writes will be flushed as quickly as possible.
                 Immediate,
-        /*
-         * Writes to the report log will be periodically flushed. See SetPeriodicFlushModePeriod()
-         */
+        // Writes will be periodically flushed.
                 Periodic,
-        /*
-         * Writes will only be flushed when FlushReportLogQueue() is called
-         */
+        // Writes will only be flushed when FlushReportLogQueue() is called
                 Manual
     };
 
-    /*
-     * Opens the specified file for writing Report data
-     */
+    // Opens the report log using the specified file.
     void OpenReportLog(const std::string& file);
-
-    /*
-     * Opens the specified file descriptor for writing report data
-     */
     void OpenReportLog(int file_descriptor);
 
-    /*
-     * Set the flushing mode for the report writer thread
-     */
+    // Set the flush mode for the reporter.
     void SetReportLogFlushMode(ReportFlushMode mode);
     ReportFlushMode GetReportLogFlushMode();
 
-    /*
-     * Set the flush period for when flush mode is ReportFlushMode::PERIODIC
-     */
+    // Set the flush period for when we're in periodic mode.
     void SetPeriodicFlushModePeriod(Duration duration);
     Duration GetPeriodicFlushModePeriod() noexcept;
 
-    /*
-     * Write a datum to the report log
-     */
-    void WriteToReportLog(Datum&& d);
+    // Write a datum to the report log.
+    template <typename T>
+    void WriteToReportLog(const std::string& suite, const std::string& operation,
+                          T&& datum);
+    template <typename T>
+    void WriteToReportLog(const char* suite, const char* operation, T&& datum);
 
-    /*
-     * Write a string to the report log
-     */
+    // Write a string to the report log.
     void WriteToReportLog(std::string&& s);
 
-    /*
-     * Immediately flush any pending writes to the report log
-     */
+    // Immediately flush any pending writes to the report log.
     void FlushReportLogQueue();
-} // namespace ancer::reporting
+
+    // Performs a "hard" flush of the log queue, waiting on any pending reports
+    // and flushing the file as well.
+    void HardFlushReportLogQueue();
+}
+
+
+#include "Reporting.inl"

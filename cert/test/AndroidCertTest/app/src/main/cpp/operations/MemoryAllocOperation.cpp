@@ -19,6 +19,7 @@
 #include <list>
 
 #include <ancer/BaseOperation.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/System.hpp>
 #include <ancer/util/Json.hpp>
 
@@ -74,11 +75,11 @@ struct sys_mem_info {
   }
 };
 
-JSON_WRITER(sys_mem_info) {
-  JSON_REQVAR(native_allocated);
-  JSON_REQVAR(available_memory);
-  JSON_REQVAR(oom_score);
-  JSON_REQVAR(low_memory);
+void WriteDatum(report_writers::Struct w, const sys_mem_info& i) {
+  ADD_DATUM_MEMBER(w, i, native_allocated);
+  ADD_DATUM_MEMBER(w, i, available_memory);
+  ADD_DATUM_MEMBER(w, i, oom_score);
+  ADD_DATUM_MEMBER(w, i, low_memory);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -135,25 +136,25 @@ struct datum {
   }
 };
 
-JSON_WRITER(datum) {
-  if (data.is_free) {
-    JSON_SETVAR(is_free, true);
-    JSON_REQVAR(free_cause);
-  } else if (data.is_restart) {
-    JSON_SETVAR(is_restart, true);
-  } else if (data.is_on_trim) {
-    JSON_SETVAR(is_on_trime, true);
-    JSON_REQVAR(on_trim_level);
-    JSON_REQVAR(total_on_trims);
-    JSON_REQVAR(trim_level_histogram);
-  } else if (data.is_malloc_fail) {
-    JSON_SETVAR(is_malloc_fail, true);
-  }
+void WriteDatum(report_writers::Struct w, const datum& d) {
+    if ( d.is_free ) {
+        w.AddItem("is_free", true);
+        ADD_DATUM_MEMBER(w, d, free_cause);
+    } else if ( d.is_restart ) {
+        w.AddItem("is_restart", true);
+    } else if ( d.is_on_trim ) {
+        w.AddItem("is_on_trim", true);
+        ADD_DATUM_MEMBER(w, d, on_trim_level);
+        ADD_DATUM_MEMBER(w, d, total_on_trims);
+        ADD_DATUM_MEMBER(w, d, trim_level_histogram);
+    } else if ( d.is_malloc_fail ) {
+        w.AddItem("is_malloc_fail", true);
+    }
 
-  JSON_REQVAR(timestamp);
-  JSON_REQVAR(total_allocation_bytes);
-  JSON_SETVAR(total_allocation_mb, data.total_allocation_bytes*MB_PER_BYTE);
-  JSON_REQVAR(sys_mem_info);
+    ADD_DATUM_MEMBER(w, d, timestamp);
+    ADD_DATUM_MEMBER(w, d, total_allocation_bytes);
+    w.AddItem("total_allocation_mb", d.total_allocation_bytes * MB_PER_BYTE);
+    ADD_DATUM_MEMBER(w, d, sys_mem_info);
 }
 }
 
@@ -263,8 +264,6 @@ class MemoryAllocOperation : public BaseOperation {
       d.timestamp = SteadyClock::now();
       d.total_allocation_bytes = _total_allocation_bytes;
       Report(d);
-
-      Log::D(TAG, "_report: " + Json(d).dump());
     }
   }
 
