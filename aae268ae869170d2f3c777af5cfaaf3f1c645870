@@ -19,6 +19,40 @@
     },
     {
       "key": {
+        "uuid": "3d92296d_0407c340",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/vulkan/VulkanVaryingsTestOperation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-02-13T22:40:38Z",
+      "side": 1,
+      "message": "For newer code we can use 2020.",
+      "revId": "aae268ae869170d2f3c777af5cfaaf3f1c645870",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5ee86083_d5b4d4e7",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/vulkan/VulkanVaryingsTestOperation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-02-13T22:40:38Z",
+      "side": 1,
+      "message": "You might consider adding a comment here with your test description so that future readers can get a quick high-level orientation to the code. I like the description in the commit message, but unfortunately recovering that commit message later is sort of archaeological in nature, as opposed to it just being there in the source file.",
+      "revId": "aae268ae869170d2f3c777af5cfaaf3f1c645870",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b9f23ad8_1318ff4c",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/vulkan/VulkanVaryingsTestOperation.cpp",
         "patchSetId": 1
@@ -30,6 +64,58 @@
       "writtenOn": "2020-02-12T23:21:21Z",
       "side": 1,
       "message": "Still, this whole thing is pretty elegant. Nice work.",
+      "revId": "aae268ae869170d2f3c777af5cfaaf3f1c645870",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a10aec6e_ca2a5e42",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/vulkan/VulkanVaryingsTestOperation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-02-13T22:40:38Z",
+      "side": 1,
+      "message": "I totally agree on both points! My only thought here is that, given the open source nature of this code, we might want to avoid leaving in comments like this. But it does seem like the sort of thing you could say as a CL comment (just as what I\u0027m typing right now is a CL comment).",
+      "parentUuid": "b9f23ad8_1318ff4c",
+      "revId": "aae268ae869170d2f3c777af5cfaaf3f1c645870",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "284dd0e8_6c398369",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/vulkan/VulkanVaryingsTestOperation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-02-13T22:40:38Z",
+      "side": 1,
+      "message": "This pattern reminds me a lot of the \"ash\" Rust library 😊",
+      "revId": "aae268ae869170d2f3c777af5cfaaf3f1c645870",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "be2006b4_8662728a",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/vulkan/VulkanVaryingsTestOperation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-02-13T22:40:38Z",
+      "side": 1,
+      "message": "What are your thoughts (in general) on retaining shader modules given that they can be immediately destroyed once the pipeline is created? I can kind of see an argument going both ways.",
       "revId": "aae268ae869170d2f3c777af5cfaaf3f1c645870",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
