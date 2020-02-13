@@ -1,0 +1,84 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8423b51e_7781f5b3",
+        "filename": "test/collate/resources/tests.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-02-13T12:48:45Z",
+      "side": 1,
+      "message": "A readme for how this file is formatted would be nice.",
+      "revId": "f92276f2428a60569d32699adc30a9b03a596c5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7abc388f_c2acbfa1",
+        "filename": "test/istresser/app/src/main/assets/default.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-02-13T12:48:45Z",
+      "side": 1,
+      "message": "This file is supposed to represent only one test, right? Currently it looks like it\u0027s representing a series of tests as it is the same file as tests.json.",
+      "revId": "f92276f2428a60569d32699adc30a9b03a596c5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f370f98f_d831cef6",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-02-13T12:48:45Z",
+      "side": 1,
+      "message": "Maybe let\u0027s give more meaningful names to the parameters as well, instead of calling them blocker and blocker2.",
+      "range": {
+        "startLine": 224,
+        "startChar": 29,
+        "endLine": 224,
+        "endChar": 37
+      },
+      "revId": "f92276f2428a60569d32699adc30a9b03a596c5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "455da6c6_1bd180eb",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-02-13T12:48:45Z",
+      "side": 1,
+      "message": "what happens to this line when the given string does not correspond to a heuristic? Should there be a check for that?",
+      "range": {
+        "startLine": 237,
+        "startChar": 27,
+        "endLine": 237,
+        "endChar": 84
+      },
+      "revId": "f92276f2428a60569d32699adc30a9b03a596c5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
