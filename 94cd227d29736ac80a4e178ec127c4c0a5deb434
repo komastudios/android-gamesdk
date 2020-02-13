@@ -1,0 +1,123 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "488e0546_cf49e6e0",
+        "filename": "bender/bender-base/app/src/main/jni/chef/chef.cc",
+        "patchSetId": 12
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-02-13T21:26:28Z",
+      "side": 1,
+      "message": "Don\u0027t know if it would be better to rename this? Without more context this reads as \"for each OBJ file, we will load the mesh\" instead of the fact that we\u0027re processing them with VCG. Not sure what better to name; MeshProcessor, MeshDecimator, MeshReducer?",
+      "revId": "94cd227d29736ac80a4e178ec127c4c0a5deb434",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "922f3d2b_2ed3647d",
+        "filename": "bender/bender-base/app/src/main/jni/chef/mesh_loader.cc",
+        "patchSetId": 12
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-02-13T21:26:28Z",
+      "side": 1,
+      "message": "How different from the LoadMTL in obj_loader is this? It looks pretty similar to me (though not identical), if there\u0027s a way we could not have that redundancy, could we just have the Load here and have the obj_loader (since it\u0027s presumably more Bender-specific) call this as a static method with some return or modified param? (Similar to other shared functions between the classes).",
+      "revId": "94cd227d29736ac80a4e178ec127c4c0a5deb434",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "25a65dfa_dff994e3",
+        "filename": "bender/bender-base/app/src/main/jni/chef/mesh_loader.cc",
+        "patchSetId": 12
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-02-13T21:26:28Z",
+      "side": 1,
+      "message": "This is a nit; can we use i, j, k for indexing (it\u0027s a bit confusing when we also have positional x, y, z which makes for less readable code).",
+      "revId": "94cd227d29736ac80a4e178ec127c4c0a5deb434",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ffd757f2_05d6b807",
+        "filename": "bender/bender-base/app/src/main/jni/chef/mesh_loader.cc",
+        "patchSetId": 12
+      },
+      "lineNbr": 285,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-02-13T21:26:28Z",
+      "side": 1,
+      "message": "Can we put some of the vcg logic into a helper function? Giant loop also feels less readable.",
+      "revId": "94cd227d29736ac80a4e178ec127c4c0a5deb434",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0ef1f701_7100ec32",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 12
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-02-13T21:26:28Z",
+      "side": 1,
+      "message": "I don\u0027t love the manual changing of this; is this something we should be using VertexFormat for? (i.e. adding smthg to VertexFormat to make this less manual as well).",
+      "revId": "94cd227d29736ac80a4e178ec127c4c0a5deb434",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4d333822_04485155",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 12
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-02-13T21:26:28Z",
+      "side": 1,
+      "message": "I understand why this (and other stuff in vulkan_main) are commented out for GDC stuff, but also it does deviate somewhat from main Bender stuff/purpose. Not within the scope of this CL perhaps but might be good to figure out how to compartmentalize GDC stuff.",
+      "revId": "94cd227d29736ac80a4e178ec127c4c0a5deb434",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "669ea452_88831a2f",
+        "filename": "bender/bender-base/utils/bender_kit/obj_loader.cc",
+        "patchSetId": 12
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-02-13T21:26:28Z",
+      "side": 1,
+      "message": "Uhm, yeah this doesn\u0027t feel like the move :| (assuming this is gonna change for obj_loader, unless we intend the obj_loader to only be for the spaceship).",
+      "revId": "94cd227d29736ac80a4e178ec127c4c0a5deb434",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
