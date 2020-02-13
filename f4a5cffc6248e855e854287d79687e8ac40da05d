@@ -16,6 +16,24 @@
       "revId": "f4a5cffc6248e855e854287d79687e8ac40da05d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5ede6903_a02ad3ce",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/Bitmath.hpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1597621
+      },
+      "writtenOn": "2020-02-13T16:05:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "26ea0269_950f02e6",
+      "revId": "f4a5cffc6248e855e854287d79687e8ac40da05d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
