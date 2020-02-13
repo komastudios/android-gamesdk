@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c9246ce8_b15e4fd2",
+        "filename": "include/swappy/swappyVk.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-02-13T09:10:05Z",
+      "side": 1,
+      "message": "Same, I would put just the function name. Also put a new line before \"See [...]\" so that it\u0027s not part of the brief (that is shown on summary pages).",
+      "revId": "753658cef6e5890ec5af89159a489975a45df4da",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5c244faa_e343c2fd",
+        "filename": "include/swappy/swappyVk.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 265,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-02-13T09:10:05Z",
+      "side": 1,
+      "message": "nit: put `@brief`s on the line after the doc comment opening:\n\n/** \n * @brief",
+      "revId": "753658cef6e5890ec5af89159a489975a45df4da",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "20c970b2_f84d39f1",
+        "filename": "include/swappy/swappy_common.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-02-13T09:10:05Z",
+      "side": 1,
+      "message": "Usually you just mention the function name without the parameters in the doc. Doxygen should see that it\u0027s a documented function and add a link to it.",
+      "revId": "753658cef6e5890ec5af89159a489975a45df4da",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
