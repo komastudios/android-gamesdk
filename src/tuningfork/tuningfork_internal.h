@@ -19,7 +19,6 @@
 #include "tuningfork/tuningfork.h"
 #include "tuningfork/tuningfork_extra.h"
 #include "tuningfork/protobuf_util.h"
-#include "swappy/swappyGL_extra.h"
 
 #include <stdint.h>
 #include <string>
@@ -151,24 +150,6 @@ class ITimeProvider {
 public:
     virtual std::chrono::steady_clock::time_point Now() = 0;
     virtual std::chrono::system_clock::time_point SystemNow() = 0;
-};
-
-// This encapsulates the callbacks that are passed to Swappy at initialization, if it is
-//  enabled + available.
-class SwappyTraceWrapper {
-    SwappyTracerFn swappyTracerFn_;
-    SwappyTracer trace_;
-    TFTraceHandle waitTraceHandle_ = 0;
-    TFTraceHandle swapTraceHandle_ = 0;
-public:
-    SwappyTraceWrapper(const Settings& settings);
-    // Swappy trace callbacks
-    static void StartFrameCallback(void* userPtr, int /*currentFrame*/,
-                                         long /*currentFrameTimeStampMs*/);
-    static void PreWaitCallback(void* userPtr);
-    static void PostWaitCallback(void* userPtr);
-    static void PreSwapBuffersCallback(void* userPtr);
-    static void PostSwapBuffersCallback(void* userPtr, long /*desiredPresentationTimeMs*/);
 };
 
 // If no backend is passed, the default backend, which uploads to the google endpoint is used.
