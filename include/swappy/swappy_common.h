@@ -47,24 +47,37 @@
 #define SWAPPY_VERSION_CONCAT(PREFIX, MAJOR, MINOR) SWAPPY_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR)
 #define SWAPPY_VERSION_SYMBOL SWAPPY_VERSION_CONCAT(Swappy_version, SWAPPY_MAJOR_VERSION, SWAPPY_MINOR_VERSION)
 
+/** @endcond */
+
 /** @brief Id of a thread returned by an external thread manager. */
 typedef uint64_t SwappyThreadId;
 
 /**
- * @brief Thread management functions.
+ * @brief A structure enabling you to set how Swappy starts and joins threads by calling
+ * ::Swappy_setThreadFunctions.
+ *
+ * Usage of this functionality is optional.
  */
 typedef struct SwappyThreadFunctions {
-    /**
-     * Called to start thread_func on a new thread with the single argument given.
-     * Should return 0 if the thread was started and also set the thread_id.
+    /** @brief Thread start callback.
+     *
+     * This function is called by Swappy to start thread_func on a new thread.
+     * @param user_data A value to be passed the thread function.
+     * If the thread was started, this function should set the thread_id and return 0.
+     * If the thread was not started, this function should return a non-zero value.
      */
     int (*start)(SwappyThreadId* thread_id, void *(*thread_func)(void*), void* user_data);
-    /**
-     * Called to join the thread with given id.
+
+    /** @brief Thread join callback.
+     *
+     * This function is called by Swappy to join the thread with given id.
      */
     void (*join)(SwappyThreadId thread_id);
-    /**
-     * Return whether the thread with the given id is joinable.
+
+    /** @brief Thread joinable callback.
+     *
+     * This function is called by Swappy to discover whether the thread with the given id
+     * is joinable.
      */
     bool (*joinable)(SwappyThreadId thread_id);
 } SwappyThreadFunctions;
@@ -72,6 +85,8 @@ typedef struct SwappyThreadFunctions {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/** @cond INTERNAL */
 
 // Internal function to track Swappy version bundled in a binary. Do not call directly.
 // If you are getting linker errors related to Swappy_version_x_y, you probably have a
@@ -87,6 +102,9 @@ uint32_t Swappy_version();
 
 /**
  * @brief Call this before any other functions in order to use a custom thread manager.
+ *
+ * Usage of this function is entirely optional. Swappy uses std::thread by default.
+ *
  */
 void Swappy_setThreadFunctions(const SwappyThreadFunctions* thread_functions);
 
