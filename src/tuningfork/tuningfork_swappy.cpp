@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "tuningfork_internal.h"
+#include "tuningfork_swappy.h"
 
 #define LOG_TAG "TuningFork"
 #include "Log.h"
@@ -36,12 +36,16 @@ SwappyTraceWrapper::SwappyTraceWrapper(const Settings& settings)
 // Swappy trace callbacks
 void SwappyTraceWrapper::StartFrameCallback(void* userPtr, int /*currentFrame*/,
                                      long /*currentFrameTimeStampMs*/) {
-        SwappyTraceWrapper* _this = (SwappyTraceWrapper*)userPtr;
-        auto err = TuningFork_frameTick(TFTICK_SYSCPU);
-        if (err!=TFERROR_OK) {
-            ALOGE("Error ticking %d : %d", TFTICK_SYSCPU, err);
-        }
+    SwappyTraceWrapper* _this = (SwappyTraceWrapper*)userPtr;
+    auto err = TuningFork_frameTick(TFTICK_SYSCPU);
+    if (err!=TFERROR_OK) {
+        ALOGE("Error ticking %d : %d", TFTICK_SYSCPU, err);
     }
+    err = TuningFork_startTrace(TFTICK_SWAPPY_LOGIC_TIME, &_this->logicTraceHandle_);
+    if (err!=TFERROR_OK) {
+        ALOGE("Error tracing %d : %d", TFTICK_SWAPPY_LOGIC_TIME, err);
+    }
+}
 void SwappyTraceWrapper::PreWaitCallback(void* userPtr) {
     SwappyTraceWrapper* _this = (SwappyTraceWrapper*)userPtr;
     auto err = TuningFork_startTrace(TFTICK_SWAPPY_WAIT_TIME, &_this->waitTraceHandle_);
@@ -62,17 +66,13 @@ void SwappyTraceWrapper::PostWaitCallback(void* userPtr) {
 }
 void SwappyTraceWrapper::PreSwapBuffersCallback(void* userPtr) {
     SwappyTraceWrapper* _this = (SwappyTraceWrapper*)userPtr;
-    auto err = TuningFork_startTrace(TFTICK_SWAPPY_SWAP_TIME, &_this->swapTraceHandle_);
-    if (err!=TFERROR_OK) {
-        ALOGE("Error tracing %d : %d", TFTICK_SWAPPY_SWAP_TIME, err);
+    if (_this->logicTraceHandle_) {
+        TuningFork_endTrace(_this->logicTraceHandle_);
+        _this->logicTraceHandle_ = 0;
     }
 }
 void SwappyTraceWrapper::PostSwapBuffersCallback(void* userPtr, long /*desiredPresentationTimeMs*/) {
-    SwappyTraceWrapper *_this = (SwappyTraceWrapper *) userPtr;
-    if (_this->swapTraceHandle_) {
-        TuningFork_endTrace(_this->swapTraceHandle_);
-        _this->swapTraceHandle_ = 0;
-    }
+    // We no longer record the swap time
 }
 
 } // namespace tuningfork
