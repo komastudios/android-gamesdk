@@ -256,28 +256,51 @@ uint64_t SwappyVk_getFenceTimeoutNS();
 void SwappyVk_injectTracer(const SwappyTracer *tracer);
 
 /**
- * A structure to enable you to provide your own Vulkan function wrappers.
+ * @brief A structure enabling you to provide your own Vulkan function wrappers
+ * by calling ::SwappyVk_setFunctionProvider.
+ *
+ * Usage of this functionality is optional.
  */
-struct SwappyVkFunctionProvider {
-    // Called before any functions are requested. E.g. so you can call dlopen on
-    // the Vulkan library.
+typedef struct SwappyVkFunctionProvider {
+    /**
+     * @brief Callback to initialize the function provider.
+     *
+     * This function is called by Swappy before any functions are requested. E.g. so you can
+     * call dlopen on the Vulkan library.
+     */
     bool (*init)();
-    // Called to get the address of a Vulkan function.
+
+    /**
+     * @brief Callback to get the address of a function.
+     *
+     * This function is called by Swappy to get the address of a Vulkan function.
+     * @param name The null-terminated name of the function.
+     */
     void* (*getProcAddr)(const char* name);
-    // Called when no more functions will be requested, e.g. so you can call
-    // dlclose on the Vulkan library.
+
+    /**
+     * @brief Callback to close any resources owned by the function provider.
+     * 
+     * This function is called by Swappy when no more functions will be requested,
+     * e.g. so you can call dlclose on the Vulkan library.
+     */
     void (*close)();
-};
+} SwappyVkFunctionProvider;
 
 /**
  * @brief Set the Vulkan function provider.
  *
- * This enables you to provide an object that will be used to look up Vulkan functions.
+ * This enables you to provide an object that will be used to look up Vulkan functions, e.g. to
+ * hook usage of these functions.
+ *
  * To use this functionality, you *must* call this function before any others.
+ * 
+ * Usage of this function is entirely optional. If you do not use it, the Vulkan functions required
+ * by Swappy will be dynamically loaded from libvulkan.so.
  *
  * @param[in] provider - provider object
  */
-void SwappyVk_setFunctionProvider(const struct SwappyVkFunctionProvider* pSwappyVkFunctionProvider);
+void SwappyVk_setFunctionProvider(const SwappyVkFunctionProvider* pSwappyVkFunctionProvider);
 
 #ifdef __cplusplus
 }  // extern "C"
