@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "56cae55f_f0b5154e",
+        "filename": "include/swappy/swappyVk.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-02-13T10:13:27Z",
+      "side": 1,
+      "message": "Ah, I didn\u0027t realise you can add :: before and it is made into a link, without the full signature.\nAlso, I think it looks fine in the summary. It adds more context and SwappyStats does the same.",
+      "parentUuid": "c9246ce8_b15e4fd2",
+      "revId": "753658cef6e5890ec5af89159a489975a45df4da",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5c244faa_e343c2fd",
         "filename": "include/swappy/swappyVk.h",
         "patchSetId": 1
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "eca4f18c_b08112a8",
+        "filename": "include/swappy/swappyVk.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 265,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-02-13T10:13:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5c244faa_e343c2fd",
+      "revId": "753658cef6e5890ec5af89159a489975a45df4da",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "20c970b2_f84d39f1",
         "filename": "include/swappy/swappy_common.h",
         "patchSetId": 1
@@ -50,6 +86,24 @@
       "revId": "753658cef6e5890ec5af89159a489975a45df4da",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "76c48bad_969683a8",
+        "filename": "include/swappy/swappy_common.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-02-13T10:13:27Z",
+      "side": 1,
+      "message": "A, yes, I didn\u0027t realise adding :: means you don\u0027t need the arguments",
+      "parentUuid": "20c970b2_f84d39f1",
+      "revId": "753658cef6e5890ec5af89159a489975a45df4da",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
