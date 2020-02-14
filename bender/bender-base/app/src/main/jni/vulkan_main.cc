@@ -79,6 +79,15 @@ auto current_time = last_time;
 float frame_time;
 float total_time;
 
+const float kStrafeSpeed = 20.0;
+const float kMoveSpeed = 2.0;
+bool move_forward = false;
+bool move_backward = false;
+bool strafe_up = false;
+bool strafe_down = false;
+bool strafe_left = false;
+bool strafe_right = false;
+
 const glm::mat4 kIdentityMat4 = glm::mat4(1.0f);
 const glm::mat4 prerotate_90 = glm::rotate(kIdentityMat4,  glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
 const glm::mat4 prerotate_270 = glm::rotate(kIdentityMat4, glm::three_over_two_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -93,28 +102,28 @@ char fps_info[50];
 void MoveForward() {
   glm::vec3
       forward = glm::normalize(render_graph->GetCamera().rotation * glm::vec3(0.0f, 0.0f, -1.0f));
-  render_graph->TranslateCamera(forward * 2.0f * frame_time);
+  render_graph->TranslateCamera(forward * kMoveSpeed * frame_time);
 }
 void MoveBackward() {
   glm::vec3
       forward = glm::normalize(render_graph->GetCamera().rotation * glm::vec3(0.0f, 0.0f, -1.0f));
-  render_graph->TranslateCamera(-forward * 2.0f * frame_time);
+  render_graph->TranslateCamera(-forward * kMoveSpeed * frame_time);
 }
 void StrafeLeft() {
   glm::vec3 right = glm::normalize(render_graph->GetCamera().rotation * glm::vec3(1.0f, 0.f, 0.f));
-  render_graph->TranslateCamera(-right * (20.0f / device->GetDisplaySize().width));
+  render_graph->TranslateCamera(-right * (kStrafeSpeed / device->GetDisplaySize().width));
 }
 void StrafeRight() {
   glm::vec3 right = glm::normalize(render_graph->GetCamera().rotation * glm::vec3(1.0f, 0.f, 0.f));
-  render_graph->TranslateCamera(right * (20.0f / device->GetDisplaySize().width));
+  render_graph->TranslateCamera(right * (kStrafeSpeed / device->GetDisplaySize().width));
 }
 void StrafeUp() {
   glm::vec3 up = glm::normalize(render_graph->GetCamera().rotation * glm::vec3(0.0f, 1.0f, 0.0f));
-  render_graph->TranslateCamera(up * (20.0f / device->GetDisplaySize().height));
+  render_graph->TranslateCamera(up * (kStrafeSpeed / device->GetDisplaySize().height));
 }
 void StrafeDown() {
   glm::vec3 up = glm::normalize(render_graph->GetCamera().rotation * glm::vec3(0.0f, 1.0f, 0.0f));
-  render_graph->TranslateCamera(-up * (20.0f / device->GetDisplaySize().height));
+  render_graph->TranslateCamera(-up * (kStrafeSpeed / device->GetDisplaySize().height));
 }
 void CreateInstance() {
   render_graph->AddMesh(std::make_shared<Mesh>(renderer,
@@ -154,32 +163,38 @@ void CreateButtons() {
   Button::SetScreenResolution(device->GetDisplaySizeOriented());
 
   user_interface->RegisterButton([] (Button& button) {
-      button.on_hold_ = StrafeLeft;
-      button.SetLabel("<--");
-      button.SetPosition(-.7, .2, .7, .2);
+    button.on_down_ = [] () { strafe_left = true; };
+    button.on_up_ = [] () { strafe_left = false; };
+    button.SetLabel("<--");
+    button.SetPosition(-.7, .2, .7, .2);
   });
   user_interface->RegisterButton([] (Button& button) {
-    button.on_hold_ = StrafeRight;
+    button.on_down_ = [] () { strafe_right = true; };
+    button.on_up_ = [] () { strafe_right = false; };
     button.SetLabel("-->");
     button.SetPosition(-.2, .2, .7, .2);
   });
   user_interface->RegisterButton([] (Button& button) {
-    button.on_hold_ = StrafeUp;
+    button.on_down_ = [] () { strafe_up = true; };
+    button.on_up_ = [] () { strafe_up = false; };
     button.SetLabel("^");
     button.SetPosition(-.47, .2, .6, .2);
   });
   user_interface->RegisterButton([] (Button& button) {
-    button.on_hold_ = StrafeDown;
+    button.on_down_ = [] () { strafe_down = true; };
+    button.on_up_ = [] () { strafe_down = false; };
     button.SetLabel("0");
     button.SetPosition(-.47, .2, .85, .2);
   });
   user_interface->RegisterButton([] (Button& button) {
-    button.on_hold_ = MoveForward;
+    button.on_down_ = [] () { move_forward = true; };
+    button.on_up_ = [] () { move_forward = false; };
     button.SetLabel("Forward");
     button.SetPosition(.43, .2, .65, .2);
   });
   user_interface->RegisterButton([] (Button& button) {
-    button.on_hold_ = MoveBackward;
+    button.on_down_ = [] () { move_backward = true; };
+    button.on_up_ = [] () { move_backward = false; };
     button.SetLabel("Backward");
     button.SetPosition(.43, .2, .85, .2);
   });
@@ -335,6 +350,13 @@ void UpdateCamera(input::Data *input_data) {
     render_graph->RotateCameraLocal(
         glm::quat(glm::vec3(input_data->delta_y / device->GetDisplaySize().height, 0.0f, 0.0f)));
   }
+
+  if (move_forward) { MoveForward(); }
+  else if (move_backward) { MoveBackward(); }
+  else if (strafe_up) { StrafeUp(); }
+  else if (strafe_down) { StrafeDown(); }
+  else if (strafe_left) { StrafeLeft(); }
+  else if (strafe_right) { StrafeRight(); }
 
   Camera camera = render_graph->GetCamera();
   render_graph->SetCameraViewMatrix(glm::inverse(
