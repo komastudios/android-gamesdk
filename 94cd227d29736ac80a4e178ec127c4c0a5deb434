@@ -72,6 +72,24 @@
     },
     {
       "key": {
+        "uuid": "0eaaaae5_7d08558d",
+        "filename": "bender/bender-base/app/src/main/jni/chef/mesh_loader.cc",
+        "patchSetId": 12
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-02-14T18:36:23Z",
+      "side": 1,
+      "message": "I think this is fair; Chef should definitely build without the need for Bender source, but I think the other way is not necessarily a problem? Like if the call is a static function in Chef that the Bender can call.",
+      "parentUuid": "fec15047_59f7f3f6",
+      "revId": "94cd227d29736ac80a4e178ec127c4c0a5deb434",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "25a65dfa_dff994e3",
         "filename": "bender/bender-base/app/src/main/jni/chef/mesh_loader.cc",
         "patchSetId": 12
@@ -174,6 +192,24 @@
       "revId": "94cd227d29736ac80a4e178ec127c4c0a5deb434",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eabe0385_39a4374a",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 12
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-02-14T18:36:23Z",
+      "side": 1,
+      "message": "That\u0027s fair, I think leaving it this way for now is fine then; I agree that VertexFormat is more specific a use than this and doesn\u0027t quite capture. Unless the bounding box calculation here becomes a fixture I think the current state is fine.",
+      "parentUuid": "bb8c26f0_9be4e37b",
+      "revId": "94cd227d29736ac80a4e178ec127c4c0a5deb434",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
