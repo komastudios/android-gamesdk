@@ -117,6 +117,7 @@ add_library(${PROJECT_NAME} SHARED
         ancer/vulkan/vulkan_base.cc
 
         # Operations
+        operations/CpusetAltOperation.cpp
         operations/CalculatePIOperation.cpp
         operations/IOPerformanceOperation.cpp
         operations/MemoryAccessOperation.cpp

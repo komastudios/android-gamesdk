@@ -10,6 +10,27 @@
   "stress_tests": [
     {
       "enabled": true,
+      "name": "Consistent CPUSET",
+      "description": "Checks CPUSET availability and consistence.",
+      "duration": "10s",
+      "data_gatherer": {
+        "id": "CpusetAltOperation",
+        "configuration": {
+          "thread_count": 4,
+          "checkpoint_frequency": "200ms"
+        }
+      },
+      "stressors": [
+        {
+          "id": "JsonManipulatorOperation",
+          "configuration": {
+            "json_asset_name": "JsonManipulatorOperation.json"
+          }
+        }
+      ]
+    },
+    {
+      "enabled": true,
       "name": "GLES3 External Framebuffer",
       "description": "Determine if a native hardware buffer can be created and used as render target.",
       "duration": "5s",
