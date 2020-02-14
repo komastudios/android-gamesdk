@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5b840e7a_8b189b57",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 360,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-02-14T00:16:58Z",
+      "side": 1,
+      "message": "Would \"switch() case:\" better here? Just wondering",
+      "revId": "194b607cb1191221092fb84c1ae9f5d77da0347c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
