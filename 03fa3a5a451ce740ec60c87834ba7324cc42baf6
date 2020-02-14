@@ -1,0 +1,31 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000001622486",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1235910?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "3d0502c1_bf9bc19f",
+        "filename": "temp/AndroidCertTest/app/src/main/assets/Shaders/ShaderBlobGLES3Operation/iq_quadratics.fsh",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-02-14T23:02:33Z",
+      "side": 1,
+      "message": "Third-party license (MIT) disallowed in repository platform/frameworks/opt/gamesdk:\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n",
+      "range": {
+        "startLine": 8,
+        "startChar": 4,
+        "endLine": 15,
+        "endChar": 41
+      },
+      "revId": "03fa3a5a451ce740ec60c87834ba7324cc42baf6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
