@@ -37,6 +37,8 @@ public:
     static void ActionMoveHandler(input::Data *input_data, std::vector<Button> &buttons);
     static void ActionUpHandler(input::Data *input_data, std::vector<Button> &buttons);
 
+    void RunHeldButtons();
+
     void OnResume(Renderer *new_renderer, Font *font);
 
 private:

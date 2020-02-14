@@ -79,6 +79,9 @@ auto current_time = last_time;
 float frame_time;
 float total_time;
 
+const float kCameraMoveSpeed = 2.0;
+const float kCameraStrafeSpeed = 20.0;
+
 const glm::mat4 kIdentityMat4 = glm::mat4(1.0f);
 const glm::mat4 prerotate_90 = glm::rotate(kIdentityMat4,  glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
 const glm::mat4 prerotate_270 = glm::rotate(kIdentityMat4, glm::three_over_two_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -93,28 +96,28 @@ char fps_info[50];
 void MoveForward() {
   glm::vec3
       forward = glm::normalize(render_graph->GetCamera().rotation * glm::vec3(0.0f, 0.0f, -1.0f));
-  render_graph->TranslateCamera(forward * 2.0f * frame_time);
+  render_graph->TranslateCamera(forward * kCameraMoveSpeed * frame_time);
 }
 void MoveBackward() {
   glm::vec3
       forward = glm::normalize(render_graph->GetCamera().rotation * glm::vec3(0.0f, 0.0f, -1.0f));
-  render_graph->TranslateCamera(-forward * 2.0f * frame_time);
+  render_graph->TranslateCamera(-forward * kCameraMoveSpeed * frame_time);
 }
 void StrafeLeft() {
   glm::vec3 right = glm::normalize(render_graph->GetCamera().rotation * glm::vec3(1.0f, 0.f, 0.f));
-  render_graph->TranslateCamera(-right * (20.0f / device->GetDisplaySize().width));
+  render_graph->TranslateCamera(-right * (kCameraStrafeSpeed / device->GetDisplaySize().width));
 }
 void StrafeRight() {
   glm::vec3 right = glm::normalize(render_graph->GetCamera().rotation * glm::vec3(1.0f, 0.f, 0.f));
-  render_graph->TranslateCamera(right * (20.0f / device->GetDisplaySize().width));
+  render_graph->TranslateCamera(right * (kCameraStrafeSpeed / device->GetDisplaySize().width));
 }
 void StrafeUp() {
   glm::vec3 up = glm::normalize(render_graph->GetCamera().rotation * glm::vec3(0.0f, 1.0f, 0.0f));
-  render_graph->TranslateCamera(up * (20.0f / device->GetDisplaySize().height));
+  render_graph->TranslateCamera(up * (kCameraStrafeSpeed / device->GetDisplaySize().height));
 }
 void StrafeDown() {
   glm::vec3 up = glm::normalize(render_graph->GetCamera().rotation * glm::vec3(0.0f, 1.0f, 0.0f));
-  render_graph->TranslateCamera(-up * (20.0f / device->GetDisplaySize().height));
+  render_graph->TranslateCamera(-up * (kCameraStrafeSpeed / device->GetDisplaySize().height));
 }
 void CreateInstance() {
   render_graph->AddMesh(std::make_shared<Mesh>(renderer,
@@ -748,6 +751,8 @@ bool VulkanDrawFrame(input::Data *input_data) {
   timing::timer.Time("Handle Input", timing::OTHER, [input_data] {
     HandleInput(input_data);
   });
+
+  user_interface->RunHeldButtons();
 
   renderer->BeginFrame();
   timing::timer.Time("Start Frame", timing::START_FRAME, [] {
