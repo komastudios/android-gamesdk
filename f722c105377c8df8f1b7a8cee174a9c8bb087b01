@@ -34,6 +34,24 @@
       "revId": "f722c105377c8df8f1b7a8cee174a9c8bb087b01",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "331ed223_676fe5f7",
+        "filename": "src/tuningfork/tuningfork_swappy.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-02-14T11:16:30Z",
+      "side": 1,
+      "message": "You\u0027re right. Thanks for checking.",
+      "parentUuid": "19a843c7_fee086d6",
+      "revId": "f722c105377c8df8f1b7a8cee174a9c8bb087b01",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
