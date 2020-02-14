@@ -25,16 +25,22 @@
 #include <thread>
 #include <unistd.h>
 
+#include <ancer/Reporter.hpp>
 #include <ancer/System.hpp>
 #include <ancer/DatumReporting.hpp>
 #include <ancer/util/Basics.hpp>
 #include <ancer/util/Bitmath.hpp>
 #include <ancer/util/Json.hpp>
+#include <ancer/util/ThreadSyncPoint.hpp>
 #include <ancer/util/Time.hpp>
 
 using namespace ancer;
 using Bytes = bitmath::Bytes;
 
+
+// TODO(tmillican@google.com): This test needs to be overhauled. This is
+//  currently on hold since the OOB/APK comparison is what prompted this test
+//  in the first place, and we currently can't run that anyway.
 
 //==============================================================================
 
@@ -50,14 +56,14 @@ namespace {
         kBaseApk, kSplitApk, kObb, kCreatedFile
     };
     constexpr const char *kFileSetupNames[] = {
-            "Base APK", "Split APK", "OBB", "Created File"
+        "Base APK", "Split APK", "OBB", "Created File"
     };
 
     enum class ThreadSetup {
         kOneCore, kAllCores, kBigCores, kLittleCores, kMiddleCores
     };
     constexpr const char *kThreadSetupNames[] = {
-            "Single Core", "All Cores", "Big Cores", "Little Cores", "Middle Cores"
+        "Single Core", "All Cores", "Big Cores", "Little Cores", "Middle Cores"
     };
     constexpr auto ToAffinity(ThreadSetup setup) {
         switch (setup) {
@@ -65,7 +71,7 @@ namespace {
             case ThreadSetup::kLittleCores: return ThreadAffinity::kLittleCore;
             case ThreadSetup::kMiddleCores: return ThreadAffinity::kMiddleCore;
             case ThreadSetup::kAllCores:
-            case ThreadSetup::kOneCore: return ThreadAffinity::kAnyCore;
+            case ThreadSetup::kOneCore: return ThreadAffinity::kAll;
             default:
                 FatalError(TAG, "Unknown thread setup %d", (int)setup);
         }
@@ -75,14 +81,14 @@ namespace {
         kDividedEvenly, kInterleaved, kGreedy
     };
     constexpr const char *kWorkSchemeNames[] = {
-            "Divided", "Interleaved", "Greedy"
+        "Divided", "Interleaved", "Greedy"
     };
 
     enum class FileApi {
         kCApi, kCppStreams, kPosix
     };
     constexpr const char *kFileApiNames[] = {
-            "CAPI", "C++ Streams", "posix"
+        "CAPI", "C++ Streams", "posix"
     };
 
     struct Configuration {
@@ -122,6 +128,10 @@ namespace {
         // primarily about file I/O we give the option to avoid that little bit
         // of extra overhead.
         bool lock_on_data_write = false;
+        // For non-greedy setups, should we wait for other threads to "catch up"
+        // before restarting reading the given area for repeated reads?
+        // TODO(tmillican@google.com): Implement
+        bool join_on_restart = false;
 
         // Calculated/determined internally
         std::filesystem::path file_path; // Note: Currently single-file only
@@ -146,6 +156,7 @@ namespace {
 
         JSON_OPTVAR(pin_affinity);
         JSON_OPTVAR(lock_on_data_write);
+        JSON_OPTVAR(join_on_restart);
         JSON_OPTVAR(read_align);
         JSON_REQVAR(buffer_size);
         JSON_OPTVAR(buffer_align);
@@ -160,11 +171,34 @@ namespace {
 //------------------------------------------------------------------------------
 
     struct Datum {
-        Bytes cumulative_bytes;
+        int thread_id;
+        Bytes bytes_update = {0};
+        Bytes bytes_cumulative = {0};
     };
 
     void WriteDatum(report_writers::Struct w, const Datum& d) {
-        ADD_DATUM_MEMBER(w, d, cumulative_bytes);
+        ADD_DATUM_MEMBER(w, d, thread_id);
+        ADD_DATUM_MEMBER(w, d, bytes_update);
+        ADD_DATUM_MEMBER(w, d, bytes_cumulative);
+    }
+
+    void Reset(Datum& datum) {
+        datum.bytes_update = Bytes{0};
+    }
+
+
+    // TODO(tmillican@google.com): Make a global helper?
+    template <typename ReportRate>
+    [[nodiscard]] bool CheckReportRate(Timestamp& last_report, ReportRate rate) {
+        const auto now = SteadyClock::now();
+        if (last_report + rate < now) {
+            // TODO(tmillican@google.com): Need to decide if we want to have
+            //  reports be 'aligned' to rate or if it should be a minimum offset
+            //  between reports. For now we're going with the latter.
+            last_report = now + rate;
+            return true;
+        }
+        return false;
     }
 }
 
@@ -257,10 +291,9 @@ namespace {
         EvenDivisionScheme(int thread, const Configuration& config)
         : _file_chunk{config.padded_read_size}
         , _data_chunk{config.buffer_size}
-        , _file_division{config.total_area_size / config.num_threads}
-        , _data_division{config.total_data_size / config.num_threads}
-        , _offsets{_file_division * thread, _data_division * thread}
-        , _file_end{_offsets.file + _file_division} {
+        , _offsets{config.read_area_start + (config.total_area_size / config.num_threads) * thread,
+                   (config.total_data_size / config.num_threads) * thread}
+        , _file_end{_offsets.file + (config.total_area_size / config.num_threads)} {
         }
 
         [[nodiscard]]
@@ -275,10 +308,10 @@ namespace {
             return _offsets.file < _file_end;
         }
     private:
+        // How much is read in one chunk.
         Bytes _file_chunk;
         Bytes _data_chunk;
-        Bytes _file_division;
-        Bytes _data_division;
+        // The current offsets for this thread and where it should stop reading.
         FileDataOffsets _offsets;
         Bytes _file_end;
     };
@@ -287,10 +320,11 @@ namespace {
     class InterleavedScheme {
     public:
         InterleavedScheme(int thread, const Configuration& config)
-        : _offsets{config.padded_read_size * thread, config.buffer_size * thread}
+        : _offsets{config.read_area_start + config.padded_read_size * thread,
+                   config.buffer_size * thread}
         , _file_advance{config.padded_read_size * config.num_threads}
         , _data_advance{config.buffer_size * config.num_threads}
-        , _file_end{config.total_area_size} {
+        , _file_end{config.read_area_end} {
         }
 
         [[nodiscard]]
@@ -344,31 +378,28 @@ namespace {
     class DirectBuffer {
     public:
         template <typename WorkScheme>
-        DirectBuffer(FinalData &data, const Reporter& reporter,
+        DirectBuffer(FinalData &data, Datum& report_datum,
                      const Configuration &config, const WorkScheme& scheme)
-        : _last_report(SteadyClock::now())
-        , _report_rate(config.report_rate)
-        , _data(data)
-        , _reporter(reporter)
+        : _data(data)
+        , _report(report_datum)
         , _read_size(config.buffer_size)
         , _offsets(scheme.GetOffsetView()) {
         }
 
-        ~DirectBuffer() {
-            if (_bytes_read != Bytes{0}) {
-                ReportReads();
-            }
-        }
-
         template <typename File>
         void ReadFrom(File&& file) {
+            const auto DoRead = [&] {
+                const auto read = file.Read(GetData(), _read_size);
+                _report.bytes_update += read;
+                _report.bytes_cumulative += read;
+            };
+
             if (_data.mutex) {
                 std::scoped_lock lock{*_data.mutex};
-                _bytes_read += file.Read(GetData(), _read_size);
+                DoRead();
             } else {
-                _bytes_read += file.Read(GetData(), _read_size);
+                DoRead();
             }
-            DataTouched();
         }
 
         void CopyFrom(const char* buffer, Bytes size) {
@@ -380,8 +411,8 @@ namespace {
             } else {
                 memcpy(GetData(), buffer, size.count());
             }
-            _bytes_read += size;
-            DataTouched();
+            _report.bytes_update += size;
+            _report.bytes_cumulative += size;
         }
 
     private:
@@ -389,24 +420,9 @@ namespace {
             return _data.data.data() + _offsets.data.count();
         }
 
-        void DataTouched() {
-            const auto now = SteadyClock::now();
-            if (_last_report < now + _report_rate) {
-                ReportReads();
-                _last_report = now;
-            }
-        }
-
-        void ReportReads() {
-            _reporter(Datum{_bytes_read});
-        }
-
-        Timestamp _last_report;
-        Milliseconds _report_rate;
         FinalData &_data;
-        const Reporter& _reporter;
+        Datum& _report;
         Bytes _read_size;
-        Bytes _bytes_read = 0;
         const FileDataOffsets &_offsets;
     };
 
@@ -417,7 +433,7 @@ namespace {
     class OwnedBuffer {
     public:
         template <typename WorkScheme>
-        OwnedBuffer(FinalData &data, const Reporter& reporter,
+        OwnedBuffer(FinalData &data, Datum& report_datum,
                     const Configuration &config, const WorkScheme& scheme)
         : _buf_size(config.buffer_size)
         // TODO(tmillican@google.com): aligned_alloc isn't implemented yet, so
@@ -425,7 +441,7 @@ namespace {
         , _buffer(/*config.buffer_align
                 ? aligned_alloc(config.buffer_align, _buffer_size)
                 : */(char *) malloc(_buf_size.count()))
-        , _databuffer{data, reporter, config, scheme} {
+        , _databuffer{data, report_datum, config, scheme} {
             if (config.buffer_align.count() != 0) {
                 FatalError(TAG, "buffer_align is not currently supported.");
             }
@@ -556,57 +572,14 @@ public:
             const auto thread_configs = DetermineThreadSetups(_config);
             _config.num_threads = std::size(thread_configs);
 
-            // Perform the operation we've set up until we've reached/exceeded
-            // our quota.
-            std::vector<std::thread> threads;
-            for ( Bytes read = 0 ; read < _config.total_read ;
-                  read += _config.total_area_size ) {
-                Log::D(TAG, "Performing new read (%zu / %zu)",
-                       read, _config.total_read);
+            ThreadSyncPoint sync_point{_config.num_threads};
 
-                threads.reserve(_config.num_threads);
-
-                // GreedyScheme has some state to the side we need to handle.
-                if (_config.work_scheme == WorkScheme::kGreedy) {
-                    GreedyDispenser greedy{_config};
-                    for (auto& thread_config : thread_configs) {
-                        threads.emplace_back([this, thread_config, &greedy] {
-                            GreedyScheme scheme{_config, greedy};
-                            DoWork(thread_config, scheme);
-                        });
-                    }
-                    for (auto &thread : threads) {
-                        thread.join();
-                    }
-                } else {
-                    for (auto& thread_config : thread_configs) {
-                        threads.emplace_back([this, thread_config] {
-                            switch (_config.work_scheme) {
-                                case WorkScheme::kDividedEvenly: {
-                                    EvenDivisionScheme scheme{thread_config.id,
-                                                        _config};
-                                    return DoWork(thread_config, scheme);
-                                }
-                                case WorkScheme::kInterleaved: {
-                                    InterleavedScheme scheme{thread_config.id,
-                                                       _config};
-                                    return DoWork(thread_config, scheme);
-                                }
-                                default:
-                                    FatalError(TAG, "Invalid work scheme '%d'",
-                                               _config.work_scheme);
-                            }
-                        });
-                    }
-                    for (auto &thread : threads) {
-                        thread.join();
-                    }
-                }
-
-                threads.clear();
+            // GreedyScheme has some state to the side we need to handle.
+            if (_config.work_scheme == WorkScheme::kGreedy) {
+                DoGreedyWork(thread_configs, sync_point);
+            } else {
+                DoEvenWork(thread_configs, sync_point);
             }
-
-            Log::D(TAG, "Read complete");
 
             CleanupFileAndData();
         }};
@@ -626,7 +599,7 @@ private:
             switch (setup) {
                 case FileSetup::kBaseApk: return RawResourcePath();
                 case FileSetup::kSplitApk: FatalError(TAG, "Currently unsupported");
-                case FileSetup::kObb: FatalError(TAG, "Currently unsupported");
+                case FileSetup::kObb: return ObbPath() + "/test.bin";
                 default:
                     FatalError(TAG, "Bad file location %d", static_cast<int>(setup));
             }
@@ -716,34 +689,121 @@ private:
 //------------------------------------------------------------------------------
 // Putting everything together
 
-    template <typename Scheme>
-    void DoWork(const ThreadConfiguration& thread_config, Scheme& scheme) {
-        SetThreadAffinity(thread_config.cpu_id, thread_config.affinity);
+    template <typename ThreadConfigs>
+    void DoGreedyWork(const ThreadConfigs& thread_configs,
+                      ThreadSyncPoint& sync_point) {
+        // TODO(tmillican@google.com): Need to set this up to be done without
+        //  repeatedly setting up & tearing down threads and all the shenanigains
+        //  that go with that.
+        std::mutex bytes_cumulative_mutex;
+        std::unordered_map<int, Bytes> bytes_cumulative; // Bleh
 
-        Reporter reporter{*this};
+        for (Bytes work_done = {0} ; work_done < _config.total_read ;
+             work_done += _config.total_area_size) {
+            GreedyDispenser greedy{_config};
+
+            std::vector<std::thread> threads;
+            for (auto& thread_config : thread_configs) {
+                threads.emplace_back([this, &greedy, &sync_point, thread_config,
+                                      &bytes_cumulative, &bytes_cumulative_mutex] {
+                    SetThreadAffinity(thread_config.cpu_id, thread_config.affinity);
+
+                    Reporter<Datum> reporter{*this};
+                    reporter.datum.thread_id = thread_config.id;
+                    {
+                        std::scoped_lock lock{bytes_cumulative_mutex};
+                        // Intentional use of [] to default on first access.
+                        reporter.datum.bytes_cumulative =
+                                bytes_cumulative[thread_config.id];
+                    }
+
+                    GreedyScheme scheme{_config, greedy};
+                    DoWork(sync_point, reporter, scheme);
+
+                    {
+                        std::scoped_lock lock{bytes_cumulative_mutex};
+                        bytes_cumulative[thread_config.id] =
+                                reporter.datum.bytes_cumulative;
+                    }
+                });
+            }
+            for (auto &thread : threads) {
+                thread.join();
+            }
+        }
+    }
+
+    template <typename ThreadConfigs>
+    void DoEvenWork(const ThreadConfigs& thread_configs,
+                    ThreadSyncPoint& sync_point) {
+        if (_config.join_on_restart) {
+            FatalError(TAG, "Join on restart is unimplemented.");
+        }
+
+        std::vector<std::thread> threads;
+        for (auto& thread_config : thread_configs) {
+            threads.emplace_back([this, &sync_point, thread_config] {
+                SetThreadAffinity(thread_config.cpu_id, thread_config.affinity);
+
+                const auto num_iterations = _config.total_read / _config.total_area_size;
+                Reporter<Datum> reporter{*this};
+                reporter.datum.thread_id = thread_config.id;
+
+                for (int i = 0 ; i < num_iterations ; ++i) {
+                    switch (_config.work_scheme) {
+                        case WorkScheme::kDividedEvenly: {
+                            EvenDivisionScheme scheme{thread_config.id,
+                                                      _config};
+                            DoWork(sync_point, reporter, scheme);
+                            break;
+                        }
+                        case WorkScheme::kInterleaved: {
+                            InterleavedScheme scheme{thread_config.id,
+                                                     _config};
+                            DoWork(sync_point, reporter, scheme);
+                            break;
+                        }
+                        default:
+                            FatalError(TAG, "Invalid work scheme '%d'",
+                                       _config.work_scheme);
+                    }
+                }
+            });
+        }
+        for (auto &thread : threads) {
+            thread.join();
+        }
+    }
+
+    //--------------
+
+    template <typename Scheme>
+    void DoWork(ThreadSyncPoint& sync_point, Reporter<Datum>& reporter,
+                Scheme& scheme) {
         if (_config.buffer_align == Bytes{-1}) {
-            DirectBuffer buffer{_data, reporter, _config, scheme};
-            DoWork(scheme, buffer);
+            DirectBuffer buffer{_data, reporter.datum, _config, scheme};
+            DoWork(sync_point, reporter, _config.report_rate, scheme, buffer);
         } else {
-            OwnedBuffer buffer{_data, reporter, _config, scheme};
-            DoWork(scheme, buffer);
+            OwnedBuffer buffer{_data, reporter.datum, _config, scheme};
+            DoWork(sync_point, reporter, _config.report_rate, scheme, buffer);
         }
     }
 
     template <typename Scheme, typename Buffer>
-    void DoWork(Scheme& scheme, Buffer& buffer) {
+    void DoWork(ThreadSyncPoint& sync_point, Reporter<Datum>& reporter,
+                Milliseconds report_rate, Scheme& scheme, Buffer& buffer) {
         switch (_config.file_api) {
             case FileApi::kCApi: {
                 CApi api{_config, scheme};
-                return DoWork(scheme, buffer, api);
+                return DoWork(sync_point, reporter, report_rate, scheme, buffer, api);
             }
             case FileApi::kCppStreams: {
                 CppStreams api{_config, scheme};
-                return DoWork(scheme, buffer, api);
+                return DoWork(sync_point, reporter, report_rate, scheme, buffer, api);
             }
             case FileApi::kPosix: {
                 Posix api{_config, scheme};
-                return DoWork(scheme, buffer, api);
+                return DoWork(sync_point, reporter, report_rate, scheme, buffer, api);
             }
             default:
                 FatalError(TAG, "Invalid File API '%d'", _config.file_api);
@@ -751,14 +811,21 @@ private:
     }
 
     template<typename Scheme, typename Buffer, typename File>
-    void DoWork(Scheme& scheme, Buffer& buffer, File& file) {
-        bool is_stopped = IsStopped();
-        bool should_continue = scheme.ShouldContinue();
-
+    void DoWork(ThreadSyncPoint& sync_point, Reporter<Datum>& reporter,
+                Milliseconds report_rate, Scheme& scheme, Buffer& buffer,
+                File& file) {
+        sync_point.Sync(std::this_thread::get_id());
+        reporter(); // Set a zero point.
+        auto last_report = SteadyClock::now();
         while (!IsStopped() && scheme.ShouldContinue()) {
             buffer.ReadFrom(file);
             scheme.Update();
+
+            if (CheckReportRate(last_report, report_rate)) {
+                reporter();
+            }
         }
+        reporter();
     }
 
 //------------------------------------------------------------------------------
