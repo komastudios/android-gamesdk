@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "32b96dd7_dbe723fc",
+        "filename": "bender/bender-base/app/src/main/jni/chef/chef.cc",
+        "patchSetId": 12
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-02-14T18:24:38Z",
+      "side": 1,
+      "message": "This is a good suggestions - I\u0027m going to go with MeshDecimator since that\u0027s the primary action we are taking on the meshes. I\u0027ll also rename the file from mesh_loader.cc to mesh_decimator.cc",
+      "parentUuid": "488e0546_cf49e6e0",
+      "revId": "94cd227d29736ac80a4e178ec127c4c0a5deb434",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "922f3d2b_2ed3647d",
         "filename": "bender/bender-base/app/src/main/jni/chef/mesh_loader.cc",
         "patchSetId": 12
@@ -30,6 +48,24 @@
       "writtenOn": "2020-02-13T21:26:28Z",
       "side": 1,
       "message": "How different from the LoadMTL in obj_loader is this? It looks pretty similar to me (though not identical), if there\u0027s a way we could not have that redundancy, could we just have the Load here and have the obj_loader (since it\u0027s presumably more Bender-specific) call this as a static method with some return or modified param? (Similar to other shared functions between the classes).",
+      "revId": "94cd227d29736ac80a4e178ec127c4c0a5deb434",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fec15047_59f7f3f6",
+        "filename": "bender/bender-base/app/src/main/jni/chef/mesh_loader.cc",
+        "patchSetId": 12
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-02-14T18:24:38Z",
+      "side": 1,
+      "message": "The way I treated chef\u0027s source code was that it would be totally independent of Bender\u0027s source since I thought that we would want to build Chef without the need for Bender source at all eventually, so I think it should be ok to keep them separate (the third party libraries I guess are an exception to that though so I\u0027m not sure if this rule applies anymore?)\n\nI think at the moment these functions are identical between the two though\n\nLet me know if I misunderstood what you were saying though!",
+      "parentUuid": "922f3d2b_2ed3647d",
       "revId": "94cd227d29736ac80a4e178ec127c4c0a5deb434",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "de688a55_0b627273",
+        "filename": "bender/bender-base/app/src/main/jni/chef/mesh_loader.cc",
+        "patchSetId": 12
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-02-14T18:24:38Z",
+      "side": 1,
+      "message": "This is a good call",
+      "parentUuid": "25a65dfa_dff994e3",
+      "revId": "94cd227d29736ac80a4e178ec127c4c0a5deb434",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ffd757f2_05d6b807",
         "filename": "bender/bender-base/app/src/main/jni/chef/mesh_loader.cc",
         "patchSetId": 12
@@ -64,6 +118,24 @@
       "writtenOn": "2020-02-13T21:26:28Z",
       "side": 1,
       "message": "Can we put some of the vcg logic into a helper function? Giant loop also feels less readable.",
+      "revId": "94cd227d29736ac80a4e178ec127c4c0a5deb434",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2560a27a_8f1d7f1c",
+        "filename": "bender/bender-base/app/src/main/jni/chef/mesh_loader.cc",
+        "patchSetId": 12
+      },
+      "lineNbr": 285,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-02-14T18:24:38Z",
+      "side": 1,
+      "message": "Yea I can split this section into a couple of different functions for sure",
+      "parentUuid": "ffd757f2_05d6b807",
       "revId": "94cd227d29736ac80a4e178ec127c4c0a5deb434",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "bb8c26f0_9be4e37b",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 12
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-02-14T18:24:38Z",
+      "side": 1,
+      "message": "I totally forgot that VertexFormat exists haha, I just took a look at implementing something that would use it; however I think there\u0027s an issue where VertexFormat is designed to work with a variety of different VertexAttribute types (float, short, etc) and provide info on a byte level whereas the way we represent our vertex_buffer information can vary at an object level (array of floats, array of structs that represent verts, array of shorts, etc) so it would be tricky to take an arbitrary VertexFormat and convert it to an offset for an arbitrary vector for vertex_buffer just for this bounding box iteration \n\nPerhaps we would eventually want to create a sort of vertex_buffer class that can encapsulate that information? \n\nEventually though this bounding box calculation should be done in chef and stored alongside the vertex data in our custom asset binary format so that we don\u0027t have to calculate this static information on loading every time :)",
+      "parentUuid": "0ef1f701_7100ec32",
+      "revId": "94cd227d29736ac80a4e178ec127c4c0a5deb434",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4d333822_04485155",
         "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
         "patchSetId": 12
@@ -98,6 +188,24 @@
       "writtenOn": "2020-02-13T21:26:28Z",
       "side": 1,
       "message": "I understand why this (and other stuff in vulkan_main) are commented out for GDC stuff, but also it does deviate somewhat from main Bender stuff/purpose. Not within the scope of this CL perhaps but might be good to figure out how to compartmentalize GDC stuff.",
+      "revId": "94cd227d29736ac80a4e178ec127c4c0a5deb434",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "36d4fbfd_c86b2d34",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 12
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-02-14T18:24:38Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "4d333822_04485155",
       "revId": "94cd227d29736ac80a4e178ec127c4c0a5deb434",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
