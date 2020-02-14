@@ -1,0 +1,7 @@
+Executable : /usr/local/google/home/loudermilk/Android/Sdk/cmake/3.10.2.4988404/bin/ninja
+arguments : 
+-C
+/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/.cxx/cmake/debug/armeabi-v7a
+native-lib
+jvmArgs : 
+

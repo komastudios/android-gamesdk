@@ -1,0 +1,23 @@
+build:
+  clean: false
+  configuration: recipes/configurations/cpu_stress_cpp.json
+
+systrace:
+  enabled: false
+
+deployment:
+  ftl:
+    test: test-robo
+    all-physical-devices: true
+    flags:
+      project: gamesdk-testing
+      format: json
+    args:
+      test-robo:
+        type: game-loop
+        timeout: 1500 # 25 minutes
+
+summary:
+  enabled: true
+  format: docx
+  publish: true

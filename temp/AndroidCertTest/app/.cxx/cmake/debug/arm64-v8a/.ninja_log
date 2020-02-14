@@ -1,0 +1,25 @@
+# ninja log v5
+3	24	1581546100	CMakeFiles/native-lib.dir/ancer/util/Basics.cpp.o	1aca4a67142e4b37
+1	233	1581546100	CMakeFiles/native-lib.dir/usr/local/google/home/loudermilk/Android/Sdk/ndk/20.1.5948944/sources/third_party/vulkan/src/common/vulkan_wrapper.cpp.o	f909de243dd047da
+9	879	1581546101	CMakeFiles/native-lib.dir/ancer/util/ThreadSyncPoint.cpp.o	9fb6693a49cc9834
+9	1126	1581546101	CMakeFiles/native-lib.dir/ancer/util/JNIHelpers.cpp.o	48974fa3f3a6007b
+6	1367	1581546101	CMakeFiles/native-lib.dir/ancer/util/GLHelpers.cpp.o	722e79c1b964cda3
+8	1798	1581546102	CMakeFiles/native-lib.dir/ancer/util/GLPixelBuffer.cpp.o	3379a15076980425
+1798	1912	1581546102	CMakeFiles/native-lib.dir/usr/local/google/home/loudermilk/Android/Sdk/ndk/20.1.5948944/sources/android/cpufeatures/cpu-features.c.o	1f34dd12fd238682
+5	3842	1581546104	CMakeFiles/native-lib.dir/ancer/util/Bitmath.cpp.o	4c4289c6f8d71140
+12	4234	1581546104	CMakeFiles/native-lib.dir/ancer/util/Time.cpp.o	36cac7e9db0cc89c
+1	4361	1581546104	CMakeFiles/native-lib.dir/ancer/BaseOperation.cpp.o	bfc5104b16fb91ae
+2	4558	1581546104	CMakeFiles/native-lib.dir/ancer/Suite.cpp.o	fd06e285e9d2b53f
+1	4671	1581546104	CMakeFiles/native-lib.dir/native-lib.cpp.o	e042131a0f24415e
+15	5299	1581546105	CMakeFiles/native-lib.dir/operations/CalculatePIOperation.cpp.o	b2fc3f4daca97775
+879	6194	1581546106	CMakeFiles/native-lib.dir/operations/MemoryAccessOperation.cpp.o	73169372f6e798ef
+1368	6196	1581546106	CMakeFiles/native-lib.dir/operations/MonitorOperation.cpp.o	1128fa51f04182b1
+233	6324	1581546106	CMakeFiles/native-lib.dir/operations/IOPerformanceOperation.cpp.o	850bcd5d30454b9f
+1126	6439	1581546106	CMakeFiles/native-lib.dir/operations/CalculateWaitPIOperation.cpp.o	24561f3030b1cdfb
+24	6545	1581546106	CMakeFiles/native-lib.dir/operations/MemoryAllocOperation.cpp.o	3d717574992d59d9
+2	6778	1581546107	CMakeFiles/native-lib.dir/ancer/Reporting.cpp.o	b4280524822af6b4
+2	6844	1581546107	CMakeFiles/native-lib.dir/ancer/System.cpp.o	80428e2d031affd9
+1912	6846	1581546107	CMakeFiles/native-lib.dir/operations/ScheduleAffinityOperation.cpp.o	c7baff0ffa5a3f2c
+3842	7758	1581546108	CMakeFiles/native-lib.dir/operations/ThreadSchedulingOperation.cpp.o	a04a3ab7d5489e9a
+4234	7826	1581546108	CMakeFiles/native-lib.dir/operations/integration/FakeOperation.cpp.o	9164423303b75ae4
+7826	8930	1581546109	/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/build/intermediates/cmake/debug/obj/arm64-v8a/libnative-lib.so	5a7a1c473144af2

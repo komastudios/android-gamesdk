@@ -1,0 +1,29 @@
+{
+    "python.linting.enabled": true,
+    "python.linting.pylintUseMinimalCheckers": false,
+    "python.linting.pylintEnabled": true,
+    "python.formatting.provider": "yapf",
+    "python.formatting.yapfArgs": [
+        "--style",
+        "google"
+    ],
+    "files.trimTrailingWhitespace": true,
+    "files.exclude": {
+        "**/.classpath": true,
+        "**/.project": true,
+        "**/.settings": true,
+        "**/.factorypath": true
+    },
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "./test/unit",
+        "-s",
+        "./test/integration",
+        "-p",
+        "test_*.py"
+    ],
+    "python.testing.pytestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.unittestEnabled": true
+}

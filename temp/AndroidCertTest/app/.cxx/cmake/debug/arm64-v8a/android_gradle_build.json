@@ -1,0 +1,156 @@
+{
+  "stringTable": {
+    "0": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/.cxx/cmake/debug/arm64-v8a",
+    "1": "--target=aarch64-none-linux-android21 --gcc-toolchain=/usr/local/google/home/loudermilk/Android/Sdk/ndk/20.1.5948944/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/usr/local/google/home/loudermilk/Android/Sdk/ndk/20.1.5948944/toolchains/llvm/prebuilt/linux-x86_64/sysroot -DVK_USE_PLATFORM_ANDROID_KHR -Dnative_lib_EXPORTS -I/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/include -I/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp -I/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/common/3rd_party/json/include -I/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/common/3rd_party/glm -I/usr/local/google/home/loudermilk/Android/Sdk/ndk/20.1.5948944/sources/third_party/vulkan/src/common -I/usr/local/google/home/loudermilk/Android/Sdk/ndk/20.1.5948944/sources/android/native_app_glue -I/usr/local/google/home/loudermilk/Android/Sdk/ndk/20.1.5948944/sources/third_party/shaderc/include -I/usr/local/google/home/loudermilk/Android/Sdk/ndk/20.1.5948944/sources/android/cpufeatures -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-addrsig -Wa,--noexecstack -Wformat -Werror=format-security -std=c++17 -fPIC -O0 -fno-limit-debug-info -fno-experimental-isel -fPIC -frtti -std=gnu++1z",
+    "2": "--target=aarch64-none-linux-android21 --gcc-toolchain=/usr/local/google/home/loudermilk/Android/Sdk/ndk/20.1.5948944/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/usr/local/google/home/loudermilk/Android/Sdk/ndk/20.1.5948944/toolchains/llvm/prebuilt/linux-x86_64/sysroot -DVK_USE_PLATFORM_ANDROID_KHR -Dnative_lib_EXPORTS -I/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/include -I/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp -I/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/common/3rd_party/json/include -I/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/common/3rd_party/glm -I/usr/local/google/home/loudermilk/Android/Sdk/ndk/20.1.5948944/sources/third_party/vulkan/src/common -I/usr/local/google/home/loudermilk/Android/Sdk/ndk/20.1.5948944/sources/android/native_app_glue -I/usr/local/google/home/loudermilk/Android/Sdk/ndk/20.1.5948944/sources/third_party/shaderc/include -I/usr/local/google/home/loudermilk/Android/Sdk/ndk/20.1.5948944/sources/android/cpufeatures -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-addrsig -Wa,--noexecstack -Wformat -Werror=format-security -O0 -fno-limit-debug-info -fno-experimental-isel -fPIC -frtti"
+  },
+  "buildFiles": [
+    "/usr/local/google/home/loudermilk/Android/Sdk/ndk/20.1.5948944/build/cmake/platforms.cmake",
+    "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/CMakeLists.txt",
+    "/usr/local/google/home/loudermilk/Android/Sdk/ndk/20.1.5948944/build/cmake/android.toolchain.cmake"
+  ],
+  "cleanCommands": [
+    "/usr/local/google/home/loudermilk/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -C \"/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/.cxx/cmake/debug/arm64-v8a\" clean"
+  ],
+  "buildTargetsCommand": "/usr/local/google/home/loudermilk/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -C \"/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/.cxx/cmake/debug/arm64-v8a\" {LIST_OF_TARGETS_TO_BUILD}",
+  "libraries": {
+    "native-lib-Debug-arm64-v8a": {
+      "buildCommand": "/usr/local/google/home/loudermilk/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -C \"/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/.cxx/cmake/debug/arm64-v8a\" native-lib",
+      "buildType": "debug",
+      "toolchain": "2463366208",
+      "abi": "arm64-v8a",
+      "artifactName": "native-lib",
+      "files": [
+        {
+          "src": "/usr/local/google/home/loudermilk/Android/Sdk/ndk/20.1.5948944/sources/android/cpufeatures/cpu-features.c",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/usr/local/google/home/loudermilk/Android/Sdk/ndk/20.1.5948944/sources/third_party/vulkan/src/common/vulkan_wrapper.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/native-lib.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/ancer/BaseOperation.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/ancer/Reporting.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/ancer/Suite.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/ancer/System.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/ancer/util/Basics.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/ancer/util/Bitmath.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/ancer/util/GLHelpers.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/ancer/util/GLPixelBuffer.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/ancer/util/JNIHelpers.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/ancer/util/ThreadSyncPoint.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/ancer/util/Time.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/operations/CalculatePIOperation.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/operations/IOPerformanceOperation.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/operations/MemoryAccessOperation.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/operations/CalculateWaitPIOperation.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/operations/MemoryAllocOperation.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/operations/MonitorOperation.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/operations/ScheduleAffinityOperation.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/operations/ThreadSchedulingOperation.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/operations/integration/FakeOperation.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        }
+      ],
+      "headers": [],
+      "output": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/build/intermediates/cmake/debug/obj/arm64-v8a/libnative-lib.so"
+    }
+  },
+  "toolchains": {
+    "2463366208": {
+      "cCompilerExecutable": "/usr/local/google/home/loudermilk/Android/Sdk/ndk/20.1.5948944/toolchains/llvm/prebuilt/linux-x86_64/bin/clang",
+      "cppCompilerExecutable": "/usr/local/google/home/loudermilk/Android/Sdk/ndk/20.1.5948944/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++"
+    }
+  },
+  "cFileExtensions": [
+    "c"
+  ],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}

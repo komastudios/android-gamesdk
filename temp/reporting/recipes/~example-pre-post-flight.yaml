@@ -1,0 +1,81 @@
+build:
+  clean: false
+  release: false
+  configuration: recipes/configurations/affinity_test.json
+
+deployment:
+  local:
+    all_attached_devices: true
+
+    #preflight tasks are executed before running the tests on device
+    # NOTE: preflight tasks are only supported for local deployment
+    preflight:
+      - {
+          # copies ./tmp/foo.png to the app's private files/ folder
+          action: copy,
+          src: "${WORKSPACE_DIR}/tmp/foo.png",
+          dst: "${APP_FILES_DIR}/foo.png",
+        }
+      - {
+          # copies $HOME/Downloads/foo.png to a subdir of app's private files/ folder
+          action: copy,
+          src: "~/Downloads/foo.png",
+          dst: "${APP_FILES_DIR}/bar/baz/foo.png",
+        }
+      - {
+          # copies ./tmp/foo.png to the app's OOB data dir
+          action: copy,
+          src: "${WORKSPACE_DIR}/tmp/foo.png",
+          dst: "${APP_OOB_DATA_DIR}/foo.png",
+        }
+      - {
+          # copies ./tmp/foo.png to a subdir of the app's OOB data dir
+          action: copy,
+          src: "~/Downloads/foo.png",
+          dst: "${APP_OOB_DATA_DIR}/bar/baz/foo.png",
+        }
+      - {
+          # copies ./tmp/foo.png to arbitrary location on filesystem
+          action: copy,
+          src: "~/Downloads/foo.png",
+          dst: "${DEVICE_ROOT}/sdcard/foo.png",
+        }
+
+    #postflight tasks are run after test completes -- good opportunity to
+    # clean up, or copy data off device
+    # NOTE: postflight tasks are only supported for local deployment
+    postflight:
+      - {
+          # copy foo.png from app's private files dir to ./tmp/foo.png
+          action: copy,
+          src: "${APP_FILES_DIR}/foo.png",
+          dst: "${WORKSPACE_DIR}/tmp/foo.jpg",
+        }
+      - {
+          # copy foo.png from app's OOB files dir to ./tmp/foo.png
+          action: copy,
+          src: "${APP_OOB_DATA_DIR}/bar/baz/foo.png",
+          dst: "${WORKSPACE_DIR}/tmp/foo.png",
+        }
+      - {
+          # copy foo.png from device public filesystem to ./tmp/foo.png
+          action: copy,
+          src: "/sdcard/foo.png",
+          dst: "${WORKSPACE_DIR}/tmp/foo.png",
+        }
+      - {
+          # delete files from device (or locally, using ${WORKSPACE_DIR})
+          action: delete,
+          files: [
+              # delete files from local computer
+              "~/Downloads/foo.png",
+              "${WORKSPACE_DIR}/tmp/foo.png",
+
+              # delete files from device
+              "${APP_FILES_DIR}/foo.png",
+              "${APP_FILES_DIR}/bar/baz/foo.png",
+              "${APP_OOB_DATA_DIR}/foo.png",
+              "${APP_OOB_DATA_DIR}/bar/foo.png",
+              "${DEVICE_ROOT}/sdcard/foo.png",
+            ],
+        }

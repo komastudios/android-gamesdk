@@ -1,0 +1,28 @@
+{
+    "auto_run": false,
+    "delay_between_tests": "5000ms",
+    "host": "SwappyGLHostActivity",
+    "defaultMonitors": [
+        {
+            "id": "MonitorOperation"
+        }
+    ],
+    "stress_tests": [
+        {
+            "enabled": true,
+            "name": "GPU Half Precision",
+            "description": "Draw Squad and test with Half precision",
+            "duration": "0.5m",
+            "data_gatherer": {
+              "id": "HalfFloatPrecisionGLES3Operation",
+              "configuration": {
+                "alloc_size_bytes": 10485760,
+                "alloc_period": "100ms",
+                "restart_pause": "1000ms",
+                "on_trim_triggers_free": true
+              }
+            },
+            "stressors": []
+        }
+    ]
+}

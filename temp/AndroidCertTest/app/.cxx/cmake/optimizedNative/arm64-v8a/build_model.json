@@ -1,0 +1,70 @@
+{
+  "variant": {
+    "module": {
+      "rootBuildGradleFolder": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest",
+      "sdkFolder": "/usr/local/google/home/loudermilk/Android/Sdk",
+      "isNativeCompilerSettingsCacheEnabled": false,
+      "isBuildOnlyTargetAbiEnabled": true,
+      "splitsAbiFilterSet": [],
+      "intermediatesFolder": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/build/intermediates",
+      "gradleModulePathName": ":app",
+      "moduleRootFolder": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app",
+      "makeFile": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/src/main/cpp/CMakeLists.txt",
+      "buildSystem": "CMAKE",
+      "compilerSettingsCacheFolder": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/.cxx",
+      "cxxFolder": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/.cxx",
+      "ndkFolder": "/usr/local/google/home/loudermilk/Android/Sdk/ndk/20.1.5948944",
+      "ndkVersion": "20.1.5948944",
+      "ndkSupportedAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "ndkDefaultAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "cmakeToolchainFile": "."
+    },
+    "buildSystemArgumentList": [
+      "-DCMAKE_BUILD_TYPE:STRING\u003dRelease"
+    ],
+    "cFlagList": [],
+    "cppFlagsList": [],
+    "variantName": "optimizedNative",
+    "soFolder": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/build/intermediates/cmake/optimizedNative/lib",
+    "objFolder": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/build/intermediates/cmake/optimizedNative/obj",
+    "jsonFolder": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/.cxx/cmake/optimizedNative",
+    "gradleBuildOutputFolder": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/.cxx/cxx/optimizedNative",
+    "isDebuggableEnabled": true,
+    "validAbiList": [
+      "ARMEABI_V7A",
+      "ARM64_V8A"
+    ],
+    "buildTargetSet": []
+  },
+  "abi": "ARM64_V8A",
+  "abiPlatformVersion": 19,
+  "cxxBuildFolder": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/.cxx/cmake/optimizedNative/arm64-v8a",
+  "jsonFile": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/.cxx/cmake/optimizedNative/arm64-v8a/android_gradle_build.json",
+  "gradleBuildOutputFolder": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/.cxx/cxx/optimizedNative/arm64-v8a",
+  "objFolder": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/build/intermediates/cmake/optimizedNative/obj/arm64-v8a",
+  "buildCommandFile": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/.cxx/cmake/optimizedNative/arm64-v8a/build_command.txt",
+  "buildOutputFile": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/.cxx/cmake/optimizedNative/arm64-v8a/build_output.txt",
+  "modelOutputFile": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/.cxx/cmake/optimizedNative/arm64-v8a/build_model.json",
+  "cmake": {
+    "cmakeListsWrapperFile": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/.cxx/cxx/optimizedNative/arm64-v8a/CMakeLists.txt",
+    "toolchainWrapperFile": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/.cxx/cxx/optimizedNative/arm64-v8a/android_gradle_build.toolchain.cmake",
+    "buildGenerationStateFile": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/.cxx/cxx/optimizedNative/arm64-v8a/build_generation_state.json",
+    "cacheKeyFile": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/.cxx/cxx/optimizedNative/arm64-v8a/compiler_cache_key.json",
+    "compilerCacheUseFile": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/.cxx/cxx/optimizedNative/arm64-v8a/compiler_cache_use.json",
+    "compilerCacheWriteFile": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/.cxx/cxx/optimizedNative/arm64-v8a/compiler_cache_write.json",
+    "toolchainSettingsFromCacheFile": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/.cxx/cxx/optimizedNative/arm64-v8a/compiler_settings_cache.cmake",
+    "cmakeWrappingBaseFolder": "."
+  },
+  "jsonGenerationLoggingRecordFile": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/.cxx/cmake/optimizedNative/arm64-v8a/json_generation_record.json",
+  "compileCommandsJsonFile": "/usr/local/google/home/loudermilk/Documents/android-game-sdk/gamesdk/temp/AndroidCertTest/app/.cxx/cmake/optimizedNative/arm64-v8a/compile_commands.json"
+}

@@ -1,0 +1,2 @@
+build:
+  configuration: recipes/configurations/32bit_depth_clear.json

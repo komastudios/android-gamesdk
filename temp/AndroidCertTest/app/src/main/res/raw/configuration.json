@@ -1,0 +1,469 @@
+{
+  "auto_run": false,
+  "delay_between_tests": "5000ms",
+  "host": "SwappyGLHostActivity",
+  "defaultMonitors": [
+    {
+      "id": "MonitorOperation"
+    }
+  ],
+  "stress_tests": [
+    {
+      "enabled": false,
+      "name": "FakeOperation",
+      "description": "Fake operation for integration testing",
+      "duration": "5s",
+      "data_gatherer": {
+        "id": "FakeOperation",
+        "configuration": {
+          "report_period": "500ms",
+          "int_value": 32768,
+          "duration_value": "123ms",
+          "bool_value": true,
+          "string_value": "Hello World"
+        }
+      },
+      "stressors": []
+    }
+//  ,
+//    {
+//      "enabled": true,
+//      "name": "GLES3 Buffer Storage",
+//      "description": "Tests if OpenGL ES Buffer Storage is available",
+//      "duration": "100ms",
+//      "data_gatherer": {
+//        "id": "BufferStorageGLES3Operation",
+//        "configuration": {}
+//      },
+//      "stressors": []
+//    },
+//    {
+//      "enabled": true,
+//      "name": "Marching Cubes",
+//      "description": "Tests marching cubes algorithm in a lot of permutations",
+//      "duration": "25m",
+//      "data_gatherer": {
+//        "id": "MarchingCubesGLES3Operation",
+//        "configuration": {
+//          "sleep_per_iteration_min": "0ms",
+//          "sleep_per_iteration_max": "4ms",
+//          "permutation_execution_duration": "30s"
+//        }
+//      }
+//    },
+//    {
+//      "enabled": true,
+//      "name": "32bit Depth Clear",
+//      "description": "Tests expected behavior when using a 32-bit depth buffer and clearing to different depth values",
+//      "duration": "1m",
+//      "data_gatherer": {
+//        "id": "DepthClearGLES3Operation",
+//        "configuration": {
+//        }
+//      },
+//      "stressors": [
+//      ]
+//    },
+//    {
+//      "enabled": true,
+//      "name": "MemoryAccessTest",
+//      "description": "Tests accessing preallocated memory",
+//      "duration": "0s",
+//      "data_gatherer": {
+//        "id": "MemoryAccessOperation",
+//        "configuration": {
+//          "buffer_size": "512mb",
+//          "report_rate": "5ms",
+//          "operations": [
+//            {
+//              "read_write": "Write",
+//              "rw_size": "256b",
+//              "operation_type": "Fixed",
+//              "config": {
+//                "threads": "Single Core",
+//                "advance": "256b"
+//              }
+//            },
+//            {
+//              "read_write": "Read",
+//              "rw_size": "256b",
+//              "operation_type": "Fixed",
+//              "config": {
+//                "threads": "All Cores",
+//                "work_scheme": "Divided",
+//                "advance": "512b"
+//              }
+//            },
+//            {
+//              "read_write": "Write",
+//              "rw_size": "128b",
+//              "operation_type": "Fixed",
+//              "config": {
+//                "threads": "All Cores",
+//                "work_scheme": "Interleaved",
+//                "advance": "256b",
+//                "initial_offset": "1kb"
+//              }
+//            },
+//            {
+//              "read_write": "Write",
+//              "rw_size": "256b",
+//              "operation_type": "Fixed",
+//              "config": {
+//                "threads": "All Cores",
+//                "work_scheme": "Divided",
+//                "times": 23,
+//                "advance": "512b",
+//                "initial_offset": "256b"
+//              }
+//            },
+//            {
+//              "read_write": "Read",
+//              "rw_size": "128b",
+//              "operation_type": "Fixed",
+//              "config": {
+//                "threads": "All Cores",
+//                "work_scheme": "Interleaved",
+//                "times": 7,
+//                "advance": "256b",
+//                "initial_offset": "1kb"
+//              }
+//            },
+//
+//            {
+//              "read_write": "Read",
+//              "rw_size": "56b",
+//              "operation_type": "Irregular",
+//              "config": {
+//                "times": 200,
+//                "rw_align": "32b",
+//                "min_advance": "0b",
+//                "max_advance": "1000b"
+//              }
+//            },
+//
+//            {
+//              "read_write": "Read",
+//              "rw_size": "56b",
+//              "operation_type": "Random",
+//              "config": {
+//                "times": 200,
+//                "rw_align": "32b"
+//              }
+//            },
+//
+//            {
+//              "read_write": "Read",
+//              "rw_size": "56b",
+//              "operation_type": "Greedy",
+//              "config": {
+//                "threads": "All Cores",
+//                "advance": "64b"
+//              }
+//            }
+//          ]
+//        }
+//      },
+//      "stressors": []
+//    },
+//    {
+//      "enabled": true,
+//      "name": "Workload Configuration Test",
+//      "description": "Reads data from the APK",
+//      "duration": "0m",
+//      "data_gatherer": {
+//        "id": "IOPerformanceOperation",
+//        "configuration": {
+//          "file_setup": "Base APK",
+//          "read_area_start": "0b",
+//          "read_area_end": "1mb",
+//          "total_read": "2mb",
+//          "thread_setup": "Big Cores",
+//          "work_scheme": "Greedy",
+//          "file_api": "C++ Streams",
+//          "buffer_size": "256b",
+//          "read_align": "384b",
+//          "report_rate": "10ms"
+//        }
+//      },
+//      "stressors": [
+//      ]
+//    },
+//    {
+//      "enabled": true,
+//      "name": "Affinity Test",
+//      "description": "Attempts to set affinity to each available processor and validate our selection 'sticks'.",
+//      "duration": "10s",
+//      "data_gatherer": {
+//        "id": "ScheduleAffinityOperation",
+//        "configuration": {
+//          "thread_count": 4,
+//          "report_frequency": "200ms"
+//        }
+//      },
+//      "stressors": [
+//        {
+//          "id": "JsonManipulatorOperation",
+//          "configuration": {
+//            "json_asset_name": "JsonManipulatorOperation.json"
+//          }
+//        }
+//      ]
+//    },
+//    {
+//      "enabled": true,
+//      "name": "Vulkan memory write protection",
+//      "description": "mprotect available to make memore read-only",
+//      "host": "VulkanHostActivity",
+//      "duration": "100ms",
+//      "data_gatherer": {
+//        "id": "VulkanMprotectCheckOperation",
+//        "configuration": {
+//        }
+//      },
+//      "stressors": [
+//      ]
+//    },
+//    {
+//      "enabled": true,
+//      "name": "WaitForPI",
+//      "description": "Testing out Pi and waiting: This will make the phone hot!",
+//      "duration": "20000ms",
+//      "data_gatherer":
+//      {
+//        "id": "CalculateWaitPIOperation",
+//        "enabled": true,
+//        "configuration": {
+//          "affinity": true,
+//          "performance_sample_period": "1000ms",
+//          "iteration_wait_count_": 10000,
+//          "iteration_wait_time_": 0
+//        }
+//      },
+//      "stressors": [
+//      {
+//        "id": "HelloGLES3Operation",
+//        "configuration": {
+//        }
+//      }
+//      ]
+//    },
+//    {
+//      "enabled": true,
+//      "name": "Java test, c++ Stressor",
+//      "description": "Single java test, single c++ stressor",
+//      "duration": "10sec",
+//      "data_gatherer": {
+//        "id": "JsonManipulatorOperation",
+//        "configuration": {
+//          "json_asset_name": "JsonManipulatorOperation.json",
+//          "performance_sample_period": "500ms"
+//        }
+//      },
+//      "stressors": [
+//        {
+//          "id": "CalculatePIOperation",
+//          "enabled": true,
+//          "configuration": {
+//            "threads": 0,
+//            "affinity": true
+//          }
+//        }
+//      ]
+//    },
+//    {
+//      "enabled": true,
+//      "name": "C++ Test, Java Stressor",
+//      "description": "Single C++ test, single Java stressor",
+//      "duration": "10s",
+//      "data_gatherer": {
+//        "id": "CalculatePIOperation",
+//        "configuration": {
+//          "threads": 0,
+//          "performance_sample_period": "500ms",
+//          "affinity": true
+//        }
+//      },
+//      "stressors": [
+//      ]
+//    },
+//    {
+//      "enabled": true,
+//      "name": "GPU fill rate & CPU stressor",
+//      "description": "Draws a ton of textured quads via swappy gl while calculating PI in background",
+//      "duration": "0.5m",
+//      "data_gatherer": {
+//        "id": "FillRateGLES3Operation",
+//        "configuration": {
+//          "num_quads": 256,
+//          "quad_size": 64,
+//          "instances_per_renderer": 128,
+//          "blending": true,
+//          "increment": {
+//            "period": "5sec",
+//            "num_quads_increment": 256,
+//            "quad_size_increment": 64
+//          },
+//          "min_fps_threshold": 15
+//        }
+//      },
+//      "stressors": [
+//        {
+//          "id": "CalculatePIOperation",
+//          "enabled": true,
+//          "configuration": {
+//            "threads": 0,
+//            "affinity": true
+//          }
+//        }
+//      ]
+//    },
+//    {
+//      "enabled": true,
+//      "name": "Vertex streaming",
+//      "description": "Streams vertices to draw each frame",
+//      "duration": "1m",
+//      "data_gatherer": {
+//        "id": "VertexStreamGLES3Operation",
+//        "configuration": {
+//          "count": 1,
+//          "rows": 128,
+//          "cols": 128,
+//          "minimizeFragmentOverhead": true,
+//          "increment": {
+//            "period": "2sec",
+//            "increment": 1
+//          },
+//          "min_fps_threshold": 15
+//        }
+//      },
+//      "stressors": [
+//      ]
+//    },
+//    {
+//      "enabled": true,
+//      "name": "Scheduler",
+//      "description": "Schedules a thread to run and measures error in scheduling",
+//      "duration": "5s",
+//      "data_gatherer": {
+//        "id": "ThreadSchedulingOperation",
+//        "configuration": {
+//          "threads": [
+//            {
+//              "cpu_id": 0,
+//              "scheduled_delay": "500ms"
+//            },
+//            {
+//              "cpu_id": -1,
+//              "scheduled_delay": "500ms"
+//            }
+//          ]
+//        }
+//      },
+//      "stressors": [
+//      ]
+//    },
+//    {
+//      "enabled": true,
+//      "name": "Teapot",
+//      "description": "Just drawing teapots",
+//      "duration": "1000ms",
+//      "data_gatherer": {
+//        "id": "TeapotRendererGLES3Operation",
+//        "configuration": {
+//          "count": 216,
+//          "min_fps_threshold": 15
+//        }
+//      },
+//      "stressors": [
+//      ]
+//    },
+//    {
+//      "enabled": true,
+//      "name": "Shader Blob Stressor",
+//      "description": "Measures shader compile time versus to loading from binary.",
+//      "host": "GLSurfaceViewHostActivity",
+//      "duration": "5s",
+//      "data_gatherer": {
+//        "id": "ShaderBlobGLES3Operation",
+//        "configuration": {
+//          "debug_only": true,
+//          "iterations": 8,
+//          "trials": 4
+//        }
+//      },
+//      "stressors": [
+//      ]
+//    },
+//    {
+//      "enabled": true,
+//      "name": "Dual Source Blending",
+//      "description": "Check for dual source blending existence and accuracy.",
+//      "host": "GLSurfaceViewHostActivity",
+//      "duration": "0s",
+//      "data_gatherer": {
+//        "id": "DualSourceBlendingGLES3Operation",
+//        "configuration": {
+//          "reference_screenshot_mode": false
+//        }
+//      },
+//      "stressors": [
+//      ]
+//    },
+//    {
+//      "enabled": true,
+//      "name": "Memory allocation",
+//      "description": "Port of istressor",
+//      "duration": "1m",
+//      "data_gatherer": {
+//        "id": "MemoryAllocOperation",
+//        "configuration": {
+//          "scenario": "commit_limit",
+//          "alloc_size_bytes": 10485760,
+//          "alloc_period": "100ms",
+//          "restart_pause": "1000ms",
+//          "on_trim_triggers_free": true
+//        }
+//      },
+//      "stressors": [
+//      ]
+//    },
+//    {
+//      "enabled": true,
+//      "name": "HalfFloatPrecisionGLES3Operation",
+//      "description": "Draw Squad and test with Half precision",
+//      "duration": "0.5m",
+//      "data_gatherer": {
+//        "id": "HalfFloatPrecisionGLES3Operation",
+//        "configuration": {
+//          "alloc_size_bytes": 10485760,
+//          "alloc_period": "100ms",
+//          "restart_pause": "1000ms",
+//          "on_trim_triggers_free": true
+//        }
+//      },
+//      "stressors": [
+//      ]
+//    },
+//    {
+//      "enabled": true,
+//      "name": "WorkLoadConfigurationTest",
+//      "description": "I/O workload throughput",
+//      "duration": "100ms",
+//      "data_gatherer": {
+//        "id": "WorkLoadConfigurationTest",
+//        "configuration": {
+//          "file_location" : "create_file",
+//          "thread_setup" : "all_core",
+//          "read_scheme" : "interleaved",
+//          "data_size" : 12800000,
+//          "buffer_size": 64,
+//          "read_align" : 0,
+//          "performance_sample_period": "500ms"
+//        }
+//      },
+//      "stressors": [
+//      ]
+//    }
+  ]
+}

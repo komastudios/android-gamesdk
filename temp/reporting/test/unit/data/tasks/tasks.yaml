@@ -1,0 +1,61 @@
+preflight:
+  - {
+      action: copy,
+      src: "${WORKSPACE_DIR}/test/unit/data/tasks/hello.txt",
+      dst: "${APP_FILES_DIR}/hello.txt",
+    }
+  - {
+      action: copy,
+      src: "${WORKSPACE_DIR}/test/unit/data/tasks/hello.txt",
+      dst: "${APP_OOB_DATA_DIR}/hello.txt",
+    }
+  - {
+      action: copy,
+      src: "${WORKSPACE_DIR}/test/unit/data/tasks/hello.txt",
+      dst: "${DEVICE_ROOT}/sdcard/hello.txt",
+    }
+
+postflight:
+  - {
+      action: copy,
+      src: "${APP_FILES_DIR}/hello.txt",
+      dst: "${WORKSPACE_DIR}/tmp/hello.txt",
+    }
+  - {
+      action: copy,
+      src: "${APP_OOB_DATA_DIR}/hello.txt",
+      dst: "${WORKSPACE_DIR}/tmp/hello.txt",
+    }
+  - {
+      action: copy,
+      src: "/sdcard/hello.txt",
+      dst: "${WORKSPACE_DIR}/tmp/hello.txt",
+    }
+
+device_deletion:
+  - {
+      action: delete,
+      files: [
+          "${APP_FILES_DIR}/hello.txt",
+        ],
+    }
+  - {
+      action: delete,
+      files: [
+          "${APP_OOB_DATA_DIR}/hello.txt",
+        ],
+    }
+  - {
+      action: delete,
+      files: [
+          "${DEVICE_ROOT}/sdcard/hello.txt",
+        ],
+    }
+
+local_deletion:
+  - {
+      action: delete,
+      files: [
+          "${WORKSPACE_DIR}/tmp/hello.txt",
+        ],
+    }

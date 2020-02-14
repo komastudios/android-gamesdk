@@ -1,0 +1,27 @@
+{
+    "auto_run": false,
+    "delay_between_tests": "5000ms",
+    "host": "SwappyGLHostActivity",
+    "defaultMonitors": [
+        {
+            "id": "MonitorOperation"
+        }
+    ],
+    "stress_tests": [
+        {
+            "enabled": true,
+            "name": "Calculate Pi (C++)",
+            "description": "C++ Stress Test",
+            "duration": "10s",
+            "data_gatherer": {
+                "id": "CalculatePIOperation",
+                "configuration": {
+                    "threads": 0,
+                    "performance_sample_period": "500ms",
+                    "affinity": true
+                }
+            },
+            "stressors": []
+        }
+    ]
+}
