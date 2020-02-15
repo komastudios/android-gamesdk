@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "eff60c4e_d5712e63",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-02-15T01:03:03Z",
+      "side": 1,
+      "message": "vertex_data is ignored if generator is not null. It feels weird to require a parameter that will potentially be ignored. Can you look for an alternative design?",
+      "revId": "e4ff28a813b93a753f59a8646dcd4eaaf4d6526c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "667e30c6_6c60d22b",
+        "filename": "bender/bender-base/app/src/main/jni/render_graph.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-02-15T01:03:03Z",
+      "side": 1,
+      "message": "You can precompute this.\nIt\u0027d be good to time this function and see if the optimization would make a difference.",
+      "revId": "e4ff28a813b93a753f59a8646dcd4eaaf4d6526c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c20318fa_8a9eec37",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 15
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-02-15T01:03:03Z",
+      "side": 1,
+      "message": "You dont need to initialize.",
+      "revId": "e4ff28a813b93a753f59a8646dcd4eaaf4d6526c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
