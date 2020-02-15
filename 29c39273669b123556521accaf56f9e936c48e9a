@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f62567d5_a3fae799",
+        "filename": "cert/test/AndroidCertTest/app/src/main/assets/Shaders/MarchingCubesGLES3Operation/line.vsh",
+        "patchSetId": 13
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-15T19:22:23Z",
+      "side": 0,
+      "message": "[S/R] Nothing I can like more than a change that improves the code by shooting down lines 🔫",
+      "revId": "29c39273669b123556521accaf56f9e936c48e9a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}

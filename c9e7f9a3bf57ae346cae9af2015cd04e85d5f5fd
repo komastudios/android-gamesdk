@@ -1,0 +1,140 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0e867967_dc188887",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/ThreadPool.hpp",
+        "patchSetId": 13
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-15T19:22:23Z",
+      "side": 1,
+      "message": "[S/R] \"But! It\u0027s been observed that a little periodic sleeping of threads can actually result in increased performance for long running tasks.\"\n\nJust \"wow...\" 🧐\nNow my question here would be: \"is it the goal to compare the performance of this test by putting threads to sleep from time to time vs. not sleeping at all?\" I guess that both metrics matter, provided that they represent the optimal scenario vs. the worst-case one.",
+      "revId": "c9e7f9a3bf57ae346cae9af2015cd04e85d5f5fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bb953c54_a6831931",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/ThreadPool.hpp",
+        "patchSetId": 13
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-15T19:22:23Z",
+      "side": 1,
+      "message": "[S/R] Gotcha. Thread numbering is definitely more human readable. Just want to mention that Linux threads are typically based on pthreads (POSIX threads), which also have an ID, although is the least memorable thing you\u0027ll find in the world. Ordinal numbers are definitely better.\nNonetheless, we are listing that ID when reporting already (look for \"thread_id\" in any JSON report).",
+      "revId": "c9e7f9a3bf57ae346cae9af2015cd04e85d5f5fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "108d521d_3ef5fab5",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/ThreadPool.hpp",
+        "patchSetId": 13
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-15T19:22:23Z",
+      "side": 1,
+      "message": "[S/R] 👏👏👏!!",
+      "revId": "c9e7f9a3bf57ae346cae9af2015cd04e85d5f5fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cb481566_33455c6f",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/Time.hpp",
+        "patchSetId": 13
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-15T19:22:23Z",
+      "side": 1,
+      "message": "[S/R] Just because you did it for SecondsAs, NanosecondsAs is also aligning its equal sign with the longest symbol MillisecondsAs 😉",
+      "revId": "c9e7f9a3bf57ae346cae9af2015cd04e85d5f5fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "04387ff0_7f330bc4",
+        "filename": "cert/test/AndroidCertTest/app/src/main/res/raw/configuration.json",
+        "patchSetId": 13
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-15T19:22:23Z",
+      "side": 1,
+      "message": "[S/R] A 20-min delta change that deserves a 25-min applause 👏👏👏!!",
+      "revId": "c9e7f9a3bf57ae346cae9af2015cd04e85d5f5fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fdb7ba64_b9077f8b",
+        "filename": "cert/test/reporting/recipes/configurations/marching_cubes.json.template",
+        "patchSetId": 13
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-15T19:22:23Z",
+      "side": 1,
+      "message": "[S/R] 👏👏👏👏 (double braces notation mask template params). HUGE improvement.",
+      "revId": "c9e7f9a3bf57ae346cae9af2015cd04e85d5f5fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "73c7fd12_ac83902a",
+        "filename": "cert/test/reporting/recipes/marching_cubes_template.yaml",
+        "patchSetId": 13
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-15T19:22:23Z",
+      "side": 1,
+      "message": "[S/R] Wouldn\u0027t marching_cubes_permutations.yaml instead of marching_cubes_template.yaml be a better for this file? In here you don\u0027t seem to specify a template -you actually did that in marching_cubes.json.template- but specifying the different desired specializations for such template. Am I wrong?",
+      "revId": "c9e7f9a3bf57ae346cae9af2015cd04e85d5f5fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e76ea75b_90909058",
+        "filename": "cert/test/reporting/tools/sharded_mc_2_csv.py",
+        "patchSetId": 13
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-15T19:22:23Z",
+      "side": 1,
+      "message": "[S/R] Superb. I could foresee that in the future (i.e., not now but when the case arrives) we may want to generalize this template - fork specializations - merge results for other testing scenarios. In particular now that you found that putting threads to sleep from time to time can improve overall performance. Another A/B test scenario we learn is the one implied in the big.LITTLE workload distribution.\nLooks like as we learn, we will find other A/B testing scenarios that we\u0027ll want to submit a single test for, like you\u0027re doing here with the marching cubes case. By then we may want to generalize the entire pipeline (i.e., permute template - submit specializations - merge results) all from a single python executable.",
+      "revId": "c9e7f9a3bf57ae346cae9af2015cd04e85d5f5fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
