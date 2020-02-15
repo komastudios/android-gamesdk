@@ -35,6 +35,7 @@
 #include "annotation_util.h"
 #include "crash_handler.h"
 #include "tuningfork_utils.h"
+#include "tuningfork_swappy.h"
 
 /* Annotations come into tuning fork as a serialized protobuf. The protobuf can only have
  * enums in it. We form an integer annotation id from the annotation interpreted as a mixed-radix

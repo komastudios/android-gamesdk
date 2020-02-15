@@ -44,12 +44,12 @@
  */
 enum InstrumentKeys {
   TFTICK_USERDEFINED_BASE = 0,
-  TFTICK_SYSCPU = 64000,  ///< Frame time between ends of glSwapBuffers calls or
-                          ///< Vulkan equivalent.
+  TFTICK_SYSCPU = 64000,  ///< Frame time between ends of eglSwapBuffers calls or
+                          ///< Vulkan queue present.
   TFTICK_SYSGPU = 64001,  ///< Frame time between Swappy sync fences.
   TFTICK_SWAPPY_WAIT_TIME = 64002,  ///< The time Swappy waits on sync fence.
-  TFTICK_SWAPPY_SWAP_TIME =
-      64003  ///< Time for call of glSwapBuffers or Vulkan equivalent.
+  TFTICK_SWAPPY_LOGIC_TIME = 64003 ///< Time between start of frame and the call to eglSwapBuffers
+                                   ///< or Vulkan queue present.
 };
 
 /**
