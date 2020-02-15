@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "ce70e132_bfd4c056",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/ThreadPool.hpp",
+        "patchSetId": 13
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-02-15T20:40:53Z",
+      "side": 1,
+      "message": "Agreed - I ought to clarify this a little better in the comment and also use more weasel words. It\u0027s not a guarantee that sleeping a bit helps, but *soemtimes* it does, and it\u0027s our work here to measure and learn. So I will clarify this better.",
+      "parentUuid": "0e867967_dc188887",
+      "revId": "c9e7f9a3bf57ae346cae9af2015cd04e85d5f5fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bb953c54_a6831931",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/ThreadPool.hpp",
         "patchSetId": 13
@@ -30,6 +48,24 @@
       "writtenOn": "2020-02-15T19:22:23Z",
       "side": 1,
       "message": "[S/R] Gotcha. Thread numbering is definitely more human readable. Just want to mention that Linux threads are typically based on pthreads (POSIX threads), which also have an ID, although is the least memorable thing you\u0027ll find in the world. Ordinal numbers are definitely better.\nNonetheless, we are listing that ID when reporting already (look for \"thread_id\" in any JSON report).",
+      "revId": "c9e7f9a3bf57ae346cae9af2015cd04e85d5f5fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8cd319fa_51db30e1",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/ThreadPool.hpp",
+        "patchSetId": 13
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-02-15T20:40:53Z",
+      "side": 1,
+      "message": "Agreed - I decided to use the human-friendly index because, well, it\u0027s an index of the thread used by the pool, which is orthogonal to how the OS identifies the thread. Both are useful information, but a simple index can be helpful (in my case to safely write to non-thread-local data structures)",
+      "parentUuid": "bb953c54_a6831931",
       "revId": "c9e7f9a3bf57ae346cae9af2015cd04e85d5f5fd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
@@ -64,6 +100,24 @@
       "writtenOn": "2020-02-15T19:22:23Z",
       "side": 1,
       "message": "[S/R] Just because you did it for SecondsAs, NanosecondsAs is also aligning its equal sign with the longest symbol MillisecondsAs 😉",
+      "revId": "c9e7f9a3bf57ae346cae9af2015cd04e85d5f5fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8bf05c8e_d6e9f7d7",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/Time.hpp",
+        "patchSetId": 13
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-02-15T20:40:53Z",
+      "side": 1,
+      "message": "Oops... auto indent breaks nice human alignments. Will fix.",
+      "parentUuid": "cb481566_33455c6f",
       "revId": "c9e7f9a3bf57ae346cae9af2015cd04e85d5f5fd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
@@ -121,6 +175,24 @@
     },
     {
       "key": {
+        "uuid": "d581ac4a_fd6b0d80",
+        "filename": "cert/test/reporting/recipes/marching_cubes_template.yaml",
+        "patchSetId": 13
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-02-15T20:40:53Z",
+      "side": 1,
+      "message": "Excellent point!",
+      "parentUuid": "73c7fd12_ac83902a",
+      "revId": "c9e7f9a3bf57ae346cae9af2015cd04e85d5f5fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e76ea75b_90909058",
         "filename": "cert/test/reporting/tools/sharded_mc_2_csv.py",
         "patchSetId": 13
@@ -132,6 +204,24 @@
       "writtenOn": "2020-02-15T19:22:23Z",
       "side": 1,
       "message": "[S/R] Superb. I could foresee that in the future (i.e., not now but when the case arrives) we may want to generalize this template - fork specializations - merge results for other testing scenarios. In particular now that you found that putting threads to sleep from time to time can improve overall performance. Another A/B test scenario we learn is the one implied in the big.LITTLE workload distribution.\nLooks like as we learn, we will find other A/B testing scenarios that we\u0027ll want to submit a single test for, like you\u0027re doing here with the marching cubes case. By then we may want to generalize the entire pipeline (i.e., permute template - submit specializations - merge results) all from a single python executable.",
+      "revId": "c9e7f9a3bf57ae346cae9af2015cd04e85d5f5fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e2ae06ae_b2f81158",
+        "filename": "cert/test/reporting/tools/sharded_mc_2_csv.py",
+        "patchSetId": 13
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-02-15T20:40:53Z",
+      "side": 1,
+      "message": "Yeah, I\u0027m inclined to think this will eventually be factored into a library, but since we have (at present) just one multiple-sharded-run test case (marching cubes) I wrote this as a single-shot tool. If/when we\u0027re doing this with more tests, it would behoove us to factor this shard collator into a library function.",
+      "parentUuid": "e76ea75b_90909058",
       "revId": "c9e7f9a3bf57ae346cae9af2015cd04e85d5f5fd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
