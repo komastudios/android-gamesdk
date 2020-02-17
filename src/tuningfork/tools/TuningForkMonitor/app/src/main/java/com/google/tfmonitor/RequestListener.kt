@@ -19,30 +19,12 @@ package com.google.tfmonitor
 import com.google.tuningfork.AppKey
 import com.google.tuningfork.Deserializer
 
-object RequestListener {
+interface RequestListener {
 
-    private var viewModel: MonitorViewModel? = null;
+    fun generateTuningParameters(appKey: AppKey, requestString: String): String
 
-    fun generateTuningParameters(appKey: AppKey, requestString: String): String {
-        val deser = Deserializer()
-        val req = deser.parseGenerateTuningParametersRequest(requestString)
-        return viewModel?.generateTuningParameters(appKey, req) ?: ""
-    }
+    fun uploadTelemetry(appKey: AppKey, requetString: String): String
 
-    fun uploadTelemetry(appKey: AppKey, requetString: String): String {
-        val deser = Deserializer()
-        val req = deser.parseUploadTelemetryRequest(requetString)
-        return viewModel?.uploadTelemetry(appKey, req) ?: ""
-    }
-
-    fun debugInfo(appKey: AppKey, requetString: String): String {
-        val deser = Deserializer()
-        val req = deser.parseDebugInfoRequest(requetString)
-        return viewModel?.debugInfo(appKey, req) ?: ""
-    }
-
-    fun setViewModel(model: MonitorViewModel) {
-        viewModel = model
-    }
+    fun debugInfo(appKey: AppKey, requetString: String): String
 
 }
