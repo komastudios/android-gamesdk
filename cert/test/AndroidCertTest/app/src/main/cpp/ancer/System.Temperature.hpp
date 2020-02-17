@@ -37,13 +37,6 @@ namespace internal {
  *              available.
  */
 bool InitTemperatureCapture(const bool run_async = false);
-
-/**
- * Performs a final analysis about tracked temperature files. If any of them hasn't experienced
- * changes during the operation execution, it's considered an invalid temperature file and removed
- * from the catalog for future executions.
- */
-void DeinitTemperatureCapture();
 }
 
 /**

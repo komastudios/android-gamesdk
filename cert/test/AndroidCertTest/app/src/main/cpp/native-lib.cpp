@@ -94,7 +94,6 @@ extern "C" JNIEXPORT void JNICALL
 Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_shutdownSuite(
         JNIEnv* env, jclass instance) {
     internal::ShutdownSuite();
-    internal::DeinitTemperatureCapture();
     // TODO(tmillican@google.com): We stopped killing the reporter on app
     //  shutdown due to lifetime issues. Maybe we should reinvestigate that.
     reporting::HardFlushReportLogQueue();
