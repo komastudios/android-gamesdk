@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4fc231ff_75645ea7",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/main/java/com/google/tfmonitor/AppDetailFragment.kt",
+        "patchSetId": 2
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2020-02-17T11:59:12Z",
+      "side": 1,
+      "message": "and potentially to other fragments?",
+      "revId": "13cce0272e7cf97d71883d78bc4005e23d461ca6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d88c562f_04e06fdf",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/main/java/com/google/tfmonitor/HistogramWidget.kt",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2020-02-17T11:59:12Z",
+      "side": 1,
+      "message": "Put package after the copyright?",
+      "revId": "13cce0272e7cf97d71883d78bc4005e23d461ca6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f0659d8f_1310a49e",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/main/java/com/google/tfmonitor/TuningForkRequestServer.kt",
+        "patchSetId": 2
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2020-02-17T11:59:12Z",
+      "side": 1,
+      "message": "The method is too long, consider refactoring",
+      "revId": "13cce0272e7cf97d71883d78bc4005e23d461ca6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2e65526b_0ef22348",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/main/java/com/google/tuningfork/Datastore.kt",
+        "patchSetId": 2
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2020-02-17T11:59:12Z",
+      "side": 1,
+      "message": "The get* methods have similar structure. Consider extracting runQuery(query, code)",
+      "revId": "13cce0272e7cf97d71883d78bc4005e23d461ca6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
