@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 The Android Open Source Project
+ * Copyright 2020 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,54 @@
  * limitations under the License.
  */
 
+/**
+ * On Linux systems (Android being just an example), temperature is approached under the notion of
+ * thermal zones. A device may have several thermal zones, accessible from an especially designated
+ * directory: /sys/class/thermal. Each thermal_zone is a directory or symlink to a directory named
+ * "thermal_zone" followed by a number:
+ *
+ * /sys/class/thermal/thermal_zone[0-*]:
+ *    |---type:         Type of the thermal zone (CPU, GPU, battery, ...)
+ *    |---temp:         Current temperature
+ *    |---...           Some more files we won't focus on
+ *
+ * The good news is that we got this designated folder, so we must not look further. The not so good
+ * news is that it's not always easy to recognize which thermal zones relate to the device CPU.
+ * That's because the type of a thermal zone doesn't follow any specific norm. It's free text that
+ * could contain something as explicit as "cpu" or cryptic as "mng-mhn-23" (e.g., the chipset name).
+ * Furthermore, not necessarily one unique thermal zone per device relates to the CPU. Especially in
+ * manycore devices, there could be more cpu related thermal zones than cores in the device. That
+ * said, it's really free the kind of associations between thermal zones, CPUs and its cores.
+ *
+ * This temperature module does its best trying to determine CPU-related thermal zones. It will
+ * collect temperature from all of detected ones.
+ *
+ * In the worst case scenario, if no CPU-related thermal zone could be identified (i.e., if no type
+ * file in any thermal_zone folder contained the substring "cpu" (case insensitive), then
+ * thermal_zone0 will be assumed as the CPU one.
+ *
+ *
+ *
+ * Links of interest:
+ *
+ * - Generic Thermal Sysfs driver How To
+ *   https://www.kernel.org/doc/Documentation/thermal/sysfs-api.txt
+ *
+ * - Android hardware library, thermal module
+ *   https://android.googlesource.com/platform/hardware/libhardware/+/master/include/hardware/thermal.h
+ *   https://android.googlesource.com/platform/hardware/libhardware/+/master/modules/thermal/thermal.c
+ */
+
 #include "System.hpp"
 
 #include <algorithm>
 #include <fstream>
-#include <queue>
+#include <list>
 #include <regex>
 #include <string>
 #include <thread>
 #include <vector>
-#include <utility>
 
-#include <sys/types.h>
 #include <dirent.h>
 
 #include "util/JNIHelpers.hpp"
@@ -33,11 +69,13 @@
 
 using namespace ancer;
 
-//==============================================================================
+//==================================================================================================
 // Constants, types, type aliases and local variable declarations.
+
 namespace {
-//------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 // Traces
+
 Log::Tag TAG{"SystemTemperature"};
 
 /**
@@ -51,129 +89,127 @@ enum class CaptureStatus {
 };
 CaptureStatus _capture_status{CaptureStatus::NotInitialized};
 
-//------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 // Persistence and secondary storage for all things temperature.
 
 using FileSystemPath = std::string;
 
-// The temperature files catalog is a file containing the names of the identified temperature files
-// to track.
-FileSystemPath _temperature_files_catalog;
+// The CPU thermal zones catalog is a file containing the names of the identified CPU thermal zones.
+FileSystemPath _cpu_thermal_zones_catalog;
 
 /**
- * This type mainly holds a temperature file path. The first time the app runs (i.e., clean install)
- * this structure is created per identified temperature file after a scanning process. Yet, certain
- * identified files don't really track a temperature. This type indicates, after a whole operation
- * completed, whether the temperature this file is supposed to track has ever changed. If not, this
- * file is removed from the catalog.
+ * A device thermal zone. It mainly contains a type and a temperature file path.
+ * The type is any arbitrary string. We focus, in particular, in those thermal zones whose types
+ * contain the word "cpu" (case-insensitive).
+ * The temperature file is where the OS stores the thermal zone temperatures (in Celsius
+ * millidegrees).
  */
-class TrackedTemperatureFile {
+class ThermalZone {
  public:
-  TrackedTemperatureFile(const FileSystemPath &path, const bool has_changed = false) :
-      _path{path}, _temperature{UNKNOWN_TEMPERATURE_MEASUREMENT}, _has_changed{has_changed} {
-  }
+  /**
+   * Expected constructor.
+   * @param path a string representing a system directory that must contain at least two files:
+   *        "type" and "temp".
+   */
+  explicit ThermalZone(const FileSystemPath &path) : _path{path}, _type{ReadType(path)},
+                                                     _temperature_path{path + "/temp"} {}
 
-  TrackedTemperatureFile(FileSystemPath &&path, const bool has_changed = false) :
-      _path{std::move(path)}, _temperature{UNKNOWN_TEMPERATURE_MEASUREMENT},
-      _has_changed{has_changed} {
+  ThermalZone(const ThermalZone &) = default;
+  ThermalZone(ThermalZone &&) = default;
+
+  ThermalZone &operator=(const ThermalZone &) = default;
+  ThermalZone &operator=(ThermalZone &&other) = default;
+
+  /**
+   * Default constructor, only available to allow container allocation (e.g.,
+   * std::vector::reserve()). A thermal zone constructed via this constructor isn't usable, as it
+   * doesn't have any valid path. A thermal zone constructed this way is, in fact, a null object:
+   *
+   *   if (ThermalZone{}) {...}                                     // Skips the "then" block
+   *   if (ThermalZone{"/sys/class/thermal/thermal_zone0"}) {...}   // Hits the "then" block
+   */
+  ThermalZone() = default;
+
+  const std::string &Type() const {
+    return _type;
   }
 
   const FileSystemPath &Path() const {
     return _path;
   }
 
-  bool HasChanged() const {
-    return _has_changed;
+  const FileSystemPath &TemperaturePath() const {
+    return _temperature_path;
   }
 
   /**
-   * Parses the content of the file at its path in order to capture the temperature it measures.
-   * @return if the reading goes OK, returns the value in Celsius millidegrees. Otherwise the
-   * constant ancer::UNKNOWN_TEMPERATURE_MEASUREMENT as an indication that the capture was
-   * unsuccessful.
+   * True if this thermal zone points to a non-empty path, and its type is known.
    */
-  TemperatureInCelsiusMillis Capture() {
+  explicit inline operator bool() const {
+    return not _path.empty() && not _type.empty();
+  }
+
+  /**
+   * Retrieves this thermal zone temperature by accessing the OS file where its value is stored.
+   *
+   * @return if the reading goes OK, returns the value in Celsius millidegrees. Otherwise the
+   *         constant ancer::UNKNOWN_TEMPERATURE_MEASUREMENT as an indication that the capture was
+   *         unsuccessful.
+   */
+  TemperatureInCelsiusMillis CaptureTemperature() {
     ancer::TemperatureInCelsiusMillis captured_temperature{UNKNOWN_TEMPERATURE_MEASUREMENT};
 
-    std::ifstream temperature_stream{_path};
+    std::ifstream temperature_stream{_temperature_path};
     if (temperature_stream.is_open()) {
       std::string stream_line;
       if (std::getline(temperature_stream, stream_line)) {
         captured_temperature = std::stoi(stream_line);
         Log::V(TAG, "%s got %d Celsius millidegrees.", _path.c_str(), captured_temperature);
-        if (_temperature==UNKNOWN_TEMPERATURE_MEASUREMENT) {
-          _temperature = captured_temperature;
-        } else {
-          auto previous = _has_changed;
-          _has_changed |= _temperature!=captured_temperature;
-          if (_has_changed && previous!=_has_changed) {
-            Log::D(TAG, "%s confirms that it tracks a varying temperature.", _path.c_str());
-          }
-        }
       } else {
-        Log::W(TAG, "%s couldn't be read.", _path.c_str());
+        Log::W(TAG, "%s couldn't be read.", _temperature_path.c_str());
       }
     } else {
-      Log::W(TAG, "%s couldn't be opened.", _path.c_str());
+      Log::W(TAG, "%s couldn't be opened.", _temperature_path.c_str());
     }
 
     return captured_temperature;
   }
 
  private:
+  /**
+   * Invoked during instance constructions, it access the thermal zone type file and returns its
+   * content.
+   */
+  std::string ReadType(const FileSystemPath &thermal_zone_path) {
+    std::string type_content;
+    FileSystemPath _type_path{thermal_zone_path + "/type"};
+
+    std::ifstream type_stream{_type_path};
+    if (type_stream.is_open()) {
+      if (std::getline(type_stream, type_content)) {
+        Log::I(TAG, "Thermal zone %s type is \"%s\".",
+               thermal_zone_path.c_str(), type_content.c_str());
+      } else {
+        Log::E(TAG, "%s couldn't be read.", _type_path.c_str());
+      }
+    } else {
+      Log::E(TAG, "%s couldn't be opened.", _type_path.c_str());
+    }
+
+    return type_content;
+  }
+
+ private:
+  std::string _type;
   FileSystemPath _path;
-  TemperatureInCelsiusMillis _temperature;
-  bool _has_changed;
+  FileSystemPath _temperature_path;
 };
 
-std::vector<TrackedTemperatureFile> _tracked_temperature_files;
-
-//------------------------------------------------------------------------------
-// Regular expressions to detect temperature file candidates.
-
-/**
- * Any temperature candidate path that matches any of these words (battery, camera, etc.) is
- * discarded as a possible CPU temperature value.
- */
-const std::vector<std::regex> REGEX_BLACKLIST{
-    std::regex{"\\."},
-    std::regex{"\\.\\."},
-    std::regex{"(.*)trip(.*)", std::regex::icase},
-    std::regex{"(.*)batt(.*)", std::regex::icase},
-    std::regex{"(.*)usb(.*)", std::regex::icase},
-    std::regex{"(.*)camera(.*)", std::regex::icase},
-    std::regex{"(.*)lcd(.*)", std::regex::icase},
-    std::regex{"(.*)gpu(.*)", std::regex::icase},
-    std::regex{"(.*)display(.*)", std::regex::icase},
-    std::regex{"(.*)firmware(.*)", std::regex::icase},
-    std::regex{"(.*)ambien(.*)", std::regex::icase},
-    std::regex{"(.*)emul(.*)", std::regex::icase},
-    std::regex{"(.*)thermistor(.*)", std::regex::icase},
-    std::regex{"(.*)sensor(.*)", std::regex::icase}
-};
-
-/**
- * By overwhelming evidence, temperature file names contain, at least, the word "temp".
- */
-const std::vector<std::regex> TEMPERATURE_FILE_REGEX{
-    std::regex{"(.*)temp(.*)"}  // case-sensitive
-};
-
-/**
- * Temperature file candidates contain a number (possibly negative).
- */
-const std::regex TEMPERATURE_MEASUREMENT_REGEX{"-?\\d+(\\.\\d*)?"};
-
-/**
- * CPU temperatures are typically around certain range in Celsius millidegrees. During analysis of
- * temperature file candidates, their measured temperature is weighed against these boundaries to
- * confirm or veto candidacies.
- */
-const ancer::TemperatureInCelsiusMillis LOWEST_REASONABLE_VALUE_IN_CELSIUS_MILLIS{24000};
-const ancer::TemperatureInCelsiusMillis HIGHEST_REASONABLE_VALUE_IN_CELSIUS_MILLIS{60000};
+std::list<ThermalZone> _cpu_thermal_zones;
 }
 
-//==============================================================================
+//==================================================================================================
+// Internal functions for CPU temperature detection and capture.
 
 namespace {
 /**
@@ -190,104 +226,105 @@ void SetCaptureStatus(const CaptureStatus &status) {
   _capture_status = status;
 }
 
-//------------------------------------------------------------------------------
-// Tracked files and catalog functions.
+//--------------------------------------------------------------------------------------------------
+// CPU thermal zone catalog functions.
 
 /**
- * Returns a string containing the path to the internal catalog were detected temperature files are
- * stored. This catalog is written the first time post-clean install, with the results of a full
- * scan for temperature file candidates.
+ * Returns a string containing the path to the internal catalog were detected CPU temperatures are
+ * stored. This catalog is written during the first launch after a clean install, and read
+ * thereafter.
  */
-const FileSystemPath &GetTemperatureFilesCatalog() {
-  if (_temperature_files_catalog.empty()) {
-    _temperature_files_catalog = InternalDataPath() + "/temperature_files.txt";
+const FileSystemPath &GetCPUThermalZonesCatalog() {
+  if (_cpu_thermal_zones_catalog.empty()) {
+    _cpu_thermal_zones_catalog = InternalDataPath() + "/cpu_thermal_zones.txt";
   }
 
-  return _temperature_files_catalog;
+  return _cpu_thermal_zones_catalog;
 }
 
 /**
- * True if no temperature files were detected.
+ * True if no CPU thermal zones were detected.
  */
-bool IsTrackedListEmpty() {
-  return _tracked_temperature_files.empty();
+bool IsCPUThermalZonesCatalogEmpty() {
+  return _cpu_thermal_zones.empty();
 }
 
 /**
- * Records the list of tracked temperature files to its catalog.
+ * Records the list of CPU thermal zones to its catalog.
+ *
  * @return True if the list isn't empty.
  */
 bool StoreTemperatureFileListToCatalog() {
   std::ofstream catalog_stream{};
   catalog_stream.exceptions(catalog_stream.exceptions() | std::ios::failbit);
-  const auto &catalog_path{GetTemperatureFilesCatalog()};
+  const auto &catalog_path{GetCPUThermalZonesCatalog()};
 
   try {
     catalog_stream.open(catalog_path, std::ios::trunc);
-    for (const auto &tracked_file : _tracked_temperature_files) {
-      catalog_stream << tracked_file.Path() << std::endl;
+    for (const auto &cpu_thermal_zone : _cpu_thermal_zones) {
+      catalog_stream << cpu_thermal_zone.Path() << std::endl;
     }
-    Log::I(TAG, "Temperature file list stored to catalog %s.", catalog_path.c_str());
+    Log::I(TAG, "CPU thermal zone list stored to catalog %s.", catalog_path.c_str());
   } catch (std::ios_base::failure &e) {
-    Log::E(TAG, "Temperature file catalog %s write open failure: \"%s\".",
+    Log::E(TAG, "CPU thermal zone catalog %s write open failure: \"%s\".",
            catalog_path.c_str(), e.what());
   }
 
-  return not IsTrackedListEmpty();
+  return not IsCPUThermalZonesCatalogEmpty();
 }
 
 /**
- * Restores the list of tracked temperature files from its catalog.
+ * Restores the list of CPU thermal zones from its catalog.
+ *
  * @return true if the catalog wasn't empty.
  */
-bool RetrieveTemperatureFileListFromCatalog() {
+bool RetrieveCPUThermalZoneListFromCatalog() {
   std::ifstream catalog_stream{};
   catalog_stream.exceptions(catalog_stream.exceptions() | std::ios::failbit);
-  const auto &catalog_path{GetTemperatureFilesCatalog()};
+  const auto &catalog_path{GetCPUThermalZonesCatalog()};
 
   try {
     catalog_stream.open(catalog_path);
-    _tracked_temperature_files.clear();
-    for (std::string temperature_file_path; std::getline(catalog_stream, temperature_file_path);) {
-      Log::I(TAG, "Retrieving temperature file path %s.", temperature_file_path.c_str());
-      _tracked_temperature_files.emplace_back(std::move(temperature_file_path), true);
+    _cpu_thermal_zones.clear();
+    for (std::string thermal_zone_path; std::getline(catalog_stream, thermal_zone_path);) {
+      Log::I(TAG, "Retrieving thermal zone path %s.", thermal_zone_path.c_str());
+      _cpu_thermal_zones.emplace_back(std::move(thermal_zone_path));
     }
   } catch (std::ios_base::failure &e) {
-    Log::I(TAG, "Temperature file catalog %s read open failure: \"%s\".",
+    Log::I(TAG, "CPU thermal zone catalog %s read open failure: \"%s\".",
            catalog_path.c_str(), e.what());
   }
 
-  return not IsTrackedListEmpty();
+  return not IsCPUThermalZonesCatalogEmpty();
 }
 
-//------------------------------------------------------------------------------
-// Low-level temperature file candidate analysis.
+//--------------------------------------------------------------------------------------------------
+// CPU thermal zone detection functions (all via regex patterns)
 
 /**
- * Given a string (e.g., file name or path), returns true if not compatible with the black list non-
- * CPU temperature files.
+ * True if a subdirectory follows the pattern "thermal_zone<SEQUENTIAL NUMBER>".
  */
-bool NotBlacklisted(const std::string &name) {
-  bool resolution{true};
-
-  for (const auto &blacklisted_word : REGEX_BLACKLIST) {
-    if (std::regex_match(name, blacklisted_word)) {
-      resolution = false;
-      break;
-    }
-  }
-
-  return resolution;
+bool IsThermalZoneSubdir(const std::string &subdirectory) {
+  static const std::regex THERMAL_ZONE_REGEX{R"(thermal_zone\d+)"};
+  return std::regex_match(subdirectory, THERMAL_ZONE_REGEX);
 }
 
 /**
- * Given a file name, returns true, if it's compatible with the temperature file name pattern.
+ * True if the thermal zone type has some hint that suggests is linked to the CPU.
  */
-bool LooksLikeTemperatureFilename(const FileSystemPath &filename) {
+bool IsCpuRelated(const ThermalZone &thermal_zone) {
+  // If you wonder why a vector for just one entry: for now we have identified one single regular
+  // expression for cpu's. Although in certain devices no thermal zone type explicitly matches it.
+  // We foresee that over time we'll identify alternative patterns. If that happens at all, then
+  // we'll append these to this vector.
+  static const std::vector<std::regex> CPU_TYPE_REGEXES{
+      std::regex{".*cpu.*", std::regex::icase}
+  };
+
   bool resolution{false};
 
-  for (const auto &temperature_file_pattern : TEMPERATURE_FILE_REGEX) {
-    if (std::regex_match(filename, temperature_file_pattern)) {
+  for (const auto &cpu_type_regex : CPU_TYPE_REGEXES) {
+    if (std::regex_match(thermal_zone.Type(), cpu_type_regex)) {
       resolution = true;
       break;
     }
@@ -296,136 +333,77 @@ bool LooksLikeTemperatureFilename(const FileSystemPath &filename) {
   return resolution;
 }
 
-/**
- * Given a file name, returns true, if it's compatible with a CPU temperature file name (as opposed
- * to battery, gyroscope, etc.)
- */
-bool LooksLikeCPUTemperatureFile(const FileSystemPath &filename) {
-  return LooksLikeTemperatureFilename(filename) && NotBlacklisted(filename);
-}
+//==================================================================================================
 
 /**
- * Given a temperature file candidate, inspects its content to check if it's compatible with a CPU
- * temperature.
- * @return true if compatible; false otherwise.
- */
-bool IsContentCompatibleWithReasonableCelsiusMillis(const FileSystemPath &temperature_candidate) {
-  bool resolution{false};
-
-  std::ifstream candidate_stream{temperature_candidate};
-  if (candidate_stream.is_open()) {
-    std::string stream_line;
-    if (std::getline(candidate_stream, stream_line)) {
-      std::smatch matching;
-      if (std::regex_match(stream_line, matching, TEMPERATURE_MEASUREMENT_REGEX)) {
-        int temperature = std::stoi(matching[0].str());
-        if (LOWEST_REASONABLE_VALUE_IN_CELSIUS_MILLIS <= temperature &&
-            temperature <= HIGHEST_REASONABLE_VALUE_IN_CELSIUS_MILLIS) {
-          Log::I(TAG, "Temperature file candidate %s seems to hold a reasonable CPU temperature "
-                      "(%d Celsius millidegrees). Will be tracked.",
-                 temperature_candidate.c_str(), temperature);
-          resolution = true;
-        } else {
-          Log::D(TAG, "Temperature file candidate %s doesn't seem a reasonable CPU temperature "
-                      "(\"%d\").",
-                 temperature_candidate.c_str(), temperature);
-        }
-      } else {
-        Log::D(TAG, "Temperature file candidate %s first line doesn't seem a number (\"%s\").",
-               temperature_candidate.c_str(), stream_line.c_str());
-      }
-    }
-  } else {
-    Log::D(TAG, "Temperature file candidate %s couldn't be opened.", temperature_candidate.c_str());
-  }
-
-  return resolution;
-}
-
-//------------------------------------------------------------------------------
-// High-order directory scan for CPU temperature files.
-
-/**
- * Checks a directory path for temperature file children. Doesn't drill down recursively. Instead,
- * it queues children directories to be scanned in a later call to this function.
- * This function analyzes all direct children of the received directory.
- * If they are files, their names and content are checked to see if compatible with a CPU
- * temperature file. If so, they are appended to the tracked file list.
- * If children are sub-directories, they are queued for subsequent sub-directory scans unless their
- * directory names suggest they are related to non-CPU components (like sensors).
+ * Scans a specific system directory looking for thermal zone subdirectories.
  *
- * @param full_directory absolute path to the directory to scan.
- * @param directories_to_scan queue where upcoming directories to scan are held.
+ * @return a list of all thermal zones detected.
  */
-void ScanDirectory_SingleLevel(const FileSystemPath &full_directory,
-                               std::queue<FileSystemPath> &directories_to_scan) {
-  Log::V(TAG, "Scanning %s...", full_directory.c_str());
+std::list<ThermalZone> FindThermalZones() {
+  static const FileSystemPath thermal_zones_dir{"/sys/class/thermal/"};
 
-  auto make_absolute = [&full_directory](const char *filename) {
-    return full_directory + "/" + filename;
-  };
+  std::list<ThermalZone> thermal_zones;
 
-  auto *directory = opendir(full_directory.c_str());
+  auto *directory = opendir(thermal_zones_dir.c_str());
   if (directory) {
     struct dirent *entry;
     while ((entry = readdir(directory))) {
       switch (entry->d_type) {
-        case DT_DIR: {
-          if (NotBlacklisted(entry->d_name)) {
-            directories_to_scan.emplace(make_absolute(entry->d_name));
+        case DT_DIR:
+        case DT_LNK: {
+          if (IsThermalZoneSubdir(entry->d_name)) {
+            thermal_zones.emplace_back(thermal_zones_dir + entry->d_name);
           }
           break;
         }
 
-        case DT_REG: {
-          if (LooksLikeCPUTemperatureFile(entry->d_name)) {
-            const FileSystemPath temperature_candidate{make_absolute(entry->d_name)};
-            if (IsContentCompatibleWithReasonableCelsiusMillis(temperature_candidate)) {
-              _tracked_temperature_files.emplace_back(std::move(temperature_candidate));
-            }
-          }
-          break;
-        }
-
-        default: {
-          // NO-OP
-        }
+        default:break;
       }
     }
+  } else {
+    Log::V(TAG, "Access to directory %s error: %d", thermal_zones_dir.c_str(), errno);
   }
-
   closedir(directory);
+
+  return thermal_zones;
 }
 
 /**
- * Receives an initial directory and scans it for temperature files. The search includes sub-
- * directories in a breadth-first fashion.
+ * Receives a list of thermal zones and strips the ones that are not CPU-related.
  *
- * @param initial_directory self-explanatory.
- * @return true if the search found at least one temperature file.
+ * @param thermal_zones a list of thermal zones.
+ * @return the same list, but without those entries that weren't CPU-related. If no thermal zone
+ *         seems to be CPU-related, it defaults to the first thermal zone retrieved.
  */
-bool ScanDirectoryTree_BFS(const FileSystemPath &initial_directory) {
-  std::queue<FileSystemPath> directories_to_scan;
-  directories_to_scan.push(initial_directory);
+std::list<ThermalZone> FilterCPUThermalZones(std::list<ThermalZone> &&thermal_zones) {
+  // Backup plan: if no thermal zone type is "CPU", we'll default on the first thermal zone.
+  ThermalZone default_thermal_zone;
+  if (not thermal_zones.empty()) { default_thermal_zone = thermal_zones.front(); }
 
-  // This loop follows a BFS (breadth-first search) logic. Given a directory tree, starts from its
-  // root, if the root has children that are directories, these children will follow. If these
-  // children have children (root's grandchildren), these grandchildren will follow. This as opposed
-  // to a recursive, depth-first search strategy  Both would lead to the same result but this one is
-  // simpler to implement: a queue called directories-to-scan pops directories from its head and
-  // queues new ones to its tail.
-  while (not directories_to_scan.empty()) {
-    const auto current_directory_name = directories_to_scan.front();
-    directories_to_scan.pop();
+  thermal_zones.remove_if([](const auto &thermal_zone) {
+    return not IsCpuRelated(thermal_zone);
+  });
 
-    ScanDirectory_SingleLevel(current_directory_name, directories_to_scan);
+  if (thermal_zones.empty() && default_thermal_zone) {
+    thermal_zones.emplace_back(std::move(default_thermal_zone));
   }
 
-  return not IsTrackedListEmpty();
+  return thermal_zones;
+}
+
+/**
+ * Its name tells all.
+ *
+ * @return true if at least one CPU thermal zone was detected.
+ */
+bool ScanThermalZonesToDetectCPUOnes() {
+  _cpu_thermal_zones = std::move(FilterCPUThermalZones(FindThermalZones()));
+  return not IsCPUThermalZonesCatalogEmpty();
 }
 }
 
-//==============================================================================
+//==================================================================================================
 
 bool ancer::internal::InitTemperatureCapture(const bool run_async) {
   if (not IsCaptureStatus(CaptureStatus::NotInitialized)) {
@@ -433,12 +411,10 @@ bool ancer::internal::InitTemperatureCapture(const bool run_async) {
   }
   SetCaptureStatus(CaptureStatus::Initializing);
 
-  if (IsTrackedListEmpty()) {
-    if (not RetrieveTemperatureFileListFromCatalog()) {
-      Log::W(TAG, "A /sys folder full-scan to detect temperature files couldn't be avoided.");
-
+  if (IsCPUThermalZonesCatalogEmpty()) {
+    if (not RetrieveCPUThermalZoneListFromCatalog()) {
       static auto initialization_steps = []() {
-        ScanDirectoryTree_BFS("/sys");
+        ScanThermalZonesToDetectCPUOnes();
         StoreTemperatureFileListToCatalog();
         SetCaptureStatus(CaptureStatus::Ready);
       };
@@ -456,39 +432,19 @@ bool ancer::internal::InitTemperatureCapture(const bool run_async) {
   return false;
 }
 
-void ancer::internal::DeinitTemperatureCapture() {
-  std::vector<TrackedTemperatureFile> new_list;
-  for (auto &tracked_file : _tracked_temperature_files) {
-    if (not tracked_file.HasChanged()) {
-      Log::I(TAG, "Unchanged %s removed from catalog.", tracked_file.Path().c_str());
-    } else {
-      new_list.push_back(tracked_file);
-    }
-  }
-
-  if (_tracked_temperature_files.size()!=new_list.size()) {
-    if (new_list.size()!=0) {
-      _tracked_temperature_files = std::move(new_list);
-      StoreTemperatureFileListToCatalog();
-    } else {
-      Log::W(TAG, "Skipping catalog update because all entries would be removed.");
-    }
-  }
-}
-
-//------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 std::vector<ancer::TemperatureInCelsiusMillis> ancer::CaptureTemperatures() {
   std::vector<ancer::TemperatureInCelsiusMillis> temperature_measurements;
 
   if (IsCaptureStatus(CaptureStatus::Ready)) {
     SetCaptureStatus(CaptureStatus::Capturing);
-    for (auto &temperature_file : _tracked_temperature_files) {
-      temperature_measurements.push_back(temperature_file.Capture());
+    for (auto &cpu_thermal_zone : _cpu_thermal_zones) {
+      temperature_measurements.push_back(cpu_thermal_zone.CaptureTemperature());
     }
     SetCaptureStatus(CaptureStatus::Ready);
   } else {
-    for (auto &temperature_file : _tracked_temperature_files) {
+    for (auto &temperature_file : _cpu_thermal_zones) {
       temperature_measurements.push_back(ancer::UNKNOWN_TEMPERATURE_MEASUREMENT);
     }
   }
@@ -496,13 +452,30 @@ std::vector<ancer::TemperatureInCelsiusMillis> ancer::CaptureTemperatures() {
   return temperature_measurements;
 }
 
-//------------------------------------------------------------------------------
+ancer::TemperatureInCelsiusMillis ancer::CaptureMaxTemperature() {
+  ancer::TemperatureInCelsiusMillis max_temperature{ancer::UNKNOWN_TEMPERATURE_MEASUREMENT};
+
+  if (IsCaptureStatus(CaptureStatus::Ready)) {
+    SetCaptureStatus(CaptureStatus::Capturing);
+    for (auto &cpu_thermal_zone : _cpu_thermal_zones) {
+      max_temperature = std::max(max_temperature, cpu_thermal_zone.CaptureTemperature());
+    }
+    SetCaptureStatus(CaptureStatus::Ready);
+  }
+
+  return max_temperature;
+}
+
+//--------------------------------------------------------------------------------------------------
 
 ThermalStatus ancer::GetThermalStatus() {
   ThermalStatus status = ThermalStatus::Unknown;
 
   jni::SafeJNICall(
       [&status](jni::LocalJNIEnv *env) {
+        static const int THERMAL_STATUS_MIN{0};
+        static const int THERMAL_STATUS_MAX{6};
+
         jobject activity = env->NewLocalRef(jni::GetActivityWeakGlobalRef());
         jclass activity_class = env->GetObjectClass(activity);
 
@@ -527,7 +500,7 @@ ThermalStatus ancer::GetThermalStatus() {
         // pixel
         jint status_int =
             env->CallIntMethod(system_helpers_instance, get_thermal_status_mid);
-        if (status_int >= 0 && status_int <= 6) {
+        if (status_int >= THERMAL_STATUS_MIN && status_int <= THERMAL_STATUS_MAX) {
           status = static_cast<ThermalStatus>(status_int);
         }
       });

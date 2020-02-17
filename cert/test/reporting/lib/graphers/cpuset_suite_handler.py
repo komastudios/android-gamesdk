@@ -80,7 +80,7 @@ class CpusetSuiteHandler(SuiteHandler):
     def format_figure_and_axes(self, x_axis_as_seconds: List[float]):
         """Sets aspects like figure height, visibility and text of legends,
         among other graphical aspects."""
-        fig, axes = plt.subplots()
+        _, axes = plt.subplots()
         fig.set_figheight(2)
 
         first_timestamp = x_axis_as_seconds[0]
