@@ -252,10 +252,10 @@ def process_ftl_reports(
             out_files.append(report_file)
 
         except SystraceParseError as ex:
-            print(f"Unable to parse systrace data, error: {repr(ex)}")
+            print(f"Unable to parse systrace data, error: {ex}")
 
-        except Exception as _:
-            print(f"Unable to process file {report_file}")
+        except Exception as ex:
+            print(f"Unable to process file {report_file}. Error: {ex}")
 
     return out_files
 

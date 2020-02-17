@@ -57,7 +57,7 @@ void WriteDatum(report_writers::Struct w, const perf_info &p) {
 
 struct temperature_info {
   ThermalStatus thermal_status;
-  std::vector<TemperatureInCelsiusMillis> temperatures_in_celsius_millis;
+  TemperatureInCelsiusMillis max_cpu_temperature;
 };
 
 void WriteDatum(report_writers::Struct w, const temperature_info &i) {
@@ -65,7 +65,7 @@ void WriteDatum(report_writers::Struct w, const temperature_info &i) {
   //  support.
   w.AddItem("status_msg", to_string(i.thermal_status));
   ADD_DATUM_MEMBER(w, i, thermal_status);
-  ADD_DATUM_MEMBER(w, i, temperatures_in_celsius_millis);
+  ADD_DATUM_MEMBER(w, i, max_cpu_temperature);
 }
 
 //------------------------------------------------------------------------------
@@ -143,7 +143,7 @@ class MonitorOperation : public BaseOperation {
         datum{
             sys_mem_info{GetMemoryInfo()},
             perf_info{c.GetAverageFps(), c.GetMinFrameTime(), c.GetMinFrameTime()},
-            temperature_info{ancer::GetThermalStatus(), ancer::CaptureTemperatures()}
+            temperature_info{ancer::GetThermalStatus(), ancer::CaptureMaxTemperature()}
         });
   }
 
