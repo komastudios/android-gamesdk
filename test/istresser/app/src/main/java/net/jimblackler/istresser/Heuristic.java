@@ -84,9 +84,13 @@ public abstract class Heuristic {
             @Override
             public Indicator getSignal(ActivityManager activityManager) {
               ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
-              return memoryInfo.availMem < memoryInfo.threshold * 2
-                  ? Indicator.RED
-                  : Indicator.GREEN;
+              if (memoryInfo.availMem < memoryInfo.threshold * 2) {
+                return Indicator.RED;
+              } else if (memoryInfo.availMem < memoryInfo.threshold * 2.5) {
+                return Indicator.YELLOW;
+              } else {
+                return Indicator.GREEN;
+              }
             }
           },
           /*
