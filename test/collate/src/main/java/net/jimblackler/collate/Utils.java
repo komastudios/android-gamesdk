@@ -1,5 +1,9 @@
 package net.jimblackler.collate;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Iterator;
 import java.util.stream.Collectors;
 
 class Utils {
@@ -41,5 +46,27 @@ class Utils {
       throw new IOException(error);
     }
     return input;
+  }
+
+  static JSONObject flattenParams(JSONObject params1) {
+    JSONObject params = new JSONObject();
+    try {
+      JSONArray coordinates = params1.getJSONArray("coordinates");
+      JSONArray tests = params1.getJSONArray("tests");
+
+      for (int coordinateNumber = 0; coordinateNumber != coordinates.length(); coordinateNumber++) {
+        JSONArray jsonArray = tests.getJSONArray(coordinateNumber);
+        JSONObject jsonObject = jsonArray.getJSONObject(coordinates.getInt(coordinateNumber));
+        Iterator<String> keys = jsonObject.keys();
+        while (keys.hasNext()) {
+          String key = keys.next();
+          params.put(key, jsonObject.get(key));
+        }
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+      System.out.println(params1.toString());
+    }
+    return params;
   }
 }
