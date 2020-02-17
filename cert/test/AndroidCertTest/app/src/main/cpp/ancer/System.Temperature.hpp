@@ -37,13 +37,6 @@ namespace internal {
  *              available.
  */
 bool InitTemperatureCapture(const bool run_async = false);
-
-/**
- * Performs a final analysis about tracked temperature files. If any of them hasn't experienced
- * changes during the operation execution, it's considered an invalid temperature file and removed
- * from the catalog for future executions.
- */
-void DeinitTemperatureCapture();
 }
 
 /**
@@ -91,14 +84,22 @@ using TemperatureInCelsiusMillis = int;
 const TemperatureInCelsiusMillis UNKNOWN_TEMPERATURE_MEASUREMENT{-99999};
 
 /**
- * When the capture status is ready, it captures all temperature measurements from temperature files
- * being tracked. If any of the files isn't temporarily available or the capture status isn't ready,
- * a measurement of UNKNOWN_TEMPERATURE_MEASUREMENT is returned for that file.
+ * When the capture status is ready, it captures all CPU thermal zone temperatures. If any of these
+ * isn't temporarily available or the capture status isn't ready, a measurement of
+ * UNKNOWN_TEMPERATURE_MEASUREMENT is returned for that thermal zone.
  *
  * @return a vector containing temperature measurements in Celsius millidegrees. Each entry
- * corresponds to an identified temperature file being tracked.
+ *         corresponds to a CPU-related thermal zone.
  */
 std::vector<TemperatureInCelsiusMillis> CaptureTemperatures();
+
+/**
+ * When the capture status is ready, it reads all CPU thermal zone temperature and returns the
+ * highest.
+ *
+ * @return the highest measured CPU thermal zone temperature.
+ */
+TemperatureInCelsiusMillis CaptureMaxTemperature();
 }
 
 #endif // _SYSTEM_TEMPERATURE_HPP
