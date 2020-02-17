@@ -22,28 +22,6 @@ public class Score {
   private static final boolean USE_DEVICE = false;
   private static final int DEVICE_SCENARIOS = 1;
 
-  private static JSONObject flattenParams(JSONObject params1) {
-    JSONObject params = new JSONObject();
-    try {
-      JSONArray coordinates = params1.getJSONArray("coordinates");
-      JSONArray tests = params1.getJSONArray("tests");
-
-      for (int coordinateNumber = 0; coordinateNumber != coordinates.length(); coordinateNumber++) {
-        JSONArray jsonArray = tests.getJSONArray(coordinateNumber);
-        JSONObject jsonObject = jsonArray.getJSONObject(coordinates.getInt(coordinateNumber));
-        Iterator<String> keys = jsonObject.keys();
-        while (keys.hasNext()) {
-          String key = keys.next();
-          params.put(key, jsonObject.get(key));
-        }
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
-      System.out.println(params1.toString());
-    }
-    return params;
-  }
-
   public static void main(String[] args) throws IOException, InterruptedException {
     Map<String, List<Result>> out = new HashMap<>();
     Map<String, JSONObject> builds = new HashMap<>();
@@ -179,7 +157,7 @@ public class Score {
         .append("</th>");
     for (int variation = 0; variation < variations[0]; variation++) {
       if (paramsMap.containsKey(variation)) {
-        JSONObject params = flattenParams(paramsMap.get(variation));
+        JSONObject params = Utils.flattenParams(paramsMap.get(variation));
         String paramString =
             params.toString().replace("{", "").replace("}", "")
                 .replace("\"", "").replace(":true", "").replace(":", " ").replace("heuristics", "")
