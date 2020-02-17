@@ -22,6 +22,7 @@ import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.MalformedInputException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -182,6 +183,10 @@ class Collector {
       file.toFile().getParentFile().mkdirs();
       storage.get(BlobId.of(bucketName, path)).downloadTo(file);
     }
-    return Files.readString(file);
+    try {
+      return Files.readString(file);
+    } catch (MalformedInputException e) {
+      throw new IOException(e);
+    }
   }
 }
