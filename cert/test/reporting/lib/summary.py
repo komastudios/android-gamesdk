@@ -225,8 +225,7 @@ def generate_summary(reports: List[Path], excluded: List[Path],
     reports_dir = reports[0].parent if len(reports) > 0 else excluded[0].parent
 
     summary_file_name = \
-        f"summary_{get_indexable_utc()}_{reports_dir.stem}" \
-            f".{output_format}"
+        f"summary_{get_indexable_utc()}.{output_format}"
     summary_path = reports_dir.joinpath(summary_file_name)
 
     summary_formatter = create_summary_formatter(output_format)

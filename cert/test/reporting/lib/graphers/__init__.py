@@ -26,17 +26,18 @@ from .depth_clear_suite_handler import DepthClearSuiteHandler
 from .file_performance_suite_handler import FilePerformanceSuiteHandler
 from .half_float_precision import HalfFloatPrecisionSuiteHandler
 from .marching_cubes_suite_handler import MarchingCubesSuiteHandler
-from .memory_allocation_suite_handler import MemoryAllocationSuiteHandler
 from .mediump_vec_norm_suite_handler import MediumPVecNormSuiteHandler
 from .memory_access.single_core_comparison import SingleCoreComparisonHandler
+from .memory_allocation_suite_handler import MemoryAllocationSuiteHandler
 from .mprotect_suite_handler import MProtectSuiteHandler
+from .temperature_suite_handler import TemperatureSuiteHandler
 
 HANDLERS = [
     AffinityTestSuiteHandler, BufferStorageSuiteHandler, CpusetSuiteHandler,
     FilePerformanceSuiteHandler, HalfFloatPrecisionSuiteHandler,
-    MemoryAllocationSuiteHandler, MarchingCubesSuiteHandler,
-    MProtectSuiteHandler, MediumPVecNormSuiteHandler,
-    SingleCoreComparisonHandler, DepthClearSuiteHandler
+    DepthClearSuiteHandler, MarchingCubesSuiteHandler,
+    MediumPVecNormSuiteHandler, MemoryAllocationSuiteHandler,
+    MProtectSuiteHandler, SingleCoreComparisonHandler, TemperatureSuiteHandler
 ]
 """List containing all registered SuiteHandler implementations to
 render charts."""
