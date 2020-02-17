@@ -44,7 +44,6 @@ public class Launcher {
         "--results-history-name", uuid.toString(),
         "--type", "game-loop",
         "--async",
-        "--timeout", "10m",
         "--format", "json"));
 
     Collection<String> devices = getDevices();
