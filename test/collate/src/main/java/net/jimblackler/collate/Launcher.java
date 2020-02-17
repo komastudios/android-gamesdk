@@ -26,7 +26,7 @@ public class Launcher {
   private static final Path ISTRESSER_BASE = SDK_BASE.resolve("gamesdk/test/istresser");
   private static final Path GRABBER_BASE = SDK_BASE.resolve("gamesdk/test/grabber");
   private static final Path GCLOUD_EXECUTABLE = GCLOUD_LOCATION.resolve("gcloud");
-  private static final int MIN_VERSION = 26;
+  private static final int MIN_VERSION = 0;
   private static final int MAX_DEVICES = Integer.MAX_VALUE;
   private static final String STANDARD_APK_PATH = "app/build/outputs/apk/debug/app-debug.apk";
 
@@ -44,7 +44,6 @@ public class Launcher {
         "--results-history-name", uuid.toString(),
         "--type", "game-loop",
         "--async",
-        "--timeout", "10m",
         "--format", "json"));
 
     Collection<String> devices = getDevices();
