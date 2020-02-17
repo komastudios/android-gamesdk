@@ -21,21 +21,20 @@ registered with the HANDLERS global.
 
 from .affinity_test_suite_handler import AffinityTestSuiteHandler
 from .buffer_storage_suite_handler import BufferStorageSuiteHandler
+from .cpuset_suite_handler import CpusetSuiteHandler
 from .file_performance_suite_handler import FilePerformanceSuiteHandler
 from .half_float_precision import HalfFloatPrecisionSuiteHandler
 from .memory_allocation_suite_handler import MemoryAllocationSuiteHandler
 from .marching_cubes_suite_handler import MarchingCubesSuiteHandler
 from .mprotect_suite_handler import MProtectSuiteHandler
 from .mediump_vec_norm_suite_handler import MediumPVecNormSuiteHandler
-
 from .memory_access.single_core_comparison import SingleCoreComparisonHandler
 
 HANDLERS = [
-    AffinityTestSuiteHandler, BufferStorageSuiteHandler,
+    AffinityTestSuiteHandler, BufferStorageSuiteHandler, CpusetSuiteHandler,
     FilePerformanceSuiteHandler, HalfFloatPrecisionSuiteHandler,
     MemoryAllocationSuiteHandler, MarchingCubesSuiteHandler,
     MProtectSuiteHandler, MediumPVecNormSuiteHandler,
-
     SingleCoreComparisonHandler
 ]
 """List containing all registered SuiteHandler implementations to
