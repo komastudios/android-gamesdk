@@ -1,0 +1,25 @@
+{
+    "auto_run": false,
+    "delay_between_tests": "5000ms",
+    "host": "SwappyGLHostActivity",
+    "defaultMonitors": [
+        {
+            "id": "MonitorOperation"
+        }
+    ],
+    "stress_tests": [
+        {
+            "enabled": true,
+            "name": "Sane CPUSET",
+            "description": "Checks CPUSET availability and big.LITTLE consistence.",
+            "duration": "10s",
+            "data_gatherer": {
+                "id": "SaneCpusetOperation",
+                "configuration": {
+                    "checkpoint_frequency": "200ms"
+                }
+            },
+            "stressors": []
+        }
+    ]
+}
