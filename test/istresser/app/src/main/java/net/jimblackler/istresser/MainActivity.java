@@ -33,6 +33,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -92,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
   private long recordNativeHeapAllocatedSize;
   private PrintStream resultsStream = System.out;
   private long startTime;
-  private long allocationStartedAt = -1;
+  private long latestAllocationTime = -1;
   private int releases;
   private long appSwitchTimerStart;
   private long lastLaunched;
@@ -102,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
   private boolean glTestActive;
   private int mallocKbPerMillisecond;
   private boolean mmapAnonTestActive;
+  private List<Heuristic> activeHeuristics = new ArrayList<>();
 
   enum ServiceState {
     ALLOCATING_MEMORY,
@@ -270,45 +272,64 @@ public class MainActivity extends AppCompatActivity {
 
     startTime = System.currentTimeMillis();
     appSwitchTimerStart = System.currentTimeMillis();
-    allocationStartedAt = startTime;
+    latestAllocationTime = startTime;
+    for (Heuristic heuristic : Heuristic.availableHeuristics) {
+      if (activeGroups.contains((heuristic.getIdentifier()))) {
+        activeHeuristics.add(heuristic);
+      }
+    }
     timer.schedule(
         new TimerTask() {
           @Override
           public void run() {
             try {
               JSONObject report = standardInfo();
-              long _allocationStartedAt = allocationStartedAt;
-              if (_allocationStartedAt != -1) {
-                boolean memoryReleased = false;
-                for (Heuristic heuristic : Heuristic.availableHeuristics) {
-                  if (activeGroups.contains(heuristic.getIdentifier())
-                      && heuristic.getSignal(activityManager) == Indicator.RED) {
-                    releaseMemory(report, heuristic.getIdentifier().toString());
-                    memoryReleased = true;
+              long _latestAllocationTime = latestAllocationTime;
+              if (_latestAllocationTime != -1) {
+                boolean shouldAllocate = true;
+                Indicator maxMemoryPressureLevel = Indicator.GREEN;
+                Identifier triggeringHeuristic = null;
+                for (Heuristic heuristic : activeHeuristics) {
+                  Indicator heuristicMemoryPressureLevel = heuristic.getSignal(activityManager);
+                  if (heuristicMemoryPressureLevel == Indicator.RED) {
+                    maxMemoryPressureLevel = Indicator.RED;
+                    triggeringHeuristic = heuristic.getIdentifier();
                     break;
+                  } else if (heuristicMemoryPressureLevel == Indicator.YELLOW) {
+                    maxMemoryPressureLevel = Indicator.YELLOW;
+                    triggeringHeuristic = heuristic.getIdentifier();
                   }
                 }
-                if (mallocKbPerMillisecond > 0 && !memoryReleased) {
-                  long sinceStart = System.currentTimeMillis() - _allocationStartedAt;
-                  long target = sinceStart * mallocKbPerMillisecond * 1024;
-                  int owed = (int) (target - nativeAllocatedByTest);
+                if (maxMemoryPressureLevel == Indicator.RED) {
+                  shouldAllocate = false;
+                  releaseMemory(report, triggeringHeuristic.toString());
+                } else if (maxMemoryPressureLevel == Indicator.YELLOW) {
+                  shouldAllocate = false;
+                  // Allocating 0 MB
+                  latestAllocationTime = System.currentTimeMillis();
+                }
+
+                if (mallocKbPerMillisecond > 0 && shouldAllocate) {
+                  long sinceLastAllocation = System.currentTimeMillis() - _latestAllocationTime;
+                  int owed = (int) (sinceLastAllocation * mallocKbPerMillisecond * 1024);
                   if (owed > 0) {
                     boolean succeeded = nativeConsume(owed);
                     if (succeeded) {
                       nativeAllocatedByTest += owed;
+                      latestAllocationTime = System.currentTimeMillis();
                     } else {
                       report.put("allocFailed", true);
                     }
                   }
                 }
                 if (mmapAnonTestActive) {
-                  long sinceStart = System.currentTimeMillis() - _allocationStartedAt;
-                  long target = sinceStart * BYTES_PER_MILLISECOND;
-                  int owed = (int) (target - mmapAllocatedByTest);
+                  long sinceLastAllocation = System.currentTimeMillis() - _latestAllocationTime;
+                  int owed = (int) (sinceLastAllocation * mallocKbPerMillisecond * 1024);
                   if (owed > MMAP_BLOCK_BYTES) {
                     long allocated = mmapAnonConsume(owed);
                     if (allocated != 0) {
                       mmapAllocatedByTest += allocated;
+                      latestAllocationTime = System.currentTimeMillis();
                     } else {
                       report.put("mmapFailed", true);
                     }
@@ -396,14 +417,17 @@ public class MainActivity extends AppCompatActivity {
     new Thread() {
       @Override
       public void run() {
+        Log.v(MEMORY_BLOCKER, FREE_ACTION);
         while (true) {
           Log.v(MEMORY_BLOCKER, ALLOCATE_ACTION + " " + MAX_SERVICE_MEMORY_MB);
+          serviceTotalMb = MAX_SERVICE_MEMORY_MB;
           try {
             Thread.sleep(SERVICE_PERIOD_SECONDS * 1000);
           } catch (Exception e) {
             e.printStackTrace();
           }
           Log.v(MEMORY_BLOCKER, FREE_ACTION);
+          serviceTotalMb = 0;
           try {
             Thread.sleep(SERVICE_PERIOD_SECONDS * 1000);
           } catch (Exception e) {
@@ -572,7 +596,7 @@ public class MainActivity extends AppCompatActivity {
     } catch (JSONException e) {
       throw new RuntimeException(e);
     }
-    allocationStartedAt = -1;
+    latestAllocationTime = -1;
     runAfterDelay(
         () -> {
           JSONObject report2;
@@ -602,7 +626,7 @@ public class MainActivity extends AppCompatActivity {
               () -> {
                 try {
                   resultsStream.println(standardInfo());
-                  allocationStartedAt = System.currentTimeMillis();
+                  latestAllocationTime = System.currentTimeMillis();
                 } catch (JSONException e) {
                   throw new RuntimeException(e);
                 }
@@ -629,7 +653,7 @@ public class MainActivity extends AppCompatActivity {
     JSONObject report = new JSONObject();
     report.put("time", System.currentTimeMillis() - startTime);
     report.put("nativeAllocated", Debug.getNativeHeapAllocatedSize());
-    boolean paused = allocationStartedAt == -1;
+    boolean paused = latestAllocationTime == -1;
     if (paused) {
       report.put("paused", true);
     }
