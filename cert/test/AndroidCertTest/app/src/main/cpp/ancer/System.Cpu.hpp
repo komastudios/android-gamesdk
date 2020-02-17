@@ -19,6 +19,7 @@
 
 #include <array>
 #include <string>
+#include <vector>
 
 namespace ancer {
 
@@ -43,8 +44,12 @@ bool SetThreadAffinity(int index, ThreadAffinity = ThreadAffinity::kAll);
  */
 bool SetThreadAffinity(ThreadAffinity affinity);
 
-[[nodiscard]] std::string GetCpuInfo();
+/**
+ * Returns a vector of core sizes where the i-th entry corresponds to the i-th CPU core.
+ */
+const std::vector<ThreadAffinity> &GetCoreSizes();
 
+[[nodiscard]] std::string GetCpuInfo();
 }
 
 #endif  // _SYSTEM_CPU_HPP

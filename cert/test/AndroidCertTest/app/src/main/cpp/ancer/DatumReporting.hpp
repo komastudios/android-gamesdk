@@ -109,7 +109,7 @@ namespace ancer::reporting::internal {
     };
 
 #define DATUM_MEMBER(value, name) #name, value.name
-#define ADD_DATUM_MEMBER(writer, value, name) w.AddItem(DATUM_MEMBER(value, name))
+#define ADD_DATUM_MEMBER(writer, value, name) writer.AddItem(DATUM_MEMBER(value, name))
 
 //------------------------------------------------------------------------------
 
