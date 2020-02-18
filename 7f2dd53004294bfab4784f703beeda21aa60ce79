@@ -19,6 +19,23 @@
     },
     {
       "key": {
+        "uuid": "59e69cca_74c91a4a",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/SaneCpusetOperation.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 277,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-02-18T23:19:33Z",
+      "side": 1,
+      "message": "We might consider using `volatile` here instead. I ran the following code on Compiler Explorer (https://godbolt.org/) under x86-64 clang 9.0.0, armv8-a clang 9, and x86-64 gcc 9.2, all with both -O1 and -O3 enabled. The result was that all instructions were optimized out of `method_one`, while method_two (`volatile`) remained *mostly* intact. It\u0027s entirely possible I\u0027m missing something, or that our compiler does something different, but it seems worth investigating.\n\n```c++\ntemplate \u003ctypename... Args\u003e\nvoid ForceCompute(Args\u0026\u0026... args) {}\n\nvoid method_one() {\n    int sum;\n    for (int i \u003d 0; i \u003c 100; ++i) {\n        sum +\u003d i;\n    }\n    ForceCompute(sum);\n}\n\nvoid method_two() {\n    volatile int sum;\n    for (int i \u003d 0; i \u003c 100; ++i) {\n        sum +\u003d i;\n    }\n}\n\n```",
+      "revId": "7f2dd53004294bfab4784f703beeda21aa60ce79",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "7262b51a_1f452b6e",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/SaneCpusetOperation.cpp",
         "patchSetId": 7
