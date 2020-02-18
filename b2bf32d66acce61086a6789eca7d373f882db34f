@@ -16,6 +16,24 @@
       "revId": "b2bf32d66acce61086a6789eca7d373f882db34f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ef3db326_74f74522",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 18
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-02-18T20:27:25Z",
+      "side": 1,
+      "message": "Previously we were passing in the filename as a const char * that we would get from calling .c_str() on a temporary string variable that would be deallocated once it got out of scope and as a result would make the const char * we stored in the Texture instance invalid, and without using a bunch of malloc and strcpy keeping it as a const char * seemed like a messy way to keep the file name around so I changed it to a std::string instead!",
+      "parentUuid": "8c94c325_e9b776b0",
+      "revId": "b2bf32d66acce61086a6789eca7d373f882db34f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
