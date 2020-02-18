@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8c94c325_e9b776b0",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 18
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-02-18T20:18:59Z",
+      "side": 1,
+      "message": "What is the difference between using C++-style string and C char*?",
+      "revId": "b2bf32d66acce61086a6789eca7d373f882db34f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
