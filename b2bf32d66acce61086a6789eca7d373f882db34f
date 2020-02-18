@@ -2,6 +2,40 @@
   "comments": [
     {
       "key": {
+        "uuid": "9d7448e5_c5c8b481",
+        "filename": "bender/bender-base/app/src/main/jni/chef/mesh_decimator.cc",
+        "patchSetId": 18
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-02-18T20:50:28Z",
+      "side": 1,
+      "message": "This is continuing from the comment previously, but I still don\u0027t love this being mostly duplicated in the obj_loader. Even if we don\u0027t want the obj_loader to call the mesh_decimator directly, can\u0027t we at least have a separate header (like mesh_helpers.h) that has these helper functions for loading MTL and other stuff that\u0027s redundant?",
+      "revId": "b2bf32d66acce61086a6789eca7d373f882db34f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2a700125_85724ce3",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 18
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-02-18T20:50:28Z",
+      "side": 1,
+      "message": "Hmm if bounding boxes are working fine maybe I\u0027m misunderstanding, but shouldn\u0027t this be (max + min) * 0.5? With parentheses for ordering?",
+      "revId": "b2bf32d66acce61086a6789eca7d373f882db34f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8c94c325_e9b776b0",
         "filename": "bender/bender-base/app/src/main/jni/texture.cc",
         "patchSetId": 18
@@ -34,6 +68,24 @@
       "revId": "b2bf32d66acce61086a6789eca7d373f882db34f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a68e7afe_8738a1ca",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 18
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-02-18T20:50:28Z",
+      "side": 1,
+      "message": "Would you mind adding this to the CL description?",
+      "parentUuid": "ef3db326_74f74522",
+      "revId": "b2bf32d66acce61086a6789eca7d373f882db34f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
