@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "221933f1_bee36482",
+        "filename": "bender/bender-base/app/src/main/jni/chef/mesh_decimator.cc",
+        "patchSetId": 18
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-02-18T23:52:35Z",
+      "side": 1,
+      "message": "Thanks for the reminder! I moved the common MTL code into benderkit as mesh_helpers.cc and reference that from both chef and Bender for now",
+      "parentUuid": "9d7448e5_c5c8b481",
+      "revId": "b2bf32d66acce61086a6789eca7d373f882db34f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2a700125_85724ce3",
         "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
         "patchSetId": 18
@@ -30,6 +48,24 @@
       "writtenOn": "2020-02-18T20:50:28Z",
       "side": 1,
       "message": "Hmm if bounding boxes are working fine maybe I\u0027m misunderstanding, but shouldn\u0027t this be (max + min) * 0.5? With parentheses for ordering?",
+      "revId": "b2bf32d66acce61086a6789eca7d373f882db34f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3a07fe48_0bd59338",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 18
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-02-18T23:52:35Z",
+      "side": 1,
+      "message": "Good catch, it should be with parentheses for sure - Also this helped me find an issue with the way that the world space bounding box center was being calculated (spoilers - it wasn\u0027t lol)",
+      "parentUuid": "2a700125_85724ce3",
       "revId": "b2bf32d66acce61086a6789eca7d373f882db34f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -83,6 +119,24 @@
       "side": 1,
       "message": "Would you mind adding this to the CL description?",
       "parentUuid": "ef3db326_74f74522",
+      "revId": "b2bf32d66acce61086a6789eca7d373f882db34f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "96f078a4_b18ea4f6",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 18
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-02-18T23:52:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a68e7afe_8738a1ca",
       "revId": "b2bf32d66acce61086a6789eca7d373f882db34f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
