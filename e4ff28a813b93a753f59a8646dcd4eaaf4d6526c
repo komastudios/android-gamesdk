@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "7485e127_65140af0",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-02-18T18:55:05Z",
+      "side": 1,
+      "message": "Currently the way we have OBJLoading setup involves reading in an obj file and potentially splitting it up should the number of verts exceed 65536, which means a single OBJ file can map to multiple geometry objects, but we have no real way of specifying which part of a given OBJ file this Geometry class instance was generated from (not a fan of this setup right now). I have some idea for how to specify which part of an obj file we need but I think that should probably be in a separate CL\n\nThis issue can be resolved best once we have our custom data representation of mesh information for Bender because then we have a 1-1 mapping of asset data to Geometry class instance. Then we can even get rid of the vertex_data vectors entirely and use the generators\n\nWhat I did right now is make the vertex_data and index_data optional parameters which default to being empty",
+      "parentUuid": "eff60c4e_d5712e63",
+      "revId": "e4ff28a813b93a753f59a8646dcd4eaaf4d6526c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "667e30c6_6c60d22b",
         "filename": "bender/bender-base/app/src/main/jni/render_graph.cc",
         "patchSetId": 15
@@ -30,6 +48,24 @@
       "writtenOn": "2020-02-15T01:03:03Z",
       "side": 1,
       "message": "You can precompute this.\nIt\u0027d be good to time this function and see if the optimization would make a difference.",
+      "revId": "e4ff28a813b93a753f59a8646dcd4eaaf4d6526c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cf1778ad_b9785f37",
+        "filename": "bender/bender-base/app/src/main/jni/render_graph.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-02-18T18:55:05Z",
+      "side": 1,
+      "message": "I timed an implementation with it precomputed and without and these are the results from Pixel 4 with all 145 meshes on screen at once:\n\nOn the Fly:  17ms\nPrecomputed: 8ms\n\nSo I implemented the precomputed method :)",
+      "parentUuid": "667e30c6_6c60d22b",
       "revId": "e4ff28a813b93a753f59a8646dcd4eaaf4d6526c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -50,6 +86,24 @@
       "revId": "e4ff28a813b93a753f59a8646dcd4eaaf4d6526c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b045cd27_13821b06",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 15
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-02-18T18:55:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c20318fa_8a9eec37",
+      "revId": "e4ff28a813b93a753f59a8646dcd4eaaf4d6526c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
