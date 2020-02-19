@@ -27,8 +27,7 @@ $ cd gamesdk/cert/test/reporting
 $ pipenv install --dev
 ```
 ---
-
-## Build and Deploy
+##Build and Deploy
 Open gamesdk/cert/test/AndroidCertTest in AndroidStudio. Attach an Android
 device with developer mode enabled and the click the Run icon in the toolbar.
 The app should build and run on the attached device.

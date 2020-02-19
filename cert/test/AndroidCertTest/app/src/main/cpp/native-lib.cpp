@@ -30,11 +30,11 @@
 #include <gtest/gtest.h>
 #endif
 
-#include "swappy/swappyGL.h"
-#include "swappy/swappyGL_extra.h"
+//#include "swappy/swappyGL.h"
+//#include "swappy/swappyGL_extra.h"
 
 #include "ancer/BaseOperation.hpp"
-#include "ancer/SwappyRenderer.hpp"
+//#include "ancer/SwappyRenderer.hpp"
 #include "ancer/Suite.hpp"
 #include "ancer/System.hpp"
 #include "ancer/util/Error.hpp"
@@ -230,16 +230,16 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_glSurfaceVie
 // SwappyGLHostActivity
 // TODO(tmillican@google.com, shamyl@google.com): Move into swappy renderer
 
-namespace {
-    void StartFrameCallback(void*, int, long) {
-        ancer::GetFpsCalculator().UpdateFps();
-    }
-
-    void SwapIntervalChangedCallback(void*) {
-        uint64_t swap_ns = SwappyGL_getSwapIntervalNS();
-        Log::I(TAG, "Swappy changed swap interval to %.2fms", swap_ns / 1e6f);
-    }
-}
+//namespace {
+//    void StartFrameCallback(void*, int, long) {
+//        ancer::GetFpsCalculator().UpdateFps();
+//    }
+//
+//    void SwapIntervalChangedCallback(void*) {
+//        uint64_t swap_ns = SwappyGL_getSwapIntervalNS();
+//        Log::I(TAG, "Swappy changed swap interval to %.2fms", swap_ns / 1e6f);
+//    }
+//}
 
 
 extern "C" JNIEXPORT void JNICALL
@@ -257,122 +257,122 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_swappyGLHost
 
     // TODO(shamyl@google.com): Remove this once Java-side double-create is fixed.
     internal::DestroyRenderer();
-    internal::CreateRenderer<SwappyRenderer>(preferredConfig, fallbackConfig);
+  //  internal::CreateRenderer<SwappyRenderer>(preferredConfig, fallbackConfig);
 
-    SwappyGL_init(env, activity);
+//    SwappyGL_init(env, activity);
 
-    SwappyTracer tracers;
-    tracers.preWait = nullptr;
-    tracers.postWait = nullptr;
-    tracers.preSwapBuffers = nullptr;
-    tracers.postSwapBuffers = nullptr;
-    tracers.startFrame = StartFrameCallback;
-    tracers.userData = nullptr;
-    tracers.swapIntervalChanged = SwapIntervalChangedCallback;
-    SwappyGL_injectTracer(&tracers);
+//    SwappyTracer tracers;
+//    tracers.preWait = nullptr;
+//    tracers.postWait = nullptr;
+//    tracers.preSwapBuffers = nullptr;
+//    tracers.postSwapBuffers = nullptr;
+//    tracers.startFrame = StartFrameCallback;
+//    tracers.userData = nullptr;
+//    tracers.swapIntervalChanged = SwapIntervalChangedCallback;
+//    SwappyGL_injectTracer(&tracers);
 }
 
-namespace {
-    // TODO(tmillican@google.com): Review how much of this should be made
-    //  a part of the generic renderer.
-    auto* GetSwappyRenderer() {
-        return static_cast<SwappyRenderer*>(internal::GetRenderer());
-    }
-}
+//namespace {
+//    // TODO(tmillican@google.com): Review how much of this should be made
+//    //  a part of the generic renderer.
+//    auto* GetSwappyRenderer() {
+//        return static_cast<SwappyRenderer*>(internal::GetRenderer());
+//    }
+//}
 
-extern "C" JNIEXPORT void JNICALL
-Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_swappyGLHost_1SetSurface(
-        JNIEnv* env,
-        jclass instance,
-        jobject surface,
-        jint width,
-        jint height) {
-    ANativeWindow* window = ANativeWindow_fromSurface(env, surface);
-    GetSwappyRenderer()->SetWindow(window,
-            static_cast<int32_t>(width), static_cast<int32_t>(height));
-}
-
-extern "C" JNIEXPORT void JNICALL
-Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_swappyGLHost_1StartRenderer(
-        JNIEnv* env,
-        jclass instance) {
-    ancer::GetFpsCalculator().Reset();
-    // start the render thread
-    GetSwappyRenderer()->Start();
-}
-
-extern "C" JNIEXPORT void JNICALL
-Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_swappyGLHost_1StopRenderer(
-        JNIEnv* env,
-        jclass instance) {
-    // TODO(shamyl@google.com): Remove this once Java-side double-create is fixed.
-    if (auto* renderer = GetSwappyRenderer()) {
-        GetSwappyRenderer()->Stop();
-        internal::DestroyRenderer();
-        SwappyGL_destroy();
-    }
-}
-
-extern "C" JNIEXPORT void JNICALL
-Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_swappyGLHost_1ClearSurface(
-        JNIEnv* env,
-        jclass instance) {
-    // TODO(shamyl@google.com): Remove this once Java-side double-create is fixed.
-    if (auto* renderer = GetSwappyRenderer()) {
-        renderer->SetWindow(nullptr, 0, 0);
-    }
-}
-
-extern "C" JNIEXPORT void JNICALL
-Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_swappyGLHost_1SetAutoSwapInterval(
-        JNIEnv* env,
-        jclass instance,
-        jboolean enabled) {
-    SwappyGL_setAutoSwapInterval(enabled);
-}
-
-extern "C" JNIEXPORT jint JNICALL
-Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_swappyGLHost_1GetSwappyStats(
-        JNIEnv* env,
-        jclass instance,
-        jint stat,
-        jint bin) {
-
-    static bool enabled = false;
-    if ( !enabled ) {
-        SwappyGL_enableStats(true);
-        enabled = true;
-    }
-
-    // stats are read one by one, query once per stat
-    static SwappyStats stats;
-    static int stat_idx = -1;
-
-    if ( stat_idx != stat ) {
-        SwappyGL_getStats(&stats);
-        stat_idx = stat;
-    }
-
-    int64_t value = 0;
-
-    if ( stats.totalFrames ) {
-        switch ( stat ) {
-        case 0:value = stats.idleFrames[bin];
-            break;
-        case 1:value = stats.lateFrames[bin];
-            break;
-        case 2:value = stats.offsetFromPreviousFrame[bin];
-            break;
-        case 3:value = stats.latencyFrames[bin];
-            break;
-        default:return static_cast<jint>(stats.totalFrames);
-        }
-
-        value = static_cast<int64_t>(std::round(value * 100.0F / stats.totalFrames));
-    }
-
-    return static_cast<jint>(value);
-}
+//extern "C" JNIEXPORT void JNICALL
+//Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_swappyGLHost_1SetSurface(
+//        JNIEnv* env,
+//        jclass instance,
+//        jobject surface,
+//        jint width,
+//        jint height) {
+//    ANativeWindow* window = ANativeWindow_fromSurface(env, surface);
+//  //  GetSwappyRenderer()->SetWindow(window,
+//            static_cast<int32_t>(width), static_cast<int32_t>(height));
+//}
+//
+//extern "C" JNIEXPORT void JNICALL
+//Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_swappyGLHost_1StartRenderer(
+//        JNIEnv* env,
+//        jclass instance) {
+//    ancer::GetFpsCalculator().Reset();
+//    // start the render thread
+////    GetSwappyRenderer()->Start();
+//}
+//
+//extern "C" JNIEXPORT void JNICALL
+//Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_swappyGLHost_1StopRenderer(
+//        JNIEnv* env,
+//        jclass instance) {
+//    // TODO(shamyl@google.com): Remove this once Java-side double-create is fixed.
+//    if (auto* renderer = GetSwappyRenderer()) {
+//        GetSwappyRenderer()->Stop();
+//        internal::DestroyRenderer();
+//        SwappyGL_destroy();
+//    }
+//}
+//
+//extern "C" JNIEXPORT void JNICALL
+//Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_swappyGLHost_1ClearSurface(
+//        JNIEnv* env,
+//        jclass instance) {
+//    // TODO(shamyl@google.com): Remove this once Java-side double-create is fixed.
+//    if (auto* renderer = GetSwappyRenderer()) {
+//        renderer->SetWindow(nullptr, 0, 0);
+//    }
+//}
+//
+//extern "C" JNIEXPORT void JNICALL
+//Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_swappyGLHost_1SetAutoSwapInterval(
+//        JNIEnv* env,
+//        jclass instance,
+//        jboolean enabled) {
+//    SwappyGL_setAutoSwapInterval(enabled);
+//}
+//
+//extern "C" JNIEXPORT jint JNICALL
+//Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_swappyGLHost_1GetSwappyStats(
+//        JNIEnv* env,
+//        jclass instance,
+//        jint stat,
+//        jint bin) {
+//
+//    static bool enabled = false;
+//    if ( !enabled ) {
+//        SwappyGL_enableStats(true);
+//        enabled = true;
+//    }
+//
+//    // stats are read one by one, query once per stat
+//    static SwappyStats stats;
+//    static int stat_idx = -1;
+//
+//    if ( stat_idx != stat ) {
+//        SwappyGL_getStats(&stats);
+//        stat_idx = stat;
+//    }
+//
+//    int64_t value = 0;
+//
+//    if ( stats.totalFrames ) {
+//        switch ( stat ) {
+//        case 0:value = stats.idleFrames[bin];
+//            break;
+//        case 1:value = stats.lateFrames[bin];
+//            break;
+//        case 2:value = stats.offsetFromPreviousFrame[bin];
+//            break;
+//        case 3:value = stats.latencyFrames[bin];
+//            break;
+//        default:return static_cast<jint>(stats.totalFrames);
+//        }
+//
+//        value = static_cast<int64_t>(std::round(value * 100.0F / stats.totalFrames));
+//    }
+//
+//    return static_cast<jint>(value);
+//}
 
 //==============================================================================
 // Helper functions
@@ -387,7 +387,7 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_openReportFi
 extern "C" JNIEXPORT void JNICALL
 Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_openReportFileDescriptor(
         JNIEnv* env, jclass instance, jint fd) {
-    reporting::OpenReportLog(dup(fd));
+ //   reporting::OpenReportLog(dup(fd));
 }
 
 

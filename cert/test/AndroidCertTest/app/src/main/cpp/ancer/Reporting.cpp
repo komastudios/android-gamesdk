@@ -222,7 +222,7 @@ namespace ancer::reporting {
             };
             WorkerThread<state> _worker = {
                     "ReportSerializer_Immediate",
-                    samples::Affinity::Odd
+                    ancer::Affinity::Odd
             };
         };
 
@@ -257,7 +257,7 @@ namespace ancer::reporting {
             };
             WorkerThread<state> _worker = {
                     "ReportSerializer_Manual",
-                    samples::Affinity::Odd
+                    ancer::Affinity::Odd
             };
         };
 

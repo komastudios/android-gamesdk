@@ -21,7 +21,8 @@
 #include <thread>
 
 #include <cpu-features.h>
-#include <device_info/device_info.h>
+//Change for g3 integration Loudermilk
+#include "device_info.h"
 
 #include "util/FpsCalculator.hpp"
 #include "util/GLHelpers.hpp"
@@ -382,9 +383,9 @@ const auto core_info = [] {
     std::vector<ThreadAffinity> core_sizes;
   } info;
 
-  androidgamesdk_deviceinfo_GameSdkDeviceInfoWithErrors proto;
+  //androidgamesdk_deviceinfo_GameSdkDeviceInfoWithErrors proto;
   androidgamesdk_deviceinfo::ProtoDataHolder data_holder;
-  createProto(proto, data_holder);
+ // createProto(proto, data_holder);
 
   const auto num_cpus = std::min((int) data_holder.cpuFreqs.size,
                                  android_getCpuCount());
@@ -395,64 +396,64 @@ const auto core_info = [] {
 
   info.num_cores[(int) ThreadAffinity::kAnyCore] = num_cpus;
   info.core_sizes.reserve(num_cpus);
-
-  auto min_freq = data_holder.cpuFreqs.data[0];
-  auto max_freq = data_holder.cpuFreqs.data[0];
-
-  for (int i = 0; i < num_cpus; ++i) {
-    const auto freq = data_holder.cpuFreqs.data[i];
-
-    // Found a frequency outside of existing big/little range
-    if (freq < min_freq || max_freq < freq) {
-      // Determine which end we're replacing.
-      const auto adj = ToAffinityOffset(
-          freq < min_freq ? ThreadAffinity::kLittleCore
-                          : ThreadAffinity::kBigCore);
-      constexpr auto kMiddleIndex = (int) ThreadAffinity::kMiddleCore;
-      if (min_freq==max_freq) {
-        // All data so far as been recorded as middle. Take that
-        // data and place it on the opposite end now that we've
-        // found an opposite frequency for a big/little pair.
-        std::swap(info.num_cores[kMiddleIndex],
-                  info.num_cores[kMiddleIndex - adj]);
-        for (auto &size : info.core_sizes) {
-          size = (ThreadAffinity) ((int) size - adj);
-        }
-      } else {
-        // Since we've found a new frequency for big/little, take
-        // what we thought was the big/little end before and merge
-        // it with whatever's already in the middle.
-        info.num_cores[kMiddleIndex] += info.num_cores[kMiddleIndex + adj];
-        info.num_cores[kMiddleIndex + adj] = 0;
-        for (auto &size : info.core_sizes) {
-          if (size==FromAffinityOffset(adj)) {
-            size = ThreadAffinity::kMiddleCore;
-          }
-        }
-      }
-    }
-
-    min_freq = std::min(min_freq, freq);
-    max_freq = std::max(max_freq, freq);
-
-    const auto which =
-        ((min_freq==max_freq) ||
-            (min_freq < freq && freq < max_freq))
-        ? ThreadAffinity::kMiddleCore
-        : freq==min_freq ? ThreadAffinity::kLittleCore
-                         : ThreadAffinity::kBigCore;
-
-    Log::D(TAG, "Core %d @ %d", i, freq);
-
-    ++info.num_cores[(int) which];
-    info.core_sizes.push_back(which);
-  }
-
-  Log::I(TAG, "%d cores detected : %d little @ %ld, %d big @ %ld, & %d middle)",
-         info.num_cores[(int) ThreadAffinity::kAnyCore],
-         info.num_cores[(int) ThreadAffinity::kLittleCore], min_freq,
-         info.num_cores[(int) ThreadAffinity::kBigCore], max_freq,
-         info.num_cores[(int) ThreadAffinity::kMiddleCore]);
+//
+//  auto min_freq = data_holder.cpuFreqs.data[0];
+//  auto max_freq = data_holder.cpuFreqs.data[0];
+//
+//  for (int i = 0; i < num_cpus; ++i) {
+//    const auto freq = data_holder.cpuFreqs.data[i];
+//
+//    // Found a frequency outside of existing big/little range
+//    if (freq < min_freq || max_freq < freq) {
+//      // Determine which end we're replacing.
+//      const auto adj = ToAffinityOffset(
+//          freq < min_freq ? ThreadAffinity::kLittleCore
+//                          : ThreadAffinity::kBigCore);
+//      constexpr auto kMiddleIndex = (int) ThreadAffinity::kMiddleCore;
+//      if (min_freq==max_freq) {
+//        // All data so far as been recorded as middle. Take that
+//        // data and place it on the opposite end now that we've
+//        // found an opposite frequency for a big/little pair.
+//        std::swap(info.num_cores[kMiddleIndex],
+//                  info.num_cores[kMiddleIndex - adj]);
+//        for (auto &size : info.core_sizes) {
+//          size = (ThreadAffinity) ((int) size - adj);
+//        }
+//      } else {
+//        // Since we've found a new frequency for big/little, take
+//        // what we thought was the big/little end before and merge
+//        // it with whatever's already in the middle.
+//        info.num_cores[kMiddleIndex] += info.num_cores[kMiddleIndex + adj];
+//        info.num_cores[kMiddleIndex + adj] = 0;
+//        for (auto &size : info.core_sizes) {
+//          if (size==FromAffinityOffset(adj)) {
+//            size = ThreadAffinity::kMiddleCore;
+//          }
+//        }
+//      }
+//    }
+//
+//    min_freq = std::min(min_freq, freq);
+//    max_freq = std::max(max_freq, freq);
+//
+//    const auto which =
+//        ((min_freq==max_freq) ||
+//            (min_freq < freq && freq < max_freq))
+//        ? ThreadAffinity::kMiddleCore
+//        : freq==min_freq ? ThreadAffinity::kLittleCore
+//                         : ThreadAffinity::kBigCore;
+//
+//    Log::D(TAG, "Core %d @ %d", i, freq);
+//
+//    ++info.num_cores[(int) which];
+//    info.core_sizes.push_back(which);
+//  }
+//
+//  Log::I(TAG, "%d cores detected : %d little @ %ld, %d big @ %ld, & %d middle)",
+//         info.num_cores[(int) ThreadAffinity::kAnyCore],
+//         info.num_cores[(int) ThreadAffinity::kLittleCore], min_freq,
+//         info.num_cores[(int) ThreadAffinity::kBigCore], max_freq,
+//         info.num_cores[(int) ThreadAffinity::kMiddleCore]);
 
   return info;
 }();

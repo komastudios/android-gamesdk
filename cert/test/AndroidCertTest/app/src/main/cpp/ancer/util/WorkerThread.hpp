@@ -21,17 +21,91 @@
 #include <optional>
 #include <queue>
 #include <thread>
+#include <sched.h>
+#include <unistd.h>
+#include <cstdint>
+#include <unordered_map>
 
-#include "Thread.h"
+
+//#include "Thread.h"
+
+// Enable thread safety attributes only with clang.
+// The attributes can be safely erased when compiling with other compilers.
+#if defined(__clang__) && (!defined(SWIG))
+#define THREAD_ANNOTATION_ATTRIBUTE__(x)   __attribute__((x))
+#else
+#define THREAD_ANNOTATION_ATTRIBUTE__(x)   // no-op
+#endif
+
+#define GUARDED_BY(x) \
+  THREAD_ANNOTATION_ATTRIBUTE__(guarded_by(x))
+
+#define REQUIRES(...) \
+  THREAD_ANNOTATION_ATTRIBUTE__(requires_capability(__VA_ARGS__))
 
 
 namespace ancer {
+
+
+        enum class Affinity {
+            None,
+            Even,
+            Odd
+        };
+
+    int32_t getNumCpus() {
+        static int32_t sNumCpus = []() {
+            pid_t pid = gettid();
+            cpu_set_t cpuSet;
+            CPU_ZERO(&cpuSet);
+            sched_getaffinity(pid, sizeof(cpuSet), &cpuSet);
+
+            int32_t numCpus = 0;
+            while (CPU_ISSET(numCpus, &cpuSet)) {
+                ++numCpus;
+            }
+
+            return numCpus;
+        }();
+
+        return sNumCpus;
+    }
+
+    void setAffinity(int32_t cpu) {
+        cpu_set_t cpuSet;
+        CPU_ZERO(&cpuSet);
+        CPU_SET(cpu, &cpuSet);
+        sched_setaffinity(gettid(), sizeof(cpuSet), &cpuSet);
+    }
+
+    void setAffinity(Affinity affinity) {
+        const int32_t numCpus = getNumCpus();
+
+        cpu_set_t cpuSet;
+        CPU_ZERO(&cpuSet);
+        for (int32_t cpu = 0; cpu < numCpus; ++cpu) {
+            switch (affinity) {
+                case Affinity::None:
+                    CPU_SET(cpu, &cpuSet);
+                    break;
+                case Affinity::Even:
+                    if (cpu % 2 == 0) CPU_SET(cpu, &cpuSet);
+                    break;
+                case Affinity::Odd:
+                    if (cpu % 2 == 1) CPU_SET(cpu, &cpuSet);
+                    break;
+            }
+        }
+
+        sched_setaffinity(gettid(), sizeof(cpuSet), &cpuSet);
+    }
+
     template <class ThreadState>
     class WorkerThread {
     public:
         using Work = std::function<void(ThreadState*)>;
 
-        WorkerThread(const char* name, samples::Affinity affinity,
+        WorkerThread(const char* name, ancer::Affinity affinity,
             std::function<ThreadState()> thread_state_factory)
             : _name(name), _affinity(affinity),
               _thread_state_factory(thread_state_factory) {
@@ -39,7 +113,7 @@ namespace ancer {
         }
 
         WorkerThread(const char* name,
-                   samples::Affinity affinity)
+                   ancer::Affinity affinity)
             : _name(name), _affinity(affinity),
             _thread_state_factory([](){ return ThreadState(); }) {
             LaunchThread();
@@ -81,7 +155,7 @@ namespace ancer {
         }
 
         void ThreadMain() {
-            samples::setAffinity(_affinity);
+            ancer::setAffinity(_affinity);
             pthread_setname_np(pthread_self(), _name.c_str());
 
             ThreadState thread_state = _thread_state_factory();
@@ -106,7 +180,7 @@ namespace ancer {
         }
 
         const std::string _name;
-        const samples::Affinity _affinity;
+        const ancer::Affinity _affinity;
         std::function<ThreadState()> _thread_state_factory;
 
         std::mutex _thread_mutex;

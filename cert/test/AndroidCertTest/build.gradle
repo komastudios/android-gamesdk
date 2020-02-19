@@ -13,17 +13,12 @@ buildscript {
     }
 }
 
-// make the output aar folder of the gameSdk available as a dependency
-def gamesdkLibDir = "../../../../../out/outputs/aar"
-println "gamesdkLibDir:" + gamesdkLibDir
 
 allprojects {
     repositories {
         google()
         jcenter()
-        flatDir {
-            dirs gamesdkLibDir
-        }
+
     }
 }
 

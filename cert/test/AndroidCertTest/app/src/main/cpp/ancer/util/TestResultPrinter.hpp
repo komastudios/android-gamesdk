@@ -15,7 +15,7 @@
  */
 
 #pragma once
-
+/*
 #include <gtest/gtest.h>
 #include <jni.h>
 
@@ -44,21 +44,22 @@ namespace ancer {
         template <typename... Args>
         void ColoredPrintf(PrintColor color, const char* fmt, Args&&... args);
         void Flush();
+*/
 
-        void OnTestProgramStart(const UnitTest& /*unit_test*/) override {}
-        void OnTestIterationStart(const UnitTest& unit_test, int iteration) override;
-        void OnEnvironmentsSetUpStart(const UnitTest& unit_test) override;
-        void OnEnvironmentsSetUpEnd(const UnitTest& /*unit_test*/) override {}
-        void OnTestCaseStart(const TestSuite& test_suite) override;
-        void OnTestStart(const TestInfo& test_info) override;
-        void OnTestPartResult(const TestPartResult& result) override;
-        void OnTestEnd(const TestInfo& test_info) override;
-        void OnTestCaseEnd(const TestSuite& test_suite) override;
-        void OnEnvironmentsTearDownStart(const UnitTest& unit_test) override;
-        void OnEnvironmentsTearDownEnd(const UnitTest& /*unit_test*/) override {}
-        void OnTestIterationEnd(const UnitTest& unit_test, int iteration) override;
-        void OnTestProgramEnd(const UnitTest& /*unit_test*/) override {}
-
+//        void OnTestProgramStart(const UnitTest& /*unit_test*/) override {};
+//        void OnTestIterationStart(const UnitTest& unit_test, int iteration) override;
+//        void OnEnvironmentsSetUpStart(const UnitTest& unit_test) override;
+//        void OnEnvironmentsSetUpEnd(const UnitTest& /*unit_test*/) override {}
+//        void OnTestCaseStart(const TestSuite& test_suite) override;
+//        void OnTestStart(const TestInfo& test_info) override;
+//        void OnTestPartResult(const TestPartResult& result) override;
+//        void OnTestEnd(const TestInfo& test_info) override;
+//        void OnTestCaseEnd(const TestSuite& test_suite) override;
+//        void OnEnvironmentsTearDownStart(const UnitTest& unit_test) override;
+//        void OnEnvironmentsTearDownEnd(const UnitTest& /*unit_test*/) override {}
+//        void OnTestIterationEnd(const UnitTest& unit_test, int iteration) override;
+//        void OnTestProgramEnd(const UnitTest& /*unit_test*/) override {}
+/*
     private:
         JNIEnv* _env;
         jobject _out;
@@ -75,3 +76,4 @@ namespace ancer {
         void PrintFullTestCommentIfPresent(const TestInfo& test_info);
     };
 } // namespace ancer
+*/

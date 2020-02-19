@@ -1,14 +1,13 @@
 cmake_minimum_required(VERSION 3.10.2)
 
 get_filename_component(CppDir ${CMAKE_CURRENT_SOURCE_DIR} ABSOLUTE)
-get_filename_component(GameSDKDir ${GAMESDK_DIR} ABSOLUTE)
 get_filename_component(LibDir ${CMAKE_CURRENT_SOURCE_DIR}/../../../../common/3rd_party ABSOLUTE)
 get_filename_component(ShadercDir ${ANDROID_NDK}/sources/third_party/shaderc ABSOLUTE)
 get_filename_component(GTestDir ${ANDROID_NDK}/sources/third_party/googletest ABSOLUTE)
 get_filename_component(CpuFeaturesDir ${ANDROID_NDK}/sources/android/cpufeatures ABSOLUTE)
 
 #===================================================================================================
-include("${GameSDKDir}/src/device_info/device_info.cmake")
+
 
 project(native-lib LANGUAGES C CXX)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fPIC")
@@ -17,54 +16,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fPIC")
 #  The one definite build issue is a phase that uses ar to merge the various components into a
 #  single gamesdk lib. There may be other issues in code, but since we're theoretically building
 #  for Android and not Windows/Mac/etc., that seems like it shouldn't be an issue.
-if (CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")
-    set(SWAPPY_LOCATION "${GameSDKDir}/src/swappy")
-    set(SWAPPY_LOCATION_COMMON "${SWAPPY_LOCATION}/common")
-    set(SWAPPY_LOCATION_OPENGL "${SWAPPY_LOCATION}/opengl")
-    set(SWAPPY_LOCATION_VULKAN "${SWAPPY_LOCATION}/vulkan")
-
-    add_library(swappy_static STATIC
-            ${SWAPPY_LOCATION_COMMON}/ChoreographerFilter.cpp
-            ${SWAPPY_LOCATION_COMMON}/ChoreographerThread.cpp
-            ${SWAPPY_LOCATION_COMMON}/FrameStatistics.cpp
-            ${SWAPPY_LOCATION_COMMON}/CpuInfo.cpp
-            ${SWAPPY_LOCATION_COMMON}/SystemProperties.cpp
-            ${SWAPPY_LOCATION_COMMON}/Settings.cpp
-            ${SWAPPY_LOCATION_COMMON}/Thread.cpp
-            ${SWAPPY_LOCATION_COMMON}/SwappyCommon.cpp
-            ${SWAPPY_LOCATION_COMMON}/swappy_c.cpp
-            ${SWAPPY_LOCATION_COMMON}/SwappyDisplayManager.cpp
-            ${SWAPPY_LOCATION_COMMON}/CPUTracer.cpp
-            ${SWAPPY_LOCATION_OPENGL}/EGL.cpp
-            ${SWAPPY_LOCATION_OPENGL}/swappyGL_c.cpp
-            ${SWAPPY_LOCATION_OPENGL}/SwappyGL.cpp
-            ${ANDROID_NDK}/sources/third_party/vulkan/src/common/vulkan_wrapper.cpp
-            ${SWAPPY_LOCATION_VULKAN}/swappyVk_c.cpp
-            ${SWAPPY_LOCATION_VULKAN}/SwappyVk.cpp
-            ${SWAPPY_LOCATION_VULKAN}/SwappyVkBase.cpp
-            ${SWAPPY_LOCATION_VULKAN}/SwappyVkFallback.cpp
-            ${SWAPPY_LOCATION_VULKAN}/SwappyVkGoogleDisplayTiming.cpp)
-
-    set_target_properties(swappy_static PROPERTIES
-            LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/build)
-
-    target_include_directories(swappy_static PUBLIC
-            ${SWAPPY_LOCATION}/../../include
-            ${SWAPPY_LOCATION}/../common
-            ${SWAPPY_LOCATION}/common
-            ${SWAPPY_LOCATION}/opengl
-            ${SWAPPY_LOCATION}/vulkan
-            ${ANDROID_NDK}/sources/third_party/vulkan/src/common
-            )
-else ()
-    include("${GameSDKDir}/samples/gamesdk.cmake")
-    add_gamesdk_target(
-            DO_LOCAL_BUILD
-            ROOT_DIR "${GameSDKDir}"
-            PACKAGE_DIR "${GameSDKDir}/../package/local"
-            GEN_TASK "localBuild"
-    )
-endif ()
 
 add_compile_options("-frtti")
 
@@ -82,10 +33,8 @@ add_library(${PROJECT_NAME} SHARED
 
         # Framework & utilities
         ancer/BaseOperation.cpp
-        ancer/BaseVulkanOperation.cpp
         ancer/Reporting.cpp
         ancer/Suite.cpp
-        ancer/SwappyRenderer.cpp
         ancer/System.cpp
         ancer/util/Basics.cpp
         ancer/util/Bitmath.cpp
@@ -94,12 +43,6 @@ add_library(${PROJECT_NAME} SHARED
         ancer/util/JNIHelpers.cpp
         ancer/util/ThreadSyncPoint.cpp
         ancer/util/Time.cpp
-        ancer/util/VkHelpers.cpp
-        ancer/util/vulkan/VkHelpersImpl.cpp
-        ancer/vulkan/android_helper.cc
-        ancer/vulkan/vulkan_base.cc
-        ancer/vulkan/context.cc
-        ancer/vulkan/swapchain.cc
 
         # Operations
         operations/CalculatePIOperation.cpp
@@ -111,20 +54,7 @@ add_library(${PROJECT_NAME} SHARED
         operations/MonitorOperation.cpp
         operations/ScheduleAffinityOperation.cpp
         operations/ThreadSchedulingOperation.cpp
-        operations/VulkanMprotectCheckOperation.cpp
 
-        operations/gl/BufferStorageGLES3Operation.cpp
-        operations/gl/DepthClearGLES3Operation.cpp
-        operations/gl/DualSourceBlendingGLES3Operation.cpp
-        operations/gl/FillRateGLES3Operation.cpp
-        operations/gl/HalfFloatPrecisionGLES3Operation.cpp
-        operations/gl/HelloGLES3Operation.cpp
-        operations/gl/MarchingCubesGLES3Operation.cpp
-        operations/gl/marching_cubes/MarchingCubes.cpp
-        operations/gl/marching_cubes/Storage.cpp
-        operations/gl/ShaderBlobGLES3Operation.cpp
-        operations/gl/TeapotRendererGLES3Operation.cpp
-        operations/gl/VertexStreamGLES3Operation.cpp
 
         # integration testing
         operations/integration/FakeOperation.cpp
@@ -132,8 +62,6 @@ add_library(${PROJECT_NAME} SHARED
 
         # some external deps
         ${CpuFeaturesDir}/cpu-features.c
-        ${GameSDKDir}/samples/common/src/Thread.cpp
-        ${GameSdkDir}/
         )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
@@ -141,8 +69,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         ${CppDir}
         ${LibDir}/json/include
         ${LibDir}/glm/
-        ${GameSDKDir}/include
-        ${GameSDKDir}/samples/common/include
         ${ANDROID_NDK}/sources/third_party/vulkan/src/common
         ${ANDROID_NDK}/sources/android/native_app_glue
         ${ANDROID_NDK}/sources/third_party/shaderc/include
@@ -168,31 +94,6 @@ target_link_libraries(${PROJECT_NAME}
         shaderc_lib
         )
 
-if (CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")
-    target_link_libraries(${PROJECT_NAME}
-            swappy_static
-            )
-else ()
-    target_link_libraries(${PROJECT_NAME}
-            device_info_static
-            gamesdk
-            )
-endif ()
 
 #===================================================================================================
 
-if (true) # build_tests
-    add_definitions(-DBUILD_UNIT_TESTS)
-    target_sources(${PROJECT_NAME} PRIVATE
-            ancer/util/TestResultPrinter.cpp
-
-            ancer/util/Bitmath.tests.cpp
-            ancer/util/Json.tests.cpp
-            ancer/util/Time.tests.cpp
-            )
-
-    add_library(gtest STATIC ${GTestDir}/src/gtest-all.cc)
-    target_include_directories(gtest PRIVATE ${GTestDir})
-    target_include_directories(gtest PUBLIC ${GTestDir}/include)
-    target_link_libraries(${PROJECT_NAME} gtest)
-endif ()

@@ -24,7 +24,7 @@
 
 #include <EGL/egl.h>
 #include <GLES3/gl32.h>
-#include <Trace.h>
+#include <ancer/Trace.h>
 
 #include "Reporting.hpp"
 #include "System.hpp"
@@ -38,8 +38,7 @@
 
 
 #define ANCER_SCOPED_TRACE(desc) \
-    gamesdk::ScopedTrace ANCER_CONCAT( trace_, __COUNTER__ )( desc )
-
+    ancer::ScopedTrace ANCER_CONCAT( trace_, __COUNTER__ )( desc )
 
 namespace ancer {
     /**
