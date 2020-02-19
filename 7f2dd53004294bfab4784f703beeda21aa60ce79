@@ -72,6 +72,24 @@
     },
     {
       "key": {
+        "uuid": "1a8db28b_6be77b30",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/SaneCpusetOperation.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 277,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-19T19:07:49Z",
+      "side": 1,
+      "message": "These are really great thoughts, Tyler!! Based on your description, I think in this particular scenario \"volatile\" does what I wanted. I really wanted the most non-optimized possible formula. But I\u0027m glad to learn all the possible choices and that tip you said about assigning the final result to a volatile variable. Thanks!",
+      "parentUuid": "fcacca0d_323d1c06",
+      "revId": "7f2dd53004294bfab4784f703beeda21aa60ce79",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7262b51a_1f452b6e",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/SaneCpusetOperation.cpp",
         "patchSetId": 7
