@@ -72,6 +72,24 @@
     },
     {
       "key": {
+        "uuid": "a843a80b_a4f7aef9",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 18
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-02-19T00:30:22Z",
+      "side": 1,
+      "message": "Resolved",
+      "parentUuid": "3a07fe48_0bd59338",
+      "revId": "b2bf32d66acce61086a6789eca7d373f882db34f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8c94c325_e9b776b0",
         "filename": "bender/bender-base/app/src/main/jni/texture.cc",
         "patchSetId": 18

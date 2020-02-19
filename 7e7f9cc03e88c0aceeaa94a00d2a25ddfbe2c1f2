@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5fa1e581_cd91cac1",
+        "filename": "bender/bender-base/app/src/main/jni/chef/mesh_decimator.cc",
+        "patchSetId": 19
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-02-19T00:30:22Z",
+      "side": 1,
+      "message": "Also sorry for not noting this earlier; style nit? PascalCase function name and in general in changed files, underscore variable_names? (Also minor I think struct variables don\u0027t have the trailing_underscore_ that class variables do)",
+      "revId": "7e7f9cc03e88c0aceeaa94a00d2a25ddfbe2c1f2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "07b6e76a_6d5b7f10",
+        "filename": "bender/bender-base/app/src/main/jni/chef/mesh_decimator.cc",
+        "patchSetId": 19
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-02-19T00:30:22Z",
+      "side": 1,
+      "message": "Is stuff in this also shared with obj_loader to put in mesh_helpers?",
+      "revId": "7e7f9cc03e88c0aceeaa94a00d2a25ddfbe2c1f2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8ad0e20_c00083d0",
+        "filename": "bender/bender-base/utils/bender_kit/mesh_helpers.h",
+        "patchSetId": 19
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-02-19T00:30:22Z",
+      "side": 1,
+      "message": "Minor nit, but do these std::string need to be initialized? I thought they\u0027d be empty-string-initialized by default, unlike char *.",
+      "revId": "7e7f9cc03e88c0aceeaa94a00d2a25ddfbe2c1f2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
