@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "a6cf508b_1d8206d6",
+        "filename": "bender/bender-base/app/src/main/jni/chef/mesh_decimator.cc",
+        "patchSetId": 19
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-02-19T17:57:45Z",
+      "side": 1,
+      "message": "A holdover from a pre-Google C++ style guide time :P I can update these! I also made the same changes for the OBJ/MTL structs across obj_loader in Bender and Chef specifically",
+      "parentUuid": "5fa1e581_cd91cac1",
+      "revId": "7e7f9cc03e88c0aceeaa94a00d2a25ddfbe2c1f2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "07b6e76a_6d5b7f10",
         "filename": "bender/bender-base/app/src/main/jni/chef/mesh_decimator.cc",
         "patchSetId": 19
@@ -30,6 +48,24 @@
       "writtenOn": "2020-02-19T00:30:22Z",
       "side": 1,
       "message": "Is stuff in this also shared with obj_loader to put in mesh_helpers?",
+      "revId": "7e7f9cc03e88c0aceeaa94a00d2a25ddfbe2c1f2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b6ff9623_e19020ec",
+        "filename": "bender/bender-base/app/src/main/jni/chef/mesh_decimator.cc",
+        "patchSetId": 19
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-02-19T17:57:45Z",
+      "side": 1,
+      "message": "LoadOBJ is a little different with the way that it handles the texture coords and the faces so it would be a bit trickier to factor it out into a common class\n\nPerhaps in a larger refactor I can change the if-else ladder into something like a command-pattern where I could have different functions carry out the work needed for each of the OBJ-specified lines, although that might be a larger overall refactor that would be good for a separate CL",
+      "parentUuid": "07b6e76a_6d5b7f10",
       "revId": "7e7f9cc03e88c0aceeaa94a00d2a25ddfbe2c1f2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -50,6 +86,24 @@
       "revId": "7e7f9cc03e88c0aceeaa94a00d2a25ddfbe2c1f2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "902cf220_594cce0f",
+        "filename": "bender/bender-base/utils/bender_kit/mesh_helpers.h",
+        "patchSetId": 19
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-02-19T17:57:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a8ad0e20_c00083d0",
+      "revId": "7e7f9cc03e88c0aceeaa94a00d2a25ddfbe2c1f2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
