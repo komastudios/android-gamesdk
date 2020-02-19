@@ -1,0 +1,32 @@
+{
+    "auto_run": false,
+    "delay_between_tests": "5000ms",
+    "host": "{{host}}",
+    "defaultMonitors": [
+      {
+        "id": "MonitorOperation"
+      }
+    ],
+    "stress_tests": [
+      {
+        "enabled": true,
+        "name": "Marching Cubes",
+        "description": "Tests marching cubes algorithm in a lot of permutations",
+        "duration": "5m",
+        "data_gatherer": {
+          "id": "MarchingCubesGLES3Operation",
+          "configuration": {
+            "thread_affinity": "{{thread_affinity}}",
+            "thread_pinned": {{thread_pinning}},
+            "warm_up_time": "5s",
+            "sleep_config": {
+              "period": "{{period}}",
+              "duration": "{{duration}}",
+              "method": "{{method}}"
+            },
+            "job_batching_setup": "{{job_batching}}"
+          }
+        }
+      }
+    ]
+  }

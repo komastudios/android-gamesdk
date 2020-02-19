@@ -15,21 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+precision mediump float;
 
-layout(location = 0) in vec3 inPosition;
-layout(location = 1) in vec3 inColor;
-layout(location = 2) in vec3 inNormal;
+in vec4 vColor;
+in vec3 vNormal;
+in vec3 vWorldNormal;
 
-out vec3 vColor;
-out vec3 vNormal;
-out vec3 vWorldNormal;
+out vec4 fragColor;
 
-uniform mat4 uMVP;
-uniform mat4 uModel;
+/////////////////////////////////////////////
 
 void main() {
-    gl_Position = uMVP * vec4(inPosition, 1.0);
-    vColor = inColor;
-    vNormal = inNormal;
-    vWorldNormal = mat3(uModel) * inNormal;
+    vec3 color = vColor.rgb * ((vNormal + vec3(1.0)) * 0.5);
+    fragColor = vec4(color, 1);
 }

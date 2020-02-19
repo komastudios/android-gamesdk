@@ -1,7 +1,7 @@
 #version 300 es
 
 /*
- * Copyright 2019 The Android Open Source Project
+ * Copyright 2020 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,16 @@
  * limitations under the License.
  */
 
-in vec3 vColor;
-in vec3 vNormal;
-in vec3 vWorldNormal;
+layout(location = 0) in vec3 inPosition;
+layout(location = 1) in vec4 inColor;
+layout(location = 2) in vec3 inNormal;
 
-out vec4 fragColor;
+out vec4 vColor;
 
-/////////////////////////////////////////////
+uniform mat4 uMVP;
+uniform mat4 uModel;
 
 void main() {
-    vec3 color = vColor * ((vNormal + vec3(1.0)) * 0.5);
-    fragColor = vec4(color, 1);
+    gl_Position = uMVP * vec4(inPosition, 1.0);
+    vColor = inColor;
 }
