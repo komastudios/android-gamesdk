@@ -108,7 +108,7 @@ class SuiteHandler(ABC):
 
 
     @abstractclassmethod
-    def handles_entire_report(cls):
+    def handles_entire_report(cls, suites: List['Suite']):
         """Check if this suite handler wants to parse all suites as a single graph.
         """
         return False

@@ -124,6 +124,7 @@ add_library(${PROJECT_NAME} SHARED
 
         operations/MemoryAllocOperation.cpp
         operations/MonitorOperation.cpp
+        operations/SaneCpusetOperation.cpp
         operations/ScheduleAffinityOperation.cpp
         operations/ThreadSchedulingOperation.cpp
         operations/VulkanMprotectCheckOperation.cpp
