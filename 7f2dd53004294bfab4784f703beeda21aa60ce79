@@ -54,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "fcacca0d_323d1c06",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/SaneCpusetOperation.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 277,
+      "author": {
+        "id": 1597621
+      },
+      "writtenOn": "2020-02-19T19:03:08Z",
+      "side": 1,
+      "message": "Had a discussion with Michael. The reason ForceCompute works is because it forwards everything to an external function: Since the compiler can\u0027t see what that function is*, it doesn\u0027t realize the work isn\u0027t \"necessary\" so it does the work and passes it to the noop function.\n\nThat\u0027s the theory, anyway. There *are* link-time optimizations that can optimize even this away, but as far as I know we\u0027re not running into them... yet, at least.\n\n\nIn the example above, the problem with marking sum as volatile (beyond volatile just being a bucket of worms to begin with) is that it does that same \"Do not optimize this\" bit for *every* use of the variable. Depending on the test, this is probably not ideal.\n\nInstead, what you can do is assign the sum to a volatile variable at the end; that will let it do the work in the most efficient way possible, but it still guarantees that the work is done.\n\n\nIn fact, you can keep ForceCompute() if you change the implementation to:\n\n```\n// Basics.hpp\n    // Forces the compiler to make sure the given data is actually calculated.\n    // To avoid the compiler completely optimizing away work for CPU stress\n    // operations and the like. Note that this will add a single pointer write\n    // as overhead.\n    template \u003ctypename... Args\u003e\n    void ForceCompute(Args\u0026\u0026... args);\n\n\n// Basics.inl\nnamespace ancer::util_detail {\n    template \u003ctypename T\u003e\n    inline volatile const T* dummy;\n\n    template \u003ctypename T\u003e void ForceCompute(volatile T\u0026 v) {\n        dummy\u003cT\u003e \u003d \u0026v;\n    }\n}\n\n\ntemplate \u003ctypename... Args\u003e\nvoid ancer::ForceCompute(Args\u0026\u0026... args) {\n    (util_detail::ForceCompute(std::forward\u003cArgs\u003e(args)), ...);\n}\n```",
+      "parentUuid": "1e67662f_1132ff71",
+      "revId": "7f2dd53004294bfab4784f703beeda21aa60ce79",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "7262b51a_1f452b6e",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/SaneCpusetOperation.cpp",
         "patchSetId": 7
