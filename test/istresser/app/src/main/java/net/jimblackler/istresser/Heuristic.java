@@ -86,7 +86,7 @@ public abstract class Heuristic {
               ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
               if (memoryInfo.availMem < memoryInfo.threshold * 2) {
                 return Indicator.RED;
-              } else if (memoryInfo.availMem < memoryInfo.threshold * 2.5) {
+              } else if (memoryInfo.availMem < memoryInfo.threshold * 3) {
                 return Indicator.YELLOW;
               } else {
                 return Indicator.GREEN;
