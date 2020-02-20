@@ -12,6 +12,7 @@ static constexpr uint32_t LCG_PRIME1 = 214013;
 static constexpr uint32_t LCG_PRIME2 = 2531011;
 
 std::list<char *> allocated;
+std::list<size_t> allocated_size;
 std::mutex mtx;
 TestRenderer *testRenderer;
 
@@ -35,6 +36,7 @@ Java_net_jimblackler_istresser_MainActivity_nativeConsume(JNIEnv *env, jobject i
 
   if (data) {
     allocated.push_back(data);
+    allocated_size.push_back(byte_count);
     lcg_fill(data, byte_count);
   } else {
     __android_log_print(ANDROID_LOG_WARN, appname, "Could not allocate");
@@ -51,6 +53,21 @@ Java_net_jimblackler_istresser_MainActivity_freeAll(JNIEnv *env, jobject instanc
   while (!allocated.empty()) {
     free(allocated.front());
     allocated.pop_front();
+    allocated_size.pop_front();
+  }
+  mtx.unlock();
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_net_jimblackler_istresser_MainActivity_freeMemory(JNIEnv *env, jobject instance, jint bytes) {
+  mtx.lock();
+  __android_log_print(ANDROID_LOG_INFO, appname, "Freeing %u entries", allocated.size());
+  size_t bytes_freed = 0;
+  while (!allocated.empty() && bytes_freed < bytes) {
+    free(allocated.front());
+    allocated.pop_front();
+    bytes_freed += allocated_size.front();
+    allocated_size.pop_front();
   }
   mtx.unlock();
 }

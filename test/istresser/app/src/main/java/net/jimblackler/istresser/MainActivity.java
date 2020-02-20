@@ -61,10 +61,11 @@ public class MainActivity extends AppCompatActivity {
   // Set LAUNCH_DURATION to a value in milliseconds to trigger the launch test.
   private static final int LAUNCH_DURATION = 0;
   private static final int RETURN_DURATION = LAUNCH_DURATION + 1000 * 20;
-  private static final int MAX_SERVICE_MEMORY_MB = 500;
-  private static final int SERVICE_PERIOD_SECONDS = 60;
+  private static final int BACKGROUND_MEMORY_PRESSURE_MB = 500;
+  private static final int BACKGROUND_PRESSURE_PERIOD_SECONDS = 30;
   private static final int BYTES_IN_MEGABYTE = 1024 * 1024;
   private static final int MMAP_BLOCK_BYTES = 128 * BYTES_IN_MEGABYTE;
+  private static final int MEMORY_TO_FREE_PER_CYCLE_MB = 500;
 
   private static final String MEMORY_BLOCKER = "MemoryBlockCommand";
   private static final String ALLOCATE_ACTION = "Allocate";
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
       ImmutableList.of("VmSize", "VmRSS", "VmData");
 
   private static final String[] SUMMARY_FIELDS = {
-        "summary.graphics", "summary.native-heap", "summary.total-pss"
+    "summary.graphics", "summary.native-heap", "summary.total-pss"
   };
 
   static {
@@ -104,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
   private int mallocKbPerMillisecond;
   private boolean mmapAnonTestActive;
   private List<Heuristic> activeHeuristics = new ArrayList<>();
+  private boolean yellowLightTesting = false;
 
   enum ServiceState {
     ALLOCATING_MEMORY,
@@ -178,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                       try {
-                        Thread.sleep(SERVICE_PERIOD_SECONDS * 1000);
+                        Thread.sleep(BACKGROUND_PRESSURE_PERIOD_SECONDS * 1000);
                       } catch (Exception e) {
                         e.printStackTrace();
                       }
@@ -195,12 +197,13 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                       try {
-                        Thread.sleep(SERVICE_PERIOD_SECONDS * 1000);
+                        Thread.sleep(BACKGROUND_PRESSURE_PERIOD_SECONDS * 1000);
                       } catch (Exception e) {
                         e.printStackTrace();
                       }
                       serviceState = ServiceState.ALLOCATING_MEMORY;
-                      serviceCommunicationHelper.allocateServerMemory(MAX_SERVICE_MEMORY_MB);
+                      serviceCommunicationHelper.allocateServerMemory(
+                          BACKGROUND_MEMORY_PRESSURE_MB);
                     }
                   }.start();
 
@@ -218,6 +221,8 @@ public class MainActivity extends AppCompatActivity {
 
       PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
       report.put("version", packageInfo.versionCode);
+
+      yellowLightTesting = params.optBoolean("yellowLightTesting");
 
       if (params.optBoolean("serviceBlocker")) {
         activateServiceBlocker();
@@ -300,13 +305,21 @@ public class MainActivity extends AppCompatActivity {
                     triggeringHeuristic = heuristic.getIdentifier();
                   }
                 }
-                if (maxMemoryPressureLevel == Indicator.RED) {
-                  shouldAllocate = false;
-                  releaseMemory(report, triggeringHeuristic.toString());
-                } else if (maxMemoryPressureLevel == Indicator.YELLOW) {
-                  shouldAllocate = false;
-                  // Allocating 0 MB
-                  latestAllocationTime = System.currentTimeMillis();
+                if (yellowLightTesting) {
+                  if (maxMemoryPressureLevel == Indicator.RED) {
+                    shouldAllocate = false;
+                    freeMemory(MEMORY_TO_FREE_PER_CYCLE_MB * BYTES_IN_MEGABYTE);
+                    latestAllocationTime = System.currentTimeMillis();
+                  } else if (maxMemoryPressureLevel == Indicator.YELLOW) {
+                    shouldAllocate = false;
+                    // Allocating 0 MB
+                    latestAllocationTime = System.currentTimeMillis();
+                  }
+                } else {
+                  if (maxMemoryPressureLevel == Indicator.RED) {
+                    shouldAllocate = false;
+                    releaseMemory(report, triggeringHeuristic.toString());
+                  }
                 }
 
                 if (mallocKbPerMillisecond > 0 && shouldAllocate) {
@@ -345,7 +358,7 @@ public class MainActivity extends AppCompatActivity {
                   File file =
                       new File(
                           Environment.getExternalStoragePublicDirectory(
-                              Environment.DIRECTORY_PICTURES)
+                                  Environment.DIRECTORY_PICTURES)
                               + File.separator
                               + "pic.jpg");
                   String authority = getApplicationContext().getPackageName() + ".provider";
@@ -410,7 +423,7 @@ public class MainActivity extends AppCompatActivity {
   private void activateServiceBlocker() {
     serviceState = ServiceState.ALLOCATING_MEMORY;
     serviceTotalMb = 0;
-    serviceCommunicationHelper.allocateServerMemory(MAX_SERVICE_MEMORY_MB);
+    serviceCommunicationHelper.allocateServerMemory(BACKGROUND_MEMORY_PRESSURE_MB);
   }
 
   private void activateFirebaseBlocker() {
@@ -419,17 +432,17 @@ public class MainActivity extends AppCompatActivity {
       public void run() {
         Log.v(MEMORY_BLOCKER, FREE_ACTION);
         while (true) {
-          Log.v(MEMORY_BLOCKER, ALLOCATE_ACTION + " " + MAX_SERVICE_MEMORY_MB);
-          serviceTotalMb = MAX_SERVICE_MEMORY_MB;
+          Log.v(MEMORY_BLOCKER, ALLOCATE_ACTION + " " + BACKGROUND_MEMORY_PRESSURE_MB);
+          serviceTotalMb = BACKGROUND_MEMORY_PRESSURE_MB;
           try {
-            Thread.sleep(SERVICE_PERIOD_SECONDS * 1000);
+            Thread.sleep(BACKGROUND_PRESSURE_PERIOD_SECONDS * 1000);
           } catch (Exception e) {
             e.printStackTrace();
           }
           Log.v(MEMORY_BLOCKER, FREE_ACTION);
           serviceTotalMb = 0;
           try {
-            Thread.sleep(SERVICE_PERIOD_SECONDS * 1000);
+            Thread.sleep(BACKGROUND_PRESSURE_PERIOD_SECONDS * 1000);
           } catch (Exception e) {
             e.printStackTrace();
           }
@@ -511,8 +524,8 @@ public class MainActivity extends AppCompatActivity {
         () -> {
           updateRecords();
 
-          ActivityManager activityManager = (ActivityManager)
-              Objects.requireNonNull(this.getSystemService((ACTIVITY_SERVICE)));
+          ActivityManager activityManager =
+              (ActivityManager) Objects.requireNonNull(this.getSystemService((ACTIVITY_SERVICE)));
 
           TextView uptime = findViewById(R.id.uptime);
           float timeRunning = (float) (System.currentTimeMillis() - startTime) / 1000;
@@ -551,8 +564,8 @@ public class MainActivity extends AppCompatActivity {
           oomScoreTextView.setText("" + Heuristics.getOomScore(activityManager));
 
           TextView lowMemoryTextView = findViewById(R.id.lowMemory);
-          lowMemoryTextView
-              .setText(Boolean.valueOf(Heuristics.lowMemoryCheck(activityManager)).toString());
+          lowMemoryTextView.setText(
+              Boolean.valueOf(Heuristics.lowMemoryCheck(activityManager)).toString());
 
           TextView trimMemoryComplete = findViewById(R.id.releases);
           trimMemoryComplete.setText(String.format(Locale.getDefault(), "%d", releases));
@@ -658,8 +671,8 @@ public class MainActivity extends AppCompatActivity {
       report.put("paused", true);
     }
 
-    ActivityManager activityManager = (ActivityManager)
-        Objects.requireNonNull(getSystemService((ACTIVITY_SERVICE)));
+    ActivityManager activityManager =
+        (ActivityManager) Objects.requireNonNull(getSystemService((ACTIVITY_SERVICE)));
     ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(activityManager);
     report.put("availMem", memoryInfo.availMem);
     boolean lowMemory = Heuristics.lowMemoryCheck(activityManager);
@@ -709,6 +722,8 @@ public class MainActivity extends AppCompatActivity {
   public static native void release();
 
   public native void freeAll();
+
+  public native void freeMemory(int bytes);
 
   public native boolean nativeConsume(int bytes);
 
