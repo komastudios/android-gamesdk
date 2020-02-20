@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "affbf173_14bd9793",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-02-20T19:05:30Z",
+      "side": 1,
+      "message": "Hmm, I think naming for the vectors should swap here; params with vertex_data and index_data, and stuff with the generator more meaningfully named? Like generated_vertices and generated_indices or something.",
+      "revId": "ebaeaaa832073017f6e52c7469ab900aab3f3888",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3fdcdbac_f4a00b46",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-02-20T19:05:30Z",
+      "side": 1,
+      "message": "Should we rename this camera_pos now that the camera is a full struct (separate concept)?",
+      "revId": "ebaeaaa832073017f6e52c7469ab900aab3f3888",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0c8b2e3c_b282af2d",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-02-20T19:05:30Z",
+      "side": 1,
+      "message": "Looks like some of the style changes got lost in the move from the previous CL (variable_names and FunctionNames) sorry to keep bringing it up 😭",
+      "revId": "ebaeaaa832073017f6e52c7469ab900aab3f3888",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
