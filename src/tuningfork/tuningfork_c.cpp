@@ -113,6 +113,10 @@ TFErrorCode TuningFork_setFidelityParameters(const CProtobufSerialization* param
         return TFERROR_BAD_PARAMETER;
 }
 
+TFErrorCode TuningFork_enableMemoryRecording(bool enable) {
+    return tf::EnableMemoryRecording(enable);
+}
+
 void TUNINGFORK_VERSION_SYMBOL() {
     // Intentionally empty: this function is used to ensure that the proper
     // version of the library is linked against the proper headers.

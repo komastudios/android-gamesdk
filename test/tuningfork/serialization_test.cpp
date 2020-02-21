@@ -112,7 +112,8 @@ std::string single_tick_with_loading = R"TF({
 TEST(SerializationTest, SerializationWithLoading) {
     ProngCache prong_cache(2/*size*/, 2/*max_instrumentation_keys*/, {DefaultHistogram(1)},
                            [](uint64_t){ return SerializedAnnotation(); },
-                           [](uint64_t id){ return id == 0; });
+                           [](uint64_t id){ return id == 0; },
+                           nullptr);
     ProtobufSerialization fidelity_params;
     ExtraUploadInfo device_info;
     std::string evt_ser;
@@ -184,7 +185,8 @@ TFHistogram DefaultHistogram() {
 TEST(SerializationTest, GEDeserialization) {
     ProngCache prong_cache(1/*size*/, 1/*max_instrumentation_keys*/, {DefaultHistogram()},
                            [](uint64_t){ return SerializedAnnotation(); },
-                           [](uint64_t){ return false; });
+                           [](uint64_t){ return false; },
+                           nullptr);
     ProtobufSerialization fidelity_params;
     ExtraUploadInfo device_info;
     std::string evt_ser;
@@ -200,7 +202,8 @@ TEST(SerializationTest, GEDeserialization) {
     EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, report)) << evt_ser << "\n!=\n" << report;
     ProngCache pc(1/*size*/, 1/*max_instrumentation_keys*/, {DefaultHistogram()},
                   [](uint64_t){ return SerializedAnnotation(); },
-                  [](uint64_t){ return false; });
+                  [](uint64_t){ return false; },
+                  nullptr);
     TestIdProvider id_provider;
     EXPECT_EQ(GESerializer::DeserializeAndMerge(evt_ser, id_provider, pc), TFERROR_OK)
             << "Deserialize single";
