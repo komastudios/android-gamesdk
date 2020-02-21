@@ -388,6 +388,14 @@ TFErrorCode TuningFork_destroy();
  */
 TFErrorCode TuningFork_setFidelityParameters(const CProtobufSerialization* params);
 
+/**
+ * @brief Enable or disable memory telemetry recording.
+ * By default, memory telemetry recording is turned *on* at initialization.
+ * @param enable If true, memory recording is enabled, if false it is disabled.
+ * @return TFERROR_OK unless Tuning Fork wasn't initialized.
+ */
+TFErrorCode TuningFork_enableMemoryRecording(bool enable);
+
 #ifdef __cplusplus
 }
 #endif

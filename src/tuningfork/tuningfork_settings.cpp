@@ -184,11 +184,11 @@ TFHistogram DefaultHistogram(InstrumentationKey ikey) {
     if (ikey==TFTICK_SYSCPU) {
         default_histogram.bucket_min = 6.54f;
         default_histogram.bucket_max = 60.0f;
-        default_histogram.n_buckets = Histogram::kDefaultNumBuckets;
+        default_histogram.n_buckets = HistogramBase::kDefaultNumBuckets;
     } else {
         default_histogram.bucket_min = 0.0f;
         default_histogram.bucket_max = 20.0f;
-        default_histogram.n_buckets = Histogram::kDefaultNumBuckets;
+        default_histogram.n_buckets = HistogramBase::kDefaultNumBuckets;
     }
     if (ikey>=TFTICK_SYSCPU) {
         // Fill in the well-known keys

@@ -97,6 +97,7 @@ private:
     std::vector<uint32_t> annotation_radix_mult_;
     AnnotationId current_annotation_id_;
     ITimeProvider *time_provider_;
+    IMemInfoProvider* meminfo_provider_;
     std::vector<InstrumentationKey> ikeys_;
     std::atomic<int> next_ikey_;
     TimePoint loading_start_;
@@ -106,7 +107,8 @@ public:
                    const ExtraUploadInfo& extra_upload_info,
                    Backend *backend,
                    ParamsLoader *loader,
-                   ITimeProvider *time_provider);
+                   ITimeProvider *time_provider,
+                   IMemInfoProvider* memory_provider);
 
     void InitHistogramSettings();
 
@@ -141,6 +143,8 @@ public:
     }
 
     TFErrorCode SetFidelityParameters(const ProtobufSerialization& params);
+
+    TFErrorCode EnableMemoryRecording(bool enable);
 
 private:
     Prong *TickNanos(uint64_t compound_id, TimePoint t);
@@ -189,12 +193,15 @@ static GEBackend s_backend;
 static ParamsLoader s_loader;
 static ExtraUploadInfo s_extra_upload_info;
 static std::unique_ptr<SwappyTraceWrapper> s_swappy_tracer;
+static std::unique_ptr<DefaultMemInfoProvider> s_meminfo_provider =
+        std::make_unique<DefaultMemInfoProvider>();
 
 TFErrorCode Init(const Settings &settings,
                  const ExtraUploadInfo* extra_upload_info,
                  Backend *backend,
                  ParamsLoader *loader,
-                 ITimeProvider *time_provider) {
+                 ITimeProvider *time_provider,
+                 IMemInfoProvider *meminfo_provider) {
 
     if (s_impl.get() != nullptr)
         return TFERROR_ALREADY_INITIALIZED;
@@ -220,8 +227,14 @@ TFErrorCode Init(const Settings &settings,
         time_provider = s_chrono_time_provider.get();
     }
 
+    if (meminfo_provider == nullptr) {
+        meminfo_provider = s_meminfo_provider.get();
+        meminfo_provider->SetDeviceMemoryBytes(extra_upload_info->total_memory_bytes);
+    }
+
     s_impl = std::make_unique<TuningForkImpl>(settings, *extra_upload_info,
-                                              backend, loader, time_provider);
+                                              backend, loader, time_provider,
+                                              meminfo_provider);
 
     // Set up the Swappy tracer after TuningFork is initialized
     if (settings.c_settings.swappy_tracer_fn != nullptr) {
@@ -322,11 +335,17 @@ TFErrorCode SetFidelityParameters(const ProtobufSerialization& params) {
     else return s_impl->SetFidelityParameters(params);
 }
 
+TFErrorCode EnableMemoryRecording(bool enable) {
+    if (!s_impl) return TFERROR_TUNINGFORK_NOT_INITIALIZED;
+    else return s_impl->EnableMemoryRecording(enable);
+}
+
 TuningForkImpl::TuningForkImpl(const Settings& settings,
                                const ExtraUploadInfo& extra_upload_info,
                                Backend *backend,
                                ParamsLoader *loader,
-                               ITimeProvider *time_provider) :
+                               ITimeProvider *time_provider,
+                               IMemInfoProvider* meminfo_provider) :
                                      settings_(settings),
                                      trace_(gamesdk::Trace::create()),
                                      backend_(backend),
@@ -334,6 +353,7 @@ TuningForkImpl::TuningForkImpl(const Settings& settings,
                                      upload_thread_(backend, extra_upload_info),
                                      current_annotation_id_(0),
                                      time_provider_(time_provider),
+                                     meminfo_provider_(meminfo_provider),
                                      ikeys_(settings.aggregation_strategy.max_instrumentation_keys),
                                      next_ikey_(0),
                                      loading_start_(TimePoint::min()) {
@@ -373,10 +393,10 @@ TuningForkImpl::TuningForkImpl(const Settings& settings,
     auto isLoading = [this](uint64_t id) { return IsLoadingAnnotationId(id); };
     prong_caches_[0] = std::make_unique<ProngCache>(max_num_prongs_, max_ikeys,
                                                     settings_.histograms, serializeId,
-                                                    isLoading);
+                                                    isLoading, meminfo_provider);
     prong_caches_[1] = std::make_unique<ProngCache>(max_num_prongs_, max_ikeys,
                                                     settings_.histograms, serializeId,
-                                                    isLoading);
+                                                    isLoading, meminfo_provider);
     current_prong_cache_ = prong_caches_[0].get();
     live_traces_.resize(max_num_prongs_);
     for (auto &t: live_traces_) t = TimePoint::min();
@@ -418,7 +438,8 @@ uint64_t TuningForkImpl::SetCurrentAnnotation(const ProtobufSerialization &annot
                 TraceNanos(current_annotation_id_, dt);
                 int cnt = (int)std::chrono::duration_cast<std::chrono::milliseconds>(dt).count();
                 bool isLoading = IsLoadingAnnotationId(current_annotation_id_);
-                ALOGI("Scene loading %" PRIu64 " (%s) took %d ms", current_annotation_id_, isLoading?"true":"false", cnt);
+                ALOGI("Scene loading %" PRIu64 " (%s) took %d ms", current_annotation_id_,
+                      isLoading?"true":"false", cnt);
                 current_annotation_id_ = id;
                 loading_start_ = TimePoint::min();
             }
@@ -730,6 +751,13 @@ bool TuningForkImpl::Debugging() const {
     else
         return false;
 #endif
+}
+
+TFErrorCode TuningForkImpl::EnableMemoryRecording(bool enable) {
+    if (meminfo_provider_ != nullptr) {
+        meminfo_provider_->SetEnabled(enable);
+    }
+    return TFERROR_OK;
 }
 
 } // namespace tuningfork {
