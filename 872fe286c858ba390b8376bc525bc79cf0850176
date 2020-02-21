@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "b85f40d6_fe0b91e3",
+        "filename": "cert/test/reporting/lib/graphers/depth_clear_suite_handler.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-02-21T17:47:40Z",
+      "side": 1,
+      "message": "I was using it earlier, but it got factored away. 👍",
+      "parentUuid": "ea276953_f8c11077",
+      "revId": "872fe286c858ba390b8376bc525bc79cf0850176",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "41dcbf8f_96c661c6",
         "filename": "cert/test/reporting/lib/graphers/depth_clear_suite_handler.py",
         "patchSetId": 2
@@ -30,6 +48,24 @@
       "writtenOn": "2020-02-21T04:14:12Z",
       "side": 1,
       "message": "[S/R] Side comment: I noticed that we got the entire SuiteHandler hierarchy (i.e., parent class and all implementations) having methods receiving a parameter \"suites\" of type List[\u0027SuiteHandler\u0027]. Turns out that it\u0027s a List[\u0027Suite\u0027] 😋. In the next maintenance round I\u0027ll fix these all.\n\nMust also say that a recent change, that a colleague did, broke all existing suite handlers because he added a couple of abstract functions to the parent class without implementing it to the existing suite handlers. That also needs to be fixed.",
+      "revId": "872fe286c858ba390b8376bc525bc79cf0850176",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "056e7fb8_b20eb807",
+        "filename": "cert/test/reporting/lib/graphers/depth_clear_suite_handler.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-02-21T17:47:40Z",
+      "side": 1,
+      "message": "Yeah, this nagged me too. I don\u0027t recall where this came from, I think it needs to be correlated with cross-suite rendering since I suspect they\u0027re doing similiar work.",
+      "parentUuid": "41dcbf8f_96c661c6",
       "revId": "872fe286c858ba390b8376bc525bc79cf0850176",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
@@ -50,6 +86,24 @@
       "revId": "872fe286c858ba390b8376bc525bc79cf0850176",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bb9e0791_90c125a5",
+        "filename": "cert/test/reporting/lib/graphers/depth_clear_suite_handler.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-02-21T17:47:40Z",
+      "side": 1,
+      "message": "Good catch! Fixed.",
+      "parentUuid": "af0419a3_3f73feb7",
+      "revId": "872fe286c858ba390b8376bc525bc79cf0850176",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
