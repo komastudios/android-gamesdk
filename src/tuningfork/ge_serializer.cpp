@@ -136,6 +136,13 @@ std::vector<uint8_t> B64Decode(const std::string& s) {
     return ret;
 }
 
+std::string JsonUint64(uint64_t x) {
+    // Json doesn't support 64-bit integers, so protobufs use strings
+    // https://developers.google.com/protocol-buffers/docs/proto3#json
+    std::stringstream s;
+    s << x;
+    return s.str();
+}
 Json::object TelemetryContextJson(const ProngCache& prong_cache,
                                   const SerializedAnnotation& annotation,
                                   const ProtobufSerialization& fidelity_params,
@@ -157,11 +164,12 @@ Json::object TelemetryReportJson(const ProngCache& prong_cache,
                                  bool& empty, Duration& duration) {
     std::vector<Json::object> render_histograms;
     std::vector<Json::object> loading_histograms;
+    std::vector<Json::object> memory_histograms;
     std::vector<int> loading_events_times; // Ignore fractional milliseconds
     duration = Duration::zero();
     for(auto& p: prong_cache.prongs()) {
         if (p.get()!=nullptr && p->Count()>0 && p->annotation_==annotation) {
-            if (p->histogram_.GetMode() != Histogram::Mode::HISTOGRAM) {
+            if (p->histogram_.GetMode() != HistogramBase::Mode::HISTOGRAM) {
                 for(auto c: p->histogram_.samples()) {
                     auto v = static_cast<int>(c);
                     if (v != 0)
@@ -186,6 +194,25 @@ Json::object TelemetryReportJson(const ProngCache& prong_cache,
             duration += p->duration_;
         }
     }
+    for( auto& mem_histogram: prong_cache.GetMemoryTelemetry().GetHistograms()) {
+        if (mem_histogram.histogram.Count() != 0) {
+            std::vector<int32_t> counts;
+            for(auto c: mem_histogram.histogram.buckets())
+                counts.push_back(static_cast<int32_t>(c));
+
+            Json::object histogram_config {
+                {"bucket_min_bytes", JsonUint64(mem_histogram.bucket_min_bytes)},
+                {"bucket_max_bytes", JsonUint64(mem_histogram.bucket_max_bytes)}
+            };
+            Json::object o {
+                {"type", mem_histogram.type},
+                {"period_ms", static_cast<int>(mem_histogram.period_ms)},
+                {"histogram_config", histogram_config},
+                {"counts",        counts}};
+            // Should never get here: we make loading histograms events-only in prong.cpp
+            memory_histograms.push_back(o);
+        }
+    }
     int total_size = render_histograms.size() + loading_histograms.size() + loading_events_times.size();
     empty = (total_size==0);
     // Use the average duration for this annotation
@@ -197,6 +224,7 @@ Json::object TelemetryReportJson(const ProngCache& prong_cache,
             {"render_time_histogram", render_histograms }
         };
     }
+    // Loading histograms
     if (loading_histograms.size()>0 || loading_events_times.size()>0) {
         Json::object loading;
         if (loading_histograms.size()>0) {
@@ -206,6 +234,12 @@ Json::object TelemetryReportJson(const ProngCache& prong_cache,
             loading["loading_events"] = Json::object{{"times_ms", loading_events_times}};
         }
         ret["loading"] = loading;
+    }
+    // Memory histogram
+    if (memory_histograms.size()>0) {
+        Json::object memory;
+        memory["memory_histogram"] = memory_histograms;
+        ret["memory"] = memory;
     }
     return ret;
 }

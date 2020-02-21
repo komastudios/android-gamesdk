@@ -18,7 +18,7 @@
 
 #include "tuningfork_internal.h"
 #include "histogram.h"
-
+#include "memory_telemetry.h"
 #include <inttypes.h>
 #include <vector>
 #include <map>
@@ -34,7 +34,7 @@ class Prong {
 public:
     InstrumentationKey instrumentation_key_;
     SerializedAnnotation annotation_;
-    Histogram histogram_;
+    Histogram<double> histogram_;
     TimePoint last_time_;
     Duration duration_;
     bool loading_;
@@ -62,11 +62,14 @@ class ProngCache {
     std::vector<std::unique_ptr<Prong>> prongs_;
     int max_num_instrumentation_keys_;
     TimeInterval time_;
+    MemoryTelemetry memory_telemetry_;
 public:
     ProngCache(size_t size, int max_num_instrumentation_keys,
                const std::vector<TFHistogram>& histogram_settings,
                const std::function<SerializedAnnotation(uint64_t)>& serializeId,
-               const std::function<bool(uint64_t)>& is_loading_id);
+               const std::function<bool(uint64_t)>& is_loading_id,
+               ITimeProvider* time_provider,
+               IMemInfoProvider* meminfo_provider);
 
     Prong *Get(uint64_t compound_id) const;
 
@@ -75,11 +78,12 @@ public:
     void SetInstrumentKeys(const std::vector<InstrumentationKey>& instrument_keys);
 
     // Update times
-    void Ping(std::chrono::system_clock::time_point t);
+    void Ping(SystemTimePoint t);
 
     TimeInterval time() const { return time_; }
     const std::vector<std::unique_ptr<Prong>>& prongs() const { return prongs_; }
 
+    const MemoryTelemetry& GetMemoryTelemetry() const { return memory_telemetry_; }
 };
 
 } // namespace tuningfork {

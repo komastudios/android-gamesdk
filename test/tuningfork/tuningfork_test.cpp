@@ -17,6 +17,7 @@
 
 #include "tuningfork/protobuf_util.h"
 #include "tuningfork/tuningfork_internal.h"
+#include "tuningfork/memory_telemetry.h"
 
 #include "full/tuningfork.pb.h"
 #include "full/dev_tuningfork.pb.h"
@@ -26,7 +27,10 @@
 #include <vector>
 #include <mutex>
 
+#ifndef LOG_TAG
 #define LOG_TAG "TFTest"
+#endif
+
 #include "Log.h"
 
 using namespace tuningfork;
@@ -123,6 +127,11 @@ public:
     }
 };
 
+class TestMemInfoProvider : public DefaultMemInfoProvider {
+  public:
+    bool IsEnabled() { return false; }
+};
+
 class TuningForkTest {
   public:
     std::shared_ptr<std::condition_variable> cv_ = std::make_shared<std::condition_variable>();
@@ -130,6 +139,7 @@ class TuningForkTest {
     TestBackend test_backend_;
     std::shared_ptr<TestParamsLoader> params_loader_;
     TestTimeProvider time_provider_;
+    TestMemInfoProvider meminfo_provider_;
     ExtraUploadInfo extra_upload_info_;
     TFErrorCode init_return_value_;
 
@@ -140,7 +150,8 @@ class TuningForkTest {
               time_provider_(tick_size), extra_upload_info_({}) {
         init_return_value_ = tuningfork::Init(settings, &extra_upload_info_, &test_backend_,
                                               params_loader_.get(),
-                                              &time_provider_);
+                                              &time_provider_,
+                                              &meminfo_provider_);
         EXPECT_EQ(init_return_value_, TFERROR_OK) << "Bad Init";
     }
 

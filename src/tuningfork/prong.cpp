@@ -64,8 +64,11 @@ void Prong::SetInstrumentKey(InstrumentationKey key) {
 ProngCache::ProngCache(size_t size, int max_num_instrumentation_keys,
                        const std::vector<TFHistogram> &histogram_settings,
                        const std::function<SerializedAnnotation(uint64_t)> &seralizeId,
-                       const std::function<bool(uint64_t)>& is_loading_id)
-    : prongs_(size), max_num_instrumentation_keys_(max_num_instrumentation_keys) {
+                       const std::function<bool(uint64_t)>& is_loading_id,
+                       ITimeProvider* time_provider,
+                       IMemInfoProvider* meminfo_provider)
+    : prongs_(size), max_num_instrumentation_keys_(max_num_instrumentation_keys),
+      memory_telemetry_(time_provider, meminfo_provider) {
     // Allocate all the prongs
     InstrumentationKey ikey = 0;
     for (int i = 0; i < size; ++i) {
@@ -103,6 +106,7 @@ void ProngCache::Clear() {
     }
     time_.start = SystemTimePoint();
     time_.end = SystemTimePoint();
+    memory_telemetry_.Clear();
 }
 
 void ProngCache::SetInstrumentKeys(const std::vector<InstrumentationKey>& instrument_keys) {
@@ -117,11 +121,12 @@ void ProngCache::SetInstrumentKeys(const std::vector<InstrumentationKey>& instru
     }
 }
 
-void ProngCache::Ping(std::chrono::system_clock::time_point t) {
-    if(time_.start==std::chrono::system_clock::time_point()) {
+void ProngCache::Ping(SystemTimePoint t) {
+    if(time_.start==SystemTimePoint()) {
         time_.start = t;
     }
     time_.end = t;
+    memory_telemetry_.Ping(t);
 }
 
 }
