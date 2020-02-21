@@ -104,6 +104,24 @@
       "revId": "872fe286c858ba390b8376bc525bc79cf0850176",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fe1701d1_dff9e51a",
+        "filename": "cert/test/reporting/lib/graphers/depth_clear_suite_handler.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-21T17:59:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bb9e0791_90c125a5",
+      "revId": "872fe286c858ba390b8376bc525bc79cf0850176",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
