@@ -152,13 +152,21 @@ public:
     virtual std::chrono::system_clock::time_point SystemNow() = 0;
 };
 
+// Provider of system memory information.
+class IMemInfoProvider {
+  public:
+    virtual uint64_t GetNativeHeapAllocatedSize() = 0;
+    virtual bool IsEnabled() = 0;
+};
+
 // If no backend is passed, the default backend, which uploads to the google endpoint is used.
 // If no timeProvider is passed, std::chrono::steady_clock is used.
 // If no env is passed, there can be no upload or download.
 TFErrorCode Init(const Settings& settings,
-                 const ExtraUploadInfo* extra_info = 0,
-                 Backend* backend = 0, ParamsLoader* loader = 0,
-                 ITimeProvider* time_provider = 0);
+                 const ExtraUploadInfo* extra_info = nullptr,
+                 Backend* backend = 0, ParamsLoader* loader = nullptr,
+                 ITimeProvider* time_provider = nullptr,
+                 IMemInfoProvider* meminfo_provider = nullptr);
 
 // Use save_dir to initialize the persister if it's not already set
 void CheckSettings(Settings& c_settings, const std::string& save_dir);
