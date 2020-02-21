@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ea276953_f8c11077",
+        "filename": "cert/test/reporting/lib/graphers/depth_clear_suite_handler.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-21T04:14:12Z",
+      "side": 1,
+      "message": "[S/R] While self.depth_bits is later evaluated in DepthClearSuiteHandler::render_plot(), self.has_requested_context \"dies\" here. It\u0027s set, but it won\u0027t be evaluated afterwards.\n\nYou may want to consider removing it.",
+      "revId": "872fe286c858ba390b8376bc525bc79cf0850176",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "41dcbf8f_96c661c6",
+        "filename": "cert/test/reporting/lib/graphers/depth_clear_suite_handler.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-21T04:14:12Z",
+      "side": 1,
+      "message": "[S/R] Side comment: I noticed that we got the entire SuiteHandler hierarchy (i.e., parent class and all implementations) having methods receiving a parameter \"suites\" of type List[\u0027SuiteHandler\u0027]. Turns out that it\u0027s a List[\u0027Suite\u0027] 😋. In the next maintenance round I\u0027ll fix these all.\n\nMust also say that a recent change, that a colleague did, broke all existing suite handlers because he added a couple of abstract functions to the parent class without implementing it to the existing suite handlers. That also needs to be fixed.",
+      "revId": "872fe286c858ba390b8376bc525bc79cf0850176",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "af0419a3_3f73feb7",
+        "filename": "cert/test/reporting/lib/graphers/depth_clear_suite_handler.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-21T04:14:12Z",
+      "side": 1,
+      "message": "I think you\u0027re missing a new-line ending here, Shamyl. If it happened that errors_at_depth is true and, namely, self.depth_bits is 32, the returned message would be\n\n\"xx errors out of yy samplesRan on requested 32-bit depth context\"",
+      "revId": "872fe286c858ba390b8376bc525bc79cf0850176",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
