@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "39e51590_39c719b6",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-02-21T20:54:45Z",
+      "side": 1,
+      "message": "Ahh, linter noticed these as typos (indices)",
+      "revId": "0cf406bdc4dd66acb8541572f3ead92b7b9ece92",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
