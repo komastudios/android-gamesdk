@@ -136,6 +136,13 @@ std::vector<uint8_t> B64Decode(const std::string& s) {
     return ret;
 }
 
+std::string JsonUint64(uint64_t x) {
+    // Json doesn't support 64-bit integers, so protobufs use strings
+    // https://developers.google.com/protocol-buffers/docs/proto3#json
+    std::stringstream s;
+    s << x;
+    return s.str();
+}
 Json::object TelemetryContextJson(const ProngCache& prong_cache,
                                   const SerializedAnnotation& annotation,
                                   const ProtobufSerialization& fidelity_params,
@@ -161,7 +168,7 @@ Json::object TelemetryReportJson(const ProngCache& prong_cache,
     duration = Duration::zero();
     for(auto& p: prong_cache.prongs()) {
         if (p.get()!=nullptr && p->Count()>0 && p->annotation_==annotation) {
-            if (p->histogram_.GetMode() != Histogram::Mode::HISTOGRAM) {
+            if (p->histogram_.GetMode() != HistogramBase::Mode::HISTOGRAM) {
                 for(auto c: p->histogram_.samples()) {
                     auto v = static_cast<int>(c);
                     if (v != 0)
@@ -197,6 +204,7 @@ Json::object TelemetryReportJson(const ProngCache& prong_cache,
             {"render_time_histogram", render_histograms }
         };
     }
+    // Loading histograms
     if (loading_histograms.size()>0 || loading_events_times.size()>0) {
         Json::object loading;
         if (loading_histograms.size()>0) {
@@ -209,14 +217,49 @@ Json::object TelemetryReportJson(const ProngCache& prong_cache,
     }
     return ret;
 }
+Json::object MemoryTelemetryReportJson(const ProngCache& prong_cache,
+                                 const SerializedAnnotation& annotation,
+                                 bool& empty) {
+    std::vector<Json::object> memory_histograms;
+    for( auto& mem_histogram: prong_cache.GetMemoryTelemetry().GetHistograms()) {
+        auto h = mem_histogram.histogram;
+        if (h.Count() != 0) {
+            if (h.GetMode()==HistogramBase::Mode::AUTO_RANGE)
+                h.CalcBucketsFromSamples();
+            std::vector<int32_t> counts;
+            for(auto c: h.buckets())
+                counts.push_back(static_cast<int32_t>(c));
+
+            Json::object histogram_config {
+                {"bucket_min_bytes", JsonUint64(h.BucketStart())},
+                {"bucket_max_bytes", JsonUint64(h.BucketEnd())}
+            };
+            Json::object o {
+                {"type", mem_histogram.type},
+                {"period_ms", static_cast<int>(mem_histogram.period_ms)},
+                {"histogram_config", histogram_config},
+                {"counts",        counts}};
+            memory_histograms.push_back(o);
+        }
+    }
+    // Memory histogram
+    Json::object ret;
+    empty = memory_histograms.size()==0;
+    if (!empty) {
+        Json::object memory;
+        memory["memory_histogram"] = memory_histograms;
+        ret["memory"] = memory;
+    }
+    return ret;
+}
 
 Json::object TelemetryJson(const ProngCache& prong_cache,
                            const SerializedAnnotation& annotation,
                            const ProtobufSerialization& fidelity_params,
                            const ExtraUploadInfo& device_info,
+                           Duration& duration,
                            bool& empty)
 {
-    Duration duration;
     auto report = TelemetryReportJson(prong_cache, annotation, empty, duration);
     return Json::object {
         {"context", TelemetryContextJson(prong_cache, annotation,
@@ -224,6 +267,20 @@ Json::object TelemetryJson(const ProngCache& prong_cache,
         {"report", report}
     };
 
+}
+
+Json::object MemoryTelemetryJson(const ProngCache& prong_cache,
+                                 const SerializedAnnotation& annotation,
+                                 const ProtobufSerialization& fidelity_params,
+                                 const ExtraUploadInfo& device_info,
+                                 const Duration& duration,
+                                 bool& empty) {
+    auto report = MemoryTelemetryReportJson(prong_cache, annotation, empty);
+    return Json::object {
+        {"context", TelemetryContextJson(prong_cache, annotation,
+                                         fidelity_params, device_info, duration)},
+        {"report", report}
+    };
 }
 
 /*static*/ void GESerializer::SerializeEvent(const ProngCache& prongs,
@@ -247,9 +304,20 @@ Json::object TelemetryJson(const ProngCache& prong_cache,
         if (p.get() != nullptr)
             annotations.insert(p->annotation_);
     }
+    Duration max_duration = Duration::zero();
     for(auto& a: annotations) {
         bool empty;
-        auto tel = TelemetryJson(prongs, a, fidelity_params, device_info, empty);
+        Duration duration;
+        auto tel = TelemetryJson(prongs, a, fidelity_params, device_info, duration, empty);
+        if (duration > max_duration) max_duration = duration;
+        if(!empty)
+            telemetry.push_back(tel);
+    }
+    if (!annotations.empty()) {
+        bool empty;
+        // Use the first annotation as a context for memory telemetry
+        auto& a = *annotations.begin();
+        auto tel = MemoryTelemetryJson(prongs, a, fidelity_params, device_info, max_duration, empty);
         if(!empty)
             telemetry.push_back(tel);
     }
