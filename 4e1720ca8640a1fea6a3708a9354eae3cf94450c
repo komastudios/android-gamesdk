@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3831c403_af8134e2",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.Cpu.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-02-22T03:05:13Z",
+      "side": 1,
+      "message": "I initially needed these functions but the code in this CL has been pared back and no longer uses them. Is it worth keeping them around, or should they be removed?",
+      "revId": "4e1720ca8640a1fea6a3708a9354eae3cf94450c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
