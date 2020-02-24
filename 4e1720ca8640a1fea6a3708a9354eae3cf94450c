@@ -16,6 +16,75 @@
       "revId": "4e1720ca8640a1fea6a3708a9354eae3cf94450c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e043e8c1_3ff55026",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.Cpu.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-24T04:49:02Z",
+      "side": 1,
+      "message": "I vote to remove these unless you have a high certainty that we\u0027ll eventually need these.\nLet\u0027s take it as a poll and if most reviewers disagree with me, follow them. 😊",
+      "parentUuid": "3831c403_af8134e2",
+      "revId": "4e1720ca8640a1fea6a3708a9354eae3cf94450c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7b52ffaf_62d23d26",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/GLHelpers.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-24T04:49:02Z",
+      "side": 1,
+      "message": "(Self-resolved) Wondering if this CheckEglExtension() and its next defined function IsExtensionSupported() end up doing the same.",
+      "revId": "4e1720ca8640a1fea6a3708a9354eae3cf94450c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "784e48f3_44abe48b",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/GLHelpers.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 489,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-24T04:49:02Z",
+      "side": 1,
+      "message": "(self-resolved) Trailing white space. Too bad that IDE formatters take trailing whitespace in Javadoc as valid, then Gerrit and other git-diff viewers show it as what they are: trailing white space. 😞",
+      "revId": "4e1720ca8640a1fea6a3708a9354eae3cf94450c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6ebc81bb_ec79f5c1",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/EGLGetFrameTimestampsGLES3Operation.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 270,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-24T04:49:02Z",
+      "side": 1,
+      "message": "(Self-resolved) Good! Just want you to know that there is some macro magic (i.e., #define) that would generate all these case \u003csymbol\u003e/return \u003csame-symbol-but-between-quotes\u003e\n\nCheck the ## macro operator if you\u0027re curious -\u003e https://www.cprogramming.com/reference/preprocessor/token-pasting-operator.html",
+      "revId": "4e1720ca8640a1fea6a3708a9354eae3cf94450c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
