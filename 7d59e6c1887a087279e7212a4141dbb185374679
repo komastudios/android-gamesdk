@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1f54b8a9_4d936166",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.Temperature.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 477,
+      "author": {
+        "id": 1597621
+      },
+      "writtenOn": "2020-02-24T15:36:44Z",
+      "side": 1,
+      "message": "Minor: Should be constexpr instead of const.\n\nIIRC, google style guid has constants as kCamelCase. I think we\u0027re using a mix right now though (plus a bit of our own style on top of that), so this isn\u0027t a dealbreaker.",
+      "range": {
+        "startLine": 476,
+        "startChar": 0,
+        "endLine": 477,
+        "endChar": 47
+      },
+      "revId": "7d59e6c1887a087279e7212a4141dbb185374679",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
