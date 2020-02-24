@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "08808d2c_1345f7d4",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.Cpu.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-02-24T19:04:30Z",
+      "side": 1,
+      "message": "Sounds good, I\u0027ll do that.",
+      "parentUuid": "e043e8c1_3ff55026",
+      "revId": "4e1720ca8640a1fea6a3708a9354eae3cf94450c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7b52ffaf_62d23d26",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/GLHelpers.cpp",
         "patchSetId": 4
@@ -48,6 +66,24 @@
       "writtenOn": "2020-02-24T04:49:02Z",
       "side": 1,
       "message": "(Self-resolved) Wondering if this CheckEglExtension() and its next defined function IsExtensionSupported() end up doing the same.",
+      "revId": "4e1720ca8640a1fea6a3708a9354eae3cf94450c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9dd6cd8a_77133038",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/GLHelpers.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-02-24T19:04:30Z",
+      "side": 1,
+      "message": "Technically OpenGL and EGL are separately libraries, so they have separate lists of extensions (and have separate function calls under the hood, and the data is returned in a different way for each).",
+      "parentUuid": "7b52ffaf_62d23d26",
       "revId": "4e1720ca8640a1fea6a3708a9354eae3cf94450c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
@@ -71,6 +107,24 @@
     },
     {
       "key": {
+        "uuid": "f43511ad_31773602",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/GLHelpers.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 489,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-02-24T19:04:30Z",
+      "side": 1,
+      "message": "Good catch.",
+      "parentUuid": "784e48f3_44abe48b",
+      "revId": "4e1720ca8640a1fea6a3708a9354eae3cf94450c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6ebc81bb_ec79f5c1",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/EGLGetFrameTimestampsGLES3Operation.cpp",
         "patchSetId": 4
@@ -82,6 +136,24 @@
       "writtenOn": "2020-02-24T04:49:02Z",
       "side": 1,
       "message": "(Self-resolved) Good! Just want you to know that there is some macro magic (i.e., #define) that would generate all these case \u003csymbol\u003e/return \u003csame-symbol-but-between-quotes\u003e\n\nCheck the ## macro operator if you\u0027re curious -\u003e https://www.cprogramming.com/reference/preprocessor/token-pasting-operator.html",
+      "revId": "4e1720ca8640a1fea6a3708a9354eae3cf94450c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e0e84ddf_abae0e69",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/EGLGetFrameTimestampsGLES3Operation.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 270,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-02-24T19:04:30Z",
+      "side": 1,
+      "message": "I had forgotten about that one, thanks for the reminder. I\u0027ll go ahead and use that since it somewhat removes a possible source of error.",
+      "parentUuid": "6ebc81bb_ec79f5c1",
       "revId": "4e1720ca8640a1fea6a3708a9354eae3cf94450c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
