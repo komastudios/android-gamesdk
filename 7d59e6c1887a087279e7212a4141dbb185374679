@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "1de9408e_61526beb",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.Temperature.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 477,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-24T19:59:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c79afce9_f82aca76",
+      "range": {
+        "startLine": 476,
+        "startChar": 0,
+        "endLine": 477,
+        "endChar": 47
+      },
+      "revId": "7d59e6c1887a087279e7212a4141dbb185374679",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d1ffab8d_4becf14f",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.Temperature.hpp",
         "patchSetId": 7
@@ -63,6 +87,24 @@
       "revId": "7d59e6c1887a087279e7212a4141dbb185374679",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "096ecd52_026b352a",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.Temperature.hpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-24T19:59:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d1ffab8d_4becf14f",
+      "revId": "7d59e6c1887a087279e7212a4141dbb185374679",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
