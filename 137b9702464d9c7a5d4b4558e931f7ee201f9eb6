@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e98024b1_e8fc9487",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.Temperature.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 398,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-02-24T23:34:12Z",
+      "side": 1,
+      "message": "A bit of a minor thing, but I think the description here should either be removed or should just redundantly restate the purpose. Perhaps more important, I found the function name to be somewhat confusing (what is the result of it scanning?); the \"@return\" documentation was what cleared up my confusion, but I wasn\u0027t able to determine that from the function name alone.",
+      "revId": "137b9702464d9c7a5d4b4558e931f7ee201f9eb6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
