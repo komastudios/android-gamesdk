@@ -4,6 +4,9 @@
       "malloc": 40
     },
     {
+      "malloc": 40
+    },
+    {
       "glTest": true
     }
   ],
