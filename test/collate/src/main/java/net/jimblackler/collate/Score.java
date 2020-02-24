@@ -36,6 +36,7 @@ public class Score {
           JSONObject first = result.getJSONObject(0);
           JSONObject params = first.getJSONObject("params");
 
+          JSONObject params1 = Utils.flattenParams(params);
           JSONArray coordinates = params.getJSONArray("coordinates");
           JSONArray tests = params.getJSONArray("tests");
           int total = 1;
@@ -95,10 +96,19 @@ public class Score {
             if (!row.has("nativeAllocated")) {
               continue;
             }
-            long nativeAllocated = row.getLong("nativeAllocated");
+            long score;
+            if (params1.has("glTest")) {
+              score = row.getLong("gl_allocated");
+            } else {
+              score = row.getLong("nativeAllocated");
+            }
+
+            if (score > largest) {
+              largest = score;
+            }
 
             if (row.has("trigger")) {
-              long top = nativeAllocated;
+              long top = score;
               if (top < lowestTop) {
                 lowestTop = top;
               }
