@@ -106,16 +106,16 @@ Java_net_jimblackler_istresser_Heuristic_tryAlloc(JNIEnv *env, jobject thiz, jin
 extern "C"
 JNIEXPORT void JNICALL
 Java_net_jimblackler_istresser_MainActivity_initGl(JNIEnv *env,
-                                                   jclass thiz,
-                                                   jobject assets) {
+                                                   jclass thiz) {
   testRenderer = new TestRenderer();
 }
 
 extern "C"
 JNIEXPORT int JNICALL
 Java_net_jimblackler_istresser_MainActivity_nativeDraw(JNIEnv *env,
-                                                       jclass clazz) {
-  return testRenderer->render();
+                                                       jclass clazz,
+                                                       int toAllocate) {
+  return testRenderer->render(toAllocate);
 }
 extern "C"
 JNIEXPORT void JNICALL
