@@ -9,6 +9,8 @@
 #include <glm/glm.hpp>
 #include <glm/ext/quaternion_float.hpp>
 
+const float kPlaneWidthTolerance = 1.2f;
+
 struct Plane {
   glm::vec3 point;
   glm::vec3 normal;

@@ -7,9 +7,9 @@
 void Camera::UpdateCameraPlanes() {
   float tangentAngle = tan(fov * .5);
   near_plane_height = near * tangentAngle;
-  near_plane_width = near * aspect_ratio;
+  near_plane_width = near * aspect_ratio * kPlaneWidthTolerance;
   far_plane_height = far * tangentAngle;
-  far_plane_width = far * aspect_ratio;
+  far_plane_width = far * aspect_ratio * kPlaneWidthTolerance;
 }
 
 std::array<Plane, 6> Camera::GenerateFrustumPlanes() const{
