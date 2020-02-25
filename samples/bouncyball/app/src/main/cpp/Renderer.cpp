@@ -64,6 +64,8 @@ void Renderer::setWindow(ANativeWindow *window, int32_t width, int32_t height) {
 void Renderer::start() {
     mWorkerThread.run([this](ThreadState *threadState) {
         threadState->isStarted = true;
+        // Reset time to avoid super-large update of position
+        threadState->lastUpdate = std::chrono::steady_clock::now();
         requestDraw();
     });
 
