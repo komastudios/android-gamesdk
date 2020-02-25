@@ -14,6 +14,46 @@
  * limitations under the License.
  */
 
+/**
+ * Heats up the device to measure performance under load. It spawns as many working threads as cores
+ * are available in the device. It can be configured to use several different throttling mechanisms.
+ *
+ * Input configuration:
+ * - affinity: if true, each thread will get assigned 1:1 to a particular CPU core. Default is
+ *             false.
+ * - looping_period: the duration of a calculate Pi loop (until waiting a while for the next loop).
+ * - wait_period: the time a thread spends between two pi calculation loops.
+ * - wait_method: specifies "how" threads wait. There are three different mechanisms:
+ *     - "spinlock": the thread loops checking whether the wait period was accomplished. That said,
+ *                   the thread is waiting but not sleeping.
+ *     - "sleep": the thread sleeps for the duration of wait_period. The OS will awake it
+ *                afterwards.
+ *     - "mutex": perhaps a better name would have been "synchronize". In this mechanism, the first
+ *                thread that starts waiting, actually waits for all the other threads to also start
+ *                waiting. Once they all wait, none of them will resume calculating pi until the
+ *                rest of them are ready to resume. In other words, the first one to reach the wait
+ *                period, will wait longer than the rest: it won't resume until the last one who
+ *                waited is ready to resume.
+ *
+ *
+ *
+ * Output report: lines are grouped under two major groups: operation_id = CalculateWaitPIOperation
+ *                and MonitorOperation.
+ * * MonitorOperation includes, among other data, temperature_info that informs, among other data
+ *   points, max_cpu_temperature at a given timestamp.
+ *
+ * * CalculateWaitPIOperation has an initial line that reports:
+ *   - wait_method as a string (see wait_method_name in Input Configuration section)
+ *   - affinity
+ *   Thereafter, any other CalculateWaitPIOperation informs:
+ *   - thread_id: a pthread ID that the line refers to.
+ *   - cpu_id: only makes sense if affinity is true. Otherwise, just the random CPU at the time of
+ *             reporting this line.
+ *   - t0: time where Pi started being calculated, or resumed calculating.
+ *   - t1: time where Pi calculation got suspended (wait interval).
+ *   - iterations: how many Pi compute loops occurred between t0 and t1.
+ */
+
 #include <array>
 #include <cmath>
 #include <mutex>
@@ -27,9 +67,6 @@
 
 using namespace ancer;
 
-// Purpose: Heats up the device to measure performance under load. Can be
-// configured to use several different throttling mechanisms.
-
 // Note: The "duration" set in configuration.json must be slightly longer than
 // N times the "interval_between_samples", where N is some whole
 // number, as there may be a delay of several milliseconds before the last sets
@@ -38,125 +75,236 @@ using namespace ancer;
 //==============================================================================
 
 namespace {
-constexpr Log::Tag TAG{"calculate_pi_native"};
-
-constexpr auto ITERATION_SAMPLE_PERIOD(int64_t(100));
-
-constexpr auto PI = 3.14159265358979323846;
+constexpr Log::Tag TAG{"CalculateWaitPIOperation"};
 }  // end anonymous namespace
 
 //==============================================================================
 
 namespace {
-constexpr std::string_view wait_mutex_name = "mutex";
-constexpr std::string_view wait_sleep_name = "sleep";
-constexpr std::string_view wait_spinlock_name = "spinlock";
-
-enum class WaitMethod { Mutex, Sleep, Spinlock };
+constexpr std::string_view kMutexName = "mutex";
+constexpr std::string_view kSleepName = "sleep";
+constexpr std::string_view kSpinlockName = "spinlock";
 }  // end anonymous namespace
 
 //==============================================================================
 
 namespace {
+/**
+ * In the wait-mutex method, this sync point helps get all thread wait together.
+ */
+ThreadSyncPoint sync_point = {0};
+
+struct thread_datum;  // forward declaration
+
+/**
+ * This type models a pointer to function that, based on the wait_method, will be any of the three
+ * options (mutex, spinlock or sleep).
+ */
+using p_wait_function_t = void (*)(const thread_datum &, const Timestamp &);
+
+/**
+ * Pointer to the wait function that corresponds to the configuration wait_method.
+ */
+p_wait_function_t p_wait_function;
+}  // end anonymous namespace
+
+//==============================================================================
+
+namespace {
+/**
+ * Input data.
+ */
 struct configuration {
-  Milliseconds interval_between_samples{Milliseconds::zero()};
-  Milliseconds interval_between_wait_periods{Milliseconds::zero()};
+  Milliseconds looping_period{Milliseconds::zero()};
   Milliseconds wait_period{Milliseconds::zero()};
-  Milliseconds heat_time{Milliseconds::zero()};
 
-  bool affinity{};
-  std::string wait_method_name;  // refer to `wait_mutex_name`, etc.
-  WaitMethod wait_method;
+  bool affinity;
+  std::string wait_method;  // refer to kWaitMutex, etc.
 };
 
 JSON_READER(configuration) {
-  JSON_REQVAR(interval_between_samples);
-  JSON_REQVAR(interval_between_wait_periods);
+  JSON_REQVAR(looping_period);
   JSON_REQVAR(wait_period);
-  JSON_REQVAR(heat_time);
 
   JSON_REQVAR(affinity);
-  JSON_REQVAR(wait_method_name);
+  JSON_REQVAR(wait_method);
 }
 }  // end anonymous namespace
 
 //==============================================================================
 
 namespace {
-struct pi_datum {
-  double value;
+/**
+ * Report first trace, corresponding to the runtime parameters (affinity, wait method).
+ */
+struct runtime_datum {
+  std::string wait_method;
+  bool affinity;
+};
+
+void WriteDatum(report_writers::Struct w, const runtime_datum &r) {
+  ADD_DATUM_MEMBER(w, r, wait_method);
+  ADD_DATUM_MEMBER(w, r, affinity);
+}
+
+/**
+ * Report regular data, corresponding to a time interval and how many iterations a given thread
+ * performed during it.
+ * Unlike other operation report structs, this one has some functions to better encapsulate its
+ * internals (like when the interval start time should be set, when the finish time, etc.)
+ */
+struct thread_datum {
+  Timestamp t0;
+  Timestamp t1;
   uint64_t iterations;
-  uint64_t first_half_iterations;
-  uint64_t last_half_iterations;
+
+  const bool designated_thread;
+
+  thread_datum(const configuration &config, const bool designated_thread) :
+      _config{config}, designated_thread{designated_thread},
+      _k{1.0}, _denominator{1.0}, _accumulator{1.0} {
+    ResetForNextLoopingPeriod();
+  }
+
+  /**
+   * Sets back some critic struct internals (t0, iteration counter, etc.) for the next series of Pi
+   * calculation loops.
+   */
+  void ResetForNextLoopingPeriod() {
+    t0 = SteadyClock::now();
+    iterations = 0;
+    _next_wait = t0 + _config.looping_period;
+  }
+
+  /**
+   * Checks whether is time to pause the Pi calculation loop and wait. If so, waits per wait method.
+   *
+   * @param sync_point a coordination point for all other threads in case the wait method is mutex.
+   * @return true if the thread paused to wait. False if it wasn't time for that yet.
+   */
+  bool WaitIfAboutTime(ThreadSyncPoint &sync_point) {
+    t1 = SteadyClock::now();
+    bool wait_time_arrived{t1 >= _next_wait};  // Wait/throttle
+
+    if (wait_time_arrived) {
+      (*p_wait_function)(*this, t1 + _config.wait_period);
+    }
+
+    return wait_time_arrived;
+  }
+
+  /**
+   * Adds to the Pi progressive accumulator another term based on Leibniz' series
+   * (1 - 1/3 + 1/5 - 1/7 ... = Pi/4).
+   */
+  void IterateCalculus() {
+    _k *= -1.0;         // -1, 1, -1, 1, ...
+    _denominator += 2;  // 3, 5, 7, ...
+    _accumulator += _k/_denominator;  // 1, 1 -1/3, 1 -1/3 +1/5, 1 -1/3 +1/5 -1/7 ...
+    volatile double value = _accumulator*4.0;  // Pi = 4 * Leibniz' series sum
+    ++iterations;
+
+    Log::V(TAG, "Pi = %.10f", value);
+  }
+
+ private:
+  const configuration &_config;
+
+  Timestamp _next_wait;
+
+  double _k;
+  double _denominator;
+  double _accumulator;
 };
 
-void WriteDatum(report_writers::Struct w, const pi_datum& p) {
-    ADD_DATUM_MEMBER(w, p, iterations);
-    ADD_DATUM_MEMBER(w, p, first_half_iterations);
-    ADD_DATUM_MEMBER(w, p, last_half_iterations);
+void WriteDatum(report_writers::Struct w, const thread_datum &p) {
+  ADD_DATUM_MEMBER(w, p, t0);
+  ADD_DATUM_MEMBER(w, p, t1);
+  ADD_DATUM_MEMBER(w, p, iterations);
 }
-
-//------------------------------------------------------------------------------
-
-struct core_sample_datum {
-  int core_id;
-  std::vector<uint64_t> iterations;
-
-  explicit core_sample_datum(int id) { core_id = id; }
-};
-
-void WriteDatum(report_writers::Struct w, const core_sample_datum& d) {
-    ADD_DATUM_MEMBER(w, d, iterations);
-    ADD_DATUM_MEMBER(w, d, core_id);
-}
-
-struct core_performance_samples {
-  std::vector<core_sample_datum> cores;
-};
-
-void WriteDatum(report_writers::Struct w, const core_performance_samples& s) {
-    ADD_DATUM_MEMBER(w, s, cores);
-}
-
 }  // end anonymous namespace
 
 //==============================================================================
 
-/*
- * CalculatePIOperation
- * Computes PI, iteratively, to heat up the CPU
+namespace {
+/**
+ * Asks the OS to stop the thread calling this function until certain time.
+ *
+ * @param until earliest time when the thread can be awaken by the OS.
+ */
+void WaitSleeping(const thread_datum &thread_datum, const Timestamp &until) {
+  std::this_thread::sleep_until(until);
+}
+
+/**
+ * Rather than sleeping via OS, a thread that waits spinning just checks whether is time to resume
+ * and, if not, checks again and again and again until such time arrives.
+ *
+ * @param until when to resume.
+ */
+void WaitSpinning(const thread_datum &thread_datum, const Timestamp &until) {
+  // Like an anxious child asking dad how long else the ride will take, we stall this thread asking
+  // "have we arrived already? No? Now, how we arrived already?"
+  while (SteadyClock::now() < until);
+}
+
+/**
+ * Make all threads wait together. They'll resume looping together as well.
+ *
+ * @param until the thread at core 0 will wait until the time indicated by this parameter. All the
+ *        other threads will stall until that wait is over.
+ */
+void WaitMutex(const thread_datum &thread_datum, const Timestamp &until) {
+  auto thread_id = std::this_thread::get_id();
+
+  // All threads will stop here until the last of them comes.
+  sync_point.Sync(thread_id);
+
+  // As long as one thread stays spinning and doesn't reach the next sync point, all the other
+  // threads will stay waiting for it at that sync point. That way, we just need one thread to wait
+  // to stall them all.
+  if (thread_datum.designated_thread) {
+    WaitSpinning(thread_datum, until);
+  }
+
+  // All threads will stop here again, to resume looping all together.
+  sync_point.Sync(thread_id);
+}
+}  // end anonymous namespace
+
+//==============================================================================
+
+/**
+ * This operation spawns threads that approximate Pi (with some dead times in between each) with the
+ * goal to heat up the CPU.
  */
 class CalculateWaitPIOperation : public BaseOperation {
  public:
   CalculateWaitPIOperation() = default;
 
-  ~CalculateWaitPIOperation() { Report(_performance_samples); }
-
   void Start() override {
     BaseOperation::Start();
 
-    const auto config = ValidateConfig(GetConfiguration<configuration>());
-    Report(config.wait_method_name);
+    const auto config = GetConfiguration<configuration>();
+    SetWaitMethodBasedOnConfiguration(config);
+    Report(runtime_datum{config.wait_method, config.affinity});
 
     const int num_cores = std::thread::hardware_concurrency();
-    _sync_point.Reset(num_cores);
+    sync_point.Reset(num_cores);
 
-    for (int i = 0; i < num_cores; ++i) {
-      _performance_samples.cores.push_back(core_sample_datum(i));
-    }
-
-    for (int i = 0; i < num_cores; ++i) {
-      _threads.emplace_back([this, i, config]() {
-        if (config.affinity) {
-          SetThreadAffinity(i);
-        }
-        CalculatePi(config, _performance_samples.cores[i], _sync_point);
+    // This loop creates working threads. The first one will be designated to wait for all if wait
+    // method is mutex
+    for (int index = 0; index < num_cores; ++index) {
+      _threads.emplace_back([this, index, config]() {
+        if (config.affinity) SetThreadAffinity(index);
+        bool is_designated_thread{index==0};
+        PiLooper(config, is_designated_thread);
       });
     }
   }
 
   void Wait() override {
-    for (std::thread& t : _threads) {
+    for (std::thread &t : _threads) {
       if (t.joinable()) {
         t.join();
       }
@@ -164,120 +312,44 @@ class CalculateWaitPIOperation : public BaseOperation {
   }
 
  private:
-  /*
-   * Performs an iterative calculation of PI for a time duration; note: the goal
-   * is not accuracy, but just to heat up the CPU.
-   * @param calculationDuration the total test duration time. If 0, run
-   * indefinitely
-   * @param reportSamplingDuration if > 0, a sample will be recorded every
-   * sampling duration
-   * @return the result (duration, iterations, result pi, etc)
+  /**
+   * Starts a loop that alternates computing iterations with wait times. Performs an iterative
+   * calculation of PI, not with the goal of accuracy but to heat up the CPU.
+   *
+   * @param config a reference to the original operation configuration.
+   * @param designated_thread when wait method is mutex, one thread is designated to wait, stalling
+   *                          the others until ready to resume.
    */
-  void CalculatePi(const configuration& config, core_sample_datum& current_core,
-                   ThreadSyncPoint& sync_point) {
-    ANCER_SCOPED_TRACE("CalculatePIOperation::calculate_pi");
+  void PiLooper(const configuration &config, const bool designated_thread) {
+    ANCER_SCOPED_TRACE("CalculatePIOperation::PiLooper");
 
-    using namespace std::chrono;
-
-    // Leibniz's infinite series approximation: 1 - 1/3 + 1/5 - 1/7 ... = Pi/4.
-    // Each term is calculated as 1.0 / pi_d, negative if pi_k is a factor of 2.
-    uint64_t pi_k = 0;  // k is 0, 1, 2, ...
-    uint64_t pi_d = 3;  // denominator for the kth term of the approximation
-    double accumulator = 1.0;
-    uint64_t iteration_count = 0;
-
-    pi_datum pi_data{};
-
-    const time_point t0 = SteadyClock::now();
-    time_point next_wait_time = t0 + config.interval_between_wait_periods;
-    time_point next_sample_time = t0 + config.interval_between_samples;
-    const time_point heat_epoch_time = t0 + config.heat_time;
+    thread_datum thread_data{config, designated_thread};
 
     while (!IsStopped()) {
-      const time_point now = SteadyClock::now();
-
-      // Wait/throttle
-      if (now >= next_wait_time) {
-        switch (config.wait_method) {
-          case WaitMethod::Mutex: {
-            sync_point.Sync(std::this_thread::get_id());
-
-            // Use one thread to sleep them all.
-            if (current_core.core_id == 0) {
-              while ((SteadyClock::now() - now) < config.wait_period)
-                ;
-            }
-
-            sync_point.Sync(std::this_thread::get_id());
-            break;
-          }
-          case WaitMethod::Sleep: {
-            std::this_thread::sleep_for(config.wait_period);
-            break;
-          }
-          case WaitMethod::Spinlock: {
-            while ((SteadyClock::now() - now) < config.wait_period)
-              ;
-            break;
-          }
-        }
-
-        next_wait_time =
-            SteadyClock::now() + config.interval_between_wait_periods;
+      if (thread_data.WaitIfAboutTime(sync_point)) {
+        Report(thread_data);
+        thread_data.ResetForNextLoopingPeriod();
         continue;
       }
 
-      // Update heat value
-      // (This first/last half iteration count is no longer being used, but we
-      // keep it in because it does contribute to slowing down the inner loop.
-      // If we removed it, we wouldn't be able to compare with older results.)
-      if (now < heat_epoch_time) {
-        ++pi_data.first_half_iterations;
-      } else {
-        ++pi_data.last_half_iterations;
-      }
-
-      ++iteration_count;
-
-      // Record performance sample
-      if (now >= next_sample_time) {
-        next_sample_time = SteadyClock::now() + config.interval_between_samples;
-        current_core.iterations.push_back(iteration_count);
-        iteration_count = 0;
-      }
-
-      // Update Pi approximation
-      // Leibniz's infinite series approximation: Pi/4 = 1 - 1/3 + 1/5 - 1/7 ...
-      const double factor =
-          1.0 / static_cast<double>((pi_k % 2 == 0) ? -pi_d : pi_d);
-      accumulator += factor;
-      pi_data.value = accumulator * 4.0;
-
-      ++pi_k;
-      pi_d += 2;
-      ++pi_data.iterations;
+      thread_data.IterateCalculus();
     }
-
-    Report(pi_datum{pi_data});
   }
 
-  configuration ValidateConfig(configuration config) const {
-    if (wait_mutex_name == config.wait_method_name) {
-      config.wait_method = WaitMethod::Mutex;
-    } else if (wait_sleep_name == config.wait_method_name) {
-      config.wait_method = WaitMethod::Sleep;
-    } else if (wait_spinlock_name == config.wait_method_name) {
-      config.wait_method = WaitMethod::Spinlock;
+  void SetWaitMethodBasedOnConfiguration(const configuration &config) const {
+    if (kMutexName==config.wait_method) {
+      p_wait_function = &WaitMutex;
+    } else if (kSleepName==config.wait_method) {
+      p_wait_function = &WaitSleeping;
+    } else if (kSpinlockName==config.wait_method) {
+      p_wait_function = &WaitSpinning;
     } else {
       FatalError(TAG, "unrecognized value for config.wait_method_name");
     }
-    return config;
   }
 
  private:
-  core_performance_samples _performance_samples;
   std::vector<std::thread> _threads;
-  ThreadSyncPoint _sync_point = {0};
 };
 
 EXPORT_ANCER_OPERATION(CalculateWaitPIOperation)

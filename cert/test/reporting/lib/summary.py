@@ -18,7 +18,6 @@
 
 import json
 import glob
-import traceback
 from pathlib import Path
 from typing import Dict, List, Union
 
@@ -99,18 +98,18 @@ def __generate_formatted_summary_from_suites(suites_by_name: Dict[str, Suite],
             for suite in suites:
                 if suite.handler.can_render_single():
                     base_name = suite.file.stem
-                    plot_path = __make_image_path(folder, base_name, image_indexer)
-                    formatter.on_device(suite.identifier(), plot_path,
-                                        plot_path.relative_to(folder),
-                                        suite.handler.plot(plot_path, figure_dpi))
+                    plot_path = __make_image_path(folder, base_name,
+                                                  image_indexer)
+                    formatter.on_device(
+                        suite.identifier(), plot_path,
+                        plot_path.relative_to(folder),
+                        suite.handler.plot(plot_path, figure_dpi))
 
 
 def __generate_formatted_report_summaries(suites_by_report: Dict[str, Suite],
                                           folder: Path,
                                           formatter: SummaryFormatter,
                                           figure_dpi: int) -> type(None):
-    image_indexer = Indexer()
-
     for [report, suites_] in suites_by_report.items():
         suites = [s for s in suites_ if s.handler]
         if not suites:
@@ -118,18 +117,17 @@ def __generate_formatted_report_summaries(suites_by_report: Dict[str, Suite],
 
         suites_by_handler_class = {}
         for s in [s for s in suites if s.handler]:
-            suites_by_handler_class.setdefault(s.handler.__class__, []).append(s)
+            suites_by_handler_class.setdefault(s.handler.__class__,
+                                               []).append(s)
 
         for handler_class in suites_by_handler_class:
             if handler_class.handles_entire_report(suites):
                 plot_path = folder.joinpath("images").joinpath(report + ".png")
-                try:
-                    formatter.on_device(suites[0].identifier(), plot_path,
-                                        plot_path.relative_to(folder),
-                                        handler_class.render_entire_report(suites, plot_path, figure_dpi))
-                except:
-                    print("Warning: Failed to write report for '" + report + "'")
-                    print(traceback.format_exc())
+                formatter.on_device(
+                    suites[0].identifier(), plot_path,
+                    plot_path.relative_to(folder),
+                    handler_class.render_entire_report(suites, plot_path,
+                                                       figure_dpi))
 
 
 def __generate_formatted_cross_suite_summary(all_suites: List[Suite],
@@ -146,7 +144,8 @@ def __generate_formatted_cross_suite_summary(all_suites: List[Suite],
     for handler_class in suites_by_handler_class:
         suites = suites_by_handler_class[handler_class]
         if handler_class.can_render_summarization_plot(suites):
-            plot_path = __make_image_path(folder, "meta_summary", image_indexer)
+            plot_path = __make_image_path(folder, "meta_summary", \
+                                          image_indexer)
             formatter.on_cross_suite(
                 plot_path, plot_path.relative_to(folder),
                 handler_class.summarization_plot(suites, \
@@ -204,13 +203,14 @@ def __generate_formatted_summary_from_reports(summary_path: Path,
         __generate_formatted_summary_from_errors(excluded, formatter)
 
 
-def generate_summary(reports: List[Path], excluded: List[Path],
+def generate_summary(name: str, reports: List[Path], excluded: List[Path],
                      output_format: str, figure_dpi: int) -> Union[Path, None]:
     """
     Creates a single doc holding results for all involved devices. Great for a
     comparative, all-up analysis.
 
     Args:
+        name: the name of this summary.
         reports: list of paths to successful device test reports.
         excluded: list of paths to device test run errors.
         output_format: summary format.
@@ -224,8 +224,7 @@ def generate_summary(reports: List[Path], excluded: List[Path],
 
     reports_dir = reports[0].parent if len(reports) > 0 else excluded[0].parent
 
-    summary_file_name = \
-        f"summary_{get_indexable_utc()}.{output_format}"
+    summary_file_name = f"summary_{get_indexable_utc()}_{name}.{output_format}"
     summary_path = reports_dir.joinpath(summary_file_name)
 
     summary_formatter = create_summary_formatter(output_format)
@@ -254,7 +253,7 @@ def perform_summary_if_enabled(recipe: Recipe, reports_dir: Path) -> type(None):
     """
     summary = __get_summary_config(recipe)
     if summary[0]:  # enabled
-        summary_path = generate_summary([
+        summary_path = generate_summary(recipe.get_name(), [
             Path(f) for f in sorted(glob.glob(f"{reports_dir}/*_report*.json"))
         ], [Path(f) for f in sorted(glob.glob(f"{reports_dir}/*_error*.json"))],
                                         summary[1], summary[2])
@@ -265,4 +264,4 @@ def perform_summary_if_enabled(recipe: Recipe, reports_dir: Path) -> type(None):
                 print(f"{summary_path} published to Google Drive.")
             except GoogleDriveRelatedError as error:
                 print(f"""{summary_path} publishing to Google Drive failure:
-{repr(error)}""")
+{error}""")
