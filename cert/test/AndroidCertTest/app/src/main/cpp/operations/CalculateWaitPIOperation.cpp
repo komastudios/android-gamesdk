@@ -14,6 +14,35 @@
  * limitations under the License.
  */
 
+/**
+ * Heats up the device to measure performance under load. It spawns as many working threads as cores
+ * are available in the device. It can be configured to use several different throttling mechanisms.
+ *
+ * Input configuration:
+ * - affinity: if true, each thread will get assigned 1:1 to a particular CPU core. Default is
+ *             false.
+ * - interval_between_samples: a checkpoint where a given thread reports how many calculate-pi
+ *                             iterations performed since its previous checkpoint. We'll get back
+ *                             to this when discussing the output report.
+ * - interval_between_wait_periods: the duration of a calculate Pi run. At the end of it, the thread
+ *                                  will wait until resuming activity.
+ * - wait_period: the time a thread spends between two pi calculation runs.
+ * - wait_method_name: specifies "how" threads wait. There are three different mechanisms:
+ *     - "spinlock": the thread loops checking whether the wait period was accomplished. That said,
+ *                   the thread is waiting but not sleeping.
+ *     - "sleep": the thread sleeps for the duration of wait_period. The OS will awake it
+ *                afterwards.
+ *     - "mutex": perhaps a better name would have been "synchronize". In this mechanism, the first
+ *                thread that starts waiting, actually waits for all the other threads to also start
+ *                waiting. Once they all wait, none of them will resume calculating pi until the
+ *                rest of them are ready to resume. In other words, the first one to reach the wait
+ *                period, will wait longer than the rest: it won't resume until the last one who
+ *                waited is ready to resume.
+ * - heat_time: deprecated.
+ *
+ * Output report:
+ */
+
 #include <array>
 #include <cmath>
 #include <mutex>
@@ -26,9 +55,6 @@
 #include <ancer/util/Json.hpp>
 
 using namespace ancer;
-
-// Purpose: Heats up the device to measure performance under load. Can be
-// configured to use several different throttling mechanisms.
 
 // Note: The "duration" set in configuration.json must be slightly longer than
 // N times the "interval_between_samples", where N is some whole
@@ -85,9 +111,13 @@ JSON_READER(configuration) {
 namespace {
 struct pi_datum {
   double value;
+  Timestamp t0;
+  Timestamp t1;
   uint64_t iterations;
   uint64_t first_half_iterations;
   uint64_t last_half_iterations;
+
+  // TODO(dagum): constructor that sets t0 and wait, etc. based on config argument;
 };
 
 void WriteDatum(report_writers::Struct w, const pi_datum& p) {
@@ -198,6 +228,7 @@ class CalculateWaitPIOperation : public BaseOperation {
 
       // Wait/throttle
       if (now >= next_wait_time) {
+        // TODO(dagum): report t0, t1, iteration_count
         switch (config.wait_method) {
           case WaitMethod::Mutex: {
             sync_point.Sync(std::this_thread::get_id());
@@ -224,6 +255,7 @@ class CalculateWaitPIOperation : public BaseOperation {
 
         next_wait_time =
             SteadyClock::now() + config.interval_between_wait_periods;
+        // TODO(dagum): reinitialize pi_datum
         continue;
       }
 
