@@ -52,7 +52,7 @@ class BufferStorageSuiteHandler(SuiteHandler):
         return None
 
     def render_plot(self) -> str:
-        plt.gcf().set_figheight(1.5)
+        plt.gcf().set_figheight(3)
         if self.test_result_status is not None:
             score_color = (0, 1, 0) \
             if self.test_result_status == 0 else (1, 0, 0)
@@ -81,3 +81,11 @@ class BufferStorageSuiteHandler(SuiteHandler):
             msg = f"Unexpected result: ({self.test_result_status})"
 
         return msg
+
+    @classmethod
+    def handles_entire_report(cls, suites: List['Suite']):
+        return False
+
+    @classmethod
+    def render_report(cls, raw_suites: List['SuiteHandler']):
+        return ''
