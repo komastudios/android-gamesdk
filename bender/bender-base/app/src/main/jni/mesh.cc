@@ -21,13 +21,13 @@ Mesh::Mesh(Renderer *renderer,
   CreateMeshDescriptors();
 }
 
-Mesh::Mesh(Renderer *renderer,
-           std::shared_ptr<Material> material,
-           const std::vector<float> &vertex_data,
-           const std::vector<uint16_t> &index_data) :
-    Mesh(renderer,
-         material,
-         std::make_shared<Geometry>(renderer->GetDevice(), vertex_data, index_data)) {}
+//Mesh::Mesh(Renderer *renderer,
+//           std::shared_ptr<Material> material,
+//           const std::vector<float> &vertex_data,
+//           const std::vector<uint16_t> &index_data) :
+//    Mesh(renderer,
+//         material,
+//         std::make_shared<Geometry>(renderer->GetDevice(), vertex_data, index_data)) {}
 
 Mesh::Mesh(const Mesh &other, std::shared_ptr<Material> material) :
     renderer_(other.renderer_),
@@ -191,8 +191,6 @@ void Mesh::SubmitDraw(VkCommandBuffer cmd_buffer, uint_t frame_index) const {
                     VK_PIPELINE_BIND_POINT_GRAPHICS,
                     pipeline_);
 
-  geometry_->Bind(cmd_buffer);
-
   vkCmdBindDescriptorSets(cmd_buffer,
                           VK_PIPELINE_BIND_POINT_GRAPHICS,
                           layout_,
@@ -214,7 +212,10 @@ void Mesh::SubmitDraw(VkCommandBuffer cmd_buffer, uint_t frame_index) const {
 
   vkCmdDrawIndexed(cmd_buffer,
                    geometry_->GetIndexCount(),
-                   1, 0, 0, 0);
+                   1,
+                   geometry_->GetFirstIndex(),
+                   geometry_->GetVertexOffset(),
+                   0);
 }
 
 void Mesh::Translate(glm::vec3 offset) {

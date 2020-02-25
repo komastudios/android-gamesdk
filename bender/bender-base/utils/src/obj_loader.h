@@ -7,6 +7,7 @@
 #include "glm/glm.hpp"
 #include "glm/gtx/hash.hpp"
 #include "mesh_helpers.h"
+#include "../../app/src/main/jni/geometry.h"
 #include <string>
 #include <sstream>
 #include <vector>
@@ -72,6 +73,7 @@ struct OBJ {
   std::vector<float> vertex_buffer;
   std::vector<uint16_t> index_buffer;
   std::unordered_map<glm::vec3, uint16_t> vert_to_index;
+  BoundingBox box;
 };
 
 void LoadOBJ(AAssetManager *mgr,

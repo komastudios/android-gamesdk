@@ -31,8 +31,8 @@ class Mesh {
 public:
   Mesh(Renderer *renderer, std::shared_ptr<Material> material, std::shared_ptr<Geometry> geometry_data);
 
-  Mesh(Renderer *renderer, std::shared_ptr<Material> material, const std::vector<float>& vertex_data,
-          const std::vector<uint16_t>& index_data);
+//  Mesh(Renderer *renderer, std::shared_ptr<Material> material, const std::vector<float>& vertex_data,
+//          const std::vector<uint16_t>& index_data);
 
   Mesh(const Mesh &other, std::shared_ptr<Geometry> geometry);
   Mesh(const Mesh &other, std::shared_ptr<Material> material);

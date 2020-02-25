@@ -279,17 +279,17 @@ void CreateMaterials() {
   });
 }
 
-void CreateGeometries() {
-  for (uint32_t i = 0; i < allowedPolyFaces.size(); i++) {
-    std::vector<float> vertex_data;
-    std::vector<uint16_t> index_data;
-    polyhedronGenerators[i](vertex_data, index_data);
-    geometries.push_back(std::make_shared<Geometry>(*device,
-                                                    vertex_data,
-                                                    index_data,
-                                                    polyhedronGenerators[i]));
-  }
-}
+//void CreateGeometries() {
+//  for (uint32_t i = 0; i < allowedPolyFaces.size(); i++) {
+//    std::vector<float> vertex_data;
+//    std::vector<uint16_t> index_data;
+//    polyhedronGenerators[i](vertex_data, index_data);
+//    geometries.push_back(std::make_shared<Geometry>(*device,
+//                                                    vertex_data,
+//                                                    index_data,
+//                                                    polyhedronGenerators[i]));
+//  }
+//}
 
 void CreateFramebuffers(VkRenderPass &render_pass,
                         VkImageView depth_view = VK_NULL_HANDLE) {
@@ -561,6 +561,8 @@ bool InitVulkan(android_app *app) {
       AAssetDir *dir = AAssetManager_openDir(app->activity->assetManager, "models");
       const char *fileName;
       fileName = AAssetDir_getNextFileName(dir);
+      std::vector<float> vertex_data_global;
+      std::vector<uint16_t> index_data_global;
       while(fileName != nullptr) {
         LOGE("%s", fileName);
         std::string fileNameString(fileName);
@@ -577,6 +579,11 @@ bool InitVulkan(android_app *app) {
                            modelData);
 
         for (auto obj : modelData) {
+          int vertex_offset = vertex_data_global.size() / 14;
+          int index_offset = index_data_global.size();
+
+          vertex_data_global.insert(vertex_data_global.end(), obj.vertex_buffer.begin(), obj.vertex_buffer.end());
+          index_data_global.insert(index_data_global.end(), obj.index_buffer.begin(), obj.index_buffer.end());
           std::string mtlName = obj.material_name;
           if (loaded_materials.find(mtlName) == loaded_materials.end()) {
             MTL currMTL = mtllib[obj.material_name];
@@ -599,13 +606,18 @@ bool InitVulkan(android_app *app) {
                                                                      myTextures,
                                                                      newMTL);
           }
-          geometries.push_back(std::make_shared<Geometry>(*device, obj.vertex_buffer, obj.index_buffer));
+          geometries.push_back(std::make_shared<Geometry>(device,
+                                                          obj.index_buffer.size(),
+                                                          vertex_offset,
+                                                          index_offset,
+                                                          obj.box));
           render_graph->AddMesh(std::make_shared<Mesh>(renderer,
                                                        loaded_materials[mtlName],
                                                        geometries.back()));
         }
         fileName = AAssetDir_getNextFileName(dir);
       }
+      Geometry::CreateVertexBuffer(vertex_data_global, index_data_global);
     });
 
     CreateDepthBuffer();
@@ -740,7 +752,7 @@ bool ResumeVulkan(android_app *app) {
                            modelData);
 
         for (auto obj : modelData)
-          geometries[geoIdx++]->OnResume(*device, obj.vertex_buffer, obj.index_buffer);
+          geometries[geoIdx++]->OnResume(device, obj.vertex_buffer, obj.index_buffer);
 
         fileName = AAssetDir_getNextFileName(dir);
       }
@@ -872,6 +884,7 @@ bool VulkanDrawFrame(input::Data *input_data) {
         int total_triangles = 0;
         std::vector<std::shared_ptr<Mesh>> all_meshes;
         render_graph->GetVisibleMeshes(all_meshes);
+        Geometry::Bind(renderer->GetCurrentCommandBuffer());
         for (uint32_t i = 0; i < all_meshes.size(); i++) {
           all_meshes[i]->UpdatePipeline(render_pass);
           all_meshes[i]->SubmitDraw(renderer->GetCurrentCommandBuffer(),
