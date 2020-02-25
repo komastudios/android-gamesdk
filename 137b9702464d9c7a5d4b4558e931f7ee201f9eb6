@@ -34,6 +34,24 @@
       "revId": "137b9702464d9c7a5d4b4558e931f7ee201f9eb6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "913bda29_ea8cf355",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.Temperature.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 398,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-25T00:17:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f6237af1_5f5f4de9",
+      "revId": "137b9702464d9c7a5d4b4558e931f7ee201f9eb6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
