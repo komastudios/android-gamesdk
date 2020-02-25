@@ -21,6 +21,7 @@ registered with the HANDLERS global.
 
 from .affinity_test_suite_handler import AffinityTestSuiteHandler
 from .buffer_storage_suite_handler import BufferStorageSuiteHandler
+from .calculate_wait_pi_suite_handler import CalculateWaitPiSuiteHandler
 from .cpuset_suite_handler import CpusetSuiteHandler
 from .depth_clear_suite_handler import DepthClearSuiteHandler
 from .file_performance_suite_handler import FilePerformanceSuiteHandler
@@ -33,7 +34,8 @@ from .mprotect_suite_handler import MProtectSuiteHandler
 from .temperature_suite_handler import TemperatureSuiteHandler
 
 HANDLERS = [
-    AffinityTestSuiteHandler, BufferStorageSuiteHandler, CpusetSuiteHandler,
+    AffinityTestSuiteHandler, BufferStorageSuiteHandler,
+    CalculateWaitPiSuiteHandler, CpusetSuiteHandler,
     FilePerformanceSuiteHandler, HalfFloatPrecisionSuiteHandler,
     DepthClearSuiteHandler, MarchingCubesSuiteHandler,
     MediumPVecNormSuiteHandler, MemoryAllocationSuiteHandler,
