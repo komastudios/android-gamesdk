@@ -31,9 +31,10 @@ void AddVertex(glm::vec3 &currVert,
   currOBJ.index_buffer.push_back(currOBJ.vert_to_index.size());
   currOBJ.vert_to_index[currVert] = currOBJ.vert_to_index.size();
 
-  currOBJ.vertex_buffer.push_back(position[TrueIndex(currVert.x, position.size())].x);
-  currOBJ.vertex_buffer.push_back(position[TrueIndex(currVert.x, position.size())].y);
-  currOBJ.vertex_buffer.push_back(position[TrueIndex(currVert.x, position.size())].z);
+  glm::vec3 pos = position[TrueIndex(currVert.x, position.size())];
+  currOBJ.vertex_buffer.push_back(pos.x);
+  currOBJ.vertex_buffer.push_back(pos.y);
+  currOBJ.vertex_buffer.push_back(pos.z);
 
   currOBJ.vertex_buffer.push_back(normal[TrueIndex(currVert.z, normal.size())].x);
   currOBJ.vertex_buffer.push_back(normal[TrueIndex(currVert.z, normal.size())].y);
@@ -49,6 +50,13 @@ void AddVertex(glm::vec3 &currVert,
 
   currOBJ.vertex_buffer.push_back(texCoord[TrueIndex(currVert.y, texCoord.size())].x);
   currOBJ.vertex_buffer.push_back(texCoord[TrueIndex(currVert.y, texCoord.size())].y);
+
+  if (pos.x > currOBJ.box.max.x) currOBJ.box.max.x = pos.x;
+  if (pos.x < currOBJ.box.min.x) currOBJ.box.min.x = pos.x;
+  if (pos.y > currOBJ.box.max.y) currOBJ.box.max.y = pos.y;
+  if (pos.y < currOBJ.box.min.y) currOBJ.box.min.y = pos.y;
+  if (pos.z > currOBJ.box.max.z) currOBJ.box.max.z = pos.z;
+  if (pos.z < currOBJ.box.min.z) currOBJ.box.min.z = pos.z;
 }
 
 void LoadMTL(AAssetManager *mgr,
@@ -107,6 +115,7 @@ void LoadOBJ(AAssetManager *mgr,
     } else if (label == "usemtl") {
       std::string materialName;
       lineStream >> materialName;
+      modelData.back().box.center = (modelData.back().box.max + modelData.back().box.min) * .5f;
       OBJ curr;
       curr.material_name = materialName;
       modelData.push_back(curr);
@@ -140,6 +149,7 @@ void LoadOBJ(AAssetManager *mgr,
       AddVertex(vertex1, modelData.back(), position, normal, texCoord, tangent, bitangent);
 
       if (modelData.back().vert_to_index.size() > 65500){
+        modelData.back().box.center = (modelData.back().box.max + modelData.back().box.min) * .5f;
         OBJ curr;
         curr.material_name = modelData.back().material_name;
         modelData.push_back(curr);

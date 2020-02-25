@@ -191,8 +191,6 @@ void Mesh::SubmitDraw(VkCommandBuffer cmd_buffer, uint_t frame_index) const {
                     VK_PIPELINE_BIND_POINT_GRAPHICS,
                     pipeline_);
 
-  geometry_->Bind(cmd_buffer);
-
   vkCmdBindDescriptorSets(cmd_buffer,
                           VK_PIPELINE_BIND_POINT_GRAPHICS,
                           layout_,
@@ -214,7 +212,10 @@ void Mesh::SubmitDraw(VkCommandBuffer cmd_buffer, uint_t frame_index) const {
 
   vkCmdDrawIndexed(cmd_buffer,
                    geometry_->GetIndexCount(),
-                   1, 0, 0, 0);
+                   1,
+                   geometry_->GetFirstIndex(),
+                   geometry_->GetVertexOffset(),
+                   0);
 }
 
 void Mesh::Translate(glm::vec3 offset) {

@@ -11,25 +11,17 @@
 using namespace benderhelpers;
 
 Geometry::Geometry(benderkit::Device &device,
-                   const std::vector<float> &vertex_data,
-                   const std::vector<uint16_t> &index_data,
-                   std::function<void(std::vector<float>&, std::vector<uint16_t>&)> generator)
-    : device_(device), generator_(generator) {
-  CreateVertexBuffer(vertex_data, index_data);
-
-  for (int x = 0; x < vertex_data.size() / 14; x++){
-    float xCoord = vertex_data[x * 14];
-    float yCoord = vertex_data[x * 14 + 1];
-    float zCoord = vertex_data[x * 14 + 2];
-
-    if (xCoord > bounding_box_.max.x) bounding_box_.max.x = xCoord;
-    if (xCoord < bounding_box_.min.x) bounding_box_.min.x = xCoord;
-    if (yCoord > bounding_box_.max.y) bounding_box_.max.y = yCoord;
-    if (yCoord < bounding_box_.min.y) bounding_box_.min.y = yCoord;
-    if (zCoord > bounding_box_.max.z) bounding_box_.max.z = zCoord;
-    if (zCoord < bounding_box_.min.z) bounding_box_.min.z = zCoord;
-  }
-  bounding_box_.center = (bounding_box_.max + bounding_box_.min) * .5f;
+                   int index_count,
+                   int vertex_offset,
+                   int index_offset,
+                   BoundingBox &box,
+                   std::function<void(std::vector<float> &, std::vector<uint16_t> &)> generator)
+    : vertex_offset_(vertex_offset),
+      index_count_(index_count),
+      index_offset_(index_offset),
+      bounding_box_(box),
+      generator_(generator) {
+  device_ = device;
 }
 
 Geometry::~Geometry() {
@@ -58,8 +50,6 @@ void Geometry::OnResume(benderkit::Device &device, const std::vector<float> &ver
 }
 
 void Geometry::CreateVertexBuffer(const std::vector<float>& vertex_data, const std::vector<uint16_t>& index_data) {
-  vertex_count_ = vertex_data.size();
-  index_count_ = index_data.size();
 
   VkDeviceSize buffer_size_vertex = sizeof(vertex_data[0]) * vertex_data.size();
   device_.CreateBuffer(buffer_size_vertex, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
@@ -79,7 +69,7 @@ void Geometry::CreateVertexBuffer(const std::vector<float>& vertex_data, const s
   vkUnmapMemory(device_.GetDevice(), index_buffer_device_memory_);
 }
 
-void Geometry::Bind(VkCommandBuffer cmd_buffer) const {
+void Geometry::Bind(VkCommandBuffer cmd_buffer)  {
   VkDeviceSize offset = 0;
   vkCmdBindVertexBuffers(cmd_buffer, 0, 1, &vertex_buf_, &offset);
   vkCmdBindIndexBuffer(cmd_buffer, index_buf_, offset, VK_INDEX_TYPE_UINT16);

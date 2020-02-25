@@ -72,6 +72,7 @@ struct OBJ {
   std::vector<float> vertex_buffer;
   std::vector<uint16_t> index_buffer;
   std::unordered_map<glm::vec3, uint16_t> vert_to_index;
+  BoundingBox box;
 };
 
 void LoadOBJ(AAssetManager *mgr,

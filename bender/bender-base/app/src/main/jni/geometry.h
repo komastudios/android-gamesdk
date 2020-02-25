@@ -19,9 +19,12 @@ struct BoundingBox {
 class Geometry {
  public:
   Geometry(benderkit::Device &device,
-           const std::vector<float> &vertex_data,
-           const std::vector<uint16_t> &index_data,
-           std::function<void(std::vector<float> &, std::vector<uint16_t> &)> generator = nullptr);
+           int index_count,
+           int vertex_offset,
+           int index_offset,
+           BoundingBox &box,
+           std::function<void(std::vector<float> &, std::vector<uint16_t> &)> generator = nullptr
+  );
   ~Geometry();
 
   void Cleanup();
@@ -30,27 +33,29 @@ class Geometry {
 
   int GetVertexCount() const { return vertex_count_; }
   int GetIndexCount() const { return index_count_; }
+  int GetFirstIndex() const { return index_offset_; }
+  int GetVertexOffset() const { return vertex_offset_; }
   BoundingBox GetBoundingBox() const { return bounding_box_; }
 
-  void Bind(VkCommandBuffer cmd_buffer) const;
+  static void Bind(VkCommandBuffer cmd_buffer);
+  static void CreateVertexBuffer(const std::vector<float> &vertex_data,
+                                 const std::vector<uint16_t> &index_data);
 
  private:
-  benderkit::Device &device_;
-
   int vertex_count_;
-  VkBuffer vertex_buf_;
-  VkDeviceMemory vertex_buffer_device_memory_;
-
+  int vertex_offset_;
   int index_count_;
-  VkBuffer index_buf_;
-  VkDeviceMemory index_buffer_device_memory_;
-
+  int index_offset_;
   BoundingBox bounding_box_;
 
-  std::function<void(std::vector<float> &, std::vector<uint16_t> &)> generator_ = nullptr;
+  static benderkit::Device &device_;
+  static VkBuffer vertex_buf_;
+  static VkDeviceMemory vertex_buffer_device_memory_;
+  static VkBuffer index_buf_;
+  static VkDeviceMemory index_buffer_device_memory_;
 
-  void CreateVertexBuffer(const std::vector<float> &vertex_data,
-                          const std::vector<uint16_t> &index_data);
+
+  std::function<void(std::vector<float> &, std::vector<uint16_t> &)> generator_ = nullptr;
 };
 
 #endif //BENDER_BASE_GEOMETRY_H
