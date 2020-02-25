@@ -18,11 +18,9 @@
                 "enabled": true,
                 "configuration": {
                     "affinity": true,
-                    "heat_time": "300000ms",
-                    "interval_between_samples": "120s",
-                    "wait_method_name": "mutex",
+                    "wait_method": "mutex",
                     "wait_period": "16ms",
-                    "interval_between_wait_periods": "1000ms"
+                    "looping_period": "1000ms"
                 }
             }
         }
