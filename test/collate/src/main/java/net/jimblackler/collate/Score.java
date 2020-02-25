@@ -10,12 +10,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Score {
@@ -36,6 +34,7 @@ public class Score {
           JSONObject first = result.getJSONObject(0);
           JSONObject params = first.getJSONObject("params");
 
+          JSONObject runParameters = Utils.flattenParams(params);
           JSONArray coordinates = params.getJSONArray("coordinates");
           JSONArray tests = params.getJSONArray("tests");
           int total = 1;
@@ -53,9 +52,7 @@ public class Score {
           } else {
             assert variations[0] == total;
           }
-          JSONObject params2 = new JSONObject(params.toString());
-          params2.remove("launcher");
-          paramsMap.put(variationNumber, params2);
+          paramsMap.put(variationNumber, runParameters);
 
           assert first.has("build");
           JSONObject build = first.getJSONObject("build");
@@ -70,6 +67,7 @@ public class Score {
           builds.put(id, build);
 
           long lowestTop = Long.MAX_VALUE;
+          long largest = 0;
           boolean exited = false;
           boolean allocFailed = false;
           boolean serviceCrashed = false;
@@ -95,10 +93,19 @@ public class Score {
             if (!row.has("nativeAllocated")) {
               continue;
             }
-            long nativeAllocated = row.getLong("nativeAllocated");
+            long score;
+            if (runParameters.has("glTest")) {
+              score = row.getLong("gl_allocated");
+            } else {
+              score = row.getLong("nativeAllocated");
+            }
+
+            if (score > largest) {
+              largest = score;
+            }
 
             if (row.has("trigger")) {
-              long top = nativeAllocated;
+              long top = score;
               if (top < lowestTop) {
                 lowestTop = top;
               }

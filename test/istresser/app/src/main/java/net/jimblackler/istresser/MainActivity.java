@@ -101,8 +101,8 @@ public class MainActivity extends AppCompatActivity {
   private int serviceTotalMb = 0;
   private ServiceCommunicationHelper serviceCommunicationHelper;
   private boolean isServiceCrashed = false;
-  private boolean glTestActive;
   private int mallocKbPerMillisecond;
+  private int glAllocKbPerMillisecond;
   private boolean mmapAnonTestActive;
   private List<Heuristic> activeHeuristics = new ArrayList<>();
   private boolean yellowLightTesting = false;
@@ -234,8 +234,10 @@ public class MainActivity extends AppCompatActivity {
 
       mallocKbPerMillisecond = params.optInt("malloc");
 
-      if (params.optBoolean("glTest")) {
-        activateGlTest();
+      glAllocKbPerMillisecond = params.optInt("glTest");
+
+      if (glAllocKbPerMillisecond > 0) {
+        testSurface.setVisibility(View.VISIBLE);
       }
 
       if (params.has("heuristics")) {
@@ -335,6 +337,13 @@ public class MainActivity extends AppCompatActivity {
                     }
                   }
                 }
+                if (glAllocKbPerMillisecond > 0 && shouldAllocate) {
+                  long sinceLastAllocation = System.currentTimeMillis() - _latestAllocationTime;
+                  long target = sinceLastAllocation * glAllocKbPerMillisecond * 1024;
+                  TestSurface testSurface = findViewById(R.id.glsurfaceView);
+                  testSurface.getRenderer().setTarget(target);
+                }
+
                 if (mmapAnonTestActive) {
                   long sinceLastAllocation = System.currentTimeMillis() - _latestAllocationTime;
                   int owed = (int) (sinceLastAllocation * mallocKbPerMillisecond * 1024);
@@ -449,12 +458,6 @@ public class MainActivity extends AppCompatActivity {
         }
       }
     }.start();
-  }
-
-  private void activateGlTest() {
-    TestSurface testSurface = findViewById(R.id.glsurfaceView);
-    testSurface.setVisibility(View.VISIBLE);
-    glTestActive = true;
   }
 
   private static void getStaticFields(JSONObject object, Class<?> aClass) throws JSONException {
@@ -625,7 +628,7 @@ public class MainActivity extends AppCompatActivity {
             freeAll();
           }
           data.clear();
-          if (glTestActive) {
+          if (glAllocKbPerMillisecond > 0) {
             TestSurface testSurface = findViewById(R.id.glsurfaceView);
             if (testSurface != null) {
               testSurface.queueEvent(
@@ -717,7 +720,7 @@ public class MainActivity extends AppCompatActivity {
 
   public static native void initGl();
 
-  public static native int nativeDraw();
+  public static native int nativeDraw(long toAllocate);
 
   public static native void release();
 
