@@ -25,14 +25,40 @@
 
 using namespace ancer;
 
+/*
+ *
+ * ThreadSchedulingOperation
+ *
+ * This test is intended to measure the delta in time between when a thread
+ * is intended to wake from a sleep and when it actually does.
+ *
+ * Inputs:
+ * configuration:
+ *   threads: [vector of scheduler_configuration] specific
+ *     per-thread configurations
+ *
+ *  scheduler_configuration:
+ *   cpu_id: [int] if >= 0, a specific CPU to pin the executing thread to;
+ *     otherwise cpu is unspecified and may be floating
+ *    scheduled_delay: [Duration] time to sleep before waking
+ *
+ * Outputs:
+ *
+ * datum:
+ *   execution_start_time: clock time (nanoseconds) when execution started
+ *     after the specified sleep
+ *   execution_start_time_error: error in nanoseconds from expected wake time
+ *
+ */
 
-//==================================================================================================
+
+//==============================================================================
 
 namespace {
     constexpr Log::Tag TAG{"ThreadSchedulingOperation"};
 }
 
-//==================================================================================================
+//==============================================================================
 
 namespace {
     struct scheduler_configuration {
@@ -45,7 +71,7 @@ namespace {
         JSON_REQVAR(scheduled_delay);
     }
 
-//--------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
     struct configuration {
         std::vector<scheduler_configuration> threads;
@@ -55,7 +81,7 @@ namespace {
         JSON_REQVAR(threads);
     }
 
-//--------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
     struct datum {
         Timestamp execution_start_time;
@@ -68,14 +94,8 @@ namespace {
     }
 }
 
-//==================================================================================================
+//==============================================================================
 
-/*
- * ThreadSchedulingOperation
- * Schedules threads to run at distances in the future, when in Test mode,
- * records the distance in time between the intended time to run and the
- * time of the actual scheduled execution
- */
 class ThreadSchedulingOperation : public BaseOperation {
 public:
 

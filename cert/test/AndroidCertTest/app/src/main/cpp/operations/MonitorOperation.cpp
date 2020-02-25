@@ -25,6 +25,38 @@
 
 using namespace ancer;
 
+/*
+ *
+ * MonitorOperation
+ *
+ * MonitorOperation is not a test, rather, it's an operation that can (and is
+ * by default) set to run alongside tests; MonitorOperation's job is to report
+ * system status (temp, memory load, etc).
+ *
+ * Inputs:
+ *
+ * configuration:
+ *   sample_period: [Duration] report frequency period
+ *
+ * Outputs:
+ *
+ *  datum:
+ *   memory_state:
+ *     native_allocated:[long] total memory allocation of system in bytes
+ *     available_memory:[long] total memory availability in bytes
+ *     low_memory:[bool] if true, OS reports a low memory state
+ *     oom_score:[int] out-of-memory score, the higher the worse. kind
+ *       of arbitrary scale
+ *   perf_info:
+ *     fps:[double] current frame-per-second of the display
+ *     min_frame_time:[duration] current minimum time it took to render a frame
+ *     max_frame_time:[duration] current maximum time it took to render a frame
+ *   temperature_info:
+ *     thermal_status:[ThermalStatus enum] high-level semantic thermal status
+ *       value as reported by Android Q
+ *     temperatures_in_celsius_millis:[vector of TemperatureInCelsiusMillis]
+ *       vector of reported thermal values
+*/
 
 //==============================================================================
 
@@ -71,9 +103,15 @@ void WriteDatum(report_writers::Struct w, const temperature_info &i) {
 //------------------------------------------------------------------------------
 
 struct sys_mem_info {
+  // heap allocation size in bytes
   long native_allocated = 0;
+  // available memory of system in bytes
   long available_memory = 0;
+
+  // if true, OS is reporting low memory condition
   bool low_memory = false;
+
+  // somewhat arbitrary "out of memory" score; the higher the worse
   int oom_score = 0;
 
   explicit sys_mem_info(const MemoryInfo &i) :

@@ -38,6 +38,71 @@ using std::unique_ptr;
 using ancer::unowned_ptr;
 
 using namespace ancer;
+
+/*
+ * MarchingCubesGLES3Operation
+ *
+ * This is an experimental platform to aid in finding best practices for
+ * maintaining high performance in (potentially-multithreaded) CPU/RAM
+ * workloads over time while minimizing consequences of thermal throttling.
+ *
+ * The test uses the marching cubes algorithm to hammer the CPU heavily via a
+ * job queue; it has a ton of non-cache-friendly memory lookups, and streams
+ * vertices to the GPU.
+ *
+ * Input:
+ *
+ * configuration:
+ *  warm_up_time:[Duration] how long to run before start measuring perf data
+ *  thread_affinity:[ThreadAffinitySetup enum], one of:
+ *    OneBigCore: pin work to a single big core
+ *    OneLittleCore: pin work to a single little core
+ *    AllBigCores: job queue sets thread affinity to big cores
+ *    AllLittleCores: job queue sets thread affinity to little cores
+ *    AllCores: job queue just uses vanilla unpinned threads without core type affinity
+ *  thread_pinned: if true, threads are pinned to whatever core they are running on
+ *  job_batching_setup: [JobBatchingSetup enum] one of:
+ *    OneNodePerJob: naive job scheduling, each job gets one work unit with
+ *      no attempt to balance load or do anything otherwsie "clever"
+ *    ManyNodesPerJob: minimally clever job scheduler; does several chunks
+ *      of work per work unit
+ *    AutoBalancedNodesPerJob: creates one job unit per hardware thread and
+ *      attempts to distribute their work to evenly balance computational expense
+ *      (to hopefully avoid scenario where some threads get "easy" jobs and
+ *      finish early while other threads are burdoned with all the "heavy" jobs)
+ *    AutoQueuedNodesPerJob: inverts the queue such that each worker takes the
+ *      next available job, but fixes the worker count to num hardware threads
+ *   sleep_config:
+ *      period:[Duration] worker threads are slept after this much work completed
+ *      duration:[Duration] how long a worker thread is allowed to sleep after
+ *        completing a work period
+ *      method:[WaitMethod enum] one of:
+ *        None: No sleep; threads will run full bore without sleeping
+ *        Sleep: threads will sleep using std::this_thread::sleep()
+ *        Spilock: threads will sleep using a simple spinlock with a yeild
+ *
+ * Output:
+ *
+ * datum:
+ *  marching_cubes_permutation_results:
+ *    exec_configuration: (copy of input configuration)
+ *    num_threads_used: [int] number of threads used to do work
+ *    num_iterations:[int] number of times the volume was marched
+ *    min_vps:[double] minimum voxels-per-second during run
+ *    max_vps:[double] max voxels-per-second during run
+ *    average_vps:[double] average voxels-per-second during run
+ *    median_vps:[double] median voxels-per-second during run
+ *    fifth_percentile_vps:[double] 5th percentile voxels-per-second during run
+ *    twentyfifth_percentile_vps:[double] 25th percentile voxels-per-second during run
+ *    seventyfifth_percentile_vps:[double] 75th percentile voxels-per-second during run
+ *    ninetyfifth_percentile_vps:[double] 95th percentile voxels-per-second during run
+ *
+ */
+
+
+
+
+
 namespace mc = marching_cubes;
 
 namespace {
