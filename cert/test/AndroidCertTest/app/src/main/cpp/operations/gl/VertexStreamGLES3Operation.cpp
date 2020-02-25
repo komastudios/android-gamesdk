@@ -13,6 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * This operation renders vertex shaders at an increasing number. The goal is to stress the GPU in
+ * order to test the stability of frames per second (i.e., whether it keeps up under incremental
+ * workload or, elsewhere, where is the breaking threshold).
+ *
+ * Input configuration:
+ * - count: initial number of simultaneous vertex renderers.
+ * - rows: shader height in vertices.
+ * - cols: shader width in vertices.
+ * - increment:
+ *   - period: time between renderer increments.
+ *   - increment: number of renderers to add.
+ *
+ * Output report: a vertex_throughput element containing:
+ * - vertices_per_second: total number of vertices rendered per second. Keep aware that while this
+ *                        number could go up, the frames per second rate could still go down.
+ *                        Possibly as a consequence of.
+ * - renderers: how many renderers are rendering vertices simultaneously after the last increment.
+ */
+
 #include <cmath>
 #include <random>
 #include <memory>
@@ -53,7 +74,6 @@ struct configuration {
   int rows;
   int cols;
   configuration_increment increment;
-  int min_fps_threshold;
 
   configuration() : count(0), rows(0), cols(0) {}
 };
@@ -63,22 +83,17 @@ JSON_CONVERTER(configuration) {
   JSON_REQVAR(rows);
   JSON_REQVAR(cols);
   JSON_OPTVAR(increment);
-  JSON_OPTVAR(min_fps_threshold);
 }
 
 //--------------------------------------------------------------------------------------------------
 
 struct vertex_throughput {
   float vertices_per_second;
-  int components_per_vertex;
-  size_t vertices_per_renderer;
   size_t renderers;
 };
 
-void WriteDatum(report_writers::Struct w, const vertex_throughput& t) {
+void WriteDatum(report_writers::Struct w, const vertex_throughput &t) {
   ADD_DATUM_MEMBER(w, t, vertices_per_second);
-  ADD_DATUM_MEMBER(w, t, components_per_vertex);
-  ADD_DATUM_MEMBER(w, t, vertices_per_renderer);
   ADD_DATUM_MEMBER(w, t, renderers);
 }
 
@@ -86,7 +101,7 @@ struct datum {
   vertex_throughput vertex_throughput;
 };
 
-void WriteDatum(report_writers::Struct w, const datum& d) {
+void WriteDatum(report_writers::Struct w, const datum &d) {
   ADD_DATUM_MEMBER(w, d, vertex_throughput);
 }
 }
@@ -101,26 +116,23 @@ struct Vertex {
   vec4 rgba;
 };
 
-constexpr auto VERTEX_COMPONENTS = 8;
-
 enum class Attributes : GLuint {
   Pos = 0,
   Color = 1,
   Texcoord = 2,
 };
 
-constexpr auto MAX_ROWS = 255;
-constexpr auto MAX_COLS = 255;
-constexpr auto B = M_PI*0.0125;
-constexpr auto C = M_PI*0.025;
+constexpr auto kMaxRows = 255;
+constexpr auto kMaxCols = 255;
+constexpr auto kB = M_PI*0.0125;
+constexpr auto kC = M_PI*0.025;
 
 class StreamRenderer {
  public:
 
   StreamRenderer(int rows, int cols, int left, int top, int width, int height) :
-      _width(width), _height(height), VERTICES_PER_ROW(cols + 1),
-      _rows(std::min(rows, MAX_ROWS)), _cols(std::min(cols, MAX_COLS)),
-      R(std::min(_width, _height)/64), _time(0), _steps(0),
+      _width(width), _height(height), kVerticesPerRow(cols + 1),
+      kR(std::min(_width, _height)/64), _time(0), _steps(0),
       _vertex_vbo_id(0), _index_vbo_id(0), _vbo_state(0) {
     //
     //  Build mesh
@@ -281,12 +293,12 @@ class StreamRenderer {
    * Given a vertex iteration order, calculates some slight position offset.
    */
   vec2 CalculatePositionDelta(const size_t order) {
-    int row = order/VERTICES_PER_ROW;
-    int col = static_cast<int>(floor(order - (row*VERTICES_PER_ROW)));
+    int row = order/kVerticesPerRow;
+    int col = static_cast<int>(floor(order - (row*kVerticesPerRow)));
 
-    const auto A = _time*M_PI*4 + row*B - col*C;
+    const auto A = _time*M_PI*4 + row*kB - col*kC;
 
-    return vec2(static_cast<float>(std::cos(A)*R), static_cast<float>(std::sin(A)*R));
+    return vec2(static_cast<float>(std::cos(A)*kR), static_cast<float>(std::sin(A)*kR));
   }
 
   /**
@@ -296,9 +308,9 @@ class StreamRenderer {
     const auto gap = _steps%20;
     if (gap < 5) {
       return vec2(v.tex_coord.x, v.tex_coord.y);
-    } else if (gap <10) {
+    } else if (gap < 10) {
       return vec2(v.tex_coord.y, v.tex_coord.x);
-    } else if (gap <15) {
+    } else if (gap < 15) {
       return vec2(-v.tex_coord.x, -v.tex_coord.y);
     } else {
       return vec2(-v.tex_coord.y, -v.tex_coord.x);
@@ -325,9 +337,9 @@ class StreamRenderer {
   GLuint _vbo_state;
 
   // internal state
-  int _width, _height, _rows, _cols;
-  const int VERTICES_PER_ROW;
-  const double R;
+  int _width, _height;
+  const int kVerticesPerRow;
+  const double kR;
   double _time;
   int _steps;
   std::vector<Vertex> _vertices;
@@ -472,7 +484,7 @@ class VertexStreamGLES3Operation : public BaseGLES3Operation {
     for (const auto &r : _renderers) { total_vertices += r->VertexCount(); }
     auto vps = total_vertices/elapsed_seconds.count();
 
-    Report(datum{{vps, VERTEX_COMPONENTS, _renderers[_renderer_count-1]->VertexCount(), _renderer_count}});
+    Report(datum{{vps, _renderer_count}});
   }
 
   /**
