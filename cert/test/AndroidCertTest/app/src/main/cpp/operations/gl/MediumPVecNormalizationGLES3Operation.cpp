@@ -17,6 +17,43 @@
 * limitations under the License.
 */
 
+/*
+ * MediumPVecNormalizationGLES3Operation
+ *
+ * This test aims to identify devices which fail to correctly normalize
+ * 3-component half-precision vectors - per reports from developers that
+ * some hardware produced "garbage" when attempting to do so.
+ *
+ * In short, given a 3-component half precision vector, then incrementing
+ * one or more fields to a value > 127, when normalized incorrect results
+ * are observed from some hardware.
+ *
+ * Input:
+ *
+ * vertex_stage_configuration: configuration params for the test as run on vertex processor
+ *  enabled: [bool] is this test enabled?
+ *  offset_steps:[int] number of steps in range to test
+ *  offset_scale:[float] each channel will be incremented by (i / offset_steps) * offset_scale
+ *    resulting in offset values from [0, offset_scale]
+ * fragment_stage_configuration: configuration params for running the test
+ *  on the fragment processor - same fields as above
+ * varying_configuration: configuration params for running the test on
+ *  vertex and fragment stages, passing data through the varying pipeline. Same
+ *  params as above.
+ *
+ * Output:
+ *
+ *  test:[string] the test for which this datum is issued, one of
+ *    "VertexStageTest", "FragmentStageTest", "VaryingPassthroughTest"
+ *  failure:[bool] if true, this datum represents a failed normalization
+ *  expected_failure:[bool] if true, normalization failure is expected due to precision
+ *  expected_rgb:[rgb triplet] expected framebuffer rgb value for the read fragment
+ *  actual_rgb:[rgb triplet] value read from framebuffer
+ *  offset:[float] offset applied to one ore more components of the vec3
+ *  squared_magnitude:[float] squared mag of the vector that was normalized,
+ *    i.e. (v.x*v.x + v.y*v.y + v.z*v.z)
+ */
+
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "misc-non-private-member-variables-in-classes"
 
@@ -35,7 +72,6 @@
 #include <list>
 
 using namespace ancer;
-
 
 //==============================================================================
 

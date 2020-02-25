@@ -14,6 +14,48 @@
  * limitations under the License.
  */
 
+/*
+ * DepthClearGLES3Operation
+ * This test aims to identify devices which don't correctly pass/reject fragments
+ * based on the depth clear level of the frame buffer.
+ *
+ * In short, if the depth buffer is cleared to 0.5 and the depth test is set
+ * to GL_LESS, fragments written at depth of 0.4 should pass, and fragments
+ * written at depth of 0.6 should be rejected.
+ *
+ * In general, this is a given for any conformant GL implementation. This test
+ * was created to attempt to recreate reports that some 32-bit depth contexts
+ * showed incorrect behavior. As such this test requests a 32-bit depth context.
+ *
+ * NOTE: None of the hardware this has been run on yet supports a 32-bit depth
+ * context - all fallback to 24-bit depth + 8-bit stencil layouts.
+ *
+ * Input:
+ *
+ * configuration:
+ *  run_for_all_depth_precisions: if true, run test on whatever gl context
+ *  configuration is provided, even if it's not the one requested.
+ *
+ * Output:
+ *
+ * datum:
+ *  kind:[datum::Kind enum] one of:
+ *    create_info_message: tag for creation message
+ *    success: tag for reporting successful result
+ *    incorrect_fragment_pass: tag for reporting incorrect fragment pass
+ *    incorrect_fragment_reject: tag for reporting incorrect fragment rejection
+ *  has_requested_context:[bool] if true, test ran on a 32-bit context as requested
+ *  depth_bits:[int] number of bits test ran on
+ *  writes_passed_as_expected:[bool] everything went a-ok
+ *  error_incorrect_fragment_pass:[bool] flag that we're reporting an incorrect fragment pass
+ *  error_incorrect_fragment_rejected:[bool] flag that we're reporting an incorrect fragment rejection
+ *  depth_clear_value:[float] depth clear value used when report was issued
+ *  fragment_depth:[float] depth of fragment which passed or rejected incorrectly
+ *  expected_rgb_value:[rgb triplet] expected value in color buffer
+ *  actual_rgb_value:[rgb triplet] value read from color buffer
+ *
+ */
+
 #include <cmath>
 #include <thread>
 #include <mutex>
@@ -24,7 +66,6 @@
 #include <ancer/util/Json.hpp>
 
 using namespace ancer;
-
 
 //==============================================================================
 

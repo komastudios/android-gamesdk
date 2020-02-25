@@ -14,6 +14,42 @@
  * limitations under the License.
  */
 
+/*
+ *
+ * ScheduleAffinityOperation
+ *
+ * This test aims to determine reliability of thread pinning. E.g., if a thread
+ * is pinned to a specific core, will the os respect that assignment?
+ *
+ * Basic operation is to spawn N threads per CPU, pin them to that CPU, have
+ * them run some busy work and periodically report what CPU they're executing
+ * on.
+ *
+ * Inputs:
+ *
+ * configuration:
+ *   thread_count: [int] count of threads to spawn per cpu
+ *   report_frequency: [Duration] Period of time between reporting cpu thread
+ *     is running on
+ *
+ * Outputs:
+ *
+ * datum:
+ *   message:[string] The action being reported, one of:
+ *     "spawning_started": start of test, about to start work threads
+ *     "spawning_batch": starting a batch of work threads for a cpu
+ *     "setting_affinity": about to set affinity of work thread X
+ *     "did_set_affinity": finished setting affinity for work thread X
+ *     "work_started": work starting for a worker thread
+ *     "work_running": work running (this is sent periodically
+ *       while test executes)
+ *     "work_finished": work finished for worker thread
+ *   expected_cpu:[int]: if >= 0 cpu this worker was expected to run on
+ *   thread_affinity_set: [bool] if true, expected_cpu should be checked against
+ *     the datum payload's cpu id for veracity
+ *
+ */
+
 #include <condition_variable>
 #include <mutex>
 #include <sched.h>
@@ -29,7 +65,6 @@
 #include <ancer/util/Time.hpp>
 
 using namespace ancer;
-
 
 //==============================================================================
 
