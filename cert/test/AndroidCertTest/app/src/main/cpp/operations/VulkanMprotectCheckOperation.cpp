@@ -14,6 +14,43 @@
  * limitations under the License.
  */
 
+/**
+ * Tests whether the device features memory region protection (mprotect) on
+ * Vulkan memory buffers. mprotect is a UNIX feature that allows setting a lock
+ * on memory regions (Read, Write, etc.) Afterwards, any access attempt to all
+ * or part of that region that violates the access-level, produces a
+ * segmentation fault (SIGSEGV). In a normal scenario, such signal would crash
+ * the app if not trapped.
+ * For this test, we first set a trap on that segmentation fault signal. Meaning
+ * that instead of crashing, the occurrence of the signal invokes a function of
+ * ours that marks the test as passed. This is because we had set mprotect on
+ * Vulkan mapped memory and then tried to violate the lock just for the segment
+ * fault to happen.
+ * Conversely, if the segmentation fault didn't occurred in spite of having
+ * mprotected a memory region, then the test would consequently fail.
+ *
+ * Input configuration: None. As this is a functional test (yes-no), the user
+ *                      doesn't have to specify any particular input data.
+ *
+ * Output report: an mprotect JSON object containing two data points.
+ * - available: boolean that indicates whether mprotect scope covers Vulkan
+ *              allocated memory.
+ * - score: an integer that tells, in case of test fail, how far it went.
+ *     - 0: success. All fine (i.e., available is true).
+ *     - 1: writing on write-protected memory raised a signal as expected, but
+ *          the test later failed to remove the write lock to the memory region.
+ *     - 2: the test raises a signal if trying to write to write protected
+ *          memory, but it also does it when writing is re-enabled.
+ *     - 3: the attempt to set a write lock on Vulkan memory failed.
+ *     - 4: in spite of being write-locked, attempting to write to the memory
+ *          region didn't raise any segmentation fault.
+ *     - 5: the attempt to map Vulkan memory as addressable memory failed.
+ *     - 6: the test failed to allocate Vulkan memory.
+ *     - 7: Vulkan doesn't report memory that can be mapped into an addressable
+ *          space.
+ *     - 8: the device doesn't support Vulkan.
+ */
+
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "misc-non-private-member-variables-in-classes"
 
@@ -31,12 +68,12 @@ using namespace ancer::vulkan;
 namespace {
   /**
    * This mprotect availability test may fail at many stages. For that reason
-   * this enum establishes a ranking to measure how far from success a device
+   * this enum establishes a scoring to measure how far from success a device
    * is.
    * The higher the score, the farther from success. The lowest score, zero,
    * means success (i.e., mprotect is fully available).
    */
-  enum MprotectRank : int {
+  enum MprotectScore : int {
     /**
      * Vulkan memory can be successfully protected against writing
      */
@@ -85,21 +122,21 @@ namespace {
 
   struct mprotect_info {
     bool available{false};
-    MprotectRank rank{NO_MAPPABLE_MEMORY};
+    MprotectScore score{NO_MAPPABLE_MEMORY};
 
-    mprotect_info(const MprotectRank rank) {
-      SetRank(rank);
+    mprotect_info(const MprotectScore score) {
+      SetScore(score);
     }
 
-    void SetRank(const MprotectRank new_rank) {
-      available = new_rank == AVAILABLE;
-      rank = new_rank;
+    void SetScore(const MprotectScore new_score) {
+      available = new_score == AVAILABLE;
+      score = new_score;
     }
   };
 
   void WriteDatum(ancer::report_writers::Struct w, const mprotect_info& i) {
     ADD_DATUM_MEMBER(w, i, available);
-    ADD_DATUM_MEMBER(w, i, rank);
+    ADD_DATUM_MEMBER(w, i, score);
   }
 
 
@@ -177,7 +214,7 @@ class VulkanMprotectCheckOperation : public BaseVulkanOperation {
       return;
     }
 
-    mprotect.SetRank(NO_MAPPABLE_MEMORY);
+    mprotect.SetScore(NO_MAPPABLE_MEMORY);
 
     for(uint32_t memTypeIndex = 0;
        memTypeIndex < _vk->physical_device_memory_properties.memoryTypeCount;
@@ -241,11 +278,11 @@ class VulkanMprotectCheckOperation : public BaseVulkanOperation {
         if(res == VK_SUCCESS) {
           Log::D(TAG, "Vulkan memory mapped");
         } else {
-          mprotect.SetRank(MEMORY_MAPPING_FAILURE);
+          mprotect.SetScore(MEMORY_MAPPING_FAILURE);
           Log::E(TAG, "Vulkan memory mapping failure. res=%d", res);
         }
       } else {
-        mprotect.SetRank(MEMORY_ALLOCATION_FAILURE);
+        mprotect.SetScore(MEMORY_ALLOCATION_FAILURE);
         Log::E(TAG, "Vulkan memory allocation failure. res=%d", res);
       }
     }
@@ -283,22 +320,22 @@ class VulkanMprotectCheckOperation : public BaseVulkanOperation {
             protectionViolationOccurred = false;
             this->WriteBuffer();
             if(protectionViolationOccurred) {
-              mprotect.SetRank(WRITE_VIOLATION_UNEXPECTED);
+              mprotect.SetScore(WRITE_VIOLATION_UNEXPECTED);
               Log::I(TAG, "Unexpected memory write violation caught.");
             } else {
-              mprotect.SetRank(AVAILABLE);
+              mprotect.SetScore(AVAILABLE);
               Log::I(TAG, "mprotect can be applied to Vulkan mapped memory.");
             }
           } else {
-            mprotect.SetRank(READ_WRITE_MPROTECT_FAILURE);
+            mprotect.SetScore(READ_WRITE_MPROTECT_FAILURE);
             Log::I(TAG, "mprotect couldn't set Vulkan memory read/write");
           }
         } else {
-          mprotect.SetRank(WRITE_VIOLATION_EXPECTED);
+          mprotect.SetScore(WRITE_VIOLATION_EXPECTED);
           Log::I(TAG, "Expected memory write violation wasn't caught.");
         }
       } else {
-        mprotect.SetRank(READ_ONLY_MPROTECT_FAILURE);
+        mprotect.SetScore(READ_ONLY_MPROTECT_FAILURE);
         Log::I(TAG, "mprotect couldn't set Vulkan memory read-only");
       }
     }
