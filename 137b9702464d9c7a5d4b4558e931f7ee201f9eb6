@@ -16,6 +16,24 @@
       "revId": "137b9702464d9c7a5d4b4558e931f7ee201f9eb6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f6237af1_5f5f4de9",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.Temperature.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 398,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-02-25T00:08:25Z",
+      "side": 1,
+      "message": "Thanks, @michaelbaxter! I did, both, rename the function and elaborate further on what it means. Please re-review and resolve this feedback if you consider that my latest change closes the gap.\n\nAn observation: by the time you posted this to patch 8, patch 9 had been out already (I\u0027d say for a few hours.) I mean that you weren\u0027t reviewing the latest version, so plusing-1, if had happened, wouldn\u0027t have made effect.",
+      "parentUuid": "e98024b1_e8fc9487",
+      "revId": "137b9702464d9c7a5d4b4558e931f7ee201f9eb6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
