@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b3325ac6_9fcf6663",
+        "filename": "test/collate/src/main/java/net/jimblackler/collate/Score.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-02-25T12:46:40Z",
+      "side": 1,
+      "message": "I feel like the number of parameters this class has that is named params is getting out of hand; can we rename them?",
+      "range": {
+        "startLine": 39,
+        "startChar": 21,
+        "endLine": 39,
+        "endChar": 28
+      },
+      "revId": "0b691f141492f967221151be76994b1bd032950b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
