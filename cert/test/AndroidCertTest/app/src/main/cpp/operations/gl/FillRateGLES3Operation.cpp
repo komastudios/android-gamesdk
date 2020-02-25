@@ -14,6 +14,29 @@
  * limitations under the License.
  */
 
+/**
+ * This operation measures the device ability to keep up with frame rate under a heavy shader
+ * filling "rain". Textured quads amount and size will vary independently during the test, in order
+ * to give an idea of at what amount and/or size of textured quads the FPS rate starts degrading.
+ *
+ * Input configuration:
+ * - num_quads: initial number of textured quads to render per frame.
+ * - quad_size: size in pixels of a textured quad (namely, if it is N, then the quad is NxN.
+ * - blending: if true, the texture has transparent colors so that the rendering process blends
+ *             flying quads with quads underneath. The default is false.
+ * - instances per renderer: like num_quads, but per single renderer. The default is 64.
+ * - increment:
+ *     - period: seconds before incrementing the fill rate.
+ *     - num_quads_increment: how many new quads will add to the ones being rendered.
+ *     - quad_size_increment: size delta for all quads.
+ *
+ * Output report:
+ * - num_quads: total number of textured quads rendered per frame.
+ * - quad_size: resulting size per quad.
+ * - pixels_per_second: total pixel throughput.
+ * - pixels_per_quad: quad_size x quad_size.
+ */
+
 #include <cmath>
 #include <random>
 #include <memory>
@@ -60,7 +83,6 @@ struct base_configuration {
 
 struct configuration : base_configuration {
   configuration_increment increment;
-  int min_fps_threshold = 0;
 };
 
 JSON_CONVERTER(configuration) {
@@ -69,7 +91,6 @@ JSON_CONVERTER(configuration) {
   JSON_REQVAR(blending);
   JSON_OPTVAR(instances_per_renderer);
   JSON_OPTVAR(increment);
-  JSON_OPTVAR(min_fps_threshold);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -81,7 +102,7 @@ struct fill_rate_performance {
   int pixels_per_quad = 0;
 };
 
-void WriteDatum(report_writers::Struct w, const fill_rate_performance& p) {
+void WriteDatum(report_writers::Struct w, const fill_rate_performance &p) {
   ADD_DATUM_MEMBER(w, p, num_quads);
   ADD_DATUM_MEMBER(w, p, quad_size);
   ADD_DATUM_MEMBER(w, p, pixels_per_second);
@@ -92,7 +113,7 @@ struct datum {
   fill_rate_performance fill_rate;
 };
 
-void WriteDatum(report_writers::Struct w, const datum& d) {
+void WriteDatum(report_writers::Struct w, const datum &d) {
   ADD_DATUM_MEMBER(w, d, fill_rate);
 }
 }
@@ -107,7 +128,7 @@ struct Vertex {
   vec4 rgba;
 };
 
-const Vertex QUAD[4] = {
+const Vertex kQuad[4] = {
     {{-0.5f, +0.5f}, {0, 0}, {0, 1, 1, 1}},
     {{-0.5f, -0.5f}, {0, 1}, {1, 0, 0, 1}},
     {{+0.5f, +0.5f}, {1, 0}, {1, 0, 1, 1}},
@@ -122,10 +143,10 @@ enum class Attributes : GLuint {
   Scalerot
 };
 
-constexpr float LINEAR_VEL = 100.0F;
-constexpr float ANGULAR_VEL = static_cast<float>(M_PI);
-constexpr const char *OPAQUE_TEXTURE_FILE = "Textures/sphinx.png";
-constexpr const char *BLENDING_TEXTURE_FILE = "Textures/dvd.png";
+constexpr float kLinearVelocity = 100.0F;
+constexpr float kAngularVelocity = static_cast<float>(M_PI);
+constexpr const char *kOpaqueTextureFile = "Textures/sphinx.png";
+constexpr const char *kBlendingTextureFile = "Textures/dvd.png";
 
 /**
  * Abstract quad renderer that declares some purely virtual rendering life cycle methods.
@@ -198,10 +219,10 @@ class InstancedQuadRenderer : public QuadRenderer {
     //  Initialize animation state
     //
 
-    const int range = 1000;
+    const int kRange = 1000;
     std::random_device dev;
     std::mt19937 rng(dev());
-    std::uniform_int_distribution<std::mt19937::result_type> dist(0, range);
+    std::uniform_int_distribution<std::mt19937::result_type> dist(0, kRange);
 
     _positions.resize(_num_quads);
     _velocities.resize(_num_quads);
@@ -211,25 +232,25 @@ class InstancedQuadRenderer : public QuadRenderer {
     // assign random velocities
     for (auto &v : _velocities) {
       auto value =
-          vec2(dist(rng), dist(rng))/vec2(range, range); // we have values from 0,1
+          vec2(dist(rng), dist(rng))/vec2(kRange, kRange); // we have values from 0,1
       value = value*vec2(2, 2) - vec2(1, 1); // we have values from -1,1
-      float vel = (LINEAR_VEL/2) +
-          ((LINEAR_VEL/2)*(dist(rng)/static_cast<float>(range)));
+      float vel = (kLinearVelocity/2) +
+          ((kLinearVelocity/2)*(dist(rng)/static_cast<float>(kRange)));
       v = glm::normalize(value)*vel;
     }
 
     // assign random initial angles
     for (float &a : _angles) {
-      auto value = static_cast<float>(dist(rng))/range;
+      auto value = static_cast<float>(dist(rng))/kRange;
       value = value*2 - 1;
       a = static_cast<float>(value*M_PI);
     }
 
     // assign random angular velocities
     for (float &av : _angular_velocities) {
-      auto value = static_cast<float>(dist(rng))/range;
+      auto value = static_cast<float>(dist(rng))/kRange;
       value = value*2 - 1;
-      av = value*ANGULAR_VEL;
+      av = value*kAngularVelocity;
     }
 
     //
@@ -241,7 +262,7 @@ class InstancedQuadRenderer : public QuadRenderer {
 
       glGenBuffers(VbCount, _vb);
       glBindBuffer(GL_ARRAY_BUFFER, _vb[VbInstance]);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(QUAD), &QUAD[0], GL_STATIC_DRAW);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(kQuad), &kQuad[0], GL_STATIC_DRAW);
 
       glBindBuffer(GL_ARRAY_BUFFER, _vb[VbScalerot]);
       glBufferData(
@@ -478,7 +499,7 @@ class FillRateGLES3Operation : public BaseGLES3Operation {
     int tex_width = 0;
     int tex_height = 0;
     _tex_id = LoadTexture(
-        _configuration.blending ? BLENDING_TEXTURE_FILE : OPAQUE_TEXTURE_FILE,
+        _configuration.blending ? kBlendingTextureFile : kOpaqueTextureFile,
         &tex_width, &tex_height, nullptr);
     if (tex_width==0 || tex_height==0) {
       FatalError(TAG, "Unable to load texture");
@@ -558,8 +579,7 @@ class FillRateGLES3Operation : public BaseGLES3Operation {
 
 
       auto seconds_elapsed = duration_cast<SecondsAs<float>>(elapsed);
-      auto quads_per_sec = static_cast<float>(_quads_rendered_since_last_fps_timestamp
-          /seconds_elapsed.count());
+      auto quads_per_sec = _quads_rendered_since_last_fps_timestamp/seconds_elapsed.count();
       auto pixels_per_quad = _current_configuration.quad_size*_current_configuration.quad_size;
       Report(datum{{
                        _current_configuration.num_quads,

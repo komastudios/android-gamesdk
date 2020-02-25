@@ -21,6 +21,27 @@
  * Each thread loops through the duration of the operation approximating e (the Euler's number).
  * From time to time, each thread stops to confirm that isn't running on any CPU that is not any of
  * its assigned ones.
+ *
+ * Input configuration: none, like most of the functional tests.
+ *
+ * Output report: this operation reports progress based on three execution
+ *                stages. They all have the property stage to determine what
+ *                other data points are available.
+ * - stage: Could be "Thread setup", "Thread in progress" and "Test summary".
+ *     * "Thread setup"
+ *        - cpuset_enabled: true if setting affinity for that thread_id
+ *                          succeeded.
+ *        - affine_to_cores: a list of CPU cores designated for this thread.
+ *     * "Thread in progress"
+ *        - is_core_among_affine: true if cpu_id, for the given thread_id, is in
+ *                                the list affine_to_cores reported during
+ *                                thread setup.
+ *     * "Test summary"
+ *        - cpuset_enabled: true if all cpuset_enabled reported during thread
+ *                          setup were true.
+ *        - bigger_cores_first: true if the lower core numbers correspond to big
+ *                              cores, then middle cores and finally, the
+ *                              highest numbers, to LITTLE cores.
  */
 
 #include <algorithm>
@@ -80,7 +101,7 @@ enum class TestStage {
    * When the whole test finishes, a last line is reported to tell whether the CPUSET feature was
    * enabled at all, whether the big.LITTLE core numbering ran from "big" to "LITTLE".
    */
-      TestShutdown
+      TestTeardown
 };
 
 struct datum {
@@ -116,7 +137,7 @@ struct datum {
                               const bool bigger_cores_first) {
     datum datum;
 
-    datum.stage = TestStage::TestShutdown;
+    datum.stage = TestStage::TestTeardown;
     datum.cpuset_enabled = cpuset_enabled;
     datum.bigger_cores_first = bigger_cores_first;
 
@@ -139,7 +160,7 @@ void WriteDatum(report_writers::Struct writer, const datum &data) {
     }
       break;
 
-    case TestStage::TestShutdown : {
+    case TestStage::TestTeardown : {
       writer.AddItem("stage", "Test summary");
       ADD_DATUM_MEMBER(writer, data, cpuset_enabled);
       ADD_DATUM_MEMBER(writer, data, bigger_cores_first);
@@ -152,8 +173,8 @@ void WriteDatum(report_writers::Struct writer, const datum &data) {
 //==================================================================================================
 
 namespace {
-constexpr pid_t THIS_THREAD_PID{0};
-constexpr int OK{0};
+constexpr pid_t kThisThreadPID{0};
+constexpr int kOk{0};
 
 /**
  * Applies a formula to select a subset of device cores, taking as input a thread ordinal.
@@ -171,10 +192,10 @@ std::set<int> DesignateCores(const int thread_ord) {
   auto total_cores = std::thread::hardware_concurrency();
   std::set<int> cores{};
 
-  for (auto iteration = 1; iteration <= total_cores / 2; ++iteration) {
+  for (auto iteration = 1; iteration <= total_cores/2; ++iteration) {
     int core = (thread_ord < total_cores ?
-                total_cores - iteration * (thread_ord + 1) :
-                (iteration + 1) * (thread_ord + 1)) % total_cores;
+                total_cores - iteration*(thread_ord + 1) :
+                (iteration + 1)*(thread_ord + 1))%total_cores;
     core = std::abs(core);
 
     Log::V(TAG, "Core %d assigned to working thread %d", core, thread_ord);
@@ -198,7 +219,7 @@ inline auto ApplyCpusetToThisThread(const cpu_set_t *cpuset) {
   // same under the hood?". The answer is "yes, it does the same but we prefer to expose, in this
   // operation, crude low-level calls rather than depending on an implementation that could change
   // without notice.
-  return sched_setaffinity(THIS_THREAD_PID, sizeof(cpu_set_t), cpuset);
+  return sched_setaffinity(kThisThreadPID, sizeof(cpu_set_t), cpuset);
 }
 
 /**
@@ -209,7 +230,7 @@ inline auto ApplyCpusetToThisThread(const cpu_set_t *cpuset) {
  * @return the same output than the underlying OS function.
  */
 inline auto GetThisThreadCpuset(cpu_set_t *cpuset) {
-  return sched_getaffinity(THIS_THREAD_PID, sizeof(cpu_set_t), cpuset);
+  return sched_getaffinity(kThisThreadPID, sizeof(cpu_set_t), cpuset);
 }
 
 /**
@@ -230,7 +251,7 @@ bool NarrowCoresForThisThread(const std::set<int> &cores) {
     CPU_SET(core, &cpuset_in);
   }
 
-  if (ApplyCpusetToThisThread(&cpuset_in) == OK && GetThisThreadCpuset(&cpuset_out) == OK) {
+  if (ApplyCpusetToThisThread(&cpuset_in)==kOk && GetThisThreadCpuset(&cpuset_out)==kOk) {
     if (CPU_EQUAL(&cpuset_in, &cpuset_out)) {
       success = true;
     } else {
@@ -351,7 +372,7 @@ class SaneCpusetOperation : public BaseOperation {
                                               const unsigned long long iterations) {
               auto current_core = sched_getcpu();
               auto current_thread_is_on_affine_core =
-                  affine_cores.find(current_core) != affine_cores.end();
+                  affine_cores.find(current_core)!=affine_cores.end();
 
               Report(datum::on_thread_progress(current_thread_is_on_affine_core));
 
