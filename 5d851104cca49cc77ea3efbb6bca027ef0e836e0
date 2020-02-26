@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8f38813b_08550713",
+        "filename": "src/tuningfork/ge_serializer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 249,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-02-26T10:56:54Z",
+      "side": 1,
+      "message": "nit: let\u0027s call this the \"memoryReport\" for consistency with the proto?",
+      "revId": "5d851104cca49cc77ea3efbb6bca027ef0e836e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2a6a319d_2cc5db3d",
+        "filename": "src/tuningfork/ge_serializer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 318,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-02-26T10:56:54Z",
+      "side": 1,
+      "message": "I\u0027m not sure what does this imply, can you explain?",
+      "revId": "5d851104cca49cc77ea3efbb6bca027ef0e836e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b2112d77_9c892e21",
+        "filename": "src/tuningfork/memory_telemetry.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-02-26T10:56:54Z",
+      "side": 1,
+      "message": "nit: can we use a const/constexpr rather than a macro?",
+      "revId": "5d851104cca49cc77ea3efbb6bca027ef0e836e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5f1d1b17_28025167",
+        "filename": "test/tuningfork/tuningfork_test.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-02-26T10:56:54Z",
+      "side": 1,
+      "message": "nit: Is this ifndef necessary?",
+      "revId": "5d851104cca49cc77ea3efbb6bca027ef0e836e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
