@@ -121,6 +121,7 @@ void InitTf(JNIEnv* env, jobject activity) {
     TFSettings settings {};
     if (swappy_enabled) {
         settings.swappy_tracer_fn = &SwappyGL_injectTracer;
+        settings.swappy_version = Swappy_version();
     }
     settings.fidelity_params_callback = FidelityParamsCallback;
 #ifndef NDEBUG
