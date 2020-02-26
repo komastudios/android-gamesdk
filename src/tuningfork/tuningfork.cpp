@@ -418,7 +418,8 @@ uint64_t TuningForkImpl::SetCurrentAnnotation(const ProtobufSerialization &annot
                 TraceNanos(current_annotation_id_, dt);
                 int cnt = (int)std::chrono::duration_cast<std::chrono::milliseconds>(dt).count();
                 bool isLoading = IsLoadingAnnotationId(current_annotation_id_);
-                ALOGI("Scene loading %" PRIu64 " (%s) took %d ms", current_annotation_id_, isLoading?"true":"false", cnt);
+                ALOGI("Scene loading %" PRIu64 " (%s) took %d ms", current_annotation_id_,
+                      isLoading?"true":"false", cnt);
                 current_annotation_id_ = id;
                 loading_start_ = TimePoint::min();
             }
@@ -620,7 +621,7 @@ TFErrorCode TuningForkImpl::CheckForSubmit(TimePoint t, Prong *prong) {
 void TuningForkImpl::InitHistogramSettings() {
     auto max_keys = settings_.aggregation_strategy.max_instrumentation_keys;
     if (max_keys!=settings_.histograms.size()) {
-        InstrumentationKey default_keys[] = {64000, 64001, 64002, 64003};
+        InstrumentationKey default_keys[] = {TFTICK_RAW_FRAME_TIME, TFTICK_PACED_FRAME_TIME, TFTICK_CPU_TIME, TFTICK_GPU_TIME};
         // Add histograms that are missing
         auto key_present = [this](InstrumentationKey k) {
                                for(auto& h: settings_.histograms) {
@@ -659,10 +660,10 @@ void TuningForkImpl::InitHistogramSettings() {
     for (auto& h: settings_.histograms) {
         check_histogram(h);
     }
-    ALOGV("TFHistograms");
+    ALOGI("TFHistograms");
     for(uint32_t i=0; i< settings_.histograms.size(); ++i) {
         auto& h = settings_.histograms[i];
-        ALOGV("ikey: %d min: %f max: %f nbkts: %d", h.instrument_key, h.bucket_min, h.bucket_max,
+        ALOGI("ikey: %d min: %f max: %f nbkts: %d", h.instrument_key, h.bucket_min, h.bucket_max,
               h.n_buckets);
     }
 }

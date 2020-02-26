@@ -39,7 +39,7 @@
 
 // Internal macros to track Swappy version, do not use directly.
 #define SWAPPY_MAJOR_VERSION 1
-#define SWAPPY_MINOR_VERSION 2
+#define SWAPPY_MINOR_VERSION 3
 #define SWAPPY_PACKED_VERSION ((SWAPPY_MAJOR_VERSION<<16)|(SWAPPY_MINOR_VERSION))
 
 // Internal macros to generate a symbol to track Swappy version, do not use directly.
@@ -113,10 +113,16 @@ void Swappy_setThreadFunctions(const SwappyThreadFunctions* thread_functions);
 #endif
 
 /**
- * Pointer to a function that can be attached to SwappyTracer::preWait or SwappyTracer::postWait.
+ * Pointer to a function that can be attached to SwappyTracer::preWait
  * @param userData Pointer to arbitrary data, see SwappyTracer::userData.
  */
-typedef void (*SwappyWaitCallback)(void*);
+typedef void (*SwappyPreWaitCallback)(void*);
+
+/**
+ * Pointer to a function that can be attached to SwappyTracer::postWait.
+ * @param userData Pointer to arbitrary data, see SwappyTracer::userData.
+ */
+typedef void (*SwappyPostWaitCallback)(void*, long cpu_time_ns, long gpu_time_ns);
 
 /**
  * Pointer to a function that can be attached to SwappyTracer::preSwapBuffers.
@@ -155,12 +161,12 @@ typedef struct SwappyTracer {
     /**
      * Callback called before waiting to queue the frame to the composer.
      */
-    SwappyWaitCallback preWait;
+    SwappyPreWaitCallback preWait;
 
     /**
      * Callback called after wait to queue the frame to the composer is done.
      */
-    SwappyWaitCallback postWait;
+    SwappyPostWaitCallback postWait;
 
     /**
      * Callback called before calling the function to queue the frame to the composer.

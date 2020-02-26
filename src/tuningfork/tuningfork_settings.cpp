@@ -181,7 +181,7 @@ TFErrorCode FindSettingsInApk(Settings* settings) {
 // Default histogram, used e.g. for TF Scaled or when a histogram is missing in the settings.
 TFHistogram DefaultHistogram(InstrumentationKey ikey) {
     TFHistogram default_histogram;
-    if (ikey==TFTICK_SYSCPU) {
+    if (ikey==TFTICK_RAW_FRAME_TIME || ikey==TFTICK_PACED_FRAME_TIME) {
         default_histogram.bucket_min = 6.54f;
         default_histogram.bucket_max = 60.0f;
         default_histogram.n_buckets = Histogram::kDefaultNumBuckets;
@@ -190,7 +190,7 @@ TFHistogram DefaultHistogram(InstrumentationKey ikey) {
         default_histogram.bucket_max = 20.0f;
         default_histogram.n_buckets = Histogram::kDefaultNumBuckets;
     }
-    if (ikey>=TFTICK_SYSCPU) {
+    if (ikey>=TFTICK_RAW_FRAME_TIME) {
         // Fill in the well-known keys
         default_histogram.instrument_key = ikey;
     } else {
