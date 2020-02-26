@@ -61,14 +61,14 @@ void RenderGraph::GetVisibleMeshes(std::vector<std::shared_ptr<Mesh>> &meshes) c
       }
     }
 
-    std::sort(meshes.begin(),
-              meshes.end(),
-              [this, meshes](std::shared_ptr<Mesh> a, std::shared_ptr<Mesh> b) {
-                BoundingBox meshA = a->GetBoundingBoxWorldSpace();
-                BoundingBox meshB = b->GetBoundingBoxWorldSpace();
-                float distanceA = glm::length(meshA.center - camera_.position);
-                float distanceB = glm::length(meshB.center - camera_.position);
-                return distanceA < distanceB;
-              });
+//    std::sort(meshes.begin(),
+//              meshes.end(),
+//              [this, meshes](std::shared_ptr<Mesh> a, std::shared_ptr<Mesh> b) {
+//                BoundingBox meshA = a->GetBoundingBoxWorldSpace();
+//                BoundingBox meshB = b->GetBoundingBoxWorldSpace();
+//                float distanceA = glm::length(meshA.center - camera_.position);
+//                float distanceB = glm::length(meshB.center - camera_.position);
+//                return distanceA < distanceB;
+//              });
   });
 }

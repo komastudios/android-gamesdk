@@ -45,6 +45,8 @@
 #include <array>
 #include <cstring>
 #include <chrono>
+#include <thread>
+#include <mutex>
 #include <obj_loader.h>
 
 using namespace benderkit;
@@ -90,12 +92,19 @@ const glm::mat4 kIdentityMat4 = glm::mat4(1.0f);
 const glm::mat4 prerotate_90 = glm::rotate(kIdentityMat4,  glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
 const glm::mat4 prerotate_270 = glm::rotate(kIdentityMat4, glm::three_over_two_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
 const glm::mat4 prerotate_180 = glm::rotate(kIdentityMat4, glm::pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
+
 bool app_initialized_once = false;
+std::thread *load_thread;
+bool done_loading = false;
+std::mutex render_graph_mutex;
+std::mutex loading_info_mutex;
+
 uint32_t poly_faces_idx = 0;
 uint32_t materials_idx = 0;
 UserInterface *user_interface;
-char mesh_info[50];
-char fps_info[50];
+char loading_info[100];
+char mesh_info[50] = " ";
+char fps_info[50] = " ";
 
 void MoveForward() {
   glm::vec3
@@ -160,36 +169,36 @@ void ChangeMaterialComplexity() {
 void CreateButtons() {
   Button::SetScreenResolution(device->GetDisplaySizeOriented());
 
-  user_interface->RegisterButton([] (Button& button) {
-      button.on_hold_ = StrafeLeft;
-      button.SetLabel("<--");
-      button.SetPosition(-.7, .2, .7, .2);
-  });
-  user_interface->RegisterButton([] (Button& button) {
-    button.on_hold_ = StrafeRight;
-    button.SetLabel("-->");
-    button.SetPosition(-.2, .2, .7, .2);
-  });
-  user_interface->RegisterButton([] (Button& button) {
-    button.on_hold_ = StrafeUp;
-    button.SetLabel("^");
-    button.SetPosition(-.47, .2, .6, .2);
-  });
-  user_interface->RegisterButton([] (Button& button) {
-    button.on_hold_ = StrafeDown;
-    button.SetLabel("0");
-    button.SetPosition(-.47, .2, .85, .2);
-  });
-  user_interface->RegisterButton([] (Button& button) {
-    button.on_hold_ = MoveForward;
-    button.SetLabel("Forward");
-    button.SetPosition(.43, .2, .65, .2);
-  });
-  user_interface->RegisterButton([] (Button& button) {
-    button.on_hold_ = MoveBackward;
-    button.SetLabel("Backward");
-    button.SetPosition(.43, .2, .85, .2);
-  });
+//  user_interface->RegisterButton([] (Button& button) {
+//      button.on_hold_ = StrafeLeft;
+//      button.SetLabel("<--");
+//      button.SetPosition(-.7, .2, .7, .2);
+//  });
+//  user_interface->RegisterButton([] (Button& button) {
+//    button.on_hold_ = StrafeRight;
+//    button.SetLabel("-->");
+//    button.SetPosition(-.2, .2, .7, .2);
+//  });
+//  user_interface->RegisterButton([] (Button& button) {
+//    button.on_hold_ = StrafeUp;
+//    button.SetLabel("^");
+//    button.SetPosition(-.47, .2, .6, .2);
+//  });
+//  user_interface->RegisterButton([] (Button& button) {
+//    button.on_hold_ = StrafeDown;
+//    button.SetLabel("0");
+//    button.SetPosition(-.47, .2, .85, .2);
+//  });
+//  user_interface->RegisterButton([] (Button& button) {
+//    button.on_hold_ = MoveForward;
+//    button.SetLabel("Forward");
+//    button.SetPosition(.43, .2, .65, .2);
+//  });
+//  user_interface->RegisterButton([] (Button& button) {
+//    button.on_hold_ = MoveBackward;
+//    button.SetLabel("Backward");
+//    button.SetPosition(.43, .2, .85, .2);
+//  });
 //  user_interface->RegisterButton([] (Button& button) {
 //    button.on_up_ = CreateInstance;
 //    button.SetLabel("+1 Mesh");
@@ -227,6 +236,12 @@ void CreateUserInterface() {
       field.text_size = 1.0f;
       field.x_corner = -0.98f;
       field.y_corner = -0.88f;
+  });
+  user_interface->RegisterTextField([] (TextField& field) {
+      field.text = loading_info;
+      field.text_size = 0.6f;
+      field.x_corner = -0.98f;
+      field.y_corner = -0.8f;
   });
 }
 
@@ -367,7 +382,9 @@ void UpdateCamera(input::Data *input_data) {
 void UpdateInstances(input::Data *input_data) {
   std::vector<std::shared_ptr<Mesh>> all_meshes;
   Camera camera = render_graph->GetCamera();
+  render_graph_mutex.lock();
   render_graph->GetAllMeshes(all_meshes);
+  render_graph_mutex.unlock();
   for (int i = 0; i < all_meshes.size(); i++) {
 //    all_meshes[i]->Rotate(glm::vec3(0.0f, 1.0f, 0.0f), 90 * frame_time);
 //    all_meshes[i]->Translate(.02f * glm::vec3(std::sin(2 * total_time),
@@ -557,20 +574,37 @@ bool InitVulkan(android_app *app) {
 
     renderer = new Renderer(*device);
 
-    timing::timer.Time("Mesh Creation", timing::OTHER, [app] {
+    CreateDepthBuffer();
+
+    CreateFramebuffers(render_pass, depth_buffer.image_view);
+
+    font = new Font(*renderer, *android_app_ctx, FONT_SDF_PATH, FONT_INFO_PATH);
+
+    CreateUserInterface();
+
+    timing::PrintEvent(*timing::timer.GetLastMajorEvent());
+    app_initialized_once = true;
+  });
+
+  load_thread = new std::thread([app] {
       AAssetDir *dir = AAssetManager_openDir(app->activity->assetManager, "models");
       const char *fileName;
       fileName = AAssetDir_getNextFileName(dir);
-      while(fileName != nullptr) {
+      while (fileName != nullptr) {
         LOGE("%s", fileName);
         std::string fileNameString(fileName);
-        if (fileNameString.find(".mtl") != -1){
+        if (fileNameString.find(".mtl") != -1) {
           fileName = AAssetDir_getNextFileName(dir);
           continue;
         }
 
+        loading_info_mutex.lock();
+        sprintf(loading_info, "Loading: %s", fileName);
+        loading_info_mutex.unlock();
+
         std::vector<OBJLoader::OBJ> modelData;
         std::unordered_map<std::string, MTL> mtllib;
+
         OBJLoader::LoadOBJ(app->activity->assetManager,
                            ("models/" + fileNameString).c_str(),
                            mtllib,
@@ -589,36 +623,32 @@ bool InitVulkan(android_app *app) {
             newMTL.ambient = currMTL.ambient;
             newMTL.specular = glm::vec4(currMTL.specular, currMTL.specular_exponent);
             newMTL.diffuse = currMTL.diffuse;
-            std::vector<std::shared_ptr<Texture>> myTextures = {loaded_textures[currMTL.map_Kd],
-                                                                loaded_textures[currMTL.map_Ks],
-                                                                loaded_textures[currMTL.map_Ke],
-                                                                loaded_textures[currMTL.map_Ns],
-                                                                loaded_textures[currMTL.map_Bump]};
-              loaded_materials[mtlName] = std::make_shared<Material>(renderer,
-                                                                     shaders,
-                                                                     myTextures,
-                                                                     newMTL);
+            std::vector<std::shared_ptr<Texture>> myTextures = {
+                    loaded_textures[currMTL.map_Kd],
+                    loaded_textures[currMTL.map_Ks],
+                    loaded_textures[currMTL.map_Ke],
+                    loaded_textures[currMTL.map_Ns],
+                    loaded_textures[currMTL.map_Bump]};
+            loaded_materials[mtlName] = std::make_shared<Material>(renderer,
+                                                                   shaders,
+                                                                   myTextures,
+                                                                   newMTL);
           }
-          geometries.push_back(std::make_shared<Geometry>(*device, obj.vertex_buffer, obj.index_buffer));
+          geometries.push_back(
+                  std::make_shared<Geometry>(*device, obj.vertex_buffer, obj.index_buffer));
+          render_graph_mutex.lock();
           render_graph->AddMesh(std::make_shared<Mesh>(renderer,
                                                        loaded_materials[mtlName],
                                                        geometries.back()));
+          render_graph_mutex.unlock();
         }
         fileName = AAssetDir_getNextFileName(dir);
       }
-    });
-
-    CreateDepthBuffer();
-
-    CreateFramebuffers(render_pass, depth_buffer.image_view);
-
-    font = new Font(*renderer, *android_app_ctx, FONT_SDF_PATH, FONT_INFO_PATH);
-
-    CreateUserInterface();
+      loading_info_mutex.lock();
+      sprintf(loading_info, " ");
+      loading_info_mutex.unlock();
+      done_loading = true;
   });
-
-  timing::PrintEvent(*timing::timer.GetLastMajorEvent());
-  app_initialized_once = true;
   return true;
 }
 
@@ -698,7 +728,17 @@ bool ResumeVulkan(android_app *app) {
 
     renderer = new Renderer(*device);
 
-    timing::timer.Time("Mesh Creation", timing::OTHER, [app] {
+    done_loading = false;
+    std::vector<std::shared_ptr<Mesh>> all_meshes;
+    render_graph->GetAllMeshes(all_meshes);
+    all_meshes = std::vector<std::shared_ptr<Mesh>>(all_meshes);
+    render_graph->ClearMeshes();
+
+    load_thread = new std::thread([all_meshes] {
+      loading_info_mutex.lock();
+      sprintf(loading_info, "Reloading textures...");
+      loading_info_mutex.unlock();
+
       for (auto &texture : textures) {
         texture->OnResume(*device, android_app_ctx);
       }
@@ -706,7 +746,11 @@ bool ResumeVulkan(android_app *app) {
         if (texture.second != nullptr) texture.second->OnResume(*device, android_app_ctx);
       }
 
-      Material::OnResumeStatic(*device, app);
+      Material::OnResumeStatic(*device, android_app_ctx);
+
+      loading_info_mutex.lock();
+      sprintf(loading_info, "Reloading materials...");
+      loading_info_mutex.unlock();
 
       for (auto &material : loaded_materials) {
         material.second->OnResume(renderer);
@@ -724,13 +768,18 @@ bool ResumeVulkan(android_app *app) {
       const char *fileName;
       fileName = AAssetDir_getNextFileName(dir);
       int geoIdx = 0;
-      while(fileName != nullptr) {
+      int meshIdx = 0;
+      while (fileName != nullptr) {
         LOGE("%s", fileName);
         std::string fileNameString(fileName);
         if (fileNameString.find(".mtl") != -1) {
           fileName = AAssetDir_getNextFileName(dir);
           continue;
         }
+
+        loading_info_mutex.lock();
+        sprintf(loading_info, "Reloading: %s", fileName);
+        loading_info_mutex.unlock();
 
         std::vector<OBJLoader::OBJ> modelData;
         std::unordered_map<std::string, MTL> mtllib;
@@ -742,14 +791,18 @@ bool ResumeVulkan(android_app *app) {
         for (auto obj : modelData)
           geometries[geoIdx++]->OnResume(*device, obj.vertex_buffer, obj.index_buffer);
 
+        all_meshes[meshIdx]->OnResume(renderer);
+        render_graph_mutex.lock();
+        render_graph->AddMesh(all_meshes[meshIdx++]);
+        render_graph_mutex.unlock();
+
         fileName = AAssetDir_getNextFileName(dir);
       }
 
-      std::vector<std::shared_ptr<Mesh>> all_meshes;
-      render_graph->GetAllMeshes(all_meshes);
-      for (auto &mesh : all_meshes) {
-        mesh->OnResume(renderer);
-      }
+      loading_info_mutex.lock();
+      sprintf(loading_info, " ");
+      loading_info_mutex.unlock();
+      done_loading = true;
     });
 
     CreateDepthBuffer();
@@ -825,6 +878,9 @@ bool VulkanDrawFrame(input::Data *input_data) {
   if (device->GetWindowResized()) {
     OnOrientationChange();
   }
+  if (done_loading) {
+      load_thread = nullptr;
+  }
   current_time = std::chrono::high_resolution_clock::now();
   frame_time = std::chrono::duration<float>(current_time - last_time).count();
   last_time = current_time;
@@ -844,7 +900,7 @@ bool VulkanDrawFrame(input::Data *input_data) {
       // Now we start a renderpass. Any draw command has to be recorded in a
       // renderpass
       std::array<VkClearValue, 2> clear_values = {};
-      clear_values[0].color = {{0.0f, 0.34f, 0.90f, 1.0}};
+      clear_values[0].color = {{0.0f, 0.0f, 0.0f, 1.0}};
       clear_values[1].depthStencil = {1.0f, 0};
 
       VkRenderPassBeginInfo render_pass_begin_info{
@@ -871,7 +927,9 @@ bool VulkanDrawFrame(input::Data *input_data) {
 
         int total_triangles = 0;
         std::vector<std::shared_ptr<Mesh>> all_meshes;
+        render_graph_mutex.lock();
         render_graph->GetVisibleMeshes(all_meshes);
+        render_graph_mutex.unlock();
         for (uint32_t i = 0; i < all_meshes.size(); i++) {
           all_meshes[i]->UpdatePipeline(render_pass);
           all_meshes[i]->SubmitDraw(renderer->GetCurrentCommandBuffer(),
@@ -894,7 +952,9 @@ bool VulkanDrawFrame(input::Data *input_data) {
                                    &frame_time);
         sprintf(fps_info, "%2.d FPS  %.3f ms", fps, frame_time);
 
+        loading_info_mutex.lock();
         user_interface->DrawUserInterface(render_pass);
+        loading_info_mutex.unlock();
 
         vkCmdEndRenderPass(renderer->GetCurrentCommandBuffer());
       });
