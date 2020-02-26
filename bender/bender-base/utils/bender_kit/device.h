@@ -35,7 +35,8 @@ namespace benderkit {
 
         VkSurfaceKHR GetSurface() const { return surface_; }
 
-        VkQueue GetQueue() const { return queue_; }
+        VkQueue GetMainQueue() const { return main_queue_; }
+        VkQueue GetWorkerQueue() const { return worker_queue_; }
 
         VkSwapchainKHR GetSwapchain() const { return swapchain_; }
 
@@ -102,7 +103,8 @@ namespace benderkit {
         VkDevice device_;
         uint32_t queue_family_index_;
         VkSurfaceKHR surface_;
-        VkQueue queue_;
+        VkQueue main_queue_;
+        VkQueue worker_queue_;
 
         VkSwapchainKHR swapchain_;
         uint32_t swapchain_length_;
