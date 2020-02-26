@@ -259,7 +259,7 @@ void Renderer::draw(State *state) {
     if (swappy_enabled)
         SwappyGL_swap(state->display, state->surface);
     else {
-        TuningFork_frameTick(TFTICK_SYSCPU);
+        TuningFork_frameTick(TFTICK_RAW_FRAME_TIME);
         eglSwapBuffers(state->display, state->surface);
     }
 

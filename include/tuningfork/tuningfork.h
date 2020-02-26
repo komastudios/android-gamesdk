@@ -28,7 +28,7 @@
 /** @cond INTERNAL */
 
 #define TUNINGFORK_MAJOR_VERSION 0
-#define TUNINGFORK_MINOR_VERSION 4
+#define TUNINGFORK_MINOR_VERSION 5
 #define TUNINGFORK_PACKED_VERSION ((TUNINGFORK_MAJOR_VERSION<<16)|(TUNINGFORK_MINOR_VERSION))
 
 // Internal macros to generate a symbol to track TuningFork version, do not use directly.
@@ -43,13 +43,13 @@
  *  Keys 64000-65535 are reserved
  */
 enum InstrumentKeys {
-  TFTICK_USERDEFINED_BASE = 0,
-  TFTICK_SYSCPU = 64000,  ///< Frame time between ends of eglSwapBuffers calls or
-                          ///< Vulkan queue present.
-  TFTICK_SYSGPU = 64001,  ///< Frame time between Swappy sync fences.
-  TFTICK_SWAPPY_WAIT_TIME = 64002,  ///< The time Swappy waits on sync fence.
-  TFTICK_SWAPPY_LOGIC_TIME = 64003 ///< Time between start of frame and the call to eglSwapBuffers
-                                   ///< or Vulkan queue present.
+  TFTICK_USERDEFINED_BASE =   0,
+  TFTICK_RAW_FRAME_TIME =     64000, ///< If GPU time is available, thisis MAX(CPU_TIME,GPU_TIME)
+                                     ///< If not, this is the same as PACED_FRAME_TIME
+  TFTICK_PACED_FRAME_TIME =   64001, ///< Frame time between ends of eglSwapBuffers calls or
+                                     ///< Vulkan queue present.
+  TFTICK_CPU_TIME =           64002, ///< The time between frame start and the call to Swappy_swap.
+  TFTICK_GPU_TIME =           64003  ///< The time between buffer swap and GPU fence triggering.
 };
 
 /**
@@ -233,6 +233,10 @@ struct TFSettings {
    * for debugging purposes only.
    */
   const char* endpoint_uri_override;
+  /**
+   * The version of Swappy that swappy_tracer_fn comes from
+   */
+  uint32_t swappy_version;
 };
 
 #ifdef __cplusplus
