@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "45ac7401_beceb0ae",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-02-26T21:30:44Z",
+      "side": 1,
+      "message": "nit: indentation",
+      "revId": "7a84da4e086e81776e97d458db76a8f5bf4aac38",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
