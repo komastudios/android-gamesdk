@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "98fe32c6_433ccf82",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 389,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-02-27T18:59:30Z",
+      "side": 1,
+      "message": "Can you remove these comments?",
+      "revId": "cafb9d407b1da0e5906e3dd471a176bbef81ca17",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
