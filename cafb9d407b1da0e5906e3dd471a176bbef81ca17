@@ -16,6 +16,24 @@
       "revId": "cafb9d407b1da0e5906e3dd471a176bbef81ca17",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7f0dba89_95348b6d",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 389,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-02-27T22:06:56Z",
+      "side": 1,
+      "message": "Okay! I\u0027ve gated non-GDC code in a separate CL (aosp/1246390), for before we set up branching",
+      "parentUuid": "98fe32c6_433ccf82",
+      "revId": "cafb9d407b1da0e5906e3dd471a176bbef81ca17",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
