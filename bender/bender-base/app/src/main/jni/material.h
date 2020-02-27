@@ -32,6 +32,7 @@ class Material {
 
   VkDescriptorSetLayout GetMaterialDescriptorSetLayout() const { return material_descriptors_layout_; }
   VkDescriptorSet GetMaterialDescriptorSet(uint_t frame_index) const { return material_descriptor_sets_[frame_index]; }
+  void UpdateMaterialDescriptorSets();
 
  private:
   static std::shared_ptr<Texture> default_texture_;
@@ -49,6 +50,7 @@ class Material {
   std::vector<VkDescriptorSet> material_descriptor_sets_;
 
   std::shared_ptr<ShaderState> GetShaders() const { return shaders_; }
+  uint32_t max_mip_levels_;
 
   void CreateDefaultTexture(Renderer &renderer);
   void CreateSampler();
