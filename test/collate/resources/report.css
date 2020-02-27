@@ -23,6 +23,10 @@ td.best {
   background: lightgreen;
 }
 
+td.good {
+  background: #dfffdf;
+}
+
 td.unacceptable {
   text-decoration: line-through;
 }

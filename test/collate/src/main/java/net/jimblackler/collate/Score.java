@@ -112,7 +112,8 @@ public class Score {
             }
           }
 
-          float score = lowestTop == Long.MAX_VALUE ? 0 : (float) lowestTop / (1024 * 1024);
+          float score = (lowestTop == Long.MAX_VALUE ? (float) largest : (float) lowestTop)
+              / (1024 * 1024);
           List<Result> results0;
           if (out.containsKey(id)) {
             results0 = out.get(id);
@@ -215,6 +216,8 @@ public class Score {
           float max = maxScore[group];
           if (result.getScore() == max) {
             classes.add("best");
+          } else if (result.getScore() > max * 0.90) {
+            classes.add("good");
           }
         }
         if (!result.isAcceptable()) {
@@ -230,7 +233,7 @@ public class Score {
         }
 
         URI uri = directory.toUri().relativize(result.getUri());
-        body.append(String.format("<a href='%s'>%.0f</a>", uri, result.getScore())).append("</td>");
+        body.append(String.format("<a href='%s'>%.1f</a>", uri, result.getScore())).append("</td>");
       }
 
       body.append("</tr>");
