@@ -62,7 +62,7 @@ public:
 
   glm::mat4 GetTransform() const;
 
-  BoundingBox GetBoundingBoxWorldSpace() const;
+  BoundingBox GetBoundingBoxWorldSpace();
 
   int GetTrianglesCount() const;
 
@@ -78,6 +78,9 @@ private:
   glm::quat rotation_;
   glm::vec3 scale_;
 
+  BoundingBox world_space_box_;
+  bool bounding_box_dirty_;
+
   VkDescriptorSetLayout mesh_descriptors_layout_;
 
   VkPipelineLayout layout_ = VK_NULL_HANDLE;
@@ -89,6 +92,7 @@ private:
 
   void CreateMeshDescriptorSetLayout();
   void CreateMeshDescriptors();
+  void ComputeBoundingBoxWorldSpace();
 };
 
 #endif //BENDER_BASE_MESH_H
