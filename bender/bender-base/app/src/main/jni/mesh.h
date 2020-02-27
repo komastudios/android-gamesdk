@@ -62,7 +62,8 @@ public:
 
   glm::mat4 GetTransform() const;
 
-  BoundingBox GetBoundingBoxWorldSpace() const;
+  void ComputeBoundingBoxWorldSpace();
+  BoundingBox GetBoundingBoxWorldSpace();
 
   int GetTrianglesCount() const;
 
@@ -77,6 +78,9 @@ private:
   glm::vec3 position_;
   glm::quat rotation_;
   glm::vec3 scale_;
+
+  BoundingBox world_space_box_;
+  bool bounding_box_dirty_;
 
   VkDescriptorSetLayout mesh_descriptors_layout_;
 
