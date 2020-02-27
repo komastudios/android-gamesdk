@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "160919d7_71c8e964",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-02-27T22:43:59Z",
+      "side": 1,
+      "message": "if the code we are gating are not all in this file I would add -D flags in cmake",
+      "revId": "05992a0d2b2cd2780b7996d16723e8d53a6a315e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
