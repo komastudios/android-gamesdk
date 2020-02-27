@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "19b5c3b0_a3681092",
+        "filename": "include/swappy/swappy_common.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-02-27T10:14:49Z",
+      "side": 1,
+      "message": "nit: Can you add cpu_time_ns and gpu_time_ns description (they are obvious but still for documentation completeness)?",
+      "revId": "bc16a4fa8023c6bb8f3838fd91215add34706d63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
