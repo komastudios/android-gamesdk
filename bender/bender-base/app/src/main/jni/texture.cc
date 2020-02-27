@@ -17,31 +17,38 @@
 #include "stb_image.h"
 #include "bender_helpers.h"
 
+#include <cmath>
 #include <cstdlib>
 #include <vector>
 
-Texture::Texture(benderkit::Device &device,
+Texture::Texture(Renderer *renderer,
                  uint8_t *img_data,
                  uint32_t img_width,
                  uint32_t img_height,
                  VkFormat texture_format,
+                 bool use_mipmaps,
                  std::function<void(uint8_t *)> generator)
-    : device_(device), texture_format_(texture_format), generator_(generator) {
+    : renderer_(renderer), texture_format_(texture_format), use_mipmaps_(use_mipmaps), generator_(generator) {
   tex_width_ = img_width;
   tex_height_ = img_height;
-  CALL_VK(CreateTexture(img_data, VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+  mip_levels_ = use_mipmaps ? std::floor(std::log2(std::max(tex_width_, tex_height_))) + 1 : 1;
+  CALL_VK(CreateTexture(img_data, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
   CreateImageView();
 }
 
-Texture::Texture(benderkit::Device &device,
+Texture::Texture(Renderer *renderer,
                  android_app &android_app_ctx,
                  const std::string &texture_file_name,
                  VkFormat texture_format,
+                 bool use_mipmaps,
                  std::function<void(uint8_t *)> generator)
-    : device_(device), texture_format_(texture_format), generator_(generator) {
+    : renderer_(renderer), texture_format_(texture_format), use_mipmaps_(use_mipmaps), generator_(generator) {
   unsigned char *img_data = LoadFileData(android_app_ctx, texture_file_name.c_str());
   file_name_ = texture_file_name;
-  CALL_VK(CreateTexture(img_data, VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+  mip_levels_ = use_mipmaps ? std::floor(std::log2(std::max(tex_width_, tex_height_))) + 1 : 1;
+  CALL_VK(CreateTexture(img_data, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
   CreateImageView();
   stbi_image_free(img_data);
 }
@@ -51,29 +58,14 @@ Texture::~Texture() {
 }
 
 void Texture::Cleanup() {
-  vkDestroyImageView(device_.GetDevice(), view_, nullptr);
-  vkDestroyImage(device_.GetDevice(), image_, nullptr);
-  vkFreeMemory(device_.GetDevice(), mem_, nullptr);
+  vkDestroyImageView(renderer_->GetVulkanDevice(), view_, nullptr);
+  vkDestroyImage(renderer_->GetVulkanDevice(), image_, nullptr);
+  vkFreeMemory(renderer_->GetVulkanDevice(), mem_, nullptr);
 }
 
-void Texture::OnResume(benderkit::Device &device, android_app *app) {
-  if (generator_ != nullptr) {
-    unsigned char
-        *img_data = (unsigned char *) malloc(tex_height_ * tex_width_ * 4 * sizeof(unsigned char));
-    generator_(img_data);
-    CALL_VK(CreateTexture(img_data,
-                          VK_IMAGE_USAGE_SAMPLED_BIT,
-                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
-    CreateImageView();
-    delete img_data;
-  } else {
-    unsigned char *img_data = LoadFileData(*app, file_name_.c_str());
-    CALL_VK(CreateTexture(img_data,
-                          VK_IMAGE_USAGE_SAMPLED_BIT,
-                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
-    CreateImageView();
-    stbi_image_free(img_data);
-  }
+void Texture::OnResume(Renderer *renderer, android_app *app) {
+  renderer_ = renderer;
+  RegenerateTexture(app);
 }
 
 unsigned char *Texture::LoadFileData(android_app &app, const char *file_path) {
@@ -119,11 +111,11 @@ VkResult Texture::CreateTexture(uint8_t *img_data,
   }
 
   VkFormatProperties props;
-  vkGetPhysicalDeviceFormatProperties(device_.GetPhysicalDevice(), texture_format_, &props);
+  vkGetPhysicalDeviceFormatProperties(renderer_->GetDevice().GetPhysicalDevice(), texture_format_, &props);
   assert((props.linearTilingFeatures | props.optimalTilingFeatures) &
       VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
 
-  uint32_t queue_family_index = device_.GetQueueFamilyIndex();
+  uint32_t queue_family_index = renderer_->GetDevice().GetQueueFamilyIndex();
   VkImageCreateInfo image_create_info = {
       .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
       .pNext = nullptr,
@@ -131,7 +123,7 @@ VkResult Texture::CreateTexture(uint8_t *img_data,
       .format = texture_format_,
       .extent = {static_cast<uint32_t>(tex_width_),
                  static_cast<uint32_t>(tex_height_), 1},
-      .mipLevels = 1,
+      .mipLevels = mip_levels_,
       .arrayLayers = 1,
       .samples = VK_SAMPLE_COUNT_1_BIT,
       .tiling = VK_IMAGE_TILING_LINEAR,
@@ -150,18 +142,18 @@ VkResult Texture::CreateTexture(uint8_t *img_data,
   };
 
   VkMemoryRequirements mem_reqs;
-  CALL_VK(vkCreateImage(device_.GetDevice(), &image_create_info, nullptr, &image_));
+  CALL_VK(vkCreateImage(renderer_->GetVulkanDevice(), &image_create_info, nullptr, &image_));
 
-  vkGetImageMemoryRequirements(device_.GetDevice(), image_, &mem_reqs);
+  vkGetImageMemoryRequirements(renderer_->GetVulkanDevice(), image_, &mem_reqs);
 
   mem_alloc.allocationSize = mem_reqs.size;
   mem_alloc.memoryTypeIndex = benderhelpers::FindMemoryType(mem_reqs.memoryTypeBits,
                                                             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
-                                                            device_.GetPhysicalDevice());
+                                                            renderer_->GetDevice().GetPhysicalDevice());
   assert(mem_alloc.memoryTypeIndex != -1);
 
-  CALL_VK(vkAllocateMemory(device_.GetDevice(), &mem_alloc, nullptr, &mem_));
-  CALL_VK(vkBindImageMemory(device_.GetDevice(), image_, mem_, 0));
+  CALL_VK(vkAllocateMemory(renderer_->GetVulkanDevice(), &mem_alloc, nullptr, &mem_));
+  CALL_VK(vkBindImageMemory(renderer_->GetVulkanDevice(), image_, mem_, 0));
 
   if (required_props & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) {
     VkSubresourceLayout layout;
@@ -172,10 +164,10 @@ VkResult Texture::CreateTexture(uint8_t *img_data,
         .arrayLayer = 0,
     };
 
-    vkGetImageSubresourceLayout(device_.GetDevice(), image_, &subres,
+    vkGetImageSubresourceLayout(renderer_->GetVulkanDevice(), image_, &subres,
                                 &layout);
     void *data;
-    CALL_VK(vkMapMemory(device_.GetDevice(), mem_, 0,
+    CALL_VK(vkMapMemory(renderer_->GetVulkanDevice(), mem_, 0,
                         mem_alloc.allocationSize, 0, &data));
 
     for (int32_t y = 0; y < tex_height_; y++) {
@@ -188,7 +180,7 @@ VkResult Texture::CreateTexture(uint8_t *img_data,
       }
     }
 
-    vkUnmapMemory(device_.GetDevice(), mem_);
+    vkUnmapMemory(renderer_->GetVulkanDevice(), mem_);
   }
 
   image_layout_ = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -201,7 +193,7 @@ VkResult Texture::CreateTexture(uint8_t *img_data,
   };
 
   VkCommandPool cmd_pool;
-  CALL_VK(vkCreateCommandPool(device_.GetDevice(), &cmd_pool_create_info, nullptr,
+  CALL_VK(vkCreateCommandPool(renderer_->GetVulkanDevice(), &cmd_pool_create_info, nullptr,
                               &cmd_pool));
 
   VkCommandBuffer gfx_cmd;
@@ -213,7 +205,7 @@ VkResult Texture::CreateTexture(uint8_t *img_data,
       .commandBufferCount = 1,
   };
 
-  CALL_VK(vkAllocateCommandBuffers(device_.GetDevice(), &cmd, &gfx_cmd));
+  CALL_VK(vkAllocateCommandBuffers(renderer_->GetVulkanDevice(), &cmd, &gfx_cmd));
   VkCommandBufferBeginInfo cmd_buf_info = {
       .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
       .pNext = nullptr,
@@ -233,7 +225,7 @@ VkResult Texture::CreateTexture(uint8_t *img_data,
       .flags = 0,
   };
   VkFence fence;
-  CALL_VK(vkCreateFence(device_.GetDevice(), &fence_info, nullptr, &fence));
+  CALL_VK(vkCreateFence(renderer_->GetVulkanDevice(), &fence_info, nullptr, &fence));
 
   VkSubmitInfo submit_info = {
       .pNext = nullptr,
@@ -246,13 +238,13 @@ VkResult Texture::CreateTexture(uint8_t *img_data,
       .signalSemaphoreCount = 0,
       .pSignalSemaphores = nullptr,
   };
-  CALL_VK(vkQueueSubmit(device_.GetWorkerQueue(), 1, &submit_info, fence) != VK_SUCCESS);
-  CALL_VK(vkWaitForFences(device_.GetDevice(), 1, &fence, VK_TRUE, 100000000) !=
+  CALL_VK(vkQueueSubmit(renderer_->GetDevice().GetWorkerQueue(), 1, &submit_info, fence) != VK_SUCCESS);
+  CALL_VK(vkWaitForFences(renderer_->GetVulkanDevice(), 1, &fence, VK_TRUE, 100000000) !=
       VK_SUCCESS);
-  vkDestroyFence(device_.GetDevice(), fence, nullptr);
+  vkDestroyFence(renderer_->GetVulkanDevice(), fence, nullptr);
 
-  vkFreeCommandBuffers(device_.GetDevice(), cmd_pool, 1, &gfx_cmd);
-  vkDestroyCommandPool(device_.GetDevice(), cmd_pool, nullptr);
+  vkFreeCommandBuffers(renderer_->GetVulkanDevice(), cmd_pool, 1, &gfx_cmd);
+  vkDestroyCommandPool(renderer_->GetVulkanDevice(), cmd_pool, nullptr);
   return VK_SUCCESS;
 }
 
@@ -270,8 +262,74 @@ void Texture::CreateImageView() {
               .b = VK_COMPONENT_SWIZZLE_B,
               .a = VK_COMPONENT_SWIZZLE_A,
           },
-      .subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
+      .subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, mip_levels_, 0, 1},
       .flags = 0,
   };
-  CALL_VK(vkCreateImageView(device_.GetDevice(), &view_create_info, nullptr, &view_));
+  CALL_VK(vkCreateImageView(renderer_->GetVulkanDevice(), &view_create_info, nullptr, &view_));
+}
+
+void Texture::RegenerateTexture(android_app *app) {
+  if (generator_ != nullptr) {
+    unsigned char
+            *img_data = (unsigned char *) malloc(tex_height_ * tex_width_ * 4 * sizeof(unsigned char));
+    generator_(img_data);
+    CALL_VK(CreateTexture(img_data,
+                          VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+    CreateImageView();
+    delete img_data;
+  } else {
+    unsigned char *img_data = LoadFileData(*app, file_name_.c_str());
+    CALL_VK(CreateTexture(img_data,
+                          VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+    CreateImageView();
+    stbi_image_free(img_data);
+  }
+}
+
+void Texture::ToggleMipmaps(android_app *app) {
+  use_mipmaps_ = !use_mipmaps_;
+  mip_levels_ = use_mipmaps_ ? std::floor(std::log2(std::max(tex_width_, tex_height_))) + 1 : 1;
+  RegenerateTexture(app);
+}
+
+void Texture::GenerateMipmaps() {
+  if (!use_mipmaps_) return;
+
+  renderer_->BeginPrimaryCommandBufferRecording();
+
+  VkImageMemoryBarrier barrier = {
+          .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+          .image = image_,
+          .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+          .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+          .subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1}
+  };
+
+  renderer_->EndPrimaryCommandBufferRecording();
+
+  int32_t mip_width = tex_width_;
+  int32_t mip_height = tex_height_;
+
+  for (uint32_t i = 1; i < mip_levels_; i++) {
+      barrier.subresourceRange.baseMipLevel = i - 1;
+      barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+      barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+      barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+      barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+
+      vkCmdPipelineBarrier(renderer_->GetCurrentCommandBuffer(), VK_PIPELINE_STAGE_TRANSFER_BIT,
+              VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+
+      VkImageBlit blit = {
+              .srcOffsets[0] = { 0, 0, 0 },
+              .srcOffsets[1] = { mip_width, mip_height, 1 },
+              .srcSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, i - 1, 0, 1 },
+              .dstOffsets[0] = { 0, 0, 0 },
+              .dstOffsets[1] = { mip_width > 1 ? mip_width / 2 : 1,
+                                 mip_height > 1 ? mip_height / 2 : 1, 1 },
+              .dstSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, i - 1, 0, 1 },
+      };
+  }
 }

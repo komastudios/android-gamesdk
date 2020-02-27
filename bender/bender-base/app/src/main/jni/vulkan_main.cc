@@ -165,9 +165,28 @@ void ChangeMaterialComplexity() {
   render_graph->ClearMeshes();
   render_graph->AddMeshes(all_meshes);
 }
+void ToggleMipmaps() {
+  done_loading = false;
+  sprintf(loading_info, "Reloading textures...");
+  std::thread([] {
+      for (auto &texture : loaded_textures) {
+        render_graph_mutex.lock();
+        if (texture.second != nullptr) texture.second->ToggleMipmaps(android_app_ctx);
+        render_graph_mutex.unlock();
+      }
+  });
+  sprintf(loading_info, " ");
+  done_loading = true;
+}
 
 void CreateButtons() {
   Button::SetScreenResolution(device->GetDisplaySizeOriented());
+
+  user_interface->RegisterButton([] (Button& button) {
+      button.on_up_ = ToggleMipmaps;
+      button.SetLabel("Mipmap Switch");
+      button.SetPosition(.5, .2, 0, .2);
+  });
 
 #ifndef GDC_DEMO
   user_interface->RegisterButton([] (Button& button) {
@@ -253,7 +272,7 @@ void CreateTextures() {
     assert(device != nullptr);
 
     for (uint32_t i = 0; i < tex_files.size(); ++i) {
-      textures.push_back(std::make_shared<Texture>(*device,
+      textures.push_back(std::make_shared<Texture>(renderer,
                                                    *android_app_ctx,
                                                    tex_files[i],
                                                    VK_FORMAT_R8G8B8A8_SRGB));
@@ -263,7 +282,7 @@ void CreateTextures() {
 
 void addTexture(std::string fileName){
   if (fileName != "" && loaded_textures.find(fileName) == loaded_textures.end()){
-      loaded_textures[fileName] = std::make_shared<Texture>(*device,
+      loaded_textures[fileName] = std::make_shared<Texture>(renderer,
                                                             *android_app_ctx,
                                                          "textures/" + fileName,
                                                             VK_FORMAT_R8G8B8A8_SRGB);
@@ -766,7 +785,7 @@ bool ResumeVulkan(android_app *app) {
             loading_info_mutex.unlock();
 
             for (auto &texture : textures) {
-                texture->OnResume(*device, android_app_ctx);
+                texture->OnResume(renderer, android_app_ctx);
             }
 #ifdef GDC_DEMO
             for (auto &texture : loaded_textures) {
@@ -774,7 +793,7 @@ bool ResumeVulkan(android_app *app) {
             }
 #endif
 
-            Material::OnResumeStatic(*device, android_app_ctx);
+            Material::OnResumeStatic(renderer, android_app_ctx);
 
 #ifdef GDC_DEMO
             loading_info_mutex.lock();
