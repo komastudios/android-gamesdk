@@ -51,6 +51,8 @@ add_library(utils STATIC
         ${UTILS_DIR}/mesh_helpers.cc
         ${UTILS_DIR}/bender_helpers.cc)
 
+add_definitions("-DGDC_DEMO")
+
 target_link_libraries(base bender-kit)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -Werror \
