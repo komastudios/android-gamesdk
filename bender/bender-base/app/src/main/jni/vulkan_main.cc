@@ -17,6 +17,8 @@
 #define GLM_FORCE_CXX17
 #define GLM_ENABLE_EXPERIMENTAL
 
+#define GDC_DEMO
+
 #include "vulkan_main.h"
 
 #include "bender_kit.h"
@@ -169,56 +171,58 @@ void ChangeMaterialComplexity() {
 void CreateButtons() {
   Button::SetScreenResolution(device->GetDisplaySizeOriented());
 
-//  user_interface->RegisterButton([] (Button& button) {
-//      button.on_hold_ = StrafeLeft;
-//      button.SetLabel("<--");
-//      button.SetPosition(-.7, .2, .7, .2);
-//  });
-//  user_interface->RegisterButton([] (Button& button) {
-//    button.on_hold_ = StrafeRight;
-//    button.SetLabel("-->");
-//    button.SetPosition(-.2, .2, .7, .2);
-//  });
-//  user_interface->RegisterButton([] (Button& button) {
-//    button.on_hold_ = StrafeUp;
-//    button.SetLabel("^");
-//    button.SetPosition(-.47, .2, .6, .2);
-//  });
-//  user_interface->RegisterButton([] (Button& button) {
-//    button.on_hold_ = StrafeDown;
-//    button.SetLabel("0");
-//    button.SetPosition(-.47, .2, .85, .2);
-//  });
-//  user_interface->RegisterButton([] (Button& button) {
-//    button.on_hold_ = MoveForward;
-//    button.SetLabel("Forward");
-//    button.SetPosition(.43, .2, .65, .2);
-//  });
-//  user_interface->RegisterButton([] (Button& button) {
-//    button.on_hold_ = MoveBackward;
-//    button.SetLabel("Backward");
-//    button.SetPosition(.43, .2, .85, .2);
-//  });
-//  user_interface->RegisterButton([] (Button& button) {
-//    button.on_up_ = CreateInstance;
-//    button.SetLabel("+1 Mesh");
-//    button.SetPosition(-.2, .2, .4, .2);
-//  });
-//  user_interface->RegisterButton([] (Button& button) {
-//    button.on_up_ = DeleteInstance;
-//    button.SetLabel("-1 Mesh");
-//    button.SetPosition(-.7, .2, .4, .2);
-//  });
-//  user_interface->RegisterButton([] (Button& button) {
-//    button.on_up_ = ChangePolyhedralComplexity;
-//    button.SetLabel("Poly Switch");
-//    button.SetPosition(.5, .2, .2, .2);
-//  });
-//  user_interface->RegisterButton([] (Button& button) {
-//    button.on_up_ = ChangeMaterialComplexity;
-//    button.SetLabel("Tex Switch");
-//    button.SetPosition(.5, .2, .4, .2);
-//  });
+#ifndef GDC_DEMO
+  user_interface->RegisterButton([] (Button& button) {
+      button.on_hold_ = StrafeLeft;
+      button.SetLabel("<--");
+      button.SetPosition(-.7, .2, .7, .2);
+  });
+  user_interface->RegisterButton([] (Button& button) {
+    button.on_hold_ = StrafeRight;
+    button.SetLabel("-->");
+    button.SetPosition(-.2, .2, .7, .2);
+  });
+  user_interface->RegisterButton([] (Button& button) {
+    button.on_hold_ = StrafeUp;
+    button.SetLabel("^");
+    button.SetPosition(-.47, .2, .6, .2);
+  });
+  user_interface->RegisterButton([] (Button& button) {
+    button.on_hold_ = StrafeDown;
+    button.SetLabel("0");
+    button.SetPosition(-.47, .2, .85, .2);
+  });
+  user_interface->RegisterButton([] (Button& button) {
+    button.on_hold_ = MoveForward;
+    button.SetLabel("Forward");
+    button.SetPosition(.43, .2, .65, .2);
+  });
+  user_interface->RegisterButton([] (Button& button) {
+    button.on_hold_ = MoveBackward;
+    button.SetLabel("Backward");
+    button.SetPosition(.43, .2, .85, .2);
+  });
+  user_interface->RegisterButton([] (Button& button) {
+    button.on_up_ = CreateInstance;
+    button.SetLabel("+1 Mesh");
+    button.SetPosition(-.2, .2, .4, .2);
+  });
+  user_interface->RegisterButton([] (Button& button) {
+    button.on_up_ = DeleteInstance;
+    button.SetLabel("-1 Mesh");
+    button.SetPosition(-.7, .2, .4, .2);
+  });
+  user_interface->RegisterButton([] (Button& button) {
+    button.on_up_ = ChangePolyhedralComplexity;
+    button.SetLabel("Poly Switch");
+    button.SetPosition(.5, .2, .2, .2);
+  });
+  user_interface->RegisterButton([] (Button& button) {
+    button.on_up_ = ChangeMaterialComplexity;
+    button.SetLabel("Tex Switch");
+    button.SetPosition(.5, .2, .4, .2);
+  });
+#endif
 }
 
 void CreateUserInterface() {
@@ -386,10 +390,12 @@ void UpdateInstances(input::Data *input_data) {
   render_graph->GetAllMeshes(all_meshes);
   render_graph_mutex.unlock();
   for (int i = 0; i < all_meshes.size(); i++) {
-//    all_meshes[i]->Rotate(glm::vec3(0.0f, 1.0f, 0.0f), 90 * frame_time);
-//    all_meshes[i]->Translate(.02f * glm::vec3(std::sin(2 * total_time),
-//                                             std::sin(i * total_time),
-//                                             std::cos(2 * total_time)));
+#ifndef GDC_DEMO
+    all_meshes[i]->Rotate(glm::vec3(0.0f, 1.0f, 0.0f), 90 * frame_time);
+    all_meshes[i]->Translate(.02f * glm::vec3(std::sin(2 * total_time),
+                                              std::sin(i * total_time),
+                                              std::cos(2 * total_time)));
+#endif
 
     all_meshes[i]->Update(renderer->GetCurrentFrame(), camera);
   }
@@ -582,11 +588,24 @@ bool InitVulkan(android_app *app) {
 
     CreateUserInterface();
 
-    timing::PrintEvent(*timing::timer.GetLastMajorEvent());
-    app_initialized_once = true;
-  });
+#ifndef GDC_DEMO
+    timing::timer.Time("Mesh Creation", timing::OTHER, [] {
+        tex_files.push_back("textures/sample_texture.png");
 
-  load_thread = new std::thread([app] {
+        CreateTextures();
+
+        CreateMaterials();
+
+        CreateGeometries();
+
+        timing::timer.Time("Create Polyhedron", timing::OTHER, [] {
+            render_graph->AddMesh(std::make_shared<Mesh>(renderer,
+                                                         baseline_materials[materials_idx],
+                                                         geometries[poly_faces_idx]));
+        });
+    });
+#else
+    load_thread = new std::thread([app] {
       timing::timer.Time("Mesh Creation", timing::OTHER, [app] {
           AAssetDir *dir = AAssetManager_openDir(app->activity->assetManager, "models");
           const char *fileName;
@@ -650,6 +669,11 @@ bool InitVulkan(android_app *app) {
           loading_info_mutex.unlock();
           done_loading = true;
       });
+    });
+#endif
+
+    timing::PrintEvent(*timing::timer.GetLastMajorEvent());
+    app_initialized_once = true;
   });
   return true;
 }
@@ -736,6 +760,7 @@ bool ResumeVulkan(android_app *app) {
     all_meshes = std::vector<std::shared_ptr<Mesh>>(all_meshes);
     render_graph->ClearMeshes();
 
+
     load_thread = new std::thread([all_meshes] {
         timing::timer.Time("Mesh Creation", timing::OTHER, [all_meshes] {
             loading_info_mutex.lock();
@@ -745,12 +770,15 @@ bool ResumeVulkan(android_app *app) {
             for (auto &texture : textures) {
                 texture->OnResume(*device, android_app_ctx);
             }
+#ifdef GDC_DEMO
             for (auto &texture : loaded_textures) {
                 if (texture.second != nullptr) texture.second->OnResume(*device, android_app_ctx);
             }
+#endif
 
             Material::OnResumeStatic(*device, android_app_ctx);
 
+#ifdef GDC_DEMO
             loading_info_mutex.lock();
             sprintf(loading_info, "Reloading materials...");
             loading_info_mutex.unlock();
@@ -758,6 +786,7 @@ bool ResumeVulkan(android_app *app) {
             for (auto &material : loaded_materials) {
                 material.second->OnResume(renderer);
             }
+#endif
 
             for (auto &material : materials) {
                 material->OnResume(renderer);
@@ -767,6 +796,7 @@ bool ResumeVulkan(android_app *app) {
                 material->OnResume(renderer);
             }
 
+#ifdef GDC_DEMO
             AAssetDir *dir = AAssetManager_openDir(android_app_ctx->activity->assetManager,
                                                    "models");
             const char *fileName;
@@ -807,6 +837,14 @@ bool ResumeVulkan(android_app *app) {
             sprintf(loading_info, " ");
             loading_info_mutex.unlock();
             done_loading = true;
+#else
+            for (auto &mesh : all_meshes) {
+                mesh->OnResume(renderer);
+                render_graph_mutex.lock();
+                render_graph->AddMesh(mesh);
+                render_graph_mutex.unlock();
+            }
+#endif
         });
     });
 
