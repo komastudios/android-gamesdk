@@ -165,9 +165,24 @@ void ChangeMaterialComplexity() {
   render_graph->ClearMeshes();
   render_graph->AddMeshes(all_meshes);
 }
+void ToggleMipmaps() {
+  done_loading = false;
+  render_graph_mutex.lock();
+  for (auto &texture : loaded_textures) {
+    if (texture.second != nullptr) texture.second->ToggleMipmaps(android_app_ctx);
+  }
+  render_graph_mutex.unlock();
+  done_loading = true;
+}
 
 void CreateButtons() {
   Button::SetScreenResolution(device->GetDisplaySizeOriented());
+
+  user_interface->RegisterButton([] (Button& button) {
+      button.on_up_ = ToggleMipmaps;
+      button.SetLabel("Mipmap Switch");
+      button.SetPosition(.5, .2, 0, .2);
+  });
 
 #ifndef GDC_DEMO
   user_interface->RegisterButton([] (Button& button) {

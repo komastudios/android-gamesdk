@@ -17,6 +17,7 @@
 #include "stb_image.h"
 #include "bender_helpers.h"
 
+#include <cmath>
 #include <cstdlib>
 #include <vector>
 
@@ -25,11 +26,14 @@ Texture::Texture(benderkit::Device &device,
                  uint32_t img_width,
                  uint32_t img_height,
                  VkFormat texture_format,
+                 bool use_mipmaps,
                  std::function<void(uint8_t *)> generator)
-    : device_(device), texture_format_(texture_format), generator_(generator) {
+    : device_(device), texture_format_(texture_format), use_mipmaps_(use_mipmaps), generator_(generator) {
   tex_width_ = img_width;
   tex_height_ = img_height;
-  CALL_VK(CreateTexture(img_data, VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+  mip_levels_ = use_mipmaps ? std::floor(std::log2(std::max(tex_width_, tex_height_))) + 1 : 1;
+  CALL_VK(CreateTexture(img_data, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
   CreateImageView();
 }
 
@@ -37,11 +41,14 @@ Texture::Texture(benderkit::Device &device,
                  android_app &android_app_ctx,
                  const std::string &texture_file_name,
                  VkFormat texture_format,
+                 bool use_mipmaps,
                  std::function<void(uint8_t *)> generator)
-    : device_(device), texture_format_(texture_format), generator_(generator) {
+    : device_(device), texture_format_(texture_format), use_mipmaps_(use_mipmaps), generator_(generator) {
   unsigned char *img_data = LoadFileData(android_app_ctx, texture_file_name.c_str());
   file_name_ = texture_file_name;
-  CALL_VK(CreateTexture(img_data, VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+  mip_levels_ = use_mipmaps ? std::floor(std::log2(std::max(tex_width_, tex_height_))) + 1 : 1;
+  CALL_VK(CreateTexture(img_data, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
   CreateImageView();
   stbi_image_free(img_data);
 }
@@ -57,23 +64,7 @@ void Texture::Cleanup() {
 }
 
 void Texture::OnResume(benderkit::Device &device, android_app *app) {
-  if (generator_ != nullptr) {
-    unsigned char
-        *img_data = (unsigned char *) malloc(tex_height_ * tex_width_ * 4 * sizeof(unsigned char));
-    generator_(img_data);
-    CALL_VK(CreateTexture(img_data,
-                          VK_IMAGE_USAGE_SAMPLED_BIT,
-                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
-    CreateImageView();
-    delete img_data;
-  } else {
-    unsigned char *img_data = LoadFileData(*app, file_name_.c_str());
-    CALL_VK(CreateTexture(img_data,
-                          VK_IMAGE_USAGE_SAMPLED_BIT,
-                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
-    CreateImageView();
-    stbi_image_free(img_data);
-  }
+  RegenerateTexture(app);
 }
 
 unsigned char *Texture::LoadFileData(android_app &app, const char *file_path) {
@@ -131,7 +122,7 @@ VkResult Texture::CreateTexture(uint8_t *img_data,
       .format = texture_format_,
       .extent = {static_cast<uint32_t>(tex_width_),
                  static_cast<uint32_t>(tex_height_), 1},
-      .mipLevels = 1,
+      .mipLevels = mip_levels_,
       .arrayLayers = 1,
       .samples = VK_SAMPLE_COUNT_1_BIT,
       .tiling = VK_IMAGE_TILING_LINEAR,
@@ -270,8 +261,48 @@ void Texture::CreateImageView() {
               .b = VK_COMPONENT_SWIZZLE_B,
               .a = VK_COMPONENT_SWIZZLE_A,
           },
-      .subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
+      .subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, mip_levels_, 0, 1},
       .flags = 0,
   };
   CALL_VK(vkCreateImageView(device_.GetDevice(), &view_create_info, nullptr, &view_));
+}
+
+void Texture::RegenerateTexture(android_app *app) {
+  if (generator_ != nullptr) {
+    unsigned char
+            *img_data = (unsigned char *) malloc(tex_height_ * tex_width_ * 4 * sizeof(unsigned char));
+    generator_(img_data);
+    CALL_VK(CreateTexture(img_data,
+                          VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+    CreateImageView();
+    delete img_data;
+  } else {
+    unsigned char *img_data = LoadFileData(*app, file_name_.c_str());
+    CALL_VK(CreateTexture(img_data,
+                          VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+    CreateImageView();
+    stbi_image_free(img_data);
+  }
+}
+
+void Texture::ToggleMipmaps(android_app *app) {
+  use_mipmaps_ = !use_mipmaps_;
+  mip_levels_ = use_mipmaps_ ? std::floor(std::log2(std::max(tex_width_, tex_height_))) + 1 : 1;
+  RegenerateTexture(app);
+}
+
+void Texture::GenerateMipmaps() {
+  if (!use_mipmaps_) return;
+
+  VkCommandBuffer cmd_buffer = [smthg];
+
+  VkImageMemoryBarrier barrier = {
+          .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+          .image = image_,
+          .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+          .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+          .subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1}
+  };
 }
