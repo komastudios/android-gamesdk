@@ -60,6 +60,8 @@ public:
   VkDescriptorPool GetDescriptorPool() const { return descriptor_pool_; };
   VkDescriptorSetLayout GetLightsDescriptorSetLayout() const { return lights_descriptors_layout_; }
   VkDescriptorSet GetLightsDescriptorSet(uint_t frame_index) const { return lights_descriptor_sets_[frame_index]; }
+  bool MipMapEnabled() const { return use_mipmaps_; }
+  void ToggleMipMap() { use_mipmaps_ = !use_mipmaps_; }
 
   const DefaultStates &GetDefaultStates() const {
     return default_states_;
@@ -88,6 +90,7 @@ private:
   VkDescriptorSetLayout lights_descriptors_layout_;
   std::vector<VkDescriptorSet> lights_descriptor_sets_;
   std::unique_ptr<UniformBufferObject<LightBlock>> lights_buffer_;
+  bool use_mipmaps_ = true;
 
   DefaultStates default_states_;
 
