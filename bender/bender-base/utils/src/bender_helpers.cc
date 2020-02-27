@@ -65,7 +65,8 @@ void SetImageLayout(VkCommandBuffer cmd_buffer, VkImage image,
             image_memory_barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
             break;
 
-        case VK_IMAGE_LAYOUT_PREINITIALIZED:image_memory_barrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT;
+        case VK_IMAGE_LAYOUT_PREINITIALIZED:
+            image_memory_barrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT;
             break;
 
         default:break;
