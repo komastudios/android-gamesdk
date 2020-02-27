@@ -85,14 +85,17 @@ private:
     public:
         FrameDuration() = default;
 
-        FrameDuration(std::chrono::nanoseconds cpuTime, std::chrono::nanoseconds gpuTime) :
-                mCpuTime(cpuTime), mGpuTime(gpuTime) {
+        FrameDuration(std::chrono::nanoseconds cpuTime, std::chrono::nanoseconds gpuTime,
+                bool frameMissedDeadline) :
+                mCpuTime(cpuTime), mGpuTime(gpuTime), mFrameMissedDeadline(frameMissedDeadline) {
             mCpuTime = std::min(mCpuTime, MAX_DURATION);
             mGpuTime = std::min(mGpuTime, MAX_DURATION);
         }
 
         std::chrono::nanoseconds getCpuTime() const { return mCpuTime; }
         std::chrono::nanoseconds getGpuTime() const { return mGpuTime; }
+
+        bool frameMiss() const { return mFrameMissedDeadline; }
 
         std::chrono::nanoseconds getTime(PipelineMode pipeline) const {
             if (pipeline == PipelineMode::On) {
@@ -122,6 +125,7 @@ private:
     private:
         std::chrono::nanoseconds mCpuTime = std::chrono::nanoseconds(0);
         std::chrono::nanoseconds mGpuTime = std::chrono::nanoseconds(0);
+        bool mFrameMissedDeadline = false;
 
         static constexpr std::chrono::nanoseconds MAX_DURATION =
                 std::chrono::milliseconds(100);
@@ -131,12 +135,10 @@ private:
     std::chrono::nanoseconds wakeClient();
 
     void swapFaster(const FrameDuration& averageFrameTime,
-                    const std::chrono::nanoseconds& lowerBound,
-                    const int32_t& newSwapInterval) REQUIRES(mFrameDurationsMutex);
+                    const std::chrono::nanoseconds& lowerBound) REQUIRES(mFrameDurationsMutex);
 
     void swapSlower(const FrameDuration& averageFrameTime,
-                    const std::chrono::nanoseconds& upperBound,
-                    const int32_t& newSwapInterval) REQUIRES(mFrameDurationsMutex);
+                    const std::chrono::nanoseconds& upperBound) REQUIRES(mFrameDurationsMutex);
     bool updateSwapInterval();
     void preSwapBuffersCallbacks();
     void postSwapBuffersCallbacks();
@@ -154,9 +156,6 @@ private:
     void setPreferredRefreshRate(std::chrono::nanoseconds frameTime);
     int calculateSwapInterval(std::chrono::nanoseconds frameTime,
                               std::chrono::nanoseconds refreshPeriod);
-    bool pipelineModeNotNeeded(const std::chrono::nanoseconds& averageFrameTime,
-                               const std::chrono::nanoseconds& upperBound)
-                               REQUIRES(mFrameDurationsMutex);
     void updateDisplayTimings();
 
     // Waits for the next frame, considering both Choreographer and the prior frame's completion
@@ -189,18 +188,19 @@ private:
     std::mutex mFrameDurationsMutex;
     std::vector<FrameDuration> mFrameDurations GUARDED_BY(mFrameDurationsMutex);
     FrameDuration mFrameDurationsSum GUARDED_BY(mFrameDurationsMutex);
+    int mMissedFrameCount GUARDED_BY(mFrameDurationsMutex) = 0;
     static constexpr int mFrameDurationSamples = 300; // 5 Seconds in 60Hz
     bool mAutoSwapIntervalEnabled GUARDED_BY(mFrameDurationsMutex) = true;
     bool mPipelineModeAutoMode GUARDED_BY(mFrameDurationsMutex) = true;
 
-    static constexpr std::chrono::nanoseconds FRAME_MARGIN = 3ms;
-    static constexpr std::chrono::nanoseconds EDGE_HYSTERESIS = 4ms;
+    static constexpr std::chrono::nanoseconds FRAME_MARGIN = 1ms;
+    static constexpr float NON_PIPELINE_PERCENT = 0.5; // 50%
+    static constexpr int FRAME_DROP_THRESHOLD = 10; // 10%
 
     std::chrono::nanoseconds mSwapIntervalNS;
     int32_t mAutoSwapInterval;
     std::atomic<std::chrono::nanoseconds> mAutoSwapIntervalThresholdNS = {50ms}; // 20FPS
     int mSwapIntervalForNewRefresh = 0;
-    PipelineMode mPipelineModeForNewRefresh;
     static constexpr std::chrono::nanoseconds REFRESH_RATE_MARGIN = 500ns;
 
     std::chrono::steady_clock::time_point mStartFrameTime;
@@ -219,7 +219,7 @@ private:
     int32_t mTargetFrame = 0;
     std::chrono::steady_clock::time_point mPresentationTime = std::chrono::steady_clock::now();
     bool mPresentationTimeNeeded;
-    PipelineMode mPipelineMode = PipelineMode::Off;
+    PipelineMode mPipelineMode = PipelineMode::On;
 
     bool mValid;
 
