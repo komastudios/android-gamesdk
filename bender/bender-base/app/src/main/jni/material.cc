@@ -16,7 +16,7 @@ void Material::DefaultTextureGenerator(uint8_t *data) {
 void Material::CreateDefaultTexture(Renderer &renderer) {
   if (default_texture_ != nullptr) { return; }
   unsigned char img_data[4] = {255, 255, 255, 0};
-  default_texture_ = std::make_shared<Texture>(renderer.GetDevice(), img_data, 1, 1,
+  default_texture_ = std::make_shared<Texture>(&renderer, img_data, 1, 1,
                                                VK_FORMAT_R8G8B8A8_SRGB, DefaultTextureGenerator);
 }
 
