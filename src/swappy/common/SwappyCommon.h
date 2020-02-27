@@ -141,7 +141,7 @@ private:
     void preSwapBuffersCallbacks();
     void postSwapBuffersCallbacks();
     void preWaitCallbacks();
-    void postWaitCallbacks();
+    void postWaitCallbacks(std::chrono::nanoseconds cpuTime, std::chrono::nanoseconds gpuTime);
     void startFrameCallbacks();
     void swapIntervalChangedCallbacks();
     void onSettingsChanged();
@@ -207,7 +207,7 @@ private:
 
     struct SwappyTracerCallbacks {
         std::list<Tracer<>> preWait;
-        std::list<Tracer<>> postWait;
+        std::list<Tracer<long,long>> postWait;
         std::list<Tracer<>> preSwapBuffers;
         std::list<Tracer<long>> postSwapBuffers;
         std::list<Tracer<int32_t, long>> startFrame;

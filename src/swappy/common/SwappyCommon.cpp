@@ -216,7 +216,7 @@ bool SwappyCommon::waitForNextFrame(const SwapHandlers& h) {
 
     const nanoseconds gpuTime = h.getPrevFrameGpuTime();
     addFrameDuration({cpuTime, gpuTime});
-    postWaitCallbacks();
+    postWaitCallbacks(cpuTime, gpuTime);
 
     return presentationTimeIsNeeded;
 }
@@ -564,8 +564,8 @@ void SwappyCommon::preWaitCallbacks() {
     executeTracers(mInjectedTracers.preWait);
 }
 
-void SwappyCommon::postWaitCallbacks() {
-    executeTracers(mInjectedTracers.postWait);
+void SwappyCommon::postWaitCallbacks(nanoseconds cpuTime, nanoseconds gpuTime) {
+    executeTracers(mInjectedTracers.postWait, cpuTime.count(), gpuTime.count());
 }
 
 void SwappyCommon::startFrameCallbacks() {

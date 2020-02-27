@@ -188,7 +188,7 @@ TuningForkLogEvent TestEndToEnd() {
     TuningForkTest test(settings);
     std::unique_lock<std::mutex> lock(*test.rmutex_);
     for (int i = 0; i < NTICKS; ++i)
-        tuningfork::FrameTick(TFTICK_SYSCPU);
+        tuningfork::FrameTick(TFTICK_RAW_FRAME_TIME);
     // Wait for the upload thread to complete writing the string
     EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time)==std::cv_status::no_timeout) << "Timeout";
 
@@ -206,7 +206,7 @@ TuningForkLogEvent TestEndToEndWithAnnotation() {
     tuningfork::SetCurrentAnnotation(Serialize(ann));
     std::unique_lock<std::mutex> lock(*test.rmutex_);
     for (int i = 0; i < NTICKS; ++i)
-        tuningfork::FrameTick(TFTICK_SYSGPU);
+        tuningfork::FrameTick(TFTICK_PACED_FRAME_TIME);
     // Wait for the upload thread to complete writing the string
     EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time)==std::cv_status::no_timeout) << "Timeout";
 
@@ -216,11 +216,11 @@ TuningForkLogEvent TestEndToEndWithAnnotation() {
 TuningForkLogEvent TestEndToEndTimeBased() {
     const int NTICKS = 101; // note the first tick doesn't add anything to the histogram
     auto settings = TestSettings(Settings::AggregationStrategy::Submission::TIME_BASED, 10100,
-                                 1, {}, {{TFTICK_SYSCPU, 50,150,10}});
+                                 1, {}, {{TFTICK_RAW_FRAME_TIME, 50,150,10}});
     TuningForkTest test(settings, std::chrono::milliseconds(100));
     std::unique_lock<std::mutex> lock(*test.rmutex_);
     for (int i = 0; i < NTICKS; ++i)
-        tuningfork::FrameTick(TFTICK_SYSCPU);
+        tuningfork::FrameTick(TFTICK_RAW_FRAME_TIME);
     // Wait for the upload thread to complete writing the string
     EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time)==std::cv_status::no_timeout) << "Timeout";
 
@@ -253,7 +253,7 @@ static const std::string session_context = R"TF(
   },
   "game_sdk_info": {
     "session_id": "",
-    "version": "0.4"
+    "version": "0.5"
   },
   "time_period": {
     "end_time": "1970-01-01T00:00:02.020000Z",
@@ -317,10 +317,10 @@ TEST(TuningForkTest, TestEndToEndWithAnnotation) {
       "rendering": {
         "render_time_histogram": [{
          "counts": [
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],

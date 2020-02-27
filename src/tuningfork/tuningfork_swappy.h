@@ -17,8 +17,21 @@
 #pragma once
 
 #include "tuningfork/tuningfork.h"
-#include "swappy/swappyGL_extra.h"
+#include "swappy/swappy_common.h"
 #include "tuningfork_internal.h"
+
+// For versions of Swappy < 1.3, the post-wait callback didn't give gpuTime
+typedef SwappyPreWaitCallback SwappyWaitCallback;
+struct SwappyTracerPre1_3 {
+    SwappyWaitCallback preWait;
+    SwappyWaitCallback postWait;
+    SwappyPreSwapBuffersCallback preSwapBuffers;
+    SwappyPostSwapBuffersCallback postSwapBuffers;
+    SwappyStartFrameCallback startFrame;
+    void* userData;
+    SwappySwapIntervalChangedCallback swapIntervalChanged;
+};
+constexpr int SWAPPY_VERSION_1_3 = ((1<<16) | 3);
 
 namespace tuningfork {
 
@@ -27,7 +40,6 @@ namespace tuningfork {
 class SwappyTraceWrapper {
     SwappyTracerFn swappyTracerFn_;
     SwappyTracer trace_;
-    TFTraceHandle waitTraceHandle_ = 0;
     TFTraceHandle logicTraceHandle_ = 0;
 public:
     SwappyTraceWrapper(const Settings& settings);
@@ -35,9 +47,14 @@ public:
     static void StartFrameCallback(void* userPtr, int /*currentFrame*/,
                                          long /*currentFrameTimeStampMs*/);
     static void PreWaitCallback(void* userPtr);
-    static void PostWaitCallback(void* userPtr);
+    static void PostWaitCallback(void* userPtr, long cpu_time_ns, long gpu_time_ns);
     static void PreSwapBuffersCallback(void* userPtr);
     static void PostSwapBuffersCallback(void* userPtr, long /*desiredPresentationTimeMs*/);
+
+    static void StartFrameCallbackPre1_3(void* userPtr, int /*currentFrame*/,
+                                         long /*currentFrameTimeStampMs*/);
+    static void PreWaitCallbackPre1_3(void* userPtr);
+    static void PostWaitCallbackPre1_3(void* userPtr);
 };
 
 } // namespace tuningfork
