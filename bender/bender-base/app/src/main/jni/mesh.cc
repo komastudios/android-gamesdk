@@ -11,7 +11,7 @@
 Mesh::Mesh(Renderer *renderer,
            std::shared_ptr<Material> material,
            std::shared_ptr<Geometry> geometry) :
-    renderer_(renderer), material_(material), geometry_(geometry) {
+    renderer_(renderer), material_(material), geometry_(geometry), bounding_box_dirty_(true) {
   position_ = glm::vec3(0.0f, 0.0f, 0.0f);
   rotation_ = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
   scale_ = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -19,6 +19,7 @@ Mesh::Mesh(Renderer *renderer,
   mesh_buffer_ = std::make_unique<UniformBufferObject<ModelViewProjection>>(renderer_->GetDevice());
   CreateMeshDescriptorSetLayout();
   CreateMeshDescriptors();
+  ComputeBoundingBoxWorldSpace();
 }
 
 Mesh::Mesh(Renderer *renderer,
@@ -27,7 +28,9 @@ Mesh::Mesh(Renderer *renderer,
            const std::vector<uint16_t> &index_data) :
     Mesh(renderer,
          material,
-         std::make_shared<Geometry>(renderer->GetDevice(), vertex_data, index_data)) {}
+         std::make_shared<Geometry>(renderer->GetDevice(), vertex_data, index_data)) {
+  ComputeBoundingBoxWorldSpace();
+}
 
 Mesh::Mesh(const Mesh &other, std::shared_ptr<Material> material) :
     renderer_(other.renderer_),
@@ -35,10 +38,12 @@ Mesh::Mesh(const Mesh &other, std::shared_ptr<Material> material) :
     geometry_(other.geometry_),
     position_(other.position_),
     rotation_(other.rotation_),
-    scale_(other.scale_){
+    scale_(other.scale_),
+    bounding_box_dirty_(true) {
   mesh_buffer_ = std::make_unique<UniformBufferObject<ModelViewProjection>>(renderer_->GetDevice());
   CreateMeshDescriptorSetLayout();
   CreateMeshDescriptors();
+  ComputeBoundingBoxWorldSpace();
 }
 
 Mesh::Mesh(const Mesh &other, std::shared_ptr<Geometry> geometry) :
@@ -47,10 +52,12 @@ Mesh::Mesh(const Mesh &other, std::shared_ptr<Geometry> geometry) :
     geometry_(geometry),
     position_(other.position_),
     rotation_(other.rotation_),
-    scale_(other.scale_) {
+    scale_(other.scale_),
+    bounding_box_dirty_(true) {
   mesh_buffer_ = std::make_unique<UniformBufferObject<ModelViewProjection>>(renderer_->GetDevice());
   CreateMeshDescriptorSetLayout();
   CreateMeshDescriptors();
+  ComputeBoundingBoxWorldSpace();
 }
 
 Mesh::~Mesh() {
@@ -219,27 +226,34 @@ void Mesh::SubmitDraw(VkCommandBuffer cmd_buffer, uint_t frame_index) const {
 
 void Mesh::Translate(glm::vec3 offset) {
   position_ += offset;
+  bounding_box_dirty_ = true;
 }
 
 void Mesh::Rotate(glm::vec3 axis, float angle) {
   rotation_ *= glm::angleAxis(glm::radians(angle), axis);
   rotation_ = glm::normalize(rotation_);
+  bounding_box_dirty_ = true;
+
 }
 
 void Mesh::Scale(glm::vec3 scaling) {
   scale_ *= scaling;
+  bounding_box_dirty_ = true;
 }
 
 void Mesh::SetPosition(glm::vec3 position) {
   position_ = position;
+  bounding_box_dirty_ = true;
 }
 
 void Mesh::SetRotation(glm::vec3 axis, float angle) {
   rotation_ = glm::angleAxis(glm::radians(angle), axis);
+  bounding_box_dirty_ = true;
 }
 
 void Mesh::SetScale(glm::vec3 scale) {
   scale_ = scale;
+  bounding_box_dirty_ = true;
 }
 
 glm::vec3 Mesh::GetPosition() const {
@@ -260,8 +274,7 @@ glm::mat4 Mesh::GetTransform() const {
   return position * glm::mat4(rotation_) * scale;
 }
 
-
-BoundingBox Mesh::GetBoundingBoxWorldSpace() const {
+void Mesh::ComputeBoundingBoxWorldSpace() {
   glm::mat4 finalTransform = GetTransform();
   BoundingBox originalBox = geometry_->GetBoundingBox();
 
@@ -274,12 +287,17 @@ BoundingBox Mesh::GetBoundingBoxWorldSpace() const {
   glm::vec3 zMin = finalTransform[2] * (originalBox.min.z);
   glm::vec3 zMax = finalTransform[2] * (originalBox.max.z);
 
-  BoundingBox result {
-      .min = glm::min(xMin, xMax) + glm::min(yMin ,yMax) + glm::min(zMin, zMax) + glm::vec3(finalTransform[3]),
-      .max = glm::max(xMin, xMax) + glm::max(yMin ,yMax) + glm::max(zMin, zMax) + glm::vec3(finalTransform[3]),
-  };
-  result.center = (result.min + result.max) * .5f;
-  return result;
+  world_space_box_.min = glm::min(xMin, xMax) + glm::min(yMin ,yMax) + glm::min(zMin, zMax) + glm::vec3(finalTransform[3]);
+  world_space_box_.max = glm::max(xMin, xMax) + glm::max(yMin ,yMax) + glm::max(zMin, zMax) + glm::vec3(finalTransform[3]);
+  world_space_box_.center = (world_space_box_.min + world_space_box_.max) * .5f;
+  bounding_box_dirty_ = false;
+}
+
+BoundingBox Mesh::GetBoundingBoxWorldSpace() {
+  if (bounding_box_dirty_) {
+    ComputeBoundingBoxWorldSpace();
+  }
+  return world_space_box_;
 }
 
 int Mesh::GetTrianglesCount() const {
