@@ -65,6 +65,7 @@ Mesh::~Mesh() {
   vkDestroyPipeline(renderer_.GetVulkanDevice(), pipeline_, nullptr);
   vkDestroyPipelineLayout(renderer_.GetVulkanDevice(), layout_, nullptr);
   vkDestroyDescriptorSetLayout(renderer_.GetVulkanDevice(), mesh_descriptors_layout_, nullptr);
+
   mesh_buffer_.reset();
   pipeline_ = VK_NULL_HANDLE;
   layout_ = VK_NULL_HANDLE;
