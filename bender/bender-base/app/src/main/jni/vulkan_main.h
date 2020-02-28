@@ -36,6 +36,8 @@ bool VulkanDrawFrame(input::Data *input_data);
 
 void OnOrientationChange();
 
+void LoadDemoModels();
+
 #endif // BENDER_BASE_VULKAN_MAIN_H__
 
 
