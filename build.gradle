@@ -23,8 +23,13 @@ def osFolderName(externalToolName) {
         }
     } else if (OperatingSystem.current().isLinux())
         return "linux-x86";
-    else if (OperatingSystem.current().isWindows())
-        return "win";
+    else if (OperatingSystem.current().isWindows()) {
+        if (externalToolName == ExternalToolName.PROTOBUF) {
+            return "win";
+	} else if (externalToolName == ExternalToolName.CMAKE) {
+	    return "windows-x86";
+	}
+    }
 
     throw new GradleException("Unsupported OS");
 }
