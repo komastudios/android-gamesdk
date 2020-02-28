@@ -604,69 +604,67 @@ bool InitVulkan(android_app *app) {
     });
 #else
     load_thread = new std::thread([app] {
-      timing::timer.Time("Mesh Creation", timing::OTHER, [app] {
-          AAssetDir *dir = AAssetManager_openDir(app->activity->assetManager, "models");
-          const char *fileName;
-          fileName = AAssetDir_getNextFileName(dir);
-          while (fileName != nullptr) {
-              LOGE("%s", fileName);
-              std::string fileNameString(fileName);
-              if (fileNameString.find(".mtl") != -1) {
-                  fileName = AAssetDir_getNextFileName(dir);
-                  continue;
-              }
-
-              loading_info_mutex.lock();
-              sprintf(loading_info, "Loading: %s", fileName);
-              loading_info_mutex.unlock();
-
-              std::vector<OBJLoader::OBJ> modelData;
-              std::unordered_map<std::string, MTL> mtllib;
-
-              OBJLoader::LoadOBJ(app->activity->assetManager,
-                                 ("models/" + fileNameString).c_str(),
-                                 mtllib,
-                                 modelData);
-
-              for (auto obj : modelData) {
-                  std::string mtlName = obj.material_name;
-                  if (loaded_materials.find(mtlName) == loaded_materials.end()) {
-                      MTL currMTL = mtllib[obj.material_name];
-                      addTexture(currMTL.map_Ka);
-                      addTexture(currMTL.map_Kd);
-                      addTexture(currMTL.map_Ks);
-                      addTexture(currMTL.map_Ns);
-                      addTexture(currMTL.map_Bump);
-                      MaterialAttributes newMTL;
-                      newMTL.ambient = currMTL.ambient;
-                      newMTL.specular = glm::vec4(currMTL.specular, currMTL.specular_exponent);
-                      newMTL.diffuse = currMTL.diffuse;
-                      std::vector<std::shared_ptr<Texture>> myTextures = {
-                              loaded_textures[currMTL.map_Kd],
-                              loaded_textures[currMTL.map_Ks],
-                              loaded_textures[currMTL.map_Ke],
-                              loaded_textures[currMTL.map_Ns],
-                              loaded_textures[currMTL.map_Bump]};
-                      loaded_materials[mtlName] = std::make_shared<Material>(renderer,
-                                                                             shaders,
-                                                                             myTextures,
-                                                                             newMTL);
-                  }
-                  geometries.push_back(
-                          std::make_shared<Geometry>(*device, obj.vertex_buffer, obj.index_buffer));
-                  render_graph_mutex.lock();
-                  render_graph->AddMesh(std::make_shared<Mesh>(renderer,
-                                                               loaded_materials[mtlName],
-                                                               geometries.back()));
-                  render_graph_mutex.unlock();
-              }
+      AAssetDir *dir = AAssetManager_openDir(app->activity->assetManager, "models");
+      const char *fileName;
+      fileName = AAssetDir_getNextFileName(dir);
+      while (fileName != nullptr) {
+          LOGE("%s", fileName);
+          std::string fileNameString(fileName);
+          if (fileNameString.find(".mtl") != -1) {
               fileName = AAssetDir_getNextFileName(dir);
+              continue;
           }
+
           loading_info_mutex.lock();
-          sprintf(loading_info, " ");
+          sprintf(loading_info, "Loading: %s", fileName);
           loading_info_mutex.unlock();
-          done_loading = true;
-      });
+
+          std::vector<OBJLoader::OBJ> modelData;
+          std::unordered_map<std::string, MTL> mtllib;
+
+          OBJLoader::LoadOBJ(app->activity->assetManager,
+                             ("models/" + fileNameString).c_str(),
+                             mtllib,
+                             modelData);
+
+          for (auto obj : modelData) {
+              std::string mtlName = obj.material_name;
+              if (loaded_materials.find(mtlName) == loaded_materials.end()) {
+                  MTL currMTL = mtllib[obj.material_name];
+                  addTexture(currMTL.map_Ka);
+                  addTexture(currMTL.map_Kd);
+                  addTexture(currMTL.map_Ks);
+                  addTexture(currMTL.map_Ns);
+                  addTexture(currMTL.map_Bump);
+                  MaterialAttributes newMTL;
+                  newMTL.ambient = currMTL.ambient;
+                  newMTL.specular = glm::vec4(currMTL.specular, currMTL.specular_exponent);
+                  newMTL.diffuse = currMTL.diffuse;
+                  std::vector<std::shared_ptr<Texture>> myTextures = {
+                          loaded_textures[currMTL.map_Kd],
+                          loaded_textures[currMTL.map_Ks],
+                          loaded_textures[currMTL.map_Ke],
+                          loaded_textures[currMTL.map_Ns],
+                          loaded_textures[currMTL.map_Bump]};
+                  loaded_materials[mtlName] = std::make_shared<Material>(renderer,
+                                                                         shaders,
+                                                                         myTextures,
+                                                                         newMTL);
+              }
+              geometries.push_back(
+                      std::make_shared<Geometry>(*device, obj.vertex_buffer, obj.index_buffer));
+              render_graph_mutex.lock();
+              render_graph->AddMesh(std::make_shared<Mesh>(renderer,
+                                                           loaded_materials[mtlName],
+                                                           geometries.back()));
+              render_graph_mutex.unlock();
+          }
+          fileName = AAssetDir_getNextFileName(dir);
+      }
+      loading_info_mutex.lock();
+      sprintf(loading_info, " ");
+      loading_info_mutex.unlock();
+      done_loading = true;
     });
 #endif
 
@@ -760,90 +758,88 @@ bool ResumeVulkan(android_app *app) {
 
 
     load_thread = new std::thread([all_meshes] {
-        timing::timer.Time("Mesh Creation", timing::OTHER, [all_meshes] {
-            loading_info_mutex.lock();
-            sprintf(loading_info, "Reloading textures...");
-            loading_info_mutex.unlock();
+        loading_info_mutex.lock();
+        sprintf(loading_info, "Reloading textures...");
+        loading_info_mutex.unlock();
 
-            for (auto &texture : textures) {
-                texture->OnResume(*device, android_app_ctx);
-            }
+        for (auto &texture : textures) {
+            texture->OnResume(*device, android_app_ctx);
+        }
 #ifdef GDC_DEMO
-            for (auto &texture : loaded_textures) {
-                if (texture.second != nullptr) texture.second->OnResume(*device, android_app_ctx);
-            }
+        for (auto &texture : loaded_textures) {
+            if (texture.second != nullptr) texture.second->OnResume(*device, android_app_ctx);
+        }
 #endif
 
-            Material::OnResumeStatic(*device, android_app_ctx);
+        Material::OnResumeStatic(*device, android_app_ctx);
 
 #ifdef GDC_DEMO
-            loading_info_mutex.lock();
-            sprintf(loading_info, "Reloading materials...");
-            loading_info_mutex.unlock();
+        loading_info_mutex.lock();
+        sprintf(loading_info, "Reloading materials...");
+        loading_info_mutex.unlock();
 
-            for (auto &material : loaded_materials) {
-                material.second->OnResume(renderer);
-            }
+        for (auto &material : loaded_materials) {
+            material.second->OnResume(renderer);
+        }
 #endif
 
-            for (auto &material : materials) {
-                material->OnResume(renderer);
-            }
+        for (auto &material : materials) {
+            material->OnResume(renderer);
+        }
 
-            for (auto &material : baseline_materials) {
-                material->OnResume(renderer);
-            }
+        for (auto &material : baseline_materials) {
+            material->OnResume(renderer);
+        }
 
 #ifdef GDC_DEMO
-            AAssetDir *dir = AAssetManager_openDir(android_app_ctx->activity->assetManager,
-                                                   "models");
-            const char *fileName;
-            fileName = AAssetDir_getNextFileName(dir);
-            int geoIdx = 0;
-            int meshIdx = 0;
-            while (fileName != nullptr) {
-                LOGE("%s", fileName);
-                std::string fileNameString(fileName);
-                if (fileNameString.find(".mtl") != -1) {
-                    fileName = AAssetDir_getNextFileName(dir);
-                    continue;
-                }
-
-                loading_info_mutex.lock();
-                sprintf(loading_info, "Reloading: %s", fileName);
-                loading_info_mutex.unlock();
-
-                std::vector<OBJLoader::OBJ> modelData;
-                std::unordered_map<std::string, MTL> mtllib;
-                OBJLoader::LoadOBJ(android_app_ctx->activity->assetManager,
-                                   ("models/" + fileNameString).c_str(),
-                                   mtllib,
-                                   modelData);
-
-                for (auto obj : modelData)
-                    geometries[geoIdx++]->OnResume(*device, obj.vertex_buffer, obj.index_buffer);
-
-                all_meshes[meshIdx]->OnResume(renderer);
-                render_graph_mutex.lock();
-                render_graph->AddMesh(all_meshes[meshIdx++]);
-                render_graph_mutex.unlock();
-
+        AAssetDir *dir = AAssetManager_openDir(android_app_ctx->activity->assetManager,
+                                               "models");
+        const char *fileName;
+        fileName = AAssetDir_getNextFileName(dir);
+        int geoIdx = 0;
+        int meshIdx = 0;
+        while (fileName != nullptr) {
+            LOGE("%s", fileName);
+            std::string fileNameString(fileName);
+            if (fileNameString.find(".mtl") != -1) {
                 fileName = AAssetDir_getNextFileName(dir);
+                continue;
             }
 
             loading_info_mutex.lock();
-            sprintf(loading_info, " ");
+            sprintf(loading_info, "Reloading: %s", fileName);
             loading_info_mutex.unlock();
-            done_loading = true;
+
+            std::vector<OBJLoader::OBJ> modelData;
+            std::unordered_map<std::string, MTL> mtllib;
+            OBJLoader::LoadOBJ(android_app_ctx->activity->assetManager,
+                               ("models/" + fileNameString).c_str(),
+                               mtllib,
+                               modelData);
+
+            for (auto obj : modelData)
+                geometries[geoIdx++]->OnResume(*device, obj.vertex_buffer, obj.index_buffer);
+
+            all_meshes[meshIdx]->OnResume(renderer);
+            render_graph_mutex.lock();
+            render_graph->AddMesh(all_meshes[meshIdx++]);
+            render_graph_mutex.unlock();
+
+            fileName = AAssetDir_getNextFileName(dir);
+        }
+
+        loading_info_mutex.lock();
+        sprintf(loading_info, " ");
+        loading_info_mutex.unlock();
+        done_loading = true;
 #else
-            for (auto &mesh : all_meshes) {
-                mesh->OnResume(renderer);
-                render_graph_mutex.lock();
-                render_graph->AddMesh(mesh);
-                render_graph_mutex.unlock();
-            }
+        for (auto &mesh : all_meshes) {
+            mesh->OnResume(renderer);
+            render_graph_mutex.lock();
+            render_graph->AddMesh(mesh);
+            render_graph_mutex.unlock();
+        }
 #endif
-        });
     });
 
     CreateDepthBuffer();
@@ -870,6 +866,11 @@ bool IsVulkanReady(void) { return device != nullptr && device->IsInitialized(); 
 
 void DeleteVulkan(void) {
   vkDeviceWaitIdle(device->GetDevice());
+
+  if (load_thread != nullptr) {
+      load_thread->join();
+      delete load_thread;
+  }
 
   delete renderer;
   delete font;
@@ -920,7 +921,7 @@ bool VulkanDrawFrame(input::Data *input_data) {
     OnOrientationChange();
   }
   if (done_loading) {
-      load_thread = nullptr;
+    load_thread = nullptr;
   }
   current_time = std::chrono::high_resolution_clock::now();
   frame_time = std::chrono::duration<float>(current_time - last_time).count();
