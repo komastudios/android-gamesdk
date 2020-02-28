@@ -96,6 +96,8 @@ namespace benderkit {
 
         void CreateSurface(ANativeWindow *platform_window);
 
+        void DestroySurface();
+
     private:
         bool initialized_;
 
