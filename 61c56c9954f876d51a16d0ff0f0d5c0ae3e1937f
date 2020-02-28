@@ -16,6 +16,24 @@
       "revId": "61c56c9954f876d51a16d0ff0f0d5c0ae3e1937f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "31e3cbf8_12b16b1c",
+        "filename": "bender/bender-base/app/src/main/jni/camera.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-02-28T18:31:27Z",
+      "side": 1,
+      "message": "Ack, will keep this in mind when we add metadata for scene description 😊",
+      "parentUuid": "34ae5edc_6ec373e3",
+      "revId": "61c56c9954f876d51a16d0ff0f0d5c0ae3e1937f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
