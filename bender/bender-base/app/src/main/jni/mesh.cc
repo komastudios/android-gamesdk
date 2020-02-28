@@ -28,7 +28,7 @@ Mesh::Mesh(Renderer *renderer,
            const std::vector<uint16_t> &index_data) :
     Mesh(renderer,
          material,
-         std::make_shared<Geometry>(renderer->GetDevice(), vertex_data, index_data)) {
+         std::make_shared<Geometry>(&renderer->GetDevice(), vertex_data, index_data)) {
   ComputeBoundingBoxWorldSpace();
 }
 
@@ -65,13 +65,17 @@ Mesh::~Mesh() {
 }
 
 void Mesh::Cleanup() {
+  if (!renderer_) { return; }
   vkDeviceWaitIdle(renderer_->GetVulkanDevice());
   vkDestroyPipeline(renderer_->GetVulkanDevice(), pipeline_, nullptr);
   vkDestroyPipelineLayout(renderer_->GetVulkanDevice(), layout_, nullptr);
   vkDestroyDescriptorSetLayout(renderer_->GetVulkanDevice(), mesh_descriptors_layout_, nullptr);
   mesh_buffer_.reset();
+
   pipeline_ = VK_NULL_HANDLE;
   layout_ = VK_NULL_HANDLE;
+  mesh_descriptors_layout_ = VK_NULL_HANDLE;
+  renderer_ = nullptr;
 }
 
 void Mesh::OnResume(Renderer *renderer) {

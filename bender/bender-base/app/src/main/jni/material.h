@@ -39,7 +39,7 @@ class Material {
 
   static void CleanupStatic() { default_texture_->Cleanup(); }
   static void OnResumeStatic(benderkit::Device &device,
-                             android_app *app) { default_texture_->OnResume(device, app); }
+                             android_app *app) { default_texture_->OnResume(&device, app); }
   static void DefaultTextureGenerator(uint8_t *data);
 
  private:

@@ -20,7 +20,7 @@
 #include <cstdlib>
 #include <vector>
 
-Texture::Texture(benderkit::Device &device,
+Texture::Texture(benderkit::Device *device,
                  uint8_t *img_data,
                  uint32_t img_width,
                  uint32_t img_height,
@@ -33,7 +33,7 @@ Texture::Texture(benderkit::Device &device,
   CreateImageView();
 }
 
-Texture::Texture(benderkit::Device &device,
+Texture::Texture(benderkit::Device *device,
                  android_app &android_app_ctx,
                  const std::string &texture_file_name,
                  VkFormat texture_format,
@@ -51,12 +51,21 @@ Texture::~Texture() {
 }
 
 void Texture::Cleanup() {
-  vkDestroyImageView(device_.GetDevice(), view_, nullptr);
-  vkDestroyImage(device_.GetDevice(), image_, nullptr);
-  vkFreeMemory(device_.GetDevice(), mem_, nullptr);
+  if (device_) { return; }
+
+  vkDeviceWaitIdle(device_->GetDevice());
+  vkDestroyImageView(device_->GetDevice(), view_, nullptr);
+  vkDestroyImage(device_->GetDevice(), image_, nullptr);
+  vkFreeMemory(device_->GetDevice(), mem_, nullptr);
+
+  view_ = VK_NULL_HANDLE;
+  image_ = VK_NULL_HANDLE;
+  mem_ = VK_NULL_HANDLE;
+  device_= nullptr;
 }
 
-void Texture::OnResume(benderkit::Device &device, android_app *app) {
+void Texture::OnResume(benderkit::Device *device, android_app *app) {
+  device_ = device;
   if (generator_ != nullptr) {
     unsigned char
         *img_data = (unsigned char *) malloc(tex_height_ * tex_width_ * 4 * sizeof(unsigned char));
@@ -119,11 +128,11 @@ VkResult Texture::CreateTexture(uint8_t *img_data,
   }
 
   VkFormatProperties props;
-  vkGetPhysicalDeviceFormatProperties(device_.GetPhysicalDevice(), texture_format_, &props);
+  vkGetPhysicalDeviceFormatProperties(device_->GetPhysicalDevice(), texture_format_, &props);
   assert((props.linearTilingFeatures | props.optimalTilingFeatures) &
       VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
 
-  uint32_t queue_family_index = device_.GetQueueFamilyIndex();
+  uint32_t queue_family_index = device_->GetQueueFamilyIndex();
   VkImageCreateInfo image_create_info = {
       .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
       .pNext = nullptr,
@@ -150,18 +159,18 @@ VkResult Texture::CreateTexture(uint8_t *img_data,
   };
 
   VkMemoryRequirements mem_reqs;
-  CALL_VK(vkCreateImage(device_.GetDevice(), &image_create_info, nullptr, &image_));
+  CALL_VK(vkCreateImage(device_->GetDevice(), &image_create_info, nullptr, &image_));
 
-  vkGetImageMemoryRequirements(device_.GetDevice(), image_, &mem_reqs);
+  vkGetImageMemoryRequirements(device_->GetDevice(), image_, &mem_reqs);
 
   mem_alloc.allocationSize = mem_reqs.size;
   mem_alloc.memoryTypeIndex = benderhelpers::FindMemoryType(mem_reqs.memoryTypeBits,
                                                             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
-                                                            device_.GetPhysicalDevice());
+                                                            device_->GetPhysicalDevice());
   assert(mem_alloc.memoryTypeIndex != -1);
 
-  CALL_VK(vkAllocateMemory(device_.GetDevice(), &mem_alloc, nullptr, &mem_));
-  CALL_VK(vkBindImageMemory(device_.GetDevice(), image_, mem_, 0));
+  CALL_VK(vkAllocateMemory(device_->GetDevice(), &mem_alloc, nullptr, &mem_));
+  CALL_VK(vkBindImageMemory(device_->GetDevice(), image_, mem_, 0));
 
   if (required_props & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) {
     VkSubresourceLayout layout;
@@ -172,10 +181,10 @@ VkResult Texture::CreateTexture(uint8_t *img_data,
         .arrayLayer = 0,
     };
 
-    vkGetImageSubresourceLayout(device_.GetDevice(), image_, &subres,
+    vkGetImageSubresourceLayout(device_->GetDevice(), image_, &subres,
                                 &layout);
     void *data;
-    CALL_VK(vkMapMemory(device_.GetDevice(), mem_, 0,
+    CALL_VK(vkMapMemory(device_->GetDevice(), mem_, 0,
                         mem_alloc.allocationSize, 0, &data));
 
     for (int32_t y = 0; y < tex_height_; y++) {
@@ -188,7 +197,7 @@ VkResult Texture::CreateTexture(uint8_t *img_data,
       }
     }
 
-    vkUnmapMemory(device_.GetDevice(), mem_);
+    vkUnmapMemory(device_->GetDevice(), mem_);
   }
 
   image_layout_ = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -201,7 +210,7 @@ VkResult Texture::CreateTexture(uint8_t *img_data,
   };
 
   VkCommandPool cmd_pool;
-  CALL_VK(vkCreateCommandPool(device_.GetDevice(), &cmd_pool_create_info, nullptr,
+  CALL_VK(vkCreateCommandPool(device_->GetDevice(), &cmd_pool_create_info, nullptr,
                               &cmd_pool));
 
   VkCommandBuffer gfx_cmd;
@@ -213,7 +222,7 @@ VkResult Texture::CreateTexture(uint8_t *img_data,
       .commandBufferCount = 1,
   };
 
-  CALL_VK(vkAllocateCommandBuffers(device_.GetDevice(), &cmd, &gfx_cmd));
+  CALL_VK(vkAllocateCommandBuffers(device_->GetDevice(), &cmd, &gfx_cmd));
   VkCommandBufferBeginInfo cmd_buf_info = {
       .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
       .pNext = nullptr,
@@ -233,7 +242,7 @@ VkResult Texture::CreateTexture(uint8_t *img_data,
       .flags = 0,
   };
   VkFence fence;
-  CALL_VK(vkCreateFence(device_.GetDevice(), &fence_info, nullptr, &fence));
+  CALL_VK(vkCreateFence(device_->GetDevice(), &fence_info, nullptr, &fence));
 
   VkSubmitInfo submit_info = {
       .pNext = nullptr,
@@ -246,13 +255,13 @@ VkResult Texture::CreateTexture(uint8_t *img_data,
       .signalSemaphoreCount = 0,
       .pSignalSemaphores = nullptr,
   };
-  CALL_VK(vkQueueSubmit(device_.GetWorkerQueue(), 1, &submit_info, fence) != VK_SUCCESS);
-  CALL_VK(vkWaitForFences(device_.GetDevice(), 1, &fence, VK_TRUE, 100000000) !=
+  CALL_VK(vkQueueSubmit(device_->GetWorkerQueue(), 1, &submit_info, fence) != VK_SUCCESS);
+  CALL_VK(vkWaitForFences(device_->GetDevice(), 1, &fence, VK_TRUE, 100000000) !=
       VK_SUCCESS);
-  vkDestroyFence(device_.GetDevice(), fence, nullptr);
+  vkDestroyFence(device_->GetDevice(), fence, nullptr);
 
-  vkFreeCommandBuffers(device_.GetDevice(), cmd_pool, 1, &gfx_cmd);
-  vkDestroyCommandPool(device_.GetDevice(), cmd_pool, nullptr);
+  vkFreeCommandBuffers(device_->GetDevice(), cmd_pool, 1, &gfx_cmd);
+  vkDestroyCommandPool(device_->GetDevice(), cmd_pool, nullptr);
   return VK_SUCCESS;
 }
 
@@ -273,5 +282,5 @@ void Texture::CreateImageView() {
       .subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
       .flags = 0,
   };
-  CALL_VK(vkCreateImageView(device_.GetDevice(), &view_create_info, nullptr, &view_));
+  CALL_VK(vkCreateImageView(device_->GetDevice(), &view_create_info, nullptr, &view_));
 }

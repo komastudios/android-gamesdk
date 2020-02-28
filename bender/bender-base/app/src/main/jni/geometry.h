@@ -18,7 +18,7 @@ struct BoundingBox {
 
 class Geometry {
  public:
-  Geometry(benderkit::Device &device,
+  Geometry(benderkit::Device *device,
            const std::vector<float> &vertex_data,
            const std::vector<uint16_t> &index_data,
            std::function<void(std::vector<float> &, std::vector<uint16_t> &)> generator = nullptr);
@@ -26,7 +26,7 @@ class Geometry {
 
   void Cleanup();
 
-  void OnResume(benderkit::Device &device, const std::vector<float> &vertex_data = {}, const std::vector<uint16_t> &index_data = {});
+  void OnResume(benderkit::Device *device, const std::vector<float> &vertex_data = {}, const std::vector<uint16_t> &index_data = {});
 
   int GetVertexCount() const { return vertex_count_; }
   int GetIndexCount() const { return index_count_; }
@@ -35,7 +35,7 @@ class Geometry {
   void Bind(VkCommandBuffer cmd_buffer) const;
 
  private:
-  benderkit::Device &device_;
+  benderkit::Device *device_;
 
   int vertex_count_;
   VkBuffer vertex_buf_;
