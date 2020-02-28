@@ -22,7 +22,7 @@ enum FrustumPlanes {
 };
 
 struct Camera {
-  glm::vec3 position = glm::vec3(0.0f, 100.0f, 50.0f);
+  glm::vec3 position = glm::vec3(0.0f, 100.0f, -1500.0f);
   glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
   float aspect_ratio;
   float fov;

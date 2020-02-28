@@ -81,7 +81,7 @@ void Renderer::EndFrame() {
       .pSignalSemaphores = &render_finished_semaphore_[GetCurrentFrame()]};
 
   timing::timer.Time("vkQueueSubmit", timing::OTHER, [this, submit_info](){
-    CALL_VK(vkQueueSubmit(device_.GetQueue(), 1, &submit_info, fence_[GetCurrentFrame()]));
+    CALL_VK(vkQueueSubmit(device_.GetMainQueue(), 1, &submit_info, fence_[GetCurrentFrame()]));
   });
 
   timing::timer.Time("Device::Present", timing::OTHER, [this](){

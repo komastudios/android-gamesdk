@@ -246,7 +246,7 @@ VkResult Texture::CreateTexture(uint8_t *img_data,
       .signalSemaphoreCount = 0,
       .pSignalSemaphores = nullptr,
   };
-  CALL_VK(vkQueueSubmit(device_.GetQueue(), 1, &submit_info, fence) != VK_SUCCESS);
+  CALL_VK(vkQueueSubmit(device_.GetWorkerQueue(), 1, &submit_info, fence) != VK_SUCCESS);
   CALL_VK(vkWaitForFences(device_.GetDevice(), 1, &fence, VK_TRUE, 100000000) !=
       VK_SUCCESS);
   vkDestroyFence(device_.GetDevice(), fence, nullptr);
