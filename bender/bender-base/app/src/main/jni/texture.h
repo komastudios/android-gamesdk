@@ -23,14 +23,14 @@
 
 class Texture {
  public:
-  Texture(benderkit::Device &device,
+  Texture(benderkit::Device *device,
           uint8_t *img_data,
           uint32_t img_width,
           uint32_t img_height,
           VkFormat texture_format,
           std::function<void(uint8_t *)> generator = nullptr);
 
-  Texture(benderkit::Device &device,
+  Texture(benderkit::Device *device,
           android_app &android_app_ctx,
           const std::string &texture_file_name,
           VkFormat texture_format,
@@ -40,7 +40,7 @@ class Texture {
 
   void Cleanup();
 
-  void OnResume(benderkit::Device &device, android_app *app);
+  void OnResume(benderkit::Device *device, android_app *app);
 
   VkImageView GetImageView() const { return view_; }
 
@@ -49,7 +49,7 @@ class Texture {
   int32_t GetHeight() const { return tex_height_; };
 
  private:
-  benderkit::Device &device_;
+  benderkit::Device *device_;
 
   std::string file_name_;
   VkImage image_;
