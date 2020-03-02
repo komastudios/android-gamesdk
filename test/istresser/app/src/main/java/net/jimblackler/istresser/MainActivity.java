@@ -64,8 +64,9 @@ public class MainActivity extends AppCompatActivity {
   private static final int BACKGROUND_MEMORY_PRESSURE_MB = 500;
   private static final int BACKGROUND_PRESSURE_PERIOD_SECONDS = 30;
   private static final int BYTES_IN_MEGABYTE = 1024 * 1024;
-  private static final int MMAP_BLOCK_BYTES = 128 * BYTES_IN_MEGABYTE;
   private static final int MEMORY_TO_FREE_PER_CYCLE_MB = 500;
+  private static final int MMAP_ANON_BLOCK_BYTES = 2 * BYTES_IN_MEGABYTE;
+  private static final int MMAP_FILE_BLOCK_BYTES = 2 * BYTES_IN_MEGABYTE;
 
   private static final String MEMORY_BLOCKER = "MemoryBlockCommand";
   private static final String ALLOCATE_ACTION = "Allocate";
@@ -90,7 +91,8 @@ public class MainActivity extends AppCompatActivity {
   private final Timer timer = new Timer();
   private final List<byte[]> data = Lists.newArrayList();
   private long nativeAllocatedByTest;
-  private long mmapAllocatedByTest;
+  private long mmapAnonAllocatedByTest;
+  private long mmapFileAllocatedByTest;
   private long recordNativeHeapAllocatedSize;
   private PrintStream resultsStream = System.out;
   private long startTime;
@@ -103,9 +105,11 @@ public class MainActivity extends AppCompatActivity {
   private boolean isServiceCrashed = false;
   private int mallocKbPerMillisecond;
   private int glAllocKbPerMillisecond;
-  private boolean mmapAnonTestActive;
   private List<Heuristic> activeHeuristics = new ArrayList<>();
   private boolean yellowLightTesting = false;
+  private int mmapAnonKbPerMillisecond;
+  private int mmapFileKbPerMillisecond;
+  private MmapFileGroup mmapFiles;
 
   enum ServiceState {
     ALLOCATING_MEMORY,
@@ -240,6 +244,19 @@ public class MainActivity extends AppCompatActivity {
         testSurface.setVisibility(View.VISIBLE);
       }
 
+      mmapAnonKbPerMillisecond = params.optInt("mmapAnon");
+
+      mmapFileKbPerMillisecond = params.optInt("mmapFile", -1);
+      if (mmapFileKbPerMillisecond > 0) {
+        // Other possible directories:
+        // * getExternalCacheDir()
+        // * getExternalFilesDir(null)
+        // * getFilesDir()
+        String mmapPath = getApplicationContext().getNoBackupFilesDir().toString();
+        JSONArray mmapFileNames = params.getJSONArray("mmapFileNames");
+        mmapFiles = new MmapFileGroup(mmapPath, mmapFileNames);
+      }
+
       if (params.has("heuristics")) {
         JSONArray heuristics = params.getJSONArray("heuristics");
         for (int idx = 0; idx != heuristics.length(); idx++) {
@@ -273,7 +290,7 @@ public class MainActivity extends AppCompatActivity {
       report.put("constant", constant);
 
       resultsStream.println(report);
-    } catch (JSONException | PackageManager.NameNotFoundException e) {
+    } catch (IOException | JSONException | PackageManager.NameNotFoundException e) {
       throw new RuntimeException(e);
     }
 
@@ -344,16 +361,30 @@ public class MainActivity extends AppCompatActivity {
                   testSurface.getRenderer().setTarget(target);
                 }
 
-                if (mmapAnonTestActive) {
+                if (mmapAnonKbPerMillisecond > 0) {
                   long sinceLastAllocation = System.currentTimeMillis() - _latestAllocationTime;
-                  int owed = (int) (sinceLastAllocation * mallocKbPerMillisecond * 1024);
-                  if (owed > MMAP_BLOCK_BYTES) {
+                  int owed = (int) (sinceLastAllocation * mmapAnonKbPerMillisecond * 1024);
+                  if (owed > MMAP_ANON_BLOCK_BYTES) {
                     long allocated = mmapAnonConsume(owed);
                     if (allocated != 0) {
-                      mmapAllocatedByTest += allocated;
+                      mmapAnonAllocatedByTest += allocated;
                       latestAllocationTime = System.currentTimeMillis();
                     } else {
-                      report.put("mmapFailed", true);
+                      report.put("mmapAnonFailed", true);
+                    }
+                  }
+                }
+                if (mmapFileKbPerMillisecond > 0) {
+                  long sinceLastAllocation = System.currentTimeMillis() - _latestAllocationTime;
+                  int owed = (int) (sinceLastAllocation * mmapFileKbPerMillisecond * 1024);
+                  if (owed > MMAP_FILE_BLOCK_BYTES) {
+                    MmapFileInfo file = mmapFiles.alloc(owed);
+                    long allocated = mmapFileConsume(file.path, file.alloc_size, file.offset);
+                    if (allocated != 0) {
+                      mmapFileAllocatedByTest += allocated;
+                      latestAllocationTime = System.currentTimeMillis();
+                    } else {
+                      report.put("mmapFileFailed", true);
                     }
                   }
                 }
@@ -556,8 +587,11 @@ public class MainActivity extends AppCompatActivity {
           TextView nativeAllocatedByTestTextView = findViewById(R.id.nativeAllocatedByTest);
           nativeAllocatedByTestTextView.setText(memoryString(nativeAllocatedByTest));
 
-          TextView mmapAllocatedByTestTextView = findViewById(R.id.mmapAllocatedByTest);
-          mmapAllocatedByTestTextView.setText(memoryString(mmapAllocatedByTest));
+          TextView mmapAnonAllocatedByTestTextView = findViewById(R.id.mmapAnonAllocatedByTest);
+          mmapAnonAllocatedByTestTextView.setText(memoryString(mmapAnonAllocatedByTest));
+
+          TextView mmapFileAllocatedByTestTextView = findViewById(R.id.mmapFileAllocatedByTest);
+          mmapFileAllocatedByTestTextView.setText(memoryString(mmapFileAllocatedByTest));
 
           ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(activityManager);
           TextView availMemTextView = findViewById(R.id.availMem);
@@ -686,7 +720,7 @@ public class MainActivity extends AppCompatActivity {
       report.put("serviceCrashed", true);
     }
     report.put("nativeAllocatedByTest", nativeAllocatedByTest);
-    report.put("mmapAllocatedByTest", mmapAllocatedByTest);
+    report.put("mmapAnonAllocatedByTest", mmapAnonAllocatedByTest);
     report.put("serviceTotalMemory", BYTES_IN_MEGABYTE * serviceTotalMb);
     report.put("oom_score", Heuristics.getOomScore(activityManager));
 
@@ -731,4 +765,57 @@ public class MainActivity extends AppCompatActivity {
   public native boolean nativeConsume(int bytes);
 
   public native long mmapAnonConsume(int bytes);
+
+  public native long mmapFileConsume(String path, int bytes, int offset);
+
+  static class MmapFileInfo {
+    private long file_size;
+    private int alloc_size;
+    private String path;
+    private int offset;
+
+    public MmapFileInfo(String path) throws IOException {
+      this.path = path;
+      file_size = Utils.getFileSize(path);
+      offset = 0;
+    }
+
+    public boolean alloc(int desiredSize) {
+      offset += alloc_size;
+      int limit = (int) (file_size - offset);
+      alloc_size = desiredSize > limit ? limit : desiredSize;
+      return alloc_size > 0;
+    }
+
+    public void reset() {
+      offset = 0;
+      alloc_size = 0;
+    }
+
+    public String getPath() { return path; }
+
+    public int getOffset() { return offset; }
+
+    public int getAllocSize() { return alloc_size; }
+  }
+
+  static class MmapFileGroup {
+    private ArrayList<MmapFileInfo> files = new ArrayList<>();
+    private int current;
+
+    public MmapFileGroup(String mmapPath, JSONArray mmapFileNames)
+        throws JSONException, IOException {
+      for (int i = 0; i < mmapFileNames.length(); ++i) {
+        files.add(new MmapFileInfo(mmapPath + "/" + mmapFileNames.get(i)));
+      }
+    }
+
+    public MmapFileInfo alloc(int desiredSize) {
+      while (!files.get(current).alloc(desiredSize)) {
+        current = (current + 1) % files.size();
+        files.get(current).reset();
+      }
+      return files.get(current);
+    }
+  }
 }
