@@ -158,7 +158,7 @@ deployment:
     # when performing ftl deployment
     flags:
       # the gcloud/firebase project id
-      project: gamesdk-testing
+      project: android-games-device-research
       # format for logging
       format: json
 

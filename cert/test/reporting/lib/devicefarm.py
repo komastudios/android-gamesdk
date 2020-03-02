@@ -126,7 +126,7 @@ def run_test(flags_file: Path, args_yaml: Path, test_name: str,
         # TODO(b/142612658): disable impersonation when API server stops
         # dropping the systrace field when authenticating as a person
         '--impersonate-service-account',
-        'gamesdk-testing@appspot.gserviceaccount.com',
+        'android-games-device-research@appspot.gserviceaccount.com',
         str(args_yaml.resolve()) + ":" + test_name
     ]
 
