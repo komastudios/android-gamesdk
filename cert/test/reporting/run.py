@@ -52,9 +52,14 @@ def main():
                         default=False,
                         action="store_true")
 
+    parser.add_argument("--all",
+                        help="Run on all FTL devices, not just those marked \"private\"",
+                        default=False,
+                        action="store_true")
+
     args = parser.parse_args()
 
-    extra_args = {"local": args.local, "ftl": args.ftl}
+    extra_args = {"local": args.local, "ftl": args.ftl, "ftl-all": args.all}
 
     if not args.local and not args.ftl:
         print("At least one of 'local' and 'ftl' must be set"\

@@ -174,7 +174,7 @@ class TestReportGeneration(unittest.TestCase):
             './test/integration/data/recipes/fake_operation.yaml')
 
         recipe = lib.common.Recipe(recipe_path, Path(RECIPE_DEFAULTS))
-        args = {"ftl": True}
+        args = {"ftl": True, 'ftl-all': False}
         report_files, out_dir = self.run_operation(recipe, args)
         for report_file in report_files:
             self.verify_report_file_contents(report_file, False)

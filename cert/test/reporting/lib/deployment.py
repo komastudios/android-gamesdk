@@ -348,7 +348,8 @@ def run_local_deployment(recipe: Recipe, apk: Path, out_dir: Path):
 # ------------------------------------------------------------------------------
 
 
-def run_ftl_deployment(recipe: Recipe, apk: Path, out_dir: Path):
+def run_ftl_deployment(recipe: Recipe, apk: Path, out_dir: Path,
+                       all_ftl_devices: bool):
     """Execute a remote deployment (to devices on Firebase test lab (FTL))
     Args:
         recipe: The recipe dict describing the deployment
@@ -379,7 +380,8 @@ def run_ftl_deployment(recipe: Recipe, apk: Path, out_dir: Path):
         test=active_test,
         enable_systrace=systrace_enabled,
         devices=devices,
-        dst_dir=out_dir)
+        dst_dir=out_dir,
+        only_private_devices=not all_ftl_devices)
 
     report_files = process_ftl_reports(out_dir, report_files, systrace_files,
                                        systrace_keywords)
@@ -387,7 +389,7 @@ def run_ftl_deployment(recipe: Recipe, apk: Path, out_dir: Path):
     perform_summary_if_enabled(recipe, out_dir)
 
 
-def run_recipe(recipe: Recipe, args: Dict, out_dir: Path = None)->Path:
+def run_recipe(recipe: Recipe, args: Dict, out_dir: Path = None) -> Path:
     '''Executes the deployment specified in the recipe
     Args:
         recipe_path: path to recipe yaml file
@@ -425,6 +427,7 @@ def run_recipe(recipe: Recipe, args: Dict, out_dir: Path = None)->Path:
     if args.get("local"):
         run_local_deployment(recipe, apk_path, out_dir)
     if args.get("ftl"):
-        run_ftl_deployment(recipe, apk_path, out_dir)
+        run_ftl_deployment(recipe, apk_path, out_dir,
+                           args.get('ftl-all', False))
 
     return out_dir
