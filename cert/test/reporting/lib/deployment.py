@@ -34,7 +34,7 @@ from lib.report import extract_and_export, normalize_report_name, \
     merge_systrace
 from lib.summary import perform_summary_if_enabled
 from lib.systrace import LocalSystrace, SystraceParseError
-from lib.devicefarm import run_on_farm_and_collect_reports
+from lib.devicefarm import run_on_farm_and_collect_reports, DeploymentTarget
 import lib.graphing
 import lib.tasks_runner
 
@@ -348,10 +348,13 @@ def run_local_deployment(recipe: Recipe, apk: Path, out_dir: Path):
 # ------------------------------------------------------------------------------
 
 
-def run_ftl_deployment(recipe: Recipe, apk: Path, out_dir: Path):
+def run_ftl_deployment(recipe: Recipe, target_devices: DeploymentTarget,
+                       apk: Path, out_dir: Path):
     """Execute a remote deployment (to devices on Firebase test lab (FTL))
     Args:
         recipe: The recipe dict describing the deployment
+        target_devices: The suite of devices to target on FTL (may be overridden
+        by devices specified in the recipe)
         apk: Path to the APK to deploy and test
         out_dir: Path to a location to save result JSON reports
     """
@@ -379,6 +382,7 @@ def run_ftl_deployment(recipe: Recipe, apk: Path, out_dir: Path):
         test=active_test,
         enable_systrace=systrace_enabled,
         devices=devices,
+        target_devices=target_devices,
         dst_dir=out_dir)
 
     report_files = process_ftl_reports(out_dir, report_files, systrace_files,
@@ -387,7 +391,7 @@ def run_ftl_deployment(recipe: Recipe, apk: Path, out_dir: Path):
     perform_summary_if_enabled(recipe, out_dir)
 
 
-def run_recipe(recipe: Recipe, args: Dict, out_dir: Path = None)->Path:
+def run_recipe(recipe: Recipe, args: Dict, out_dir: Path = None) -> Path:
     '''Executes the deployment specified in the recipe
     Args:
         recipe_path: path to recipe yaml file
@@ -425,6 +429,6 @@ def run_recipe(recipe: Recipe, args: Dict, out_dir: Path = None)->Path:
     if args.get("local"):
         run_local_deployment(recipe, apk_path, out_dir)
     if args.get("ftl"):
-        run_ftl_deployment(recipe, apk_path, out_dir)
+        run_ftl_deployment(recipe, args["ftl-deployment-target"], apk_path, out_dir)
 
     return out_dir
