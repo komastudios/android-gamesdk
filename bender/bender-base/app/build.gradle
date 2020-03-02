@@ -14,39 +14,73 @@ if (buildScript) {
     properties.store(project.rootProject.file('local.properties').newDataOutputStream(), '')
 }
 
-android {
-    compileSdkVersion 28
+if (project.hasProperty("MSBUILD_JNI_LIBS_SRC_DIR")) {
+    // Android Studio or Gradle from command line
+    android {
+        compileSdkVersion 28
 
-    defaultConfig {
-        applicationId "com.google.a2g.bender"
-        minSdkVersion 26
-        targetSdkVersion 28
-        versionCode 1
-        versionName "0.0.1"
-        externalNativeBuild {
-            cmake {
-                arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=c++_static'
-                abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+        defaultConfig {
+            applicationId "com.google.a2g.bender"
+            minSdkVersion 26
+            targetSdkVersion 28
+            versionCode 1
+            versionName "0.0.1"
+            shaders {
+                glslcArgs.addAll(['-c'])
             }
         }
-        shaders {
-            glslcArgs.addAll(['-c'])
+        buildTypes {
+            release {
+                minifyEnabled = false
+                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            }
+        }
+        applicationVariants.all { variant ->
+            variant.outputs.all {
+                outputFileName = MSBUILD_ANDROID_OUTPUT_APK_NAME
+            }
+        }
+        sourceSets {
+            main {
+                jniLibs.srcDirs = jniLibs.srcDirs + [MSBUILD_JNI_LIBS_SRC_DIR]
+            }
         }
     }
+} else {
+    // Android Studio or Gradle from command line
+    android {
+        compileSdkVersion 28
 
-    externalNativeBuild {
-        cmake {
-            path 'CMakeLists.txt'
+        defaultConfig {
+            applicationId "com.google.a2g.bender"
+            minSdkVersion 26
+            targetSdkVersion 28
+            versionCode 1
+            versionName "0.0.1"
+            externalNativeBuild {
+                cmake {
+                    arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=c++_static'
+                    abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+                }
+            }
+            shaders {
+                glslcArgs.addAll(['-c'])
+            }
         }
-    }
-    buildTypes {
-        release {
-            minifyEnabled = false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+
+        externalNativeBuild {
+            cmake {
+                path 'CMakeLists.txt'
+            }
+        }
+        buildTypes {
+            release {
+                minifyEnabled = false
+                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            }
         }
     }
 }
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
