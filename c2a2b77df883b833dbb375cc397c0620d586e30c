@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0c6f6db3_3113d4c7",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-03-02T23:52:08Z",
+      "side": 1,
+      "message": "My respects (S/R)",
+      "revId": "c2a2b77df883b833dbb375cc397c0620d586e30c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a98dfbb_44cb95cc",
+        "filename": "cert/test/reporting/lib/devicefarm.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-03-02T23:52:08Z",
+      "side": 1,
+      "message": "(S/R) Is this account well-provisioned already? Because both Jeremy and I started FTL tests on Friday and Saturday respectively. It took more than 48 hours to finish (if not that Jeremy finally cancelled these).\nMaybe this private set vs. all devices intention is to deal with that, on a second thought.",
+      "revId": "c2a2b77df883b833dbb375cc397c0620d586e30c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
