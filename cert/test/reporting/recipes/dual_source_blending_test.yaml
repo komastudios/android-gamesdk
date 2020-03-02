@@ -10,7 +10,7 @@ deployment:
     test: test-robo
     all-physical-devices: true
     flags:
-      project: gamesdk-testing
+      project: android-games-device-research
       format: json
     args:
       test-robo:
