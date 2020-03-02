@@ -1,6 +1,7 @@
 package net.jimblackler.istresser;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,5 +41,9 @@ public class Utils {
    */
   static String readFile(String filename) throws IOException {
     return readStream(new FileInputStream(filename));
+  }
+
+  static long getFileSize(String filename) throws IOException {
+    return new File(filename).length();
   }
 }

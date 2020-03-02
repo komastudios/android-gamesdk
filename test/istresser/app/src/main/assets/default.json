@@ -2,8 +2,20 @@
   "tests": [
     [
       {},
+      { "malloc": 40 },
+      { "mmapAnon": 50 },
       {
-        "malloc": 40
+        "mmapFile": 50,
+        "mmapFileNames": [
+          "test0.dat",
+          "test1.dat",
+          "test2.dat",
+          "test3.dat",
+          "test4.dat",
+          "test5.dat",
+          "test6.dat",
+          "test7.dat"
+        ]
       }
     ],
     [
@@ -33,7 +45,7 @@
     ]
   ],
   "coordinates": [
-    1,
+    2,
     0,
     1,
     0
