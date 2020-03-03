@@ -16,6 +16,24 @@
       "revId": "ab6ca38ef33ff9730d7a57e6ec22a25a9d56c65f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eeb5b9d7_2794a660",
+        "filename": "src/tuningfork/crash_handler.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-03-03T15:39:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8c5f2554_16a75ca2",
+      "revId": "ab6ca38ef33ff9730d7a57e6ec22a25a9d56c65f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
