@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8c5f2554_16a75ca2",
+        "filename": "src/tuningfork/crash_handler.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-03-03T15:29:24Z",
+      "side": 1,
+      "message": "Can we comment the meaning of the return value? Must be documented somewhere, but at least let\u0027s have it here too so that we don\u0027t have to open the reference of signal handler callbacks?",
+      "revId": "ab6ca38ef33ff9730d7a57e6ec22a25a9d56c65f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
