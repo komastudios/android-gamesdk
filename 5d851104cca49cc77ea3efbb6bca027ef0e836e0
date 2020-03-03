@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "d1a72b53_4e966e3e",
+        "filename": "src/tuningfork/ge_serializer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 249,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-03T16:13:44Z",
+      "side": 1,
+      "message": "It\u0027s called \u0027memory\u0027 in the proto.",
+      "parentUuid": "8f38813b_08550713",
+      "revId": "5d851104cca49cc77ea3efbb6bca027ef0e836e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2a6a319d_2cc5db3d",
         "filename": "src/tuningfork/ge_serializer.cpp",
         "patchSetId": 3
@@ -33,6 +51,24 @@
       "revId": "5d851104cca49cc77ea3efbb6bca027ef0e836e0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c212bc7b_5b1f082d",
+        "filename": "src/tuningfork/ge_serializer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 318,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-03T16:13:44Z",
+      "side": 1,
+      "message": "Rather than recording a memory histogram for each annotation, we are recording a single histogram, but each report needs to be associated with a context, including an annotation. We expect the annotation to be ignored  on the Play side.\nI\u0027ve improved the comment.",
+      "parentUuid": "2a6a319d_2cc5db3d",
+      "revId": "5d851104cca49cc77ea3efbb6bca027ef0e836e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "146f2502_1ead186b",
+        "filename": "src/tuningfork/memory_telemetry.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-03T16:13:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b2112d77_9c892e21",
+      "revId": "5d851104cca49cc77ea3efbb6bca027ef0e836e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5f1d1b17_28025167",
         "filename": "test/tuningfork/tuningfork_test.cpp",
         "patchSetId": 3
@@ -67,6 +121,24 @@
       "revId": "5d851104cca49cc77ea3efbb6bca027ef0e836e0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e778e69e_d8fd80fd",
+        "filename": "test/tuningfork/tuningfork_test.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-03T16:13:44Z",
+      "side": 1,
+      "message": "Yes, because I made Histogram a templated class, so the implementation of that class now needs Log.h included with a LOG_TAG already set and this is included in memory_telemetry.h. It\u0027s unfortunate but I don\u0027t know a way around it.",
+      "parentUuid": "5f1d1b17_28025167",
+      "revId": "5d851104cca49cc77ea3efbb6bca027ef0e836e0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
