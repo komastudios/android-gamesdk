@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9e0929ea_16d53e24",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-03T17:46:19Z",
+      "side": 1,
+      "message": "Nit: PRECENT-\u003ePERCENT",
+      "revId": "ef882e858f1a290ce9a8eeb99062ca287c39c853",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "07594731_6f2ed1b4",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 411,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-03T17:46:19Z",
+      "side": 1,
+      "message": "Nit: Precent -\u003e Percent",
+      "revId": "ef882e858f1a290ce9a8eeb99062ca287c39c853",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
