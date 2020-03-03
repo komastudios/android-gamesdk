@@ -16,6 +16,24 @@
       "revId": "db10eb2bc83157bb955efcbe9148fda63a73531b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9379074b_d337deee",
+        "filename": "src/tuningfork/crash_handler.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-03-03T19:05:03Z",
+      "side": 1,
+      "message": "Resolving this to unlock the fix. But would be great to take a look at the following condition checking handled.",
+      "parentUuid": "55b76362_4853d618",
+      "revId": "db10eb2bc83157bb955efcbe9148fda63a73531b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
