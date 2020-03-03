@@ -33,6 +33,24 @@
       "revId": "c2a2b77df883b833dbb375cc397c0620d586e30c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "70a73829_575e2324",
+        "filename": "cert/test/reporting/lib/devicefarm.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-03-03T00:01:52Z",
+      "side": 1,
+      "message": "Yeah, I\u0027m experiencing some issues with this. When I deployed to a small explicitly selected set of devices (via recipe.yaml) my test ran fine, completed in 20 minutes. But deployments to the entire private set have failed to complete, and I\u0027m testing if that\u0027s reproducible when deploying to just public devices.",
+      "parentUuid": "9a98dfbb_44cb95cc",
+      "revId": "c2a2b77df883b833dbb375cc397c0620d586e30c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
