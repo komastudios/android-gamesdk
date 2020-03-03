@@ -255,7 +255,8 @@ bool CrashHandler::HandlerSignal(int sig, siginfo_t *info, void *ucontext) {
     if(callback_) {
         callback_();
     }
-    return true;
+    // Crash is not handled here, return false to restore other signal handlers.
+    return false;
 }
 }  // namespace tuningfork
 #endif
