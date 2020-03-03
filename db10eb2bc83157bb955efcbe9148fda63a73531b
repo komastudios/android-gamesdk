@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "55b76362_4853d618",
+        "filename": "src/tuningfork/crash_handler.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-03-03T15:33:16Z",
+      "side": 1,
+      "message": "This will be always false no? Or are we missing something in HandlerSignal so that it can return true?",
+      "revId": "db10eb2bc83157bb955efcbe9148fda63a73531b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
