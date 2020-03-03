@@ -255,7 +255,7 @@ bool CrashHandler::HandlerSignal(int sig, siginfo_t *info, void *ucontext) {
     if(callback_) {
         callback_();
     }
-    return true;
+    return false;
 }
 }  // namespace tuningfork
 #endif
