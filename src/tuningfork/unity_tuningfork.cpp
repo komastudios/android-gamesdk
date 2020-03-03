@@ -125,6 +125,10 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     return JNI_VERSION_1_6;
 }
 
+void Unity_TuningFork_crash(jint id) {
+    raise(id);
+}
+
 TFErrorCode Unity_TuningFork_init(
     ProtoCallback fidelity_params_callback,
     const CProtobufSerialization* training_fidelity_params,
@@ -154,4 +158,6 @@ TFErrorCode Unity_TuningFork_findFidelityParamsInApk(
 TFErrorCode Unity_TuningFork_saveOrDeleteFidelityParamsFile(CProtobufSerialization* fps) {
     return TuningFork_saveOrDeleteFidelityParamsFile(jni::Env(), jni::AppContextGlobalRef(), fps);
 }
+
+
 } // extern "C" {

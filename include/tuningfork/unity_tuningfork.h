@@ -42,6 +42,8 @@ TFErrorCode Unity_TuningFork_findFidelityParamsInApk(
 
 TFErrorCode Unity_TuningFork_saveOrDeleteFidelityParamsFile(CProtobufSerialization* fps);
 
+void Unity_TuningFork_crash(jint id) ;
+
 #ifdef __cplusplus
 }
 #endif

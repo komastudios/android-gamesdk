@@ -84,6 +84,9 @@ public:
 class TuningForkImpl : public IdProvider {
 private:
     CrashHandler crash_handler_;
+    CrashHandler crash_handler_report;
+    CrashHandler crash_handler_external;
+    CrashHandler crash_handler_one_more;
     Settings settings_;
     std::unique_ptr<ProngCache> prong_caches_[2];
     ProngCache *current_prong_cache_;
@@ -388,7 +391,25 @@ TuningForkImpl::TuningForkImpl(const Settings& settings,
                               return true;
                           };
 
+   auto report_callback = [this]()->bool {
+                                ALOGI("Report callback");
+                                return true;
+                            };
+
+    auto external_callback = [this]()->bool {
+                                    ALOGI("External callback");
+                                    return true;
+                                };
+
+    auto one_more_callback = [this]()->bool {
+                                    ALOGI("One more callback");
+                                    return true;
+                                };
+
     crash_handler_.Init(crash_callback);
+    crash_handler_report.Init(report_callback);
+    crash_handler_external.Init(external_callback);
+    crash_handler_one_more.Init(one_more_callback);
 
     // Check if there are any files waiting to be uploaded
     // + merge any histograms that are persisted.
