@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 apply plugin: 'com.android.application'
 
 android {
@@ -46,6 +48,15 @@ task createJar(type: GradleBuild) {
     tasks = ['createJar']
 }
 
+def getProtocPath() {
+    String platformName
+    if (Os.isFamily(Os.FAMILY_MAC)) platformName = "linux-x86/bin/protoc"
+    if (Os.isFamily(Os.FAMILY_UNIX)) platformName = "mac/bin/protoc"
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) platformName = "win/bin/protoc"
+    return "../../../../third_party/protobuf-3.0.0/install/"  + platformName
+
+}
+
 task buildTuningForkBinFiles(type: Exec) {
     dependsOn createJar
     commandLine "java",
@@ -54,7 +65,7 @@ task buildTuningForkBinFiles(type: Exec) {
             "--tuningforkPath",
             "src/main/assets/tuningfork",
             "--protoCompiler",
-            "../../../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc"
+            getProtocPath()
 }
 
 tasks.preBuild.dependsOn("buildTuningForkBinFiles")
