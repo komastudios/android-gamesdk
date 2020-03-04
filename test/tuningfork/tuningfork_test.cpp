@@ -17,6 +17,7 @@
 
 #include "tuningfork/protobuf_util.h"
 #include "tuningfork/tuningfork_internal.h"
+#include "tuningfork/memory_telemetry.h"
 
 #include "full/tuningfork.pb.h"
 #include "full/dev_tuningfork.pb.h"
@@ -26,7 +27,10 @@
 #include <vector>
 #include <mutex>
 
+#ifndef LOG_TAG
 #define LOG_TAG "TFTest"
+#endif
+
 #include "Log.h"
 
 using namespace tuningfork;
@@ -123,6 +127,20 @@ public:
     }
 };
 
+class TestMemInfoProvider : public DefaultMemInfoProvider {
+    uint64_t result_;
+  public:
+    TestMemInfoProvider(bool enabled) : result_(0) {
+        SetEnabled(enabled);
+        SetDeviceMemoryBytes(8000000000);
+    }
+    uint64_t GetNativeHeapAllocatedSize() override {
+        // Crank up the memory with each call
+        result_ += 100000000L;
+        return result_;
+    }
+};
+
 class TuningForkTest {
   public:
     std::shared_ptr<std::condition_variable> cv_ = std::make_shared<std::condition_variable>();
@@ -130,17 +148,20 @@ class TuningForkTest {
     TestBackend test_backend_;
     std::shared_ptr<TestParamsLoader> params_loader_;
     TestTimeProvider time_provider_;
+    TestMemInfoProvider meminfo_provider_;
     ExtraUploadInfo extra_upload_info_;
     TFErrorCode init_return_value_;
 
     TuningForkTest(const Settings& settings, Duration tick_size = std::chrono::milliseconds(20),
                    const std::shared_ptr<TestParamsLoader>& params_loader
-                     = std::make_shared<TestParamsLoader>())
+                   = std::make_shared<TestParamsLoader>(),
+                  bool enable_meminfo = false)
             : test_backend_(cv_, rmutex_), params_loader_(params_loader),
-              time_provider_(tick_size), extra_upload_info_({}) {
+              time_provider_(tick_size), meminfo_provider_(enable_meminfo), extra_upload_info_({}) {
         init_return_value_ = tuningfork::Init(settings, &extra_upload_info_, &test_backend_,
                                               params_loader_.get(),
-                                              &time_provider_);
+                                              &time_provider_,
+                                              &meminfo_provider_);
         EXPECT_EQ(init_return_value_, TFERROR_OK) << "Bad Init";
     }
 
@@ -218,6 +239,21 @@ TuningForkLogEvent TestEndToEndTimeBased() {
     auto settings = TestSettings(Settings::AggregationStrategy::Submission::TIME_BASED, 10100,
                                  1, {}, {{TFTICK_RAW_FRAME_TIME, 50,150,10}});
     TuningForkTest test(settings, std::chrono::milliseconds(100));
+    std::unique_lock<std::mutex> lock(*test.rmutex_);
+    for (int i = 0; i < NTICKS; ++i)
+        tuningfork::FrameTick(TFTICK_RAW_FRAME_TIME);
+    // Wait for the upload thread to complete writing the string
+    EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time)==std::cv_status::no_timeout) << "Timeout";
+
+    return test.Result();
+}
+
+TuningForkLogEvent TestEndToEndWithMemory() {
+    const int NTICKS = 101; // note the first tick doesn't add anything to the histogram
+    auto settings = TestSettings(Settings::AggregationStrategy::Submission::TICK_BASED, NTICKS - 1,
+                                 1, {});
+    TuningForkTest test(settings,  std::chrono::milliseconds(20),
+                        std::make_shared<TestParamsLoader>(), /*enable_meminfo*/ true);
     std::unique_lock<std::mutex> lock(*test.rmutex_);
     for (int i = 0; i < NTICKS; ++i)
         tuningfork::FrameTick(TFTICK_RAW_FRAME_TIME);
@@ -461,6 +497,71 @@ TEST(TuningForkTest, TestFidelityParamDownloadRequest) {
     ProtobufSerialization fps;
     std::string experiment_id;
     p.GetFidelityParams(request, nullptr, fps, experiment_id);
+}
+
+TEST(TuningForkTest, EndToEndWithMemory) {
+    auto result = TestEndToEndWithMemory();
+    TuningForkLogEvent expected = R"TF(
+{
+  "name": "applications//apks/0",
+  "session_context":)TF" + session_context + R"TF(,
+  "telemetry": [{
+    "context": {
+      "annotations": "",
+      "duration": "2s",
+      "tuning_parameters": {
+        "experiment_id": "",
+        "serialized_fidelity_parameters": ""
+      }
+    },
+    "report": {
+      "rendering": {
+        "render_time_histogram": [{
+         "counts": [
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         "instrument_id": 64000
+        }]
+      }
+    }
+  },{
+    "context": {
+      "annotations": "",
+      "duration": "2s",
+      "tuning_parameters": {
+        "experiment_id": "",
+        "serialized_fidelity_parameters": ""
+      }
+    },
+    "report": {
+      "memory": {
+        "memory_histogram": [{
+          "counts": [0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0,
+                     1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1,
+                     0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0,
+                     1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1,
+                     0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0,
+                     0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0,
+                     1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1,
+                     0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 22],
+         "histogram_config": {
+          "bucket_max_bytes": "8000000000",
+          "bucket_min_bytes": "0"
+         },
+         "period_ms": 16,
+         "type": 1
+        }]
+      }
+    }
+  }]
+}
+)TF";
+    CheckStrings("WithMemory", result, expected);
 }
 
 } // namespace tuningfork_test
