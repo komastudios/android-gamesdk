@@ -371,6 +371,9 @@ task cleanPath(type: Delete) {
     delete getTempPath()
     delete getBuildPath()
 }
+
+clean.dependsOn cleanPath
+
 def executeCmd(cmd, dir) {
     def out = new StringBuilder()
     def err = new StringBuilder()
