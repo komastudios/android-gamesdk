@@ -95,12 +95,13 @@ class Datum:
         self.timestamp = timestamp
 
         # the raw custom JSON dict from the report JSON entry
-        self.custom = custom
+        self.custom_fields_flattened = self.custom = custom
 
-        # the custom dict flattened for easier access
-        self.custom_fields_flattened = {}
-        for field_name, field_value in flatten_dict(custom):
-            self.custom_fields_flattened[field_name] = field_value
+        if not isinstance(custom, (int, float, bool, str)):
+            # the custom dict flattened for easier access
+            self.custom_fields_flattened = {}
+            for field_name, field_value in flatten_dict(custom):
+                self.custom_fields_flattened[field_name] = field_value
 
     def __eq__(self, other):
         if isinstance(other, Datum):

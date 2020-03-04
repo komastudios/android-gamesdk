@@ -14,6 +14,42 @@
  * limitations under the License.
  */
 
+/**
+ * Tests whether the device features memory region protection (mprotect) on
+ * Vulkan memory buffers. mprotect is a UNIX feature that allows setting a lock
+ * on memory regions (Read, Write, etc.) Afterwards, any access attempt to all
+ * or part of that region that violates the access-level, produces a
+ * segmentation fault (SIGSEGV). In a normal scenario, such signal would crash
+ * the app if not trapped.
+ * For this test, we first set a trap on that segmentation fault signal. Meaning
+ * that instead of crashing, the occurrence of the signal invokes a function of
+ * ours that marks the test as passed. This is because we had set mprotect on
+ * Vulkan mapped memory and then tried to violate the lock just for the segment
+ * fault to happen.
+ * Conversely, if the segmentation fault didn't occurred in spite of having
+ * mprotected a memory region, then the test would consequently fail.
+ *
+ * Input configuration: none.
+ *
+ * Output report: an mprotect JSON object containing two data points.
+ * - available: boolean that indicates whether mprotect scope covers Vulkan
+ *              allocated memory.
+ * - score: an integer that tells, in case of test fail, how far it went.
+ *     - 0: success. All fine (i.e., available is true).
+ *     - 1: writing on write-protected memory raised a signal as expected, but
+ *          the test later failed to remove the write lock to the memory region.
+ *     - 2: the test raises a signal if trying to write to write protected
+ *          memory, but it also does it when writing is re-enabled.
+ *     - 3: the attempt to set a write lock on Vulkan memory failed.
+ *     - 4: in spite of being write-locked, attempting to write to the memory
+ *          region didn't raise any segmentation fault.
+ *     - 5: the attempt to map Vulkan memory as addressable memory failed.
+ *     - 6: the test failed to allocate Vulkan memory.
+ *     - 7: Vulkan doesn't report memory that can be mapped into an addressable
+ *          space.
+ *     - 8: the device doesn't support Vulkan.
+ */
+
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "misc-non-private-member-variables-in-classes"
 
@@ -29,129 +65,127 @@ using namespace ancer;
 using namespace ancer::vulkan;
 
 namespace {
+/**
+ * This mprotect availability test may fail at many stages. For that reason
+ * this enum establishes a scoring to measure how far from success a device
+ * is.
+ * The higher the score, the farther from success. The lowest score, zero,
+ * means success (i.e., mprotect is fully available).
+ */
+enum MprotectScore : int {
   /**
-   * This mprotect availability test may fail at many stages. For that reason
-   * this enum establishes a ranking to measure how far from success a device
-   * is.
-   * The higher the score, the farther from success. The lowest score, zero,
-   * means success (i.e., mprotect is fully available).
+   * Vulkan memory can be successfully protected against writing
    */
-  enum MprotectRank : int {
-    /**
-     * Vulkan memory can be successfully protected against writing
-     */
-    AVAILABLE,
+      Available,
 
-    /**
-     * mprotect failed to make Vulkan mapped memory R/W
-     */
-    READ_WRITE_MPROTECT_FAILURE,
+  /**
+   * mprotect failed to make Vulkan mapped memory R/W
+   */
+      ReadWriteMprotectFailure,
 
-    /**
-     * Vulkan memory write error in spite of being R/W
-     */
-    WRITE_VIOLATION_UNEXPECTED,
+  /**
+   * Vulkan memory write error in spite of being R/W
+   */
+      WriteViolationUnexpected,
 
-    /**
-     * mprotect failed to make Vulkan mapped memory read only
-     */
-    READ_ONLY_MPROTECT_FAILURE,
+  /**
+   * mprotect failed to make Vulkan mapped memory read only
+   */
+      ReadOnlyMprotectFailure,
 
-    /**
-     * Vulkan memory write succeeded in spite of being read-only
-     */
-    WRITE_VIOLATION_EXPECTED,
+  /**
+   * Vulkan memory write succeeded in spite of being read-only
+   */
+      WriteViolationExpected,
 
-    /**
-     * Vulkan memory mapping failed
-     */
-    MEMORY_MAPPING_FAILURE,
+  /**
+   * Vulkan memory mapping failed
+   */
+      MemoryMappingFailure,
 
-    /**
-     * Vulkan memory allocation failed
-     */
-    MEMORY_ALLOCATION_FAILURE,
+  /**
+   * Vulkan memory allocation failed
+   */
+      MemoryAllocationFailure,
 
-    /**
-     * Device doesn't have mappable memory
-     */
-    NO_MAPPABLE_MEMORY,
+  /**
+   * Device doesn't have mappable memory
+   */
+      NoMappableMemory,
 
-    /**
-     * Device doesn't have Vulkan support
-     */
-    VULKAN_NOT_AVAILABLE
-  };
+  /**
+   * Device doesn't have Vulkan support
+   */
+      VulkanUnavailable
+};
 
-  struct mprotect_info {
-    bool available{false};
-    MprotectRank rank{NO_MAPPABLE_MEMORY};
+struct mprotect_info {
+  bool available{false};
+  MprotectScore score{NoMappableMemory};
 
-    mprotect_info(const MprotectRank rank) {
-      SetRank(rank);
-    }
-
-    void SetRank(const MprotectRank new_rank) {
-      available = new_rank == AVAILABLE;
-      rank = new_rank;
-    }
-  };
-
-  void WriteDatum(ancer::report_writers::Struct w, const mprotect_info& i) {
-    ADD_DATUM_MEMBER(w, i, available);
-    ADD_DATUM_MEMBER(w, i, rank);
+  mprotect_info(const MprotectScore score) {
+    SetScore(score);
   }
 
-
-  struct datum {
-    mprotect_info mprotect;
-  };
-
-  void WriteDatum(ancer::report_writers::Struct w, const datum& d) {
-    ADD_DATUM_MEMBER(w, d, mprotect);
+  void SetScore(const MprotectScore new_score) {
+    available = new_score==Available;
+    score = new_score;
   }
+};
 
+void WriteDatum(ancer::report_writers::Struct w, const mprotect_info &i) {
+  ADD_DATUM_MEMBER(w, i, available);
+  ADD_DATUM_MEMBER(w, i, score);
+}
 
-  constexpr Log::Tag TAG{"VulkanMprotectCheckOperation"};
+struct datum {
+  mprotect_info mprotect;
+};
 
-  volatile bool protectionViolationOccurred;
+void WriteDatum(ancer::report_writers::Struct w, const datum &d) {
+  ADD_DATUM_MEMBER(w, d, mprotect);
+}
 
-  /**
-   * This function is meant to be called when is detected that memory that had
-   * been previously protected was accessed in ways that violates the
-   * protection. The purpose of this function is to verify that the protection
-   * scheme succeeded. See TrapSegmentationFaultSignals().
-   */
-  void OnProtectionViolation(int, siginfo_t *si, void *);
+constexpr Log::Tag TAG{"VulkanMprotectCheckOperation"};
 
-  /**
-   * Calling this function opens a time frame in which any segmentation fault
-   * generated will be captured (rather than crashing the app!). In the
-   * context of this operation, a segmentation fault would occur if we attempt
-   * to write memory that had been previously mprotect'ed against writing. See
-   * OnProtectionViolation().
-   * The time frame lasts until ReleaseSegmentationFaultSignals(previous
-   * scheme) is invoked.
-   *
-   * @param pOldSigAction pointer where the pre-existing segmentation fault
-   *                      scheme is to be stored.
-   */
-  void TrapSegmentationFaultSignals(struct sigaction *pOldSigAction);
+volatile bool protectionViolationOccurred;
 
-  /**
-   * Releases the segmentation fault capturing scheme by restoring the
-   * previous one.
-   */
-  void ReleaseSegmentationFaultSignals(const struct sigaction *pOldSigAction);
+/**
+ * This function is meant to be called when is detected that memory that had
+ * been previously protected was accessed in ways that violates the
+ * protection. The purpose of this function is to verify that the protection
+ * scheme succeeded. See TrapSegmentationFaultSignals().
+ */
+void OnProtectionViolation(int, siginfo_t *si, void *);
 
-  /**
-   * Not every Vulkan memory type is mappable. A memory type that isn't
-   * mappable can't be mprotected (by design) and therefore must be skipped
-   * from this test.
-   *
-   * @return true if the memory type can be mapped.
-   */
-  bool IsMemoryTypeMappable(const VkMemoryType &memoryType);
+/**
+ * Calling this function opens a time frame in which any segmentation fault
+ * generated will be captured (rather than crashing the app!). In the
+ * context of this operation, a segmentation fault would occur if we attempt
+ * to write memory that had been previously mprotect'ed against writing. See
+ * OnProtectionViolation().
+ * The time frame lasts until ReleaseSegmentationFaultSignals(previous
+ * scheme) is invoked.
+ *
+ * @param pOldSigAction pointer where the pre-existing segmentation fault
+ *                      scheme is to be stored.
+ */
+void TrapSegmentationFaultSignals(struct sigaction *pOldSigAction);
+
+/**
+ * Releases the segmentation fault capturing scheme by restoring the
+ * previous one.
+ */
+void ReleaseSegmentationFaultSignals(const struct sigaction *pOldSigAction);
+
+/**
+ * Not every Vulkan memory type is mappable. A memory type that isn't
+ * mappable can't be mprotected (by design) and therefore must be skipped
+ * from this test.
+ *
+ * @return true if the memory type can be mapped.
+ */
+bool IsMemoryTypeMappable(const VkMemoryType &memoryType);
 }
 
 class VulkanMprotectCheckOperation : public BaseVulkanOperation {
@@ -170,24 +204,24 @@ class VulkanMprotectCheckOperation : public BaseVulkanOperation {
   }
 
   void Start() override {
-    mprotect_info mprotect{VULKAN_NOT_AVAILABLE};
+    mprotect_info mprotect{VulkanUnavailable};
 
-    if(!IsVulkanAvailable()) {
+    if (!IsVulkanAvailable()) {
       Report(datum{mprotect});
       return;
     }
 
-    mprotect.SetRank(NO_MAPPABLE_MEMORY);
+    mprotect.SetScore(NoMappableMemory);
 
-    for(uint32_t memTypeIndex = 0;
-       memTypeIndex < _vk->physical_device_memory_properties.memoryTypeCount;
-       ++memTypeIndex) {
-      if(::IsMemoryTypeMappable(
-            _vk->physical_device_memory_properties.memoryTypes[memTypeIndex])) {
+    for (uint32_t memTypeIndex = 0;
+         memTypeIndex < _vk->physical_device_memory_properties.memoryTypeCount;
+         ++memTypeIndex) {
+      if (::IsMemoryTypeMappable(
+          _vk->physical_device_memory_properties.memoryTypes[memTypeIndex])) {
         Log::I(TAG, "Testing memory type index %d", memTypeIndex);
 
         ProtectMemoryAndAttemptWrite(memTypeIndex, mprotect);
-        if(!mprotect.available)
+        if (!mprotect.available)
           break;
       } else
         Log::D(TAG, "Skipping memory type index %d", memTypeIndex);
@@ -200,7 +234,7 @@ class VulkanMprotectCheckOperation : public BaseVulkanOperation {
   void ProtectMemoryAndAttemptWrite(const uint32_t memTypeIndex,
                                     mprotect_info &mprotect) {
     VulkanMemoryAllocator allocator{
-      _vk, memTypeIndex, mprotect
+        _vk, memTypeIndex, mprotect
     };
     allocator.ProtectMemoryAndAttemptWrite(mprotect);
   }
@@ -224,40 +258,40 @@ class VulkanMprotectCheckOperation : public BaseVulkanOperation {
      */
     VulkanMemoryAllocator(Vulkan vk, const uint32_t memoryTypeIndex,
                           mprotect_info &mprotect)
-    : _vk{vk}, _deviceMemoryBuffer{VK_NULL_HANDLE}, _pMappedBuffer{nullptr} {
+        : _vk{vk}, _deviceMemoryBuffer{VK_NULL_HANDLE}, _pMappedBuffer{nullptr} {
       VkMemoryAllocateInfo allocInfo = {};
       allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-      allocInfo.allocationSize = ALLOCATION_SIZE;
+      allocInfo.allocationSize = kAllocationSize;
       allocInfo.memoryTypeIndex = memoryTypeIndex;
 
       VkResult res = _vk->allocateMemory(_vk->device, &allocInfo, nullptr,
-                                               &_deviceMemoryBuffer);
-      if(res == VK_SUCCESS) {
+                                         &_deviceMemoryBuffer);
+      if (res==VK_SUCCESS) {
         Log::D(TAG, "Vulkan memory allocated");
 
         // Map a "misaligned" 4-page subset of the 5 pages allocated.
-        res = _vk->mapMemory(_vk->device, _deviceMemoryBuffer, BUFFER_OFFSET,
-                             MAPPED_SIZE, 0, (void **) &_pMappedBuffer);
-        if(res == VK_SUCCESS) {
+        res = _vk->mapMemory(_vk->device, _deviceMemoryBuffer, kBufferOffset,
+                             kMappedSize, 0, (void **) &_pMappedBuffer);
+        if (res==VK_SUCCESS) {
           Log::D(TAG, "Vulkan memory mapped");
         } else {
-          mprotect.SetRank(MEMORY_MAPPING_FAILURE);
+          mprotect.SetScore(MemoryMappingFailure);
           Log::E(TAG, "Vulkan memory mapping failure. res=%d", res);
         }
       } else {
-        mprotect.SetRank(MEMORY_ALLOCATION_FAILURE);
+        mprotect.SetScore(MemoryAllocationFailure);
         Log::E(TAG, "Vulkan memory allocation failure. res=%d", res);
       }
     }
 
     // RAII
     virtual ~VulkanMemoryAllocator() {
-      if(_pMappedBuffer) {
+      if (_pMappedBuffer) {
         _vk->unmapMemory(_vk->device, _deviceMemoryBuffer);
         Log::D(TAG, "Vulkan memory unmapped");
       }
 
-      if(_deviceMemoryBuffer != VK_NULL_HANDLE) {
+      if (_deviceMemoryBuffer!=VK_NULL_HANDLE) {
         _vk->freeMemory(_vk->device, _deviceMemoryBuffer, nullptr);
         Log::D(TAG, "Vulkan memory released");
       }
@@ -275,56 +309,56 @@ class VulkanMprotectCheckOperation : public BaseVulkanOperation {
      * @param mprotect The data structure used to hold test results.
      */
     void ProtectMemoryAndAttemptWrite(mprotect_info &mprotect) {
-      if(this->MakeBufferReadOnly()) {
+      if (this->MakeBufferReadOnly()) {
         protectionViolationOccurred = false;
         this->WriteBuffer();
-        if(protectionViolationOccurred) {
-          if(this->MakeBufferWritable()) {
+        if (protectionViolationOccurred) {
+          if (this->MakeBufferWritable()) {
             protectionViolationOccurred = false;
             this->WriteBuffer();
-            if(protectionViolationOccurred) {
-              mprotect.SetRank(WRITE_VIOLATION_UNEXPECTED);
+            if (protectionViolationOccurred) {
+              mprotect.SetScore(WriteViolationUnexpected);
               Log::I(TAG, "Unexpected memory write violation caught.");
             } else {
-              mprotect.SetRank(AVAILABLE);
+              mprotect.SetScore(Available);
               Log::I(TAG, "mprotect can be applied to Vulkan mapped memory.");
             }
           } else {
-            mprotect.SetRank(READ_WRITE_MPROTECT_FAILURE);
+            mprotect.SetScore(ReadWriteMprotectFailure);
             Log::I(TAG, "mprotect couldn't set Vulkan memory read/write");
           }
         } else {
-          mprotect.SetRank(WRITE_VIOLATION_EXPECTED);
+          mprotect.SetScore(WriteViolationExpected);
           Log::I(TAG, "Expected memory write violation wasn't caught.");
         }
       } else {
-        mprotect.SetRank(READ_ONLY_MPROTECT_FAILURE);
+        mprotect.SetScore(ReadOnlyMprotectFailure);
         Log::I(TAG, "mprotect couldn't set Vulkan memory read-only");
       }
     }
 
    private:
-    static const int ALLOCATED_PAGES{5};
-    static const VkDeviceSize ALLOCATION_SIZE{ALLOCATED_PAGES * PAGE_SIZE};
-    static const int MAPPED_PAGES{4};
-    static const VkDeviceSize MAPPED_SIZE{MAPPED_PAGES * PAGE_SIZE};
-    static const int BUFFER_OFFSET{2};
+    static const int kAllocatedPages{5};
+    static const VkDeviceSize kAllocationSize{kAllocatedPages*PAGE_SIZE};
+    static const int kMappedPages{4};
+    static const VkDeviceSize kMappedSize{kMappedPages*PAGE_SIZE};
+    static const int kBufferOffset{2};
 
     Vulkan _vk;
     VkDeviceMemory _deviceMemoryBuffer;
     char *_pMappedBuffer;
 
     bool MakeBufferReadOnly() const {
-      auto success = SetBufferProtectionLevel(PROT_READ) == 0;
-      if(success)
+      auto success = SetBufferProtectionLevel(PROT_READ)==0;
+      if (success)
         Log::D(TAG, "Vulkan memory buffer set read-only");
 
       return success;
     }
 
     bool MakeBufferWritable() const {
-      auto success = SetBufferProtectionLevel(PROT_WRITE) == 0;
-      if(success) {
+      auto success = SetBufferProtectionLevel(PROT_WRITE)==0;
+      if (success) {
         Log::D(TAG, "Vulkan memory buffer set read/write");
       }
 
@@ -335,7 +369,7 @@ class VulkanMprotectCheckOperation : public BaseVulkanOperation {
       // mprotect requires the beginning of a page as its first parameter.
       // We also map a little more than 4 pages to make sure we can
       // attempt to write to the final page.
-      if(mprotect(_pMappedBuffer - BUFFER_OFFSET, MAPPED_SIZE + 1,
+      if (mprotect(_pMappedBuffer - kBufferOffset, kMappedSize + 1,
                    protectionLevel)) {
         Log::I(TAG, "mprotect on Vulkan mapped memory failed. errno=%d",
                errno);
@@ -353,41 +387,41 @@ class VulkanMprotectCheckOperation : public BaseVulkanOperation {
 };
 
 namespace {
-  const auto ALL_BITS = 0xFFFULL;
+const auto kAllBits = 0xFFFULL;
 
-  void OnProtectionViolation(int, siginfo_t *si, void *) {
-    protectionViolationOccurred = true;
-    mprotect((void *) ((size_t) si->si_addr & ~ALL_BITS), 1,
-            PROT_READ | PROT_WRITE); // NOLINT(hicpp-signed-bitwise)
+void OnProtectionViolation(int, siginfo_t *si, void *) {
+  protectionViolationOccurred = true;
+  mprotect((void *) ((size_t) si->si_addr & ~kAllBits), 1,
+           PROT_READ | PROT_WRITE); // NOLINT(hicpp-signed-bitwise)
+}
+
+void TrapSegmentationFaultSignals(struct sigaction *pOldSigAction) {
+  struct sigaction sa{};
+
+  sa.sa_flags = SA_SIGINFO;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_sigaction = OnProtectionViolation;
+
+  if (sigaction(SIGSEGV, &sa, pOldSigAction)) {
+    Log::E(TAG, "Setting segmentation fault capturing failed. errno=%d",
+           errno);
+  } else {
+    Log::I(TAG, "Segmentation fault capturing set");
   }
+}
 
-  void TrapSegmentationFaultSignals(struct sigaction *pOldSigAction) {
-    struct sigaction sa{};
-
-    sa.sa_flags = SA_SIGINFO;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_sigaction = OnProtectionViolation;
-
-    if(sigaction(SIGSEGV, &sa, pOldSigAction)) {
-      Log::E(TAG, "Setting segmentation fault capturing failed. errno=%d",
-             errno);
-    } else {
-      Log::I(TAG, "Segmentation fault capturing set");
-    }
+void ReleaseSegmentationFaultSignals(const struct sigaction *pOldSigAction) {
+  if (sigaction(SIGSEGV, pOldSigAction, nullptr)) {
+    Log::E(TAG, "Releasing segmentation fault capturing failed. errno=%d", errno);
+  } else {
+    Log::I(TAG, "Segmentation fault capturing released");
   }
+}
 
-  void ReleaseSegmentationFaultSignals(const struct sigaction *pOldSigAction) {
-    if(sigaction(SIGSEGV, pOldSigAction, nullptr)) {
-      Log::E(TAG, "Releasing segmentation fault capturing failed. errno=%d", errno);
-    } else {
-      Log::I(TAG, "Segmentation fault capturing released");
-    }
-  }
-
-  bool IsMemoryTypeMappable(const VkMemoryType &memoryType) {
-    return VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ==
-              (memoryType.propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-  }
+bool IsMemoryTypeMappable(const VkMemoryType &memoryType) {
+  return VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT==
+      (memoryType.propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+}
 }
 
 EXPORT_ANCER_OPERATION(VulkanMprotectCheckOperation)
