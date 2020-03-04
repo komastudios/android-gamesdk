@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "dd711e8c_cfcf4dc0",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-04T17:18:25Z",
+      "side": 1,
+      "message": "Right, I realized that might be the case since I made that change initially; I didn\u0027t know if it would go back to a device if we did the refactoring to add single-use command buffers to benderkit device, but I figure I\u0027ll just update this to reflect whichever thing it\u0027s rebased on top of :P",
+      "parentUuid": "ed97668e_761ad7a5",
+      "revId": "b9f27ee4f67730b09421cf654ef9f0fdcce3cbbc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bad8bcd6_f4075d7e",
         "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
         "patchSetId": 4
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "3455645c_25a784b2",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 911,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-04T17:18:25Z",
+      "side": 1,
+      "message": "I think that some of the stuff I fixed in resuming texture might have fixed this, since I think the problem was that textures were already not updating to the new device anyways. I\u0027ll keep monitoring it and y\u0027all can see if you run into unexpected crashes in this vein.\n\nAt the point I\u0027m at right now, I think the only crash that I get, at least observably, is when DeleteVulkan doesn\u0027t get this device_mutex in time, which I\u0027m not sure how to avoid without having an interruptable thread.",
+      "parentUuid": "bad8bcd6_f4075d7e",
+      "revId": "b9f27ee4f67730b09421cf654ef9f0fdcce3cbbc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "673c5bfd_e18b214d",
         "filename": "bender/bender-base/build.gradle",
         "patchSetId": 4
@@ -47,6 +83,24 @@
       "writtenOn": "2020-03-04T16:55:36Z",
       "side": 1,
       "message": "Will this require us all to update our Gradle version?",
+      "revId": "b9f27ee4f67730b09421cf654ef9f0fdcce3cbbc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "77f8e0ee_1b2decbb",
+        "filename": "bender/bender-base/build.gradle",
+        "patchSetId": 4
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-04T17:18:25Z",
+      "side": 1,
+      "message": "Whoops nope I just updated it locally, will exclude the change in next changeset",
+      "parentUuid": "673c5bfd_e18b214d",
       "revId": "b9f27ee4f67730b09421cf654ef9f0fdcce3cbbc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
