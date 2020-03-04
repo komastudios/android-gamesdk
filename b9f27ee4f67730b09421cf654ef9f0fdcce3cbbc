@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ed97668e_761ad7a5",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-04T16:55:36Z",
+      "side": 1,
+      "message": "Just as a heads up - For mipmapping we change this again to from taking in the benderkit::Device* to a Renderer* lol so this might change again",
+      "revId": "b9f27ee4f67730b09421cf654ef9f0fdcce3cbbc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bad8bcd6_f4075d7e",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 911,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-04T16:55:36Z",
+      "side": 1,
+      "message": "Just to be clear - will this still have an issue when only a subset of the vulkan objects have been properly resumed since the subset that haven\u0027t resumed yet will still hold the reference to the old, invalid Vulkan Device/Objects?",
+      "revId": "b9f27ee4f67730b09421cf654ef9f0fdcce3cbbc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "673c5bfd_e18b214d",
+        "filename": "bender/bender-base/build.gradle",
+        "patchSetId": 4
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-04T16:55:36Z",
+      "side": 1,
+      "message": "Will this require us all to update our Gradle version?",
+      "revId": "b9f27ee4f67730b09421cf654ef9f0fdcce3cbbc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
