@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "396e296f_34b4f205",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-03-04T19:21:37Z",
+      "side": 1,
+      "message": "Sounds really clear and simple. 👏",
+      "revId": "38c92b63c1067d90635af16c687b8204cf772d44",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
