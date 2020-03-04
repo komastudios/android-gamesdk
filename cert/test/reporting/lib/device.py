@@ -16,7 +16,7 @@
 """A catalog of device data indexed by codename.
 """
 
-from typing import Any, Dict, Iterable, Union
+from typing import Any, Dict, Iterable, List, Union
 
 
 class DeviceInfo:
@@ -26,7 +26,8 @@ class DeviceInfo:
                  codename: str,
                  brand: str,
                  model: str,
-                 sdk_version: Union[str, int] = ""):
+                 sdk_version: Union[str, int] = "",
+                 tags: List[str] = None):
         self.__codename = codename.strip()
 
         brand = brand.strip()
@@ -44,6 +45,8 @@ class DeviceInfo:
             self.__model = self.__model[len(self.__brand) + 1:]
 
         self.__sdk_version = sdk_version
+
+        self.__tags = tags if tags else []
 
         if (len(self.__codename) == 0 or len(self.__brand) == 0 or
                 len(self.__model) == 0):
@@ -70,6 +73,15 @@ class DeviceInfo:
     def sdk_version(self) -> str:
         """API Level supported by the device model."""
         return self.__sdk_version
+
+    @property
+    def tags(self) -> List[str]:
+        """List of firebase metadata tags about device"""
+        return self.__tags
+
+    def has_tag(self, tag: str) -> bool:
+        """Return true if this device has a particular tag in its tags list"""
+        return tag in self.__tags
 
     def __lt__(self, other: Any) -> bool:
         """Less-than lexicographic order on brand and model."""

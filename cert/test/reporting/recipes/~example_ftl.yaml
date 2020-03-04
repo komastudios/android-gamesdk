@@ -15,7 +15,7 @@ deployment:
       - { model: "mlv1", version: 23 }
 
     flags:
-      project: gamesdk-testing
+      project: android-games-device-research
       format: json
     args:
       test-robo:

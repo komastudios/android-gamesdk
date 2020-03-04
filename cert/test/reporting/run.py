@@ -23,6 +23,7 @@ import sys
 
 from lib.common import Recipe
 from lib.deployment import run_recipe
+from lib.devicefarm import DeploymentTarget
 
 # ------------------------------------------------------------------------------
 
@@ -31,38 +32,83 @@ RECIPE_DEFAULTS = "./recipes/defaults.yaml"
 # ------------------------------------------------------------------------------
 
 
+def local():
+    """Handle `run.py local` arguments"""
+    parser = argparse.ArgumentParser(description="Run locally")
+
+    parser.add_argument(
+        "recipe",
+        type=str,
+        nargs=1,
+        metavar="<recipe file>",
+        help="Path to yaml file describing the run task")
+
+    args = parser.parse_args(sys.argv[2:])
+
+    extra_args = {"local": True, "ftl": False}
+    return extra_args, Recipe(Path(args.recipe[0]), Path(RECIPE_DEFAULTS))
+
+
+def ftl():
+    """Handle `run.py ftl` arguments"""
+    parser = argparse.ArgumentParser(description="Run on Firebase Test Lab")
+
+    parser.add_argument(
+        "recipe",
+        type=str,
+        nargs=1,
+        metavar="<recipe file>",
+        help="Path to yaml file describing the run task")
+
+    parser.add_argument("--public",
+                        help="Run on public FTL devices",
+                        default=False,
+                        action="store_true")
+
+    parser.add_argument("--all",
+                        help="Run on all FTL devices, public and private",
+                        default=False,
+                        action="store_true")
+
+    args = parser.parse_args(sys.argv[2:])
+
+    target = DeploymentTarget.FTL_DEVICES_PRIVATE
+    if args.public:
+        target = DeploymentTarget.FTL_DEVICES_PUBLIC
+    if args.all:
+        target = DeploymentTarget.FTL_DEVICES_ALL
+
+    extra_args = {
+        "local": False,
+        "ftl": True,
+        "ftl-deployment-target": target,
+    }
+    return extra_args, Recipe(Path(args.recipe[0]), Path(RECIPE_DEFAULTS))
+
+
 def main():
     """main entry point for command-line execution
     """
     parser = argparse.ArgumentParser(
         description=
-        "Run ACT on local or remote devices, and process their results")
+        "Run ACT on local or remote devices, and process their results",
+        usage='''run.py <command> [<args>]
+The commands are:
+    local       Run on locally attached devices
+    ftl         Run on Firebase Test Lab
+''')
 
-    parser.add_argument("--recipe",
-                        help="Path to yaml file describing the run task",
-                        required=True)
-
-    parser.add_argument("--local",
-                        help="Run local deployment",
-                        default=False,
-                        action="store_true")
-
-    parser.add_argument("--ftl",
-                        help="Run FTL deployment",
-                        default=False,
-                        action="store_true")
-
-    args = parser.parse_args()
-
-    extra_args = {"local": args.local, "ftl": args.ftl}
-
-    if not args.local and not args.ftl:
-        print("At least one of 'local' and 'ftl' must be set"\
-            ", else this script does nothing.")
+    parser.add_argument('command', help="Subcommand to run")
+    args = parser.parse_args(sys.argv[1:2])
+    if args.command == "local":
+        extra_args, recipe = local()
+    elif args.command == "ftl":
+        extra_args, recipe = ftl()
+    else:
+        print("Unrecognized command")
         parser.print_help()
         sys.exit(1)
 
-    recipe = Recipe(Path(args.recipe), Path(RECIPE_DEFAULTS))
     run_recipe(recipe, extra_args)
 
 

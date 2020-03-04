@@ -49,15 +49,21 @@ NOTE: Because VSCode saves a user-specific python env path in the `settings.json
 ### `run.py`
 
 ``` bash
-# this will run the recipe on all local devices as well as on FTL
-python run.py --local --ftl --recipe path/to/recipe.yaml
+# run the recipe on all locally attached devices
+python run.py local path/to/recipe.yaml
 
-# this will run the recipe on just local devices
-python run.py --local --recipe path/to/recipe.yaml
+# run the recipe on ftl, only on private devices (we default to private devices)
+python run.py ftl path/to/recipe.yaml
+
+# run the recipe on ftl, only on public devices
+python run.py ftl --public path/to/recipe.yaml
+
+# run the recipe on ftl, on public and private devices
+python run.py ftl --all path/to/recipe.yaml
 
 ```
 
-The entrypoint for the pipeline is `run.py` , which consumes a "recipe" YAML file. Usage is simple: `python run.py --recipe whatever.yaml` . The recipe file structure is as follows:
+The entrypoint for the pipeline is `run.py` , which consumes a "recipe" YAML file. Usage is simple: `python run.py local whatever.yaml` . The recipe file structure is as follows:
 
 NOTE: defaults are sourced from `recipes/defaults.yaml`, meaning a minimal valid recipe may simply consist of:
 ```yaml
@@ -158,7 +164,7 @@ deployment:
     # when performing ftl deployment
     flags:
       # the gcloud/firebase project id
-      project: gamesdk-testing
+      project: android-games-device-research
       # format for logging
       format: json
 

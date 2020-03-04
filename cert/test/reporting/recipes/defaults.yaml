@@ -18,7 +18,7 @@ deployment:
   ftl:
     test: test-gameloop
     flags:
-      project: gamesdk-testing
+      project: android-games-device-research
       format: json
     args:
       test-gameloop:
