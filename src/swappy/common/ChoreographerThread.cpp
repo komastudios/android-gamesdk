@@ -56,6 +56,14 @@ using PFN_AChoreographer_postFrameCallbackDelayed = void (*)(AChoreographer* cho
                                                         void* data,
                                                         long delayMillis);
 
+using PFN_AChoreographer_registerRefreshRateCallback = void (*)(AChoreographer* choreographer,
+                                                        AChoreographer_refreshRateCallback callback,
+                                                        void* data);
+
+using PFN_AChoreographer_unregisterRefreshRateCallback = void (*) (AChoreographer* choreographer,
+                                                        AChoreographer_refreshRateCallback callback,
+                                                        void* data);
+
 // Forward declaration of the native method of Java Choreographer class
 extern "C" {
 
@@ -72,7 +80,7 @@ class NDKChoreographerThread : public ChoreographerThread {
 public:
     static constexpr int MIN_SDK_VERSION = 24;
 
-    NDKChoreographerThread(Callback onChoreographer);
+    NDKChoreographerThread(Callback onChoreographer, Callback onRefreshRateChanged);
     ~NDKChoreographerThread() override;
 
 private:
@@ -82,16 +90,20 @@ private:
     PFN_AChoreographer_getInstance mAChoreographer_getInstance = nullptr;
     PFN_AChoreographer_postFrameCallback mAChoreographer_postFrameCallback = nullptr;
     PFN_AChoreographer_postFrameCallbackDelayed mAChoreographer_postFrameCallbackDelayed = nullptr;
+    PFN_AChoreographer_registerRefreshRateCallback mAChoreographer_registerRefreshRateCallback = nullptr;
+    PFN_AChoreographer_unregisterRefreshRateCallback mAChoreographer_unregisterRefreshRateCallback = nullptr;
     void *mLibAndroid = nullptr;
     Thread mThread;
     std::condition_variable mWaitingCondition;
     ALooper *mLooper GUARDED_BY(mWaitingMutex) = nullptr;
     bool mThreadRunning GUARDED_BY(mWaitingMutex) = false;
     AChoreographer *mChoreographer GUARDED_BY(mWaitingMutex) = nullptr;
+    Callback mOnRefreshRateChanged;
 };
 
-NDKChoreographerThread::NDKChoreographerThread(Callback onChoreographer) :
-    ChoreographerThread(onChoreographer)
+NDKChoreographerThread::NDKChoreographerThread(Callback onChoreographer,
+                                               Callback onRefreshRateChanged) :
+    ChoreographerThread(onChoreographer), mOnRefreshRateChanged(onRefreshRateChanged)
 {
     mLibAndroid = dlopen("libandroid.so", RTLD_NOW | RTLD_LOCAL);
     if (mLibAndroid == nullptr) {
@@ -110,6 +122,14 @@ NDKChoreographerThread::NDKChoreographerThread(Callback onChoreographer) :
     mAChoreographer_postFrameCallbackDelayed =
             reinterpret_cast<PFN_AChoreographer_postFrameCallbackDelayed >(
                     dlsym(mLibAndroid, "AChoreographer_postFrameCallbackDelayed"));
+
+    mAChoreographer_registerRefreshRateCallback =
+            reinterpret_cast<PFN_AChoreographer_registerRefreshRateCallback >(
+                    dlsym(mLibAndroid, "AChoreographer_registerRefreshRateCallback"));
+
+    mAChoreographer_unregisterRefreshRateCallback =
+            reinterpret_cast<PFN_AChoreographer_unregisterRefreshRateCallback >(
+                    dlsym(mLibAndroid, "AChoreographer_unregisterRefreshRateCallback"));
 
     if (!mAChoreographer_getInstance ||
         !mAChoreographer_postFrameCallback ||
@@ -165,6 +185,13 @@ void NDKChoreographerThread::looperThread()
         return;
     }
 
+    AChoreographer_refreshRateCallback callback = [](int64_t vsyncPeriodNanos, void *data) {
+        reinterpret_cast<NDKChoreographerThread *>(data)->mOnRefreshRateChanged();
+    };
+
+    if (mAChoreographer_registerRefreshRateCallback) {
+        mAChoreographer_registerRefreshRateCallback(mChoreographer, callback, this);
+    }
     mWaitingCondition.notify_all();
 
     const char *name = "SwappyChoreographer";
@@ -194,6 +221,9 @@ void NDKChoreographerThread::looperThread()
         ALooper_pollAll(-1, &outFd, &outEvents, &outData);
         mWaitingMutex.lock();
     }
+    if (mAChoreographer_unregisterRefreshRateCallback) {
+        mAChoreographer_unregisterRefreshRateCallback(mChoreographer, callback, this);
+    }
     ALOGI("Terminating Looper thread");
 
     return;
@@ -203,6 +233,7 @@ void NDKChoreographerThread::scheduleNextFrameCallback()
 {
     AChoreographer_frameCallback frameCallback =
             [](long frameTimeNanos, void *data) {
+
                 reinterpret_cast<NDKChoreographerThread*>(data)->onChoreographer();
             };
 
@@ -464,7 +495,8 @@ void ChoreographerThread::onChoreographer()
 
 std::unique_ptr<ChoreographerThread>
     ChoreographerThread::createChoreographerThread(
-                Type type, JavaVM *vm, jobject jactivity, Callback onChoreographer, int sdkVersion) {
+                Type type, JavaVM *vm, jobject jactivity, Callback onChoreographer,
+                Callback onRefreshRateChanged, int sdkVersion) {
     if (type == Type::App) {
         ALOGI("Using Application's Choreographer");
         return std::make_unique<NoChoreographerThread>(onChoreographer);
@@ -472,7 +504,7 @@ std::unique_ptr<ChoreographerThread>
 
     if (vm == nullptr || sdkVersion >= NDKChoreographerThread::MIN_SDK_VERSION) {
         ALOGI("Using NDK Choreographer");
-        return std::make_unique<NDKChoreographerThread>(onChoreographer);
+        return std::make_unique<NDKChoreographerThread>(onChoreographer, onRefreshRateChanged);
     }
 
     if(vm != nullptr && jactivity != nullptr) {

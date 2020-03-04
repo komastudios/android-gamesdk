@@ -41,7 +41,7 @@ public:
     using Callback = std::function<void()>;
 
     static std::unique_ptr<ChoreographerThread> createChoreographerThread(
-            Type type, JavaVM *vm, jobject jactivity, Callback onChoreographer, int sdkVersion);
+            Type type, JavaVM *vm, jobject jactivity, Callback onChoreographer, Callback onRefreshRateChanged, int sdkVersion);
 
     virtual ~ChoreographerThread() = 0;
 
