@@ -115,14 +115,14 @@ bool SwappyCommonSettings::getFromApp(JNIEnv *env, jobject jactivity,
 }
 
 SwappyCommon::SwappyCommon(JNIEnv *env, jobject jactivity)
-        : mSwapDuration(nanoseconds(0)),
+        : mJactivity(env->NewGlobalRef(jactivity)),
+          mSwapDuration(nanoseconds(0)),
           mAutoSwapInterval(1),
           mValid(false) {
-    if (!SwappyCommonSettings::getFromApp(env,jactivity, &mCommonSettings))
+    if (!SwappyCommonSettings::getFromApp(env, mJactivity, &mCommonSettings))
         return;
 
-    JavaVM* vm;
-    env->GetJavaVM(&vm);
+    env->GetJavaVM(&mJVM);
 
     mChoreographerFilter = std::make_unique<ChoreographerFilter>(mCommonSettings.refreshPeriod,
                                      mCommonSettings.sfVsyncOffset - mCommonSettings.appVsyncOffset,
@@ -130,16 +130,17 @@ SwappyCommon::SwappyCommon(JNIEnv *env, jobject jactivity)
 
     mChoreographerThread = ChoreographerThread::createChoreographerThread(
                                 ChoreographerThread::Type::Swappy,
-                                vm,
+                                mJVM,
                                 jactivity,
                                 [this]{ mChoreographerFilter->onChoreographer(); },
+                                [this]{ onRefreshRateChanged(); },
                                 mCommonSettings.sdkVersion);
     if (!mChoreographerThread->isInitialized()) {
         ALOGE("failed to initialize ChoreographerThread");
         return;
     }
     if (USE_DISPLAY_MANAGER && mCommonSettings.sdkVersion >= SwappyDisplayManager::MIN_SDK_VERSION) {
-        mDisplayManager = std::make_unique<SwappyDisplayManager>(vm, jactivity);
+        mDisplayManager = std::make_unique<SwappyDisplayManager>(mJVM, jactivity);
 
         if (!mDisplayManager->isInitialized()) {
             mDisplayManager = nullptr;
@@ -163,6 +164,7 @@ SwappyCommon::SwappyCommon(JNIEnv *env, jobject jactivity)
 
 // Used by tests
 SwappyCommon::SwappyCommon(const SwappyCommonSettings& settings) :
+          mJactivity(nullptr),
           mSwapDuration(nanoseconds(0)),
           mAutoSwapInterval(1),
           mValid(true), mCommonSettings(settings) {
@@ -177,6 +179,7 @@ SwappyCommon::SwappyCommon(const SwappyCommonSettings& settings) :
                     nullptr,
                     nullptr,
                     [this] { mChoreographerFilter->onChoreographer(); },
+                    [this]{ },
                     mCommonSettings.sdkVersion);
 
     Settings::getInstance()->addListener([this]() { onSettingsChanged(); });
@@ -198,6 +201,30 @@ SwappyCommon::~SwappyCommon() {
     mChoreographerFilter.reset();
 
     Settings::reset();
+
+    if (mJactivity != nullptr) {
+        JNIEnv *env;
+        mJVM->AttachCurrentThread(&env, nullptr);
+
+        env->DeleteGlobalRef(mJactivity);
+    }
+}
+
+void SwappyCommon::onRefreshRateChanged() {
+    JNIEnv *env;
+    mJVM->AttachCurrentThread(&env, nullptr);
+
+    ALOGV("onRefreshRateChanged");
+
+    SwappyCommonSettings settings;
+    if (!SwappyCommonSettings::getFromApp(env, mJactivity, &settings)) {
+        ALOGE("failed to query display timings");
+        return;
+    }
+
+    Settings::getInstance()->setDisplayTimings({settings.refreshPeriod,
+                                                settings.appVsyncOffset,
+                                                settings.sfVsyncOffset});
 }
 
 nanoseconds SwappyCommon::wakeClient() {
@@ -223,6 +250,7 @@ void SwappyCommon::onChoreographer(int64_t frameTimeNanos) {
                         nullptr,
                         nullptr,
                         [this] { mChoreographerFilter->onChoreographer(); },
+                        [this]{ onRefreshRateChanged(); },
                         mCommonSettings.sdkVersion);
     }
 

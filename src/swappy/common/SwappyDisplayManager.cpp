@@ -139,6 +139,7 @@ void SwappyDisplayManagerJNI::onRefreshRateChanged(jlong /*cookie*/,
                                                    long refreshPeriod,
                                                    long appOffset,
                                                    long sfOffset) {
+    ALOGV("onRefreshRateChanged");
     using std::chrono::nanoseconds;
     Settings::DisplayTimings displayTimings;
     displayTimings.refreshPeriod = nanoseconds(refreshPeriod);

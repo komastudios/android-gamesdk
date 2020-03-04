@@ -48,6 +48,7 @@ struct SwappyCommonSettings {
 
     static bool getFromApp(JNIEnv *env, jobject jactivity, SwappyCommonSettings* out);
     static int getSDKVersion(JNIEnv *env);
+    static bool queryDisplayTimings(JNIEnv *env, jobject jactivity, SwappyCommonSettings* out);
 };
 
 // Common part between OpenGL and Vulkan implementations.
@@ -185,6 +186,11 @@ private:
                         int interval1,
                         std::chrono::nanoseconds period2,
                         int interval2);
+
+    void onRefreshRateChanged();
+
+    const jobject mJactivity;
+    JavaVM *mJVM = nullptr;
 
     std::unique_ptr<ChoreographerFilter> mChoreographerFilter;
 
