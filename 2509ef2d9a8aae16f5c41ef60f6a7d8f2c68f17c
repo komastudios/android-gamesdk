@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "686ef045_e6f3a2db",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-04T21:04:07Z",
+      "side": 1,
+      "message": "What does this check do? Is this for the scenario where Cleanup is run when a Geometry object hasn\u0027t been resumed?",
+      "revId": "2509ef2d9a8aae16f5c41ef60f6a7d8f2c68f17c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "808d91e7_1dd78673",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-04T21:04:07Z",
+      "side": 1,
+      "message": "What is the difference right now between done_loading_once and app_initialized_once?",
+      "revId": "2509ef2d9a8aae16f5c41ef60f6a7d8f2c68f17c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}

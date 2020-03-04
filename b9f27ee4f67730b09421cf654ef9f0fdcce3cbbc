@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "b6608026_1e84e26c",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-04T21:04:07Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "dd711e8c_cfcf4dc0",
+      "revId": "b9f27ee4f67730b09421cf654ef9f0fdcce3cbbc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bad8bcd6_f4075d7e",
         "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
         "patchSetId": 4
@@ -104,6 +122,24 @@
       "revId": "b9f27ee4f67730b09421cf654ef9f0fdcce3cbbc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "84160256_e6ed28a0",
+        "filename": "bender/bender-base/build.gradle",
+        "patchSetId": 4
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-04T21:04:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "77f8e0ee_1b2decbb",
+      "revId": "b9f27ee4f67730b09421cf654ef9f0fdcce3cbbc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
