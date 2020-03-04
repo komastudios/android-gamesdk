@@ -136,6 +136,30 @@
     },
     {
       "enabled": true,
+      "name": "Stella3D Accleration",
+      "description": "Mimics Unity's Stella3D Acceleration code",
+
+      "duration": "60000ms",
+      "data_gatherer":
+      {
+        "id": "Stella3DOperation",
+        "enabled": true,
+        "configuration": {
+          "use_job_system": true,
+          "vector_count_": 10000000,
+          "range": 100
+        }
+      },
+      "stressors": [
+        {
+          "id": "HelloGLES3Operation",
+          "configuration": {
+          }
+        }
+      ]
+    },
+    {
+      "enabled": true,
       "name": "MemoryAccessTest",
       "description": "Tests accessing preallocated memory",
       "duration": "0s",

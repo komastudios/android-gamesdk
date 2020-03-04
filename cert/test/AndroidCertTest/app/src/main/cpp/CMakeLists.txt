@@ -117,6 +117,7 @@ add_library(${PROJECT_NAME} SHARED
         ancer/vulkan/swapchain.cc
         ancer/vulkan/upload.cc
         ancer/vulkan/vulkan_base.cc
+        ancer/util/JobQueue.cpp
 
         # Operations
         operations/CalculatePIOperation.cpp
@@ -130,6 +131,7 @@ add_library(${PROJECT_NAME} SHARED
         operations/ScheduleAffinityOperation.cpp
         operations/ThreadSchedulingOperation.cpp
         operations/VulkanMprotectCheckOperation.cpp
+        operations/Stella3DOperation.cpp
 
         operations/gl/BufferStorageGLES3Operation.cpp
         operations/gl/DepthClearGLES3Operation.cpp
