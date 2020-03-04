@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "7c80a8a8_866ab50a",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/CalculateWaitPIOperation.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-03-04T00:48:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "66637b01_d9d795c0",
+      "revId": "07f6b3c4444ce7162dcaba6d383b3a67502d0157",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5ad5670e_ee8137c8",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/CalculateWaitPIOperation.cpp",
         "patchSetId": 9
@@ -101,6 +119,24 @@
       "side": 1,
       "message": "True. I tracked back all other func tests where I said similar things and simplified these all.",
       "parentUuid": "bd2dfae4_89b09934",
+      "revId": "07f6b3c4444ce7162dcaba6d383b3a67502d0157",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "abf8fe6c_876740cc",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/SaneCpusetOperation.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-03-04T00:48:25Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "2df2de4e_3a4b41ea",
       "revId": "07f6b3c4444ce7162dcaba6d383b3a67502d0157",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
