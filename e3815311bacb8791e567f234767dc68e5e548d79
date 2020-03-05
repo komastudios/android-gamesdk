@@ -1,0 +1,48 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000001842333",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1251914?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "7eb9d114_bb6c2942",
+          "description": "Change to \"cert/test/AndroidCertTest/app/src/main/cpp/operations/MemoryAllocOperation.cpp\"",
+          "replacements": [
+            {
+              "path": "cert/test/AndroidCertTest/app/src/main/cpp/operations/MemoryAllocOperation.cpp",
+              "range": {
+                "startLine": 47,
+                "startChar": 52,
+                "endLine": 47,
+                "endChar": 63
+              },
+              "replacement": "unsuccessful"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "52d2dce9_3aabb7cc",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/MemoryAllocOperation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-03-05T17:59:02Z",
+      "side": 1,
+      "message": "Common typo found: \"unsuccesful\" -- should it be \"unsuccessful\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.",
+      "range": {
+        "startLine": 47,
+        "startChar": 52,
+        "endLine": 47,
+        "endChar": 63
+      },
+      "revId": "e3815311bacb8791e567f234767dc68e5e548d79",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
