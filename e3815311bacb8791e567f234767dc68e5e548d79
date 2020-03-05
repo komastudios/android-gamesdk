@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a946f46d_3e698a37",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/MemoryAllocOperation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-03-05T18:38:59Z",
+      "side": 1,
+      "message": "\u003e Common typo found: \"unsuccesful\" -- should it be \"unsuccessful\"?\n\u003e Note: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.\n\nI fixed this, roboto.",
+      "parentUuid": "52d2dce9_3aabb7cc",
+      "range": {
+        "startLine": 47,
+        "startChar": 52,
+        "endLine": 47,
+        "endChar": 63
+      },
+      "revId": "e3815311bacb8791e567f234767dc68e5e548d79",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
