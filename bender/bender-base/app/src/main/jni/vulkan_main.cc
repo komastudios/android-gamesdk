@@ -96,6 +96,10 @@ const glm::mat4 prerotate_180 = glm::rotate(kIdentityMat4, glm::pi<float>(), glm
 bool app_initialized_once = false;
 bool is_presenting = false;
 std::thread *load_thread;
+bool done_loading_once = false;
+bool currently_loading = false;
+std::mutex device_mutex;
+std::thread *mipmaps_thread;
 bool done_loading = false;
 std::mutex render_graph_mutex;
 std::mutex loading_info_mutex;
@@ -165,6 +169,20 @@ void ChangeMaterialComplexity() {
   }
   render_graph->ClearMeshes();
   render_graph->AddMeshes(all_meshes);
+}
+void ToggleMipmaps() {
+  vkDeviceWaitIdle(device->GetDevice());
+  done_loading = false;
+  sprintf(loading_info, "Reloading textures...");
+  renderer->ToggleMipMap();
+  for (auto &texture : loaded_textures) {
+    if (texture.second != nullptr) texture.second->ToggleMipmaps(android_app_ctx);
+  }
+  for (auto &material : loaded_materials) {
+    material.second->UpdateMaterialDescriptorSets();
+  }
+  sprintf(loading_info, " ");
+  done_loading = true;
 }
 
 void CreateButtons() {
@@ -254,7 +272,7 @@ void CreateTextures() {
     assert(device != nullptr);
 
     for (uint32_t i = 0; i < tex_files.size(); ++i) {
-      textures.push_back(std::make_shared<Texture>(*device,
+      textures.push_back(std::make_shared<Texture>(*renderer,
                                                    *android_app_ctx,
                                                    tex_files[i],
                                                    VK_FORMAT_R8G8B8A8_SRGB));
@@ -262,9 +280,9 @@ void CreateTextures() {
   });
 }
 
-void addTexture(std::string fileName){
+void AddTexture(std::string fileName){
   if (fileName != "" && loaded_textures.find(fileName) == loaded_textures.end()){
-      loaded_textures[fileName] = std::make_shared<Texture>(*device,
+      loaded_textures[fileName] = std::make_shared<Texture>(*renderer,
                                                             *android_app_ctx,
                                                          "textures/" + fileName,
                                                             VK_FORMAT_R8G8B8A8_SRGB);
@@ -500,6 +518,77 @@ void UpdateCameraParameters(){
   }
 }
 
+
+
+void LoadDemoModels() {
+    AAssetDir *dir = AAssetManager_openDir(android_app_ctx->activity->assetManager, "models");
+    const char *file_name;
+    file_name = AAssetDir_getNextFileName(dir);
+    while (file_name != nullptr) {
+        LOGE("%s", file_name);
+        std::string file_name_string(file_name);
+        if (file_name_string.find(".mtl") != -1) {
+            file_name = AAssetDir_getNextFileName(dir);
+            continue;
+        }
+
+        loading_info_mutex.lock();
+        sprintf(loading_info, "Loading: %s", file_name);
+        loading_info_mutex.unlock();
+
+        std::vector<OBJLoader::OBJ> model_data;
+        std::unordered_map<std::string, MTL> mtllib;
+
+        OBJLoader::LoadOBJ(android_app_ctx->activity->assetManager,
+                           ("models/" + file_name_string).c_str(),
+                           mtllib,
+                           model_data);
+
+        for (auto obj : model_data) {
+            std::string mtl_name = obj.material_name;
+            if (loaded_materials.find(mtl_name) == loaded_materials.end()) {
+                MTL curr_mtl = mtllib[obj.material_name];
+                if (!device_mutex.try_lock()) { return; }
+                AddTexture(curr_mtl.map_Ka);
+                AddTexture(curr_mtl.map_Kd);
+                AddTexture(curr_mtl.map_Ks);
+                AddTexture(curr_mtl.map_Ns);
+                AddTexture(curr_mtl.map_Bump);
+
+                MaterialAttributes new_mtl;
+                new_mtl.ambient = curr_mtl.ambient;
+                new_mtl.specular = glm::vec4(curr_mtl.specular, curr_mtl.specular_exponent);
+                new_mtl.diffuse = curr_mtl.diffuse;
+                std::vector<std::shared_ptr<Texture>> my_textures = {
+                        loaded_textures[curr_mtl.map_Kd],
+                        loaded_textures[curr_mtl.map_Ks],
+                        loaded_textures[curr_mtl.map_Ke],
+                        loaded_textures[curr_mtl.map_Ns],
+                        loaded_textures[curr_mtl.map_Bump]};
+                loaded_materials[mtl_name] = std::make_shared<Material>(*renderer,
+                                                                       shaders,
+                                                                       my_textures,
+                                                                       new_mtl);
+                device_mutex.unlock();
+            }
+            if (!device_mutex.try_lock()) { return; }
+            geometries.push_back(
+                    std::make_shared<Geometry>(*device, obj.vertex_buffer, obj.index_buffer));
+            render_graph_mutex.lock();
+            render_graph->AddMesh(std::make_shared<Mesh>(*renderer,
+                                                         loaded_materials[mtl_name],
+                                                         geometries.back()));
+            device_mutex.unlock();
+            render_graph_mutex.unlock();
+        }
+        file_name = AAssetDir_getNextFileName(dir);
+    }
+    loading_info_mutex.lock();
+    sprintf(loading_info, " ");
+    loading_info_mutex.unlock();
+    done_loading_once = true;
+}
+
 bool InitVulkan(android_app *app) {
   timing::timer.Time("Initialization", timing::OTHER, [app] {
     android_app_ctx = app;
@@ -597,78 +686,24 @@ bool InitVulkan(android_app *app) {
         CreateGeometries();
 
         timing::timer.Time("Create Polyhedron", timing::OTHER, [] {
-            render_graph->AddMesh(std::make_shared<Mesh>(renderer,
+            render_graph->AddMesh(std::make_shared<Mesh>(*renderer,
                                                          baseline_materials[materials_idx],
                                                          geometries[poly_faces_idx]));
         });
     });
 #else
-    load_thread = new std::thread([app] {
-      timing::timer.Time("Mesh Creation", timing::OTHER, [app] {
-          AAssetDir *dir = AAssetManager_openDir(app->activity->assetManager, "models");
-          const char *fileName;
-          fileName = AAssetDir_getNextFileName(dir);
-          while (fileName != nullptr) {
-              LOGE("%s", fileName);
-              std::string fileNameString(fileName);
-              if (fileNameString.find(".mtl") != -1) {
-                  fileName = AAssetDir_getNextFileName(dir);
-                  continue;
-              }
-
-              loading_info_mutex.lock();
-              sprintf(loading_info, "Loading: %s", fileName);
-              loading_info_mutex.unlock();
-
-              std::vector<OBJLoader::OBJ> modelData;
-              std::unordered_map<std::string, MTL> mtllib;
-
-              OBJLoader::LoadOBJ(app->activity->assetManager,
-                                 ("models/" + fileNameString).c_str(),
-                                 mtllib,
-                                 modelData);
-
-              for (auto obj : modelData) {
-                  std::string mtlName = obj.material_name;
-                  if (loaded_materials.find(mtlName) == loaded_materials.end()) {
-                      MTL currMTL = mtllib[obj.material_name];
-                      addTexture(currMTL.map_Ka);
-                      addTexture(currMTL.map_Kd);
-                      addTexture(currMTL.map_Ks);
-                      addTexture(currMTL.map_Ns);
-                      addTexture(currMTL.map_Bump);
-                      MaterialAttributes newMTL;
-                      newMTL.ambient = currMTL.ambient;
-                      newMTL.specular = glm::vec4(currMTL.specular, currMTL.specular_exponent);
-                      newMTL.diffuse = currMTL.diffuse;
-                      std::vector<std::shared_ptr<Texture>> myTextures = {
-                              loaded_textures[currMTL.map_Kd],
-                              loaded_textures[currMTL.map_Ks],
-                              loaded_textures[currMTL.map_Ke],
-                              loaded_textures[currMTL.map_Ns],
-                              loaded_textures[currMTL.map_Bump]};
-                      loaded_materials[mtlName] = std::make_shared<Material>(*renderer,
-                                                                             shaders,
-                                                                             myTextures,
-                                                                             newMTL);
-                  }
-                  geometries.push_back(
-                          std::make_shared<Geometry>(*device, obj.vertex_buffer, obj.index_buffer));
-                  render_graph_mutex.lock();
-                  render_graph->AddMesh(std::make_shared<Mesh>(*renderer,
-                                                               loaded_materials[mtlName],
-                                                               geometries.back()));
-                  render_graph_mutex.unlock();
-              }
-              fileName = AAssetDir_getNextFileName(dir);
-          }
-          loading_info_mutex.lock();
-          sprintf(loading_info, " ");
-          loading_info_mutex.unlock();
-          done_loading = true;
-      });
+    currently_loading = true;
+    load_thread = new std::thread([] {
+        LoadDemoModels();
+        currently_loading = false;
     });
+
 #endif
+    user_interface->RegisterButton([](Button &button) {
+      button.on_up_ = ToggleMipmaps;
+      button.SetLabel("Mipmap Switch");
+      button.SetPosition(.5, .2, 0, .2);
+    });
 
     timing::PrintEvent(*timing::timer.GetLastMajorEvent());
     app_initialized_once = true;
@@ -710,6 +745,14 @@ void DestroyWindow(void) {
 }
 
 void DeleteVulkan(void) {
+  device_mutex.lock();
+  if (currently_loading) {
+    load_thread->detach();
+    delete load_thread;
+  }
+  load_thread = nullptr;
+  device_mutex.unlock();
+
   vkDeviceWaitIdle(device->GetDevice());
 
   delete renderer;
@@ -734,6 +777,7 @@ void DeleteVulkan(void) {
   baseline_materials.clear();
   geometries.clear();
   shaders.reset();
+
   delete device;
 }
 
@@ -741,8 +785,8 @@ bool VulkanDrawFrame(input::Data *input_data) {
   if (device->GetWindowResized()) {
     OnOrientationChange();
   }
-  if (done_loading) {
-      load_thread = nullptr;
+  if (!currently_loading) {
+    load_thread = nullptr;
   }
   current_time = std::chrono::high_resolution_clock::now();
   frame_time = std::chrono::duration<float>(current_time - last_time).count();
@@ -813,7 +857,11 @@ bool VulkanDrawFrame(input::Data *input_data) {
                                    timing::timer.GetLastMajorEvent()->number,
                                    &fps,
                                    &frame_time);
-        sprintf(fps_info, "%2.d FPS  %.3f ms", fps, frame_time);
+        sprintf(fps_info,
+                "%2.d FPS  %.3f ms mipmaps: %s",
+                fps,
+                frame_time,
+                renderer->MipMapEnabled() ? "enabled" : "disabled");
 
         loading_info_mutex.lock();
         user_interface->DrawUserInterface(render_pass);

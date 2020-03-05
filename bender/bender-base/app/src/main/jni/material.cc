@@ -11,7 +11,7 @@ std::shared_ptr<Texture> Material::default_texture_ = nullptr;
 void Material::CreateDefaultTexture(Renderer &renderer) {
   if (default_texture_ != nullptr) { return; }
   unsigned char img_data[4] = {255, 255, 255, 0};
-  default_texture_ = std::make_shared<Texture>(renderer.GetDevice(), img_data, 1, 1,
+  default_texture_ = std::make_shared<Texture>(renderer, img_data, 1, 1,
                                                VK_FORMAT_R8G8B8A8_SRGB);
 }
 
@@ -19,6 +19,7 @@ Material::Material(Renderer &renderer, std::shared_ptr<ShaderState> shaders,
                    std::vector<std::shared_ptr<Texture>> &texture, const MaterialAttributes &attrs) :
     renderer_(renderer) {
   shaders_ = shaders;
+  max_mip_levels = 0;
   for (auto currTexture : texture) {
     if (currTexture == nullptr){
       CreateDefaultTexture(renderer);
@@ -26,6 +27,9 @@ Material::Material(Renderer &renderer, std::shared_ptr<ShaderState> shaders,
     }
     else{
       texture_.push_back(currTexture);
+      if(currTexture->GetMipLevel() > max_mip_levels) {
+        max_mip_levels = currTexture->GetMipLevel();
+      }
     }
   }
   material_attributes_ = attrs;
@@ -50,15 +54,15 @@ void Material::CreateSampler() {
     .pNext = nullptr,
     .magFilter = VK_FILTER_LINEAR,
     .minFilter = VK_FILTER_LINEAR,
-    .mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST,
+    .mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR,
     .addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
     .addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,
     .addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT,
     .mipLodBias = 0.0f,
     .maxAnisotropy = 1,
     .compareOp = VK_COMPARE_OP_NEVER,
-    .minLod = 0.0f,
-    .maxLod = 0.0f,
+    .minLod = 5.0f,
+    .maxLod = static_cast<float>(max_mip_levels),
     .borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE,
     .unnormalizedCoordinates = VK_FALSE,
   };
@@ -103,20 +107,7 @@ void Material::CreateMaterialDescriptorSetLayout() {
                                         &material_descriptors_layout_));
 }
 
-void Material::CreateMaterialDescriptorSets() {
-  std::vector<VkDescriptorSetLayout> layouts(renderer_.GetDevice().GetDisplayImages().size(),
-                                           material_descriptors_layout_);
-
-  VkDescriptorSetAllocateInfo alloc_info = {
-          .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-          .descriptorPool = renderer_.GetDescriptorPool(),
-          .descriptorSetCount = static_cast<uint32_t>(renderer_.GetDevice().GetDisplayImages().size()),
-          .pSetLayouts = layouts.data(),
-  };
-
-  material_descriptor_sets_.resize(renderer_.GetDevice().GetDisplayImages().size());
-  CALL_VK(vkAllocateDescriptorSets(renderer_.GetVulkanDevice(), &alloc_info, material_descriptor_sets_.data()));
-
+void Material::UpdateMaterialDescriptorSets() {
   MaterialAttributes attrs = material_attributes_;
 
   for (size_t i = 0; i < renderer_.GetDevice().GetDisplayImages().size(); i++) {
@@ -162,4 +153,21 @@ void Material::CreateMaterialDescriptorSets() {
     vkUpdateDescriptorSets(renderer_.GetVulkanDevice(), descriptor_writes.size(), descriptor_writes.data(),
                            0, nullptr);
   }
+}
+
+void Material::CreateMaterialDescriptorSets() {
+  std::vector<VkDescriptorSetLayout> layouts(renderer_.GetDevice().GetDisplayImages().size(),
+                                           material_descriptors_layout_);
+
+  VkDescriptorSetAllocateInfo alloc_info = {
+          .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+          .descriptorPool = renderer_.GetDescriptorPool(),
+          .descriptorSetCount = static_cast<uint32_t>(renderer_.GetDevice().GetDisplayImages().size()),
+          .pSetLayouts = layouts.data(),
+  };
+
+  material_descriptor_sets_.resize(renderer_.GetDevice().GetDisplayImages().size());
+  CALL_VK(vkAllocateDescriptorSets(renderer_.GetVulkanDevice(), &alloc_info, material_descriptor_sets_.data()));
+
+  UpdateMaterialDescriptorSets();
 }
