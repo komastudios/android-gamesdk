@@ -16,6 +16,24 @@
       "revId": "46aed58653199beb043cb7eb793f778996c8b890",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0f66a11e_d4946ab2",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 871,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-05T22:20:38Z",
+      "side": 0,
+      "message": "Good call yea we can definitely get rid of those functions too and just use the destructors now :)",
+      "parentUuid": "bc6a44e3_701ff829",
+      "revId": "46aed58653199beb043cb7eb793f778996c8b890",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
