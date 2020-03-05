@@ -36,10 +36,11 @@ class Material {
 
   VkDescriptorSetLayout GetMaterialDescriptorSetLayout() const { return material_descriptors_layout_; }
   VkDescriptorSet GetMaterialDescriptorSet(uint_t frame_index) const { return material_descriptor_sets_[frame_index]; }
+  void UpdateMaterialDescriptorSets();
 
   static void CleanupStatic() { default_texture_->Cleanup(); }
-  static void OnResumeStatic(benderkit::Device &device,
-                             android_app *app) { default_texture_->OnResume(device, app); }
+  static void OnResumeStatic(Renderer *renderer,
+                             android_app *app) { default_texture_->OnResume(renderer, app); }
   static void DefaultTextureGenerator(uint8_t *data);
 
  private:
@@ -58,6 +59,7 @@ class Material {
   std::vector<VkDescriptorSet> material_descriptor_sets_;
 
   std::shared_ptr<ShaderState> GetShaders() const { return shaders_; }
+  uint32_t max_mip_levels;
 
   void CreateDefaultTexture(Renderer &renderer);
   void CreateSampler();
