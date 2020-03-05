@@ -13,6 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * This test intends to exhaust the device memory through recurring allocation. It's ready to free
+ * all allocated memory upon a system sign that is based on different test scenarios. These are:
+ *
+ * * Out-of-Memory (OOM). Android has a scoring mechanism to measure chances for an app to hit the
+ *                        memory heap limit. We release memory when the score reaches certain limit.
+ * * Low Memory. The OS turns on an indication that the process is under a low memory scenario. We
+ *               release memory when such indication is on.
+ * * Try Alloc. We allocate memory until the OS denies further allocation. Then we release all.
+ * * Commit Limit. The amount of RAM plus pagefile (virtual memory). When the total allocated memory
+ *                 exceeds this limit, we release all.
+ *
+ * Input configuration:
+ * - scenario: which of the constrained memory scenarios this test is about. Possible values are
+ *             oom, low_memory, try_alloc and memory_limit.
+ * - alloc_size_bytes: how much memory, in bytes, to allocate at a time. Default: zero.
+ * - alloc_period: interval between two allocation loop iterations. Default: no wait.
+ * - on_trim_triggers_free: if true, if the system issues an onTrimMemory() callback, it releases
+ *                          all the allocated memory so far.
+ * - restart_pause: if on_trim_triggers_free is true, time to wait before resuming the loop.
+ *                  Default is one second.
+ *
+ * Output report:
+ * - total_allocation_bytes: how much memory is being allocated since last release.
+ * - sys_mem_info: memory stats gathered from the OS:
+ *   - native_allocated: in bytes, system-wise.
+ *   - available_memory: in bytes, system-wise.
+ *   - oom_score: OS metric of proximity to the heap size limit.
+ *   - low_memory: system indication of overall memory getting exhausted.
+ * Besides these data points, the following are optional event indicators:
+ * - is_malloc_fail: the last memory allocation was unsuccessful.
+ * - is_free: if present, the trace is written upon memory release.
+ *   - free_cause: the cause that corresponds to the chosen scenario.
+ * - is_on_trim: Android just issued an onTrimMemory() callback.
+ *   - on_trim_level: which level of trimming the OS called back with.
+ *   - total_on_trims: accumulative counter.
+ *   - trim_level_histogram: map of on_trim_level and the many times each was trimmed.
+ * - is_restart: the allocation loop resumes after the pause imposed by an onTrimMemory() event.
+ */
+
 #include <thread>
 #include <mutex>
 #include <sstream>
@@ -30,14 +71,16 @@ using namespace ancer;
 
 namespace {
 constexpr Log::Tag TAG{"MemoryAllocOperation"};
-constexpr auto BYTES_PER_MB = 1024.0*1024.0;
-constexpr auto MB_PER_BYTE = 1/BYTES_PER_MB;
-constexpr auto SCENARIO_TRY_ALLOC_BYTES = 32*1024*1024;
 
-constexpr const char *SCENARIO_OOM = "oom";
-constexpr const char *SCENARIO_LOW_MEMORY = "low_memory";
-constexpr const char *SCENARIO_TRY_ALLOC = "try_alloc";
-constexpr const char *SCENARIO_COMMIT_LIMIT = "commit_limit";
+constexpr auto kBytesPerMb = 1024.0*1024.0;
+constexpr auto kMbPerByte = 1/kBytesPerMb;
+constexpr auto kOomScoreLimit = 650;
+constexpr auto kTryAllocSize = 32*1024*1024;
+
+constexpr const char *kScenarioOom = "oom";
+constexpr const char *kScenarioLowMemory = "low_memory";
+constexpr const char *kScenarioTryAlloc = "try_alloc";
+constexpr const char *kScenarioCommitLimit = "commit_limit";
 }
 
 //==================================================================================================
@@ -75,7 +118,7 @@ struct sys_mem_info {
   }
 };
 
-void WriteDatum(report_writers::Struct w, const sys_mem_info& i) {
+void WriteDatum(report_writers::Struct w, const sys_mem_info &i) {
   ADD_DATUM_MEMBER(w, i, native_allocated);
   ADD_DATUM_MEMBER(w, i, available_memory);
   ADD_DATUM_MEMBER(w, i, oom_score);
@@ -85,13 +128,12 @@ void WriteDatum(report_writers::Struct w, const sys_mem_info& i) {
 //--------------------------------------------------------------------------------------------------
 
 struct datum {
-  Timestamp timestamp;
   sys_mem_info sys_mem_info;
   long total_allocation_bytes = 0;
 
   bool is_on_trim = false;
   int on_trim_level = 0;
-  int total_on_trims = 0;
+  long total_on_trims = 0;
   std::map<std::string, int> trim_level_histogram;
   bool is_free = false;
   std::string free_cause;
@@ -109,7 +151,7 @@ struct datum {
   }
 
   static datum
-  on_trim(int trim_level, int total_on_trims, const std::map<int, int> &trim_hist) {
+  on_trim(int trim_level, long total_on_trims, const std::map<int, int> &trim_hist) {
     datum d;
     d.is_on_trim = true;
     d.on_trim_level = trim_level;
@@ -136,25 +178,24 @@ struct datum {
   }
 };
 
-void WriteDatum(report_writers::Struct w, const datum& d) {
-    if ( d.is_free ) {
-        w.AddItem("is_free", true);
-        ADD_DATUM_MEMBER(w, d, free_cause);
-    } else if ( d.is_restart ) {
-        w.AddItem("is_restart", true);
-    } else if ( d.is_on_trim ) {
-        w.AddItem("is_on_trim", true);
-        ADD_DATUM_MEMBER(w, d, on_trim_level);
-        ADD_DATUM_MEMBER(w, d, total_on_trims);
-        ADD_DATUM_MEMBER(w, d, trim_level_histogram);
-    } else if ( d.is_malloc_fail ) {
-        w.AddItem("is_malloc_fail", true);
-    }
+void WriteDatum(report_writers::Struct w, const datum &d) {
+  if (d.is_free) {
+    w.AddItem("is_free", true);
+    ADD_DATUM_MEMBER(w, d, free_cause);
+  } else if (d.is_restart) {
+    w.AddItem("is_restart", true);
+  } else if (d.is_on_trim) {
+    w.AddItem("is_on_trim", true);
+    ADD_DATUM_MEMBER(w, d, on_trim_level);
+    ADD_DATUM_MEMBER(w, d, total_on_trims);
+    ADD_DATUM_MEMBER(w, d, trim_level_histogram);
+  } else if (d.is_malloc_fail) {
+    w.AddItem("is_malloc_fail", true);
+  }
 
-    ADD_DATUM_MEMBER(w, d, timestamp);
-    ADD_DATUM_MEMBER(w, d, total_allocation_bytes);
-    w.AddItem("total_allocation_mb", d.total_allocation_bytes * MB_PER_BYTE);
-    ADD_DATUM_MEMBER(w, d, sys_mem_info);
+  ADD_DATUM_MEMBER(w, d, total_allocation_bytes);
+  w.AddItem("total_allocation_mb", d.total_allocation_bytes*kMbPerByte);
+  ADD_DATUM_MEMBER(w, d, sys_mem_info);
 }
 }
 
@@ -238,16 +279,16 @@ class MemoryAllocOperation : public BaseOperation {
 
       // check for cleanup scenarios
       auto info = GetMemoryInfo();
-      if (_configuration.scenario==SCENARIO_OOM && info._oom_score > 650) {
-        FreeBuffers(SCENARIO_OOM);
-      } else if (_configuration.scenario==SCENARIO_LOW_MEMORY && info.low_memory) {
-        FreeBuffers(SCENARIO_LOW_MEMORY);
-      } else if (_configuration.scenario==SCENARIO_TRY_ALLOC
-          && !TryAlloc(SCENARIO_TRY_ALLOC_BYTES)) {
-        FreeBuffers(SCENARIO_TRY_ALLOC);
-      } else if (_configuration.scenario==SCENARIO_COMMIT_LIMIT
+      if (_configuration.scenario==kScenarioOom && info._oom_score > kOomScoreLimit) {
+        FreeBuffers(kScenarioOom);
+      } else if (_configuration.scenario==kScenarioLowMemory && info.low_memory) {
+        FreeBuffers(kScenarioLowMemory);
+      } else if (_configuration.scenario==kScenarioTryAlloc
+          && !TryAlloc(kTryAllocSize)) {
+        FreeBuffers(kScenarioTryAlloc);
+      } else if (_configuration.scenario==kScenarioCommitLimit
           && info.native_heap_allocation_size > info.commit_limit) {
-        FreeBuffers(SCENARIO_COMMIT_LIMIT);
+        FreeBuffers(kScenarioCommitLimit);
       }
 
       if (!IsStopped()) {
@@ -261,7 +302,6 @@ class MemoryAllocOperation : public BaseOperation {
     if (GetMode()==Mode::DataGatherer) {
       // stuff in the common information all reports will bear
       d.sys_mem_info = sys_mem_info(GetMemoryInfo());
-      d.timestamp = SteadyClock::now();
       d.total_allocation_bytes = _total_allocation_bytes;
       Report(d);
     }
@@ -274,7 +314,7 @@ class MemoryAllocOperation : public BaseOperation {
       Log::W(
           TAG,
           "malloc() returned null; current allocation total is: %.2f (mb) - stopping...",
-          (_total_allocation_bytes*MB_PER_BYTE));
+          (_total_allocation_bytes*kMbPerByte));
       ReportDatum(datum::malloc_fail());
       FreeBuffers("malloc_fail");
       Stop();
