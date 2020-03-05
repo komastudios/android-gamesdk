@@ -30,12 +30,6 @@ ShaderState::ShaderState(std::string shader_name, const benderkit::VertexFormat&
   };
 }
 
-void ShaderState::OnResume(VkDevice app_device){
-  device_ = app_device;
-  SetVertexShader("shaders/" + file_name_ + ".vert");
-  SetFragmentShader("shaders/" + file_name_ + ".frag");
-}
-
 void ShaderState::SetVertexShader(const std::string &name) {
   VkShaderModule shader;
   LoadShaderFromFile((name + ".spv").c_str(), &shader);

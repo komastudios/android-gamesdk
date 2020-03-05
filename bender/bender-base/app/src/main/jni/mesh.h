@@ -29,9 +29,9 @@ struct ModelViewProjection {
 
 class Mesh {
 public:
-  Mesh(Renderer *renderer, std::shared_ptr<Material> material, std::shared_ptr<Geometry> geometry_data);
+  Mesh(Renderer &renderer, std::shared_ptr<Material> material, std::shared_ptr<Geometry> geometry_data);
 
-  Mesh(Renderer *renderer, std::shared_ptr<Material> material, const std::vector<float>& vertex_data,
+  Mesh(Renderer &renderer, std::shared_ptr<Material> material, const std::vector<float>& vertex_data,
           const std::vector<uint16_t>& index_data);
 
   Mesh(const Mesh &other, std::shared_ptr<Geometry> geometry);
@@ -40,8 +40,6 @@ public:
   ~Mesh();
 
   void Cleanup();
-
-  void OnResume(Renderer *renderer);
 
   void UpdatePipeline(VkRenderPass render_pass);
 
@@ -69,7 +67,7 @@ public:
 private:
   std::unique_ptr<UniformBufferObject<ModelViewProjection>> mesh_buffer_;
 
-  Renderer *renderer_;
+  Renderer &renderer_;
 
   const std::shared_ptr<Material> material_;
   const std::shared_ptr<Geometry> geometry_;

@@ -27,6 +27,9 @@ void handle_cmd(android_app *app, int32_t cmd) {
       StartVulkan(app);
       break;
     case APP_CMD_TERM_WINDOW:
+      DestroyWindow();
+      break;
+    case APP_CMD_DESTROY:
       // The window is being hidden or closed, clean it up.
       DeleteVulkan();
       break;

@@ -38,8 +38,6 @@ class ShaderState {
 
   void Cleanup();
 
-  void OnResume(VkDevice app_device);
-
   void FillPipelineInfo(VkGraphicsPipelineCreateInfo *pipeline_info);
 
 
