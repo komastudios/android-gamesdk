@@ -24,9 +24,8 @@ Texture::Texture(benderkit::Device &device,
                  uint8_t *img_data,
                  uint32_t img_width,
                  uint32_t img_height,
-                 VkFormat texture_format,
-                 std::function<void(uint8_t *)> generator)
-    : device_(device), texture_format_(texture_format), generator_(generator) {
+                 VkFormat texture_format)
+    : device_(device), texture_format_(texture_format) {
   tex_width_ = img_width;
   tex_height_ = img_height;
   CALL_VK(CreateTexture(img_data, VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
@@ -36,44 +35,18 @@ Texture::Texture(benderkit::Device &device,
 Texture::Texture(benderkit::Device &device,
                  android_app &android_app_ctx,
                  const std::string &texture_file_name,
-                 VkFormat texture_format,
-                 std::function<void(uint8_t *)> generator)
-    : device_(device), texture_format_(texture_format), generator_(generator) {
+                 VkFormat texture_format)
+    : device_(device), texture_format_(texture_format) {
   unsigned char *img_data = LoadFileData(android_app_ctx, texture_file_name.c_str());
-  file_name_ = texture_file_name;
   CALL_VK(CreateTexture(img_data, VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
   CreateImageView();
   stbi_image_free(img_data);
 }
 
 Texture::~Texture() {
-  Cleanup();
-}
-
-void Texture::Cleanup() {
   vkDestroyImageView(device_.GetDevice(), view_, nullptr);
   vkDestroyImage(device_.GetDevice(), image_, nullptr);
   vkFreeMemory(device_.GetDevice(), mem_, nullptr);
-}
-
-void Texture::OnResume(benderkit::Device &device, android_app *app) {
-  if (generator_ != nullptr) {
-    unsigned char
-        *img_data = (unsigned char *) malloc(tex_height_ * tex_width_ * 4 * sizeof(unsigned char));
-    generator_(img_data);
-    CALL_VK(CreateTexture(img_data,
-                          VK_IMAGE_USAGE_SAMPLED_BIT,
-                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
-    CreateImageView();
-    delete img_data;
-  } else {
-    unsigned char *img_data = LoadFileData(*app, file_name_.c_str());
-    CALL_VK(CreateTexture(img_data,
-                          VK_IMAGE_USAGE_SAMPLED_BIT,
-                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
-    CreateImageView();
-    stbi_image_free(img_data);
-  }
 }
 
 unsigned char *Texture::LoadFileData(android_app &app, const char *file_path) {
@@ -190,8 +163,6 @@ VkResult Texture::CreateTexture(uint8_t *img_data,
 
     vkUnmapMemory(device_.GetDevice(), mem_);
   }
-
-  image_layout_ = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
   VkCommandPoolCreateInfo cmd_pool_create_info{
       .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,

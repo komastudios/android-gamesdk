@@ -76,6 +76,19 @@ Device::~Device() {
   vkDestroyInstance(instance_, nullptr);
 }
 
+void Device::CreateSurface(ANativeWindow *platform_window) {
+  VkAndroidSurfaceCreateInfoKHR create_info {
+      .sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR,
+      .pNext = nullptr,
+      .flags = 0,
+      .window = platform_window};
+
+  CALL_VK(vkCreateAndroidSurfaceKHR(instance_, &create_info, nullptr,
+                                    &surface_));
+
+  CreateSwapChain();
+}
+
 void Device::Present(VkSemaphore* wait_semaphores) {
   VkResult result;
   VkSwapchainKHR swapchains[] = { GetSwapchain() };

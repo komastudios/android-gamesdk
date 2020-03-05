@@ -94,6 +94,8 @@ namespace benderkit {
 
         void CreateSwapChain(VkSwapchainKHR old_swapchain = VK_NULL_HANDLE);
 
+        void CreateSurface(ANativeWindow *platform_window);
+
     private:
         bool initialized_;
 
