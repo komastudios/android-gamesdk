@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bc6a44e3_701ff829",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 871,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-05T21:15:23Z",
+      "side": 0,
+      "message": "Now that we\u0027re not needing to resume everything, is there any functional purpose to using Cleanup() instead of the destructors? Can we just get rid of the Cleanup() for most things?",
+      "revId": "46aed58653199beb043cb7eb793f778996c8b890",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}

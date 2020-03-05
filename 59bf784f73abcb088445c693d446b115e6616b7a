@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c13e1010_ff457320",
+        "filename": "bender/bender-base/app/src/main/jni/android_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-05T21:15:23Z",
+      "side": 1,
+      "message": "Minor nit, probs get rid of these comments or update to be accurate.",
+      "revId": "59bf784f73abcb088445c693d446b115e6616b7a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
