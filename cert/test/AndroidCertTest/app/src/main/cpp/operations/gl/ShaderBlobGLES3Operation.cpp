@@ -14,6 +14,39 @@
  * limitations under the License.
  */
 
+/**
+ * This performance test measures the compilation time of 1...2^N shaders
+ * as well as the time to load the same shaders cached as a blob file on disk.
+ * The goal is to gather data for comparing the effectiveness of
+ *
+ * Care was taken to attempt to prevent driver-level caching of shaders (which
+ * can be observed on some devices) by introducing a unique uniform name into
+ * each shader so that no two shaders are the same.
+ *
+ * The shader is presumably as complex as what might be found in a high-end
+ * mobile game. (That is to say, the compilation times we get for N copies of
+ * this shader resemble times we see reported in some developer talks. See
+ * "Vulkan on Android: Gotchas and best practices" from GDC 2018, slide 21.)
+ *
+ * Input configuration:
+ * - debug_only: set to true if debugging the shader (bypasses reporting),
+ * otherwise set to false.
+ * - trials: the number of trials run (over which results can be averaged).
+ * - iterations: total number of iterations in a trial; each iteration has twice
+ * the number of shaders as the previous iteration, so we get 1, 2, 4, ... 2^N
+ * shaders generated where N is `iterations`.
+ *
+ * Output report:
+ * Each line of output reports the results of one iteration.
+ * - trial: the trial number (zero-based) associated with the current iteration.
+ * - shader_program_count: the number of shader programs generated for the
+ * current iteration.
+ * - compile_time_milliseconds: the measured time in milliseconds that elapsed
+ * while compiling `shader_program_count` programs.
+ * - cache_load_time_milliseconds: the measured time in milliseconds that
+ * elapsed while loading `shader_program_count` programs from a blob on disk.
+ */
+
 #include <cmath>
 #include <chrono>
 #include <thread>
@@ -34,535 +67,497 @@
 
 using namespace ancer;
 
-// Purpose: Measures compilation time of 1...2^N shaders compared to the
-// equivalent time to load the program binaries from a blob stored to disk.
-
 //==============================================================================
 
 namespace {
-    constexpr Log::Tag TAG{"ShaderBlobGLES3Stressor"};
+constexpr Log::Tag TAG{"ShaderBlobGLES3Stressor"};
 }
 
 //==============================================================================
 
 namespace {
-    struct configuration {
-        bool debug_only = false;
-        int trials = 1;
-        int iterations = 1;
+struct configuration {
+  bool debug_only = false;
+  int trials = 1;
+  int iterations = 1;
 
-        void Validate() const {
-            if (iterations < 1) {
-                FatalError(TAG, "Configured number of 'iterations' "
-                                "must be 1 or greater.");
-            }
-
-            if (iterations > 12) {
-                FatalError(TAG, "Configured number of 'iterations' would generate "
-                                "more shader variants than the test "
-                                "supports (max 4096).");
-            }
-
-            if (trials < 1) {
-                FatalError(TAG, "Configured number of 'trials' must be 1 or greater.");
-            }
-        }
-    };
-
-    JSON_CONVERTER(configuration) {
-        JSON_OPTVAR(debug_only);
-        JSON_OPTVAR(trials);
-        JSON_OPTVAR(iterations);
+  void Validate() const {
+    if (iterations < 1) {
+      FatalError(TAG,
+                 "Configured number of 'iterations' "
+                 "must be 1 or greater.");
     }
+
+    if (iterations > 12) {
+      FatalError(TAG,
+                 "Configured number of 'iterations' would generate "
+                 "more shader variants than the test "
+                 "supports (max 4096).");
+    }
+
+    if (trials < 1) {
+      FatalError(TAG, "Configured number of 'trials' must be 1 or greater.");
+    }
+  }
+};
+
+JSON_CONVERTER(configuration) {
+  JSON_OPTVAR(debug_only);
+  JSON_OPTVAR(trials);
+  JSON_OPTVAR(iterations);
+}
 
 //------------------------------------------------------------------------------
 
-    struct datum {
-        int trial = 0;
-        int shader_program_count = 0;
-        float compile_time_milliseconds = 0.0F;
-        float cache_load_time_milliseconds = 0.0F; };
+struct datum {
+  int trial = 0;
+  int shader_program_count = 0;
+  float compile_time_milliseconds = 0.0F;
+  float cache_load_time_milliseconds = 0.0F;
+};
 
-    void WriteDatum(report_writers::Struct w, const datum& d) {
-        ADD_DATUM_MEMBER(w, d, trial);
-        ADD_DATUM_MEMBER(w, d, shader_program_count);
-        ADD_DATUM_MEMBER(w, d, compile_time_milliseconds);
-        ADD_DATUM_MEMBER(w, d, cache_load_time_milliseconds);
-    }
+void WriteDatum(report_writers::Struct w, const datum& d) {
+  ADD_DATUM_MEMBER(w, d, trial);
+  ADD_DATUM_MEMBER(w, d, shader_program_count);
+  ADD_DATUM_MEMBER(w, d, compile_time_milliseconds);
+  ADD_DATUM_MEMBER(w, d, cache_load_time_milliseconds);
 }
+}  // namespace
 
 //==============================================================================
 
 namespace {
 
-    // Returns the filename component of a file path.
-    std::string GetFilename(const std::string& path) {
-        // TODO(tmillican@google.com): Duplicated code, should probably use
-        //  std::filesystem anyway.
-        const size_t pos = path.find_last_of("/");
-        if (pos > path.size()) {
-            return path;
-        }
+// Returns the filename component of a file path.
+std::string GetFilename(const std::string& path) {
+  // TODO(tmillican@google.com): Duplicated code, should probably use
+  //  std::filesystem anyway.
+  const size_t pos = path.find_last_of("/");
+  if (pos > path.size()) {
+    return path;
+  }
 
-        return path.substr(pos + 1, path.size() - pos - 1);
-    }
-
-    // Returns the given path excluding the file extension and period.
-    std::string GetPathRemovingExtension(const std::string& path) {
-        const size_t pos = path.find_last_of(".");
-        if (pos > path.size()) {
-            return path;
-        }
-
-        return path.substr(0, pos);
-    }
-
-    // Returns the file extension from a file path.
-    std::string GetFileExtension(const std::string& path) {
-        const size_t pos = path.find_last_of(".");
-        if (pos > path.size()) {
-            return path;
-        }
-
-        return path.substr(pos + 1, path.size() - pos - 1);
-    }
-
-    // TODO (baxtermichael@google.com): Handle implication of regex input
-    std::string StringReplace(
-            const std::string& src,
-            const std::string& original,
-            const std::string& replacement)
-    {
-        std::string result;
-        std::regex exp{"\\b" + original + "\\b"};
-        std::regex_replace(std::back_inserter(result),
-                src.begin(), src.end(), exp, replacement);
-        return result;
-    }
-
-    std::string LoadTextFromFiles(const std::string& path) {
-        std::ifstream ifs{path};
-        if (!ifs.good()) {
-            FatalError(TAG, "Failed to open file : " + path);
-        }
-
-        std::stringstream ss;
-        ss << ifs.rdbuf();
-        ifs.close();
-
-        return ss.str();
-    }
-
-    bool SaveTextToFiles(const std::string& path, const std::string text) {
-        std::ofstream ofs{path};
-        if (!ofs.good()) {
-            return false;
-        }
-
-        ofs << text;
-        ofs.close();
-
-        return true;
-    }
-
-    std::vector<std::string> GenerateShaderVariants(
-            const std::string& src_path,
-            const std::string& dst_dir,
-            size_t num_variants,
-            const std::string& identifier) {
-
-        std::vector<std::string> paths;
-
-        const std::string shader_src = LoadText(src_path.c_str());
-
-        for (size_t i = 1; i < num_variants + 1; ++i) {
-
-            std::string dst_path = dst_dir;
-            dst_path += "/" + GetPathRemovingExtension(GetFilename(src_path));
-            dst_path += std::to_string(i);
-            dst_path += "." + GetFileExtension(src_path);
-
-            const std::string modified = StringReplace(shader_src, identifier,
-                    identifier + std::to_string(i));
-
-            if (!SaveTextToFiles(dst_path, modified)) {
-                FatalError(TAG, "Failed to create file to store"
-                                "shader variant : " + dst_path);
-            }
-
-            paths.push_back(dst_path);
-        }
-
-        return paths;
-    }
+  return path.substr(pos + 1, path.size() - pos - 1);
 }
+
+// Returns the given path excluding the file extension and period.
+std::string GetPathRemovingExtension(const std::string& path) {
+  const size_t pos = path.find_last_of(".");
+  if (pos > path.size()) {
+    return path;
+  }
+
+  return path.substr(0, pos);
+}
+
+// Returns the file extension from a file path.
+std::string GetFileExtension(const std::string& path) {
+  const size_t pos = path.find_last_of(".");
+  if (pos > path.size()) {
+    return path;
+  }
+
+  return path.substr(pos + 1, path.size() - pos - 1);
+}
+
+// TODO (baxtermichael@google.com): Handle implication of regex input
+std::string StringReplace(const std::string& src, const std::string& original,
+                          const std::string& replacement) {
+  std::string result;
+  std::regex exp{"\\b" + original + "\\b"};
+  std::regex_replace(std::back_inserter(result), src.begin(), src.end(), exp,
+                     replacement);
+  return result;
+}
+
+std::string LoadTextFromFiles(const std::string& path) {
+  std::ifstream ifs{path};
+  if (!ifs.good()) {
+    FatalError(TAG, "Failed to open file : " + path);
+  }
+
+  std::stringstream ss;
+  ss << ifs.rdbuf();
+  ifs.close();
+
+  return ss.str();
+}
+
+bool SaveTextToFiles(const std::string& path, const std::string text) {
+  std::ofstream ofs{path};
+  if (!ofs.good()) {
+    return false;
+  }
+
+  ofs << text;
+  ofs.close();
+
+  return true;
+}
+
+std::vector<std::string> GenerateShaderVariants(const std::string& src_path,
+                                                const std::string& dst_dir,
+                                                size_t num_variants,
+                                                const std::string& identifier) {
+  std::vector<std::string> paths;
+
+  const std::string shader_src = LoadText(src_path.c_str());
+
+  for (size_t i = 1; i < num_variants + 1; ++i) {
+    std::string dst_path = dst_dir;
+    dst_path += "/" + GetPathRemovingExtension(GetFilename(src_path));
+    dst_path += std::to_string(i);
+    dst_path += "." + GetFileExtension(src_path);
+
+    const std::string modified =
+        StringReplace(shader_src, identifier, identifier + std::to_string(i));
+
+    if (!SaveTextToFiles(dst_path, modified)) {
+      FatalError(TAG,
+                 "Failed to create file to store"
+                 "shader variant : " +
+                     dst_path);
+    }
+
+    paths.push_back(dst_path);
+  }
+
+  return paths;
+}
+}  // namespace
 
 //==============================================================================
 
 namespace {
 
-    class TestIteration {
-    public:
-
-        TestIteration(const std::string& vert_path,
+class TestIteration {
+ public:
+  TestIteration(const std::string& vert_path,
                 const std::vector<std::string>& frag_paths) {
+    const auto t1 = SteadyClock::now();
+    CompilePrograms(vert_path, frag_paths);
+    _compile_duration = SteadyClock::now() - t1;
 
-            const auto t1 = SteadyClock::now();
-            CompilePrograms(vert_path, frag_paths);
-            _compile_duration = SteadyClock::now() - t1;
+    CachePrograms();
 
-            CachePrograms();
+    const auto t2 = SteadyClock::now();
+    LoadCachedPrograms();
+    _cache_load_duration = SteadyClock::now() - t2;
+  }
 
-            const auto t2 = SteadyClock::now();
-            LoadCachedPrograms();
-            _cache_load_duration = SteadyClock::now() - t2;
-        }
+  // Prevent copies/moves that would prematurely
+  // destroy the underlying program object
+  TestIteration(const TestIteration&) = delete;
+  TestIteration& operator=(const TestIteration&) = delete;
+  TestIteration(const TestIteration&&) = delete;
+  TestIteration& operator=(const TestIteration&&) = delete;
 
-        // Prevent copies/moves that would prematurely
-        // destroy the underlying program object
-        TestIteration(const TestIteration&) = delete;
-        TestIteration& operator=(const TestIteration&) = delete;
-        TestIteration(const TestIteration&&) = delete;
-        TestIteration& operator=(const TestIteration&&) = delete;
+  ~TestIteration() {
+    for (auto& program : _compiled_programs) {
+      glDeleteProgram(program);
+      program = 0;
+    }
 
-        ~TestIteration() {
-            for (auto& program : _compiled_programs) {
-                glDeleteProgram(program);
-                program = 0;
-            }
+    for (auto& cached : _cached_programs) {
+      glDeleteProgram(cached.name);
+      cached.name = 0;
+      cached.length = 0;
+    }
 
-            for (auto& cached : _cached_programs) {
-                glDeleteProgram(cached.name);
-                cached.name = 0;
-                cached.length = 0;
-            }
+    std::remove(_blob_path.c_str());
+  }
 
-            std::remove(_blob_path.c_str());
-        }
+  datum GetDatum() const {
+    const auto compile_time =
+        duration_cast<MillisecondsAs<float>>(_compile_duration).count();
 
-        datum GetDatum() const {
+    const auto cache_load_time =
+        duration_cast<MillisecondsAs<float>>(_cache_load_duration).count();
 
-            const auto compile_time = duration_cast<MillisecondsAs<float>>(
-                    _compile_duration).count();
+    return datum{0, static_cast<int>(_compiled_programs.size()), compile_time,
+                 cache_load_time};
+  }
 
-            const auto cache_load_time = duration_cast<MillisecondsAs<float>>(
-                    _cache_load_duration).count();
+  // GetCompiledPrograms can be called during development/debugging
+  // to test or inspect any of the shader programs generated.
+  std::vector<GLuint> GetCompiledPrograms() const { return _compiled_programs; }
 
-            return datum{
-                0,
-                static_cast<int>(_compiled_programs.size()),
-                compile_time,
-                cache_load_time
-            };
-        }
+  // GetCachedPrograms can be called during development/debugging
+  // to test or inspect any of the shader programs generated.
+  std::vector<GLuint> GetCachedPrograms() const {
+    std::vector<GLuint> programs;
 
-        // GetCompiledPrograms can be called during development/debugging
-        // to test or inspect any of the shader programs generated.
-        std::vector<GLuint> GetCompiledPrograms() const {
-            return _compiled_programs;
-        }
+    for (const auto& p : _cached_programs) {
+      programs.push_back(p.name);
+    }
 
-        // GetCachedPrograms can be called during development/debugging
-        // to test or inspect any of the shader programs generated.
-        std::vector<GLuint> GetCachedPrograms() const {
+    return programs;
+  }
 
-            std::vector<GLuint> programs;
+ private:
+  struct CachedProgram {
+    GLuint name = 0;
+    GLenum format;
+    GLsizei length = 0;
+  };
 
-            for (const auto& p : _cached_programs) {
-                programs.push_back(p.name);
-            }
+  void CompilePrograms(const std::string& vert_path,
+                       const std::vector<std::string>& frag_paths) {
+    const std::string vert_source = LoadText(vert_path.c_str());
 
-            return programs;
-        }
+    for (const auto& frag_path : frag_paths) {
+      const std::string frag_source = LoadTextFromFiles(frag_path.c_str());
 
-    private:
+      GLuint program =
+          glh::CreateProgramSrc(vert_source.c_str(), frag_source.c_str());
 
-        struct CachedProgram {
-            GLuint name = 0;
-            GLenum format;
-            GLsizei length = 0;
-        };
+      _compiled_programs.push_back(program);
+    }
+  }
 
-        void CompilePrograms(
-                const std::string& vert_path,
-                const std::vector<std::string>& frag_paths) {
+  void CachePrograms() {
+    const size_t buf_size = 32 * 1024 * 1024;
+    void* buf = malloc(buf_size);
+    size_t buf_offset = 0;
 
-            const std::string vert_source = LoadText(vert_path.c_str());
+    for (auto program : _compiled_programs) {
+      const auto cached =
+          CacheProgram(program, (char*)buf + buf_offset, buf_size - buf_offset);
 
-            for (const auto& frag_path : frag_paths) {
-                const std::string frag_source = LoadTextFromFiles(frag_path.c_str());
+      buf_offset += static_cast<size_t>(cached.length);
 
-                GLuint program = glh::CreateProgramSrc(
-                        vert_source.c_str(),
-                        frag_source.c_str());
+      _cached_programs.push_back(cached);
+    }
 
-                _compiled_programs.push_back(program);
-            }
-        }
+    _blob_size = buf_offset;
+    SaveBlob(_blob_path, buf, _blob_size);
 
-        void CachePrograms() {
+    free(buf);
+  }
 
-            const size_t buf_size = 32 * 1024 * 1024;
-            void *buf = malloc(buf_size);
-            size_t buf_offset = 0;
+  CachedProgram CacheProgram(GLuint program, void* buf, size_t buf_size) {
+    GLsizei length;
+    GLenum format;
 
-            for (auto program : _compiled_programs) {
+    glGetProgramBinary(program, static_cast<GLsizei>(buf_size), &length,
+                       &format, buf);
 
-                const auto cached = CacheProgram(program,
-                        (char*)buf + buf_offset,
-                        buf_size - buf_offset);
+    const GLenum err = glGetError();
+    if (err) {
+      FatalError(TAG, "Failed to create shader program binary");
+    }
 
-                buf_offset += static_cast<size_t>(cached.length);
+    CachedProgram cached_program{};
+    cached_program.length = length;
+    cached_program.format = format;
 
-                _cached_programs.push_back(cached);
-            }
+    return cached_program;
+  }
 
-            _blob_size = buf_offset;
-            SaveBlob(_blob_path, buf, _blob_size);
+  void SaveBlob(const std::string& path, void* data, size_t bytes) {
+    std::ofstream f{_blob_path, std::ios::binary};
+    if (!f.good()) {
+      FatalError(TAG, "Failed to create shader blob file");
+    }
 
-            free(buf);
-        }
+    f.write(reinterpret_cast<char*>(data), bytes);
+  }
 
-        CachedProgram CacheProgram(GLuint program, void *buf, size_t buf_size) {
+  void LoadCachedPrograms() {
+    void* buf = malloc(_blob_size);
+    size_t buf_offset = 0;
 
-            GLsizei length;
-            GLenum format;
+    LoadBlob(_blob_path, buf, _blob_size);
 
-            glGetProgramBinary(program, static_cast<GLsizei>(buf_size),
-                    &length, &format, buf);
+    for (auto& cached_program : _cached_programs) {
+      LoadCachedProgram(cached_program, (char*)buf + buf_offset);
+      buf_offset += static_cast<size_t>(cached_program.length);
+    }
 
-            const GLenum err = glGetError();
-            if (err) {
-                FatalError(TAG, "Failed to create shader program binary");
-            }
+    free(buf);
+  }
 
-            CachedProgram cached_program{};
-            cached_program.length = length;
-            cached_program.format = format;
+  void LoadCachedProgram(CachedProgram& cached_program, void* buf) {
+    GLuint program = glCreateProgram();
+    if (!program) {
+      FatalError(TAG, "Failed to create shader program");
+    }
 
-            return cached_program;
-        }
+    glProgramBinary(program, cached_program.format, buf, cached_program.length);
 
-        void SaveBlob(const std::string& path, void *data, size_t bytes) {
+    if (glGetError()) {
+      FatalError(TAG, "Failed to create shader program from binary");
+    }
 
-            std::ofstream f{ _blob_path, std::ios::binary };
-            if (!f.good()) {
-                FatalError(TAG, "Failed to create shader blob file");
-            }
+    cached_program.name = program;
+  }
 
-            f.write(reinterpret_cast<char*>(data), bytes);
-        }
+  void LoadBlob(const std::string& path, void* buf, size_t bytes) {
+    std::ifstream f{path, std::ios::binary};
+    if (!f.good()) {
+      FatalError(TAG, "Failed to open shader blob file");
+    }
 
-        void LoadCachedPrograms() {
+    f.read(reinterpret_cast<char*>(buf), bytes);
+  }
 
-            void *buf = malloc(_blob_size);
-            size_t buf_offset = 0;
+ private:
+  Duration _compile_duration;
+  Duration _cache_load_duration;
 
-            LoadBlob(_blob_path, buf, _blob_size);
+  std::vector<GLuint> _compiled_programs;
 
-            for (auto& cached_program : _cached_programs) {
-                LoadCachedProgram(cached_program, (char*)buf + buf_offset);
-                buf_offset += static_cast<size_t>(cached_program.length);
-            }
-
-            free(buf);
-        }
-
-        void LoadCachedProgram(CachedProgram& cached_program, void *buf) {
-
-            GLuint program = glCreateProgram();
-            if (!program) {
-                FatalError(TAG, "Failed to create shader program");
-            }
-
-            glProgramBinary(program, cached_program.format, buf,
-                    cached_program.length);
-
-            if (glGetError()) {
-                FatalError(TAG, "Failed to create shader program from binary");
-            }
-
-            cached_program.name = program;
-        }
-
-        void LoadBlob(const std::string& path, void *buf, size_t bytes) {
-
-            std::ifstream f{path, std::ios::binary};
-            if (!f.good()) {
-                FatalError(TAG, "Failed to open shader blob file");
-            }
-
-            f.read(reinterpret_cast<char*>(buf), bytes);
-        }
-
-    private:
-
-        Duration _compile_duration;
-        Duration _cache_load_duration;
-
-        std::vector<GLuint> _compiled_programs;
-
-        const std::string _blob_path = InternalDataPath() + "/shader_blob.bin";
-        size_t _blob_size = 0;
-        std::vector<CachedProgram> _cached_programs;
-    };
-}
+  const std::string _blob_path = InternalDataPath() + "/shader_blob.bin";
+  size_t _blob_size = 0;
+  std::vector<CachedProgram> _cached_programs;
+};
+}  // namespace
 
 // =============================================================================
 
 class ShaderBlobGLES3Operation : public BaseGLES3Operation {
-public:
+ public:
+  ShaderBlobGLES3Operation() = default;
 
-    ShaderBlobGLES3Operation() = default;
+  ~ShaderBlobGLES3Operation() {
+    if (_configuration.debug_only) {
+      CleanupDrawableShader();
+    }
+  }
 
-    ~ShaderBlobGLES3Operation() {
-        if (_configuration.debug_only) {
-            CleanupDrawableShader();
-        }
+  void OnGlContextReady(const GLContextConfig& ctx_config) override {
+    Log::D(TAG, "GlContextReady");
+    _configuration = GetConfiguration<configuration>();
+    _configuration.Validate();
+
+    SetHeartbeatPeriod(500ms);
+
+    _egl_context = eglGetCurrentContext();
+    if (_egl_context == EGL_NO_CONTEXT) {
+      FatalError(TAG, "No EGL context available");
     }
 
-    void OnGlContextReady(const GLContextConfig& ctx_config) override {
-        Log::D(TAG, "GlContextReady");
-        _configuration = GetConfiguration<configuration>();
-        _configuration.Validate();
+    if (_configuration.debug_only) {
+      SetupDrawableShader();
+    } else {
+      RunTest();
+    }
+  }
 
-        SetHeartbeatPeriod(500ms);
+  void Draw(double delta_seconds) override {
+    BaseGLES3Operation::Draw(delta_seconds);
+    if (_configuration.debug_only) {
+      DrawShader(delta_seconds);
+    }
+  }
 
-        _egl_context = eglGetCurrentContext();
-        if (_egl_context == EGL_NO_CONTEXT) {
-            FatalError(TAG, "No EGL context available");
-        }
+  void OnHeartbeat(Duration elapsed) override {}
 
-        if (_configuration.debug_only) {
-            SetupDrawableShader();
-        } else {
-            RunTest();
-        }
+ private:
+  void RunTest() {
+    const int iterations = _configuration.iterations;
+    const int trials = _configuration.trials;
+
+    // Generate shader variants:
+    // We never want to use the same shader source twice.
+    // Since our largest iteration runs 2^(iterations) shaders,
+    // we will need twice that many shaders (e.g., as with mipmaps).
+    const int shader_count = 2 * trials * static_cast<int>(pow(2, iterations));
+
+    const auto frag_paths = GenerateShaderVariants(
+        _frag_path, InternalDataPath(), shader_count, "uTime");
+
+    // Run test iterations, 1, 2, 4 ... N
+    int frag_paths_offset = 0;
+    for (int trial = 0; trial < trials; ++trial) {
+      for (int i = 0; i <= iterations; ++i) {
+        std::vector<std::string> paths{frag_paths.begin() + frag_paths_offset,
+                                       frag_paths.begin() + frag_paths_offset +
+                                           static_cast<int>(pow(2, i))};
+        frag_paths_offset += static_cast<int>(paths.size());
+
+        TestIteration test(_vert_path, paths);
+
+        auto datum = test.GetDatum();
+        datum.trial = trial;
+        Report(datum);
+      }
     }
 
-    void Draw(double delta_seconds) override {
-        BaseGLES3Operation::Draw(delta_seconds);
-        if (_configuration.debug_only) {
-            DrawShader(delta_seconds);
-        }
+    // Clean up shader variants
+    for (const auto& frag_path : frag_paths) {
+      std::remove(frag_path.c_str());
+    }
+  }
+
+  //--------------------------------------------------------------------------
+  // The performance test only involves compiling shaders, not drawing them.
+  // Nevertheless, we want to make it easy to visually verify and debug
+  // shaders used in the test.
+
+  void SetupDrawableShader() {
+    // Since our test generates a bunch of variants of the same fragment
+    // shader and stores them in the user "files" directory, we only look
+    // for fragment shaders in that directory, even if the vertex shader
+    // is elsewhere. Thus, even when creating a shader for debug drawing,
+    // we need to place it in the same files directory.
+
+    const std::string src = LoadText(_frag_path.c_str());
+
+    const std::string dst_path =
+        InternalDataPath() + "/" + GetFilename(_frag_path);
+    if (!SaveTextToFiles(dst_path, src)) {
+      FatalError(TAG, "Failed to save drawable shader to files");
     }
 
-    void OnHeartbeat(Duration elapsed) override {
+    const std::vector<std::string> frag_paths = {dst_path};
+    _test = std::make_unique<TestIteration>(_vert_path, frag_paths);
+
+    const auto test_programs = _test->GetCachedPrograms();
+    if (test_programs.empty()) {
+      FatalError(TAG, "Test did not generate any valid shader programs");
     }
 
-private:
+    _prog = test_programs[0];
+    _screen_resolution_uniform_loc = glGetUniformLocation(_prog, "uResolution");
+    _time_uniform_loc = glGetUniformLocation(_prog, "uTime");
+  }
 
-    void RunTest() {
+  void CleanupDrawableShader() const {
+    const std::string path = InternalDataPath() + "/" + GetFilename(_frag_path);
+    std::remove(path.c_str());
+  }
 
-        const int iterations = _configuration.iterations;
-        const int trials = _configuration.trials;
+  void DrawShader(double delta_seconds) {
+    // Color and depth clear are handled by GLSurfaceViewHostActivity
 
-        // Generate shader variants:
-        // We never want to use the same shader source twice.
-        // Since our largest iteration runs 2^(iterations) shaders,
-        // we will need twice that many shaders (e.g., as with mipmaps).
-        const int shader_count = 2 * trials * static_cast<int>(pow(2, iterations));
+    const auto context_size = GetGlContextSize();
+    _elapsed_time += delta_seconds;
 
-        const auto frag_paths = GenerateShaderVariants(
-                _frag_path,
-                InternalDataPath(),
-                shader_count, "uTime");
+    glUseProgram(_prog);
 
-        // Run test iterations, 1, 2, 4 ... N
-        int frag_paths_offset = 0;
-        for (int trial = 0; trial < trials; ++trial) {
+    glUniform2f(_screen_resolution_uniform_loc, context_size.x, context_size.y);
+    glUniform1f(_time_uniform_loc, static_cast<float>(_elapsed_time));
 
-            for (int i = 0; i <= iterations; ++i) {
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+  }
 
-                std::vector<std::string> paths{
-                        frag_paths.begin() + frag_paths_offset,
-                        frag_paths.begin() + frag_paths_offset
-                            + static_cast<int>(pow(2, i))
-                };
-                frag_paths_offset += static_cast<int>(paths.size());
+ private:
+  configuration _configuration;
+  EGLContext _egl_context = EGL_NO_CONTEXT;
+  double _elapsed_time = 0.0;
 
-                TestIteration test(_vert_path, paths);
+  const std::string _vert_path =
+      "Shaders/ShaderBlobGLES3Operation/"
+      "implicit_fullscreen_triangle.vsh";
+  const std::string _frag_path =
+      "Shaders/ShaderBlobGLES3Operation/"
+      "iq_quadratics.fsh";
 
-                auto datum = test.GetDatum();
-                datum.trial = trial;
-                Report(datum);
-            }
-        }
-
-        // Clean up shader variants
-        for (const auto& frag_path : frag_paths) {
-            std::remove(frag_path.c_str());
-        }
-    }
-
-    //--------------------------------------------------------------------------
-    // The performance test only involves compiling shaders, not drawing them.
-    // Nevertheless, we want to make it easy to visually verify and debug
-    // shaders used in the test.
-
-    void SetupDrawableShader() {
-        // Since our test generates a bunch of variants of the same fragment
-        // shader and stores them in the user "files" directory, we only look
-        // for fragment shaders in that directory, even if the vertex shader
-        // is elsewhere. Thus, even when creating a shader for debug drawing,
-        // we need to place it in the same files directory.
-
-        const std::string src = LoadText(_frag_path.c_str());
-
-        const std::string dst_path = InternalDataPath()
-                + "/" + GetFilename(_frag_path);
-        if (!SaveTextToFiles(dst_path, src)) {
-            FatalError(TAG, "Failed to save drawable shader to files");
-        }
-
-        const std::vector<std::string> frag_paths = { dst_path };
-        _test = std::make_unique<TestIteration>(_vert_path, frag_paths);
-
-        const auto test_programs = _test->GetCachedPrograms();
-        if (test_programs.empty()) {
-            FatalError(TAG, "Test did not generate any valid shader programs");
-        }
-
-        _prog = test_programs[0];
-        _screen_resolution_uniform_loc = glGetUniformLocation(_prog, "uResolution");
-        _time_uniform_loc = glGetUniformLocation(_prog, "uTime");
-    }
-
-    void CleanupDrawableShader() const {
-        const std::string path = InternalDataPath()
-                                     + "/" + GetFilename(_frag_path);
-        std::remove(path.c_str());
-    }
-
-    void DrawShader(double delta_seconds) {
-        // Color and depth clear are handled by GLSurfaceViewHostActivity
-
-        const auto context_size = GetGlContextSize();
-        _elapsed_time += delta_seconds;
-
-        glUseProgram(_prog);
-
-        glUniform2f(_screen_resolution_uniform_loc, context_size.x, context_size.y);
-        glUniform1f(_time_uniform_loc, static_cast<float>(_elapsed_time));
-
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-    }
-
-private:
-
-    configuration _configuration;
-    EGLContext _egl_context = EGL_NO_CONTEXT;
-    double _elapsed_time = 0.0;
-
-    const std::string _vert_path = "Shaders/ShaderBlobGLES3Operation/"
-                                   "implicit_fullscreen_triangle.vsh";
-    const std::string _frag_path = "Shaders/ShaderBlobGLES3Operation/"
-                                   "iq_quadratics.fsh";
-
-    std::unique_ptr<TestIteration> _test;
-    GLuint _prog = 0;
-    GLint _screen_resolution_uniform_loc = 0;
-    GLint _time_uniform_loc = 0;
+  std::unique_ptr<TestIteration> _test;
+  GLuint _prog = 0;
+  GLint _screen_resolution_uniform_loc = 0;
+  GLint _time_uniform_loc = 0;
 };
 
 EXPORT_ANCER_OPERATION(ShaderBlobGLES3Operation)

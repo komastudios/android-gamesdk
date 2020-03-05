@@ -14,6 +14,124 @@
  * limitations under the License.
  */
 
+/**
+ * This operation gathers data to determine if EGL_ANDROID_get_frame_timestamps
+ * extension is present and works.
+ *
+ * The EGL frame timestamps extension allows the application to fetch timestamps
+ * related to frame compositing and frame processing. This can be used to
+ * determine latency and detect if frames are being displayed late.
+ *
+ * The extension provides for fetching three types of values related to surface
+ * composition, as well as nine types of events related to the rendering and
+ * processing of a frame. Additionally, it allows the application to query for
+ * the integer id associated with the next frame available for rendering.
+ *
+ * To test the availability of the extension, we will check if the extension
+ * is reported among the list of EGL extensions, as well as if function pointers
+ * for the extension's methods can be loaded from the EGL library on device.
+ * Additionally, we need to check that the rendering surface can be enabled to
+ * produce timestamp values.
+ *
+ * The remainder of the test consists of two independent parts: one that tests
+ * surface "composite" queries and one that tests frame timing queries. They are
+ * essentially parallel in that we must first check which queries are supported
+ * and then attempt to get values for each supported query. Since frame ids are
+ * not needed for surface composite queries, the "next frame id" query can be
+ * tested alongside the test for frame timing queries (where ids are required.)
+ *
+ * Input configuration:
+ * We may only want to begin sampling timestamp values once rendering has passed
+ * a certain point (for example, after the first few frames have rendered and
+ * the sequence of timestamps is more stable). However, we can't necessarily
+ * rely on EGL's `next frame id`s to start at zero and increase by one, so the
+ * test keeps its own count of the frame id, starting at zero. The following
+ * configuration is relative to that test-managed, zero-based frame id, and
+ * allows us to sample only a specific number of frames.
+ * - first_frame_id: integer id of first frame we consider
+ * - last_frame_id: integer id of last frame we consider
+ *
+ * Output report:
+ *
+ * - extension_availability_datum: info about the extension's availability.
+ *   - has_ext_egl_android_get_frame_timestamps:
+ *   - did_enable_surface_egl_timestamps: the EGL surface succeeded in
+ *       enabling timestamp collection.
+ *   - has_fp_get_compositor_timing_supported: the function pointer for
+ *       eglGetCompositorTimingSupportedANDROID was loaded and not null.
+ *   - has_fp_get_compositor_timing: the function pointer for
+ *       eglGetCompositorTimingANDROID was loaded and not null.
+ *   - has_fp_get_next_frame_id: the function pointer for
+ *       eglGetNextFrameIdANDROID was loaded and not null.
+ *   - has_fp_get_frame_timestamp_supported: the function pointer for
+ *       eglGetFrameTimestampSupportedANDROID was loaded and not null.
+ *   - has_fp_get_frame_timestamps: the function pointer for
+ *       eglGetFrameTimestampsANDROID was loaded and not null.
+ *
+ * - supported_composite_values_datum
+ *   - supports_composite_deadline: EGL_COMPOSITE_DEADLINE_ANDROID is supported.
+ *   - supports_composite_interval: EGL_COMPOSITE_INTERVAL_ANDROID is supported.
+ *   - supports_composite_to_present_latency:
+ *       EGL_COMPOSITE_TO_PRESENT_LATENCY_ANDROID is supported.
+ *
+ * - composite_value_datum
+ *   - measurement_name: either EGL_COMPOSITE_DEADLINE_ANDROID,
+ *                       EGL_COMPOSITE_INTERVAL_ANDROID,
+ *                       or EGL_COMPOSITE_TO_PRESENT_LATENCY_ANDROID.
+ *   - value_ns: the reported timestamp or duration value in nanoseconds.
+ *
+ * - supported_frame_timing_events_datum
+ *   - supports_requested_present_time: EGL_REQUESTED_PRESENT_TIME_ANDROID
+ *       timestamp query is supported.
+ *   - supports_rendering_complete_time: EGL_RENDERING_COMPLETE_TIME_ANDROID
+ *       timestamp query is supported.
+ *   - supports_composition_latch_time: EGL_COMPOSITION_LATCH_TIME_ANDROID
+ *       timestamp query is supported.
+ *   - supports_first_composition_start_time:
+ *       EGL_FIRST_COMPOSITION_START_TIME_ANDROID timestamp query is supported.
+ *   - supports_last_composition_start_time:
+ *       EGL_LAST_COMPOSITION_START_TIME_ANDROID timestamp query is supported.
+ *   - supports_first_composition_gpu_finished_time:
+ *       EGL_FIRST_COMPOSITION_GPU_FINISHED_TIME_ANDROID timestamp query is
+ *       supported.
+ *   - supports_display_present_time: EGL_DISPLAY_PRESENT_TIME_ANDROID timestamp
+ *       query is supported.
+ *   - supports_dequeue_ready_time: EGL_DEQUEUE_READY_TIME_ANDROID timestamp
+ *       query is supported.
+ *   - supports_reads_done_time: EGL_READS_DONE_TIME_ANDROID timestamp query is
+ *       supported.
+ *
+ * - next_frame_id_datum
+ *   - next_frame_id: the integer value returned by eglGetNextFrameIdANDROID.
+ *
+ * - frame_timing_datum
+ *   - frame_id: the frame id from eglGetNextFrameIdANDROID.
+ *   - event_name: either EGL_REQUESTED_PRESENT_TIME_ANDROID,
+ *                 EGL_RENDERING_COMPLETE_TIME_ANDROID,
+ *                 EGL_COMPOSITION_LATCH_TIME_ANDROID,
+ *                 EGL_FIRST_COMPOSITION_START_TIME_ANDROID,
+ *                 EGL_LAST_COMPOSITION_START_TIME_ANDROID,
+ *                 EGL_FIRST_COMPOSITION_GPU_FINISHED_TIME_ANDROID,
+ *                 EGL_DISPLAY_PRESENT_TIME_ANDROID,
+ *                 EGL_DEQUEUE_READY_TIME_ANDROID,
+ *                 or EGL_READS_DONE_TIME_ANDROID.
+ *   - value_ns: the reported timestamp value in nanoseconds.
+ *
+ * - frame_timing_error_datum
+ *   - frame_id: the frame id from eglGetNextFrameIdANDROID.
+ *   - event_name: either EGL_REQUESTED_PRESENT_TIME_ANDROID,
+ *                 EGL_RENDERING_COMPLETE_TIME_ANDROID,
+ *                 EGL_COMPOSITION_LATCH_TIME_ANDROID,
+ *                 EGL_FIRST_COMPOSITION_START_TIME_ANDROID,
+ *                 EGL_LAST_COMPOSITION_START_TIME_ANDROID,
+ *                 EGL_FIRST_COMPOSITION_GPU_FINISHED_TIME_ANDROID,
+ *                 EGL_DISPLAY_PRESENT_TIME_ANDROID,
+ *                 EGL_DEQUEUE_READY_TIME_ANDROID,
+ *                 or EGL_READS_DONE_TIME_ANDROID.
+ *   - error_message: description of why the timestamp could not be taken (for
+ *                    example, if the frame id expired).
+ */
+
 #define EGL_EGLEXT_PROTOTYPES
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
@@ -28,30 +146,6 @@ using namespace ancer;
 using std::string;
 using std::vector;
 
-// PURPOSE: Determine if EGL frame timestamps extension is present and works.
-
-// The `EGL_ANDROID_get_frame_timestamps` extension allows the application to
-// fetch timestamps related to frame compositing and frame processing. This can
-// be used to determine latency and detect if frames are being displayed late.
-//
-// The extension provides for fetching three types of values related to surface
-// composition, as well as nine types of events related to the rendering and
-// processing of a frame. Additionally, it allows the application to query for
-// the integer id associated with the next frame available for rendering.
-//
-// To test the availability of the extension, we will check if the extension
-// is reported among the list of EGL extensions, as well as if function pointers
-// for the extension's methods can be loaded from the EGL library on device.
-// Additionally, we need to check that the rendering surface can be enabled to
-// produce timestamp values.
-//
-// The remainder of the test consists of two independent parts: one that tests
-// surface composite queries and one that tests frame timing queries. They are
-// essentially parallel in that we must first check which queries are supported
-// and then attempt to get values for each supported query. Since frame ids are
-// not needed for surface composite queries, the "next frame id" query can be
-// tested alongside the test for frame timing queries (where ids are required.)
-
 // =============================================================================
 
 namespace {
@@ -62,8 +156,8 @@ const string extension_name = "EGL_ANDROID_get_frame_timestamps";
 // -----------------------------------------------------------------------------
 
 struct configuration {
-  int first_frame_id;  // id of first frame we consider
-  int last_frame_id;   // id of last frame we consider
+  int first_frame_id;
+  int last_frame_id;
 };
 
 JSON_CONVERTER(configuration) {
