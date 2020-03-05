@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "52d7e97d_4d2ebebc",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 360,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-05T19:57:13Z",
+      "side": 1,
+      "message": "What if we need to change by more than one swap interval? Like this, we need to wait another 5s (at least) before we switch again.",
+      "revId": "8a10041c91c258f7aad11b5ad71a276efbade46a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b3ab8cb7_10743dee",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 373,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-05T19:57:13Z",
+      "side": 1,
+      "message": "As above: what if we need to change by more than one swap interval? Like this, we need to wait another 5s (at least) before we switch again.",
+      "revId": "8a10041c91c258f7aad11b5ad71a276efbade46a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fc9ea469_eaa4a26b",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-05T19:57:13Z",
+      "side": 1,
+      "message": "This should be a std::deque and we use std::pop_front when un-queuing",
+      "revId": "8a10041c91c258f7aad11b5ad71a276efbade46a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1d5b7e43_dfe487b5",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-05T19:57:13Z",
+      "side": 1,
+      "message": "Can you make these consistent, so both are percentages or both are fractions? I\u0027d say if it is called NON_PIPELINE_PERCENT the range should be (0,100)",
+      "revId": "8a10041c91c258f7aad11b5ad71a276efbade46a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
