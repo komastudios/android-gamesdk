@@ -12,9 +12,8 @@ using namespace benderhelpers;
 
 Geometry::Geometry(benderkit::Device &device,
                    const std::vector<float> &vertex_data,
-                   const std::vector<uint16_t> &index_data,
-                   std::function<void(std::vector<float>&, std::vector<uint16_t>&)> generator)
-    : device_(device), generator_(generator) {
+                   const std::vector<uint16_t> &index_data)
+    : device_(device) {
   CreateVertexBuffer(vertex_data, index_data);
 
   for (int x = 0; x < vertex_data.size() / 14; x++){
@@ -33,28 +32,11 @@ Geometry::Geometry(benderkit::Device &device,
 }
 
 Geometry::~Geometry() {
-  Cleanup();
-}
-
-void Geometry::Cleanup() {
   vkDeviceWaitIdle(device_.GetDevice());
   vkDestroyBuffer(device_.GetDevice(), vertex_buf_, nullptr);
   vkFreeMemory(device_.GetDevice(), vertex_buffer_device_memory_, nullptr);
   vkDestroyBuffer(device_.GetDevice(), index_buf_, nullptr);
   vkFreeMemory(device_.GetDevice(), index_buffer_device_memory_, nullptr);
-}
-
-void Geometry::OnResume(benderkit::Device &device, const std::vector<float> &vertex_data, const std::vector<uint16_t> &index_data) {
-  device_ = device;
-  if (generator_ != nullptr){
-    std::vector<float> generated_vertices;
-    std::vector<uint16_t> generated_indices;
-    generator_(generated_vertices, generated_indices);
-    CreateVertexBuffer(generated_vertices, generated_indices);
-  }
-  else {
-    CreateVertexBuffer(vertex_data, index_data);
-  }
 }
 
 void Geometry::CreateVertexBuffer(const std::vector<float>& vertex_data, const std::vector<uint16_t>& index_data) {

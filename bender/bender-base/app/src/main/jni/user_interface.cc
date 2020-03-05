@@ -103,8 +103,3 @@ void UserInterface::RunHeldButtons() {
         if (button.IsHeld()) { button.OnButtonHold(); }
     }
 }
-
-void UserInterface::OnResume(Renderer *newRenderer, Font *font) {
-  renderer_ = newRenderer;
-  font_ = font;
-}

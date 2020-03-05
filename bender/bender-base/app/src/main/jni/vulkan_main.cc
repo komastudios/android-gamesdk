@@ -94,6 +94,7 @@ const glm::mat4 prerotate_270 = glm::rotate(kIdentityMat4, glm::three_over_two_p
 const glm::mat4 prerotate_180 = glm::rotate(kIdentityMat4, glm::pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
 
 bool app_initialized_once = false;
+bool is_presenting = false;
 std::thread *load_thread;
 bool done_loading = false;
 std::mutex render_graph_mutex;
@@ -133,7 +134,7 @@ void StrafeDown() {
   render_graph->TranslateCamera(-up * (kCameraStrafeSpeed / device->GetDisplaySize().height));
 }
 void CreateInstance() {
-  render_graph->AddMesh(std::make_shared<Mesh>(renderer,
+  render_graph->AddMesh(std::make_shared<Mesh>(*renderer,
                                                baseline_materials[materials_idx],
                                                geometries[poly_faces_idx]));
   render_graph->GetLastMesh()->Translate(glm::vec3(rand() % 3,
@@ -277,21 +278,21 @@ void CreateMaterials() {
     defaultMaterial.diffuse = {0.8f, 0.0f, 0.5f};
     defaultMaterial.ambient = {0.8f, 0.0f, 0.5f};
     std::vector<std::shared_ptr<Texture>> materialTextures = {nullptr, nullptr, nullptr, nullptr, nullptr};
-    baseline_materials.push_back(std::make_shared<Material>(renderer, shaders, materialTextures));
-    baseline_materials.push_back(std::make_shared<Material>(renderer,
+    baseline_materials.push_back(std::make_shared<Material>(*renderer, shaders, materialTextures));
+    baseline_materials.push_back(std::make_shared<Material>(*renderer,
                                                            shaders,
                                                            materialTextures,
                                                            defaultMaterial));
 
     materialTextures = {textures[0], nullptr, nullptr, nullptr, nullptr};
-    baseline_materials.push_back(std::make_shared<Material>(renderer, shaders, materialTextures));
-    baseline_materials.push_back(std::make_shared<Material>(renderer,
+    baseline_materials.push_back(std::make_shared<Material>(*renderer, shaders, materialTextures));
+    baseline_materials.push_back(std::make_shared<Material>(*renderer,
                                                            shaders,
                                                            materialTextures,
                                                            defaultMaterial));
     for (uint32_t i = 0; i < textures.size(); ++i) {
       materialTextures = {textures[i], nullptr, nullptr, nullptr, nullptr};
-      materials.push_back(std::make_shared<Material>(renderer, shaders, materialTextures));
+      materials.push_back(std::make_shared<Material>(*renderer, shaders, materialTextures));
     }
   });
 }
@@ -303,8 +304,7 @@ void CreateGeometries() {
     polyhedronGenerators[i](vertex_data, index_data);
     geometries.push_back(std::make_shared<Geometry>(*device,
                                                     vertex_data,
-                                                    index_data,
-                                                    polyhedronGenerators[i]));
+                                                    index_data));
   }
 }
 
@@ -647,7 +647,7 @@ bool InitVulkan(android_app *app) {
                               loaded_textures[currMTL.map_Ke],
                               loaded_textures[currMTL.map_Ns],
                               loaded_textures[currMTL.map_Bump]};
-                      loaded_materials[mtlName] = std::make_shared<Material>(renderer,
+                      loaded_materials[mtlName] = std::make_shared<Material>(*renderer,
                                                                              shaders,
                                                                              myTextures,
                                                                              newMTL);
@@ -655,7 +655,7 @@ bool InitVulkan(android_app *app) {
                   geometries.push_back(
                           std::make_shared<Geometry>(*device, obj.vertex_buffer, obj.index_buffer));
                   render_graph_mutex.lock();
-                  render_graph->AddMesh(std::make_shared<Mesh>(renderer,
+                  render_graph->AddMesh(std::make_shared<Mesh>(*renderer,
                                                                loaded_materials[mtlName],
                                                                geometries.back()));
                   render_graph_mutex.unlock();
@@ -672,189 +672,26 @@ bool InitVulkan(android_app *app) {
 
     timing::PrintEvent(*timing::timer.GetLastMajorEvent());
     app_initialized_once = true;
+    is_presenting = true;
   });
   return true;
 }
 
 bool ResumeVulkan(android_app *app) {
   timing::timer.Time("Initialization", timing::OTHER, [app] {
+    vkDeviceWaitIdle(device->GetDevice());
+    for (int i = 0; i < device->GetSwapchainLength(); i++) {
+      vkDestroyImageView(device->GetDevice(), display_views[i], nullptr);
+      vkDestroyFramebuffer(device->GetDevice(), framebuffers[i], nullptr);
+    }
     android_app_ctx = app;
-
-    device = new Device(app->window);
-    assert(device->IsInitialized());
-    device->SetObjectName(reinterpret_cast<uint64_t>(device->GetDevice()),
-                          VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, "TEST NAME: VULKAN DEVICE");
+    device->CreateSurface(app->window);
 
     UpdateCameraParameters();
 
-    VkAttachmentDescription color_description{
-        .format = device->GetDisplayFormat(),
-        .samples = VK_SAMPLE_COUNT_1_BIT,
-        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-        .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-    };
-
-    VkAttachmentDescription depth_description{
-        .format = benderhelpers::FindDepthFormat(device),
-        .samples = VK_SAMPLE_COUNT_1_BIT,
-        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-        .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-        .finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-    };
-
-    VkAttachmentReference color_attachment_reference = {
-        .attachment = 0,
-        .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-    };
-
-    VkAttachmentReference depth_attachment_reference = {
-        .attachment = 1,
-        .layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
-    };
-
-    VkSubpassDescription subpass_description{
-        .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
-        .flags = 0,
-        .inputAttachmentCount = 0,
-        .pInputAttachments = nullptr,
-        .colorAttachmentCount = 1,
-        .pColorAttachments = &color_attachment_reference,
-        .pResolveAttachments = nullptr,
-        .pDepthStencilAttachment = &depth_attachment_reference,
-        .preserveAttachmentCount = 0,
-        .pPreserveAttachments = nullptr,
-    };
-
-    std::array<VkAttachmentDescription, 2> attachment_descriptions =
-        {color_description, depth_description};
-
-    VkRenderPassCreateInfo render_pass_create_info{
-        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-        .pNext = nullptr,
-        .attachmentCount = static_cast<uint32_t>(attachment_descriptions.size()),
-        .pAttachments = attachment_descriptions.data(),
-        .subpassCount = 1,
-        .pSubpasses = &subpass_description,
-        .dependencyCount = 0,
-        .pDependencies = nullptr,
-    };
-    CALL_VK(vkCreateRenderPass(device->GetDevice(), &render_pass_create_info, nullptr,
-                               &render_pass));
-
-    shaders->OnResume(device->GetDevice());
-
-    renderer = new Renderer(*device);
-
-    done_loading = false;
-    std::vector<std::shared_ptr<Mesh>> all_meshes;
-    render_graph->GetAllMeshes(all_meshes);
-    all_meshes = std::vector<std::shared_ptr<Mesh>>(all_meshes);
-    render_graph->ClearMeshes();
-
-
-    load_thread = new std::thread([all_meshes] {
-        timing::timer.Time("Mesh Creation", timing::OTHER, [all_meshes] {
-            loading_info_mutex.lock();
-            sprintf(loading_info, "Reloading textures...");
-            loading_info_mutex.unlock();
-
-            for (auto &texture : textures) {
-                texture->OnResume(*device, android_app_ctx);
-            }
-#ifdef GDC_DEMO
-            for (auto &texture : loaded_textures) {
-                if (texture.second != nullptr) texture.second->OnResume(*device, android_app_ctx);
-            }
-#endif
-
-            Material::OnResumeStatic(*device, android_app_ctx);
-
-#ifdef GDC_DEMO
-            loading_info_mutex.lock();
-            sprintf(loading_info, "Reloading materials...");
-            loading_info_mutex.unlock();
-
-            for (auto &material : loaded_materials) {
-                material.second->OnResume(renderer);
-            }
-#endif
-
-            for (auto &material : materials) {
-                material->OnResume(renderer);
-            }
-
-            for (auto &material : baseline_materials) {
-                material->OnResume(renderer);
-            }
-
-#ifdef GDC_DEMO
-            AAssetDir *dir = AAssetManager_openDir(android_app_ctx->activity->assetManager,
-                                                   "models");
-            const char *fileName;
-            fileName = AAssetDir_getNextFileName(dir);
-            int geoIdx = 0;
-            int meshIdx = 0;
-            while (fileName != nullptr) {
-                LOGE("%s", fileName);
-                std::string fileNameString(fileName);
-                if (fileNameString.find(".mtl") != -1) {
-                    fileName = AAssetDir_getNextFileName(dir);
-                    continue;
-                }
-
-                loading_info_mutex.lock();
-                sprintf(loading_info, "Reloading: %s", fileName);
-                loading_info_mutex.unlock();
-
-                std::vector<OBJLoader::OBJ> modelData;
-                std::unordered_map<std::string, MTL> mtllib;
-                OBJLoader::LoadOBJ(android_app_ctx->activity->assetManager,
-                                   ("models/" + fileNameString).c_str(),
-                                   mtllib,
-                                   modelData);
-
-                for (auto obj : modelData)
-                    geometries[geoIdx++]->OnResume(*device, obj.vertex_buffer, obj.index_buffer);
-
-                all_meshes[meshIdx]->OnResume(renderer);
-                render_graph_mutex.lock();
-                render_graph->AddMesh(all_meshes[meshIdx++]);
-                render_graph_mutex.unlock();
-
-                fileName = AAssetDir_getNextFileName(dir);
-            }
-
-            loading_info_mutex.lock();
-            sprintf(loading_info, " ");
-            loading_info_mutex.unlock();
-            done_loading = true;
-#else
-            for (auto &mesh : all_meshes) {
-                mesh->OnResume(renderer);
-                render_graph_mutex.lock();
-                render_graph->AddMesh(mesh);
-                render_graph_mutex.unlock();
-            }
-#endif
-        });
-    });
-
-    CreateDepthBuffer();
-
     CreateFramebuffers(render_pass, depth_buffer.image_view);
-
-    font = new Font(*renderer, *android_app_ctx, FONT_SDF_PATH, FONT_INFO_PATH);
-    user_interface->OnResume(renderer, font);
+    is_presenting = true;
   });
-
-  timing::PrintEvent(*timing::timer.GetLastMajorEvent());
   return true;
 }
 
@@ -866,7 +703,11 @@ void StartVulkan(android_app *app) {
   }
 }
 
-bool IsVulkanReady(void) { return device != nullptr && device->IsInitialized(); }
+bool IsVulkanReady(void) { return device != nullptr && device->IsInitialized() && is_presenting; }
+
+void DestroyWindow(void) {
+  is_presenting = false;
+}
 
 void DeleteVulkan(void) {
   vkDeviceWaitIdle(device->GetDevice());
@@ -885,31 +726,14 @@ void DeleteVulkan(void) {
 
   vkDestroyRenderPass(device->GetDevice(), render_pass, nullptr);
 
-  std::vector<std::shared_ptr<Mesh>> all_meshes;
-  render_graph->GetAllMeshes(all_meshes);
-  for (auto &mesh : all_meshes) {
-    mesh->Cleanup();
-  }
-  for (auto &texture : loaded_textures){
-    if (texture.second != nullptr) texture.second->Cleanup();
-  }
-  for (auto &texture : textures) {
-    texture->Cleanup();
-  }
-  for (auto &material : loaded_materials){
-    material.second->Cleanup();
-  }
-  for (auto &material : materials) {
-    material->Cleanup();
-  }
-  for (auto &material : baseline_materials) {
-    material->Cleanup();
-  }
-  for (auto &geometry : geometries) {
-    geometry->Cleanup();
-  }
-  shaders->Cleanup();
-  Material::CleanupStatic();
+  render_graph->ClearMeshes();
+  loaded_textures.clear();
+  textures.clear();
+  loaded_materials.clear();
+  materials.clear();
+  baseline_materials.clear();
+  geometries.clear();
+  shaders->~ShaderState();
 
   delete device;
   device = nullptr;

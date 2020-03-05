@@ -39,8 +39,6 @@ public:
 
     void RunHeldButtons();
 
-    void OnResume(Renderer *new_renderer, Font *font);
-
 private:
     Renderer *renderer_;
     Font *font_;

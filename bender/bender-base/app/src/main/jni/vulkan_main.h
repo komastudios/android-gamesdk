@@ -28,6 +28,8 @@ void StartVulkan(android_app *app);
 // delete vulkan device context when application goes away
 void DeleteVulkan(void);
 
+void DestroyWindow(void);
+
 // Check if vulkan is ready to draw
 bool IsVulkanReady(void);
 
