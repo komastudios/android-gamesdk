@@ -56,13 +56,13 @@ task prepare_proto_before {
         // Install python-protobuf
         exec {
             workingDir "./third_party/protobuf-3.0.0/python"
-            environment 'PATH', "$protocBinDir:${environment.PATH}"
+            environment 'PATH': "$protocBinDir:${environment.PATH}"
             commandLine "python", "setup.py", "install", "--user"
         }
         // Generate nano-pb requirements
         exec {
             workingDir '../external/nanopb-c/generator/proto'
-            environment 'PATH', "$protocBinDir:${environment.PATH}"
+            environment 'PATH': "$protocBinDir:${environment.PATH}"
             commandLine 'make'
         }
     }
