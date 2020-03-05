@@ -14,6 +14,37 @@
  * limitations under the License.
  */
 
+/**
+ * This test aims to determine if a native hardware buffer can be created and
+ * used as a render target, and if the CPU can read directly from the buffer
+ * with native function calls. (That is, not using glReadPixel or the like.)
+ *
+ * Context: On typical rendering hardware, whether integrated or discrete, a
+ * rendered frame is written to the GPU-local memory before being transferred to
+ * main memory. Consequently, if the GPU wishes to access pixels from the
+ * previous frame, the results must be copied from main memory back to the GPU.
+ * A native hardware buffer seeks to alleviate some of this overhead by
+ * providing for allocation of a buffer that can be used as a render target as
+ * well as directly accessed by the CPU.
+ *
+ * Input configuration:
+ * - None
+ *
+ * Output report:
+ * - datum
+ *   - success: true if we were able to create, render to, and read a native
+ *              hardware buffer.
+ *   - measured_red: the red value sampled from the hardware buffer.
+ *   - measured_green: the green value sampled from the hardware buffer.
+ *   - measured_blue: the blue value sampled from the hardware buffer.
+ *   - measured_alpha: the alpha value sampled from the hardware buffer.
+ * - error_message_datum
+ *   - error_message: describes the reason the test failed.
+ *
+ * (Note: the `measured_red`, etc. values are only logged for debugging
+ * purposes.)
+ */
+
 #include <condition_variable>
 
 #include <GLES/gl.h>
@@ -28,10 +59,6 @@
 #include <ancer/util/LibEGL.hpp>
 
 using namespace ancer;
-
-// PURPOSE: To determine if a native hardware buffer can be created and used
-// as a render target, and if the CPU can read directly from the buffer
-// with native function calls (that is, not using glReadPixel or the like).
 
 //==============================================================================
 

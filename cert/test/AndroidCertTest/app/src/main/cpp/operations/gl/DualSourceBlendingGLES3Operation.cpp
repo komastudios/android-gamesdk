@@ -14,6 +14,80 @@
  * limitations under the License.
  */
 
+/**
+ * This operation test the availability of the dual source blending extension
+ * (GL_EXT_blend_func_extended). It detects the presence of the extension and
+ * also performs a variety of dual source blending operations to verify that the
+ * rendered result matches the value epxected by mathematical computation of the
+ * equation given in the OpenGL spec.
+ *
+ * Dual source blending allows a shader to write out an additional color per
+ * fragment, which can then be used in OpenGL's blend operation:
+ *
+ *   COLOR = BLEND_MODE(SRC_FACTOR * SRC_COLOR, DST_FACTOR * DST_COLOR),
+ *
+ * where BLEND_MODE is either GL_ADD or GL_SUBTRACT. Essentially, it blends
+ * the existing color (destination or "DST") with the fragment shader's primary
+ * output color (source or "SRC"), multiplying both quantities by a configurable
+ * factor.
+ *
+ * Each datum records the test of one permutation of a blend equation; a test
+ * draws many color patterns to the screen and the result is sampled. If any
+ * sample does not match the expected value (within some epsilon), the test
+ * fails.
+ *
+ * We test the following permutations:
+ * - (GL_ADD, GL_ONE, GL_ZERO)
+ * - (GL_ADD, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+ * - (GL_ADD, GL_SRC1_ALPHA_EXT, GL_ONE_MINUS_SRC1_ALPHA_EXT)
+ * - (GL_ADD, GL_SRC_ALPHA, GL_ONE_MINUS_SRC1_ALPHA_EXT)
+ * - (GL_ADD, GL_SRC1_ALPHA_EXT, GL_ONE_MINUS_SRC_ALPHA)
+ * - (GL_ADD, GL_ONE, GL_SRC1_COLOR_EXT)
+ * - (GL_ADD, GL_ONE, GL_ONE_MINUS_SRC1_COLOR_EXT)
+ * - (GL_ADD, GL_SRC_ALPHA, GL_SRC1_COLOR_EXT)
+ * - (GL_ADD, GL_SRC1_COLOR_EXT, GL_SRC1_COLOR_EXT)
+ *
+ * Input configuration:
+ * - reference_screenshot_mode: Used only when creating a reference screenshot
+ *                              for a specific test variant. This should be
+ *                              false during normal use.
+ *
+ * Output report:
+ * - feature_report_datum: reports the success or failure of the setup stage.
+ *   - gl_ext_blend_func_available: true if the GL_EXT_blend_func_extended
+ *                                  extension is available.
+ *   - arb_blend_func_available: true if the GL_ARB_blend_func_extended
+ *                               extension is available (doesn't seem to be
+ *                               necessary, but may help identify legacy/edge
+ *                               cases).
+ *   - shaders_compiled: true if the shaders compiled (they may fail if the
+ *                       extension is not supported).
+ * - datum: the result of testing a blend permutation.
+ *   - name: string representation of the blend operation in the form
+ *           "(op, src, dst)" where "op" is the blend operation (e.g., GL_ADD),
+ *           "src" is the source blend factor, and "dst" is the destination
+ *           blend factor.
+ *   - success: true if the test passed.
+ *   - epsilon: the epsilon value used when determining if the test passed.
+ *   - max_variance: the largest integer value by which an RGBA channel of an
+ *                   image differed from the expected result.
+ * - sampled_image_datum: reports image for a datum that failed.
+ *   - base64_image: the base64-encoded image of the screen, as described by the
+ *                   other parameters in the sampled_image_datum.
+ *   - blend_mode: the blend mode used (e.g., GL_ADD).
+ *   - src_blend_factor: the source blend factor used (e.g., GL_SRC_ALPHA).
+ *   - dst_blend_factor: the destination blend factor used (e.g., GL_ONE).
+ *   - dst_color: the destination color
+ *   - src_1_color: the fullscreen color set as the secondary output from the
+ *                  fragment shader.
+ *   - src_palette_last_color: the last color of the palette drawn to the
+ *                             screen, used to later identify which palette was
+ *                             used for rendering. (note, this is a shortcut
+ *                             which allows us to avoid generating some kind of
+ *                             ids associated with each palette, as they are at
+ *                             present distinguishable by their last color.)
+ */
+
 #include <memory>
 #include <optional>
 #include <vector>
@@ -30,21 +104,6 @@
 
 using namespace ancer;
 
-// PURPOSE: To test the availability of dual source blending extensions, as well
-// to perform a variety of dual source blending operations to verify that the
-// rendered result matches the value expected by mathematical computation of the
-// equation given in the OpenGL spec.
-
-// Dual source blending allows a shader to write out an additional color per
-// fragment, which can then be used in OpenGL's blend operation:
-//
-//   COLOR = BLEND_MODE(SRC_FACTOR * SRC_COLOR, DST_FACTOR * DST_COLOR),
-//
-// where BLEND_MODE is either GL_ADD or GL_SUBTRACT. Essentially, it blends
-// the existing color (destination or "DST") with the fragment shader's primary
-// output color (source or "SRC"), multiplying both quantities by a configurable
-// factor.
-
 //==============================================================================
 
 namespace {
@@ -53,9 +112,6 @@ constexpr Log::Tag TAG{"DualSourceBlendingGLES3Operation"};
 
 //------------------------------------------------------------------------------
 
-// "reference_screenshot_mode" is only used when creating a reference
-// screenshot for a specific test variant. This should be false during normal
-// use (that is, when gathering data from devices).
 struct configuration {
   bool reference_screenshot_mode;
 };
@@ -343,7 +399,8 @@ struct Test {
   int epsilon = 1;
 
   std::string Description() const {
-    return "(" + BlendFactorName(blend_s_factor) + ", " +
+    return "(" + BlendModeName(blend_mode) + ", " +
+           BlendFactorName(blend_s_factor) + ", " +
            BlendFactorName(blend_d_factor) + ")";
   }
 };
