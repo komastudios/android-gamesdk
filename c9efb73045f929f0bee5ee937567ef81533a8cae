@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6445e515_753c444b",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/MemoryAllocOperation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-03-05T19:04:15Z",
+      "side": 1,
+      "message": "This documentation is great. However, I find myself wondering what happens after a free. Does it repeat the cycle? Granted, I could read the code to figure this out, but I think for this particular documentation to convey the complete idea of what data I might see in the output report, it may need to describe this. Just my take.",
+      "revId": "c9efb73045f929f0bee5ee937567ef81533a8cae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
