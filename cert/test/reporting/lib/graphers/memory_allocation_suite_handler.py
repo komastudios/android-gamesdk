@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 """SuiteHandler implementation for "Memory allocation" test
 """
 
@@ -143,3 +142,11 @@ class MemoryAllocationSuiteHandler(SuiteHandler):
         # TODO(shamyl@google.com): Outlier onTrims, etc might make
         # for interesting summary text
         return None
+
+    @classmethod
+    def handles_entire_report(cls, suites: List['Suite']):
+        return False
+
+    @classmethod
+    def render_report(cls, raw_suites: List['SuiteHandler']):
+        return ''

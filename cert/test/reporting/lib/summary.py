@@ -206,18 +206,21 @@ def __generate_formatted_summary_from_reports(summary_path: Path,
         __generate_formatted_summary_from_errors(excluded, formatter)
 
 
-def generate_summary(name: str, reports: List[Path], excluded: List[Path],
-                     output_format: str, figure_dpi: int) -> Union[Path, None]:
+def generate_summary(reports: List[Path],
+                     excluded: List[Path],
+                     output_format: str,
+                     figure_dpi: int,
+                     name: str = "") -> Union[Path, None]:
     """
     Creates a single doc holding results for all involved devices. Great for a
     comparative, all-up analysis.
 
     Args:
-        name: the name of this summary.
         reports: list of paths to successful device test reports.
         excluded: list of paths to device test run errors.
         output_format: summary format.
         figure_dpi: image resolution.
+        name: the name of this summary.
 
     Returns:
         a path to the reported summary.
@@ -256,10 +259,11 @@ def perform_summary_if_enabled(recipe: Recipe, reports_dir: Path) -> type(None):
     """
     summary = __get_summary_config(recipe)
     if summary[0]:  # enabled
-        summary_path = generate_summary(recipe.get_name(), [
+        summary_path = generate_summary([
             Path(f) for f in sorted(glob.glob(f"{reports_dir}/*_report*.json"))
         ], [Path(f) for f in sorted(glob.glob(f"{reports_dir}/*_error*.json"))],
-                                        summary[1], summary[2])
+                                        summary[1], summary[2],
+                                        recipe.get_name())
 
         if summary[3]:  # publish to Google Drive
             try:
