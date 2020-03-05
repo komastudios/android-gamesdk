@@ -44,7 +44,9 @@ add_library(base SHARED
         ${SRC_DIR}/button.cc
         ${SRC_DIR}/user_interface.cc
         ${SRC_DIR}/render_graph.cc
-        ${SRC_DIR}/camera.cc)
+        ${SRC_DIR}/camera.cc
+        ${SRC_DIR}/stop_token.hpp
+        ${SRC_DIR}/jthread.hpp)
 
 add_library(utils STATIC
         ${UTILS_DIR}/obj_loader.cc
