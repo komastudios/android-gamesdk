@@ -1,10 +1,10 @@
 [
   [
     {
-      "malloc": 40
+      "malloc": "40K"
     },
     {
-      "glTest": 40
+      "glTest": "40K"
     }
   ],
   [

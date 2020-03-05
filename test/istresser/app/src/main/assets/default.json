@@ -2,10 +2,10 @@
   "tests": [
     [
       {},
-      { "malloc": 40 },
-      { "mmapAnon": 50 },
+      { "malloc": "40K" },
+      { "mmapAnon": "50K" },
       {
-        "mmapFile": 50,
+        "mmapFile": "50K",
         "mmapFileNames": [
           "test0.dat",
           "test1.dat",

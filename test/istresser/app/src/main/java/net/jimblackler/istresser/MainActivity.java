@@ -53,8 +53,6 @@ public class MainActivity extends AppCompatActivity {
 
   private static final String TAG = MainActivity.class.getSimpleName();
 
-  public static final int BYTES_PER_MILLISECOND = 100 * 1024;
-
   // Set MAX_DURATION to zero to stop the app from self-exiting.
   private static final int MAX_DURATION = 1000 * 60 * 10;
 
@@ -103,12 +101,12 @@ public class MainActivity extends AppCompatActivity {
   private int serviceTotalMb = 0;
   private ServiceCommunicationHelper serviceCommunicationHelper;
   private boolean isServiceCrashed = false;
-  private int mallocKbPerMillisecond;
-  private int glAllocKbPerMillisecond;
+  private long mallocBytesPerMillisecond;
+  private long glAllocBytesPerMillisecond;
   private List<Heuristic> activeHeuristics = new ArrayList<>();
   private boolean yellowLightTesting = false;
-  private int mmapAnonKbPerMillisecond;
-  private int mmapFileKbPerMillisecond;
+  private long mmapAnonBytesPerMillisecond;
+  private long mmapFileBytesPerMillisecond;
   private MmapFileGroup mmapFiles;
 
   enum ServiceState {
@@ -236,18 +234,18 @@ public class MainActivity extends AppCompatActivity {
         activateFirebaseBlocker();
       }
 
-      mallocKbPerMillisecond = params.optInt("malloc");
+      mallocBytesPerMillisecond = Utils.getMemoryQuantity(params, "malloc");
 
-      glAllocKbPerMillisecond = params.optInt("glTest");
+      glAllocBytesPerMillisecond = Utils.getMemoryQuantity(params, "glTest");
 
-      if (glAllocKbPerMillisecond > 0) {
+      if (glAllocBytesPerMillisecond > 0) {
         testSurface.setVisibility(View.VISIBLE);
       }
 
-      mmapAnonKbPerMillisecond = params.optInt("mmapAnon");
+      mmapAnonBytesPerMillisecond = Utils.getMemoryQuantity(params, "mmapAnon");
 
-      mmapFileKbPerMillisecond = params.optInt("mmapFile", -1);
-      if (mmapFileKbPerMillisecond > 0) {
+      mmapFileBytesPerMillisecond =  Utils.getMemoryQuantity(params,"mmapFile");
+      if (mmapFileBytesPerMillisecond > 0) {
         // Other possible directories:
         // * getExternalCacheDir()
         // * getExternalFilesDir(null)
@@ -341,9 +339,9 @@ public class MainActivity extends AppCompatActivity {
                   }
                 }
 
-                if (mallocKbPerMillisecond > 0 && shouldAllocate) {
+                if (mallocBytesPerMillisecond > 0 && shouldAllocate) {
                   long sinceLastAllocation = System.currentTimeMillis() - _latestAllocationTime;
-                  int owed = (int) (sinceLastAllocation * mallocKbPerMillisecond * 1024);
+                  int owed = (int) (sinceLastAllocation * mallocBytesPerMillisecond);
                   if (owed > 0) {
                     boolean succeeded = nativeConsume(owed);
                     if (succeeded) {
@@ -354,16 +352,16 @@ public class MainActivity extends AppCompatActivity {
                     }
                   }
                 }
-                if (glAllocKbPerMillisecond > 0 && shouldAllocate) {
+                if (glAllocBytesPerMillisecond > 0 && shouldAllocate) {
                   long sinceLastAllocation = System.currentTimeMillis() - _latestAllocationTime;
-                  long target = sinceLastAllocation * glAllocKbPerMillisecond * 1024;
+                  long target = sinceLastAllocation * glAllocBytesPerMillisecond;
                   TestSurface testSurface = findViewById(R.id.glsurfaceView);
                   testSurface.getRenderer().setTarget(target);
                 }
 
-                if (mmapAnonKbPerMillisecond > 0) {
+                if (mmapAnonBytesPerMillisecond > 0) {
                   long sinceLastAllocation = System.currentTimeMillis() - _latestAllocationTime;
-                  int owed = (int) (sinceLastAllocation * mmapAnonKbPerMillisecond * 1024);
+                  int owed = (int) (sinceLastAllocation * mmapAnonBytesPerMillisecond);
                   if (owed > MMAP_ANON_BLOCK_BYTES) {
                     long allocated = mmapAnonConsume(owed);
                     if (allocated != 0) {
@@ -374,9 +372,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                   }
                 }
-                if (mmapFileKbPerMillisecond > 0) {
+                if (mmapFileBytesPerMillisecond > 0) {
                   long sinceLastAllocation = System.currentTimeMillis() - _latestAllocationTime;
-                  int owed = (int) (sinceLastAllocation * mmapFileKbPerMillisecond * 1024);
+                  int owed = (int) (sinceLastAllocation * mmapFileBytesPerMillisecond);
                   if (owed > MMAP_FILE_BLOCK_BYTES) {
                     MmapFileInfo file = mmapFiles.alloc(owed);
                     long allocated = mmapFileConsume(file.path, file.alloc_size, file.offset);
@@ -662,7 +660,7 @@ public class MainActivity extends AppCompatActivity {
             freeAll();
           }
           data.clear();
-          if (glAllocKbPerMillisecond > 0) {
+          if (glAllocBytesPerMillisecond > 0) {
             TestSurface testSurface = findViewById(R.id.glsurfaceView);
             if (testSurface != null) {
               testSurface.queueEvent(
