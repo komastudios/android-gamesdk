@@ -16,6 +16,24 @@
       "revId": "c9efb73045f929f0bee5ee937567ef81533a8cae",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "40798b5a_092a1a69",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/MemoryAllocOperation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-03-05T19:14:14Z",
+      "side": 1,
+      "message": "You\u0027re right! I somehow felt I should \"complete the sentence\" with what happens thereafter while I wrote it.\n\nWill do, Michael. Thanks!!",
+      "parentUuid": "6445e515_753c444b",
+      "revId": "c9efb73045f929f0bee5ee937567ef81533a8cae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
