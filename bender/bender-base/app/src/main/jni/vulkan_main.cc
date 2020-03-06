@@ -249,7 +249,6 @@ void CreateUserInterface() {
 }
 
 void CreateTextures() {
-  timing::timer.Time("Texture Creation", timing::OTHER, [] {
     assert(android_app_ctx != nullptr);
     assert(device != nullptr);
 
@@ -259,7 +258,6 @@ void CreateTextures() {
                                                    tex_files[i],
                                                    VK_FORMAT_R8G8B8A8_SRGB));
     }
-  });
 }
 
 void addTexture(std::string fileName){
@@ -272,7 +270,6 @@ void addTexture(std::string fileName){
 }
 
 void CreateMaterials() {
-  timing::timer.Time("Materials Creation", timing::OTHER, [] {
     MaterialAttributes defaultMaterial;
     defaultMaterial.specular = {0.8f, 0.0f, 0.5f, 128.0f};
     defaultMaterial.diffuse = {0.8f, 0.0f, 0.5f};
@@ -294,7 +291,6 @@ void CreateMaterials() {
       materialTextures = {textures[i], nullptr, nullptr, nullptr, nullptr};
       materials.push_back(std::make_shared<Material>(*renderer, shaders, materialTextures));
     }
-  });
 }
 
 void CreateGeometries() {
@@ -501,7 +497,6 @@ void UpdateCameraParameters(){
 }
 
 bool InitVulkan(android_app *app) {
-  timing::timer.Time("Initialization", timing::OTHER, [app] {
     android_app_ctx = app;
 
     device = new Device(app->window);
@@ -587,7 +582,6 @@ bool InitVulkan(android_app *app) {
     CreateUserInterface();
 
 #ifndef GDC_DEMO
-    timing::timer.Time("Mesh Creation", timing::OTHER, [] {
         tex_files.push_back("textures/sample_texture.png");
 
         CreateTextures();
@@ -596,15 +590,11 @@ bool InitVulkan(android_app *app) {
 
         CreateGeometries();
 
-        timing::timer.Time("Create Polyhedron", timing::OTHER, [] {
             render_graph->AddMesh(std::make_shared<Mesh>(renderer,
                                                          baseline_materials[materials_idx],
                                                          geometries[poly_faces_idx]));
-        });
-    });
 #else
     load_thread = new std::thread([app] {
-      timing::timer.Time("Mesh Creation", timing::OTHER, [app] {
           AAssetDir *dir = AAssetManager_openDir(app->activity->assetManager, "models");
           const char *fileName;
           fileName = AAssetDir_getNextFileName(dir);
@@ -666,19 +656,15 @@ bool InitVulkan(android_app *app) {
           sprintf(loading_info, " ");
           loading_info_mutex.unlock();
           done_loading = true;
-      });
     });
 #endif
 
-    timing::PrintEvent(*timing::timer.GetLastMajorEvent());
     app_initialized_once = true;
     is_presenting = true;
-  });
   return true;
 }
 
 bool ResumeVulkan(android_app *app) {
-  timing::timer.Time("Initialization", timing::OTHER, [app] {
     vkDeviceWaitIdle(device->GetDevice());
     for (int i = 0; i < device->GetSwapchainLength(); i++) {
       vkDestroyImageView(device->GetDevice(), display_views[i], nullptr);
@@ -691,7 +677,6 @@ bool ResumeVulkan(android_app *app) {
 
     CreateFramebuffers(render_pass, depth_buffer.image_view);
     is_presenting = true;
-  });
   return true;
 }
 
@@ -749,15 +734,11 @@ bool VulkanDrawFrame(input::Data *input_data) {
   last_time = current_time;
   total_time += frame_time;
 
-  timing::timer.Time("Handle Input", timing::OTHER, [input_data] {
     HandleInput(input_data);
-  });
 
   user_interface->RunHeldButtons();
 
   renderer->BeginFrame();
-  timing::timer.Time("Start Frame", timing::START_FRAME, [] {
-    timing::timer.Time("PrimaryCommandBufferRecording", timing::OTHER, [] {
       renderer->BeginPrimaryCommandBufferRecording();
 
       // Now we start a renderpass. Any draw command has to be recorded in a
@@ -780,7 +761,6 @@ bool VulkanDrawFrame(input::Data *input_data) {
           .pClearValues = clear_values.data(),
       };
 
-      timing::timer.Time("Render Pass", timing::OTHER, [render_pass_begin_info] {
         vkCmdBeginRenderPass(renderer->GetCurrentCommandBuffer(), &render_pass_begin_info,
                              VK_SUBPASS_CONTENTS_INLINE);
 
@@ -820,13 +800,8 @@ bool VulkanDrawFrame(input::Data *input_data) {
         loading_info_mutex.unlock();
 
         vkCmdEndRenderPass(renderer->GetCurrentCommandBuffer());
-      });
       renderer->EndPrimaryCommandBufferRecording();
-    });
-    timing::timer.Time("End Frame", timing::OTHER, [] {
       renderer->EndFrame();
-    });
-  });
   return true;
 }
 

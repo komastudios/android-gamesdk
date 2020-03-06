@@ -26,7 +26,6 @@ std::shared_ptr<Mesh> RenderGraph::GetLastMesh() const {
 }
 
 void RenderGraph::GetVisibleMeshes(std::vector<std::shared_ptr<Mesh>> &meshes) const {
-  timing::timer.Time("Get Visible Meshes", timing::OTHER, [this, &meshes]() {
     meshes.clear();
 
     std::array<Plane, 6> frustum_planes = camera_.GenerateFrustumPlanes();
@@ -71,5 +70,4 @@ void RenderGraph::GetVisibleMeshes(std::vector<std::shared_ptr<Mesh>> &meshes) c
                 float distanceB = glm::distance2(meshB.center, camera_.position);
                 return distanceA < distanceB;
               });
-  });
 }

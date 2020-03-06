@@ -28,7 +28,6 @@ using namespace benderhelpers;
 // Device class member functions
 //
 Device::Device(ANativeWindow *window) {
-  timing::timer.Time("Create Bender Device", timing::OTHER, [this, window](){
     if (!InitVulkan()) {
       LOGW("Vulkan is unavailable, install vulkan and re-start");
       initialized_ = false;
@@ -64,7 +63,6 @@ Device::Device(ANativeWindow *window) {
     CreateSwapChain();
 
     initialized_ = true;
-  });
 }
 
 Device::~Device() {
@@ -112,7 +110,6 @@ void Device::Present(VkSemaphore* wait_semaphores) {
 
 void Device::CreateVulkanDevice(ANativeWindow *platform_window,
                                 VkApplicationInfo *app_info) {
-  timing::timer.Time("Create Vulkan Device", timing::OTHER, [this, platform_window, app_info](){
     std::vector<const char *> instance_extensions;
     std::vector<const char *> instance_layers;
     std::vector<const char *> device_extensions;
@@ -212,7 +209,6 @@ void Device::CreateVulkanDevice(ANativeWindow *platform_window,
     vkGetDeviceQueue(device_, queue_family_index_, 0, &main_queue_);
     vkGetDeviceQueue(device_, queue_family_index_, 1, &worker_queue_);
     debugmarker::Setup(device_, gpu_device_);
-  });
 }
 
 void Device::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer &buffer,
@@ -245,7 +241,6 @@ void Device::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer 
 }
 
 void Device::CreateSwapChain(VkSwapchainKHR oldSwapchain) {
-  timing::timer.Time("Create Swapchain", timing::OTHER, [this, oldSwapchain](){
     VkSurfaceCapabilitiesKHR surfaceCapabilities;
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(gpu_device_, surface_,
                                               &surfaceCapabilities);
@@ -311,7 +306,6 @@ void Device::CreateSwapChain(VkSwapchainKHR oldSwapchain) {
                                     display_images_.data()));
 
     current_frame_index_ = 0;
-  });
 }
 
 void Device::SetObjectName(uint64_t object,

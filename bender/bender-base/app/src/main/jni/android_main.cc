@@ -49,7 +49,6 @@ void android_main(struct android_app *app) {
 
   // Main loop
   do {
-    timing::timer.Time("Main Loop", timing::EventType::MAIN_LOOP, [&events, &source, app](){
       if (ALooper_pollAll(IsVulkanReady() ? 1 : 0, nullptr,
                           &events, (void **) &source) >= 0) {
         if (source != NULL) source->process(app, source);
@@ -59,6 +58,5 @@ void android_main(struct android_app *app) {
       if (IsVulkanReady()) {
         VulkanDrawFrame((input::Data *)app->userData);
       }
-    });
   } while (app->destroyRequested == 0);
 }

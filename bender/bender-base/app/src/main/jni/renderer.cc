@@ -53,17 +53,13 @@ Renderer::~Renderer() {
 }
 
 void Renderer::BeginFrame() {
-  timing::timer.Time("vkAcquireNextImageKHR", timing::OTHER, [this](){
     uint32_t next_index;
     CALL_VK(vkAcquireNextImageKHR(device_.GetDevice(), device_.GetSwapchain(),
                                   UINT64_MAX, acquire_image_semaphore_[GetCurrentFrame()], VK_NULL_HANDLE,
                                   &next_index));
-  });
 
-  timing::timer.Time("vkWaitForFences", timing::OTHER, [this](){
     CALL_VK(vkWaitForFences(device_.GetDevice(), 1, &fence_[GetCurrentFrame()], VK_TRUE, 100000000));
     CALL_VK(vkResetFences(device_.GetDevice(), 1, &fence_[GetCurrentFrame()]));
-  });
 }
 
 void Renderer::EndFrame() {
@@ -80,13 +76,9 @@ void Renderer::EndFrame() {
       .signalSemaphoreCount = 1,
       .pSignalSemaphores = &render_finished_semaphore_[GetCurrentFrame()]};
 
-  timing::timer.Time("vkQueueSubmit", timing::OTHER, [this, submit_info](){
     CALL_VK(vkQueueSubmit(device_.GetMainQueue(), 1, &submit_info, fence_[GetCurrentFrame()]));
-  });
 
-  timing::timer.Time("Device::Present", timing::OTHER, [this](){
     device_.Present(&render_finished_semaphore_[GetCurrentFrame()]);
-  });
 }
 
 void Renderer::BeginPrimaryCommandBufferRecording() {
