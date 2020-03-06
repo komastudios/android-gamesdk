@@ -2,6 +2,40 @@
   "comments": [
     {
       "key": {
+        "uuid": "b8901467_cc81bcfa",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DualSourceBlendingGLES3Operation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-03-06T22:15:25Z",
+      "side": 1,
+      "message": "(Self-resolved) I assume that the report EITHER logs feature_report_datum, OR datum, OR sampled_image_datum, right? Not that the three elements will be present on a single line. Just side question for my own info without running the tool myself and confirm.",
+      "revId": "d91592a2bafba4c7872d2265974bd2b8456a521d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1b0a4fea_0c62d501",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/ShaderBlobGLES3Operation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-03-06T22:15:25Z",
+      "side": 1,
+      "message": "(Self-resolved) For my understanding, are we simulating a debug session here? What exactly \"debug\" means in this context? Rephrasing the question, who would be \"debugging the shader\" when this test runs?",
+      "revId": "d91592a2bafba4c7872d2265974bd2b8456a521d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7c3fe911_a81bc1a1",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/ShaderBlobGLES3Operation.cpp",
         "patchSetId": 2
@@ -13,6 +47,24 @@
       "writtenOn": "2020-03-06T20:54:00Z",
       "side": 1,
       "message": "I believe all the changes below here are from running clang-format.",
+      "revId": "d91592a2bafba4c7872d2265974bd2b8456a521d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d297c7b4_66d2aef9",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/ShaderBlobGLES3Operation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-03-06T22:15:25Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "7c3fe911_a81bc1a1",
       "revId": "d91592a2bafba4c7872d2265974bd2b8456a521d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
