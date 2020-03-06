@@ -22,30 +22,21 @@ struct alignas(16) MaterialAttributes {
 
 class Material {
  public:
-  Material(Renderer *renderer,
+  Material(Renderer &renderer,
            std::shared_ptr<ShaderState> shaders,
            std::vector<std::shared_ptr<Texture>> &texture,
            const MaterialAttributes &attrs = MaterialAttributes());
   ~Material();
-
-  void Cleanup();
-
-  void OnResume(Renderer *renderer);
 
   void FillPipelineInfo(VkGraphicsPipelineCreateInfo *pipeline_info);
 
   VkDescriptorSetLayout GetMaterialDescriptorSetLayout() const { return material_descriptors_layout_; }
   VkDescriptorSet GetMaterialDescriptorSet(uint_t frame_index) const { return material_descriptor_sets_[frame_index]; }
 
-  static void CleanupStatic() { default_texture_->Cleanup(); }
-  static void OnResumeStatic(benderkit::Device &device,
-                             android_app *app) { default_texture_->OnResume(device, app); }
-  static void DefaultTextureGenerator(uint8_t *data);
-
  private:
   static std::shared_ptr<Texture> default_texture_;
 
-  Renderer *renderer_;
+  Renderer &renderer_;
 
   std::shared_ptr<ShaderState> shaders_;
   std::vector<std::shared_ptr<Texture>> texture_;
