@@ -82,9 +82,10 @@ static TFErrorCode DecodeResponse(const std::string& response, std::vector<uint8
     auto& outer = jresponse.object_items();
     auto iparameters = outer.find("parameters");
     if (iparameters==outer.end()) {
-        ALOGW("No parameters: assuming they are empty");
+        ALOGW("No parameters: no fidelity parameters");
         fps.clear();
         experiment_id.clear();
+        return TFERROR_NO_FIDELITY_PARAMS;
     }
     else {
         auto& params = iparameters->second;
