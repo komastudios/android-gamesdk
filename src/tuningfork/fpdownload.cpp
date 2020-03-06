@@ -85,6 +85,7 @@ static TFErrorCode DecodeResponse(const std::string& response, std::vector<uint8
         ALOGW("No parameters: assuming they are empty");
         fps.clear();
         experiment_id.clear();
+        return TFERROR_NO_FIDELITY_PARAMS;
     }
     else {
         auto& params = iparameters->second;
