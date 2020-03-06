@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7c3fe911_a81bc1a1",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/ShaderBlobGLES3Operation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-03-06T20:54:00Z",
+      "side": 1,
+      "message": "I believe all the changes below here are from running clang-format.",
+      "revId": "d91592a2bafba4c7872d2265974bd2b8456a521d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
