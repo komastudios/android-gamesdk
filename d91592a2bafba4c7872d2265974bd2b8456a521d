@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "e6e09db8_8646563c",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DualSourceBlendingGLES3Operation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-03-06T23:26:35Z",
+      "side": 1,
+      "message": "It\u0027s fine, was just for my own info. NP.",
+      "parentUuid": "6398e939_cb1a4933",
+      "revId": "d91592a2bafba4c7872d2265974bd2b8456a521d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1b0a4fea_0c62d501",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/ShaderBlobGLES3Operation.cpp",
         "patchSetId": 2
@@ -66,6 +84,24 @@
       "side": 1,
       "message": "It\u0027s a bit hard to explain in a documentation format, but basically, the work that I would have to do in debugging (or modifying) a shader diverges quite a bit from the code to test shader loading/caching, so I had to make a separate path for it. The shaders that the test depends on aren\u0027t really meant to be viewed (and the test doesn\u0027t depend on them being viewed, only compiled), so if I wanted to actually see what a shader looks like, I would need a sort of \"debug mode.\" Does that help clarify things? Maybe there\u0027s some way I can state the same thing in a more concise manner and add it to the documentation. Any ideas?",
       "parentUuid": "1b0a4fea_0c62d501",
+      "revId": "d91592a2bafba4c7872d2265974bd2b8456a521d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ef546a0a_55f68ed2",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/ShaderBlobGLES3Operation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-03-06T23:26:35Z",
+      "side": 1,
+      "message": "Gotcha! All fine if left as is. Seems to me that the name could have been report_off (true, false) if the effect, in this test context is not to emit a report line. But it\u0027s really fine.\nI keep the +1 here.",
+      "parentUuid": "cba7d02c_28daa31d",
       "revId": "d91592a2bafba4c7872d2265974bd2b8456a521d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
