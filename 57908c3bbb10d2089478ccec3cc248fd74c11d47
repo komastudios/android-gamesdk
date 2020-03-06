@@ -16,6 +16,24 @@
       "revId": "57908c3bbb10d2089478ccec3cc248fd74c11d47",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3001bd5d_b2a6217f",
+        "filename": "bender/bender-base/app/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-06T21:32:06Z",
+      "side": 1,
+      "message": "Oh good catch I forgot to update them!",
+      "parentUuid": "172d5ff7_470923f2",
+      "revId": "57908c3bbb10d2089478ccec3cc248fd74c11d47",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
