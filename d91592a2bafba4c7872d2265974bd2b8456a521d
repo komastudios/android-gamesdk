@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "6398e939_cb1a4933",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DualSourceBlendingGLES3Operation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-03-06T23:12:25Z",
+      "side": 1,
+      "message": "On a good device, it should report the feature_report_datum AND the datum. On a bad device, it should additionally report sampled_image_datum. So it\u0027s possible to report all three. I should probably add that information to the documentation, right?",
+      "parentUuid": "b8901467_cc81bcfa",
+      "revId": "d91592a2bafba4c7872d2265974bd2b8456a521d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1b0a4fea_0c62d501",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/ShaderBlobGLES3Operation.cpp",
         "patchSetId": 2
@@ -30,6 +48,24 @@
       "writtenOn": "2020-03-06T22:15:25Z",
       "side": 1,
       "message": "(Self-resolved) For my understanding, are we simulating a debug session here? What exactly \"debug\" means in this context? Rephrasing the question, who would be \"debugging the shader\" when this test runs?",
+      "revId": "d91592a2bafba4c7872d2265974bd2b8456a521d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cba7d02c_28daa31d",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/ShaderBlobGLES3Operation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-03-06T23:12:25Z",
+      "side": 1,
+      "message": "It\u0027s a bit hard to explain in a documentation format, but basically, the work that I would have to do in debugging (or modifying) a shader diverges quite a bit from the code to test shader loading/caching, so I had to make a separate path for it. The shaders that the test depends on aren\u0027t really meant to be viewed (and the test doesn\u0027t depend on them being viewed, only compiled), so if I wanted to actually see what a shader looks like, I would need a sort of \"debug mode.\" Does that help clarify things? Maybe there\u0027s some way I can state the same thing in a more concise manner and add it to the documentation. Any ideas?",
+      "parentUuid": "1b0a4fea_0c62d501",
       "revId": "d91592a2bafba4c7872d2265974bd2b8456a521d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
