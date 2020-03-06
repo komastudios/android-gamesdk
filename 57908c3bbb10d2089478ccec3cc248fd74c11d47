@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "172d5ff7_470923f2",
+        "filename": "bender/bender-base/app/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-06T20:38:56Z",
+      "side": 1,
+      "message": "There are two identical comments for the if/else? I\u0027m assuming the first one is invalid.",
+      "revId": "57908c3bbb10d2089478ccec3cc248fd74c11d47",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
