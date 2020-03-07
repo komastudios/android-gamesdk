@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 The Android Open Source Project
+ * Copyright 2020 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,16 @@
 #ifndef volume_hpp
 #define volume_hpp
 
+#include <future>
 #include <memory>
 #include <unordered_set>
 #include <vector>
 
+#include <ancer/util/GLHelpers.hpp>
 #include <ancer/util/UnownedPtr.hpp>
 
 #include "MarchingCubes.hpp"
-#include "JobQueue.hpp"
+#include "ThreadPool.hpp"
 
 namespace marching_cubes {
 
@@ -32,14 +34,8 @@ namespace marching_cubes {
 // VolumeSampler
 //
 
-/*
- * Base class for a thing which occupies the space in a volume; e.g.,
- * a SphereVolumeSampler would represent a sphere in a volume, and would
- * implement methods for testing AABB intersection and isosurface value taps
- */
 class IVolumeSampler {
  public:
-
   enum class AABBIntersection {
     None,
     IntersectsAABB,
@@ -58,12 +54,12 @@ class IVolumeSampler {
 
   virtual ~IVolumeSampler() = default;
 
-  Mode GetMode() const { return _mode; }
+  Mode mode() const { return _mode; }
 
   /*
    Return true iff bounds intersects the region affected by this sampler
   */
-  virtual bool Intersects(ancer::glh::AABB bounds) const = 0;
+  virtual bool intersects(ancer::glh::AABB bounds) const = 0;
 
   /*
   Subtractive samplers can offer an optimization by overriding this method
@@ -71,9 +67,8 @@ class IVolumeSampler {
   contained by the volume, this method should return AABBIntersection::ContainsAABB
   which allows the OctreeVolume to optimize the set of nodes to march.
   */
-  virtual AABBIntersection Intersection(ancer::glh::AABB bounds) const {
-    return Intersects(bounds) ? AABBIntersection::IntersectsAABB
-                              : AABBIntersection::None;
+  virtual AABBIntersection intersection(ancer::glh::AABB bounds) const {
+    return intersects(bounds) ? AABBIntersection::IntersectsAABB : AABBIntersection::None;
   }
 
   /*
@@ -82,8 +77,9 @@ class IVolumeSampler {
    example, in the case of a circle or radius r, a point distance <= r - fuziness
    returns a value of 1, and a distance >= r returns 0,
    and values in between return a linear transition.
+   Write the material properties of the volume into `material
    */
-  virtual float ValueAt(const vec3& p, float fuzziness) const = 0;
+  virtual float valueAt(const glm::vec3 &p, float fuzziness, MaterialState &material) const = 0;
 
  private:
   Mode _mode;
@@ -93,237 +89,302 @@ class IVolumeSampler {
 // Volume
 //
 
-/*
- * Base class for a volume made up of a collection of IVolumeSampler instances
- */
 class BaseCompositeVolume {
  public:
-  BaseCompositeVolume(ivec3 size, float fuzziness)
+  BaseCompositeVolume(glm::ivec3 size, float fuzziness)
       : _size(size), _fuzziness(fuzziness) {
   }
 
   virtual ~BaseCompositeVolume() = default;
 
   template<typename T>
-  ancer::unowned_ptr<T> Add(std::unique_ptr<T>&& sampler) {
+  ancer::unowned_ptr<T> add(std::unique_ptr<T> &&sampler) {
     auto sPtr = sampler.get();
     _samplers.push_back(std::move(sampler));
 
-    switch (sPtr->GetMode()) {
-      case IVolumeSampler::Mode::Additive:_additive_samplers.push_back(sPtr);
+    switch (sPtr->mode()) {
+      case IVolumeSampler::Mode::Additive:_additiveSamplers.push_back(sPtr);
         break;
 
-      case IVolumeSampler::Mode::Subtractive:_subtractive_samplers.push_back(sPtr);
+      case IVolumeSampler::Mode::Subtractive:_subtractiveSamplers.push_back(sPtr);
         break;
     }
 
     return sPtr;
   }
 
-  void Clear() {
+  virtual void clear() {
     _samplers.clear();
-    _additive_samplers.clear();
-    _subtractive_samplers.clear();
+    _additiveSamplers.clear();
+    _subtractiveSamplers.clear();
   }
 
-  ivec3 Size() const {
+  glm::ivec3 size() const {
     return _size;
   }
 
-  void SetFuzziness(float ft) { _fuzziness = std::max<float>(ft, 0); }
-  float GetFuzziness() const { return _fuzziness; }
+  void setFuzziness(float ft) { _fuzziness = std::max<float>(ft, 0); }
+  float fuzziness() const { return _fuzziness; }
 
  protected:
-  ivec3 _size;
+  glm::ivec3 _size;
   float _fuzziness;
-  std::vector<IVolumeSampler*> _additive_samplers, _subtractive_samplers;
+  std::vector<IVolumeSampler *> _additiveSamplers, _subtractiveSamplers;
   std::vector<std::unique_ptr<IVolumeSampler>> _samplers;
 };
 
-/*
- * Implements BaseCompositeVolume using octree subdivision to reduce the
- * number of voxels marched to properly represent the volume's contents
- */
 class OctreeVolume : public BaseCompositeVolume {
  public:
   struct Node {
     Node() = delete;
-    Node(const Node&) = delete;
-    Node(const Node&&) = delete;
+    Node(const Node &) = delete;
+    Node(const Node &&) = delete;
     Node(const ancer::glh::AABB bounds, int depth, int childIdx)
-        : bounds(bounds), depth(depth), child_idx(childIdx) {
+        : bounds(bounds), depth(depth), childIdx(childIdx) {
     }
     ~Node() = default;
 
     ancer::glh::AABB bounds;
     int depth = 0;
-    int child_idx = 0;
-    bool is_leaf = false;
+    int childIdx = 0;
+    bool isLeaf = false;
     bool march = false;
     bool empty = false;
     std::array<std::unique_ptr<Node>, 8> children;
-    std::unordered_set<IVolumeSampler*> additive_samplers;
-    std::unordered_set<IVolumeSampler*> subtractive_samplers;
+    std::unordered_set<IVolumeSampler *> additiveSamplers;
+    std::unordered_set<IVolumeSampler *> subtractiveSamplers;
 
    private:
     friend class OctreeVolume;
 
-    std::vector<IVolumeSampler*> _additive_samplers_vec;
-    std::vector<IVolumeSampler*> _subtractive_samplers_vec;
+    std::vector<IVolumeSampler *> _additiveSamplersVec;
+    std::vector<IVolumeSampler *> _subtractiveSamplersVec;
   };
 
  public:
-  OctreeVolume(int size,
-               float fuzziness,
-               int min_node_size,
-               ancer::unowned_ptr<job::JobQueue> job_queue,
-               const std::vector<ancer::unowned_ptr<ITriangleConsumer>>
-               & triangle_consumers)
-      :BaseCompositeVolume(ivec3{size, size, size}, fuzziness),
-      _bounds(ancer::glh::AABB(ivec3(0, 0, 0), ivec3(size, size, size))),
-      _root(BuildOctreeNode(_bounds, min_node_size, 0, 0)),
-      _job_queue(job_queue),
-      _triangle_consumers(triangle_consumers) {
+  OctreeVolume(int size, float fuzziness, int minNodeSize,
+               const std::shared_ptr<ThreadPool> threadPool,
+               const std::vector<ancer::unowned_ptr<TriangleConsumer<Vertex>>> &triangleConsumers)
+      : BaseCompositeVolume(glm::ivec3{size, size, size}, fuzziness),
+        _bounds(ancer::glh::AABB(glm::ivec3(0, 0, 0), glm::ivec3(size, size, size))),
+        _root(buildOctreeNode(_bounds, minNodeSize, 0, 0)),
+        _threadPool(threadPool),
+        _triangleConsumers(triangleConsumers) {
   }
 
-  static constexpr int BATCH_USING_BALANCED_LOAD = 0;
-  static constexpr int BATCH_USING_QUEUE = -1;
+  void clear() override {
+    BaseCompositeVolume::clear();
+    clear(_root.get());
+  }
 
-  /*
+  void collect(std::vector<Node *> &collector) {
+    /*
+        TODO: I believe I should probably skip the root node; it will always intersect
+        something; it's not useful.
+    */
+    mark(_root.get());
+    collect(_root.get(), collector);
+  }
+
+  void walkOctree(std::function<bool(Node *)> visitor) {
+    std::function<void(Node *)> walker = [&visitor, &walker](Node *node) {
+      if (visitor(node)) {
+        if (!node->isLeaf) {
+          for (auto &child : node->children) {
+            walker(child.get());
+          }
+        }
+      }
+    };
+
+    walker(_root.get());
+  }
+
+  /**
    * March the represented volume into the triangle consumers provided in the constructor
-   * transform: A mat4 transform to apply to each vertex as geometry is computed
-   * compute_normals: If true, the isosurface will be queried for its gradient, otherwise
-   *  each generated triangle will be flat-shaded with its normal
-   * batch_size: number of nodes to bundle into each batch sent to job system.
-   *  If BATCH_USING_BALANCED_LOAD, create one job per hardware thread and spread
-   *    node load across them,
-   *  if BATCH_USING_QUEUE, create one job per hardware thread and have them
-   *    consume nodes from a queue
-   * marched_node_observer: if provided, this callback will be invoked for each
-   *  node in the octree which is marched.
   */
-  void March(mat4 transform,
-             bool compute_normals,
-             int batch_size,
-             std::function<void(OctreeVolume::Node*)> marched_node_observer = nullptr) {
-    DispatchMarch(ancer::unowned_ptr<mat4>(&transform),
-                  compute_normals,
-                  batch_size,
-                  marched_node_observer);
-  }
+  void march(std::function<void(OctreeVolume::Node *)> marchedNodeObserver = nullptr);
 
-  /*
-   * March the represented volume into the triangle consumers provided in the constructor
-   * compute_normals: If true, the isosurface will be queried for its gradient, otherwise
-   *  each generated triangle will be flat-shaded with its normal
-   * batch_size: number of nodes to bundle into each batch sent to job system.
-   *  If BATCH_USING_BALANCED_LOAD, create one job per hardware thread and spread
-   *    node load across them,
-   *  if BATCH_USING_QUEUE, create one job per hardware thread and have them
-   *    consume nodes from a queue
-   * marched_node_observer: if provided, this callback will be invoked for each
-   *  node in the octree which is marched.
-  */
-  void March(bool compute_normals,
-             int batch_size,
-             std::function<void(OctreeVolume::Node*)> marched_node_observer = nullptr) {
-    DispatchMarch(nullptr, compute_normals, batch_size, marched_node_observer);
-  }
+  /**
+   * March the volume in a non-blocking fashion; calls onReady on the
+   * main thread when the work is done
+   * NOTE:
+   * onReady will be called on the main thread, which requires use of
+   *  mc::marching_cubes::MainThreadQueue
+   * marchedNodeObserver will be called on the calling thread
+   */
+  void marchAsync(
+      std::function<void()> onReady,
+      std::function<void(OctreeVolume::Node *)> marchedNodeObserver = nullptr);
 
   /**
    * Get the bounds of this volume - no geometry will exceed this region
    */
-  ancer::glh::AABB GetBounds() const {
+  ancer::glh::AABB bounds() const {
     return _bounds;
   }
 
   /**
    * Get the max octree node depth
    */
-  size_t GetDepth() const {
-    return _tree_depth;
+  size_t depth() const {
+    return _treeDepth;
   }
 
  protected:
+  void marchSetup();
+  std::vector<std::future<void>> marchCollectedNodes();
+  void marchNode(OctreeVolume::Node *node, TriangleConsumer<Vertex> &tc);
 
-  void DispatchMarch(ancer::unowned_ptr<mat4> transform,
-                     bool compute_normals,
-                     int batch_size,
-                     std::function<void(OctreeVolume::Node*)> marched_node_observer);
+  void clear(Node *currentNode) {
+    currentNode->empty = true;
+    currentNode->march = false;
 
-  void MarchNode(OctreeVolume::Node* node,
-                 ITriangleConsumer& tc,
-                 ancer::unowned_ptr<mat4> transform,
-                 bool compute_normals);
+    currentNode->additiveSamplers.clear();
+    currentNode->subtractiveSamplers.clear();
+    currentNode->_additiveSamplersVec.clear();
+    currentNode->_subtractiveSamplersVec.clear();
+
+    for (const auto &node : currentNode->children) {
+      if (!node->isLeaf) {
+        clear(node.get());
+      }
+    }
+  }
 
   /**
    * Mark the nodes which should be marched.
   */
-  bool MarkNodesToMarch(Node* current_node) const;
+  bool mark(Node *currentNode) const {
+    currentNode->empty = true;
+    currentNode->march = false;
 
-  /*
-   * Collect the nodes to march into `collector
-   */
-  void CollectNodesToMarch(std::vector<Node*>& collector) {
-    /*
-        TODO: I believe I should probably skip the root node; it will always intersect
-        something; it's not useful.
-    */
-    MarkNodesToMarch(_root.get());
-    CollectNodesToMarch(_root.get(), collector);
+    currentNode->additiveSamplers.clear();
+    currentNode->subtractiveSamplers.clear();
+
+    for (const auto sampler : _additiveSamplers) {
+      if (sampler->intersects(currentNode->bounds)) {
+        currentNode->additiveSamplers.insert(sampler);
+        currentNode->empty = false;
+      }
+    }
+
+    // we don't care about subtractiveSamplers UNLESS the
+    // current node has additive ones; because without any
+    // additive samplers, there is no volume to subtract from
+    if (!currentNode->empty) {
+      for (const auto sampler : _subtractiveSamplers) {
+        auto intersection = sampler->intersection(currentNode->bounds);
+        switch (intersection) {
+          case IVolumeSampler::AABBIntersection::IntersectsAABB:
+            currentNode->subtractiveSamplers.insert(sampler);
+            break;
+          case IVolumeSampler::AABBIntersection::ContainsAABB:
+            // special case - this node is completely contained
+            // by the volume, which means it is EMPTY.
+            currentNode->additiveSamplers.clear();
+            currentNode->subtractiveSamplers.clear();
+            currentNode->empty = true;
+            break;
+          case IVolumeSampler::AABBIntersection::None:break;
+        }
+
+        // if a subtractive sampler cleared this node,
+        // break the loop, we're done
+        if (currentNode->empty) {
+          break;
+        }
+      }
+    }
+
+    if (!currentNode->empty) {
+
+      if (currentNode->isLeaf) {
+        currentNode->march = true;
+        return true;
+      }
+
+      // some samplers intersect this node; traverse down
+      int occupied = 0;
+      for (auto &child : currentNode->children) {
+        if (mark(child.get())) {
+          occupied++;
+        }
+      }
+
+      if (occupied == 8) {
+
+        // all 8 children intersect samplers; mark self to march, and
+        // coalesce their samplers into currentNode
+        currentNode->march = true;
+
+        // copy up their samplers
+        for (auto &child : currentNode->children) {
+          child->march = false;
+          currentNode->additiveSamplers.insert(std::begin(child->additiveSamplers),
+                                               std::end(child->additiveSamplers));
+          currentNode->subtractiveSamplers.insert(std::begin(child->subtractiveSamplers),
+                                                  std::end(child->subtractiveSamplers));
+        }
+
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /**
    * After calling mark(), this will collect all nodes which should be marched
   */
-  void CollectNodesToMarch(Node* current_node,
-                           std::vector<Node*>& nodes_to_march) const {
-    if (current_node->empty)
+  void collect(Node *currentNode, std::vector<Node *> &nodesToMarch) const {
+    if (currentNode->empty)
       return;
 
-    if (current_node->march) {
+    if (currentNode->march) {
       // collect this node, don't recurse further
-      nodes_to_march.push_back(current_node);
-    } else if (!current_node->is_leaf) {
+      nodesToMarch.push_back(currentNode);
+    } else if (!currentNode->isLeaf) {
       // if this is not a leaf node and not marked
-      for (const auto& child : current_node->children) {
-        CollectNodesToMarch(child.get(), nodes_to_march);
+      for (const auto &child : currentNode->children) {
+        collect(child.get(), nodesToMarch);
       }
     }
   }
 
-  std::unique_ptr<Node>
-  BuildOctreeNode(ancer::glh::AABB bounds,
-                  size_t min_node_size,
-                  size_t depth,
-                  size_t child_idx) {
-    _tree_depth = std::max(depth, _tree_depth);
-    auto node = std::make_unique<Node>(bounds, depth, child_idx);
+  std::unique_ptr<Node> buildOctreeNode(ancer::glh::AABB bounds,
+                                        size_t minNodeSize,
+                                        size_t depth,
+                                        size_t childIdx) {
+    _treeDepth = std::max(depth, _treeDepth);
+    auto node = std::make_unique<Node>(bounds, depth, childIdx);
 
     // we're working on cubes, so only one bounds size is checked
     size_t size = static_cast<size_t>(bounds.Size().x);
-    if (size / 2 >= min_node_size) {
-      node->is_leaf = false;
+    if (size / 2 >= minNodeSize) {
+      node->isLeaf = false;
       auto childBounds = bounds.OctreeSubdivide();
       for (size_t i = 0, N = childBounds.size(); i < N; i++) {
-        node->children[i] =
-            BuildOctreeNode(childBounds[i], min_node_size, depth + 1, i);
+        node->children[i] = buildOctreeNode(childBounds[i], minNodeSize, depth + 1, i);
       }
     } else {
-      node->is_leaf = true;
+      node->isLeaf = true;
     }
 
     return node;
   }
 
  private:
-
   ancer::glh::AABB _bounds;
-  size_t _tree_depth = 0;
+  size_t _treeDepth = 0;
   std::unique_ptr<Node> _root;
-  std::vector<Node*> _nodes_to_march;
-  ancer::unowned_ptr<job::JobQueue> _job_queue;
-  std::vector<ancer::unowned_ptr<ITriangleConsumer>> _triangle_consumers;
+  std::vector<Node *> _nodesToMarch, _marchedNodes;
+  std::shared_ptr<ThreadPool> _threadPool;
+  std::vector<ancer::unowned_ptr<TriangleConsumer<Vertex>>> _triangleConsumers;
+  std::size_t _asyncMarchId{0};
+  std::mutex _queuePopMutex;
+
+  std::future<void> _asyncWaiter;
 };
 
 } // namespace marching_cubes

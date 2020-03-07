@@ -203,8 +203,8 @@ struct ProgramState {
   }
 
   bool Build(const std::string& vertFile, const std::string& fragFile) {
-    auto vert_src = LoadText(vertFile.c_str());
-    auto frag_src = LoadText(fragFile.c_str());
+    auto vert_src = LoadAssetText(vertFile.c_str());
+    auto frag_src = LoadAssetText(fragFile.c_str());
     _program = glh::CreateProgramSrc(vert_src.c_str(), frag_src.c_str());
     if (_program == 0) {
       return false;
