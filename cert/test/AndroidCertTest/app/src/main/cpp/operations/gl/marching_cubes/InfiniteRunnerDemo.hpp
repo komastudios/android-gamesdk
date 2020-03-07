@@ -1,0 +1,221 @@
+/*
+ * Copyright 2020 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#ifndef infinite_runner_demo_hpp
+#define infinite_runner_demo_hpp
+
+#include "OpQueue.hpp"
+#include "TerrainSamplers.hpp"
+#include "Materials.hpp"
+#include "Camera.hpp"
+#include "TerrainSegment.hpp"
+
+namespace marching_cubes {
+
+class InfiniteRunnerDemo {
+
+ public:
+
+  explicit InfiniteRunnerDemo(std::shared_ptr<ThreadPool> threadPool)
+    :_threadPool(threadPool)
+  {}
+
+  void OnGlContextReady() {
+    //
+    // load materials
+    //
+
+    const auto ambientLight = vec3(0.45, 0.5, 0.0);
+    const auto renderDistance = kSegmentSizeZ * 2;
+
+    _terrainMaterial = std::make_unique<TerrainMaterial>(
+        ambientLight,
+        renderDistance);
+
+    _lineMaterial = std::make_unique<LineMaterial>();
+
+    const auto skyboxTexture =
+        ancer::glh::LoadTextureCube("Textures/MarchingCubesGLES3Operation/sky", ".jpg");
+    _skydomeMaterial = std::make_unique<SkydomeMaterial>(skyboxTexture);
+
+    //
+    // some constant GL state
+    //
+
+    glClearColor(0, 0, 0, 0);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  }
+
+  void OnGlContextResized(int width, int height) {
+    _aspect = static_cast<float>(width) / static_cast<float>(height);
+    _projection = glm::perspective(radians(kFovDegrees), _aspect, kNearPlane, kFarPlane);
+  }
+
+  void Draw(double delta_seconds) {
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    const mat4 view = _camera.view();
+
+    // draw skydome
+    glDepthMask(GL_TRUE);
+    _skydomeMaterial->bind(_projection, view);
+    _skydomeQuad.draw();
+
+    // draw the terrain segment volumes
+    for (size_t i = 0, N = _segments.size(); i < N; i++) {
+      const auto &segment = _segments[i];
+      const auto model = translate(mat4{1}, vec3(0, 0, (i * kSegmentSizeZ) - _distanceAlongZ));
+      _terrainMaterial->bind(model, view, _projection, _camera.position);
+      for (auto &tc : segment->triangles) {
+        tc->draw();
+      }
+    }
+
+    glDepthMask(GL_FALSE);
+
+    // draw the origin of our scene
+    _lineMaterial->bind(_projection * view * mat4{1});
+    _axisMarker.draw();
+
+    // draw optional markers, aabbs, etc
+    if (_drawOctreeAABBs || _drawWaypoints || _drawSegmentBounds) {
+      for (size_t i = 0, N = _segments.size(); i < N; i++) {
+        const auto &segment = _segments[i];
+        const auto model = translate(mat4{1}, vec3(0, 0, (i * kSegmentSizeZ) - _distanceAlongZ));
+        _lineMaterial->bind(_projection * view * model);
+        if (_drawSegmentBounds) {
+          segment->boundingLineBuffer.draw();
+        }
+        if (_drawOctreeAABBs) {
+          segment->aabbLineBuffer.draw();
+        }
+        if (_drawWaypoints) {
+          segment->waypointLineBuffer.draw();
+        }
+      }
+    }
+  }
+
+  void Step(double delta_seconds) {
+    MainThreadQueue()->drain();
+    _updateScroll(delta_seconds);
+    _updateCamera(delta_seconds);
+  }
+
+ private:
+
+  void _updateScroll(float deltaT) {
+    const float scrollDelta = _scrolling ? 100 * deltaT : 0;
+    _distanceAlongZ += scrollDelta;
+
+    if (_distanceAlongZ > kSegmentSizeZ) {
+      _distanceAlongZ -= kSegmentSizeZ;
+
+      // we moved forward enough to hide first segment,
+      // it can be repurposed. pop front segment, generate
+      // a new end segment, and push it back
+
+      auto seg = std::move(_segments.front());
+      _segments.pop_front();
+
+      seg->build(_segments.back()->idx + 1, _fastNoise);
+      seg->march();
+
+      _segments.push_back(std::move(seg));
+    }
+
+    _lastWaypoint.z -= scrollDelta;
+    _nextWaypoint.z -= scrollDelta;
+
+    if (_nextWaypoint.z <= 0) {
+      _lastWaypoint = _nextWaypoint;
+
+      // find the next waypoint
+      for (size_t i = 0, N = _segments.size(); i < N; i++) {
+        bool found = false;
+        float dz = (i * kSegmentSizeZ) - _distanceAlongZ;
+        const auto &segment = _segments[i];
+        for (const auto &waypoint : segment->waypoints) {
+          auto waypointWorld = vec3(waypoint.x, waypoint.y, waypoint.z + dz);
+          if (waypointWorld.z > 0) {
+            _nextWaypoint = waypointWorld;
+            found = true;
+            break;
+          }
+        }
+        if (found) {
+          break;
+        }
+      }
+    }
+  }
+
+  void _updateCamera(float deltaT) {
+    float t = (0 - _lastWaypoint.z) / (_nextWaypoint.z - _lastWaypoint.z);
+    vec3 autoPilotPosition = mix(_lastWaypoint, _nextWaypoint, t);
+
+    _autopilotPositionSpring.setTarget(autoPilotPosition);
+    _autopilotTargetSpring.setTarget(_nextWaypoint);
+
+    autoPilotPosition = _autopilotPositionSpring.step(deltaT);
+    vec3 autoPilotTargetPosition = _autopilotTargetSpring.step(deltaT);
+
+    _camera.lookAt(autoPilotPosition, autoPilotTargetPosition);
+  }
+
+ private:
+
+  static constexpr float kNearPlane = 0.1f;
+  static constexpr float kFarPlane = 1000.0f;
+  static constexpr float kFovDegrees = 50.0F;
+  static constexpr int kSegmentSizeZ = 256;
+
+ private:
+
+  // render state
+  Camera _camera;
+  float _aspect = 1;
+  mat4 _projection;
+  std::unique_ptr<TerrainMaterial> _terrainMaterial;
+  std::unique_ptr<LineMaterial> _lineMaterial;
+  std::unique_ptr<SkydomeMaterial> _skydomeMaterial;
+  TriangleConsumer<VertexP3C4> _skydomeQuad;
+  LineSegmentBuffer _axisMarker;
+
+  // drawing flags
+  bool _drawOctreeAABBs = false;
+  bool _drawWaypoints = true;
+  bool _drawSegmentBounds = true;
+
+  // demo state
+  std::shared_ptr<ThreadPool> _threadPool;
+  bool _scrolling = false;
+  float _distanceAlongZ = 0;
+  std::deque<std::unique_ptr<TerrainSegment>> _segments;
+  FastNoise _fastNoise;
+  vec3 _lastWaypoint, _nextWaypoint;
+  spring3 _autopilotPositionSpring{5, 40, 20};
+  spring3 _autopilotTargetSpring{5, 20, 10};
+};
+
+} // namespace marching_cubes
+
+#endif

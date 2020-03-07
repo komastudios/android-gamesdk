@@ -38,7 +38,8 @@ GLuint CreateProgram(const char *vtx_file_name, const char *frg_file_name);
  * texture id.
  */
 GLuint LoadTexture(const char *file_name, int32_t *out_width = nullptr,
-                   int32_t *out_height = nullptr, bool *has_alpha = nullptr);
+                   int32_t *out_height = nullptr, bool *has_alpha = nullptr,
+                   GLenum target = GL_TEXTURE_2D);
 
 /**
  * Configuration params for opengl contexts

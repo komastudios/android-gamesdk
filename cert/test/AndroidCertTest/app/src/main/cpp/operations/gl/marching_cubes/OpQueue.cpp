@@ -1,5 +1,3 @@
-#version 300 es
-
 /*
  * Copyright 2020 The Android Open Source Project
  *
@@ -16,16 +14,20 @@
  * limitations under the License.
  */
 
-layout(location = 0) in vec3 inPosition;
-layout(location = 1) in vec4 inColor;
-layout(location = 2) in vec3 inNormal;
+#include "OpQueue.hpp"
 
-out vec4 vColor;
+namespace marching_cubes {
 
-uniform mat4 uMVP;
-uniform mat4 uModel;
+ancer::unowned_ptr<OperationQueue> MainThreadQueue() {
+  static std::mutex _lock;
+  static std::unique_ptr<OperationQueue> _queue = nullptr;
 
-void main() {
-    gl_Position = uMVP * vec4(inPosition, 1.0);
-    vColor = inColor;
+  std::lock_guard lock(_lock);
+  if (!_queue) {
+    _queue = std::make_unique<OperationQueue>();
+  }
+
+  return _queue.get();
+}
+
 }

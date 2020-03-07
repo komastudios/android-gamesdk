@@ -112,9 +112,10 @@ public class SystemHelpers {
      * called from native code via JNI.
      *
      * @param path path to an image in assets/
+     * @param target GLenum texture type, e.g. GL_TEXTURE_2D
      * @return TextureInformation on the loaded image
      */
-    public TextureInformation loadTexture(String path) {
+    public TextureInformation loadTexture(String path, int target) {
         Bitmap bitmap = null;
         TextureInformation info = new TextureInformation();
         try {
@@ -142,7 +143,7 @@ public class SystemHelpers {
             return info;
         }
 
-        GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
+        GLUtils.texImage2D(target, 0, bitmap, 0);
         info.ret = true;
         info.alphaChannel = bitmap.hasAlpha();
         info.originalWidth = bitmap.getWidth();

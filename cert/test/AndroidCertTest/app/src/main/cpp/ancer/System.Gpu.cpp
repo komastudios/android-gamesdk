@@ -44,18 +44,18 @@ GLuint ancer::CreateProgram(const char *vtx_file_name, const char *frg_file_name
 //==============================================================================
 
 GLuint ancer::LoadTexture(const char *file_name, int32_t *out_width, int32_t *out_height,
-                          bool *has_alpha) {
+                          bool *has_alpha, GLenum target) {
   GLuint tex = 0;
   jni::SafeJNICall(
-      [&tex, &out_width, &out_height, &has_alpha, file_name](jni::LocalJNIEnv *env) {
+      [&tex, &out_width, &out_height, &has_alpha, file_name, target](jni::LocalJNIEnv *env) {
         jstring name = env->NewStringUTF(file_name);
         jobject activity = env->NewLocalRef(jni::GetActivityWeakGlobalRef());
         jclass activity_class = env->GetObjectClass(activity);
 
         glGenTextures(1, &tex);
-        glBindTexture(GL_TEXTURE_2D, tex);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBindTexture(target, tex);
+        glTexParameterf(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+        glTexParameterf(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         jmethodID get_asset_helpers_mid = env->GetMethodID(
             activity_class,
@@ -67,10 +67,10 @@ GLuint ancer::LoadTexture(const char *file_name, int32_t *out_width, int32_t *ou
 
         jmethodID load_texture_mid = env->GetMethodID(
             asset_helpers_class, "loadTexture",
-            "(Ljava/lang/String;)Lcom/google/gamesdk/gamecert/operationrunner/"
+            "(Ljava/lang/String;I)Lcom/google/gamesdk/gamecert/operationrunner/"
             "util/SystemHelpers$TextureInformation;");
 
-        jobject out = env->CallObjectMethod(asset_helpers_instance, load_texture_mid, name);
+        jobject out = env->CallObjectMethod(asset_helpers_instance, load_texture_mid, name, target);
 
         // extract TextureInformation from out
         jclass java_cls = LoadClass(
@@ -101,7 +101,7 @@ GLuint ancer::LoadTexture(const char *file_name, int32_t *out_width, int32_t *ou
             *has_alpha = alpha;
 
           // Generate mipmap
-          glGenerateMipmap(GL_TEXTURE_2D);
+          glGenerateMipmap(target);
         }
       });
 
