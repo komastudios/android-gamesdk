@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "07fe04ea_19ed843d",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DualSourceBlendingGLES3Operation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-03-07T00:27:51Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "e6e09db8_8646563c",
+      "revId": "d91592a2bafba4c7872d2265974bd2b8456a521d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1b0a4fea_0c62d501",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/ShaderBlobGLES3Operation.cpp",
         "patchSetId": 2
@@ -102,6 +120,24 @@
       "side": 1,
       "message": "Gotcha! All fine if left as is. Seems to me that the name could have been report_off (true, false) if the effect, in this test context is not to emit a report line. But it\u0027s really fine.\nI keep the +1 here.",
       "parentUuid": "cba7d02c_28daa31d",
+      "revId": "d91592a2bafba4c7872d2265974bd2b8456a521d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4088a82d_971acb2d",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/ShaderBlobGLES3Operation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-03-07T00:27:51Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "ef546a0a_55f68ed2",
       "revId": "d91592a2bafba4c7872d2265974bd2b8456a521d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
