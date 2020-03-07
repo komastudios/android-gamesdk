@@ -481,7 +481,6 @@ class FillRateGLES3Operation : public BaseGLES3Operation {
 
   ~FillRateGLES3Operation() override {
     glDeleteProgram(_program);
-    glDeleteTextures(1, &_tex_id);
   }
 
   void OnGlContextReady(const GLContextConfig &ctx_config) override {
@@ -496,12 +495,8 @@ class FillRateGLES3Operation : public BaseGLES3Operation {
       FatalError(TAG, "No EGL context available");
     }
 
-    int tex_width = 0;
-    int tex_height = 0;
-    _tex_id = LoadTexture(
-        _configuration.blending ? kBlendingTextureFile : kOpaqueTextureFile,
-        &tex_width, &tex_height, nullptr);
-    if (tex_width==0 || tex_height==0) {
+    _texture = ancer::glh::LoadTexture2D(_configuration.blending ? kBlendingTextureFile : kOpaqueTextureFile);
+    if (!_texture) {
       FatalError(TAG, "Unable to load texture");
     }
 
@@ -558,7 +553,7 @@ class FillRateGLES3Operation : public BaseGLES3Operation {
     glUniformMatrix4fv(_projection_uniform_loc, 1, GL_FALSE, glm::value_ptr(_projection));
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, _tex_id);
+    glBindTexture(_texture->target(), _texture->id());
     glUniform1i(_tex_id_uniform_loc, 0);
 
     for (auto &r : _renderers) {
@@ -698,7 +693,7 @@ class FillRateGLES3Operation : public BaseGLES3Operation {
 
   // opengl
   GLuint _program = 0;
-  GLuint _tex_id = 0;
+  ancer::glh::TextureHandleRef _texture;
   GLint _tex_id_uniform_loc = 0;
   GLint _projection_uniform_loc = 0;
   mat4 _projection;

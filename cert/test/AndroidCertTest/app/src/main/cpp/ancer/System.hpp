@@ -52,7 +52,12 @@ void DestroyRenderer();
 /**
  * Load the text from a file in the application's assets/ folder
  */
-std::string LoadText(const char *file_name);
+std::string LoadAssetText(const char *file_name);
+
+/**
+ * Load the contents of a file in assets/
+ */
+std::vector<uint8_t> LoadAssetData(const char* file_name);
 } // namespace ancer
 
 #include "System.inl"

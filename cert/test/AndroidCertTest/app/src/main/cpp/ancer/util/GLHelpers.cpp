@@ -16,10 +16,13 @@
 
 #include "GLHelpers.hpp"
 
-#include "Error.hpp"
-#include "Log.hpp"
-#include "Raii.hpp"
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
+#include <ancer/System.hpp>
+#include <ancer/util/Error.hpp>
+#include <ancer/util/Log.hpp>
+#include <ancer/util/Raii.hpp>
 
 #include <EGL/egl.h>
 
@@ -46,7 +49,7 @@ hsv rgb2hsv(rgb in) {
     return out;
   }
   if (max > 0.0) { // NOTE: if Max is == 0, this divide would cause a crash
-    out.s = (delta/max);                  // s
+    out.s = (delta / max);                  // s
   } else {
     // if max is 0, then r = g = b = 0
     // s = 0, h is undefined
@@ -55,11 +58,11 @@ hsv rgb2hsv(rgb in) {
     return out;
   }
   if (in.r >= max)                           // > is bogus, just keeps compilor happy
-    out.h = (in.g - in.b)/delta;        // between yellow & magenta
+    out.h = (in.g - in.b) / delta;        // between yellow & magenta
   else if (in.g >= max)
-    out.h = 2.0F + (in.b - in.r)/delta;  // between cyan & yellow
+    out.h = 2.0F + (in.b - in.r) / delta;  // between cyan & yellow
   else
-    out.h = 4.0F + (in.r - in.g)/delta;  // between magenta & cyan
+    out.h = 4.0F + (in.r - in.g) / delta;  // between magenta & cyan
 
   out.h *= 60.0F;                              // degrees
 
@@ -78,9 +81,9 @@ rgb hsv2rgb(hsv in) {
   const float hh = (in.h < 360.0f ? in.h : 0.0f) / 60.0f;
   const auto i = static_cast<long>(hh);
   const float ff = hh - i;
-  const float p = in.v*(1.0F - in.s);
-  const float q = in.v*(1.0F - (in.s*ff));
-  const float t = in.v*(1.0F - (in.s*(1.0F - ff)));
+  const float p = in.v * (1.0F - in.s);
+  const float q = in.v * (1.0F - (in.s * ff));
+  const float t = in.v * (1.0F - (in.s * (1.0F - ff)));
 
   switch (i) {
     case 0: return {in.v, t, p};
@@ -96,7 +99,7 @@ rgb hsv2rgb(hsv in) {
 
 bool CheckGlError(const char *func_name) {
 #ifndef NDEBUG
-  if (GLint err = glGetError() ; err!=GL_NO_ERROR) {
+  if (GLint err = glGetError(); err != GL_NO_ERROR) {
     // TODO(tmillican@google.com): Make this fatal and re-introduce checks in
     //  the few (if any?) places where it makes sense to continue.
     Log::E(TAG, "GL error after %s(): 0x%08x\n", func_name, err);
@@ -107,25 +110,29 @@ bool CheckGlError(const char *func_name) {
 }
 
 bool CheckGlExtension(const char *extension_name) {
-    GLint extension_count = 0;
-    glGetIntegerv(GL_NUM_EXTENSIONS, &extension_count);
-    for (int i = 0; i < extension_count; ++i) {
-        const char* ext = reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i));
-        if (strcmp(ext, extension_name) == 0) {
-            return true;
-        }
+  GLint extension_count = 0;
+  glGetIntegerv(GL_NUM_EXTENSIONS, &extension_count);
+  for (int i = 0; i < extension_count; ++i) {
+    const char *ext = reinterpret_cast<const char *>(glGetStringi(GL_EXTENSIONS, i));
+    if (strcmp(ext, extension_name) == 0) {
+      return true;
     }
-    return false;
+  }
+  return false;
 }
 
-GLuint CreateProgramSrc(const char *vtx_src, const char *frag_src) {
-  const GLuint vtx_shader = CreateShader(GL_VERTEX_SHADER, vtx_src);
+namespace {
+GLuint _CreateProgram(const char *vtx_src,
+                      const char *vtx_file,
+                      const char *frag_src,
+                      const char *frag_file) {
+  const GLuint vtx_shader = CreateShader(GL_VERTEX_SHADER, vtx_src, vtx_file);
   ANCER_AT_SCOPE([&] { glDeleteShader(vtx_shader); });
   if (!vtx_shader)
     return 0;
 
-  const GLuint frag_shader = CreateShader(GL_FRAGMENT_SHADER, frag_src);
-  ANCER_AT_SCOPE([&] {glDeleteShader(frag_shader); });
+  const GLuint frag_shader = CreateShader(GL_FRAGMENT_SHADER, frag_src, frag_file);
+  ANCER_AT_SCOPE([&] { glDeleteShader(frag_shader); });
   if (!frag_shader)
     return 0;
 
@@ -158,8 +165,19 @@ GLuint CreateProgramSrc(const char *vtx_src, const char *frag_src) {
 
   return program;
 }
+}
 
-GLuint CreateShader(GLenum shader_type, const char *src) {
+GLuint CreateProgramFromFiles(const char *vtx_file, const char *frag_file) {
+  auto vtx_src = LoadAssetText(vtx_file);
+  auto frag_src = LoadAssetText(frag_file);
+  return _CreateProgram(vtx_src.c_str(), vtx_file, frag_src.c_str(), frag_file);
+}
+
+GLuint CreateProgramSrc(const char *vtx_src, const char *frag_src) {
+  return _CreateProgram(vtx_src, nullptr, frag_src, nullptr);
+}
+
+GLuint CreateShader(GLenum shader_type, const char *src, const char *file) {
   GLuint shader = glCreateShader(shader_type);
   if (!shader) {
     CheckGlError("glCreateShader");
@@ -178,10 +196,18 @@ GLuint CreateShader(GLenum shader_type, const char *src) {
       if (info_log) {
         glGetShaderInfoLog(shader, info_log_len, nullptr, info_log);
         // TODO: Need to review if this should be fatal or not.
-        Log::E(
-            TAG, "Could not compile %s shader:\n%s\n",
-            shader_type==GL_VERTEX_SHADER ? "vertex" : "fragment",
-            info_log);
+        if (file) {
+          Log::E(
+              TAG, "Could not compile %s shader (file: %s):\n%s\n",
+              shader_type == GL_VERTEX_SHADER ? "vertex" : "fragment",
+              file,
+              info_log);
+        } else {
+          Log::E(
+              TAG, "Could not compile %s shader:\n%s\n",
+              shader_type == GL_VERTEX_SHADER ? "vertex" : "fragment",
+              info_log);
+        }
         free(info_log);
       }
     }
@@ -196,22 +222,22 @@ glm::mat4 Ortho2d(float left, float top, float right, float bottom) {
   // this was cribbed from elsewhere because glm's ortho function proved hard to use
   const float z_near = -1.0F;
   const float z_far = 1.0F;
-  const float inv_z = 1.0F/(z_far - z_near);
-  const float inv_y = 1.0F/(-top + bottom);
-  const float inv_x = 1.0F/(right - left);
+  const float inv_z = 1.0F / (z_far - z_near);
+  const float inv_y = 1.0F / (-top + bottom);
+  const float inv_x = 1.0F / (right - left);
 
   glm::mat4 result;
-  result[0] = glm::vec4(2*inv_x, 0, 0, 0);
-  result[1] = glm::vec4(0, 2*inv_y, 0, 0);
-  result[2] = glm::vec4(0, 0, -2*inv_z, 0);
+  result[0] = glm::vec4(2 * inv_x, 0, 0, 0);
+  result[1] = glm::vec4(0, 2 * inv_y, 0, 0);
+  result[2] = glm::vec4(0, 0, -2 * inv_z, 0);
   result[3] = glm::vec4(
-      -(right + left)*inv_x,
-      (top + bottom)*inv_y,
-      -(z_far + z_near)*inv_z,
+      -(right + left) * inv_x,
+      (top + bottom) * inv_y,
+      -(z_far + z_near) * inv_z,
       1
   );
 
-  return result*glm::scale(glm::mat4(1), glm::vec3(1, -1, 1));
+  return result * glm::scale(glm::mat4(1), glm::vec3(1, -1, 1));
 }
 
 std::vector<std::string> GetGlExtensions() {
@@ -262,11 +288,87 @@ bool IsExtensionSupported(const char *gl_extension) {
 
   while (not supported && ++index < number_of_extensions) {
     const auto *ccc = glGetStringi(GL_EXTENSIONS, index);
-    if (strcmp((const char *)ccc, gl_extension)==0) {
+    if (strcmp((const char *) ccc, gl_extension) == 0) {
       supported = true; // The extension is supported by our hardware and driver
     }
   }
 
   return supported;
 }
+
+TextureHandleRef LoadTexture2D(const std::string &filename) {
+  auto rawBytes = ancer::LoadAssetData(filename.c_str());
+
+  int texWidth, texHeight, texChannels;
+  stbi_uc *data = stbi_load_from_memory(rawBytes.data(), static_cast<int>(rawBytes.size()),
+                                        &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+
+  if (!data) {
+    Log::E(TAG, "[LoadTexture2D] - Unable to load image from file \"%s\"", filename.c_str());
+    return nullptr;
+  }
+
+  GLuint textureId;
+  glGenTextures(1, &textureId);
+  glBindTexture(GL_TEXTURE_2D, textureId);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texWidth, texHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+  CheckGlError("LoadTexture2D - setting params on texture");
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glGenerateMipmap(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, 0);
+
+  stbi_image_free(data);
+
+  return std::make_shared<TextureHandle>(textureId, GL_TEXTURE_2D, texWidth, texHeight);
+}
+
+TextureHandleRef LoadTextureCube(const std::array<std::string, 6> &faces) {
+  unsigned int textureId;
+  glGenTextures(1, &textureId);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
+
+  int width, height, nrChannels;
+  for (unsigned int i = 0; i < faces.size(); i++) {
+    auto rawBytes = ancer::LoadAssetData(faces[i].c_str());
+
+    stbi_uc *data = stbi_load_from_memory(rawBytes.data(), static_cast<int>(rawBytes.size()),
+                                          &width, &height, &nrChannels, STBI_rgb);
+
+    if (data) {
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                   0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+      stbi_image_free(data);
+    } else {
+      Log::E(TAG, "[LoadTexture2DCube] - Unable to load image from file \"%s\"", faces[i].c_str());
+      return nullptr;
+    }
+  }
+
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+  // note, good-looking sampling of mipmap lods requires
+  // glEnable(GL_TEXTURE_CUBEMAP_SEAMLESS), which may not be available
+  // here on gles
+  glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+  return std::make_shared<TextureHandle>(textureId, GL_TEXTURE_CUBE_MAP, width, height);
+}
+
+TextureHandleRef LoadTextureCube(const std::string &folder, const std::string &ext) {
+  return LoadTextureCube({
+                             folder + "/right" + ext,
+                             folder + "/left" + ext,
+                             folder + "/top" + ext,
+                             folder + "/bottom" + ext,
+                             folder + "/front" + ext,
+                             folder + "/back" + ext,
+                         });
+}
+
 }  // namespace ancer::glh

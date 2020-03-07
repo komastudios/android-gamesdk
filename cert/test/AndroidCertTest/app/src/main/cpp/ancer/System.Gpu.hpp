@@ -32,15 +32,6 @@ namespace ancer {
 GLuint CreateProgram(const char *vtx_file_name, const char *frg_file_name);
 
 /**
- * Loads a texture from application's assets/ folder. If texture loads,
- * writes width into out_width, height into out_height, and if the texture
- * has an alpha channel writes true into has_alpha. Returns the GL
- * texture id.
- */
-GLuint LoadTexture(const char *file_name, int32_t *out_width = nullptr,
-                   int32_t *out_height = nullptr, bool *has_alpha = nullptr);
-
-/**
  * Configuration params for opengl contexts
  */
 struct GLContextConfig {
