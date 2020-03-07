@@ -27,259 +27,275 @@ using namespace glm;
 
 namespace marching_cubes {
 
-/*
- * The Vertex primitive we'll be using, just position, color and normal
+/**
+ * Simple vertex type with a 3-component position and 4 component color
+ * used by LineSegmentBuffer and skydome rendering
  */
-struct Vertex {
-  vec3 pos{0};
-  vec4 color{1};
-  vec3 normal { 0,1,0};
+struct VertexP3C4 {
+  glm::vec3 pos;
+  glm::vec4 color{1};
 
   enum class AttributeLayout : GLuint {
     Pos = 0,
-    Color = 1,
-    Normal = 2
+    Color = 1
   };
 
-  bool operator==(const Vertex& other) const {
-    return pos == other.pos && color == other.color && normal == other.normal;
+  bool operator==(const VertexP3C4 &other) const {
+    return pos == other.pos && color == other.color;
   }
 
-  static void BindVertexAttributes();
+  static void bindVertexAttributes();
 };
 
-/*
- * A simple triangle composed of 3 vertices
+/**
+ * GPU storage templated on vertex type. Expects vertex to have static method
+ * static void VertexType::bindVertexAttributes(); which sets/enables the right
+ * vertex attrib pointers
  */
-struct Triangle {
-  Vertex a, b, c;
-
-  Triangle() = default;
-
-  Triangle(const Vertex& a, const Vertex& b, const Vertex& c)
-      : a(a), b(b), c(c) {
-  }
-
-  Triangle(const Triangle& other) = default;
-  Triangle& operator=(const Triangle& other) = default;
-};
-
-//------------------------------------------------------------------------------
-
-/*
- * Growable GPU-backed storage for Vertex. Works like std::vector by
- * growing larger than the requested size to minimize number of allocations.
- */
+template<class VertexType>
 class VertexStorage {
  private:
   GLenum _mode;
-  GLuint _vertex_vbo_id = 0;
+  GLuint _vertexVboId = 0;
   GLuint _vao = 0;
-  std::size_t _num_vertices = 0;
-  std::size_t _vertex_storage_size = 0;
-  float _growth_factor;
+  std::size_t _numVertices = 0;
+  std::size_t _vertexStorageSize = 0;
+  float _growthFactor;
 
  public:
-  /*
-   * Set up a vertex storage to draw using mode (e.g., GL_TRIANGLES)
-   * and to grow by growthFactor when the high-water mark is reached.
-   */
   VertexStorage(GLenum mode, float growthFactor = 1.5F)
-      : _mode(mode), _growth_factor(growthFactor) {
+      : _mode(mode), _growthFactor(growthFactor) {
   }
 
-  /*
-   * Set up a vertex storage to draw using mode (e.g., GL_TRIANGLES)
-   * and to grow by growthFactor when the high-water mark is reached.
-   */
-  VertexStorage(const std::vector<Vertex>& vertices,
-                GLenum mode,
-                float growthFactor = 1.5F)
-      : _mode(mode), _growth_factor(growthFactor) {
-    Update(vertices);
+  VertexStorage(const std::vector<VertexType> &vertices, GLenum mode, float growthFactor = 1.5F)
+      : _mode(mode), _growthFactor(growthFactor) {
+    update(vertices);
   }
 
-  ~VertexStorage();
+  ~VertexStorage() {
+    if (_vao > 0)
+      glDeleteVertexArrays(1, &_vao);
+    if (_vertexVboId > 0)
+      glDeleteBuffers(1, &_vertexVboId);
+  }
 
-  void Draw() const;
+  void draw() const {
+    if (_vao > 0) {
+      ancer::glh::CheckGlError("VertexStorage::draw enter");
+      glBindVertexArray(_vao);
+      glDrawArrays(_mode, 0, static_cast<GLsizei>(_numVertices));
+      glBindVertexArray(0);
+      ancer::glh::CheckGlError("VertexStorage::draw exit");
+    }
+  }
 
-  std::size_t GetNumVertices() const { return _num_vertices; }
-  std::size_t GetVertexStoreSize() const { return _vertex_storage_size; }
+  std::size_t numVertices() const { return _numVertices; }
+  std::size_t vertexStoreSize() const { return _vertexStorageSize; }
 
-  void Update(const std::vector<Vertex>& vertices);
+  void update(const std::vector<VertexType> &vertices) {
+    if (_vao == 0) {
+      glGenVertexArrays(1, &_vao);
+    }
+    glBindVertexArray(_vao);
+    _updateVertices(vertices);
+    glBindVertexArray(0);
+  }
 
  private:
-  void UpdateVertices(const std::vector<Vertex>& vertices);
+  void _updateVertices(const std::vector<VertexType> &vertices) {
+    ancer::glh::CheckGlError("VertexStorage::_updateVertices enter");
+    if (vertices.size() > _vertexStorageSize) {
+      _vertexStorageSize = static_cast<std::size_t>(vertices.size() * _growthFactor);
+      _numVertices = vertices.size();
+
+      if (_vertexVboId > 0) {
+        glDeleteBuffers(1, &_vertexVboId);
+        _vertexVboId = 0;
+      }
+
+      glGenBuffers(1, &_vertexVboId);
+      glBindBuffer(GL_ARRAY_BUFFER, _vertexVboId);
+
+      glBufferData(
+          GL_ARRAY_BUFFER,
+          sizeof(VertexType) * _vertexStorageSize,
+          nullptr,
+          GL_STREAM_DRAW);
+
+      glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(VertexType) * _numVertices, vertices.data());
+
+      VertexType::bindVertexAttributes();
+
+    } else {
+      // GPU storage suffices, just copy data over
+      _numVertices = vertices.size();
+      if (_numVertices > 0) {
+        glBindBuffer(GL_ARRAY_BUFFER, _vertexVboId);
+        glBufferSubData(
+            GL_ARRAY_BUFFER,
+            0,
+            sizeof(VertexType) * _numVertices,
+            vertices.data());
+      }
+    }
+    ancer::glh::CheckGlError("VertexStorage::_updateVertices exit");
+  }
 };
 
 //------------------------------------------------------------------------------
 
-/*
- * Base class for things which consume triangles.
- * In our marching cubes code, the marching cubes alg just generates a
- * big honking soup of triangles. We'll use an implementation of
- * ITriangleConsumer to receive those triangles and send them to the
- * GPU via VertexStorage
- */
-class ITriangleConsumer {
- public:
-  ITriangleConsumer() = default;
-  virtual ~ITriangleConsumer() = default;
+template<class VertexType>
+struct Triangle {
+  VertexType a, b, c;
 
-  /*
-   Signal that a batch of triangles will begin. Clears internal storage.
-   */
-  virtual void Start() = 0;
+  Triangle() {
+  }
 
-  /*
-   Add a triangle to storage
-   */
-  virtual void AddTriangle(const Triangle& t) = 0;
+  Triangle(const VertexType &a, const VertexType &b, const VertexType &c)
+      : a(a), b(b), c(c) {
+  }
 
-  /*
-   Signal that batch addition has completed; submits new triangles to GPU
-   */
-  virtual void Finish() = 0;
+  Triangle(const Triangle<VertexType> &other) {
+    a = other.a;
+    b = other.b;
+    c = other.c;
+  }
 
-  /*
-   Draw the internal storage of triangles
-   */
-  virtual void Draw() const = 0;
+  Triangle &operator=(const Triangle<VertexType> &other) {
+    a = other.a;
+    b = other.b;
+    c = other.c;
+    return *this;
+  }
 };
 
-//------------------------------------------------------------------------------
-
 /*
- Consumes triangles and feeds VertexStorage
+ Consumes triangles and maintaining a non-indexed vertex storage
  */
-class TriangleConsumer : public ITriangleConsumer {
+template<class VertexType>
+class TriangleConsumer {
  private:
-  std::vector<Vertex> _vertices;
-  VertexStorage _gpu_storage{GL_TRIANGLES};
+  std::vector<VertexType> _vertices;
+  VertexStorage<VertexType> _gpuStorage{GL_TRIANGLES};
+  size_t _numTriangles = 0;
 
  public:
+  using vertex_type = VertexType;
+
   TriangleConsumer() = default;
   virtual ~TriangleConsumer() = default;
 
-  void Start() override { _vertices.clear(); }
-  void AddTriangle(const Triangle& t) override {
+  void start() {
+    _vertices.clear();
+    _numTriangles = 0;
+  }
+
+  void addTriangle(const Triangle<VertexType> &t) {
     _vertices.push_back(t.a);
     _vertices.push_back(t.b);
     _vertices.push_back(t.c);
+    _numTriangles++;
   }
-  void Finish() override { _gpu_storage.Update(_vertices); }
-  void Draw() const override { _gpu_storage.Draw(); }
 
-  const VertexStorage& GetStorage() const { return _gpu_storage; }
-  VertexStorage& GetStorage() { return _gpu_storage; }
+  void finish() {
+    _gpuStorage.update(_vertices);
+  }
+
+  size_t numTriangles() const { return _numTriangles; }
+
+  void draw() const {
+    _gpuStorage.draw();
+  }
+
+  void clear() {
+    _vertices.clear();
+    _gpuStorage.update({});
+    _numTriangles = 0;
+  }
+
+  const auto &storage() const { return _gpuStorage; }
+  auto &storage() { return _gpuStorage; }
 };
 
 //------------------------------------------------------------------------------
 
-/*
- * Helper class for drawing line segments, e.g.
- * (a->b), (c->d), (e->f)
- */
 class LineSegmentBuffer {
  public:
+  using vertex_type = VertexP3C4;
+
   LineSegmentBuffer() = default;
-  LineSegmentBuffer(const LineSegmentBuffer&) = delete;
-  LineSegmentBuffer(const LineSegmentBuffer&&) = delete;
+  LineSegmentBuffer(const LineSegmentBuffer &) = delete;
+  LineSegmentBuffer(const LineSegmentBuffer &&) = delete;
   ~LineSegmentBuffer() = default;
 
-  void Clear() {
+  void clear() {
     _vertices.clear();
     _dirty = true;
   }
 
-  /*
-   * Add a single line segment from a->b
-   */
-  void Add(const Vertex& a, const Vertex& b) {
+  void add(const vertex_type &a, const vertex_type &b) {
     _vertices.push_back(a);
     _vertices.push_back(b);
     _dirty = true;
   }
 
-  /*
-   * Generate an appropriate list of linesegments to draw the
-   * AABB with the provided color
-   */
   template<typename T, glm::precision P>
-  inline void Add(const ancer::glh::tAABB<T, P>& bounds, const glm::vec4& color) {
+  inline void add(const ancer::glh::tAABB<T, P> &bounds, const glm::vec4 &color) {
     auto corners = bounds.Corners();
 
     // trace bottom
-    Add(Vertex{corners[0], color}, Vertex{corners[1], color});
-    Add(Vertex{corners[1], color}, Vertex{corners[2], color});
-    Add(Vertex{corners[2], color}, Vertex{corners[3], color});
-    Add(Vertex{corners[3], color}, Vertex{corners[0], color});
+    add(vertex_type{corners[0], color}, vertex_type{corners[1], color});
+    add(vertex_type{corners[1], color}, vertex_type{corners[2], color});
+    add(vertex_type{corners[2], color}, vertex_type{corners[3], color});
+    add(vertex_type{corners[3], color}, vertex_type{corners[0], color});
 
     // trace top
-    Add(Vertex{corners[4], color}, Vertex{corners[5], color});
-    Add(Vertex{corners[5], color}, Vertex{corners[6], color});
-    Add(Vertex{corners[6], color}, Vertex{corners[7], color});
-    Add(Vertex{corners[7], color}, Vertex{corners[4], color});
+    add(vertex_type{corners[4], color}, vertex_type{corners[5], color});
+    add(vertex_type{corners[5], color}, vertex_type{corners[6], color});
+    add(vertex_type{corners[6], color}, vertex_type{corners[7], color});
+    add(vertex_type{corners[7], color}, vertex_type{corners[4], color});
 
     // add bars connecting bottom to top
-    Add(Vertex{corners[0], color}, Vertex{corners[4], color});
-    Add(Vertex{corners[1], color}, Vertex{corners[5], color});
-    Add(Vertex{corners[2], color}, Vertex{corners[6], color});
-    Add(Vertex{corners[3], color}, Vertex{corners[7], color});
+    add(vertex_type{corners[0], color}, vertex_type{corners[4], color});
+    add(vertex_type{corners[1], color}, vertex_type{corners[5], color});
+    add(vertex_type{corners[2], color}, vertex_type{corners[6], color});
+    add(vertex_type{corners[3], color}, vertex_type{corners[7], color});
   }
 
-  void Draw() {
+  void addAxis(const glm::mat4 &basis, float size) {
+    const auto X = glm::vec3{basis[0][0], basis[1][0], basis[2][0]};
+    const auto Y = glm::vec3{basis[0][1], basis[1][1], basis[2][1]};
+    const auto Z = glm::vec3{basis[0][2], basis[1][2], basis[2][2]};
+    const auto pos = glm::vec3{basis[3][0], basis[3][1], basis[3][2]};
+    const auto red = glm::vec4{1, 0, 0, 1};
+    const auto green = glm::vec4{0, 1, 0, 1};
+    const auto blue = glm::vec4{0, 0, 1, 1};
+    add(vertex_type{pos, red}, vertex_type{pos + X * size, red});
+    add(vertex_type{pos, green}, vertex_type{pos + Y * size, green});
+    add(vertex_type{pos, blue}, vertex_type{pos + Z * size, blue});
+  }
+
+  void addMarker(const glm::vec3 &pos, float size, const glm::vec4 &color) {
+    add(vertex_type{pos, color}, vertex_type{pos + glm::vec3(-size, 0, 0), color});
+    add(vertex_type{pos, color}, vertex_type{pos + glm::vec3(+size, 0, 0), color});
+    add(vertex_type{pos, color}, vertex_type{pos + glm::vec3(0, -size, 0), color});
+    add(vertex_type{pos, color}, vertex_type{pos + glm::vec3(0, +size, 0), color});
+    add(vertex_type{pos, color}, vertex_type{pos + glm::vec3(0, 0, -size), color});
+    add(vertex_type{pos, color}, vertex_type{pos + glm::vec3(0, 0, +size), color});
+  }
+
+  void draw() {
     if (_dirty) {
-      _gpuStorage.Update(_vertices);
+      _gpuStorage.update(_vertices);
       _dirty = false;
     }
-    _gpuStorage.Draw();
+    _gpuStorage.draw();
   }
 
  private:
   bool _dirty = false;
-  std::vector<Vertex> _vertices;
-  VertexStorage _gpuStorage{GL_LINES};
-};
-
-/*
- * Helper class for drawing line strips, e.g.:
- * (a->b->c->d->e)
- */
-class LineStripBuffer {
- public:
-  LineStripBuffer() = default;
-  LineStripBuffer(const LineStripBuffer&) = delete;
-  LineStripBuffer(const LineStripBuffer&&) = delete;
-  ~LineStripBuffer() = default;
-
-  void Clear() {
-    _vertices.clear();
-    _dirty = true;
-  }
-
-  void Add(const Vertex& a) {
-    _vertices.push_back(a);
-    _dirty = true;
-  }
-
-  void Close() {
-    _vertices.push_back(_vertices.front());
-    _dirty = true;
-  }
-
-  void Draw() {
-    if (_dirty) {
-      _gpuStorage.Update(_vertices);
-      _dirty = false;
-    }
-    _gpuStorage.Draw();
-  }
-
- private:
-  bool _dirty = false;
-  std::vector<Vertex> _vertices;
-  VertexStorage _gpuStorage{GL_LINE_STRIP};
+  std::vector<vertex_type> _vertices;
+  VertexStorage<vertex_type> _gpuStorage{GL_LINES};
 };
 
 } // namespace marching_cubes

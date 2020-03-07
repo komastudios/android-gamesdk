@@ -99,59 +99,6 @@ public class SystemHelpers {
 
     //--------------------------------------------------------------------------
 
-    public static class TextureInformation {
-        public boolean ret;
-        public boolean alphaChannel;
-        public int originalWidth;
-        public int originalHeight;
-        public Object image;
-    }
-
-    /**
-     * loads an image into the current gl texture unit. Note: this function is
-     * called from native code via JNI.
-     *
-     * @param path path to an image in assets/
-     * @return TextureInformation on the loaded image
-     */
-    public TextureInformation loadTexture(String path) {
-        Bitmap bitmap = null;
-        TextureInformation info = new TextureInformation();
-        try {
-            String str = path;
-            if (!path.startsWith("/")) {
-                str = "/" + path;
-            }
-
-            File file = new File(_context.getExternalFilesDir(null), str);
-            if (file.canRead()) {
-                bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
-            } else {
-                bitmap = BitmapFactory.decodeStream(_context.getResources()
-                        .getAssets().open(path));
-            }
-        } catch (Exception e) {
-            Log.w(TAG, "Couldn't load file: \"" + path + "\"");
-            info.ret = false;
-            return info;
-        }
-
-        if (bitmap == null) {
-            Log.e(TAG, "Couldn't load image: \"" + path + "\"");
-            info.ret = false;
-            return info;
-        }
-
-        GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
-        info.ret = true;
-        info.alphaChannel = bitmap.hasAlpha();
-        info.originalWidth = bitmap.getWidth();
-        info.originalHeight = bitmap.getHeight();
-        info.image = bitmap;
-
-        return info;
-    }
-
     /**
      * loads a text file. Note: this function is
      * called from native code via JNI.
@@ -159,7 +106,7 @@ public class SystemHelpers {
      * @param path path to a text file in assets/
      * @return text content of the file
      */
-    public String loadText(String path) {
+    public String loadAssetText(String path) {
         try {
             InputStream stream = _context.getAssets().open(path);
             int size = stream.available();
@@ -168,7 +115,28 @@ public class SystemHelpers {
             stream.close();
             return new String(buffer);
         } catch (IOException e) {
-            Log.e(TAG, "loadText - unable to load text from file \""
+            Log.e(TAG, "loadAssetText - unable to load text from file \""
+                    + path + "\"");
+        }
+
+        return null;
+    }
+
+    /**
+     * Loads the contents of the file in assets/ to a byte[]
+     * @param path path to a file in assets/
+     * @return byte[] of contents, or null if not found
+     */
+    public byte[] loadAssetData(String path) {
+        try {
+            InputStream stream = _context.getAssets().open(path);
+            int size = stream.available();
+            byte[] buffer = new byte[size];
+            stream.read(buffer);
+            stream.close();
+            return buffer;
+        } catch (IOException e) {
+            Log.e(TAG, "loadAssetData - unable to load text from file \""
                     + path + "\"");
         }
 

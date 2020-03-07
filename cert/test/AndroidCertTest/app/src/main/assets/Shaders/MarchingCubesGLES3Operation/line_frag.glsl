@@ -16,20 +16,12 @@
  * limitations under the License.
  */
 
-layout(location = 0) in vec3 inPosition;
-layout(location = 1) in vec4 inColor;
-layout(location = 2) in vec3 inNormal;
+in vec4 vColor;
 
-out vec4 vColor;
-out vec3 vNormal;
-out vec3 vWorldNormal;
+out vec4 fragColor;
 
-uniform mat4 uMVP;
-uniform mat4 uModel;
+/////////////////////////////////////////////
 
 void main() {
-    gl_Position = uMVP * vec4(inPosition, 1.0);
-    vColor = inColor;
-    vNormal = inNormal;
-    vWorldNormal = mat3(uModel) * inNormal;
+    fragColor = vColor;
 }

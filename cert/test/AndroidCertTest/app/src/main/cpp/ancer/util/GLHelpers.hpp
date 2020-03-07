@@ -57,6 +57,7 @@ struct hsv {
 };
 
 hsv rgb2hsv(rgb in);
+
 rgb hsv2rgb(hsv in);
 } // namespace color
 
@@ -85,24 +86,24 @@ class tAABB {
   }
 
   template<typename V, glm::precision Q>
-  tAABB(const tAABB<V, Q>& other)
+  tAABB(const tAABB<V, Q> &other)
       : min(other.min), max(other.max) {
   }
 
-  tAABB(const glm::tvec3<T, P>& min, const glm::tvec3<T, P>& max)
+  tAABB(const glm::tvec3<T, P> &min, const glm::tvec3<T, P> &max)
       : min(min), max(max) {
   }
 
-  tAABB(const glm::tvec3<T, P>& c, const T radius)
+  tAABB(const glm::tvec3<T, P> &c, const T radius)
       : min(c.x - radius, c.y - radius, c.z - radius),
         max(c.x + radius, c.y + radius, c.z + radius) {
   }
 
-  bool operator==(const tAABB<T, P>& other) const {
+  bool operator==(const tAABB<T, P> &other) const {
     return min == other.min && max == other.max;
   }
 
-  bool operator!=(const tAABB<T, P>& other) const {
+  bool operator!=(const tAABB<T, P> &other) const {
     return min != other.min || max != other.max;
   }
 
@@ -180,7 +181,7 @@ class tAABB {
   /*
       return tAABB containing both
   */
-  const tAABB<T, P> operator+(const tAABB<T, P>& a) const {
+  const tAABB<T, P> operator+(const tAABB<T, P> &a) const {
     return tAABB<T, P>(
         std::min<T>(min.x, a.min.x),
         std::max<T>(max.x, a.max.x),
@@ -193,7 +194,7 @@ class tAABB {
   /*
       return tAABB containing both this tAABB and the point
   */
-  const tAABB<T, P> operator+(const glm::tvec3<T, P>& p) const {
+  const tAABB<T, P> operator+(const glm::tvec3<T, P> &p) const {
     return tAABB<T, P>(
         std::min<T>(min.x, p.x),
         std::max<T>(max.x, p.x),
@@ -226,7 +227,7 @@ class tAABB {
   /*
       Make this tAABB become the add of it and the other tAABB
   */
-  tAABB<T, P>& operator+=(const tAABB<T, P>& a) {
+  tAABB<T, P> &operator+=(const tAABB<T, P> &a) {
     min.x = std::min(min.x, a.min.x),
     max.x = std::max(max.x, a.max.x),
     min.y = std::min(min.y, a.min.y),
@@ -240,7 +241,7 @@ class tAABB {
   /*
       Make this tAABB become the union of it and the other tAABB
   */
-  void add(const tAABB<T, P>& a) {
+  void add(const tAABB<T, P> &a) {
     min.x = std::min(min.x, a.min.x),
     max.x = std::max(max.x, a.max.x),
     min.y = std::min(min.y, a.min.y),
@@ -252,7 +253,7 @@ class tAABB {
   /*
       Expand this tAABB ( if necessary ) to contain the given point
   */
-  tAABB<T, P>& operator+=(const glm::tvec3<T, P>& p) {
+  tAABB<T, P> &operator+=(const glm::tvec3<T, P> &p) {
     min.x = std::min(min.x, p.x);
     max.x = std::max(max.x, p.x);
     min.y = std::min(min.y, p.y);
@@ -266,31 +267,33 @@ class tAABB {
   /*
       Expand this tAABB ( if necessary ) to contain the given point
   */
-  void add(const glm::tvec3<T, P>& p) {
+  tAABB<T, P> &add(const glm::tvec3<T, P> &p) {
     min.x = std::min(min.x, p.x);
     max.x = std::max(max.x, p.x);
     min.y = std::min(min.y, p.y);
     max.y = std::max(max.y, p.y);
     min.z = std::min(min.z, p.z);
     max.z = std::max(max.z, p.z);
+    return *this;
   }
 
   /*
       Expand this tAABB ( if necessary ) ton contain the given sphere
   */
-  void add(const glm::tvec3<T, P>& p, T radius) {
+  tAABB<T, P> &add(const glm::tvec3<T, P> &p, T radius) {
     min.x = std::min(min.x, p.x - radius);
     max.x = std::max(max.x, p.x + radius);
     min.y = std::min(min.y, p.y - radius);
     max.y = std::max(max.y, p.y + radius);
     min.z = std::min(min.z, p.z - radius);
     max.z = std::max(max.z, p.z + radius);
+    return *this;
   }
 
   /*
       Outset this tAABB by scalar factor
   */
-  tAABB<T, P>& operator+=(const T d) {
+  tAABB<T, P> &operator+=(const T d) {
     min.x -= d;
     max.x += d;
     min.y -= d;
@@ -304,19 +307,20 @@ class tAABB {
   /*
       Outset this tAABB by scalar factor
   */
-  void Outset(T d) {
+  tAABB<T, P> &Outset(T d) {
     min.x -= d;
     max.x += d;
     min.y -= d;
     max.y += d;
     min.z -= d;
     max.z += d;
+    return *this;
   }
 
   /*
       Inset this tAABB by scalar factor
   */
-  tAABB<T, P>& operator-=(const T d) {
+  tAABB<T, P> &operator-=(const T d) {
     min.x += d;
     max.x -= d;
     min.y += d;
@@ -330,23 +334,25 @@ class tAABB {
   /*
       Inset this tAABB by scalar factor
   */
-  void Inset(T d) {
+  tAABB<T, P> &Inset(T d) {
     min += vec3(d);
     max -= vec3(d);
+    return *this;
   }
 
   /*
       Transform this tAABB by p
   */
-  void Translate(const glm::tvec3<T, P>& p) {
+  tAABB<T, P> &Translate(const glm::tvec3<T, P> &p) {
     min += p;
     max += p;
+    return *this;
   }
 
   /*
       return true if point is in this tAABB
   */
-  bool Contains(const glm::tvec3<T, P>& point) const {
+  bool Contains(const glm::tvec3<T, P> &point) const {
     return (point.x >= min.x && point.x <= max.x && point.y >= min.y
         && point.y <= max.y && point.z >= min.z && point.z <= max.z);
   }
@@ -354,7 +360,7 @@ class tAABB {
   /*
       return the intersection type of this tAABB with other
   */
-  Intersection Intersect(const tAABB<T, P>& other) const {
+  Intersection Intersect(const tAABB<T, P> &other) const {
     // Check first to see if 'other' is completely inside this tAABB.
     // If it is, return Inside.
 
@@ -378,7 +384,7 @@ class tAABB {
       return the intersection type of this tAABB with the sphere at
       center with given radius
   */
-  Intersection Intersect(const glm::tvec3<T, P>& center, T radius) const {
+  Intersection Intersect(const glm::tvec3<T, P> &center, T radius) const {
     return Intersect(tAABB<T, P>(center, radius));
   }
 
@@ -395,7 +401,7 @@ class tAABB {
     };
   }
 
-  void Corners(std::array<glm::tvec3<T, P>, 8>& c) const {
+  void Corners(std::array<glm::tvec3<T, P>, 8> &c) const {
     c[0] = glm::tvec3<T, P>(min.x, min.y, min.z);
     c[1] = glm::tvec3<T, P>(min.x, min.y, max.z);
     c[2] = glm::tvec3<T, P>(max.x, min.y, max.z);
@@ -409,7 +415,7 @@ class tAABB {
   /**
 * Subdivides this AABB into 8 child AABBs
 */
-  void OctreeSubdivide(std::array<tAABB<T, P>, 8>& into) const {
+  void OctreeSubdivide(std::array<tAABB<T, P>, 8> &into) const {
     auto min = this->min;
     auto size = this->Size();
 
@@ -451,15 +457,36 @@ class tAABB {
 };
 
 typedef tAABB<float, glm::defaultp> AABB;
-typedef tAABB<int, glm::defaultp> AABBi;
+typedef tAABB<int, glm::defaultp> iAABB;
 
-bool CheckGlError(const char* func_name);
+bool CheckGlError(const char *func_name);
 
-bool CheckGlExtension(const char* extension_name);
+bool CheckGlExtension(const char *extension_name);
 
-GLuint CreateProgramSrc(const char* vtx_src, const char* frag_src);
+/**
+ * Create a gpu program
+ * @param vtx_file path to the vertex shader relative to assets/ folder
+ * @param frag_file path to the fragment shader relative to assets/ folder
+ * @return the program, linked and ready to use or 0 if failed
+ */
+GLuint CreateProgramFromFiles(const char *vtx_file, const char *frag_file);
 
-GLuint CreateShader(GLenum shader_type, const char* src);
+/**
+ * Create a gpu program
+ * @param vtx_src source for the vertex shader
+ * @param frag_src source for the fragment shader
+ * @return the program, linked and ready to use or 0 if failed
+ */
+GLuint CreateProgramSrc(const char *vtx_src, const char *frag_src);
+
+/**
+ * Creates a shader from given source
+ * @param shader_type type of shader, e.g.,GL_VERTEX_SHADER or GL_FRAGMENT_SHADER
+ * @param src the shader source
+ * @param file if provided, the file src came from, which will be shown if there's an error in compilation, aiding debugging
+ * @return handle for the compiled shader
+ */
+GLuint CreateShader(GLenum shader_type, const char *src, const char* file = nullptr);
 
 /**
  * Creates an ortho projection with (0,0) at top-left,
@@ -489,7 +516,7 @@ std::vector<std::string> GetEglExtensions();
  *
  * @return true if extension is available
  */
-bool CheckEglExtension(const std::string& name);
+bool CheckEglExtension(const std::string &name);
 
 /**
  * Checks whether the OpenGL ES driver and hardware on the device support a given extension.
@@ -499,5 +526,63 @@ bool CheckEglExtension(const std::string& name);
  * @param gl_extension a C-string containing the extension name.
  * @return true if the extension is in GLES extensions list; false otherwise.
  */
-bool IsExtensionSupported(const char* gl_extension);
+bool IsExtensionSupported(const char *gl_extension);
+
+/**
+ * Simple immutable wrapper for a GL texture. Deletes texture on destruction.
+ */
+class TextureHandle {
+ private:
+  GLuint _id;
+  GLenum _target;
+  int _width;
+  int _height;
+  int _mipLevels;
+
+ public:
+  TextureHandle(GLuint id, GLenum target, int width, int height)
+      : _id(id)
+      , _target(target)
+      , _width(width)
+      , _height(height)
+  {
+    _mipLevels = static_cast<int>(std::log2(std::min(_width, _height)));
+  }
+
+  ~TextureHandle()
+  {
+    glDeleteTextures(1, &_id);
+  }
+
+  GLuint id() const { return _id; }
+  GLenum target() const { return _target; }
+  int width() const { return _width; }
+  int height() const { return _height; }
+  int mipLevels() const { return _mipLevels; }
+};
+
+typedef std::shared_ptr<TextureHandle> TextureHandleRef;
+
+/**
+Loads image into a texture 2d
+*/
+TextureHandleRef LoadTexture2D(const std::string& filename);
+
+/**
+Loads images into a cubemap texture in this order:
+0: GL_TEXTURE_CUBE_MAP_POSITIVE_X 	Right
+1: GL_TEXTURE_CUBE_MAP_NEGATIVE_X 	Left
+2: GL_TEXTURE_CUBE_MAP_POSITIVE_Y 	Top
+3: GL_TEXTURE_CUBE_MAP_NEGATIVE_Y 	Bottom
+4: GL_TEXTURE_CUBE_MAP_POSITIVE_Z 	Back
+5: GL_TEXTURE_CUBE_MAP_NEGATIVE_Z 	Front
+*/
+TextureHandleRef LoadTextureCube(const std::array<std::string, 6>& faces);
+
+/**
+ * Helper function to load a skybox from a folder, where the faces are named
+ * [right, left, top, bottom, front, back]
+ */
+TextureHandleRef LoadTextureCube(const std::string& folder, const std::string& ext = ".jpg");
+
 }  // namespace ancer::glh

@@ -143,6 +143,8 @@ add_library(${PROJECT_NAME} SHARED
         operations/gl/marching_cubes/MarchingCubes.cpp
         operations/gl/marching_cubes/Storage.cpp
         operations/gl/marching_cubes/Volume.cpp
+        operations/gl/marching_cubes/OpQueue.cpp
+        operations/gl/marching_cubes/FastNoise.cpp
         operations/gl/MediumPVecNormalizationGLES3Operation.cpp
         operations/gl/ShaderBlobGLES3Operation.cpp
         operations/gl/TeapotRendererGLES3Operation.cpp
@@ -163,6 +165,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         ${CppDir}
         ${LibDir}/json/include
         ${LibDir}/glm/
+        ${LibDir}/
         ${GameSDKDir}/include
         ${GameSDKDir}/samples/common/include
         ${ANDROID_NDK}/sources/third_party/vulkan/src/common

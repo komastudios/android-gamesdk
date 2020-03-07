@@ -1,7 +1,7 @@
 #version 300 es
 
 /*
- * Copyright 2020 The Android Open Source Project
+ * Copyright 2019 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-precision mediump float;
 
-in vec4 vColor;
+layout(location = 0) in vec3 inPosition;
+layout(location = 1) in vec4 inColor;
 
-out vec4 fragColor;
+uniform mat4 uMVP;
 
-/////////////////////////////////////////////
+out vec4 vColor;
 
 void main() {
-    fragColor = vColor;
+    gl_Position = uMVP * vec4(inPosition, 1.0);
+    vColor = inColor;
 }

@@ -173,7 +173,7 @@ namespace {
 
         std::vector<std::string> paths;
 
-        const std::string shader_src = LoadText(src_path.c_str());
+        const std::string shader_src = LoadAssetText(src_path.c_str());
 
         for (size_t i = 1; i < num_variants + 1; ++i) {
 
@@ -287,7 +287,7 @@ namespace {
                 const std::string& vert_path,
                 const std::vector<std::string>& frag_paths) {
 
-            const std::string vert_source = LoadText(vert_path.c_str());
+            const std::string vert_source = LoadAssetText(vert_path.c_str());
 
             for (const auto& frag_path : frag_paths) {
                 const std::string frag_source = LoadTextFromFiles(frag_path.c_str());
@@ -507,7 +507,7 @@ private:
         // is elsewhere. Thus, even when creating a shader for debug drawing,
         // we need to place it in the same files directory.
 
-        const std::string src = LoadText(_frag_path.c_str());
+        const std::string src = LoadAssetText(_frag_path.c_str());
 
         const std::string dst_path = InternalDataPath()
                 + "/" + GetFilename(_frag_path);

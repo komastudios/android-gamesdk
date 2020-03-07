@@ -89,13 +89,8 @@
 #include <ancer/util/ThreadSyncPoint.hpp>
 #include <ancer/util/UnownedPtr.hpp>
 
-#include "operations/gl/marching_cubes/MarchingCubes.hpp"
-#include "operations/gl/marching_cubes/Volume.hpp"
-#include "operations/gl/marching_cubes/VolumeSamplers.hpp"
-#include "operations/gl/marching_cubes/Demos.hpp"
+#include "operations/gl/marching_cubes/InfiniteRunnerDemo.hpp"
 
-using std::make_unique;
-using std::unique_ptr;
 using namespace ancer;
 namespace mc = marching_cubes;
 
@@ -106,10 +101,6 @@ namespace {
 //
 
 constexpr Log::Tag TAG{"MarchingCubesGLES3Operation"};
-constexpr float NEAR_PLANE = 0.1f;
-constexpr float FAR_PLANE = 1000.0f;
-constexpr float FOV_DEGREES = 50.0F;
-constexpr float OCTREE_NODE_VISUAL_INSET_FACTOR = 0.0025F;
 
 //
 //  Configuration
@@ -145,18 +136,18 @@ struct sleep_configuration {
   Duration duration;
   WaitMethod method;
 
-  ThreadPool::SleepConfig ToSleepConfig() const {
+  mc::ThreadPool::SleepConfig ToSleepConfig() const {
     const auto mthd = [=](){
       switch (method){
         case WaitMethod::None:
-          return ThreadPool::SleepConfig::Method::None;
+          return mc::ThreadPool::SleepConfig::Method::None;
         case WaitMethod::Sleep:
-          return ThreadPool::SleepConfig::Method::Sleep;
+          return mc::ThreadPool::SleepConfig::Method::Sleep;
         case WaitMethod::Spinlock:
-          return ThreadPool::SleepConfig::Method::Spinlock;
+          return mc::ThreadPool::SleepConfig::Method::Spinlock;
       }
     }();
-    return ThreadPool::SleepConfig{period, duration, mthd };
+    return mc::ThreadPool::SleepConfig{period, duration, mthd };
   }
 };
 
@@ -263,81 +254,22 @@ class MarchingCubesGLES3Operation : public BaseGLES3Operation {
 
   void OnGlContextReady(const GLContextConfig& ctx_config) override {
     _configuration = GetConfiguration<configuration>();
-
-    {
-      auto vert_file = "Shaders/MarchingCubesGLES3Operation/volume.vsh";
-      auto frag_file = "Shaders/MarchingCubesGLES3Operation/volume.fsh";
-      if (!_volume_program.Build(vert_file, frag_file)) {
-        Stop();
-        return;
-      }
-    }
-
-    {
-      auto vert_file = "Shaders/MarchingCubesGLES3Operation/line.vsh";
-      auto frag_file = "Shaders/MarchingCubesGLES3Operation/line.fsh";
-      if (!_line_program.Build(vert_file, frag_file)) {
-        Stop();
-        return;
-      }
-    }
-
-    glClearColor(0.2F, 0.2F, 0.22F, 0.0F);
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     BuildExecConfiguration();
+    _demo->OnGlContextReady();
   }
 
   void OnGlContextResized(int width, int height) override {
     BaseOperation::OnGlContextResized(width, height);
-    _aspect = static_cast<float>(width) / static_cast<float>(height);
+    if (_demo) {
+      _demo->OnGlContextResized(width, height);
+    }
   }
 
   void Draw(double delta_seconds) override {
     BaseGLES3Operation::Draw(delta_seconds);
-
-    Step(delta_seconds);
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    const auto mvp = MVP();
-
-    _volume_program.Bind(mvp, _model);
-
-    glDepthMask(GL_TRUE);
-    for (auto& tc : _triangle_consumers) {
-      tc->Draw();
-    }
-
-    glDepthMask(GL_FALSE);
-    _line_program.Bind(mvp, _model);
-    _node_aabb_line_buffer.Draw();
-
-    glDepthMask(GL_TRUE);
-  }
-
-  void Step(double delta_seconds) {
-    _animation_time += static_cast<float>(delta_seconds);
-    if (_volume && _current_demo) {
-
-      // make camera orbit about y, with a gently bobbing up and down
-      float orbit_y = _animation_time * glm::pi<float>() * 0.125F;
-      float orbit_tilt_phase = _animation_time * glm::pi<float>() * 0.0625F;
-      float orbit_tilt = sin(orbit_tilt_phase) * glm::pi<float>() * 0.125F;
-      _trackball_rotation =
-          glm::rotate(glm::rotate(mat4{1}, orbit_tilt, vec3(1, 0, 0)),
-                      orbit_y,
-                      vec3(0, 1, 0));
-
-      // update demo animation cycle
-      _current_demo->Step(_animation_time);
-
-      // update geometry for rendering
-      MarchVolume();
+    if (_demo) {
+      _demo->Step(delta_seconds);
+      _demo->Draw(delta_seconds);
     }
   }
 
@@ -347,55 +279,6 @@ class MarchingCubesGLES3Operation : public BaseGLES3Operation {
   }
 
  private:
-
-  /*
-   * Create a model-view-projection matrix for rendering the current frame
-   */
-  mat4 MVP() const {
-    // extract trackball Z and Y for building view matrix via lookAt
-    auto trackball_y =
-        glm::vec3{_trackball_rotation[0][1], _trackball_rotation[1][1],
-                  _trackball_rotation[2][1]};
-    auto trackball_z =
-        glm::vec3{_trackball_rotation[0][2], _trackball_rotation[1][2],
-                  _trackball_rotation[2][2]};
-    mat4 view, proj;
-
-    if (_use_ortho_projection) {
-      auto bounds = _volume->GetBounds();
-      auto size = length(bounds.Size());
-
-      auto scaleMin = 0.1F;
-      auto scaleMax = 5.0F;
-      auto scale = mix(scaleMin, scaleMax, pow(_dolly, 2.5F));
-
-      auto width = scale * _aspect * size;
-      auto height = scale * size;
-
-      auto distance = FAR_PLANE / 2;
-      view = lookAt(-distance * trackball_z, vec3(0), trackball_y);
-
-      proj = glm::ortho(-width / 2,
-                        width / 2,
-                        -height / 2,
-                        height / 2,
-                        NEAR_PLANE,
-                        FAR_PLANE);
-    } else {
-      auto bounds = _volume->GetBounds();
-      auto minDistance = 0.1F;
-      auto maxDistance = length(bounds.Size()) * 2;
-
-      auto distance = mix(minDistance, maxDistance, pow<float>(_dolly, 2));
-      view = lookAt(-distance * trackball_z, vec3(0), trackball_y);
-
-      proj = glm::perspective(radians(FOV_DEGREES),
-                              _aspect,
-                              NEAR_PLANE,
-                              FAR_PLANE);
-    }
-    return proj * view * _model;
-  }
 
   void ReportPerformanceData() {
     if (_march_performance_data.empty()) {
@@ -488,46 +371,16 @@ class MarchingCubesGLES3Operation : public BaseGLES3Operation {
 
     auto sleep_config = _configuration.sleep_config.ToSleepConfig();
 
-    _job_queue = std::make_unique<mc::job::JobQueue>(
-        affinity, pinned, max_thread_count, sleep_config);
-
-    _num_threads_used = _job_queue->NumThreads();
+    _threadPool = std::make_shared<mc::ThreadPool>(affinity, pinned, max_thread_count, sleep_config);
+    _num_threads_used = _threadPool->size();
 
     //
-    //  We need ONE ITriangleConsumer per thread, so that each thread
-    //  processing the volume can safely write to its dedicated store.
-    //  We own the triangle consumers, so we make unowned_ptrs to hand
-    //  to the _volume
+    //  Configure the demo
+    //  TODO(shamyl@google.com): Pass configuration data and some means
+    //  to record perf data (callback?)
     //
 
-    std::vector<unowned_ptr<mc::ITriangleConsumer>> tcs;
-    _triangle_consumers.clear();
-    for (auto i = 0; i < _num_threads_used; i++) {
-      auto tc = make_unique<mc::TriangleConsumer>();
-      tcs.emplace_back(tc.get());
-      _triangle_consumers.push_back(std::move(tc));
-    }
-
-    Log::I(TAG,
-           "Using %d %s threads (%s); sleep period: %d ns dur: %d ns (%s); batching: %s",
-           _num_threads_used,
-           pinned ? "pinned" : "floating",
-           ThreadAffinitySetupNames[static_cast<int>(_configuration.thread_affinity)],
-           _configuration.sleep_config.period,
-           _configuration.sleep_config.duration,
-           WaitMethodNames[static_cast<int>(_configuration.sleep_config.method)],
-           JobBatchingSetupNames[static_cast<int>(_configuration.job_batching_setup)]
-    );
-
-    //
-    //  Build the volume and demo to render into it
-    //
-
-    _volume = make_unique<mc::OctreeVolume>(64, 1.0F, 4, _job_queue.get(), tcs);
-    _model = glm::translate(mat4{1}, -vec3(_volume->GetBounds().Center()));
-
-    _current_demo = make_unique<mc::demos::CompoundShapesDemo>(10, 10);
-    _current_demo->Build(_volume.get());
+    _demo = std::make_unique<mc::InfiniteRunnerDemo>(_threadPool);
 
     //
     //  Trigger a warmup phase for the next test pass
@@ -538,130 +391,66 @@ class MarchingCubesGLES3Operation : public BaseGLES3Operation {
   }
 
   /*
-   * Helper for visualation of the octree - generates a unique
-   * color for an octree node based on its depth
-   */
-  vec4 GetNodeColor(int atDepth) const {
-    using namespace ancer::glh::color;
-    static std::vector<vec4> nodeColors;
-
-    auto depth = _volume->GetDepth();
-    if (nodeColors.size() != depth) {
-      nodeColors.clear();
-      const float hueStep = 360.0F / depth;
-      for (auto i = 0U; i <= depth; i++) {
-        const hsv hC{i * hueStep, 0.6F, 1.0F};
-        const auto rgbC = hsv2rgb(hC);
-        nodeColors.emplace_back(rgbC.r,
-                                rgbC.g,
-                                rgbC.b,
-                                mix<float>(0.6F,
-                                           0.25F,
-                                           static_cast<float>(i) / depth));
-      }
-    }
-
-    return nodeColors[atDepth];
-  }
-
-  /*
    * March the volume, recording a PerfDatum
    */
   void MarchVolume() {
 
-    _node_aabb_line_buffer.Clear();
-    const auto start_time = SteadyClock::now();
-    size_t num_voxels = 0;
-    auto batch_size = 0;
-    switch (_configuration.job_batching_setup) {
-      case JobBatchingSetup::AutoBalancedNodesPerJob:
-        batch_size = mc::OctreeVolume::BATCH_USING_BALANCED_LOAD;
-        break;
-      case JobBatchingSetup::AutoQueuedNodesPerJob:
-        batch_size = mc::OctreeVolume::BATCH_USING_QUEUE;
-        break;
-      case JobBatchingSetup::OneNodePerJob:batch_size = 1;
-        break;
-      case JobBatchingSetup::ManyNodesPerJob:batch_size = 32;
-        break;
-    }
-
-    _volume->March(false, batch_size,
-                   [this, &num_voxels](mc::OctreeVolume::Node* node) {
-                     {
-                       // we add each node to our line buffer so we can visualize marched nodes
-                       auto bounds = node->bounds;
-                       bounds.Inset(
-                           node->depth * OCTREE_NODE_VISUAL_INSET_FACTOR);
-                       _node_aabb_line_buffer.Add(bounds,
-                                                  GetNodeColor(node->depth));
-                     }
-
-                     // record # of voxels marched
-                     num_voxels += static_cast<size_t>(node->bounds.Volume());
-                   });
-
-    const auto end_time = SteadyClock::now();
-
-    // we don't record timestamps until we've been running for a while
-    if (_warming_up) {
-      if (!_recorded_first_step_timestamp) {
-        Log::D(TAG, "Warm up starting");
-        _first_step_timestamp = SteadyClock::now();
-        _recorded_first_step_timestamp = true;
-      } else {
-        auto elapsed_since_first_step =
-            SteadyClock::now() - _first_step_timestamp;
-        if (elapsed_since_first_step >= _configuration.warm_up_time) {
-          Log::D(TAG, "Warm up finished, will start recording perf timings");
-          _warming_up = false;
-        }
-      }
-    }
-
-    if (!_warming_up) {
-      _march_performance_data.emplace_back(end_time - start_time, num_voxels);
-    }
+//    const auto start_time = SteadyClock::now();
+//    size_t num_voxels = 0;
+//    auto batch_size = 0;
+//    switch (_configuration.job_batching_setup) {
+//      case JobBatchingSetup::AutoBalancedNodesPerJob:
+//        batch_size = mc::OctreeVolume::BATCH_USING_BALANCED_LOAD;
+//        break;
+//      case JobBatchingSetup::AutoQueuedNodesPerJob:
+//        batch_size = mc::OctreeVolume::BATCH_USING_QUEUE;
+//        break;
+//      case JobBatchingSetup::OneNodePerJob:batch_size = 1;
+//        break;
+//      case JobBatchingSetup::ManyNodesPerJob:batch_size = 32;
+//        break;
+//    }
+//
+//    _volume->March(false, batch_size,
+//                   [this, &num_voxels](mc::OctreeVolume::Node* node) {
+//                     {
+//                       // we add each node to our line buffer so we can visualize marched nodes
+//                       auto bounds = node->bounds;
+//                       bounds.Inset(
+//                           node->depth * OCTREE_NODE_VISUAL_INSET_FACTOR);
+//                       _node_aabb_line_buffer.Add(bounds,
+//                                                  GetNodeColor(node->depth));
+//                     }
+//
+//                     // record # of voxels marched
+//                     num_voxels += static_cast<size_t>(node->bounds.Volume());
+//                   });
+//
+//    const auto end_time = SteadyClock::now();
+//
+//    // we don't record timestamps until we've been running for a while
+//    if (_warming_up) {
+//      if (!_recorded_first_step_timestamp) {
+//        Log::D(TAG, "Warm up starting");
+//        _first_step_timestamp = SteadyClock::now();
+//        _recorded_first_step_timestamp = true;
+//      } else {
+//        auto elapsed_since_first_step =
+//            SteadyClock::now() - _first_step_timestamp;
+//        if (elapsed_since_first_step >= _configuration.warm_up_time) {
+//          Log::D(TAG, "Warm up finished, will start recording perf timings");
+//          _warming_up = false;
+//        }
+//      }
+//    }
+//
+//    if (!_warming_up) {
+//      _march_performance_data.emplace_back(end_time - start_time, num_voxels);
+//    }
 
   }
 
  private:
-
-  struct ProgramState {
-   private:
-    GLuint _program = 0;
-    GLint _uniform_loc_MVP = -1;
-    GLint _uniform_loc_Model = -1;
-
-   public:
-    ProgramState() = default;
-    ProgramState(const ProgramState& other) = delete;
-    ProgramState(const ProgramState&& other) = delete;
-    ~ProgramState() {
-      if (_program > 0) {
-        glDeleteProgram(_program);
-      }
-    }
-
-    bool Build(const std::string& vert_file, const std::string& frag_file) {
-      auto vert_src = LoadText(vert_file.c_str());
-      auto frag_src = LoadText(frag_file.c_str());
-      _program = glh::CreateProgramSrc(vert_src.c_str(), frag_src.c_str());
-      if (_program == 0) {
-        return false;
-      }
-      _uniform_loc_MVP = glGetUniformLocation(_program, "uMVP");
-      _uniform_loc_Model = glGetUniformLocation(_program, "uModel");
-      return true;
-    }
-
-    void Bind(const mat4& mvp, const mat4& model) {
-      glUseProgram(_program);
-      glUniformMatrix4fv(_uniform_loc_MVP, 1, GL_FALSE, value_ptr(mvp));
-      glUniformMatrix4fv(_uniform_loc_Model, 1, GL_FALSE, value_ptr(model));
-    }
-
-  };
 
   struct PerfDatum {
    private:
@@ -686,21 +475,9 @@ class MarchingCubesGLES3Operation : public BaseGLES3Operation {
   // configuration state
   configuration _configuration;
 
-  // render state
-  ProgramState _volume_program, _line_program;
-  bool _use_ortho_projection = false;
-  mat4 _model{1};
-  mat4 _trackball_rotation{1};
-  float _dolly = 0.9F; // camera distance, ranges [0,1], remapped in MVP()
-  float _aspect = 1; // apsect ratio of the framebuffer
-  float _animation_time = 0;
-  mc::LineSegmentBuffer _node_aabb_line_buffer;
-
-  // marching cubes state
-  unique_ptr<mc::job::JobQueue> _job_queue;
-  unique_ptr<mc::OctreeVolume> _volume;
-  std::vector<unique_ptr<mc::ITriangleConsumer>> _triangle_consumers;
-  unique_ptr<mc::demos::Demo> _current_demo;
+  // demo
+  std::unique_ptr<mc::InfiniteRunnerDemo> _demo;
+  std::shared_ptr<mc::ThreadPool> _threadPool;
 
   // perf recording state
   size_t _num_threads_used = 0;
