@@ -69,7 +69,7 @@ std::string ancer::ObbPath() {
 
 //==============================================================================
 
-std::string ancer::LoadText(const char *file_name) {
+std::string ancer::LoadAssetText(const char *file_name) {
   std::string text;
   jni::SafeJNICall(
       [file_name, &text](jni::LocalJNIEnv *env) {
@@ -87,7 +87,7 @@ std::string ancer::LoadText(const char *file_name) {
             env->GetObjectClass(asset_helpers_instance);
 
         jmethodID load_text_mid = env->GetMethodID(
-            asset_helpers_class, "loadText",
+            asset_helpers_class, "loadAssetText",
             "(Ljava/lang/String;)Ljava/lang/String;");
         auto result_j_string = (jstring) env->CallObjectMethod(
             asset_helpers_instance, load_text_mid,
@@ -101,4 +101,40 @@ std::string ancer::LoadText(const char *file_name) {
         }
       });
   return text;
+}
+
+std::vector<uint8_t> ancer::LoadAssetData(const char *file_name) {
+  std::vector<uint8_t> result;
+  jni::SafeJNICall(
+      [file_name, &result](jni::LocalJNIEnv *env) {
+        jstring name = env->NewStringUTF(file_name);
+        jobject activity = env->NewLocalRef(jni::GetActivityWeakGlobalRef());
+        jclass activity_class = env->GetObjectClass(activity);
+
+        jmethodID get_asset_helpers_mid = env->GetMethodID(
+            activity_class, "getSystemHelpers",
+            "()Lcom/google/gamesdk/gamecert/operationrunner/util/SystemHelpers;"
+        );
+        jobject asset_helpers_instance =
+            env->CallObjectMethod(activity, get_asset_helpers_mid);
+        jclass asset_helpers_class =
+            env->GetObjectClass(asset_helpers_instance);
+
+        jmethodID load_data_mid = env->GetMethodID(
+            asset_helpers_class, "loadAssetData",
+            "(Ljava/lang/String;)[B");
+        auto result_j_byte_array = (jbyteArray) env->CallObjectMethod(
+            asset_helpers_instance, load_data_mid,
+            name);
+
+        if (result_j_byte_array) {
+          jbyte* bytes = env->GetByteArrayElements(result_j_byte_array, nullptr);
+          auto length = static_cast<size_t>(env->GetArrayLength(result_j_byte_array));
+          result.resize(length);
+          memcpy(result.data(), bytes, length * sizeof(uint8_t));
+
+          env->ReleaseByteArrayElements(result_j_byte_array, bytes, 0);
+        }
+      });
+  return result;
 }

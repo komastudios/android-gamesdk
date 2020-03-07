@@ -33,79 +33,12 @@ Log::Tag TAG{"ancer::system"};
 //==============================================================================
 
 GLuint ancer::CreateProgram(const char *vtx_file_name, const char *frg_file_name) {
-  std::string vtx_src = LoadText(vtx_file_name);
-  std::string frag_src = LoadText(frg_file_name);
+  std::string vtx_src = LoadAssetText(vtx_file_name);
+  std::string frag_src = LoadAssetText(frg_file_name);
   if (!vtx_src.empty() && !frag_src.empty()) {
     return glh::CreateProgramSrc(vtx_src.c_str(), frag_src.c_str());
   }
   return 0;
-}
-
-//==============================================================================
-
-GLuint ancer::LoadTexture(const char *file_name, int32_t *out_width, int32_t *out_height,
-                          bool *has_alpha) {
-  GLuint tex = 0;
-  jni::SafeJNICall(
-      [&tex, &out_width, &out_height, &has_alpha, file_name](jni::LocalJNIEnv *env) {
-        jstring name = env->NewStringUTF(file_name);
-        jobject activity = env->NewLocalRef(jni::GetActivityWeakGlobalRef());
-        jclass activity_class = env->GetObjectClass(activity);
-
-        glGenTextures(1, &tex);
-        glBindTexture(GL_TEXTURE_2D, tex);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        jmethodID get_asset_helpers_mid = env->GetMethodID(
-            activity_class,
-            "getSystemHelpers",
-            "()Lcom/google/gamesdk/gamecert/operationrunner/util/SystemHelpers;"
-        );
-        jobject asset_helpers_instance = env->CallObjectMethod(activity, get_asset_helpers_mid);
-        jclass asset_helpers_class = env->GetObjectClass(asset_helpers_instance);
-
-        jmethodID load_texture_mid = env->GetMethodID(
-            asset_helpers_class, "loadTexture",
-            "(Ljava/lang/String;)Lcom/google/gamesdk/gamecert/operationrunner/"
-            "util/SystemHelpers$TextureInformation;");
-
-        jobject out = env->CallObjectMethod(asset_helpers_instance, load_texture_mid, name);
-
-        // extract TextureInformation from out
-        jclass java_cls = LoadClass(
-            env, activity,
-            "com/google/gamesdk/gamecert/operationrunner/util/"
-            "SystemHelpers$TextureInformation");
-        jfieldID fid_ret = env->GetFieldID(java_cls, "ret", "Z");
-        jfieldID fid_has_alpha = env->GetFieldID(java_cls, "alphaChannel", "Z");
-        jfieldID fid_width = env->GetFieldID(java_cls, "originalWidth", "I");
-        jfieldID fid_height = env->GetFieldID(java_cls, "originalHeight", "I");
-        bool ret = env->GetBooleanField(out, fid_ret);
-        bool alpha = env->GetBooleanField(out, fid_has_alpha);
-        int32_t width = env->GetIntField(out, fid_width);
-        int32_t height = env->GetIntField(out, fid_height);
-
-        if (!ret) {
-          glDeleteTextures(1, &tex);
-          *out_width = 0;
-          *out_height = 0;
-          if (has_alpha)
-            *has_alpha = false;
-          FatalError(TAG, "loadTexture - unable to load \"%s\"",
-                     file_name);
-        } else {
-          *out_width = width;
-          *out_height = height;
-          if (has_alpha)
-            *has_alpha = alpha;
-
-          // Generate mipmap
-          glGenerateMipmap(GL_TEXTURE_2D);
-        }
-      });
-
-  return tex;
 }
 
 //==============================================================================
