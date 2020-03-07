@@ -15,17 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-precision mediump float;
 
-in vec4 vColor;
-in vec3 vNormal;
-in vec3 vWorldNormal;
+layout(location = 0) in vec3 inPosition;
+layout(location = 1) in vec4 inColor;
 
-out vec4 fragColor;
 
-/////////////////////////////////////////////
+uniform mat4 uProjectionInverse;
+uniform mat4 uModelViewInverse;
+
+out vec3 vRayDir;
 
 void main() {
-    vec3 color = vColor.rgb * ((vNormal + vec3(1.0)) * 0.5);
-    fragColor = vec4(color, 1);
+    vec4 r = vec4(inPosition.xy, 0, 1);
+    r = uProjectionInverse * r;
+    r.w = 0.0;
+    r = uModelViewInverse * r;
+    vRayDir = vec3(r);
+
+    gl_Position = vec4(inPosition, 1.0);
 }
