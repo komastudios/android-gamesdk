@@ -1,7 +1,7 @@
 #version 300 es
 
 /*
- * Copyright 2020 The Android Open Source Project
+ * Copyright 2019 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,16 @@
  * limitations under the License.
  */
 
-layout(location = 0) in vec3 inPosition;
-layout(location = 1) in vec4 inColor;
-layout(location = 2) in vec3 inNormal;
 
-out vec4 vColor;
+uniform samplerCube uSkyboxSampler;
+in vec3 vRayDir;
 
-uniform mat4 uMVP;
-uniform mat4 uModel;
+out vec4 fragColor;
+
+/////////////////////////////////////////////
 
 void main() {
-    gl_Position = uMVP * vec4(inPosition, 1.0);
-    vColor = inColor;
+    vec3 rayDir = normalize(vRayDir);
+    vec3 color = texture(uSkyboxSampler, rayDir).rgb;
+    fragColor = vec4(color,1);
 }

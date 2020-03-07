@@ -18,18 +18,33 @@
 
 layout(location = 0) in vec3 inPosition;
 layout(location = 1) in vec4 inColor;
-layout(location = 2) in vec3 inNormal;
+layout(location = 2) in vec3 inTriangleNormal;
+layout(location = 3) in float inShininess;
+layout(location = 4) in float inTex0Contribution;
+layout(location = 5) in float inTex1Contribution;
 
-out vec4 vColor;
-out vec3 vNormal;
-out vec3 vWorldNormal;
 
 uniform mat4 uMVP;
 uniform mat4 uModel;
+uniform mediump vec3 uCameraPosition;
 
-void main() {
+out vec4 vColor;
+out vec3 vWorldNormal;
+out vec3 vWorldPosition;
+out float vShininess;
+out float vTex0Contribution;
+out float vTex1Contribution;
+out float vWorldDistance;
+
+void main()
+{
     gl_Position = uMVP * vec4(inPosition, 1.0);
+
     vColor = inColor;
-    vNormal = inNormal;
-    vWorldNormal = mat3(uModel) * inNormal;
+    vWorldNormal = mat3(uModel) * inTriangleNormal;
+    vWorldPosition = vec3(uModel * vec4(inPosition, 1.0));
+    vShininess = inShininess;
+    vTex0Contribution = inTex0Contribution;
+    vTex1Contribution = inTex1Contribution;
+    vWorldDistance = distance(vWorldPosition, uCameraPosition);
 }

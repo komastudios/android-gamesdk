@@ -364,7 +364,6 @@ class VertexStreamGLES3Operation : public BaseGLES3Operation {
   ~VertexStreamGLES3Operation() override {
     if (eglGetCurrentContext()==_egl_context) {
       glDeleteProgram(_program);
-      glDeleteTextures(1, &_tex_id);
     }
   }
 
@@ -383,7 +382,7 @@ class VertexStreamGLES3Operation : public BaseGLES3Operation {
       FatalError(TAG, "No EGL context available");
     }
 
-    _tex_id = SetupTexture();
+    _tex = SetupTexture();
 
     glDisable(GL_BLEND);
 
@@ -400,7 +399,7 @@ class VertexStreamGLES3Operation : public BaseGLES3Operation {
     glUniformMatrix4fv(_projection_uniform_loc, 1, GL_FALSE, glm::value_ptr(_projection));
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, _tex_id);
+    glBindTexture(GL_TEXTURE_2D, _tex->id());
     glUniform1i(_tex_id_uniform_loc, 0);
 
     // The operation drawing actually delegates onto its current renderers to draw themselves.
@@ -442,18 +441,13 @@ class VertexStreamGLES3Operation : public BaseGLES3Operation {
    * Loads a texture, aborting the execution in case of failure.
    * @return the texture ID.
    */
-  GLuint SetupTexture() {
-    int tex_width = 0;
-    int tex_height = 0;
-
-    GLuint tex_id = LoadTexture(
-        "Textures/sphinx.png",
-        &tex_width, &tex_height, nullptr);
-    if (tex_width==0 || tex_height==0) {
+  ancer::glh::TextureHandleRef SetupTexture() {
+    auto t = ancer::glh::LoadTexture2D("Textures/sphinx.png");
+    if (!t) {
       FatalError(TAG, "Unable to load texture");
     }
 
-    return tex_id;
+    return t;
   }
 
   /**
@@ -527,7 +521,7 @@ class VertexStreamGLES3Operation : public BaseGLES3Operation {
   // opengl
   EGLContext _egl_context = nullptr;
   GLuint _program = 0;
-  GLuint _tex_id = 0;
+  ancer::glh::TextureHandleRef _tex;
   GLint _tex_id_uniform_loc = -1;
   GLint _projection_uniform_loc = -1;
   mat4 _projection;
