@@ -1,0 +1,85 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000001878313",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1253051?revision\u003d5",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "841085bf_cf36ee38",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/marching_cubes/FastNoise.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-03-08T21:50:06Z",
+      "side": 1,
+      "message": "Third-party license (MIT) disallowed in repository platform/frameworks/opt/gamesdk:\nPermission is hereby granted, free of charge, to any person\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 4,
+        "endLine": 7,
+        "endChar": 63
+      },
+      "revId": "f852dbfdab0176dd55a1f3c4e034e67aa480ca8d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000001878313",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1253051?revision\u003d5",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "99be764b_d9773082",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/marching_cubes/FastNoise.hpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-03-08T21:50:06Z",
+      "side": 1,
+      "message": "Third-party license (MIT) disallowed in repository platform/frameworks/opt/gamesdk:\nPermission is hereby granted, free of charge, to any person\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 4,
+        "endLine": 7,
+        "endChar": 63
+      },
+      "revId": "f852dbfdab0176dd55a1f3c4e034e67aa480ca8d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000001878313",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1253051?revision\u003d5",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "d8b561ec_2d1b4517",
+        "filename": "cert/test/AndroidCertTest/common/3rd_party/stb_image.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 7532,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-03-08T21:50:06Z",
+      "side": 1,
+      "message": "Third-party license (MIT) disallowed in repository platform/frameworks/opt/gamesdk:\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n",
+      "range": {
+        "startLine": 7525,
+        "startChar": 1,
+        "endLine": 7532,
+        "endChar": 48
+      },
+      "revId": "f852dbfdab0176dd55a1f3c4e034e67aa480ca8d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
