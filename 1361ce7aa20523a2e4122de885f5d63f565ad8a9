@@ -16,6 +16,24 @@
       "revId": "1361ce7aa20523a2e4122de885f5d63f565ad8a9",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e2c40160_f91cd818",
+        "filename": "samples/tuningfork/scaledballs/app/src/main/assets/tuningfork/tuningfork_settings.txt",
+        "patchSetId": 3
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-03-09T14:45:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e8533808_a8fde9f4",
+      "revId": "1361ce7aa20523a2e4122de885f5d63f565ad8a9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
