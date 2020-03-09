@@ -1,0 +1,12 @@
+Open-Source-Licensing+1: Lint 🤖 <android-build-prod-ayeaye@system.gserviceaccount.com>
+Code-Review+1: Francesco Carucci <fcarucci@google.com>
+Code-Review+2: Matt Wang <mattkw@google.com>
+Code-Review+1: Andy Yu <chingtangyu@google.com>
+Autosubmit+1: Andy Yu <chingtangyu@google.com>
+Presubmit-Verified-1: Treehugger Robot <treehugger-gerrit@google.com>
+Lint+1: Lint 🤖 <android-build-prod-ayeaye@system.gserviceaccount.com>
+Submitted-by: Matt Wang <mattkw@google.com>
+Submitted-at: Mon, 09 Mar 2020 23:30:03 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1246391
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
