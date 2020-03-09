@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e8533808_a8fde9f4",
+        "filename": "samples/tuningfork/scaledballs/app/src/main/assets/tuningfork/tuningfork_settings.txt",
+        "patchSetId": 3
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-09T13:08:31Z",
+      "side": 1,
+      "message": "This shouldn\u0027t be necessary",
+      "revId": "1361ce7aa20523a2e4122de885f5d63f565ad8a9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
