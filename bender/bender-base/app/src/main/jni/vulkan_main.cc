@@ -167,10 +167,25 @@ void ChangeMaterialComplexity() {
   render_graph->ClearMeshes();
   render_graph->AddMeshes(all_meshes);
 }
+void ToggleMipmaps() {
+  vkDeviceWaitIdle(device->GetDevice());
+  renderer->ToggleMipmaps();
+  for (auto &texture : loaded_textures) {
+    if (texture.second != nullptr) texture.second->ToggleMipmaps();
+  }
+  for (auto &material : loaded_materials) {
+    material.second->UpdateMaterialDescriptorSets();
+  }
+}
 
 void CreateButtons() {
   Button::SetScreenResolution(device->GetDisplaySizeOriented());
 
+  user_interface->RegisterButton([] (Button& button) {
+      button.on_up_ = ToggleMipmaps;
+      button.SetLabel("Mipmap Switch");
+      button.SetPosition(.5, .2, 0, .2);
+  });
 #ifndef GDC_DEMO
   user_interface->RegisterButton([] (Button& button) {
       button.on_hold_ = StrafeLeft;
@@ -255,7 +270,7 @@ void CreateTextures() {
     assert(device != nullptr);
 
     for (uint32_t i = 0; i < tex_files.size(); ++i) {
-      textures.push_back(std::make_shared<Texture>(*device,
+      textures.push_back(std::make_shared<Texture>(*renderer,
                                                    *android_app_ctx,
                                                    tex_files[i],
                                                    VK_FORMAT_R8G8B8A8_SRGB));
@@ -265,9 +280,9 @@ void CreateTextures() {
 
 void AddTexture(std::string file_name){
   if (file_name != "" && loaded_textures.find(file_name) == loaded_textures.end()){
-      loaded_textures[file_name] = std::make_shared<Texture>(*device,
+      loaded_textures[file_name] = std::make_shared<Texture>(*renderer,
                                                             *android_app_ctx,
-                                                         "textures/" + file_name,
+                                                            "textures/" + file_name,
                                                             VK_FORMAT_R8G8B8A8_SRGB);
   }
 }
@@ -681,6 +696,7 @@ bool InitVulkan(android_app *app) {
         LoadDemoModels();
         currently_loading = false;
     });
+
 #endif
 
     timing::PrintEvent(*timing::timer.GetLastMajorEvent());
@@ -838,7 +854,11 @@ bool VulkanDrawFrame(input::Data *input_data) {
                                    timing::timer.GetLastMajorEvent()->number,
                                    &fps,
                                    &frame_time);
-        sprintf(fps_info, "%2.d FPS  %.3f ms", fps, frame_time);
+        sprintf(fps_info,
+                "%2.d FPS  %.3f ms mipmaps: %s",
+                fps,
+                frame_time,
+                renderer->MipmapsEnabled() ? "enabled" : "disabled");
 
         loading_info_mutex.lock();
         user_interface->DrawUserInterface(render_pass);
