@@ -54,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "6ea78629_d6098717",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/vulkan/VulkanVaryingsTestOperation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1623122
+      },
+      "writtenOn": "2020-03-09T21:05:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3d92296d_0407c340",
+      "revId": "aae268ae869170d2f3c777af5cfaaf3f1c645870",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5ee86083_d5b4d4e7",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/vulkan/VulkanVaryingsTestOperation.cpp",
         "patchSetId": 1
@@ -142,6 +160,24 @@
     },
     {
       "key": {
+        "uuid": "d96b5efe_d1394b8f",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/vulkan/VulkanVaryingsTestOperation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1623122
+      },
+      "writtenOn": "2020-03-09T21:05:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a10aec6e_ca2a5e42",
+      "revId": "aae268ae869170d2f3c777af5cfaaf3f1c645870",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "284dd0e8_6c398369",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/vulkan/VulkanVaryingsTestOperation.cpp",
         "patchSetId": 1
@@ -168,6 +204,24 @@
         "id": 1599245
       },
       "writtenOn": "2020-02-14T19:38:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "284dd0e8_6c398369",
+      "revId": "aae268ae869170d2f3c777af5cfaaf3f1c645870",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "24a65f17_0074ba91",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/vulkan/VulkanVaryingsTestOperation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1623122
+      },
+      "writtenOn": "2020-03-09T21:05:34Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "284dd0e8_6c398369",
@@ -205,6 +259,24 @@
       "writtenOn": "2020-02-14T19:38:43Z",
       "side": 1,
       "message": "Done",
+      "parentUuid": "be2006b4_8662728a",
+      "revId": "aae268ae869170d2f3c777af5cfaaf3f1c645870",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2b0da2f3_e08060a4",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/vulkan/VulkanVaryingsTestOperation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1623122
+      },
+      "writtenOn": "2020-03-09T21:05:34Z",
+      "side": 1,
+      "message": "retaining the shaders on the GPU such as this is not needed but also not tracked. its up to the users of this Vulkan wrapper to know that it can be deleted. However retaining the bytecode can be usefull for a bit. For example it can be used to get a vertex shader\u0027s vertex attributes or deriving a set of shader\u0027s descriptor set layout.",
       "parentUuid": "be2006b4_8662728a",
       "revId": "aae268ae869170d2f3c777af5cfaaf3f1c645870",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
