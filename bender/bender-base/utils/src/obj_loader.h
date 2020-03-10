@@ -66,10 +66,12 @@ for (auto obj : modelData) {
 
 namespace OBJLoader {
 
+constexpr int MAX_VERTEX_COUNT = 65500;
+
 struct OBJ {
   std::string name;
   std::string material_name;
-  std::vector<float> vertex_buffer;
+  std::vector<MeshVertex> vertex_buffer;
   std::vector<uint16_t> index_buffer;
   std::unordered_map<glm::vec3, uint16_t> vert_to_index;
 };
