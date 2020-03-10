@@ -35,6 +35,12 @@ VkFormat FindSupportedFormat(benderkit::Device *device,
 
 VkFormat FindDepthFormat(benderkit::Device *device);
 
+int16_t FloatToSnorm16(float v);
+
+uint16_t FloatToUnorm16(float v);
+
+float Snorm16ToFloat( int16_t v );
+
 }
 
 #endif  // BENDER_BASE_UTILS_SRC_BENDER_HELPERS_H

@@ -435,11 +435,9 @@ void HandleInput(input::Data *input_data) {
 
 void CreateShaderState() {
   VertexFormat vertex_format{{
-                                 VertexElement::float3,
-                                 VertexElement::float3,
-                                 VertexElement::float3,
-                                 VertexElement::float3,
-                                 VertexElement::float2,
+                                 VertexElement::snorm4,
+                                 VertexElement::snorm4,
+                                 VertexElement::unorm2,
                              },
   };
 

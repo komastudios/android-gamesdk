@@ -5,6 +5,7 @@
 #include "geometry.h"
 #include "polyhedron.h"
 #include <vector>
+#include <math.h>
 
 #include "bender_helpers.h"
 
@@ -14,8 +15,6 @@ Geometry::Geometry(benderkit::Device &device,
                    const std::vector<float> &vertex_data,
                    const std::vector<uint16_t> &index_data)
     : device_(device) {
-  CreateVertexBuffer(vertex_data, index_data);
-
   for (int x = 0; x < vertex_data.size() / 14; x++){
     float xCoord = vertex_data[x * 14];
     float yCoord = vertex_data[x * 14 + 1];
@@ -29,6 +28,62 @@ Geometry::Geometry(benderkit::Device &device,
     if (zCoord < bounding_box_.min.z) bounding_box_.min.z = zCoord;
   }
   bounding_box_.center = (bounding_box_.max + bounding_box_.min) * .5f;
+
+  std::vector<uint16_t> real_vertex_data(vertex_data.size() / 14 * 10);
+  float max_x = std::max(std::abs(bounding_box_.min.x), std::abs(bounding_box_.max.x));
+  float max_y = std::max(std::abs(bounding_box_.min.y), std::abs(bounding_box_.max.y));
+  float max_z = std::max(std::abs(bounding_box_.min.z), std::abs(bounding_box_.max.z));
+  scale_factor_ = {max_x, max_y, max_z};
+
+  for (int x = 0; x < vertex_data.size() / 14; x++){
+    float xCoord = vertex_data[x * 14];
+    float yCoord = vertex_data[x * 14 + 1];
+    float zCoord = vertex_data[x * 14 + 2];
+
+    real_vertex_data[x * 10] = FloatToSnorm16(xCoord / max_x);
+    real_vertex_data[x * 10 + 1] = FloatToSnorm16(yCoord / max_y);
+    real_vertex_data[x * 10 + 2] = FloatToSnorm16(zCoord / max_z);
+    real_vertex_data[x * 10 + 3] = 32767;
+
+    glm::vec3 normal = {vertex_data[x * 14 + 3], vertex_data[x * 14 + 4], vertex_data[x * 14 + 5]};
+    glm::vec3 avgTangent = {vertex_data[x * 14 + 6], vertex_data[x * 14 + 7], vertex_data[x * 14 + 8]};
+    glm::vec3 avgBitangent = {vertex_data[x * 14 + 9], vertex_data[x * 14 + 10], vertex_data[x * 14 + 11]};
+
+    normal = glm::normalize(normal);
+    avgTangent = glm::normalize(avgTangent);
+    glm::vec3 tangent = glm::normalize(avgTangent - (normal * (glm::dot(normal, avgTangent))));
+    glm::vec3 bitangent = glm::normalize(glm::cross(normal, tangent));
+
+    glm::mat3 tbn = {normal, tangent, bitangent};
+    glm::quat qTangent(tbn);
+    qTangent = glm::normalize(qTangent);
+
+    if( qTangent.w < 0 )
+      qTangent = -qTangent;
+
+    const float bias = 1.0f / 32767.0f;
+    const float normFactor = std::sqrt(1 - bias * bias);
+
+    if (qTangent.w < bias){
+      qTangent.w = bias;
+      qTangent.x *= normFactor;
+      qTangent.y *= normFactor;
+      qTangent.z *= normFactor;
+    }
+
+    if (glm::dot(bitangent, avgBitangent) >= 0)
+      qTangent = -qTangent;
+
+    real_vertex_data[x * 10 + 4] = FloatToSnorm16(qTangent.x);
+    real_vertex_data[x * 10 + 5] = FloatToSnorm16(qTangent.y);
+    real_vertex_data[x * 10 + 6] = FloatToSnorm16(qTangent.z);
+    real_vertex_data[x * 10 + 7] = FloatToSnorm16(qTangent.w);
+
+    real_vertex_data[x * 10 + 8] = FloatToUnorm16(vertex_data[x * 14 + 12]);
+    real_vertex_data[x * 10 + 9] = FloatToUnorm16(vertex_data[x * 14 + 13]);
+  }
+
+  CreateVertexBuffer(real_vertex_data, index_data);
 }
 
 Geometry::~Geometry() {
@@ -39,7 +94,7 @@ Geometry::~Geometry() {
   vkFreeMemory(device_.GetDevice(), index_buffer_device_memory_, nullptr);
 }
 
-void Geometry::CreateVertexBuffer(const std::vector<float>& vertex_data, const std::vector<uint16_t>& index_data) {
+void Geometry::CreateVertexBuffer(const std::vector<uint16_t>& vertex_data, const std::vector<uint16_t>& index_data) {
   vertex_count_ = vertex_data.size();
   index_count_ = index_data.size();
 
