@@ -28,11 +28,9 @@ uniform LightBlock {
     vec3 cameraPos;
 } lightBlock;
 
-layout(location = 0) in vec3 inPosition;
-layout(location = 1) in vec3 inNormal;
-layout(location = 2) in vec3 inTangent;
-layout(location = 3) in vec3 inBitangent;
-layout(location = 4) in vec2 inTexCoord;
+layout(location = 0) in vec4 inPosition;
+layout(location = 1) in vec4 inQTangent;
+layout(location = 2) in vec2 inTexCoord;
 
 layout(location = 0) out vec3 fragPos;
 layout(location = 1) out vec2 fragTexCoord;
@@ -45,14 +43,50 @@ layout(location = 2) out LightBlock {
     vec3 cameraPos;
 } fragLightBlock;
 
+
+vec3 xAxis( vec4 qQuat )
+{
+    float fTy  = 2.0 * qQuat.y;
+    float fTz  = 2.0 * qQuat.z;
+    float fTwy = fTy * qQuat.w;
+    float fTwz = fTz * qQuat.w;
+    float fTxy = fTy * qQuat.x;
+    float fTxz = fTz * qQuat.x;
+    float fTyy = fTy * qQuat.y;
+    float fTzz = fTz * qQuat.z;
+
+    return vec3( 1.0-(fTyy+fTzz), fTxy+fTwz, fTxz-fTwy );
+}
+
+vec3 yAxis( vec4 qQuat )
+{
+    float fTx  = 2.0 * qQuat.x;
+    float fTy  = 2.0 * qQuat.y;
+    float fTz  = 2.0 * qQuat.z;
+    float fTwx = fTx * qQuat.w;
+    float fTwz = fTz * qQuat.w;
+    float fTxx = fTx * qQuat.x;
+    float fTxy = fTy * qQuat.x;
+    float fTyz = fTz * qQuat.y;
+    float fTzz = fTz * qQuat.z;
+
+    return vec3( fTxy-fTwz, 1.0-(fTxx+fTzz), fTyz+fTwx );
+}
+
 void main() {
+    vec4 qtangent = normalize(inQTangent);
+    vec3 inNormal = xAxis(qtangent);
+    vec3 inTangent = yAxis(qtangent);
+    float bitangentReflection = sign(inQTangent.w);
+    vec3 inBitangent = cross( inNormal, inTangent ) * bitangentReflection;
+
     vec3 T = normalize(vec3(ubo.invTranspose * vec4(inTangent, 0.0)));
     vec3 B = normalize(vec3(ubo.invTranspose * vec4(inBitangent, 0.0)));
     vec3 N = normalize(vec3(ubo.invTranspose * vec4(inNormal, 0.0)));
     mat3 worldToTangent = transpose(mat3(T, B, N));
 
-    gl_Position = ubo.mvp * vec4(inPosition, 1.0);
-    fragPos = worldToTangent * vec3(ubo.model * vec4(inPosition, 1.0));
+    gl_Position = ubo.mvp * inPosition;
+    fragPos = worldToTangent * vec3(ubo.model * inPosition);
     fragTexCoord = inTexCoord;
 
     fragLightBlock.pointLightPosition = worldToTangent * lightBlock.pointLight.position;
