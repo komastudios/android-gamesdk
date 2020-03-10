@@ -188,7 +188,6 @@ void CreateButtons() {
       button.SetLabel("Mipmap Switch");
       button.SetPosition(.5, .2, 0, .2);
   });
-#ifndef GDC_DEMO
   user_interface->RegisterButton([] (Button& button) {
       button.on_hold_ = StrafeLeft;
       button.SetLabel("<--");
@@ -219,7 +218,8 @@ void CreateButtons() {
     button.SetLabel("Backward");
     button.SetPosition(.43, .2, .85, .2);
   });
-  user_interface->RegisterButton([] (Button& button) {
+#ifndef GDC_DEMO
+    user_interface->RegisterButton([] (Button& button) {
     button.on_up_ = CreateInstance;
     button.SetLabel("+1 Mesh");
     button.SetPosition(-.2, .2, .4, .2);
@@ -435,11 +435,9 @@ void HandleInput(input::Data *input_data) {
 
 void CreateShaderState() {
   VertexFormat vertex_format{{
-                                 VertexElement::float3,
-                                 VertexElement::float3,
-                                 VertexElement::float3,
-                                 VertexElement::float3,
-                                 VertexElement::float2,
+                                 VertexElement::snorm4,
+                                 VertexElement::snorm4,
+                                 VertexElement::unorm2,
                              },
   };
 

@@ -135,6 +135,13 @@ void LoadOBJ(AAssetManager *mgr,
       tangent = f * (deltaUV2.y * edge1 - deltaUV1.y * edge2);
       bitangent = f * (-deltaUV2.x * edge1 + deltaUV1.x * edge2);
 
+      if (glm::any(glm::isnan(tangent)) || glm::any(glm::isinf(tangent))){
+        tangent = glm::vec3(0);
+      }
+      if (glm::any(glm::isnan(bitangent)) || glm::any(glm::isnan(bitangent))){
+        bitangent = glm::vec3(0);
+      }
+
       AddVertex(vertex3, modelData.back(), position, normal, texCoord, tangent, bitangent);
       AddVertex(vertex2, modelData.back(), position, normal, texCoord, tangent, bitangent);
       AddVertex(vertex1, modelData.back(), position, normal, texCoord, tangent, bitangent);
