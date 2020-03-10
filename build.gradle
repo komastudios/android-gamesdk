@@ -5,6 +5,7 @@ import org.gradle.internal.logging.text.StyledTextOutputFactory;
 import static org.gradle.internal.logging.text.StyledTextOutput.Style;
 import org.gradle.internal.os.OperatingSystem;
 import org.gradle.api.Project;
+import static groovy.lang.Closure.IDENTITY;
 import groovy.util.GroovyCollections;
 import groovyx.gpars.GParsPool;
 
@@ -50,19 +51,31 @@ def joinPath(String first, String... more) {
     return Paths.get(first, more).toString()
 }
 
+def getEnvironment() {
+    def env = [:]
+    def trans = IDENTITY
+    if (OperatingSystem.current().isWindows()) {
+        trans = { it.toUpperCase() }
+    }
+    System.getenv().each{entry -> env[trans(entry.key)] = entry.value}
+    return env
+}
+
 task prepare_proto_before {
     def protocBinDir = protobufInstallDir() + "/bin"
+    def env = getEnvironment()
+    env['PATH'] = protocBinDir + System.getProperty("path.separator") + env['PATH']
     doLast {
         // Install python-protobuf
         exec {
             workingDir "./third_party/protobuf-3.0.0/python"
-            environment 'PATH': "$protocBinDir:${environment.PATH}"
+            setEnvironment env
             commandLine "python", "setup.py", "install", "--user"
         }
         // Generate nano-pb requirements
         exec {
             workingDir '../external/nanopb-c/generator/proto'
-            environment 'PATH': "$protocBinDir:${environment.PATH}"
+            setEnvironment env
             commandLine 'make'
         }
     }
