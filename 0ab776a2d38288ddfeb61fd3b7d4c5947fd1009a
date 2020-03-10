@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d05a95b2_b5eedef4",
+        "filename": "bender/bender-base/utils/bender_kit/timing.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-10T21:26:28Z",
+      "side": 1,
+      "message": "This isn\u0027t directly related to the content of this CL, but if we\u0027re modifying timing, is it possible to reset this when we lose surface and pause? Don\u0027t know if there\u0027s a way to avoid the initial spike in displayed fps on resume.",
+      "revId": "0ab776a2d38288ddfeb61fd3b7d4c5947fd1009a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "63c41a87_4355bd7e",
+        "filename": "bender/bender-base/utils/src/circular_buffer.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-10T21:26:28Z",
+      "side": 1,
+      "message": "IsEmpty() might be clearer naming?",
+      "revId": "0ab776a2d38288ddfeb61fd3b7d4c5947fd1009a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
