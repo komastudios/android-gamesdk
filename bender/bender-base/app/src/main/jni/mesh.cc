@@ -24,11 +24,11 @@ Mesh::Mesh(Renderer &renderer,
 
 Mesh::Mesh(Renderer &renderer,
            std::shared_ptr<Material> material,
-           const std::vector<float> &vertex_data,
+           const std::vector<MeshVertex> &vertex_data,
            const std::vector<uint16_t> &index_data) :
-    Mesh(renderer,
-         material,
-         std::make_shared<Geometry>(renderer.GetDevice(), vertex_data, index_data)) {
+        Mesh(renderer,
+             material,
+             std::make_shared<Geometry>(renderer.GetDevice(), vertex_data, index_data)) {
   ComputeBoundingBoxWorldSpace();
 }
 
@@ -172,7 +172,7 @@ void Mesh::UpdatePipeline(VkRenderPass render_pass) {
 }
 
 void Mesh::Update(uint_t frame_index, Camera &camera) {
-  glm::mat4 model = GetTransform();
+  glm::mat4 model = GetTransform(true);
   glm::mat4 mvp = camera.proj * camera.view * model;
 
   mesh_buffer_->Update(frame_index, [&mvp, &model, &camera](auto &ubo) {
@@ -257,9 +257,9 @@ glm::vec3 Mesh::GetScale() const {
   return scale_;
 }
 
-glm::mat4 Mesh::GetTransform() const {
+glm::mat4 Mesh::GetTransform(bool for_mvp /* = false */) const {
   glm::mat4 position = glm::translate(glm::mat4(1.0), position_);
-  glm::mat4 scale = glm::scale(glm::mat4(1.0), scale_);
+  glm::mat4 scale = glm::scale(glm::mat4(1.0), for_mvp ? scale_ * geometry_->GetScaleFactor() : scale_);
   return position * glm::mat4(rotation_) * scale;
 }
 
