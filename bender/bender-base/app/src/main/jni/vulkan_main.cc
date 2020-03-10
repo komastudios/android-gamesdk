@@ -710,8 +710,6 @@ bool InitVulkan(android_app *app) {
     });
 
 #endif
-
-    timing::PrintEvent(*timing::timer.GetLastMajorEvent());
     app_initialized_once = true;
     is_presenting = true;
   });
@@ -719,7 +717,8 @@ bool InitVulkan(android_app *app) {
 }
 
 bool ResumeVulkan(android_app *app) {
-  timing::timer.Time("Initialization", timing::OTHER, [app] {
+  timing::timer.ResetEvents();
+  timing::timer.Time("Resume Vulkan", timing::OTHER, [app] {
     vkDeviceWaitIdle(device->GetDevice());
     for (int i = 0; i < device->GetSwapchainLength(); i++) {
       vkDestroyImageView(device->GetDevice(), display_views[i], nullptr);
@@ -862,10 +861,7 @@ bool VulkanDrawFrame(input::Data *input_data) {
 
         int fps;
         float frame_time;
-        timing::timer.GetFramerate(100,
-                                   timing::timer.GetLastMajorEvent()->number,
-                                   &fps,
-                                   &frame_time);
+        timing::timer.GetFramerate(100, &fps, &frame_time);
         sprintf(fps_info,
                 "%2.d FPS  %.3f ms mipmaps: %s",
                 fps,
