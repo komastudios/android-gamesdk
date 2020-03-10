@@ -11,7 +11,20 @@
 #include <vector>
 
 namespace benderkit {
-    enum class VertexElement { float1, float2, float3, float4 };
+    enum class VertexElement {
+        float1,
+        float2,
+        float3,
+        float4,
+        unorm1,
+        unorm2,
+        unorm3,
+        unorm4,
+        snorm1,
+        snorm2,
+        snorm3,
+        snorm4
+    };
 
     class VertexFormat {
     public:
