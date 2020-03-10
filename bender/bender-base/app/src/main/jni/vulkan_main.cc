@@ -189,7 +189,6 @@ void CreateButtons() {
       button.SetLabel("Mipmap Switch");
       button.SetPosition(.5, .2, 0, .2);
   });
-#ifndef GDC_DEMO
   user_interface->RegisterButton([] (Button& button) {
       button.on_hold_ = StrafeLeft;
       button.SetLabel("<--");
@@ -220,7 +219,8 @@ void CreateButtons() {
     button.SetLabel("Backward");
     button.SetPosition(.43, .2, .85, .2);
   });
-  user_interface->RegisterButton([] (Button& button) {
+#ifndef GDC_DEMO
+    user_interface->RegisterButton([] (Button& button) {
     button.on_up_ = CreateInstance;
     button.SetLabel("+1 Mesh");
     button.SetPosition(-.2, .2, .4, .2);
@@ -281,7 +281,7 @@ void CreateTextures() {
   });
 }
 
-void AddTexture(std::string file_name, VkFormat format){
+void AddTexture(std::string file_name, VkFormat format) {
   if (file_name != "" && loaded_textures.find(file_name) == loaded_textures.end()){
     std::string texture_name = file_name;
     if (use_astc && file_name.find(".png") != -1) {
@@ -323,7 +323,7 @@ void CreateMaterials() {
 
 void CreateGeometries() {
   for (uint32_t i = 0; i < allowedPolyFaces.size(); i++) {
-    std::vector<float> vertex_data;
+    std::vector<MeshVertex> vertex_data;
     std::vector<uint16_t> index_data;
     polyhedronGenerators[i](vertex_data, index_data);
     geometries.push_back(std::make_shared<Geometry>(*device,
@@ -440,12 +440,11 @@ void HandleInput(input::Data *input_data) {
 }
 
 void CreateShaderState() {
+  // This format matches the format found in ../../utils/packed_types.h
   VertexFormat vertex_format{{
-                                 VertexElement::float3,
-                                 VertexElement::float3,
-                                 VertexElement::float3,
-                                 VertexElement::float3,
-                                 VertexElement::float2,
+                                 VertexElement::snorm4, // position
+                                 VertexElement::snorm4, // qtangent (for tangent space)
+                                 VertexElement::unorm2, // texture coordinates
                              },
   };
 
