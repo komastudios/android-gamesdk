@@ -19,43 +19,26 @@ void AddVertex(glm::vec3 &currVert,
   if (currOBJ.vert_to_index.find(currVert) != currOBJ.vert_to_index.end()) {
     uint16_t index = currOBJ.vert_to_index[currVert];
     currOBJ.index_buffer.push_back(index);
-    currOBJ.vertex_buffer[index * 14 + 6] += tangent.x;
-    currOBJ.vertex_buffer[index * 14 + 7] += tangent.y;
-    currOBJ.vertex_buffer[index * 14 + 8] += tangent.z;
-    currOBJ.vertex_buffer[index * 14 + 9] += bitangent.x;
-    currOBJ.vertex_buffer[index * 14 + 10] += bitangent.y;
-    currOBJ.vertex_buffer[index * 14 + 11] += bitangent.z;
+    currOBJ.vertex_buffer[index].tangent += tangent;
+    currOBJ.vertex_buffer[index].bitangent += bitangent;
     return;
   }
 
   currOBJ.index_buffer.push_back(currOBJ.vert_to_index.size());
   currOBJ.vert_to_index[currVert] = currOBJ.vert_to_index.size();
 
-  currOBJ.vertex_buffer.push_back(position[TrueIndex(currVert.x, position.size())].x);
-  currOBJ.vertex_buffer.push_back(position[TrueIndex(currVert.x, position.size())].y);
-  currOBJ.vertex_buffer.push_back(position[TrueIndex(currVert.x, position.size())].z);
-
-  currOBJ.vertex_buffer.push_back(normal[TrueIndex(currVert.z, normal.size())].x);
-  currOBJ.vertex_buffer.push_back(normal[TrueIndex(currVert.z, normal.size())].y);
-  currOBJ.vertex_buffer.push_back(normal[TrueIndex(currVert.z, normal.size())].z);
-
-  currOBJ.vertex_buffer.push_back(tangent.x);
-  currOBJ.vertex_buffer.push_back(tangent.y);
-  currOBJ.vertex_buffer.push_back(tangent.z);
-
-  currOBJ.vertex_buffer.push_back(bitangent.x);
-  currOBJ.vertex_buffer.push_back(bitangent.y);
-  currOBJ.vertex_buffer.push_back(bitangent.z);
-
-  currOBJ.vertex_buffer.push_back(texCoord[TrueIndex(currVert.y, texCoord.size())].x);
-  currOBJ.vertex_buffer.push_back(texCoord[TrueIndex(currVert.y, texCoord.size())].y);
+  currOBJ.vertex_buffer.emplace_back(position[TrueIndex(currVert.x, position.size())],
+                                     normal[TrueIndex(currVert.z, normal.size())],
+                                     tangent,
+                                     bitangent,
+                                     texCoord[TrueIndex(currVert.y, texCoord.size())]);
 }
 
 void LoadMTL(AAssetManager *mgr,
              const std::string &fileName,
              std::unordered_map<std::string, MTL> &mtllib) {
 
-  AAsset *file = AAssetManager_open(mgr, "models/starship_command_center_triangle.mtl", AASSET_MODE_BUFFER);
+  AAsset *file = AAssetManager_open(mgr, ("models/" + fileName).c_str(), AASSET_MODE_BUFFER);
   const char *fileContent = static_cast<const char *>(AAsset_getBuffer(file));
 
   std::stringstream data(std::string(fileContent, AAsset_getLength(file)));
@@ -99,7 +82,7 @@ void LoadOBJ(AAssetManager *mgr,
     } else if (label == "vt") {
       float x, y;
       lineStream >> x >> y;
-      texCoord.push_back({x, 1-y});
+      texCoord.push_back(glm::clamp(glm::vec2(x, 1-y), 0.0f, 1.0f));
     } else if (label == "vn") {
       float x, y, z;
       lineStream >> x >> y >> z;
@@ -135,11 +118,18 @@ void LoadOBJ(AAssetManager *mgr,
       tangent = f * (deltaUV2.y * edge1 - deltaUV1.y * edge2);
       bitangent = f * (-deltaUV2.x * edge1 + deltaUV1.x * edge2);
 
+      if (glm::any(glm::isnan(tangent)) || glm::any(glm::isinf(tangent))){
+        tangent = glm::vec3(0.0f);
+      }
+      if (glm::any(glm::isnan(bitangent)) || glm::any(glm::isnan(bitangent))){
+        bitangent = glm::vec3(0.0f);
+      }
+
       AddVertex(vertex3, modelData.back(), position, normal, texCoord, tangent, bitangent);
       AddVertex(vertex2, modelData.back(), position, normal, texCoord, tangent, bitangent);
       AddVertex(vertex1, modelData.back(), position, normal, texCoord, tangent, bitangent);
 
-      if (modelData.back().vert_to_index.size() > 65500){
+      if (modelData.back().vert_to_index.size() > MAX_VERTEX_COUNT){
         OBJ curr;
         curr.material_name = modelData.back().material_name;
         modelData.push_back(curr);

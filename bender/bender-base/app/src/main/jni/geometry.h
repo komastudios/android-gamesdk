@@ -9,6 +9,8 @@
 #include "bender_kit.h"
 #include <functional>
 #include <glm/glm.hpp>
+#include <packed_types.h>
+#include <mesh_helpers.h>
 
 struct BoundingBox {
   glm::vec3 min {MAXFLOAT, MAXFLOAT, MAXFLOAT};
@@ -21,10 +23,16 @@ class Geometry {
   Geometry(benderkit::Device &device,
            const std::vector<float> &vertex_data,
            const std::vector<uint16_t> &index_data);
+
+  Geometry(benderkit::Device &device,
+           const std::vector<OBJ_Vertex> &vertex_data,
+           const std::vector<uint16_t> &index_data);
+
   ~Geometry();
 
   int GetVertexCount() const { return vertex_count_; }
   int GetIndexCount() const { return index_count_; }
+  glm::vec3 GetScaleFactor() const { return scale_factor_; }
   BoundingBox GetBoundingBox() const { return bounding_box_; }
 
   void Bind(VkCommandBuffer cmd_buffer) const;
@@ -41,8 +49,9 @@ class Geometry {
   VkDeviceMemory index_buffer_device_memory_;
 
   BoundingBox bounding_box_;
+  glm::vec3 scale_factor_;
 
-  void CreateVertexBuffer(const std::vector<float> &vertex_data,
+  void CreateVertexBuffer(const std::vector<packed_vertex> &vertex_data,
                           const std::vector<uint16_t> &index_data);
 };
 
