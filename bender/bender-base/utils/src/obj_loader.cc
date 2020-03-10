@@ -55,7 +55,7 @@ void LoadMTL(AAssetManager *mgr,
              const std::string &fileName,
              std::unordered_map<std::string, MTL> &mtllib) {
 
-  AAsset *file = AAssetManager_open(mgr, "models/starship_command_center_triangle.mtl", AASSET_MODE_BUFFER);
+  AAsset *file = AAssetManager_open(mgr, ("models/" + fileName).c_str(), AASSET_MODE_BUFFER);
   const char *fileContent = static_cast<const char *>(AAsset_getBuffer(file));
 
   std::stringstream data(std::string(fileContent, AAsset_getLength(file)));
@@ -134,6 +134,13 @@ void LoadOBJ(AAssetManager *mgr,
       glm::vec3 tangent, bitangent;
       tangent = f * (deltaUV2.y * edge1 - deltaUV1.y * edge2);
       bitangent = f * (-deltaUV2.x * edge1 + deltaUV1.x * edge2);
+
+      if (glm::any(glm::isnan(tangent)) || glm::any(glm::isinf(tangent))){
+        tangent = glm::vec3(0);
+      }
+      if (glm::any(glm::isnan(bitangent)) || glm::any(glm::isnan(bitangent))){
+        bitangent = glm::vec3(0);
+      }
 
       AddVertex(vertex3, modelData.back(), position, normal, texCoord, tangent, bitangent);
       AddVertex(vertex2, modelData.back(), position, normal, texCoord, tangent, bitangent);

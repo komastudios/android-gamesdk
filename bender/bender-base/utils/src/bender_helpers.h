@@ -18,6 +18,11 @@
 #include "vulkan_wrapper.h"
 #include "bender_kit.h"
 
+
+#define SNORM_MAX 32767.0f
+#define SNORM_MIN -32768.0f
+#define UNORM_MAX 65535.0f
+
 namespace benderhelpers {
 
 uint32_t FindMemoryType(uint32_t type_filter, VkMemoryPropertyFlags properties,
@@ -34,6 +39,12 @@ VkFormat FindSupportedFormat(benderkit::Device *device,
                              VkFormatFeatureFlags features);
 
 VkFormat FindDepthFormat(benderkit::Device *device);
+
+int16_t FloatToSnorm16(float v);
+
+uint16_t FloatToUnorm16(float v);
+
+float Snorm16ToFloat( int16_t v );
 
 }
 

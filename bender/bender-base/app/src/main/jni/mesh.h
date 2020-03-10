@@ -56,7 +56,7 @@ public:
   glm::quat GetRotation() const;
   glm::vec3 GetScale() const;
 
-  glm::mat4 GetTransform() const;
+  glm::mat4 GetTransform(bool for_mvp = false) const;
 
   BoundingBox GetBoundingBoxWorldSpace();
 

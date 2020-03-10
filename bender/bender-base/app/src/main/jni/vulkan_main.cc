@@ -188,7 +188,6 @@ void CreateButtons() {
       button.SetLabel("Mipmap Switch");
       button.SetPosition(.5, .2, 0, .2);
   });
-#ifndef GDC_DEMO
   user_interface->RegisterButton([] (Button& button) {
       button.on_hold_ = StrafeLeft;
       button.SetLabel("<--");
@@ -219,7 +218,8 @@ void CreateButtons() {
     button.SetLabel("Backward");
     button.SetPosition(.43, .2, .85, .2);
   });
-  user_interface->RegisterButton([] (Button& button) {
+#ifndef GDC_DEMO
+    user_interface->RegisterButton([] (Button& button) {
     button.on_up_ = CreateInstance;
     button.SetLabel("+1 Mesh");
     button.SetPosition(-.2, .2, .4, .2);
@@ -285,7 +285,9 @@ void AddTexture(std::string file_name){
       loaded_textures[file_name] = std::make_shared<Texture>(*renderer,
                                                             *android_app_ctx,
                                                             "textures/" + file_name,
-                                                            VK_FORMAT_R8G8B8A8_SRGB);
+                                                            file_name.find("normal") == std::string::npos &&
+                                                            file_name.find("metalRough") == std::string::npos ?
+                                                            VK_FORMAT_R8G8B8A8_SRGB : VK_FORMAT_R8G8B8A8_UNORM);
   }
 }
 
@@ -435,11 +437,9 @@ void HandleInput(input::Data *input_data) {
 
 void CreateShaderState() {
   VertexFormat vertex_format{{
-                                 VertexElement::float3,
-                                 VertexElement::float3,
-                                 VertexElement::float3,
-                                 VertexElement::float3,
-                                 VertexElement::float2,
+                                 VertexElement::snorm4,
+                                 VertexElement::snorm4,
+                                 VertexElement::unorm2,
                              },
   };
 
