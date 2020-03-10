@@ -87,6 +87,8 @@ float total_time;
 
 const float kCameraMoveSpeed = 200.0;
 const float kCameraStrafeSpeed = 2000.0;
+const float kInputThresholdX = .1;
+const float kInputThresholdY = .1;
 
 const glm::mat4 kIdentityMat4 = glm::mat4(1.0f);
 const glm::mat4 prerotate_90 = glm::rotate(kIdentityMat4,  glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -376,9 +378,19 @@ void CreateFramebuffers(VkRenderPass &render_pass,
   }
 }
 
+bool InputWithinApp(float last_x, float last_y) {
+  uint32_t width = device->GetDisplaySizeOriented().width;
+  uint32_t height = device->GetDisplaySizeOriented().height;
+
+  return last_x > width * kInputThresholdX
+      && last_x < width * (1 - kInputThresholdX)
+      && last_y > height * kInputThresholdY
+      && last_y < height * (1 - kInputThresholdY);
+}
+
 void UpdateCamera(input::Data *input_data) {
-  if ((input_data->last_button != nullptr && input_data->last_input_count > 1)
-      || input_data->last_button == nullptr) {
+  if (((input_data->last_button != nullptr && input_data->last_input_count > 1)
+      || input_data->last_button == nullptr) && InputWithinApp(input_data->last_x, input_data->last_y)) {
     render_graph->RotateCameraGlobal(
         glm::quat(glm::vec3(0.0f, input_data->delta_x / device->GetDisplaySize().width, 0.0f)));
     render_graph->RotateCameraLocal(
