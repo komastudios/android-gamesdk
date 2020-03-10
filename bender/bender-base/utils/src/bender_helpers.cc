@@ -129,4 +129,25 @@ VkFormat FindDepthFormat(benderkit::Device *device) {
   );
 }
 
+int16_t FloatToSnorm16(float v) {
+    //According to D3D10 rules, the value "-1.0f" has two representations:
+    //  0x1000 and 0x10001
+    //This allows everyone to convert by just multiplying by 32767 instead
+    //of multiplying the negative values by 32768 and 32767 for positive.
+    return static_cast<int16_t>( std::clamp(v >= 0.0f ?
+                                            (v * 32767.0f + 0.5f) :
+                                            (v * 32767.0f - 0.5f),
+                                            -32768.0f,
+                                            32767.0f));
+}
+
+uint16_t FloatToUnorm16(float v){
+    return static_cast<uint16_t >( v * 65535.0f );
+}
+
+float Snorm16ToFloat( int16_t v ) {
+    // -32768 & -32767 both map to -1 according to D3D10 rules.
+    return std::max( v / 32767.0f, -1.0f );
+}
+
 }
