@@ -16,6 +16,24 @@
       "revId": "5cef28abbc283e00eedbc468643c71a782419ed0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "45d15bdd_28b4acdc",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 759,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-10T19:39:45Z",
+      "side": 1,
+      "message": "Yes; that\u0027s fine and actually expected behavior. Technically at this point this isn\u0027t necessary anymore, because it seems that DestroyWindow is always called before DeleteVulkan on termination; however, I figured I\u0027d keep this here so we could still have a lock to match the unlock in the function as we free the load_thread.",
+      "parentUuid": "f0b528f0_6bea0edc",
+      "revId": "5cef28abbc283e00eedbc468643c71a782419ed0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
