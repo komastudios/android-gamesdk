@@ -549,13 +549,11 @@ void LoadDemoModels() {
         std::vector<OBJLoader::OBJ> model_data;
         std::unordered_map<std::string, MTL> mtllib;
 
-        load_mutex.lock();
-
+        if (!load_mutex.try_lock()) { return; }
         OBJLoader::LoadOBJ(android_app_ctx->activity->assetManager,
                            ("models/" + file_name_string).c_str(),
                            mtllib,
                            model_data);
-
         load_mutex.unlock();
 
         for (auto obj : model_data) {
@@ -563,6 +561,7 @@ void LoadDemoModels() {
 
             if (loaded_materials.find(mtl_name) == loaded_materials.end()) {
                 MTL curr_mtl = mtllib[obj.material_name];
+                if (!load_mutex.try_lock()) { return; }
                 AddTexture(curr_mtl.map_Ka);
                 AddTexture(curr_mtl.map_Kd);
                 AddTexture(curr_mtl.map_Ks);
@@ -583,8 +582,10 @@ void LoadDemoModels() {
                                                                        shaders,
                                                                        my_textures,
                                                                        new_mtl);
+                load_mutex.unlock();
             }
 
+            if (!load_mutex.try_lock()) { return; }
             geometries.push_back(
                     std::make_shared<Geometry>(*device, obj.vertex_buffer, obj.index_buffer));
             render_graph_mutex.lock();
@@ -592,6 +593,7 @@ void LoadDemoModels() {
                                                          loaded_materials[mtl_name],
                                                          geometries.back()));
             render_graph_mutex.unlock();
+            load_mutex.unlock();
         }
         file_name = AAssetDir_getNextFileName(dir);
     }
@@ -754,7 +756,7 @@ void DestroyWindow(void) {
 }
 
 void DeleteVulkan(void) {
-  load_mutex.lock();
+  load_mutex.try_lock();
   if (currently_loading) {
     load_thread->detach();
     delete load_thread;
@@ -788,6 +790,8 @@ void DeleteVulkan(void) {
   shaders.reset();
 
   delete device;
+
+  app_initialized_once = false;
 }
 
 bool VulkanDrawFrame(input::Data *input_data) {

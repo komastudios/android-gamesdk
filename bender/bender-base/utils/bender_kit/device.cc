@@ -78,6 +78,9 @@ Device::~Device() {
 void Device::DestroySurface() {
   vkDestroySwapchainKHR(device_, swapchain_, nullptr);
   vkDestroySurfaceKHR(instance_, surface_, nullptr);
+
+  swapchain_ = VK_NULL_HANDLE;
+  surface_ = VK_NULL_HANDLE;
 }
 
 void Device::CreateSurface(ANativeWindow *platform_window) {
