@@ -36,6 +36,18 @@ namespace swappy {
 
 using namespace std::chrono_literals;
 
+struct SwappyCommonSettings {
+
+    int sdkVersion;
+
+    std::chrono::nanoseconds refreshPeriod;
+    std::chrono::nanoseconds appVsyncOffset;
+    std::chrono::nanoseconds sfVsyncOffset;
+
+    static bool GetFromApp(JNIEnv *env, jobject jactivity, SwappyCommonSettings& out);
+    static int getSDKVersion(JNIEnv *env);
+};
+
 // Common part between OpenGL and Vulkan implementations.
 class SwappyCommon final {
 public:
@@ -48,6 +60,10 @@ public:
     };
 
     SwappyCommon(JNIEnv *env, jobject jactivity);
+
+    // Used for testing
+    SwappyCommon(const SwappyCommonSettings& settings);
+
     ~SwappyCommon();
 
     uint64_t getSwapIntervalNS();
@@ -74,7 +90,7 @@ public:
     }
 
     std::chrono::steady_clock::time_point getPresentationTime() { return mPresentationTime; }
-    std::chrono::nanoseconds getRefreshPeriod() const { return mRefreshPeriod; }
+    std::chrono::nanoseconds getRefreshPeriod() const { return mSettings.refreshPeriod; }
 
     bool isValid() { return mValid; }
 
@@ -167,10 +183,6 @@ private:
                         std::chrono::nanoseconds period2,
                         int interval2);
 
-    int getSDKVersion(JNIEnv *env);
-
-    const int mSdkVersion;
-
     std::unique_ptr<ChoreographerFilter> mChoreographerFilter;
 
     bool mUsingExternalChoreographer = false;
@@ -184,7 +196,7 @@ private:
 
     std::chrono::steady_clock::time_point mSwapTime;
 
-    std::chrono::nanoseconds mRefreshPeriod;
+    SwappyCommonSettings mSettings;
 
     std::mutex mFrameDurationsMutex;
     std::vector<FrameDuration> mFrameDurations GUARDED_BY(mFrameDurationsMutex);
