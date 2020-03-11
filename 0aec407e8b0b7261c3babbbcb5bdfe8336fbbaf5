@@ -1,0 +1,129 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5bb3c7e8_8264fe18",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-03-11T16:51:01Z",
+      "side": 1,
+      "message": "Pass out parameters by pointer and not by reference. This makes it clearer for the caller to know that parameters are modified by the functions:\n\nGetFromApp(.., out) vs GetFromApp(.., \u0026out);",
+      "revId": "0aec407e8b0b7261c3babbbcb5bdfe8336fbbaf5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f9cb10ea_b59e0eda",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-03-11T16:51:01Z",
+      "side": 1,
+      "message": "Nit: GetFromApp -\u003e getFromApp",
+      "revId": "0aec407e8b0b7261c3babbbcb5bdfe8336fbbaf5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "827f05d3_468f27eb",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-03-11T16:51:01Z",
+      "side": 1,
+      "message": "Nit: consider changing this to \u0027protected\u0027 and a new class SwappyCommonTest : public SwappyCommon {} to call this.\nThis helps to ensure that outside code doesn\u0027t call test methods.",
+      "revId": "0aec407e8b0b7261c3babbbcb5bdfe8336fbbaf5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "73fcfbc8_5f248d25",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-03-11T16:51:01Z",
+      "side": 1,
+      "message": "Nit: We already have a class Settings which might be confusing. Maybe rename to mSwappyCommonSettings ?",
+      "range": {
+        "startLine": 199,
+        "startChar": 25,
+        "endLine": 199,
+        "endChar": 34
+      },
+      "revId": "0aec407e8b0b7261c3babbbcb5bdfe8336fbbaf5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "20331a30_116348a6",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-03-11T16:51:01Z",
+      "side": 1,
+      "message": "Can this be const ?",
+      "revId": "0aec407e8b0b7261c3babbbcb5bdfe8336fbbaf5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c83de8aa_111134b0",
+        "filename": "test/swappy/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-03-11T16:51:01Z",
+      "side": 1,
+      "message": "Instead of compiling all files again in the test, can we link swappy library here ?",
+      "revId": "0aec407e8b0b7261c3babbbcb5bdfe8336fbbaf5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4e0490ee_e4be94e2",
+        "filename": "test/swappy/swappy_test.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-03-11T16:51:01Z",
+      "side": 1,
+      "message": "Why do we need this custom main function ? gtest is not enough ?",
+      "revId": "0aec407e8b0b7261c3babbbcb5bdfe8336fbbaf5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
