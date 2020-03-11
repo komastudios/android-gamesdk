@@ -339,7 +339,7 @@ private:
 
 NoChoreographerThread::NoChoreographerThread(Callback onChoreographer) :
     ChoreographerThread(onChoreographer) {
-    std::unique_lock<std::mutex> lock(mWaitingMutex);
+    std::lock_guard<std::mutex> lock(mWaitingMutex);
     Settings::getInstance()->addListener([this]() { onSettingsChanged(); });
     mThreadRunning = true;
     mThread = Thread([this]() { looperThread(); });
@@ -350,9 +350,10 @@ NoChoreographerThread::~NoChoreographerThread()
 {
     ALOGI("Destroying NoChoreographerThread");
     {
-        std::unique_lock<std::mutex> lock(mWaitingMutex);
+        std::lock_guard<std::mutex> lock(mWaitingMutex);
         mThreadRunning = false;
     }
+    mWaitingCondition.notify_all();
     mThread.join();
 }
 
@@ -393,6 +394,9 @@ void NoChoreographerThread::looperThread()
         {
             // mutex should be unlocked before sleeping
             std::lock_guard<std::mutex> lock(mWaitingMutex);
+            if (!mThreadRunning) {
+                break;
+            }
             mWaitingCondition.wait(mWaitingMutex);
             if (!mThreadRunning) {
                 break;
