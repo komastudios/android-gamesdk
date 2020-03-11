@@ -58,6 +58,7 @@
 #include <cmath>
 #include <mutex>
 #include <sstream>
+#include <string>
 
 #include <ancer/BaseOperation.hpp>
 #include <ancer/DatumReporting.hpp>
@@ -139,11 +140,13 @@ namespace {
  */
 struct runtime_datum {
   std::string wait_method;
+  std::string iteration_period;
   bool affinity;
 };
 
 void WriteDatum(report_writers::Struct w, const runtime_datum &r) {
   ADD_DATUM_MEMBER(w, r, wait_method);
+  ADD_DATUM_MEMBER(w, r, iteration_period);
   ADD_DATUM_MEMBER(w, r, affinity);
 }
 
@@ -287,7 +290,7 @@ class CalculateWaitPIOperation : public BaseOperation {
 
     const auto config = GetConfiguration<configuration>();
     SetWaitMethodBasedOnConfiguration(config);
-    Report(runtime_datum{config.wait_method, config.affinity});
+    Report(runtime_datum{config.wait_method, std::to_string(config.looping_period.count()) + "ms", config.affinity});
 
     const int num_cores = std::thread::hardware_concurrency();
     sync_point.Reset(num_cores);
