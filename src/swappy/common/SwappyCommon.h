@@ -36,8 +36,20 @@ namespace swappy {
 
 using namespace std::chrono_literals;
 
+struct SwappyCommonSettings {
+
+    int sdkVersion;
+
+    std::chrono::nanoseconds refreshPeriod;
+    std::chrono::nanoseconds appVsyncOffset;
+    std::chrono::nanoseconds sfVsyncOffset;
+
+    static bool getFromApp(JNIEnv *env, jobject jactivity, SwappyCommonSettings* out);
+    static int getSDKVersion(JNIEnv *env);
+};
+
 // Common part between OpenGL and Vulkan implementations.
-class SwappyCommon final {
+class SwappyCommon {
 public:
     enum class PipelineMode { Off, On };
 
@@ -48,6 +60,7 @@ public:
     };
 
     SwappyCommon(JNIEnv *env, jobject jactivity);
+
     ~SwappyCommon();
 
     uint64_t getSwapIntervalNS();
@@ -74,12 +87,17 @@ public:
     }
 
     std::chrono::steady_clock::time_point getPresentationTime() { return mPresentationTime; }
-    std::chrono::nanoseconds getRefreshPeriod() const { return mRefreshPeriod; }
+    std::chrono::nanoseconds getRefreshPeriod() const { return mCommonSettings.refreshPeriod; }
 
     bool isValid() { return mValid; }
 
     std::chrono::nanoseconds getFenceTimeout() const { return mFenceTimeout; }
     void setFenceTimeout(std::chrono::nanoseconds t) { mFenceTimeout = t; }
+
+  protected:
+    // Used for testing
+    SwappyCommon(const SwappyCommonSettings& settings);
+
 private:
     class FrameDuration {
     public:
@@ -167,10 +185,6 @@ private:
                         std::chrono::nanoseconds period2,
                         int interval2);
 
-    int getSDKVersion(JNIEnv *env);
-
-    const int mSdkVersion;
-
     std::unique_ptr<ChoreographerFilter> mChoreographerFilter;
 
     bool mUsingExternalChoreographer = false;
@@ -184,7 +198,7 @@ private:
 
     std::chrono::steady_clock::time_point mSwapTime;
 
-    std::chrono::nanoseconds mRefreshPeriod;
+    SwappyCommonSettings mCommonSettings;
 
     std::mutex mFrameDurationsMutex;
     std::vector<FrameDuration> mFrameDurations GUARDED_BY(mFrameDurationsMutex);
