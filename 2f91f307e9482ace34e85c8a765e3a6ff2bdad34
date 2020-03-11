@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a397f2dc_b2644505",
+        "filename": "test/swappy/swappycommon_test.cpp~",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-03-11T15:12:26Z",
+      "side": 1,
+      "message": "File to delete?",
+      "revId": "2f91f307e9482ace34e85c8a765e3a6ff2bdad34",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
