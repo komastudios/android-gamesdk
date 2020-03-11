@@ -32,26 +32,26 @@
 #include <ancer/util/Log.hpp>
 #include <ancer/System.hpp>
 
-namespace ancer {
+namespace marching_cubes {
 
 /*
  * A simple thread pool with a Wait() function to enable blocking until
  * queued jobs have completed
  */
-class ThreadPool {
+class MarchingCubesThreadPool {
  private:
-  static constexpr ancer::Log::Tag TAG{"ThreadPool"};
+  static constexpr ancer::Log::Tag TAG{"MarchingCubesThreadPool"};
 
  public:
 
   /*
    * SleepConfig is a specification for if/how to periodically sleep
    * worker threads to mitigate core(s) overheating and being throttled
-   * by the OS. By default, ThreadPool uses SleepConfig::None(), which is
+   * by the OS. By default, MarchingCubesThreadPool uses SleepConfig::None(), which is
    * does nothing and allows threads to run at full bore.
    * But! It's been observed that a little periodic sleeping of threads
    * can, *in some cases* result in improved performance for long running tasks.
-   * By making sleep optional/configurable for ThreadPool we can experiment
+   * By making sleep optional/configurable for MarchingCubesThreadPool we can experiment
    * with different sleep scenarios, to plot best practices.
    */
   struct SleepConfig {
@@ -61,17 +61,17 @@ class ThreadPool {
 
     // how often each thread will be slept; each thread will sleep
     // after it's done this much work.
-    const Duration period{0};
+    const ancer::Duration period{0};
 
     // when a thread has worked for `period`, it will be slept for
     // this long
-    const Duration duration{0};
+    const ancer::Duration duration{0};
 
     // the technique used to sleep the thread; if Method::None,
     // sleep is a no-op
     const Method method{Method::None};
 
-    SleepConfig(Duration period, Duration duration, Method method) :
+    SleepConfig(ancer::Duration period, ancer::Duration duration, Method method) :
         period(period), duration(duration), method(method) {}
 
     SleepConfig(const SleepConfig&) = default;
@@ -80,7 +80,7 @@ class ThreadPool {
 
     // convenience function to create a default no-op sleep config
     static SleepConfig None() {
-      return SleepConfig{Duration{0}, Duration{0}, Method::None};
+      return SleepConfig{ancer::Duration{0}, ancer::Duration{0}, Method::None};
     }
   };
 
@@ -92,7 +92,7 @@ class ThreadPool {
   typedef std::function<void(int)> WorkFn;
 
   /*
-   * Create a ThreadPool
+   * Create a MarchingCubesThreadPool
    * affinity: The thread affinity (big core, little core, etc)
    * pin_threads: if true, pin threads to the CPU they're on
    * max_thread_count: allow setting # cpus to a smaller value than the
@@ -100,23 +100,23 @@ class ThreadPool {
    * sleep_config: A sleep configuration to use to periodically sleep
    *   each thread, to mitigate core overheating/throttling
    */
-  ThreadPool(ThreadAffinity affinity,
-             bool pin_threads,
-             int max_thread_count = std::numeric_limits<int>::max(),
-             SleepConfig sleep_config = SleepConfig::None())
+  MarchingCubesThreadPool(ancer::ThreadAffinity affinity,
+                          bool pin_threads,
+                          int max_thread_count = std::numeric_limits<int>::max(),
+                          SleepConfig sleep_config = SleepConfig::None())
       : _sleep_config(sleep_config) {
-    auto count = std::max(std::min(NumCores(affinity), max_thread_count), 1);
+    auto count = std::max(std::min(ancer::NumCores(affinity), max_thread_count), 1);
 
     for (auto i = 0; i < count; ++i) {
       auto cpu_idx = pin_threads ? i : -1;
-      _elapsed_work_times.push_back(Duration{0});
+      _elapsed_work_times.push_back(ancer::Duration{0});
       _workers.emplace_back([this, i, affinity, cpu_idx]() {
         ThreadLoop(affinity, cpu_idx, i);
       });
     }
   }
 
-  ~ThreadPool() {
+  ~MarchingCubesThreadPool() {
     // set stop-condition
     std::unique_lock<std::mutex> latch(_queue_mutex);
     _stop_requested = true;
@@ -181,15 +181,15 @@ class ThreadPool {
         latch.unlock();
 
         // run function outside context
-        const auto start_time = SteadyClock::now();
+        const auto start_time = ancer::SteadyClock::now();
 
         fn(thread_idx);
 
-        const auto end_time = SteadyClock::now();
+        const auto end_time = ancer::SteadyClock::now();
         _elapsed_work_times[thread_idx] += (end_time - start_time);
 
         if (_sleep_config.method != SleepConfig::Method::None &&
-          _sleep_config.duration > Duration{0} &&
+          _sleep_config.duration > ancer::Duration{0} &&
           !_sleeping) {
           _sleeping = true;
 
@@ -199,10 +199,10 @@ class ThreadPool {
           // sleep periods (this is arbitrary)
           auto ref =_elapsed_work_times[thread_idx];
           auto duration = (ref / _sleep_config.period) * _sleep_config.duration;
-          duration = std::min<Duration>(duration, 3 * duration);
+          duration = std::min<ancer::Duration>(duration, 3 * duration);
 
           Sleep(duration);
-          _elapsed_work_times[thread_idx] = Duration{0};
+          _elapsed_work_times[thread_idx] = ancer::Duration{0};
 
           _sleeping = false;
         }
@@ -218,7 +218,7 @@ class ThreadPool {
 
  private:
 
-  void Sleep(Duration duration)
+  void Sleep(ancer::Duration duration)
   {
     switch(_sleep_config.method){
 
@@ -227,8 +227,8 @@ class ThreadPool {
         std::this_thread::sleep_for(duration);
         break;
       case SleepConfig::Method::Spinlock: {
-        auto now = SteadyClock::now();
-        while ((SteadyClock::now() - now) < duration) {
+        auto now = ancer::SteadyClock::now();
+        while ((ancer::SteadyClock::now() - now) < duration) {
           std::this_thread::yield();
         }
         break;
@@ -239,7 +239,7 @@ class ThreadPool {
  private:
 
   std::vector<std::thread> _workers;
-  std::vector<Duration> _elapsed_work_times;
+  std::vector<ancer::Duration> _elapsed_work_times;
   std::deque<WorkFn> _tasks;
   std::mutex _queue_mutex;
   std::condition_variable _cv_task;
