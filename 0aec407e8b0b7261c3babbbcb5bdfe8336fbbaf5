@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "58857300_3e958fd9",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-11T17:26:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5bb3c7e8_8264fe18",
+      "revId": "0aec407e8b0b7261c3babbbcb5bdfe8336fbbaf5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f9cb10ea_b59e0eda",
         "filename": "src/swappy/common/SwappyCommon.h",
         "patchSetId": 2
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "95796bb9_cf852298",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-11T17:26:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f9cb10ea_b59e0eda",
+      "revId": "0aec407e8b0b7261c3babbbcb5bdfe8336fbbaf5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "827f05d3_468f27eb",
         "filename": "src/swappy/common/SwappyCommon.h",
         "patchSetId": 2
@@ -50,6 +86,24 @@
       "revId": "0aec407e8b0b7261c3babbbcb5bdfe8336fbbaf5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "04c5e770_5a4ef667",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-11T17:26:50Z",
+      "side": 1,
+      "message": "Done, although this means SwappyCommon can\u0027t be final.",
+      "parentUuid": "827f05d3_468f27eb",
+      "revId": "0aec407e8b0b7261c3babbbcb5bdfe8336fbbaf5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -93,6 +147,48 @@
     },
     {
       "key": {
+        "uuid": "e634b471_03497da0",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-11T17:26:50Z",
+      "side": 1,
+      "message": "Renamed to mCommonSettings",
+      "parentUuid": "73fcfbc8_5f248d25",
+      "range": {
+        "startLine": 199,
+        "startChar": 25,
+        "endLine": 199,
+        "endChar": 34
+      },
+      "revId": "0aec407e8b0b7261c3babbbcb5bdfe8336fbbaf5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0978b904_3dd8568c",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-11T17:26:50Z",
+      "side": 1,
+      "message": "It includes the refresh period, which can change.",
+      "parentUuid": "20331a30_116348a6",
+      "revId": "0aec407e8b0b7261c3babbbcb5bdfe8336fbbaf5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c83de8aa_111134b0",
         "filename": "test/swappy/CMakeLists.txt",
         "patchSetId": 2
@@ -110,6 +206,24 @@
     },
     {
       "key": {
+        "uuid": "f20cee02_3149280d",
+        "filename": "test/swappy/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-11T17:26:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c83de8aa_111134b0",
+      "revId": "0aec407e8b0b7261c3babbbcb5bdfe8336fbbaf5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4e0490ee_e4be94e2",
         "filename": "test/swappy/swappy_test.h",
         "patchSetId": 2
@@ -124,6 +238,24 @@
       "revId": "0aec407e8b0b7261c3babbbcb5bdfe8336fbbaf5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "07241cd9_8f499e01",
+        "filename": "test/swappy/swappy_test.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-11T17:26:50Z",
+      "side": 1,
+      "message": "This is for the app so that we can get back the messages that gtest produces. Without it, the messages go to the console and the app can\u0027t tell if tests passed or failed.",
+      "parentUuid": "4e0490ee_e4be94e2",
+      "revId": "0aec407e8b0b7261c3babbbcb5bdfe8336fbbaf5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
