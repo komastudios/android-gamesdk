@@ -38,20 +38,20 @@ namespace ancer {
  * A simple thread pool with a Wait() function to enable blocking until
  * queued jobs have completed
  */
-class ThreadPool {
+class MarchingCubesThreadPool {
  private:
-  static constexpr ancer::Log::Tag TAG{"ThreadPool"};
+  static constexpr ancer::Log::Tag TAG{"MarchingCubesThreadPool"};
 
  public:
 
   /*
    * SleepConfig is a specification for if/how to periodically sleep
    * worker threads to mitigate core(s) overheating and being throttled
-   * by the OS. By default, ThreadPool uses SleepConfig::None(), which is
+   * by the OS. By default, MarchingCubesThreadPool uses SleepConfig::None(), which is
    * does nothing and allows threads to run at full bore.
    * But! It's been observed that a little periodic sleeping of threads
    * can, *in some cases* result in improved performance for long running tasks.
-   * By making sleep optional/configurable for ThreadPool we can experiment
+   * By making sleep optional/configurable for MarchingCubesThreadPool we can experiment
    * with different sleep scenarios, to plot best practices.
    */
   struct SleepConfig {
@@ -92,7 +92,7 @@ class ThreadPool {
   typedef std::function<void(int)> WorkFn;
 
   /*
-   * Create a ThreadPool
+   * Create a MarchingCubesThreadPool
    * affinity: The thread affinity (big core, little core, etc)
    * pin_threads: if true, pin threads to the CPU they're on
    * max_thread_count: allow setting # cpus to a smaller value than the
@@ -100,10 +100,10 @@ class ThreadPool {
    * sleep_config: A sleep configuration to use to periodically sleep
    *   each thread, to mitigate core overheating/throttling
    */
-  ThreadPool(ThreadAffinity affinity,
-             bool pin_threads,
-             int max_thread_count = std::numeric_limits<int>::max(),
-             SleepConfig sleep_config = SleepConfig::None())
+  MarchingCubesThreadPool(ThreadAffinity affinity,
+                          bool pin_threads,
+                          int max_thread_count = std::numeric_limits<int>::max(),
+                          SleepConfig sleep_config = SleepConfig::None())
       : _sleep_config(sleep_config) {
     auto count = std::max(std::min(NumCores(affinity), max_thread_count), 1);
 
@@ -116,7 +116,7 @@ class ThreadPool {
     }
   }
 
-  ~ThreadPool() {
+  ~MarchingCubesThreadPool() {
     // set stop-condition
     std::unique_lock<std::mutex> latch(_queue_mutex);
     _stop_requested = true;

@@ -145,18 +145,18 @@ struct sleep_configuration {
   Duration duration;
   WaitMethod method;
 
-  ThreadPool::SleepConfig ToSleepConfig() const {
+  MarchingCubesThreadPool::SleepConfig ToSleepConfig() const {
     const auto mthd = [=](){
       switch (method){
         case WaitMethod::None:
-          return ThreadPool::SleepConfig::Method::None;
+          return MarchingCubesThreadPool::SleepConfig::Method::None;
         case WaitMethod::Sleep:
-          return ThreadPool::SleepConfig::Method::Sleep;
+          return MarchingCubesThreadPool::SleepConfig::Method::Sleep;
         case WaitMethod::Spinlock:
-          return ThreadPool::SleepConfig::Method::Spinlock;
+          return MarchingCubesThreadPool::SleepConfig::Method::Spinlock;
       }
     }();
-    return ThreadPool::SleepConfig{period, duration, mthd };
+    return MarchingCubesThreadPool::SleepConfig{period, duration, mthd };
   }
 };
 
@@ -488,7 +488,7 @@ class MarchingCubesGLES3Operation : public BaseGLES3Operation {
 
     auto sleep_config = _configuration.sleep_config.ToSleepConfig();
 
-    _job_queue = std::make_unique<mc::job::JobQueue>(
+    _job_queue = std::make_unique<mc::job::MarchingCubesJobQueue>(
         affinity, pinned, max_thread_count, sleep_config);
 
     _num_threads_used = _job_queue->NumThreads();
@@ -697,7 +697,7 @@ class MarchingCubesGLES3Operation : public BaseGLES3Operation {
   mc::LineSegmentBuffer _node_aabb_line_buffer;
 
   // marching cubes state
-  unique_ptr<mc::job::JobQueue> _job_queue;
+  unique_ptr<mc::job::MarchingCubesJobQueue> _job_queue;
   unique_ptr<mc::OctreeVolume> _volume;
   std::vector<unique_ptr<mc::ITriangleConsumer>> _triangle_consumers;
   unique_ptr<mc::demos::Demo> _current_demo;
