@@ -7,6 +7,7 @@
 #include "blend_mode.h"
 #include "depth_mode.h"
 #include "shader_module.h"
+#include "resources.h"
 
 namespace ancer {
 namespace vulkan {

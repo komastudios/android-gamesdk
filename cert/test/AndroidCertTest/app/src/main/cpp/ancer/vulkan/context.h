@@ -3,6 +3,7 @@
 
 #include "vulkan_base.h"
 #include "render_pass.h"
+#include "resources.h"
 
 #include <cstdarg>
 
@@ -27,9 +28,26 @@ class Context {
   Result Begin();
 
   /**
+   *
+   */
+  Result BindResources(VkPipelineBindPoint bind_point, VkPipelineLayout layout,
+                       uint32_t first,
+                       std::initializer_list<Resources> resources);
+
+  /**
    * End recording to the command buffer.
    */
   Result End();
+
+  /**
+   * Set the fence used for the current command buffer
+   */
+  Result SetFence(Fence & fence);
+
+  /**
+   * Get the fence used for the current command buffer
+   */
+  Result GetFence(Fence & fence, bool create_advancing_fence = false);
 
   /**
    * Fill a VkSubmitInfo struct for submitting this command buffer to a queue
@@ -61,6 +79,8 @@ class Context {
   Vulkan _vk;
 
  private:
+  Result ClearFence();
+
   uint32_t _qfi;
   std::vector<VkCommandPool> _pools;
   std::vector<VkCommandBuffer> _command_buffers;

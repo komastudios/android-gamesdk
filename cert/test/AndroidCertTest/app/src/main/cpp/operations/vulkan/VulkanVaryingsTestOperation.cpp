@@ -26,6 +26,7 @@
 #pragma ide diagnostic ignored "misc-non-private-member-variables-in-classes"
 
 #include <ancer/BaseVulkanOperation.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/util/Json.hpp>
 
 #include <ancer/vulkan/image.h>
@@ -52,11 +53,11 @@ struct datum {
   uint32_t reported_max_components;
 };
 
-JSON_WRITER(datum) {
-  JSON_REQVAR(initialization_success);
-  JSON_REQVAR(max_block_components);
-  JSON_REQVAR(max_single_components);
-  JSON_REQVAR(reported_max_components);
+void WriteDatum(report_writers::Struct w, const datum &i) {
+  ADD_DATUM_MEMBER(w, i, initialization_success);
+  ADD_DATUM_MEMBER(w, i, max_block_components);
+  ADD_DATUM_MEMBER(w, i, max_single_components);
+  ADD_DATUM_MEMBER(w, i, reported_max_components);
 }
 
 constexpr Log::Tag TAG{"VulkanVaryingsTestOperation"};

@@ -13,6 +13,7 @@ namespace ancer {
 namespace vulkan {
 class ResourcesLayout;
 class Resources;
+struct PipelineLayoutDesc;
 }
 };
 
@@ -29,12 +30,21 @@ template<> struct hash<ancer::vulkan::ResourcesLayout> {
   std::size_t operator()(const ancer::vulkan::ResourcesLayout & rl) const noexcept;
 };
 template<> struct hash<ancer::vulkan::Resources> {
-  std::size_t operator()(const ancer::vulkan::Resources & rl) const noexcept;
+  std::size_t operator()(const ancer::vulkan::Resources & r) const noexcept;
+};
+template<> struct hash<ancer::vulkan::PipelineLayoutDesc> {
+  std::size_t operator()(const ancer::vulkan::PipelineLayoutDesc & pld) const noexcept;
 };
 } // namespace std
 
 namespace ancer {
 namespace vulkan {
+
+static const std::size_t kMaxDSLPerPipelineLayout = 4;
+
+struct PipelineLayoutDesc {
+  VkDescriptorSetLayout layouts[kMaxDSLPerPipelineLayout];
+};
 
 /**
  * This class functionally describes a structure for use in shaders with data
@@ -99,6 +109,12 @@ class ResourcesLayout {
  */
 class Resources {
  public:
+  Resources() = default;
+
+  inline Resources(const ResourcesLayout &rl) {
+    _layout = &rl;
+  }
+
   Resources &Layout(const ResourcesLayout *rl);
 
   Resources &Bind(uint32_t binding, uint32_t element, VkSampler sampler);
@@ -181,11 +197,16 @@ class ResourcesStore {
     return Result::kSuccess;
   }
 
+  Result Resolve(std::initializer_list<ResourcesLayout> layouts,
+                 /* <push constants>, */ VkPipelineLayout &out);
+
   Result Cleanup(bool advance = false);
 
  private:
   Result CreatePool();
   Result AllocateSet(VkDescriptorSetLayout layout, VkDescriptorSet &out);
+
+  static const std::size_t kDescriptorSetLifetime = 3;
 
   struct Pool {
     VkDescriptorPool descriptor_pool;
@@ -200,8 +221,6 @@ class ResourcesStore {
     VkDescriptorSet descriptor_set;
   };
 
-  static const std::size_t kDescriptorSetLifetime = 3;
-
   Vulkan _vk;
 
   std::unordered_map<VkSamplerCreateInfo, VkSampler> _samplers;
@@ -215,6 +234,9 @@ class ResourcesStore {
   InternalList _inactive_sets[kDescriptorSetLifetime];
   InternalList _active_sets;
   std::unordered_map<Resources, DescriptorSet> _sets;
+
+  std::mutex _pl_mutex;
+  std::unordered_map<PipelineLayoutDesc, VkPipelineLayout> _pl;
 };
 
 }

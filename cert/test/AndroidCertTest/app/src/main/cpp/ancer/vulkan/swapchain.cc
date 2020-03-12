@@ -1,5 +1,15 @@
 #include "swapchain.h"
 
+#include <ancer/util/JNIHelpers.hpp>
+#include <ancer/System.hpp>
+#include <ancer/util/Log.hpp>
+
+#include <swappy/swappyVk.h>
+
+namespace {
+constexpr ancer::Log::Tag TAG{"VulkanSwapchain"};
+}
+
 namespace ancer {
 namespace vulkan {
 
@@ -33,8 +43,9 @@ Result Swapchain::Initialize(Vulkan & _vulkan, VkImageUsageFlags usage_flags) {
      vk->surface_formats[0].format == VK_FORMAT_UNDEFINED) {
     format = VK_FORMAT_B8G8R8A8_UNORM;
   } else {
-    if(vk->surface_formats.size() == 0)
+    if(vk->surface_formats.size() == 0) {
       return Result(VK_ERROR_INITIALIZATION_FAILED);
+    }
     format = vk->surface_formats[0].format;
   }
 
@@ -43,14 +54,12 @@ Result Swapchain::Initialize(Vulkan & _vulkan, VkImageUsageFlags usage_flags) {
     vk->present.family_index
   };
   uint32_t qfi_count = qfi[0] != qfi[1] ? 2 : 1;
-
   VkSurfaceTransformFlagBitsKHR pre_transform;
   if(vk->surface_capabilities.supportedTransforms &
      VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR)
     pre_transform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
   else
     pre_transform = vk->surface_capabilities.currentTransform;
-
   VkCompositeAlphaFlagBitsKHR composite_alpha =
       VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
   const VkCompositeAlphaFlagBitsKHR composite_alpha_flags[4] = {
@@ -65,7 +74,6 @@ Result Swapchain::Initialize(Vulkan & _vulkan, VkImageUsageFlags usage_flags) {
       break;
     }
   }
-
   VkSwapchainCreateInfoKHR create_info = {
     /* sType                 */ VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
     /* pNext                 */ nullptr,
@@ -131,6 +139,17 @@ Result Swapchain::Initialize(Vulkan & _vulkan, VkImageUsageFlags usage_flags) {
     used_semaphores.push_back(VK_NULL_HANDLE);
   }
 
+  if(vk->use_swappy) {
+    jni::SafeJNICall([&](jni::LocalJNIEnv *env) {
+      auto jni_env = env->GetOriginalJNIEnv();
+      jobject activity = env->NewLocalRef(jni::GetActivityWeakGlobalRef());
+      SwappyVk_initAndGetRefreshCycleDuration(jni_env, activity,
+                                              vk->physical_device,
+                                              vk->device, swapchain,
+                                              &swappy_refresh_duration);
+    });
+  }
+
   width = extent.width;
   height = extent.height;
 
@@ -184,7 +203,11 @@ Result Swapchain::Present(SwapchainImage & image,
     /* pResults           */ nullptr
   };
 
-  return Result(vk->queuePresentKHR(vk->present.queue, &present_info));
+  if(vk->use_swappy) {
+    return Result(SwappyVk_queuePresent(vk->present.queue, &present_info));
+  } else {
+    return Result(vk->queuePresentKHR(vk->present.queue, &present_info));
+  }
 }
 
 }

@@ -9,20 +9,23 @@
 namespace ancer {
 namespace vulkan {
 
-static android_app *android_application = nullptr;
+static ANativeWindow *_window;
+static ANativeActivity *_activity;
 
-void AndroidHelper::Initialize() {
+void AndroidHelper::Initialize(ANativeWindow *window, ANativeActivity *activity) {
+    _window = window;
+    _activity = activity;
 }
 
 ANativeWindow * AndroidHelper::Window() {
-  assert(android_application != nullptr);
-  return android_application->window;
+  assert(_window != nullptr);
+  return _window;
 }
 
 void AndroidHelper::WindowSize(uint32_t & width, uint32_t & height) {
-    assert(android_application != nullptr);
-    width = ANativeWindow_getWidth(android_application->window);
-    height = ANativeWindow_getHeight(android_application->window);
+    assert(_window != nullptr);
+    width = ANativeWindow_getWidth(_window);
+    height = ANativeWindow_getHeight(_window);
 }
 
 // Android fopen stub described at
@@ -48,9 +51,9 @@ FILE * AndroidHelper::Fopen(const char * fname, const char * mode) {
     if(mode[0] == 'w')
         return nullptr;
 
-    assert(android_application != nullptr);
+    assert(_activity != nullptr);
     AAsset * asset = AAssetManager_open(
-                                   android_application->activity->assetManager,
+                                   _activity->assetManager,
                                    fname, 0);
     if(!asset)
         return nullptr;
