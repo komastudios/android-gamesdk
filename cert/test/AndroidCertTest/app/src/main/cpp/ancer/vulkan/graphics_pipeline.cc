@@ -1,19 +1,27 @@
 #include "graphics_pipeline.h"
 
+#include <ancer/util/Log.hpp>
+#include <cstring>
+
 #include "render_pass.h"
+#include "vk_debug_print.h"
 
 namespace ancer {
 namespace vulkan {
 
+namespace {
+const Log::Tag TAG{"VulkanGraphicsPipeline"};
+}
+
 namespace graphics_pipeline {
 
-Builder::Builder(GraphicsPipeline &graphics_pipeline) :
-    _graphics_pipeline(graphics_pipeline) {
-
-#define CLEAR(S, T) do { \
-  memset(&S, 0, sizeof(S)); \
-  S.sType = VK_STRUCTURE_TYPE_ ## T; \
-} while(false)
+Builder::Builder(GraphicsPipeline &graphics_pipeline)
+    : _graphics_pipeline(graphics_pipeline) {
+#define CLEAR(S, T)                  \
+  do {                               \
+    memset(&S, 0, sizeof(S));        \
+    S.sType = VK_STRUCTURE_TYPE_##T; \
+  } while (false)
 
   CLEAR(_vertex_input_state, PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO);
   CLEAR(_input_assembly_state, PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO);
@@ -26,13 +34,16 @@ Builder::Builder(GraphicsPipeline &graphics_pipeline) :
   CLEAR(_dynamic_state, PIPELINE_DYNAMIC_STATE_CREATE_INFO);
   CLEAR(_create_info, GRAPHICS_PIPELINE_CREATE_INFO);
 
+  _rasterization_state.lineWidth = 1.0f;
+  _multisample_state.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+
 #undef CLEAR
 
   RasterizationState().lineWidth = 1.0f;
 }
 
 Builder &Builder::DisableOptimization(bool value) {
-  if(value)
+  if (value)
     _create_info.flags |= VK_PIPELINE_CREATE_DISABLE_OPTIMIZATION_BIT;
   else
     _create_info.flags &= ~VK_PIPELINE_CREATE_DISABLE_OPTIMIZATION_BIT;
@@ -40,7 +51,7 @@ Builder &Builder::DisableOptimization(bool value) {
 }
 
 Builder &Builder::AllowDerivatives(bool value) {
-  if(value)
+  if (value)
     _create_info.flags |= VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT;
   else
     _create_info.flags &= ~VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT;
@@ -48,7 +59,7 @@ Builder &Builder::AllowDerivatives(bool value) {
 }
 
 Builder &Builder::Derivative(bool value) {
-  if(value)
+  if (value)
     _create_info.flags |= VK_PIPELINE_CREATE_DERIVATIVE_BIT;
   else
     _create_info.flags &= ~VK_PIPELINE_CREATE_DERIVATIVE_BIT;
@@ -62,58 +73,55 @@ Builder &Builder::Shader(ShaderModule &shader_module) {
   // here?
 
   // touch states required
-  switch(stage) {
-  case VK_SHADER_STAGE_VERTEX_BIT:
-    VertexInputState();
-    InputAssemblyState();
-    break;
-  case VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT:
-    /* fallthrough */
-  case VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT:
-    TessellationState();
-    break;
-  case VK_SHADER_STAGE_FRAGMENT_BIT:
-    /* nothing */
-    break;
-  case VK_SHADER_STAGE_COMPUTE_BIT:
-    // cannot build a compute shader into a graphics pipeline
-    assert(false);
-  default:
-    // unknown shader stage being built into a graphics pipeline
-    assert(false);
+  switch (stage) {
+    case VK_SHADER_STAGE_VERTEX_BIT:
+      VertexInputState();
+      InputAssemblyState();
+      break;
+    case VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT:
+      /* fallthrough */
+    case VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT:
+      TessellationState();
+      break;
+    case VK_SHADER_STAGE_FRAGMENT_BIT:
+      /* nothing */
+      break;
+    case VK_SHADER_STAGE_COMPUTE_BIT:
+      // cannot build a compute shader into a graphics pipeline
+      assert(false);
+    default:
+      // unknown shader stage being built into a graphics pipeline
+      assert(false);
   }
 
-  _shader_stages.push_back(VkPipelineShaderStageCreateInfo {
-    /* sType               */
-                           VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-    /* pNext               */ nullptr,
-    /* flags               */ 0,
-    /* stage               */ stage,
-    /* module              */ shader_module.Handle(),
-    /* pName               */ shader_module.Name(),
-    /* pSpecializationInfo */ shader_module.SpecializationInfo()
-  });
+  _shader_stages.push_back(VkPipelineShaderStageCreateInfo{
+      /* sType               */
+      VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+      /* pNext               */ nullptr,
+      /* flags               */ 0,
+      /* stage               */ stage,
+      /* module              */ shader_module.Handle(),
+      /* pName               */ shader_module.Name(),
+      /* pSpecializationInfo */ shader_module.SpecializationInfo()});
   return *this;
 }
 
 Builder &Builder::VertexBinding(uint32_t binding, uint32_t stride,
                                 VkVertexInputRate input_rate) {
-  _vertex_bindings.push_back(VkVertexInputBindingDescription {
-    /* binding   */ binding,
-    /* stride    */ stride,
-    /* inputRate */ input_rate
-  });
+  _vertex_bindings.push_back(
+      VkVertexInputBindingDescription{/* binding   */ binding,
+                                      /* stride    */ stride,
+                                      /* inputRate */ input_rate});
   return *this;
 }
 
 Builder &Builder::VertexAttribute(uint32_t binding, uint32_t location,
                                   VkFormat format, uint32_t offset) {
-  _vertex_attributes.push_back(VkVertexInputAttributeDescription {
-    /* location */ location,
-    /* binding  */ binding,
-    /* format   */ format,
-    /* offset   */ offset
-  });
+  _vertex_attributes.push_back(
+      VkVertexInputAttributeDescription{/* location */ location,
+                                        /* binding  */ binding,
+                                        /* format   */ format,
+                                        /* offset   */ offset});
   return *this;
 }
 
@@ -133,27 +141,18 @@ Builder &Builder::PatchControlPoints(uint32_t patch_control_points) {
 }
 
 Builder &Builder::StaticViewport(float x, float y, float w, float h,
-                                 float min_depth, float max_depth,
-                                 int32_t sx, int32_t sy, uint32_t sw,
-                                 uint32_t sh) {
-  _viewports.push_back(VkViewport {
-    /* x        */ x,
-    /* y        */ y,
-    /* width    */ w,
-    /* height   */ h,
-    /* minDepth */ min_depth,
-    /* maxDepth */ max_depth
-  });
-  _scissors.push_back(VkRect2D {
-    /* offset */ {
-      /* x */ sx,
-      /* y */ sy
-    },
-    /* extent */ {
-      /* width  */ sw,
-      /* height */ sh
-    }
-  });
+                                 float min_depth, float max_depth, int32_t sx,
+                                 int32_t sy, uint32_t sw, uint32_t sh) {
+  _viewports.push_back(VkViewport{/* x        */ x,
+                                  /* y        */ y,
+                                  /* width    */ w,
+                                  /* height   */ h,
+                                  /* minDepth */ min_depth,
+                                  /* maxDepth */ max_depth});
+  _scissors.push_back(VkRect2D{/* offset */ {/* x */ sx,
+                                             /* y */ sy},
+                               /* extent */ {/* width  */ sw,
+                                             /* height */ sh}});
   return *this;
 }
 
@@ -233,13 +232,16 @@ Builder &Builder::AlphaToOne(bool value) {
   return *this;
 }
 
-Builder &Builder::DepthMode(const class DepthMode & depth_mode) {
+Builder &Builder::DepthMode(const class DepthMode &depth_mode) {
   DepthStencilState() = depth_mode.CreateInfo();
   return *this;
 }
 
-Builder &Builder::BlendMode(const class BlendMode & blend_mode) {
+Builder &Builder::BlendMode(const class BlendMode &blend_mode) {
   ColorBlendState() = blend_mode.CreateInfo();
+  ColorBlendState().pAttachments = _blend_attachments;
+  memcpy(_blend_attachments, blend_mode.CreateInfo().pAttachments,
+         sizeof(_blend_attachments));
   return *this;
 }
 
@@ -247,31 +249,6 @@ Builder &Builder::Layout(VkPipelineLayout pipeline_layout) {
   _create_info.layout = pipeline_layout;
   return *this;
 }
-
-#if 0
-Builder &Builder::Layout(Vulkan &vk,
-                    std::initializer_list<ResourcesLayout> resources_layouts) {
-  VkDescriptorSetLayout layouts[resources_layouts.size()];
-  for(size_t i = 0; i < resources_layouts.size(); ++i) {
-    VK_RETURN_FAIL(vk.GetResourcesStore().Resolve(resources_layouts[i],
-                                                  layouts[i]));
-  }
-  VkPipelineLayout pipeline_layout;
-  VkPipelineLayoutCreateInfo create_info = {
-    /* sType                  */ VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-    /* pNext                  */ nullptr,
-    /* flags                  */ 0,
-    /* setLayoutCount         */ static_cast<uint32_t>(
-                                                     resources_layouts.size()),
-    /* pSetLayouts            */ layouts,
-    /* pushConstantRangeCount */ 0,
-    /* pPushConstantRanges    */ nullptr
-  };
-  VK_RETURN_FAIL(vk->createPipelineLayout(vk->device, &create_info, nullptr,
-                                          &pipeline_layout));
-  return Layout(pipeline_layout);
-}
-#endif
 
 Builder &Builder::RenderPass(const class RenderPass &render_pass,
                              uint32_t subpass) {
@@ -328,16 +305,23 @@ Builder &Builder::DynamicStencilReference(bool value) {
 void Builder::SetDynamicState(VkDynamicState dstate, bool add) {
   std::size_t i = 0;
   std::size_t e = _dynamic_states.size();
-  while(i < e) {
-    if(_dynamic_states[i] == dstate)
-      break;
+  while (i < e) {
+    if (_dynamic_states[i] == dstate) break;
     ++i;
   }
-  if(i >= e && add)
+  if (i >= e && add)
     _dynamic_states.push_back(dstate);
-  else if(i != e && !add) {
+  else if (i != e && !add) {
     std::iter_swap(_dynamic_states.begin() + i, _dynamic_states.end() - 1);
     _dynamic_states.pop_back();
+  }
+}
+
+template <typename T>
+void print_u32s(const char *name, const T &data) {
+  const uint32_t *udata = reinterpret_cast<const uint32_t *>(&data);
+  for (size_t i = 0; i < sizeof(T) / 4; ++i) {
+    Log::E(TAG, "%s[%u] %u", name, udata[i]);
   }
 }
 
@@ -345,22 +329,22 @@ Result Builder::Build(Vulkan &vk) {
   _create_info.stageCount = static_cast<uint32_t>(_shader_stages.size());
   _create_info.pStages = _shader_stages.data();
 
-  if(_vertex_bindings.size() > 0) {
-    auto & vistate = VertexInputState();
+  if (_vertex_bindings.size() > 0) {
+    auto &vistate = VertexInputState();
     vistate.vertexBindingDescriptionCount =
-                                static_cast<uint32_t>(_vertex_bindings.size());
+        static_cast<uint32_t>(_vertex_bindings.size());
     vistate.pVertexBindingDescriptions = _vertex_bindings.data();
   }
 
-  if(_vertex_attributes.size() > 0) {
-    auto & vistate = VertexInputState();
+  if (_vertex_attributes.size() > 0) {
+    auto &vistate = VertexInputState();
     vistate.vertexAttributeDescriptionCount =
-                              static_cast<uint32_t>(_vertex_attributes.size());
+        static_cast<uint32_t>(_vertex_attributes.size());
     vistate.pVertexAttributeDescriptions = _vertex_attributes.data();
   }
 
-  auto & vstate = ViewportState();
-  if(_viewports.size() > 0) {
+  auto &vstate = ViewportState();
+  if (_viewports.size() > 0) {
     SetDynamicState(VK_DYNAMIC_STATE_VIEWPORT, false);
     SetDynamicState(VK_DYNAMIC_STATE_SCISSOR, false);
     vstate.viewportCount = static_cast<uint32_t>(_viewports.size());
@@ -376,94 +360,99 @@ Result Builder::Build(Vulkan &vk) {
     vstate.pScissors = nullptr;
   }
 
-  auto & rstate = RasterizationState();
-  if(rstate.rasterizerDiscardEnable == VK_FALSE) {
+  auto &rstate = RasterizationState();
+  if (rstate.rasterizerDiscardEnable == VK_FALSE) {
     // touch states required for rasterization
     MultisampleState();
   }
 
-  if(_dynamic_states.size() > 0) {
-    auto & dstate = DynamicState();
+  auto &dstate = DynamicState();
+  if (_dynamic_states.size() > 0) {
     dstate.dynamicStateCount = static_cast<uint32_t>(_dynamic_states.size());
     dstate.pDynamicStates = _dynamic_states.data();
+  } else {
+    dstate.dynamicStateCount = 0;
+    dstate.pDynamicStates = nullptr;
   }
 
-  if(_create_info.layout == VK_NULL_HANDLE)
+  if (_create_info.layout == VK_NULL_HANDLE)
     _create_info.layout = vk->empty_pipeline_layout;
 
   _graphics_pipeline._vk = vk;
 
   VkPipeline &pipeline = _graphics_pipeline._pipeline;
 
-  VK_RETURN_FAIL(vk->createGraphicsPipelines(vk->device, vk->pipeline_cache,
-                                             1, &_create_info, nullptr,
-                                             &pipeline));
+#if 0
+  VkGraphicsPipelineCreateInfo_debug_print("create_info", 0, _create_info);
+#endif
+
+  VK_RETURN_FAIL(vk->createGraphicsPipelines(
+      vk->device, vk->pipeline_cache, 1, &_create_info, nullptr, &pipeline));
 
   return Result::kSuccess;
 }
 
 VkPipelineVertexInputStateCreateInfo &Builder::VertexInputState() {
-  if(_create_info.pVertexInputState == nullptr)
+  if (_create_info.pVertexInputState == nullptr)
     _create_info.pVertexInputState = &_vertex_input_state;
   return _vertex_input_state;
 }
 
 VkPipelineInputAssemblyStateCreateInfo &Builder::InputAssemblyState() {
-  if(_create_info.pInputAssemblyState == nullptr)
+  if (_create_info.pInputAssemblyState == nullptr)
     _create_info.pInputAssemblyState = &_input_assembly_state;
   return _input_assembly_state;
 }
 
 VkPipelineTessellationStateCreateInfo &Builder::TessellationState() {
-  if(_create_info.pTessellationState == nullptr)
+  if (_create_info.pTessellationState == nullptr)
     _create_info.pTessellationState = &_tessellation_state;
   return _tessellation_state;
 }
 
 VkPipelineViewportStateCreateInfo &Builder::ViewportState() {
-  if(_create_info.pViewportState == nullptr)
+  if (_create_info.pViewportState == nullptr)
     _create_info.pViewportState = &_viewport_state;
   return _viewport_state;
 }
 
 VkPipelineRasterizationStateCreateInfo &Builder::RasterizationState() {
-  if(_create_info.pRasterizationState == nullptr)
+  if (_create_info.pRasterizationState == nullptr)
     _create_info.pRasterizationState = &_rasterization_state;
   return _rasterization_state;
 }
 
 VkPipelineMultisampleStateCreateInfo &Builder::MultisampleState() {
-  if(_create_info.pMultisampleState == nullptr)
+  if (_create_info.pMultisampleState == nullptr)
     _create_info.pMultisampleState = &_multisample_state;
   return _multisample_state;
 }
 
 VkPipelineDepthStencilStateCreateInfo &Builder::DepthStencilState() {
-  if(_create_info.pDepthStencilState == nullptr)
+  if (_create_info.pDepthStencilState == nullptr)
     _create_info.pDepthStencilState = &_depth_stencil_state;
   return _depth_stencil_state;
 }
 
 VkPipelineColorBlendStateCreateInfo &Builder::ColorBlendState() {
-  if(_create_info.pColorBlendState == nullptr)
+  if (_create_info.pColorBlendState == nullptr)
     _create_info.pColorBlendState = &_color_blend_state;
   return _color_blend_state;
 }
 
 VkPipelineDynamicStateCreateInfo &Builder::DynamicState() {
-  if(_create_info.pDynamicState == nullptr)
+  if (_create_info.pDynamicState == nullptr)
     _create_info.pDynamicState = &_dynamic_state;
   return _dynamic_state;
 }
 
-} // namespace graphics_pipeline
+}  // namespace graphics_pipeline
 
-void GraphicsPipeline::Shutdown() {
-}
+void GraphicsPipeline::Shutdown() {}
 
 graphics_pipeline::Builder GraphicsPipeline::Builder() {
   return graphics_pipeline::Builder(*this);
 }
 
-}
-}
+}  // namespace vulkan
+}  // namespace ancer

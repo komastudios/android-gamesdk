@@ -22,8 +22,25 @@ namespace {
 
 namespace ancer {
 
+static void DrawThread(BaseVulkanOperation *op) {
+  Log::E(TAG, "draw thread started");
+  Timestamp last_now = SteadyClock::now();
+  while(!op->IsStopped()) {
+    const auto now = SteadyClock::now();
+    const auto delta0 = last_now - now;
+    const auto delta1 = std::chrono::duration_cast<SecondsAs<double>>(delta0);
+    //Log::E(TAG, "draw thread draw");
+    op->Draw(delta1.count());
+    std::this_thread::sleep_until(now + op->GetDrawPeriod());
+  }
+}
+
 BaseVulkanOperation::BaseVulkanOperation(const Log::Tag testTag) :
   _vk{}, _testTag{testTag}, _vulkan_initialized(false) {
+}
+
+void BaseVulkanOperation::Start() {
+  BaseOperation::Start();
 
   VulkanRequirements requirements;
 
@@ -36,11 +53,15 @@ BaseVulkanOperation::BaseVulkanOperation(const Log::Tag testTag) :
   }
 
   _vulkan_initialized = true;
+
+  _draw_thread = std::thread(DrawThread, this);
 }
 
 BaseVulkanOperation::~BaseVulkanOperation() {
   if (_vulkan_initialized) {
     _vk.Shutdown();
+
+    _draw_thread.join();
   }
 }
 

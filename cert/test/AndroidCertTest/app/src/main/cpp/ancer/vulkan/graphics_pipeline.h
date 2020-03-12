@@ -27,8 +27,10 @@ struct [[nodiscard]] Builder {
   Builder &AllowDerivatives(bool value = true);
   Builder &Derivative(bool value = true);
   Builder &Shader(ShaderModule &shader_module);
-  Builder &VertexBinding(uint32_t binding, uint32_t stride, VkVertexInputRate input_rate = VK_VERTEX_INPUT_RATE_VERTEX);
-  Builder &VertexAttribute(uint32_t binding, uint32_t location, VkFormat format, uint32_t offset);
+  Builder &VertexBinding(uint32_t binding, uint32_t stride,
+                   VkVertexInputRate input_rate = VK_VERTEX_INPUT_RATE_VERTEX);
+  Builder &VertexAttribute(uint32_t binding, uint32_t location,
+                           VkFormat format, uint32_t offset);
   Builder &PrimitiveTopology(VkPrimitiveTopology topology);
   Builder &PrimitiveRestart(bool value = true);
   Builder &PatchControlPoints(uint32_t patch_control_points);

@@ -70,9 +70,12 @@ struct [[nodiscard]] SubpassBuilder {
  public:
   SubpassBuilder(Builder &builder, uint32_t index);
 
-  SubpassBuilder &Input(uint32_t index, VkImageLayout layout = VK_IMAGE_LAYOUT_UNDEFINED);
-  SubpassBuilder &Color(uint32_t index, VkImageLayout layout = VK_IMAGE_LAYOUT_UNDEFINED);
-  SubpassBuilder &DepthStencil(uint32_t index, VkImageLayout layout = VK_IMAGE_LAYOUT_UNDEFINED);
+  SubpassBuilder &Input(uint32_t index,
+                        VkImageLayout layout = VK_IMAGE_LAYOUT_UNDEFINED);
+  SubpassBuilder &Color(uint32_t index,
+                        VkImageLayout layout = VK_IMAGE_LAYOUT_UNDEFINED);
+  SubpassBuilder &DepthStencil(uint32_t index,
+                             VkImageLayout layout = VK_IMAGE_LAYOUT_UNDEFINED);
 
   Builder &End();
 

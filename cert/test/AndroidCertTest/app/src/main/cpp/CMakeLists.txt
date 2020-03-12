@@ -138,7 +138,7 @@ add_library(${PROJECT_NAME} SHARED
         operations/SaneCpusetOperation.cpp
         operations/ScheduleAffinityOperation.cpp
         operations/ThreadSchedulingOperation.cpp
-        operations/VulkanMprotectCheckOperation.cpp
+        #operations/VulkanMprotectCheckOperation.cpp
 
         operations/gl/BufferStorageGLES3Operation.cpp
         operations/gl/DependentTextureReadGLES3Operation.cpp
@@ -160,6 +160,8 @@ add_library(${PROJECT_NAME} SHARED
         operations/gl/TextureLoadingGLES3Operation.cpp
         operations/gl/VertexStreamGLES3Operation.cpp
 
+        operations/vulkan/MediumPVecNormalizationVulkanOperation.cpp
+        operations/vulkan/VulkanMprotectCheckOperation.cpp
         operations/vulkan/VulkanVaryingsTestOperation.cpp
 
         # integration testing

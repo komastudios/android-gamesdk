@@ -86,5 +86,5 @@ Sampler &Sampler::UnnormalizedCoordinates(bool value) {
   return *this;
 }
 
-}
-}
+}  // namespace vulkan
+}  // namespace ancer

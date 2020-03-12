@@ -7,7 +7,7 @@ Result Uploader::Initialize(Vulkan &vk, uint32_t concurrent,
                             VkDeviceSize buffer_size) {
   _vk = vk;
 
-  VK_RETURN_FAIL(_buffer.Initialize(vk, ResourceUse::CPUToGPU,
+  VK_RETURN_FAIL(_buffer.Initialize(vk, EResourceUse::CPUToGPU,
                                     VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                                     buffer_size, nullptr));
 
@@ -16,9 +16,7 @@ Result Uploader::Initialize(Vulkan &vk, uint32_t concurrent,
   return Result::kSuccess;
 }
 
-Result Uploader::Shutdown() {
-  return Result::kSuccess;
-}
+Result Uploader::Shutdown() { return Result::kSuccess; }
 
 Result Uploader::Start(VkBuffer buffer, VkDeviceSize size,
                        UploadBuffer &context) {
@@ -31,32 +29,33 @@ Result Uploader::Start(VkBuffer buffer, VkDeviceSize size,
 }
 
 void Uploader::Copy(UploadBuffer &context, VkDeviceSize dst_offset,
-                    VkDeviceSize size, const void * data) {
+                    VkDeviceSize size, const void *data) {
   memcpy(
-    reinterpret_cast<uint8_t *>(_buffer.Allocation().Map()) + context.offset,
-    data, size);
+      reinterpret_cast<uint8_t *>(_buffer.Allocation().Map()) + context.offset,
+      data, size);
 
-  context.regions.push_back(VkBufferCopy {
-      /* srcOffset */ context.offset,
-      /* dstOffset */ dst_offset,
-      /* size      */ size
-  });
+  context.regions.push_back(VkBufferCopy{/* srcOffset */ context.offset,
+                                         /* dstOffset */ dst_offset,
+                                         /* size      */ size});
   context.offset += size;
 }
 
 Result Uploader::Finish(UploadBuffer &context) {
   VkCommandBuffer cmd_buffer;
 
-  VK_RETURN_FAIL(_vk.AcquireTemporaryCommandBuffer(Q_TRANSFER, cmd_buffer));
+  VK_RETURN_FAIL(
+      _vk.AcquireTemporaryCommandBuffer(Q_TRANSFER, cmd_buffer, true));
 
   _vk->cmdCopyBuffer(cmd_buffer, _buffer.Handle(), context.buffer,
                      static_cast<uint32_t>(context.regions.size()),
                      context.regions.data());
 
-  VK_RETURN_FAIL(_vk.QueueTemporaryCommandBuffer(cmd_buffer,
-                                               _pending[context.index].fence));
+  const uint32_t index = context.index % _pending.size();
 
-  _pending[context.index].in_flight.store(true);
+  VK_RETURN_FAIL(
+      _vk.QueueTemporaryCommandBuffer(cmd_buffer, _pending[index].fence));
+
+  _pending[index].in_flight.store(true);
 
   return Result::kSuccess;
 }
@@ -65,24 +64,22 @@ Result Uploader::Pump(bool force) {
   bool complete = false;
 
   // resolve some
-  for(uint32_t index = _index_head; index < _index_tail;
-      ++index) {
-    if(!_pending[index].in_flight.load())
-      break;
+  for (uint32_t i = _index_head; i < _index_tail; ++i) {
+    const uint32_t index = i % _pending.size();
+    if (!_pending[index].in_flight.load()) break;
 
     VK_RETURN_FAIL(_vk.WaitForFence(_pending[index].fence, complete, force));
 
     // since we resolve in order, if we cant get one, we cant resolve the
     // remaining
-    if(!complete)
-      break;
+    if (!complete) break;
 
     // update the buffer space used
-    _index_head = index;
+    _index_head = i;
     _space_head = _pending[index].end;
 
     // this would be the last, reset
-    if(_space_head == _space_tail) {
+    if (_space_head == _space_tail) {
       _space_head = 0;
       _space_tail = 0;
       _index_head = 0;
@@ -102,8 +99,10 @@ Result Uploader::GetSlot(VkDeviceSize size, uint32_t &index,
   // if we need room, pump all of the remaining entries
   // - because this does a vkWaitForFences with a timeout, we are waiting on the
   // GPU
-  while(_buffer.Allocation().Size() - _space_tail < size)
+  while (_buffer.Allocation().Size() - _space_tail < size ||
+         _index_tail - _index_head >= _pending.size()) {
     VK_RETURN_FAIL(Pump(true));
+  }
 
   index = _index_tail;
   start = _space_tail;
@@ -114,5 +113,5 @@ Result Uploader::GetSlot(VkDeviceSize size, uint32_t &index,
   return Result::kSuccess;
 }
 
-}
-}
+}  // namespace vulkan
+}  // namespace ancer

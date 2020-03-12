@@ -7,7 +7,8 @@ namespace vulkan {
 
 DepthMode::DepthMode() {
   std::memset(&_create_info, 0, sizeof(_create_info));
-  _create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+  _create_info.sType =
+      VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 }
 
 DepthMode &DepthMode::DepthTest(bool value) {
@@ -39,13 +40,10 @@ DepthMode &DepthMode::DepthBounds(float min, float max) {
   return *this;
 }
 
-DepthMode DepthMode::kNoDepth = DepthMode()
-  .DepthCompare(VK_COMPARE_OP_ALWAYS);
+DepthMode DepthMode::kNoDepth = DepthMode().DepthCompare(VK_COMPARE_OP_ALWAYS);
 
-DepthMode DepthMode::kLessThan = DepthMode()
-  .DepthTest()
-  .DepthWrite()
-  .DepthCompare(VK_COMPARE_OP_LESS);
+DepthMode DepthMode::kLessThan =
+    DepthMode().DepthTest().DepthWrite().DepthCompare(VK_COMPARE_OP_LESS);
 
-}
-}
+}  // namespace vulkan
+}  // namespace ancer

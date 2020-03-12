@@ -1,7 +1,7 @@
 #include "format.h"
 
-#include <unordered_map>
 #include <atomic>
+#include <unordered_map>
 
 namespace ancer {
 namespace vulkan {
@@ -11,215 +11,177 @@ static const std::unordered_map<VkFormat, FormatProperties> &Builtin() {
   static std::unordered_map<VkFormat, FormatProperties> map;
 
   auto unorm = [](uint32_t size) -> FormatProperties {
-    return FormatProperties {
-      /* size_in_bytes      */ size,
-      /* block_width        */ 1,
-      /* block_height       */ 1,
-      /* numeric_format     */ NumericFormat::UNorm,
-      /* sample_type        */ SampleType::Float,
-      /* compression_scheme */ CompressionScheme::None
-    };
+    return FormatProperties{/* size_in_bytes      */ size,
+                            /* block_width        */ 1,
+                            /* block_height       */ 1,
+                            /* numeric_format     */ NumericFormat::UNorm,
+                            /* sample_type        */ SampleType::Float,
+                            /* compression_scheme */ CompressionScheme::None};
   };
 
   auto snorm = [](uint32_t size) -> FormatProperties {
-    return FormatProperties {
-      /* size_in_bytes      */ size,
-      /* block_width        */ 1,
-      /* block_height       */ 1,
-      /* numeric_format     */ NumericFormat::SNorm,
-      /* sample_type        */ SampleType::Float,
-      /* compression_scheme */ CompressionScheme::None
-    };
+    return FormatProperties{/* size_in_bytes      */ size,
+                            /* block_width        */ 1,
+                            /* block_height       */ 1,
+                            /* numeric_format     */ NumericFormat::SNorm,
+                            /* sample_type        */ SampleType::Float,
+                            /* compression_scheme */ CompressionScheme::None};
   };
 
   auto uscaled = [](uint32_t size) -> FormatProperties {
-    return FormatProperties {
-      /* size_in_bytes      */ size,
-      /* block_width        */ 1,
-      /* block_height       */ 1,
-      /* numeric_format     */ NumericFormat::UScaled,
-      /* sample_type        */ SampleType::Float,
-      /* compression_scheme */ CompressionScheme::None
-    };
+    return FormatProperties{/* size_in_bytes      */ size,
+                            /* block_width        */ 1,
+                            /* block_height       */ 1,
+                            /* numeric_format     */ NumericFormat::UScaled,
+                            /* sample_type        */ SampleType::Float,
+                            /* compression_scheme */ CompressionScheme::None};
   };
 
   auto sscaled = [](uint32_t size) -> FormatProperties {
-    return FormatProperties {
-      /* size_in_bytes      */ size,
-      /* block_width        */ 1,
-      /* block_height       */ 1,
-      /* numeric_format     */ NumericFormat::SScaled,
-      /* sample_type        */ SampleType::Float,
-      /* compression_scheme */ CompressionScheme::None
-    };
+    return FormatProperties{/* size_in_bytes      */ size,
+                            /* block_width        */ 1,
+                            /* block_height       */ 1,
+                            /* numeric_format     */ NumericFormat::SScaled,
+                            /* sample_type        */ SampleType::Float,
+                            /* compression_scheme */ CompressionScheme::None};
   };
 
   auto uint = [](uint32_t size) -> FormatProperties {
-    return FormatProperties {
-      /* size_in_bytes      */ size,
-      /* block_width        */ 1,
-      /* block_height       */ 1,
-      /* numeric_format     */ NumericFormat::UInt,
-      /* sample_type        */ SampleType::Int,
-      /* compression_scheme */ CompressionScheme::None
-    };
+    return FormatProperties{/* size_in_bytes      */ size,
+                            /* block_width        */ 1,
+                            /* block_height       */ 1,
+                            /* numeric_format     */ NumericFormat::UInt,
+                            /* sample_type        */ SampleType::Int,
+                            /* compression_scheme */ CompressionScheme::None};
   };
 
   auto sint = [](uint32_t size) -> FormatProperties {
-    return FormatProperties {
-      /* size_in_bytes      */ size,
-      /* block_width        */ 1,
-      /* block_height       */ 1,
-      /* numeric_format     */ NumericFormat::SInt,
-      /* sample_type        */ SampleType::Int,
-      /* compression_scheme */ CompressionScheme::None
-    };
+    return FormatProperties{/* size_in_bytes      */ size,
+                            /* block_width        */ 1,
+                            /* block_height       */ 1,
+                            /* numeric_format     */ NumericFormat::SInt,
+                            /* sample_type        */ SampleType::Int,
+                            /* compression_scheme */ CompressionScheme::None};
   };
 
   auto ufloat = [](uint32_t size) -> FormatProperties {
-    return FormatProperties {
-      /* size_in_bytes      */ size,
-      /* block_width        */ 1,
-      /* block_height       */ 1,
-      /* numeric_format     */ NumericFormat::UFloat,
-      /* sample_type        */ SampleType::Float,
-      /* compression_scheme */ CompressionScheme::None
-    };
+    return FormatProperties{/* size_in_bytes      */ size,
+                            /* block_width        */ 1,
+                            /* block_height       */ 1,
+                            /* numeric_format     */ NumericFormat::UFloat,
+                            /* sample_type        */ SampleType::Float,
+                            /* compression_scheme */ CompressionScheme::None};
   };
 
   auto sfloat = [](uint32_t size) -> FormatProperties {
-    return FormatProperties {
-      /* size_in_bytes      */ size,
-      /* block_width        */ 1,
-      /* block_height       */ 1,
-      /* numeric_format     */ NumericFormat::SFloat,
-      /* sample_type        */ SampleType::Float,
-      /* compression_scheme */ CompressionScheme::None
-    };
+    return FormatProperties{/* size_in_bytes      */ size,
+                            /* block_width        */ 1,
+                            /* block_height       */ 1,
+                            /* numeric_format     */ NumericFormat::SFloat,
+                            /* sample_type        */ SampleType::Float,
+                            /* compression_scheme */ CompressionScheme::None};
   };
 
   auto srgb = [](uint32_t size) -> FormatProperties {
-    return FormatProperties {
-      /* size_in_bytes      */ size,
-      /* block_width        */ 1,
-      /* block_height       */ 1,
-      /* numeric_format     */ NumericFormat::SRGB,
-      /* sample_type        */ SampleType::Float,
-      /* compression_scheme */ CompressionScheme::None
-    };
+    return FormatProperties{/* size_in_bytes      */ size,
+                            /* block_width        */ 1,
+                            /* block_height       */ 1,
+                            /* numeric_format     */ NumericFormat::SRGB,
+                            /* sample_type        */ SampleType::Float,
+                            /* compression_scheme */ CompressionScheme::None};
   };
 
   auto bc_unorm = [](uint32_t size) -> FormatProperties {
-    return FormatProperties {
-      /* size_in_bytes      */ size,
-      /* block_width        */ 4,
-      /* block_height       */ 4,
-      /* numeric_format     */ NumericFormat::UNorm,
-      /* sample_type        */ SampleType::Float,
-      /* compression_scheme */ CompressionScheme::BC
-    };
+    return FormatProperties{/* size_in_bytes      */ size,
+                            /* block_width        */ 4,
+                            /* block_height       */ 4,
+                            /* numeric_format     */ NumericFormat::UNorm,
+                            /* sample_type        */ SampleType::Float,
+                            /* compression_scheme */ CompressionScheme::BC};
   };
 
   auto bc_srgb = [](uint32_t size) -> FormatProperties {
-    return FormatProperties {
-      /* size_in_bytes      */ size,
-      /* block_width        */ 4,
-      /* block_height       */ 4,
-      /* numeric_format     */ NumericFormat::SRGB,
-      /* sample_type        */ SampleType::Float,
-      /* compression_scheme */ CompressionScheme::BC
-    };
+    return FormatProperties{/* size_in_bytes      */ size,
+                            /* block_width        */ 4,
+                            /* block_height       */ 4,
+                            /* numeric_format     */ NumericFormat::SRGB,
+                            /* sample_type        */ SampleType::Float,
+                            /* compression_scheme */ CompressionScheme::BC};
   };
 
   auto bc_ufloat = [](uint32_t size) -> FormatProperties {
-    return FormatProperties {
-      /* size_in_bytes      */ size,
-      /* block_width        */ 4,
-      /* block_height       */ 4,
-      /* numeric_format     */ NumericFormat::UFloat,
-      /* sample_type        */ SampleType::Float,
-      /* compression_scheme */ CompressionScheme::BC
-    };
+    return FormatProperties{/* size_in_bytes      */ size,
+                            /* block_width        */ 4,
+                            /* block_height       */ 4,
+                            /* numeric_format     */ NumericFormat::UFloat,
+                            /* sample_type        */ SampleType::Float,
+                            /* compression_scheme */ CompressionScheme::BC};
   };
 
   auto bc_sfloat = [](uint32_t size) -> FormatProperties {
-    return FormatProperties {
-      /* size_in_bytes      */ size,
-      /* block_width        */ 4,
-      /* block_height       */ 4,
-      /* numeric_format     */ NumericFormat::SFloat,
-      /* sample_type        */ SampleType::Float,
-      /* compression_scheme */ CompressionScheme::BC
-    };
+    return FormatProperties{/* size_in_bytes      */ size,
+                            /* block_width        */ 4,
+                            /* block_height       */ 4,
+                            /* numeric_format     */ NumericFormat::SFloat,
+                            /* sample_type        */ SampleType::Float,
+                            /* compression_scheme */ CompressionScheme::BC};
   };
 
   auto etc2_unorm = [](uint32_t size) -> FormatProperties {
-    return FormatProperties {
-      /* size_in_bytes      */ size,
-      /* block_width        */ 4,
-      /* block_height       */ 4,
-      /* numeric_format     */ NumericFormat::UNorm,
-      /* sample_type        */ SampleType::Float,
-      /* compression_scheme */ CompressionScheme::ETC2
-    };
+    return FormatProperties{/* size_in_bytes      */ size,
+                            /* block_width        */ 4,
+                            /* block_height       */ 4,
+                            /* numeric_format     */ NumericFormat::UNorm,
+                            /* sample_type        */ SampleType::Float,
+                            /* compression_scheme */ CompressionScheme::ETC2};
   };
 
   auto etc2_srgb = [](uint32_t size) -> FormatProperties {
-    return FormatProperties {
-      /* size_in_bytes      */ size,
-      /* block_width        */ 4,
-      /* block_height       */ 4,
-      /* numeric_format     */ NumericFormat::SRGB,
-      /* sample_type        */ SampleType::Float,
-      /* compression_scheme */ CompressionScheme::ETC2
-    };
+    return FormatProperties{/* size_in_bytes      */ size,
+                            /* block_width        */ 4,
+                            /* block_height       */ 4,
+                            /* numeric_format     */ NumericFormat::SRGB,
+                            /* sample_type        */ SampleType::Float,
+                            /* compression_scheme */ CompressionScheme::ETC2};
   };
 
   auto eac_unorm = [](uint32_t size) -> FormatProperties {
-    return FormatProperties {
-      /* size_in_bytes      */ size,
-      /* block_width        */ 4,
-      /* block_height       */ 4,
-      /* numeric_format     */ NumericFormat::UNorm,
-      /* sample_type        */ SampleType::Float,
-      /* compression_scheme */ CompressionScheme::EAC
-    };
+    return FormatProperties{/* size_in_bytes      */ size,
+                            /* block_width        */ 4,
+                            /* block_height       */ 4,
+                            /* numeric_format     */ NumericFormat::UNorm,
+                            /* sample_type        */ SampleType::Float,
+                            /* compression_scheme */ CompressionScheme::EAC};
   };
 
   auto eac_snorm = [](uint32_t size) -> FormatProperties {
-    return FormatProperties {
-      /* size_in_bytes      */ size,
-      /* block_width        */ 4,
-      /* block_height       */ 4,
-      /* numeric_format     */ NumericFormat::SNorm,
-      /* sample_type        */ SampleType::Float,
-      /* compression_scheme */ CompressionScheme::EAC
-    };
+    return FormatProperties{/* size_in_bytes      */ size,
+                            /* block_width        */ 4,
+                            /* block_height       */ 4,
+                            /* numeric_format     */ NumericFormat::SNorm,
+                            /* sample_type        */ SampleType::Float,
+                            /* compression_scheme */ CompressionScheme::EAC};
   };
 
   auto astc_unorm = [](uint32_t width, uint32_t height) -> FormatProperties {
-    return FormatProperties {
-      /* size_in_bytes      */ 16,
-      /* block_width        */ width,
-      /* block_height       */ height,
-      /* numeric_format     */ NumericFormat::UNorm,
-      /* sample_type        */ SampleType::Float,
-      /* compression_scheme */ CompressionScheme::ASTC
-    };
+    return FormatProperties{/* size_in_bytes      */ 16,
+                            /* block_width        */ width,
+                            /* block_height       */ height,
+                            /* numeric_format     */ NumericFormat::UNorm,
+                            /* sample_type        */ SampleType::Float,
+                            /* compression_scheme */ CompressionScheme::ASTC};
   };
 
   auto astc_srgb = [](uint32_t width, uint32_t height) -> FormatProperties {
-    return FormatProperties {
-      /* size_in_bytes      */ 16,
-      /* block_width        */ width,
-      /* block_height       */ height,
-      /* numeric_format     */ NumericFormat::SRGB,
-      /* sample_type        */ SampleType::Float,
-      /* compression_scheme */ CompressionScheme::ASTC
-    };
+    return FormatProperties{/* size_in_bytes      */ 16,
+                            /* block_width        */ width,
+                            /* block_height       */ height,
+                            /* numeric_format     */ NumericFormat::SRGB,
+                            /* sample_type        */ SampleType::Float,
+                            /* compression_scheme */ CompressionScheme::ASTC};
   };
 
-  if(!generated.test_and_set()) {
+  if (!generated.test_and_set()) {
     map[VK_FORMAT_R4G4_UNORM_PACK8] = unorm(1);
     map[VK_FORMAT_R4G4B4A4_UNORM_PACK16] = unorm(2);
     map[VK_FORMAT_B4G4R4A4_UNORM_PACK16] = unorm(2);
@@ -416,7 +378,7 @@ FormatProperties GetFormatProperties(Vulkan &vk, VkFormat format) {
 
   auto &builtin = Builtin();
   auto builtin_find = builtin.find(format);
-  if(builtin_find != builtin.end()) {
+  if (builtin_find != builtin.end()) {
     fp = builtin_find->second;
   }
 
@@ -430,5 +392,5 @@ FormatProperties GetFormatProperties(Vulkan &vk, VkFormat format) {
   return fp;
 }
 
-}
-}
+}  // namespace vulkan
+}  // namespace ancer

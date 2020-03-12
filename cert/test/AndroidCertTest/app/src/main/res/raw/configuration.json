@@ -108,6 +108,34 @@
     },
     {
       "enabled": true,
+      "name": "Vulkan MediumP",
+      "description": "Test normalization of mediump vec3 with large component values",
+      "host": "VulkanHostActivity",
+      "duration": "5m",
+      "data_gatherer": {
+        "id": "MediumPVecNormalizationVulkanOperation",
+        "configuration": {
+          "vertex_stage_configuration": {
+            "enabled": true,
+            "offset_steps": 16,
+            "offset_scale": 250
+          },
+          "fragment_stage_configuration": {
+            "enabled": true,
+            "offset_steps": 16,
+            "offset_scale": 250
+          },
+          "varying_configuration": {
+            "enabled": true,
+            "offset_steps": 16,
+            "offset_scale": 250
+          }
+        }
+      },
+      "stressors": []
+    },
+    {
+      "enabled": true,
       "name": "Vulkan Varyings Blocks",
       "description": "Test Vulkan implementations for large varying interface blocks",
       "host": "VulkanHostActivity",

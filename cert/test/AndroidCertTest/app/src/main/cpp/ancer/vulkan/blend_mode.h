@@ -3,7 +3,7 @@
 
 #include <cstdio>
 
-#include <vulkan/vulkan.h>
+#include <ancer/vulkan/vulkan_base.h>
 
 namespace ancer {
 namespace vulkan {
@@ -19,6 +19,7 @@ class BlendMode {
   };
 
   BlendMode();
+  BlendMode(const BlendMode &other);
 
   BlendMode &LogicOp(nullptr_t);
   BlendMode &LogicOp(VkLogicOp op);

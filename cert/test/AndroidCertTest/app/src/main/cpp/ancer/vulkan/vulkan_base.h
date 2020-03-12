@@ -38,14 +38,24 @@
 namespace ancer {
 namespace vulkan {
 
+static inline void _vulkan_debug_result(VkResult result) {
+  result = result;
+}
+
 #define VK_RETURN_FAIL(x) do { \
   Result _err{x}; \
-  if(!_err.is_success()) return _err; \
+  if(!_err.is_success()) { \
+    _vulkan_debug_result(_err.vk_result); \
+    return _err; \
+  } \
 } while(0)
 
 #define VK_GOTO_FAIL(x) do { \
   Result _err{x}; \
-  if(!_err.is_success()) goto fail; \
+  if(!_err.is_success()) { \
+    _vulkan_debug_result(_err.vk_result); \
+    goto fail; \
+  } \
 } while(0)
 
 class Context;
@@ -224,6 +234,8 @@ class VulkanRequirements {
  */
 struct Fence {
  public:
+  inline Fence() : data{nullptr} { }
+
   inline void AdvanceFrame(bool value = true) {
     data->advance_frame = value;
   }
@@ -249,7 +261,7 @@ struct Fence {
 /**
  * a simple enum for Queues we create
  */
-enum Queue {
+enum EQueue {
   Q_GRAPHICS,
   Q_COMPUTE,
   Q_TRANSFER,
@@ -260,7 +272,7 @@ enum Queue {
 /**
  * Simplify required memory properties to these concepts
  */
-enum class ResourceUse {
+enum class EResourceUse {
   GPU,
   TransientGPU,
   CPUToGPU,
@@ -276,6 +288,10 @@ enum class ResourceUse {
  */
 class MemoryAllocation {
  public:
+  inline MemoryAllocation() : _memory(VK_NULL_HANDLE), _map(nullptr),
+                              _start(0), _offset(0), _end(0) {
+  }
+
   inline const VkDeviceMemory &Memory() const {
     return _memory;
   }
@@ -295,6 +311,8 @@ class MemoryAllocation {
   inline void *Map() const {
     return _map;
   }
+
+  Result Invalidate(Vulkan &vk) const;
 
  private:
   friend class Vulkan;
@@ -320,7 +338,7 @@ class MemoryAllocation {
  *
  * Fence. These are allocated and a free list is used to minimize allocations.
  *
- * Queue. Created and managed by the Vulkan::Data. Nothing should touch a Queue
+ * EQueue. Created and managed by the Vulkan::Data. Nothing should touch a EQueue
  * besides the logic in Vulkan.
  *
  * RenderPass. Some information about a VkRenderPass and it's sub passes are
@@ -427,6 +445,9 @@ class Vulkan {
    * Add this object to the to-be-destroy list \
    */ \
   inline void Destroy(TYPE object, bool now = false) { \
+    if(object == VK_NULL_HANDLE) { \
+      return; \
+    } \
     DestroyEntry destroy = { \
       /* object_type */ VK_DEBUG_REPORT_OBJECT_TYPE_ ## ENUM ## _EXT, \
       /* object      */ uint64_t(object), \
@@ -442,7 +463,7 @@ class Vulkan {
   //DESTROY(SEMAPHORE, VkSemaphore)
   //DESTROY(COMMAND_BUFFER, VkCommandBuffer)
   //DESTROY(FENCE, VkFence)
-  //DESTROY(DEVICE_MEMORY, VkDeviceMemory)
+  DESTROY(DEVICE_MEMORY, VkDeviceMemory)
   DESTROY(BUFFER, VkBuffer)
   DESTROY(IMAGE, VkImage)
   //DESTROY(EVENT, VkEvent)
@@ -518,7 +539,7 @@ class Vulkan {
   /**
    * Submit a Context to a VkQueue. Generic form of SubmitToQueue
    */
-  Result SubmitToQueue(Queue queue, Context &context, Fence &fence);
+  Result SubmitToQueue(EQueue queue, Context &context, Fence &fence);
 
   // ==========================================================================
   Result AllocateMemory(VkMemoryRequirements &requirements,
@@ -534,14 +555,15 @@ class Vulkan {
                         VkFramebuffer &framebuffer);
 
   // ==========================================================================
-  Result AcquireTemporaryCommandBuffer(Queue queue,
-                                       VkCommandBuffer &cmd_buffer);
+  Result AcquireTemporaryCommandBuffer(EQueue queue,
+                                       VkCommandBuffer &cmd_buffer,
+                                       bool fresh = false);
 
   Result ReleaseTemporaryCommandBuffer(VkCommandBuffer cmd_buffer);
 
   Result QueueTemporaryCommandBuffer(VkCommandBuffer cmd_buffer, Fence &fence);
 
-  Result SubmitTemporaryCommandBuffers(Queue queue, VkSemaphore &semaphore);
+  Result SubmitTemporaryCommandBuffers(EQueue queue, VkSemaphore &semaphore);
 
   // ==========================================================================
 
@@ -661,6 +683,12 @@ class Vulkan {
 
     // for piplines that do not require resources
     VkPipelineLayout empty_pipeline_layout;
+
+    // old debug report callback
+    VkDebugReportCallbackEXT debug_report_callback;
+
+    // new debug messeage callback
+    VkDebugUtilsMessengerEXT debug_utils_callback;
 
     // 1.0 core functions
     PFN_vkCreateInstance createInstance;
@@ -801,6 +829,7 @@ class Vulkan {
     PFN_vkCmdEndRenderPass cmdEndRenderPass;
     PFN_vkCmdExecuteCommands cmdExecuteCommands;
 
+    // VK_KHR_surface
     PFN_vkDestroySurfaceKHR destroySurfaceKHR;
     PFN_vkGetPhysicalDeviceSurfaceSupportKHR getPhysicalDeviceSurfaceSupportKHR;
     PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR getPhysicalDeviceSurfaceCapabilitiesKHR;
@@ -808,9 +837,11 @@ class Vulkan {
     PFN_vkGetPhysicalDeviceSurfacePresentModesKHR getPhysicalDeviceSurfacePresentModesKHR;
 
 #ifdef VK_USE_PLATFORM_ANDROID_KHR
+    // VK_KHR_surface_android
     PFN_vkCreateAndroidSurfaceKHR createAndroidSurfaceKHR;
 #endif
 
+    // VK_KHR_swapchain
     PFN_vkCreateSwapchainKHR createSwapchainKHR;
     PFN_vkDestroySwapchainKHR destroySwapchainKHR;
     PFN_vkGetSwapchainImagesKHR getSwapchainImagesKHR;
@@ -820,6 +851,31 @@ class Vulkan {
     PFN_vkGetDeviceGroupSurfacePresentModesKHR getDeviceGroupSurfacePresentModesKHR;
     PFN_vkGetPhysicalDevicePresentRectanglesKHR getPhysicalDevicePresentRectanglesKHR;
     PFN_vkAcquireNextImage2KHR acquireNextImage2KHR;
+
+    // VK_EXT_debug_report
+    PFN_vkCreateDebugReportCallbackEXT createDebugReportCallbackEXT;
+    PFN_vkDestroyDebugReportCallbackEXT destroyDebugReportCallbackEXT;
+    PFN_vkDebugReportMessageEXT debugReportMessageEXT;
+
+    // VK_EXT_debug_marker
+    PFN_vkDebugMarkerSetObjectTagEXT debugMarkerSetObjectTagEXT;
+    PFN_vkDebugMarkerSetObjectNameEXT debugMarkerSetObjectNameEXT;
+    PFN_vkCmdDebugMarkerBeginEXT cmdDebugMarkerBeginEXT;
+    PFN_vkCmdDebugMarkerEndEXT cmdDebugMarkerEndEXT;
+    PFN_vkCmdDebugMarkerInsertEXT cmdDebugMarkerInsertEXT;
+
+    // VK_EXT_debug_util
+    PFN_vkSetDebugUtilsObjectNameEXT setDebugUtilsObjectNameEXT;
+    PFN_vkSetDebugUtilsObjectTagEXT setDebugUtilsObjectTagEXT;
+    PFN_vkQueueBeginDebugUtilsLabelEXT queueBeginDebugUtilsLabelEXT;
+    PFN_vkQueueEndDebugUtilsLabelEXT queueEndDebugUtilsLabelEXT;
+    PFN_vkQueueInsertDebugUtilsLabelEXT queueInsertDebugUtilsLabelEXT;
+    PFN_vkCmdBeginDebugUtilsLabelEXT cmdBeginDebugUtilsLabelEXT;
+    PFN_vkCmdEndDebugUtilsLabelEXT cmdEndDebugUtilsLabelEXT;
+    PFN_vkCmdInsertDebugUtilsLabelEXT cmdInsertDebugUtilsLabelEXT;
+    PFN_vkCreateDebugUtilsMessengerEXT createDebugUtilsMessengerEXT;
+    PFN_vkDestroyDebugUtilsMessengerEXT destroyDebugUtilsMessengerEXT;
+    PFN_vkSubmitDebugUtilsMessageEXT submitDebugUtilsMessageEXT;
   };
 
   std::shared_ptr<Data> vk{nullptr};

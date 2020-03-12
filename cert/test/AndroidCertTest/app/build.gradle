@@ -61,6 +61,14 @@ android {
             path file('src/main/cpp/CMakeLists.txt')
         }
     }
+
+    sourceSets {
+        main {
+            jniLibs {
+                srcDir "../../../../../prebuilts/ndk/r20/sources/third_party/vulkan/src/build-android/jniLibs/"
+            }
+        }
+    }
 }
 
 buildscript {

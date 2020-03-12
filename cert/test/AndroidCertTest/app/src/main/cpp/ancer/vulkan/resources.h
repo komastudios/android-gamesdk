@@ -172,6 +172,8 @@ class Resources {
  */
 class ResourcesStore {
  public:
+  ResourcesStore();
+
   Result Initialize(Vulkan &vk, uint32_t pool_size,
                     uint32_t min_descriptor_count);
 
@@ -204,7 +206,8 @@ class ResourcesStore {
 
  private:
   Result CreatePool();
-  Result AllocateSet(VkDescriptorSetLayout layout, VkDescriptorSet &out);
+  Result AllocateSet(VkDescriptorSetLayout layout, const Resources &resources,
+                     VkDescriptorSet &out);
 
   static const std::size_t kDescriptorSetLifetime = 3;
 
@@ -217,6 +220,7 @@ class ResourcesStore {
 
   struct DescriptorSet {
     InternalList list;
+    uint32_t storage_index;
     uint32_t pool_index;
     VkDescriptorSet descriptor_set;
   };
@@ -233,7 +237,9 @@ class ResourcesStore {
   std::mutex _sets_mutex;
   InternalList _inactive_sets[kDescriptorSetLifetime];
   InternalList _active_sets;
-  std::unordered_map<Resources, DescriptorSet> _sets;
+  std::vector<uint32_t> _free_sets;
+  std::vector<DescriptorSet *> _sets_storage;
+  std::unordered_map<Resources, uint32_t> _sets;
 
   std::mutex _pl_mutex;
   std::unordered_map<PipelineLayoutDesc, VkPipelineLayout> _pl;

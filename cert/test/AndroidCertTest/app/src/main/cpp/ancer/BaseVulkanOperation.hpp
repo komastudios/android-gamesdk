@@ -35,9 +35,23 @@ class BaseVulkanOperation : public BaseOperation {
 
   virtual ~BaseVulkanOperation();
 
+  virtual void Start() override;
+
   void Wait() override {}
 
- protected:
+  /**
+   * If > 0, OnHeartbeat will be called regularly
+   * @param period How often to call OnHeartbeat
+   */
+  void SetDrawPeriod(Duration period) {
+    _draw_period = period;
+  }
+
+  [[nodiscard]] auto GetDrawPeriod() const noexcept {
+    return _draw_period;
+  }
+
+protected:
   /**
    * Returns true iff Vulkan was successfully initialized
    */
@@ -57,6 +71,8 @@ class BaseVulkanOperation : public BaseOperation {
  private:
   bool _vulkan_initialized = false;
   const Log::Tag _testTag;
+  Duration _draw_period = Duration::zero();
+  std::thread _draw_thread;
 };
 
 }
