@@ -55,6 +55,7 @@ void SwappyTraceWrapper::PreWaitCallback(void* userPtr) {
 }
 
 void SwappyTraceWrapper::PostWaitCallback(void* userPtr, long cpuTimeNs, long gpuTimeNs) {
+    static long prevCpuTimeNs = 0;
     SwappyTraceWrapper *_this = (SwappyTraceWrapper *) userPtr;
     auto err = TuningFork_frameDeltaTimeNanos(TFTICK_CPU_TIME, cpuTimeNs);
     if (err != TFERROR_OK && err != TFERROR_TUNINGFORK_NOT_INITIALIZED) {
@@ -64,10 +65,12 @@ void SwappyTraceWrapper::PostWaitCallback(void* userPtr, long cpuTimeNs, long gp
     if (err != TFERROR_OK && err != TFERROR_TUNINGFORK_NOT_INITIALIZED) {
         ALOGE("Error ticking %d : %d", TFTICK_GPU_TIME, err);
     }
-    err = TuningFork_frameDeltaTimeNanos(TFTICK_RAW_FRAME_TIME, std::max(cpuTimeNs, gpuTimeNs));
+    // This GPU time is actually for the previous frame, so use the previous frame's CPU time.
+    err = TuningFork_frameDeltaTimeNanos(TFTICK_RAW_FRAME_TIME, std::max(prevCpuTimeNs, gpuTimeNs));
     if (err != TFERROR_OK && err != TFERROR_TUNINGFORK_NOT_INITIALIZED) {
         ALOGE("Error ticking %d : %d", TFTICK_RAW_FRAME_TIME, err);
     }
+    prevCpuTimeNs = cpuTimeNs;
 }
 
 void SwappyTraceWrapper::PreSwapBuffersCallback(void* userPtr) {
