@@ -4,10 +4,20 @@
 #include <bitset>
 #include <cstring>
 
+#include <ancer/util/Log.hpp>
+
 #include "context.h"
 #include "android_helper.h"
 #include "upload.h"
 #include "resources.h"
+
+#include <swappy/swappyVk.h>
+
+using namespace ancer;
+
+namespace {
+static Log::Tag TAG{"VulkanBase"};
+}
 
 namespace ancer {
 namespace vulkan {
@@ -29,17 +39,17 @@ void VulkanRequirements::Swapchain() {
   DeviceExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 }
 
-Result Vulkan::Initialize(const VulkanRequirements & requirements) {
-  VK_GOTO_FAIL(InitEntry(requirements));
-  VK_GOTO_FAIL(InitInstance(requirements));
-  VK_GOTO_FAIL(InitDebugReporting(requirements));
+Result Vulkan::Initialize(const VulkanRequirements & requirements) { Log::E(TAG, "%i", __LINE__);
+  VK_GOTO_FAIL(InitEntry(requirements)); Log::E(TAG, "%i", __LINE__);
+  VK_GOTO_FAIL(InitInstance(requirements)); Log::E(TAG, "%i", __LINE__);
+  VK_GOTO_FAIL(InitDebugReporting(requirements)); Log::E(TAG, "%i", __LINE__);
 
   if(HaveInstanceExtension(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME)) {
-    VK_GOTO_FAIL(InitSurface(requirements));
+    VK_GOTO_FAIL(InitSurface(requirements)); Log::E(TAG, "%i", __LINE__);
   }
 
-  VK_GOTO_FAIL(InitPhysicalDevice(requirements));
-  VK_GOTO_FAIL(InitDevice(requirements));
+  VK_GOTO_FAIL(InitPhysicalDevice(requirements)); Log::E(TAG, "%i", __LINE__);
+  VK_GOTO_FAIL(InitDevice(requirements)); Log::E(TAG, "%i", __LINE__);
 
   // initialize pipeline cache
   {
@@ -89,11 +99,12 @@ fail:
 void Vulkan::Shutdown() {
 }
 
-Result Vulkan::AllocateFence(Fence &fence) {
+Result Vulkan::AllocateFence(Fence &fence, bool advance) {
   {
     std::lock_guard<std::mutex> guard(vk->free_fences_mutex);
     if(vk->free_fences.size() > 0) {
       fence = vk->free_fences.back();
+      fence.AdvanceFrame(advance);
       vk->free_fences.pop_back();
       return Result::kSuccess;
     }
@@ -107,6 +118,7 @@ Result Vulkan::AllocateFence(Fence &fence) {
 
   fence.data.reset(new Fence::Data());
   fence.data->waited = false;
+  fence.data->advance_frame = advance;
   fence.data->frame = vk->frame;
   fence.data->references = 0;
   return Result(vk->createFence(vk->device, &create_info, nullptr,
@@ -502,8 +514,15 @@ Result Vulkan::InitEntry(const VulkanRequirements & requirements) {
   void * libVulkan = dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL);
   if(!libVulkan) return Result::kSuccess;
 
-#define LOAD_ENTRY(NAME, ID) vk->ID = \
-  reinterpret_cast<PFN_ ## NAME>(dlsym(libVulkan, #NAME));
+#define LOAD_ENTRY(NAME, ID) \
+  do { \
+    vk->ID = \
+    reinterpret_cast<PFN_ ## NAME>(dlsym(libVulkan, #NAME)); \
+    if(vk->ID == nullptr) { \
+      Log::E(TAG, "Coul'd not load " #NAME); \
+      return Result{VK_ERROR_INITIALIZATION_FAILED}; \
+    } \
+  } while(false)
 
   vk.reset(new Data());
   LOAD_ENTRY(vkCreateInstance, createInstance);
@@ -646,6 +665,8 @@ Result Vulkan::InitEntry(const VulkanRequirements & requirements) {
 
 #undef LOAD_ENTRY
 
+  vk->use_swappy = requirements._use_swappy;
+
   return Result::kSuccess;
 }
 
@@ -672,9 +693,9 @@ Result Vulkan::InitInstanceExtensions(const VulkanRequirements & requirements) {
   VkResult res;
   do {
     count = 0;
-    VK_RETURN_FAIL(vk->enumerateInstanceLayerProperties(&count, nullptr));
+    VK_RETURN_FAIL(vk->enumerateInstanceLayerProperties(&count, nullptr)); Log::E(TAG, "%i", __LINE__);
     layers.resize(count);
-    res = vk->enumerateInstanceLayerProperties(&count, layers.data());
+    res = vk->enumerateInstanceLayerProperties(&count, layers.data()); Log::E(TAG, "%i", __LINE__);
     VK_RETURN_FAIL(res);
   } while(res == VK_INCOMPLETE);
   for(const auto & layer : layers) {
@@ -685,11 +706,11 @@ Result Vulkan::InitInstanceExtensions(const VulkanRequirements & requirements) {
   do { \
     count = 0; \
     VK_RETURN_FAIL(vk->enumerateInstanceExtensionProperties(layer, \
-                                                            &count, nullptr)); \
+                                                            &count, nullptr)); Log::E(TAG, "%i", __LINE__); \
     extensions.resize(count); \
     VK_RETURN_FAIL(vk->enumerateInstanceExtensionProperties(layer, \
                                                             &count, \
-                                                           extensions.data())); \
+                                                           extensions.data())); Log::E(TAG, "%i", __LINE__); \
     for(const auto & extension : extensions) { \
       vk->available_instance_extensions.insert(extension.extensionName); \
     } \
@@ -723,29 +744,29 @@ Result Vulkan::InitInstanceExtensions(const VulkanRequirements & requirements) {
   return Result::kSuccess;
 }
 
-Result Vulkan::InitInstance(const VulkanRequirements & requirements) {
-  VK_RETURN_FAIL(InitInstanceExtensions(requirements));
+Result Vulkan::InitInstance(const VulkanRequirements & requirements) { Log::E(TAG, "%i", __LINE__);
+  VK_RETURN_FAIL(InitInstanceExtensions(requirements)); Log::E(TAG, "%i", __LINE__);
 
   // map to c_str for VkInstanceCreateInfo
-  std::vector<const char *> enabled_layers(
-                                       vk->enabled_instance_layers.size());
+  std::vector<const char *> enabled_layers;
   for(const auto & layer : vk->enabled_instance_layers) {
+    Log::D(TAG, "layer %s", layer.c_str());
     enabled_layers.emplace_back(layer.c_str());
   }
 
   // map to c_str for VkInstanceCreateInfo
-  std::vector<const char *> enabled_extensions(
-                                       vk->enabled_instance_extensions.size());
+  std::vector<const char *> enabled_extensions;
   for(const auto & extension : vk->enabled_instance_extensions) {
+    Log::D(TAG, "extension %s", extension.c_str());
     enabled_extensions.emplace_back(extension.c_str());
   }
 
   VkApplicationInfo application_info = {
     /* sType              */ VK_STRUCTURE_TYPE_APPLICATION_INFO,
     /* pNext              */ nullptr,
-    /* pApplicationName   */ "",
+    /* pApplicationName   */ "ancer",
     /* applicationVersion */ 1,
-    /* pEngineName        */ "",
+    /* pEngineName        */ "ancer",
     /* engineVersion      */ 1,
     /* apiVersion         */ VK_API_VERSION_1_0
   };
@@ -763,10 +784,27 @@ Result Vulkan::InitInstance(const VulkanRequirements & requirements) {
     /* ppEnabledExtensionNames */ enabled_extensions.empty() ? nullptr :
                                   enabled_extensions.data()
   };
-  VK_RETURN_FAIL(vk->createInstance(&create_info, nullptr, &vk->instance));
+#define DEBUG_P(X, F) Log::D(TAG, #X " " #F, X)
+  DEBUG_P(create_info.sType, %u);
+  DEBUG_P(create_info.pNext, %p);
+  DEBUG_P(create_info.flags, %u);
+  DEBUG_P(create_info.pApplicationInfo, %p);
+  DEBUG_P(create_info.pApplicationInfo->sType, %u);
+  DEBUG_P(create_info.pApplicationInfo->pNext, %p);
+  DEBUG_P(create_info.pApplicationInfo->pApplicationName, %s);
+  DEBUG_P(create_info.pApplicationInfo->applicationVersion, %u);
+  DEBUG_P(create_info.pApplicationInfo->pEngineName, %s);
+  DEBUG_P(create_info.pApplicationInfo->engineVersion, %u);
+  DEBUG_P(create_info.pApplicationInfo->apiVersion, %u);
+  DEBUG_P(create_info.enabledLayerCount, %u);
+  DEBUG_P(create_info.ppEnabledLayerNames, %p);
+  DEBUG_P(create_info.enabledExtensionCount, %u);
+  DEBUG_P(create_info.ppEnabledExtensionNames, %p);
+#undef DEBUG_P
+  VK_RETURN_FAIL(vk->createInstance(&create_info, nullptr, &vk->instance)); Log::E(TAG, "%i", __LINE__);
 
 #define LOAD_ENTRY(NAME, ID) vk->ID = \
-  reinterpret_cast<PFN_ ## NAME>(vk->getInstanceProcAddr(vk->instance, #NAME));
+  reinterpret_cast<PFN_ ## NAME>(vk->getInstanceProcAddr(vk->instance, #NAME)); Log::E(TAG, "%i", __LINE__);
 
   if(HaveInstanceExtension(VK_KHR_SURFACE_EXTENSION_NAME)) {
     LOAD_ENTRY(vkDestroySurfaceKHR, destroySurfaceKHR);
@@ -824,6 +862,8 @@ Result Vulkan::InitPhysicalDevice(const VulkanRequirements & requirements) {
 }
 
 Result Vulkan::InitSurface(const VulkanRequirements & requirements) {
+  Log::E(TAG, "%i", __LINE__);
+
 #ifdef VK_USE_PLATFORM_ANDROID_KHR
   AndroidHelper::WindowSize(vk->window_width, vk->window_height);
 
@@ -834,7 +874,7 @@ Result Vulkan::InitSurface(const VulkanRequirements & requirements) {
     /* window */ AndroidHelper::Window()
   };
   VK_RETURN_FAIL(vk->createAndroidSurfaceKHR(vk->instance, &create_info,
-                                             nullptr, &vk->surface));
+                                             nullptr, &vk->surface)); Log::E(TAG, "%i", __LINE__);
 #endif
 
   // by now, vk->window_width, vk->window_height, and vk->surface are valid
@@ -842,32 +882,32 @@ Result Vulkan::InitSurface(const VulkanRequirements & requirements) {
   VK_RETURN_FAIL(vk->getPhysicalDeviceSurfaceCapabilitiesKHR(
                                                    vk->physical_device,
                                                    vk->surface,
-                                                   &vk->surface_capabilities));
+                                                   &vk->surface_capabilities)); Log::E(TAG, "%i", __LINE__);
 
   uint32_t count = 0;
   VK_RETURN_FAIL(vk->getPhysicalDeviceSurfacePresentModesKHR(
                                                            vk->physical_device,
                                                            vk->surface,
-                                                           &count, nullptr));
+                                                           &count, nullptr)); Log::E(TAG, "%i", __LINE__);
 
   vk->surface_present_modes.resize(count);
   VK_RETURN_FAIL(vk->getPhysicalDeviceSurfacePresentModesKHR(
                                             vk->physical_device,
                                             vk->surface,
                                             &count,
-                                            vk->surface_present_modes.data()));
+                                            vk->surface_present_modes.data())); Log::E(TAG, "%i", __LINE__);
 
   count = 0;
   VK_RETURN_FAIL(vk->getPhysicalDeviceSurfaceFormatsKHR(vk->physical_device,
                                                         vk->surface,
-                                                        &count, nullptr));
+                                                        &count, nullptr)); Log::E(TAG, "%i", __LINE__);
 
   vk->surface_formats.resize(count);
   VK_RETURN_FAIL(vk->getPhysicalDeviceSurfaceFormatsKHR(
                                                   vk->physical_device,
                                                   vk->surface,
                                                   &count,
-                                                  vk->surface_formats.data()));
+                                                  vk->surface_formats.data())); Log::E(TAG, "%i", __LINE__);
 
   return Result::kSuccess;
 }
@@ -878,6 +918,7 @@ Result Vulkan::InitDeviceExtensions(const VulkanRequirements & requirements) {
 
   std::vector<VkLayerProperties> layers;
   std::vector<VkExtensionProperties> extensions;
+  std::vector<VkExtensionProperties> all_extensions;
 
   vk->available_device_layers.clear();
   vk->available_device_extensions.clear();
@@ -905,6 +946,7 @@ Result Vulkan::InitDeviceExtensions(const VulkanRequirements & requirements) {
                                                           &count, \
                                                           extensions.data())); \
     for(const auto & extension : extensions) { \
+      all_extensions.push_back(extension); \
       vk->available_device_extensions.insert(extension.extensionName); \
     } \
   } while(false)
@@ -913,6 +955,16 @@ Result Vulkan::InitDeviceExtensions(const VulkanRequirements & requirements) {
 
   for(const auto & layer : vk->available_device_layers) {
     LOAD_EXTENSIONS(layer.c_str());
+  }
+
+  if(vk->use_swappy) {
+    count = 0;
+    SwappyVk_determineDeviceExtensions(
+        vk->physical_device, static_cast<uint32_t>(all_extensions.size()),
+        all_extensions.data(), &count, nullptr);
+    if(count > 0) {
+      return Result(VK_ERROR_EXTENSION_NOT_PRESENT);
+    }
   }
 
 #undef LOAD_EXTENSIONS
@@ -1111,6 +1163,11 @@ Result Vulkan::InitDevice(const VulkanRequirements & requirements) {
   RESOLVE(compute);
   RESOLVE(transfer);
   RESOLVE(present);
+
+  if(vk->use_swappy) {
+    SwappyVk_setQueueFamilyIndex(vk->device, vk->present.queue,
+                                 vk->present.family_index);
+  }
 
 #define LOAD_ENTRY(NAME, ID) vk->ID = \
   reinterpret_cast<PFN_ ## NAME>(vk->getDeviceProcAddr(vk->device, #NAME));

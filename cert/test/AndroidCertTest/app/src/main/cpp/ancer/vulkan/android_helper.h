@@ -7,11 +7,13 @@
 
 #include <vulkan/vulkan.h>
 
+#include <android/native_activity.h>
+
 namespace ancer {
 namespace vulkan {
 
 struct AndroidHelper {
-  static void Initialize();
+  static void Initialize(ANativeWindow *window, ANativeActivity *activity);
 
   static ANativeWindow * Window();
 

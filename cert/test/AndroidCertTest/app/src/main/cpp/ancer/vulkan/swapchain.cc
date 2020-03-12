@@ -1,9 +1,21 @@
 #include "swapchain.h"
 
+#include <ancer/util/JNIHelpers.hpp>
+#include <ancer/System.hpp>
+#include <ancer/util/Log.hpp>
+
+#include <swappy/swappyVk.h>
+
+namespace {
+constexpr ancer::Log::Tag TAG{"VulkanSwapchain"};
+}
+
 namespace ancer {
 namespace vulkan {
 
 Result Swapchain::Initialize(Vulkan & _vulkan, VkImageUsageFlags usage_flags) {
+  Log::E(TAG, "%i", __LINE__);
+
   vulkan = _vulkan;
   auto & vk = vulkan.vk;
 
@@ -27,14 +39,16 @@ Result Swapchain::Initialize(Vulkan & _vulkan, VkImageUsageFlags usage_flags) {
 
   uint32_t image_count = 2;
   image_count = std::max(image_count, vk->surface_capabilities.minImageCount);
-  image_count = std::min(image_count, vk->surface_capabilities.maxImageCount);
+  image_count = std::min(image_count, vk->surface_capabilities.maxImageCount); Log::E(TAG, "%i", __LINE__);
 
   if(vk->surface_formats.size() == 1 &&
      vk->surface_formats[0].format == VK_FORMAT_UNDEFINED) {
     format = VK_FORMAT_B8G8R8A8_UNORM;
   } else {
-    if(vk->surface_formats.size() == 0)
+    if(vk->surface_formats.size() == 0) {
+      Log::E(TAG, "%i", __LINE__);
       return Result(VK_ERROR_INITIALIZATION_FAILED);
+    }
     format = vk->surface_formats[0].format;
   }
 
@@ -43,14 +57,14 @@ Result Swapchain::Initialize(Vulkan & _vulkan, VkImageUsageFlags usage_flags) {
     vk->present.family_index
   };
   uint32_t qfi_count = qfi[0] != qfi[1] ? 2 : 1;
-
+  Log::E(TAG, "%i", __LINE__);
   VkSurfaceTransformFlagBitsKHR pre_transform;
   if(vk->surface_capabilities.supportedTransforms &
      VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR)
     pre_transform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
   else
     pre_transform = vk->surface_capabilities.currentTransform;
-
+  Log::E(TAG, "%i", __LINE__);
   VkCompositeAlphaFlagBitsKHR composite_alpha =
       VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
   const VkCompositeAlphaFlagBitsKHR composite_alpha_flags[4] = {
@@ -65,7 +79,7 @@ Result Swapchain::Initialize(Vulkan & _vulkan, VkImageUsageFlags usage_flags) {
       break;
     }
   }
-
+  Log::E(TAG, "%i", __LINE__);
   VkSwapchainCreateInfoKHR create_info = {
     /* sType                 */ VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
     /* pNext                 */ nullptr,
@@ -88,16 +102,17 @@ Result Swapchain::Initialize(Vulkan & _vulkan, VkImageUsageFlags usage_flags) {
     /* oldSwapchain          */ VK_NULL_HANDLE
   };
 
+  Log::E(TAG, "%i", __LINE__);
   VK_RETURN_FAIL(vk->createSwapchainKHR(vk->device, &create_info, nullptr,
-                                        &swapchain));
+                                        &swapchain)); Log::E(TAG, "%i", __LINE__);
 
   uint32_t count = 0;
   VK_RETURN_FAIL(vk->getSwapchainImagesKHR(vk->device, swapchain, &count,
-                                           nullptr));
+                                           nullptr)); Log::E(TAG, "%i", __LINE__);
 
   images.resize(count);
   VK_RETURN_FAIL(vk->getSwapchainImagesKHR(vk->device, swapchain, &count,
-                                           images.data()));
+                                           images.data())); Log::E(TAG, "%i", __LINE__);
 
   for(auto & image : images) {
     VkImageViewCreateInfo view_create_info = {
@@ -124,11 +139,22 @@ Result Swapchain::Initialize(Vulkan & _vulkan, VkImageUsageFlags usage_flags) {
 
     VkImageView image_view;
     VK_RETURN_FAIL(vk->createImageView(vk->device, &view_create_info,
-                                       nullptr, &image_view));
+                                       nullptr, &image_view)); Log::E(TAG, "%i", __LINE__);
 
     image_views.push_back(image_view);
 
     used_semaphores.push_back(VK_NULL_HANDLE);
+  }
+
+  if(vk->use_swappy) {
+    jni::SafeJNICall([&](jni::LocalJNIEnv *env) {
+      auto jni_env = env->GetOriginalJNIEnv();
+      jobject activity = env->NewLocalRef(jni::GetActivityWeakGlobalRef());
+      SwappyVk_initAndGetRefreshCycleDuration(jni_env, activity,
+                                              vk->physical_device,
+                                              vk->device, swapchain,
+                                              &swappy_refresh_duration);
+    });
   }
 
   width = extent.width;
@@ -149,11 +175,11 @@ Result Swapchain::Acquire(SwapchainImage & image) {
     /* flags */ 0
   };
   VK_RETURN_FAIL(vk->createSemaphore(vk->device, &semaphore_create_info,
-                                     nullptr, &image.semaphore));
+                                     nullptr, &image.semaphore)); Log::E(TAG, "%i", __LINE__);
 
   VK_RETURN_FAIL(vk->acquireNextImageKHR(vk->device, swapchain, UINT64_MAX,
                                          image.semaphore, VK_NULL_HANDLE,
-                                         &image.index));
+                                         &image.index)); Log::E(TAG, "%i", __LINE__);
 
   image.image = images[image.index];
   image.image_view = image_views[image.index];
@@ -184,7 +210,11 @@ Result Swapchain::Present(SwapchainImage & image,
     /* pResults           */ nullptr
   };
 
-  return Result(vk->queuePresentKHR(vk->present.queue, &present_info));
+  if(vk->use_swappy) { Log::E(TAG, "%i", __LINE__);
+    return Result(SwappyVk_queuePresent(vk->present.queue, &present_info));
+  } else { Log::E(TAG, "%i", __LINE__);
+    return Result(vk->queuePresentKHR(vk->present.queue, &present_info));
+  }
 }
 
 }

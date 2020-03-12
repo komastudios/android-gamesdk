@@ -95,6 +95,10 @@ class VulkanRequirements {
     _debug = value;
   }
 
+  inline void UseSwappy(bool value = true) {
+    _use_swappy = value;
+  }
+
   inline void InstanceLayer(std::string layer) {
     _instance_layers.insert(std::move(layer));
   }
@@ -191,6 +195,7 @@ class VulkanRequirements {
   friend class Vulkan;
 
   bool _debug;
+  bool _use_swappy;
 
   std::unordered_set<std::string> _instance_layers;
   std::unordered_set<std::string> _instance_extensions;
@@ -219,8 +224,12 @@ class VulkanRequirements {
  */
 struct Fence {
  public:
-  void AdvanceFrame(bool value = true) {
+  inline void AdvanceFrame(bool value = true) {
     data->advance_frame = value;
+  }
+
+  inline bool Valid() {
+    return data != nullptr && data->references > 0;
   }
 
  private:
@@ -489,7 +498,7 @@ class Vulkan {
    * Allocate a Fence to be used with SubmitToQueue. The same fence can be used
    * multiple times in a frame.
    */
-  Result AllocateFence(Fence &fence);
+  Result AllocateFence(Fence &fence, bool advance = false);
 
   /**
    * Wait for a Fence to complete. if force is false this becomes a query for
@@ -533,22 +542,6 @@ class Vulkan {
   Result QueueTemporaryCommandBuffer(VkCommandBuffer cmd_buffer, Fence &fence);
 
   Result SubmitTemporaryCommandBuffers(Queue queue, VkSemaphore &semaphore);
-
-  // ==========================================================================
-  Result CreateDescriptorSetLayout(
-                  std::initializer_list<VkDescriptorSetLayoutBinding> bindings,
-                  VkDescriptorSetLayout &layout);
-
-  Result GetDescriptorSet(VkDescriptorSetLayout layout,
-                          VkDescriptorSet &descriptor_set);
-
-  inline Result GetDescriptorSet(
-                  std::initializer_list<VkDescriptorSetLayoutBinding> bindings,
-                  VkDescriptorSet &descriptor_set) {
-    VkDescriptorSetLayout layout;
-    VK_RETURN_FAIL(CreateDescriptorSetLayout(bindings, layout));
-    return GetDescriptorSet(layout, descriptor_set);
-  }
 
   // ==========================================================================
 
@@ -617,6 +610,7 @@ class Vulkan {
     VkInstance instance;
 
     bool debug_enabled;
+    bool use_swappy;
 
     VkPhysicalDevice physical_device;
     VkPhysicalDeviceProperties physical_device_properties;
