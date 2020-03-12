@@ -22,6 +22,7 @@ Version 1.0.1
  - SwappyVk_destroySwapchain now doesn't destroy device resources if there is more than one
    swapchain.
  - The Swappy version is now printed in logcat.
+ - Fixes to crashing and deadlocking in Swappy_destroy for API<=24
 - New features
  - Support for custom thread managers (Swappy_setThreadFunctions)
  - Support for hooking of Vulkan functions (SwappyVk_setFunctionProvider)
