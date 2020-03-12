@@ -4,6 +4,7 @@
 #include "vulkan_base.h"
 #include "render_pass.h"
 #include "resources.h"
+#include "image.h"
 
 #include <cstdarg>
 
@@ -71,6 +72,12 @@ class Context {
    * Add this semaphore to the list to signal when completed.
    */
   void Signal(VkSemaphore semaphore);
+
+  /// utility functions, replacement for vkCmd*
+ public:
+  void ChangeImageLayout(ImageResource image, VkImageLayout oldLayout);
+
+  void CopyImage(ImageResource src, ImageResource dst);
 
  protected:
   Result Initialize(Vulkan & vk, uint32_t num_buffers,

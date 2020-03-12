@@ -5,7 +5,10 @@
 namespace ancer {
 namespace vulkan {
 
-Result Buffer::Initialize(Vulkan &vk, ResourceUse ruse,
+Buffer::Buffer() : _buffer(VK_NULL_HANDLE), _view(VK_NULL_HANDLE), _memory() {
+}
+
+Result Buffer::Initialize(Vulkan &vk, EResourceUse ruse,
                           VkBufferUsageFlags usage, VkDeviceSize size,
                           void * data) {
   _vk = vk;
@@ -35,15 +38,15 @@ Result Buffer::Initialize(Vulkan &vk, ResourceUse ruse,
                                    &memory_requirements);
 
   switch(ruse) {
-    case ResourceUse::GPU:
-    case ResourceUse::TransientGPU:
+    case EResourceUse::GPU:
+    case EResourceUse::TransientGPU:
       memory_flags |= VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
       break;
-    case ResourceUse::CPUToGPU:
+    case EResourceUse::CPUToGPU:
       memory_flags |= VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
                       VK_MEMORY_PROPERTY_HOST_CACHED_BIT;
       break;
-    case ResourceUse::GPUToCPU:
+    case EResourceUse::GPUToCPU:
       memory_flags |= VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
                       VK_MEMORY_PROPERTY_HOST_CACHED_BIT;
       break;

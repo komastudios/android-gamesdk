@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include <ancer/util/Log.hpp>
+
 // ============================================================================
 // usefull hashes .... STL makes hashes difficult
 template<class T>
@@ -58,6 +60,11 @@ static bool operator == (const VkSamplerCreateInfo &a,
 }
 namespace ancer {
 namespace vulkan {
+
+namespace {
+  const Log::Tag TAG{"VulkanResources"};
+}
+
 static bool operator == (const ResourcesLayout &a, const ResourcesLayout &b) {
   uint32_t count = a.BindingCount();
   if(count != b.BindingCount())
@@ -351,6 +358,10 @@ void Resources::Insert(Slot slot) {
 
 // ============================================================================
 // ResourcesStore
+
+ResourcesStore::ResourcesStore() : _samplers(), _layouts(), _pools(), _sets_mutex(), _sets(), _pl_mutex(), _pl() {
+}
+
 Result ResourcesStore::Initialize(Vulkan &vk, uint32_t pool_size,
                                  uint32_t min_descriptor_count) {
   _vk = vk;

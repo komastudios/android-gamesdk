@@ -13,7 +13,9 @@ namespace vulkan {
  */
 class Buffer {
  public:
-  Result Initialize(Vulkan &vk, ResourceUse ruse, VkBufferUsageFlags usage,
+  Buffer();
+
+  Result Initialize(Vulkan &vk, EResourceUse ruse, VkBufferUsageFlags usage,
                     VkDeviceSize size, void * data);
 
   void Shutdown();
@@ -56,7 +58,7 @@ class Buffer {
 
 class IndexBuffer : public Buffer {
  public:
-  inline Result Initialize(Vulkan &vk, ResourceUse ruse, VkIndexType index_type,
+  inline Result Initialize(Vulkan &vk, EResourceUse ruse, VkIndexType index_type,
                            VkDeviceSize size, void * data) {
     _index_type = index_type;
     return Buffer::Initialize(vk, ruse, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
@@ -73,7 +75,7 @@ class IndexBuffer : public Buffer {
 
 class VertexBuffer : public Buffer {
  public:
-  inline Result Initialize(Vulkan &vk, ResourceUse ruse, VkDeviceSize size,
+  inline Result Initialize(Vulkan &vk, EResourceUse ruse, VkDeviceSize size,
                            void * data) {
     return Buffer::Initialize(vk, ruse, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
                               size, data);
@@ -82,7 +84,7 @@ class VertexBuffer : public Buffer {
 
 class UniformBuffer : public Buffer {
  public:
-  inline Result Initialize(Vulkan &vk, ResourceUse ruse, VkDeviceSize size,
+  inline Result Initialize(Vulkan &vk, EResourceUse ruse, VkDeviceSize size,
                            void * data) {
     return Buffer::Initialize(vk, ruse, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
                               size, data);
@@ -91,7 +93,7 @@ class UniformBuffer : public Buffer {
 
 class StorageBuffer : public Buffer {
  public:
-  inline Result Initialize(Vulkan &vk, ResourceUse ruse, VkDeviceSize size,
+  inline Result Initialize(Vulkan &vk, EResourceUse ruse, VkDeviceSize size,
                            void * data) {
     return Buffer::Initialize(vk, ruse, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
                               size, data);

@@ -1,9 +1,18 @@
 #include "graphics_pipeline.h"
 
+#include <ancer/util/Log.hpp>
+
 #include "render_pass.h"
+#include "vk_debug_print.h"
+
+#include <cstring>
 
 namespace ancer {
 namespace vulkan {
+
+namespace {
+const Log::Tag TAG{"VulkanGraphicsPipeline"};
+}
 
 namespace graphics_pipeline {
 
@@ -25,6 +34,9 @@ Builder::Builder(GraphicsPipeline &graphics_pipeline) :
   CLEAR(_color_blend_state, PIPELINE_COLOR_BLEND_STATE_CREATE_INFO);
   CLEAR(_dynamic_state, PIPELINE_DYNAMIC_STATE_CREATE_INFO);
   CLEAR(_create_info, GRAPHICS_PIPELINE_CREATE_INFO);
+
+  _rasterization_state.lineWidth = 1.0f;
+  _multisample_state.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
 
 #undef CLEAR
 
@@ -240,6 +252,8 @@ Builder &Builder::DepthMode(const class DepthMode & depth_mode) {
 
 Builder &Builder::BlendMode(const class BlendMode & blend_mode) {
   ColorBlendState() = blend_mode.CreateInfo();
+  ColorBlendState().pAttachments = _blend_attachments;
+  memcpy(_blend_attachments, blend_mode.CreateInfo().pAttachments, sizeof(_blend_attachments));
   return *this;
 }
 
@@ -341,6 +355,14 @@ void Builder::SetDynamicState(VkDynamicState dstate, bool add) {
   }
 }
 
+template<typename T>
+void print_u32s(const char * name, const T &data) {
+  const uint32_t *udata = reinterpret_cast<const uint32_t *>(&data);
+  for(size_t i = 0; i < sizeof(T)/4; ++i) {
+    Log::E(TAG, "%s[%u] %u", name, udata[i]);
+  }
+}
+
 Result Builder::Build(Vulkan &vk) {
   _create_info.stageCount = static_cast<uint32_t>(_shader_stages.size());
   _create_info.pStages = _shader_stages.data();
@@ -382,10 +404,13 @@ Result Builder::Build(Vulkan &vk) {
     MultisampleState();
   }
 
+  auto & dstate = DynamicState();
   if(_dynamic_states.size() > 0) {
-    auto & dstate = DynamicState();
     dstate.dynamicStateCount = static_cast<uint32_t>(_dynamic_states.size());
     dstate.pDynamicStates = _dynamic_states.data();
+  } else {
+    dstate.dynamicStateCount = 0;
+    dstate.pDynamicStates = nullptr;
   }
 
   if(_create_info.layout == VK_NULL_HANDLE)
@@ -394,6 +419,10 @@ Result Builder::Build(Vulkan &vk) {
   _graphics_pipeline._vk = vk;
 
   VkPipeline &pipeline = _graphics_pipeline._pipeline;
+
+#if 1
+  VkGraphicsPipelineCreateInfo_debug_print("create_info", 0, _create_info);
+#endif
 
   VK_RETURN_FAIL(vk->createGraphicsPipelines(vk->device, vk->pipeline_cache,
                                              1, &_create_info, nullptr,

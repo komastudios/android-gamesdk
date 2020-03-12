@@ -172,6 +172,8 @@ class Resources {
  */
 class ResourcesStore {
  public:
+  ResourcesStore();
+
   Result Initialize(Vulkan &vk, uint32_t pool_size,
                     uint32_t min_descriptor_count);
 

@@ -7,17 +7,24 @@ namespace ancer {
 namespace vulkan {
 
 BlendMode::BlendMode() {
-  std::memset(&_attachments, 0, sizeof(_attachments));
+  //std::memset(&_attachments, 0, sizeof(_attachments));
   std::memset(&_create_info, 0, sizeof(_create_info));
   _create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
   _create_info.pAttachments = _attachments;
 
   for(uint32_t i = 0; i < MAX_ATTACHMENTS; ++i) {
+    std::memset(&_attachments[i], 0, sizeof(_attachments[i]));
     _attachments[i].colorWriteMask = VK_COLOR_COMPONENT_R_BIT |
                                      VK_COLOR_COMPONENT_G_BIT |
                                      VK_COLOR_COMPONENT_B_BIT |
                                      VK_COLOR_COMPONENT_A_BIT ;
   }
+}
+
+BlendMode::BlendMode(const BlendMode &other) {
+  _create_info = other._create_info;
+  memcpy(_attachments, other._attachments, sizeof(_attachments));
+  _create_info.pAttachments = _attachments;
 }
 
 BlendMode &BlendMode::LogicOp(nullptr_t) {
@@ -34,6 +41,7 @@ BlendMode &BlendMode::LogicOp(VkLogicOp op) {
 BlendMode &BlendMode::Blend(uint32_t index, nullptr_t) {
   _create_info.attachmentCount = std::max(_create_info.attachmentCount,
                                           index + 1);
+  _attachments[index].blendEnable = VK_FALSE;
   return *this;
 }
 

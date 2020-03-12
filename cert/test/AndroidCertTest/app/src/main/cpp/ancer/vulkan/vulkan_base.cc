@@ -71,6 +71,9 @@ Result Vulkan::Initialize(const VulkanRequirements & requirements) {
                                         requirements._concurrent_uploads,
                                         requirements._upload_buffer_size));
 
+  vk->resources_store = new ResourcesStore();
+  VK_GOTO_FAIL(vk->resources_store->Initialize(*this, 1024, 1024));
+
   {
     // initialize empty pipeline layout
     VkPipelineLayoutCreateInfo pipeline_layout_create_info = {
@@ -169,7 +172,7 @@ Result Vulkan::WaitForFence(Fence &fence, bool &completed, bool force) {
 
 
 
-Result Vulkan::SubmitToQueue(Queue queue, Context &context, Fence &fence) {
+Result Vulkan::SubmitToQueue(EQueue queue, Context &context, Fence &fence) {
   VkSubmitInfo submit_info = {
       /* sType                */ VK_STRUCTURE_TYPE_SUBMIT_INFO,
       /* pNext                */ nullptr,
@@ -240,6 +243,9 @@ fail:
 
 void Vulkan::Free(const MemoryAllocation &allocation) {
   // TODO(sarahburns@google.com): fix this to use pages or the AMD allocator
+  if(allocation._memory == VK_NULL_HANDLE) {
+    return;
+  }
 
   vk->freeMemory(vk->device, allocation._memory, nullptr);
 }
@@ -293,7 +299,6 @@ Result Vulkan::GetFramebuffer(VkRenderPass render_pass,
   VK_RETURN_FAIL(vk->createFramebuffer(vk->device, &create_info, nullptr,
                                        &framebuffer));
 
-
   {
     std::lock_guard<std::mutex> guard(vk->framebuffer_mutex);
     vk->framebuffers[h1] = Framebuffer {
@@ -308,7 +313,7 @@ Result Vulkan::GetFramebuffer(VkRenderPass render_pass,
 }
 
 // ============================================================================
-Result Vulkan::AcquireTemporaryCommandBuffer(Queue queue,
+Result Vulkan::AcquireTemporaryCommandBuffer(EQueue queue,
                                              VkCommandBuffer &cmd_buffer) {
   auto thread_data = GetThreadData();
 
@@ -447,7 +452,7 @@ Result Vulkan::QueueTemporaryCommandBuffer(VkCommandBuffer cmd_buffer,
   return Result::kSuccess;
 }
 
-Result Vulkan::SubmitTemporaryCommandBuffers(Queue queue,
+Result Vulkan::SubmitTemporaryCommandBuffers(EQueue queue,
                                              VkSemaphore &semaphore) {
   semaphore = VK_NULL_HANDLE;
 
@@ -724,8 +729,60 @@ Result Vulkan::InitInstanceExtensions(const VulkanRequirements & requirements) {
 
 #undef LOAD_EXTENSIONS
 
+  std::unordered_set<std::string> req_layers{requirements._instance_layers};
+  std::unordered_set<std::string> req_extensions{requirements._instance_extensions};
+
+  if(requirements._debug) {
+    auto request_layer = [&](std::string name) -> bool {
+      Log::I(TAG, "instance layer requested '%s' ...", name.c_str());
+      for(auto && layer : vk->available_instance_layers) {
+        if(layer == name) {
+          Log::I(TAG, "  found");
+          req_layers.insert(name);
+          return true;
+        }
+      }
+      Log::I(TAG, "   not found");
+      return false;
+    };
+
+    auto request_extension = [&](std::string name) -> bool {
+      Log::I(TAG, "instance extension requested '%s' ...", name.c_str());
+      for(auto && extension : vk->available_instance_extensions) {
+        if(extension == name) {
+          Log::I(TAG, "  found");
+          req_extensions.insert(name);
+          return true;
+        }
+      }
+      Log::I(TAG, "   not found");
+      return false;
+    };
+
+    // this is a 'meta' layer that includes the later ones
+    if(!request_layer("VK_LAYER_LUNARG_standard_validation")) {
+      // on some devices I have encountered enabling all of them (with or without
+      // the meta one) can cause issues. Included is the others in case one causes
+      // issues. These also are order dependent and this is an acceptable order.
+
+      //request_layer("VK_LAYER_GOOGLE_threading");
+      //request_layer("VK_LAYER_LUNARG_parameter_validation");
+      //request_layer("VK_LAYER_LUNARG_device_limits");
+      //request_layer("VK_LAYER_LUNARG_object_tracker");
+      //request_layer("VK_LAYER_LUNARG_image");
+      //request_layer("VK_LAYER_LUNARG_core_validation");
+      //request_layer("VK_LAYER_LUNARG_swapchain");
+      //request_layer("VK_LAYER_GOOGLE_unique_objects");
+    }
+
+    //if(!request_extension(VK_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
+      //request_extension(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+      //request_extension(VK_EXT_DEBUG_MARKER_EXTENSION_NAME);
+    //}
+  }
+
   // make sure we have the required instance layers
-  for(const auto & layer : requirements._instance_layers) {
+  for(const auto & layer : req_layers) {
     if(vk->available_instance_extensions.count(layer))
       vk->enabled_instance_extensions.insert(layer);
     else
@@ -733,11 +790,11 @@ Result Vulkan::InitInstanceExtensions(const VulkanRequirements & requirements) {
   }
 
   // make sure we have the required instance extensions
-  for(const auto & extension : requirements._instance_extensions) {
+  for(const auto & extension : req_extensions) {
     if(vk->available_instance_extensions.count(extension))
       vk->enabled_instance_extensions.insert(extension);
     else
-      return Result(VK_ERROR_LAYER_NOT_PRESENT);
+      return Result(VK_ERROR_EXTENSION_NOT_PRESENT);
   }
 
   return Result::kSuccess;
@@ -783,23 +840,6 @@ Result Vulkan::InitInstance(const VulkanRequirements & requirements) {
     /* ppEnabledExtensionNames */ enabled_extensions.empty() ? nullptr :
                                   enabled_extensions.data()
   };
-#define DEBUG_P(X, F) Log::D(TAG, #X " " #F, X)
-  DEBUG_P(create_info.sType, %u);
-  DEBUG_P(create_info.pNext, %p);
-  DEBUG_P(create_info.flags, %u);
-  DEBUG_P(create_info.pApplicationInfo, %p);
-  DEBUG_P(create_info.pApplicationInfo->sType, %u);
-  DEBUG_P(create_info.pApplicationInfo->pNext, %p);
-  DEBUG_P(create_info.pApplicationInfo->pApplicationName, %s);
-  DEBUG_P(create_info.pApplicationInfo->applicationVersion, %u);
-  DEBUG_P(create_info.pApplicationInfo->pEngineName, %s);
-  DEBUG_P(create_info.pApplicationInfo->engineVersion, %u);
-  DEBUG_P(create_info.pApplicationInfo->apiVersion, %u);
-  DEBUG_P(create_info.enabledLayerCount, %u);
-  DEBUG_P(create_info.ppEnabledLayerNames, %p);
-  DEBUG_P(create_info.enabledExtensionCount, %u);
-  DEBUG_P(create_info.ppEnabledExtensionNames, %p);
-#undef DEBUG_P
   VK_RETURN_FAIL(vk->createInstance(&create_info, nullptr, &vk->instance));
 
 #define LOAD_ENTRY(NAME, ID) vk->ID = \
@@ -819,13 +859,239 @@ Result Vulkan::InitInstance(const VulkanRequirements & requirements) {
   }
 #endif
 
+  if(HaveInstanceExtension(VK_EXT_DEBUG_REPORT_EXTENSION_NAME)) {
+    LOAD_ENTRY(vkCreateDebugReportCallbackEXT, createDebugReportCallbackEXT);
+    LOAD_ENTRY(vkDestroyDebugReportCallbackEXT, destroyDebugReportCallbackEXT);
+    LOAD_ENTRY(vkDebugReportMessageEXT, debugReportMessageEXT);
+  }
+
+  if(HaveInstanceExtension(VK_EXT_DEBUG_MARKER_EXTENSION_NAME)) {
+    LOAD_ENTRY(vkDebugMarkerSetObjectTagEXT, debugMarkerSetObjectTagEXT);
+    LOAD_ENTRY(vkDebugMarkerSetObjectNameEXT, debugMarkerSetObjectNameEXT);
+    LOAD_ENTRY(vkCmdDebugMarkerBeginEXT, cmdDebugMarkerBeginEXT);
+    LOAD_ENTRY(vkCmdDebugMarkerEndEXT, cmdDebugMarkerEndEXT);
+    LOAD_ENTRY(vkCmdDebugMarkerInsertEXT, cmdDebugMarkerInsertEXT);
+  }
+
+  if(HaveInstanceExtension(VK_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
+    LOAD_ENTRY(vkSetDebugUtilsObjectNameEXT, setDebugUtilsObjectNameEXT);
+    LOAD_ENTRY(vkSetDebugUtilsObjectTagEXT, setDebugUtilsObjectTagEXT);
+    LOAD_ENTRY(vkQueueBeginDebugUtilsLabelEXT, queueBeginDebugUtilsLabelEXT);
+    LOAD_ENTRY(vkQueueEndDebugUtilsLabelEXT, queueEndDebugUtilsLabelEXT);
+    LOAD_ENTRY(vkQueueInsertDebugUtilsLabelEXT, queueInsertDebugUtilsLabelEXT);
+    LOAD_ENTRY(vkCmdBeginDebugUtilsLabelEXT, cmdBeginDebugUtilsLabelEXT);
+    LOAD_ENTRY(vkCmdEndDebugUtilsLabelEXT, cmdEndDebugUtilsLabelEXT);
+    LOAD_ENTRY(vkCmdInsertDebugUtilsLabelEXT, cmdInsertDebugUtilsLabelEXT);
+    LOAD_ENTRY(vkCreateDebugUtilsMessengerEXT, createDebugUtilsMessengerEXT);
+    LOAD_ENTRY(vkDestroyDebugUtilsMessengerEXT, destroyDebugUtilsMessengerEXT);
+    LOAD_ENTRY(vkSubmitDebugUtilsMessageEXT, submitDebugUtilsMessageEXT);
+  }
+
 #undef LOAD_ENTRY
 
   return Result::kSuccess;
 }
 
+struct Object {
+  VkObjectType type;
+  uint64_t handle;
+  const char * name;
+};
+
+struct Label {
+  const char * name;
+  float color[4];
+};
+
+struct Message {
+  VkDebugUtilsMessageSeverityFlagBitsEXT message_severity;
+  VkDebugUtilsMessageTypeFlagsEXT message_types;
+  const char * message_id_name;
+  int32_t message_id_number;
+  const char * message;
+  std::vector<Label> queue_labels;
+  std::vector<Label> command_buffer_labels;
+  std::vector<Object> objects;
+};
+
+static VkBool32 DebugMessage(const Message &message) {
+  Log::E(TAG, "%s", message.message);
+
+  return VK_FALSE;
+}
+
+static VKAPI_ATTR VkBool32 DebugReportCallbackEXT(
+    VkDebugReportFlagsEXT                       flags,
+    VkDebugReportObjectTypeEXT                  objectType,
+    uint64_t                                    object,
+    size_t                                      location,
+    int32_t                                     messageCode,
+    const char*                                 pLayerPrefix,
+    const char*                                 pMessage,
+    void*                                       pUserData) {
+  Message msg;
+
+  // TODO(sarahburns@google.com) see if this has an official way to translate
+  // from new to old (and back)
+  if(flags & VK_DEBUG_REPORT_INFORMATION_BIT_EXT) {
+    msg.message_severity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT;
+    msg.message_types |= VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT;
+  }
+  if(flags & VK_DEBUG_REPORT_WARNING_BIT_EXT) {
+    msg.message_severity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
+    msg.message_types |= VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
+  }
+  if(flags & VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT) {
+    msg.message_severity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
+    msg.message_types |= VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+  }
+  if(flags & VK_DEBUG_REPORT_ERROR_BIT_EXT) {
+    msg.message_severity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+    msg.message_types |= VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
+  }
+  if(flags & VK_DEBUG_REPORT_DEBUG_BIT_EXT) {
+    msg.message_severity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
+    msg.message_types |= VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT;
+  }
+
+  Object obj;
+
+#define MATCH(FROM, TO) case VK_DEBUG_REPORT_OBJECT_TYPE_##FROM##_EXT: obj.type = VK_OBJECT_TYPE_##TO; break;
+#define MATCH1(FROMTO) MATCH(FROMTO, FROMTO)
+  switch(objectType) {
+    default:
+    MATCH1(UNKNOWN)
+    MATCH1(INSTANCE)
+    MATCH1(PHYSICAL_DEVICE)
+    MATCH1(DEVICE)
+    MATCH1(QUEUE)
+    MATCH1(SEMAPHORE)
+    MATCH1(COMMAND_BUFFER)
+    MATCH1(FENCE)
+    MATCH1(DEVICE_MEMORY)
+    MATCH1(BUFFER)
+    MATCH1(IMAGE)
+    MATCH1(EVENT)
+    MATCH1(QUERY_POOL)
+    MATCH1(BUFFER_VIEW)
+    MATCH1(IMAGE_VIEW)
+    MATCH1(SHADER_MODULE)
+    MATCH1(PIPELINE_CACHE)
+    MATCH1(PIPELINE_LAYOUT)
+    MATCH1(RENDER_PASS)
+    MATCH1(PIPELINE)
+    MATCH1(DESCRIPTOR_SET_LAYOUT)
+    MATCH1(SAMPLER)
+    MATCH1(DESCRIPTOR_POOL)
+    MATCH1(DESCRIPTOR_SET)
+    MATCH1(FRAMEBUFFER)
+    MATCH1(SURFACE_KHR)
+    MATCH1(SWAPCHAIN_KHR)
+    MATCH1(DEBUG_REPORT_CALLBACK_EXT)
+    MATCH1(DISPLAY_KHR)
+    MATCH1(DISPLAY_MODE_KHR)
+    MATCH1(OBJECT_TABLE_NVX)
+    MATCH1(INDIRECT_COMMANDS_LAYOUT_NVX)
+    MATCH1(VALIDATION_CACHE_EXT)
+    MATCH1(SAMPLER_YCBCR_CONVERSION)
+    MATCH1(DESCRIPTOR_UPDATE_TEMPLATE)
+    MATCH1(ACCELERATION_STRUCTURE_NV)
+  }
+#undef MATCH1
+#undef MATCH
+
+  obj.handle = object;
+
+  // TODO(sarahburns@google.com) get object name from VK_EXT_debug_marker
+  // extension
+
+  msg.objects.push_back(obj);
+
+  msg.message_id_number = messageCode;
+
+  msg.message = pMessage;
+
+  return DebugMessage(msg);
+}
+
+static VKAPI_ATTR VkBool32 DebugUtilsMessengerCallbackEXT(
+    VkDebugUtilsMessageSeverityFlagBitsEXT           messageSeverity,
+    VkDebugUtilsMessageTypeFlagsEXT                  messageTypes,
+    const VkDebugUtilsMessengerCallbackDataEXT*      pCallbackData,
+    void*                                            pUserData) {
+  Message msg;
+  msg.message_severity = messageSeverity;
+  msg.message_types = messageTypes;
+  msg.message_id_name = pCallbackData->pMessageIdName;
+  msg.message_id_number = pCallbackData->messageIdNumber;
+  msg.message = pCallbackData->pMessage;
+
+  for(uint32_t i = 0; i < pCallbackData->queueLabelCount; ++i) {
+    Label lbl;
+    lbl.name = pCallbackData->pQueueLabels[i].pLabelName;
+    memcpy(lbl.color, pCallbackData->pQueueLabels[i].color, sizeof(lbl.color));
+    msg.queue_labels.push_back(lbl);
+  }
+
+  for(uint32_t i = 0; i < pCallbackData->cmdBufLabelCount; ++i) {
+    Label lbl;
+    lbl.name = pCallbackData->pCmdBufLabels[i].pLabelName;
+    memcpy(lbl.color, pCallbackData->pCmdBufLabels[i].color, sizeof(lbl.color));
+    msg.command_buffer_labels.push_back(lbl);
+  }
+
+  for(uint32_t i = 0; i < pCallbackData->objectCount; ++i) {
+    Object obj;
+    obj.type = pCallbackData->pObjects[i].objectType;
+    obj.handle = pCallbackData->pObjects[i].objectHandle;
+    obj.name = pCallbackData->pObjects[i].pObjectName;
+    msg.objects.push_back(obj);
+  }
+
+  return DebugMessage(msg);
+}
+
 Result Vulkan::InitDebugReporting(const VulkanRequirements & requirements) {
   // TODO(sarahburns@google.com)
+
+  if(HaveInstanceExtension(VK_EXT_DEBUG_REPORT_EXTENSION_NAME)) {
+    VkDebugReportCallbackCreateInfoEXT create_info = {
+      /* sType       */ VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT,
+      /* pNext       */ nullptr,
+      /* flags       */ VK_DEBUG_REPORT_INFORMATION_BIT_EXT |
+                        VK_DEBUG_REPORT_WARNING_BIT_EXT |
+                        VK_DEBUG_REPORT_ERROR_BIT_EXT,
+      /* pfnCallback */ DebugReportCallbackEXT,
+      /* pUserData   */ this
+    };
+    VK_RETURN_FAIL(vk->createDebugReportCallbackEXT(vk->instance,
+                                                    &create_info, nullptr,
+                                                  &vk->debug_report_callback));
+
+    Log::I(TAG, "Debug report callback created");
+  }
+
+  if(HaveInstanceExtension(VK_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
+    VkDebugUtilsMessengerCreateInfoEXT create_info = {
+      /* sType           */ VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
+      /* pNext           */ nullptr,
+      /* flags           */ 0,
+      /* messageSeverity */ VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+                            VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
+      /* messageType     */ VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+                            VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+                            VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
+      /* pfnUserCallback */ DebugUtilsMessengerCallbackEXT,
+      /* pUserData       */ this
+    };
+
+    VK_RETURN_FAIL(vk->createDebugUtilsMessengerEXT(vk->instance,
+                                                    &create_info, nullptr,
+                                                   &vk->debug_utils_callback));
+
+    Log::I(TAG, "Debug utils callback created");
+  }
+
   return Result::kSuccess;
 }
 
@@ -979,7 +1245,7 @@ Result Vulkan::InitDeviceExtensions(const VulkanRequirements & requirements) {
     if(vk->available_device_extensions.count(extension))
       vk->enabled_device_extensions.insert(extension);
     else
-      return Result(VK_ERROR_LAYER_NOT_PRESENT);
+      return Result(VK_ERROR_EXTENSION_NOT_PRESENT);
   }
 
   return Result::kSuccess;

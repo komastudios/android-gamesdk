@@ -1,0 +1,40 @@
+{
+  "auto_run": false,
+  "delay_between_tests": "5000ms",
+  "host": "VulkanHostActivity",
+  "defaultMonitors": [
+    {
+      "id": "MonitorOperation"
+    }
+  ],
+  "stress_tests": [
+    {
+      "enabled": true,
+      "name": "MediumPVecNormalizationVulkanOperation",
+      "description": "Test normalization of mediump vec3 with large component values",
+      "duration": "5m",
+      "data_gatherer": {
+        "id": "MediumPVecNormalizationVulkanOperation",
+        "configuration": {
+          "vertex_stage_configuration": {
+            "enabled": true,
+            "offset_steps": 16,
+            "offset_scale": 220
+          },
+          "fragment_stage_configuration": {
+            "enabled": true,
+            "offset_steps": 16,
+            "offset_scale": 220
+          },
+          "varying_configuration": {
+            "enabled": true,
+            "offset_steps": 16,
+            "offset_scale": 220
+          }
+        }
+      },
+      "stressors": [
+      ]
+    }
+  ]
+}

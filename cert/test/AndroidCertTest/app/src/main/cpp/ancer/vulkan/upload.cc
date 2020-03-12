@@ -7,7 +7,7 @@ Result Uploader::Initialize(Vulkan &vk, uint32_t concurrent,
                             VkDeviceSize buffer_size) {
   _vk = vk;
 
-  VK_RETURN_FAIL(_buffer.Initialize(vk, ResourceUse::CPUToGPU,
+  VK_RETURN_FAIL(_buffer.Initialize(vk, EResourceUse::CPUToGPU,
                                     VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                                     buffer_size, nullptr));
 
