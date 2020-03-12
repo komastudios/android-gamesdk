@@ -18,28 +18,28 @@
 #define marching_cubes_job_h
 
 #include <ancer/System.hpp>
-#include <ancer/util/ThreadPool.hpp>
+#include <ancer/util/MarchingCubesThreadPool.hpp>
 
 namespace marching_cubes::job {
 
-class JobQueue {
+class MarchingCubesJobQueue {
  public:
-  using WorkFn = ancer::ThreadPool::WorkFn;
+  using WorkFn = MarchingCubesThreadPool::WorkFn;
  public:
-  JobQueue(ancer::ThreadAffinity affinity,
+    MarchingCubesJobQueue(ancer::ThreadAffinity affinity,
       bool pinned, int max_thread_count,
-      ancer::ThreadPool::SleepConfig sleep_config) {
+      MarchingCubesThreadPool::SleepConfig sleep_config) {
 
-    _thread_pool = std::make_unique<ancer::ThreadPool>(
+    _thread_pool = std::make_unique<MarchingCubesThreadPool>(
         affinity, pinned, max_thread_count, sleep_config);
 
     _executing_jobs = &_jobs_0;
     _queueing_jobs = &_jobs_1;
   }
-  JobQueue() = delete;
-  JobQueue(const JobQueue&) = delete;
-  JobQueue(JobQueue&&) = delete;
-  ~JobQueue() = default;
+  MarchingCubesJobQueue() = delete;
+  MarchingCubesJobQueue(const MarchingCubesJobQueue&) = delete;
+    MarchingCubesJobQueue(MarchingCubesJobQueue&&) = delete;
+  ~MarchingCubesJobQueue() = default;
 
   void RunAllReadiedJobs() {
 
@@ -64,7 +64,7 @@ class JobQueue {
 
  private:
   std::mutex _lock;
-  std::unique_ptr<ancer::ThreadPool> _thread_pool;
+  std::unique_ptr<MarchingCubesThreadPool> _thread_pool;
   std::vector<WorkFn> _jobs_0;
   std::vector<WorkFn> _jobs_1;
 

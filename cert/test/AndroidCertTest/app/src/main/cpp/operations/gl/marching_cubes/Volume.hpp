@@ -24,7 +24,7 @@
 #include <ancer/util/UnownedPtr.hpp>
 
 #include "MarchingCubes.hpp"
-#include "JobQueue.hpp"
+#include "MarchingCubesJobQueue.hpp"
 
 namespace marching_cubes {
 
@@ -176,7 +176,7 @@ class OctreeVolume : public BaseCompositeVolume {
   OctreeVolume(int size,
                float fuzziness,
                int min_node_size,
-               ancer::unowned_ptr<job::JobQueue> job_queue,
+               ancer::unowned_ptr<job::MarchingCubesJobQueue> job_queue,
                const std::vector<ancer::unowned_ptr<ITriangleConsumer>>
                & triangle_consumers)
       :BaseCompositeVolume(ivec3{size, size, size}, fuzziness),
@@ -322,7 +322,7 @@ class OctreeVolume : public BaseCompositeVolume {
   size_t _tree_depth = 0;
   std::unique_ptr<Node> _root;
   std::vector<Node*> _nodes_to_march;
-  ancer::unowned_ptr<job::JobQueue> _job_queue;
+  ancer::unowned_ptr<job::MarchingCubesJobQueue> _job_queue;
   std::vector<ancer::unowned_ptr<ITriangleConsumer>> _triangle_consumers;
 };
 
