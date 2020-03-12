@@ -157,10 +157,6 @@ SwappyCommon::SwappyCommon(JNIEnv *env, jobject jactivity)
         (long long)mCommonSettings.sfVsyncOffset.count()
     );
     mValid = true;
-    mChoreographerFilter = std::make_unique<ChoreographerFilter>(mCommonSettings.refreshPeriod,
-                                  mCommonSettings.sfVsyncOffset - mCommonSettings.appVsyncOffset,
-                                                                [this]() { return wakeClient(); });
-
 }
 
 // Used by tests
