@@ -18,19 +18,14 @@ cmake_minimum_required(VERSION 3.4.1)
 
 message( STATUS "A CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
 
-set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Werror" )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Werror" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D _LIBCPP_ENABLE_THREAD_SAFETY_ANNOTATIONS -Os -fPIC" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions" )
-# set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGAMESDK_TESTING")
 
 set(ANDROID_GTEST_DIR "../../../external/googletest")
 add_subdirectory("${ANDROID_GTEST_DIR}/googletest"
    googletest-build
-)
-
-add_subdirectory("../../src/swappy"
-  swappy-build
 )
 
 include_directories(
@@ -43,6 +38,14 @@ include_directories(
 set ( SOURCE_LOCATION_COMMON "../../src/swappy/common" )
 
 set(TEST_SRCS
+  ${SOURCE_LOCATION_COMMON}/SwappyCommon.cpp
+  ${SOURCE_LOCATION_COMMON}/CPUTracer.cpp
+  ${SOURCE_LOCATION_COMMON}/CpuInfo.cpp
+  ${SOURCE_LOCATION_COMMON}/Thread.cpp
+  ${SOURCE_LOCATION_COMMON}/ChoreographerFilter.cpp
+  ${SOURCE_LOCATION_COMMON}/ChoreographerThread.cpp
+  ${SOURCE_LOCATION_COMMON}/SwappyDisplayManager.cpp
+  ${SOURCE_LOCATION_COMMON}/Settings.cpp
   swappycommon_test.cpp
 )
 
@@ -58,14 +61,12 @@ add_library(swappy_test_lib
 )
 
 target_link_libraries(swappy_test
-  swappy_static
   android
   gtest
   log
 )
 
 target_link_libraries(swappy_test_lib
-  swappy_static
   android
   gtest
   log

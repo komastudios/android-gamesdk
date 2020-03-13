@@ -21,6 +21,7 @@
 #include <thread>
 #include <ostream>
 #include <vector>
+#include <optional>
 
 #include "swappy/common/SwappyCommon.h"
 
@@ -40,32 +41,24 @@ extern "C" {
 
 namespace swappycommon_test {
 
-// A parameter that can be undefined
-template<typename T> struct Parameter {
-    Parameter(T value) : value(value), isDefined(true) {}
-    Parameter() : isDefined(false) {}
-    operator T() const { return value; }
-    bool isDefined;
-    T value;
-};
-
 class SwappyCommonTest: public SwappyCommon {
   public:
     SwappyCommonTest(const SwappyCommonSettings& settings) : SwappyCommon(settings) {}
 };
 
 struct Workload {
-  std::function<duration()> cpuWorkTime;
-  std::function<duration()> gpuWorkTime;
+    std::function<duration()> cpuWorkTime;
+    std::function<duration()> gpuWorkTime;
 };
 
 struct Parameters {
-   Parameter<bool> autoModeEnabled;
-   Parameter<bool> autoPipelineModeEnabled;
-   Parameter<duration> fenceTimeout;
-   Parameter<duration> maxAutoSwapInterval;
-   Parameter<duration> swapInterval;
+    std::optional<bool> autoModeEnabled;
+    std::optional<bool> autoPipelineModeEnabled;
+    std::optional<duration> fenceTimeout;
+    std::optional<duration> maxAutoSwapInterval;
+    std::optional<duration> swapInterval;
 };
+
 struct ParametersChangeEvent {
     Parameters parameters;
     time_point time;
@@ -189,19 +182,19 @@ class Simulator {
         commonBase_->addTracerCallbacks(tracers_);
     }
     void setParameters(const Parameters& p) {
-        if (p.autoModeEnabled.isDefined)
-            commonBase_->setAutoSwapInterval(p.autoModeEnabled);
-        if (p.autoPipelineModeEnabled.isDefined)
-            commonBase_->setAutoPipelineMode(p.autoPipelineModeEnabled);
-        if (p.fenceTimeout.isDefined) {
+        if (p.autoModeEnabled)
+            commonBase_->setAutoSwapInterval(*p.autoModeEnabled);
+        if (p.autoPipelineModeEnabled)
+            commonBase_->setAutoPipelineMode(*p.autoPipelineModeEnabled);
+        if (p.fenceTimeout) {
             // This needs to be propagated to the gpuThread
-            commonBase_->setFenceTimeout(p.fenceTimeout);
-            gpuThread_.setFenceTimeout(p.fenceTimeout);
+            commonBase_->setFenceTimeout(*p.fenceTimeout);
+            gpuThread_.setFenceTimeout(*p.fenceTimeout);
         }
-        if (p.maxAutoSwapInterval.isDefined)
-            commonBase_->setMaxAutoSwapIntervalNS(p.maxAutoSwapInterval);
-        if (p.swapInterval.isDefined)
-            Settings::getInstance()->setSwapIntervalNS(p.swapInterval.value.count());
+        if (p.maxAutoSwapInterval)
+            commonBase_->setMaxAutoSwapIntervalNS(*p.maxAutoSwapInterval);
+        if (p.swapInterval)
+            Settings::getInstance()->setSwapIntervalNS(p.swapInterval->count());
     }
     void run_for(duration run_time) {
         int scheduleIndex = 0;
@@ -392,9 +385,9 @@ void SingleTest(const SwappyCommonSettings& settings,
 
 SwappyCommonSettings base60HzSettings {
     0, // SDK version
-    std::chrono::nanoseconds(16666667), // refresh period
-    std::chrono::nanoseconds(0), // app vsync offset
-    std::chrono::nanoseconds(0) // sf vsync offset
+    16666667ns, // refresh period
+    0ns, // app vsync offset
+    0ns // sf vsync offset
 };
 
 Parameters defaultParameters {};
@@ -402,8 +395,8 @@ Parameters defaultParameters {};
 Parameters autoModeOffParameters {
     false, // auto-mode
     false, // auto pipeline mode
-    std::chrono::nanoseconds(50ms), // fence timeout
-    std::chrono::nanoseconds(50ms),// maxAutoSwapInterval
+    50ms, // fence timeout
+    50ms,// maxAutoSwapInterval
     16666667ns // swap interval
 };
 
@@ -427,12 +420,8 @@ Workload highWorkload {
     [](){ return 33000000ns;}, // gpu
 };
 
-// The following are disabled and need to be fixed.
-// The default parameters do not currently
-// give as good behaviour as the auto-mode off parameters.
-
 // Bad test result{ avg cpu/ms: 10.7631ms, avg gpu/ms: 10ms, num frames: 30} vs expected { avg cpu/ms: 10ms, avg gpu/ms: 10ms, num frames: 60} +- { avg cpu/ms: 1ms, avg gpu/ms: 1ms, num frames: 1}
-TEST(SwappyCommonTest, DISABLED_DefaultParamsLightWorkload) {
+TEST(SwappyCommonTest, DefaultParamsLightWorkload) {
   SingleTest(base60HzSettings,
              defaultParameters,
              1s,
@@ -441,7 +430,7 @@ TEST(SwappyCommonTest, DISABLED_DefaultParamsLightWorkload) {
              {Result{1ms, 1ms, 1}});
 }
 // Bad test result{ avg cpu/ms: 31.7747ms, avg gpu/ms: 10ms, num frames: 20} vs expected { avg cpu/ms: 33ms, avg gpu/ms: 10ms, num frames: 30} +- { avg cpu/ms: 1ms, avg gpu/ms: 1ms, num frames: 1}
-TEST(SwappyCommonTest, DISABLED_DefaultParamsMedCpuWorkload) {
+TEST(SwappyCommonTest, DefaultParamsMedCpuWorkload) {
   SingleTest(base60HzSettings,
              defaultParameters,
              1s,
@@ -450,7 +439,7 @@ TEST(SwappyCommonTest, DISABLED_DefaultParamsMedCpuWorkload) {
              {Result{1ms, 1ms, 1}});
 }
 // Bad test result{ avg cpu/ms: 9.76201ms, avg gpu/ms: 33ms, num frames: 20} vs expected { avg cpu/ms: 10ms, avg gpu/ms: 33ms, num frames: 24} +- { avg cpu/ms: 1ms, avg gpu/ms: 3ms, num frames: 2}
-TEST(SwappyCommonTest, DISABLED_DefaultParamsMedGpuWorkload) {
+TEST(SwappyCommonTest, DefaultParamsMedGpuWorkload) {
   SingleTest(base60HzSettings,
              defaultParameters,
              1s,
@@ -459,13 +448,13 @@ TEST(SwappyCommonTest, DISABLED_DefaultParamsMedGpuWorkload) {
              {Result{1ms, 3ms, 2}});
 }
 // Bad test result{ avg cpu/ms: 31.0508ms, avg gpu/ms: 33ms, num frames: 15} vs expected { avg cpu/ms: 33ms, avg gpu/ms: 33ms, num frames: 24} +- { avg cpu/ms: 1ms, avg gpu/ms: 3ms, num frames: 2}
-TEST(SwappyCommonTest, DISABLED_DefaultParamsHighWorkload) {
+TEST(SwappyCommonTest, DefaultParamsHighWorkload) {
   SingleTest(base60HzSettings,
              defaultParameters,
              1s,
              highWorkload,
              {Result{33ms, 33ms, 24}},
-             {Result{1ms, 3ms, 2}});
+             {Result{3ms, 3ms, 2}});
 }
 
 // Auto-mode off tests
@@ -500,5 +489,5 @@ TEST(SwappyCommonTest, AutoModeOffHighWorkload) {
              1s,
              highWorkload,
              {Result{33ms, 33ms, 24}},
-             {Result{1ms, 3ms, 2}});
+             {Result{3ms, 3ms, 2}});
 }

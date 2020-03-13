@@ -44,6 +44,7 @@ class GTestRecorder : public EmptyTestEventListener {
     std::vector<std::string> success_invocations; // Only from SUCCESS macros
     std::vector<std::string> failed_invocations; // From any failed EXPECT or ASSERT
     bool overall_success;
+    std::string current_test;
  private:
     // Called before any test activity starts.
     void OnTestProgramStart(const UnitTest& /* unit_test */) override {
@@ -57,13 +58,14 @@ class GTestRecorder : public EmptyTestEventListener {
 
     // Called before a test starts.
     void OnTestStart(const TestInfo& test_info) override {
-        tests_started.insert(std::string(test_info.test_case_name()) + "." + test_info.name());
+        current_test = std::string(test_info.test_case_name()) + "." + test_info.name();
+        tests_started.insert(current_test);
     }
 
     // Called after a failed assertion or a SUCCEED() invocation.
     void OnTestPartResult(const TestPartResult& test_part_result) override {
         std::stringstream record;
-        record << test_part_result.file_name() << ":" << test_part_result.line_number() << '\n' <<
+        record << current_test << " " << test_part_result.file_name() << ":" << test_part_result.line_number() << '\n' <<
                test_part_result.summary() << '\n';
         if (test_part_result.failed()) {
             failed_invocations.push_back(record.str());

@@ -800,7 +800,6 @@ task localUnitTests {
 }
 
 task localSwappyUnitTests {
-    dependsOn ':extras:assembleRelease'
     // These unit tests require a connected ARM64 device to run
     doLast {
         def buildInfo = localNativeBuild(false, "test/swappy")
