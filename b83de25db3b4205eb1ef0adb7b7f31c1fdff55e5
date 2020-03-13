@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "70c7e4b7_c97254e9",
+        "filename": "test/swappy/swappycommon_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-03-13T09:43:28Z",
+      "side": 1,
+      "message": "As discussed we can try to use std::optional to avoid having to define this struct. Not a huge saving, but can still make things a bit clearer for the reader.",
+      "revId": "b83de25db3b4205eb1ef0adb7b7f31c1fdff55e5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "35d0c034_8d6ab0f9",
         "filename": "test/swappy/swappycommon_test.cpp",
         "patchSetId": 1
