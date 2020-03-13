@@ -110,6 +110,30 @@
       "revId": "b83de25db3b4205eb1ef0adb7b7f31c1fdff55e5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "61959c0b_c62b761b",
+        "filename": "test/swappy/swappycommon_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-03-13T20:03:44Z",
+      "side": 1,
+      "message": "Right.. if (p.autoModeEnabled) is whether it is defined vs. if (*p.autoModeEnabled) to check the value.\\\nSame as std::optional",
+      "parentUuid": "3cb506c6_819d71da",
+      "range": {
+        "startLine": 191,
+        "startChar": 12,
+        "endLine": 191,
+        "endChar": 39
+      },
+      "revId": "b83de25db3b4205eb1ef0adb7b7f31c1fdff55e5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
