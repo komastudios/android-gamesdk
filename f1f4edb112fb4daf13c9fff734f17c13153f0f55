@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "3372fd8b_faaeefd9",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 427,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-03-16T23:35:50Z",
+      "side": 1,
+      "message": "but with this check line 244 will always be true and we will never bypass swappy...",
+      "parentUuid": "7b3ff16c_310ce533",
+      "revId": "f1f4edb112fb4daf13c9fff734f17c13153f0f55",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "59fc71c5_c9f1db7c",
         "filename": "src/swappy/common/SwappyCommon.cpp",
         "patchSetId": 1
@@ -66,6 +84,24 @@
       "side": 1,
       "message": "If the pipeline config hasn\u0027t changed though, we don\u0027t want to wait another 2s before considering switching again, do we?",
       "parentUuid": "59fc71c5_c9f1db7c",
+      "revId": "f1f4edb112fb4daf13c9fff734f17c13153f0f55",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a298116a_2ad3d400",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 518,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-03-16T23:35:50Z",
+      "side": 1,
+      "message": "I think we do, since timing may change (different load, clocks may lock on a different freq, etc.)",
+      "parentUuid": "59ba30c8_ea6ee449",
       "revId": "f1f4edb112fb4daf13c9fff734f17c13153f0f55",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
