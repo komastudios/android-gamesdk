@@ -77,6 +77,7 @@ std::vector<std::shared_ptr<Material>> materials;
 std::vector<std::shared_ptr<Material>> baseline_materials;
 std::vector<std::shared_ptr<Geometry>> geometries;
 
+std::string mtl_file_name = std::string("models/starship_command_center_triangle_astc.mtl");
 std::map<std::string, std::shared_ptr<Texture>> loaded_textures;
 std::map<std::string, std::shared_ptr<Material>> loaded_materials;
 
@@ -553,7 +554,8 @@ void LoadDemoModels() {
         OBJLoader::LoadOBJ(android_app_ctx->activity->assetManager,
                            ("models/" + file_name_string).c_str(),
                            mtllib,
-                           model_data);
+                           model_data,
+                           &mtl_file_name);
         load_mutex.unlock();
 
         for (auto obj : model_data) {

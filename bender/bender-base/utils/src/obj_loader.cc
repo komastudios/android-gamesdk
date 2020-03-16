@@ -52,10 +52,10 @@ void AddVertex(glm::vec3 &currVert,
 }
 
 void LoadMTL(AAssetManager *mgr,
-             const std::string &fileName,
+             const std::string &mtlFileName,
              std::unordered_map<std::string, MTL> &mtllib) {
 
-  AAsset *file = AAssetManager_open(mgr, "models/starship_command_center_triangle.mtl", AASSET_MODE_BUFFER);
+  AAsset *file = AAssetManager_open(mgr, mtlFileName.c_str(), AASSET_MODE_BUFFER);
   const char *fileContent = static_cast<const char *>(AAsset_getBuffer(file));
 
   std::stringstream data(std::string(fileContent, AAsset_getLength(file)));
@@ -70,25 +70,34 @@ void LoadMTL(AAssetManager *mgr,
 // This means you need to convert those global indices to
 // Indices for vertex buffers of individual models
 void LoadOBJ(AAssetManager *mgr,
-             const std::string &fileName,
+             const std::string &objFileName,
              std::unordered_map<std::string, MTL> &mtllib,
-             std::vector<OBJ> &modelData) {
+             std::vector<OBJ> &modelData,
+             const std::string *mtlOverrideFileName) {
 
   std::vector<glm::vec3> position;
   std::vector<glm::vec3> normal;
   std::vector<glm::vec2> texCoord;
 
-  AAsset *file = AAssetManager_open(mgr, fileName.c_str(), AASSET_MODE_BUFFER);
+  AAsset *file = AAssetManager_open(mgr, objFileName.c_str(), AASSET_MODE_BUFFER);
   const char *fileContent = static_cast<const char *>(AAsset_getBuffer(file));
 
   std::stringstream data(std::string(fileContent, AAsset_getLength(file)));
 
+  bool overrideLoaded = false;
   std::string line;
   while (std::getline(data, line) && !data.eof()) {
     std::stringstream lineStream(line);
     std::string label;
     lineStream >> label;
     if (label == "mtllib") {
+      if (mtlOverrideFileName != nullptr) {
+        if (!overrideLoaded) {
+          LoadMTL(mgr, *mtlOverrideFileName, mtllib);
+          overrideLoaded = true;
+        }
+        continue;
+      }
       std::string mtllibName;
       lineStream >> mtllibName;
       LoadMTL(mgr, mtllibName, mtllib);

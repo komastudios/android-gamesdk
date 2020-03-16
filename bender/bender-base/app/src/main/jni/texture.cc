@@ -30,7 +30,8 @@ Texture::Texture(Renderer &renderer,
   tex_width_ = img_width;
   tex_height_ = img_height;
   mip_levels_ = std::floor(std::log2(std::max(tex_width_, tex_height_))) + 1;
-  CALL_VK(CreateTexture(img_data, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+  CALL_VK(CreateTexture(img_data, sizeof(uint8_t) * tex_height_ * tex_width_ * 4,
+          VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
   CreateImageView();
 }
@@ -40,12 +41,24 @@ Texture::Texture(Renderer &renderer,
                  const std::string &texture_file_name,
                  VkFormat texture_format)
     : renderer_(renderer), texture_format_(texture_format) {
-  unsigned char *img_data = LoadFileData(android_app_ctx, texture_file_name.c_str());
-  mip_levels_ = std::floor(std::log2(std::max(tex_width_, tex_height_))) + 1;
-  CALL_VK(CreateTexture(img_data, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
-          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+  unsigned char *img_data;
+  bool is_astc = texture_file_name.find(".astc") != -1;
+  if (is_astc) {
+      uint32_t img_bytes;
+      img_data = LoadASTCFileData(android_app_ctx, texture_file_name.c_str(), img_bytes);
+      mip_levels_ = 1;
+      CALL_VK(CreateTexture(img_data, img_bytes,
+              VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+              VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+  } else {
+    img_data = LoadFileData(android_app_ctx, texture_file_name.c_str());
+    mip_levels_ = std::floor(std::log2(std::max(tex_width_, tex_height_))) + 1;
+    CALL_VK(CreateTexture(img_data, sizeof(uint8_t) * tex_height_ * tex_width_ * 4,
+            VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+    stbi_image_free(img_data);
+  }
   CreateImageView();
-  stbi_image_free(img_data);
 }
 
 Texture::~Texture() {
@@ -54,41 +67,124 @@ Texture::~Texture() {
   vkFreeMemory(renderer_.GetVulkanDevice(), mem_, nullptr);
 }
 
+unsigned char *Texture::LoadDefaultTexture() {
+  tex_width_ = 128;
+  tex_height_ = 128;
+  unsigned char *img_data = (unsigned char *) malloc(tex_width_ * tex_height_ * 4 * sizeof(unsigned char));
+  for (int32_t i = 0; i < tex_height_; i++) {
+    for (int32_t j = 0; j < tex_width_; j++) {
+      img_data[(i + j * tex_width_) * 4] = 215;
+      img_data[(i + j * tex_width_) * 4 + 1] = 95;
+      img_data[(i + j * tex_width_) * 4 + 2] = 175;
+      img_data[(i + j * tex_width_) * 4 + 3] = 255;
+    }
+  }
+  return img_data;
+}
+
 unsigned char *Texture::LoadFileData(android_app &app, const char *file_path) {
   AAsset *file = AAssetManager_open(app.activity->assetManager,
                                     file_path, AASSET_MODE_BUFFER);
-  uint32_t img_width, img_height, n;
-  unsigned char *img_data;
-  if (file == nullptr) {
-    img_width = 128;
-    img_height = 128;
-    img_data = (unsigned char *) malloc(img_width * img_height * 4 * sizeof(unsigned char));
-    for (int32_t i = 0; i < img_height; i++) {
-      for (int32_t j = 0; j < img_width; j++) {
-        img_data[(i + j * img_width) * 4] = 215;
-        img_data[(i + j * img_width) * 4 + 1] = 95;
-        img_data[(i + j * img_width) * 4 + 2] = 175;
-        img_data[(i + j * img_width) * 4 + 3] = 255;
-      }
-    }
-  } else {
-    size_t file_length = AAsset_getLength(file);
-    stbi_uc *file_content = new unsigned char[file_length];
-    AAsset_read(file, file_content, file_length);
-    AAsset_close(file);
 
-    img_data = stbi_load_from_memory(
-        file_content, file_length, reinterpret_cast<int *>(&img_width),
-        reinterpret_cast<int *>(&img_height), reinterpret_cast<int *>(&n), 4);
-    delete[] file_content;
+  if (file == nullptr) {
+    return LoadDefaultTexture();
   }
+
+  unsigned char *img_data;
+  size_t file_length = AAsset_getLength(file);
+  stbi_uc *file_content = new unsigned char[file_length];
+  AAsset_read(file, file_content, file_length);
+  AAsset_close(file);
+
+  uint32_t img_width, img_height, n;
+  img_data = stbi_load_from_memory(
+      file_content, file_length, reinterpret_cast<int *>(&img_width),
+      reinterpret_cast<int *>(&img_height), reinterpret_cast<int *>(&n), 4);
   tex_width_ = img_width;
   tex_height_ = img_height;
+
+  delete[] file_content;
+
+  return img_data;
+}
+
+VkFormat GetASTCFormat(uint8_t block_dim_x, uint8_t block_dim_y) {
+  if (block_dim_x == 4 && block_dim_y == 4) {
+    return VK_FORMAT_ASTC_4x4_UNORM_BLOCK;
+  }
+  else if (block_dim_x == 5 && block_dim_y == 4) {
+    return VK_FORMAT_ASTC_5x4_UNORM_BLOCK;
+  }
+  else if (block_dim_x == 6 && block_dim_y == 5) {
+    return VK_FORMAT_ASTC_6x5_UNORM_BLOCK;
+  }
+  else if (block_dim_x == 6 && block_dim_y == 6) {
+    return VK_FORMAT_ASTC_6x6_UNORM_BLOCK;
+  }
+  else if (block_dim_x == 8 && block_dim_y == 5) {
+    return VK_FORMAT_ASTC_8x5_UNORM_BLOCK;
+  }
+  else if (block_dim_x == 8 && block_dim_y == 6) {
+    return VK_FORMAT_ASTC_8x6_UNORM_BLOCK;
+  }
+  else if (block_dim_x == 8 && block_dim_y == 8) {
+    return VK_FORMAT_ASTC_8x8_UNORM_BLOCK;
+  }
+  else if (block_dim_x == 10 && block_dim_y == 5) {
+    return VK_FORMAT_ASTC_10x5_UNORM_BLOCK;
+  }
+  else if (block_dim_x == 10 && block_dim_y == 6) {
+    return VK_FORMAT_ASTC_10x6_UNORM_BLOCK;
+  }
+  else if (block_dim_x == 10 && block_dim_y == 8) {
+    return VK_FORMAT_ASTC_10x8_UNORM_BLOCK;
+  }
+  else if (block_dim_x == 10 && block_dim_y == 10) {
+    return VK_FORMAT_ASTC_10x10_UNORM_BLOCK;
+  }
+  else if (block_dim_x == 12 && block_dim_y == 10) {
+    return VK_FORMAT_ASTC_12x10_UNORM_BLOCK;
+  }
+  else if (block_dim_x == 12 && block_dim_y == 12) {
+    return VK_FORMAT_ASTC_12x12_UNORM_BLOCK;
+  }
+  else {
+    return VK_FORMAT_UNDEFINED;
+  }
+}
+
+unsigned char *Texture::LoadASTCFileData(android_app &app, const char *file_path, uint32_t& img_bytes) {
+  AAsset *file = AAssetManager_open(app.activity->assetManager,
+                                    file_path, AASSET_MODE_BUFFER);
+
+  if (file == nullptr) {
+    return LoadDefaultTexture();
+  }
+
+  ASTCHeader header;
+  AAsset_read(file, &header, sizeof(ASTCHeader));
+  uint32_t magic = header.magic[0] | (uint32_t(header.magic[1]) << 8) |
+          (uint32_t(header.magic[2]) << 16) | (uint32_t(header.magic[3]) << 24);
+
+  VkFormat format = GetASTCFormat(header.block_dim_x, header.block_dim_y);
+  if (magic != ASTC_MAGIC || header.block_dim_z != 1 || format == VK_FORMAT_UNDEFINED) {
+    return LoadDefaultTexture();
+  }
+
+  img_bytes = AAsset_getRemainingLength(file);
+  unsigned char *img_data = new unsigned char[img_bytes];
+  AAsset_read(file, img_data, img_bytes);
+  AAsset_close(file);
+
+  tex_width_ = header.x_size[0] | (header.x_size[1] << 8) | (header.x_size[2] << 16);
+  tex_height_ = header.y_size[0] | (header.y_size[1] << 8) | (header.y_size[2] << 16);
+  texture_format_ = format;
 
   return img_data;
 }
 
 VkResult Texture::CreateTexture(uint8_t *img_data,
+                                uint32_t img_bytes,
                                 VkImageUsageFlags usage,
                                 VkFlags required_props) {
   if (!(usage | required_props)) {
@@ -116,7 +212,7 @@ VkResult Texture::CreateTexture(uint8_t *img_data,
       .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
       .usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
       .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
-      .size = sizeof(unsigned char) * tex_height_ * tex_width_ * 4,
+      .size = img_bytes,
   };
 
   CALL_VK(vkCreateBuffer(renderer_.GetVulkanDevice(), &staging_info, nullptr, &staging));
@@ -132,10 +228,9 @@ VkResult Texture::CreateTexture(uint8_t *img_data,
   CALL_VK(vkMapMemory(renderer_.GetVulkanDevice(), staging_mem, 0,
                       mem_alloc.allocationSize, 0, &data));
 
-  memcpy(data, img_data, sizeof(unsigned char) * tex_height_ * tex_width_ * 4);
+  memcpy(data, img_data, img_bytes);
 
   vkUnmapMemory(renderer_.GetVulkanDevice(), staging_mem);
-
 
   uint32_t queue_family_index = renderer_.GetDevice().GetQueueFamilyIndex();
   VkImageCreateInfo image_create_info = {

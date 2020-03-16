@@ -75,9 +75,10 @@ struct OBJ {
 };
 
 void LoadOBJ(AAssetManager *mgr,
-             const std::string &fileName,
+             const std::string &objFileName,
              std::unordered_map<std::string, MTL> &mtllib,
-             std::vector<OBJ> &modelData);
+             std::vector<OBJ> &modelData,
+             const std::string *mtlOverrideFileName = nullptr);
 
 };
 
