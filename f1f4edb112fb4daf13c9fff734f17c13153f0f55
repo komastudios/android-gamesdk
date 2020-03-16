@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "75c26c7b_5108acae",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 427,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-03-16T21:59:46Z",
+      "side": 1,
+      "message": "Why do we need to add this check ? we do want to get to a point that mCommonSettings.refreshPeriod*(mAutoSwapInterval) \u003c\u003d mAutoSwapIntervalThresholdNS.load() and then to bypass swappy completely",
+      "revId": "f1f4edb112fb4daf13c9fff734f17c13153f0f55",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "59fc71c5_c9f1db7c",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 518,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-03-16T21:59:46Z",
+      "side": 1,
+      "message": "even if swap interval is the same and we just change the pipeline config, configChanged still need to be true to remove the old stats and start recording fresh ones.",
+      "revId": "f1f4edb112fb4daf13c9fff734f17c13153f0f55",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
