@@ -55,7 +55,7 @@ void LoadMTL(AAssetManager *mgr,
              const std::string &fileName,
              std::unordered_map<std::string, MTL> &mtllib) {
 
-  AAsset *file = AAssetManager_open(mgr, "models/starship_command_center_triangle.mtl", AASSET_MODE_BUFFER);
+  AAsset *file = AAssetManager_open(mgr, "models/starship_command_center_triangle_astc.mtl", AASSET_MODE_BUFFER);
   const char *fileContent = static_cast<const char *>(AAsset_getBuffer(file));
 
   std::stringstream data(std::string(fileContent, AAsset_getLength(file)));

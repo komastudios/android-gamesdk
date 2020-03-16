@@ -22,8 +22,20 @@
 
 #include <android_native_app_glue.h>
 
+#define ASTC_MAGIC 0x5CA1AB13
+
 class Texture {
  public:
+  struct ASTCHeader {
+      uint8_t magic[4];
+      uint8_t block_dim_x;
+      uint8_t block_dim_y;
+      uint8_t block_dim_z;
+      uint8_t x_size[3];
+      uint8_t y_size[3];
+      uint8_t z_size[3];
+  };
+
   Texture(Renderer &renderer,
           uint8_t *img_data,
           uint32_t img_width,
@@ -33,7 +45,7 @@ class Texture {
   Texture(Renderer &renderer,
           android_app &android_app_ctx,
           const std::string &texture_file_name,
-          VkFormat texture_format);
+          VkFormat texture_format = VK_FORMAT_R8G8B8A8_SRGB);
 
   ~Texture();
 
@@ -60,8 +72,10 @@ class Texture {
 
   uint32_t mip_levels_;
 
+  unsigned char *LoadDefaultTexture();
   unsigned char *LoadFileData(android_app &app, const char *file_path);
-  VkResult CreateTexture(uint8_t *img_data, VkImageUsageFlags usage, VkFlags required_props);
+  unsigned char *LoadASTCFileData(android_app &app, const char *file_path, uint32_t& img_bytes);
+  VkResult CreateTexture(uint8_t *img_data, uint32_t img_bytes, VkImageUsageFlags usage, VkFlags required_props);
   void CreateImageView();
   void GenerateMipmaps(VkCommandBuffer *command_buffer);
 };
