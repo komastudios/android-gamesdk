@@ -415,39 +415,55 @@ void SwappyCommon::addFrameDuration(FrameDuration duration) {
     mFrameDurations.add(duration);
 }
 
-void SwappyCommon::swapSlower(const FrameDuration& averageFrameTime,
+bool SwappyCommon::swapSlower(const FrameDuration& averageFrameTime,
                         const nanoseconds& upperBound,
                         int newSwapInterval) {
+    bool swappedSlower = false;
     ALOGV("Rendering takes too much time for the given config");
 
     // Check if turning on pipeline is not enough
-    if (mPipelineMode == PipelineMode::On ||
-            averageFrameTime.getTime(PipelineMode::On) + FRAME_MARGIN > upperBound) {
+    if ((mPipelineMode == PipelineMode::On ||
+            averageFrameTime.getTime(PipelineMode::On) + FRAME_MARGIN > upperBound) &&
+            mCommonSettings.refreshPeriod*mAutoSwapInterval <= mAutoSwapIntervalThresholdNS.load()
+                                                                   + FRAME_MARGIN) {
+        int mOriginalAutoSwapInterval = mAutoSwapInterval;
         if (newSwapInterval > mAutoSwapInterval) {
             mAutoSwapInterval = newSwapInterval;
         } else {
             mAutoSwapInterval++;
         }
-
-        ALOGV("Changing Swap interval to %d", mAutoSwapInterval);
+        if (mAutoSwapInterval!=mOriginalAutoSwapInterval) {
+            ALOGV("Changing Swap interval to %d from %d", mAutoSwapInterval,
+                  mOriginalAutoSwapInterval);
+            swappedSlower = true;
+        }
     }
 
-    ALOGV("turning on pipelining");
-    mPipelineMode = PipelineMode::On;
+    if (mPipelineMode == PipelineMode::Off) {
+        ALOGV("turning on pipelining");
+        mPipelineMode = PipelineMode::On;
+    }
+
+    return swappedSlower;
 }
 
-void SwappyCommon::swapFaster(int newSwapInterval) {
-
+bool SwappyCommon::swapFaster(int newSwapInterval) {
+    bool swappedFaster = false;
+    int mOriginalAutoSwapInterval = mAutoSwapInterval;
     while (newSwapInterval < mAutoSwapInterval && mSwapIntervalNS <= mCommonSettings.refreshPeriod * (mAutoSwapInterval - 1)) {
         mAutoSwapInterval--;
     }
 
-    ALOGV("Rendering is much shorter for the given config");
-    ALOGV("Changing Swap interval to %d", mAutoSwapInterval);
+    if (mAutoSwapInterval!=mOriginalAutoSwapInterval) {
+        ALOGV("Rendering is much shorter for the given config");
+        ALOGV("Changing Swap interval to %d from %d", mAutoSwapInterval, mOriginalAutoSwapInterval);
+        // since we changed the swap interval, we may need to turn on pipeline mode
+        ALOGV("Turning on pipelining");
+        mPipelineMode = PipelineMode::On;
+        swappedFaster = true;
+    }
 
-    // since we changed the swap interval, we may need to turn on pipeline mode
-    ALOGV("Turning on pipelining");
-    mPipelineMode = PipelineMode::On;
+    return swappedFaster;
 }
 
 bool SwappyCommon::isSameDuration(std::chrono::nanoseconds period1, int interval1,
@@ -500,8 +516,8 @@ bool SwappyCommon::updateSwapInterval() {
 
     // Make sure the frame time fits in the current config to avoid missing frames
     if (missedFramesPercent > FRAME_DROP_THRESHOLD) {
-        swapSlower(averageFrameTime, upperBoundForThisRefresh, newSwapInterval);
-        configChanged = true;
+        if (swapSlower(averageFrameTime, upperBoundForThisRefresh, newSwapInterval))
+            configChanged = true;
     }
 
     // So we shouldn't miss any frames with this config but maybe we can go faster ?
@@ -509,8 +525,8 @@ bool SwappyCommon::updateSwapInterval() {
     else if (missedFramesPercent == 0 &&
              mSwapIntervalNS <= mCommonSettings.refreshPeriod * (mAutoSwapInterval - 1) &&
              pipelineFrameTime < lowerBoundForThisRefresh) {
-        swapFaster(newSwapInterval);
-        configChanged = true;
+        if (swapFaster(newSwapInterval))
+            configChanged = true;
     }
 
     // If we reached to this condition it means that we fit into the boundaries.
