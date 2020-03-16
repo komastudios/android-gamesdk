@@ -35,5 +35,15 @@ Java_com_swappy_testapp_MainActivity_runTests(
     } else {
         ALOGE("%s", full_record.c_str());
     }
-    return env->NewStringUTF((full_record).c_str());
+    return env->NewStringUTF(full_record.c_str());
+}
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_com_swappy_testapp_MainActivity_testSummarySoFar(
+        JNIEnv* env,
+        jobject ctx) {
+    constexpr int BUF_LEN = 2048;
+    static char buf[BUF_LEN];
+    test_summary(buf, BUF_LEN);
+    return env->NewStringUTF(buf);
 }
