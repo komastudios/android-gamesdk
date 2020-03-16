@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "02e40add_47380379",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-03-16T17:34:18Z",
+      "side": 1,
+      "message": "make \"32767\" as a defined constant maybe?",
+      "revId": "9c084d562fce41c2163dbbde63bc4edee37f57c1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "43a4e426_5381d1fd",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-03-16T17:34:18Z",
+      "side": 1,
+      "message": "same here.",
+      "revId": "9c084d562fce41c2163dbbde63bc4edee37f57c1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "34b937e0_3f848040",
+        "filename": "bender/bender-base/utils/src/bender_helpers.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-03-16T17:34:18Z",
+      "side": 1,
+      "message": "same here.",
+      "revId": "9c084d562fce41c2163dbbde63bc4edee37f57c1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
