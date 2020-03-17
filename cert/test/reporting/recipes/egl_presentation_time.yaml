@@ -1,0 +1,15 @@
+build:
+  configuration: recipes/configurations/egl_presentation_time.json
+
+deployment:
+  ftl:
+    enabled: true
+    devices:
+      - { model: "a7y18lte", version: 28 }
+      - { model: "dream2qltechn", version: 28 }
+      - { model: "SCV37", version: 28 }
+      # - { model: "sawfish", version: 28 }
+      # - { model: "sawfish", version: 28 }
+      - { model: "blueline", version: 29 }
+      - { model: "walleye", version: 28 }
+      # - { model: "H8416", version: 28 }
