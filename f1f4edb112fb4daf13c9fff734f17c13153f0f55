@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "f1fd4c40_c198e6fd",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 427,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-17T10:52:31Z",
+      "side": 1,
+      "message": "Ah, true. I removed the +1, so it increments to mAutoSwapIntervalThreshold+1 but no more.",
+      "parentUuid": "3372fd8b_faaeefd9",
+      "revId": "f1f4edb112fb4daf13c9fff734f17c13153f0f55",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "59fc71c5_c9f1db7c",
         "filename": "src/swappy/common/SwappyCommon.cpp",
         "patchSetId": 1
@@ -108,6 +126,24 @@
     },
     {
       "key": {
+        "uuid": "dabc071c_e9332449",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 518,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-17T10:52:31Z",
+      "side": 1,
+      "message": "Don\u0027t we want to be switching based on a moving average, rather than an average taken over discontinuous 2s intervals?",
+      "parentUuid": "a298116a_2ad3d400",
+      "revId": "f1f4edb112fb4daf13c9fff734f17c13153f0f55",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1c54fd73_9c7ef521",
         "filename": "test/swappy/swappycommon_test.cpp",
         "patchSetId": 1
@@ -122,6 +158,24 @@
       "revId": "f1f4edb112fb4daf13c9fff734f17c13153f0f55",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3f72f99d_e620f7ad",
+        "filename": "test/swappy/swappycommon_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 530,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-17T10:52:31Z",
+      "side": 1,
+      "message": "Replaced with a counter.",
+      "parentUuid": "1c54fd73_9c7ef521",
+      "revId": "f1f4edb112fb4daf13c9fff734f17c13153f0f55",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
