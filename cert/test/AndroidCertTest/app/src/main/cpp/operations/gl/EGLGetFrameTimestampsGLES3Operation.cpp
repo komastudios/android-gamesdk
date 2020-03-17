@@ -139,7 +139,6 @@
 #include <ancer/BaseGLES3Operation.hpp>
 #include <ancer/DatumReporting.hpp>
 #include <ancer/System.hpp>
-#include <ancer/util/Json.hpp>
 #include <ancer/util/LibEGL.hpp>
 
 using namespace ancer;
@@ -387,6 +386,23 @@ struct FrameEvent {
 }  // namespace
 
 // =============================================================================
+namespace {
+PFNEGLGETCOMPOSITORTIMINGSUPPORTEDANDROIDPROC pfnGetCompositorTimingSupported =
+    libegl::PfnGetCompositorTimingSupported();
+
+PFNEGLGETCOMPOSITORTIMINGANDROIDPROC pfnGetCompositorTiming =
+    libegl::PfnGetCompositorTiming();
+
+PFNEGLGETNEXTFRAMEIDANDROIDPROC pfnGetNextFrameId = libegl::PfnGetNextFrameId();
+
+PFNEGLGETFRAMETIMESTAMPSUPPORTEDANDROIDPROC pfnGetFrameTimestampSupported =
+    libegl::PfnGetFrameTimestampSupported();
+
+PFNEGLGETFRAMETIMESTAMPSANDROIDPROC pfnGetFrameTimestamps =
+    libegl::PfnGetFrameTimestamps();
+}  // namespace
+
+// =============================================================================
 
 class EGLGetFrameTimestampsGLES3Operation : public BaseGLES3Operation {
  public:
@@ -439,42 +455,41 @@ class EGLGetFrameTimestampsGLES3Operation : public BaseGLES3Operation {
     datum.has_ext_egl_android_get_frame_timestamps =
         glh::CheckEglExtension(extension_name);
     datum.did_enable_surface_egl_timestamps = EnableSurfaceTimestamps();
+
     datum.has_fp_get_compositor_timing_supported =
-        libegl::GetFP_GetCompositorTimingSupported() != nullptr;
+        libegl::PfnGetCompositorTimingSupported() != nullptr;
     datum.has_fp_get_compositor_timing =
-        libegl::GetFP_GetCompositorTiming() != nullptr;
-    datum.has_fp_get_next_frame_id = libegl::GetFP_GetNextFrameId() != nullptr;
+        libegl::PfnGetCompositorTiming() != nullptr;
+    datum.has_fp_get_next_frame_id = libegl::PfnGetNextFrameId() != nullptr;
     datum.has_fp_get_frame_timestamp_supported =
-        libegl::GetFP_GetFrameTimestampSupported() != nullptr;
+        libegl::PfnGetFrameTimestampSupported() != nullptr;
     datum.has_fp_get_frame_timestamps =
-        libegl::GetFP_GetFrameTimestamps() != nullptr;
+        libegl::PfnGetFrameTimestamps() != nullptr;
 
     Report(datum);
   }
 
   void StoreSupportedCompositeNames() {
-    const auto fp = libegl::GetFP_GetCompositorTimingSupported();
-    if (fp == nullptr) return;
+    if (pfnGetCompositorTimingSupported == nullptr) return;
 
     EGLDisplay display = eglGetCurrentDisplay();
     EGLSurface surface = eglGetCurrentSurface(EGL_DRAW);
 
     for (const auto& name : composite_value_names) {
-      if (fp(display, surface, name)) {
+      if (pfnGetCompositorTimingSupported(display, surface, name)) {
         _supported_composite_names.push_back(name);
       }
     }
   }
 
   void StoreSupportedFrameTimingEvents() {
-    const auto fp = libegl::GetFP_GetFrameTimestampSupported();
-    if (fp == nullptr) return;
+    if (pfnGetFrameTimestampSupported == nullptr) return;
 
     EGLDisplay display = eglGetCurrentDisplay();
     EGLSurface surface = eglGetCurrentSurface(EGL_DRAW);
 
     for (const auto& event : frame_timing_events) {
-      if (fp(display, surface, event)) {
+      if (pfnGetFrameTimestampSupported(display, surface, event)) {
         _supported_frame_timing_events.push_back(event);
       }
     }
@@ -530,16 +545,14 @@ class EGLGetFrameTimestampsGLES3Operation : public BaseGLES3Operation {
   }
 
   void ReportCompositeValues() const {
-    const auto fp = libegl::GetFP_GetCompositorTiming();
-    if (fp == nullptr) return;
+    if (pfnGetCompositorTiming == nullptr) return;
 
     EGLDisplay display = eglGetCurrentDisplay();
     EGLSurface surface = eglGetCurrentSurface(EGL_DRAW);
 
     for (const auto& name : _supported_composite_names) {
       EGLnsecsANDROID value;
-      const EGLBoolean ok = fp(display, surface, 1, &name, &value);
-      if (ok) {
+      if (pfnGetCompositorTiming(display, surface, 1, &name, &value)) {
         composite_value_datum datum = {};
         datum.measurement_name = TimestampTypeName(name);
         datum.value_ns = static_cast<int64_t>(value);
@@ -561,8 +574,7 @@ class EGLGetFrameTimestampsGLES3Operation : public BaseGLES3Operation {
   }
 
   void ReportPendingFrameTimingEvents() {
-    const auto fp = libegl::GetFP_GetFrameTimestamps();
-    if (fp == nullptr) return;
+    if (pfnGetFrameTimestamps == nullptr) return;
 
     EGLDisplay display = eglGetCurrentDisplay();
     EGLSurface surface = eglGetCurrentSurface(EGL_DRAW);
@@ -571,9 +583,9 @@ class EGLGetFrameTimestampsGLES3Operation : public BaseGLES3Operation {
       if (!event.pending) continue;
 
       EGLnsecsANDROID value = 0;
-      const EGLBoolean ok =
-          fp(display, surface, event.frame_id, 1, &event.timing_event, &value);
-      if (!ok) continue;  // the timestamp may be pending
+      if (!pfnGetFrameTimestamps(display, surface, event.frame_id, 1,
+                                 &event.timing_event, &value))
+        continue;  // the timestamp may be pending
 
       if (EGL_TIMESTAMP_INVALID_ANDROID == value) {
         event.pending = false;
@@ -612,13 +624,14 @@ class EGLGetFrameTimestampsGLES3Operation : public BaseGLES3Operation {
   }
 
   bool GetNextFrameId(EGLuint64KHR* next_frame_id) const {
-    const auto fp = libegl::GetFP_GetNextFrameId();
-    if (fp == nullptr || next_frame_id == nullptr) return EGL_FALSE;
+    if (pfnGetNextFrameId == nullptr || next_frame_id == nullptr)
+      return EGL_FALSE;
 
     EGLDisplay display = eglGetCurrentDisplay();
     EGLSurface surface = eglGetCurrentSurface(EGL_DRAW);
 
-    return static_cast<bool>(fp(display, surface, next_frame_id));
+    const EGLBoolean ok = pfnGetNextFrameId(display, surface, next_frame_id);
+    return static_cast<bool>(ok);
   }
 
   bool EnableSurfaceTimestamps() {
