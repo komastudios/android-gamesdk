@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "48e4f790_f3f9acfd",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.vert",
+        "patchSetId": 7
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-03-17T21:23:26Z",
+      "side": 1,
+      "message": "not sure about the coding style of shader. which style is preferred?\n\n( spacing_true )\n(spacing_false)",
+      "revId": "4d3fc81f3c18b1cf95a9923e94e91f9d6da067ce",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "72fd451b_c561c94e",
+        "filename": "bender/bender-base/utils/src/bender_helpers.cc",
+        "patchSetId": 7
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-03-17T21:23:26Z",
+      "side": 1,
+      "message": "[nit] (int16_t v)",
+      "revId": "4d3fc81f3c18b1cf95a9923e94e91f9d6da067ce",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "be0fbff5_2a076856",
+        "filename": "bender/bender-base/utils/src/bender_helpers.h",
+        "patchSetId": 7
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-03-17T21:23:26Z",
+      "side": 1,
+      "message": "[nit] (int16_t v)",
+      "range": {
+        "startLine": 47,
+        "startChar": 20,
+        "endLine": 47,
+        "endChar": 33
+      },
+      "revId": "4d3fc81f3c18b1cf95a9923e94e91f9d6da067ce",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
