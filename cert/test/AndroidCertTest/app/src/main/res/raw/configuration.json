@@ -17,7 +17,7 @@
         "id": "EGLGetFrameTimestampsGLES3Operation",
         "configuration": {
           "first_frame_id": 20,
-          "last_frame_id": 21
+          "last_frame_id": 81
         }
       },
       "host": "GLSurfaceViewHostActivity",
