@@ -159,7 +159,7 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
   bool CreateNativeClientBuffer() {
     libandroid::FP_AHB_ALLOCATE fp_alloc =
         libandroid::GetFP_AHardwareBuffer_Allocate();
-    if (fp_alloc == nullptr) {
+    if (nullptr == fp_alloc) {
       ReportError("Failed to locate symbol for AHardwareBuffer_allocate");
       return false;
     }
@@ -174,21 +174,21 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
                    AHARDWAREBUFFER_USAGE_CPU_WRITE_OFTEN;
 
     fp_alloc(&h_desc, &_hardware_buffer);
-    if (_hardware_buffer == nullptr) {
+    if (nullptr == _hardware_buffer) {
       ReportError("Failed to allocate AHardwareBuffer");
       return false;
     }
 
-    libegl::FP_GET_NATIVE_CLIENT_BUFFER fp_get_native_client_buffer =
-        libegl::GetFP_GetNativeClientBuffer();
-    if (fp_get_native_client_buffer == nullptr) {
+    PFNEGLGETNATIVECLIENTBUFFERANDROIDPROC fp_get_native_client_buffer =
+        libegl::PfnGetNativeClientBuffer();
+    if (nullptr == fp_get_native_client_buffer) {
       ReportError(
           "Failed to locate symbol for eglGetNativeClientBufferANDROID");
       return false;
     }
 
     _egl_buffer = fp_get_native_client_buffer(_hardware_buffer);
-    if (_egl_buffer == nullptr) {
+    if (nullptr == _egl_buffer) {
       DestroyNativeClientBuffer();
       ReportError("Failed to get native client buffer");
       return false;
@@ -200,7 +200,7 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
   bool DestroyNativeClientBuffer() {
     libandroid::FP_AHB_RELEASE fp_release =
         libandroid::GetFP_AHardwareBuffer_Release();
-    if (fp_release == nullptr) {
+    if (nullptr == fp_release) {
       ReportError("Failed to locate symbol for AHardwareBuffer_release");
       return false;
     }
@@ -309,14 +309,14 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
 
   bool ReadAHardwareBuffer() {
     libandroid::FP_AHB_LOCK fp_lock = libandroid::GetFP_AHardwareBuffer_Lock();
-    if (fp_lock == nullptr) {
+    if (nullptr == fp_lock) {
       ReportError("Failed to load symbol for AHardwareBuffer_lock");
       return false;
     }
 
     libandroid::FP_AHB_UNLOCK fp_unlock =
         libandroid::GetFP_AHardwareBuffer_Unlock();
-    if (fp_unlock == nullptr) {
+    if (nullptr == fp_unlock) {
       ReportError("Failed to load symbol for AHardwareBuffer_unlock");
       return false;
     }
@@ -331,7 +331,7 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
       return false;
     }
 
-    if (buffer == nullptr) {
+    if (nullptr == buffer) {
       ReportError("Failed to map buffer memory");
       return false;
     }

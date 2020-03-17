@@ -10,6 +10,22 @@
   "stress_tests": [
     {
       "enabled": true,
+      "name": "EGL Presentation Time",
+      "description": "Determine if EGL presentation time extension is present and works.",
+      "duration": "5s",
+      "data_gatherer": {
+        "id": "EGLPresentationTimeGLES3Operation",
+        "configuration": {
+          "first_frame_id": 20,
+          "last_frame_id": 120,
+          "presentation_delay_ms": 54
+        }
+      },
+      "host": "GLSurfaceViewHostActivity",
+      "stressors": []
+    },
+    {
+      "enabled": true,
       "name": "EGL Get Frame Timestamps",
       "description": "Determine if EGL frame timestamps extension is present and works.",
       "duration": "2s",
@@ -17,7 +33,7 @@
         "id": "EGLGetFrameTimestampsGLES3Operation",
         "configuration": {
           "first_frame_id": 20,
-          "last_frame_id": 21
+          "last_frame_id": 81
         }
       },
       "host": "GLSurfaceViewHostActivity",
@@ -140,11 +156,9 @@
       "duration": "1m",
       "data_gatherer": {
         "id": "DepthClearGLES3Operation",
-        "configuration": {
-        }
+        "configuration": {}
       },
-      "stressors": [
-      ]
+      "stressors": []
     },
     {
       "enabled": true,
@@ -211,7 +225,6 @@
                 "initial_offset": "1kb"
               }
             },
-
             {
               "read_write": "Read",
               "rw_size": "56b",
@@ -223,7 +236,6 @@
                 "max_advance": "1000b"
               }
             },
-
             {
               "read_write": "Read",
               "rw_size": "56b",
@@ -233,7 +245,6 @@
                 "rw_align": "32b"
               }
             },
-
             {
               "read_write": "Read",
               "rw_size": "56b",
@@ -268,8 +279,7 @@
           "report_rate": "50ms"
         }
       },
-      "stressors": [
-      ]
+      "stressors": []
     },
     {
       "enabled": true,
@@ -300,11 +310,9 @@
       "duration": "100ms",
       "data_gatherer": {
         "id": "VulkanMprotectCheckOperation",
-        "configuration": {
-        }
+        "configuration": {}
       },
-      "stressors": [
-      ]
+      "stressors": []
     },
     {
       "enabled": true,
@@ -342,8 +350,7 @@
           "affinity": true
         }
       },
-      "stressors": [
-      ]
+      "stressors": []
     },
     {
       "enabled": true,
@@ -395,8 +402,7 @@
           "min_fps_threshold": 15
         }
       },
-      "stressors": [
-      ]
+      "stressors": []
     },
     {
       "enabled": true,
@@ -418,8 +424,7 @@
           ]
         }
       },
-      "stressors": [
-      ]
+      "stressors": []
     },
     {
       "enabled": true,
@@ -433,8 +438,7 @@
           "min_fps_threshold": 15
         }
       },
-      "stressors": [
-      ]
+      "stressors": []
     },
     {
       "enabled": true,
@@ -450,8 +454,7 @@
           "trials": 4
         }
       },
-      "stressors": [
-      ]
+      "stressors": []
     },
     {
       "enabled": true,
@@ -465,8 +468,7 @@
           "reference_screenshot_mode": false
         }
       },
-      "stressors": [
-      ]
+      "stressors": []
     },
     {
       "enabled": true,
@@ -483,8 +485,7 @@
           "on_trim_triggers_free": true
         }
       },
-      "stressors": [
-      ]
+      "stressors": []
     },
     {
       "enabled": true,
@@ -511,8 +512,7 @@
           }
         }
       },
-      "stressors": [
-      ]
+      "stressors": []
     },
     {
       "enabled": true,
@@ -522,17 +522,16 @@
       "data_gatherer": {
         "id": "WorkLoadConfigurationTest",
         "configuration": {
-          "file_location" : "create_file",
-          "thread_setup" : "all_core",
-          "read_scheme" : "interleaved",
-          "data_size" : 12800000,
+          "file_location": "create_file",
+          "thread_setup": "all_core",
+          "read_scheme": "interleaved",
+          "data_size": 12800000,
           "buffer_size": 64,
-          "read_align" : 0,
+          "read_align": 0,
           "performance_sample_period": "500ms"
         }
       },
-      "stressors": [
-      ]
+      "stressors": []
     }
   ]
 }
