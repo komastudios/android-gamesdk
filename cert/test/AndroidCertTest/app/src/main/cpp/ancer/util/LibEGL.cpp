@@ -21,42 +21,42 @@
 namespace libegl {
 void *GetLib() { return LoadLibrary("libEGL.so"); }
 
-FP_GET_NATIVE_CLIENT_BUFFER GetFP_GetNativeClientBuffer() {
-  return reinterpret_cast<FP_GET_NATIVE_CLIENT_BUFFER>(
+PFNEGLGETNATIVECLIENTBUFFERANDROIDPROC PfnGetNativeClientBuffer() {
+  return reinterpret_cast<PFNEGLGETNATIVECLIENTBUFFERANDROIDPROC>(
       LoadSymbol(GetLib(), "eglGetNativeClientBufferANDROID"));
 }
 
 // -----------------------------------------------------------------------------
 
-FP_PRESENTATION_TIME GetFP_PresentationTime() {
-  return reinterpret_cast<FP_PRESENTATION_TIME>(
+PFNEGLPRESENTATIONTIMEANDROIDPROC PfnPresentationTime() {
+  return reinterpret_cast<PFNEGLPRESENTATIONTIMEANDROIDPROC>(
       LoadSymbol(GetLib(), "eglPresentationTimeANDROID"));
 }
 
 // -----------------------------------------------------------------------------
 
-FP_GET_COMPOSITOR_TIMING_SUPPORTED GetFP_GetCompositorTimingSupported() {
-  return reinterpret_cast<FP_GET_COMPOSITOR_TIMING_SUPPORTED>(
+PFNEGLGETCOMPOSITORTIMINGSUPPORTEDANDROIDPROC PfnGetCompositorTimingSupported() {
+  return reinterpret_cast<PFNEGLGETCOMPOSITORTIMINGSUPPORTEDANDROIDPROC>(
       LoadSymbol(GetLib(), "eglGetCompositorTimingSupportedANDROID"));
 }
 
-FP_GET_COMPOSITOR_TIMING GetFP_GetCompositorTiming() {
-  return reinterpret_cast<FP_GET_COMPOSITOR_TIMING>(
+PFNEGLGETCOMPOSITORTIMINGANDROIDPROC PfnGetCompositorTiming() {
+  return reinterpret_cast<PFNEGLGETCOMPOSITORTIMINGANDROIDPROC>(
       LoadSymbol(GetLib(), "eglGetCompositorTimingANDROID"));
 }
 
-FP_GET_NEXT_FRAME_ID GetFP_GetNextFrameId() {
-  return reinterpret_cast<FP_GET_NEXT_FRAME_ID>(
+PFNEGLGETNEXTFRAMEIDANDROIDPROC PfnGetNextFrameId() {
+  return reinterpret_cast<PFNEGLGETNEXTFRAMEIDANDROIDPROC>(
       LoadSymbol(GetLib(), "eglGetNextFrameIdANDROID"));
 }
 
-FP_GET_FRAME_TIMESTAMP_SUPPORTED GetFP_GetFrameTimestampSupported() {
-  return reinterpret_cast<FP_GET_FRAME_TIMESTAMP_SUPPORTED>(
+PFNEGLGETFRAMETIMESTAMPSUPPORTEDANDROIDPROC PfnGetFrameTimestampSupported() {
+  return reinterpret_cast<PFNEGLGETFRAMETIMESTAMPSUPPORTEDANDROIDPROC>(
       LoadSymbol(GetLib(), "eglGetFrameTimestampSupportedANDROID"));
 }
 
-FP_GET_FRAME_TIMESTAMPS GetFP_GetFrameTimestamps() {
-  return reinterpret_cast<FP_GET_FRAME_TIMESTAMPS>(
+PFNEGLGETFRAMETIMESTAMPSANDROIDPROC PfnGetFrameTimestamps() {
+  return reinterpret_cast<PFNEGLGETFRAMETIMESTAMPSANDROIDPROC>(
       LoadSymbol(GetLib(), "eglGetFrameTimestampsANDROID"));
 }
 

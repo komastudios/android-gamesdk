@@ -29,11 +29,15 @@ typedef int (*FP_AHB_LOCK)(AHardwareBuffer *, uint64_t, int32_t, const ARect *,
                            void **);
 typedef int (*FP_AHB_UNLOCK)(AHardwareBuffer *, int32_t *);
 
+// Returns function pointer to AHardwareBuffer_allocate()
 FP_AHB_ALLOCATE GetFP_AHardwareBuffer_Allocate();
 
+// Returns function pointer to AHardwareBuffer_release()
 FP_AHB_RELEASE GetFP_AHardwareBuffer_Release();
 
+// Returns function pointer to AHardwareBuffer_lock()
 FP_AHB_LOCK GetFP_AHardwareBuffer_Lock();
 
+// Returns function pointer to AHardwareBuffer_unlock()
 FP_AHB_UNLOCK GetFP_AHardwareBuffer_Unlock();
 }  // namespace libandroid
