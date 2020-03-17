@@ -105,6 +105,23 @@
       "revId": "f1f4edb112fb4daf13c9fff734f17c13153f0f55",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1c54fd73_9c7ef521",
+        "filename": "test/swappy/swappycommon_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 530,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-03-17T09:29:53Z",
+      "side": 1,
+      "message": "A bit worried of using randomness in tests, could we have a vector of times that we repeat?\n\n```\nstatic size_t step \u003d 0;\nstatic std::vector\u003cduration\u003e distribution{20ms, 20ms, 10ms, 20ms, 20ms}; // Maybe longer to simulate some noise and reach 10% of the time.\n\nreturn {\n  [\u0026]() { auto time \u003d distribution[step % distribution.size()]; step++; return time; }, // cpu\n  []() { return 10ms; }, // gpu\n}\n```",
+      "revId": "f1f4edb112fb4daf13c9fff734f17c13153f0f55",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
