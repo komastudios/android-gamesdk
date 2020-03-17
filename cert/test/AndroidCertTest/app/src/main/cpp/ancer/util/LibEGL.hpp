@@ -23,30 +23,26 @@
 namespace libegl {
 void *GetLib();
 
-typedef PFNEGLGETNATIVECLIENTBUFFERANDROIDPROC FP_GET_NATIVE_CLIENT_BUFFER;
+// Returns function pointer tp eglGetNativeClientBufferANDROID().
+PFNEGLGETNATIVECLIENTBUFFERANDROIDPROC GetFP_GetNativeClientBuffer();
 
-FP_GET_NATIVE_CLIENT_BUFFER GetFP_GetNativeClientBuffer();
+// Returns function pointer to eglPresentationTimeANDROID().
+PFNEGLPRESENTATIONTIMEANDROIDPROC GetFP_PresentationTime();
 
-// -----------------------------------------------------------------------------
+// Returns function pointer to eglGetCompositorTimingSupportedANDROID().
+PFNEGLGETCOMPOSITORTIMINGSUPPORTEDANDROIDPROC
+GetFP_GetCompositorTimingSupported();
 
-typedef PFNEGLPRESENTATIONTIMEANDROIDPROC FP_PRESENTATION_TIME;
+// Returns function pointer to eglGetCompositorTimingANDROID().
+PFNEGLGETCOMPOSITORTIMINGANDROIDPROC GetFP_GetCompositorTiming();
 
-FP_PRESENTATION_TIME GetFP_PresentationTime();
+// Returns function pointer to eglGetNextFrameIdANDROID().
+PFNEGLGETNEXTFRAMEIDANDROIDPROC GetFP_GetNextFrameId();
 
-// -----------------------------------------------------------------------------
+// Returns function pointer to eglGetFrameTimestampSupportedANDROID().
+PFNEGLGETFRAMETIMESTAMPSUPPORTEDANDROIDPROC GetFP_GetFrameTimestampSupported();
 
-typedef PFNEGLGETCOMPOSITORTIMINGSUPPORTEDANDROIDPROC
-    FP_GET_COMPOSITOR_TIMING_SUPPORTED;
-typedef PFNEGLGETCOMPOSITORTIMINGANDROIDPROC FP_GET_COMPOSITOR_TIMING;
-typedef PFNEGLGETNEXTFRAMEIDANDROIDPROC FP_GET_NEXT_FRAME_ID;
-typedef PFNEGLGETFRAMETIMESTAMPSUPPORTEDANDROIDPROC
-    FP_GET_FRAME_TIMESTAMP_SUPPORTED;
-typedef PFNEGLGETFRAMETIMESTAMPSANDROIDPROC FP_GET_FRAME_TIMESTAMPS;
-
-FP_GET_COMPOSITOR_TIMING_SUPPORTED GetFP_GetCompositorTimingSupported();
-FP_GET_COMPOSITOR_TIMING GetFP_GetCompositorTiming();
-FP_GET_NEXT_FRAME_ID GetFP_GetNextFrameId();
-FP_GET_FRAME_TIMESTAMP_SUPPORTED GetFP_GetFrameTimestampSupported();
-FP_GET_FRAME_TIMESTAMPS GetFP_GetFrameTimestamps();
+// Returns function pointer to eglGetFrameTimestampsANDROID().
+PFNEGLGETFRAMETIMESTAMPSANDROIDPROC GetFP_GetFrameTimestamps();
 
 }  // namespace libegl

@@ -179,7 +179,7 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
       return false;
     }
 
-    libegl::FP_GET_NATIVE_CLIENT_BUFFER fp_get_native_client_buffer =
+    PFNEGLGETNATIVECLIENTBUFFERANDROIDPROC fp_get_native_client_buffer =
         libegl::GetFP_GetNativeClientBuffer();
     if (fp_get_native_client_buffer == nullptr) {
       ReportError(
