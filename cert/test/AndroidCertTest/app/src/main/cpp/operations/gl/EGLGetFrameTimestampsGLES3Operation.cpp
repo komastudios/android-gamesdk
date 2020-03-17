@@ -139,7 +139,6 @@
 #include <ancer/BaseGLES3Operation.hpp>
 #include <ancer/DatumReporting.hpp>
 #include <ancer/System.hpp>
-#include <ancer/util/Json.hpp>
 #include <ancer/util/LibEGL.hpp>
 
 using namespace ancer;
