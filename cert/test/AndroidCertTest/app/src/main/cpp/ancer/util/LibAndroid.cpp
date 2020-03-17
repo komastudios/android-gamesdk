@@ -21,23 +21,23 @@
 namespace libandroid {
 void *GetLib() { return LoadLibrary("libandroid.so"); }
 
-FP_AHB_ALLOCATE GetFP_AHardwareBuffer_Allocate() {
-  return reinterpret_cast<FP_AHB_ALLOCATE>(
+PFN_AHB_ALLOCATE PfnAHardwareBuffer_Allocate() {
+  return reinterpret_cast<PFN_AHB_ALLOCATE>(
       LoadSymbol(GetLib(), "AHardwareBuffer_allocate"));
 }
 
-FP_AHB_RELEASE GetFP_AHardwareBuffer_Release() {
-  return reinterpret_cast<FP_AHB_RELEASE>(
+PFN_AHB_RELEASE PfnAHardwareBuffer_Release() {
+  return reinterpret_cast<PFN_AHB_RELEASE>(
       LoadSymbol(GetLib(), "AHardwareBuffer_release"));
 }
 
-FP_AHB_LOCK GetFP_AHardwareBuffer_Lock() {
-  return reinterpret_cast<FP_AHB_LOCK>(
+PFN_AHB_LOCK PfnAHardwareBuffer_Lock() {
+  return reinterpret_cast<PFN_AHB_LOCK>(
       LoadSymbol(GetLib(), "AHardwareBuffer_lock"));
 }
 
-FP_AHB_UNLOCK GetFP_AHardwareBuffer_Unlock() {
-  return reinterpret_cast<FP_AHB_UNLOCK>(
+PFN_AHB_UNLOCK PfnAHardwareBuffer_Unlock() {
+  return reinterpret_cast<PFN_AHB_UNLOCK>(
       LoadSymbol(GetLib(), "AHardwareBuffer_unlock"));
 }
 }  // namespace libandroid

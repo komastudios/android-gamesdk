@@ -22,18 +22,22 @@
 namespace libandroid {
 void *GetLib();
 
-typedef int (*FP_AHB_ALLOCATE)(const AHardwareBuffer_Desc *,
-                               AHardwareBuffer **);
-typedef void (*FP_AHB_RELEASE)(AHardwareBuffer *);
-typedef int (*FP_AHB_LOCK)(AHardwareBuffer *, uint64_t, int32_t, const ARect *,
-                           void **);
-typedef int (*FP_AHB_UNLOCK)(AHardwareBuffer *, int32_t *);
+typedef int (*PFN_AHB_ALLOCATE)(const AHardwareBuffer_Desc *,
+                                AHardwareBuffer **);
+typedef void (*PFN_AHB_RELEASE)(AHardwareBuffer *);
+typedef int (*PFN_AHB_LOCK)(AHardwareBuffer *, uint64_t, int32_t, const ARect *,
+                            void **);
+typedef int (*PFN_AHB_UNLOCK)(AHardwareBuffer *, int32_t *);
 
-FP_AHB_ALLOCATE GetFP_AHardwareBuffer_Allocate();
+// Returns function pointer to AHardwareBuffer_allocate()
+PFN_AHB_ALLOCATE PfnAHardwareBuffer_Allocate();
 
-FP_AHB_RELEASE GetFP_AHardwareBuffer_Release();
+// Returns function pointer to AHardwareBuffer_release()
+PFN_AHB_RELEASE PfnAHardwareBuffer_Release();
 
-FP_AHB_LOCK GetFP_AHardwareBuffer_Lock();
+// Returns function pointer to AHardwareBuffer_lock()
+PFN_AHB_LOCK PfnAHardwareBuffer_Lock();
 
-FP_AHB_UNLOCK GetFP_AHardwareBuffer_Unlock();
+// Returns function pointer to AHardwareBuffer_unlock()
+PFN_AHB_UNLOCK PfnAHardwareBuffer_Unlock();
 }  // namespace libandroid
