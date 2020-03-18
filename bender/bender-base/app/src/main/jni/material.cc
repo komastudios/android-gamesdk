@@ -10,10 +10,10 @@ std::shared_ptr<Texture> Material::default_texture_ = nullptr;
 
 void Material::CreateDefaultTexture(Renderer &renderer) {
   if (default_texture_ != nullptr) { return; }
-  unsigned char img_data[4] = {255, 255, 255, 0};
+  unsigned char img_data[4] = {128, 128, 255, 0};
 
   default_texture_ = std::make_shared<Texture>(renderer, img_data, 1, 1,
-                                               VK_FORMAT_R8G8B8A8_SRGB);
+                                               VK_FORMAT_R8G8B8A8_UNORM);
 }
 
 Material::Material(Renderer &renderer, std::shared_ptr<ShaderState> shaders,

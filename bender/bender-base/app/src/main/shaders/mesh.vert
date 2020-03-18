@@ -3,17 +3,6 @@
 
 #include "shader_bindings.h"
 
-struct PointLight {
-    vec3 position;
-    vec3 color;
-    float intensity;
-};
-
-struct AmbientLight {
-    vec3 color;
-    float intensity;
-};
-
 layout(set = BINDING_SET_MESH, binding = VERTEX_BINDING_MODEL_VIEW_PROJECTION)
 uniform UniformBufferObject {
     mat4 mvp;
@@ -23,8 +12,9 @@ uniform UniformBufferObject {
 
 layout(set = BINDING_SET_LIGHTS, binding = FRAGMENT_BINDING_LIGHTS)
 uniform LightBlock {
-    PointLight pointLight;
-    AmbientLight ambientLight;
+    vec3 pointLightPosition;
+    vec3 pointLightColor;
+    vec3 ambientLightColor;
     vec3 cameraPos;
 } lightBlock;
 
@@ -35,15 +25,11 @@ layout(location = 2) in vec2 inTexCoord;
 
 layout(location = 0) out vec3 fragPos;
 layout(location = 1) out vec2 fragTexCoord;
-layout(location = 2) out LightBlock {
-    vec3 pointLightPosition;
-    vec3 pointLightColor;
-    float pointLightIntensity;
-    vec3 ambientLightColor;
-    float ambientLightIntensity;
-    vec3 cameraPos;
-} fragLightBlock;
-
+layout(location = 2) out vec3 ambientLightColor;
+layout(location = 3) out vec3 cameraPos;
+layout(location = 4) out vec3 pointLightPosition;
+layout(location = 5) out vec3 pointLightColor;
+layout(location = 6) out vec3 dirLightDirection;
 
 // Computes the first row of the rotation matrix represented by a given quaternion
 vec3 xAxis(vec4 qQuat)
@@ -94,12 +80,9 @@ void main() {
     fragPos = worldToTangent * vec3(ubo.model * inPosition);
     fragTexCoord = inTexCoord;
 
-    fragLightBlock.pointLightPosition = worldToTangent * lightBlock.pointLight.position;
-    fragLightBlock.pointLightColor = lightBlock.pointLight.color;
-    fragLightBlock.pointLightIntensity = lightBlock.pointLight.intensity;
-
-    fragLightBlock.ambientLightColor = lightBlock.ambientLight.color;
-    fragLightBlock.ambientLightIntensity = lightBlock.ambientLight.intensity;
-
-    fragLightBlock.cameraPos = worldToTangent * lightBlock.cameraPos;
+    pointLightPosition = worldToTangent * lightBlock.pointLightPosition;
+    pointLightColor = lightBlock.pointLightColor;
+    ambientLightColor = lightBlock.ambientLightColor;
+    cameraPos = worldToTangent * lightBlock.cameraPos;
+    dirLightDirection = worldToTangent * vec3(.577, .577, .577);
 }
