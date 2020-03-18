@@ -167,6 +167,23 @@
     },
     {
       "key": {
+        "uuid": "8d2ce040_28c79bc9",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-18T13:32:23Z",
+      "side": 1,
+      "message": "Could we have LoadFileData consolidate all the calls to loading data (LoadASTCFileData, LoadDefaultTexture, and perhaps a refactor of the work done in LoadFileData out to another function?)",
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b0b1af63_95f3c5ab",
         "filename": "bender/bender-base/app/src/main/jni/texture.cc",
         "patchSetId": 2
@@ -307,6 +324,30 @@
     },
     {
       "key": {
+        "uuid": "e5620273_2c755b29",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-18T13:32:23Z",
+      "side": 1,
+      "message": "This should get fixed with the Vertex Format Compression code :P",
+      "parentUuid": "b84d60bf_73ae5626",
+      "range": {
+        "startLine": 80,
+        "startChar": 0,
+        "endLine": 80,
+        "endChar": 92
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2653c064_671f393a",
         "filename": "bender/bender-base/convert_astc.sh",
         "patchSetId": 2
@@ -387,6 +428,30 @@
       "writtenOn": "2020-03-18T03:33:57Z",
       "side": 1,
       "message": "It\u0027s a good idea to hoist out magic numbers and comment them (I realize this was from an earlier checkin - probably Omar\u0027s?).\n\nBased on usage, if they only crop up once, you can put them by the usage. Otherwise, hoist to the top of the .cpp or even the .h\n\nExample:\n      AddVertex(vertex2, modelData.back(), position, normal, texCoord, tangent, bitangent);\n      AddVertex(vertex1, modelData.back(), position, normal, texCoord, tangent, bitangent);\n\n      if (modelData.back().vert_to_index.size() \u003e 65500){\n\nBecomes:\n\n      AddVertex(vertex2, modelData.back(), position, normal, texCoord, tangent, bitangent);\n      AddVertex(vertex1, modelData.back(), position, normal, texCoord, tangent, bitangent);\n      \n      // Some GPUs only allow uint16_t index values - this prevents us from overflowing\n      constexpr size_t MaxAllowedIndexCountPerBuffer \u003d 65500U;\n\n      if (modelData.back().vert_to_index.size() \u003e MaxAllowedIndexCountPerBuffer ){",
+      "range": {
+        "startLine": 151,
+        "startChar": 50,
+        "endLine": 151,
+        "endChar": 55
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2548458f_89d67f78",
+        "filename": "bender/bender-base/utils/src/obj_loader.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-18T13:32:23Z",
+      "side": 1,
+      "message": "Yea this one\u0027s mine for sure, forgot to make it a macro or a constant",
+      "parentUuid": "c25b1ad5_9ef1febf",
       "range": {
         "startLine": 151,
         "startChar": 50,
