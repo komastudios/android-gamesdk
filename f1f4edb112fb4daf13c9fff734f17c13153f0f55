@@ -180,6 +180,24 @@
     },
     {
       "key": {
+        "uuid": "e107abc6_549f83ba",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 518,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-18T10:07:32Z",
+      "side": 1,
+      "message": "If we do a change, we do clear the frame durations and wait another 2s. This only stops us clearing if there was no change.",
+      "parentUuid": "60c0a513_cc37720f",
+      "revId": "f1f4edb112fb4daf13c9fff734f17c13153f0f55",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1c54fd73_9c7ef521",
         "filename": "test/swappy/swappycommon_test.cpp",
         "patchSetId": 1
