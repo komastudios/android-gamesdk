@@ -73,6 +73,24 @@
     },
     {
       "key": {
+        "uuid": "61bf2071_73f542d6",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 427,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-03-18T00:44:51Z",
+      "side": 1,
+      "message": "This is still confusing. If mCommonSettings.refreshPeriod*mAutoSwapInterval \u003c\u003d mAutoSwapIntervalThresholdNS.load() is false we will go to line 442 and print \"turning on pipeline\"...\n\nMaybe we should add a return there.",
+      "parentUuid": "f1fd4c40_c198e6fd",
+      "revId": "f1f4edb112fb4daf13c9fff734f17c13153f0f55",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "59fc71c5_c9f1db7c",
         "filename": "src/swappy/common/SwappyCommon.cpp",
         "patchSetId": 1
@@ -138,6 +156,24 @@
       "side": 1,
       "message": "Don\u0027t we want to be switching based on a moving average, rather than an average taken over discontinuous 2s intervals?",
       "parentUuid": "a298116a_2ad3d400",
+      "revId": "f1f4edb112fb4daf13c9fff734f17c13153f0f55",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "60c0a513_cc37720f",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 518,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-03-18T00:44:51Z",
+      "side": 1,
+      "message": "The problem is that we might switch back and forth. If we already did a change, IMO we should not attempt to do one in the near future (i.e. the 2 seconds).\nHowever, if you don\u0027t see issues with that I am fine to keep it.",
+      "parentUuid": "dabc071c_e9332449",
       "revId": "f1f4edb112fb4daf13c9fff734f17c13153f0f55",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
