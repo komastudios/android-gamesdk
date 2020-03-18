@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "ad10f518_67016e5f",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 7
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-18T13:13:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a745ec5e_d4f99b23",
+      "revId": "4d3fc81f3c18b1cf95a9923e94e91f9d6da067ce",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "789cf147_67e68bed",
         "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
         "patchSetId": 7
@@ -30,6 +48,24 @@
       "writtenOn": "2020-03-18T00:44:31Z",
       "side": 1,
       "message": "Is making this distinction not something we can do with the params of AddTexture? Since the loaded mtllib must know which textures are being used for what, we should add a param instead of doing rough gating based on the naming.\n\nAlso, because this is a long conditional I would put it on a separate line regardless.",
+      "revId": "4d3fc81f3c18b1cf95a9923e94e91f9d6da067ce",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "75ed6cad_2b04be07",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 7
+      },
+      "lineNbr": 288,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-18T13:13:18Z",
+      "side": 1,
+      "message": "Yea this one definitely can improve, although I think we might want to eventually go farther and information to the Texture class (like an enum specifying the type of texture) as I think we might want to use that information later on to decide on things like the default texture and VK_FORMAT within the Texture/Material contructor (for example I think the default texture for a normal map should be (0, 0, 255) for just the up vector rather than (255, 255, 255) which is a skew vector from the surface)\n\nFor now though passing it in as a parameter is a good idea! Definitely better than basing it off texture name which does not necessarily follow any convention :P",
+      "parentUuid": "789cf147_67e68bed",
       "revId": "4d3fc81f3c18b1cf95a9923e94e91f9d6da067ce",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "a51f1e66_569277c0",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.vert",
+        "patchSetId": 7
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-18T13:13:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "48e4f790_f3f9acfd",
+      "revId": "4d3fc81f3c18b1cf95a9923e94e91f9d6da067ce",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "72fd451b_c561c94e",
         "filename": "bender/bender-base/utils/src/bender_helpers.cc",
         "patchSetId": 7
@@ -67,6 +121,24 @@
       "revId": "4d3fc81f3c18b1cf95a9923e94e91f9d6da067ce",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1d7be8c3_40d5cbe0",
+        "filename": "bender/bender-base/utils/src/bender_helpers.cc",
+        "patchSetId": 7
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-18T13:13:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "72fd451b_c561c94e",
+      "revId": "4d3fc81f3c18b1cf95a9923e94e91f9d6da067ce",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -90,6 +162,30 @@
       "revId": "4d3fc81f3c18b1cf95a9923e94e91f9d6da067ce",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "71974573_3fa31861",
+        "filename": "bender/bender-base/utils/src/bender_helpers.h",
+        "patchSetId": 7
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-18T13:13:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "be0fbff5_2a076856",
+      "range": {
+        "startLine": 47,
+        "startChar": 20,
+        "endLine": 47,
+        "endChar": 33
+      },
+      "revId": "4d3fc81f3c18b1cf95a9923e94e91f9d6da067ce",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
