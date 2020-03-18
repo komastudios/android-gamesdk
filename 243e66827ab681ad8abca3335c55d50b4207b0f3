@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "8b8e1c9e_d89078b6",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-18T17:00:59Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "48f69ebc_1336905a",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 87
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8311c934_60020579",
         "filename": "bender/bender-base/app/src/main/jni/texture.cc",
         "patchSetId": 2
@@ -167,6 +191,30 @@
     },
     {
       "key": {
+        "uuid": "bef4e05f_cbac299d",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-18T17:00:59Z",
+      "side": 1,
+      "message": "That\u0027s fair; right now the ASTC loading checks the magic value in the ASTC header, and loads default texture if it\u0027s invalid (which would signify an invalid file wrongly named with *.astc).",
+      "parentUuid": "3008e43b_9909704a",
+      "range": {
+        "startLine": 46,
+        "startChar": 6,
+        "endLine": 46,
+        "endChar": 13
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8d2ce040_28c79bc9",
         "filename": "bender/bender-base/app/src/main/jni/texture.cc",
         "patchSetId": 2
@@ -178,6 +226,24 @@
       "writtenOn": "2020-03-18T13:32:23Z",
       "side": 1,
       "message": "Could we have LoadFileData consolidate all the calls to loading data (LoadASTCFileData, LoadDefaultTexture, and perhaps a refactor of the work done in LoadFileData out to another function?)",
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c3521b13_bc5e2f27",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-18T17:00:59Z",
+      "side": 1,
+      "message": "Ooh do you mean like have all the textures call LoadFileData, and deal with splitting into Default, png, or ASTC within this function? That makes sense to me, will do.",
+      "parentUuid": "8d2ce040_28c79bc9",
       "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -204,6 +270,30 @@
       "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4f2c6831_b88281d4",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-18T17:00:59Z",
+      "side": 1,
+      "message": "See comment in shell script :)",
+      "parentUuid": "b0b1af63_95f3c5ab",
+      "range": {
+        "startLine": 174,
+        "startChar": 0,
+        "endLine": 177,
+        "endChar": 21
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -301,6 +391,30 @@
     },
     {
       "key": {
+        "uuid": "644ba7ec_5731226c",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-18T17:00:59Z",
+      "side": 1,
+      "message": "I don\u0027t think that this is the source of the lint error b/c Lint didn\u0027t comment on my first patchset. I have a theory that it\u0027s related to the commit description, will see if my theory is true in the next patchset 😊\n\nAlso will split out into separate astc files.",
+      "parentUuid": "3878e316_7afdde7c",
+      "range": {
+        "startLine": 24,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 21
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b84d60bf_73ae5626",
         "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
         "patchSetId": 2
@@ -348,6 +462,30 @@
     },
     {
       "key": {
+        "uuid": "86fb88ac_05659f1e",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-18T17:00:59Z",
+      "side": 1,
+      "message": "Will figure out what to do with this with Omar",
+      "parentUuid": "e5620273_2c755b29",
+      "range": {
+        "startLine": 80,
+        "startChar": 0,
+        "endLine": 80,
+        "endChar": 92
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2653c064_671f393a",
         "filename": "bender/bender-base/convert_astc.sh",
         "patchSetId": 2
@@ -371,6 +509,30 @@
     },
     {
       "key": {
+        "uuid": "8f284d41_7cb30b47",
+        "filename": "bender/bender-base/convert_astc.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-18T17:00:59Z",
+      "side": 1,
+      "message": "This is fixing the flipping; I\u0027m thinking about this in terms of Chef, where processing should be done ahead of use. I didn\u0027t want to change the shader, b/c it would require that I flip the textures for the png textures (which is what the ARM sample does), to enable both to be used in the same shader.",
+      "parentUuid": "2653c064_671f393a",
+      "range": {
+        "startLine": 11,
+        "startChar": 7,
+        "endLine": 11,
+        "endChar": 28
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ff7a6529_b646ab11",
         "filename": "bender/bender-base/convert_astc.sh",
         "patchSetId": 2
@@ -391,6 +553,30 @@
       "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "189c69ff_c2754715",
+        "filename": "bender/bender-base/convert_astc.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-18T17:00:59Z",
+      "side": 1,
+      "message": "Got it; astcenc provides options for sse2, sse4.2, and avx2, but I didn\u0027t know the distinctions so I just went with nointrin when testing.",
+      "parentUuid": "ff7a6529_b646ab11",
+      "range": {
+        "startLine": 12,
+        "startChar": 10,
+        "endLine": 12,
+        "endChar": 26
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -461,6 +647,30 @@
       "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8cbd0fe_e0b844cb",
+        "filename": "bender/bender-base/utils/src/obj_loader.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-18T17:00:59Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "2548458f_89d67f78",
+      "range": {
+        "startLine": 151,
+        "startChar": 50,
+        "endLine": 151,
+        "endChar": 55
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
