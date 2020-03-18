@@ -22,21 +22,11 @@
 
 #include "glm/glm.hpp"
 
-struct alignas(16) PointLight{
-    alignas(16) glm::vec3 position;
-    alignas(16) glm::vec3 color;
-    alignas(4) float intensity;
-};
-
-struct alignas(16) AmbientLight{
-    alignas(16) glm::vec3 color;
-    alignas(4) float intensity;
-};
-
 struct alignas(16) LightBlock{
-    PointLight pointLight;
-    AmbientLight ambientLight;
-    alignas(16) glm::vec3 cameraPos;
+    alignas(16) glm::vec4 pointLightPosition;
+    alignas(16) glm::vec4 pointLightColor;
+    alignas(16) glm::vec4 ambientLight;
+    alignas(16) glm::vec4 cameraPos;
 };
 
 class Renderer {
