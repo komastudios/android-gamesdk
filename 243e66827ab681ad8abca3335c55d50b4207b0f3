@@ -73,6 +73,29 @@
     },
     {
       "key": {
+        "uuid": "8311c934_60020579",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-18T03:33:57Z",
+      "side": 1,
+      "message": "Probably worth explicitly calling out the numeric conversions here, especially as you\u0027re converting unsigned -\u003e signed -\u003e double -\u003e unsigned here. \n\n     mip_levels_ \u003d static_cast\u003cuint32_t\u003e( std::floor( std::log2( static_cast\u003cfloat\u003e( std::max( tex_width_, tex_height_ ) ) ) ) ) + 1U;\n\nOccasionally signed vs. unsigned usage can lead to undefined behavior, and it\u0027s horrible to try to figure out what happened. Usually you should at least get a warning though.\n\nNOTE: This next part is just to show you a trick.\n\nIt may also be possible to replace the log2/floor calls with a call to __builtin_clz() - which should be supported on all Android devices (requires ARM7 instructions) and on Intel/AMD\n\ne.g.\n\nmip_levels_ \u003d ( sizeof(tex_width_)* 8 ) - __builtin_clz( std::max( tex_width_, tex_height_ ) );",
+      "range": {
+        "startLine": 32,
+        "startChar": 1,
+        "endLine": 32,
+        "endChar": 77
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "033116a2_0e919cc7",
         "filename": "bender/bender-base/app/src/main/jni/texture.cc",
         "patchSetId": 2
@@ -137,6 +160,29 @@
         "startChar": 6,
         "endLine": 46,
         "endChar": 13
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b0b1af63_95f3c5ab",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-18T03:33:57Z",
+      "side": 1,
+      "message": "You mentioned earlier today that ASTC inverted the y-order of lines in the texture vs what you were expecting (which was fixed-up in the shader). Would it make more sense to flip the lines here (on-read, or after the image is in memory), or even better during encode?",
+      "range": {
+        "startLine": 174,
+        "startChar": 0,
+        "endLine": 177,
+        "endChar": 21
       },
       "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
@@ -212,6 +258,167 @@
       "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3878e316_7afdde7c",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-18T03:33:57Z",
+      "side": 1,
+      "message": "Wondering if these are the source of your lint message - astc_header (and the encoder) appears in 3rd party libs elsewhere in the google source tree - e.g. https://cs.corp.google.com/piper///depot/google3/third_party/fplbase/src/texture_headers.h?q\u003dASTCHeader\u0026dr\u003dCSs\n\nAlso, it would be a good to isolate all of the ASTC stuff to its own .h/.cpp - this will eventually be in Vulkan/OpenGL ES standard, and I\u0027d assume that they\u0027d include the data structure/cookie value there.",
+      "range": {
+        "startLine": 24,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 21
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b84d60bf_73ae5626",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-18T03:33:57Z",
+      "side": 1,
+      "message": "Is this only for this revision? If so, you might want to add a comment like this:\n\n//#HACK: Hardcoding material file for ATSC compression for this release. Remove later.",
+      "range": {
+        "startLine": 80,
+        "startChar": 0,
+        "endLine": 80,
+        "endChar": 92
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2653c064_671f393a",
+        "filename": "bender/bender-base/convert_astc.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-18T03:33:57Z",
+      "side": 1,
+      "message": "Looks like this might be you fixing the flipping you mentioned this morning so you don\u0027t need to do it in the shader? (Or it\u0027s the source of the unexpected flipping?)",
+      "range": {
+        "startLine": 11,
+        "startChar": 7,
+        "endLine": 11,
+        "endChar": 28
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ff7a6529_b646ab11",
+        "filename": "bender/bender-base/convert_astc.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-18T03:33:57Z",
+      "side": 1,
+      "message": "Will want to revisit this later - astcenc-nointrin implies that intrinsics are disabled for this build of the texture encoder. There\u0027s nearly zero build machines in existence which don\u0027t support up to at least AVX SSE2 on Windows (it\u0027s over a decade old - all 64-bit apps need to at least support SSE + SSE2). Most should even support SSE3 :)\n\nWe should default to a texture-encoder which is optimized.",
+      "range": {
+        "startLine": 12,
+        "startChar": 10,
+        "endLine": 12,
+        "endChar": 26
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c87bd4cb_f799895d",
+        "filename": "bender/bender-base/utils/src/obj_loader.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-18T03:33:57Z",
+      "side": 1,
+      "message": "A best-practice that I\u0027ve adopted over the years is that in my .cc/.cpp, for parameters on functions with default values, I\u0027ll add keep the default part in the .cc/.cpp but commented out. e.g.:\n\nvoid LoadOBJ(AAssetManager *mgr,\n             const std::string \u0026objFileName,\n             std::unordered_map\u003cstd::string, MTL\u003e \u0026mtllib,\n             std::vector\u003cOBJ\u003e \u0026modelData,\n             const std::string *mtlOverrideFileName /* \u003d nullptr */) {\n\n... that way people reading the .cpp can see what\u0027s a default, as there\u0027s usually additional inferred semantics there. Your call tho, especially as this requires that you block-comment out code using //\u0027s instead of /* ... */",
+      "range": {
+        "startLine": 76,
+        "startChar": 13,
+        "endLine": 76,
+        "endChar": 54
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c25b1ad5_9ef1febf",
+        "filename": "bender/bender-base/utils/src/obj_loader.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-18T03:33:57Z",
+      "side": 1,
+      "message": "It\u0027s a good idea to hoist out magic numbers and comment them (I realize this was from an earlier checkin - probably Omar\u0027s?).\n\nBased on usage, if they only crop up once, you can put them by the usage. Otherwise, hoist to the top of the .cpp or even the .h\n\nExample:\n      AddVertex(vertex2, modelData.back(), position, normal, texCoord, tangent, bitangent);\n      AddVertex(vertex1, modelData.back(), position, normal, texCoord, tangent, bitangent);\n\n      if (modelData.back().vert_to_index.size() \u003e 65500){\n\nBecomes:\n\n      AddVertex(vertex2, modelData.back(), position, normal, texCoord, tangent, bitangent);\n      AddVertex(vertex1, modelData.back(), position, normal, texCoord, tangent, bitangent);\n      \n      // Some GPUs only allow uint16_t index values - this prevents us from overflowing\n      constexpr size_t MaxAllowedIndexCountPerBuffer \u003d 65500U;\n\n      if (modelData.back().vert_to_index.size() \u003e MaxAllowedIndexCountPerBuffer ){",
+      "range": {
+        "startLine": 151,
+        "startChar": 50,
+        "endLine": 151,
+        "endChar": 55
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5cb492bf_79de5516",
+        "filename": "bender/bender-base/utils/src/obj_loader.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-18T03:33:57Z",
+      "side": 1,
+      "message": "If this is temporary while you\u0027re working on the obj loader, you might want to call this out in a comment - overriding filenames feels like an edge case to me.",
+      "range": {
+        "startLine": 81,
+        "startChar": 4,
+        "endLine": 81,
+        "endChar": 63
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
