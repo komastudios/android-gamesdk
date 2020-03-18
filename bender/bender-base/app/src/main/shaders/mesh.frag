@@ -46,28 +46,82 @@ layout(location = 2) in LightBlock {
 
 layout(location = 0) out vec4 outColor;
 
+const float PI = 3.14159265359;
+
+float DistributionGGX(vec3 N, vec3 H, float roughness)
+{
+    float a      = roughness*roughness;
+    float a2     = a*a;
+    float NdotH  = max(dot(N, H), 0.0);
+    float NdotH2 = NdotH*NdotH;
+
+    float num   = a2;
+    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+    denom = PI * denom * denom;
+
+    return num / denom;
+}
+float GeometrySchlickGGX(float NdotV, float roughness)
+{
+    float r = (roughness + 1.0);
+    float k = (r*r) / 8.0;
+
+    float num   = NdotV;
+    float denom = NdotV * (1.0 - k) + k;
+
+    return num / denom;
+}
+float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
+{
+    float NdotV = max(dot(N, V), 0.0);
+    float NdotL = max(dot(N, L), 0.0);
+    float ggx2  = GeometrySchlickGGX(NdotV, roughness);
+    float ggx1  = GeometrySchlickGGX(NdotL, roughness);
+
+    return ggx1 * ggx2;
+}
+vec3 fresnelSchlick(float cosTheta, vec3 F0)
+{
+    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+}
+
 vec3 calcPointLight(PointLight light){
-    vec3 lightDir = normalize(light.position - fragPos);
-    vec3 viewDir = normalize(fragLightBlock.cameraPos - fragPos);
-    vec3 halfwayDir = normalize(lightDir + viewDir);
+    vec3 N = normalize(texture(textureNormal, fragTexCoord).xyz * 2.0 - 1.0);
+    vec3 V = normalize(fragLightBlock.cameraPos - fragPos);
+    float metallic = texture(textureSpecularExponent, fragTexCoord).x;
+    float roughness = texture(textureSpecularExponent, fragTexCoord).y;
+    vec3 albedo = pow(texture(textureDiffuse, fragTexCoord).xyz, vec3(2.2));
+    vec3 F0 = vec3(0.04);
+    F0 = mix(F0, albedo, metallic);
 
-    vec3 lightDiff = light.position - fragPos;
-    float attenuation = light.intensity / length(lightDiff);
+    // calculate per-light radiance
+    vec3 L = normalize(light.position - fragPos);
+    vec3 H = normalize(V + L);
+    float distance    = length(light.position - fragPos);
+    float attenuation = 1.0 / (distance * distance);
+    vec3 radiance     = light.color * attenuation * light.intensity;
 
-    vec3 normal = texture(textureNormal, fragTexCoord).xyz;
-    normal = normalize(normal * 2.0 - 1.0);
+    // cook-torrance brdf
+    float NDF = DistributionGGX(N, H, roughness);
+    float G   = GeometrySmith(N, V, L, roughness);
+    vec3 F    = fresnelSchlick(max(dot(H, V), 0.0), F0);
 
-    float diffuseTerm = max(dot(lightDir, normal), 0.0);
-    vec3 diffuse = diffuseTerm * light.color * attenuation * texture(textureDiffuse, fragTexCoord).xyz * materialAttr.diffuse;
+    vec3 kS = F;
+    vec3 kD = vec3(1.0) - kS;
+    kD *= 1.0 - metallic;
 
-    float specularTerm = pow(max(dot(normal, halfwayDir), 0.0), materialAttr.specular.w * texture(textureSpecularExponent, fragTexCoord).x);
-    vec3 specular = specularTerm * light.color * attenuation * texture(textureSpecular, fragTexCoord).xyz * materialAttr.specular.xyz;
+    vec3 numerator    = NDF * G * F;
+    float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
+    vec3 specular     = numerator / max(denominator, 0.001);
 
-    return specular + diffuse;
+    // return outgoing radiance Lo
+    float NdotL = max(dot(N, L), 0.0);
+    return (kD * albedo / PI + specular) * radiance * NdotL;
 }
 
 vec3 calcAmbientLight(AmbientLight light){
-    return light.intensity * light.color * materialAttr.ambient * texture(textureDiffuse, fragTexCoord).xyz;
+    vec3 color =  pow(texture(textureDiffuse, fragTexCoord).xyz, vec3(2.2));
+    return light.intensity * light.color * materialAttr.ambient * color;
 }
 
 void main(){
@@ -81,6 +135,9 @@ void main(){
     ambient_light.intensity = fragLightBlock.ambientLightIntensity;
 
     vec3 res = calcPointLight(point_light) + calcAmbientLight(ambient_light);
+
+    res = res / (res + vec3(1.0));
+    res = pow(res, vec3(1.0/2.2));
 
     outColor = vec4(res, 1.0);
 }
