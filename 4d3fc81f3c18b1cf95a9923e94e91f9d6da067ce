@@ -2,6 +2,40 @@
   "comments": [
     {
       "key": {
+        "uuid": "a745ec5e_d4f99b23",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 7
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-18T00:44:31Z",
+      "side": 1,
+      "message": "Careful with variable names in this function, (not camelCase, underscore_case).",
+      "revId": "4d3fc81f3c18b1cf95a9923e94e91f9d6da067ce",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "789cf147_67e68bed",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 7
+      },
+      "lineNbr": 288,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-18T00:44:31Z",
+      "side": 1,
+      "message": "Is making this distinction not something we can do with the params of AddTexture? Since the loaded mtllib must know which textures are being used for what, we should add a param instead of doing rough gating based on the naming.\n\nAlso, because this is a long conditional I would put it on a separate line regardless.",
+      "revId": "4d3fc81f3c18b1cf95a9923e94e91f9d6da067ce",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "48e4f790_f3f9acfd",
         "filename": "bender/bender-base/app/src/main/shaders/mesh.vert",
         "patchSetId": 7
