@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "48f69ebc_1336905a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-03-18T00:49:15Z",
+      "side": 1,
+      "message": "hah yeah I just found out this. maybe the some keywords in the commit message (e.g. thrid party, libraries) triggered Lint? We can add license team to take a look afterwards",
+      "parentUuid": "e4ccff97_d6e43ed0",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 87
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "033116a2_0e919cc7",
         "filename": "bender/bender-base/app/src/main/jni/texture.cc",
         "patchSetId": 2
@@ -96,6 +120,30 @@
     },
     {
       "key": {
+        "uuid": "3008e43b_9909704a",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-03-18T00:49:15Z",
+      "side": 1,
+      "message": "and one more concern when checking this way: what if an uncompressed texture file wrongly named with *.astc :p",
+      "parentUuid": "d5bf4cd5_563e4d19",
+      "range": {
+        "startLine": 46,
+        "startChar": 6,
+        "endLine": 46,
+        "endChar": 13
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c7816fb5_b9a50248",
         "filename": "bender/bender-base/app/src/main/jni/texture.cc",
         "patchSetId": 2
@@ -131,6 +179,30 @@
       "side": 1,
       "message": "I actually think that bytes is more accurate in this case (since .size is meant to be bytes of the buffer). I named it this way because I figured size might be ambiguous in terms of referring to image dimensions, which is not the same for the ASTC compressed textures.",
       "parentUuid": "c7816fb5_b9a50248",
+      "range": {
+        "startLine": 215,
+        "startChar": 14,
+        "endLine": 215,
+        "endChar": 23
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "612665f9_29dae178",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-03-18T00:49:15Z",
+      "side": 1,
+      "message": "makes sense when putting astc format in account",
+      "parentUuid": "25889245_02ea1503",
       "range": {
         "startLine": 215,
         "startChar": 14,
