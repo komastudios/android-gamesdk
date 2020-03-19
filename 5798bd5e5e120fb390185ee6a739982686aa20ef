@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "1c22675d_c64ae26b",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T20:34:38Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "7794be14_51a040f1",
+      "range": {
+        "startLine": 203,
+        "startChar": 5,
+        "endLine": 203,
+        "endChar": 51
+      },
+      "revId": "5798bd5e5e120fb390185ee6a739982686aa20ef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "03cd0a69_767c7d56",
         "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "5798bd5e5e120fb390185ee6a739982686aa20ef",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a0f62ca0_906ad841",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 1
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T20:34:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "03cd0a69_767c7d56",
+      "range": {
+        "startLine": 91,
+        "startChar": 29,
+        "endLine": 91,
+        "endChar": 52
+      },
+      "revId": "5798bd5e5e120fb390185ee6a739982686aa20ef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "045829be_a5e96980",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T20:34:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8210ffde_a219a4c8",
+      "range": {
+        "startLine": 92,
+        "startChar": 30,
+        "endLine": 92,
+        "endChar": 53
+      },
+      "revId": "5798bd5e5e120fb390185ee6a739982686aa20ef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "64ec8f44_cea18324",
         "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
         "patchSetId": 1
@@ -82,6 +154,30 @@
       "writtenOn": "2020-03-19T06:04:59Z",
       "side": 1,
       "message": "pow is an expensive function - gamma? \n\nSo this may be because you\u0027re using an sRGB diffuse texture but loading it as linear? If it\u0027s loaded as sRGB the hardware will do the gamma calculation for you when you sample the texture. Almost for free on most GPUs (they do a piecewise linear approximation) :D \n\n(Although make sure that sRGB really is what you want, and not gamma - they\u0027re not the same. It\u0027s just most computer art uses sRGB these days, so that\u0027s probably what you\u0027ve got).\n\nFor the future: Your frame buffer should be linear RGB for anything that touches lighting - including (if we get there) lightmaps. IF possible. Depending on memory constraints it might not be (but blending may be incorrect/less accurate then). As part of your post-processing pass (+ HUD rendering) you\u0027d usually perform linear-\u003esRGB conversion by rendering to an output buffer (while you\u0027re doing other work, like bloom, Depth of Field, etc).\n\n[ ] Make sure that diffuse textures/normal maps/smoothness maps are correctly sRGB or Linear (might not be what you\u0027d expect for PBR - may *need* linear but sRGB may give you better results), and make sure they\u0027re being loaded into memory with the right setting flipped onto the surface you\u0027re creating too. Try to explicitly call it out so people see what\u0027s going on.\n[ ] Verify that this doesn\u0027t change your point light\u0027s value. (Should be pretty easy to see).\n[ ] Verify that the framebuffer has the correct sRGB/Linear flag set on it. (Usually intermediates are Linear and the final final post- post-processing buffer is sRGB or REC2020 or something like that. For Bender, diffuse should be _SRGB and the frame buffer should also probably be _SRGB).\n\nFor now though, try simplifying the albedo calculation, setting the right _SRGB on diffuse + framebuffer, and remove the pow() - see if it works. \n\nSee this for more info: https://medium.com/@Jacob_Bell/programmers-guide-to-gamma-correction-4c1d3a1724fb\n\ne.g: --\u003e\n\nvec3 albedo \u003d texture(textureDiffuse, fragTexCoord).xyz;",
+      "range": {
+        "startLine": 93,
+        "startChar": 3,
+        "endLine": 93,
+        "endChar": 76
+      },
+      "revId": "5798bd5e5e120fb390185ee6a739982686aa20ef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e9d43741_7564dea8",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 1
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T20:34:38Z",
+      "side": 1,
+      "message": "Ahhhh yea that confused me a bit, I wasn\u0027t sure if the specification of the texture of the texture format in vulkan as *_SRGB would automatically do the conversion - doing more tests it does seem to automatically convert the texture into a linear format\n\nSame with the framebuffer, right now it\u0027s being set to SRGB which I assume means that it will also automatically do the conversion of the output color from linear to RGB",
+      "parentUuid": "64ec8f44_cea18324",
       "range": {
         "startLine": 93,
         "startChar": 3,
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "172a2a00_d84b6ba6",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 1
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T20:34:38Z",
+      "side": 1,
+      "message": "F0 is used for the fresnel equation!",
+      "parentUuid": "84deffcd_1803c407",
+      "range": {
+        "startLine": 94,
+        "startChar": 0,
+        "endLine": 95,
+        "endChar": 35
+      },
+      "revId": "5798bd5e5e120fb390185ee6a739982686aa20ef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "83ebd29f_5aaf9c73",
         "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
         "patchSetId": 1
@@ -128,6 +248,30 @@
       "writtenOn": "2020-03-19T06:04:59Z",
       "side": 1,
       "message": "max() is often implemented using some form of conditional move instruction (a \"compare \u0026 select\" operation). It\u0027s cheap, but remember, these costs quickly balloon up when rendered across every pixel.\n\nOn most GPUs (for example, Imagination PowerVR), the saturate instruction is FREE! You generate it by using a clamp(...,0.0,1.0)\n\nWe already know that L is a unit vector.\nN is a normal (by definition, a unit vector)\nV is normalized too.\n\nSo we can replace this line with this:\n\nfloat denominator \u003d 4.0 * clamp( dot( N, V ), 0.0, 1,0 ) * clamp( dot(N,L), 0.0, 1.0);\n\n... which should be at least 2 cycles cheaper (but I can\u0027t verify this at the moment). \n\nSee this doc for more optimizations for shaders (for that specific GPU, but should apply to most): http://cdn.imgtec.com/sdk-documentation/PowerVR%20Low%20level%20GLSL%20Optimisation.pdf",
+      "range": {
+        "startLine": 114,
+        "startChar": 0,
+        "endLine": 114,
+        "endChar": 72
+      },
+      "revId": "5798bd5e5e120fb390185ee6a739982686aa20ef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "692ccfb7_a5a5e41d",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T20:34:38Z",
+      "side": 1,
+      "message": "Oh I definitely did not know about clamp vs max on the GPU, thanks!!",
+      "parentUuid": "83ebd29f_5aaf9c73",
       "range": {
         "startLine": 114,
         "startChar": 0,
@@ -163,6 +307,30 @@
     },
     {
       "key": {
+        "uuid": "a4647bc8_a44077af",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 1
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T20:34:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "44a5e90f_adc157da",
+      "range": {
+        "startLine": 115,
+        "startChar": 4,
+        "endLine": 115,
+        "endChar": 60
+      },
+      "revId": "5798bd5e5e120fb390185ee6a739982686aa20ef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fb328d10_0c09f7a6",
         "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
         "patchSetId": 1
@@ -177,6 +345,24 @@
       "revId": "5798bd5e5e120fb390185ee6a739982686aa20ef",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "47223b09_ba6b048e",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 1
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T20:34:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fb328d10_0c09f7a6",
+      "revId": "5798bd5e5e120fb390185ee6a739982686aa20ef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -203,6 +389,30 @@
     },
     {
       "key": {
+        "uuid": "f31b5f1e_c3829824",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 1
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T20:34:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d2ddd342_93d4ba8d",
+      "range": {
+        "startLine": 123,
+        "startChar": 1,
+        "endLine": 123,
+        "endChar": 76
+      },
+      "revId": "5798bd5e5e120fb390185ee6a739982686aa20ef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8f1b4104_8511f08a",
         "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
         "patchSetId": 1
@@ -223,6 +433,30 @@
       "revId": "5798bd5e5e120fb390185ee6a739982686aa20ef",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8db4ae8c_80ccdb95",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 1
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T20:34:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8f1b4104_8511f08a",
+      "range": {
+        "startLine": 140,
+        "startChar": 1,
+        "endLine": 140,
+        "endChar": 34
+      },
+      "revId": "5798bd5e5e120fb390185ee6a739982686aa20ef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
