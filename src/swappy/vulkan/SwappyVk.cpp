@@ -164,6 +164,19 @@ bool SwappyVk::GetRefreshCycleDuration(JNIEnv           *env,
                                                       pRefreshDuration);
 }
 
+/**
+ * Generic/Singleton implementation of swappyVkSetWindow.
+ */
+void SwappyVk::SetWindow(VkDevice       device,
+                         VkSwapchainKHR swapchain,
+                         ANativeWindow* window)
+{
+    auto& pImplementation = perDeviceImplementation[device];
+    if (!pImplementation) {
+        return;
+    }
+    pImplementation->doSetWindow(window);
+}
 
 /**
  * Generic/Singleton implementation of swappyVkSetSwapInterval.
