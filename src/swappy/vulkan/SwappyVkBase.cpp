@@ -120,6 +120,10 @@ SwappyVkBase::~SwappyVkBase() {
     destroyVkSyncObjects();
 }
 
+void SwappyVkBase::doSetWindow(ANativeWindow* window) {
+    mCommonBase.setANativeWindow(window);
+}
+
 void SwappyVkBase::doSetSwapInterval(VkSwapchainKHR swapchain, uint64_t swap_ns) {
     Settings::getInstance()->setSwapIntervalNS(swap_ns);
 }
