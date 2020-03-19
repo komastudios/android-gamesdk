@@ -23,6 +23,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <android/native_window.h>
 
 /** @brief Swap interval for 60fps, in nanoseconds. */
 #define SWAPPY_SWAP_60FPS (16666667L)
@@ -39,7 +40,7 @@
 
 // Internal macros to track Swappy version, do not use directly.
 #define SWAPPY_MAJOR_VERSION 1
-#define SWAPPY_MINOR_VERSION 3
+#define SWAPPY_MINOR_VERSION 4
 #define SWAPPY_PACKED_VERSION ((SWAPPY_MAJOR_VERSION<<16)|(SWAPPY_MINOR_VERSION))
 
 // Internal macros to generate a symbol to track Swappy version, do not use directly.
