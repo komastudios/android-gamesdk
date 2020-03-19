@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "10a2569b_4720adec",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T19:35:52Z",
+      "side": 1,
+      "message": "Implemented an OBJ_Vertex data type for this - I had one implemented in the mesh decimator that worked pretty well so didn\u0027t take too long to port haha\n\nThe only issue is that right now for the polyhedron, the vertex data is stored entirely in an std::vector\u003cfloat\u003e which is hard coded - so I kept the other constructor that takes in the std::vector\u003cfloat\u003e around until we figure out a better way to deal with the polyhedra",
+      "parentUuid": "c5f595d4_958532c7",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 44
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6f979e13_ecb19622",
         "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
         "patchSetId": 8
@@ -36,6 +60,30 @@
       "writtenOn": "2020-03-19T04:00:49Z",
       "side": 1,
       "message": "Is there any way we can get rid of this vec4.w parameter here? seems a waste to pass it around if we\u0027re compressing everything else.\n\n(If the answer\u0027s no, that\u0027s fine).",
+      "range": {
+        "startLine": 47,
+        "startChar": 4,
+        "endLine": 47,
+        "endChar": 45
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "559a4e25_ed25f67b",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T19:35:52Z",
+      "side": 1,
+      "message": "This one is more of a padding thing, a vec3 and a vec4 both take up the same amount of space (vec3 just gets padding) and we need this vector to be a vec4 in the vertex shader anyways to be multiplied by the mat4 mvp matrix so I figured we could get it all setup beforehand :)",
+      "parentUuid": "6f979e13_ecb19622",
       "range": {
         "startLine": 47,
         "startChar": 4,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "fb611e06_d14d1feb",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T19:35:52Z",
+      "side": 1,
+      "message": "This is a good suggestion, thanks!",
+      "parentUuid": "29524d9c_e44d7a18",
+      "range": {
+        "startLine": 54,
+        "startChar": 19,
+        "endLine": 54,
+        "endChar": 45
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0a25631c_01b91118",
         "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
         "patchSetId": 8
@@ -91,6 +163,30 @@
       "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3f782be0_0f965046",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T19:35:52Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "0a25631c_01b91118",
+      "range": {
+        "startLine": 69,
+        "startChar": 4,
+        "endLine": 69,
+        "endChar": 25
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "357a7bd9_12aa1fbf",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T19:35:52Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "863768cd_4cde216d",
+      "range": {
+        "startLine": 82,
+        "startChar": 42,
+        "endLine": 82,
+        "endChar": 48
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7055a5b8_e1e19940",
         "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
         "patchSetId": 8
@@ -128,6 +248,30 @@
       "writtenOn": "2020-03-19T04:00:49Z",
       "side": 1,
       "message": "Ideally you\u0027d add a real_vertex_data format here as well, but glm doesn\u0027t really support vertex types with uint16_t. \n\nInstead, what you might want to do is this:\n\nCreate a header file somewhere for your \"packedtypes.h\"\n\nIn there, add something along these lines:\n#pragma pack(push,0) //\u003c-- important! the GPU doesn\u0027t care what data structure we use, as \n// long as the vertices are contiguous in memory and laid out as binary data in the right \n// spots. We just need to be consistent. Part of that is making sure all padding/alignment \n// is explicit.\n\nstruct vec4_snorm16\n{\n  int16_t x, y, z, w;\n\n  const vec4_snorm16\u0026 Set( int16_t in_x, int16_t in_y, int16_t in_z, int16_t in_w)\n  { // OR... accept a glm::vec3.\n\n     x \u003d FloatToSnorm16( in_x );\n     y \u003d FloatToSnorm16( in_y );\n     z \u003d FloatToSnorm16( in_z );\n     w \u003d FloatToSnorm16( in_w );\n     return *this;  \n  }\n}\n\nstruct vec3_snorm16\n{\n  int16_t x, y, z;\n}\n\nstruct vec2_snorm16\n{\n  int16_t x, y;\n}\n\nstruct vec4_unorm16\n{\n  int16_t x, y, z, w;\n}\n\nstruct vec3_unorm16\n{\n  int16_t x, y, z;\n}\n\nstruct vec2_unorm16\n{\n  int16_t x, y;\n}\n#pragma pack(pop)\n\n-------------------------\n\nAnd then here, define a struct using the unorm16/snorm16 types:\n\nstruct packed_vertex_format\n{\n  vec4_snorm16 pos;\n  vec4_snorm16 tangent;\n  vec4_unorm16 uv;\n}\n\n... and when you pass the data to the Vulkan API, use something like reinterpret_cast\u003cuint16_t*\u003e(\u0026buffer[0]). :)",
+      "range": {
+        "startLine": 85,
+        "startChar": 0,
+        "endLine": 91,
+        "endChar": 76
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fd46419a_3f1adcb1",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T19:35:52Z",
+      "side": 1,
+      "message": "Gotcha, implemented this as well!",
+      "parentUuid": "7055a5b8_e1e19940",
       "range": {
         "startLine": 85,
         "startChar": 0,
@@ -160,6 +304,30 @@
       "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "18545369_1d05b64b",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T19:35:52Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "179c3e4a_e1d32e01",
+      "range": {
+        "startLine": 113,
+        "startChar": 35,
+        "endLine": 113,
+        "endChar": 56
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -203,6 +371,30 @@
     },
     {
       "key": {
+        "uuid": "3bef12da_595192cd",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T19:35:52Z",
+      "side": 1,
+      "message": "I like this suggestion, definitely keeping that one in my toolkit haha",
+      "parentUuid": "8950ece0_2af24d5d",
+      "range": {
+        "startLine": 260,
+        "startChar": 29,
+        "endLine": 260,
+        "endChar": 41
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e69833fa_0f740bd0",
         "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
         "patchSetId": 8
@@ -214,6 +406,30 @@
       "writtenOn": "2020-03-19T04:00:49Z",
       "side": 1,
       "message": "This seems like an odd thing to have. What\u0027s it for?",
+      "range": {
+        "startLine": 262,
+        "startChar": 0,
+        "endLine": 262,
+        "endChar": 104
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "73f2b056_e4365c19",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T19:35:52Z",
+      "side": 1,
+      "message": "This is because to use Snorm/Unorm, the vertices have to all be within the range [[-1|0]-1], so they get scaled in the x, y, z direction in order to shrink them down from whatever their original size was\n\nyou bake this scale into the mvp so that you get the original model\u0027s size back out! But I wanted to hide away that weird scaling so that when looking at the transform you don\u0027t see a weird scaling included that takes this into account, just the transformations that you applied in worldspace",
+      "parentUuid": "e69833fa_0f740bd0",
       "range": {
         "startLine": 262,
         "startChar": 0,
@@ -249,6 +465,30 @@
     },
     {
       "key": {
+        "uuid": "40902ce9_0b19bf68",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.vert",
+        "patchSetId": 8
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T19:35:52Z",
+      "side": 1,
+      "message": "Answered above!",
+      "parentUuid": "cfb92253_b1065f15",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 40
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1aae6226_3547ba43",
         "filename": "bender/bender-base/utils/src/bender_helpers.cc",
         "patchSetId": 8
@@ -260,6 +500,30 @@
       "writtenOn": "2020-03-19T04:00:49Z",
       "side": 1,
       "message": "First: I don\u0027t know if we do or not, but do we need an assert here to verify that v is valid?\n\n    assert( v \u003e\u003d -1.0f \u0026\u0026 v \u003c\u003d 1.0f \u0026\u0026 \"v out of range\"); // \u003c-- if appropriate. \n\nThis calculation feels wrong (and from memory I helped so my bad too). Assuming a normalized input value between -1.0f and 1.0f... I\u0027d expect to need to do the following instead:\n\nint16_t FloatToSnorm16(float v) {\n    return static_cast\u003cint16_t\u003e(std::clamp( v * SNORM_MAX, SNORM_MIN, SNORM_MAX ) );\n}\n\nInput of -1 \u003d -SNORM_MAX \u003d -1.0 * 32767.0f \u003d -32767.0f \u003d SNORM_MIN\nInput of 1 \u003d SNORM_MAX \u003d 32767.0f\nInput of 0 \u003d 0\n\n\nYou also might want to rename the parameter and the function to something like this:\nint16_t NormFloatToSnorm16(float n) {\n\n... because it\u0027s normalized (value is in range -1.0f to +1.0f), and calling it out will help people remember.",
+      "range": {
+        "startLine": 133,
+        "startChar": 31,
+        "endLine": 136,
+        "endChar": 66
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6b1c9819_f543d2e6",
+        "filename": "bender/bender-base/utils/src/bender_helpers.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T19:35:52Z",
+      "side": 1,
+      "message": "The +/- .5 is for rounding purposes - the spec states that you should round to the nearest integer when doing the conversion and so this pushes the values up and down accordingly so that they get truncated to the rounded value\n\nThe assert makes sense! We also have the clamp in place in order to ensure the output isn\u0027t bad but ideally you are using this function with normalized values so unless you really know what you\u0027re doing getting that error would be helpful\n\nThe naming suggestion also makes sense!",
+      "parentUuid": "1aae6226_3547ba43",
       "range": {
         "startLine": 133,
         "startChar": 31,
@@ -292,6 +556,30 @@
       "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f1a7f0c1_0a6c7493",
+        "filename": "bender/bender-base/utils/src/bender_helpers.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T19:35:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6aea28ee_4848a7b2",
+      "range": {
+        "startLine": 139,
+        "startChar": 0,
+        "endLine": 142,
+        "endChar": 0
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -341,6 +629,30 @@
     },
     {
       "key": {
+        "uuid": "3de50d5c_a31d6d63",
+        "filename": "bender/bender-base/utils/src/bender_helpers.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T19:35:52Z",
+      "side": 1,
+      "message": "So I read somewhere that GPU\u0027s map -32768.0f and -32767.0f so that\u0027s why I used -32768.0f (for the symmetry you described) but that was also D3D10 based - I found some vulkan specific documentation that states the conversion should be -(2^15-1) which is -32767.0f so I will update it accordingly!",
+      "parentUuid": "4b42a205_e380ca45",
+      "range": {
+        "startLine": 23,
+        "startChar": 18,
+        "endLine": 23,
+        "endChar": 27
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c9ec7dc0_492f08cf",
         "filename": "bender/bender-base/utils/src/bender_helpers.h",
         "patchSetId": 8
@@ -361,6 +673,30 @@
       "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "96eff3a6_5d1f2a37",
+        "filename": "bender/bender-base/utils/src/bender_helpers.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T19:35:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c9ec7dc0_492f08cf",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 26
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -387,6 +723,30 @@
     },
     {
       "key": {
+        "uuid": "fe0492cd_023a0d14",
+        "filename": "bender/bender-base/utils/src/bender_helpers.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T19:35:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c5e14dfe_fcf1196f",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 47,
+        "endChar": 32
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f7b784f2_4c9a821b",
         "filename": "bender/bender-base/utils/src/obj_loader.cc",
         "patchSetId": 8
@@ -398,6 +758,30 @@
       "writtenOn": "2020-03-19T04:00:49Z",
       "side": 1,
       "message": "I\u0027m honestly surprised that this actually works and gives you a std::string back - cool!",
+      "range": {
+        "startLine": 58,
+        "startChar": 42,
+        "endLine": 58,
+        "endChar": 62
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5dcc286e_5b9209d6",
+        "filename": "bender/bender-base/utils/src/obj_loader.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T19:35:52Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f7b784f2_4c9a821b",
       "range": {
         "startLine": 58,
         "startChar": 42,
@@ -433,6 +817,30 @@
     },
     {
       "key": {
+        "uuid": "63733885_8001a94a",
+        "filename": "bender/bender-base/utils/src/obj_loader.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T19:35:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a1970937_7678cd5e",
+      "range": {
+        "startLine": 139,
+        "startChar": 27,
+        "endLine": 139,
+        "endChar": 29
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4224ec35_2a0fca20",
         "filename": "bender/bender-base/utils/src/obj_loader.cc",
         "patchSetId": 8
@@ -456,6 +864,30 @@
     },
     {
       "key": {
+        "uuid": "77b43d2a_2da498d5",
+        "filename": "bender/bender-base/utils/src/obj_loader.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T19:35:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4224ec35_2a0fca20",
+      "range": {
+        "startLine": 142,
+        "startChar": 30,
+        "endLine": 142,
+        "endChar": 31
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c76e53c5_271ae8ca",
         "filename": "bender/bender-base/utils/src/obj_loader.cc",
         "patchSetId": 8
@@ -476,6 +908,30 @@
       "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e6bf3be3_a238ea67",
+        "filename": "bender/bender-base/utils/src/obj_loader.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-19T19:35:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c76e53c5_271ae8ca",
+      "range": {
+        "startLine": 149,
+        "startChar": 50,
+        "endLine": 149,
+        "endChar": 55
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
