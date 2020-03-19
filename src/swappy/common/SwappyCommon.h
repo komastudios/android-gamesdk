@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <android/native_window.h>
+
 #include <atomic>
 #include <chrono>
 #include <deque>
@@ -36,18 +38,23 @@
 
 namespace swappy {
 
+// ANativeWindow_setFrameRate is supported from API 30. To allow compilation for minSDK < 30
+// we need runtime support to call this API.
+using PFN_ANativeWindow_setFrameRate = int32_t (*)(ANativeWindow* window, float frameRate, int8_t compatibility);
+
 using namespace std::chrono_literals;
 
 struct SwappyCommonSettings {
 
-    int sdkVersion;
+    // {Build.VERSION.SDK_INT, Build.VERSION.PREVIEW_SDK_INT}
+    std::pair<int, bool> sdkVersion;
 
     std::chrono::nanoseconds refreshPeriod;
     std::chrono::nanoseconds appVsyncOffset;
     std::chrono::nanoseconds sfVsyncOffset;
 
     static bool getFromApp(JNIEnv *env, jobject jactivity, SwappyCommonSettings* out);
-    static int getSDKVersion(JNIEnv *env);
+    static std::pair<int, bool> getSDKVersion(JNIEnv *env);
     static bool queryDisplayTimings(JNIEnv *env, jobject jactivity, SwappyCommonSettings* out);
 };
 
@@ -96,6 +103,8 @@ public:
 
     std::chrono::nanoseconds getFenceTimeout() const { return mFenceTimeout; }
     void setFenceTimeout(std::chrono::nanoseconds t) { mFenceTimeout = t; }
+
+    void setANativeWindow(ANativeWindow *window);
 
   protected:
     // Used for testing
@@ -173,8 +182,8 @@ private:
     void waitUntil(int32_t target);
     void waitUntilTargetFrame();
     void waitOneFrame();
-    void setPreferredRefreshRate(int index);
-    void setPreferredRefreshRate(std::chrono::nanoseconds frameTime);
+    void setPreferredModeId(int index);
+    void setPreferredRefreshRate(std::chrono::nanoseconds frameTime) REQUIRES(mFrameDurationsMutex);
     int calculateSwapInterval(std::chrono::nanoseconds frameTime,
                               std::chrono::nanoseconds refreshPeriod);
     void updateDisplayTimings();
@@ -190,6 +199,9 @@ private:
     void onRefreshRateChanged();
 
     const jobject mJactivity;
+    void *mLibAndroid = nullptr;
+    PFN_ANativeWindow_setFrameRate mANativeWindow_setFrameRate = nullptr;
+
     JavaVM *mJVM = nullptr;
 
     std::unique_ptr<ChoreographerFilter> mChoreographerFilter;
@@ -293,6 +305,11 @@ private:
     bool mTimingSettingsNeedUpdate GUARDED_BY(mFrameDurationsMutex) = false;
 
     CPUTracer mCPUTracer;
+
+    ANativeWindow* mWindow GUARDED_BY(mFrameDurationsMutex) = nullptr;
+    bool mWindowChanged GUARDED_BY(mFrameDurationsMutex) = false;
+    float mLatestFrameRateVote GUARDED_BY(mFrameDurationsMutex) = 0.f;
+    static constexpr float FRAME_RATE_VOTE_MARGIN = 1.f; // 1Hz
 };
 
 } //namespace swappy
