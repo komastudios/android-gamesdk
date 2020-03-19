@@ -1,0 +1,481 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c5f595d4_958532c7",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-19T04:00:49Z",
+      "side": 1,
+      "message": "Is it possible to change this so that we use an explicit vertex format here instead of raw floats? (same for real_vertex_data output)\n\nThe reason I\u0027m asking is that the index math you\u0027re doing here is brittle and hard to understand - it\u0027s best reserved for flexible formats where you don\u0027t know what the next thing in the stream might be.\n\nFor example, one way to do this might be:\n\nstruct objvertformat\n{\n  glm::vector3 pos;\n  glm::vector3 normal;\n  glm::vector3 tangent;\n  glm::vector3 bitangent;\n  glm::vector2 uv;\n}\n\nGeometry::Geometry(benderkit::Device \u0026device,\n                   const std::vector\u003cobjvertformat\u003e \u0026vertex_data,\n                   const std::vector\u003cuint16_t\u003e \u0026index_data)\n    : device_(device) {\n  for (int x \u003d 0; x \u003c vertex_data.size(); x++){\n    float x_coord \u003d vertex_data[x].pos.x;\n    float y_coord \u003d vertex_data[x].pos.y;\n    float z_coord \u003d vertex_data[x].pos.z;\n\n    if (x_coord \u003e bounding_box_.max.x) bounding_box_.max.x \u003d x_coord;\n    if (x_coord \u003c bounding_box_.min.x) bounding_box_.min.x \u003d x_coord;\n    if (y_coord \u003e bounding_box_.max.y) bounding_box_.max.y \u003d y_coord;\n    if (y_coord \u003c bounding_box_.min.y) bounding_box_.min.y \u003d y_coord;\n    if (z_coord \u003e bounding_box_.max.z) bounding_box_.max.z \u003d z_coord;\n    if (z_coord \u003c bounding_box_.min.z) bounding_box_.min.z \u003d z_coord;\n  }\n\nYou can define as many vert formats as you need (one for on-disk, one for in-memory). The only trick is to remember to keep the padding/alignment correct for the consumers of the data :)\n\nSee next comment too... this really only applies here for the obj import format.",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 44
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6f979e13_ecb19622",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-19T04:00:49Z",
+      "side": 1,
+      "message": "Is there any way we can get rid of this vec4.w parameter here? seems a waste to pass it around if we\u0027re compressing everything else.\n\n(If the answer\u0027s no, that\u0027s fine).",
+      "range": {
+        "startLine": 47,
+        "startChar": 4,
+        "endLine": 47,
+        "endChar": 45
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "29524d9c_e44d7a18",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-19T04:00:49Z",
+      "side": 1,
+      "message": "Occasionally you\u0027ll end up dealing with badly written libraries that might actually have double parameters as well as float parameters using polymorphism.\n\nAvoid this by explicitly using float literals here - glm::vec3(1.0f, 0,0f, 0,0f);",
+      "range": {
+        "startLine": 54,
+        "startChar": 19,
+        "endLine": 54,
+        "endChar": 45
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0a25631c_01b91118",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-19T04:00:49Z",
+      "side": 1,
+      "message": "Careful on numeric literals. The compiler will do the right thing here - until it doesn\u0027t, and then you\u0027ll spend a weekend debugging this :D\n\nUse 0.0f (or 0.f - I personally prefer 0.0f) instead of a naked 0.",
+      "range": {
+        "startLine": 69,
+        "startChar": 4,
+        "endLine": 69,
+        "endChar": 25
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "863768cd_4cde216d",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-19T04:00:49Z",
+      "side": 1,
+      "message": "Another naked 0 here - dot() returns a float, so compare with a float 0.0f",
+      "range": {
+        "startLine": 82,
+        "startChar": 42,
+        "endLine": 82,
+        "endChar": 48
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7055a5b8_e1e19940",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-19T04:00:49Z",
+      "side": 1,
+      "message": "Ideally you\u0027d add a real_vertex_data format here as well, but glm doesn\u0027t really support vertex types with uint16_t. \n\nInstead, what you might want to do is this:\n\nCreate a header file somewhere for your \"packedtypes.h\"\n\nIn there, add something along these lines:\n#pragma pack(push,0) //\u003c-- important! the GPU doesn\u0027t care what data structure we use, as \n// long as the vertices are contiguous in memory and laid out as binary data in the right \n// spots. We just need to be consistent. Part of that is making sure all padding/alignment \n// is explicit.\n\nstruct vec4_snorm16\n{\n  int16_t x, y, z, w;\n\n  const vec4_snorm16\u0026 Set( int16_t in_x, int16_t in_y, int16_t in_z, int16_t in_w)\n  { // OR... accept a glm::vec3.\n\n     x \u003d FloatToSnorm16( in_x );\n     y \u003d FloatToSnorm16( in_y );\n     z \u003d FloatToSnorm16( in_z );\n     w \u003d FloatToSnorm16( in_w );\n     return *this;  \n  }\n}\n\nstruct vec3_snorm16\n{\n  int16_t x, y, z;\n}\n\nstruct vec2_snorm16\n{\n  int16_t x, y;\n}\n\nstruct vec4_unorm16\n{\n  int16_t x, y, z, w;\n}\n\nstruct vec3_unorm16\n{\n  int16_t x, y, z;\n}\n\nstruct vec2_unorm16\n{\n  int16_t x, y;\n}\n#pragma pack(pop)\n\n-------------------------\n\nAnd then here, define a struct using the unorm16/snorm16 types:\n\nstruct packed_vertex_format\n{\n  vec4_snorm16 pos;\n  vec4_snorm16 tangent;\n  vec4_unorm16 uv;\n}\n\n... and when you pass the data to the Vulkan API, use something like reinterpret_cast\u003cuint16_t*\u003e(\u0026buffer[0]). :)",
+      "range": {
+        "startLine": 85,
+        "startChar": 0,
+        "endLine": 91,
+        "endChar": 76
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "179c3e4a_e1d32e01",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-19T04:00:49Z",
+      "side": 1,
+      "message": "normally this would be `sizeof(index_data::value_type)` instead of sizeof(index_data[0]), but both work.",
+      "range": {
+        "startLine": 113,
+        "startChar": 35,
+        "endLine": 113,
+        "endChar": 56
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d6665fa8_e7d8ede7",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-19T04:00:49Z",
+      "side": 1,
+      "message": "If you switch to the explicit vertex format we were talking about earlier, you\u0027ll either want to use the explicit vertex format here, OR switch to using pointers (e.g. uint16_t*) and a count so that it\u0027s obvious that something interesting is going on. \n\ne.g. the call would look like this:\n\nCreateVertexBuffer( static_cast\u003cuint16_t*\u003e(\u0026real_vertex_data[0]), real_vertex_data.size(), index_data );\n\n... your choice depending on which way you want to go.",
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8950ece0_2af24d5d",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-19T04:00:49Z",
+      "side": 1,
+      "message": "I made this comment on Matt\u0027s review yesterday... I try to document my default parameters in my .cpp/.cc files by including them but commented out.\n\nFor example:\n\nglm::mat4 Mesh::GetTransform(bool for_mvp /* \u003d false */) const {\n\n... that way you can see what the default parameter is from inside the implementation while working on it.",
+      "range": {
+        "startLine": 260,
+        "startChar": 29,
+        "endLine": 260,
+        "endChar": 41
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e69833fa_0f740bd0",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-19T04:00:49Z",
+      "side": 1,
+      "message": "This seems like an odd thing to have. What\u0027s it for?",
+      "range": {
+        "startLine": 262,
+        "startChar": 0,
+        "endLine": 262,
+        "endChar": 104
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cfb92253_b1065f15",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.vert",
+        "patchSetId": 8
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-19T04:00:49Z",
+      "side": 1,
+      "message": "This goes back to my question in the geometry file - why vec4 not vec3?",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 40
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1aae6226_3547ba43",
+        "filename": "bender/bender-base/utils/src/bender_helpers.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-19T04:00:49Z",
+      "side": 1,
+      "message": "First: I don\u0027t know if we do or not, but do we need an assert here to verify that v is valid?\n\n    assert( v \u003e\u003d -1.0f \u0026\u0026 v \u003c\u003d 1.0f \u0026\u0026 \"v out of range\"); // \u003c-- if appropriate. \n\nThis calculation feels wrong (and from memory I helped so my bad too). Assuming a normalized input value between -1.0f and 1.0f... I\u0027d expect to need to do the following instead:\n\nint16_t FloatToSnorm16(float v) {\n    return static_cast\u003cint16_t\u003e(std::clamp( v * SNORM_MAX, SNORM_MIN, SNORM_MAX ) );\n}\n\nInput of -1 \u003d -SNORM_MAX \u003d -1.0 * 32767.0f \u003d -32767.0f \u003d SNORM_MIN\nInput of 1 \u003d SNORM_MAX \u003d 32767.0f\nInput of 0 \u003d 0\n\n\nYou also might want to rename the parameter and the function to something like this:\nint16_t NormFloatToSnorm16(float n) {\n\n... because it\u0027s normalized (value is in range -1.0f to +1.0f), and calling it out will help people remember.",
+      "range": {
+        "startLine": 133,
+        "startChar": 31,
+        "endLine": 136,
+        "endChar": 66
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6aea28ee_4848a7b2",
+        "filename": "bender/bender-base/utils/src/bender_helpers.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-19T04:00:49Z",
+      "side": 1,
+      "message": "If you\u0027re going to provide Snorm16ToFloat you should probably also provide Unorm16ToFloat",
+      "range": {
+        "startLine": 139,
+        "startChar": 0,
+        "endLine": 142,
+        "endChar": 0
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e96a7aae_3f9ea832",
+        "filename": "bender/bender-base/utils/src/bender_helpers.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-19T04:00:49Z",
+      "side": 1,
+      "message": "You caught it here :)",
+      "range": {
+        "startLine": 143,
+        "startChar": 0,
+        "endLine": 146,
+        "endChar": 1
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4b42a205_e380ca45",
+        "filename": "bender/bender-base/utils/src/bender_helpers.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-19T04:00:49Z",
+      "side": 1,
+      "message": "Here\u0027s one of those sneaky things: SNORM_MIN isn\u0027t -32768.0f. It\u0027s -32767.0f. And there\u0027s two values for -1.0f when it becomes a uint16_t - 0x8000 and 0x8001. Yes, this is a bit ridiculous, why do you ask? :D\n\nThey wanted to make it symmetrical, so they had to discard a value.\n\nPlease replace SNORM_MIN with -32767.0f :D",
+      "range": {
+        "startLine": 23,
+        "startChar": 18,
+        "endLine": 23,
+        "endChar": 27
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c9ec7dc0_492f08cf",
+        "filename": "bender/bender-base/utils/src/bender_helpers.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-19T04:00:49Z",
+      "side": 1,
+      "message": "consider using:\n constexpr float SNORM_MAX \u003d 32767.0f;\ninstead.",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 26
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c5e14dfe_fcf1196f",
+        "filename": "bender/bender-base/utils/src/bender_helpers.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-19T04:00:49Z",
+      "side": 1,
+      "message": "I\u0027m guessing that these are tiny - the implementation might benefit from being moved to the header so that they can be inlined.",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 47,
+        "endChar": 32
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f7b784f2_4c9a821b",
+        "filename": "bender/bender-base/utils/src/obj_loader.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-19T04:00:49Z",
+      "side": 1,
+      "message": "I\u0027m honestly surprised that this actually works and gives you a std::string back - cool!",
+      "range": {
+        "startLine": 58,
+        "startChar": 42,
+        "endLine": 58,
+        "endChar": 62
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a1970937_7678cd5e",
+        "filename": "bender/bender-base/utils/src/obj_loader.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-19T04:00:49Z",
+      "side": 1,
+      "message": "0.0f",
+      "range": {
+        "startLine": 139,
+        "startChar": 27,
+        "endLine": 139,
+        "endChar": 29
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4224ec35_2a0fca20",
+        "filename": "bender/bender-base/utils/src/obj_loader.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-19T04:00:49Z",
+      "side": 1,
+      "message": "0.0f",
+      "range": {
+        "startLine": 142,
+        "startChar": 30,
+        "endLine": 142,
+        "endChar": 31
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c76e53c5_271ae8ca",
+        "filename": "bender/bender-base/utils/src/obj_loader.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-19T04:00:49Z",
+      "side": 1,
+      "message": "Magic number (from Matt\u0027s code review)",
+      "range": {
+        "startLine": 149,
+        "startChar": 50,
+        "endLine": 149,
+        "endChar": 55
+      },
+      "revId": "91192a2ec8b399d6c1e74150c7f9222670ff8249",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
