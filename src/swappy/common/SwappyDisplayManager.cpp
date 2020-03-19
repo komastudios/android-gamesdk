@@ -56,6 +56,17 @@ const JNINativeMethod SwappyDisplayManager::SDMNativeMethods[] = {
         {"nOnRefreshRateChanged", "(JJJJ)V",
          (void*)&Java_com_google_androidgamesdk_SwappyDisplayManager_nOnRefreshRateChanged}};
 
+bool SwappyDisplayManager::useSwappyDisplayManager(std::pair<int, bool> sdkVersion) {
+    // SwappyDisplayManager uses APIs introduced in SDK 23
+    if (sdkVersion.first < 23) {
+        return false;
+    }
+
+    // SDK 30 and above doesn't need SwappyDisplayManager as it has native support in NDK
+    return !(sdkVersion.first >= 30 || (sdkVersion.first == 29 && sdkVersion.second));
+
+}
+
 SwappyDisplayManager::SwappyDisplayManager(JavaVM* vm, jobject mainActivity) : mJVM(vm) {
 
     if(!vm || !mainActivity) {

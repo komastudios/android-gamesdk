@@ -68,6 +68,9 @@ public:
                                  VkDevice         device,
                                  VkSwapchainKHR   swapchain,
                                  uint64_t*        pRefreshDuration);
+    void SetWindow(VkDevice       device,
+                   VkSwapchainKHR swapchain,
+                   ANativeWindow* window);
     void SetSwapIntervalNS(VkDevice       device,
                            VkSwapchainKHR swapchain,
                            uint64_t       swap_ns);
