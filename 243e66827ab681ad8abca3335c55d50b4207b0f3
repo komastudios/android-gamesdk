@@ -97,6 +97,30 @@
     },
     {
       "key": {
+        "uuid": "7f366e66_5eaee4c6",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1359095
+      },
+      "writtenOn": "2020-03-19T19:23:48Z",
+      "side": 1,
+      "message": "The UI for commit messages is broken. It\u0027s really complaining about line 14, where there is a false positive.\n\nSince it is a false positive and there are no other findings, any 2 Googlers can approve merge by voting +2 on the Open-Souce-Licensing label.",
+      "parentUuid": "8b8e1c9e_d89078b6",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 87
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8311c934_60020579",
         "filename": "bender/bender-base/app/src/main/jni/texture.cc",
         "patchSetId": 2
