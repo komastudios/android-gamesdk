@@ -61,6 +61,16 @@ bool SwappyVk_initAndGetRefreshCycleDuration_internal(
                                           pRefreshDuration);
 }
 
+void SwappyVk_setWindow(
+        VkDevice       device,
+        VkSwapchainKHR swapchain,
+        ANativeWindow* window)
+{
+    TRACE_CALL();
+    swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
+    swappy.SetWindow(device, swapchain, window);
+}
+
 void SwappyVk_setSwapIntervalNS(
         VkDevice       device,
         VkSwapchainKHR swapchain,

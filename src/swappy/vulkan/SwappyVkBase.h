@@ -127,6 +127,7 @@ public:
                                     uint32_t                queueFamilyIndex,
                                     const VkPresentInfoKHR* pPresentInfo) = 0;
 
+    void doSetWindow(ANativeWindow* window);
     void doSetSwapInterval(VkSwapchainKHR swapchain,
                            uint64_t       swap_ns);
 

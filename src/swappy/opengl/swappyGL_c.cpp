@@ -40,6 +40,10 @@ void SwappyGL_onChoreographer(int64_t frameTimeNanos) {
     SwappyGL::onChoreographer(frameTimeNanos);
 }
 
+bool SwappyGL_setWindow(ANativeWindow* window) {
+    return SwappyGL::setWindow(window);
+}
+
 bool SwappyGL_swap(EGLDisplay display, EGLSurface surface) {
     return SwappyGL::swap(display, surface);
 }
