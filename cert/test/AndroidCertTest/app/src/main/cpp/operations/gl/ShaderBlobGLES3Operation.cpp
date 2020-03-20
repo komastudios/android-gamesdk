@@ -29,8 +29,6 @@
  * "Vulkan on Android: Gotchas and best practices" from GDC 2018, slide 21.)
  *
  * Input configuration:
- * - debug_only: set to true if debugging the shader (bypasses reporting),
- *               otherwise set to false.
  * - trials: the number of trials run (over which results can be averaged).
  * - iterations: total number of iterations in a trial; each iteration has twice
  *               the number of shaders as the previous iteration, so we get
@@ -78,7 +76,6 @@ constexpr Log::Tag TAG{"ShaderBlobGLES3Stressor"};
 
 namespace {
 struct configuration {
-  bool debug_only = false;
   int trials = 1;
   int iterations = 1;
 
@@ -103,7 +100,6 @@ struct configuration {
 };
 
 JSON_CONVERTER(configuration) {
-  JSON_OPTVAR(debug_only);
   JSON_OPTVAR(trials);
   JSON_OPTVAR(iterations);
 }
@@ -421,7 +417,7 @@ class ShaderBlobGLES3Operation : public BaseGLES3Operation {
   ShaderBlobGLES3Operation() = default;
 
   ~ShaderBlobGLES3Operation() {
-    if (_configuration.debug_only) {
+    if (_debug_shader) {
       CleanupDrawableShader();
     }
   }
@@ -438,7 +434,7 @@ class ShaderBlobGLES3Operation : public BaseGLES3Operation {
       FatalError(TAG, "No EGL context available");
     }
 
-    if (_configuration.debug_only) {
+    if (_debug_shader) {
       SetupDrawableShader();
     } else {
       RunTest();
@@ -447,7 +443,7 @@ class ShaderBlobGLES3Operation : public BaseGLES3Operation {
 
   void Draw(double delta_seconds) override {
     BaseGLES3Operation::Draw(delta_seconds);
-    if (_configuration.debug_only) {
+    if (_debug_shader) {
       DrawShader(delta_seconds);
     }
   }
@@ -546,6 +542,7 @@ class ShaderBlobGLES3Operation : public BaseGLES3Operation {
  private:
   configuration _configuration;
   EGLContext _egl_context = EGL_NO_CONTEXT;
+  const bool _debug_shader = false;
   double _elapsed_time = 0.0;
 
   const std::string _vert_path =
