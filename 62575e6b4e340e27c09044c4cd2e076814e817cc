@@ -2,6 +2,115 @@
   "comments": [
     {
       "key": {
+        "uuid": "3ce4a3ff_6becb4d7",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2020-03-20T20:08:59Z",
+      "side": 1,
+      "message": "\u003ccstring\u003e?",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 19
+      },
+      "revId": "62575e6b4e340e27c09044c4cd2e076814e817cc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0675ac9d_8717bc6c",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2020-03-20T20:08:59Z",
+      "side": 1,
+      "message": "100 chars (here and throughout)",
+      "revId": "62575e6b4e340e27c09044c4cd2e076814e817cc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d9689872_d9088720",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 592,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2020-03-20T20:08:59Z",
+      "side": 1,
+      "message": "This check seems to depend on the implementation of setPreferredRefreshRate. Based on a quick scan of its implementation, maybe we should refactor setPreferredRefreshRate into a couple of different methods (one with ANW and one without) and write a wrapper for places where we want to do the check (like at :361 or :365)?",
+      "range": {
+        "startLine": 591,
+        "startChar": 0,
+        "endLine": 592,
+        "endChar": 51
+      },
+      "revId": "62575e6b4e340e27c09044c4cd2e076814e817cc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "22e90c12_4e1c70f4",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 644,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2020-03-20T20:08:59Z",
+      "side": 1,
+      "message": "This \u0027else\u0027 is pretty long; could we extract it into a helper so the top-level code is easier to follow?",
+      "range": {
+        "startLine": 594,
+        "startChar": 0,
+        "endLine": 644,
+        "endChar": 9
+      },
+      "revId": "62575e6b4e340e27c09044c4cd2e076814e817cc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3aa1b7fb_b28263ad",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 746,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2020-03-20T20:08:59Z",
+      "side": 1,
+      "message": "This could be simplified with an early return",
+      "range": {
+        "startLine": 746,
+        "startChar": 0,
+        "endLine": 746,
+        "endChar": 22
+      },
+      "revId": "62575e6b4e340e27c09044c4cd2e076814e817cc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0bf40fd6_e8cc3a02",
         "filename": "src/swappy/common/SwappyCommon.cpp",
         "patchSetId": 7
@@ -18,6 +127,109 @@
         "startChar": 16,
         "endLine": 753,
         "endChar": 43
+      },
+      "revId": "62575e6b4e340e27c09044c4cd2e076814e817cc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f1537a49_32f544db",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 7
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2020-03-20T20:08:59Z",
+      "side": 1,
+      "message": "Nit: should android includes go after STL/JNI? (i.e., around :29)",
+      "revId": "62575e6b4e340e27c09044c4cd2e076814e817cc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d4040744_a4fe19ec",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 7
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2020-03-20T20:08:59Z",
+      "side": 1,
+      "message": "100 chars",
+      "revId": "62575e6b4e340e27c09044c4cd2e076814e817cc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "60656f21_8f6c97dd",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 7
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2020-03-20T20:08:59Z",
+      "side": 1,
+      "message": "Could we make this a named struct?",
+      "range": {
+        "startLine": 50,
+        "startChar": 4,
+        "endLine": 50,
+        "endChar": 24
+      },
+      "revId": "62575e6b4e340e27c09044c4cd2e076814e817cc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "33882be7_ae9a6152",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 7
+      },
+      "lineNbr": 309,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2020-03-20T20:08:59Z",
+      "side": 1,
+      "message": "This looks like kind of a weird name for the mutex protecting mWindow. Maybe we should tweak it if it\u0027s now covering more than just frame durations?",
+      "range": {
+        "startLine": 309,
+        "startChar": 38,
+        "endLine": 309,
+        "endChar": 58
+      },
+      "revId": "62575e6b4e340e27c09044c4cd2e076814e817cc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ae524f96_5f5b1a8c",
+        "filename": "src/swappy/opengl/SwappyGL.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2020-03-20T20:08:59Z",
+      "side": 1,
+      "message": "setWindow",
+      "range": {
+        "startLine": 72,
+        "startChar": 50,
+        "endLine": 72,
+        "endChar": 54
       },
       "revId": "62575e6b4e340e27c09044c4cd2e076814e817cc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
