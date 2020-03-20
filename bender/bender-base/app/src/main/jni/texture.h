@@ -24,6 +24,7 @@
 
 class Texture {
  public:
+
   Texture(Renderer &renderer,
           uint8_t *img_data,
           uint32_t img_width,
@@ -33,7 +34,7 @@ class Texture {
   Texture(Renderer &renderer,
           android_app &android_app_ctx,
           const std::string &texture_file_name,
-          VkFormat texture_format);
+          VkFormat texture_format = VK_FORMAT_R8G8B8A8_SRGB);
 
   ~Texture();
 
@@ -60,8 +61,11 @@ class Texture {
 
   uint32_t mip_levels_;
 
-  unsigned char *LoadFileData(android_app &app, const char *file_path);
-  VkResult CreateTexture(uint8_t *img_data, VkImageUsageFlags usage, VkFlags required_props);
+  unsigned char *LoadFallbackData();
+  unsigned char *LoadImageFileData(AAsset *file);
+  unsigned char *LoadASTCFileData(AAsset *file, uint32_t& img_bytes);
+  VkResult CreateTextureFromFile(android_app &app, const std::string& texture_file_name);
+  VkResult CreateTexture(uint8_t *img_data, uint32_t img_bytes, VkImageUsageFlags usage, VkFlags required_props);
   void CreateImageView();
   void GenerateMipmaps(VkCommandBuffer *command_buffer);
 };
