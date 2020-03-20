@@ -77,6 +77,7 @@ std::vector<std::shared_ptr<Material>> materials;
 std::vector<std::shared_ptr<Material>> baseline_materials;
 std::vector<std::shared_ptr<Geometry>> geometries;
 
+bool use_astc = true; // This is set true for testing ASTC. TODO: replace this with a toggle.
 std::map<std::string, std::shared_ptr<Texture>> loaded_textures;
 std::map<std::string, std::shared_ptr<Material>> loaded_materials;
 
@@ -282,10 +283,15 @@ void CreateTextures() {
 
 void AddTexture(std::string file_name){
   if (file_name != "" && loaded_textures.find(file_name) == loaded_textures.end()){
-      loaded_textures[file_name] = std::make_shared<Texture>(*renderer,
-                                                            *android_app_ctx,
-                                                            "textures/" + file_name,
-                                                            VK_FORMAT_R8G8B8A8_SRGB);
+    std::string texture_name = file_name;
+    if (use_astc && file_name.find(".png") != -1) {
+      size_t basename_len = file_name.rfind('.');
+      file_name.replace(basename_len, file_name.size() - basename_len + 1, ".astc");
+    }
+    loaded_textures[texture_name] = std::make_shared<Texture>(*renderer,
+                                                              *android_app_ctx,
+                                                              "textures/" + file_name,
+                                                              VK_FORMAT_R8G8B8A8_SRGB);
   }
 }
 
