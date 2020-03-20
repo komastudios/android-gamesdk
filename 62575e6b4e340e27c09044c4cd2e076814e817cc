@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0bf40fd6_e8cc3a02",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 753,
+      "author": {
+        "id": 1122478
+      },
+      "writtenOn": "2020-03-20T18:48:20Z",
+      "side": 1,
+      "message": "Is this called every frame? Or is there some filtering we do to call it less frequently?",
+      "range": {
+        "startLine": 753,
+        "startChar": 16,
+        "endLine": 753,
+        "endChar": 43
+      },
+      "revId": "62575e6b4e340e27c09044c4cd2e076814e817cc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
