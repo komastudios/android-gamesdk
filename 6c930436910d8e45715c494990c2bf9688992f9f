@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "940f77ad_9cc8a480",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-23T17:53:34Z",
+      "side": 1,
+      "message": "I guess the word \"default\" in this context is a little vague - is the job of the default texture here to draw your attention to something that is missing? And if so how would you do that with a non-color data texture like a normal/bump/Metallic/Shine texture - or should that all be the job of the Material class\n\nI think those probably are questions that are a bit out of the scope of this CL, just things to keep in mind ;) \n\nThe (0, 0, 0, 0) and (0, 0, 255, 0) where just examples of what a \"default\" texture for a normal map\u0027s single pixel RGBA values could be, sorry if that wasn\u0027t clear!",
+      "parentUuid": "2ed54ae0_6821dee0",
+      "revId": "6c930436910d8e45715c494990c2bf9688992f9f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "651bce92_6cdb8946",
         "filename": "bender/bender-base/app/src/main/jni/texture.cc",
         "patchSetId": 3
