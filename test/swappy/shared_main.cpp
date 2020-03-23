@@ -41,6 +41,7 @@ static jobject s_context = 0;
 class GTestRecorder : public EmptyTestEventListener {
     std::set<std::string> tests_started;
     std::set<std::string> tests_completed;
+    std::set<std::string> tests_failed;
     std::vector<std::string> success_invocations; // Only from SUCCESS macros
     std::vector<std::string> failed_invocations; // From any failed EXPECT or ASSERT
     bool overall_success;
@@ -69,6 +70,7 @@ class GTestRecorder : public EmptyTestEventListener {
                test_part_result.summary() << '\n';
         if (test_part_result.failed()) {
             failed_invocations.push_back(record.str());
+            tests_failed.insert(current_test);
         } else {
             success_invocations.push_back(record.str());
         }
@@ -92,18 +94,47 @@ class GTestRecorder : public EmptyTestEventListener {
             result << "\nTests that started but failed to complete:\n";
             for (auto s: not_completed) { result << s << '\n'; }
         }
-        if (!failed_invocations.empty()) {
-            result << "\nFailures:\n";
-            for (auto s: failed_invocations) result << s << '\n';
+        if (!tests_failed.empty()) {
+            result << "\nFailed tests:\n";
+            for (auto s: tests_failed) result << s << '\n';
         }
         if (!success_invocations.empty()) {
             result << "\nExplicitly recorded successes:\n";
             for (auto s: success_invocations) result << s << '\n';
         }
+        if (!failed_invocations.empty()) {
+            result << "\nFailure details:\n";
+            for (auto s: failed_invocations) result << s << '\n';
+        }
         return result.str();
+    }
+    std::string Summary() const {
+        std::stringstream str;
+        str << "Running:\n" << current_test << '\n';
+        str << "\nCompleted:\n";
+        for(auto& i: tests_started) {
+            str << i << '\n';
+        }
+        str << "\nFailed:\n";
+        for(auto& i: failed_invocations) {
+            str << i << '\n';
+        }
+        return str.str();
     }
 };  // class GTestRecorder
 
+}
+
+std::shared_ptr<GTestRecorder> s_recorder;
+
+extern "C" size_t test_summary(char* result, size_t len) {
+    if (s_recorder.get()) {
+        auto s = s_recorder->Summary();
+        auto sz = std::min(len, s.size());
+        strncpy(result, s.c_str(), sz);
+        return sz;
+    } else
+        return 0;
 }
 
 extern "C" int shared_main(int argc, char * argv[], JNIEnv* env, jobject context,
@@ -118,11 +149,11 @@ extern "C" int shared_main(int argc, char * argv[], JNIEnv* env, jobject context
     UnitTest& unit_test = *UnitTest::GetInstance();
     TestEventListeners& listeners = unit_test.listeners();
     delete listeners.Release(listeners.default_result_printer());
-    auto recorder = std::make_shared<GTestRecorder>();
-    listeners.Append(recorder.get());
+    s_recorder = std::make_shared<GTestRecorder>();
+    listeners.Append(s_recorder.get());
 
     // Run tests
     int result = RUN_ALL_TESTS();
-    messages = recorder->GetResult();
+    messages = s_recorder->GetResult();
     return result;
 }

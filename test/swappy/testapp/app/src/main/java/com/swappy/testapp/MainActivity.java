@@ -21,7 +21,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class MainActivity extends AppCompatActivity {
+  TextView mTextView;
+  Thread mTestThread;
+  Timer mTimer;
+  Boolean mDone;
+  String mResult;
 
   // Used to load the 'native-lib' library on application startup.
   static {
@@ -33,14 +41,57 @@ public class MainActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    TextView tv = findViewById(R.id.sample_text);
-    tv.setMovementMethod(new ScrollingMovementMethod());
-    tv.setText(runTests());
+    mTextView = findViewById(R.id.sample_text);
+    mTextView.setMovementMethod(new ScrollingMovementMethod());
+    mDone = false;
+    startTestsOnSeparateThread();
+    mTimer = new Timer();
+    mTimer.schedule(new TimerTask() {
+      @Override
+      public void run() {
+        TimerMethod();
+      }
+    }, 0, 1000);
   }
+  private void TimerMethod()
+  {
+    //This method is called directly by the timer
+    //and runs in the same thread as the timer.
+
+    //We call the method that will work with the UI
+    //through the runOnUiThread method.
+    this.runOnUiThread(()->{
+      if (mDone) {
+        mTextView.setText(mResult);
+        mTimer.cancel();
+      } else {
+        mTextView.setText(testSummarySoFar());
+      }
+    });
+  }
+
+  @Override
+  protected void onDestroy() {
+    try {
+      mTestThread.join();
+    } catch (InterruptedException e) {
+      //
+    }
+    super.onDestroy();
+  }
+  void startTestsOnSeparateThread() {
+    mTestThread = new Thread(()->{
+      mResult = runTests();
+      mDone = true;
+    });
+    mTestThread.start();
+  }
+
 
   /**
    * A native method that is implemented by the 'native-lib' native library, which is packaged with
    * this application.
    */
   public native String runTests();
+  public native String testSummarySoFar();
 }

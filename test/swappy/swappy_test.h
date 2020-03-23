@@ -21,3 +21,5 @@
 // messages is filled with a summary of the tests run, including failure messages.
 extern "C" int shared_main(int argc, char * argv[], JNIEnv* env, jobject context,
                            std::string& messages);
+
+extern "C" size_t test_summary(char* result, size_t len);

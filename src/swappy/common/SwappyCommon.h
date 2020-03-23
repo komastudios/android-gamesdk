@@ -155,9 +155,9 @@ private:
     void addFrameDuration(FrameDuration duration);
     std::chrono::nanoseconds wakeClient();
 
-    void swapFaster(int newSwapInterval) REQUIRES(mFrameDurationsMutex);
+    bool swapFaster(int newSwapInterval) REQUIRES(mFrameDurationsMutex);
 
-    void swapSlower(const FrameDuration& averageFrameTime,
+    bool swapSlower(const FrameDuration& averageFrameTime,
                     const std::chrono::nanoseconds& upperBound,
                     int newSwapInterval) REQUIRES(mFrameDurationsMutex);
     bool updateSwapInterval();
@@ -233,7 +233,7 @@ private:
     static constexpr int NON_PIPELINE_PERCENT = 50; // 50%
     static constexpr int FRAME_DROP_THRESHOLD = 10; // 10%
 
-    std::chrono::nanoseconds mSwapIntervalNS;
+    std::chrono::nanoseconds mSwapIntervalNS = 0ns;
     int32_t mAutoSwapInterval;
     std::atomic<std::chrono::nanoseconds> mAutoSwapIntervalThresholdNS = {50ms}; // 20FPS
     int mSwapIntervalForNewRefresh = 0;
