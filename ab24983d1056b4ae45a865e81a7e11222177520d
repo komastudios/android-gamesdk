@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "22157ed5_5c0d42f9",
+        "filename": "bender/bender-base/utils/src/mesh_helpers.h",
+        "patchSetId": 9
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-23T14:43:18Z",
+      "side": 1,
+      "message": "Nit style? obj_vertex might be better?",
+      "revId": "ab24983d1056b4ae45a865e81a7e11222177520d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ed35edf2_872a5cd0",
+        "filename": "bender/bender-base/utils/src/obj_loader.cc",
+        "patchSetId": 9
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-23T14:43:18Z",
+      "side": 1,
+      "message": "I\u0027m not sure if you\u0027re not running into this somehow; when I run this locally, the file is NULL, which I\u0027m guessing might be because the .OBJs refer to the mtl file with ./starship_command_center_triangle.mtl and the asset manager has issues with models/./starship...? If you\u0027re not having this issue maybe that\u0027s okay, but it crashes for me.",
+      "revId": "ab24983d1056b4ae45a865e81a7e11222177520d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4981d6bc_1dd166a8",
+        "filename": "bender/bender-base/utils/src/obj_loader.cc",
+        "patchSetId": 9
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-23T14:43:18Z",
+      "side": 1,
+      "message": "Also should you be closing the file with AAsset_close(file)? After you get the length.",
+      "revId": "ab24983d1056b4ae45a865e81a7e11222177520d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3c27187e_9f532e14",
+        "filename": "bender/bender-base/utils/src/packed_types.h",
+        "patchSetId": 9
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-23T14:43:18Z",
+      "side": 1,
+      "message": "Woahhhhhhhhhh. Tried to cherrypick this CL and wouldn\u0027t build b/c of this. Should this be \u003ccstdint\u003e?",
+      "revId": "ab24983d1056b4ae45a865e81a7e11222177520d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
