@@ -5,8 +5,10 @@ export ANDROID_NDK_HOME=`pwd`/../prebuilts/ndk/r20
 if [[ $1 == "full" ]]
     then
         TARGET=fullSdkZip
+	OUTDIR=fullsdk
     else
         TARGET=gamesdkZip
+	OUTDIR=gamesdk
 fi
 ./gradlew $TARGET
 
@@ -28,9 +30,15 @@ popd
 dist_dir=$DIST_DIR
 if [[ -z dist_dir ]]
     then
-        export dist_dir=`pwd`/../
+	export dist_dir=`pwd`/../package/$OUTDIR
 fi
 
+# Calculate hash of the zip file
+pushd $dist_dir/gamesdk
+sha256sum gamesdk.zip > gamesdk.zip.sha256
+popd
+
+# Copy samples to dist_dir
 if [[ $1 == "samples" ]] || [[ $1 == "full" ]]
     then
         mkdir -p $dist_dir/samples
