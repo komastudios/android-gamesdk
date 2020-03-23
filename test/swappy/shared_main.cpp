@@ -21,6 +21,9 @@
 
 #include "gtest/gtest.h"
 
+#define LOG_TAG "SwappyTestMain"
+#include "../../samples/common/include/Log.h"
+
 #include <jni.h>
 
 using ::testing::EmptyTestEventListener;
@@ -61,6 +64,7 @@ class GTestRecorder : public EmptyTestEventListener {
     void OnTestStart(const TestInfo& test_info) override {
         current_test = std::string(test_info.test_case_name()) + "." + test_info.name();
         tests_started.insert(current_test);
+        ALOGI("TestStarted: %s", current_test.c_str());
     }
 
     // Called after a failed assertion or a SUCCEED() invocation.
@@ -71,6 +75,7 @@ class GTestRecorder : public EmptyTestEventListener {
         if (test_part_result.failed()) {
             failed_invocations.push_back(record.str());
             tests_failed.insert(current_test);
+            ALOGI("TestFailed: %s\n%s", current_test.c_str(), record.str().c_str());
         } else {
             success_invocations.push_back(record.str());
         }
@@ -112,7 +117,7 @@ class GTestRecorder : public EmptyTestEventListener {
         std::stringstream str;
         str << "Running:\n" << current_test << '\n';
         str << "\nCompleted:\n";
-        for(auto& i: tests_started) {
+        for(auto& i: tests_completed) {
             str << i << '\n';
         }
         str << "\nFailed:\n";
@@ -125,16 +130,16 @@ class GTestRecorder : public EmptyTestEventListener {
 
 }
 
-std::shared_ptr<GTestRecorder> s_recorder;
+static std::shared_ptr<GTestRecorder> s_recorder;
 
 extern "C" size_t test_summary(char* result, size_t len) {
     if (s_recorder.get()) {
-        auto s = s_recorder->Summary();
-        auto sz = std::min(len, s.size());
-        strncpy(result, s.c_str(), sz);
-        return sz;
-    } else
-        return 0;
+            auto s = s_recorder->Summary();
+            auto sz = std::min(len, s.size());
+            strncpy(result, s.c_str(), sz);
+            return sz;
+        } else
+            return 0;
 }
 
 extern "C" int shared_main(int argc, char * argv[], JNIEnv* env, jobject context,
