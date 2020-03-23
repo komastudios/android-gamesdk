@@ -73,6 +73,24 @@
     },
     {
       "key": {
+        "uuid": "2a0abf4d_3c21d0fc",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-23T17:56:55Z",
+      "side": 1,
+      "message": "Hmm I guess that\u0027s fair; basically I just refactored out the part of the code that deals with like invalid conditions or a missing file; I can rename this like LoadFallbackData() to be more clear that it\u0027s not like \"loading\" from anything and  it\u0027s distinct from the Default Texture in Material?",
+      "parentUuid": "940f77ad_9cc8a480",
+      "revId": "6c930436910d8e45715c494990c2bf9688992f9f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "651bce92_6cdb8946",
         "filename": "bender/bender-base/app/src/main/jni/texture.cc",
         "patchSetId": 3
