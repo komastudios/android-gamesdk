@@ -37,8 +37,11 @@ def run_test(cmdline_tail, systrace_on):
         encoding='utf-8'
     )
     if proc.returncode != 0:
+        print("ERROR running gcloud: " + str(proc.returncode))
         print(proc.stderr)
-        exit(proc.returncode)
+        # Aborts (code=10) can still be processed
+        if proc.returncode!=10:
+            exit(proc.returncode)
 
     return proc.stdout, proc.stderr
 
