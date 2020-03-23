@@ -22,6 +22,30 @@
       "revId": "6c930436910d8e45715c494990c2bf9688992f9f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c2dfcf7e_95aee26c",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-23T17:30:48Z",
+      "side": 1,
+      "message": "Good question; we can\u0027t directly create mipmaps in code with compressed formats in general, to my knowledge. To enable mipmaps, we need to generate mipmaps offline and then compress those individually to ASTC, and finally include these manually as mipmaps for a Texture. I envision this to be part of the work in Chef, and will add support for mipmaps in Texture when we get Chef end set up.",
+      "parentUuid": "651bce92_6cdb8946",
+      "range": {
+        "startLine": 125,
+        "startChar": 4,
+        "endLine": 125,
+        "endChar": 20
+      },
+      "revId": "6c930436910d8e45715c494990c2bf9688992f9f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
