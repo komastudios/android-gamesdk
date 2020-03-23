@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "2ed54ae0_6821dee0",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-03-23T17:42:48Z",
+      "side": 1,
+      "message": "I think this \"default\" texture is a flag of the texture we are loading is missing or has error upon loading process, but this question is a really good one to consider. Also I am no sure what you mean by (0, 0, 0, o) or (0, 0, 255, 0), currently the default texture is a pink pixel afaik.",
+      "parentUuid": "e8f3ab53_e3057b47",
+      "revId": "6c930436910d8e45715c494990c2bf9688992f9f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "651bce92_6cdb8946",
         "filename": "bender/bender-base/app/src/main/jni/texture.cc",
         "patchSetId": 3
