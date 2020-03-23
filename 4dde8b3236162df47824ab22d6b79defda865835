@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6cee1bd0_95e3340a",
+        "filename": "test/devicefarm/postprocessing/get_test_results.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-03-23T10:56:13Z",
+      "side": 1,
+      "message": "Comment to update for Swappy test app",
+      "revId": "4dde8b3236162df47824ab22d6b79defda865835",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "44759e45_40d85fae",
+        "filename": "test/swappy/testapp/app/build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-03-23T10:56:13Z",
+      "side": 1,
+      "message": "Can we add a comment telling why this resolution strategy is necessary?",
+      "revId": "4dde8b3236162df47824ab22d6b79defda865835",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "434f6455_9c2a67ee",
+        "filename": "test/swappy/testapp/build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-03-23T10:56:13Z",
+      "side": 1,
+      "message": "same, a comment would be useful.",
+      "revId": "4dde8b3236162df47824ab22d6b79defda865835",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
