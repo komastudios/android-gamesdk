@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "2a31f5bc_2ba61d1f",
+        "filename": "bender/bender-base/utils/src/mesh_helpers.h",
+        "patchSetId": 9
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-23T16:44:04Z",
+      "side": 1,
+      "message": "Oh I renamed this to MeshVertex now since I updated the polyhedra to use this type, so a generalized name I thought would be better\n\nI also think that the style guide says types need to be CamelCase rather than snake_case my bad!",
+      "parentUuid": "22157ed5_5c0d42f9",
+      "revId": "ab24983d1056b4ae45a865e81a7e11222177520d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ed35edf2_872a5cd0",
         "filename": "bender/bender-base/utils/src/obj_loader.cc",
         "patchSetId": 9
@@ -30,6 +48,24 @@
       "writtenOn": "2020-03-23T14:43:18Z",
       "side": 1,
       "message": "I\u0027m not sure if you\u0027re not running into this somehow; when I run this locally, the file is NULL, which I\u0027m guessing might be because the .OBJs refer to the mtl file with ./starship_command_center_triangle.mtl and the asset manager has issues with models/./starship...? If you\u0027re not having this issue maybe that\u0027s okay, but it crashes for me.",
+      "revId": "ab24983d1056b4ae45a865e81a7e11222177520d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "463caa05_eb44953f",
+        "filename": "bender/bender-base/utils/src/obj_loader.cc",
+        "patchSetId": 9
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-23T16:44:04Z",
+      "side": 1,
+      "message": "Oh shoot that\u0027s probably because I have an updated set of models where I changed their MTL file name\n\nI also have a set of the undecimated meshes with proper mtl names that I used as like a ground truth of sorts (it runs surprisingly well haha)\n\nI\u0027ll get those asset packs uploaded to the drive right now for you guys",
+      "parentUuid": "ed35edf2_872a5cd0",
       "revId": "ab24983d1056b4ae45a865e81a7e11222177520d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "4abcdead_45d68e4d",
+        "filename": "bender/bender-base/utils/src/obj_loader.cc",
+        "patchSetId": 9
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-23T16:44:04Z",
+      "side": 1,
+      "message": "Good catch!",
+      "parentUuid": "4981d6bc_1dd166a8",
+      "revId": "ab24983d1056b4ae45a865e81a7e11222177520d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3c27187e_9f532e14",
         "filename": "bender/bender-base/utils/src/packed_types.h",
         "patchSetId": 9
@@ -64,6 +118,24 @@
       "writtenOn": "2020-03-23T14:43:18Z",
       "side": 1,
       "message": "Woahhhhhhhhhh. Tried to cherrypick this CL and wouldn\u0027t build b/c of this. Should this be \u003ccstdint\u003e?",
+      "revId": "ab24983d1056b4ae45a865e81a7e11222177520d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "809af3d4_dd11cab9",
+        "filename": "bender/bender-base/utils/src/packed_types.h",
+        "patchSetId": 9
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-23T16:44:04Z",
+      "side": 1,
+      "message": "Ahhh these are definitely from the automatic includes that come from Android Studio, didn\u0027t realize it dropped in a direct filepath like that!\n\nAlso updated the glm includes as well",
+      "parentUuid": "3c27187e_9f532e14",
       "revId": "ab24983d1056b4ae45a865e81a7e11222177520d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
