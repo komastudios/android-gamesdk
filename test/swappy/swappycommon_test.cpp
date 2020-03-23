@@ -65,6 +65,10 @@ struct Event {
     duration time_offset; // Offset from start of simulation
 };
 
+struct ITimeProvider {
+    virtual duration timeFromStart() const = 0;
+};
+
 class GpuThread {
  public:
     enum Fence {
@@ -82,9 +86,12 @@ class GpuThread {
     std::condition_variable threadCondition_;
     duration waitTime_;
     bool running_;
+    ITimeProvider* timeProvider_;
+    duration fenceCreationTime_;
  public:
-    GpuThread(duration fenceTimeout) : fence_(NO_SYNC), fenceTimeout_(fenceTimeout), waitTime_(0),
-                                       running_(true) {
+    GpuThread(ITimeProvider* timeProvider, duration fenceTimeout) : fence_(NO_SYNC),
+                                       fenceTimeout_(fenceTimeout), waitTime_(0),
+                                       running_(true), timeProvider_(timeProvider) {
         thread_ = std::thread(&GpuThread::run, this);
     }
     ~GpuThread() {
@@ -100,14 +107,19 @@ class GpuThread {
     Fence fenceStatus() const { return fence_;}
     void waitForFence() {
         std::unique_lock<std::mutex> lock(fenceMutex_);
+        bool fenceAlreadySignalled = fence_!=UNSIGNALLED;
         if (!fenceCondition_.wait_for(lock, fenceTimeout_, [this](){ return fence_!=UNSIGNALLED;})) {
             ALOGW("Fence Timeout");
         }
+        ALOGV("Fence completed in %lld ns (%s)",
+                (timeProvider_->timeFromStart() - fenceCreationTime_).count(),
+                 fenceAlreadySignalled?"no extra wait":"wait");
     }
     void createFence(duration gpuFrameTime) {
         std::lock_guard<std::mutex> lock(threadMutex_);
         fence_ = UNSIGNALLED;
         waitTime_ = gpuFrameTime;
+        fenceCreationTime_ = timeProvider_->timeFromStart();
         threadCondition_.notify_all();
     }
     void run() {
@@ -172,7 +184,7 @@ std::ostream& operator<<(std::ostream& o, const std::vector<Result>& rs) {
     return o;
 }
 
-class Simulator {
+class Simulator : public ITimeProvider {
   public:
 
     template <typename T> using Schedule = std::vector<Event<T>>;
@@ -193,7 +205,7 @@ class Simulator {
                 (void*)this,
                 swapIntervalChangedTracer
             },
-            gpuThread_(commonBase_->getFenceTimeout()),
+            gpuThread_(this, commonBase_->getFenceTimeout()),
             cpuTimeSum_(0),
             gpuTimeSum_(0),
             cpuTimeCount_(0)
@@ -237,16 +249,19 @@ class Simulator {
         mStartTime = std::chrono::steady_clock::now();
         currentWorkload_.reset();
         resetResults();
+        firstWait = true;
         // Main game loop
         while(true) {
             // Check if we need to update parameters
             auto dt = timeFromStart();
             if (dt > run_time) break;
-            if (parametersScheduleIndex<parametersSchedule_.size() && dt >= parametersSchedule_[parametersScheduleIndex].time_offset) {
+            if (parametersScheduleIndex<parametersSchedule_.size()
+                && dt >= parametersSchedule_[parametersScheduleIndex].time_offset) {
                 setParameters(parametersSchedule_[parametersScheduleIndex].value);
                 ++parametersScheduleIndex;
             }
-            if (workloadScheduleIndex<workloadSchedule_.size() && dt >= workloadSchedule_[workloadScheduleIndex].time_offset) {
+            if (workloadScheduleIndex<workloadSchedule_.size()
+                && dt >= workloadSchedule_[workloadScheduleIndex].time_offset) {
                 setWorkload(workloadSchedule_[workloadScheduleIndex].value);
                 ++workloadScheduleIndex;
             }
@@ -300,9 +315,15 @@ class Simulator {
       // In OpenGL, this returns
       //   eglGetSyncAttribKHR(display, mSyncFence, EGL_SYNC_STATUS_KHR, &status);
       switch (gpuThread_.fenceStatus()) {
-          case GpuThread::NO_SYNC: return true; // First time
-          case GpuThread::SIGNALLED: return true;
-          case GpuThread::UNSIGNALLED: return false;
+          case GpuThread::NO_SYNC:
+              ALOGV("Last frame complete = true");
+              return true; // First time
+          case GpuThread::SIGNALLED:
+              ALOGV("Last frame complete = true");
+              return true;
+          case GpuThread::UNSIGNALLED:
+              ALOGV("Last frame complete = false");
+              return false;
       }
       return true;
     }
@@ -324,8 +345,11 @@ class Simulator {
     void preWait() {}
     void postWait(duration cpuTime, duration gpuTime) {
         // Discard the first frame
-        static bool first = true;
-        if (first) first = false;
+        static duration prevTime;
+        if (firstWait) {
+            firstWait = false;
+            prevTime = timeFromStart();
+        }
         else {
             cpuTimeSum_ += cpuTime;
             gpuTimeSum_ += gpuTime;
@@ -337,7 +361,8 @@ class Simulator {
     void startFrame(int currentFrame, duration desiredPresentationTime) {}
     void swapIntervalChanged() {
         auto newSwapInterval = std::chrono::nanoseconds(commonBase_->getSwapIntervalNS());
-        swapIntervalChangedEvents.push_back(SwapIntervalChangedEvent {newSwapInterval, timeFromStart()});
+        swapIntervalChangedEvents.push_back(
+                SwapIntervalChangedEvent {newSwapInterval, timeFromStart()});
     }
 
       // Static tracer callbacks
@@ -369,7 +394,8 @@ class Simulator {
 
     void recordResults() {
         results_.push_back(
-                {cpuTimeSum_ / cpuTimeCount_, gpuTimeSum_ / cpuTimeCount_, cpuTimeCount_, swapIntervalChangedEvents});
+                {cpuTimeSum_ / cpuTimeCount_, gpuTimeSum_ / cpuTimeCount_, cpuTimeCount_,
+                 swapIntervalChangedEvents});
     }
     void resetResults() {
         cpuTimeCount_ = 0;
@@ -425,6 +451,7 @@ class Simulator {
     uint64_t cpuTimeCount_;
     std::vector<Result> results_;
     std::vector<SwapIntervalChangedEvent> swapIntervalChangedEvents;
+    bool firstWait = true;
 };
 
 }
@@ -506,12 +533,12 @@ Workload mediumCpuWorkload {
 
 Workload mediumGpuWorkload {
     [](){ return 10ms;}, // cpu
-    [](){ return 33ms;}, // gpu
+    [](){ return 30ms;}, // gpu
 };
 
 Workload highWorkload {
-    [](){ return 33ms;}, // cpu
-    [](){ return 33ms;}, // gpu
+    [](){ return 40ms;}, // cpu
+    [](){ return 40ms;}, // gpu
 };
 
 // 10% of the time, frames are slow
@@ -542,7 +569,7 @@ TEST(SwappyCommonTest, DefaultParamsLightWorkload) {
              1s,
              {{lightWorkload,0s}},
              {Result{10ms, 10ms, 60}},
-             {Result{1ms, 1ms, 1}});
+             {Result{1ms, 1ms, 2}});
 }
 
 TEST(SwappyCommonTest, DefaultParamsMedCpuWorkload) {
@@ -559,7 +586,7 @@ TEST(SwappyCommonTest, DefaultParamsMedGpuWorkload) {
              defaultParameters,
              1s,
              {{mediumGpuWorkload,0s}},
-             {Result{10ms, 33ms, 26}},
+             {Result{10ms, 30ms, 30}},
              {Result{1ms, 3ms, 4}});
 }
 
@@ -568,7 +595,7 @@ TEST(SwappyCommonTest, DefaultParamsHighWorkload) {
              defaultParameters,
              1s,
              {{highWorkload,0s}},
-             {Result{33ms, 33ms, 27}}, // Why is this higher than for lower CPU workload?
+             {Result{40ms, 40ms, 22}},
              {Result{3ms, 3ms, 4}});
 }
 
@@ -579,7 +606,7 @@ TEST(SwappyCommonTest, AutoModeOffLightWorkload) {
                1s,
                {{lightWorkload,0s}},
                {Result{10ms, 10ms, 60}},
-               {Result{1ms, 1ms, 1}});
+               {Result{1ms, 1ms, 2}});
 }
 TEST(SwappyCommonTest, AutoModeOffMedCpuWorkload) {
     SingleTest(base60HzSettings,
@@ -594,16 +621,17 @@ TEST(SwappyCommonTest, AutoModeOffMedGpuWorkload) {
                autoModeOffParameters,
                1s,
                {{mediumGpuWorkload,0s}},
-               {Result{10ms, 33ms, 26}},
+               {Result{10ms, 30ms, 30}},
                {Result{1ms, 3ms, 4}});
 }
+
 TEST(SwappyCommonTest, AutoModeOffHighWorkload) {
     SingleTest(base60HzSettings,
                autoModeOffParameters,
                1s,
                {{highWorkload,0s}},
-               {Result{33ms, 33ms, 27}},
-               {Result{3ms, 3ms, 4}});
+               {Result{40ms, 40ms, 21}},
+               {Result{3ms, 3ms, 2}});
 }
 
 // Auto-mode on tests
@@ -630,7 +658,7 @@ TEST(SwappyCommonTest, AutoModeOnMedGpuWorkload) {
                autoModeAndPipeliningOnParameters,
                1s,
                {{mediumGpuWorkload,0s}},
-               {Result{10ms, 33ms, 24}},
+               {Result{10ms, 30ms, 30}},
                {Result{1ms, 3ms, 3}});
 }
 TEST(SwappyCommonTest, AutoModeOnHighWorkload) {
@@ -638,8 +666,8 @@ TEST(SwappyCommonTest, AutoModeOnHighWorkload) {
                autoModeAndPipeliningOnParameters,
                1s,
                {{highWorkload,0s}},
-               {Result{33ms, 33ms, 28}},
-               {Result{3ms, 3ms, 6}});
+               {Result{40ms, 40ms, 22}},
+               {Result{3ms, 3ms, 2}});
 }
 
 // Check that we don't swap faster than the app-set swap interval
@@ -648,8 +676,9 @@ TEST(SwappyCommonTest, AutoModeOnLightWorkload30Hz) {
                autoModeAndPipeliningOn30HzParameters,
                16s,
                {{lightWorkload,0s},{lightWorkload,4s},{lightWorkload,8s},{lightWorkload,12s}},
-               {Result{10ms, 10ms, 120},Result{10ms, 10ms, 120},Result{10ms, 10ms, 120},Result{10ms, 10ms, 120}},
-               {Result{1ms, 1ms, 1},Result{1ms, 1ms, 1},Result{1ms, 1ms, 1},Result{1ms, 1ms, 1}});
+               {Result{10ms, 10ms, 120},Result{10ms, 10ms, 120},Result{10ms, 10ms, 120},
+                Result{10ms, 10ms, 120}},
+               {Result{1ms, 1ms, 2},Result{1ms, 1ms, 2},Result{1ms, 1ms, 2},Result{1ms, 1ms, 2}});
 }
 
 // Currently, we are getting frame counts 120, 46, 151
@@ -670,7 +699,7 @@ TEST(SwappyCommonTest, DISABLED_AutoModeOnVariableWorkload30Hz) {
                autoModeAndPipeliningOn30HzParameters,
                6s,
                loHiLo2sWorkload(),
-               {Result{10ms, 10ms, 60}, Result{33ms, 33ms, 60}, Result{10ms, 10ms, 60}},
+               {Result{10ms, 10ms, 60}, Result{40ms, 40ms, 60}, Result{10ms, 10ms, 60}},
                {Result{3ms, 3ms, 2}, Result{3ms, 3ms, 2}, Result{3ms, 3ms, 2}});
 }
 
@@ -719,5 +748,5 @@ TEST(SwappyCommonTest, AutoModeOnAutoPipeliningOffSwitchDownFrom60HzAndBack) {
                {Result{30ms, 10ms, 95, SwapEvents{{33333us, 2s}}},
                 Result{10ms, 10ms, 190, SwapEvents{{16667us, 4600ms}}}},
                {Result{1ms, 1ms, 3, SwapEvents{{1ms, 100ms}}},
-                Result{1ms, 1ms, 3, SwapEvents{{1ms, 100ms}}}});
+                Result{1ms, 1ms, 3, SwapEvents{{1ms, 200ms}}}});
 }
