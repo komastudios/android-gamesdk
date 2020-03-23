@@ -95,12 +95,13 @@ class Datum:
         self.timestamp = timestamp
 
         # the raw custom JSON dict from the report JSON entry
-        self.custom = custom
+        self.custom_fields_flattened = self.custom = custom
 
-        # the custom dict flattened for easier access
-        self.custom_fields_flattened = {}
-        for field_name, field_value in flatten_dict(custom):
-            self.custom_fields_flattened[field_name] = field_value
+        if not isinstance(custom, (int, float, bool, str)):
+            # the custom dict flattened for easier access
+            self.custom_fields_flattened = {}
+            for field_name, field_value in flatten_dict(custom):
+                self.custom_fields_flattened[field_name] = field_value
 
     def __eq__(self, other):
         if isinstance(other, Datum):
@@ -203,6 +204,35 @@ class BuildInfo:
         """Get underlying dict"""
         return self._d
 
+    def check_core_sizes(self) -> bool:
+        """Returns true if bigger cores get lower numbers, LITTLEr cores get
+        higher numbers."""
+
+        def get_core_numbers(cpu_type: str) -> List[int]:
+            ret_value = None
+            cpu_type_dict = self._d.get(cpu_type)
+            if cpu_type_dict:
+                ret_value = cpu_type_dict.get('cpus')
+            return [] if ret_value is None else ret_value
+
+        big_cores = get_core_numbers('big_cores')
+        little_cores = get_core_numbers('little_cores')
+        middle_cores = get_core_numbers('middle_cores')
+
+        def has_lower_numbering(set_1: List[int], set_2: List[int]):
+            """Compares that two CPU core sets are such that the maximum core
+            number in the first set is smaller than the minimum core number in
+            the second set.
+            If any set is empty, the function returns True: the comparison
+            makes sense when both sets aren't empty."""
+            ret_value = True
+            if set_1 and set_2:     # both not empty
+                ret_value = max(set_1) < min(set_2)
+            return ret_value
+
+        return has_lower_numbering(big_cores, middle_cores) \
+            and has_lower_numbering(middle_cores, little_cores) \
+            and has_lower_numbering(big_cores, little_cores)
 
 class Suite:
     """Suite is a list of datums from a report file of the same suite_id
@@ -288,13 +318,17 @@ def load_report(report_file: Path) -> (BuildInfo, List[Datum]):
 
     with open(report_file) as file:
         for i, line in enumerate(file):
-            json_dict = json.loads(line)
-            # first line is the build info, every other is a report datum
-            if i == 0:
-                build = BuildInfo.from_json(json_dict)
-            else:
-                datum = Datum.from_json(json_dict)
-                data.append(datum)
+            try:
+                json_dict = json.loads(line)
+                # first line is the build info, every other is a report datum
+                if i == 0:
+                    build = BuildInfo.from_json(json_dict)
+                else:
+                    datum = Datum.from_json(json_dict)
+                    data.append(datum)
+            except json.decoder.JSONDecodeError as ex:
+                print(f'Report file {report_file}, line {i}: skipping due to '
+                      f'a JSON parsing error "{ex}":\n{line}')
 
     build = homologate_build_info(codename, api_level, build)
 

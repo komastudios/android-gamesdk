@@ -17,6 +17,7 @@
 """
 
 from datetime import datetime
+from enum import Enum
 import json
 from pathlib import Path
 import re
@@ -28,6 +29,13 @@ import yaml
 
 from lib.common import NonZeroSubprocessExitCode
 from lib.device import DeviceCatalog, DeviceInfo
+
+
+class DeploymentTarget(Enum):
+    """Different device types on the FTL farm to deploy to"""
+    FTL_DEVICES_PRIVATE = 0
+    FTL_DEVICES_PUBLIC = 1
+    FTL_DEVICES_ALL = 2
 
 
 def populate_device_catalog_from_gcloud(flags_yaml):
@@ -64,41 +72,56 @@ def populate_device_catalog_from_gcloud(flags_yaml):
     for device in devices:
         device_info = DeviceInfo(device['codename'], device['brand'],
                                  device['name'],
-                                 device['supportedVersionIds'][-1])
+                                 device['supportedVersionIds'][-1],
+                                 device.get('tags'))
         device_catalog.push(device_info)
 
     return device_catalog
 
 
-def make_device_args_list_from_catalog(subset: List[Dict]) -> str:
+def make_device_args_list_from_catalog(subset: List[Dict],
+                                       target: DeploymentTarget) -> str:
     """Turns the device catalog into a string of --device model/version
     arguments for gcloud.
     Args:
         subset: List of dict (e.g. { model: "sawfish", version: 26 }) describing
         a subset of the device catalog to deploy to. If empty, all devices
         in the catalog will be used
-
+        target: the device types to target, if subset is not specified
     """
-    result_args_list = []
-    for device in DeviceCatalog():
-        include = False
-        for subset_device in subset:
-            if device.codename == subset_device[
-                    "model"] and device.sdk_version == str(
-                        subset_device["version"]):
-                include = True
-                break
 
-        if not subset or include:
-            result_args_list.append('--device')
-            result_args_list.append('model={},version={}'.format(
-                device.codename, device.sdk_version))
+    result_args_list = []
+
+    def append_device(device: Dict):
+        result_args_list.append('--device')
+        result_args_list.append('model={},version={}'.format(
+            device.codename, device.sdk_version))
+
+    if subset:
+        for device in DeviceCatalog():
+            for subset_device in subset:
+                if device.codename == subset_device["model"]\
+                    and device.sdk_version == str(subset_device["version"]):
+                    append_device(device)
+    else:
+        if target == DeploymentTarget.FTL_DEVICES_ALL:
+            for device in DeviceCatalog():
+                append_device(device)
+        elif target == DeploymentTarget.FTL_DEVICES_PRIVATE:
+            for device in DeviceCatalog():
+                if device.has_tag('private'):
+                    append_device(device)
+        elif target == DeploymentTarget.FTL_DEVICES_PUBLIC:
+            for device in DeviceCatalog():
+                if not device.has_tag('private'):
+                    append_device(device)
 
     return result_args_list
 
 
 def run_test(flags_file: Path, args_yaml: Path, test_name: str,
-             enable_systrace: bool, devices: List[Dict]):
+             enable_systrace: bool, devices: List[Dict],
+             target: DeploymentTarget):
     """Executes an android test deployment on firebase test lab
     Args:
         flags_file: Path to the flags file expected by ftl
@@ -108,6 +131,7 @@ def run_test(flags_file: Path, args_yaml: Path, test_name: str,
         enable_systrace: if true, cause FTL to record a systrace during exec
         devices: list of dicts describing devices to deploy to, in form
             of { model: "sawfish", version: 26 }
+        target: type of device to deploy to if devices param is empty
     Returns:
         tuple of stdout and sterr
     """
@@ -126,12 +150,12 @@ def run_test(flags_file: Path, args_yaml: Path, test_name: str,
         # TODO(b/142612658): disable impersonation when API server stops
         # dropping the systrace field when authenticating as a person
         '--impersonate-service-account',
-        'gamesdk-testing@appspot.gserviceaccount.com',
+        'android-games-device-research@appspot.gserviceaccount.com',
         str(args_yaml.resolve()) + ":" + test_name
     ]
 
     populate_device_catalog_from_gcloud(flags_file)
-    device_args_list = make_device_args_list_from_catalog(subset=devices)
+    device_args_list = make_device_args_list_from_catalog(devices, target)
     if not device_args_list:
         if devices:
             print("[INFO] - no hardware devices from provided devices list"\
@@ -262,7 +286,8 @@ def download_cloud_artifacts(test_info, file_pattern, dst: Path) -> List[Path]:
 
 def run_on_farm_and_collect_reports(
         args_dict: Dict, flags_dict: Dict, test: str, enable_systrace,
-        devices: List[Dict], dst_dir: Path) -> Tuple[List[Path], List[Path]]:
+        devices: List[Dict], target_devices: DeploymentTarget,
+        dst_dir: Path) -> Tuple[List[Path], List[Path]]:
     """Runs the tests on FTL, returning a tuple of lists of result
     json, and result systrace.
     Args:
@@ -275,6 +300,8 @@ def run_on_farm_and_collect_reports(
             if empty, all physical devices available on FTL will be deployed to.
             If no physical devices match those in the list, deployment will be
             canceled.
+        target_devices: If devices is not specified, this is the type of device
+            to deploy to en masse
         dst_dir: the directory into which result data will be copied
     """
 
@@ -293,7 +320,8 @@ def run_on_farm_and_collect_reports(
                                   args_file,
                                   test,
                                   enable_systrace=enable_systrace,
-                                  devices=devices)
+                                  devices=devices,
+                                  target=target_devices)
 
         display_test_results(stdout, stderr, dst_dir)
         test_info = get_test_info(stderr)

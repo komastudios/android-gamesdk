@@ -17,6 +17,43 @@
 * limitations under the License.
 */
 
+/*
+ * MediumPVecNormalizationGLES3Operation
+ *
+ * This test aims to identify devices which fail to correctly normalize
+ * 3-component half-precision vectors - per reports from developers that
+ * some hardware produced "garbage" when attempting to do so.
+ *
+ * In short, given a 3-component half precision vector, then incrementing
+ * one or more fields to a value > 127, when normalized incorrect results
+ * are observed from some hardware.
+ *
+ * Input:
+ *
+ * vertex_stage_configuration: configuration params for the test as run on vertex processor
+ *  enabled: [bool] is this test enabled?
+ *  offset_steps:[int] number of steps in range to test
+ *  offset_scale:[float] each channel will be incremented by (i / offset_steps) * offset_scale
+ *    resulting in offset values from [0, offset_scale]
+ * fragment_stage_configuration: configuration params for running the test
+ *  on the fragment processor - same fields as above
+ * varying_configuration: configuration params for running the test on
+ *  vertex and fragment stages, passing data through the varying pipeline. Same
+ *  params as above.
+ *
+ * Output:
+ *
+ *  test:[string] the test for which this datum is issued, one of
+ *    "VertexStageTest", "FragmentStageTest", "VaryingPassthroughTest"
+ *  failure:[bool] if true, this datum represents a failed normalization
+ *  expected_failure:[bool] if true, normalization failure is expected due to precision
+ *  expected_rgb:[rgb triplet] expected framebuffer rgb value for the read fragment
+ *  actual_rgb:[rgb triplet] value read from framebuffer
+ *  offset:[float] offset applied to one ore more components of the vec3
+ *  squared_magnitude:[float] squared mag of the vector that was normalized,
+ *    i.e. (v.x*v.x + v.y*v.y + v.z*v.z)
+ */
+
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "misc-non-private-member-variables-in-classes"
 
@@ -26,6 +63,7 @@
 #include <condition_variable>
 
 #include <ancer/BaseGLES3Operation.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/util/GLPixelBuffer.hpp>
 #include <ancer/util/Json.hpp>
 #include <ancer/System.hpp>
@@ -34,7 +72,6 @@
 #include <list>
 
 using namespace ancer;
-
 
 //==============================================================================
 
@@ -69,10 +106,10 @@ bool operator!=(const rgb_u8& lhs, const rgb_u8& rhs) {
   return lhs.r != rhs.r || lhs.g != rhs.g || lhs.b != rhs.b;
 }
 
-JSON_WRITER(rgb_u8) {
-  JSON_REQVAR(r);
-  JSON_REQVAR(g);
-  JSON_REQVAR(b);
+void WriteDatum(report_writers::Struct w, const rgb_u8& d) {
+  ADD_DATUM_MEMBER(w, d, r);
+  ADD_DATUM_MEMBER(w, d, g);
+  ADD_DATUM_MEMBER(w, d, b);
 }
 
 //==============================================================================
@@ -129,22 +166,22 @@ struct result {
   float squared_magnitude;
 };
 
-JSON_WRITER(result) {
-  JSON_REQVAR(test);
-  JSON_REQVAR(failure);
-  JSON_REQVAR(expected_failure);
-  JSON_REQVAR(expected_rgb8);
-  JSON_REQVAR(actual_rgb8);
-  JSON_REQVAR(offset);
-  JSON_REQVAR(squared_magnitude);
+void WriteDatum(report_writers::Struct w, const result& d) {
+  ADD_DATUM_MEMBER(w, d, test);
+  ADD_DATUM_MEMBER(w, d, failure);
+  ADD_DATUM_MEMBER(w, d, expected_failure);
+  ADD_DATUM_MEMBER(w, d, expected_rgb8);
+  ADD_DATUM_MEMBER(w, d, actual_rgb8);
+  ADD_DATUM_MEMBER(w, d, offset);
+  ADD_DATUM_MEMBER(w, d, squared_magnitude);
 }
 
 struct datum {
   result mediump_vec_normalization_result;
 };
 
-JSON_WRITER(datum) {
-  JSON_REQVAR(mediump_vec_normalization_result);
+void WriteDatum(report_writers::Struct w, const datum& d) {
+  ADD_DATUM_MEMBER(w, d, mediump_vec_normalization_result);
 }
 
 //------------------------------------------------------------------------------

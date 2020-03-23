@@ -1,9 +1,9 @@
-#pragma once
+#pragma once_size
 #include "Basics.hpp"
 
 
 namespace ancer::util_detail {
-    void ForceCompute(void*);
+    void ForceCompute(const void*);
 }
 
 
@@ -15,6 +15,6 @@ void ancer::ForceCompute(Args&&... args) {
 
 template<typename T>
 [[nodiscard]] constexpr auto ancer::NextAlignedValue(T value, T align) {
-    const auto offset = align ? value % align : 0;
-    return value + (offset ? align - offset : 0);
+    const auto offset = align ? value % align : static_cast<T>(0);
+    return value + (offset ? align - offset : static_cast<T>(0));
 }

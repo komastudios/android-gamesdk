@@ -21,7 +21,7 @@
 #include "Log.hpp"
 
 namespace ancer::reporting {
-    void FlushReportLogQueue();
+    void HardFlushReportLogQueue();
 }
 
 
@@ -37,7 +37,7 @@ namespace ancer {
         } else {
             Log::F(Log::Tag{"ERROR"}, "%s", "A fatal error has occurred.");
         }
-        reporting::FlushReportLogQueue();
+        reporting::HardFlushReportLogQueue();
         std::terminate();
     }
 } // namespace ancer

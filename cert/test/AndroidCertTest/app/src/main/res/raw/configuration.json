@@ -10,6 +10,46 @@
   "stress_tests": [
     {
       "enabled": true,
+      "name": "EGL Get Frame Timestamps",
+      "description": "Determine if EGL frame timestamps extension is present and works.",
+      "duration": "2s",
+      "data_gatherer": {
+        "id": "EGLGetFrameTimestampsGLES3Operation",
+        "configuration": {
+          "first_frame_id": 20,
+          "last_frame_id": 21
+        }
+      },
+      "host": "GLSurfaceViewHostActivity",
+      "stressors": []
+    },
+    {
+      "enabled": true,
+      "name": "Sane CPUSET",
+      "description": "Checks CPUSET availability and big.LITTLE consistence.",
+      "duration": "10s",
+      "data_gatherer": {
+        "id": "SaneCpusetOperation",
+        "configuration": {
+          "checkpoint_frequency": "200ms"
+        }
+      },
+      "stressors": []
+    },
+    {
+      "enabled": true,
+      "name": "Vulkan Varyings Blocks",
+      "description": "Test Vulkan implementations for large varying interface blocks",
+      "host": "VulkanHostActivity",
+      "duration": "100ms",
+      "data_gatherer": {
+        "id": "VulkanVaryingsTestOperation",
+        "configuration": {}
+      },
+      "stressors": []
+    },
+    {
+      "enabled": true,
       "name": "GLES3 External Framebuffer",
       "description": "Determine if a native hardware buffer can be created and used as render target.",
       "duration": "5s",
@@ -39,11 +79,9 @@
         "enabled": true,
         "configuration": {
           "affinity": true,
-          "heat_time": "300000ms",
-          "interval_between_samples": "120s",
-          "wait_method_name": "sleep",
+          "wait_method": "sleep",
           "wait_period": "16ms",
-          "interval_between_wait_periods": "1000ms"
+          "looping_period": "1000ms"
         }
       }
     },
@@ -79,13 +117,19 @@
       "enabled": true,
       "name": "Marching Cubes",
       "description": "Tests marching cubes algorithm in a lot of permutations",
-      "duration": "25m",
+      "duration": "5m",
       "data_gatherer": {
         "id": "MarchingCubesGLES3Operation",
         "configuration": {
-          "sleep_per_iteration_min": "0ms",
-          "sleep_per_iteration_max": "4ms",
-          "permutation_execution_duration": "30s"
+          "thread_affinity": "AllBigCores",
+          "thread_pinned": true,
+          "warm_up_time": "5s",
+          "sleep_config": {
+            "period": "4ms",
+            "duration": "0.5ms",
+            "method": "Spinlock"
+          },
+          "job_batching_setup": "OneNodePerJob"
         }
       }
     },
@@ -221,7 +265,7 @@
           "file_api": "C++ Streams",
           "buffer_size": "256b",
           "read_align": "384b",
-          "report_rate": "10ms"
+          "report_rate": "50ms"
         }
       },
       "stressors": [

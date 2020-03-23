@@ -1,0 +1,243 @@
+{
+    "auto_run": false,
+    "delay_between_tests": "200ms",
+    "host": "BasicHostActivity",
+    "defaultMonitors": [
+      {
+        "id": "MonitorOperation"
+      }
+    ],
+    "stress_tests": [
+      {
+        "enabled": true,
+        "name": "dummy",
+        "description": "Do a dry run in case malloc returns the same buffer each time",
+        "duration": "0m",
+        "data_gatherer": {
+          "id": "MemoryAccessOperation",
+          "configuration": {
+            "buffer_size": "32mb",
+            "operations": [
+              {
+                "read_write": "Write",
+                "run_count": 10000000,
+                "core_setup": {
+                  "affinity": "All"
+                },
+                "touch": "buffer",
+                "touch_size": "1kb",
+                "operation_type": "Fixed",
+                "type_config": {
+                  "scheme": "Divided",
+                  "advance": "1kb"
+                }
+              }
+            ]
+          }
+        },
+        "stressors": []
+      },
+      {
+        "enabled": true,
+        "name": "MA:SCC:BigWrite",
+        "description": "",
+        "duration": "0m",
+        "data_gatherer": {
+          "id": "MemoryAccessOperation",
+          "configuration": {
+            "buffer_size": "32mb",
+            "report_rate": 64,
+            "operations": [
+              {
+                "read_write": "Write",
+                "run_count": 10000000,
+                "always_randomize": true,
+                "core_setup": {
+                  "affinity": "Big",
+                  "max_affinity_cores": 1,
+                  "fixed_cores": true
+                },
+                "touch": "buffer",
+                "touch_size": "1kb",
+                "operation_type": "Fixed",
+                "type_config": {
+                  "scheme": "Divided",
+                  "advance": "1kb"
+                }
+              }
+            ]
+          }
+        },
+        "stressors": []
+      },
+      {
+        "enabled": true,
+        "name": "MA:SCC:MiddleWrite",
+        "description": "",
+        "duration": "0m",
+        "data_gatherer": {
+          "id": "MemoryAccessOperation",
+          "configuration": {
+            "buffer_size": "32mb",
+            "report_rate": 64,
+            "operations": [
+              {
+                "read_write": "Write",
+                "run_count": 10000000,
+                "always_randomize": true,
+                "core_setup": {
+                  "affinity": "Middle",
+                  "max_affinity_cores": 1,
+                  "fixed_cores": true
+                },
+                "touch": "buffer",
+                "touch_size": "1kb",
+                "operation_type": "Fixed",
+                "type_config": {
+                  "scheme": "Divided",
+                  "advance": "1kb"
+                }
+              }
+            ]
+          }
+        },
+        "stressors": []
+      },
+      {
+        "enabled": true,
+        "name": "MA:SCC:LittleWrite",
+        "description": "",
+        "duration": "0m",
+        "data_gatherer": {
+          "id": "MemoryAccessOperation",
+          "configuration": {
+            "buffer_size": "32mb",
+            "report_rate": 64,
+            "operations": [
+              {
+                "read_write": "Write",
+                "run_count": 10000000,
+                "always_randomize": true,
+                "core_setup": {
+                  "affinity": "Little",
+                  "max_affinity_cores": 1,
+                  "fixed_cores": true
+                },
+                "touch": "buffer",
+                "touch_size": "1kb",
+                "operation_type": "Fixed",
+                "type_config": {
+                  "scheme": "Divided",
+                  "advance": "1kb"
+                }
+              }
+            ]
+          }
+        },
+        "stressors": []
+      },
+
+      {
+        "enabled": true,
+        "name": "MA:SCC:BigRead",
+        "description": "",
+        "duration": "0m",
+        "data_gatherer": {
+          "id": "MemoryAccessOperation",
+          "configuration": {
+            "buffer_size": "32mb",
+            "report_rate": 64,
+            "prewrite_buffer": true,
+            "operations": [
+              {
+                "read_write": "Read",
+                "run_count": 10000000,
+                "always_randomize": true,
+                "core_setup": {
+                  "affinity": "Big",
+                  "max_affinity_cores": 1,
+                  "fixed_cores": true
+                },
+                "touch": "buffer",
+                "touch_size": "1kb",
+                "operation_type": "Fixed",
+                "type_config": {
+                  "scheme": "Divided",
+                  "advance": "1kb"
+                }
+              }
+            ]
+          }
+        },
+        "stressors": []
+      },
+      {
+        "enabled": true,
+        "name": "MA:SCC:MiddleRead",
+        "description": "",
+        "duration": "0m",
+        "data_gatherer": {
+          "id": "MemoryAccessOperation",
+          "configuration": {
+            "buffer_size": "32mb",
+            "report_rate": 64,
+            "prewrite_buffer": true,
+            "operations": [
+              {
+                "read_write": "Read",
+                "run_count": 10000000,
+                "always_randomize": true,
+                "core_setup": {
+                  "affinity": "Middle",
+                  "max_affinity_cores": 1,
+                  "fixed_cores": true
+                },
+                "touch": "buffer",
+                "touch_size": "1kb",
+                "operation_type": "Fixed",
+                "type_config": {
+                  "scheme": "Divided",
+                  "advance": "1kb"
+                }
+              }
+            ]
+          }
+        },
+        "stressors": []
+      },
+      {
+        "enabled": true,
+        "name": "MA:SCC:LittleRead",
+        "description": "",
+        "duration": "0m",
+        "data_gatherer": {
+          "id": "MemoryAccessOperation",
+          "configuration": {
+            "buffer_size": "32mb",
+            "report_rate": 64,
+            "prewrite_buffer": true,
+            "operations": [
+              {
+                "read_write": "Read",
+                "run_count": 10000000,
+                "always_randomize": true,
+                "core_setup": {
+                  "affinity": "Little",
+                  "max_affinity_cores": 1,
+                  "fixed_cores": true
+                },
+                "touch": "buffer",
+                "touch_size": "1kb",
+                "operation_type": "Fixed",
+                "type_config": {
+                  "scheme": "Divided",
+                  "advance": "1kb"
+                }
+              }
+            ]
+          }
+        },
+        "stressors": []
+      }
+    ]
+  }

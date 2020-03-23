@@ -8,33 +8,33 @@
 
 std::shared_ptr<Texture> Material::default_texture_ = nullptr;
 
-void Material::DefaultTextureGenerator(uint8_t *data) {
-  unsigned char img_data[4] = {255, 255, 255, 0};
-  memcpy(data, img_data, 4);
-}
-
 void Material::CreateDefaultTexture(Renderer &renderer) {
   if (default_texture_ != nullptr) { return; }
   unsigned char img_data[4] = {255, 255, 255, 0};
-  default_texture_ = std::make_shared<Texture>(renderer.GetDevice(), img_data, 1, 1,
-                                               VK_FORMAT_R8G8B8A8_SRGB, DefaultTextureGenerator);
+
+  default_texture_ = std::make_shared<Texture>(renderer, img_data, 1, 1,
+                                               VK_FORMAT_R8G8B8A8_SRGB);
 }
 
-Material::Material(Renderer *renderer, std::shared_ptr<ShaderState> shaders,
+Material::Material(Renderer &renderer, std::shared_ptr<ShaderState> shaders,
                    std::vector<std::shared_ptr<Texture>> &texture, const MaterialAttributes &attrs) :
     renderer_(renderer) {
   shaders_ = shaders;
+  max_mip_levels_ = 0;
   for (auto currTexture : texture) {
     if (currTexture == nullptr){
-      CreateDefaultTexture(*renderer);
+      CreateDefaultTexture(renderer);
       texture_.push_back(default_texture_);
     }
     else{
       texture_.push_back(currTexture);
+      if(currTexture->GetMipLevel() > max_mip_levels_) {
+        max_mip_levels_ = currTexture->GetMipLevel();
+      }
     }
   }
   material_attributes_ = attrs;
-  material_buffer_ = std::make_unique<UniformBufferObject<MaterialAttributes>>(renderer_->GetDevice());
+  material_buffer_ = std::make_unique<UniformBufferObject<MaterialAttributes>>(renderer_.GetDevice());
 
   CreateSampler();
   CreateMaterialDescriptorSetLayout();
@@ -42,22 +42,11 @@ Material::Material(Renderer *renderer, std::shared_ptr<ShaderState> shaders,
 }
 
 Material::~Material() {
-  Cleanup();
-}
-
-void Material::Cleanup() {
-  vkDeviceWaitIdle(renderer_->GetVulkanDevice());
-  vkDestroySampler(renderer_->GetVulkanDevice(), sampler_, nullptr);
-  vkDestroyDescriptorSetLayout(renderer_->GetVulkanDevice(), material_descriptors_layout_, nullptr);
+  vkDeviceWaitIdle(renderer_.GetVulkanDevice());
+  vkDestroySampler(renderer_.GetVulkanDevice(), sampler_, nullptr);
+  vkDestroyDescriptorSetLayout(renderer_.GetVulkanDevice(), material_descriptors_layout_, nullptr);
   material_buffer_.reset();
-}
-
-void Material::OnResume(Renderer *renderer) {
-  renderer_ = renderer;
-  material_buffer_ = std::make_unique<UniformBufferObject<MaterialAttributes>>(renderer_->GetDevice());
-  CreateSampler();
-  CreateMaterialDescriptorSetLayout();
-  CreateMaterialDescriptorSets();
+  default_texture_.reset();
 }
 
 void Material::CreateSampler() {
@@ -66,7 +55,7 @@ void Material::CreateSampler() {
     .pNext = nullptr,
     .magFilter = VK_FILTER_LINEAR,
     .minFilter = VK_FILTER_LINEAR,
-    .mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST,
+    .mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR,
     .addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
     .addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,
     .addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT,
@@ -74,11 +63,11 @@ void Material::CreateSampler() {
     .maxAnisotropy = 1,
     .compareOp = VK_COMPARE_OP_NEVER,
     .minLod = 0.0f,
-    .maxLod = 0.0f,
+    .maxLod = static_cast<float>(max_mip_levels_),
     .borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE,
     .unnormalizedCoordinates = VK_FALSE,
   };
-  CALL_VK(vkCreateSampler(renderer_->GetVulkanDevice(), &sampler_Create_info, nullptr, &sampler_));
+  CALL_VK(vkCreateSampler(renderer_.GetVulkanDevice(), &sampler_Create_info, nullptr, &sampler_));
 }
 
 void Material::FillPipelineInfo(VkGraphicsPipelineCreateInfo *pipeline_info) {
@@ -115,27 +104,14 @@ void Material::CreateMaterialDescriptorSetLayout() {
           .pBindings = bindings.data(),
   };
 
-  CALL_VK(vkCreateDescriptorSetLayout(renderer_->GetVulkanDevice(), &layout_info, nullptr,
+  CALL_VK(vkCreateDescriptorSetLayout(renderer_.GetVulkanDevice(), &layout_info, nullptr,
                                         &material_descriptors_layout_));
 }
 
-void Material::CreateMaterialDescriptorSets() {
-  std::vector<VkDescriptorSetLayout> layouts(renderer_->GetDevice().GetDisplayImages().size(),
-                                           material_descriptors_layout_);
-
-  VkDescriptorSetAllocateInfo alloc_info = {
-          .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-          .descriptorPool = renderer_->GetDescriptorPool(),
-          .descriptorSetCount = static_cast<uint32_t>(renderer_->GetDevice().GetDisplayImages().size()),
-          .pSetLayouts = layouts.data(),
-  };
-
-  material_descriptor_sets_.resize(renderer_->GetDevice().GetDisplayImages().size());
-  CALL_VK(vkAllocateDescriptorSets(renderer_->GetVulkanDevice(), &alloc_info, material_descriptor_sets_.data()));
-
+void Material::UpdateMaterialDescriptorSets() {
   MaterialAttributes attrs = material_attributes_;
 
-  for (size_t i = 0; i < renderer_->GetDevice().GetDisplayImages().size(); i++) {
+  for (size_t i = 0; i < renderer_.GetDevice().GetDisplayImages().size(); i++) {
     std::vector<VkWriteDescriptorSet>
         descriptor_writes(texture_.size() + FRAGMENT_BINDING_MATERIAL_COUNT);
 
@@ -175,7 +151,24 @@ void Material::CreateMaterialDescriptorSets() {
       descriptor_writes[arrayIdx].pImageInfo = &image_info[x];
     }
 
-    vkUpdateDescriptorSets(renderer_->GetVulkanDevice(), descriptor_writes.size(), descriptor_writes.data(),
+    vkUpdateDescriptorSets(renderer_.GetVulkanDevice(), descriptor_writes.size(), descriptor_writes.data(),
                            0, nullptr);
   }
+}
+
+void Material::CreateMaterialDescriptorSets() {
+  std::vector<VkDescriptorSetLayout> layouts(renderer_.GetDevice().GetDisplayImages().size(),
+                                           material_descriptors_layout_);
+
+  VkDescriptorSetAllocateInfo alloc_info = {
+          .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+          .descriptorPool = renderer_.GetDescriptorPool(),
+          .descriptorSetCount = static_cast<uint32_t>(renderer_.GetDevice().GetDisplayImages().size()),
+          .pSetLayouts = layouts.data(),
+  };
+
+  material_descriptor_sets_.resize(renderer_.GetDevice().GetDisplayImages().size());
+  CALL_VK(vkAllocateDescriptorSets(renderer_.GetVulkanDevice(), &alloc_info, material_descriptor_sets_.data()));
+
+  UpdateMaterialDescriptorSets();
 }

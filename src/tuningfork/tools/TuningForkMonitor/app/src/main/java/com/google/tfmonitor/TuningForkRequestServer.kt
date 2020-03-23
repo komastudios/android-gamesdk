@@ -17,9 +17,6 @@
 package com.google.tfmonitor
 
 import android.net.Uri
-import com.google.tfmonitor.RequestListener.debugInfo
-import com.google.tfmonitor.RequestListener.generateTuningParameters
-import com.google.tfmonitor.RequestListener.uploadTelemetry
 import com.google.tuningfork.AppKey
 import java.io.DataInputStream
 import java.io.DataOutputStream
@@ -40,7 +37,18 @@ import java.util.TimeZone
 fun String.HeaderTrim() =
     this.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1].trim { it <= ' ' }
 
-class TuningForkRequestServer(ip: String, port: Int) : Thread() {
+data class HeaderInfo(
+    val contentLen: Int,
+    val contentType: String,
+    val connectionType: String,
+    val hostname: String,
+    val userAgent: String,
+    val encoding: String,
+    val requestLocation: String
+)
+
+class TuningForkRequestServer(ip: String, port: Int, val requestListener: RequestListener) :
+    Thread() {
     private val serverSocket: ServerSocket
     private var isStart = true
     private var keepAlive = true
@@ -57,7 +65,7 @@ class TuningForkRequestServer(ip: String, port: Int) : Thread() {
             try {
                 //wait for new connection on port
                 val newSocket = serverSocket.accept()
-                val newClient = ResponseThread(newSocket)
+                val newClient = ResponseThread(newSocket, requestListener)
                 newClient.start()
             } catch (s: SocketTimeoutException) {
             } catch (e: IOException) {
@@ -66,7 +74,8 @@ class TuningForkRequestServer(ip: String, port: Int) : Thread() {
         }
     }
 
-    inner class ResponseThread(protected var socket: Socket) : Thread() {
+    inner class ResponseThread(protected var socket: Socket, val requestListener: RequestListener) :
+        Thread() {
 
         internal val TAG = "AppApis"
 
@@ -86,15 +95,87 @@ class TuningForkRequestServer(ip: String, port: Int) : Thread() {
         val kConnectionTypePattern = Regex("Connection:", RegexOption.IGNORE_CASE)
         val kAcceptEncodingPattern = Regex("Accept-Encoding:", RegexOption.IGNORE_CASE)
 
-        override fun run() {
+        private fun parseHeaders(header: Array<String>): HeaderInfo {
+            var contentLen = "0"
+            var contentType = "text/html"
+            var connectionType = "keep-alive"
+            var hostname = ""
+            var userAgent = ""
+            var encoding = ""
+            var requestLocation = ""
 
+            val h1 =
+                header[0].split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            if (h1.size == 3) {
+                requestType = h1[0]
+                requestLocation = h1[1]
+                httpVer = h1[2]
+            }
+
+            for (h in header.indices) {
+                val value = header[h].trim { it <= ' ' }
+
+                when (true) {
+                    kContentLengthPattern.containsMatchIn(value) -> contentLen =
+                        value.HeaderTrim()
+                    kContentTypePattern.containsMatchIn(value) -> contentType =
+                        value.HeaderTrim()
+                    kConnectionTypePattern.containsMatchIn(value) -> connectionType =
+                        value.HeaderTrim()
+                    kClientHostPattern.containsMatchIn(value) -> hostname =
+                        value.HeaderTrim()
+                    kAcceptEncodingPattern.containsMatchIn(value) -> encoding =
+                        value.HeaderTrim()
+                    kUserAgentPattern.containsMatchIn(value) ->
+                        for (ua in value.split(":".toRegex())
+                            .dropLastWhile { it.isEmpty() }.toTypedArray()) {
+                            if (!ua.equals("User-Agent:", ignoreCase = true)) {
+                                userAgent += ua.trim { it <= ' ' }
+                            }
+                        }
+                }
+            }
+
+            return HeaderInfo(
+                Integer.valueOf(contentLen), contentType, connectionType, hostname,
+                userAgent, encoding, requestLocation
+            )
+        }
+
+        private fun processPostRequest(
+            header: HeaderInfo, lastHeaderLine: String,
+            inp: DataInputStream?
+        ) {
+            var out = DataOutputStream(socket.getOutputStream())
+            var postData = lastHeaderLine
+            if (header.contentLen > 0) {
+                val data = ByteArray(1500)
+                var contentLength = header.contentLen
+                // Read any extra data
+                while (contentLength > postData.length) {
+                    val read_size = inp!!.read(data)
+                    if (read_size <= 0) break
+                    val str = StringBuilder()
+                    val recData = String(data).trim { it <= ' ' }
+                    str.append(postData)
+                    str.append(recData)
+                    postData = str.toString()
+                }
+                if (contentLength < postData.length)
+                    postData = postData.substring(0, contentLength)
+            }
+
+            if (!header.requestLocation.isEmpty()) {
+                processLocation(out, header.requestLocation, postData)
+            }
+        }
+
+        override fun run() {
             try {
                 var inp: DataInputStream? = null
-                var out: DataOutputStream? = null
 
                 if (socket.isConnected) {
                     inp = DataInputStream(socket.getInputStream())
-                    out = DataOutputStream(socket.getOutputStream())
                 }
 
                 val data = ByteArray(1500)
@@ -104,71 +185,12 @@ class TuningForkRequestServer(ip: String, port: Int) : Thread() {
                     val read_size = inp!!.read(data)
                     if (read_size == -1) break
                     var recData = String(data).trim { it <= ' ' }
-                    val header = recData.split("\\r?\\n".toRegex()).dropLastWhile { it.isEmpty() }
+                    val headers = recData.split("\\r?\\n".toRegex()).dropLastWhile { it.isEmpty() }
                         .toTypedArray()
-
-                    var contentLen = "0"
-                    var contentType = "text/html"
-                    var connectionType = "keep-alive"
-                    var hostname = ""
-                    var userAgent = ""
-                    var encoding = ""
-
-                    val h1 =
-                        header[0].split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                    if (h1.size == 3) {
-                        requestType = h1[0]
-                        httpVer = h1[2]
-                    }
-
-                    for (h in header.indices) {
-                        val value = header[h].trim { it <= ' ' }
-
-                        when (true) {
-                            kContentLengthPattern.containsMatchIn(value) -> contentLen =
-                                value.HeaderTrim()
-                            kContentTypePattern.containsMatchIn(value) -> contentType =
-                                value.HeaderTrim()
-                            kConnectionTypePattern.containsMatchIn(value) -> connectionType =
-                                value.HeaderTrim()
-                            kClientHostPattern.containsMatchIn(value) -> hostname =
-                                value.HeaderTrim()
-                            kAcceptEncodingPattern.containsMatchIn(value) -> encoding =
-                                value.HeaderTrim()
-                            kUserAgentPattern.containsMatchIn(value) ->
-                                for (ua in value.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()) {
-                                    if (!ua.equals("User-Agent:", ignoreCase = true)) {
-                                        userAgent += ua.trim { it <= ' ' }
-                                    }
-                                }
-                        }
-                    }
-
-                    val contentLength = Integer.valueOf(contentLen)
-
-                    if (requestType != "") {
-                        var postData = ""
-                        if (requestType.equals("POST", ignoreCase = true) && contentLen != "0") {
-                            postData = header[header.size - 1]
-                            if (contentLength > 0) {
-                                // Read any extra data
-                                while (contentLength > postData.length) {
-                                    val read_size = inp!!.read(data)
-                                    if (read_size <= 0) break
-                                    val str = StringBuilder()
-                                    recData = String(data).trim { it <= ' ' }
-                                    str.append(postData)
-                                    str.append(recData)
-                                    postData = str.toString()
-                                }
-                                postData = postData.substring(0, contentLength)
-                            }
-                        }
-
-                        val requestLocation = h1[1]
-                        if (requestLocation != null) {
-                            processLocation(out, requestLocation, postData)
-                        }
+                    if (!headers.isEmpty()) {
+                        val header = parseHeaders(headers)
+                        if (requestType.equals("POST", ignoreCase = true))
+                            processPostRequest(header, headers.last(), inp)
                     }
                 }
             } catch (er: SocketException) {
@@ -220,9 +242,12 @@ class TuningForkRequestServer(ip: String, port: Int) : Thread() {
                 val postData = qparms["_POST"]
                 val resultBody = if (postData != null) {
                     when (function) {
-                        "generateTuningParameters" -> generateTuningParameters(app, postData)
-                        "uploadTelemetry" -> uploadTelemetry(app, postData)
-                        "debugInfo" -> debugInfo(app, postData)
+                        "generateTuningParameters" -> requestListener.generateTuningParameters(
+                            app,
+                            postData
+                        )
+                        "uploadTelemetry" -> requestListener.uploadTelemetry(app, postData)
+                        "debugInfo" -> requestListener.debugInfo(app, postData)
                         else -> errorResult()
                     }
                 } else errorResult()
@@ -282,11 +307,11 @@ class TuningForkRequestServer(ip: String, port: Int) : Thread() {
         var isStart = false
         private var server: TuningForkRequestServer? = null
 
-        fun startServer(ip: String, port: Int) {
+        fun startServer(ip: String, port: Int, requestListener: RequestListener) {
             try {
 
                 if (!isStart) {
-                    server = TuningForkRequestServer(ip, port)
+                    server = TuningForkRequestServer(ip, port, requestListener)
                     val eh =
                         UncaughtExceptionHandler { server, e -> println("Uncaught exception!") }
                     server?.uncaughtExceptionHandler = eh

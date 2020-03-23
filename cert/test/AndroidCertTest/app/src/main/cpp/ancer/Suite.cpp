@@ -74,10 +74,10 @@ void internal::SuiteUpdateRenderer() {
 //==============================================================================
 
 int internal::CreateOperation(
-        const std::string& suite,
+        const std::string& suite, const std::string& description,
         const std::string& operation,
         ancer::BaseOperation::Mode mode) {
-    auto op = BaseOperation::Load(operation, suite, mode);
+    auto op = BaseOperation::Load(operation, suite, description, mode);
     if ( op ) {
         std::lock_guard<std::mutex> lock(_operations_lock);
         int id = _id_counter++;

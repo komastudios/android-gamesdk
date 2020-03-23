@@ -95,13 +95,39 @@ def __generate_formatted_summary_from_suites(suites_by_name: Dict[str, Suite],
 
         if suites:
             formatter.on_init(suite_name, get_readable_utc())
-
             for suite in suites:
-                base_name = suite.file.stem
-                plot_path = __make_image_path(folder, base_name, image_indexer)
-                formatter.on_device(suite.identifier(), plot_path,
-                                    plot_path.relative_to(folder),
-                                    suite.handler.plot(plot_path, figure_dpi))
+                if suite.handler.can_render_single():
+                    base_name = suite.file.stem
+                    plot_path = __make_image_path(folder, base_name,
+                                                  image_indexer)
+                    formatter.on_device(
+                        suite.identifier(), plot_path,
+                        plot_path.relative_to(folder),
+                        suite.handler.plot(plot_path, figure_dpi))
+
+
+def __generate_formatted_report_summaries(suites_by_report: Dict[str, Suite],
+                                          folder: Path,
+                                          formatter: SummaryFormatter,
+                                          figure_dpi: int) -> type(None):
+    for [report, suites_] in suites_by_report.items():
+        suites = [s for s in suites_ if s.handler]
+        if not suites:
+            continue
+
+        suites_by_handler_class = {}
+        for s in [s for s in suites if s.handler]:
+            suites_by_handler_class.setdefault(s.handler.__class__,
+                                               []).append(s)
+
+        for handler_class in suites_by_handler_class:
+            if handler_class.handles_entire_report(suites):
+                plot_path = folder.joinpath("images").joinpath(report + ".png")
+                formatter.on_device(
+                    suites[0].identifier(), plot_path,
+                    plot_path.relative_to(folder),
+                    handler_class.render_entire_report(suites, plot_path,
+                                                       figure_dpi))
 
 
 def __generate_formatted_cross_suite_summary(all_suites: List[Suite],
@@ -118,7 +144,8 @@ def __generate_formatted_cross_suite_summary(all_suites: List[Suite],
     for handler_class in suites_by_handler_class:
         suites = suites_by_handler_class[handler_class]
         if handler_class.can_render_summarization_plot(suites):
-            plot_path = __make_image_path(folder, "meta_summary", image_indexer)
+            plot_path = __make_image_path(folder, "meta_summary", \
+                                          image_indexer)
             formatter.on_cross_suite(
                 plot_path, plot_path.relative_to(folder),
                 handler_class.summarization_plot(suites, \
@@ -138,6 +165,9 @@ def __generate_formatted_summary_from_errors(excluded: List[Path],
         with open(excluded_path, "r") as excluded_file:
             exclusion_data = json.load(excluded_file)
             device_info = DeviceCatalog()[exclusion_data["codename"]]
+            if device_info is None:
+                # If brand & model lookup fails, just go with codename
+                device_info = f'Codename "{exclusion_data["codename"]}"'
             formatter.on_device_error(
                 repr(device_info), f'{exclusion_data["outcome"]}: '
                 f'{exclusion_data["test_details"]}')
@@ -152,12 +182,14 @@ def __generate_formatted_summary_from_reports(summary_path: Path,
     the result formatted to the summary
     """
     suites_by_name = {}
+    suites_by_report = {}
     all_suites = []
     folder = summary_path.parent
 
     for report in reports:
         suites = load_suites(report)
         all_suites.extend(suites)
+        suites_by_report[report.stem] = suites
         for suite in suites:
             suites_by_name.setdefault(suite.name, []).append(suite)
 
@@ -165,14 +197,20 @@ def __generate_formatted_summary_from_reports(summary_path: Path,
         __generate_formatted_summary_from_suites(suites_by_name, folder,
                                                  formatter, figure_dpi)
 
+        __generate_formatted_report_summaries(suites_by_report, folder,
+                                              formatter, figure_dpi)
+
         __generate_formatted_cross_suite_summary(all_suites, folder, formatter,
                                                  figure_dpi)
 
         __generate_formatted_summary_from_errors(excluded, formatter)
 
 
-def generate_summary(reports: List[Path], excluded: List[Path],
-                     output_format: str, figure_dpi: int) -> Union[Path, None]:
+def generate_summary(reports: List[Path],
+                     excluded: List[Path],
+                     output_format: str,
+                     figure_dpi: int,
+                     name: str = "") -> Union[Path, None]:
     """
     Creates a single doc holding results for all involved devices. Great for a
     comparative, all-up analysis.
@@ -182,6 +220,7 @@ def generate_summary(reports: List[Path], excluded: List[Path],
         excluded: list of paths to device test run errors.
         output_format: summary format.
         figure_dpi: image resolution.
+        name: the name of this summary.
 
     Returns:
         a path to the reported summary.
@@ -191,9 +230,7 @@ def generate_summary(reports: List[Path], excluded: List[Path],
 
     reports_dir = reports[0].parent if len(reports) > 0 else excluded[0].parent
 
-    summary_file_name = \
-        f"summary_{get_indexable_utc()}_{reports_dir.stem}" \
-            f".{output_format}"
+    summary_file_name = f"summary_{get_indexable_utc()}_{name}.{output_format}"
     summary_path = reports_dir.joinpath(summary_file_name)
 
     summary_formatter = create_summary_formatter(output_format)
@@ -225,7 +262,8 @@ def perform_summary_if_enabled(recipe: Recipe, reports_dir: Path) -> type(None):
         summary_path = generate_summary([
             Path(f) for f in sorted(glob.glob(f"{reports_dir}/*_report*.json"))
         ], [Path(f) for f in sorted(glob.glob(f"{reports_dir}/*_error*.json"))],
-                                        summary[1], summary[2])
+                                        summary[1], summary[2],
+                                        recipe.get_name())
 
         if summary[3]:  # publish to Google Drive
             try:
@@ -233,4 +271,4 @@ def perform_summary_if_enabled(recipe: Recipe, reports_dir: Path) -> type(None):
                 print(f"{summary_path} published to Google Drive.")
             except GoogleDriveRelatedError as error:
                 print(f"""{summary_path} publishing to Google Drive failure:
-{repr(error)}""")
+{error}""")

@@ -2,15 +2,10 @@ package net.jimblackler.istresser;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
-import android.os.Debug;
 import android.os.Debug.MemoryInfo;
 import android.util.Log;
 import com.google.common.primitives.Ints;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -52,47 +47,13 @@ public class Heuristics {
     try {
       int largestOom = 0;
       for (int pid : getPids(activityManager)) {
-        int oom = Integer.parseInt(readFile(("/proc/" + pid) + "/oom_score"));
+        int oom = Integer.parseInt(Utils.readFile(("/proc/" + pid) + "/oom_score"));
         largestOom = Math.max(largestOom, oom);
       }
       return largestOom;
     } catch (IOException | NumberFormatException e) {
       return 0;
     }
-  }
-
-  /**
-   * Loads all the text from an input string and returns the result as a string.
-   *
-   * @param inputStream The stream to read.
-   * @return All of the text from the stream.
-   * @throws IOException Thrown if a read error occurs.
-   */
-  private static String readStream(InputStream inputStream) throws IOException {
-    try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-        BufferedReader reader = new BufferedReader(inputStreamReader)) {
-      String newline = System.getProperty("line.separator");
-      StringBuilder output = new StringBuilder();
-      String line;
-      while ((line = reader.readLine()) != null) {
-        if (output.length() > 0) {
-          output.append(newline);
-        }
-        output.append(line);
-      }
-      return output.toString();
-    }
-  }
-
-  /**
-   * Loads all text from the specified file and returns the result as a string.
-   *
-   * @param filename The name of the file to read.
-   * @return All of the text from the file.
-   * @throws IOException Thrown if a read error occurs.
-   */
-  private static String readFile(String filename) throws IOException {
-    return readStream(new FileInputStream(filename));
   }
 
   /**
@@ -117,7 +78,7 @@ public class Heuristics {
 
     String filename = "/proc/meminfo";
     try {
-      String meminfoText = readFile(filename);
+      String meminfoText = Utils.readFile(filename);
       Pattern pattern = Pattern.compile("([^:]+)[^\\d]*(\\d+).*\n");
       Matcher matcher = pattern.matcher(meminfoText);
       while (matcher.find()) {
@@ -143,7 +104,7 @@ public class Heuristics {
       for (int pid : getPids(activityManager)) {
         String filename = "/proc/" + pid + "/status";
         try {
-          String meminfoText = readFile(filename);
+          String meminfoText = Utils.readFile(filename);
           Pattern pattern = Pattern.compile("([a-zA-Z]+)[^\\d]*(\\d+) kB.*\n");
           Matcher matcher = pattern.matcher(meminfoText);
           while (matcher.find()) {

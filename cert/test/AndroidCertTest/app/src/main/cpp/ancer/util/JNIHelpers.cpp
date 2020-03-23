@@ -29,14 +29,16 @@ namespace {
 Log::Tag TAG{"ancer::util::jni"};
 
 JavaVM *_java_vm;
+
+jobject _activity_weak_global_ref;
 }
 
 //==============================================================================
 
 namespace {
-class BoundJNIEnvImpl final : public jni::LocalJNIEnv {
+class LocalJNIEnvImpl final : public jni::LocalJNIEnv {
  public:
-  BoundJNIEnvImpl() {
+  LocalJNIEnvImpl() {
     auto attachment_status = _java_vm->GetEnv((void **) &_env, JNI_VERSION_1_6);
     if (attachment_status==JNI_EDETACHED) {
       if (_java_vm->AttachCurrentThread(&_env, nullptr)!=0) {
@@ -47,7 +49,7 @@ class BoundJNIEnvImpl final : public jni::LocalJNIEnv {
     _detach_on_destroy = false;
   }
 
-  ~BoundJNIEnvImpl() {
+  ~LocalJNIEnvImpl() {
     for (const auto &local_ref : _local_refs) {
       _env->DeleteLocalRef(local_ref);
     }
@@ -806,9 +808,57 @@ void ancer::jni::SetJavaVM(JavaVM *vm) {
 
 void ancer::jni::SafeJNICall(JNIFunction &&func) {
   try {
-    BoundJNIEnvImpl bound_jni_env{};
-    return func(&bound_jni_env);
+    LocalJNIEnvImpl local_jni_env{};
+    return func(&local_jni_env);
   } catch (const std::exception &e) {
     FatalError(TAG, e.what());
   }
+}
+
+//==============================================================================
+
+void ancer::jni::Init(ancer::jni::LocalJNIEnv *env, const jobject activity) {
+  if (_activity_weak_global_ref!=nullptr) {
+    ancer::jni::Deinit(env);
+  }
+  _activity_weak_global_ref = env->NewWeakGlobalRef(activity);
+}
+
+jobject ancer::jni::GetActivityWeakGlobalRef() {
+  return _activity_weak_global_ref;
+}
+
+void ancer::jni::Deinit(ancer::jni::LocalJNIEnv *env) {
+  if (_activity_weak_global_ref!=nullptr) {
+    env->DeleteWeakGlobalRef(_activity_weak_global_ref);
+    _activity_weak_global_ref = nullptr;
+  }
+}
+
+//==============================================================================
+
+jclass ancer::jni::LoadClass(ancer::jni::LocalJNIEnv *env, jobject activity,
+                             const char *class_name) {
+  return (jclass) env->CallObjectMethod(
+      env->CallObjectMethod(activity,
+                            env->GetMethodID(env->GetObjectClass(activity),
+                                             "getClassLoader", "()Ljava/lang/ClassLoader;")),
+      env->GetMethodID(env->FindClass("java/lang/ClassLoader"),
+                       "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;"),
+      env->NewStringUTF(class_name)
+  );
+}
+
+jobject ancer::jni::GetEnumField(jni::LocalJNIEnv *env, const char *class_name,
+                                 const char *field_name) {
+  const jclass cls = env->FindClass(class_name);
+  if (cls==nullptr)
+    return nullptr;
+
+  const jfieldID field_id = env->GetStaticFieldID(cls, field_name,
+                                                  (std::string{"L"} + class_name + ";").c_str());
+  if (field_id==nullptr)
+    return nullptr;
+
+  return env->GetStaticObjectField(cls, field_id);
 }

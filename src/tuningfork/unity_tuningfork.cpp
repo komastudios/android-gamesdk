@@ -52,6 +52,7 @@ namespace {
     static SwappyTracerFn s_swappy_tracer_fn = nullptr;
     static UnitySwappyTracerFn s_unity_swappy_tracer_fn = nullptr;
     static bool s_swappy_enabled = false;
+    static uint32_t s_swappy_version = 0;
 
     void UnityTracer(const SwappyTracer* tracer) {
         SwappyBackend swappyBackend = s_unity_swappy_tracer_fn(tracer);
@@ -79,8 +80,8 @@ namespace {
         auto tracer = findFunction<UnitySwappyTracerFn>("libunity.so", "UnitySwappy_injectTracer");
         auto version_fn = findFunction<UnitySwappyVersion>("libunity.so", "UnitySwappy_version");
         if(version_fn != nullptr) {
-            auto version = version_fn();
-            ALOGI("Unity Swappy version: [%d]", version);
+            s_swappy_version = version_fn();
+            ALOGI("Unity Swappy version: [%d]", s_swappy_version);
         }
         return tracer;
     }
@@ -137,6 +138,7 @@ TFErrorCode Unity_TuningFork_init(
     settings.fidelity_params_callback = fidelity_params_callback;
     settings.training_fidelity_params = training_fidelity_params;
     settings.endpoint_uri_override = endpoint_uri_override;
+    settings.swappy_version = s_swappy_version;
     return TuningFork_init(&settings, jni::Env(), jni::AppContextGlobalRef());
 }
 

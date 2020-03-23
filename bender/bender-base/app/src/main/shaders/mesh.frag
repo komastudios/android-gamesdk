@@ -20,6 +20,8 @@ layout(set = BINDING_SET_MATERIAL, binding = SAMPLER_SPECULAR)
 uniform sampler2D textureSpecular;
 layout(set = BINDING_SET_MATERIAL, binding = SAMPLER_EMISSIVE)
 uniform sampler2D textureEmissive;
+layout(set = BINDING_SET_MATERIAL, binding = SAMPLER_SPECULAR_EXPONENT)
+uniform sampler2D textureSpecularExponent;
 layout(set = BINDING_SET_MATERIAL, binding = SAMPLER_NORMAL)
 uniform sampler2D textureNormal;
 
@@ -58,7 +60,7 @@ vec3 calcPointLight(PointLight light){
     float diffuseTerm = max(dot(lightDir, normal), 0.0);
     vec3 diffuse = diffuseTerm * light.color * attenuation * texture(textureDiffuse, fragTexCoord).xyz * materialAttr.diffuse;
 
-    float specularTerm = pow(max(dot(normal, halfwayDir), 0.0), materialAttr.specular.w);
+    float specularTerm = pow(max(dot(normal, halfwayDir), 0.0), materialAttr.specular.w * texture(textureSpecularExponent, fragTexCoord).x);
     vec3 specular = specularTerm * light.color * attenuation * texture(textureSpecular, fragTexCoord).xyz * materialAttr.specular.xyz;
 
     return specular + diffuse;

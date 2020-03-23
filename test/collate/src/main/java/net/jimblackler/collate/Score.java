@@ -24,24 +24,35 @@ public class Score {
     Map<String, List<Result>> out = new HashMap<>();
     Map<String, JSONObject> builds = new HashMap<>();
     Path directory = Files.createTempDirectory("report-");
-    final int[] numberScenarios = {0};
-    Map<Integer, JSONArray> groups = new HashMap<>();
+    final int[] variations = {0};
+    Map<Integer, JSONObject> paramsMap = new HashMap<>();
     Consumer<JSONArray> collect =
         result -> {
           if (result.isEmpty()) {
             return;
           }
           JSONObject first = result.getJSONObject(0);
-          if (!first.has("scenario")) {
-            System.out.println("No scenario");
-            return;
-          }
+          JSONObject params = first.getJSONObject("params");
 
-          int scenario = first.getInt("scenario");
-          if (scenario > numberScenarios[0]) {
-            numberScenarios[0] = scenario;
+          JSONObject runParameters = Utils.flattenParams(params);
+          JSONArray coordinates = params.getJSONArray("coordinates");
+          JSONArray tests = params.getJSONArray("tests");
+          int total = 1;
+          int variationNumber = 0;
+          for (int coordinateNumber = coordinates.length() - 1;
+              coordinateNumber >= 0;
+              coordinateNumber--) {
+            int bound = tests.getJSONArray(coordinateNumber).length();
+            int value = coordinates.getInt(coordinateNumber);
+            variationNumber += value * total;
+            total *= bound;
           }
-          groups.put(scenario, first.getJSONArray("groups"));
+          if (variations[0] == 0) {
+            variations[0] = total;
+          } else {
+            assert variations[0] == total;
+          }
+          paramsMap.put(variationNumber, runParameters);
 
           assert first.has("build");
           JSONObject build = first.getJSONObject("build");
@@ -56,6 +67,7 @@ public class Score {
           builds.put(id, build);
 
           long lowestTop = Long.MAX_VALUE;
+          long largest = 0;
           boolean exited = false;
           boolean allocFailed = false;
           boolean serviceCrashed = false;
@@ -81,35 +93,45 @@ public class Score {
             if (!row.has("nativeAllocated")) {
               continue;
             }
-            long nativeAllocated = row.getLong("nativeAllocated");
+            long score;
+            if (runParameters.has("glTest")) {
+              score = row.getLong("gl_allocated");
+            } else {
+              score = row.getLong("nativeAllocated");
+            }
+
+            if (score > largest) {
+              largest = score;
+            }
 
             if (row.has("trigger")) {
-              long top = nativeAllocated;
+              long top = score;
               if (top < lowestTop) {
                 lowestTop = top;
               }
             }
           }
 
-          float score = lowestTop == Long.MAX_VALUE ? 0 : (float) lowestTop / (1024 * 1024);
+          float score = (lowestTop == Long.MAX_VALUE ? (float) largest : (float) lowestTop)
+              / (1024 * 1024);
           List<Result> results0;
           if (out.containsKey(id)) {
             results0 = out.get(id);
           } else {
             results0 = new ArrayList<>();
-            while (results0.size() < groups.size()) {
+            while (results0.size() < variations[0]) {
               results0.add(null);
             }
             out.put(id, results0);
           }
           JSONArray results1 = new JSONArray();
           results1.put(result);
-          while (results0.size() <= numberScenarios[0] - 1) {
+          while (results0.size() <= variations[0] - 1) {
             results0.add(null);
           }
-          assert results0.get(scenario - 1) == null;
+          assert results0.get(variationNumber) == null;
           results0.set(
-              scenario - 1,
+              variationNumber,
               new Result(
                   score,
                   Main.writeGraphs(directory, results1),
@@ -141,17 +163,17 @@ public class Score {
         .append("<th>")
         .append("Release")
         .append("</th>");
-    for (int scenario = 1; scenario <= numberScenarios[0]; scenario++) {
-      JSONArray _groups = groups.getOrDefault(scenario, new JSONArray());
-      StringBuilder groupsString = new StringBuilder();
-
-      for (int idx = 0; idx < _groups.length(); idx++) {
-        if (idx > 0) {
-          groupsString.append(", ");
-        }
-        groupsString.append(_groups.getString(idx).toLowerCase());
+    for (int variation = 0; variation < variations[0]; variation++) {
+      if (paramsMap.containsKey(variation)) {
+        JSONObject params = Utils.flattenParams(paramsMap.get(variation));
+        String paramString =
+            params.toString().replace("{", "").replace("}", "")
+                .replace("\"", "").replace(":true", "").replace(":", " ").replace("heuristics", "")
+                .replace(",", " ");
+        body.append("<th>").append(paramString).append("</th>");
+      } else {
+        body.append("<th>").append("</th>");
       }
-      body.append("<th>").append(String.join("<br/>", groupsString)).append("</th>");
     }
     body.append("</thead>");
 
@@ -190,8 +212,13 @@ public class Score {
         }
         Collection<String> classes = new ArrayList<>();
         int group = result.getGroup();
-        if (result.getScore() == maxScore[group] && result.isAcceptable()) {
-          classes.add("best");
+        if (result.isAcceptable()) {
+          float max = maxScore[group];
+          if (result.getScore() == max) {
+            classes.add("best");
+          } else if (result.getScore() > max * 0.90) {
+            classes.add("good");
+          }
         }
         if (!result.isAcceptable()) {
           classes.add("unacceptable");
@@ -206,7 +233,7 @@ public class Score {
         }
 
         URI uri = directory.toUri().relativize(result.getUri());
-        body.append(String.format("<a href='%s'>%.0f</a>", uri, result.getScore())).append("</td>");
+        body.append(String.format("<a href='%s'>%.1f</a>", uri, result.getScore())).append("</td>");
       }
 
       body.append("</tr>");

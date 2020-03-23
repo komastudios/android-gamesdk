@@ -5,6 +5,7 @@ import org.gradle.internal.logging.text.StyledTextOutputFactory;
 import static org.gradle.internal.logging.text.StyledTextOutput.Style;
 import org.gradle.internal.os.OperatingSystem;
 import org.gradle.api.Project;
+import static groovy.lang.Closure.IDENTITY;
 import groovy.util.GroovyCollections;
 import groovyx.gpars.GParsPool;
 
@@ -23,8 +24,13 @@ def osFolderName(externalToolName) {
         }
     } else if (OperatingSystem.current().isLinux())
         return "linux-x86";
-    else if (OperatingSystem.current().isWindows())
-        return "win";
+    else if (OperatingSystem.current().isWindows()) {
+        if (externalToolName == ExternalToolName.PROTOBUF) {
+            return "win";
+	} else if (externalToolName == ExternalToolName.CMAKE) {
+	    return "windows-x86";
+	}
+    }
 
     throw new GradleException("Unsupported OS");
 }
@@ -45,19 +51,31 @@ def joinPath(String first, String... more) {
     return Paths.get(first, more).toString()
 }
 
+def getEnvironment() {
+    def env = [:]
+    def trans = IDENTITY
+    if (OperatingSystem.current().isWindows()) {
+        trans = { it.toUpperCase() }
+    }
+    System.getenv().each{entry -> env[trans(entry.key)] = entry.value}
+    return env
+}
+
 task prepare_proto_before {
     def protocBinDir = protobufInstallDir() + "/bin"
+    def env = getEnvironment()
+    env['PATH'] = protocBinDir + System.getProperty("path.separator") + env['PATH']
     doLast {
         // Install python-protobuf
         exec {
             workingDir "./third_party/protobuf-3.0.0/python"
-            environment 'PATH', "$protocBinDir:${environment.PATH}"
+            setEnvironment env
             commandLine "python", "setup.py", "install", "--user"
         }
         // Generate nano-pb requirements
         exec {
             workingDir '../external/nanopb-c/generator/proto'
-            environment 'PATH', "$protocBinDir:${environment.PATH}"
+            setEnvironment env
             commandLine 'make'
         }
     }
@@ -366,6 +384,9 @@ task cleanPath(type: Delete) {
     delete getTempPath()
     delete getBuildPath()
 }
+
+clean.dependsOn cleanPath
+
 def executeCmd(cmd, dir) {
     def out = new StringBuilder()
     def err = new StringBuilder()
@@ -762,9 +783,9 @@ tasks.withType(BuildTask) {
 task localUnitTests {
     // These unit tests require a connected ARM64 device to run
     doLast {
-        def buildInfo = localNativeBuild(true, "test")
+        def buildInfo = localNativeBuild(true, "test/tuningfork")
         def buildKey = buildInfo.buildKey.findAll{it.contains('arm64-v8a')}[0]
-        def cmakeFolder = getTempPath() + '/' + buildKey + '/.cmake/tuningfork'
+        def cmakeFolder = getTempPath() + '/' + buildKey + '/.cmake'
         def toolchain = getLocalToolchain();
         def adb = toolchain.getAdbPath();
         exec {
@@ -774,6 +795,25 @@ task localUnitTests {
         exec {
             workingDir cmakeFolder
             commandLine adb, "shell", "/data/local/tmp/tuningfork_test"
+        }
+    }
+}
+
+task localSwappyUnitTests {
+    // These unit tests require a connected ARM64 device to run
+    doLast {
+        def buildInfo = localNativeBuild(false, "test/swappy")
+        def buildKey = buildInfo.buildKey.findAll{it.contains('arm64-v8a')}[0]
+        def cmakeFolder = getTempPath() + '/' + buildKey + '/.cmake'
+        def toolchain = getLocalToolchain();
+        def adb = toolchain.getAdbPath();
+        exec {
+            workingDir cmakeFolder
+            commandLine adb, "push", "swappy_test", "/data/local/tmp"
+        }
+        exec {
+            workingDir cmakeFolder
+            commandLine adb, "shell", "/data/local/tmp/swappy_test"
         }
     }
 }

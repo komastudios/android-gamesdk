@@ -121,6 +121,7 @@ void InitTf(JNIEnv* env, jobject activity) {
     TFSettings settings {};
     if (swappy_enabled) {
         settings.swappy_tracer_fn = &SwappyGL_injectTracer;
+        settings.swappy_version = Swappy_version();
     }
     settings.fidelity_params_callback = FidelityParamsCallback;
 #ifndef NDEBUG
@@ -130,6 +131,9 @@ void InitTf(JNIEnv* env, jobject activity) {
     if (err==TFERROR_OK) {
         TuningFork_setUploadCallback(UploadCallback);
         SetAnnotations();
+        // Test disabling and enabling memory recording
+        TuningFork_enableMemoryRecording(false);
+        TuningFork_enableMemoryRecording(true);
     } else {
         ALOGW("Error initializing TuningFork: %d", err);
     }

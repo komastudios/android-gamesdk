@@ -1,7 +1,13 @@
 cmake_minimum_required(VERSION 3.4.1)
 
+set( EXE_EXTENSION "")
+set( PLUGIN_EXTENSION "")
 if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
   set( HOST_PLATFORM "mac")
+elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+  set( HOST_PLATFORM "win")
+  set( EXE_EXTENSION ".exe")
+  set( PLUGIN_EXTENSION ".bat")
 else()
   set( HOST_PLATFORM "linux-x86")
 endif()
@@ -11,7 +17,7 @@ set( PROTOBUF_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/../../third_party/protobuf-3.0.
 if( NOT DEFINED PROTOBUF_NANO_SRC_DIR)
   set( PROTOBUF_NANO_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../external/nanopb-c")
 endif()
-set(PROTOC_EXE ${PROTOBUF_INSTALL_DIR}/bin/protoc)
+set(PROTOC_EXE ${PROTOBUF_INSTALL_DIR}/bin/protoc${EXE_EXTENSION})
 set( PROTOBUF_INCLUDE_DIR ${PROTOBUF_SRC_DIR} )
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Werror -Wthread-safety" )
@@ -101,7 +107,7 @@ get_filename_component(ABS_PROTOBUF_NANO_SRC_DIR ${PROTOBUF_NANO_SRC_DIR} ABSOLU
 
 function(protobuf_generate_nano_c)
   protobuf_generate_base("c" "--nanopb_out"
-    "--plugin=protoc-gen-nanopb=${ABS_PROTOBUF_NANO_SRC_DIR}/generator/protoc-gen-nanopb"
+    "--plugin=protoc-gen-nanopb=${ABS_PROTOBUF_NANO_SRC_DIR}/generator/protoc-gen-nanopb${PLUGIN_EXTENSION}"
     "/nano" ${ARGN})
 endfunction()
 

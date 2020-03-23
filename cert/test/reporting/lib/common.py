@@ -220,6 +220,7 @@ class Recipe():
     def __init__(self, recipe: Path, default_recipe: Path):
         self._recipe_path = recipe
         self._default_recipe_path = default_recipe
+        self._name = recipe.stem
 
         with open(recipe) as recipe_file:
             self._recipe = yaml.load(recipe_file, Loader=yaml.FullLoader)
@@ -243,6 +244,10 @@ class Recipe():
     def get_default_recipe(self) -> Dict:
         """Get the default/fallback recipe"""
         return self._recipe
+
+    def get_name(self) -> str:
+        """Returns the recipe file name (without extension)."""
+        return self._name
 
     def lookup(self, key_path: str, fallback: Any = None) -> Any:
         """Looks up a value in a the recipe file, using the value from

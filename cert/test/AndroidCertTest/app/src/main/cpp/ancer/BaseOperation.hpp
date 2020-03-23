@@ -74,7 +74,7 @@ namespace ancer {
          */
         static std::unique_ptr<BaseOperation> Load(
                 const std::string& operation_id, const std::string& suite_id,
-                Mode mode);
+                const std::string& suite_description, Mode mode);
 
     public:
 
@@ -227,25 +227,25 @@ namespace ancer {
 
         [[nodiscard]] auto GetStartTime() const noexcept { return _start_time; }
 
-        //
-        //  Helper functions
-        //
+
         template <typename T>
-        void Report(const T& payload) const {
-            ReportImpl(Json(payload));
+        friend class Reporter;
+        // NOTE: If applicable, consider calling Report(std::move(datum)) to cut
+        // down on unnecessary copies.
+        template <typename T>
+        void Report(T&& payload) const {
+            if (GetMode() == Mode::DataGatherer) {
+                reporting::WriteToReportLog(_suite_id, _operation_id,
+                                            std::forward<T>(payload));
+            }
         }
 
     private:
-        friend class Reporter;
-
-        void ReportImpl(Json&& custom_payload) const;
-
-    private:
-
         std::atomic<bool> _stop_ordered{false};
 
         Mode _mode = Mode::Stressor;
         std::string _suite_id;
+        std::string _suite_desc;
         std::string _operation_id;
         std::string _json_configuration;
 
@@ -255,17 +255,6 @@ namespace ancer {
         Timestamp _start_time;
         Duration _heartbeat_period = Duration::zero();
         Timestamp _heartbeat_timestamp;
-    };
-
-    /// Helper so reporting can be done by helper classes/functions.
-    class Reporter {
-    public:
-        Reporter(BaseOperation& op) : _op(op) {}
-
-        template <typename T>
-        void operator () (T&& payload) const { _op.ReportImpl(Json(payload)); }
-    private:
-        BaseOperation& _op;
     };
 } // namespace ancer
 

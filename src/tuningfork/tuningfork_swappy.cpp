@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "tuningfork_internal.h"
+#include "tuningfork_swappy.h"
 
 #define LOG_TAG "TuningFork"
 #include "Log.h"
@@ -24,9 +24,17 @@ namespace tuningfork {
 SwappyTraceWrapper::SwappyTraceWrapper(const Settings& settings)
         : swappyTracerFn_(settings.c_settings.swappy_tracer_fn),
           trace_({}) {
-    trace_.startFrame = StartFrameCallback;
-    trace_.preWait =  PreWaitCallback;
-    trace_.postWait = PostWaitCallback;
+    uint32_t swappyVersion = settings.c_settings.swappy_version;
+    if (swappyVersion < SWAPPY_VERSION_1_3) {
+        auto pre13_trace = reinterpret_cast<SwappyTracerPre1_3*>(&trace_);
+        pre13_trace->startFrame = StartFrameCallbackPre1_3;
+        pre13_trace->preWait =  PreWaitCallbackPre1_3;
+        pre13_trace->postWait = PostWaitCallbackPre1_3;
+    } else {
+        trace_.startFrame = StartFrameCallback;
+        trace_.preWait =  PreWaitCallback;
+        trace_.postWait = PostWaitCallback;
+    }
     trace_.preSwapBuffers = PreSwapBuffersCallback;
     trace_.postSwapBuffers = PostSwapBuffersCallback;
     trace_.userData = this;
@@ -36,42 +44,80 @@ SwappyTraceWrapper::SwappyTraceWrapper(const Settings& settings)
 // Swappy trace callbacks
 void SwappyTraceWrapper::StartFrameCallback(void* userPtr, int /*currentFrame*/,
                                      long /*currentFrameTimeStampMs*/) {
-        SwappyTraceWrapper* _this = (SwappyTraceWrapper*)userPtr;
-        auto err = TuningFork_frameTick(TFTICK_SYSCPU);
-        if (err!=TFERROR_OK) {
-            ALOGE("Error ticking %d : %d", TFTICK_SYSCPU, err);
+    SwappyTraceWrapper* _this = (SwappyTraceWrapper*)userPtr;
+    auto err = TuningFork_frameTick(TFTICK_PACED_FRAME_TIME);
+    if (err != TFERROR_OK && err != TFERROR_TUNINGFORK_NOT_INITIALIZED) {
+        ALOGE("Error ticking %d : %d", TFTICK_PACED_FRAME_TIME, err);
+    }
+}
+
+void SwappyTraceWrapper::PreWaitCallback(void* userPtr) {
+}
+
+void SwappyTraceWrapper::PostWaitCallback(void* userPtr, long cpuTimeNs, long gpuTimeNs) {
+    static long prevCpuTimeNs = 0;
+    SwappyTraceWrapper *_this = (SwappyTraceWrapper *) userPtr;
+    auto err = TuningFork_frameDeltaTimeNanos(TFTICK_CPU_TIME, cpuTimeNs);
+    if (err != TFERROR_OK && err != TFERROR_TUNINGFORK_NOT_INITIALIZED) {
+        ALOGE("Error ticking %d : %d", TFTICK_CPU_TIME, err);
+    }
+    err = TuningFork_frameDeltaTimeNanos(TFTICK_GPU_TIME, gpuTimeNs);
+    if (err != TFERROR_OK && err != TFERROR_TUNINGFORK_NOT_INITIALIZED) {
+        ALOGE("Error ticking %d : %d", TFTICK_GPU_TIME, err);
+    }
+    // This GPU time is actually for the previous frame, so use the previous frame's CPU time.
+    if (prevCpuTimeNs!=0) {
+        err = TuningFork_frameDeltaTimeNanos(TFTICK_RAW_FRAME_TIME, std::max(prevCpuTimeNs,
+                                                                             gpuTimeNs));
+        if (err != TFERROR_OK && err != TFERROR_TUNINGFORK_NOT_INITIALIZED) {
+            ALOGE("Error ticking %d : %d", TFTICK_RAW_FRAME_TIME, err);
         }
     }
-void SwappyTraceWrapper::PreWaitCallback(void* userPtr) {
-    SwappyTraceWrapper* _this = (SwappyTraceWrapper*)userPtr;
-    auto err = TuningFork_startTrace(TFTICK_SWAPPY_WAIT_TIME, &_this->waitTraceHandle_);
-    if (err!=TFERROR_OK) {
-        ALOGE("Error tracing %d : %d", TFTICK_SWAPPY_WAIT_TIME, err);
-    }
+    prevCpuTimeNs = cpuTimeNs;
 }
-void SwappyTraceWrapper::PostWaitCallback(void* userPtr) {
-    SwappyTraceWrapper *_this = (SwappyTraceWrapper *) userPtr;
-    if (_this->waitTraceHandle_) {
-        TuningFork_endTrace(_this->waitTraceHandle_);
-        _this->waitTraceHandle_ = 0;
-    }
-    auto err=TuningFork_frameTick(TFTICK_SYSGPU);
-    if (err!=TFERROR_OK) {
-        ALOGE("Error ticking %d : %d", TFTICK_SYSGPU, err);
-    }
-}
+
 void SwappyTraceWrapper::PreSwapBuffersCallback(void* userPtr) {
+    // We no longer record the swap time
+}
+
+void SwappyTraceWrapper::PostSwapBuffersCallback(void* userPtr, long /*desiredPresentationTimeMs*/) {
+    // We no longer record the swap time
+}
+
+// Callbacks for swappy version < 1.3 where we don't have direct GPU time
+void SwappyTraceWrapper::StartFrameCallbackPre1_3(void* userPtr, int /*currentFrame*/,
+                                     long /*currentFrameTimeStampMs*/) {
     SwappyTraceWrapper* _this = (SwappyTraceWrapper*)userPtr;
-    auto err = TuningFork_startTrace(TFTICK_SWAPPY_SWAP_TIME, &_this->swapTraceHandle_);
-    if (err!=TFERROR_OK) {
-        ALOGE("Error tracing %d : %d", TFTICK_SWAPPY_SWAP_TIME, err);
+    // There's no distinction between RAW and PACED frame time for swappy < 1.3
+    // since we can't get real raw frame time.
+    auto err = TuningFork_frameTick(TFTICK_RAW_FRAME_TIME);
+    if (err != TFERROR_OK && err != TFERROR_TUNINGFORK_NOT_INITIALIZED) {
+        ALOGE("Error ticking %d : %d", TFTICK_RAW_FRAME_TIME, err);
+    }
+    err = TuningFork_frameTick(TFTICK_PACED_FRAME_TIME);
+    if (err != TFERROR_OK && err != TFERROR_TUNINGFORK_NOT_INITIALIZED) {
+        ALOGE("Error ticking %d : %d", TFTICK_PACED_FRAME_TIME, err);
+    }
+    err = TuningFork_startTrace(TFTICK_CPU_TIME, &_this->logicTraceHandle_);
+    if (err != TFERROR_OK && err != TFERROR_TUNINGFORK_NOT_INITIALIZED) {
+        ALOGE("Error tracing %d : %d", TFTICK_CPU_TIME, err);
     }
 }
-void SwappyTraceWrapper::PostSwapBuffersCallback(void* userPtr, long /*desiredPresentationTimeMs*/) {
+
+void SwappyTraceWrapper::PreWaitCallbackPre1_3(void* userPtr) {
+    SwappyTraceWrapper* _this = (SwappyTraceWrapper*)userPtr;
+    if (_this->logicTraceHandle_) {
+        TuningFork_endTrace(_this->logicTraceHandle_);
+        _this->logicTraceHandle_ = 0;
+    }
+}
+
+void SwappyTraceWrapper::PostWaitCallbackPre1_3(void* userPtr) {
     SwappyTraceWrapper *_this = (SwappyTraceWrapper *) userPtr;
-    if (_this->swapTraceHandle_) {
-        TuningFork_endTrace(_this->swapTraceHandle_);
-        _this->swapTraceHandle_ = 0;
+    // This is not real GPU time
+    auto err=TuningFork_frameTick(TFTICK_GPU_TIME);
+    if (err != TFERROR_OK && err != TFERROR_TUNINGFORK_NOT_INITIALIZED) {
+        ALOGE("Error ticking %d : %d", TFTICK_GPU_TIME, err);
     }
 }
 

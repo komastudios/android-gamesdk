@@ -248,6 +248,11 @@ std::vector<std::string> GetEglExtensions() {
   return extensions;
 }
 
+bool CheckEglExtension(const std::string &name) {
+  const auto exts = GetEglExtensions();
+  return std::find(exts.begin(), exts.end(), name) != exts.end();
+}
+
 bool IsExtensionSupported(const char *gl_extension) {
   auto supported{false};
   auto index{-1};

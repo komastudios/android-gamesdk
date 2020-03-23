@@ -400,6 +400,28 @@ class Context : public java::Object {
 
 } // namespace content
 
+namespace os {
+
+class DebugClass {
+    jmethodID getNativeHeapAllocatedSize_method_id_;
+  public:
+    static uint64_t getNativeHeapAllocatedSize() {
+        JNIEnv* env = Env();
+        if ( env != nullptr) {
+            LocalObject obj;
+            obj.Cast("android/os/Debug");
+            jclass clz = obj;
+            jmethodID method = env->GetStaticMethodID(clz, "getNativeHeapAllocatedSize", "()J" );
+            if (method!=NULL)
+                return (uint64_t)env->CallStaticLongMethod(clz, method);
+        }
+        return 0;
+    }
+
+}; // class Debug
+
+} // namespace os
+
 } // namespace android
 
 // A local jni reference to the app context

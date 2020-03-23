@@ -29,19 +29,15 @@ struct ModelViewProjection {
 
 class Mesh {
 public:
-  Mesh(Renderer *renderer, std::shared_ptr<Material> material, std::shared_ptr<Geometry> geometry_data);
+  Mesh(Renderer &renderer, std::shared_ptr<Material> material, std::shared_ptr<Geometry> geometry_data);
 
-  Mesh(Renderer *renderer, std::shared_ptr<Material> material, const std::vector<float>& vertex_data,
+  Mesh(Renderer &renderer, std::shared_ptr<Material> material, const std::vector<float>& vertex_data,
           const std::vector<uint16_t>& index_data);
 
   Mesh(const Mesh &other, std::shared_ptr<Geometry> geometry);
   Mesh(const Mesh &other, std::shared_ptr<Material> material);
 
   ~Mesh();
-
-  void Cleanup();
-
-  void OnResume(Renderer *renderer);
 
   void UpdatePipeline(VkRenderPass render_pass);
 
@@ -62,14 +58,14 @@ public:
 
   glm::mat4 GetTransform() const;
 
-  BoundingBox GetBoundingBoxWorldSpace() const;
+  BoundingBox GetBoundingBoxWorldSpace();
 
   int GetTrianglesCount() const;
 
 private:
   std::unique_ptr<UniformBufferObject<ModelViewProjection>> mesh_buffer_;
 
-  Renderer *renderer_;
+  Renderer &renderer_;
 
   const std::shared_ptr<Material> material_;
   const std::shared_ptr<Geometry> geometry_;
@@ -78,9 +74,12 @@ private:
   glm::quat rotation_;
   glm::vec3 scale_;
 
+  BoundingBox world_space_box_;
+  bool bounding_box_dirty_;
+
   VkDescriptorSetLayout mesh_descriptors_layout_;
 
-  VkPipelineLayout layout_;
+  VkPipelineLayout layout_ = VK_NULL_HANDLE;
   VkPipeline pipeline_ = VK_NULL_HANDLE;
 
   std::vector<VkDescriptorSet> mesh_descriptor_sets_;
@@ -89,6 +88,7 @@ private:
 
   void CreateMeshDescriptorSetLayout();
   void CreateMeshDescriptors();
+  void ComputeBoundingBoxWorldSpace();
 };
 
 #endif //BENDER_BASE_MESH_H

@@ -20,6 +20,7 @@
 #include <condition_variable>
 
 #include <ancer/BaseGLES3Operation.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/util/Json.hpp>
 
 using namespace ancer;
@@ -52,8 +53,8 @@ namespace {
         int ticks;
     };
 
-    JSON_WRITER(datum) {
-        JSON_REQVAR(ticks);
+    void WriteDatum(report_writers::Struct w, const datum& d) {
+        ADD_DATUM_MEMBER(w, d, ticks);
     }
 }
 

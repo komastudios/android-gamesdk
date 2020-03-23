@@ -13,25 +13,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/*
+ *
+ * ThreadSchedulingOperation
+ *
+ * This test is intended to measure the delta in time between when a thread
+ * is intended to wake from a sleep and when it actually does.
+ *
+ * Inputs:
+ * configuration:
+ *   threads: [vector of scheduler_configuration] specific
+ *     per-thread configurations
+ *
+ *  scheduler_configuration:
+ *   cpu_id: [int] if >= 0, a specific CPU to pin the executing thread to;
+ *     otherwise cpu is unspecified and may be floating
+ *    scheduled_delay: [Duration] time to sleep before waking
+ *
+ * Outputs:
+ *
+ * datum:
+ *   execution_start_time: clock time (nanoseconds) when execution started
+ *     after the specified sleep
+ *   execution_start_time_error: error in nanoseconds from expected wake time
+ *
+ */
+
 #include <sched.h>
 #include <thread>
 #include <mutex>
 #include <sstream>
 
 #include <ancer/BaseOperation.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/System.hpp>
 #include <ancer/util/Json.hpp>
 
 using namespace ancer;
 
-
-//==================================================================================================
+//==============================================================================
 
 namespace {
     constexpr Log::Tag TAG{"ThreadSchedulingOperation"};
 }
 
-//==================================================================================================
+//==============================================================================
 
 namespace {
     struct scheduler_configuration {
@@ -44,7 +71,7 @@ namespace {
         JSON_REQVAR(scheduled_delay);
     }
 
-//--------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
     struct configuration {
         std::vector<scheduler_configuration> threads;
@@ -54,27 +81,21 @@ namespace {
         JSON_REQVAR(threads);
     }
 
-//--------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
     struct datum {
         Timestamp execution_start_time;
         Nanoseconds execution_start_time_error;
     };
 
-    JSON_WRITER(datum) {
-        JSON_REQVAR(execution_start_time);
-        JSON_REQVAR(execution_start_time_error);
+    void WriteDatum(report_writers::Struct w, const datum& d) {
+        ADD_DATUM_MEMBER(w, d, execution_start_time);
+        ADD_DATUM_MEMBER(w, d, execution_start_time_error);
     }
 }
 
-//==================================================================================================
+//==============================================================================
 
-/*
- * ThreadSchedulingOperation
- * Schedules threads to run at distances in the future, when in Test mode,
- * records the distance in time between the intended time to run and the
- * time of the actual scheduled execution
- */
 class ThreadSchedulingOperation : public BaseOperation {
 public:
 

@@ -24,15 +24,16 @@ class Main {
       if (results.length() == 1) {
         JSONArray result = results.getJSONArray(0);
         JSONObject first = result.getJSONObject(0);
+        JSONObject params = first.getJSONObject("params");
         JSONObject build = first.getJSONObject("build");
         int count = 0;
         while (true) {
+          String coordinates = params.getJSONArray("coordinates").toString();
           String name =
               build.getString("ID")
                   + "_"
                   + build.getString("RELEASE")
-                  + "_"
-                  + first.getInt("scenario")
+                  + coordinates.replace("[", "_").replace(",", "_").replace("]", "")
                   + (count > 0 ? "_" + count : "")
                   + ".html";
           outputFile = directory.resolve(name);

@@ -192,10 +192,27 @@
             style="@style/TableCell"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="mmap Allocated By Test" />
+            android:text="mmapAnon Allocated By Test" />
 
         <TextView
-            android:id="@+id/mmapAllocatedByTest"
+            android:id="@+id/mmapAnonAllocatedByTest"
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/TableCell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="mmapFile Allocated By Test" />
+
+        <TextView
+            android:id="@+id/mmapFileAllocatedByTest"
             style="@style/TableCell"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Trace;
-import android.preference.ListPreference;
 import android.preference.PreferenceManager;
 import android.text.Layout;
 import android.util.Log;
@@ -41,13 +40,19 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Queue;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatTextView;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class OrbitActivity extends AppCompatActivity implements Choreographer.FrameCallback, SurfaceHolder.Callback {
 
@@ -195,10 +200,72 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
         }
     }
 
+    class TestCase {
+        boolean use_affinity;
+        boolean hot_pocket;
+        boolean use_auto_swap_interval;
+        int workload;
+        int duration;
+        Timer timer;
+    }
+    private List<TestCase> testCases;
+
+    private boolean loadScript(String s) {
+        try {
+            testCases = new ArrayList<TestCase>();
+            JSONArray ja = new JSONArray(s);
+            for (int i=0; i< ja.length(); ++i) {
+                JSONObject o = ja.getJSONObject(i);
+                TestCase t = new TestCase();
+                if (o.has("use_affinity")) t.use_affinity = o.getBoolean("use_affinity");
+                if (o.has("hot_pocket")) t.hot_pocket = o.getBoolean("hot_pocket");
+                if (o.has("use_auto_swap_interval")) t.use_auto_swap_interval
+                                                         = o.getBoolean("use_auto_swap_interval");
+                if (o.has("workload")) t.workload = o.getInt("workload");
+                if (o.has("duration")) t.duration = o.getInt("duration");
+                testCases.add(t);
+            }
+            return true;
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Couldn't parse test script");
+            return false;
+        }
+    }
+
+    private void runScript() {
+        if (testCases != null) {
+            int ms = 1000;
+            for (TestCase t : testCases) {
+                t.timer = new Timer();
+                t.timer.schedule(new TimerTask() {
+                    public void run() {
+                        nSetPreference("use_affinity", t.use_affinity ? "true" : "false");
+                        nSetPreference("hot_pocket", t.hot_pocket ? "true" : "false");
+                        nSetAutoSwapInterval(t.use_auto_swap_interval);
+                        nSetWorkload(t.workload);
+                        Log.i(LOG_TAG, String.format("Task: auto swap = %d, workload = %d",
+                                                     t.use_auto_swap_interval?1:0, t.workload));
+                    }
+                }, ms);
+                ms += t.duration * 1000;
+
+            }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_orbit);
+
+        // See if there is an intent with a test script
+        Intent start_intent = getIntent();
+        if (start_intent.hasExtra("TEST_SCRIPT")) {
+            String test_data = start_intent.getStringExtra("TEST_SCRIPT");
+            Log.i(LOG_TAG, String.format("Intent test script (%d) %s", test_data.length(),
+                                         test_data));
+            loadScript(test_data);
+        }
 
         // Get display metrics
 
@@ -208,7 +275,8 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
         Log.i(LOG_TAG, String.format("Refresh rate: %.1f Hz", refreshRateHz));
         long refreshPeriodNanos = (long) (ONE_S_IN_NS / refreshRateHz);
         long appVsyncOffsetNanos = display.getAppVsyncOffsetNanos();
-        long sfVsyncOffsetNanos = refreshPeriodNanos - (display.getPresentationDeadlineNanos() - ONE_MS_IN_NS);
+        long sfVsyncOffsetNanos = refreshPeriodNanos
+                                  - (display.getPresentationDeadlineNanos() - ONE_MS_IN_NS);
 
         // Initialize UI
 
@@ -222,13 +290,17 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
         buildSwappyStatsGrid();
 
         TextView appOffsetView = findViewById(R.id.app_offset);
-        appOffsetView.setText(String.format(Locale.US, "App Offset: %.1f ms", appVsyncOffsetNanos / (float) ONE_MS_IN_NS));
+        appOffsetView.setText(String.format(Locale.US, "App Offset: %.1f ms", appVsyncOffsetNanos
+                / (float) ONE_MS_IN_NS));
         TextView sfOffsetView = findViewById(R.id.sf_offset);
-        sfOffsetView.setText(String.format(Locale.US, "SF Offset: %.1f ms", sfVsyncOffsetNanos / (float) ONE_MS_IN_NS));
+        sfOffsetView.setText(String.format(Locale.US, "SF Offset: %.1f ms", sfVsyncOffsetNanos
+                / (float) ONE_MS_IN_NS));
 
         // Initialize the native renderer
 
         nInit();
+
+        runScript();
     }
 
     private void infoOverlayToggle() {
@@ -276,7 +348,8 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
     protected void onStart() {
         super.onStart();
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(
+            getApplicationContext());
         for (String key : sharedPreferences.getAll().keySet()) {
             if (key.equals("use_affinity")) {
                 nSetPreference(key, sharedPreferences.getBoolean(key, true) ? "true" : "false");
@@ -384,7 +457,8 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
             }
         }
         TextView appOffsetView = findViewById(R.id.swappy_stats);
-        appOffsetView.setText(String.format(Locale.US, "SwappyStats: %d Total Frames", nGetSwappyStats(-1, 0)));
+        appOffsetView.setText(String.format(Locale.US, "SwappyStats: %d Total Frames",
+                nGetSwappyStats(-1, 0)));
         Trace.endSection();
 
         Trace.beginSection("clearSecondBins");
@@ -417,8 +491,10 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
         mLastArrivalTime = now;
         mLastFrameTimestamp = frameTimeNanos;
 
-        mArrivalBinsLastSecond[Math.min(deltaToBin(arrivalDelta), mArrivalBinsLastSecond.length - 1)] += 1;
-        mTimestampBinsLastSecond[Math.min(deltaToBin(timestampDelta), mTimestampBinsLastSecond.length - 1)] += 1;
+        mArrivalBinsLastSecond[Math.min(deltaToBin(arrivalDelta)
+              , mArrivalBinsLastSecond.length - 1)] += 1;
+        mTimestampBinsLastSecond[Math.min(deltaToBin(timestampDelta)
+              , mTimestampBinsLastSecond.length - 1)] += 1;
 
         if (now - mLastDumpTime > 1000000000) {
             dumpBins();
