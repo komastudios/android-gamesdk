@@ -14,6 +14,9 @@ Button::Button(float x_center,
   SetPosition(x_center, x_extent, y_center, y_extent);
   SetLabel(text);
 
+  pressed_ = false;
+  held_ = false;
+
   on_up_ = [] {};
   on_down_ = [] {};
   on_hold_ = [] {};

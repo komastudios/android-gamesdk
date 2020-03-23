@@ -1307,8 +1307,8 @@ static void demo_draw(struct demo *demo) {
 void swappy_trace_test_preWait(void* userData) {
   DbgMsg("swappy_trace_test_preWait");
 }
-void swappy_trace_test_postWait(void* userData) {
-  DbgMsg("swappy_trace_test_postWait");
+void swappy_trace_test_postWait(void* userData, long cpu_time_ns, long gpu_time_ns) {
+  DbgMsg("swappy_trace_test_postWait: cpu: %ld gpu: %ld", cpu_time_ns, gpu_time_ns);
 }
 void swappy_trace_test_preSwapBuffers(void* userData) {
   DbgMsg("swappy_trace_test_preSwapBuffers");

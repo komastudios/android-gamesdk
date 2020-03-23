@@ -37,14 +37,17 @@ class Button {
   }
 
   void OnButtonHold(){
-    pressed_ = true;
     on_hold_();
   }
 
   void OnButtonUp(){
     pressed_ = false;
+    held_ = false;
     on_up_();
   }
+
+  void StartHold() { held_ = true; }
+  bool IsHeld() { return held_; }
 
   void Update() { updater_(*this); }
 
@@ -61,7 +64,7 @@ class Button {
  private:
   float x_min_, y_min_, x_max_, y_max_, x_center_, y_center_;
   static inline int screen_width_, screen_height_;
-  bool pressed_;
+  bool pressed_, held_;
   std::string default_label_;
 };
 

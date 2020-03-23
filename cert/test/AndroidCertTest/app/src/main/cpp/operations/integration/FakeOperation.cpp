@@ -20,6 +20,7 @@
 #include <sstream>
 
 #include <ancer/BaseOperation.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/System.hpp>
 #include <ancer/util/Json.hpp>
 
@@ -75,13 +76,15 @@ struct datum {
   std::string string_value;
 };
 
-JSON_WRITER(datum) {
-  JSON_REQENUM(event, EventTypeNames);
-  JSON_REQVAR(report_period);
-  JSON_REQVAR(int_value);
-  JSON_REQVAR(duration_value);
-  JSON_REQVAR(string_value);
-  JSON_REQVAR(bool_value);
+void WriteDatum(report_writers::Struct w, const datum& d) {
+  // TODO(tmillican@google.com): Switch once we have better enum-to-string
+  //  support.
+  w.AddItem("event", EventTypeNames[(int)d.event]);
+  ADD_DATUM_MEMBER(w, d, report_period);
+  ADD_DATUM_MEMBER(w, d, int_value);
+  ADD_DATUM_MEMBER(w, d, duration_value);
+  ADD_DATUM_MEMBER(w, d, string_value);
+  ADD_DATUM_MEMBER(w, d, bool_value);
 }
 }
 

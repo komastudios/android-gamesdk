@@ -35,7 +35,7 @@ class MProtectSuiteHandler(SuiteHandler):
 
         for datum in self.data:
             if datum.operation_id == "VulkanMprotectCheckOperation":
-                self.mprotect_score = datum.get_custom_field("mprotect.rank")
+                self.mprotect_score = datum.get_custom_field("mprotect.score")
 
     @classmethod
     def can_handle_suite(cls, suite: Suite):
@@ -51,7 +51,7 @@ class MProtectSuiteHandler(SuiteHandler):
         return None
 
     def render_plot(self) -> str:
-        plt.gcf().set_figheight(1.5)
+        plt.gcf().set_figheight(3)
         if self.mprotect_score is not None:
             score_color = (0, 1, 0) if self.mprotect_score == 0 else (1, 0, 0)
             plt.xticks(np.arange(0))
@@ -67,18 +67,28 @@ class MProtectSuiteHandler(SuiteHandler):
         elif self.mprotect_score == 1:
             msg = "R/W protect fail."
         elif self.mprotect_score == 2:
-            msg = "Unexpected violation."
+            msg = "Unexpected write violation."
         elif self.mprotect_score == 3:
-            msg = "Read protect fail."
+            msg = "Read-only protect fail."
         elif self.mprotect_score == 4:
-            msg = "Missing violation."
+            msg = "Missing write violation."
         elif self.mprotect_score == 5:
             msg = "Mem mapping fail."
         elif self.mprotect_score == 6:
             msg = "Mem alloc fail."
         elif self.mprotect_score == 7:
             msg = "No mappable memory."
+        elif self.mprotect_score == 8:
+            msg = "Vulkan isn't supported on this device."
         else:
             msg = f"Unexpected result: ({self.mprotect_score})"
 
         return msg
+
+    @classmethod
+    def handles_entire_report(cls, suites: List['Suite']):
+        return False
+
+    @classmethod
+    def render_report(cls, raw_suites: List['SuiteHandler']):
+        return ''

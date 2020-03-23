@@ -26,13 +26,13 @@ namespace ancer::bitmath {
 }
 
 namespace std {
-    template <typename Rep1, typename Period1, typename Rep2, typename Period2>
-    struct common_type<ancer::bitmath::Size<Rep1, Period1>,
-                       ancer::bitmath::Size<Rep2, Period2>> {
+    template <typename Rep1, typename Ratio1, typename Rep2, typename Ratio2>
+    struct common_type<ancer::bitmath::Size<Rep1, Ratio1>,
+                       ancer::bitmath::Size<Rep2, Ratio2>> {
         // TODO(tmillican@google.com): Ugly, but since we have a finite set of
-        //  possible periods it does the job.
-        using ratio_type = std::ratio<std::min(Period1::num, Period2::num),
-                std::max(Period1::den, Period2::den)>;
+        //  possible Ratios it does the job.
+        using ratio_type = std::ratio<std::min(Ratio1::num, Ratio2::num),
+                std::max(Ratio1::den, Ratio2::den)>;
 
         using type = ancer::bitmath::Size<std::common_type_t<Rep1, Rep2>,
                 ratio_type>;
@@ -42,6 +42,13 @@ namespace std {
 //==============================================================================
 
 namespace ancer::bitmath {
+    template <typename Rep1, typename Ratio1, typename Rep2, typename Ratio2>
+    static constexpr auto ToCommon(const Size<Rep1, Ratio1>& lhs,
+                                   const Size<Rep2, Ratio2>& rhs) {
+        using CommonType = std::common_type_t<Size<Rep1, Ratio1>, Size<Rep2, Ratio2>>;
+        return std::pair{CommonType{lhs}, CommonType{rhs}};
+    }
+
     // Heavily inspired by std::chrono::duration.
     template <typename Rep, typename Ratio>
     class Size {
@@ -52,8 +59,8 @@ namespace ancer::bitmath {
         constexpr Size() = default;
         constexpr Size(const Size&) = default;
         constexpr Size(rep_type val) : _val{val} {}
-        template <typename Rep2, typename Period2>
-        constexpr Size(const Size<Rep2, Period2>& rhs);
+        template <typename Rep2, typename Ratio2>
+        constexpr Size(const Size<Rep2, Ratio2>& rhs);
         constexpr Size& operator = (const Size&) = default;
 
         static Size zero() { return {0}; }
@@ -63,7 +70,7 @@ namespace ancer::bitmath {
     private:
         rep_type _val = 0;
 
-        //----------------------------------------------------------------------
+//------------------------------------------------------------------------------
     public:
         explicit constexpr operator bool () const { return (bool)_val; }
 
@@ -82,41 +89,52 @@ namespace ancer::bitmath {
         constexpr Size& operator /= (rep_type rhs) { _val /= rhs; return *this; }
         constexpr Size& operator %= (rep_type rhs) { _val %= rhs; return *this; }
 
-        //----------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-        template <typename Rep1, typename Period1, typename Rep2, typename Period2>
-        static constexpr auto ToCommon(const Size<Rep1, Period1>& lhs,
-                                       const Size<Rep2, Period2>& rhs) {
-            using CommonType = std::common_type_t<Size<Rep1, Period1>, Size<Rep2, Period2>>;
-            return std::pair{CommonType{lhs}, CommonType{rhs}};
-        }
+// Preprocessor to make this managable.
+// T is us, U is any other, V is common type. For each op, define:
+//     T op T -> Actual code
+//     T op U, U op T -> V op V
+#define REPEAT_RHS_LHS(op) \
+    template <typename Rep2, typename Ratio2> \
+    friend constexpr bool operator op (const Size<Rep, Ratio>& lhs, \
+                                       const Size<Rep2, Ratio2>& rhs) { \
+        const auto [l,r] = ToCommon(lhs, rhs); return l op r; \
+    } \
+    template <typename Rep2, typename Ratio2> \
+    friend constexpr bool operator op (const Size<Rep2, Ratio2>& lhs, \
+                                       const Size<Rep, Ratio>& rhs) { \
+        const auto [l,r] = ToCommon(lhs, rhs); return l op r; \
+    }
 
 // Comparison between two sizes
 #define BITMATH_COMPARISON_OP(op) \
-    template <typename Rep1, typename Period1, typename Rep2, typename Period2> \
-    friend constexpr bool operator op (const Size<Rep1, Period1>& lhs, \
-                                const Size<Rep2, Period2>& rhs) { \
-        const auto [l,r] = ToCommon(lhs, rhs); return l.count() op r.count(); \
-    }
+    friend constexpr bool operator op (const Size& lhs, const Size& rhs) \
+    { return lhs.count() op rhs.count(); } \
+    REPEAT_RHS_LHS(op)
 // Binary op between two sizes
 #define BITMATH_BINARY_OP(op) \
-    template <typename Rep1, typename Period1, typename Rep2, typename Period2> \
-    friend constexpr auto operator op (const Size<Rep1, Period1>& lhs, \
-                                       const Size<Rep2, Period2>& rhs) { \
-        const auto [l,r] = ToCommon(lhs, rhs); \
-        return decltype(l){l.count() op r.count()}; \
-    }
+    friend constexpr auto operator op (const Size& lhs, const Size& rhs) \
+    { return Size{lhs.count() op rhs.count()}; } \
+    REPEAT_RHS_LHS(op)
+
+// Binary op that returns a scalar.
+#define BITMATH_BINARY_OP_SCALAR(op) \
+    friend constexpr auto operator op (const Size& lhs, const Size& rhs) \
+    { return lhs.count() op rhs.count(); } \
+    REPEAT_RHS_LHS(op)
+
 // Op with a size on the left and scalar on the right
 #define BITMATH_RT_SCALAR_OP(op) \
-    template <typename Rep1, typename Period1> \
-    friend constexpr auto operator op (const Size<Rep1, Period1>& sz, Rep1 s) \
-    { return Size<Rep1, Period1>{sz._val op s}; }
+    friend constexpr auto operator op (const Size& sz, Rep s) \
+    { return Size{sz._val op s}; }
 // Op with a size and a scalar
 #define BITMATH_SCALAR_OP(op) \
     BITMATH_RT_SCALAR_OP(op) \
-    template <typename Rep1, typename Period1> \
-    friend constexpr auto operator op (Rep1 s, const Size<Rep1, Period1>& sz) \
-    { return Size<Rep1, Period1>{sz._val op s}; }
+    friend constexpr auto operator op (Rep s, const Size& sz) \
+    { return Size{sz._val op s}; }
+
+//------------------------------------------------------------------------------
 
         BITMATH_COMPARISON_OP(==)
         BITMATH_COMPARISON_OP(!=)
@@ -128,8 +146,8 @@ namespace ancer::bitmath {
         BITMATH_BINARY_OP(+)
         BITMATH_BINARY_OP(-)
         BITMATH_BINARY_OP(*)
-        BITMATH_BINARY_OP(/)
-        BITMATH_BINARY_OP(%)
+        BITMATH_BINARY_OP_SCALAR(/)
+        BITMATH_BINARY_OP_SCALAR(%)
 
         BITMATH_SCALAR_OP(*)
         BITMATH_RT_SCALAR_OP(/)
@@ -139,6 +157,7 @@ namespace ancer::bitmath {
 #undef BITMATH_BINARY_OP
 #undef BITMATH_RT_SCALAR_OP
 #undef BITMATH_SCALAR_OP
+#undef REPEAT_RHS_LHS
     };
 }
 

@@ -16,6 +16,9 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         ndk {
+            // Ultimately requires ndkVersion to be explicit, or build fails with
+            // > No version of NDK matched the requested version 20.0.5594570.
+            ndkVersion "20.1.5948944"
             abiFilters 'armeabi-v7a', 'arm64-v8a'
         }
         externalNativeBuild {

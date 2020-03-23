@@ -61,6 +61,11 @@ message GenerateTuningParametersRequest {
   // parameters configured in the Play Console for the apk.
   // If there are no defaults configured, the return message will be empty.
   DeviceSpec device_spec = 2;
+
+  // Fidelity parameters uploaded when in training mode.
+  // These are the game-generated fidelity parameters that would be used
+  //  on this device without any Tuning Fork intervention.
+  bytes serialized_training_tuning_parameters = 3;
 }
 
 // Response message of 'GetTuningParameters'.
@@ -119,6 +124,10 @@ message Telemetry {
 message TelemetryReport {
   // Render time data collected in the time period of the report.
   RenderingReport rendering = 4;
+  // Information on scene loading times.
+  LoadingReport loading = 5;
+  // Information on memory usage
+  MemoryReport memory = 6;
 }
 
 // Self reported context from a device requesting telemetry logging.
@@ -218,6 +227,23 @@ message RenderTimeHistogram {
   repeated int32 counts = 2 [packed = true];
 }
 
+// A report of scene loading times, a set of events.
+// Tuning Fork records the time between the 'loading' annotation changing from
+// LOADING to NOT_LOADING and this is then stored as an event associated with
+// the annotation.
+// This can be used to record game start-up time and/or time during which a
+// scene is loading.
+message LoadingReport {
+  // A set of loading times for the parent telemetry context.
+  LoadingTimeEvents loading_events = 1;
+}
+
+// Representation of a set of loading times.
+message LoadingTimeEvents {
+  // Times in milliseconds
+  repeated int32 times_ms = 1 [packed = true];
+}
+
 // A message describing a period of time.
 message TimePeriod {
   // Time at the start of the period.
@@ -227,4 +253,40 @@ message TimePeriod {
   // Time at the end of the period.
   // Required.
   google.protobuf.Timestamp end_time = 6;
+}
+
+// A report of the memory usage of a device while a game is playing.
+message MemoryReport {
+  // Distribution of memory usage
+  repeated MemoryHistogram memory_histogram = 1;
+}
+
+// A histogram describing memory usage.
+message MemoryHistogram {
+  // Enum describing how the memory records were obtained.
+  enum MemoryRecordType {
+    INVALID = 0;
+    // From calls to android.os.Debug.getNativeHeapAllocatedSize
+    ANDROID_DEBUG_NATIVE_HEAP = 1;
+  }
+
+  // The type of memory record.
+  MemoryRecordType type = 1;
+
+  // How often a memory record was taken in milliseconds.
+  int32 period_ms = 2;
+
+  MemoryHistogramConfig histogram_config = 3;
+
+  // Bucket counts.
+  // Note that the first bucket is for memory records < bucket_min_kB and
+  // the last bucket is for memory records > bucket_min_kB so there must
+  // be at least 2 buckets.
+  repeated int32 counts = 4 [packed = true];
+}
+
+message MemoryHistogramConfig {
+  // The range of the buckets in bytes.
+  int64 bucket_min_bytes = 1;
+  int64 bucket_max_bytes = 2;
 }

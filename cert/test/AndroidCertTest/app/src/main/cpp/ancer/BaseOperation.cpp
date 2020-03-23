@@ -41,38 +41,44 @@ namespace {
 }
 
 std::unique_ptr<BaseOperation> BaseOperation::Load(
-    const std::string& operation_id,
-    const std::string& suite_id,
-    Mode mode) {
-  void* lib = OpenSelfLibrary();
+        const std::string &operation_id, const std::string &suite_id,
+        const std::string& suite_description, Mode mode) {
+    void *lib = OpenSelfLibrary();
 
-  std::string fn_name = operation_id;
-  switch (mode) {
-    case Mode::DataGatherer:fn_name += "_CreateDataGatherer";
-      break;
-    case Mode::Stressor:fn_name += "_CreateStressor";
-      break;
-  }
+    std::string fn_name = operation_id;
+    switch (mode) {
+        case Mode::DataGatherer:
+            fn_name += "_CreateDataGatherer";
+            break;
+        case Mode::Stressor:
+            fn_name += "_CreateStressor";
+            break;
+    }
 
-  using FactoryFunction = void (*)(std::unique_ptr<BaseOperation>&);
-  auto fn = (FactoryFunction) (dlsym(lib, fn_name.c_str()));
-  if (fn) {
-    std::unique_ptr<BaseOperation> op;
-    fn(op);
-    op->_operation_id = operation_id;
-    op->_suite_id = suite_id;
-    op->_mode = mode;
-    return op;
-  } else {
-    FatalError(
-        TAG, "Unable to dlsym() operation named \"" + fn_name +
-            "\" - did you remember to EXPORT_ANCER_OPERATION() it?");
-  }
+    using FactoryFunction = void (*)(std::unique_ptr<BaseOperation> &);
+    auto fn = (FactoryFunction) (dlsym(lib, fn_name.c_str()));
+    if (fn) {
+        std::unique_ptr<BaseOperation> op;
+        fn(op);
+        op->_operation_id = operation_id;
+        op->_suite_id = suite_id;
+        op->_suite_desc = suite_description;
+        op->_mode = mode;
+        return op;
+    } else {
+        FatalError(
+                TAG, "Unable to dlsym() operation named \"" + fn_name +
+                     "\" - did you remember to EXPORT_ANCER_OPERATION() it?");
+    }
 
-  return nullptr;
+    return nullptr;
 }
 
+//==============================================================================
+
 BaseOperation::~BaseOperation() = default;
+
+//==============================================================================
 
 void BaseOperation::Start() {
     _start_time = SteadyClock::now();
@@ -104,15 +110,9 @@ void BaseOperation::Draw(double delta_seconds) {
     }
 }
 
+//==============================================================================
+
 void BaseOperation::OnGlContextResized(int width, int height) {
     _width = width;
     _height = height;
-}
-
-void BaseOperation::ReportImpl(Json &&custom_payload) const {
-    if (GetMode() == Mode::DataGatherer) {
-        reporting::WriteToReportLog(reporting::Datum{
-            _suite_id, _operation_id, std::move(custom_payload)
-        });
-    }
 }

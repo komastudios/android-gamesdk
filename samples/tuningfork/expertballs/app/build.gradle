@@ -1,3 +1,5 @@
+import org.gradle.internal.os.OperatingSystem;
+
 apply plugin: 'com.android.application'
 
 android {
@@ -7,7 +9,7 @@ android {
         applicationId "com.tuningfork.expertballs"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 16
+        versionCode 17
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
@@ -46,6 +48,14 @@ task createJar(type: GradleBuild) {
     tasks = ['createJar']
 }
 
+def getProtocPath() {
+    String platformName
+    if (OperatingSystem.current().isLinux()) platformName = "linux-x86/bin/protoc"
+    if (OperatingSystem.current().isMacOsX()) platformName = "mac/bin/protoc"
+    if (OperatingSystem.current().isWindows()) platformName = "win/bin/protoc"
+    return "../../../../third_party/protobuf-3.0.0/install/"  + platformName
+}
+
 task buildTuningForkBinFiles(type: Exec) {
     dependsOn createJar
     commandLine "java",
@@ -54,7 +64,7 @@ task buildTuningForkBinFiles(type: Exec) {
             "--tuningforkPath",
             "src/main/assets/tuningfork",
             "--protoCompiler",
-            "../../../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc"
+            getProtocPath()
 }
 
 tasks.preBuild.dependsOn("buildTuningForkBinFiles")

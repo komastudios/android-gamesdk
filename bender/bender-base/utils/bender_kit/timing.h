@@ -20,6 +20,7 @@
 #include <deque>
 #include <stack>
 #include <map>
+#include <circular_buffer.h>
 
 #define NS_TO_S 1.0E-9
 #define NS_TO_MS 1.0E-6
@@ -38,33 +39,40 @@ struct Event {
   int level, number = -1;
   EventType type;
   std::chrono::high_resolution_clock::duration start_time, duration;
-  Event *parent_event = nullptr;
-  std::stack<Event *> sub_events;
+
+  Event() : name(""), level(-1), number(-1), type(OTHER),
+            start_time(std::chrono::high_resolution_clock::duration::zero()),
+            duration(std::chrono::high_resolution_clock::duration::zero()) {}
+
+  Event(const char *name, int level, int number, EventType type,
+        std::chrono::high_resolution_clock::duration start_time,
+        std::chrono::high_resolution_clock::duration duration) :
+          name(name), level(level), number(number), type(type), start_time(start_time),
+          duration(duration) {}
 };
 
-void PrintEvent(Event &event);
 
 class EventTiming {
  public:
   EventTiming();
-  Event *GetLastMajorEvent();
-  void GetFramerate(int num_frames, int most_recent_frame, int *fps, float *frame_time);
+  void GetFramerate(int num_frames, int *fps, float *frame_time);
+  void PrintLastEvent();
+  void ResetEvents();
   void Time(const char *name, EventType type, std::function<void()> event_to_time) {
-    StartEvent(name, type);
+    Event &event = StartEvent(name, type);
     event_to_time();
-    StopEvent();
+    StopEvent(event);
   }
 
  private:
-  void StartEvent(const char *name, EventType type);
-  void StopEvent();
+  Event& StartEvent(const char *name, EventType type);
+  void StopEvent(Event &event);
 
-  std::vector<Event *> major_events_;
-  std::vector<std::vector<Event *>> event_buckets_;
-  int current_major_event_num_ = 0;
-  Event *current_event_ = nullptr;
+  std::vector<CircularBuffer<Event *>> event_buckets_;
+  int current_event_number_ = 0;
+  int current_event_level_ = -1;
   std::chrono::high_resolution_clock::time_point application_start_time_;
-  std::deque<Event> event_pool_;
+  CircularBuffer<Event> event_pool_;
 };
 
 extern EventTiming timer;

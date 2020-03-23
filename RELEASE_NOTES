@@ -22,7 +22,17 @@ Version 1.0.1
  - SwappyVk_destroySwapchain now doesn't destroy device resources if there is more than one
    swapchain.
  - The Swappy version is now printed in logcat.
+ - Fixes to crashing and deadlocking in Swappy_destroy for API<=24
 - New features
  - Support for custom thread managers (Swappy_setThreadFunctions)
  - Support for hooking of Vulkan functions (SwappyVk_setFunctionProvider)
- 
+
+Version 1.0.2
+=============
+This release includes bug fixes and changes in the behaviour of auto-mode.
+- Bug fixes for swappy destruction and re-initialization.
+- Pipelining is now *on* by default. If auto-pipelining is on, Swappy can still decide to switch
+  it off when the workload is very low.
+- When auto-mode is enabled, Swappy will decide to switch swap interval only after 15% of frames
+  within a 2 second window are either faster or slower than expected.
+  Note that Swappy will never swap slower than the user-specified swap interval.

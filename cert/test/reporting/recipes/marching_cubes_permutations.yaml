@@ -1,0 +1,36 @@
+build:
+  configuration: recipes/configurations/marching_cubes.json.template
+
+  template:
+    configuration_base_name: "marching_cubes"
+    parameters:
+      host:
+        - GLSurfaceViewHostActivity
+        - SwappyGLHostActivity
+      thread_affinity:
+        - AllBigCores
+        - AllLittleCores
+        - AllCores
+      thread_pinning:
+        - true
+        - false
+      period:
+        - 10ms
+      duration:
+        - 0.5ms
+        # - 1ms
+      method:
+        - None
+        - Sleep
+        - Spinlock
+      job_batching:
+        - OneNodePerJob
+        - ManyNodesPerJob
+        # - AutoBalancedNodesPerJob
+        # - AutoQueuedNodesPerJob
+
+deployment:
+  ftl:
+    devices:
+      - { model: "blueline", version: 29 }
+

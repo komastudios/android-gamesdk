@@ -7,6 +7,9 @@
 **/captures
 **/build
 **/assets
+**/.vscode
+**/output
+**/input
 
 .temp
 .externalNativeBuild
@@ -16,8 +19,11 @@
 **/*.iml
 **/out
 
-# Protocol Buffers:
-third_party/protobuf-3.0.0/python/dist/
+# Visual Studio files and outputs
+**/[Dd]ebug
+**/[Rr]elease
+**/.vs
+**/*.user
 
 # CMake generated files:
 **/.cxx/

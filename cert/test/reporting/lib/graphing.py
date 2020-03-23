@@ -88,13 +88,17 @@ def load_suites(report_file) -> List[Suite]:
 
     with open(report_file) as file:
         for i, line in enumerate(file):
-            line_dict = json.loads(line)
-            # first line is the build info, every other is a report datum
-            if i == 0:
-                build = BuildInfo.from_json(line_dict)
-            else:
-                datum = Datum.from_json(line_dict)
-                suite_data.setdefault(datum.suite_id, []).append(datum)
+            try:
+                line_dict = json.loads(line)
+                # first line is the build info, every other is a report datum
+                if i == 0:
+                    build = BuildInfo.from_json(line_dict)
+                else:
+                    datum = Datum.from_json(line_dict)
+                    suite_data.setdefault(datum.suite_id, []).append(datum)
+            except json.decoder.JSONDecodeError as ex:
+                print(f'Report file {report_file}, line {i}: skipping due to '
+                      f'a JSON parsing error "{ex}":\n{line}')
 
     for suite_name in suite_data:
         data = suite_data[suite_name]

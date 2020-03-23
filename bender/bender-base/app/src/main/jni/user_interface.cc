@@ -81,7 +81,7 @@ void UserInterface::ActionMoveHandler(input::Data *input_data, std::vector<Butto
             if (input_data->last_button == nullptr) {
                 button.OnButtonDown();
             } else {
-                button.OnButtonHold();
+                button.StartHold();
             }
             input_data->last_button = &button;
         }
@@ -98,7 +98,8 @@ void UserInterface::ActionUpHandler(input::Data *input_data, std::vector<Button>
     input::ClearInput(input_data);
 }
 
-void UserInterface::OnResume(Renderer *newRenderer, Font *font) {
-  renderer_ = newRenderer;
-  font_ = font;
+void UserInterface::RunHeldButtons() {
+    for (auto &button : buttons_) {
+        if (button.IsHeld()) { button.OnButtonHold(); }
+    }
 }

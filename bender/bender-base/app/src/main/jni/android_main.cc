@@ -23,11 +23,12 @@
 void handle_cmd(android_app *app, int32_t cmd) {
   switch (cmd) {
     case APP_CMD_INIT_WINDOW:
-      // The window is being shown, get it ready.
       StartVulkan(app);
       break;
     case APP_CMD_TERM_WINDOW:
-      // The window is being hidden or closed, clean it up.
+      DestroyWindow();
+      break;
+    case APP_CMD_DESTROY:
       DeleteVulkan();
       break;
     default:

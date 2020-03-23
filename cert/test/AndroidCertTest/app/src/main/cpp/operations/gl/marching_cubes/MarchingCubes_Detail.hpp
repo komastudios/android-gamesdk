@@ -397,30 +397,29 @@ constexpr int TRI_TABLE[256][16] = {
 */
 
 int Polygonise(const GridCell& grid,
-               float iso_level,
-               const marching_cubes::IIsoSurface& volume,
-               Triangle* triangles,
-               bool compute_normals) {
+               float isolevel,
+               IsoSurfaceNormalFunction normal_function,
+               Triangle* triangles) {
   /*
       Determine the index into the edge table which
       tells us which vertices are inside of the surface
    */
   int cube_index = 0;
-  if (grid.val[0] < iso_level)
+  if (grid.val[0] < isolevel)
     cube_index |= 1;
-  if (grid.val[1] < iso_level)
+  if (grid.val[1] < isolevel)
     cube_index |= 2;
-  if (grid.val[2] < iso_level)
+  if (grid.val[2] < isolevel)
     cube_index |= 4;
-  if (grid.val[3] < iso_level)
+  if (grid.val[3] < isolevel)
     cube_index |= 8;
-  if (grid.val[4] < iso_level)
+  if (grid.val[4] < isolevel)
     cube_index |= 16;
-  if (grid.val[5] < iso_level)
+  if (grid.val[5] < isolevel)
     cube_index |= 32;
-  if (grid.val[6] < iso_level)
+  if (grid.val[6] < isolevel)
     cube_index |= 64;
-  if (grid.val[7] < iso_level)
+  if (grid.val[7] < isolevel)
     cube_index |= 128;
 
   /*
@@ -432,138 +431,139 @@ int Polygonise(const GridCell& grid,
   /*
       Find the vertices where the surface intersects the cube
   */
-  vec3 vert_list[12], source_list[12];
+  glm::vec3 vert_list[12], source_list[12];
+  const bool compute_normals = normal_function != nullptr;
 
   if (EDGE_TABLE[cube_index] & 1) {
     vert_list[0] =
-        VertexInterp(iso_level, grid.p[0], grid.p[1], grid.val[0], grid.val[1]);
+        VertexInterp(isolevel, grid.p[0], grid.p[1], grid.val[0], grid.val[1]);
     if (compute_normals)
-      source_list[0] = VertexInterp(iso_level,
-                                    grid.v[0],
-                                    grid.v[1],
-                                    grid.val[0],
-                                    grid.val[1]);
+      source_list[0] = VertexInterp(isolevel,
+                                   grid.v[0],
+                                   grid.v[1],
+                                   grid.val[0],
+                                   grid.val[1]);
   }
 
   if (EDGE_TABLE[cube_index] & 2) {
     vert_list[1] =
-        VertexInterp(iso_level, grid.p[1], grid.p[2], grid.val[1], grid.val[2]);
+        VertexInterp(isolevel, grid.p[1], grid.p[2], grid.val[1], grid.val[2]);
     if (compute_normals)
-      source_list[1] = VertexInterp(iso_level,
-                                    grid.v[1],
-                                    grid.v[2],
-                                    grid.val[1],
-                                    grid.val[2]);
+      source_list[1] = VertexInterp(isolevel,
+                                   grid.v[1],
+                                   grid.v[2],
+                                   grid.val[1],
+                                   grid.val[2]);
   }
 
   if (EDGE_TABLE[cube_index] & 4) {
     vert_list[2] =
-        VertexInterp(iso_level, grid.p[2], grid.p[3], grid.val[2], grid.val[3]);
+        VertexInterp(isolevel, grid.p[2], grid.p[3], grid.val[2], grid.val[3]);
     if (compute_normals)
-      source_list[2] = VertexInterp(iso_level,
-                                    grid.v[2],
-                                    grid.v[3],
-                                    grid.val[2],
-                                    grid.val[3]);
+      source_list[2] = VertexInterp(isolevel,
+                                   grid.v[2],
+                                   grid.v[3],
+                                   grid.val[2],
+                                   grid.val[3]);
   }
 
   if (EDGE_TABLE[cube_index] & 8) {
     vert_list[3] =
-        VertexInterp(iso_level, grid.p[3], grid.p[0], grid.val[3], grid.val[0]);
+        VertexInterp(isolevel, grid.p[3], grid.p[0], grid.val[3], grid.val[0]);
     if (compute_normals)
-      source_list[3] = VertexInterp(iso_level,
-                                    grid.v[3],
-                                    grid.v[0],
-                                    grid.val[3],
-                                    grid.val[0]);
+      source_list[3] = VertexInterp(isolevel,
+                                   grid.v[3],
+                                   grid.v[0],
+                                   grid.val[3],
+                                   grid.val[0]);
   }
 
   if (EDGE_TABLE[cube_index] & 16) {
     vert_list[4] =
-        VertexInterp(iso_level, grid.p[4], grid.p[5], grid.val[4], grid.val[5]);
+        VertexInterp(isolevel, grid.p[4], grid.p[5], grid.val[4], grid.val[5]);
     if (compute_normals)
-      source_list[4] = VertexInterp(iso_level,
-                                    grid.v[4],
-                                    grid.v[5],
-                                    grid.val[4],
-                                    grid.val[5]);
+      source_list[4] = VertexInterp(isolevel,
+                                   grid.v[4],
+                                   grid.v[5],
+                                   grid.val[4],
+                                   grid.val[5]);
   }
 
   if (EDGE_TABLE[cube_index] & 32) {
     vert_list[5] =
-        VertexInterp(iso_level, grid.p[5], grid.p[6], grid.val[5], grid.val[6]);
+        VertexInterp(isolevel, grid.p[5], grid.p[6], grid.val[5], grid.val[6]);
     if (compute_normals)
-      source_list[5] = VertexInterp(iso_level,
-                                    grid.v[5],
-                                    grid.v[6],
-                                    grid.val[5],
-                                    grid.val[6]);
+      source_list[5] = VertexInterp(isolevel,
+                                   grid.v[5],
+                                   grid.v[6],
+                                   grid.val[5],
+                                   grid.val[6]);
   }
 
   if (EDGE_TABLE[cube_index] & 64) {
     vert_list[6] =
-        VertexInterp(iso_level, grid.p[6], grid.p[7], grid.val[6], grid.val[7]);
+        VertexInterp(isolevel, grid.p[6], grid.p[7], grid.val[6], grid.val[7]);
     if (compute_normals)
-      source_list[6] = VertexInterp(iso_level,
-                                    grid.v[6],
-                                    grid.v[7],
-                                    grid.val[6],
-                                    grid.val[7]);
+      source_list[6] = VertexInterp(isolevel,
+                                   grid.v[6],
+                                   grid.v[7],
+                                   grid.val[6],
+                                   grid.val[7]);
   }
 
   if (EDGE_TABLE[cube_index] & 128) {
     vert_list[7] =
-        VertexInterp(iso_level, grid.p[7], grid.p[4], grid.val[7], grid.val[4]);
+        VertexInterp(isolevel, grid.p[7], grid.p[4], grid.val[7], grid.val[4]);
     if (compute_normals)
-      source_list[7] = VertexInterp(iso_level,
-                                    grid.v[7],
-                                    grid.v[4],
-                                    grid.val[7],
-                                    grid.val[4]);
+      source_list[7] = VertexInterp(isolevel,
+                                   grid.v[7],
+                                   grid.v[4],
+                                   grid.val[7],
+                                   grid.val[4]);
   }
 
   if (EDGE_TABLE[cube_index] & 256) {
     vert_list[8] =
-        VertexInterp(iso_level, grid.p[0], grid.p[4], grid.val[0], grid.val[4]);
+        VertexInterp(isolevel, grid.p[0], grid.p[4], grid.val[0], grid.val[4]);
     if (compute_normals)
-      source_list[8] = VertexInterp(iso_level,
-                                    grid.v[0],
-                                    grid.v[4],
-                                    grid.val[0],
-                                    grid.val[4]);
+      source_list[8] = VertexInterp(isolevel,
+                                   grid.v[0],
+                                   grid.v[4],
+                                   grid.val[0],
+                                   grid.val[4]);
   }
 
   if (EDGE_TABLE[cube_index] & 512) {
     vert_list[9] =
-        VertexInterp(iso_level, grid.p[1], grid.p[5], grid.val[1], grid.val[5]);
+        VertexInterp(isolevel, grid.p[1], grid.p[5], grid.val[1], grid.val[5]);
     if (compute_normals)
-      source_list[9] = VertexInterp(iso_level,
-                                    grid.v[1],
-                                    grid.v[5],
-                                    grid.val[1],
-                                    grid.val[5]);
+      source_list[9] = VertexInterp(isolevel,
+                                   grid.v[1],
+                                   grid.v[5],
+                                   grid.val[1],
+                                   grid.val[5]);
   }
 
   if (EDGE_TABLE[cube_index] & 1024) {
     vert_list[10] =
-        VertexInterp(iso_level, grid.p[2], grid.p[6], grid.val[2], grid.val[6]);
+        VertexInterp(isolevel, grid.p[2], grid.p[6], grid.val[2], grid.val[6]);
     if (compute_normals)
-      source_list[10] = VertexInterp(iso_level,
-                                     grid.v[2],
-                                     grid.v[6],
-                                     grid.val[2],
-                                     grid.val[6]);
+      source_list[10] = VertexInterp(isolevel,
+                                    grid.v[2],
+                                    grid.v[6],
+                                    grid.val[2],
+                                    grid.val[6]);
   }
 
   if (EDGE_TABLE[cube_index] & 2048) {
     vert_list[11] =
-        VertexInterp(iso_level, grid.p[3], grid.p[7], grid.val[3], grid.val[7]);
+        VertexInterp(isolevel, grid.p[3], grid.p[7], grid.val[3], grid.val[7]);
     if (compute_normals)
-      source_list[11] = VertexInterp(iso_level,
-                                     grid.v[3],
-                                     grid.v[7],
-                                     grid.val[3],
-                                     grid.val[7]);
+      source_list[11] = VertexInterp(isolevel,
+                                    grid.v[3],
+                                    grid.v[7],
+                                    grid.val[3],
+                                    grid.val[7]);
   }
 
   //
@@ -578,13 +578,13 @@ int Polygonise(const GridCell& grid,
 
     if (compute_normals) {
       triangles[num_triangles].a.normal =
-          volume.NormalAt(source_list[TRI_TABLE[cube_index][i]]);
+          normal_function(source_list[TRI_TABLE[cube_index][i]]);
       triangles[num_triangles].b.normal =
-          volume.NormalAt(source_list[TRI_TABLE[cube_index][i + 1]]);
+          normal_function(source_list[TRI_TABLE[cube_index][i + 1]]);
       triangles[num_triangles].c.normal =
-          volume.NormalAt(source_list[TRI_TABLE[cube_index][i + 2]]);
+          normal_function(source_list[TRI_TABLE[cube_index][i + 2]]);
     } else {
-      vec3 n = normalize(cross(
+      glm::vec3 n = normalize(cross(
           triangles[num_triangles].b.pos - triangles[num_triangles].a.pos,
           triangles[num_triangles].c.pos - triangles[num_triangles].a.pos));
       triangles[num_triangles].a.normal = n;
@@ -598,35 +598,37 @@ int Polygonise(const GridCell& grid,
   return num_triangles;
 }
 
-//------------------------------------------------------------------------------
+//
+// GridCell Access
+//
 
 bool GetGridCell(int x,
                  int y,
                  int z,
-                 const marching_cubes::IIsoSurface& volume,
+                 IsoSurfaceValueFunction value_function,
                  GridCell& cell,
-                 const mat4& transform) {
+                 const glm::mat4* transform) {
   // store the location in the voxel array
-  cell.v[0] = vec3(x, y, z);
-  cell.v[1] = vec3(x + 1, y, z);
-  cell.v[2] = vec3(x + 1, y + 1, z);
-  cell.v[3] = vec3(x, y + 1, z);
+  cell.v[0] = glm::vec3(x, y, z);
+  cell.v[1] = glm::vec3(x + 1, y, z);
+  cell.v[2] = glm::vec3(x + 1, y + 1, z);
+  cell.v[3] = glm::vec3(x, y + 1, z);
 
-  cell.v[4] = vec3(x, y, z + 1);
-  cell.v[5] = vec3(x + 1, y, z + 1);
-  cell.v[6] = vec3(x + 1, y + 1, z + 1);
-  cell.v[7] = vec3(x, y + 1, z + 1);
+  cell.v[4] = glm::vec3(x, y, z + 1);
+  cell.v[5] = glm::vec3(x + 1, y, z + 1);
+  cell.v[6] = glm::vec3(x + 1, y + 1, z + 1);
+  cell.v[7] = glm::vec3(x, y + 1, z + 1);
 
   // store the value in the voxel array
-  cell.val[0] = volume.ValueAt(cell.v[0]);
-  cell.val[1] = volume.ValueAt(cell.v[1]);
-  cell.val[2] = volume.ValueAt(cell.v[2]);
-  cell.val[3] = volume.ValueAt(cell.v[3]);
+  cell.val[0] = value_function(cell.v[0]);
+  cell.val[1] = value_function(cell.v[1]);
+  cell.val[2] = value_function(cell.v[2]);
+  cell.val[3] = value_function(cell.v[3]);
 
-  cell.val[4] = volume.ValueAt(cell.v[4]);
-  cell.val[5] = volume.ValueAt(cell.v[5]);
-  cell.val[6] = volume.ValueAt(cell.v[6]);
-  cell.val[7] = volume.ValueAt(cell.v[7]);
+  cell.val[4] = value_function(cell.v[4]);
+  cell.val[5] = value_function(cell.v[5]);
+  cell.val[6] = value_function(cell.v[6]);
+  cell.val[7] = value_function(cell.v[7]);
 
   cell.occupied =
       (cell.val[0] > 0 || cell.val[1] > 0 || cell.val[2] > 0 || cell.val[3] > 0
@@ -635,15 +637,26 @@ bool GetGridCell(int x,
 
   if (cell.occupied) {
     // now compute the location of vertices in world space
-    cell.p[0] = vec3(transform * vec4(x, y, z, 1));
-    cell.p[1] = vec3(transform * vec4(x + 1, y, z, 1));
-    cell.p[2] = vec3(transform * vec4(x + 1, y + 1, z, 1));
-    cell.p[3] = vec3(transform * vec4(x, y + 1, z, 1));
+    if (transform) {
+      cell.p[0] = glm::vec3(*transform * glm::vec4(x, y, z, 1));
+      cell.p[1] = glm::vec3(*transform * glm::vec4(x + 1, y, z, 1));
+      cell.p[2] = glm::vec3(*transform * glm::vec4(x + 1, y + 1, z, 1));
+      cell.p[3] = glm::vec3(*transform * glm::vec4(x, y + 1, z, 1));
 
-    cell.p[4] = vec3(transform * vec4(x, y, z + 1, 1));
-    cell.p[5] = vec3(transform * vec4(x + 1, y, z + 1, 1));
-    cell.p[6] = vec3(transform * vec4(x + 1, y + 1, z + 1, 1));
-    cell.p[7] = vec3(transform * vec4(x, y + 1, z + 1, 1));
+      cell.p[4] = glm::vec3(*transform * glm::vec4(x, y, z + 1, 1));
+      cell.p[5] = glm::vec3(*transform * glm::vec4(x + 1, y, z + 1, 1));
+      cell.p[6] = glm::vec3(*transform * glm::vec4(x + 1, y + 1, z + 1, 1));
+      cell.p[7] = glm::vec3(*transform * glm::vec4(x, y + 1, z + 1, 1));
+    } else {
+      cell.p[0] = glm::vec3(x, y, z);
+      cell.p[1] = glm::vec3(x + 1, y, z);
+      cell.p[2] = glm::vec3(x + 1, y + 1, z);
+      cell.p[3] = glm::vec3(x, y + 1, z);
+      cell.p[4] = glm::vec3(x, y, z + 1);
+      cell.p[5] = glm::vec3(x + 1, y, z + 1);
+      cell.p[6] = glm::vec3(x + 1, y + 1, z + 1);
+      cell.p[7] = glm::vec3(x, y + 1, z + 1);
+    }
   }
 
   return cell.occupied;

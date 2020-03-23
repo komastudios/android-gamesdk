@@ -20,7 +20,7 @@
 
 namespace histogram_test {
 
-using namespace tuningfork;
+typedef tuningfork::Histogram<double> Histogram;
 
 const char kEmptyHistogramJson[] = "{\"events\":[]}";
 const char kOneEventJson[] = "{\"events\":[1.00]}";

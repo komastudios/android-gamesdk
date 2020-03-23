@@ -68,12 +68,32 @@ Device::Device(ANativeWindow *window) {
 }
 
 Device::~Device() {
-  vkDestroySwapchainKHR(device_, swapchain_, nullptr);
-  vkDestroySurfaceKHR(instance_, surface_, nullptr);
+  DestroySurface();
 
   // Delete Device
   vkDestroyDevice(device_, nullptr);
   vkDestroyInstance(instance_, nullptr);
+}
+
+void Device::DestroySurface() {
+  vkDestroySwapchainKHR(device_, swapchain_, nullptr);
+  vkDestroySurfaceKHR(instance_, surface_, nullptr);
+
+  swapchain_ = VK_NULL_HANDLE;
+  surface_ = VK_NULL_HANDLE;
+}
+
+void Device::CreateSurface(ANativeWindow *platform_window) {
+  VkAndroidSurfaceCreateInfoKHR create_info {
+      .sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR,
+      .pNext = nullptr,
+      .flags = 0,
+      .window = platform_window};
+
+  CALL_VK(vkCreateAndroidSurfaceKHR(instance_, &create_info, nullptr,
+                                    &surface_));
+
+  CreateSwapChain();
 }
 
 void Device::Present(VkSemaphore* wait_semaphores) {
@@ -90,7 +110,7 @@ void Device::Present(VkSemaphore* wait_semaphores) {
           .pResults = &result,
   };
 
-  auto res = vkQueuePresentKHR(queue_, &present_info);
+  auto res = vkQueuePresentKHR(main_queue_, &present_info);
   if (res == VK_SUBOPTIMAL_KHR){
     window_resized_ = true;
   }
@@ -171,13 +191,13 @@ void Device::CreateVulkanDevice(ANativeWindow *platform_window,
 
     // Create a logical device (vulkan device)
     float priorities[] = {
-        1.0f,
+        1.0f, 1.0f,
     };
     VkDeviceQueueCreateInfo queue_create_info {
         .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
         .pNext = nullptr,
         .flags = 0,
-        .queueCount = 1,
+        .queueCount = 2,
         .queueFamilyIndex = queue_family_index,
         .pQueuePriorities = priorities,
     };
@@ -196,7 +216,8 @@ void Device::CreateVulkanDevice(ANativeWindow *platform_window,
 
     CALL_VK(vkCreateDevice(gpu_device_, &device_create_info, nullptr,
                            &device_));
-    vkGetDeviceQueue(device_, queue_family_index_, 0, &queue_);
+    vkGetDeviceQueue(device_, queue_family_index_, 0, &main_queue_);
+    vkGetDeviceQueue(device_, queue_family_index_, 1, &worker_queue_);
     debugmarker::Setup(device_, gpu_device_);
   });
 }

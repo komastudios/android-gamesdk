@@ -5,6 +5,7 @@
 #include "render_graph.h"
 #include <math.h>
 #include <timing.h>
+#include <glm/gtx/norm.hpp>
 
 void RenderGraph::SetCameraFOV(float fov) {
   camera_.fov = fov;
@@ -64,8 +65,10 @@ void RenderGraph::GetVisibleMeshes(std::vector<std::shared_ptr<Mesh>> &meshes) c
     std::sort(meshes.begin(),
               meshes.end(),
               [this, meshes](std::shared_ptr<Mesh> a, std::shared_ptr<Mesh> b) {
-                float distanceA = glm::length(a->GetPosition() - camera_.position);
-                float distanceB = glm::length(b->GetPosition() - camera_.position);
+                BoundingBox meshA = a->GetBoundingBoxWorldSpace();
+                BoundingBox meshB = b->GetBoundingBoxWorldSpace();
+                float distanceA = glm::distance2(meshA.center, camera_.position);
+                float distanceB = glm::distance2(meshB.center, camera_.position);
                 return distanceA < distanceB;
               });
   });

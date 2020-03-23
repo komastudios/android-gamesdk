@@ -87,11 +87,17 @@ add_library(${PROJECT_NAME} SHARED
         ancer/Suite.cpp
         ancer/SwappyRenderer.cpp
         ancer/System.cpp
+        ancer/System.Cpu.cpp
+        ancer/System.Gpu.cpp
+        ancer/System.Memory.cpp
+        ancer/System.Temperature.cpp
         ancer/util/Basics.cpp
         ancer/util/Bitmath.cpp
         ancer/util/GLHelpers.cpp
         ancer/util/GLPixelBuffer.cpp
         ancer/util/JNIHelpers.cpp
+        ancer/util/LibAndroid.cpp
+        ancer/util/LibEGL.cpp
         ancer/util/ThreadSyncPoint.cpp
         ancer/util/Time.cpp
         ancer/util/VkHelpers.cpp
@@ -120,6 +126,7 @@ add_library(${PROJECT_NAME} SHARED
 
         operations/MemoryAllocOperation.cpp
         operations/MonitorOperation.cpp
+        operations/SaneCpusetOperation.cpp
         operations/ScheduleAffinityOperation.cpp
         operations/ThreadSchedulingOperation.cpp
         operations/VulkanMprotectCheckOperation.cpp
@@ -127,6 +134,7 @@ add_library(${PROJECT_NAME} SHARED
         operations/gl/BufferStorageGLES3Operation.cpp
         operations/gl/DepthClearGLES3Operation.cpp
         operations/gl/DualSourceBlendingGLES3Operation.cpp
+        operations/gl/EGLGetFrameTimestampsGLES3Operation.cpp
         operations/gl/ExternalBufferGLES3Operation.cpp
         operations/gl/FillRateGLES3Operation.cpp
         operations/gl/GetExtensionsGLES3Operation.cpp
@@ -134,10 +142,13 @@ add_library(${PROJECT_NAME} SHARED
         operations/gl/MarchingCubesGLES3Operation.cpp
         operations/gl/marching_cubes/MarchingCubes.cpp
         operations/gl/marching_cubes/Storage.cpp
+        operations/gl/marching_cubes/Volume.cpp
         operations/gl/MediumPVecNormalizationGLES3Operation.cpp
         operations/gl/ShaderBlobGLES3Operation.cpp
         operations/gl/TeapotRendererGLES3Operation.cpp
         operations/gl/VertexStreamGLES3Operation.cpp
+
+        operations/vulkan/VulkanVaryingsTestOperation.cpp
 
         # integration testing
         operations/integration/FakeOperation.cpp

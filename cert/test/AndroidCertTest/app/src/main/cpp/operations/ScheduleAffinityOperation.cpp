@@ -1,3 +1,55 @@
+/*
+ * Copyright 2020 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ *
+ * ScheduleAffinityOperation
+ *
+ * This test aims to determine reliability of thread pinning. E.g., if a thread
+ * is pinned to a specific core, will the os respect that assignment?
+ *
+ * Basic operation is to spawn N threads per CPU, pin them to that CPU, have
+ * them run some busy work and periodically report what CPU they're executing
+ * on.
+ *
+ * Inputs:
+ *
+ * configuration:
+ *   thread_count: [int] count of threads to spawn per cpu
+ *   report_frequency: [Duration] Period of time between reporting cpu thread
+ *     is running on
+ *
+ * Outputs:
+ *
+ * datum:
+ *   message:[string] The action being reported, one of:
+ *     "spawning_started": start of test, about to start work threads
+ *     "spawning_batch": starting a batch of work threads for a cpu
+ *     "setting_affinity": about to set affinity of work thread X
+ *     "did_set_affinity": finished setting affinity for work thread X
+ *     "work_started": work starting for a worker thread
+ *     "work_running": work running (this is sent periodically
+ *       while test executes)
+ *     "work_finished": work finished for worker thread
+ *   expected_cpu:[int]: if >= 0 cpu this worker was expected to run on
+ *   thread_affinity_set: [bool] if true, expected_cpu should be checked against
+ *     the datum payload's cpu id for veracity
+ *
+ */
+
 #include <condition_variable>
 #include <mutex>
 #include <sched.h>
@@ -6,13 +58,13 @@
 #include <cpu-features.h>
 
 #include <ancer/BaseOperation.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/util/Basics.hpp>
 #include <ancer/util/Log.hpp>
 #include <ancer/util/Json.hpp>
 #include <ancer/util/Time.hpp>
 
 using namespace ancer;
-
 
 //==============================================================================
 
@@ -44,9 +96,10 @@ struct datum {
   bool thread_affinity_set = false;
 };
 
-JSON_WRITER(datum) {
-  JSON_REQVAR(message);
-  JSON_REQVAR(expected_cpu);
+void WriteDatum(report_writers::Struct w, const datum& d) {
+    ADD_DATUM_MEMBER(w, d, message);
+    ADD_DATUM_MEMBER(w, d, expected_cpu);
+    ADD_DATUM_MEMBER(w, d, thread_affinity_set);
 }
 } // anonymous namespace
 

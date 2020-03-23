@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.google.gamesdk">
 
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
     <application
         android:name="com.google.gamesdk.gamecert.operationrunner.ACTApplication"
         android:allowBackup="true"
@@ -13,6 +15,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
 
+        <activity android:name="com.google.gamesdk.gamecert.operationrunner.hosts.BaseHostActivity" />
         <activity android:name="com.google.gamesdk.gamecert.operationrunner.hosts.GLSurfaceViewHostActivity" />
         <activity android:name="com.google.gamesdk.gamecert.operationrunner.hosts.SwappyGLHostActivity" />
         <activity android:name="com.google.gamesdk.gamecert.operationrunner.hosts.VulkanHostActivity" />

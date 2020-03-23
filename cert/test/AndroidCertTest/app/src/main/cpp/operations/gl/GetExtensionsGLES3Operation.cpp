@@ -14,45 +14,53 @@
  * limitations under the License.
  */
 
-#include <GLES/gl.h>       // TODO: Remove if possible
-#include <GLES2/gl2.h>     // TODO: Remove if possible
-#include <GLES2/gl2ext.h>  // TODO: Remove if possible
-#include <EGL/egl.h>
-#include <EGL/eglext.h>
+/**
+ * This operation queries the GLES and EGL libraries for the list of extensions
+ * available on the device. The initial use case was to query a set of devices
+ * in order to locate one that supported a specific extension.
+ *
+ * Input configuration:
+ * - None
+ *
+ * Output report:
+ * - gl_extensions:  the list of supported GLES extensions
+ * - egl_extensions: the list of supported EGl extensions
+ *
+ * (Note: No manipulation is done to the strings in the report lists of
+ * extensions; therefore, they should match those found in online documentation
+ * and specifications.)
+ */
 
-#include <condition_variable>
 #include <ancer/BaseGLES3Operation.hpp>
+#include <ancer/DatumReporting.hpp>
 #include <ancer/System.hpp>
-#include <ancer/util/Json.hpp>
 
 using namespace ancer;
-
-// PURPOSE: Gets a list of GLES and EGL extensions available on the device.
 
 //==============================================================================
 
 namespace {
-  constexpr Log::Tag TAG{"GetExtensionsGLES3Operation"};
+constexpr Log::Tag TAG{"GetExtensionsGLES3Operation"};
 }  // anonymous namespace
 
 namespace {
 
-  struct datum {
-    std::vector<std::string> gl_extensions;
-    std::vector<std::string> egl_extensions;
-  };
+struct datum {
+  std::vector<std::string> gl_extensions;
+  std::vector<std::string> egl_extensions;
+};
 
-  JSON_WRITER(datum) {
-    JSON_REQVAR(gl_extensions);
-    JSON_REQVAR(egl_extensions);
-  }
+void WriteDatum(report_writers::Struct w, const datum& d) {
+  ADD_DATUM_MEMBER(w, d, gl_extensions);
+  ADD_DATUM_MEMBER(w, d, egl_extensions);
+}
 
 }  // anonymous namespace
 
 //==============================================================================
 
 class GetExtensionsGLES3Operation : public BaseGLES3Operation {
-public:
+ public:
   GetExtensionsGLES3Operation() = default;
 
   ~GetExtensionsGLES3Operation() {}
@@ -77,7 +85,7 @@ public:
 
   void OnHeartbeat(Duration elapsed) override {}
 
-private:
+ private:
   void LogExtensions() {
     const auto gl_extensions = glh::GetGlExtensions();
     const auto egl_extensions = glh::GetEglExtensions();
@@ -87,7 +95,7 @@ private:
     Report(d);
   }
 
-private:
+ private:
   EGLContext _egl_context = EGL_NO_CONTEXT;
 };
 

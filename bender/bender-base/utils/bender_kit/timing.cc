@@ -25,52 +25,35 @@ namespace timing {
 
 EventTiming timer;
 
-EventTiming::EventTiming() {
+EventTiming::EventTiming() : event_pool_(4000) {
   application_start_time_ = std::chrono::high_resolution_clock::now();
-  event_buckets_.resize(EVENT_TYPE_COUNT);
+  event_buckets_.resize(EVENT_TYPE_COUNT, CircularBuffer<Event *>(4000));
   Time("Application Start", OTHER, [](){});
 }
 
-void EventTiming::StartEvent(const char *name, EventType type) {
+Event& EventTiming::StartEvent(const char *name, EventType type) {
   TRACE_BEGIN_SECTION(name);
-  Event new_event;
-  new_event.start_time = std::chrono::high_resolution_clock::now() - application_start_time_;
-  new_event.duration = std::chrono::high_resolution_clock::duration::zero();
-  new_event.name = name;
-  new_event.type = type;
-  new_event.parent_event = current_event_;
-  if (current_event_ == nullptr) {
-    new_event.level = 0;
-    new_event.number = current_major_event_num_++;
-    event_pool_.push_back(new_event);
-    major_events_.push_back(&event_pool_.back());
-    current_event_ = major_events_.back();
-  } else {
-    new_event.level = current_event_->level + 1;
-    event_pool_.push_back(new_event);
-    current_event_->sub_events.push(&event_pool_.back());
-    current_event_ = current_event_->sub_events.top();
-  }
-  event_buckets_[new_event.type].push_back(&event_pool_.back());
+  event_pool_.PushBack(Event(name, ++current_event_level_, current_event_number_++, type,
+                           std::chrono::high_resolution_clock::now() -
+                           application_start_time_,
+                           std::chrono::high_resolution_clock::duration::zero()));
+  event_buckets_[type].PushBack(&event_pool_.Back());
+
+  return event_pool_.Back();
 }
 
-void EventTiming::StopEvent() {
-  if (!current_event_)
-    return;
-
+void EventTiming::StopEvent(Event &event) {
   TRACE_END_SECTION();
-  current_event_->duration = std::chrono::high_resolution_clock::now()
-      - (current_event_->start_time + application_start_time_);
-  current_event_ = current_event_->parent_event;
+    event.duration = std::chrono::high_resolution_clock::now() -
+                     (event.start_time + application_start_time_);
+
+  current_event_level_ = event.level - 1;
 }
 
-Event *EventTiming::GetLastMajorEvent() {
-  return major_events_.back();
-}
 
-void EventTiming::GetFramerate(int num_frames, int most_recent_frame, int *fps, float *frame_time) {
-  int most_recent_frameMain = event_buckets_[MAIN_LOOP].size() - 2;
-  most_recent_frame = (int)event_buckets_[START_FRAME].size() - 2 < most_recent_frame ? (int)event_buckets_[START_FRAME].size() - 2: most_recent_frame;
+void EventTiming::GetFramerate(int num_frames, int *fps, float *frame_time) {
+  int most_recent_frameMain = event_buckets_[MAIN_LOOP].Size() - 2;
+  int most_recent_frame = event_buckets_[START_FRAME].Size() - 2;
   int frames_count = most_recent_frame < num_frames ? most_recent_frame : num_frames;
 
   float sum_fps = 0;
@@ -84,35 +67,40 @@ void EventTiming::GetFramerate(int num_frames, int most_recent_frame, int *fps, 
   *frame_time = (sum_frame_time * NS_TO_MS) / frames_count;
 }
 
-void PrintEvent(Event &event) {
+void EventTiming::PrintLastEvent() {
   int fps;
   float frame_time;
-  timer.GetFramerate(100, event.number, &fps, &frame_time);
+  timer.GetFramerate(100, &fps, &frame_time);
+
+  int current_major_event = -1;
+  for (int i = event_pool_.Size() - 1; i > -1; i--) {
+      if (event_pool_[i].level == 0) {
+          current_major_event = i;
+          break;
+      }
+  }
+
   LOGI("Event %u - %s: Duration: %.3f ms Framerate: %d FPS Average Frame Time %.3f ms",
-       event.number,
-       event.name,
-       event.duration.count() * NS_TO_MS,
+       event_pool_[current_major_event].number,
+       event_pool_[current_major_event].name,
+       event_pool_[current_major_event].duration.count() * NS_TO_MS,
        fps,
        frame_time);
 
-  std::stack<Event *> current_list;
-  while (!event.sub_events.empty()){
-    current_list.push(event.sub_events.top());
-    event.sub_events.pop();
-  }
-
-  while (!current_list.empty()) {
-    Event *curr_event = current_list.top();
-    current_list.pop();
+  current_major_event++;
+  while (current_major_event < event_pool_.Size() && event_pool_[current_major_event].level != 0) {
     LOGI("%s%s: \tStart Time: %.6f s \tDuration: %.3f ms",
-         std::string(curr_event->level, '\t').c_str(),
-         curr_event->name,
-         curr_event->start_time.count() * NS_TO_S,
-         curr_event->duration.count() * NS_TO_MS);
-    for (int i = 0; i < curr_event->sub_events.size(); i++) {
-      current_list.push(curr_event->sub_events.top());
-      curr_event->sub_events.pop();
-    }
+         std::string(event_pool_[current_major_event].level, '\t').c_str(),
+         event_pool_[current_major_event].name,
+         event_pool_[current_major_event].start_time.count() * NS_TO_S,
+         event_pool_[current_major_event].duration.count() * NS_TO_MS);
+      current_major_event++;
   }
+}
+
+void EventTiming::ResetEvents() {
+    event_pool_.Clear();
+    for (auto &buffer : event_buckets_)
+        buffer.Clear();
 }
 }

@@ -34,4 +34,15 @@ typedef struct AChoreographer AChoreographer;
  */
 typedef void (*AChoreographer_frameCallback)(long frameTimeNanos, void* data);
 
-#endif
+#endif // __ANDROID_API__ < 24
+
+#if __ANDROID_API__ < 30
+
+/**
+ * Prototype of the function that is called when the display refresh rate
+ * changes. It's passed the new vsync period in nanoseconds, as well as the data
+ * pointer provided by the application that registered a callback.
+ */
+typedef void (*AChoreographer_refreshRateCallback)(int64_t vsyncPeriodNanos, void* data);
+
+#endif // __ANDROID_API__ < 30

@@ -17,30 +17,28 @@
 
 #include "vulkan_wrapper.h"
 #include "bender_kit.h"
+#include "renderer.h"
 #include <functional>
 
 #include <android_native_app_glue.h>
 
 class Texture {
  public:
-  Texture(benderkit::Device &device,
+  Texture(Renderer &renderer,
           uint8_t *img_data,
           uint32_t img_width,
           uint32_t img_height,
-          VkFormat texture_format,
-          std::function<void(uint8_t *)> generator = nullptr);
+          VkFormat texture_format);
 
-  Texture(benderkit::Device &device,
+  Texture(Renderer &renderer,
           android_app &android_app_ctx,
-          const char *texture_file_name,
-          VkFormat texture_format,
-          std::function<void(uint8_t *)> generator = nullptr);
+          const std::string &texture_file_name,
+          VkFormat texture_format);
 
   ~Texture();
 
-  void Cleanup();
 
-  void OnResume(benderkit::Device &device, android_app *app);
+  void ToggleMipmaps();
 
   VkImageView GetImageView() const { return view_; }
 
@@ -48,23 +46,24 @@ class Texture {
 
   int32_t GetHeight() const { return tex_height_; };
 
- private:
-  benderkit::Device &device_;
+  uint32_t GetMipLevel() { return mip_levels_; }
 
-  const char *file_name_ = nullptr;
+ private:
+  Renderer &renderer_;
+
   VkImage image_;
-  VkImageLayout image_layout_;
   VkDeviceMemory mem_;
   VkImageView view_;
   int32_t tex_width_;
   int32_t tex_height_;
   VkFormat texture_format_;
 
-  std::function<void(uint8_t *)> generator_ = nullptr;
+  uint32_t mip_levels_;
 
   unsigned char *LoadFileData(android_app &app, const char *file_path);
   VkResult CreateTexture(uint8_t *img_data, VkImageUsageFlags usage, VkFlags required_props);
   void CreateImageView();
+  void GenerateMipmaps(VkCommandBuffer *command_buffer);
 };
 
 #endif //BENDER_BASE_TEXTURE_H

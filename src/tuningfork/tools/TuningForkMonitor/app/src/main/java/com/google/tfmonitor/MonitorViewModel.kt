@@ -34,6 +34,7 @@ class MonitorViewModel : ViewModel() {
     private val storedApplications = MutableLiveData<List<AppKey>>()
 
     private val applicationData = mutableMapOf<AppKey, MutableLiveData<AppData>>()
+    private val applicationTelemetry = mutableMapOf<AppKey, MutableLiveData<AppTelemetry>>()
 
     private val log = MutableLiveData<String>()
     val logBuilder = StringBuilder()
@@ -49,6 +50,12 @@ class MonitorViewModel : ViewModel() {
             return null
         else
             return applicationData.get(activeApp!!)
+    }
+    fun getActiveAppTelemetry() : LiveData<AppTelemetry>? {
+        if (activeApp == null)
+            return null
+        else
+            return applicationTelemetry.get(activeApp!!)
     }
     fun applicationsForType(type: AppType) : MutableLiveData<List<AppKey>> {
         when (type) {
@@ -77,6 +84,13 @@ class MonitorViewModel : ViewModel() {
         applicationData[a]?.postValue(d)
     }
 
+    fun addAppTelemetry(a: AppKey, d: AppTelemetry) {
+        if (!applicationTelemetry.containsKey(a)) {
+            applicationTelemetry[a] = MutableLiveData<AppTelemetry>()
+        }
+        applicationTelemetry[a]?.postValue(d)
+    }
+
     fun getLog(): LiveData<String> {
         System.out.println(log.value)
         return log
@@ -99,6 +113,7 @@ class MonitorViewModel : ViewModel() {
         val app = AppKey.parse(req.name)
         addLogLine(app.name + " " + app.version + " uploadTelemetry")
         addAppMaybe(app, AppType.LIVE)
+        addAppTelemetry(app, AppTelemetry(req.telemetry))
         return ""
     }
 

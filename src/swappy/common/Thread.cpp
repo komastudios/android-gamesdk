@@ -108,7 +108,7 @@ struct StlThreadImpl : public ThreadImpl {
     bool joinable() { return thread_.joinable(); }
 };
 
-Thread::Thread() {}
+Thread::Thread() noexcept {}
 
 Thread::~Thread() {}
 
