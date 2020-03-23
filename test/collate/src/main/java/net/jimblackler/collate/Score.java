@@ -52,7 +52,7 @@ public class Score {
           } else {
             assert variations[0] == total;
           }
-          paramsMap.put(variationNumber, runParameters);
+          paramsMap.put(variationNumber, params);
 
           assert first.has("build");
           JSONObject build = first.getJSONObject("build");
@@ -165,7 +165,7 @@ public class Score {
         .append("</th>");
     for (int variation = 0; variation < variations[0]; variation++) {
       if (paramsMap.containsKey(variation)) {
-        JSONObject params = Utils.flattenParams(paramsMap.get(variation));
+        JSONObject params = paramsMap.get(variation);
         String paramString =
             params.toString().replace("{", "").replace("}", "")
                 .replace("\"", "").replace(":true", "").replace(":", " ").replace("heuristics", "")
