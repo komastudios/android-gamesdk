@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "35edaa30_d39c31b8",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 3
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-23T17:48:52Z",
+      "side": 1,
+      "message": "To Omar\u0027s first question, yes if the VkFormat is ASTC the raw data should conform to that, and I don\u0027t know what the behavior would be using an uncompressed default texture there. To this end, I was considering setting a default param for the constructor\u0027s VkFormat, maybe just like `VK_FORMAT_R8G8B8A8_SRGB`, since right now if it\u0027s an ASTC file the format is ignored anyways (the VkFormat is defined by the ASTC header, which is I would argue the most reliable way to set this), which would allow us to have a default uncompressed non-ASTC format to fall back to in case of a missing ASTC texture, since the ASTC texture could then be created without an explicit ASTC VkFormat constructor param.\n\nTo the second question, I think that that\u0027s valid, but I\u0027m not sure that that\u0027s something that we should be doing in the Texture class? I think of what we have in Material for the default texture, which might be a better model (and I think is a bit beyond the scope of this CL).",
+      "parentUuid": "2ed54ae0_6821dee0",
+      "revId": "6c930436910d8e45715c494990c2bf9688992f9f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "651bce92_6cdb8946",
         "filename": "bender/bender-base/app/src/main/jni/texture.cc",
         "patchSetId": 3
