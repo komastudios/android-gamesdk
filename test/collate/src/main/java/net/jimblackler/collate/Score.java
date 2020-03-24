@@ -52,7 +52,7 @@ public class Score {
           } else {
             assert variations[0] == total;
           }
-          paramsMap.put(variationNumber, params);
+          paramsMap.put(variationNumber, runParameters);
 
           assert first.has("build");
           JSONObject build = first.getJSONObject("build");
