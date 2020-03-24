@@ -29,33 +29,64 @@ struct ASTCHeader {
     uint8_t z_size[3];
 };
 
-VkFormat GetASTCFormat(uint8_t block_dim_x, uint8_t block_dim_y) {
+bool IsCompatibleSRGB(VkFormat template_format) {
+  switch (template_format) {
+    case VK_FORMAT_R8G8B8A8_SRGB:
+    case VK_FORMAT_BC1_RGBA_SRGB_BLOCK:
+    case VK_FORMAT_BC2_SRGB_BLOCK:
+    case VK_FORMAT_BC3_SRGB_BLOCK:
+    case VK_FORMAT_BC7_SRGB_BLOCK:
+    case VK_FORMAT_ETC2_R8G8B8A1_SRGB_BLOCK:
+    case VK_FORMAT_ETC2_R8G8B8A8_SRGB_BLOCK:
+    case VK_FORMAT_ASTC_4x4_SRGB_BLOCK:
+    case VK_FORMAT_ASTC_5x4_SRGB_BLOCK:
+    case VK_FORMAT_ASTC_5x5_SRGB_BLOCK:
+    case VK_FORMAT_ASTC_6x5_SRGB_BLOCK:
+    case VK_FORMAT_ASTC_6x6_SRGB_BLOCK:
+    case VK_FORMAT_ASTC_8x5_SRGB_BLOCK:
+    case VK_FORMAT_ASTC_8x6_SRGB_BLOCK:
+    case VK_FORMAT_ASTC_8x8_SRGB_BLOCK:
+    case VK_FORMAT_ASTC_10x5_SRGB_BLOCK:
+    case VK_FORMAT_ASTC_10x6_SRGB_BLOCK:
+    case VK_FORMAT_ASTC_10x8_SRGB_BLOCK:
+    case VK_FORMAT_ASTC_10x10_SRGB_BLOCK:
+    case VK_FORMAT_ASTC_12x10_SRGB_BLOCK:
+    case VK_FORMAT_ASTC_12x12_SRGB_BLOCK:
+      return true;
+    default:
+      return false;
+  }
+}
+
+VkFormat GetASTCFormat(VkFormat template_format, uint8_t block_dim_x, uint8_t block_dim_y) {
+  bool use_srgb = IsCompatibleSRGB(template_format);
+
   if (block_dim_x == 4 && block_dim_y == 4) {
-    return VK_FORMAT_ASTC_4x4_UNORM_BLOCK;
+    return use_srgb ? VK_FORMAT_ASTC_4x4_SRGB_BLOCK : VK_FORMAT_ASTC_4x4_UNORM_BLOCK;
   } else if (block_dim_x == 5 && block_dim_y == 4) {
-    return VK_FORMAT_ASTC_5x4_UNORM_BLOCK;
+    return use_srgb ? VK_FORMAT_ASTC_5x4_SRGB_BLOCK : VK_FORMAT_ASTC_5x4_UNORM_BLOCK;
   } else if (block_dim_x == 6 && block_dim_y == 5) {
-    return VK_FORMAT_ASTC_6x5_UNORM_BLOCK;
+    return use_srgb ? VK_FORMAT_ASTC_6x5_SRGB_BLOCK : VK_FORMAT_ASTC_6x5_UNORM_BLOCK;
   } else if (block_dim_x == 6 && block_dim_y == 6) {
-    return VK_FORMAT_ASTC_6x6_UNORM_BLOCK;
+    return use_srgb ? VK_FORMAT_ASTC_6x6_SRGB_BLOCK : VK_FORMAT_ASTC_6x6_UNORM_BLOCK;
   } else if (block_dim_x == 8 && block_dim_y == 5) {
-    return VK_FORMAT_ASTC_8x5_UNORM_BLOCK;
+    return use_srgb ? VK_FORMAT_ASTC_8x5_SRGB_BLOCK : VK_FORMAT_ASTC_8x5_UNORM_BLOCK;
   } else if (block_dim_x == 8 && block_dim_y == 6) {
-    return VK_FORMAT_ASTC_8x6_UNORM_BLOCK;
+    return use_srgb ? VK_FORMAT_ASTC_8x6_SRGB_BLOCK : VK_FORMAT_ASTC_8x6_UNORM_BLOCK;
   } else if (block_dim_x == 8 && block_dim_y == 8) {
-    return VK_FORMAT_ASTC_8x8_UNORM_BLOCK;
+    return use_srgb ? VK_FORMAT_ASTC_8x8_SRGB_BLOCK : VK_FORMAT_ASTC_8x8_UNORM_BLOCK;
   } else if (block_dim_x == 10 && block_dim_y == 5) {
-    return VK_FORMAT_ASTC_10x5_UNORM_BLOCK;
+    return use_srgb ? VK_FORMAT_ASTC_10x5_SRGB_BLOCK : VK_FORMAT_ASTC_10x5_UNORM_BLOCK;
   } else if (block_dim_x == 10 && block_dim_y == 6) {
-    return VK_FORMAT_ASTC_10x6_UNORM_BLOCK;
+    return use_srgb ? VK_FORMAT_ASTC_10x6_SRGB_BLOCK : VK_FORMAT_ASTC_10x6_UNORM_BLOCK;
   } else if (block_dim_x == 10 && block_dim_y == 8) {
-    return VK_FORMAT_ASTC_10x8_UNORM_BLOCK;
+    return use_srgb ? VK_FORMAT_ASTC_10x8_SRGB_BLOCK : VK_FORMAT_ASTC_10x8_UNORM_BLOCK;
   } else if (block_dim_x == 10 && block_dim_y == 10) {
-    return VK_FORMAT_ASTC_10x10_UNORM_BLOCK;
+    return use_srgb ? VK_FORMAT_ASTC_10x10_SRGB_BLOCK : VK_FORMAT_ASTC_10x10_UNORM_BLOCK;
   } else if (block_dim_x == 12 && block_dim_y == 10) {
-    return VK_FORMAT_ASTC_12x10_UNORM_BLOCK;
+    return use_srgb ? VK_FORMAT_ASTC_12x10_SRGB_BLOCK : VK_FORMAT_ASTC_12x10_UNORM_BLOCK;
   } else if (block_dim_x == 12 && block_dim_y == 12) {
-    return VK_FORMAT_ASTC_12x12_UNORM_BLOCK;
+    return use_srgb ? VK_FORMAT_ASTC_12x12_SRGB_BLOCK : VK_FORMAT_ASTC_12x12_UNORM_BLOCK;
   } else {
     return VK_FORMAT_UNDEFINED;
   }

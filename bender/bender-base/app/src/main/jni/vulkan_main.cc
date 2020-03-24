@@ -287,15 +287,11 @@ void AddTexture(std::string file_name){
     if (use_astc && file_name.find(".png") != -1) {
       size_t basename_len = file_name.rfind('.');
       file_name.replace(basename_len, file_name.size() - basename_len + 1, ".astc");
-      loaded_textures[texture_name] = std::make_shared<Texture>(*renderer,
-                                                                *android_app_ctx,
-                                                                "textures/" + file_name);
-    } else {
-      loaded_textures[texture_name] = std::make_shared<Texture>(*renderer,
-                                                                *android_app_ctx,
-                                                                "textures/" + file_name,
-                                                                VK_FORMAT_R8G8B8A8_SRGB);
     }
+    loaded_textures[texture_name] = std::make_shared<Texture>(*renderer,
+                                                              *android_app_ctx,
+                                                              "textures/" + file_name,
+                                                              VK_FORMAT_R8G8B8A8_SRGB);
   }
 }
 

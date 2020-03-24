@@ -42,7 +42,7 @@ Texture::Texture(Renderer &renderer,
 Texture::Texture(Renderer &renderer,
                  android_app &android_app_ctx,
                  const std::string &texture_file_name,
-                 VkFormat texture_format /* = VK_FORMAT_R8G8B8A8_SRGB */)
+                 VkFormat texture_format)
     : renderer_(renderer), texture_format_(texture_format) {
   CALL_VK(CreateTextureFromFile(android_app_ctx, texture_file_name));
   CreateImageView();
@@ -92,8 +92,8 @@ unsigned char *Texture::LoadASTCFileData(AAsset *file, uint32_t& img_bytes) {
   ASTCHeader header;
   AAsset_read(file, &header, sizeof(ASTCHeader));
 
-  VkFormat format = GetASTCFormat(header.block_dim_x, header.block_dim_y);
-  if ( !ASTCHeaderIsValid(header) || format == VK_FORMAT_UNDEFINED) {
+  VkFormat format = GetASTCFormat(texture_format_, header.block_dim_x, header.block_dim_y);
+  if (!ASTCHeaderIsValid(header) || format == VK_FORMAT_UNDEFINED) {
     return LoadFallbackData();
   }
 

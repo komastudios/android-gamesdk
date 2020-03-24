@@ -34,7 +34,7 @@ class Texture {
   Texture(Renderer &renderer,
           android_app &android_app_ctx,
           const std::string &texture_file_name,
-          VkFormat texture_format = VK_FORMAT_R8G8B8A8_SRGB);
+          VkFormat texture_format);
 
   ~Texture();
 
