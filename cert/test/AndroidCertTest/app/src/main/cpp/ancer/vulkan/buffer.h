@@ -38,6 +38,15 @@ class Buffer {
     return _memory.Size();
   }
 
+  void *MapVoid();
+
+  void Unmap();
+
+  template<typename T>
+  T *Map() {
+    return reinterpret_cast<T *>(MapVoid());
+  }
+
  private:
   Vulkan _vk;
   VkBuffer _buffer;
@@ -47,11 +56,19 @@ class Buffer {
 
 class IndexBuffer : public Buffer {
  public:
-  inline Result Initialize(Vulkan &vk, ResourceUse ruse, VkDeviceSize size,
-                           void * data) {
+  inline Result Initialize(Vulkan &vk, ResourceUse ruse, VkIndexType index_type,
+                           VkDeviceSize size, void * data) {
+    _index_type = index_type;
     return Buffer::Initialize(vk, ruse, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
                               size, data);
   }
+
+  inline VkIndexType IndexType() const {
+    return _index_type;
+  }
+
+ private:
+  VkIndexType _index_type;
 };
 
 class VertexBuffer : public Buffer {
@@ -59,6 +76,24 @@ class VertexBuffer : public Buffer {
   inline Result Initialize(Vulkan &vk, ResourceUse ruse, VkDeviceSize size,
                            void * data) {
     return Buffer::Initialize(vk, ruse, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                              size, data);
+  }
+};
+
+class UniformBuffer : public Buffer {
+ public:
+  inline Result Initialize(Vulkan &vk, ResourceUse ruse, VkDeviceSize size,
+                           void * data) {
+    return Buffer::Initialize(vk, ruse, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                              size, data);
+  }
+};
+
+class StorageBuffer : public Buffer {
+ public:
+  inline Result Initialize(Vulkan &vk, ResourceUse ruse, VkDeviceSize size,
+                           void * data) {
+    return Buffer::Initialize(vk, ruse, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
                               size, data);
   }
 };

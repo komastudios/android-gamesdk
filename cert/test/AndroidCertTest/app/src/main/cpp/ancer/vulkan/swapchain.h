@@ -73,6 +73,8 @@ class Swapchain {
   uint32_t width;
   uint32_t height;
 
+  uint64_t swappy_refresh_duration;
+
   VkSwapchainKHR swapchain;
   std::vector<VkImage> images;
   std::vector<VkImageView> image_views;

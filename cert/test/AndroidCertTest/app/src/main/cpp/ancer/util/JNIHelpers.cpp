@@ -784,6 +784,10 @@ class LocalJNIEnvImpl final : public jni::LocalJNIEnv {
     return _env->GetObjectRefType(obj);
   }
 
+  JNIEnv * GetOriginalJNIEnv() {
+    return _env;
+  }
+
  private:
   template<typename JNI_TYPE>
   JNI_TYPE _bind_local_ref_to_env(const JNI_TYPE &jinstance) {

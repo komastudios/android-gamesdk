@@ -71,12 +71,7 @@ void Context::Shutdown() {
 Result Context::Begin() {
   _current_buffer = (_current_buffer + 1) % _command_buffers.size();
 
-  bool complete;
-  VK_RETURN_FAIL(_vk.WaitForFence(_command_buffer_fence[_current_buffer],
-                                  complete));
-
-  if(!complete)
-    return Result(VK_TIMEOUT);
+  VK_RETURN_FAIL(ClearFence());
 
   VkCommandBufferBeginInfo begin_info = {
     /* sType            */ VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
@@ -96,12 +91,46 @@ Result Context::Begin() {
   return Result::kSuccess;
 }
 
+Result Context::BindResources(VkPipelineBindPoint bind_point,
+                              VkPipelineLayout layout, uint32_t first,
+                              std::initializer_list<Resources> resources) {
+  auto &resolver = _vk.GetResourcesStore();
+  VkDescriptorSet sets[resources.size()];
+  uint32_t i = 0;
+  for(auto resource : resources) {
+    VK_RETURN_FAIL(resolver.Resolve(resource, sets[i]));
+    ++i;
+  }
+  _vk->cmdBindDescriptorSets(CommandBuffer(), bind_point, layout, first,
+                             static_cast<uint32_t>(resources.size()), sets,
+                             0, nullptr);
+  return Result::kSuccess;
+}
+
 Result Context::End() {
   if(!_end) {
-    VK_RETURN_FAIL(_vk->endCommandBuffer(CommandBuffer()));
     _end = true;
+    VK_RETURN_FAIL(_vk->endCommandBuffer(CommandBuffer()));
   }
 
+  return Result::kSuccess;
+}
+
+Result Context::SetFence(Fence & fence) {
+  VK_RETURN_FAIL(ClearFence());
+
+  _command_buffer_fence[_current_buffer] = fence;
+
+  return Result::kSuccess;
+}
+
+Result Context::GetFence(Fence & fence, bool create_advancing_fence) {
+  if(create_advancing_fence) {
+    VK_RETURN_FAIL(_vk.AllocateFence(fence, true));
+    _command_buffer_fence[_current_buffer] = fence;
+  } else {
+    fence = _command_buffer_fence[_current_buffer];
+  }
   return Result::kSuccess;
 }
 
@@ -143,6 +172,18 @@ Result Context::CompletedSignal(VkSemaphore & semaphore) {
 
 void Context::Signal(VkSemaphore semaphore) {
   _signal_semaphores.push_back(semaphore);
+}
+
+Result Context::ClearFence() {
+  if(_command_buffer_fence[_current_buffer].Valid()) {
+    bool complete;
+    VK_RETURN_FAIL(_vk.WaitForFence(_command_buffer_fence[_current_buffer],
+                                    complete));
+    if(!complete)
+      return Result(VK_TIMEOUT);
+  }
+
+  return Result::kSuccess;
 }
 
 Result GraphicsContext::BeginRenderPass(RenderPass &render_pass,

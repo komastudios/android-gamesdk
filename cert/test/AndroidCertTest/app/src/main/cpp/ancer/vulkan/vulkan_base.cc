@@ -4,10 +4,20 @@
 #include <bitset>
 #include <cstring>
 
+#include <ancer/util/Log.hpp>
+
 #include "context.h"
 #include "android_helper.h"
 #include "upload.h"
 #include "resources.h"
+
+#include <swappy/swappyVk.h>
+
+using namespace ancer;
+
+namespace {
+static Log::Tag TAG{"VulkanBase"};
+}
 
 namespace ancer {
 namespace vulkan {
@@ -89,11 +99,12 @@ fail:
 void Vulkan::Shutdown() {
 }
 
-Result Vulkan::AllocateFence(Fence &fence) {
+Result Vulkan::AllocateFence(Fence &fence, bool advance) {
   {
     std::lock_guard<std::mutex> guard(vk->free_fences_mutex);
     if(vk->free_fences.size() > 0) {
       fence = vk->free_fences.back();
+      fence.AdvanceFrame(advance);
       vk->free_fences.pop_back();
       return Result::kSuccess;
     }
@@ -107,6 +118,7 @@ Result Vulkan::AllocateFence(Fence &fence) {
 
   fence.data.reset(new Fence::Data());
   fence.data->waited = false;
+  fence.data->advance_frame = advance;
   fence.data->frame = vk->frame;
   fence.data->references = 0;
   return Result(vk->createFence(vk->device, &create_info, nullptr,
@@ -502,8 +514,14 @@ Result Vulkan::InitEntry(const VulkanRequirements & requirements) {
   void * libVulkan = dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL);
   if(!libVulkan) return Result::kSuccess;
 
-#define LOAD_ENTRY(NAME, ID) vk->ID = \
-  reinterpret_cast<PFN_ ## NAME>(dlsym(libVulkan, #NAME));
+#define LOAD_ENTRY(NAME, ID) \
+  do { \
+    vk->ID = \
+    reinterpret_cast<PFN_ ## NAME>(dlsym(libVulkan, #NAME)); \
+    if(vk->ID == nullptr) { \
+      return Result{VK_ERROR_INITIALIZATION_FAILED}; \
+    } \
+  } while(false)
 
   vk.reset(new Data());
   LOAD_ENTRY(vkCreateInstance, createInstance);
@@ -646,6 +664,8 @@ Result Vulkan::InitEntry(const VulkanRequirements & requirements) {
 
 #undef LOAD_ENTRY
 
+  vk->use_swappy = requirements._use_swappy;
+
   return Result::kSuccess;
 }
 
@@ -727,25 +747,25 @@ Result Vulkan::InitInstance(const VulkanRequirements & requirements) {
   VK_RETURN_FAIL(InitInstanceExtensions(requirements));
 
   // map to c_str for VkInstanceCreateInfo
-  std::vector<const char *> enabled_layers(
-                                       vk->enabled_instance_layers.size());
+  std::vector<const char *> enabled_layers;
   for(const auto & layer : vk->enabled_instance_layers) {
+    Log::D(TAG, "layer %s", layer.c_str());
     enabled_layers.emplace_back(layer.c_str());
   }
 
   // map to c_str for VkInstanceCreateInfo
-  std::vector<const char *> enabled_extensions(
-                                       vk->enabled_instance_extensions.size());
+  std::vector<const char *> enabled_extensions;
   for(const auto & extension : vk->enabled_instance_extensions) {
+    Log::D(TAG, "extension %s", extension.c_str());
     enabled_extensions.emplace_back(extension.c_str());
   }
 
   VkApplicationInfo application_info = {
     /* sType              */ VK_STRUCTURE_TYPE_APPLICATION_INFO,
     /* pNext              */ nullptr,
-    /* pApplicationName   */ "",
+    /* pApplicationName   */ "ancer",
     /* applicationVersion */ 1,
-    /* pEngineName        */ "",
+    /* pEngineName        */ "ancer",
     /* engineVersion      */ 1,
     /* apiVersion         */ VK_API_VERSION_1_0
   };
@@ -763,6 +783,23 @@ Result Vulkan::InitInstance(const VulkanRequirements & requirements) {
     /* ppEnabledExtensionNames */ enabled_extensions.empty() ? nullptr :
                                   enabled_extensions.data()
   };
+#define DEBUG_P(X, F) Log::D(TAG, #X " " #F, X)
+  DEBUG_P(create_info.sType, %u);
+  DEBUG_P(create_info.pNext, %p);
+  DEBUG_P(create_info.flags, %u);
+  DEBUG_P(create_info.pApplicationInfo, %p);
+  DEBUG_P(create_info.pApplicationInfo->sType, %u);
+  DEBUG_P(create_info.pApplicationInfo->pNext, %p);
+  DEBUG_P(create_info.pApplicationInfo->pApplicationName, %s);
+  DEBUG_P(create_info.pApplicationInfo->applicationVersion, %u);
+  DEBUG_P(create_info.pApplicationInfo->pEngineName, %s);
+  DEBUG_P(create_info.pApplicationInfo->engineVersion, %u);
+  DEBUG_P(create_info.pApplicationInfo->apiVersion, %u);
+  DEBUG_P(create_info.enabledLayerCount, %u);
+  DEBUG_P(create_info.ppEnabledLayerNames, %p);
+  DEBUG_P(create_info.enabledExtensionCount, %u);
+  DEBUG_P(create_info.ppEnabledExtensionNames, %p);
+#undef DEBUG_P
   VK_RETURN_FAIL(vk->createInstance(&create_info, nullptr, &vk->instance));
 
 #define LOAD_ENTRY(NAME, ID) vk->ID = \
@@ -878,6 +915,7 @@ Result Vulkan::InitDeviceExtensions(const VulkanRequirements & requirements) {
 
   std::vector<VkLayerProperties> layers;
   std::vector<VkExtensionProperties> extensions;
+  std::vector<VkExtensionProperties> all_extensions;
 
   vk->available_device_layers.clear();
   vk->available_device_extensions.clear();
@@ -905,6 +943,7 @@ Result Vulkan::InitDeviceExtensions(const VulkanRequirements & requirements) {
                                                           &count, \
                                                           extensions.data())); \
     for(const auto & extension : extensions) { \
+      all_extensions.push_back(extension); \
       vk->available_device_extensions.insert(extension.extensionName); \
     } \
   } while(false)
@@ -913,6 +952,16 @@ Result Vulkan::InitDeviceExtensions(const VulkanRequirements & requirements) {
 
   for(const auto & layer : vk->available_device_layers) {
     LOAD_EXTENSIONS(layer.c_str());
+  }
+
+  if(vk->use_swappy) {
+    count = 0;
+    SwappyVk_determineDeviceExtensions(
+        vk->physical_device, static_cast<uint32_t>(all_extensions.size()),
+        all_extensions.data(), &count, nullptr);
+    if(count > 0) {
+      return Result(VK_ERROR_EXTENSION_NOT_PRESENT);
+    }
   }
 
 #undef LOAD_EXTENSIONS
@@ -1111,6 +1160,11 @@ Result Vulkan::InitDevice(const VulkanRequirements & requirements) {
   RESOLVE(compute);
   RESOLVE(transfer);
   RESOLVE(present);
+
+  if(vk->use_swappy) {
+    SwappyVk_setQueueFamilyIndex(vk->device, vk->present.queue,
+                                 vk->present.family_index);
+  }
 
 #define LOAD_ENTRY(NAME, ID) vk->ID = \
   reinterpret_cast<PFN_ ## NAME>(vk->getDeviceProcAddr(vk->device, #NAME));

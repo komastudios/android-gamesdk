@@ -89,5 +89,13 @@ void Buffer::Shutdown() {
   _buffer = VK_NULL_HANDLE;
 }
 
+void *Buffer::MapVoid() {
+  return _memory.Map();
+}
+
+void Buffer::Unmap() {
+  // nothing
+}
+
 }
 }
