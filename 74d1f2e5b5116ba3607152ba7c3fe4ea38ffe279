@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a5bf561f_ad6eb45e",
+        "filename": "build.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-03-25T11:54:55Z",
+      "side": 1,
+      "message": "Should be done only for samples and full no?\nYou could as well put this after the zip command?",
+      "revId": "74d1f2e5b5116ba3607152ba7c3fe4ea38ffe279",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
