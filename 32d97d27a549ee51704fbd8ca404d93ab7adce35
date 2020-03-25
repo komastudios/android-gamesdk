@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "6e626d28_9f9d01ae",
+        "filename": "build.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-25T10:39:28Z",
+      "side": 1,
+      "message": "It would require other changes in the main build.gradle file. I don\u0027t think it\u0027s worth it for now. Let\u0027s do a follow up CL.",
+      "parentUuid": "5441ccc0_3ed2858b",
+      "revId": "32d97d27a549ee51704fbd8ca404d93ab7adce35",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "80222711_273ca44a",
         "filename": "build.sh",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "32d97d27a549ee51704fbd8ca404d93ab7adce35",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "87f0e860_1b3fa698",
+        "filename": "build.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-25T10:39:28Z",
+      "side": 1,
+      "message": "$apk_dir is not relative $dist_dir but yes, this could be done better. I\u0027ll change it.",
+      "parentUuid": "80222711_273ca44a",
+      "revId": "32d97d27a549ee51704fbd8ca404d93ab7adce35",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
