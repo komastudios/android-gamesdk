@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5441ccc0_3ed2858b",
+        "filename": "build.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-03-25T09:28:20Z",
+      "side": 1,
+      "message": "What do you think of gamesdk-full?\nSounds a bit clearer than \"fullsdk\". Would this implies other changes?",
+      "revId": "32d97d27a549ee51704fbd8ca404d93ab7adce35",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "80222711_273ca44a",
+        "filename": "build.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-03-25T09:28:20Z",
+      "side": 1,
+      "message": "nitpicking: could you use $apk_dir?",
+      "revId": "32d97d27a549ee51704fbd8ca404d93ab7adce35",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
