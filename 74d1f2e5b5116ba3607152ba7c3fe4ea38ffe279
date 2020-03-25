@@ -16,6 +16,24 @@
       "revId": "74d1f2e5b5116ba3607152ba7c3fe4ea38ffe279",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d90896df_7b38122a",
+        "filename": "build.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-25T11:59:20Z",
+      "side": 1,
+      "message": "No, we need it for the Swappy-only SDK release too.",
+      "parentUuid": "a5bf561f_ad6eb45e",
+      "revId": "74d1f2e5b5116ba3607152ba7c3fe4ea38ffe279",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
