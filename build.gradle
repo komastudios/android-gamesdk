@@ -538,6 +538,14 @@ def copySamples(outFolder, includeTuningForkSamples = true) {
             includeEmptyDirs = false
 	}
 	copy {
+            from file(joinPath('samples', "tuningfork", "scaledballs"))
+            into file(joinPath(buildFolder, 'samples', "tuningfork", "scaledballs"))
+            exclude '**/build', '**/out', "local.properties", "**/.externalNativeBuild", "**/.gradle",
+		"**/OWNERS", "**/.idea", '**/CMakeLists.txt'
+            rename 'CMakeLists.for-samples-in-archive.txt', 'CMakeLists.txt'
+            includeEmptyDirs = false
+	}
+	copy {
             from file(joinPath('src', 'protobuf'))
             into file(joinPath(buildFolder, 'src', 'protobuf'))
             includeEmptyDirs = false
