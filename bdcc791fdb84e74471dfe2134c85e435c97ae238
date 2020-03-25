@@ -1,0 +1,48 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000002116703",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1261399?revision\u003d7",
+      "fixSuggestions": [
+        {
+          "fixId": "9c18a6ae_c2f89b52",
+          "description": "Change to \"cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/EGLPresentationTimeGLES3Operation.cpp\"",
+          "replacements": [
+            {
+              "path": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/EGLPresentationTimeGLES3Operation.cpp",
+              "range": {
+                "startLine": 312,
+                "startChar": 5,
+                "endLine": 312,
+                "endChar": 12
+              },
+              "replacement": "Attempts"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "9f10e37b_83144119",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/EGLPresentationTimeGLES3Operation.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 312,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-03-25T21:59:14Z",
+      "side": 1,
+      "message": "Common typo found: \"Attemps\" -- should it be \"Attempts\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.",
+      "range": {
+        "startLine": 312,
+        "startChar": 5,
+        "endLine": 312,
+        "endChar": 12
+      },
+      "revId": "bdcc791fdb84e74471dfe2134c85e435c97ae238",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
