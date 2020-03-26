@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d5daa08e_abb21abe",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-26T06:19:11Z",
+      "side": 1,
+      "message": "still curious why 1000.0f here :)",
+      "range": {
+        "startLine": 203,
+        "startChar": 6,
+        "endLine": 203,
+        "endChar": 51
+      },
+      "revId": "30a2df98f7729f76b5118d9d49ffe2679b0715a9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b05feab2_2bb2ae2c",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-26T06:19:11Z",
+      "side": 1,
+      "message": "Because it\u0027s sample code, might want to provide a link to the paper somewhere near here:\n\nhttps://www.cs.cornell.edu/~srm/publications/EGSR07-btdf.pdf",
+      "range": {
+        "startLine": 50,
+        "startChar": 0,
+        "endLine": 51,
+        "endChar": 54
+      },
+      "revId": "30a2df98f7729f76b5118d9d49ffe2679b0715a9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}

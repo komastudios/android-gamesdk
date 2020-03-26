@@ -237,6 +237,54 @@
     },
     {
       "key": {
+        "uuid": "f6782dbb_efb62b56",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 1
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-26T06:19:11Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "172a2a00_d84b6ba6",
+      "range": {
+        "startLine": 94,
+        "startChar": 0,
+        "endLine": 95,
+        "endChar": 35
+      },
+      "revId": "5798bd5e5e120fb390185ee6a739982686aa20ef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "62ab6854_ffb8d88c",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 1
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-26T06:19:11Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "172a2a00_d84b6ba6",
+      "range": {
+        "startLine": 94,
+        "startChar": 0,
+        "endLine": 95,
+        "endChar": 35
+      },
+      "revId": "5798bd5e5e120fb390185ee6a739982686aa20ef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "83ebd29f_5aaf9c73",
         "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
         "patchSetId": 1
@@ -319,6 +367,30 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "44a5e90f_adc157da",
+      "range": {
+        "startLine": 115,
+        "startChar": 4,
+        "endLine": 115,
+        "endChar": 60
+      },
+      "revId": "5798bd5e5e120fb390185ee6a739982686aa20ef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5ee4c05a_bb6ec0b6",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 1
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-26T06:19:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a4647bc8_a44077af",
       "range": {
         "startLine": 115,
         "startChar": 4,

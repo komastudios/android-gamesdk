@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "79bde896_c9a4bed3",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-26T06:19:11Z",
+      "side": 1,
+      "message": "You might want to move the light so that it\u0027s top-left of the frustum (or something) - it\u0027ll give you more lighting variance to work with when looking at the effects of PBR rather than having the light dead-on at the camera position.",
+      "range": {
+        "startLine": 201,
+        "startChar": 41,
+        "endLine": 201,
+        "endChar": 69
+      },
+      "revId": "c3977c1cb7dba770df7f726ad0cd8efcbc4a8566",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bf488c98_646b6036",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-26T06:19:11Z",
+      "side": 1,
+      "message": "Good call, but why this vs. making the point light color an 8-bit per component RGB value with a 16-bit float intensity?\n\nNote: To clarify, I\u0027m not saying that this is wrong - just interested in your thinking.",
+      "range": {
+        "startLine": 202,
+        "startChar": 2,
+        "endLine": 203,
+        "endChar": 60
+      },
+      "revId": "c3977c1cb7dba770df7f726ad0cd8efcbc4a8566",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c2fcc724_12128aa8",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-26T06:19:11Z",
+      "side": 1,
+      "message": "Is there a perf benefit to using vec4 instead of vec3 here? (the alignas(16) you have does the same job as making them vec4s, but prevents you from packing floats in between them in future without changing them all back).\n\nYou could have this instead:\n\nstruct alignas(16) LightBlock{\n    alignas(16) glm::vec3 pointLightPosition;\n    float reserved1;\n    alignas(16) glm::vec3 pointLightColor;\n    float reserved2;\n    alignas(16) glm::vec3 ambientLight;\n    float reserved3;\n    alignas(16) glm::vec3 cameraPos;\n    float reserved4;\n}\n\nThe main reason I bring it up is because no-one ever thinks about the W coordinate, and forcing you to do vec4(V,1.0) or vec4(V,0.0) makes you make the choice.\n\nNot saying to change this, just to consider the knock-on effects here.",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 36
+      },
+      "revId": "c3977c1cb7dba770df7f726ad0cd8efcbc4a8566",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9b27718a_d0918bdf",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.vert",
+        "patchSetId": 5
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-26T06:19:11Z",
+      "side": 1,
+      "message": "These are vec3\u0027s, but the CPU datastructure uses vec4\u0027s. Worth documenting what you\u0027re doing in the CPU one so that people don\u0027t get confused?",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 13
+      },
+      "revId": "c3977c1cb7dba770df7f726ad0cd8efcbc4a8566",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "540827a7_b69e93dd",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 3
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-26T06:19:11Z",
+      "side": 1,
+      "message": "What\u0027s this doing? I can\u0027t figure it out :)",
+      "range": {
+        "startLine": 139,
+        "startChar": 3,
+        "endLine": 139,
+        "endChar": 34
+      },
+      "revId": "5ec224e50a1205cde66b05b07a3200c815df7094",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
