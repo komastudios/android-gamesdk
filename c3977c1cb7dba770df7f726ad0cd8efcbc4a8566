@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "38973635_7970d1cd",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-26T14:56:35Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "79bde896_c9a4bed3",
+      "range": {
+        "startLine": 201,
+        "startChar": 41,
+        "endLine": 201,
+        "endChar": 69
+      },
+      "revId": "c3977c1cb7dba770df7f726ad0cd8efcbc4a8566",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bf488c98_646b6036",
         "filename": "bender/bender-base/app/src/main/jni/renderer.cc",
         "patchSetId": 5
@@ -36,6 +60,30 @@
       "writtenOn": "2020-03-26T06:19:11Z",
       "side": 1,
       "message": "Good call, but why this vs. making the point light color an 8-bit per component RGB value with a 16-bit float intensity?\n\nNote: To clarify, I\u0027m not saying that this is wrong - just interested in your thinking.",
+      "range": {
+        "startLine": 202,
+        "startChar": 2,
+        "endLine": 203,
+        "endChar": 60
+      },
+      "revId": "c3977c1cb7dba770df7f726ad0cd8efcbc4a8566",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b396fee4_ed06166e",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-26T14:56:35Z",
+      "side": 1,
+      "message": "Part of the reason is that it got rid of the floats and vec3s in the uniform buffer that people recommend you avoid for the alignment issues\n\nBut the other, primary reason, was that in all our lighting calculations end up just multiplying the intensity value and light color anyways, so this was a means of getting rid of that multiply in the shaders\n\nAlso technically in PBR, the light color is more interpreted as the radiant energy of the R, G, and B wavelengths, so this aligns a little more closely with that definition of lighting in the PBR model",
+      "parentUuid": "bf488c98_646b6036",
       "range": {
         "startLine": 202,
         "startChar": 2,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "d5cb1bd8_55d4ad62",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-26T14:56:35Z",
+      "side": 1,
+      "message": "The reason I went with vec4 here is that from what I read using vec3 and floats in uniform buffer objects in general can cause headaches because implementation dependent differences can cause them to not be aligned with what the shaders end up expecting, so doing something along the lines of:\n\nglm::vec4 colorAndIntensity\n\nis what is preferred, although in our case I just tested this and it seems to work just as well! So I might go with this just because it helps map it better to the vec3s that we have in the shaders - if we run into alignment issues later on we can go back to the vec4 only implementation",
+      "parentUuid": "c2fcc724_12128aa8",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 36
+      },
+      "revId": "c3977c1cb7dba770df7f726ad0cd8efcbc4a8566",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "9b27718a_d0918bdf",
         "filename": "bender/bender-base/app/src/main/shaders/mesh.vert",
         "patchSetId": 5
@@ -91,6 +163,30 @@
       "revId": "c3977c1cb7dba770df7f726ad0cd8efcbc4a8566",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "157c68c7_d34e2d12",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.vert",
+        "patchSetId": 5
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-26T14:56:35Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "9b27718a_d0918bdf",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 13
+      },
+      "revId": "c3977c1cb7dba770df7f726ad0cd8efcbc4a8566",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }

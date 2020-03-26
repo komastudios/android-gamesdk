@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "9a6fa0e6_7f2c1e40",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-26T14:56:35Z",
+      "side": 1,
+      "message": "This was purely artistic haha, this just made it bright enough for me to see\n\nPart of the reason it got darker is because I switched to an inverse square attenuation based on distance for the point light rather than just a linear inverse based on distance for the attenuation\n\nIt\u0027s also possible things are darker in general now because of the energy conserving nature of PBR vs the Blinn-Phong lighting we had previously",
+      "parentUuid": "d5daa08e_abb21abe",
+      "range": {
+        "startLine": 203,
+        "startChar": 6,
+        "endLine": 203,
+        "endChar": 51
+      },
+      "revId": "30a2df98f7729f76b5118d9d49ffe2679b0715a9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b05feab2_2bb2ae2c",
         "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
         "patchSetId": 2
@@ -45,6 +69,30 @@
       "revId": "30a2df98f7729f76b5118d9d49ffe2679b0715a9",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "87dab08c_9685726d",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-26T14:56:35Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "b05feab2_2bb2ae2c",
+      "range": {
+        "startLine": 50,
+        "startChar": 0,
+        "endLine": 51,
+        "endChar": 54
+      },
+      "revId": "30a2df98f7729f76b5118d9d49ffe2679b0715a9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
