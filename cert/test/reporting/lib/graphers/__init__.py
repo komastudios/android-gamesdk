@@ -25,6 +25,7 @@ from .calculate_wait_pi_suite_handler import CalculateWaitPiSuiteHandler
 from .cpuset_suite_handler import CpusetSuiteHandler
 from .depth_clear_suite_handler import DepthClearSuiteHandler
 from .file_performance_suite_handler import FilePerformanceSuiteHandler
+from .fill_rate_suite_handler import FillRateSuiteHandler
 from .half_float_precision import HalfFloatPrecisionSuiteHandler
 from .marching_cubes_suite_handler import MarchingCubesSuiteHandler
 from .mediump_vec_norm_suite_handler import MediumPVecNormSuiteHandler
@@ -32,16 +33,17 @@ from .memory_access.single_core_comparison import SingleCoreComparisonHandler
 from .memory_allocation_suite_handler import MemoryAllocationSuiteHandler
 from .mprotect_suite_handler import MProtectSuiteHandler
 from .temperature_suite_handler import TemperatureSuiteHandler
+from .vertex_suite_handler import VertexRateSuiteHandler
 from .vulkan_varyings_handler import VulkanVaryingsHandler
 
 HANDLERS = [
     AffinityTestSuiteHandler, BufferStorageSuiteHandler,
-    CalculateWaitPiSuiteHandler, CpusetSuiteHandler,
-    FilePerformanceSuiteHandler, HalfFloatPrecisionSuiteHandler,
-    DepthClearSuiteHandler, MarchingCubesSuiteHandler,
+    CalculateWaitPiSuiteHandler, CpusetSuiteHandler, DepthClearSuiteHandler,
+    FilePerformanceSuiteHandler, FillRateSuiteHandler,
+    HalfFloatPrecisionSuiteHandler, MarchingCubesSuiteHandler,
     MediumPVecNormSuiteHandler, MemoryAllocationSuiteHandler,
     MProtectSuiteHandler, SingleCoreComparisonHandler, TemperatureSuiteHandler,
-    VulkanVaryingsHandler
+    VertexRateSuiteHandler, VulkanVaryingsHandler
 ]
 """List containing all registered SuiteHandler implementations to
 render charts."""
