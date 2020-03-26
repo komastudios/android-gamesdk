@@ -46,6 +46,11 @@ def milliseconds_to_nanoseconds(milliseconds):
     return milliseconds * 1e6
 
 
+def bytes_to_megabytes(size_in_bytes: int) -> float:
+    """Converts bytes to megabytes"""
+    return size_in_bytes / 1048576  # 1024^2
+
+
 # ------------------------------------------------------------------------------
 
 
