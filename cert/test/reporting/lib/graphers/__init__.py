@@ -32,6 +32,7 @@ from .memory_access.single_core_comparison import SingleCoreComparisonHandler
 from .memory_allocation_suite_handler import MemoryAllocationSuiteHandler
 from .mprotect_suite_handler import MProtectSuiteHandler
 from .temperature_suite_handler import TemperatureSuiteHandler
+from .vertex_suite_handler import VertexRateSuiteHandler
 from .vulkan_varyings_handler import VulkanVaryingsHandler
 
 HANDLERS = [
@@ -41,7 +42,7 @@ HANDLERS = [
     DepthClearSuiteHandler, MarchingCubesSuiteHandler,
     MediumPVecNormSuiteHandler, MemoryAllocationSuiteHandler,
     MProtectSuiteHandler, SingleCoreComparisonHandler, TemperatureSuiteHandler,
-    VulkanVaryingsHandler
+    VertexRateSuiteHandler, VulkanVaryingsHandler
 ]
 """List containing all registered SuiteHandler implementations to
 render charts."""
