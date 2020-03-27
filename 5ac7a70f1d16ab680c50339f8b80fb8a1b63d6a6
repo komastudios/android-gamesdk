@@ -186,6 +186,29 @@
     },
     {
       "key": {
+        "uuid": "2227341e_86fd3b5e",
+        "filename": "bender/bender-base/utils/src/bender_helpers.h",
+        "patchSetId": 15
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-27T20:26:37Z",
+      "side": 1,
+      "message": "OK now I get it 😊 Could you document the rounding away from zero behavior to make that explicit what you\u0027re doing?\n\nMight be able to avoid a branch here, but with glm it\u0027s hard to tell if what you\u0027ll get is optimal for ARM.\n\nIf you did (and vectorized it), what you\u0027d do would be:\n\ninline uint64 NormVec4x32ToSnorm16x4(glm::vec4 in)\n{\n  glm::vec4 roundingadjust \u003d glm::sign(in) * 0.5f;\n  glm::vec4 saturated \u003d std::clamp( in * SNORM_MAX + roundingadjust, SNORM_MIN, SNORM_MAX);\n  return glm::packSnorm4x16( saturated );\n  );\n}\n\n(If you don\u0027t want to provide a vector version that\u0027s fine too)",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 48,
+        "endChar": 66
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6a8d82bd_ec04195e",
         "filename": "bender/bender-base/utils/src/mesh_helpers.h",
         "patchSetId": 15
@@ -220,6 +243,30 @@
       "writtenOn": "2020-03-27T20:01:24Z",
       "side": 1,
       "message": "I\u0027m still not sure about the implementation of NormFloatToSnorm16 - will follow up in email. But if we can make it easily done as vector math, we can replace these with SIMD operations. (Although with a bit of luck Clang will do this automagically).",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 5
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f668559d_f1fcf28c",
+        "filename": "bender/bender-base/utils/src/packed_types.h",
+        "patchSetId": 15
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-27T20:26:37Z",
+      "side": 1,
+      "message": "OK - found the original note - understand the rounding issue there.",
+      "parentUuid": "99f27853_e38aca32",
       "range": {
         "startLine": 20,
         "startChar": 0,
