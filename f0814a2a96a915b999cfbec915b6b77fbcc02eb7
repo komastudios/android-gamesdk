@@ -2,6 +2,40 @@
   "comments": [
     {
       "key": {
+        "uuid": "d725ff28_e68a75f4",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 497,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-03-27T23:31:20Z",
+      "side": 1,
+      "message": "Can you time this function? I\u0027m curious to see how long it takes to load each texture.",
+      "revId": "f0814a2a96a915b999cfbec915b6b77fbcc02eb7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "96861bb8_3df0c04b",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 568,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-03-27T23:31:20Z",
+      "side": 1,
+      "message": "Can you try to load data directly into the mapped memory instead of loading into a temp buffer and memcpying it?",
+      "revId": "f0814a2a96a915b999cfbec915b6b77fbcc02eb7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a045f3f5_c87e85e9",
         "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
         "patchSetId": 4
@@ -16,6 +50,23 @@
       "revId": "f0814a2a96a915b999cfbec915b6b77fbcc02eb7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9af86a2e_9de957ae",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 291,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-03-27T23:31:20Z",
+      "side": 1,
+      "message": "This should be cached. Check if the texture has been already loaded, return a shared_ptr if it is. If not, load and return the shared_ptr.",
+      "revId": "f0814a2a96a915b999cfbec915b6b77fbcc02eb7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
