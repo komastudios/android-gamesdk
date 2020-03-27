@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "d36db6c4_64dfb4eb",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 497,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-27T23:42:30Z",
+      "side": 1,
+      "message": "Will do 😊",
+      "parentUuid": "d725ff28_e68a75f4",
+      "revId": "f0814a2a96a915b999cfbec915b6b77fbcc02eb7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "96861bb8_3df0c04b",
         "filename": "bender/bender-base/app/src/main/jni/texture.cc",
         "patchSetId": 4
@@ -30,6 +48,24 @@
       "writtenOn": "2020-03-27T23:31:20Z",
       "side": 1,
       "message": "Can you try to load data directly into the mapped memory instead of loading into a temp buffer and memcpying it?",
+      "revId": "f0814a2a96a915b999cfbec915b6b77fbcc02eb7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "07662a96_4df4e332",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 568,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-27T23:42:30Z",
+      "side": 1,
+      "message": "Got it; I\u0027ll get this in next changeset.",
+      "parentUuid": "96861bb8_3df0c04b",
       "revId": "f0814a2a96a915b999cfbec915b6b77fbcc02eb7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -67,6 +103,24 @@
       "revId": "f0814a2a96a915b999cfbec915b6b77fbcc02eb7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e2b4ba0e_acaf08e1",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 291,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-27T23:42:30Z",
+      "side": 1,
+      "message": "As we discussed in chat, I think that the if statement on line 285 should be avoiding redundant loads.",
+      "parentUuid": "9af86a2e_9de957ae",
+      "revId": "f0814a2a96a915b999cfbec915b6b77fbcc02eb7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
