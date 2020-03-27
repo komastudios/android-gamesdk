@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a045f3f5_c87e85e9",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 284,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-03-27T23:19:03Z",
+      "side": 1,
+      "message": "Changes in vulkan_main are actually part of Omar\u0027s aosp/1256895 (but it\u0027s confusing / hard to test without these here in case format changes ASTC stuff). Assuming if that CL goes first that these temporary changes will be eliminated on rebase.",
+      "revId": "f0814a2a96a915b999cfbec915b6b77fbcc02eb7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
