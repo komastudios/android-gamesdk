@@ -34,6 +34,7 @@ uint32_t FindMemoryType(uint32_t type_filter, VkMemoryPropertyFlags properties,
 
 void SetImageLayout(VkCommandBuffer cmd_buffer, VkImage image,
                     VkImageLayout old_image_layout, VkImageLayout new_image_layout,
+                    uint32_t mip_level, uint32_t level_count,
                     VkPipelineStageFlags src_stages,
                     VkPipelineStageFlags dest_stages) {
     VkImageMemoryBarrier image_memory_barrier = {
@@ -49,8 +50,8 @@ void SetImageLayout(VkCommandBuffer cmd_buffer, VkImage image,
             .subresourceRange =
                     {
                             .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-                            .baseMipLevel = 0,
-                            .levelCount = 1,
+                            .baseMipLevel = mip_level,
+                            .levelCount = level_count,
                             .baseArrayLayer = 0,
                             .layerCount = 1,
                     },

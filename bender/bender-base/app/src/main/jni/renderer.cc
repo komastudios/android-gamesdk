@@ -104,6 +104,7 @@ void Renderer::BeginPrimaryCommandBufferRecording() {
                  device_.GetCurrentDisplayImage(),
                  VK_IMAGE_LAYOUT_UNDEFINED,
                  VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                 0, 1,
                  VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
                  VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 }
@@ -113,6 +114,7 @@ void Renderer::EndPrimaryCommandBufferRecording() {
                  GetCurrentDisplayImage(),
                  VK_IMAGE_LAYOUT_UNDEFINED,
                  VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+                 0, 1,
                  VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
                  VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT);
 

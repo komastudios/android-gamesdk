@@ -25,6 +25,7 @@ uint32_t FindMemoryType(uint32_t type_filter, VkMemoryPropertyFlags properties,
 
 void SetImageLayout(VkCommandBuffer cmd_buffer, VkImage image,
                     VkImageLayout old_image_layout, VkImageLayout new_image_layout,
+                    uint32_t mip_level, uint32_t level_count,
                     VkPipelineStageFlags src_stages,
                     VkPipelineStageFlags dest_stages);
 
