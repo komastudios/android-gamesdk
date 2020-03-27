@@ -52,6 +52,24 @@
       "revId": "b6bca2d620f3a752f0a8d94234e9451b1fbe329b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d3773a80_e0384858",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/ExternalBufferGLES3Operation.cpp",
+        "patchSetId": 11
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-03-27T20:55:06Z",
+      "side": 1,
+      "message": "Given that I can\u0027t even find the original source where I saw this, and that several respectable books use the `if (fptr \u003d\u003d nullptr)` convention (instead of the way you asked about), and that the compiler will actually catch the issues here, I don\u0027t think my original reasoning (the reasoning I explained) stands.",
+      "parentUuid": "f99daec8_0ca91652",
+      "revId": "b6bca2d620f3a752f0a8d94234e9451b1fbe329b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
