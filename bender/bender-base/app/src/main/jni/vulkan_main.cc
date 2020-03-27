@@ -281,7 +281,7 @@ void CreateTextures() {
   });
 }
 
-void AddTexture(std::string file_name){
+void AddTexture(std::string file_name, VkFormat format){
   if (file_name != "" && loaded_textures.find(file_name) == loaded_textures.end()){
     std::string texture_name = file_name;
     if (use_astc && file_name.find(".png") != -1) {
@@ -291,7 +291,7 @@ void AddTexture(std::string file_name){
     loaded_textures[texture_name] = std::make_shared<Texture>(*renderer,
                                                               *android_app_ctx,
                                                               "textures/" + file_name,
-                                                              VK_FORMAT_R8G8B8A8_SRGB);
+                                                              format);
   }
 }
 
@@ -568,11 +568,11 @@ void LoadDemoModels() {
             if (loaded_materials.find(mtl_name) == loaded_materials.end()) {
                 MTL curr_mtl = mtllib[obj.material_name];
                 if (!load_mutex.try_lock()) { return; }
-                AddTexture(curr_mtl.map_Ka);
-                AddTexture(curr_mtl.map_Kd);
-                AddTexture(curr_mtl.map_Ks);
-                AddTexture(curr_mtl.map_Ns);
-                AddTexture(curr_mtl.map_Bump);
+                AddTexture(curr_mtl.map_Ka, VK_FORMAT_R8G8B8A8_SRGB);
+                AddTexture(curr_mtl.map_Kd, VK_FORMAT_R8G8B8A8_SRGB);
+                AddTexture(curr_mtl.map_Ks, VK_FORMAT_R8G8B8A8_SRGB);
+                AddTexture(curr_mtl.map_Ns, VK_FORMAT_R8G8B8A8_UNORM);
+                AddTexture(curr_mtl.map_Bump, VK_FORMAT_R8G8B8A8_UNORM);
 
                 MaterialAttributes new_mtl;
                 new_mtl.ambient = curr_mtl.ambient;
