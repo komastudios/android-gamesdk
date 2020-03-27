@@ -1,0 +1,234 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bc5b573d_c03b5cdc",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-27T20:01:24Z",
+      "side": 1,
+      "message": "Alternative option here is to initialize the bounding box with the data from the first vertex and iterate starting at the second. You\u0027d need an initializer for bounding_box_ which took a point though. Bit of a micro-optimization. \n\n(Don\u0027t change anything - just pointing it out).",
+      "range": {
+        "startLine": 18,
+        "startChar": 2,
+        "endLine": 18,
+        "endChar": 47
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "649a009a_434131af",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-27T20:01:24Z",
+      "side": 1,
+      "message": "might be worth using const \u0026 for pos here.",
+      "range": {
+        "startLine": 19,
+        "startChar": 4,
+        "endLine": 19,
+        "endChar": 39
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2a318ead_4e3a9eb7",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-27T20:01:24Z",
+      "side": 1,
+      "message": "Try this...\nbounding_box_.max \u003d max(bounding_box_.max,pos);\nbounding_box_.min \u003d min(bounding_box_.min,pos);\n\nMax and min are often implemented using conditional moves, or other tricks that allow you to avoid branches - so you save a lot here. Even better, doing it on SIMD types often saves you a LOT.\n\nYou might be able to save even more by only creating bounding_box_ at the end, and hoisting this all out to another function - e.g.\n\nBoundingBox GenerateBoundingBox( const std::vector\u003cMeshVertex\u003e\u0026vertices )\n{\n  glm::vec3 boundingMax \u003d vertex_data[0];\n  glm::vec3 boundingMin \u003d boundingMin;\n\n  for ( int x \u003d 1; x \u003c vertex_data.size; ++x ){\n    const glm::vec3\u0026 pos \u003d vertex_data[x];\n    boundingMax \u003d max(boundingMax, pos);\n    boundingMin \u003d min(boundingMin, pos); \n  }\n\n  return BoundingBox( boundingMin, boundingMax ); // NOTE: uses Return-Value optimization\n}\n\nYou\u0027ll need to add a constructor to BoundingBox which takes max/min extents and generates center (Note: this ALSO allows you to have a version of BoundingBox which you initialize, avoiding potential double-initialization if you move setting boundingMax/boundingMin to an empty constructor instead of on the field).",
+      "range": {
+        "startLine": 21,
+        "startChar": 4,
+        "endLine": 26,
+        "endChar": 65
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "21623de5_938835ed",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-27T20:01:24Z",
+      "side": 1,
+      "message": "Nice - pre-sizing vectors wherever possible to reduce allocs is a great (and usually free) optimization.",
+      "range": {
+        "startLine": 30,
+        "startChar": 2,
+        "endLine": 30,
+        "endChar": 66
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7873479a_69312221",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-27T20:01:24Z",
+      "side": 1,
+      "message": "Took me a minute to figure out what you were doing here - good stuff.\n\nMaybe add a comment something like this?\n// We\u0027re going to pack meshes so that each coordinate is normalized and lies within a \n// bounding box which for each axis is symmetrical about the origin.\n// We then normalize all of the vertices to be within the range -1.0f and 1.0f, and\n// store the scale favor to regenerate their original positions later. This simplifies\n// normal mapping.",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 40
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "30b82800_bb5c1474",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 446,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-27T20:01:24Z",
+      "side": 1,
+      "message": "Should probably document what each element here contains, and where to find the struct that mirrors this layout in the source tree.",
+      "range": {
+        "startLine": 444,
+        "startChar": 0,
+        "endLine": 446,
+        "endChar": 55
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c76fda2e_2e78f7f9",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.vert",
+        "patchSetId": 15
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-27T20:01:24Z",
+      "side": 1,
+      "message": "May be worth commenting the CPU-side struct + file it\u0027s defined in here:\ne.g.\n// This matches the layout of MeshVertex defined in \"x.h\"",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 40
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "637e2af1_d46fdc41",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.vert",
+        "patchSetId": 15
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-27T20:01:24Z",
+      "side": 1,
+      "message": "A comment at the top of this (and the xAxis and yAxis) functions would help a lot here to explain to the people who come after you what\u0027s happening :)\n\n// Regenerate normal mapping normal, tangent, and bitangent from qtangent value.",
+      "range": {
+        "startLine": 77,
+        "startChar": 0,
+        "endLine": 82,
+        "endChar": 0
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6a8d82bd_ec04195e",
+        "filename": "bender/bender-base/utils/src/mesh_helpers.h",
+        "patchSetId": 15
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-27T20:01:24Z",
+      "side": 1,
+      "message": "The ARM/Android ABI determines what the compiler does with values this large in C++ when passed into functions.\n\nSo our primary target ABI right now should be arm64-v8a, and that\u0027s mostly documented here (with the exception of r18 being reserved for Android use).\n\nhttps://developer.arm.com/docs/ihi0055/d/procedure-call-standard-for-the-arm-64-bit-architecture\n\nIt looks like v0-v7 SIMD registers can be used without pushing anything on the stack. So what you have above is correct. 👍",
+      "range": {
+        "startLine": 15,
+        "startChar": 4,
+        "endLine": 16,
+        "endChar": 35
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "99f27853_e38aca32",
+        "filename": "bender/bender-base/utils/src/packed_types.h",
+        "patchSetId": 15
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-03-27T20:01:24Z",
+      "side": 1,
+      "message": "I\u0027m still not sure about the implementation of NormFloatToSnorm16 - will follow up in email. But if we can make it easily done as vector math, we can replace these with SIMD operations. (Although with a bit of luck Clang will do this automagically).",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 5
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
