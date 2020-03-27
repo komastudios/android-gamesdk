@@ -16,6 +16,24 @@
       "revId": "b6bca2d620f3a752f0a8d94234e9451b1fbe329b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "08eb454c_0e143dec",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/ExternalBufferGLES3Operation.cpp",
+        "patchSetId": 11
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-03-27T20:11:04Z",
+      "side": 1,
+      "message": "Good question. You know, now that I look into it, I see that clang complains about the sort of thing this pattern is trying to prevent. The idea is to have the non-assignable value on the left to eliminate bugs like `if (fp_alloc \u003d nullptr)`. I can\u0027t even remember where I saw this \"advice\", but it seems obsolete. (Or perhaps my memory of it was wrong?) At any rate, I\u0027m going to quickly change it back, since it reads better the other way, appears to be more standard, and I\u0027m convinced our compiler will handle it (it triggers `-Werror -Wparenthesis`). As an aside, the reason I changed it here was because this so closely parallels the new test I was writing (which the CL is mainly about).",
+      "parentUuid": "19c9c80e_fda8c152",
+      "revId": "b6bca2d620f3a752f0a8d94234e9451b1fbe329b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
