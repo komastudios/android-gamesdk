@@ -49,7 +49,8 @@ add_library(base SHARED
 add_library(utils STATIC
         ${UTILS_DIR}/obj_loader.cc
         ${UTILS_DIR}/mesh_helpers.cc
-        ${UTILS_DIR}/bender_helpers.cc)
+        ${UTILS_DIR}/bender_helpers.cc
+        ${UTILS_DIR}/astc.cc)
 
 add_definitions("-DGDC_DEMO")
 

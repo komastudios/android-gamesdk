@@ -15,14 +15,11 @@
 #include "texture.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-#include "astc.h"
 #include "bender_helpers.h"
 
 #include <cmath>
 #include <cstdlib>
 #include <vector>
-
-using namespace astc;
 
 Texture::Texture(Renderer &renderer,
                  uint8_t *img_data,
@@ -33,9 +30,24 @@ Texture::Texture(Renderer &renderer,
   tex_width_ = img_width;
   tex_height_ = img_height;
   mip_levels_ = std::floor(std::log2(std::max(tex_width_, tex_height_))) + 1;
-  CALL_VK(CreateTexture(img_data, sizeof(uint8_t) * tex_height_ * tex_width_ * 4,
+
+  VkCommandPoolCreateInfo cmd_pool_create_info{
+          .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+          .pNext = nullptr,
+          .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+          .queueFamilyIndex = renderer_.GetDevice().GetQueueFamilyIndex(),
+  };
+
+  VkCommandPool cmd_pool;
+  CALL_VK(vkCreateCommandPool(renderer_.GetVulkanDevice(), &cmd_pool_create_info, nullptr,
+                              &cmd_pool));
+
+  CALL_VK(CreateTexture(cmd_pool, img_data, sizeof(uint8_t) * tex_height_ * tex_width_ * 4,
           VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+
+  vkDestroyCommandPool(renderer_.GetVulkanDevice(), cmd_pool, nullptr);
+
   CreateImageView();
 }
 
@@ -88,12 +100,12 @@ unsigned char *Texture::LoadImageFileData(AAsset *file) {
   return img_data;
 }
 
-unsigned char *Texture::LoadASTCFileData(AAsset *file, uint32_t& img_bytes) {
-  ASTCHeader header;
+unsigned char *Texture::LoadASTCFileData(AAsset *file, ASTCHeader& header, uint32_t& img_bytes) {
   AAsset_read(file, &header, sizeof(ASTCHeader));
 
   VkFormat format = GetASTCFormat(texture_format_, header.block_dim_x, header.block_dim_y);
   if (!ASTCHeaderIsValid(header) || format == VK_FORMAT_UNDEFINED) {
+    AAsset_close(file);
     return LoadFallbackData();
   }
 
@@ -102,10 +114,6 @@ unsigned char *Texture::LoadASTCFileData(AAsset *file, uint32_t& img_bytes) {
   AAsset_read(file, img_data, img_bytes);
   AAsset_close(file);
 
-  tex_width_ = header.x_size[0] | (header.x_size[1] << 8) | (header.x_size[2] << 16);
-  tex_height_ = header.y_size[0] | (header.y_size[1] << 8) | (header.y_size[2] << 16);
-  texture_format_ = format;
-
   return img_data;
 }
 
@@ -113,36 +121,63 @@ VkResult Texture::CreateTextureFromFile(android_app &app, const std::string& tex
   AAsset *file = AAssetManager_open(app.activity->assetManager,
                                     texture_file_name.c_str(), AASSET_MODE_BUFFER);
 
-  uint32_t img_bytes;
+  VkCommandPoolCreateInfo cmd_pool_create_info{
+          .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+          .pNext = nullptr,
+          .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+          .queueFamilyIndex = renderer_.GetDevice().GetQueueFamilyIndex(),
+  };
+
+  VkCommandPool cmd_pool;
+  CALL_VK(vkCreateCommandPool(renderer_.GetVulkanDevice(), &cmd_pool_create_info, nullptr,
+                              &cmd_pool));
+
+  uint32_t img_bytes = 0;
   unsigned char *img_data;
   if (file == nullptr) {
     img_data = LoadFallbackData();
-    mip_levels_ = (sizeof(tex_width_) * 8) - __builtin_clz(std::max(tex_width_, tex_height_));
     img_bytes = sizeof(uint8_t) * tex_height_ * tex_width_ * 4;
+    mip_levels_ = (sizeof(tex_width_) * 8) - __builtin_clz(std::max(tex_width_, tex_height_));
+    CALL_VK(CreateTexture(cmd_pool, img_data, img_bytes,
+                          VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+    BlitMipmaps(cmd_pool);
   }
   else if (texture_file_name.find(".astc") != -1) {
-    img_data = LoadASTCFileData(file, img_bytes);
-    mip_levels_ = 1;
+    ASTCHeader header;
+    img_data = LoadASTCFileData(file, header, img_bytes);
+
+    tex_width_ = header.x_size[0] | (header.x_size[1] << 8) | (header.x_size[2] << 16);
+    tex_height_ = header.y_size[0] | (header.y_size[1] << 8) | (header.y_size[2] << 16);
+    texture_format_ = GetASTCFormat(texture_format_, header.block_dim_x, header.block_dim_y);
+    mip_levels_ = (sizeof(tex_width_) * 8) - __builtin_clz(std::max(tex_width_, tex_height_));
+    CALL_VK(CreateTexture(cmd_pool, img_data, img_bytes,
+                          VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+    LoadMipmapsFromFiles(app, cmd_pool, texture_file_name);
   } else {
     img_data = LoadImageFileData(file);
-    mip_levels_ = (sizeof(tex_width_) * 8) - __builtin_clz(std::max(tex_width_, tex_height_));
     img_bytes = sizeof(uint8_t) * tex_height_ * tex_width_ * 4;
+    mip_levels_ = (sizeof(tex_width_) * 8) - __builtin_clz(std::max(tex_width_, tex_height_));
+    CALL_VK(CreateTexture(cmd_pool, img_data, img_bytes,
+                          VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+    BlitMipmaps(cmd_pool);
   }
 
-  CALL_VK(CreateTexture(img_data, img_bytes,
-                        VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
-                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+  vkDestroyCommandPool(renderer_.GetVulkanDevice(), cmd_pool, nullptr);
   stbi_image_free(img_data);
 
   return VK_SUCCESS;
 }
 
-VkResult Texture::CreateTexture(uint8_t *img_data,
+VkResult Texture::CreateTexture(VkCommandPool &cmd_pool,
+                                uint8_t *img_data,
                                 uint32_t img_bytes,
                                 VkImageUsageFlags usage,
                                 VkFlags required_props) {
   if (!(usage | required_props)) {
-    LOGE("Texture: No usage and required_pros");
+    LOGE("Texture: No usage and required_props");
     return VK_ERROR_FORMAT_NOT_SUPPORTED;
   }
 
@@ -224,17 +259,6 @@ VkResult Texture::CreateTexture(uint8_t *img_data,
           .levelCount = 1,
           .layerCount = 1,
   };
-
-  VkCommandPoolCreateInfo cmd_pool_create_info{
-      .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-      .pNext = nullptr,
-      .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
-      .queueFamilyIndex = queue_family_index,
-  };
-
-  VkCommandPool cmd_pool;
-  CALL_VK(vkCreateCommandPool(renderer_.GetVulkanDevice(), &cmd_pool_create_info, nullptr,
-                              &cmd_pool));
 
   VkCommandBuffer copy_cmd;
   const VkCommandBufferAllocateInfo cmd = {
@@ -320,31 +344,7 @@ VkResult Texture::CreateTexture(uint8_t *img_data,
 
   vkFreeMemory(renderer_.GetVulkanDevice(), staging_mem, nullptr);
   vkDestroyBuffer(renderer_.GetVulkanDevice(), staging, nullptr);
-
-  VkCommandBuffer mipmaps_cmd;
-
-  CALL_VK(vkAllocateCommandBuffers(renderer_.GetVulkanDevice(), &cmd, &mipmaps_cmd));
-
-  VkCommandBufferBeginInfo mipmaps_info = {
-          .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-          .pNext = nullptr,
-          .flags = 0,
-          .pInheritanceInfo = nullptr
-  };
-  CALL_VK(vkBeginCommandBuffer(mipmaps_cmd, &mipmaps_info));
-  GenerateMipmaps(&mipmaps_cmd);
-  CALL_VK(vkEndCommandBuffer(mipmaps_cmd));
-
-  CALL_VK(vkCreateFence(renderer_.GetVulkanDevice(), &fence_info, nullptr, &fence));
-  submit_info.pCommandBuffers = &mipmaps_cmd;
-  CALL_VK(vkQueueSubmit(renderer_.GetDevice().GetWorkerQueue(), 1, &submit_info, fence) != VK_SUCCESS);
-  CALL_VK(vkWaitForFences(renderer_.GetVulkanDevice(), 1, &fence, VK_TRUE, 100000000) !=
-          VK_SUCCESS);
-  vkDestroyFence(renderer_.GetVulkanDevice(), fence, nullptr);
-
   vkFreeCommandBuffers(renderer_.GetVulkanDevice(), cmd_pool, 1, &copy_cmd);
-  vkFreeCommandBuffers(renderer_.GetVulkanDevice(), cmd_pool, 1, &mipmaps_cmd);
-  vkDestroyCommandPool(renderer_.GetVulkanDevice(), cmd_pool, nullptr);
   return VK_SUCCESS;
 }
 
@@ -379,7 +379,25 @@ void Texture::ToggleMipmaps() {
   CreateImageView();
 }
 
-void Texture::GenerateMipmaps(VkCommandBuffer *command_buffer) {
+void Texture::BlitMipmaps(VkCommandPool &cmd_pool) {
+  const VkCommandBufferAllocateInfo cmd = {
+          .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+          .pNext = nullptr,
+          .commandPool = cmd_pool,
+          .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+          .commandBufferCount = 1,
+  };
+  VkCommandBuffer mipmaps_cmd;
+
+  CALL_VK(vkAllocateCommandBuffers(renderer_.GetVulkanDevice(), &cmd, &mipmaps_cmd));
+
+  VkCommandBufferBeginInfo mipmaps_info = {
+          .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+          .pNext = nullptr,
+          .flags = 0,
+          .pInheritanceInfo = nullptr
+  };
+  CALL_VK(vkBeginCommandBuffer(mipmaps_cmd, &mipmaps_info));
 
   VkImageMemoryBarrier barrier = {
           .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -423,13 +441,13 @@ void Texture::GenerateMipmaps(VkCommandBuffer *command_buffer) {
       barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
       barrier.subresourceRange = mip_subres;
 
-      vkCmdPipelineBarrier(*command_buffer,
+      vkCmdPipelineBarrier(mipmaps_cmd,
                            VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0,
                            0, nullptr,
                            0, nullptr,
                            1, &barrier);
 
-      vkCmdBlitImage(*command_buffer,
+      vkCmdBlitImage(mipmaps_cmd,
                      image_, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
                      image_, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                      1, &blit, VK_FILTER_LINEAR);
@@ -440,7 +458,7 @@ void Texture::GenerateMipmaps(VkCommandBuffer *command_buffer) {
       barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
       barrier.subresourceRange = mip_subres;
 
-      vkCmdPipelineBarrier(*command_buffer,
+      vkCmdPipelineBarrier(mipmaps_cmd,
                            VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0,
                            0, nullptr,
                            0, nullptr,
@@ -456,9 +474,166 @@ void Texture::GenerateMipmaps(VkCommandBuffer *command_buffer) {
   barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
   barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-  vkCmdPipelineBarrier(*command_buffer,
+  vkCmdPipelineBarrier(mipmaps_cmd,
                        VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
                        0, nullptr,
                        0, nullptr,
                        1, &barrier);
+
+  CALL_VK(vkEndCommandBuffer(mipmaps_cmd));
+
+  VkFenceCreateInfo fence_info = {
+          .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+          .pNext = nullptr,
+          .flags = 0,
+  };
+  VkFence fence;
+  CALL_VK(vkCreateFence(renderer_.GetVulkanDevice(), &fence_info, nullptr, &fence));
+
+  VkSubmitInfo submit_info = {
+          .pNext = nullptr,
+          .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+          .waitSemaphoreCount = 0,
+          .pWaitSemaphores = nullptr,
+          .pWaitDstStageMask = nullptr,
+          .commandBufferCount = 1,
+          .pCommandBuffers = &mipmaps_cmd,
+          .signalSemaphoreCount = 0,
+          .pSignalSemaphores = nullptr,
+  };
+  submit_info.pCommandBuffers = &mipmaps_cmd;
+  CALL_VK(vkQueueSubmit(renderer_.GetDevice().GetWorkerQueue(), 1, &submit_info, fence) != VK_SUCCESS);
+  CALL_VK(vkWaitForFences(renderer_.GetVulkanDevice(), 1, &fence, VK_TRUE, 100000000) !=
+          VK_SUCCESS);
+  vkDestroyFence(renderer_.GetVulkanDevice(), fence, nullptr);
+
+  vkFreeCommandBuffers(renderer_.GetVulkanDevice(), cmd_pool, 1, &mipmaps_cmd);
+}
+
+void Texture::LoadMipmapsFromFiles(android_app &app, VkCommandPool &cmd_pool,
+        const std::string& base_file_name) {
+  const VkCommandBufferAllocateInfo cmd = {
+          .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+          .pNext = nullptr,
+          .commandPool = cmd_pool,
+          .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+          .commandBufferCount = 1,
+  };
+  VkCommandBuffer mipmaps_cmd;
+
+  CALL_VK(vkAllocateCommandBuffers(renderer_.GetVulkanDevice(), &cmd, &mipmaps_cmd));
+
+  VkCommandBufferBeginInfo mipmaps_info = {
+          .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+          .pNext = nullptr,
+          .flags = 0,
+          .pInheritanceInfo = nullptr
+  };
+  CALL_VK(vkBeginCommandBuffer(mipmaps_cmd, &mipmaps_info));
+
+  VkImageMemoryBarrier barrier = {
+          .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+          .image = image_,
+          .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+          .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+          .subresourceRange = {
+                  .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                  .levelCount = 1,
+                  .layerCount = 1,
+          },
+  };
+
+  VkBuffer staging_bufs[mip_levels_ - 1];
+  VkDeviceMemory staging_mems[mip_levels_ - 1];
+
+  size_t file_basename = base_file_name.rfind(".");
+  for (uint32_t i = 1; i < mip_levels_; i++) {
+    std::string mip_file_name = base_file_name;
+    mip_file_name.insert(file_basename, "-mip-" + std::to_string(i));
+    AAsset *file = AAssetManager_open(app.activity->assetManager,
+                                      mip_file_name.c_str(), AASSET_MODE_BUFFER);
+
+    if (file == nullptr) {
+      LOGE("Texture: missing expected mip file");
+      break;
+    }
+
+    uint32_t img_bytes = 0;
+    ASTCHeader header;
+    unsigned char *img_data = LoadASTCFileData(file, header, img_bytes);
+
+    renderer_.GetDevice().CreateBuffer(img_bytes, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                                       staging_bufs[i - 1], staging_mems[i - 1]);
+
+    void *data;
+    CALL_VK(vkMapMemory(renderer_.GetVulkanDevice(), staging_mems[i - 1], 0,
+                        img_bytes, 0, &data));
+
+    memcpy(data, img_data, img_bytes);
+
+    vkUnmapMemory(renderer_.GetVulkanDevice(), staging_mems[i - 1]);
+
+    uint32_t width = header.x_size[0] | (header.x_size[1] << 8) | (header.x_size[2] << 16);
+    uint32_t height = header.y_size[0] | (header.y_size[1] << 8) | (header.y_size[2] << 16);
+
+    VkBufferImageCopy image_copy = {
+            .bufferOffset = 0,
+            .bufferRowLength = width,
+            .imageSubresource.mipLevel = i,
+            .imageSubresource.layerCount = 1,
+            .imageExtent.width = width,
+            .imageExtent.height = height,
+            .imageExtent.depth = 1,
+
+    };
+
+    vkCmdCopyBufferToImage(mipmaps_cmd, staging_bufs[i - 1], image_, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            1, &image_copy);
+  }
+
+  barrier.subresourceRange.levelCount = mip_levels_;
+  barrier.subresourceRange.baseMipLevel = 0;
+  barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+  barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+  barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+  barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+  vkCmdPipelineBarrier(mipmaps_cmd,
+                       VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
+                       0, nullptr,
+                       0, nullptr,
+                       1, &barrier);
+
+  CALL_VK(vkEndCommandBuffer(mipmaps_cmd));
+
+  VkFenceCreateInfo fence_info = {
+          .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+          .pNext = nullptr,
+          .flags = 0,
+  };
+  VkFence fence;
+  CALL_VK(vkCreateFence(renderer_.GetVulkanDevice(), &fence_info, nullptr, &fence));
+
+  VkSubmitInfo submit_info = {
+          .pNext = nullptr,
+          .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+          .waitSemaphoreCount = 0,
+          .pWaitSemaphores = nullptr,
+          .pWaitDstStageMask = nullptr,
+          .commandBufferCount = 1,
+          .pCommandBuffers = &mipmaps_cmd,
+          .signalSemaphoreCount = 0,
+          .pSignalSemaphores = nullptr,
+  };
+  CALL_VK(vkQueueSubmit(renderer_.GetDevice().GetWorkerQueue(), 1, &submit_info, fence) != VK_SUCCESS);
+  CALL_VK(vkWaitForFences(renderer_.GetVulkanDevice(), 1, &fence, VK_TRUE, 100000000) !=
+          VK_SUCCESS);
+  vkDestroyFence(renderer_.GetVulkanDevice(), fence, nullptr);
+
+  for (uint32_t i = 0; i < mip_levels_ - 1; i++) {
+    vkFreeMemory(renderer_.GetVulkanDevice(), staging_mems[i], nullptr);
+    vkDestroyBuffer(renderer_.GetVulkanDevice(), staging_bufs[i], nullptr);
+  }
+
+  vkFreeCommandBuffers(renderer_.GetVulkanDevice(), cmd_pool, 1, &mipmaps_cmd);
 }
