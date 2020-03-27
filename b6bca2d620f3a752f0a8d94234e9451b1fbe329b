@@ -34,6 +34,24 @@
       "revId": "b6bca2d620f3a752f0a8d94234e9451b1fbe329b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f99daec8_0ca91652",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/ExternalBufferGLES3Operation.cpp",
+        "patchSetId": 11
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-03-27T20:49:49Z",
+      "side": 1,
+      "message": "Great explanation (i.e., to prove the compiler that you meant check for equality and not assign).\nPlease don\u0027t change this back if my question sounded a call to revert. Not at all.\nI\u0027ll adopt this practice myself!!",
+      "parentUuid": "08eb454c_0e143dec",
+      "revId": "b6bca2d620f3a752f0a8d94234e9451b1fbe329b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
