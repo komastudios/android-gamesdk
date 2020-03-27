@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "19c9c80e_fda8c152",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/ExternalBufferGLES3Operation.cpp",
+        "patchSetId": 11
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-03-27T02:09:16Z",
+      "side": 1,
+      "message": "[S/R]\nCurious about the effect of swapping positions so that the constant value (nullptr) goes first.\nI\u0027m sure there\u0027s something to gain but a quick Google about it brought other results (I probably failed at asking the right search)",
+      "revId": "b6bca2d620f3a752f0a8d94234e9451b1fbe329b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
