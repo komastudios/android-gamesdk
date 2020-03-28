@@ -445,7 +445,6 @@
       "data_gatherer": {
         "id": "ShaderBlobGLES3Operation",
         "configuration": {
-          "debug_only": true,
           "iterations": 8,
           "trials": 4
         }
