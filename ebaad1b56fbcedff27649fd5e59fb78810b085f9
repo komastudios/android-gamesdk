@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a487832_28565182",
+        "filename": "build.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-03-30T12:17:27Z",
+      "side": 1,
+      "message": "Nit: extra tabs here and below",
+      "revId": "ebaad1b56fbcedff27649fd5e59fb78810b085f9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
