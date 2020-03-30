@@ -11,7 +11,7 @@
         {
             "enabled": true,
             "name": "GPU fill rate",
-            "description": "Draws a ton of textured quads via swappy gl while calculating PI in background",
+            "description": "Draws a ton of textured quads via swappy gl",
             "duration": "40s",
             "data_gatherer": {
                 "id": "FillRateGLES3Operation",
@@ -29,14 +29,6 @@
                 }
             },
             "stressors": [
-                {
-                    "id": "CalculatePIOperation",
-                    "enabled": true,
-                    "configuration": {
-                        "threads": -1,
-                        "affinity": false
-                    }
-                }
             ]
         }
     ]
