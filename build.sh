@@ -72,6 +72,9 @@ then
     pushd samples/tuningfork/scaledballs
     ./gradlew build
     popd
+    pushd src/tuningfork/tools/TuningForkMonitor
+    ./gradlew build
+    popd
     pushd test/tuningfork/testapp
     ./gradlew build
     popd
