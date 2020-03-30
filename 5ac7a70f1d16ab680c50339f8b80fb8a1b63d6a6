@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "9003538e_7a515baf",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-30T16:04:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bc5b573d_c03b5cdc",
+      "range": {
+        "startLine": 18,
+        "startChar": 2,
+        "endLine": 18,
+        "endChar": 47
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "649a009a_434131af",
         "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
         "patchSetId": 15
@@ -45,6 +69,30 @@
       "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aeb082fa_1ee26fbd",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-30T16:04:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "649a009a_434131af",
+      "range": {
+        "startLine": 19,
+        "startChar": 4,
+        "endLine": 19,
+        "endChar": 39
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "ef649b10_a6d73fc8",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-30T16:04:11Z",
+      "side": 1,
+      "message": "This is a really good suggestion - implemented!",
+      "parentUuid": "2a318ead_4e3a9eb7",
+      "range": {
+        "startLine": 21,
+        "startChar": 4,
+        "endLine": 26,
+        "endChar": 65
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "21623de5_938835ed",
         "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
         "patchSetId": 15
@@ -91,6 +163,30 @@
       "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "06c75aed_5616e5f4",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-30T16:04:11Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "21623de5_938835ed",
+      "range": {
+        "startLine": 30,
+        "startChar": 2,
+        "endLine": 30,
+        "endChar": 66
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "8b267da4_845e1272",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-30T16:04:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7873479a_69312221",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 40
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "30b82800_bb5c1474",
         "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
         "patchSetId": 15
@@ -137,6 +257,30 @@
       "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7568e1be_7ffa2317",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 446,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-30T16:04:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "30b82800_bb5c1474",
+      "range": {
+        "startLine": 444,
+        "startChar": 0,
+        "endLine": 446,
+        "endChar": 55
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -163,6 +307,30 @@
     },
     {
       "key": {
+        "uuid": "6b3f8117_627bece4",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.vert",
+        "patchSetId": 15
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-30T16:04:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c76fda2e_2e78f7f9",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 40
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "637e2af1_d46fdc41",
         "filename": "bender/bender-base/app/src/main/shaders/mesh.vert",
         "patchSetId": 15
@@ -186,6 +354,30 @@
     },
     {
       "key": {
+        "uuid": "7cb7e831_8e928b90",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.vert",
+        "patchSetId": 15
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-30T16:04:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "637e2af1_d46fdc41",
+      "range": {
+        "startLine": 77,
+        "startChar": 0,
+        "endLine": 82,
+        "endChar": 0
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2227341e_86fd3b5e",
         "filename": "bender/bender-base/utils/src/bender_helpers.h",
         "patchSetId": 15
@@ -197,6 +389,30 @@
       "writtenOn": "2020-03-27T20:26:37Z",
       "side": 1,
       "message": "OK now I get it 😊 Could you document the rounding away from zero behavior to make that explicit what you\u0027re doing?\n\nMight be able to avoid a branch here, but with glm it\u0027s hard to tell if what you\u0027ll get is optimal for ARM.\n\nIf you did (and vectorized it), what you\u0027d do would be:\n\ninline uint64 NormVec4x32ToSnorm16x4(glm::vec4 in)\n{\n  glm::vec4 roundingadjust \u003d glm::sign(in) * 0.5f;\n  glm::vec4 saturated \u003d std::clamp( in * SNORM_MAX + roundingadjust, SNORM_MIN, SNORM_MAX);\n  return glm::packSnorm4x16( saturated );\n  );\n}\n\n(If you don\u0027t want to provide a vector version that\u0027s fine too)",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 48,
+        "endChar": 66
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1f957987_b18bea68",
+        "filename": "bender/bender-base/utils/src/bender_helpers.h",
+        "patchSetId": 15
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-30T16:04:11Z",
+      "side": 1,
+      "message": "So I decided to use the glm::pack* functions actually do the float-to-snorm conversion for you in what I assume is an optimal vectorized way:\n\nhttps://glm.g-truc.net/0.9.5/api/a00178.html#ga358943934d21da947d5bcc88c2ab7832\n\nSo inside of packed_types I take the returned uint64 and then decode it into the x,y,z,w components, would it be more efficient to just store it as a uint64 and avoid the conversion all together? Would we even really need the packed_types at that point? or is packed_types more for debugging/ease of understanding?",
+      "parentUuid": "2227341e_86fd3b5e",
       "range": {
         "startLine": 43,
         "startChar": 0,
@@ -229,6 +445,30 @@
       "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cf9ce0a3_dbb43707",
+        "filename": "bender/bender-base/utils/src/mesh_helpers.h",
+        "patchSetId": 15
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-30T16:04:11Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "6a8d82bd_ec04195e",
+      "range": {
+        "startLine": 15,
+        "startChar": 4,
+        "endLine": 16,
+        "endChar": 35
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -276,6 +516,30 @@
       "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "206334e1_192f937a",
+        "filename": "bender/bender-base/utils/src/packed_types.h",
+        "patchSetId": 15
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-03-30T16:04:11Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f668559d_f1fcf28c",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 5
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
