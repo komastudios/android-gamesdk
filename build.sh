@@ -72,10 +72,13 @@ then
     pushd samples/tuningfork/scaledballs
     ./gradlew build
     popd
+    pushd src/tuningfork/tools/TuningForkMonitor
+    ./gradlew build
+    popd
     pushd test/tuningfork/testapp
     ./gradlew build
     popd
-    
+
     # Copy to $apk_dir
     cp samples/tuningfork/expertballs/app/build/outputs/apk/debug/app-debug.apk \
       $apk_dir/samples/expertballs.apk
@@ -84,7 +87,7 @@ then
     cp src/tuningfork/tools/TuningForkMonitor/app/build/outputs/apk/debug/app-debug.apk \
       $apk_dir/tools/TuningForkMonitor.apk
     cp test/tuningfork/testapp/app/build/outputs/apk/debug/app-debug.apk \
-      $apk_dir/test/tuningforktest.apk    
+      $apk_dir/test/tuningforktest.apk
 fi
 
 # Package the apks into the zip file
