@@ -29,6 +29,8 @@ import numpy as np
 from .affinity_test_suite_handler import AffinityTestSuiteHandler
 from .buffer_storage_suite_handler import BufferStorageSuiteHandler
 from .calculate_wait_pi_suite_handler import CalculateWaitPiSuiteHandler
+from .choreographer_timestamps_suite_handler import \
+    ChoreographerTimestampsSuiteHandler
 from .cpuset_suite_handler import CpusetSuiteHandler
 from .depth_clear_suite_handler import DepthClearSuiteHandler
 from .file_performance_suite_handler import FilePerformanceSuiteHandler
@@ -46,12 +48,13 @@ from .vulkan_varyings_handler import VulkanVaryingsHandler
 
 HANDLERS = [
     AffinityTestSuiteHandler, BufferStorageSuiteHandler,
-    CalculateWaitPiSuiteHandler, CpusetSuiteHandler, DepthClearSuiteHandler,
-    FilePerformanceSuiteHandler, FillRateSuiteHandler,
-    HalfFloatPrecisionSuiteHandler, MarchingCubesSuiteHandler,
-    MediumPVecNormSuiteHandler, MemoryAllocationSuiteHandler,
-    MProtectSuiteHandler, NougatCrashSuiteHandler, SingleCoreComparisonHandler,
-    TemperatureSuiteHandler, VertexRateSuiteHandler, VulkanVaryingsHandler
+    CalculateWaitPiSuiteHandler, ChoreographerTimestampsSuiteHandler,
+    CpusetSuiteHandler, DepthClearSuiteHandler, FilePerformanceSuiteHandler,
+    FillRateSuiteHandler, HalfFloatPrecisionSuiteHandler,
+    MarchingCubesSuiteHandler, MediumPVecNormSuiteHandler,
+    MemoryAllocationSuiteHandler, MProtectSuiteHandler, NougatCrashSuiteHandler,
+    SingleCoreComparisonHandler, TemperatureSuiteHandler,
+    VertexRateSuiteHandler, VulkanVaryingsHandler
 ]
 """List containing all registered SuiteHandler implementations to
 render charts."""
