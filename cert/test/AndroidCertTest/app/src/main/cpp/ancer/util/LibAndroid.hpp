@@ -16,12 +16,23 @@
 
 #pragma once
 
+#include <android/choreographer.h>
 #include <android/hardware_buffer.h>
 #include <android/hardware_buffer_jni.h>
 
 namespace libandroid {
 void *GetLib();
 
+// AChoreographer
+typedef AChoreographer* (*FP_ACHOREOGRAPHER_GET_INSTANCE)();
+FP_ACHOREOGRAPHER_GET_INSTANCE GetFP_AChoreographer_getInstance();
+
+typedef void (*FP_AChoreographer_postFrameCallback)(AChoreographer* choreographer,
+        AChoreographer_frameCallback callback, void* data);
+
+FP_AChoreographer_postFrameCallback GetFP_AChoreographer_postFrameCallback();
+
+// AHardwareBuffer
 typedef int (*FP_AHB_ALLOCATE)(const AHardwareBuffer_Desc *,
                                AHardwareBuffer **);
 typedef void (*FP_AHB_RELEASE)(AHardwareBuffer *);
