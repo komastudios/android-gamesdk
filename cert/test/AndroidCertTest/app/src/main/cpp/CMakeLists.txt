@@ -120,10 +120,10 @@ add_library(${PROJECT_NAME} SHARED
 
         # Operations
         operations/CalculatePIOperation.cpp
+        operations/CalculateWaitPIOperation.cpp
+        operations/ChoreographerTimestampsOperation.cpp
         operations/IOPerformanceOperation.cpp
         operations/MemoryAccessOperation.cpp
-        operations/CalculateWaitPIOperation.cpp
-
         operations/MemoryAllocOperation.cpp
         operations/MonitorOperation.cpp
         operations/SaneCpusetOperation.cpp

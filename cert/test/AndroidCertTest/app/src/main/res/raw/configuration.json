@@ -10,6 +10,17 @@
   "stress_tests": [
     {
       "enabled": true,
+      "name": "Choreographer Timestamps",
+      "description": "TODO(baxtermichael@google.com)",
+      "duration": "5s",
+      "data_gatherer": {
+        "id": "ChoreographerTimestampsOperation",
+        "configuration": {
+        }
+      }
+    },
+    {
+      "enabled": true,
       "name": "EGL Get Frame Timestamps",
       "description": "Determine if EGL frame timestamps extension is present and works.",
       "duration": "2s",
