@@ -157,8 +157,13 @@ deployment:
     # specify certain devices to run on or leave field out to run on all
     # physical devices available to FTL
     devices:
-      - { model: "flo", version: 21 }
-      - { model: "mlv1", version: 23 }
+      - { codename: "flo", version: 21 }
+      - { codename: "mlv1", version: 23 }
+
+    # specify certain devices to skip run or leave field out to skip none
+    excluding:
+      - { codename: "flo", version: 21 }
+      - { codename: "mlv1", version: 23 }
 
     # flags: this maps directly to the `--flags-file` argument
     # when performing ftl deployment
@@ -184,8 +189,8 @@ summary:
   # if true, report will be generated
   enabled: [true|false]
 
-  # format for report, presently only "md" and "html" are supported
-  format: [md|html]
+  # format for report, presently only "md", "html" and "docx" are supported
+  format: [md|html|docx]
 
 ```
 

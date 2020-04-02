@@ -20,32 +20,43 @@ import com.google.gamesdk.gamecert.operationrunner.util.NativeInvoker;
 
 public abstract class BaseGLHostActivity extends BaseHostActivity {
 
-  public static class GLContextConfiguration {
-    int redBits = 0;
-    int greenBits = 0;
-    int blueBits = 0;
-    int alphaBits = 0;
-    int depthBits = 0;
-    int stencilBits = 0;
-  }
+    public static class GLContextConfiguration {
+        int redBits;
+        int greenBits;
+        int blueBits;
+        int alphaBits;
+        int depthBits;
+        int stencilBits;
 
-  /**
-   * @return the preferred GLContextConfiguration for the data gathering operation being run
-   */
-  GLContextConfiguration getGLContextConfiguration() {
-    GLContextConfiguration config = new GLContextConfiguration();
-    NativeInvoker.getGLContextConfiguration(config);
-    return config;
-  }
+        public GLContextConfiguration() {
+            this(0, 0, 0, 0, 0, 0);
+        }
 
-  GLContextConfiguration getDefaultGLContextConfiguration() {
-    GLContextConfiguration config = new GLContextConfiguration();
-    config.redBits = 8;
-    config.greenBits = 8;
-    config.blueBits = 8;
-    config.alphaBits = 0;
-    config.depthBits = 24;
-    config.stencilBits = 0;
-    return config;
-  }
+        public GLContextConfiguration(int r, int g, int b, int a, int d, int s) {
+            redBits = r;
+            greenBits = g;
+            blueBits = b;
+            alphaBits = a;
+            depthBits = d;
+            stencilBits = s;
+        }
+
+        public String toString() {
+            return String.format("{r=%d, g=%d, b=%d, a=%d, d=%d, s=%d}",
+                    redBits, greenBits, blueBits, alphaBits, depthBits, stencilBits);
+        }
+    }
+
+    /**
+     * @return the preferred GLContextConfiguration for the data gathering operation being run
+     */
+    GLContextConfiguration getGLContextConfiguration() {
+        GLContextConfiguration config = new GLContextConfiguration();
+        NativeInvoker.getGLContextConfiguration(config);
+        return config;
+    }
+
+    GLContextConfiguration getDefaultGLContextConfiguration() {
+        return new GLContextConfiguration(8, 8, 8, 0, 24, 0);
+    }
 }
