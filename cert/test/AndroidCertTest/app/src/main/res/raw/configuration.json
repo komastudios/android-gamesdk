@@ -10,6 +10,20 @@
   "stress_tests": [
     {
       "enabled": true,
+      "name": "Choreographer Timestamps",
+      "description": "Samples timestamps from Choreographer for comparison with VSYNC traces",
+      "duration": "5s",
+      "data_gatherer": {
+      "id": "ChoreographerTimestampsOperation",
+      "configuration": {
+          "frame_limit": 240
+        }
+      },
+      "host": "GLSurfaceViewHostActivity",
+      "stressors": []
+    },
+    {
+      "enabled": true,
       "name": "EGL Presentation Time",
       "description": "Determine if EGL presentation time extension is present and works.",
       "duration": "5s",

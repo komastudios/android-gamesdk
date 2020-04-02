@@ -21,6 +21,20 @@
 namespace libandroid {
 void *GetLib() { return LoadLibrary("libandroid.so"); }
 
+// -----------------------------------------------------------------------------
+
+FP_ACHOREOGRAPHER_GET_INSTANCE GetFP_AChoreographer_getInstance() {
+  return reinterpret_cast<FP_ACHOREOGRAPHER_GET_INSTANCE>(
+      LoadSymbol(GetLib(), "AChoreographer_getInstance"));
+}
+
+FP_AChoreographer_postFrameCallback GetFP_AChoreographer_postFrameCallback() {
+  return reinterpret_cast<FP_AChoreographer_postFrameCallback>(
+      LoadSymbol(GetLib(), "AChoreographer_postFrameCallback"));
+}
+
+// -----------------------------------------------------------------------------
+
 FP_AHB_ALLOCATE GetFP_AHardwareBuffer_Allocate() {
   return reinterpret_cast<FP_AHB_ALLOCATE>(
       LoadSymbol(GetLib(), "AHardwareBuffer_allocate"));
