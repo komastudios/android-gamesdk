@@ -312,7 +312,7 @@ def load_report(report_file: Path) -> (BuildInfo, List[Datum]):
     """
     build: BuildInfo = None
     data: List[Datum] = []
-    device_patterns = re.match(r"^(.+)-(\d+)-.+$", report_file.name)
+    device_patterns = re.match(r"^(.+)[-_](\d+)[-_].+$", report_file.name)
     codename = device_patterns.group(1)
     api_level = device_patterns.group(2)
 
@@ -443,6 +443,10 @@ def merge_systrace(report_file: Path, systrace_file: Path,
     """
     offset_ns, useful_lines = filter_systrace_to_interested_lines(
         systrace_file, keywords=systrace_keywords, pattern=None)
+
+    if offset_ns == None:
+        print("Unable to convert systrace timestamps")
+        offset_ns = 0
 
     systrace_datums = []
     for line in useful_lines:
