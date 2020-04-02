@@ -61,9 +61,8 @@ def get_systrace_config(recipe: Recipe) -> (bool, List[str], List[str]):
     return enabled, keywords, categories
 
 
-def load_tasks(
-        tasks_dict: List[Dict],
-        task_ctors: Dict) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
+def load_tasks(tasks_dict: List[Dict], task_ctors: Dict
+              ) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
     """Load tasks and create default task environment (internal, called by
     get_preflight_tasks and get_postflight_tasks)
     Args:
@@ -78,8 +77,8 @@ def load_tasks(
     return lib.tasks_runner.load(tasks_dict, task_ctors), env
 
 
-def get_preflight_tasks(
-        recipe: Recipe) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
+def get_preflight_tasks(recipe: Recipe
+                       ) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
     """Load preflight tasks from the local deployment block of the recipe,
     and generate preflight environment
     """
@@ -87,8 +86,8 @@ def get_preflight_tasks(
     return load_tasks(preflight, lib.tasks_runner.PREFLIGHT_TASKS)
 
 
-def get_postflight_tasks(
-        recipe: Recipe) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
+def get_postflight_tasks(recipe: Recipe
+                        ) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
     """Load postflight tasks from the local deployment block of the recipe,
     and generate preflight environment
     """
@@ -171,8 +170,9 @@ def poll_app_active(device_id: str, app_id: str):
     return False
 
 
-def start_test_and_wait_for_completion(
-        local_device_id: str, display_wait_message: bool) -> type(None):
+def start_test_and_wait_for_completion(local_device_id: str,
+                                       display_wait_message: bool
+                                      ) -> type(None):
     """Launches the test on the device. Doesn't return control until execution
     has finished.
 
@@ -370,20 +370,14 @@ def run_ftl_deployment(recipe: Recipe, target_devices: DeploymentTarget,
     flags_dict = recipe.lookup("deployment.ftl.flags", {})
 
     devices = recipe.lookup("deployment.ftl.devices", fallback=[])
-    if devices is None:
-        devices = []
+    excluding = recipe.lookup("deployment.ftl.excluding", fallback=[])
 
     systrace_enabled, systrace_keywords, _ = \
         get_systrace_config(recipe)
 
     report_files, systrace_files = run_on_farm_and_collect_reports(
-        args_dict=args_dict,
-        flags_dict=flags_dict,
-        test=active_test,
-        enable_systrace=systrace_enabled,
-        devices=devices,
-        target_devices=target_devices,
-        dst_dir=out_dir)
+        args_dict, flags_dict, active_test, systrace_enabled, devices,
+        excluding, target_devices, out_dir)
 
     report_files = process_ftl_reports(out_dir, report_files, systrace_files,
                                        systrace_keywords)
@@ -429,6 +423,7 @@ def run_recipe(recipe: Recipe, args: Dict, out_dir: Path = None) -> Path:
     if args.get("local"):
         run_local_deployment(recipe, apk_path, out_dir)
     if args.get("ftl"):
-        run_ftl_deployment(recipe, args["ftl-deployment-target"], apk_path, out_dir)
+        run_ftl_deployment(recipe, args["ftl-deployment-target"], apk_path,
+                           out_dir)
 
     return out_dir

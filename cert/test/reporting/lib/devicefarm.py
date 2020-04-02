@@ -79,48 +79,59 @@ def populate_device_catalog_from_gcloud(flags_yaml):
     return device_catalog
 
 
-def make_device_args_list_from_catalog(subset: List[Dict],
+def make_device_args_list_from_catalog(subset: List[Dict], minus: List[Dict],
                                        target: DeploymentTarget) -> str:
     """Turns the device catalog into a string of --device model/version
     arguments for gcloud.
     Args:
-        subset: List of dict (e.g. { model: "sawfish", version: 26 }) describing
-        a subset of the device catalog to deploy to. If empty, all devices
-        in the catalog will be used
+        subset: List of dict (e.g. { codename: "sawfish", version: 26 })
+        describing a subset of the device catalog to deploy to. If empty, all
+        devices in the catalog will be included.
+        minus: opposite to argument subset, elements here won't be included.
         target: the device types to target, if subset is not specified
     """
 
     result_args_list = []
 
-    def append_device(device: Dict):
+    is_same = lambda device, list_item: \
+        device.codename == list_item['codename'] and \
+        device.sdk_version == str(list_item['sdk_version'])
+
+    # First, make an initial list of devices either from the whole catalog or,
+    # if subset isn't empty, the intersection of subset and the catalog.
+    devices = list(DeviceCatalog() if not subset else filter(
+        lambda device: next((item for item in subset if is_same(device, item)),
+                            None) is not None, DeviceCatalog()))
+
+    # Subtract, from the initial list, those devices that are in the "minus"
+    # list
+    devices = list(
+        filter(
+            lambda device: next((item for item in minus
+                                 if is_same(device, item)), None) is None,
+            devices))
+
+    if not subset:
+        # If we're targeting just private devices, filter these.
+        if target == DeploymentTarget.FTL_DEVICES_PRIVATE:
+            devices = list(
+                filter(lambda device: device.has_tag('private'), devices))
+        # If we're targeting just public devices, remove private ones.
+        elif target == DeploymentTarget.FTL_DEVICES_PUBLIC:
+            devices = list(
+                filter(lambda device: not device.has_tag('private'), devices))
+
+    # With the resulting list, add codenames & sdk_versions to the FTL params.
+    for device in devices:
         result_args_list.append('--device')
         result_args_list.append('model={},version={}'.format(
             device.codename, device.sdk_version))
-
-    if subset:
-        for device in DeviceCatalog():
-            for subset_device in subset:
-                if device.codename == subset_device["model"]\
-                    and device.sdk_version == str(subset_device["version"]):
-                    append_device(device)
-    else:
-        if target == DeploymentTarget.FTL_DEVICES_ALL:
-            for device in DeviceCatalog():
-                append_device(device)
-        elif target == DeploymentTarget.FTL_DEVICES_PRIVATE:
-            for device in DeviceCatalog():
-                if device.has_tag('private'):
-                    append_device(device)
-        elif target == DeploymentTarget.FTL_DEVICES_PUBLIC:
-            for device in DeviceCatalog():
-                if not device.has_tag('private'):
-                    append_device(device)
 
     return result_args_list
 
 
 def run_test(flags_file: Path, args_yaml: Path, test_name: str,
-             enable_systrace: bool, devices: List[Dict],
+             enable_systrace: bool, devices: List[Dict], excluding: List[Dict],
              target: DeploymentTarget):
     """Executes an android test deployment on firebase test lab
     Args:
@@ -130,7 +141,9 @@ def run_test(flags_file: Path, args_yaml: Path, test_name: str,
             firebase dashboard
         enable_systrace: if true, cause FTL to record a systrace during exec
         devices: list of dicts describing devices to deploy to, in form
-            of { model: "sawfish", version: 26 }
+            of { codename: "sawfish", version: 26 }
+        excluding: opposite to argument devices, elements in this list aren't
+            deployed the test, nor run.
         target: type of device to deploy to if devices param is empty
     Returns:
         tuple of stdout and sterr
@@ -155,7 +168,8 @@ def run_test(flags_file: Path, args_yaml: Path, test_name: str,
     ]
 
     populate_device_catalog_from_gcloud(flags_file)
-    device_args_list = make_device_args_list_from_catalog(devices, target)
+    device_args_list = make_device_args_list_from_catalog(
+        devices, excluding, target)
     if not device_args_list:
         if devices:
             print("[INFO] - no hardware devices from provided devices list"\
@@ -284,10 +298,12 @@ def download_cloud_artifacts(test_info, file_pattern, dst: Path) -> List[Path]:
     return outfiles
 
 
-def run_on_farm_and_collect_reports(
-        args_dict: Dict, flags_dict: Dict, test: str, enable_systrace,
-        devices: List[Dict], target_devices: DeploymentTarget,
-        dst_dir: Path) -> Tuple[List[Path], List[Path]]:
+def run_on_farm_and_collect_reports(args_dict: Dict, flags_dict: Dict,
+                                    test: str, enable_systrace: bool,
+                                    devices: List[Dict], excluding: List[Dict],
+                                    target_devices: DeploymentTarget,
+                                    dst_dir: Path
+                                   ) -> Tuple[List[Path], List[Path]]:
     """Runs the tests on FTL, returning a tuple of lists of result
     json, and result systrace.
     Args:
@@ -295,11 +311,15 @@ def run_on_farm_and_collect_reports(
         flags_dict: the contents that ftl expects for the flags file
         test: the top-level test to run as described in args_dict
         enable_systrace: if true, collect systrace from ftl
-        devices: List of dict (e.g. { model: "sawfish", version: 26 })
+        devices: List of dict (e.g. { codename: "sawfish", version: 26 })
             describing a subset of the available physical devices to run on;
-            if empty, all physical devices available on FTL will be deployed to.
+            if empty, all physical devices available on FTL will be deployed
+            to.
             If no physical devices match those in the list, deployment will be
             canceled.
+        excluding: similar to argument devices, but for devices we don't want
+            the test to run on. Usually, this argument makes sense when devices
+            isn't posted (meaning, "run on all devices, excluding these ones").
         target_devices: If devices is not specified, this is the type of device
             to deploy to en masse
         dst_dir: the directory into which result data will be copied
@@ -321,6 +341,7 @@ def run_on_farm_and_collect_reports(
                                   test,
                                   enable_systrace=enable_systrace,
                                   devices=devices,
+                                  excluding=excluding,
                                   target=target_devices)
 
         display_test_results(stdout, stderr, dst_dir)
