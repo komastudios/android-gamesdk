@@ -24,3 +24,13 @@ deployment:
       test-gameloop:
         type: game-loop
         timeout: 1500 # 25 minutes
+    excluding:
+      # The following devices hang running, forcing cancel
+      - { codename: 'crownqltechn', sdk_version: 28 }
+      - { codename: 'greatqltechn', sdk_version: 28 }
+      # The following devices crash with IllegalArgumentException
+      # during eglCreateContext()
+      - { codename: 'hwALE-H', sdk_version: 21 }
+      - { codename: 'j1acevelte', sdk_version: 22 }
+      - { codename: 'j3xnlte', sdk_version: 22 }
+      - { codename: 'lt02wifi', sdk_version: 19 }
