@@ -107,6 +107,7 @@ configuration_backup.json
 __pycache__
 
 # hide VSCode settings files
+AndroidCertTest/.vscode
 reporting/.vscode
 
 # hide 3rd party deps

@@ -85,7 +85,7 @@ def make_device_args_list_from_catalog(subset: List[Dict],
     """Turns the device catalog into a string of --device model/version
     arguments for gcloud.
     Args:
-        subset: List of dict (e.g. { codename: "sawfish", version: 26 })
+        subset: List of dict (e.g. { codename: "sawfish", sdk_version: 26 })
                 describing a subset of the device catalog to deploy to. If
                 empty, all devices in the catalog will be included.
         excluding: opposite to argument subset, elements here won't be
@@ -143,7 +143,7 @@ def run_test(flags_file: Path, args_yaml: Path, test_name: str,
             firebase dashboard
         enable_systrace: if true, cause FTL to record a systrace during exec
         devices: list of dicts describing devices to deploy to, in form
-            of { codename: "sawfish", version: 26 }
+            of { codename: "sawfish", sdk_version: 26 }
         excluding: opposite to argument devices, elements in this list aren't
             deployed the test, nor run.
         target: type of device to deploy to if devices param is empty
@@ -313,7 +313,7 @@ def run_on_farm_and_collect_reports(args_dict: Dict, flags_dict: Dict,
         flags_dict: the contents that ftl expects for the flags file
         test: the top-level test to run as described in args_dict
         enable_systrace: if true, collect systrace from ftl
-        devices: List of dict (e.g. { codename: "sawfish", version: 26 })
+        devices: List of dict (e.g. { codename: "sawfish", sdk_version: 26 })
             describing a subset of the available physical devices to run on;
             if empty, all physical devices available on FTL will be deployed
             to.

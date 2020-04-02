@@ -60,7 +60,7 @@ def main():
     doc_fmt = args.fmt
 
     if not path.exists():
-        print(f"File {path} does not found; bailing.")
+        print(f"File {path} not found; bailing.")
 
     elif path.is_dir():
         # this is a batch
