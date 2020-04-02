@@ -121,12 +121,12 @@ add_library(${PROJECT_NAME} SHARED
         # Operations
         operations/CalculatePIOperation.cpp
         operations/CalculateWaitPIOperation.cpp
+        operations/ChoreographerTimestampsOperation.cpp
         operations/IOPerformanceOperation.cpp
         operations/MemoryAccessOperation.cpp
-        operations/NougatSigabrtOperation.cpp
-
         operations/MemoryAllocOperation.cpp
         operations/MonitorOperation.cpp
+        operations/NougatSigabrtOperation.cpp
         operations/SaneCpusetOperation.cpp
         operations/ScheduleAffinityOperation.cpp
         operations/ThreadSchedulingOperation.cpp
