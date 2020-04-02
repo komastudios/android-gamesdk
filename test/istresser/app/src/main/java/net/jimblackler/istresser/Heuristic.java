@@ -1,21 +1,29 @@
 package net.jimblackler.istresser;
 
-import static net.jimblackler.istresser.Heuristics.getMemoryInfo;
-import static net.jimblackler.istresser.Heuristics.processMeminfo;
+import static net.jimblackler.istresser.Utils.getMemoryInfo;
+import static net.jimblackler.istresser.Utils.getOomScore;
+import static net.jimblackler.istresser.Utils.processMeminfo;
 
 import android.app.ActivityManager;
 import android.os.Debug;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 
+/** An instance of this class describes a single mechanism for determining memory pressure. */
 public abstract class Heuristic {
 
+  /**
+   * The value a heuristic returns when asked for memory pressure on the device through the
+   * getSignal method. GREEN indicates it is safe to allocate further, YELLOW indicates further
+   * allocation shouldn't happen, and RED indicates high memory pressure.
+   */
   public enum Indicator {
     GREEN,
     YELLOW,
     RED
   }
 
+  /** One word identifiers for various different heuristics. */
   public enum Identifier {
     TRIM,
     OOM,
@@ -35,9 +43,7 @@ public abstract class Heuristic {
           new Heuristic(Identifier.OOM) {
             @Override
             public Indicator getSignal(ActivityManager activityManager) {
-              return Heuristics.getOomScore(activityManager) <= 650
-                  ? Indicator.GREEN
-                  : Indicator.RED;
+              return getOomScore(activityManager) <= 650 ? Indicator.GREEN : Indicator.RED;
             }
           },
           /*
@@ -124,7 +130,7 @@ public abstract class Heuristic {
             }
           });
 
-  private Identifier identifier;
+  private final Identifier identifier;
 
   Heuristic(Identifier identifier) {
     this.identifier = identifier;

@@ -3,6 +3,13 @@ package net.jimblackler.istresser;
 import static net.jimblackler.istresser.Heuristic.Identifier.TRIM;
 import static net.jimblackler.istresser.ServiceCommunicationHelper.CRASHED_BEFORE;
 import static net.jimblackler.istresser.ServiceCommunicationHelper.TOTAL_MEMORY_MB;
+import static net.jimblackler.istresser.Utils.getDebugMemoryInfo;
+import static net.jimblackler.istresser.Utils.getMemoryInfo;
+import static net.jimblackler.istresser.Utils.getOomScore;
+import static net.jimblackler.istresser.Utils.lowMemoryCheck;
+import static net.jimblackler.istresser.Utils.processMeminfo;
+import static net.jimblackler.istresser.Utils.processStatus;
+import static net.jimblackler.istresser.Utils.readFile;
 
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
@@ -45,10 +52,12 @@ import java.util.TimerTask;
 import java.util.TreeSet;
 import net.jimblackler.istresser.Heuristic.Identifier;
 import net.jimblackler.istresser.Heuristic.Indicator;
+import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/** The main activity of the istresser app */
 public class MainActivity extends AppCompatActivity {
 
   private static final String TAG = MainActivity.class.getSimpleName();
@@ -62,9 +71,9 @@ public class MainActivity extends AppCompatActivity {
   private static final int BACKGROUND_MEMORY_PRESSURE_MB = 500;
   private static final int BACKGROUND_PRESSURE_PERIOD_SECONDS = 30;
   private static final int BYTES_IN_MEGABYTE = 1024 * 1024;
-  private static final int MEMORY_TO_FREE_PER_CYCLE_MB = 500;
   private static final int MMAP_ANON_BLOCK_BYTES = 2 * BYTES_IN_MEGABYTE;
   private static final int MMAP_FILE_BLOCK_BYTES = 2 * BYTES_IN_MEGABYTE;
+  private static final int MEMORY_TO_FREE_PER_CYCLE_MB = 500;
 
   private static final String MEMORY_BLOCKER = "MemoryBlockCommand";
   private static final String ALLOCATE_ACTION = "Allocate";
@@ -79,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
       ImmutableList.of("VmSize", "VmRSS", "VmData");
 
   private static final String[] SUMMARY_FIELDS = {
-    "summary.graphics", "summary.native-heap", "summary.total-pss"
+      "summary.graphics", "summary.native-heap", "summary.total-pss"
   };
 
   static {
@@ -103,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
   private boolean isServiceCrashed = false;
   private long mallocBytesPerMillisecond;
   private long glAllocBytesPerMillisecond;
-  private List<Heuristic> activeHeuristics = new ArrayList<>();
+  private final List<Heuristic> activeHeuristics = new ArrayList<>();
   private boolean yellowLightTesting = false;
   private long mmapAnonBytesPerMillisecond;
   private long mmapFileBytesPerMillisecond;
@@ -119,12 +128,13 @@ public class MainActivity extends AppCompatActivity {
   private ServiceState serviceState;
 
   private static String memoryString(long bytes) {
-    return String.format(Locale.getDefault(), "%.1f MB", (float) bytes / (1024 * 1024));
+    return String.format(Locale.getDefault(), "%.1f MB", (float) bytes / BYTES_IN_MEGABYTE);
   }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    initNative();
 
     Intent launchIntent = getIntent();
 
@@ -140,22 +150,22 @@ public class MainActivity extends AppCompatActivity {
                 new PrintStream(
                     Objects.requireNonNull(getContentResolver().openOutputStream(logFile)));
           } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
           }
         }
       }
       try {
-        params1 = new JSONObject(Utils.readFile("/sdcard/params.json"));
+        params1 = new JSONObject(readFile("/sdcard/params.json"));
       } catch (IOException | JSONException e) {
-        throw new RuntimeException(e);
+        throw new IllegalStateException(e);
       }
     }
 
     if (params1 == null) {
       try {
         params1 = new JSONObject(Utils.readStream(getAssets().open("default.json")));
-      } catch (IOException | JSONException e2) {
-        throw new RuntimeException(e2);
+      } catch (IOException | JSONException e) {
+        throw new IllegalStateException(e);
       }
     }
 
@@ -164,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
     serviceCommunicationHelper = new ServiceCommunicationHelper(this);
     serviceState = ServiceState.DEALLOCATED;
     ActivityManager activityManager =
-        (ActivityManager) Objects.requireNonNull(getSystemService((Context.ACTIVITY_SERVICE)));
+        (ActivityManager) Objects.requireNonNull(getSystemService(Context.ACTIVITY_SERVICE));
 
     try {
       // Setting up broadcast receiver
@@ -184,7 +194,10 @@ public class MainActivity extends AppCompatActivity {
                       try {
                         Thread.sleep(BACKGROUND_PRESSURE_PERIOD_SECONDS * 1000);
                       } catch (Exception e) {
-                        e.printStackTrace();
+                        if (e instanceof InterruptedException) {
+                          Thread.currentThread().interrupt();
+                        }
+                        throw new IllegalStateException(e);
                       }
                       serviceState = ServiceState.FREEING_MEMORY;
                       serviceCommunicationHelper.freeServerMemory();
@@ -201,7 +214,10 @@ public class MainActivity extends AppCompatActivity {
                       try {
                         Thread.sleep(BACKGROUND_PRESSURE_PERIOD_SECONDS * 1000);
                       } catch (Exception e) {
-                        e.printStackTrace();
+                        if (e instanceof InterruptedException) {
+                          Thread.currentThread().interrupt();
+                        }
+                        throw new IllegalStateException(e);
                       }
                       serviceState = ServiceState.ALLOCATING_MEMORY;
                       serviceCommunicationHelper.allocateServerMemory(
@@ -210,6 +226,7 @@ public class MainActivity extends AppCompatActivity {
                   }.start();
 
                   break;
+                default:
               }
             }
           };
@@ -237,6 +254,9 @@ public class MainActivity extends AppCompatActivity {
       mallocBytesPerMillisecond = Utils.getMemoryQuantity(params, "malloc");
 
       glAllocBytesPerMillisecond = Utils.getMemoryQuantity(params, "glTest");
+      if (mallocBytesPerMillisecond == 0) {
+        nativeConsume((int) Utils.getMemoryQuantity(params, "mallocFixed"));
+      }
 
       if (glAllocBytesPerMillisecond > 0) {
         testSurface.setVisibility(View.VISIBLE);
@@ -244,22 +264,19 @@ public class MainActivity extends AppCompatActivity {
 
       mmapAnonBytesPerMillisecond = Utils.getMemoryQuantity(params, "mmapAnon");
 
-      mmapFileBytesPerMillisecond =  Utils.getMemoryQuantity(params,"mmapFile");
+      mmapFileBytesPerMillisecond = Utils.getMemoryQuantity(params, "mmapFile");
       if (mmapFileBytesPerMillisecond > 0) {
-        // Other possible directories:
-        // * getExternalCacheDir()
-        // * getExternalFilesDir(null)
-        // * getFilesDir()
-        String mmapPath = getApplicationContext().getNoBackupFilesDir().toString();
-        JSONArray mmapFileNames = params.getJSONArray("mmapFileNames");
-        mmapFiles = new MmapFileGroup(mmapPath, mmapFileNames);
+        String mmapPath = getApplicationContext().getCacheDir().toString();
+        int mmapFileCount = params.getInt("mmapFileCount");
+        long mmapFileSize = Utils.getMemoryQuantity(params, "mmapFileSize");
+        mmapFiles = new MmapFileGroup(mmapPath, mmapFileCount, mmapFileSize);
       }
 
       if (params.has("heuristics")) {
         JSONArray heuristics = params.getJSONArray("heuristics");
         for (int idx = 0; idx != heuristics.length(); idx++) {
           try {
-            activeGroups.add(Enum.valueOf(Identifier.class, heuristics.getString(idx)));
+            activeGroups.add(Identifier.valueOf(heuristics.getString(idx)));
           } catch (IllegalArgumentException e) {
             Log.e(TAG, "Enum error", e);
           }
@@ -271,16 +288,16 @@ public class MainActivity extends AppCompatActivity {
 
       JSONObject build = new JSONObject();
       getStaticFields(build, Build.class);
-      getStaticFields(build, Build.VERSION.class);
+      getStaticFields(build, VERSION.class);
       report.put("build", build);
 
       JSONObject constant = new JSONObject();
-      ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(activityManager);
+      ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
       constant.put("totalMem", memoryInfo.totalMem);
       constant.put("threshold", memoryInfo.threshold);
-      constant.put("memoryClass", activityManager.getMemoryClass() * 1024 * 1024);
+      constant.put("memoryClass", activityManager.getMemoryClass() * BYTES_IN_MEGABYTE);
 
-      Long commitLimit = Heuristics.processMeminfo().get("CommitLimit");
+      Long commitLimit = processMeminfo().get("CommitLimit");
       if (commitLimit != null) {
         constant.put("CommitLimit", commitLimit);
       }
@@ -289,14 +306,14 @@ public class MainActivity extends AppCompatActivity {
 
       resultsStream.println(report);
     } catch (IOException | JSONException | PackageManager.NameNotFoundException e) {
-      throw new RuntimeException(e);
+      throw new IllegalStateException(e);
     }
 
     startTime = System.currentTimeMillis();
     appSwitchTimerStart = System.currentTimeMillis();
     latestAllocationTime = startTime;
     for (Heuristic heuristic : Heuristic.availableHeuristics) {
-      if (activeGroups.contains((heuristic.getIdentifier()))) {
+      if (activeGroups.contains(heuristic.getIdentifier())) {
         activeHeuristics.add(heuristic);
       }
     }
@@ -306,8 +323,7 @@ public class MainActivity extends AppCompatActivity {
           public void run() {
             try {
               JSONObject report = standardInfo();
-              long _latestAllocationTime = latestAllocationTime;
-              if (_latestAllocationTime != -1) {
+              if (latestAllocationTime != -1) {
                 boolean shouldAllocate = true;
                 Indicator maxMemoryPressureLevel = Indicator.GREEN;
                 Identifier triggeringHeuristic = null;
@@ -340,7 +356,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (mallocBytesPerMillisecond > 0 && shouldAllocate) {
-                  long sinceLastAllocation = System.currentTimeMillis() - _latestAllocationTime;
+                  long sinceLastAllocation = System.currentTimeMillis() - latestAllocationTime;
                   int owed = (int) (sinceLastAllocation * mallocBytesPerMillisecond);
                   if (owed > 0) {
                     boolean succeeded = nativeConsume(owed);
@@ -353,15 +369,15 @@ public class MainActivity extends AppCompatActivity {
                   }
                 }
                 if (glAllocBytesPerMillisecond > 0 && shouldAllocate) {
-                  long sinceLastAllocation = System.currentTimeMillis() - _latestAllocationTime;
+                  long sinceLastAllocation = System.currentTimeMillis() - latestAllocationTime;
                   long target = sinceLastAllocation * glAllocBytesPerMillisecond;
                   TestSurface testSurface = findViewById(R.id.glsurfaceView);
                   testSurface.getRenderer().setTarget(target);
                 }
 
                 if (mmapAnonBytesPerMillisecond > 0) {
-                  long sinceLastAllocation = System.currentTimeMillis() - _latestAllocationTime;
-                  int owed = (int) (sinceLastAllocation * mmapAnonBytesPerMillisecond);
+                  long sinceLastAllocation = System.currentTimeMillis() - latestAllocationTime;
+                  long owed = sinceLastAllocation * mmapAnonBytesPerMillisecond;
                   if (owed > MMAP_ANON_BLOCK_BYTES) {
                     long allocated = mmapAnonConsume(owed);
                     if (allocated != 0) {
@@ -373,16 +389,17 @@ public class MainActivity extends AppCompatActivity {
                   }
                 }
                 if (mmapFileBytesPerMillisecond > 0) {
-                  long sinceLastAllocation = System.currentTimeMillis() - _latestAllocationTime;
-                  int owed = (int) (sinceLastAllocation * mmapFileBytesPerMillisecond);
+                  long sinceLastAllocation = System.currentTimeMillis() - latestAllocationTime;
+                  long owed = sinceLastAllocation * mmapFileBytesPerMillisecond;
                   if (owed > MMAP_FILE_BLOCK_BYTES) {
                     MmapFileInfo file = mmapFiles.alloc(owed);
-                    long allocated = mmapFileConsume(file.path, file.alloc_size, file.offset);
-                    if (allocated != 0) {
+                    long allocated =
+                        mmapFileConsume(file.getPath(), file.getAllocSize(), file.getOffset());
+                    if (allocated == 0) {
+                      report.put("mmapFileFailed", true);
+                    } else {
                       mmapFileAllocatedByTest += allocated;
                       latestAllocationTime = System.currentTimeMillis();
-                    } else {
-                      report.put("mmapFileFailed", true);
                     }
                   }
                 }
@@ -396,7 +413,7 @@ public class MainActivity extends AppCompatActivity {
                   File file =
                       new File(
                           Environment.getExternalStoragePublicDirectory(
-                                  Environment.DIRECTORY_PICTURES)
+                              Environment.DIRECTORY_PICTURES)
                               + File.separator
                               + "pic.jpg");
                   String authority = getApplicationContext().getPackageName() + ".provider";
@@ -417,7 +434,7 @@ public class MainActivity extends AppCompatActivity {
                   report.put("exiting", true);
                   resultsStream.println(report);
                 } catch (JSONException e) {
-                  throw new RuntimeException(e);
+                  throw new IllegalStateException(e);
                 }
               }
 
@@ -429,7 +446,7 @@ public class MainActivity extends AppCompatActivity {
               }
               updateInfo();
             } catch (JSONException e) {
-              throw new RuntimeException(e);
+              throw new IllegalStateException(e);
             }
           }
         },
@@ -453,7 +470,7 @@ public class MainActivity extends AppCompatActivity {
         }
       }
     } catch (JSONException e) {
-      throw new RuntimeException(e);
+      throw new IllegalStateException(e);
     }
     return params;
   }
@@ -475,14 +492,20 @@ public class MainActivity extends AppCompatActivity {
           try {
             Thread.sleep(BACKGROUND_PRESSURE_PERIOD_SECONDS * 1000);
           } catch (Exception e) {
-            e.printStackTrace();
+            if (e instanceof InterruptedException) {
+              Thread.currentThread().interrupt();
+            }
+            throw new IllegalStateException(e);
           }
           Log.v(MEMORY_BLOCKER, FREE_ACTION);
           serviceTotalMb = 0;
           try {
             Thread.sleep(BACKGROUND_PRESSURE_PERIOD_SECONDS * 1000);
           } catch (Exception e) {
-            e.printStackTrace();
+            if (e instanceof InterruptedException) {
+              Thread.currentThread().interrupt();
+            }
+            throw new IllegalStateException(e);
           }
         }
       }
@@ -510,7 +533,7 @@ public class MainActivity extends AppCompatActivity {
       report.put("onDestroy", true);
       resultsStream.println(report);
     } catch (JSONException e) {
-      throw new RuntimeException(e);
+      throw new IllegalStateException(e);
     }
     super.onDestroy();
   }
@@ -528,7 +551,7 @@ public class MainActivity extends AppCompatActivity {
       report.put("activityPaused", true);
       resultsStream.println(report);
     } catch (JSONException e) {
-      throw new RuntimeException(e);
+      throw new IllegalStateException(e);
     }
   }
 
@@ -540,7 +563,7 @@ public class MainActivity extends AppCompatActivity {
       report.put("activityPaused", false);
       resultsStream.println(report);
     } catch (JSONException e) {
-      throw new RuntimeException(e);
+      throw new IllegalStateException(e);
     }
   }
 
@@ -557,7 +580,7 @@ public class MainActivity extends AppCompatActivity {
           updateRecords();
 
           ActivityManager activityManager =
-              (ActivityManager) Objects.requireNonNull(this.getSystemService((ACTIVITY_SERVICE)));
+              (ActivityManager) Objects.requireNonNull(this.getSystemService(ACTIVITY_SERVICE));
 
           TextView uptime = findViewById(R.id.uptime);
           float timeRunning = (float) (System.currentTimeMillis() - startTime) / 1000;
@@ -591,16 +614,15 @@ public class MainActivity extends AppCompatActivity {
           TextView mmapFileAllocatedByTestTextView = findViewById(R.id.mmapFileAllocatedByTest);
           mmapFileAllocatedByTestTextView.setText(memoryString(mmapFileAllocatedByTest));
 
-          ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(activityManager);
+          ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
           TextView availMemTextView = findViewById(R.id.availMem);
           availMemTextView.setText(memoryString(memoryInfo.availMem));
 
           TextView oomScoreTextView = findViewById(R.id.oomScore);
-          oomScoreTextView.setText("" + Heuristics.getOomScore(activityManager));
+          oomScoreTextView.setText("" + getOomScore(activityManager));
 
           TextView lowMemoryTextView = findViewById(R.id.lowMemory);
-          lowMemoryTextView.setText(
-              Boolean.valueOf(Heuristics.lowMemoryCheck(activityManager)).toString());
+          lowMemoryTextView.setText(Boolean.toString(lowMemoryCheck(activityManager)));
 
           TextView trimMemoryComplete = findViewById(R.id.releases);
           trimMemoryComplete.setText(String.format(Locale.getDefault(), "%d", releases));
@@ -615,7 +637,7 @@ public class MainActivity extends AppCompatActivity {
       }
       data.add(array);
     } catch (OutOfMemoryError e) {
-      throw new RuntimeException(e);
+      throw new IllegalStateException(e);
     }
   }
 
@@ -634,7 +656,7 @@ public class MainActivity extends AppCompatActivity {
       updateInfo();
       super.onTrimMemory(level);
     } catch (JSONException e) {
-      throw new RuntimeException(e);
+      throw new IllegalStateException(e);
     }
   }
 
@@ -642,7 +664,7 @@ public class MainActivity extends AppCompatActivity {
     try {
       report.put("trigger", trigger);
     } catch (JSONException e) {
-      throw new RuntimeException(e);
+      throw new IllegalStateException(e);
     }
     latestAllocationTime = -1;
     runAfterDelay(
@@ -651,7 +673,7 @@ public class MainActivity extends AppCompatActivity {
           try {
             report2 = standardInfo();
           } catch (JSONException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
           }
           resultsStream.println(report2);
           if (nativeAllocatedByTest > 0) {
@@ -676,7 +698,7 @@ public class MainActivity extends AppCompatActivity {
                   resultsStream.println(standardInfo());
                   latestAllocationTime = System.currentTimeMillis();
                 } catch (JSONException e) {
-                  throw new RuntimeException(e);
+                  throw new IllegalStateException(e);
                 }
               },
               1000);
@@ -707,10 +729,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     ActivityManager activityManager =
-        (ActivityManager) Objects.requireNonNull(getSystemService((ACTIVITY_SERVICE)));
-    ActivityManager.MemoryInfo memoryInfo = Heuristics.getMemoryInfo(activityManager);
+        (ActivityManager) Objects.requireNonNull(getSystemService(ACTIVITY_SERVICE));
+    ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
     report.put("availMem", memoryInfo.availMem);
-    boolean lowMemory = Heuristics.lowMemoryCheck(activityManager);
+    boolean lowMemory = lowMemoryCheck(activityManager);
     if (lowMemory) {
       report.put("lowMemory", true);
     }
@@ -719,21 +741,22 @@ public class MainActivity extends AppCompatActivity {
     }
     report.put("nativeAllocatedByTest", nativeAllocatedByTest);
     report.put("mmapAnonAllocatedByTest", mmapAnonAllocatedByTest);
+    report.put("mmapFileAllocatedByTest", mmapFileAllocatedByTest);
     report.put("serviceTotalMemory", BYTES_IN_MEGABYTE * serviceTotalMb);
-    report.put("oom_score", Heuristics.getOomScore(activityManager));
+    report.put("oom_score", getOomScore(activityManager));
 
     TestSurface testSurface = findViewById(R.id.glsurfaceView);
     TestRenderer renderer = testSurface.getRenderer();
     report.put("gl_allocated", renderer.getAllocated());
 
     if (VERSION.SDK_INT >= VERSION_CODES.M) {
-      MemoryInfo debugMemoryInfo = Heuristics.getDebugMemoryInfo(activityManager)[0];
+      MemoryInfo debugMemoryInfo = getDebugMemoryInfo(activityManager)[0];
       for (String key : SUMMARY_FIELDS) {
         report.put(key, debugMemoryInfo.getMemoryStat(key));
       }
     }
 
-    Map<String, Long> values = Heuristics.processMeminfo();
+    Map<String, Long> values = processMeminfo();
     for (Map.Entry<String, Long> pair : values.entrySet()) {
       String key = pair.getKey();
       if (MEMINFO_FIELDS.contains(key)) {
@@ -741,7 +764,7 @@ public class MainActivity extends AppCompatActivity {
       }
     }
 
-    for (Map.Entry<String, Long> pair : Heuristics.processStatus(activityManager).entrySet()) {
+    for (Map.Entry<String, Long> pair : processStatus(activityManager).entrySet()) {
       String key = pair.getKey();
       if (STATUS_FIELDS.contains(key)) {
         report.put(key, pair.getValue());
@@ -749,6 +772,8 @@ public class MainActivity extends AppCompatActivity {
     }
     return report;
   }
+
+  public static native void initNative();
 
   public static native void initGl();
 
@@ -762,53 +787,64 @@ public class MainActivity extends AppCompatActivity {
 
   public native boolean nativeConsume(int bytes);
 
-  public native long mmapAnonConsume(int bytes);
+  public native long mmapAnonConsume(long bytes);
 
-  public native long mmapFileConsume(String path, int bytes, int offset);
+  public native long mmapFileConsume(String path, long bytes, long offset);
+
+  public static native boolean writeRandomFile(String path, long bytes);
 
   static class MmapFileInfo {
-    private long file_size;
-    private int alloc_size;
-    private String path;
-    private int offset;
+    private final long fileSize;
+    private long allocSize;
+    private final String path;
+    private long offset;
 
     public MmapFileInfo(String path) throws IOException {
       this.path = path;
-      file_size = Utils.getFileSize(path);
+      fileSize = Utils.getFileSize(path);
       offset = 0;
     }
 
-    public boolean alloc(int desiredSize) {
-      offset += alloc_size;
-      int limit = (int) (file_size - offset);
-      alloc_size = desiredSize > limit ? limit : desiredSize;
-      return alloc_size > 0;
+    public boolean alloc(long desiredSize) {
+      offset += allocSize;
+      long limit = fileSize - offset;
+      allocSize = Math.min(limit, desiredSize);
+      return allocSize > 0;
     }
 
     public void reset() {
       offset = 0;
-      alloc_size = 0;
+      allocSize = 0;
     }
 
-    public String getPath() { return path; }
+    public String getPath() {
+      return path;
+    }
 
-    public int getOffset() { return offset; }
+    public long getOffset() {
+      return offset;
+    }
 
-    public int getAllocSize() { return alloc_size; }
+    public long getAllocSize() {
+      return allocSize;
+    }
   }
 
   static class MmapFileGroup {
-    private ArrayList<MmapFileInfo> files = new ArrayList<>();
+    private final ArrayList<MmapFileInfo> files = new ArrayList<>();
     private int current;
 
-    public MmapFileGroup(String mmapPath, JSONArray mmapFileNames)
-        throws JSONException, IOException {
-      for (int i = 0; i < mmapFileNames.length(); ++i) {
-        files.add(new MmapFileInfo(mmapPath + "/" + mmapFileNames.get(i)));
+    public MmapFileGroup(String mmapPath, int mmapFileCount, long mmapFileSize) throws IOException {
+      int digits = Integer.toString(mmapFileCount - 1).length();
+      FileUtils.cleanDirectory(new File(mmapPath));
+      for (int i = 0; i < mmapFileCount; ++i) {
+        String filename = mmapPath + "/" + String.format("test%0" + digits + "d.dat", i);
+        writeRandomFile(filename, mmapFileSize);
+        files.add(new MmapFileInfo(filename));
       }
     }
 
-    public MmapFileInfo alloc(int desiredSize) {
+    public MmapFileInfo alloc(long desiredSize) {
       while (!files.get(current).alloc(desiredSize)) {
         current = (current + 1) % files.size();
         files.get(current).reset();
