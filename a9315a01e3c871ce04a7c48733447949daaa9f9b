@@ -33,6 +33,24 @@
       "revId": "a9315a01e3c871ce04a7c48733447949daaa9f9b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d9d808c1_c074902d",
+        "filename": "cert/test/reporting/lib/devicefarm.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-03T21:14:39Z",
+      "side": 1,
+      "message": "True!! Thought about that same, Shamyl :-D\nIt actually was that... see that other partner \"subset\". It\u0027s being called \"devices\" from .yamls all the way down the line till this point where it\u0027s renamed. I thought I had to be original here myself :-P\n\nNonetheless. I\u0027ll rename \"minus\" at least. I\u0027ll need your help afterwards re plusing-one.",
+      "parentUuid": "a5fff05a_99d16271",
+      "revId": "a9315a01e3c871ce04a7c48733447949daaa9f9b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
