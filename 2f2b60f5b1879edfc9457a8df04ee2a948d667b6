@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0b2d88d7_eef772d4",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 569,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-04-03T20:28:29Z",
+      "side": 1,
+      "message": "just curious, why is the w value decoupled from others and needs to be loaded like this?",
+      "range": {
+        "startLine": 569,
+        "startChar": 8,
+        "endLine": 569,
+        "endChar": 62
+      },
+      "revId": "2f2b60f5b1879edfc9457a8df04ee2a948d667b6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
