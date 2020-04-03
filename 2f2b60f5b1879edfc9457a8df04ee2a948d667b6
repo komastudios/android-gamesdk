@@ -22,6 +22,30 @@
       "revId": "2f2b60f5b1879edfc9457a8df04ee2a948d667b6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ce68f0df_dca09616",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 569,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-04-03T20:34:27Z",
+      "side": 1,
+      "message": "That\u0027s a good question - I was running into alignment issues with the uniform buffer that would make it such that if this was a float/int it would not be read properly, however turning the specular into a vec4 and using the w coordinate worked properly\n\nFrom what I learned honestly it seems like best practice for uniform buffers is to only ever use vec2 or vec4 for alignment purposes, since openGL/Vulkan will most likely pad your vec3 into a vec4 anyways for alignment purposes implicitly. Doing it yourself apparently will save a lot of headache in the future haha\n\nBut I think that conversion might need to be saved for a different CL :P",
+      "parentUuid": "0b2d88d7_eef772d4",
+      "range": {
+        "startLine": 569,
+        "startChar": 8,
+        "endLine": 569,
+        "endChar": 62
+      },
+      "revId": "2f2b60f5b1879edfc9457a8df04ee2a948d667b6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
