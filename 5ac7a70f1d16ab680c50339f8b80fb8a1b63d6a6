@@ -380,6 +380,30 @@
     },
     {
       "key": {
+        "uuid": "c6791fc9_43a62cd6",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 261,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-04-03T15:56:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "20f3cbbf_75cfa4a8",
+      "range": {
+        "startLine": 261,
+        "startChar": 48,
+        "endLine": 261,
+        "endChar": 51
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c19a1915_0827ecba",
         "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
         "patchSetId": 15
@@ -400,6 +424,30 @@
       "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "acdfab11_9967a1fc",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-04-03T15:56:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c19a1915_0827ecba",
+      "range": {
+        "startLine": 262,
+        "startChar": 41,
+        "endLine": 262,
+        "endChar": 44
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -733,6 +781,30 @@
     },
     {
       "key": {
+        "uuid": "5a65b9fd_394ab21f",
+        "filename": "bender/bender-base/utils/src/obj_loader.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-04-03T15:56:23Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "325b6272_882d19fc",
+      "range": {
+        "startLine": 30,
+        "startChar": 24,
+        "endLine": 30,
+        "endChar": 36
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "178301dd_e85924ac",
         "filename": "bender/bender-base/utils/src/obj_loader.h",
         "patchSetId": 15
@@ -756,6 +828,30 @@
     },
     {
       "key": {
+        "uuid": "f1c00df5_cc213ddc",
+        "filename": "bender/bender-base/utils/src/obj_loader.h",
+        "patchSetId": 15
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-04-03T15:56:23Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "178301dd_e85924ac",
+      "range": {
+        "startLine": 69,
+        "startChar": 10,
+        "endLine": 69,
+        "endChar": 13
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fd62e87e_5c55e914",
         "filename": "bender/bender-base/utils/src/packed_types.h",
         "patchSetId": 15
@@ -776,6 +872,30 @@
       "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "77f14f42_0901f6e2",
+        "filename": "bender/bender-base/utils/src/packed_types.h",
+        "patchSetId": 15
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-04-03T15:56:23Z",
+      "side": 1,
+      "message": "Oh that\u0027s a really good point to make, slipped my mind the effect of #including files after this would have!",
+      "parentUuid": "fd62e87e_5c55e914",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 21
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -897,6 +1017,30 @@
     },
     {
       "key": {
+        "uuid": "0ec16909_f971c340",
+        "filename": "bender/bender-base/utils/src/packed_types.h",
+        "patchSetId": 15
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-04-03T15:56:23Z",
+      "side": 1,
+      "message": "Ohhhhhh this is how you do something like that! Ok for a little bit I tried to do a sort of type punning with Unions to be able to get something to this effect but it didn\u0027t quite work (and technically in c++ is undefined behavior...) \n\nI\u0027ll go ahead and do this though because they could be useful later!\n\nI also had to add a default constructor since we\u0027ve added a non-default constructor and it deletes the implicit default constructor as a result",
+      "parentUuid": "c66134f0_1f1fef76",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 43,
+        "endChar": 5
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "78093162_c5ec04e7",
         "filename": "bender/bender-base/utils/src/packed_types.h",
         "patchSetId": 15
@@ -917,6 +1061,30 @@
       "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "63c7fead_4591d931",
+        "filename": "bender/bender-base/utils/src/packed_types.h",
+        "patchSetId": 15
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-04-03T15:56:23Z",
+      "side": 1,
+      "message": "It\u0027s worked without having packed_vertex within the bounds of the #pragma pack however I think it\u0027ll be good to be explicit, since it does need to be packed tightly (I guess we just got somewhat lucky and the compiler packed it properly for us 😊)",
+      "parentUuid": "78093162_c5ec04e7",
+      "range": {
+        "startLine": 100,
+        "startChar": 0,
+        "endLine": 100,
+        "endChar": 17
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
