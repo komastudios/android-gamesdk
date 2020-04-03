@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "562368e6_b9ac0f94",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-04-03T18:27:16Z",
+      "side": 1,
+      "message": "Out of curiosity what are these numbers for? (would they be good candidates for being constants?)",
+      "revId": "a0cd8c5ffb8fd93c140961ccb3d31240333396ab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
