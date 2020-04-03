@@ -34,6 +34,24 @@
       "revId": "a0cd8c5ffb8fd93c140961ccb3d31240333396ab",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "955356aa_d72df567",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-04-03T18:31:32Z",
+      "side": 1,
+      "message": "Ooh, these are related to the added params in benderhelpers::SetImageLayout, which allows for a baseMipLevel and levelCount to be specified. So 0 and 1 is default set, with one mip level. Given that, I can maybe convert those to optional params and avoid the changes here.",
+      "parentUuid": "562368e6_b9ac0f94",
+      "revId": "a0cd8c5ffb8fd93c140961ccb3d31240333396ab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
