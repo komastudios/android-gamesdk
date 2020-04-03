@@ -22,6 +22,7 @@ Mesh::Mesh(Renderer &renderer,
   ComputeBoundingBoxWorldSpace();
 }
 
+#ifndef GDC_DEMO
 Mesh::Mesh(Renderer &renderer,
            std::shared_ptr<Material> material,
            const std::vector<MeshVertex> &vertex_data,
@@ -31,6 +32,7 @@ Mesh::Mesh(Renderer &renderer,
              std::make_shared<Geometry>(renderer.GetDevice(), vertex_data, index_data)) {
   ComputeBoundingBoxWorldSpace();
 }
+#endif
 
 Mesh::Mesh(const Mesh &other, std::shared_ptr<Material> material) :
     renderer_(other.renderer_),
