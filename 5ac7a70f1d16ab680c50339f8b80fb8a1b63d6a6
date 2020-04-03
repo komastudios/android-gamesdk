@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "0ba3b0dd_e99ce0ec",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-04-03T08:45:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9003538e_7a515baf",
+      "range": {
+        "startLine": 18,
+        "startChar": 2,
+        "endLine": 18,
+        "endChar": 47
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "649a009a_434131af",
         "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
         "patchSetId": 15
@@ -84,6 +108,30 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "649a009a_434131af",
+      "range": {
+        "startLine": 19,
+        "startChar": 4,
+        "endLine": 19,
+        "endChar": 39
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "79526ef4_967866df",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-04-03T08:45:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aeb082fa_1ee26fbd",
       "range": {
         "startLine": 19,
         "startChar": 4,
@@ -143,6 +191,30 @@
     },
     {
       "key": {
+        "uuid": "ea412f10_4ef19a22",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-04-03T08:45:02Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "ef649b10_a6d73fc8",
+      "range": {
+        "startLine": 21,
+        "startChar": 4,
+        "endLine": 26,
+        "endChar": 65
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "21623de5_938835ed",
         "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
         "patchSetId": 15
@@ -178,6 +250,30 @@
       "side": 1,
       "message": "Ack",
       "parentUuid": "21623de5_938835ed",
+      "range": {
+        "startLine": 30,
+        "startChar": 2,
+        "endLine": 30,
+        "endChar": 66
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bc9cf638_e567ca98",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-04-03T08:45:02Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "06c75aed_5616e5f4",
       "range": {
         "startLine": 30,
         "startChar": 2,
@@ -234,6 +330,76 @@
       "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "93765c20_bd6625e9",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-04-03T08:45:02Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "8b267da4_845e1272",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 40
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "20f3cbbf_75cfa4a8",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 261,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-04-03T08:45:02Z",
+      "side": 1,
+      "message": "1.0f?",
+      "range": {
+        "startLine": 261,
+        "startChar": 48,
+        "endLine": 261,
+        "endChar": 51
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c19a1915_0827ecba",
+        "filename": "bender/bender-base/app/src/main/jni/mesh.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-04-03T08:45:02Z",
+      "side": 1,
+      "message": "1.0f?",
+      "range": {
+        "startLine": 262,
+        "startChar": 41,
+        "endLine": 262,
+        "endChar": 44
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     },
     {
       "key": {
@@ -319,6 +485,30 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "c76fda2e_2e78f7f9",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 40
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b0fb3cf2_ce75185f",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.vert",
+        "patchSetId": 15
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-04-03T08:45:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6b3f8117_627bece4",
       "range": {
         "startLine": 30,
         "startChar": 0,
@@ -425,6 +615,30 @@
     },
     {
       "key": {
+        "uuid": "a0192f82_2df42842",
+        "filename": "bender/bender-base/utils/src/bender_helpers.h",
+        "patchSetId": 15
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-04-03T08:45:02Z",
+      "side": 1,
+      "message": "They\u0027re more for debugging/ease of understanding. You can just eliminate them too, but they\u0027re handy if you\u0027re hacking away after you\u0027ve packed the assets and you need to access them from the CPU for any reason.\n\nThis is one of those cases where as long as you\u0027re certain that the endianness of the platform you\u0027re running on matches the endianness of the platform that cooked your data (or you\u0027ve actually handled that with code to make it match), you can do mildly unsafe things instead :D \n\nOne way would be to add a function to the packed types which cast their this pointer to a uint64_t* and filled it from a uint64_t (a version of Set... or have it as a constructor - although using this ptr from a constructor is iffy). \n\nSee packed_types.h for more 😊",
+      "parentUuid": "1f957987_b18bea68",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 48,
+        "endChar": 66
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6a8d82bd_ec04195e",
         "filename": "bender/bender-base/utils/src/mesh_helpers.h",
         "patchSetId": 15
@@ -469,6 +683,99 @@
       "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7cd1af46_6dbe78ea",
+        "filename": "bender/bender-base/utils/src/mesh_helpers.h",
+        "patchSetId": 15
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-04-03T08:45:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cf9ce0a3_dbb43707",
+      "range": {
+        "startLine": 15,
+        "startChar": 4,
+        "endLine": 16,
+        "endChar": 35
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "325b6272_882d19fc",
+        "filename": "bender/bender-base/utils/src/obj_loader.cc",
+        "patchSetId": 15
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-04-03T08:45:02Z",
+      "side": 1,
+      "message": "Using emplace_back is one of the better new features of C++ - it\u0027s a true perf optimization. About the only way of doing something like this before was with manually using placement new, which was a mess.",
+      "range": {
+        "startLine": 30,
+        "startChar": 24,
+        "endLine": 30,
+        "endChar": 36
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "178301dd_e85924ac",
+        "filename": "bender/bender-base/utils/src/obj_loader.h",
+        "patchSetId": 15
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-04-03T08:45:02Z",
+      "side": 1,
+      "message": "This is a nit, but element counts in Modern C++ tend to use size_t by default. No need to change. Not sure what happens if this gets cast to a short though - might be interesting to try it and find out.",
+      "range": {
+        "startLine": 69,
+        "startChar": 10,
+        "endLine": 69,
+        "endChar": 13
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fd62e87e_5c55e914",
+        "filename": "bender/bender-base/utils/src/packed_types.h",
+        "patchSetId": 15
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-04-03T08:45:02Z",
+      "side": 1,
+      "message": "Careful with the placement of this. You want it to tightly bind to the structs you want to apply it to, because you can accidentally cause all structs in headers you #include afterwards to get laid out in binary-incompatible ways with their compiled libs that reference them - and this can cause nasty bugs.\n\n(Good libs will push/pack if it\u0027s important - not all libs are good).\n\nTo help, put your #pragma pack after your using namespace line (15 below).",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 21
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     },
     {
       "key": {
@@ -540,6 +847,76 @@
       "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "82080e32_b7eeea60",
+        "filename": "bender/bender-base/utils/src/packed_types.h",
+        "patchSetId": 15
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-04-03T08:45:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "206334e1_192f937a",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 5
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c66134f0_1f1fef76",
+        "filename": "bender/bender-base/utils/src/packed_types.h",
+        "patchSetId": 15
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-04-03T08:45:02Z",
+      "side": 1,
+      "message": "Consider adding a version to all of these which did something like this:\n\nconst vec4_snorm16( uint64_t packed_in ) {\n  *reinterpret_cast\u003cuint64_t\u003e(\u0026x) \u003d in;\n}\n\nconst vec4_snorm16 \u0026Set( uint64_t packed_in ) {\n  //NOTE: When targeting a new platform, must verify that this is still valid.\n  *reinterpret_cast\u003cuint64_t\u003e(\u0026x) \u003d in;\n}\n\nMight be worth considering a constexpr version of both types as well... but if we go too far this will become a full math/vector type lib. That\u0027s ok, but we should decide if we actually want to do that. 😊",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 43,
+        "endChar": 5
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "78093162_c5ec04e7",
+        "filename": "bender/bender-base/utils/src/packed_types.h",
+        "patchSetId": 15
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-04-03T08:45:02Z",
+      "side": 1,
+      "message": "Don\u0027t know if it\u0027s important for packed_vertex to be packed tightly but if so #pragma pack(pop) must be before the #endif but after the struct below.",
+      "range": {
+        "startLine": 100,
+        "startChar": 0,
+        "endLine": 100,
+        "endChar": 17
+      },
+      "revId": "5ac7a70f1d16ab680c50339f8b80fb8a1b63d6a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }

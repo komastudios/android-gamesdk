@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d79bb0fc_845e8fa2",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 16
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-04-03T08:45:02Z",
+      "side": 1,
+      "message": "I think this should be vertices[0].pos as well (or glm::vec3 boundingMin \u003d boundingMax; )",
+      "range": {
+        "startLine": 110,
+        "startChar": 3,
+        "endLine": 110,
+        "endChar": 46
+      },
+      "revId": "01d099281983d0ce4ed07ae224a31faf9907fec6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "06ead8ff_1254a764",
+        "filename": "bender/bender-base/utils/src/packed_types.h",
+        "patchSetId": 16
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-04-03T08:45:02Z",
+      "side": 1,
+      "message": "from before (prev version review):\nMove #pragma pack(push,0) to just above line 18. \nConsider adding a constexpr constructor.\nAdd constructor and Set which takes a uint64_t and writes to \u0026x after doing a reinterpret_cast. Make sure you add a note saying why this is ok, and that platforms which are different endianness might not support this.",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 21
+      },
+      "revId": "01d099281983d0ce4ed07ae224a31faf9907fec6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "baf2b7f9_850b65cd",
+        "filename": "bender/bender-base/utils/src/packed_types.h",
+        "patchSetId": 16
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-04-03T08:45:02Z",
+      "side": 1,
+      "message": "... and double check if you need to move this below packed_vertex too (I don\u0027t think you do)",
+      "range": {
+        "startLine": 84,
+        "startChar": 0,
+        "endLine": 86,
+        "endChar": 0
+      },
+      "revId": "01d099281983d0ce4ed07ae224a31faf9907fec6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
