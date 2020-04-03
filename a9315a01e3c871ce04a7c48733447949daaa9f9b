@@ -51,6 +51,24 @@
       "revId": "a9315a01e3c871ce04a7c48733447949daaa9f9b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "64ca44ab_727e7bc5",
+        "filename": "cert/test/reporting/lib/devicefarm.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-03T21:43:32Z",
+      "side": 1,
+      "message": "Renamed back on latest pachset!",
+      "parentUuid": "d9d808c1_c074902d",
+      "revId": "a9315a01e3c871ce04a7c48733447949daaa9f9b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
