@@ -22,16 +22,6 @@ Mesh::Mesh(Renderer &renderer,
   ComputeBoundingBoxWorldSpace();
 }
 
-Mesh::Mesh(Renderer &renderer,
-           std::shared_ptr<Material> material,
-           const std::vector<MeshVertex> &vertex_data,
-           const std::vector<uint16_t> &index_data) :
-        Mesh(renderer,
-             material,
-             std::make_shared<Geometry>(renderer.GetDevice(), vertex_data, index_data)) {
-  ComputeBoundingBoxWorldSpace();
-}
-
 Mesh::Mesh(const Mesh &other, std::shared_ptr<Material> material) :
     renderer_(other.renderer_),
     material_(material),
