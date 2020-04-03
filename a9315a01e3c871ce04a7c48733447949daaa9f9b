@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "eb02b974_f137dc25",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/gamesdk/gamecert/operationrunner/hosts/BaseGLHostActivity.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-04-03T21:10:06Z",
+      "side": 1,
+      "message": "I turned this into a Builder pattern in the new codebase :) (S/R)",
+      "revId": "a9315a01e3c871ce04a7c48733447949daaa9f9b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a5fff05a_99d16271",
+        "filename": "cert/test/reporting/lib/devicefarm.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-04-03T21:10:06Z",
+      "side": 1,
+      "message": "You use the argument name `excluding` everywhere else, I think for consistency\u0027s sake this one ought to be called `excluding` as well instead of `minus`",
+      "revId": "a9315a01e3c871ce04a7c48733447949daaa9f9b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
