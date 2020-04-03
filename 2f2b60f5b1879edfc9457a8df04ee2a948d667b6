@@ -46,6 +46,30 @@
       "revId": "2f2b60f5b1879edfc9457a8df04ee2a948d667b6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f6bf73ab_d38c6235",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 569,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-04-03T20:39:35Z",
+      "side": 1,
+      "message": "Cool. Lesson learned.",
+      "parentUuid": "ce68f0df_dca09616",
+      "range": {
+        "startLine": 569,
+        "startChar": 8,
+        "endLine": 569,
+        "endChar": 62
+      },
+      "revId": "2f2b60f5b1879edfc9457a8df04ee2a948d667b6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
