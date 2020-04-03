@@ -16,6 +16,24 @@
       "revId": "a0cd8c5ffb8fd93c140961ccb3d31240333396ab",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "77c77905_2e59cba5",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-04-03T18:30:31Z",
+      "side": 1,
+      "message": "They are passed for the subresource (miplevel and layer). I think it\u0027s okay to have them as numbers.",
+      "parentUuid": "562368e6_b9ac0f94",
+      "revId": "a0cd8c5ffb8fd93c140961ccb3d31240333396ab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
