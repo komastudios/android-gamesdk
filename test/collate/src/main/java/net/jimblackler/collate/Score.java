@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -25,6 +26,7 @@ public class Score {
     Map<String, JSONObject> builds = new HashMap<>();
     Path directory = Files.createTempDirectory("report-");
     final int[] variations = {0};
+    AtomicReference<JSONArray> tests = new AtomicReference<>();
     Map<Integer, JSONObject> paramsMap = new HashMap<>();
     Consumer<JSONArray> collect =
         result -> {
@@ -36,13 +38,13 @@ public class Score {
 
           JSONObject runParameters = Utils.flattenParams(params);
           JSONArray coordinates = params.getJSONArray("coordinates");
-          JSONArray tests = params.getJSONArray("tests");
+          tests.set(params.getJSONArray("tests"));
           int total = 1;
           int variationNumber = 0;
           for (int coordinateNumber = coordinates.length() - 1;
               coordinateNumber >= 0;
               coordinateNumber--) {
-            int bound = tests.getJSONArray(coordinateNumber).length();
+            int bound = tests.get().getJSONArray(coordinateNumber).length();
             int value = coordinates.getInt(coordinateNumber);
             variationNumber += value * total;
             total *= bound;
@@ -134,6 +136,8 @@ public class Score {
             results0.add(null);
           }
           assert results0.get(variationNumber) == null;
+          JSONObject group = new JSONObject(runParameters.toString());
+          group.remove("heuristics");
           results0.set(
               variationNumber,
               new Result(
@@ -141,7 +145,7 @@ public class Score {
                   Main.writeGraphs(directory, results1),
                   exited && !allocFailed,
                   serviceCrashed,
-                  first.has("service") ? 1 : 0));
+                  group.toString()));
         };
 
     if (USE_DEVICE) {
@@ -152,32 +156,55 @@ public class Score {
       Collector.cloudCollect(collect);
     }
 
+    JSONArray _tests = tests.get();
+    int rowspan = _tests.length() + 1;
     StringBuilder body = new StringBuilder();
+    int colspan = variations[0];
     body.append("<table>")
         .append("<thead>")
-        .append("<th>")
+        .append("<tr>")
+        .append("<th rowspan=" + rowspan + " >")
         .append("Manufacturer")
         .append("</th>")
-        .append("<th>")
+        .append("<th rowspan=" + rowspan + " >")
         .append("Model")
         .append("</th>")
-        .append("<th>")
+        .append("<th rowspan=" + rowspan + " >")
         .append("SDK")
         .append("</th>")
-        .append("<th>")
+        .append("<th rowspan=" + rowspan + " >")
         .append("Release")
-        .append("</th>");
-    for (int variation = 0; variation < variations[0]; variation++) {
-      if (paramsMap.containsKey(variation)) {
-        JSONObject params = paramsMap.get(variation);
-        String paramString =
-            params.toString().replace("{", "").replace("}", "")
-                .replace("\"", "").replace(":true", "").replace(":", " ").replace("heuristics", "")
-                .replace(",", " ");
-        body.append("<th>").append(paramString).append("</th>");
-      } else {
-        body.append("<th>").append("</th>");
+        .append("</th>")
+        .append("<th colspan=" + colspan + ">")
+        .append("</th>")
+        .append("</tr>");
+
+    int repeats = 1;
+    for (int idx = 0; idx < _tests.length(); idx++) {
+      JSONArray test = _tests.getJSONArray(idx);
+      colspan /= test.length();
+      body.append("<tr>");
+
+      if (false) {
+        body.append("<th>")
+            .append("</th>")
+            .append("<th>")
+            .append("</th>")
+            .append("<th>")
+            .append("</th>")
+            .append("<th>")
+            .append("</th>");
       }
+      for (int repeat = 0; repeat != repeats; repeat++) {
+        for (int param = 0; param < test.length(); param++) {
+          JSONObject _param = test.getJSONObject(param);
+          body.append("<th colspan=" + colspan + ">")
+              .append(toString(_param))
+              .append("</th>");
+        }
+      }
+      body.append("</tr>");
+      repeats *= test.length();
     }
     body.append("</thead>");
 
@@ -200,12 +227,16 @@ public class Score {
           .append(build.getString("RELEASE"))
           .append("</td>");
 
-      float[] maxScore = {Float.MIN_VALUE, Float.MIN_VALUE};
+      Map<String, Float> maxScore = new HashMap<>();
 
       for (Result result : row.getValue()) {
         if (result != null && result.isAcceptable()) {
-          int group = result.getGroup();
-          maxScore[group] = Math.max(result.getScore(), maxScore[group]);
+          String group = result.getGroup();
+          if (maxScore.containsKey(group)) {
+            maxScore.put(group, Math.max(result.getScore(), maxScore.get(group)));
+          } else {
+            maxScore.put(group, result.getScore());
+          }
         }
       }
 
@@ -215,9 +246,9 @@ public class Score {
           continue;
         }
         Collection<String> classes = new ArrayList<>();
-        int group = result.getGroup();
+        String group = result.getGroup();
         if (result.isAcceptable()) {
-          float max = maxScore[group];
+          float max = maxScore.get(group);
           if (result.getScore() == max) {
             classes.add("best");
           } else if (result.getScore() > max * 0.90) {
@@ -254,8 +285,33 @@ public class Score {
     Desktop.getDesktop().browse(outputFile.toUri());
   }
 
-  private static String capitalizeFirstLetter(String s) {
-    return s.substring(0, 1).toUpperCase() + s.substring(1);
+  private static String toString(Object obj) {
+    StringBuilder builder = new StringBuilder();
+    if (obj instanceof JSONObject) {
+      JSONObject obj2 = (JSONObject) obj;
+      String divider = "";
+      for (String key : obj2.keySet()) {
+        builder.append(divider)
+            .append("<span class='key'>")
+            .append(key)
+            .append("</span>")
+            .append("<span class='value'>")
+            .append(toString(obj2.get(key)))
+            .append("</span>");
+        divider = " ";
+      }
+    } else if (obj instanceof JSONArray) {
+      JSONArray array = (JSONArray) obj;
+      for (int idx = 0; idx < array.length(); idx++) {
+        if (idx > 0) {
+          builder.append(", ");
+        }
+        builder.append(toString(array.get(idx)));
+      }
+    } else {
+      builder.append(obj);
+    }
+    return builder.toString();
   }
 
   private static class Result {
@@ -263,9 +319,9 @@ public class Score {
     private final URI uri;
     private final boolean acceptable;
     private final boolean serviceCrashed;
-    private final int group;
+    private final String group;
 
-    Result(float score, URI uri, boolean acceptable, boolean serviceCrashed, int group) {
+    Result(float score, URI uri, boolean acceptable, boolean serviceCrashed, String group) {
       this.score = score;
       this.uri = uri;
       this.acceptable = acceptable;
@@ -289,7 +345,7 @@ public class Score {
       return serviceCrashed;
     }
 
-    int getGroup() {
+    String getGroup() {
       return group;
     }
   }
