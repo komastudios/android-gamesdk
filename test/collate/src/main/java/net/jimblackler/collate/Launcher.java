@@ -23,7 +23,6 @@ public class Launcher {
   private static final Path HOME = Path.of(System.getProperty("user.home"));
   private static final Path GCLOUD_LOCATION = HOME.resolve("google-cloud-sdk/bin");
   private static final Path SDK_BASE = HOME.resolve("code/android-games-sdk");
-  private static final Path ISTRESSER_BASE = SDK_BASE.resolve("gamesdk/test/istresser");
   private static final Path GRABBER_BASE = SDK_BASE.resolve("gamesdk/test/grabber");
   private static final Path GCLOUD_EXECUTABLE = GCLOUD_LOCATION.resolve("gcloud");
   private static final int MIN_VERSION = 26;
@@ -34,13 +33,12 @@ public class Launcher {
 
     UUID uuid = UUID.randomUUID();
     Date date = new Date();
-    Path iStresserPath = ISTRESSER_BASE.resolve(STANDARD_APK_PATH);
+
     Path grabberPath = GRABBER_BASE.resolve(STANDARD_APK_PATH);
 
     List<String> baseCommands = new ArrayList<>(Arrays.asList(
         GCLOUD_EXECUTABLE.toString(),
         "beta", "firebase", "test", "android", "run",
-        "--app", iStresserPath.toString(),
         "--results-history-name", uuid.toString(),
         "--type", "game-loop",
         "--async",
@@ -48,7 +46,6 @@ public class Launcher {
 
     Collection<String> devices = getDevices();
     System.out.println(devices);
-    baseCommands.addAll(devices);
 
     Path grabberCopy = null;
 
@@ -75,6 +72,25 @@ public class Launcher {
       List<String> commands = new ArrayList<>(baseCommands);
       commands.add("--other-files");
       commands.add("/sdcard/params.json=" + tempFile.toString());
+
+      JSONObject flattened = Utils.flattenParams(paramsIn);
+      commands.add("--app=" +
+          Path.of(flattened.getString("apk_base"), flattened.getString("apk_name")));
+
+      if (flattened.has("firebase")) {
+        JSONObject firebase = flattened.getJSONObject("firebase");
+        for (String key : firebase.keySet()) {
+          commands.add("--" + key + "=" + firebase.get(key));
+        }
+      }
+
+      if (flattened.has("orientation")) {
+        for (String device : devices) {
+          commands.add(device + ",orientation=" + flattened.get("orientation"));
+        }
+      } else {
+        commands.addAll(devices);
+      }
 
       if (paramsIn.has("serviceBlocker")) {
         if (grabberCopy == null) {
@@ -137,8 +153,8 @@ public class Launcher {
         if (versionId < MIN_VERSION) {
           continue;
         }
-        devicesOut.add("--device");
-        devicesOut.add(String.format("model=%s,version=%d", device.getString("id"), versionId));
+        devicesOut.add(
+            String.format("--device=model=%s,version=%d", device.getString("id"), versionId));
         count++;
         if (count >= MAX_DEVICES) {
           return devicesOut;
