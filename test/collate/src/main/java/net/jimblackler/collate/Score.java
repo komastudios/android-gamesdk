@@ -84,7 +84,7 @@ public class Score {
             if (row.has("exiting")) {
               exited = true;
             }
-            if (row.has("allocFailed")) {
+            if (row.has("allocFailed") || row.has("mmapAnonFailed") || row.has("mmapFileFailed")) {
               allocFailed = true;
             }
             if (row.has("serviceCrashed")) {
@@ -96,6 +96,10 @@ public class Score {
             long score;
             if (runParameters.has("glTest")) {
               score = row.getLong("gl_allocated");
+            } else if (runParameters.has("mmapAnon")) {
+              score = row.getLong("mmapAnonAllocatedByTest");
+            } else if (runParameters.has("mmapFile")) {
+              score = row.getLong("mmapFileAllocatedByTest");
             } else {
               score = row.getLong("nativeAllocated");
             }
