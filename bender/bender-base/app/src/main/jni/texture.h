@@ -15,12 +15,16 @@
 #ifndef BENDER_BASE_TEXTURE_H
 #define BENDER_BASE_TEXTURE_H
 
-#include "vulkan_wrapper.h"
-#include "bender_kit.h"
+#include "astc.h"
 #include "renderer.h"
-#include <functional>
 
 #include <android_native_app_glue.h>
+#include "vulkan_wrapper.h"
+#include "bender_kit.h"
+
+#include <functional>
+
+using namespace astc;
 
 class Texture {
  public:
@@ -37,7 +41,6 @@ class Texture {
           VkFormat texture_format);
 
   ~Texture();
-
 
   void ToggleMipmaps();
 
@@ -63,11 +66,15 @@ class Texture {
 
   unsigned char *LoadFallbackData();
   unsigned char *LoadImageFileData(AAsset *file);
-  unsigned char *LoadASTCFileData(AAsset *file, uint32_t& img_bytes);
+  unsigned char *LoadASTCFileData(AAsset *file, ASTCHeader& header, uint32_t& img_bytes);
+
   VkResult CreateTextureFromFile(android_app &app, const std::string& texture_file_name);
-  VkResult CreateTexture(uint8_t *img_data, uint32_t img_bytes, VkImageUsageFlags usage, VkFlags required_props);
+  VkResult CreateUncompressedTexture(uint8_t *img_data, uint32_t img_bytes);
+  VkResult CreateASTCTexture(android_app& app, const std::string& texture_file_name, AAsset *file);
   void CreateImageView();
-  void GenerateMipmaps(VkCommandBuffer *command_buffer);
+
+  void GenerateMipmaps(VkCommandBuffer& command_buffer);
+  void LoadMipmapsFromFiles(android_app& app, const std::string& base_file_name);
 };
 
 #endif //BENDER_BASE_TEXTURE_H
