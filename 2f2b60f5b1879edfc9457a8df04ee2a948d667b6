@@ -70,6 +70,30 @@
       "revId": "2f2b60f5b1879edfc9457a8df04ee2a948d667b6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bd09dc36_ccfb8ca9",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 569,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-04-07T13:09:32Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f6bf73ab_d38c6235",
+      "range": {
+        "startLine": 569,
+        "startChar": 8,
+        "endLine": 569,
+        "endChar": 62
+      },
+      "revId": "2f2b60f5b1879edfc9457a8df04ee2a948d667b6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
