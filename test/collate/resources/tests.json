@@ -1,6 +1,16 @@
 [
   [
     {
+      "apk_base": "../istresser/app/build/outputs/apk/debug",
+      "apk_name": "app-debug.apk",
+      "firebase" : {
+        "timeout" : "11m"
+      },
+      "orientation" : "landscape"
+    }
+  ],
+  [
+    {
       "malloc": "40K"
     },
     {
