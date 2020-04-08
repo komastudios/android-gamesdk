@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "231b7605_0e140633",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 18
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-04-08T17:16:46Z",
+      "side": 1,
+      "message": "Yes it does, nope it doesn\u0027t matter since it\u0027s an initialization only loop:)",
+      "parentUuid": "5b02ef8e_69efb569",
+      "range": {
+        "startLine": 29,
+        "startChar": 3,
+        "endLine": 29,
+        "endChar": 47
+      },
+      "revId": "adeaf79aa087cd018d4eebb87c73eb4d73f969d2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "77cb6dc5_359ae4ec",
         "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
         "patchSetId": 18
@@ -59,6 +83,30 @@
       "writtenOn": "2020-04-08T16:47:29Z",
       "side": 1,
       "message": "You should delete this //NOTE: piece - that was just for you.",
+      "range": {
+        "startLine": 116,
+        "startChar": 50,
+        "endLine": 116,
+        "endChar": 89
+      },
+      "revId": "adeaf79aa087cd018d4eebb87c73eb4d73f969d2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "90056411_006a2a98",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 18
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-04-08T17:16:46Z",
+      "side": 1,
+      "message": "Also, this is a const method.",
+      "parentUuid": "77cb6dc5_359ae4ec",
       "range": {
         "startLine": 116,
         "startChar": 50,
