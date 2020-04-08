@@ -1,15 +1,17 @@
 package net.jimblackler.istresser;
 
+import static com.google.android.apps.internal.games.helperlibrary.Helper.getBuild;
 import static net.jimblackler.istresser.Heuristic.Identifier.TRIM;
 import static net.jimblackler.istresser.ServiceCommunicationHelper.CRASHED_BEFORE;
 import static net.jimblackler.istresser.ServiceCommunicationHelper.TOTAL_MEMORY_MB;
-import static net.jimblackler.istresser.Utils.getDebugMemoryInfo;
-import static net.jimblackler.istresser.Utils.getMemoryInfo;
-import static net.jimblackler.istresser.Utils.getOomScore;
-import static net.jimblackler.istresser.Utils.lowMemoryCheck;
-import static net.jimblackler.istresser.Utils.processMeminfo;
-import static net.jimblackler.istresser.Utils.processStatus;
-import static net.jimblackler.istresser.Utils.readFile;
+import static net.jimblackler.istresser.Utils.getFileSize;
+import static net.jimblackler.istresser.Utils.getMemoryQuantity;
+import static com.google.android.apps.internal.games.helperlibrary.Utils.getMemoryInfo;
+import static com.google.android.apps.internal.games.helperlibrary.Utils.getOomScore;
+import static com.google.android.apps.internal.games.helperlibrary.Utils.lowMemoryCheck;
+import static com.google.android.apps.internal.games.helperlibrary.Utils.processMeminfo;
+import static com.google.android.apps.internal.games.helperlibrary.Utils.readFile;
+import static com.google.android.apps.internal.games.helperlibrary.Utils.readStream;
 
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
@@ -19,12 +21,8 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Debug;
-import android.os.Debug.MemoryInfo;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
@@ -33,19 +31,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import com.google.common.collect.ImmutableList;
+import com.google.android.apps.internal.games.helperlibrary.Info;
 import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -81,16 +77,6 @@ public class MainActivity extends AppCompatActivity {
 
   private final Collection<Identifier> activeGroups = new TreeSet<>();
 
-  private static final ImmutableList<String> MEMINFO_FIELDS =
-      ImmutableList.of("Cached", "MemFree", "MemAvailable", "SwapFree");
-
-  private static final ImmutableList<String> STATUS_FIELDS =
-      ImmutableList.of("VmSize", "VmRSS", "VmData");
-
-  private static final String[] SUMMARY_FIELDS = {
-      "summary.graphics", "summary.native-heap", "summary.total-pss"
-  };
-
   static {
     System.loadLibrary("native-lib");
   }
@@ -102,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
   private long mmapFileAllocatedByTest;
   private long recordNativeHeapAllocatedSize;
   private PrintStream resultsStream = System.out;
-  private long startTime;
+  private Info info = new Info();
   private long latestAllocationTime = -1;
   private int releases;
   private long appSwitchTimerStart;
@@ -163,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
     if (params1 == null) {
       try {
-        params1 = new JSONObject(Utils.readStream(getAssets().open("default.json")));
+        params1 = new JSONObject(readStream(getAssets().open("default.json")));
       } catch (IOException | JSONException e) {
         throw new IllegalStateException(e);
       }
@@ -251,9 +237,9 @@ public class MainActivity extends AppCompatActivity {
         activateFirebaseBlocker();
       }
 
-      mallocBytesPerMillisecond = Utils.getMemoryQuantity(params, "malloc");
+      mallocBytesPerMillisecond = getMemoryQuantity(params, "malloc");
 
-      glAllocBytesPerMillisecond = Utils.getMemoryQuantity(params, "glTest");
+      glAllocBytesPerMillisecond = getMemoryQuantity(params, "glTest");
       if (mallocBytesPerMillisecond == 0) {
         nativeConsume((int) Utils.getMemoryQuantity(params, "mallocFixed"));
       }
@@ -262,13 +248,13 @@ public class MainActivity extends AppCompatActivity {
         testSurface.setVisibility(View.VISIBLE);
       }
 
-      mmapAnonBytesPerMillisecond = Utils.getMemoryQuantity(params, "mmapAnon");
+      mmapAnonBytesPerMillisecond = getMemoryQuantity(params, "mmapAnon");
 
-      mmapFileBytesPerMillisecond = Utils.getMemoryQuantity(params, "mmapFile");
+      mmapFileBytesPerMillisecond = getMemoryQuantity(params, "mmapFile");
       if (mmapFileBytesPerMillisecond > 0) {
         String mmapPath = getApplicationContext().getCacheDir().toString();
         int mmapFileCount = params.getInt("mmapFileCount");
-        long mmapFileSize = Utils.getMemoryQuantity(params, "mmapFileSize");
+        long mmapFileSize = getMemoryQuantity(params, "mmapFileSize");
         mmapFiles = new MmapFileGroup(mmapPath, mmapFileCount, mmapFileSize);
       }
 
@@ -286,10 +272,7 @@ public class MainActivity extends AppCompatActivity {
       TextView strategies = findViewById(R.id.strategies);
       strategies.setText(activeGroups.toString());
 
-      JSONObject build = new JSONObject();
-      getStaticFields(build, Build.class);
-      getStaticFields(build, VERSION.class);
-      report.put("build", build);
+      report.put("build", getBuild());
 
       JSONObject constant = new JSONObject();
       ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
@@ -309,9 +292,8 @@ public class MainActivity extends AppCompatActivity {
       throw new IllegalStateException(e);
     }
 
-    startTime = System.currentTimeMillis();
     appSwitchTimerStart = System.currentTimeMillis();
-    latestAllocationTime = startTime;
+    latestAllocationTime = info.getStartTime();
     for (Heuristic heuristic : Heuristic.availableHeuristics) {
       if (activeGroups.contains(heuristic.getIdentifier())) {
         activeHeuristics.add(heuristic);
@@ -404,7 +386,7 @@ public class MainActivity extends AppCompatActivity {
                   }
                 }
               }
-              long timeRunning = System.currentTimeMillis() - startTime;
+              long timeRunning = System.currentTimeMillis() - info.getStartTime();
               if (LAUNCH_DURATION != 0) {
                 long appSwitchTimeRunning = System.currentTimeMillis() - appSwitchTimerStart;
                 if (appSwitchTimeRunning > LAUNCH_DURATION && lastLaunched < LAUNCH_DURATION) {
@@ -512,20 +494,6 @@ public class MainActivity extends AppCompatActivity {
     }.start();
   }
 
-  private static void getStaticFields(JSONObject object, Class<?> aClass) throws JSONException {
-
-    for (Field field : aClass.getFields()) {
-      if (!java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
-        continue;
-      }
-      try {
-        object.put(field.getName(), JSONObject.wrap(field.get(null)));
-      } catch (IllegalAccessException e) {
-        // Silent by design.
-      }
-    }
-  }
-
   @Override
   protected void onDestroy() {
     try {
@@ -567,23 +535,19 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
-  private void updateRecords() {
-    long nativeHeapAllocatedSize = Debug.getNativeHeapAllocatedSize();
-    if (nativeHeapAllocatedSize > recordNativeHeapAllocatedSize) {
-      recordNativeHeapAllocatedSize = nativeHeapAllocatedSize;
-    }
-  }
-
   private void updateInfo() {
     runOnUiThread(
         () -> {
-          updateRecords();
+          long nativeHeapAllocatedSize = Debug.getNativeHeapAllocatedSize();
+          if (nativeHeapAllocatedSize > recordNativeHeapAllocatedSize) {
+            recordNativeHeapAllocatedSize = nativeHeapAllocatedSize;
+          }
 
           ActivityManager activityManager =
               (ActivityManager) Objects.requireNonNull(this.getSystemService(ACTIVITY_SERVICE));
 
           TextView uptime = findViewById(R.id.uptime);
-          float timeRunning = (float) (System.currentTimeMillis() - startTime) / 1000;
+          float timeRunning = (float) (System.currentTimeMillis() - info.getStartTime()) / 1000;
           uptime.setText(String.format(Locale.getDefault(), "%.2f", timeRunning));
 
           TextView freeMemory = findViewById(R.id.freeMemory);
@@ -599,7 +563,6 @@ public class MainActivity extends AppCompatActivity {
           nativeHeap.setText(memoryString(Debug.getNativeHeapSize()));
 
           TextView nativeAllocated = findViewById(R.id.nativeAllocated);
-          long nativeHeapAllocatedSize = Debug.getNativeHeapAllocatedSize();
           nativeAllocated.setText(memoryString(nativeHeapAllocatedSize));
 
           TextView recordNativeAllocated = findViewById(R.id.recordNativeAllocated);
@@ -719,23 +682,12 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private JSONObject standardInfo() throws JSONException {
-    updateRecords();
-    JSONObject report = new JSONObject();
-    report.put("time", System.currentTimeMillis() - startTime);
-    report.put("nativeAllocated", Debug.getNativeHeapAllocatedSize());
+    JSONObject report = info.getMemoryMetrics(this);
     boolean paused = latestAllocationTime == -1;
     if (paused) {
       report.put("paused", true);
     }
 
-    ActivityManager activityManager =
-        (ActivityManager) Objects.requireNonNull(getSystemService(ACTIVITY_SERVICE));
-    ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
-    report.put("availMem", memoryInfo.availMem);
-    boolean lowMemory = lowMemoryCheck(activityManager);
-    if (lowMemory) {
-      report.put("lowMemory", true);
-    }
     if (isServiceCrashed) {
       report.put("serviceCrashed", true);
     }
@@ -743,33 +695,10 @@ public class MainActivity extends AppCompatActivity {
     report.put("mmapAnonAllocatedByTest", mmapAnonAllocatedByTest);
     report.put("mmapFileAllocatedByTest", mmapFileAllocatedByTest);
     report.put("serviceTotalMemory", BYTES_IN_MEGABYTE * serviceTotalMb);
-    report.put("oom_score", getOomScore(activityManager));
 
     TestSurface testSurface = findViewById(R.id.glsurfaceView);
     TestRenderer renderer = testSurface.getRenderer();
     report.put("gl_allocated", renderer.getAllocated());
-
-    if (VERSION.SDK_INT >= VERSION_CODES.M) {
-      MemoryInfo debugMemoryInfo = getDebugMemoryInfo(activityManager)[0];
-      for (String key : SUMMARY_FIELDS) {
-        report.put(key, debugMemoryInfo.getMemoryStat(key));
-      }
-    }
-
-    Map<String, Long> values = processMeminfo();
-    for (Map.Entry<String, Long> pair : values.entrySet()) {
-      String key = pair.getKey();
-      if (MEMINFO_FIELDS.contains(key)) {
-        report.put(key, pair.getValue());
-      }
-    }
-
-    for (Map.Entry<String, Long> pair : processStatus(activityManager).entrySet()) {
-      String key = pair.getKey();
-      if (STATUS_FIELDS.contains(key)) {
-        report.put(key, pair.getValue());
-      }
-    }
     return report;
   }
 
@@ -801,7 +730,7 @@ public class MainActivity extends AppCompatActivity {
 
     public MmapFileInfo(String path) throws IOException {
       this.path = path;
-      fileSize = Utils.getFileSize(path);
+      fileSize = getFileSize(path);
       offset = 0;
     }
 
