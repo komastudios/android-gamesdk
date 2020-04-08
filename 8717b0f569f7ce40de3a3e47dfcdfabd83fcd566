@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "60ea3c01_53ed1974",
+        "filename": "test/helperlibrary/helperlibrary/src/main/java/com/google/android/apps/internal/games/helperlibrary/Helper.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-04-08T16:58:05Z",
+      "side": 1,
+      "message": "Could you add javadoc to all the new classes?",
+      "revId": "8717b0f569f7ce40de3a3e47dfcdfabd83fcd566",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9a0721b3_8ae31398",
+        "filename": "test/helperlibrary/helperlibrary/src/main/java/com/google/android/apps/internal/games/helperlibrary/Info.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-04-08T16:58:05Z",
+      "side": 1,
+      "message": "I think you can turn all of the methods in this class into static",
+      "range": {
+        "startLine": 22,
+        "startChar": 13,
+        "endLine": 22,
+        "endChar": 17
+      },
+      "revId": "8717b0f569f7ce40de3a3e47dfcdfabd83fcd566",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "61d40418_e4f29298",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/Utils.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-04-08T16:58:05Z",
+      "side": 1,
+      "message": "Why did you not move the entire file?",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 12,
+        "endChar": 20
+      },
+      "revId": "8717b0f569f7ce40de3a3e47dfcdfabd83fcd566",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
