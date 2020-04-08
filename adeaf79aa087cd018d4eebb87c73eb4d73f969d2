@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7d405deb_e338e782",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 18
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-04-08T16:47:29Z",
+      "side": 1,
+      "message": "It\u0027d be useful to see what Clang does with this code - does it autovectorize? Or not?\nWhat you should be able to do here instead is do this all in a glm::vec3 type:\n\nscale_factor_ \u003d glm::max(glm::abs(bounding_box_.min), glm::abs(bounding_box_.max));\n\nI\u0027d be surprised if Clang didn\u0027t catch this and do it for you, but it\u0027s worth checking :)",
+      "range": {
+        "startLine": 24,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 40
+      },
+      "revId": "adeaf79aa087cd018d4eebb87c73eb4d73f969d2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5b02ef8e_69efb569",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 18
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-04-08T16:47:29Z",
+      "side": 1,
+      "message": "Micro-optimization time:\n - does Clang hoist the call to vertex_data.size() out of the loop? \n - does it matter? 😄\n\n(Don\u0027t change anything, just consider it for a while...)",
+      "range": {
+        "startLine": 29,
+        "startChar": 3,
+        "endLine": 29,
+        "endChar": 47
+      },
+      "revId": "adeaf79aa087cd018d4eebb87c73eb4d73f969d2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "77cb6dc5_359ae4ec",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.cc",
+        "patchSetId": 18
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-04-08T16:47:29Z",
+      "side": 1,
+      "message": "You should delete this //NOTE: piece - that was just for you.",
+      "range": {
+        "startLine": 116,
+        "startChar": 50,
+        "endLine": 116,
+        "endChar": 89
+      },
+      "revId": "adeaf79aa087cd018d4eebb87c73eb4d73f969d2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
