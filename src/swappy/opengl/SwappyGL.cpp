@@ -45,7 +45,6 @@ bool SwappyGL::init(JNIEnv *env, jobject jactivity) {
     sInstance = std::make_unique<SwappyGL>(env, jactivity, ConstructorTag{});
     if (!sInstance->mEnableSwappy) {
         ALOGE("Failed to initialize SwappyGL");
-        sInstance = nullptr;
         return false;
     }
 
@@ -57,7 +56,6 @@ void SwappyGL::onChoreographer(int64_t frameTimeNanos) {
 
     SwappyGL *swappy = getInstance();
     if (!swappy) {
-        ALOGE("Failed to get Swappy instance in swap");
         return;
     }
 
@@ -69,7 +67,6 @@ bool SwappyGL::swap(EGLDisplay display, EGLSurface surface) {
 
     SwappyGL *swappy = getInstance();
     if (!swappy) {
-        ALOGE("Failed to get SwappyGL instance in swap");
         return EGL_FALSE;
     }
 
@@ -118,16 +115,15 @@ bool SwappyGL::swapInternal(EGLDisplay display, EGLSurface surface) {
 void SwappyGL::addTracer(const SwappyTracer *tracer) {
     SwappyGL *swappy = getInstance();
     if (!swappy) {
-        ALOGE("Failed to get SwappyGL instance in addTracer");
         return;
     }
-    swappy->mCommonBase.addTracerCallbacks(*tracer);
+    if (swappy->enabled())
+        swappy->mCommonBase.addTracerCallbacks(*tracer);
 }
 
 uint64_t SwappyGL::getSwapIntervalNS() {
     SwappyGL *swappy = getInstance();
-    if (!swappy) {
-        ALOGE("Failed to get SwappyGL instance in getSwapIntervalNS");
+    if (!swappy || !swappy->enabled()) {
         return -1;
     }
     return swappy->mCommonBase.getSwapIntervalNS();
@@ -136,35 +132,34 @@ uint64_t SwappyGL::getSwapIntervalNS() {
 void SwappyGL::setAutoSwapInterval(bool enabled) {
     SwappyGL *swappy = getInstance();
     if (!swappy) {
-        ALOGE("Failed to get SwappyGL instance in setAutoSwapInterval");
         return;
     }
-    swappy->mCommonBase.setAutoSwapInterval(enabled);
+    if (swappy->enabled())
+        swappy->mCommonBase.setAutoSwapInterval(enabled);
 }
 
 void SwappyGL::setAutoPipelineMode(bool enabled) {
     SwappyGL *swappy = getInstance();
     if (!swappy) {
-        ALOGE("Failed to get SwappyGL instance in setAutoPipelineMode");
         return;
     }
-    swappy->mCommonBase.setAutoPipelineMode(enabled);
+    if (swappy->enabled())
+        swappy->mCommonBase.setAutoPipelineMode(enabled);
 }
 
 void SwappyGL::setMaxAutoSwapIntervalNS(std::chrono::nanoseconds maxSwapNS) {
     SwappyGL *swappy = getInstance();
     if (!swappy) {
-        ALOGE("Failed to get SwappyGL instance in setMaxAutoSwapIntervalNS");
         return;
     }
-    swappy->mCommonBase.setMaxAutoSwapIntervalNS(maxSwapNS);
+    if (swappy->enabled())
+        swappy->mCommonBase.setMaxAutoSwapIntervalNS(maxSwapNS);
 }
 
 void SwappyGL::enableStats(bool enabled) {
     SwappyGL *swappy = getInstance();
     if (!swappy) {
-        ALOGE("Failed to get SwappyGL instance in enableStats");
-            return;
+        return;
     }
 
     if (!swappy->enabled()) {
@@ -190,7 +185,6 @@ void SwappyGL::recordFrameStart(EGLDisplay display, EGLSurface surface) {
     TRACE_CALL();
     SwappyGL *swappy = getInstance();
     if (!swappy) {
-        ALOGE("Failed to get Swappy instance in recordFrameStart");
         return;
     }
 
@@ -201,7 +195,6 @@ void SwappyGL::recordFrameStart(EGLDisplay display, EGLSurface surface) {
 void SwappyGL::getStats(SwappyStats *stats) {
     SwappyGL *swappy = getInstance();
     if (!swappy) {
-        ALOGE("Failed to get SwappyGL instance in getStats");
         return;
     }
 
@@ -232,8 +225,7 @@ void SwappyGL::destroyInstance() {
 
 void SwappyGL::setFenceTimeout(std::chrono::nanoseconds t) {
     SwappyGL *swappy = getInstance();
-    if (!swappy) {
-        ALOGE("Failed to get SwappyGL instance in setFenceTimeout");
+    if (!swappy || !swappy->enabled()) {
         return;
     }
     swappy->mCommonBase.setFenceTimeout(t);
@@ -241,8 +233,7 @@ void SwappyGL::setFenceTimeout(std::chrono::nanoseconds t) {
 
 std::chrono::nanoseconds SwappyGL::getFenceTimeout() {
     SwappyGL *swappy = getInstance();
-    if (!swappy) {
-        ALOGE("Failed to get SwappyGL instance in getFenceTimeout");
+    if (!swappy || !swappy->enabled()) {
         return std::chrono::nanoseconds(0);
     }
     return swappy->mCommonBase.getFenceTimeout();
@@ -261,6 +252,16 @@ SwappyGL::SwappyGL(JNIEnv *env, jobject jactivity, ConstructorTag)
     : mFrameStatistics(nullptr),
       mCommonBase(env, jactivity)
 {
+    {
+        std::lock_guard<std::mutex> lock(mEglMutex);
+        mEgl = EGL::create(mCommonBase.getFenceTimeout());
+        if (!mEgl) {
+            ALOGE("Failed to load EGL functions");
+            mEnableSwappy = false;
+            return;
+        }
+    }
+
     if (!mCommonBase.isValid()) {
         ALOGE("SwappyCommon could not initialize correctly.");
         mEnableSwappy = false;
@@ -270,14 +271,6 @@ SwappyGL::SwappyGL(JNIEnv *env, jobject jactivity, ConstructorTag)
     mEnableSwappy = !getSystemPropViaGetAsBool(SWAPPY_SYSTEM_PROP_KEY_DISABLE, false);
     if (!enabled()) {
         ALOGI("Swappy is disabled");
-        return;
-    }
-
-    std::lock_guard<std::mutex> lock(mEglMutex);
-    mEgl = EGL::create(mCommonBase.getFenceTimeout());
-    if (!mEgl) {
-        ALOGE("Failed to load EGL functions");
-        mEnableSwappy = false;
         return;
     }
 
