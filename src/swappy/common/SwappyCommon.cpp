@@ -124,6 +124,11 @@ SwappyCommon::SwappyCommon(JNIEnv *env, jobject jactivity)
 
     env->GetJavaVM(&mJVM);
 
+    if (deviceIsBlacklisted()) {
+        ALOGE("Device is blacklisted");
+        return;
+    }
+
     mChoreographerFilter = std::make_unique<ChoreographerFilter>(mCommonSettings.refreshPeriod,
                                      mCommonSettings.sfVsyncOffset - mCommonSettings.appVsyncOffset,
                                                                 [this]() { return wakeClient(); });
@@ -835,6 +840,82 @@ int SwappyCommonSettings::getSDKVersion(JNIEnv *env) {
 
     ALOGI("SDK version = %d", sdk);
     return sdk;
+}
+
+namespace {
+
+static std::string GetStringField(JNIEnv* env, jclass clz, const char* name) {
+    const jfieldID fieldId = env->GetStaticFieldID(clz, name,
+							"Ljava/lang/String;");
+    if (env->ExceptionCheck()) {
+        env->ExceptionClear();
+        ALOGE("Failed to get string field %s", name);
+        return "";
+    }
+
+    const jstring jstr = (jstring)env->GetStaticObjectField(clz, fieldId);
+    if (env->ExceptionCheck()) {
+        env->ExceptionClear();
+        ALOGE("Failed to get string %s", name);
+        return "";
+    }
+    jboolean isCopy;
+    auto cstr = env->GetStringUTFChars(jstr, &isCopy);
+    auto length = env->GetStringUTFLength(jstr);
+    std::string retValue(cstr, length);
+    env->ReleaseStringUTFChars(jstr, cstr);
+    env->DeleteLocalRef(jstr);
+    return retValue;
+}
+
+struct DeviceIdentifier {
+    std::string manufacturer;
+    std::string model;
+    std::string display;
+    // Empty fields match against any value and we match the beginning of the input, e.g.
+    //  A37 matches A37f, A37fw, etc.
+    bool match(std::string manufacturer_in, std::string model_in, std::string display_in) {
+        if (! matchStartOfString(manufacturer, manufacturer_in) ) return false;
+        if (! matchStartOfString(model, model_in) ) return false;
+        if (! matchStartOfString(display, display_in) ) return false;
+        return true;
+    }
+    bool matchStartOfString(std::string start, std::string sample) {
+        return start.empty() || start==sample.substr(0, start.length());
+    }
+};
+
+} // anonymous namespace
+
+bool SwappyCommon::deviceIsBlacklisted() {
+    JNIEnv *env;
+    mJVM->AttachCurrentThread(&env, nullptr);
+
+    // List of blacklisted models
+    static std::vector<DeviceIdentifier> blacklistedDevices = {{"OPPO", "A37", ""}};
+
+    const jclass buildClass = env->FindClass("android/os/Build");
+    if (env->ExceptionCheck()) {
+        env->ExceptionClear();
+        ALOGE("Failed to get Build class");
+        return false;
+    }
+
+    auto manufacturer = GetStringField(env, buildClass, "MANUFACTURER");
+    if (manufacturer.empty()) return false;
+
+    auto model = GetStringField(env, buildClass, "MODEL");
+    if (model.empty()) return false;
+
+    auto display = GetStringField(env, buildClass, "DISPLAY");
+    if (display.empty()) return false;
+
+    for(auto& device: blacklistedDevices) {
+        if (device.match(manufacturer, model, display))
+            return true;
+    }
+
+    return false;
 }
 
 } // namespace swappy

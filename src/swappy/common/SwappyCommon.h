@@ -97,6 +97,8 @@ public:
     std::chrono::nanoseconds getFenceTimeout() const { return mFenceTimeout; }
     void setFenceTimeout(std::chrono::nanoseconds t) { mFenceTimeout = t; }
 
+    bool deviceIsBlacklisted();
+
   protected:
     // Used for testing
     SwappyCommon(const SwappyCommonSettings& settings);
