@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9eca7882_2ceb3f2a",
+        "filename": "src/swappy/opengl/SwappyGL.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 233,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-04-09T11:58:43Z",
+      "side": 0,
+      "message": "Should this setter be also checking swappy-\u003eenabled()? Other setter and getters are doing it.",
+      "revId": "78d400d542d9fc5f4149a8d80e42b2c1192b5d23",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}

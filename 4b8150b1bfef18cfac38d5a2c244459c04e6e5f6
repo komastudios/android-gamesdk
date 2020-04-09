@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9da297c1_477cdbe9",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 847,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-04-09T11:58:43Z",
+      "side": 1,
+      "message": "nit: GetStaticStringField?",
+      "revId": "4b8150b1bfef18cfac38d5a2c244459c04e6e5f6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4f340482_ecd894a7",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 863,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-04-09T11:58:43Z",
+      "side": 1,
+      "message": "nit: you can pass null_ptr according to the doc if you don\u0027t need isCopy",
+      "revId": "4b8150b1bfef18cfac38d5a2c244459c04e6e5f6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2252ce0b_05108cad",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 877,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-04-09T11:58:43Z",
+      "side": 1,
+      "message": "nitpicking question: pass by const reference to avoid copies of the strings every time we\u0027re checking a device? Or useless because there is probably copy-on-write optimisation on std::strings?",
+      "revId": "4b8150b1bfef18cfac38d5a2c244459c04e6e5f6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d39daeb7_eb64801d",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-04-09T11:58:43Z",
+      "side": 1,
+      "message": "uber nitpicking: I usually prefer to start functions returning a boolean with is (or should/has).\n\u003d\u003e isDeviceBlacklisted",
+      "revId": "4b8150b1bfef18cfac38d5a2c244459c04e6e5f6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b0510816_366379bd",
+        "filename": "src/swappy/opengl/SwappyGL.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-04-09T11:58:43Z",
+      "side": 1,
+      "message": "What\u0027s the reason behind this, is it just safer to acquire the lock sooner than later?",
+      "revId": "4b8150b1bfef18cfac38d5a2c244459c04e6e5f6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
