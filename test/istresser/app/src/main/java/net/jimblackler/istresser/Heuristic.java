@@ -1,8 +1,8 @@
 package net.jimblackler.istresser;
 
-import static net.jimblackler.istresser.Utils.getMemoryInfo;
-import static net.jimblackler.istresser.Utils.getOomScore;
-import static net.jimblackler.istresser.Utils.processMeminfo;
+import static com.google.android.apps.internal.games.helperlibrary.Utils.getMemoryInfo;
+import static com.google.android.apps.internal.games.helperlibrary.Utils.getOomScore;
+import static com.google.android.apps.internal.games.helperlibrary.Utils.processMeminfo;
 
 import android.app.ActivityManager;
 import android.os.Debug;
