@@ -69,4 +69,8 @@ class Utils {
     }
     return params;
   }
+
+  static String getProjectId() throws IOException {
+    return execute(Config.GCLOUD_EXECUTABLE.toString(), "config", "get-value", "project");
+  }
 }

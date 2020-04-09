@@ -53,9 +53,7 @@ class Collector {
   }
 
   static void cloudCollect(Consumer<? super JSONArray> emitter) throws IOException {
-
-    String projectId = "istresser";
-
+    String projectId = Utils.getProjectId();
     String accessToken = Auth.getAccessToken();
     GoogleCredentials credentials1 = GoogleCredentials.create(new AccessToken(accessToken, null));
     Storage storage = StorageOptions.newBuilder().setCredentials(credentials1).build().getService();
@@ -108,7 +106,7 @@ class Collector {
             //noinspection HardcodedFileSeparator
             extra.put(
                 "resultsPage",
-                "https://firebase.corp.google.com/project/istresser/testlab/histories/"
+                "https://console.cloud.google.com/project/" + projectId + "/testlab/histories/"
                     + historyId
                     + "/matrices/"
                     + executionId

@@ -20,11 +20,6 @@ import org.json.JSONTokener;
 
 public class Launcher {
 
-  private static final Path HOME = Path.of(System.getProperty("user.home"));
-  private static final Path GCLOUD_LOCATION = HOME.resolve("google-cloud-sdk/bin");
-  private static final Path SDK_BASE = HOME.resolve("code/android-games-sdk");
-  private static final Path GRABBER_BASE = SDK_BASE.resolve("gamesdk/test/grabber");
-  private static final Path GCLOUD_EXECUTABLE = GCLOUD_LOCATION.resolve("gcloud");
   private static final int MIN_VERSION = 26;
   private static final int MAX_DEVICES = Integer.MAX_VALUE;
   private static final String STANDARD_APK_PATH = "app/build/outputs/apk/debug/app-debug.apk";
@@ -34,10 +29,10 @@ public class Launcher {
     UUID uuid = UUID.randomUUID();
     Date date = new Date();
 
-    Path grabberPath = GRABBER_BASE.resolve(STANDARD_APK_PATH);
+    Path grabberPath = Config.GRABBER_BASE.resolve(STANDARD_APK_PATH);
 
     List<String> baseCommands = new ArrayList<>(Arrays.asList(
-        GCLOUD_EXECUTABLE.toString(),
+        Config.GCLOUD_EXECUTABLE.toString(),
         "beta", "firebase", "test", "android", "run",
         "--results-history-name", uuid.toString(),
         "--type", "game-loop",
@@ -129,7 +124,7 @@ public class Launcher {
   private static Collection<String> getDevices() throws IOException {
     Collection<String> devicesOut = new ArrayList<>();
     String[] args1 = {
-      GCLOUD_EXECUTABLE.toString(),
+      Config.GCLOUD_EXECUTABLE.toString(),
       "beta", "firebase", "test", "android", "models", "list",
       "--format", "json"
     };
