@@ -11,6 +11,19 @@
 #ifndef BENDER_BASE_UTILS_SRC_MESH_HELPERS_H_
 #define BENDER_BASE_UTILS_SRC_MESH_HELPERS_H_
 
+struct MeshVertex {
+    MeshVertex(glm::vec3 pos, glm::vec3 normal, glm::vec3 tangent, glm::vec3 bitangent,
+               glm::vec2 tex_coord) :
+            pos(pos), normal(normal), tangent(tangent), bitangent(bitangent),
+            tex_coord(tex_coord) {}
+
+    glm::vec3 pos;
+    glm::vec3 normal;
+    glm::vec3 tangent;
+    glm::vec3 bitangent;
+    glm::vec2 tex_coord;
+};
+
 struct MTL {
   glm::vec3 ambient;
   glm::vec3 diffuse;
