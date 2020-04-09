@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "69291fef_5f3e8f98",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 542,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-04-09T16:05:41Z",
+      "side": 1,
+      "message": "Can we pass this down as an argument?",
+      "revId": "06e5b9e8c9b14e539fcdff8762f8f88c9bc63443",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "05e1d298_fd51cf67",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 555,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-04-09T16:05:41Z",
+      "side": 1,
+      "message": "Extract LoadMaterials()",
+      "revId": "06e5b9e8c9b14e539fcdff8762f8f88c9bc63443",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "213dbc9c_a674bf51",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 595,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-04-09T16:05:41Z",
+      "side": 1,
+      "message": "Extract LoadMeshes()",
+      "revId": "06e5b9e8c9b14e539fcdff8762f8f88c9bc63443",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "27662311_5d6a283c",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 621,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-04-09T16:05:41Z",
+      "side": 1,
+      "message": "I would try to eliminate these two memcpys and read straight into the vertex/index buffers.\nAlso, small nitpicks, this method is CreateBuffer() and not just CreateVertexBuffer().\n\nSo something like:\npacked_vertex* vertex_data \u003d Geometry::LockVertexBuffer(total_vertex_count);\ndata.read(... vertex_data, ...);\nGeometry::UnlockVertexBuffer();\n\nuint16_t index_data \u003d Geometry::LockIndexBuffer(total_index_count);\n...\nGeometry::UnlockIndexBuffer();\n\nLock methods will also create the buffers if necessary.",
+      "revId": "06e5b9e8c9b14e539fcdff8762f8f88c9bc63443",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
