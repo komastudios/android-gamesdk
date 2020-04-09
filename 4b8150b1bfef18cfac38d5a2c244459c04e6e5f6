@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "398fffb8_18fc8f99",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 847,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-04-09T12:55:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9da297c1_477cdbe9",
+      "revId": "4b8150b1bfef18cfac38d5a2c244459c04e6e5f6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4f340482_ecd894a7",
         "filename": "src/swappy/common/SwappyCommon.cpp",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "4b8150b1bfef18cfac38d5a2c244459c04e6e5f6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "efcc2f8f_76945127",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 863,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-04-09T12:55:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4f340482_ecd894a7",
+      "revId": "4b8150b1bfef18cfac38d5a2c244459c04e6e5f6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "d235d2b2_4b439dbd",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 877,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-04-09T12:55:05Z",
+      "side": 1,
+      "message": "I think most STLs don\u0027t have copy on write for strings. People debate whether small strings should be passed by value rather than reference, but in this case, you\u0027re right, it is more efficient to pass by reference, so I\u0027ve changed it.",
+      "parentUuid": "2252ce0b_05108cad",
+      "revId": "4b8150b1bfef18cfac38d5a2c244459c04e6e5f6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d39daeb7_eb64801d",
         "filename": "src/swappy/common/SwappyCommon.h",
         "patchSetId": 1
@@ -70,6 +124,24 @@
     },
     {
       "key": {
+        "uuid": "18d3fa6b_84ed7c9b",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-04-09T12:55:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d39daeb7_eb64801d",
+      "revId": "4b8150b1bfef18cfac38d5a2c244459c04e6e5f6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b0510816_366379bd",
         "filename": "src/swappy/opengl/SwappyGL.cpp",
         "patchSetId": 1
@@ -84,6 +156,24 @@
       "revId": "4b8150b1bfef18cfac38d5a2c244459c04e6e5f6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0a1c82b7_d2a779f9",
+        "filename": "src/swappy/opengl/SwappyGL.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-04-09T12:55:05Z",
+      "side": 1,
+      "message": "Now we don\u0027t zero the Swappy pointer when Swappy is disabled, we need a working mEgl in order to call eglSwapbuffers when SwappyGL_swap is called.",
+      "parentUuid": "b0510816_366379bd",
+      "revId": "4b8150b1bfef18cfac38d5a2c244459c04e6e5f6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }

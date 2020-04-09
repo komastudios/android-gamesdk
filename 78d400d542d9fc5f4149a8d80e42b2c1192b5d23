@@ -16,6 +16,24 @@
       "revId": "78d400d542d9fc5f4149a8d80e42b2c1192b5d23",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4a609d15_cc6b7984",
+        "filename": "src/swappy/opengl/SwappyGL.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 233,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-04-09T12:55:05Z",
+      "side": 0,
+      "message": "Done",
+      "parentUuid": "9eca7882_2ceb3f2a",
+      "revId": "78d400d542d9fc5f4149a8d80e42b2c1192b5d23",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
