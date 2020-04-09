@@ -106,7 +106,7 @@ class Collector {
             //noinspection HardcodedFileSeparator
             extra.put(
                 "resultsPage",
-                "https://console.cloud.google.com/project/" + projectId + "/testlab/histories/"
+                "https://console.firebase.google.com/project/" + projectId + "/testlab/histories/"
                     + historyId
                     + "/matrices/"
                     + executionId
