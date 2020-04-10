@@ -41,7 +41,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <AndroidNdkVersion>20.1.5948944</AndroidNdkVersion>
+    <AndroidNdkVersion>21.0.6113669</AndroidNdkVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -166,6 +166,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="$(VS_NdkRoot)\sources\android\native_app_glue\android_native_app_glue.c" />
     <ClCompile Include="app\src\main\jni\android_main.cc" />
     <ClCompile Include="app\src\main\jni\button.cc" />
     <ClCompile Include="app\src\main\jni\camera.cc" />
@@ -183,13 +184,13 @@
     <ClCompile Include="app\src\main\jni\uniform_buffer.cc" />
     <ClCompile Include="app\src\main\jni\user_interface.cc" />
     <ClCompile Include="app\src\main\jni\vulkan_main.cc" />
-    <ClCompile Include="C:\Users\mattkw\AppData\Local\Android\Sdk\ndk\20.0.5594570\sources\android\native_app_glue\android_native_app_glue.c" />
     <ClCompile Include="external\glm\detail\glm.cpp" />
     <ClCompile Include="utils\bender_kit\debug_marker.cc" />
     <ClCompile Include="utils\bender_kit\device.cc" />
     <ClCompile Include="utils\bender_kit\timing.cc" />
     <ClCompile Include="utils\bender_kit\vertex_format.cc" />
     <ClCompile Include="utils\bender_kit\vulkan_wrapper\vulkan_wrapper.cc" />
+    <ClCompile Include="utils\src\astc.cc" />
     <ClCompile Include="utils\src\bender_helpers.cc" />
     <ClCompile Include="utils\src\mesh_helpers.cc" />
     <ClCompile Include="utils\src\obj_loader.cc" />
@@ -465,7 +466,9 @@
     <ClInclude Include="utils\bender_kit\timing.h" />
     <ClInclude Include="utils\bender_kit\vertex_format.h" />
     <ClInclude Include="utils\bender_kit\vulkan_wrapper\vulkan_wrapper.h" />
+    <ClInclude Include="utils\src\astc.h" />
     <ClInclude Include="utils\src\bender_helpers.h" />
+    <ClInclude Include="utils\src\circular_buffer.h" />
     <ClInclude Include="utils\src\mesh_helpers.h" />
     <ClInclude Include="utils\src\obj_loader.h" />
   </ItemGroup>
