@@ -17,7 +17,6 @@
 package com.google.gamesdk.gamecert.operationrunner.hosts;
 
 import android.content.Context;
-import android.content.Intent;
 import android.opengl.EGL14;
 import android.opengl.EGLExt;
 import android.opengl.GLSurfaceView;
@@ -27,7 +26,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 
 import com.google.gamesdk.R;
-import com.google.gamesdk.gamecert.operationrunner.transport.Configuration;
 import com.google.gamesdk.gamecert.operationrunner.util.NativeInvoker;
 
 import javax.microedition.khronos.egl.EGL10;
@@ -41,12 +39,6 @@ public class GLSurfaceViewHostActivity extends BaseGLHostActivity {
     private static final String TAG = "SurfaceViewHostActivity";  // max 23 chars per Log API
 
     GLES3JNIView _view;
-
-    public static Intent createIntent(Context ctx, Configuration.StressTest stressTest) {
-        Intent i = new Intent(ctx, GLSurfaceViewHostActivity.class);
-        i.putExtra(STRESS_TEST_JSON, stressTest.toJson());
-        return i;
-    }
 
     @Override
     protected int getContentViewResource() {

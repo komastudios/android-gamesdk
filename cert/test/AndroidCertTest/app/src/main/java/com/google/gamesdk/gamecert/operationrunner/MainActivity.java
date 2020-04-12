@@ -50,6 +50,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.gamesdk.R;
 import com.google.gamesdk.gamecert.operationrunner.hosts.BaseHostActivity;
 import com.google.gamesdk.gamecert.operationrunner.hosts.GLSurfaceViewHostActivity;
+import com.google.gamesdk.gamecert.operationrunner.hosts.NougatSigabrtHostActivity;
 import com.google.gamesdk.gamecert.operationrunner.hosts.SwappyGLHostActivity;
 import com.google.gamesdk.gamecert.operationrunner.hosts.VulkanHostActivity;
 import com.google.gamesdk.gamecert.operationrunner.transport.Configuration;
@@ -422,33 +423,43 @@ public class MainActivity extends AppCompatActivity {
 
         switch (host) {
             case BaseHostActivity.ID: {
-                i = BaseHostActivity.createIntent(this, stressTest);
+                i = BaseHostActivity.createIntent(this, stressTest, BaseHostActivity.class);
                 break;
             }
 
             case GLSurfaceViewHostActivity.ID: {
-                i = GLSurfaceViewHostActivity.createIntent(this, stressTest);
+                i = BaseHostActivity.createIntent(this, stressTest,
+                    GLSurfaceViewHostActivity.class);
                 break;
             }
 
             case SwappyGLHostActivity.ID: {
                 if (SwappyGLHostActivity.isSupported()) {
-                    i = SwappyGLHostActivity.createIntent(this, stressTest);
+                    i = BaseHostActivity.createIntent(this, stressTest,
+                        SwappyGLHostActivity.class);
                 } else {
                     Log.i(TAG, "SwappyGLHostActivity not supported on SDK "
                         + VERSION.SDK_INT + " using GLSurfaceViewHostActivity");
-                    i = GLSurfaceViewHostActivity.createIntent(this, stressTest);
+                    i = BaseHostActivity.createIntent(this, stressTest,
+                        GLSurfaceViewHostActivity.class);
                 }
                 break;
             }
 
             case VulkanHostActivity.ID: {
                 if (VulkanHostActivity.isSupported()) {
-                    i = VulkanHostActivity.createIntent(this, stressTest);
+                    i = BaseHostActivity.createIntent(this, stressTest,
+                        VulkanHostActivity.class);
                 } else {
                     Log.i(TAG, "VulkanHostActivity not supported on SDK "
                         + VERSION.SDK_INT + " using GLSurfaceViewHostActivity");
                 }
+                break;
+            }
+
+            case NougatSigabrtHostActivity.ID: {
+                i = BaseHostActivity.createIntent(this, stressTest,
+                    NougatSigabrtHostActivity.class);
                 break;
             }
 
