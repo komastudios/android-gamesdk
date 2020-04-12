@@ -223,19 +223,6 @@ class MemoryAllocOperation : public BaseOperation {
         [=]() {
           _loop();
         });
-
-    // wait for execution duration to time out
-    _threads.emplace_back(
-        [this]() {
-          while (!IsStopped()) {
-            auto now = SteadyClock::now();
-            if (now - GetStartTime() > GetDuration()) {
-              Stop();
-              return;
-            }
-            std::this_thread::sleep_for(50ms);
-          }
-        });
   }
 
   void Wait() override {
