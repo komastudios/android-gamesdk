@@ -36,21 +36,18 @@ import com.google.gamesdk.gamecert.operationrunner.operations.BaseOperation.Mode
 import com.google.gamesdk.gamecert.operationrunner.operations.Factory;
 import com.google.gamesdk.gamecert.operationrunner.transport.Configuration;
 import com.google.gamesdk.gamecert.operationrunner.transport.Configuration.Operation;
-import com.google.gamesdk.gamecert.operationrunner.transport.Configuration.StressTest;
 import com.google.gamesdk.gamecert.operationrunner.util.NativeInvoker;
 import com.google.gamesdk.gamecert.operationrunner.util.SystemHelpers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public class BaseHostActivity extends AppCompatActivity
         implements ComponentCallbacks2 {
 
-    public static final String ID = "BasicHostActivity";
+    public static final String ID = "BaseHostActivity";
     private static final String TAG = BaseHostActivity.class.getSimpleName();
     protected static final String STRESS_TEST_JSON = "STRESS_TEST_JSON";
     private static final boolean SHOW_TIMING_INFO = true;
@@ -71,8 +68,9 @@ public class BaseHostActivity extends AppCompatActivity
 
     protected SystemHelpers _systemHelpers;
 
-    public static Intent createIntent(Context ctx, Configuration.StressTest stressTest) {
-        Intent i = new Intent(ctx, BaseHostActivity.class);
+    public static Intent createIntent(Context ctx, Configuration.StressTest stressTest,
+          Class clazz) {
+        Intent i = new Intent(ctx, clazz);
         i.putExtra(STRESS_TEST_JSON, stressTest.toJson());
         return i;
     }
@@ -144,27 +142,24 @@ public class BaseHostActivity extends AppCompatActivity
 
         // we're not using java streams because of SDK 19 support
         for (Operation stressor : _stressTest.getStressors()) {
-            OperationWrapper wrapper = new OperationWrapper(_suiteId, _suiteDescription, stressor,this, Mode.STRESSOR);
+            OperationWrapper wrapper = new OperationWrapper(_suiteId, _suiteDescription, stressor,
+                this, Mode.STRESSOR);
             _stressors.add(wrapper);
         }
 
         for (Operation monitor : _stressTest.getMonitors()) {
-            OperationWrapper wrapper = new OperationWrapper(_suiteId, _suiteDescription, monitor, this, Mode.DATA_GATHERER);
+            OperationWrapper wrapper = new OperationWrapper(_suiteId, _suiteDescription, monitor,
+                this, Mode.DATA_GATHERER);
             _monitors.add(wrapper);
         }
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
         startDataGathererAndStressors();
     }
 
     @Override
     public void onBackPressed() {
         _canceled = true;
-        _dataGatherer.stop();
-        for (OperationWrapper op : _stressors) op.stop();
+        stopDataGathererAndStressors();
     }
 
     @Override
@@ -256,6 +251,15 @@ public class BaseHostActivity extends AppCompatActivity
             _mainThreadPump.post(() -> onFinished(_canceled));
 
         }).start();
+    }
+
+    /**
+     * Useful to anticipate the finalization of a test at will (e.g., back button pressed or
+     * collected data is enough and there's no need to wait for the original test duration).
+     */
+    protected void stopDataGathererAndStressors() {
+        _dataGatherer.stop();
+        for (OperationWrapper op : _stressors) op.stop();
     }
 
     protected int getContentViewResource() {

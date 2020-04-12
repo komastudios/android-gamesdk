@@ -19,7 +19,7 @@
           "first_frame_id": 20,
           "last_frame_id": 120,
           "presentation_delay_ms": 54
-      }
+        }
       },
       "host": "GLSurfaceViewHostActivity",
       "stressors": []
