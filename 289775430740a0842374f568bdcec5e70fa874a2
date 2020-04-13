@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2eb718da_4933eaeb",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/gamesdk/gamecert/operationrunner/hosts/NougatSigabrtHostActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-04-13T17:11:59Z",
+      "side": 1,
+      "message": "Is it necessary to both press back key and call onBackPressed?",
+      "revId": "289775430740a0842374f568bdcec5e70fa874a2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "30364ea1_0b9e889a",
+        "filename": "cert/test/reporting/lib/graphers/__init__.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-04-13T17:11:59Z",
+      "side": 1,
+      "message": "These red/yellow/green traffic lights are really fun. Love it. (S/R)",
+      "revId": "289775430740a0842374f568bdcec5e70fa874a2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
