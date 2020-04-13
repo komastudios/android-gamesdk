@@ -105,6 +105,24 @@
       "revId": "289775430740a0842374f568bdcec5e70fa874a2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "97407178_98214f05",
+        "filename": "cert/test/reporting/lib/graphers/__init__.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-13T23:41:44Z",
+      "side": 1,
+      "message": "Hi Michael, could be debatable. While it\u0027s true that so far was just a list holder, it\u0027s still a Python __init__.py file. These files are meant to hold things we want available module-wise.\n\nBecause so far we didn\u0027t have anything else than the list of handlers, that was the only thing that this __init__.py was for. But looks like this time around I got something more meaningful for this module __init__ to be good at :-)\n\nI\u0027d personally keep it as is and we wouldn\u0027t be violating any Python rule for module __init__ files. But I\u0027d change my mind if it started growing way too big. Then, splitting would be certainly a recommended action.\n\nI hope it makes sense!",
+      "parentUuid": "2d5fea7e_f272c274",
+      "revId": "289775430740a0842374f568bdcec5e70fa874a2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
