@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "47522721_b01211e6",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/gamesdk/gamecert/operationrunner/hosts/NougatSigabrtHostActivity.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-13T23:29:22Z",
+      "side": 1,
+      "message": "In consideration of earlier feedback (patch 1), I re-assessed the need to simulate a back button pressing here and concluded that it suffices with enabling host activities to stop data gatherers and stressors once what we needed to check is done.\nFor that reason, I added this stopDataGathererAndStressors() to BaseHostActivity.\n\nThe intention here is clear: five seconds after launching the device camera, this host activity stops all test operations. If a crash happened, it\u0027s already captured and logged (see NougatSigabrtOperation).",
+      "revId": "b1059b6cf1eb595a72f4122578ba730c2df67fb0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
