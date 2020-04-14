@@ -368,6 +368,11 @@ def buildNativeModules(arch, Toolchain toolchain, stl, threadChecks, buildtf, su
         workingDir workingFolder
         commandLine cmdLine
     }
+    
+    def jsonDesription = new File(joinPath(outputFolder, "abi.json"))
+    jsonDesription.text = '{"abi":"'+arch+'","api":'+toolchain.getAndroidVersion()+
+        '"ndk":'+toolchain.getNdkVersionNumber()+',"stl":"'+stl+'"}'
+    
     return [arch: arch, buildKey: buildKey]
 }
 
@@ -418,6 +423,51 @@ def repackArchives(dir, inArs, outAr) {
         cmd <<= /$arPath -rcs $outAr *.o && rm *.o && popd/
         ['/bin/bash', '-c', cmd.toString()].execute().waitFor()
     }
+}
+
+def aarSdkCopy(buildInfo, outFolder) {
+    def arch = buildInfo.arch
+    def buildKey = buildInfo.buildKey
+    def cmakeFolder = joinPath(getTempPath(), buildKey, '.cmake', 'swappy')
+    def buildFolder = joinPath(getPackagePath(), outFolder )
+    def libBuildFolder = joinPath(buildFolder, 'prefab','modules', 'swappy', 'libs',
+                                  buildKey)
+    def staticsFolder = joinPath(getOutPath(), buildKey)
+    def includeBuildFolder = joinPath(buildFolder, 'prefab','modules', 'swappy', 'include')
+    def headerFolder = './include/swappy'
+    // 1. Copy dynamic library
+    copy {
+        from file(cmakeFolder)
+        include "*.so","*.json"
+        into file(libBuildFolder)
+        includeEmptyDirs = false
+    }
+    // 2. Copy the static libary
+    copy {
+            from file(staticsFolder)
+            include "*.a","*.json"
+            rename("libswappy_static.a", "libswappy.a")
+            into file(libBuildFolder)
+    }
+    // 3. Copy headers
+    copy {
+        from file(headerFolder)
+        include "*.h"
+        into file(includeBuildFolder)
+        includeEmptyDirs = false
+    }
+    // 4. Copy the manifest
+    copy {
+        from file("./src")
+        include "AndroidManifest.xml"
+        into file(buildFolder)
+        includeEmptyDirs = false
+    }
+    // 5. Create the json files
+    def jsonPrefabDesription = new File(joinPath(buildFolder, 'prefab', 'prefab.json'))
+    jsonPrefabDesription.text = '{"name":"y","schema_version":1,"dependencies":[],"version":"1.3.0"}'
+    def jsonModuleDesription = new File(joinPath(buildFolder, 'prefab', 'modules', 'swappy', 'module.json'))
+    jsonModuleDesription.text = '{"library_name": "libswappy", "export_libraries": ["-llibswappy"]}'
 }
 
 def sdkCopy(buildInfo, outFolder, all = true, staticToo = false,
@@ -698,6 +748,24 @@ task releaseSdkBuild(type: BuildTask) {
     ext.buildType = "Release";
     ext.nativeBuild = { tf,bt -> sdkNativeBuild(tf,bt) }
 }
+// Build everything and package as an aar file
+task releaseAarSdkBuild() {
+    dependsOn ':extras:assembleRelease', prepare_proto
+    ext.packageName = 'gamesdk'
+    ext.flattenLibs = false
+    ext.withTuningFork = false
+    ext.withSharedLibs = true
+    ext.withStaticLibs = true
+    ext.withFullBuildKey = true
+    ext.withSamples = true
+    ext.buildType = "Release";
+    ext.nativeBuild = { tf,bt -> sdkNativeBuild(tf,bt) }
+    doLast {
+        nativeBuild(withTuningFork, buildType).each {
+            aarSdkCopy(it, packageName)
+        }
+    }
+}
 // Build everything in debug without TF
 task debugSdkBuild(type: BuildTask) {
     dependsOn ':extras:assembleRelease', prepare_proto
@@ -829,24 +897,24 @@ task localDeviceInfoUnitTests {
 }
 
 // Zipping things up
-def addZipTask(name, buildTask, zipName, rootName = "gamesdk") {
+def addZipTask(name, buildTask, zipName) {
     def packPath = buildTask.packageName
     tasks.register(name, Zip) {
         dependsOn buildTask
         def buildFolder = joinPath(getPackagePath(), packPath)
-        baseName = joinPath(buildFolder, zipName)
-
+        def archName = zipName + (zipName.contains(".") ? "" : ".zip")
+                     
         from fileTree(buildFolder)
-        exclude "*.zip"
-
-        into rootName
+        exclude archName
+        destinationDirectory = file(buildFolder)
+        archiveFileName = archName
 
         doLast {
             def outFolder = getBuildPath();\
             mkdir outFolder;
 
             copy {
-                from file(baseName + '.zip')
+                from file(archiveName)
                 into outFolder
             }
 
@@ -858,9 +926,9 @@ def addZipTask(name, buildTask, zipName, rootName = "gamesdk") {
             }
 
             def out = services.get(StyledTextOutputFactory).create("output")
-            out.style(Style.Identifier).text('\n' + rootName +'.zip is in ')
+            out.style(Style.Identifier).text('\n' + archName +' is in ')
             .style(Style.ProgressStatus)
-                .println(baseName + '.zip' );
+                .println(destinationDirectory.get());
         }
     }
 
@@ -875,3 +943,4 @@ addZipTask("fullSdkZip", fullSdkBuild, "gamesdk")
 addZipTask("specificZip", specificBuild, "gamesdk")
 addZipTask("gamesdkZip", releaseSdkBuild, "gamesdk")
 addZipTask("gamesdkDebugZip", debugSdkBuild, "gamesdk_debug")
+addZipTask("gameSdkAAR", releaseAarSdkBuild, "gamesdk.aar")
