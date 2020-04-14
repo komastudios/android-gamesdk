@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "30ea859d_947d39d0",
+        "filename": "bender/bender-base/utils/bender_kit/device.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-04-14T19:27:09Z",
+      "side": 1,
+      "message": "Should we declare this more specifically as uint32_t?",
+      "range": {
+        "startLine": 129,
+        "startChar": 8,
+        "endLine": 129,
+        "endChar": 12
+      },
+      "revId": "6fb73d554e93157b285e9fc897389bfc4dc2ab62",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9d59cc69_0c08fefe",
+        "filename": "bender/bender-base/utils/bender_kit/timing.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-04-14T19:27:09Z",
+      "side": 1,
+      "message": "Is this added to avoid zero division?",
+      "range": {
+        "startLine": 66,
+        "startChar": 44,
+        "endLine": 66,
+        "endChar": 48
+      },
+      "revId": "6fb73d554e93157b285e9fc897389bfc4dc2ab62",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
