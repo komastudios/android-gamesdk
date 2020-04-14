@@ -27,9 +27,9 @@ def osFolderName(externalToolName) {
     else if (OperatingSystem.current().isWindows()) {
         if (externalToolName == ExternalToolName.PROTOBUF) {
             return "win";
-	} else if (externalToolName == ExternalToolName.CMAKE) {
-	    return "windows-x86";
-	}
+        } else if (externalToolName == ExternalToolName.CMAKE) {
+            return "windows-x86";
+        }
     }
 
     throw new GradleException("Unsupported OS");
@@ -97,7 +97,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.3.2'
-	classpath "org.codehaus.gpars:gpars:1.2.0"
+        classpath "org.codehaus.gpars:gpars:1.2.0"
     }
 }
 
@@ -122,7 +122,7 @@ abstract class Toolchain {
     }
     public String getBuildKey(String arch, String stl, String buildType) {
         return arch + "_API" + androidVersion_ + "_NDK" + getNdkVersionNumber() + '_' +
-	    sanitize(stl)+ '_'+buildType
+            sanitize(stl)+ '_'+buildType
     }
     protected String getNdkVersionFromPropertiesFile() {
         def f = new File(getAndroidNDKPath(), 'source.properties')
@@ -137,7 +137,7 @@ abstract class Toolchain {
             }
             def ver = props."Pkg.Revision"
             def parts = ver.findAll("[^.]+")
-	    // Ignore the minor version
+            // Ignore the minor version
             return parts[0]
         }
     }
@@ -368,6 +368,11 @@ def buildNativeModules(arch, Toolchain toolchain, stl, threadChecks, buildtf, su
         workingDir workingFolder
         commandLine cmdLine
     }
+    
+    def jsonDesription = new File(joinPath(outputFolder, "abi.json"))
+    jsonDesription.text = '{"abi":"'+arch+'","api":'+toolchain.getAndroidVersion()+
+        '"ndk":'+toolchain.getNdkVersionNumber()+',"stl":"'+stl+'"}'
+    
     return [arch: arch, buildKey: buildKey]
 }
 
@@ -418,6 +423,51 @@ def repackArchives(dir, inArs, outAr) {
         cmd <<= /$arPath -rcs $outAr *.o && rm *.o && popd/
         ['/bin/bash', '-c', cmd.toString()].execute().waitFor()
     }
+}
+
+def aarSdkCopy(buildInfo, outFolder) {
+    def arch = buildInfo.arch
+    def buildKey = buildInfo.buildKey
+    def cmakeFolder = joinPath(getTempPath(), buildKey, '.cmake', 'swappy')
+    def buildFolder = joinPath(getPackagePath(), outFolder )
+    def libBuildFolder = joinPath(buildFolder, 'prefab','modules', 'swappy', 'libs',
+                                  buildKey)
+    def staticsFolder = joinPath(getOutPath(), buildKey)
+    def includeBuildFolder = joinPath(buildFolder, 'prefab','modules', 'swappy', 'include')
+    def headerFolder = './include/swappy'
+    // 1. Copy dynamic library
+    copy {
+        from file(cmakeFolder)
+        include "*.so","*.json"
+        into file(libBuildFolder)
+        includeEmptyDirs = false
+    }
+    // 2. Copy the static libary
+    copy {
+            from file(staticsFolder)
+            include "*.a","*.json"
+            rename("libswappy_static.a", "libswappy.a")
+            into file(libBuildFolder)
+    }
+    // 3. Copy headers
+    copy {
+        from file(headerFolder)
+        include "*.h"
+        into file(includeBuildFolder)
+        includeEmptyDirs = false
+    }
+    // 4. Copy the manifest
+    copy {
+        from file("./src")
+        include "AndroidManifest.xml"
+        into file(buildFolder)
+        includeEmptyDirs = false
+    }
+    // 5. Create the json files
+    def jsonPrefabDescription = new File(joinPath(buildFolder, 'prefab', 'prefab.json'))
+    jsonPrefabDescription.text = '{"name":"GameSDK","schema_version":1,"dependencies":[],"version":"1.3.0"}'
+    def jsonModuleDescription = new File(joinPath(buildFolder, 'prefab', 'modules', 'swappy', 'module.json'))
+    jsonModuleDescription.text = '{"library_name": "libswappy", "export_libraries": ["-llibswappy"]}'
 }
 
 def sdkCopy(buildInfo, outFolder, all = true, staticToo = false,
@@ -479,8 +529,8 @@ def copyExtras(outFolder, all = true) {
 
 def copyDocs(outFolder) {
     copy {
-	from "LICENSE", "THIRD_PARTY_NOTICES", "RELEASE_NOTES"
-	into getPackagePath() + '/' + outFolder
+        from "LICENSE", "THIRD_PARTY_NOTICES", "RELEASE_NOTES"
+        into getPackagePath() + '/' + outFolder
     }
 }
 
@@ -506,7 +556,7 @@ def copySamples(outFolder, includeTuningForkSamples = true) {
         from file(joinPath('samples', "bouncyball"))
         into file(joinPath(buildFolder, 'samples', "bouncyball"))
         exclude '**/build', '**/out', "local.properties", "**/.externalNativeBuild", "**/.gradle",
-	    "**/OWNERS", "**/.idea", '**/CMakeLists.txt'
+            "**/OWNERS", "**/.idea", '**/CMakeLists.txt'
         rename 'CMakeLists.for-samples-in-archive.txt', 'CMakeLists.txt'
         includeEmptyDirs = false
     }
@@ -516,7 +566,7 @@ def copySamples(outFolder, includeTuningForkSamples = true) {
         from file(joinPath('samples', "cube"))
         into file(joinPath(buildFolder, 'samples', "cube"))
         exclude '**/build', '**/out', "local.properties", "**/.externalNativeBuild",
-	    "**/.gradle", "**/OWNERS", "**/.idea"
+            "**/.gradle", "**/OWNERS", "**/.idea"
         includeEmptyDirs = false
     }
     copy {
@@ -524,46 +574,46 @@ def copySamples(outFolder, includeTuningForkSamples = true) {
         into file(joinPath(buildFolder, 'third_party', "cube"))
         rename 'CMakeLists.for-samples-in-archive.txt', 'CMakeLists.txt'
         exclude '**/build', '**/out', "local.properties", "**/.externalNativeBuild", "**/.gradle",
-	    "**/OWNERS", "**/.idea"
+            "**/OWNERS", "**/.idea"
         includeEmptyDirs = false
     }
 
     if (includeTuningForkSamples) {
-	copy {
+        copy {
             from file(joinPath('samples', "tuningfork", "expertballs"))
             into file(joinPath(buildFolder, 'samples', "tuningfork", "expertballs"))
             exclude '**/build', '**/out', "local.properties", "**/.externalNativeBuild", "**/.gradle",
-		"**/OWNERS", "**/.idea", '**/CMakeLists.txt'
+                "**/OWNERS", "**/.idea", '**/CMakeLists.txt'
             rename 'CMakeLists.for-samples-in-archive.txt', 'CMakeLists.txt'
             includeEmptyDirs = false
-	}
-	copy {
+        }
+        copy {
             from file(joinPath('src', 'protobuf'))
             into file(joinPath(buildFolder, 'src', 'protobuf'))
             includeEmptyDirs = false
-	}
-	copy {
+        }
+        copy {
             from file(joinPath('third_party', 'protobuf-3.0.0'))
             into file(joinPath(buildFolder, 'third_party', 'protobuf-3.0.0'))
             includeEmptyDirs = false
-	}
-	copy {
+        }
+        copy {
             from file(joinPath('..', 'external', 'nanopb-c'))
             into file(joinPath(buildFolder, 'external', 'nanopb-c'))
             includeEmptyDirs = false
-	}
-	copy {
+        }
+        copy {
             from file(joinPath('src', 'tuningfork', 'tools', 'validation'))
             into file(joinPath(buildFolder, 'src', 'tuningfork', 'tools', 'validation'))
             exclude '**/build'
             includeEmptyDirs = false
-	}
-	copy {
+        }
+        copy {
             from file(joinPath('src', 'tuningfork', 'proto'))
             into file(joinPath(buildFolder, 'src', 'tuningfork', 'proto'))
             include 'tuningfork.proto'
             includeEmptyDirs = false
-	}
+        }
     }
 }
 
@@ -590,21 +640,21 @@ def sdkNativeBuild(withTuningFork = true, buildType="Release") {
     def versions = versionMapping().collectMany { GroovyCollections.combinations(it) }
     def versionsPost17 = versionMappingPost17().collectMany { GroovyCollections.combinations(it) }
     def allCombos = GroovyCollections.combinations(defaultAbis(), versions, allSTLs()) +
-	GroovyCollections.combinations(defaultAbis(), versionsPost17, post17STLs());
+        GroovyCollections.combinations(defaultAbis(), versionsPost17, post17STLs());
     GParsPool.withPool {
-	return allCombos.collectParallel { x ->
+        return allCombos.collectParallel { x ->
             buildNativeModules(x[0], x[1][1].toString(), x[1][0], x[2], threadChecks,
-			       withTuningFork, buildType	)
-	}
+                               withTuningFork, buildType        )
+        }
     }
 }
 
 def specificNativeBuild(sdkVersion, ndkVersion, stlVersion, withTuningFork = false,
-			buildType="Release") {
+                        buildType="Release") {
     def threadChecks = false
     return defaultAbis().collect {
         buildNativeModules(it, sdkVersion, ndkVersion, stlVersion, threadChecks, withTuningFork,
-			   buildType)
+                           buildType)
     }
 }
 
@@ -698,6 +748,24 @@ task releaseSdkBuild(type: BuildTask) {
     ext.buildType = "Release";
     ext.nativeBuild = { tf,bt -> sdkNativeBuild(tf,bt) }
 }
+// Build everything and package as an aar file
+task releaseAarSdkBuild() {
+    dependsOn ':extras:assembleRelease', prepare_proto
+    ext.packageName = 'gamesdk'
+    ext.flattenLibs = false
+    ext.withTuningFork = false
+    ext.withSharedLibs = true
+    ext.withStaticLibs = true
+    ext.withFullBuildKey = true
+    ext.withSamples = true
+    ext.buildType = "Release";
+    ext.nativeBuild = { tf,bt -> sdkNativeBuild(tf,bt) }
+    doLast {
+        nativeBuild(withTuningFork, buildType).each {
+            aarSdkCopy(it, packageName)
+        }
+    }
+}
 // Build everything in debug without TF
 task debugSdkBuild(type: BuildTask) {
     dependsOn ':extras:assembleRelease', prepare_proto
@@ -772,7 +840,7 @@ tasks.withType(BuildTask) {
         }
         copyExtras(packageName, withTuningFork)
 
-	copyDocs(packageName)
+        copyDocs(packageName)
 
         if (withSamples) {
             copySamples(packageName, withTuningFork)
@@ -829,24 +897,24 @@ task localDeviceInfoUnitTests {
 }
 
 // Zipping things up
-def addZipTask(name, buildTask, zipName, rootName = "gamesdk") {
+def addZipTask(name, buildTask, zipName) {
     def packPath = buildTask.packageName
     tasks.register(name, Zip) {
         dependsOn buildTask
         def buildFolder = joinPath(getPackagePath(), packPath)
-        baseName = joinPath(buildFolder, zipName)
-
+        def archName = zipName + (zipName.contains(".") ? "" : ".zip")
+                     
         from fileTree(buildFolder)
-        exclude "*.zip"
-
-        into rootName
+        exclude archName
+        destinationDirectory = file(buildFolder)
+        archiveFileName = archName
 
         doLast {
             def outFolder = getBuildPath();\
             mkdir outFolder;
 
             copy {
-                from file(baseName + '.zip')
+                from file(archiveName)
                 into outFolder
             }
 
@@ -858,9 +926,9 @@ def addZipTask(name, buildTask, zipName, rootName = "gamesdk") {
             }
 
             def out = services.get(StyledTextOutputFactory).create("output")
-            out.style(Style.Identifier).text('\n' + rootName +'.zip is in ')
+            out.style(Style.Identifier).text('\n' + archName +' is in ')
             .style(Style.ProgressStatus)
-                .println(baseName + '.zip' );
+                .println(destinationDirectory.get());
         }
     }
 
@@ -875,3 +943,4 @@ addZipTask("fullSdkZip", fullSdkBuild, "gamesdk")
 addZipTask("specificZip", specificBuild, "gamesdk")
 addZipTask("gamesdkZip", releaseSdkBuild, "gamesdk")
 addZipTask("gamesdkDebugZip", debugSdkBuild, "gamesdk_debug")
+addZipTask("gameSdkAAR", releaseAarSdkBuild, "gamesdk.aar")
