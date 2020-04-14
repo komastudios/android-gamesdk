@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "4ead51c0_8e4ac416",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-04-14T20:45:37Z",
+      "side": 1,
+      "message": "No, it\u0027s equivalent to your current method. FillVertexBuffer will look like:\n\nFillVertexBuffer(..., [](packed_vertex *vertices) filler) {\n\nvoid *data;\nVkMapMemory(..., \u0026data)\nfiller(data);\nVkUnmapMemory();\n}\n\n\n\nThe client will call like:\n\nFillVertexBuffer(... , [](packed_vertex *vertices) {\n  fread(soup_file, vertices, length_of_vb);\n});",
+      "parentUuid": "601befb4_e710eb04",
+      "revId": "884abc42211113ad129d1c3728dc548dc228dda6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5983be26_9a194c0d",
         "filename": "bender/bender-base/app/src/main/jni/geometry.h",
         "patchSetId": 3
@@ -66,6 +84,24 @@
       "side": 1,
       "message": "Yup that\u0027s currently the setup, a single buffer for the vertex data and a single buffer containing index data, then we just use offsets to get the needed data from them",
       "parentUuid": "5983be26_9a194c0d",
+      "revId": "884abc42211113ad129d1c3728dc548dc228dda6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "281131af_8ee2261b",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-04-14T20:45:37Z",
+      "side": 1,
+      "message": "Sounds good.",
+      "parentUuid": "1f7ca739_c37e6415",
       "revId": "884abc42211113ad129d1c3728dc548dc228dda6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
