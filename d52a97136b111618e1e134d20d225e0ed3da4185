@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "2e3667f5_624e0da9",
+        "filename": "build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 372,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2020-04-14T15:32:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e94f027a_ea2c5aa1",
+      "range": {
+        "startLine": 372,
+        "startChar": 8,
+        "endLine": 372,
+        "endChar": 22
+      },
+      "revId": "d52a97136b111618e1e134d20d225e0ed3da4185",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e91757a4_2e13c52b",
         "filename": "build.gradle",
         "patchSetId": 2
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "bd7239cc_db635daf",
+        "filename": "build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 467,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2020-04-14T15:32:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e91757a4_2e13c52b",
+      "range": {
+        "startLine": 467,
+        "startChar": 8,
+        "endLine": 467,
+        "endChar": 28
+      },
+      "revId": "d52a97136b111618e1e134d20d225e0ed3da4185",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f8b733b7_43a4535f",
         "filename": "build.gradle",
         "patchSetId": 2
@@ -62,6 +110,24 @@
       "revId": "d52a97136b111618e1e134d20d225e0ed3da4185",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "98c1cb80_9d827713",
+        "filename": "build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 468,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2020-04-14T15:32:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f8b733b7_43a4535f",
+      "revId": "d52a97136b111618e1e134d20d225e0ed3da4185",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
