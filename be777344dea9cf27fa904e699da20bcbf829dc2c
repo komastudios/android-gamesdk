@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cfc4bea9_1a7b9b83",
+        "filename": "bender/bender-base/utils/bender_kit/device.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-04-14T19:58:23Z",
+      "side": 1,
+      "message": "I would like to explore the possibility of moving the logic that manages the current image index inside the device, to avoid having to set the current image from outside.\n\nNot a blocker.",
+      "revId": "be777344dea9cf27fa904e699da20bcbf829dc2c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
