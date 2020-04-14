@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2bc67925_fbda9b99",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-04-14T20:06:39Z",
+      "side": 1,
+      "message": "I find this paradigm confusing and error prone, since this is creating AND locking the VB/IB.\n\nI recommend a slightly different approach, instead of lock/unlock:\n\nGeometry::FillVertexBuffer(...device, [](packed_vertex* vertices, size_t length) {\n    ... code to write to vertices\n}\n\nLocking/Unlocking is hidden inside FillVertex.\n\nSame for the index buffer.",
+      "revId": "884abc42211113ad129d1c3728dc548dc228dda6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5983be26_9a194c0d",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-04-14T20:06:39Z",
+      "side": 1,
+      "message": "Are we sharing vertex and index buffers across all Geometries?",
+      "revId": "884abc42211113ad129d1c3728dc548dc228dda6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
