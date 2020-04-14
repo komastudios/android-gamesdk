@@ -52,10 +52,11 @@ public:
 
   void UpdateLights(glm::vec3 camera_pos);
 
-  benderkit::Device& GetDevice() const { return device_; };
+  benderkit::Device& GetDevice() const { return device_; }
   VkDevice GetVulkanDevice() const { return device_.GetDevice(); }
   VkCommandBuffer GetCurrentCommandBuffer() const;
   uint32_t GetCurrentFrame() const;
+  uint32_t GetCurrentImage() const;
 
   VkDescriptorPool GetDescriptorPool() const { return descriptor_pool_; };
   VkDescriptorSetLayout GetLightsDescriptorSetLayout() const { return lights_descriptors_layout_; }
@@ -82,7 +83,8 @@ private:
   VkSemaphore *acquire_image_semaphore_;
   VkSemaphore *render_finished_semaphore_;
 
-  VkFence *fence_;
+  VkFence *in_flight_fences_;
+  VkFence *images_in_flight_;
 
   VkPipelineCache cache_;
 

@@ -34,16 +34,17 @@ Renderer::~Renderer() {
   vkFreeCommandBuffers(GetVulkanDevice(), cmd_pool_, cmd_buffer_len_,
                        cmd_buffer_);
 
-  for (int i = 0; i < device_.GetDisplayImages().size(); i++){
+  for (int i = 0; i < device_.GetMaxFramesInFlight(); i++){
     vkDestroySemaphore(device_.GetDevice(), acquire_image_semaphore_[i], nullptr);
     vkDestroySemaphore(device_.GetDevice(), render_finished_semaphore_[i], nullptr);
-    vkDestroyFence(device_.GetDevice(), fence_[i], nullptr);
+    vkDestroyFence(device_.GetDevice(), in_flight_fences_[i], nullptr);
   }
 
   delete[] cmd_buffer_;
   delete[] acquire_image_semaphore_;
   delete[] render_finished_semaphore_;
-  delete[] fence_;
+  delete[] in_flight_fences_;
+  delete[] images_in_flight_;
 
   DestroyPool();
   vkDestroyDescriptorSetLayout(device_.GetDevice(), lights_descriptors_layout_, nullptr);
@@ -55,14 +56,18 @@ Renderer::~Renderer() {
 void Renderer::BeginFrame() {
   timing::timer.Time("vkAcquireNextImageKHR", timing::OTHER, [this](){
     uint32_t next_index;
+    CALL_VK(vkWaitForFences(device_.GetDevice(), 1, &in_flight_fences_[GetCurrentFrame()], VK_TRUE, UINT64_MAX));
     CALL_VK(vkAcquireNextImageKHR(device_.GetDevice(), device_.GetSwapchain(),
                                   UINT64_MAX, acquire_image_semaphore_[GetCurrentFrame()], VK_NULL_HANDLE,
                                   &next_index));
+    device_.SetCurrentImageIndex(next_index);
   });
 
   timing::timer.Time("vkWaitForFences", timing::OTHER, [this](){
-    CALL_VK(vkWaitForFences(device_.GetDevice(), 1, &fence_[GetCurrentFrame()], VK_TRUE, 100000000));
-    CALL_VK(vkResetFences(device_.GetDevice(), 1, &fence_[GetCurrentFrame()]));
+    if (images_in_flight_[GetCurrentImage()] != VK_NULL_HANDLE){
+      CALL_VK(vkWaitForFences(device_.GetDevice(), 1, &images_in_flight_[GetCurrentImage()], VK_TRUE, UINT64_MAX));
+    }
+    images_in_flight_[GetCurrentImage()] = in_flight_fences_[GetCurrentFrame()];
   });
 }
 
@@ -76,12 +81,13 @@ void Renderer::EndFrame() {
       .pWaitSemaphores = &acquire_image_semaphore_[GetCurrentFrame()],
       .pWaitDstStageMask = &wait_stage_mask,
       .commandBufferCount = 1,
-      .pCommandBuffers = &cmd_buffer_[GetCurrentFrame()],
+      .pCommandBuffers = &cmd_buffer_[GetCurrentImage()],
       .signalSemaphoreCount = 1,
       .pSignalSemaphores = &render_finished_semaphore_[GetCurrentFrame()]};
 
   timing::timer.Time("vkQueueSubmit", timing::OTHER, [this, submit_info](){
-    CALL_VK(vkQueueSubmit(device_.GetMainQueue(), 1, &submit_info, fence_[GetCurrentFrame()]));
+      CALL_VK(vkResetFences(device_.GetDevice(), 1, &in_flight_fences_[GetCurrentFrame()]));
+      CALL_VK(vkQueueSubmit(device_.GetMainQueue(), 1, &submit_info, in_flight_fences_[GetCurrentFrame()]));
   });
 
   timing::timer.Time("Device::Present", timing::OTHER, [this](){
@@ -131,9 +137,10 @@ void Renderer::Init() {
 
   cmd_buffer_len_ = device_.GetSwapchainLength();
   cmd_buffer_ = new VkCommandBuffer[device_.GetSwapchainLength()];
-  acquire_image_semaphore_ = new VkSemaphore[device_.GetSwapchainLength()];
-  render_finished_semaphore_ = new VkSemaphore[device_.GetSwapchainLength()];
-  fence_ = new VkFence[device_.GetSwapchainLength()];
+  acquire_image_semaphore_ = new VkSemaphore[device_.GetMaxFramesInFlight()];
+  render_finished_semaphore_ = new VkSemaphore[device_.GetMaxFramesInFlight()];
+  in_flight_fences_ = new VkFence[device_.GetMaxFramesInFlight()];
+  images_in_flight_ = new VkFence[device_.GetSwapchainLength()];
 
   for (int i = 0; i < device_.GetSwapchainLength(); ++i) {
     VkCommandBufferAllocateInfo cmd_buffer_create_info {
@@ -150,12 +157,22 @@ void Renderer::Init() {
         VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT,
         ("TEST NAME: COMMAND BUFFER" + std::to_string(i)).c_str());
 
-    VkSemaphoreCreateInfo semaphore_create_info {
+    images_in_flight_[i] = VK_NULL_HANDLE;
+  }
+
+  VkSemaphoreCreateInfo semaphore_create_info {
         .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
         .pNext = nullptr,
         .flags = 0,
-    };
+  };
 
+  VkFenceCreateInfo fence_create_info {
+        .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+        .pNext = nullptr,
+        .flags = VK_FENCE_CREATE_SIGNALED_BIT,
+  };
+
+  for (int i = 0; i < device_.GetMaxFramesInFlight(); i++) {
     CALL_VK(vkCreateSemaphore(device_.GetDevice(),
                               &semaphore_create_info,
                               nullptr,
@@ -166,16 +183,10 @@ void Renderer::Init() {
                               nullptr,
                               &render_finished_semaphore_[i]));
 
-    VkFenceCreateInfo fence_create_info {
-        .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
-        .pNext = nullptr,
-        .flags = VK_FENCE_CREATE_SIGNALED_BIT,
-    };
-    CALL_VK(
-        vkCreateFence(device_.GetDevice(),
-                      &fence_create_info,
-                      nullptr,
-                      &fence_[i]));
+    CALL_VK(vkCreateFence(device_.GetDevice(),
+                          &fence_create_info,
+                          nullptr,
+                          &in_flight_fences_[i]));
   }
 
   lights_buffer_ = std::make_unique<UniformBufferObject<LightBlock>>(device_);
@@ -197,7 +208,7 @@ void Renderer::Init() {
 }
 
 void Renderer::UpdateLights(glm::vec3 camera_pos) {
-  lights_buffer_->Update(GetCurrentFrame(), [&camera_pos](auto &lights_buffer) {
+  lights_buffer_->Update(GetCurrentImage(), [&camera_pos](auto &lights_buffer) {
       lights_buffer.pointLight.position = camera_pos;
       lights_buffer.pointLight.color = {1.0f, 1.0f, 1.0f};
       lights_buffer.pointLight.intensity = 50.0f;
@@ -302,11 +313,15 @@ VkGraphicsPipelineCreateInfo Renderer::GetDefaultPipelineInfo(
 }
 
 VkCommandBuffer Renderer::GetCurrentCommandBuffer() const {
-  return cmd_buffer_[GetCurrentFrame()];
+  return cmd_buffer_[GetCurrentImage()];
 }
 
 uint32_t Renderer::GetCurrentFrame() const {
   return device_.GetCurrentFrameIndex();
+}
+
+uint32_t Renderer::GetCurrentImage() const {
+  return device_.GetCurrentImageIndex();
 }
 
 VkImage Renderer::GetCurrentDisplayImage() const {
