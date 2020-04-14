@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "601befb4_e710eb04",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-04-14T20:36:40Z",
+      "side": 1,
+      "message": "But doesn\u0027t this method necessitate doing a memcpy from within the FillVertexBuffer function, which is what we were trying to avoid before? \n\nUnless there\u0027s a way to have Vulkan map data from an existing pointer to a buffer that I don\u0027t know about (which is entirely possible haha)\n\n\n\nCurrently my understanding is we would have to do this within the function then:\n\nvoid *data\nVkMapMemory(..., \u0026data)\nmemcpy(vertices, data)\nVkUnmapMemory()",
+      "parentUuid": "2bc67925_fbda9b99",
+      "revId": "884abc42211113ad129d1c3728dc548dc228dda6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5983be26_9a194c0d",
         "filename": "bender/bender-base/app/src/main/jni/geometry.h",
         "patchSetId": 3
@@ -30,6 +48,24 @@
       "writtenOn": "2020-04-14T20:06:39Z",
       "side": 1,
       "message": "Are we sharing vertex and index buffers across all Geometries?",
+      "revId": "884abc42211113ad129d1c3728dc548dc228dda6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1f7ca739_c37e6415",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-04-14T20:36:40Z",
+      "side": 1,
+      "message": "Yup that\u0027s currently the setup, a single buffer for the vertex data and a single buffer containing index data, then we just use offsets to get the needed data from them",
+      "parentUuid": "5983be26_9a194c0d",
       "revId": "884abc42211113ad129d1c3728dc548dc228dda6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
