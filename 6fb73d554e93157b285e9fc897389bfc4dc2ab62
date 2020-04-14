@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "780aa56a_41292611",
+        "filename": "bender/bender-base/utils/bender_kit/device.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-04-14T19:51:30Z",
+      "side": 1,
+      "message": "I kept is as uint here since that\u0027s what the previous current_frame_index_ was but yea I think if we change all of them in this file to uint32_t it would be more clear/consistent!",
+      "parentUuid": "30ea859d_947d39d0",
+      "range": {
+        "startLine": 129,
+        "startChar": 8,
+        "endLine": 129,
+        "endChar": 12
+      },
+      "revId": "6fb73d554e93157b285e9fc897389bfc4dc2ab62",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9d59cc69_0c08fefe",
         "filename": "bender/bender-base/utils/bender_kit/timing.cc",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2020-04-14T19:27:09Z",
       "side": 1,
       "message": "Is this added to avoid zero division?",
+      "range": {
+        "startLine": 66,
+        "startChar": 44,
+        "endLine": 66,
+        "endChar": 48
+      },
+      "revId": "6fb73d554e93157b285e9fc897389bfc4dc2ab62",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fffeddfb_88d90d3e",
+        "filename": "bender/bender-base/utils/bender_kit/timing.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-04-14T19:51:30Z",
+      "side": 1,
+      "message": "no this is actually just to do rounding! since fps is an integer but this computation is done with floats before it would truncate the framerate rather than round it (which is why a lot of the time it would show up as 89fps rather than 90fps)\n\nthis makes it so if the framerate is like 89.6 it\u0027ll become 90.1 and then get truncated down to 90\n\notherwise if it\u0027s like 89.4 it\u0027ll become 89.9 and get truncated down to 89",
+      "parentUuid": "9d59cc69_0c08fefe",
       "range": {
         "startLine": 66,
         "startChar": 44,
