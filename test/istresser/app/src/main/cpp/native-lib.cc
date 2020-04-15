@@ -132,6 +132,22 @@ Java_net_jimblackler_istresser_MainActivity_freeMemory(
   utils->mtx.unlock();
 }
 
+extern "C" JNIEXPORT void JNICALL
+Java_net_jimblackler_istresser_MainActivity_mmapAnonFreeAll(
+    JNIEnv *env, jobject instance) {
+  utils->mtx.lock();
+  __android_log_print(ANDROID_LOG_INFO, kAppName, "Freeing anon mmap memory");
+  while (!utils->mmap_allocated.empty()) {
+    if (munmap(utils->mmap_allocated.front(),
+               utils->mmap_allocated_size.front()) != 0) {
+      __android_log_print(ANDROID_LOG_INFO, kAppName, ": Could not release mmapped memory");
+    }
+    utils->mmap_allocated.pop_front();
+    utils->mmap_allocated_size.pop_front();
+  }
+  utils->mtx.unlock();
+}
+
 extern "C" JNIEXPORT int64_t JNICALL
 Java_net_jimblackler_istresser_MainActivity_mmapAnonConsume(
     JNIEnv *env, jobject instance, jlong bytes) {
@@ -148,6 +164,8 @@ Java_net_jimblackler_istresser_MainActivity_mmapAnonConsume(
   } else {
     __android_log_print(ANDROID_LOG_INFO, kAppName, "mmapped %u bytes at %p", byte_count, addr);
     LcgFill(addr, byte_count);
+    utils->mmap_allocated.push_back(addr);
+    utils->mmap_allocated_size.push_back(byte_count);
   }
   return addr != MAP_FAILED ? byte_count : 0;
 }

@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
   private long mmapFileAllocatedByTest;
   private long recordNativeHeapAllocatedSize;
   private PrintStream resultsStream = System.out;
-  private Info info = new Info();
+  private final Info info = new Info();
   private long latestAllocationTime = -1;
   private int releases;
   private long appSwitchTimerStart;
@@ -246,6 +246,12 @@ public class MainActivity extends AppCompatActivity {
 
       if (glAllocBytesPerMillisecond > 0) {
         testSurface.setVisibility(View.VISIBLE);
+      } else {
+        long glFixed = getMemoryQuantity(params, "glFixed");
+        if (glFixed > 0) {
+          testSurface.setVisibility(View.VISIBLE);
+          testSurface.getRenderer().setTarget(glFixed);
+        }
       }
 
       mmapAnonBytesPerMillisecond = getMemoryQuantity(params, "mmapAnon");
@@ -305,7 +311,8 @@ public class MainActivity extends AppCompatActivity {
           public void run() {
             try {
               JSONObject report = standardInfo();
-              if (latestAllocationTime != -1) {
+              long sinceLastAllocation = System.currentTimeMillis() - latestAllocationTime;
+              if (sinceLastAllocation > 0) {
                 boolean shouldAllocate = true;
                 Indicator maxMemoryPressureLevel = Indicator.GREEN;
                 Identifier triggeringHeuristic = null;
@@ -324,12 +331,11 @@ public class MainActivity extends AppCompatActivity {
                   if (maxMemoryPressureLevel == Indicator.RED) {
                     shouldAllocate = false;
                     freeMemory(MEMORY_TO_FREE_PER_CYCLE_MB * BYTES_IN_MEGABYTE);
-                    latestAllocationTime = System.currentTimeMillis();
                   } else if (maxMemoryPressureLevel == Indicator.YELLOW) {
                     shouldAllocate = false;
                     // Allocating 0 MB
-                    latestAllocationTime = System.currentTimeMillis();
                   }
+                  latestAllocationTime = System.currentTimeMillis();
                 } else {
                   if (maxMemoryPressureLevel == Indicator.RED) {
                     shouldAllocate = false;
@@ -338,7 +344,6 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (mallocBytesPerMillisecond > 0 && shouldAllocate) {
-                  long sinceLastAllocation = System.currentTimeMillis() - latestAllocationTime;
                   int owed = (int) (sinceLastAllocation * mallocBytesPerMillisecond);
                   if (owed > 0) {
                     boolean succeeded = nativeConsume(owed);
@@ -351,14 +356,12 @@ public class MainActivity extends AppCompatActivity {
                   }
                 }
                 if (glAllocBytesPerMillisecond > 0 && shouldAllocate) {
-                  long sinceLastAllocation = System.currentTimeMillis() - latestAllocationTime;
                   long target = sinceLastAllocation * glAllocBytesPerMillisecond;
                   TestSurface testSurface = findViewById(R.id.glsurfaceView);
                   testSurface.getRenderer().setTarget(target);
                 }
 
                 if (mmapAnonBytesPerMillisecond > 0) {
-                  long sinceLastAllocation = System.currentTimeMillis() - latestAllocationTime;
                   long owed = sinceLastAllocation * mmapAnonBytesPerMillisecond;
                   if (owed > MMAP_ANON_BLOCK_BYTES) {
                     long allocated = mmapAnonConsume(owed);
@@ -371,7 +374,6 @@ public class MainActivity extends AppCompatActivity {
                   }
                 }
                 if (mmapFileBytesPerMillisecond > 0) {
-                  long sinceLastAllocation = System.currentTimeMillis() - latestAllocationTime;
                   long owed = sinceLastAllocation * mmapFileBytesPerMillisecond;
                   if (owed > MMAP_FILE_BLOCK_BYTES) {
                     MmapFileInfo file = mmapFiles.alloc(owed);
@@ -644,6 +646,8 @@ public class MainActivity extends AppCompatActivity {
             releases++;
             freeAll();
           }
+          mmapAnonFreeAll();
+          mmapAnonAllocatedByTest = 0;
           data.clear();
           if (glAllocBytesPerMillisecond > 0) {
             TestSurface testSurface = findViewById(R.id.glsurfaceView);
@@ -715,6 +719,8 @@ public class MainActivity extends AppCompatActivity {
   public native void freeMemory(int bytes);
 
   public native boolean nativeConsume(int bytes);
+
+  public native void mmapAnonFreeAll();
 
   public native long mmapAnonConsume(long bytes);
 

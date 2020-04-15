@@ -10,6 +10,8 @@ namespace istresser_utils {
   public:
     std::list<char *> allocated;
     std::list<size_t> allocated_size;
+    std::list<void *> mmap_allocated;
+    std::list<size_t> mmap_allocated_size;
     std::mutex mtx;
 
     Utils() = default;
