@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e40b6d7e_d339f6a9",
+        "filename": "bender/bender-base/app/src/main/jni/geometry.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-04-15T01:13:40Z",
+      "side": 1,
+      "message": "Super nit picking:\n\ntemplate \u003ctypename VertexType\u003e\nstatic void FillVertexBuffer(benderkit::Device \u0026device, size_t count, std::function\u003cvoid(VertexType *, size_t)\u003e filler) {\n  VertexType *data;\n  lock...\n  filler(data, count * sizeof(VertexType));\n  unlock...\n}",
+      "revId": "6c8acd3bb9c1197f0637b232dd314bc0e8b9962e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "17242189_3f7752a0",
+        "filename": "bender/bender-base/app/src/main/jni/vulkan_main.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 615,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-04-15T01:13:40Z",
+      "side": 1,
+      "message": "Awesome!",
+      "revId": "6c8acd3bb9c1197f0637b232dd314bc0e8b9962e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
