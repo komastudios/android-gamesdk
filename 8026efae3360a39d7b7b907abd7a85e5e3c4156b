@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5605b110_48beab7a",
+        "filename": "cert/test/reporting/lib/graphers/__init__.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-04-17T19:51:50Z",
+      "side": 1,
+      "message": "This line is actually longer than 80 characters. Do I need to break it into two lines? (Not sure what our Python code requires.)",
+      "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7deb9d8c_e09aab6b",
+        "filename": "cert/test/reporting/lib/report.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 315,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-04-17T19:51:50Z",
+      "side": 1,
+      "message": "Can someone double-check my logic on this regex change? I\u0027m not sure why it would have worked before on a local run since the files names have underscores and prior to my change it was looking for hyphens.",
+      "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1b3cb53f_bedc0045",
+        "filename": "cert/test/reporting/lib/report.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 316,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-04-17T19:51:50Z",
+      "side": 1,
+      "message": "I think I\u0027ll remove this TODO since I can\u0027t remember what was meant by it.",
+      "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7d37a563_46212b8e",
+        "filename": "cert/test/reporting/lib/systrace.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-04-17T19:51:50Z",
+      "side": 1,
+      "message": "This clock sync offset gets returned through several levels, but (I believe) I\u0027ve made it so only the top level has to care about whether it\u0027s an optional.",
+      "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
