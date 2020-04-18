@@ -1,0 +1,20 @@
+{
+    "auto_run": false,
+    "host": "SwappyGLHostActivity",
+    "defaultMonitors": [],
+    "stress_tests": [
+        {
+            "enabled": true,
+            "name": "Indirect Texture Read",
+            "description": "AKA Dependent texture read",
+            "duration": "33s",
+            "data_gatherer": {
+                "id": "DependentTextureReadGLES3Operation",
+                "configuration": {
+                    "indirection_interval": "3s"
+                }
+            },
+            "stressors": []
+        }
+    ]
+}
