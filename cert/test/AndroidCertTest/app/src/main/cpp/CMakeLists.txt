@@ -133,6 +133,7 @@ add_library(${PROJECT_NAME} SHARED
         operations/VulkanMprotectCheckOperation.cpp
 
         operations/gl/BufferStorageGLES3Operation.cpp
+        operations/gl/DependentTextureReadGLES3Operation.cpp
         operations/gl/DepthClearGLES3Operation.cpp
         operations/gl/DualSourceBlendingGLES3Operation.cpp
         operations/gl/EGLGetFrameTimestampsGLES3Operation.cpp

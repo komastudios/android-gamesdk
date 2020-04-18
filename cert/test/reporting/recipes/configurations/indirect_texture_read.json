@@ -1,0 +1,20 @@
+{
+    "auto_run": false,
+    "host": "GLSurfaceViewHostActivity",
+    "defaultMonitors": [],
+    "stress_tests": [
+        {
+            "enabled": true,
+            "name": "Indirect Texture Read",
+            "description": "AKA Dependent texture read",
+            "duration": "1m",
+            "data_gatherer": {
+                "id": "DependentTextureReadGLES3Operation",
+                "configuration": {
+                    "indirection_interval": "3s"
+                }
+            },
+            "stressors": []
+        }
+    ]
+}
