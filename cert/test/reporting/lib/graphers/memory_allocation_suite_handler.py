@@ -52,11 +52,11 @@ class MemoryAllocationSuiteHandler(SuiteHandler):
 
     @classmethod
     def can_render_summarization_plot(cls,
-                                      suites: List['SuiteHandler']) -> bool:
+                                      suites: List['Suite']) -> bool:
         return False
 
     @classmethod
-    def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
+    def render_summarization_plot(cls, suites: List['Suite']) -> str:
         return None
 
     def render_plot(self) -> str:
@@ -134,5 +134,5 @@ class MemoryAllocationSuiteHandler(SuiteHandler):
         return False
 
     @classmethod
-    def render_report(cls, raw_suites: List['SuiteHandler']):
+    def render_report(cls, raw_suites: List['Suite']):
         return ''

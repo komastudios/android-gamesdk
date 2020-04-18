@@ -32,6 +32,7 @@ from .calculate_wait_pi_suite_handler import CalculateWaitPiSuiteHandler
 from .choreographer_timestamps_suite_handler import \
     ChoreographerTimestampsSuiteHandler
 from .cpuset_suite_handler import CpusetSuiteHandler
+from .dependent_read_suite_handler import DependentReadSuiteHandler
 from .depth_clear_suite_handler import DepthClearSuiteHandler
 from .file_performance_suite_handler import FilePerformanceSuiteHandler
 from .fill_rate_suite_handler import FillRateSuiteHandler
@@ -46,15 +47,28 @@ from .temperature_suite_handler import TemperatureSuiteHandler
 from .vertex_suite_handler import VertexRateSuiteHandler
 from .vulkan_varyings_handler import VulkanVaryingsHandler
 
+# Keep each suite handler alone in its line and we'll avoid zillions of really
+# avoidable merge conflicts
 HANDLERS = [
-    AffinityTestSuiteHandler, BufferStorageSuiteHandler,
-    CalculateWaitPiSuiteHandler, ChoreographerTimestampsSuiteHandler,
-    CpusetSuiteHandler, DepthClearSuiteHandler, FilePerformanceSuiteHandler,
-    FillRateSuiteHandler, HalfFloatPrecisionSuiteHandler,
-    MarchingCubesSuiteHandler, MediumPVecNormSuiteHandler,
-    MemoryAllocationSuiteHandler, MProtectSuiteHandler, NougatCrashSuiteHandler,
-    SingleCoreComparisonHandler, TemperatureSuiteHandler,
-    VertexRateSuiteHandler, VulkanVaryingsHandler
+    AffinityTestSuiteHandler, \
+    BufferStorageSuiteHandler, \
+    CalculateWaitPiSuiteHandler, \
+    ChoreographerTimestampsSuiteHandler, \
+    CpusetSuiteHandler, \
+    DependentReadSuiteHandler, \
+    DepthClearSuiteHandler, \
+    FilePerformanceSuiteHandler, \
+    FillRateSuiteHandler, \
+    HalfFloatPrecisionSuiteHandler, \
+    MarchingCubesSuiteHandler, \
+    MediumPVecNormSuiteHandler, \
+    MemoryAllocationSuiteHandler, \
+    MProtectSuiteHandler, \
+    NougatCrashSuiteHandler, \
+    SingleCoreComparisonHandler, \
+    TemperatureSuiteHandler, \
+    VertexRateSuiteHandler, \
+    VulkanVaryingsHandler
 ]
 """List containing all registered SuiteHandler implementations to
 render charts."""

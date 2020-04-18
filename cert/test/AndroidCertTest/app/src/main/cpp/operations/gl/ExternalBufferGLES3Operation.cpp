@@ -158,7 +158,7 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
 
   bool CreateNativeClientBuffer() {
     libandroid::FP_AHB_ALLOCATE fp_alloc =
-        libandroid::GetFP_AHardwareBuffer_Allocate();
+        libandroid::GetFP_AHardwareBuffer_allocate();
     if (nullptr == fp_alloc) {
       ReportError("Failed to locate symbol for AHardwareBuffer_allocate");
       return false;
@@ -199,7 +199,7 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
 
   bool DestroyNativeClientBuffer() {
     libandroid::FP_AHB_RELEASE fp_release =
-        libandroid::GetFP_AHardwareBuffer_Release();
+        libandroid::GetFP_AHardwareBuffer_release();
     if (nullptr == fp_release) {
       ReportError("Failed to locate symbol for AHardwareBuffer_release");
       return false;
@@ -308,14 +308,14 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
   }
 
   bool ReadAHardwareBuffer() {
-    libandroid::FP_AHB_LOCK fp_lock = libandroid::GetFP_AHardwareBuffer_Lock();
+    libandroid::FP_AHB_LOCK fp_lock = libandroid::GetFP_AHardwareBuffer_lock();
     if (nullptr == fp_lock) {
       ReportError("Failed to load symbol for AHardwareBuffer_lock");
       return false;
     }
 
     libandroid::FP_AHB_UNLOCK fp_unlock =
-        libandroid::GetFP_AHardwareBuffer_Unlock();
+        libandroid::GetFP_AHardwareBuffer_unlock();
     if (nullptr == fp_unlock) {
       ReportError("Failed to load symbol for AHardwareBuffer_unlock");
       return false;
