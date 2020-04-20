@@ -2,6 +2,74 @@
   "comments": [
     {
       "key": {
+        "uuid": "09349426_825c3ff7",
+        "filename": "cert/test/.gitignore",
+        "patchSetId": 7
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-20T04:53:27Z",
+      "side": 1,
+      "message": "I think you can also put\n\n```\n**/.vscode\n```\n\nAnd that would make both `AndroidCertTest/.vscode`, `reporting/.vscode` and any other `.vscode` directory or subdirectory in the future to be ignored.\n\nNotwithstanding, this line also does what you intent.",
+      "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "15bed62a_a9b81196",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/LibAndroid.hpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-20T04:53:27Z",
+      "side": 1,
+      "message": "Just because you fixed these existing comments here, I want to point out that rather than `_allocate` (i.e., lowercase), the function whose pointer is returned is `_Allocate` (uppercase initial)",
+      "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "76ca4f1b_9399eb98",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-20T04:53:27Z",
+      "side": 1,
+      "message": "Looks like the intention was to write \"Choreographer can be used\" (\"be\" got missing, in such case).",
+      "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7c672c2b_be7faa1e",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-20T04:53:27Z",
+      "side": 1,
+      "message": "Beware about dangling pointers here, Michael.\nThe choreographer will receive \"this\" as pointer to \"data\", to be forwarded to static function FrameCallback (defined below).\n\nA potential race condition is when \"this\" ChoreographerTimestampsOperation instance is destroyed (e.g., the operation duration is completed so the base operation issues a Stop() signal to end execution and complete, etc.\n\nThere\u0027s a chance that the choreographer calls static function ChoreographerTimestampsOperation::FrameCallback() with a dangling pointer to \"this\" just-destroyed instance, which ChoreographerTimestampsOperation::FrameCallback() reinterprets as \"self\".\n\nThere are two ways to overcome that:\n\n1) (Recommended), define a destructor ~ChoreographerTimestampsOperation() that unsets the choreographer postFrameCallback.\n2) (A bit more complicated but not impossible) instead of this, pass a std::weak_ptr to this instance. That way, inside FrameCallback(), you may always start by asking if the pointer still points to a living instance. However, a weak_ptr always needs a shared_ptr to reference count the instance. Furthermore, as FrameCallback() receives \"void*\", you should pass a reference to the weak_ptr so then you dereference...\n\n... you\u0027ll be OK with alternative 1 (unset the callback upon operation destruction).",
+      "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5605b110_48beab7a",
         "filename": "cert/test/reporting/lib/graphers/__init__.py",
         "patchSetId": 7
@@ -16,6 +84,41 @@
       "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eef6ced8_e9fa82b1",
+        "filename": "cert/test/reporting/lib/graphers/__init__.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-20T04:53:27Z",
+      "side": 1,
+      "message": "You should, yep. Even more: 79 is the maximum based on PEP 8 (Python style standards)",
+      "parentUuid": "5605b110_48beab7a",
+      "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "493d0ffc_3c4fd450",
+        "filename": "cert/test/reporting/lib/graphers/choreographer_timestamps_suite_handler.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-20T04:53:27Z",
+      "side": 1,
+      "message": "I wish I had known about this Optional thing when I needed to mean \"optional\" myself. I googled and found that \"the\" way to express \"optional\" was through an awkward Union between the optional type and `type(None)`.\nGreat that this thing exists.",
+      "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -50,6 +153,24 @@
       "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ecd1e1fb_a3ce8679",
+        "filename": "cert/test/reporting/lib/report.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 315,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-20T04:53:27Z",
+      "side": 1,
+      "message": "I\u0027m listing file names generated by another operation I just worked on. They are:\n\nKDDI_Samsung_Note_8_SM-N950J_28_report.json\nKDDI_Samsung_S8+_SM-G955J_28_report.json\nSamsung_A5_SM-A520W_26_report.json\nSamsung_A6_SM-A600FN_26_report.json\nSamsung_A7_SM-A750FN_28_report.json\nSamsung_A8+_SM-A730F_28_report.json\n\u0027Samsung_Galaxy_A5_(2016)_24_report.json\u0027\nSamsung_Galaxy_J3_Prime_24_report.json\nSamsung_Galaxy_J6_SM-J600FN_28_report.json\nSamsung_Galaxy_J7_Core_28_report.json\nSamsung_Galaxy_Note_5_24_report.json\nSamsung_Note_8_SM-N960D_28_report.json\nSamsung_S10_SM-G973D_28_report.json\nSamsung_S8+_SM-G9550_28_report.json\nSamsung_S9_SM-G960W_28_report.json\n\nI tried your regex on this online tester that I recommend (https://regex101.com/) and it correctly identified device models (group 1) and API levels (group 2).\n\nYou\u0027re good to go, dude.",
+      "parentUuid": "7deb9d8c_e09aab6b",
+      "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
