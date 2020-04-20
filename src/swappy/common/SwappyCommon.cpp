@@ -124,8 +124,8 @@ SwappyCommon::SwappyCommon(JNIEnv *env, jobject jactivity)
 
     env->GetJavaVM(&mJVM);
 
-    if (isDeviceBlacklisted()) {
-        ALOGE("Device is blacklisted");
+    if (isDeviceUnsupported()) {
+        ALOGE("Device is unsupported");
         return;
     }
 
@@ -887,12 +887,12 @@ struct DeviceIdentifier {
 
 } // anonymous namespace
 
-bool SwappyCommon::isDeviceBlacklisted() {
+bool SwappyCommon::isDeviceUnsupported() {
     JNIEnv *env;
     mJVM->AttachCurrentThread(&env, nullptr);
 
-    // List of blacklisted models
-    static std::vector<DeviceIdentifier> blacklistedDevices = {{"OPPO", "A37", ""}};
+    // List of unsupported models
+    static std::vector<DeviceIdentifier> unsupportedDevices = {{"OPPO", "A37", ""}};
 
     const jclass buildClass = env->FindClass("android/os/Build");
     if (env->ExceptionCheck()) {
@@ -910,7 +910,7 @@ bool SwappyCommon::isDeviceBlacklisted() {
     auto display = GetStaticStringField(env, buildClass, "DISPLAY");
     if (display.empty()) return false;
 
-    for(auto& device: blacklistedDevices) {
+    for(auto& device: unsupportedDevices) {
         if (device.match(manufacturer, model, display))
             return true;
     }

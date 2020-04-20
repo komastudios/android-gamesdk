@@ -97,7 +97,7 @@ public:
     std::chrono::nanoseconds getFenceTimeout() const { return mFenceTimeout; }
     void setFenceTimeout(std::chrono::nanoseconds t) { mFenceTimeout = t; }
 
-    bool isDeviceBlacklisted();
+    bool isDeviceUnsupported();
 
   protected:
     // Used for testing
