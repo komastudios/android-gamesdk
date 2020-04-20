@@ -70,6 +70,24 @@
     },
     {
       "key": {
+        "uuid": "ea9c04a0_4c1855e7",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-04-20T16:18:24Z",
+      "side": 1,
+      "message": "100% agreement with Diego from me. I\u0027m on team Destructor.",
+      "parentUuid": "7c672c2b_be7faa1e",
+      "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5605b110_48beab7a",
         "filename": "cert/test/reporting/lib/graphers/__init__.py",
         "patchSetId": 7
@@ -99,6 +117,24 @@
       "side": 1,
       "message": "You should, yep. Even more: 79 is the maximum based on PEP 8 (Python style standards)",
       "parentUuid": "5605b110_48beab7a",
+      "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9f945298_c2249d09",
+        "filename": "cert/test/reporting/lib/graphers/__init__.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-04-20T16:18:24Z",
+      "side": 1,
+      "message": "VSCode, if you\u0027ve copied over the template JSON settings file, will automatically show linter errors - you\u0027ll see them in the problems pane.",
+      "parentUuid": "eef6ced8_e9fa82b1",
       "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
