@@ -16,6 +16,24 @@
       "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f70e5c48_90e58210",
+        "filename": "cert/test/AndroidCertTest/app/src/main/assets/Shaders/DependentTextureReadGLES3Operation/indirect_texture_read.fsh",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-20T16:46:40Z",
+      "side": 1,
+      "message": "Thanks, Shamyl. I tell you why I think I must re-clamp by illustrating a worst case scenario here.\n\nLet\u0027s imagine that the fragment shader gets called with a vTexCoord \u003d (0.5, 0.5). uMultiplier (set by the operation as a random coefficient between 0 and 1) comes being 1.0, let\u0027s assume.\n\nuIndirections is also 1, meaning that we\u0027ll iterate once through this for loop.\n\nSo far, so good.\n\nOnce inside the for loop, outColor already have, let\u0027s imagine (1, 1, 1, 1) -that is to say, a fully visible white color).\nAnd lastTextCoord got already initialized as incoming vTexCoord; that is to say (0.5, 0.5).\n\nNow, inside the loop, we calculate the deltaXY to apply to the indirect texture coordinate (line 39):\ndeltaXY \u003d (1, 1) * 1.0 \u003d (1, 1).\n\nIn line 41, we shift lastTextCoord by deltaXY:\nlastTextCoord \u003d (0.5, 0.5) + (1, 1) \u003d (1.5, 1.5)\n\nWhat I\u0027m doing in lines 44 to 50 is a sort of \"pacman effect\". If you trespass the right border, I\u0027ll make you re-enter from the left by the extra distance. Same if you \"disappear\" through the bottom (you\u0027ll \"re-appear\" from the top.\nNamely, if lastTextCoord was (1.3, 1.7) after shifting deltaXY, it will become (0.3, 0.7). Back inside the square defined by diagonal (0, 0) - (1, 1).\n\nHope it makes sense.",
+      "parentUuid": "4da7c4cd_b1485896",
+      "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
