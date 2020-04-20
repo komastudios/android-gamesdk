@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4da7c4cd_b1485896",
+        "filename": "cert/test/AndroidCertTest/app/src/main/assets/Shaders/DependentTextureReadGLES3Operation/indirect_texture_read.fsh",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-04-20T16:25:32Z",
+      "side": 1,
+      "message": "I\u0027m not certain this bounds check is necessary, since texture wrap/clamp behavior is specified in GL on the texture object itself and is implemented in hardware in the sampler unit; all it does here is add code. That being said it doesn\u0027t hurt anything to be explicit.",
+      "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
