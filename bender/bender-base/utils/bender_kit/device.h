@@ -40,7 +40,7 @@ namespace benderkit {
 
         VkSwapchainKHR GetSwapchain() const { return swapchain_; }
 
-        uint GetSwapchainLength() const { return swapchain_length_; }
+        uint32_t GetSwapchainLength() const { return swapchain_length_; }
 
         VkSurfaceTransformFlagBitsKHR GetPretransformFlag() const { return pretransform_flag_; }
 
@@ -62,13 +62,19 @@ namespace benderkit {
 
         const std::vector<VkImage> &GetDisplayImages() { return display_images_; }
 
-        VkImage GetCurrentDisplayImage() const { return display_images_[current_frame_index_]; }
+        VkImage GetCurrentDisplayImage() const { return display_images_[current_image_index_]; }
 
-        uint GetCurrentFrameIndex() const { return current_frame_index_; }
+        uint32_t GetCurrentFrameIndex() const { return current_frame_index_; }
+
+        uint32_t GetCurrentImageIndex() const { return current_image_index_; }
+
+        uint32_t GetMaxFramesInFlight() const { return max_frames_in_flight_; }
 
         bool GetWindowResized() const { return window_resized_; }
 
         void SetWindowResized(bool resized) { window_resized_ = resized; }
+
+        void SetCurrentImageIndex(uint32_t image_index) { current_image_index_ = image_index; }
 
         void Present(VkSemaphore* wait_semaphores);
 
@@ -118,7 +124,9 @@ namespace benderkit {
         VkFormat display_format_;
         bool window_resized_ = false;
 
-        uint current_frame_index_ = 0;
+        uint32_t current_frame_index_ = 0;
+        uint32_t current_image_index_ = 0;
+        uint32_t max_frames_in_flight_;
 
         std::vector<VkImage> display_images_;
 

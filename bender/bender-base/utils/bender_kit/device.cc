@@ -62,6 +62,7 @@ Device::Device(ANativeWindow *window) {
     display_size_identity_ = surfaceCapabilities.currentExtent;
 
     CreateSwapChain();
+    max_frames_in_flight_ = swapchain_length_ + 2;
 
     initialized_ = true;
   });
@@ -104,7 +105,7 @@ void Device::Present(VkSemaphore* wait_semaphores) {
           .pNext = nullptr,
           .swapchainCount = 1,
           .pSwapchains = swapchains,
-          .pImageIndices = &current_frame_index_,
+          .pImageIndices = &current_image_index_,
           .waitSemaphoreCount = 1,
           .pWaitSemaphores = wait_semaphores,
           .pResults = &result,
@@ -114,7 +115,7 @@ void Device::Present(VkSemaphore* wait_semaphores) {
   if (res == VK_SUBOPTIMAL_KHR){
     window_resized_ = true;
   }
-  current_frame_index_ = (current_frame_index_ + 1) % GetDisplayImages().size();
+  current_frame_index_ = (current_frame_index_ + 1) % max_frames_in_flight_;
 }
 
 void Device::CreateVulkanDevice(ANativeWindow *platform_window,
@@ -293,7 +294,7 @@ void Device::CreateSwapChain(VkSwapchainKHR oldSwapchain) {
         .imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
         .queueFamilyIndexCount = 1,
         .pQueueFamilyIndices = &queue_family_index_,
-        .presentMode = VK_PRESENT_MODE_FIFO_KHR,
+        .presentMode = VK_PRESENT_MODE_MAILBOX_KHR,
         .oldSwapchain = oldSwapchain,
         .clipped = VK_FALSE,
     };

@@ -404,7 +404,7 @@ void UpdateCamera(input::Data *input_data) {
   render_graph->SetCameraProjMatrix(proj_matrix);
 }
 
-void UpdateInstances(input::Data *input_data) {
+void UpdateInstances() {
   std::vector<std::shared_ptr<Mesh>> all_meshes;
   Camera camera = render_graph->GetCamera();
   render_graph_mutex.lock();
@@ -418,14 +418,14 @@ void UpdateInstances(input::Data *input_data) {
                                               std::cos(2 * total_time)));
 #endif
 
-    all_meshes[i]->Update(renderer->GetCurrentFrame(), camera);
+    all_meshes[i]->Update(renderer->GetCurrentImage(), camera);
   }
   renderer->UpdateLights(camera.position);
 }
 
 void HandleInput(input::Data *input_data) {
   UpdateCamera(input_data);
-  UpdateInstances(input_data);
+  UpdateInstances();
 }
 
 void CreateShaderState() {
@@ -825,14 +825,13 @@ bool VulkanDrawFrame(input::Data *input_data) {
   last_time = current_time;
   total_time += frame_time;
 
-  timing::timer.Time("Handle Input", timing::OTHER, [input_data] {
-    HandleInput(input_data);
-  });
+  timing::timer.Time("Start Frame", timing::START_FRAME, [&input_data] {
+    renderer->BeginFrame();
+    timing::timer.Time("Handle Input", timing::OTHER, [&input_data] {
+        HandleInput(input_data);
+        user_interface->RunHeldButtons();
+    });
 
-  user_interface->RunHeldButtons();
-
-  renderer->BeginFrame();
-  timing::timer.Time("Start Frame", timing::START_FRAME, [] {
     timing::timer.Time("PrimaryCommandBufferRecording", timing::OTHER, [] {
       renderer->BeginPrimaryCommandBufferRecording();
 
@@ -846,7 +845,7 @@ bool VulkanDrawFrame(input::Data *input_data) {
           .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
           .pNext = nullptr,
           .renderPass = render_pass,
-          .framebuffer = framebuffers[renderer->GetCurrentFrame()],
+          .framebuffer = framebuffers[renderer->GetCurrentImage()],
           .renderArea = {.offset =
               {
                   .x = 0, .y = 0,
@@ -872,7 +871,7 @@ bool VulkanDrawFrame(input::Data *input_data) {
         for (uint32_t i = 0; i < all_meshes.size(); i++) {
           all_meshes[i]->UpdatePipeline(render_pass);
           all_meshes[i]->SubmitDraw(renderer->GetCurrentCommandBuffer(),
-                                   renderer->GetCurrentFrame());
+                                    renderer->GetCurrentImage());
           total_triangles += all_meshes[i]->GetTrianglesCount();
         }
 
@@ -884,12 +883,12 @@ bool VulkanDrawFrame(input::Data *input_data) {
                 allowedPolyFaces[poly_faces_idx], kPolyNoun, total_triangles, kTriangleNoun);
 
         int fps;
-        float frame_time;
-        timing::timer.GetFramerate(100, &fps, &frame_time);
+        float avg_frame_time;
+        timing::timer.GetFramerate(100, &fps, &avg_frame_time);
         sprintf(fps_info,
                 "%2.d FPS  %.3f ms mipmaps: %s",
                 fps,
-                frame_time,
+                avg_frame_time,
                 renderer->MipmapsEnabled() ? "enabled" : "disabled");
 
         loading_info_mutex.lock();
