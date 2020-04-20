@@ -31,6 +31,7 @@ from .buffer_storage_suite_handler import BufferStorageSuiteHandler
 from .calculate_wait_pi_suite_handler import CalculateWaitPiSuiteHandler
 from .cpuset_suite_handler import CpusetSuiteHandler
 from .depth_clear_suite_handler import DepthClearSuiteHandler
+from .egl_get_frame_timestamps_suite_handler import EGLGetFrameTimestampsSuiteHandler
 from .file_performance_suite_handler import FilePerformanceSuiteHandler
 from .fill_rate_suite_handler import FillRateSuiteHandler
 from .half_float_precision import HalfFloatPrecisionSuiteHandler
@@ -47,6 +48,7 @@ from .vulkan_varyings_handler import VulkanVaryingsHandler
 HANDLERS = [
     AffinityTestSuiteHandler, BufferStorageSuiteHandler,
     CalculateWaitPiSuiteHandler, CpusetSuiteHandler, DepthClearSuiteHandler,
+    EGLGetFrameTimestampsSuiteHandler,
     FilePerformanceSuiteHandler, FillRateSuiteHandler,
     HalfFloatPrecisionSuiteHandler, MarchingCubesSuiteHandler,
     MediumPVecNormSuiteHandler, MemoryAllocationSuiteHandler,

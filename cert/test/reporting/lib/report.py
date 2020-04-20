@@ -312,7 +312,7 @@ def load_report(report_file: Path) -> (BuildInfo, List[Datum]):
     """
     build: BuildInfo = None
     data: List[Datum] = []
-    device_patterns = re.match(r"^(.+)-(\d+)-.+$", report_file.name)
+    device_patterns = re.match(r"^(.+)[-_](\d+)[-_].+$", report_file.name)
     codename = device_patterns.group(1)
     api_level = device_patterns.group(2)
 
