@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "0b36980f_b07c9df8",
+        "filename": "cert/test/.gitignore",
+        "patchSetId": 7
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-04-20T20:22:10Z",
+      "side": 1,
+      "message": "Cool, I\u0027ll make that change 😊",
+      "parentUuid": "09349426_825c3ff7",
+      "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "15bed62a_a9b81196",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/LibAndroid.hpp",
         "patchSetId": 7
@@ -30,6 +48,24 @@
       "writtenOn": "2020-04-20T04:53:27Z",
       "side": 1,
       "message": "Just because you fixed these existing comments here, I want to point out that rather than `_allocate` (i.e., lowercase), the function whose pointer is returned is `_Allocate` (uppercase initial)",
+      "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "98b3169f_11cad1b9",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/LibAndroid.hpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-04-20T20:22:10Z",
+      "side": 1,
+      "message": "Good eye. The actual name for the function (to which I\u0027m taking a pointer) is with the lowercase (\"AHardwareBuffer_allocate\"), so I think I should probably change the rest of these to be something like \"GetFP_AHardwareBuffer_allocate\", etc. That way we stick as close to the NDK functions in our naming as possible and perhaps prevent some confusion.",
+      "parentUuid": "15bed62a_a9b81196",
       "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
@@ -50,6 +86,24 @@
       "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0e63b4cf_eb0944d7",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-04-20T20:22:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "76ca4f1b_9399eb98",
+      "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -82,6 +136,24 @@
       "side": 1,
       "message": "100% agreement with Diego from me. I\u0027m on team Destructor.",
       "parentUuid": "7c672c2b_be7faa1e",
+      "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "56282189_4a405049",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-04-20T20:22:10Z",
+      "side": 1,
+      "message": "That\u0027s a good point. However, it seems that only the Java API provides a way to remove this type of callback, but given that it doesn\u0027t allow custom data, it would be impossible to pass `this`, which means it wouldn\u0027t have that issue in the first place.\n\nThat being said, I think my code is \"safe\" as long the logic underlying `BaseOperation` (both the Java and the C++) doesn\u0027t change. Let me explain why:\n\nIn \"BaseHostActivity.java\", in the function `startDataGathererAndStressors()`, around line 238, we see that `waitForCompletion()` is called on our dataGatherer, which we can trace through a few function calls through Java and \"native-lib.cpp\" until we reach `internal::WaitForOperation()` in \"Suite.cpp\". If any operation overrides the base class\u0027s `Wait()` function, it can effectively block the operation from being destroyed (which is what I hinted at in my comment below). This is true regardless of if `Stop()` is called, or if the operation has been running longer than the time set in \"configuration.json\". This is where operations that inherit from `BaseOperation` differ from those that inherit from `BaseGLES3Operation`; in the former, `Wait()` is pure virtual, and in the later, it is concrete and looks for `IsStopped()` to return true. Where the configuration\u0027s \"duration\" factors into this is in \"BaseOperation.cpp\", in `Draw()`, where it checks if the elapsed time is greater than duration, at which point it calls `Stop()` if so. So even though this may be called for my operation, because I\u0027ve implemented a custom `Wait()` method (whose logic is linked with how the callback is called), the operation won\u0027t shut down early even if it runs past the configured duration or if `Stop()` is called for another reason.\n\nNow, whether or not that\u0027s the intent of the `Wait()` operation, I\u0027m not sure, the documentation around it is a little unclear to me. But every operation that inherits directly from `BaseOperation` must implement `Wait()`, since in BaseOperation it\u0027s pure virtual. (This is not true of operations that inherit from `BaseGLES3Operation`.)",
+      "parentUuid": "ea9c04a0_4c1855e7",
       "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -141,6 +213,24 @@
     },
     {
       "key": {
+        "uuid": "f3d18ef6_7b292de7",
+        "filename": "cert/test/reporting/lib/graphers/__init__.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-04-20T20:22:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9f945298_c2249d09",
+      "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "493d0ffc_3c4fd450",
         "filename": "cert/test/reporting/lib/graphers/choreographer_timestamps_suite_handler.py",
         "patchSetId": 7
@@ -152,6 +242,24 @@
       "writtenOn": "2020-04-20T04:53:27Z",
       "side": 1,
       "message": "I wish I had known about this Optional thing when I needed to mean \"optional\" myself. I googled and found that \"the\" way to express \"optional\" was through an awkward Union between the optional type and `type(None)`.\nGreat that this thing exists.",
+      "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9fde984b_f92c0e98",
+        "filename": "cert/test/reporting/lib/graphers/choreographer_timestamps_suite_handler.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-04-20T20:22:10Z",
+      "side": 1,
+      "message": "Yeah, algebraic data types can be really convenient. I like how they\u0027re implemented in languages like Swift and Rust and ML derivatives. Python can kind of fake that since it\u0027s a weakly typed language, but it\u0027s cool that they at least have the notion in the annotation system.",
+      "parentUuid": "493d0ffc_3c4fd450",
       "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
@@ -204,6 +312,24 @@
       "side": 1,
       "message": "I\u0027m listing file names generated by another operation I just worked on. They are:\n\nKDDI_Samsung_Note_8_SM-N950J_28_report.json\nKDDI_Samsung_S8+_SM-G955J_28_report.json\nSamsung_A5_SM-A520W_26_report.json\nSamsung_A6_SM-A600FN_26_report.json\nSamsung_A7_SM-A750FN_28_report.json\nSamsung_A8+_SM-A730F_28_report.json\n\u0027Samsung_Galaxy_A5_(2016)_24_report.json\u0027\nSamsung_Galaxy_J3_Prime_24_report.json\nSamsung_Galaxy_J6_SM-J600FN_28_report.json\nSamsung_Galaxy_J7_Core_28_report.json\nSamsung_Galaxy_Note_5_24_report.json\nSamsung_Note_8_SM-N960D_28_report.json\nSamsung_S10_SM-G973D_28_report.json\nSamsung_S8+_SM-G9550_28_report.json\nSamsung_S9_SM-G960W_28_report.json\n\nI tried your regex on this online tester that I recommend (https://regex101.com/) and it correctly identified device models (group 1) and API levels (group 2).\n\nYou\u0027re good to go, dude.",
       "parentUuid": "7deb9d8c_e09aab6b",
+      "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "83b85443_2bfee96a",
+        "filename": "cert/test/reporting/lib/report.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 315,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-04-20T20:22:10Z",
+      "side": 1,
+      "message": "Wonderful, thanks for checking on that, Diego!",
+      "parentUuid": "ecd1e1fb_a3ce8679",
       "revId": "8026efae3360a39d7b7b907abd7a85e5e3c4156b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
