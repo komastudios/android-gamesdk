@@ -16,6 +16,24 @@
       "revId": "be777344dea9cf27fa904e699da20bcbf829dc2c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1e46c5b1_507f9142",
+        "filename": "bender/bender-base/utils/bender_kit/device.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-04-20T16:15:09Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "cfc4bea9_1a7b9b83",
+      "revId": "be777344dea9cf27fa904e699da20bcbf829dc2c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
