@@ -27,11 +27,12 @@ struct BoundingBox {
 
 class Geometry {
  public:
-  Geometry(benderkit::Device &device,
-           const std::vector<MeshVertex> &vertex_data,
-           const std::vector<uint16_t> &index_data);
-
-  ~Geometry();
+  Geometry(int vertex_count,
+           int index_count,
+           int vertex_offset,
+           int index_offset,
+           BoundingBox &bounding_box,
+           glm::vec3 &scale_factor);
 
   int GetVertexCount() const { return vertex_count_; }
   int GetIndexCount() const { return index_count_; }
@@ -40,24 +41,34 @@ class Geometry {
 
   void Bind(VkCommandBuffer cmd_buffer) const;
 
+  template<typename VertexType>
+  static void FillVertexBuffer(benderkit::Device &device, size_t length,
+                               std::function<void(VertexType *, size_t)> filler) {
+      device.CreateBuffer(length, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, vertex_buf_,
+                          vertex_buffer_device_memory_);
+      void *data;
+      vkMapMemory(device.GetDevice(), vertex_buffer_device_memory_, 0, length, 0, &data);
+      filler(static_cast<VertexType *>(data), length);
+      vkUnmapMemory(device.GetDevice(), vertex_buffer_device_memory_);
+  }
+
+  static void FillIndexBuffer(benderkit::Device &device, size_t length,
+                              std::function<void(uint16_t *, size_t)> filler);
+
+  static void CleanupStatic(benderkit::Device &device);
+
  private:
-  benderkit::Device &device_;
-
   int vertex_count_;
-  VkBuffer vertex_buf_;
-  VkDeviceMemory vertex_buffer_device_memory_;
-
   int index_count_;
-  VkBuffer index_buf_;
-  VkDeviceMemory index_buffer_device_memory_;
-
+  VkDeviceSize vertex_offset_;
+  VkDeviceSize index_offset_;
   BoundingBox bounding_box_;
   glm::vec3 scale_factor_;
 
-  void CreateVertexBuffer(const std::vector<packed_vertex> &vertex_data,
-                          const std::vector<uint16_t> &index_data);
-
-  BoundingBox GenerateBoundingBox( const std::vector<MeshVertex>&vertices ) const;
+  static VkBuffer vertex_buf_;
+  static VkDeviceMemory vertex_buffer_device_memory_;
+  static VkBuffer index_buf_;
+  static VkDeviceMemory index_buffer_device_memory_;
 };
 
 #endif //BENDER_BASE_GEOMETRY_H
