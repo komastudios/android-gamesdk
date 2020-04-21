@@ -55,7 +55,7 @@ public class Info {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       Debug.MemoryInfo debugMemoryInfo = getDebugMemoryInfo(activityManager)[0];
       for (String key : SUMMARY_FIELDS) {
-        report.put(key, debugMemoryInfo.getMemoryStat(key));
+        report.put(key, Long.parseLong(debugMemoryInfo.getMemoryStat(key)));
       }
     }
 
