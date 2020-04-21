@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "401d1891_66cbcd72",
+        "filename": "cert/test/AndroidCertTest/app/src/main/assets/Shaders/DependentTextureReadGLES3Operation/indirect_texture_read.fsh",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-21T00:45:11Z",
+      "side": 1,
+      "message": "Marking this as unresolved until I apply that GL_REPEAT trick, remove lines 44 to 50.",
+      "parentUuid": "8b1044f7_2d43823d",
+      "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8b9f01a8_fb4edeed",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DependentTextureReadGLES3Operation.cpp",
         "patchSetId": 1
@@ -72,6 +90,24 @@
     },
     {
       "key": {
+        "uuid": "f1b9a652_ec02074f",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DependentTextureReadGLES3Operation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 328,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-21T00:45:11Z",
+      "side": 1,
+      "message": "Great question, Michael!\n\nShort story long: my first attempt to implement this operation didn\u0027t have that, but when running, a big black square was shown (no output).\n\nSo I departed from another, existing operation (that I knew how it worked), and through successive minor tweaks I converted it into this one.\n\nGuess what I\u0027ve found: if I remove this Step() function, I get the blackout back. I couldn\u0027t explain what causes it. I wish I know as I also feel like this is a hack.",
+      "parentUuid": "8b9f01a8_fb4edeed",
+      "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3b4a08cd_2a0ed5c5",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DependentTextureReadGLES3Operation.cpp",
         "patchSetId": 1
@@ -83,6 +119,24 @@
       "writtenOn": "2020-04-21T00:26:18Z",
       "side": 1,
       "message": "I\u0027m curious why you went the route of procedurally setting the vertex, texcoord, and index data, rather than just making an explicit array of vertices like `GLfloat texcoords[] \u003d {0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0};`. I suppose it doesn\u0027t matter too much, but it might be easier to read/debug that way.",
+      "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7ef02830_1c626dba",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DependentTextureReadGLES3Operation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 351,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-21T00:45:11Z",
+      "side": 1,
+      "message": "Hahahaha, true!!\n\nWell, I\u0027ll try doing what you say, definitely.\n\nShort story long: in my first attempt, rather than indexed vertices, I just tried to draw a quad. Not quite two triangles but a single quad. Didn\u0027t work, probably because I\u0027m two knew to know how glDrawArray for a quad.\n\nThis... sh*t... is a tweaked version of the operation I started from on my second attempt. That operation split the entire texture in an NxN grid of two triangles each grid. I tweaked that down until getting one single grid of two triangles. And it worked, happy me!!\n\nBut certainly I could go, at least, one step further and just initialize here with the result rather than calculating it. I missed that detail, admittedly.",
+      "parentUuid": "3b4a08cd_2a0ed5c5",
       "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
