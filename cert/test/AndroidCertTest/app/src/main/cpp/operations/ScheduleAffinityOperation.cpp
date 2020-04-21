@@ -110,6 +110,7 @@ void WriteDatum(report_writers::Struct w, const datum& d) {
 class ScheduleAffinityOperation : public BaseOperation {
   void Start() override {
     BaseOperation::Start();
+    static std::mt19937 random_number_generator(std::random_device{}());
 
     _thread = std::thread{[this] {
       // It doesn't hurt to note what the spawning thread is doing.
@@ -118,8 +119,6 @@ class ScheduleAffinityOperation : public BaseOperation {
       const auto c = GetConfiguration<configuration>();
       const auto time_to_run = GetDuration();
 
-      std::random_device rd;
-      std::mt19937 rng(rd());
       std::vector<std::thread> threads;
 
       auto core_sizes = ancer::GetCoreSizes();
@@ -136,17 +135,15 @@ class ScheduleAffinityOperation : public BaseOperation {
         Report(datum{"spawning_batch", original_cpu});
         for (int j = 0; j < c.thread_count; j++) {
           threads.emplace_back(
-              [this, i, j, &c, time_to_run, &big_core_indexes, &rng] {
+              [this, i, j, &c, time_to_run, &big_core_indexes] {
                 // determine cpu core we're on
                 int starting_cpu_index = sched_getcpu();
 
                 // find a big core != current
                 int big_core_index_to_use =
-                    PickRandomElementExcluding(rng, big_core_indexes,
+                    PickRandomElementExcluding(random_number_generator,
+                                               big_core_indexes,
                                                sched_getcpu());
-
-                Log::D(TAG, "i: %d j: %d big_core_index_to_use: %d",
-                    i, j, big_core_index_to_use);
 
                 if (big_core_index_to_use >= 0) {
                   // set affinity to the chosen cpu
