@@ -1,7 +1,6 @@
 package net.jimblackler.istresser;
 
 import static com.google.android.apps.internal.games.helperlibrary.Helper.getBuild;
-import static net.jimblackler.istresser.Heuristic.Identifier.TRIM;
 import static net.jimblackler.istresser.ServiceCommunicationHelper.CRASHED_BEFORE;
 import static net.jimblackler.istresser.ServiceCommunicationHelper.TOTAL_MEMORY_MB;
 import static net.jimblackler.istresser.Utils.getFileSize;
@@ -46,8 +45,8 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.TreeSet;
-import net.jimblackler.istresser.Heuristic.Identifier;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import net.jimblackler.istresser.Heuristic.Indicator;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -76,8 +75,6 @@ public class MainActivity extends AppCompatActivity {
   private static final String ALLOCATE_ACTION = "Allocate";
   private static final String FREE_ACTION = "Free";
 
-  private final Collection<Identifier> activeGroups = new TreeSet<>();
-
   static {
     System.loadLibrary("native-lib");
   }
@@ -100,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
   private boolean isServiceCrashed = false;
   private long mallocBytesPerMillisecond;
   private long glAllocBytesPerMillisecond;
-  private final List<Heuristic> activeHeuristics = new ArrayList<>();
+  private JSONObject params;
   private boolean yellowLightTesting = false;
   private long mmapAnonBytesPerMillisecond;
   private long mmapFileBytesPerMillisecond;
@@ -157,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
       }
     }
 
-    JSONObject params = flattenParams(params1);
+    params = flattenParams(params1);
     deviceSettings= getDeviceSettings();
     setContentView(R.layout.activity_main);
     serviceCommunicationHelper = new ServiceCommunicationHelper(this);
@@ -268,19 +265,8 @@ public class MainActivity extends AppCompatActivity {
         mmapFiles = new MmapFileGroup(mmapPath, mmapFileCount, mmapFileSize);
       }
 
-      if (params.has("heuristics")) {
-        JSONArray heuristics = params.getJSONArray("heuristics");
-        for (int idx = 0; idx != heuristics.length(); idx++) {
-          try {
-            activeGroups.add(Identifier.valueOf(heuristics.getString(idx)));
-          } catch (IllegalArgumentException e) {
-            Log.e(TAG, "Enum error", e);
-          }
-        }
-      }
-
       TextView strategies = findViewById(R.id.strategies);
-      strategies.setText(activeGroups.toString());
+      strategies.setText(params.toString());
 
       report.put("build", getBuild());
 
@@ -304,11 +290,7 @@ public class MainActivity extends AppCompatActivity {
 
     appSwitchTimerStart = System.currentTimeMillis();
     latestAllocationTime = info.getStartTime();
-    for (Heuristic heuristic : Heuristic.availableHeuristics) {
-      if (activeGroups.contains(heuristic.getIdentifier())) {
-        activeHeuristics.add(heuristic);
-      }
-    }
+
     timer.schedule(
         new TimerTask() {
           @Override
@@ -318,32 +300,33 @@ public class MainActivity extends AppCompatActivity {
               long sinceLastAllocation = System.currentTimeMillis() - latestAllocationTime;
               if (sinceLastAllocation > 0) {
                 boolean shouldAllocate = true;
-                Indicator maxMemoryPressureLevel = Indicator.GREEN;
-                Identifier triggeringHeuristic = null;
-                for (Heuristic heuristic : activeHeuristics) {
-                  Indicator heuristicMemoryPressureLevel = heuristic.getSignal(activityManager);
-                  if (heuristicMemoryPressureLevel == Indicator.RED) {
-                    maxMemoryPressureLevel = Indicator.RED;
-                    triggeringHeuristic = heuristic.getIdentifier();
-                    break;
-                  } else if (heuristicMemoryPressureLevel == Indicator.YELLOW) {
-                    maxMemoryPressureLevel = Indicator.YELLOW;
-                    triggeringHeuristic = heuristic.getIdentifier();
-                  }
-                }
+                Indicator[] maxMemoryPressureLevel = {Indicator.GREEN};
+                String[] triggeringHeuristic = {null};
+
+                Heuristic.checkHeuristics(activityManager, params, deviceSettings,
+                    (heuristic, heuristicMemoryPressureLevel) -> {
+                      if (heuristicMemoryPressureLevel == Indicator.RED) {
+                        triggeringHeuristic[0] = heuristic;
+                        maxMemoryPressureLevel[0] = Indicator.RED;
+                      } else if (heuristicMemoryPressureLevel == Indicator.YELLOW) {
+                        triggeringHeuristic[0] = heuristic;
+                        maxMemoryPressureLevel[0] = Indicator.YELLOW;
+                      }
+                    });
+
                 if (yellowLightTesting) {
-                  if (maxMemoryPressureLevel == Indicator.RED) {
+                  if (maxMemoryPressureLevel[0] == Indicator.RED) {
                     shouldAllocate = false;
                     freeMemory(MEMORY_TO_FREE_PER_CYCLE_MB * BYTES_IN_MEGABYTE);
-                  } else if (maxMemoryPressureLevel == Indicator.YELLOW) {
+                  } else if (maxMemoryPressureLevel[0] == Indicator.YELLOW) {
                     shouldAllocate = false;
                     // Allocating 0 MB
                   }
                   latestAllocationTime = System.currentTimeMillis();
                 } else {
-                  if (maxMemoryPressureLevel == Indicator.RED) {
+                  if (maxMemoryPressureLevel[0] == Indicator.RED) {
                     shouldAllocate = false;
-                    releaseMemory(report, triggeringHeuristic.toString());
+                    releaseMemory(report, triggeringHeuristic[0]);
                   }
                 }
 
@@ -639,8 +622,11 @@ public class MainActivity extends AppCompatActivity {
       JSONObject report = standardInfo();
       report.put("onTrimMemory", level);
 
-      if (activeGroups.contains(TRIM)) {
-        releaseMemory(report, TRIM.name());
+      if (params.has("heuristics")) {
+        JSONObject heuristics = params.getJSONObject("heuristics");
+        if (heuristics.has("trim")) {
+          releaseMemory(report, "trim");
+        }
       }
       resultsStream.println(report);
 
@@ -685,16 +671,41 @@ public class MainActivity extends AppCompatActivity {
                   });
             }
           }
-          runAfterDelay(
-              () -> {
-                try {
-                  resultsStream.println(standardInfo());
+          runAfterDelay(new Runnable() {
+            @Override
+            public void run() {
+              try {
+                resultsStream.println(standardInfo());
+                AtomicBoolean anyRed = new AtomicBoolean(false);
+                ActivityManager activityManager =
+                    (ActivityManager) Objects.requireNonNull(getSystemService(Context.ACTIVITY_SERVICE));
+
+                Heuristic.checkHeuristics(activityManager, params, deviceSettings,
+                    (heuristic, heuristicMemoryPressureLevel) -> {
+                      if (heuristicMemoryPressureLevel == Indicator.RED) {
+                        anyRed.set(true);
+                      }
+                    });
+
+                if (anyRed.get()) {
+                  runAfterDelay(
+                      () -> {
+                        try {
+                          resultsStream.println(standardInfo());
+                          latestAllocationTime = System.currentTimeMillis();
+                        } catch (JSONException e) {
+                          throw new IllegalStateException(e);
+                        }
+                      },
+                      1000);
+                } else {
                   latestAllocationTime = System.currentTimeMillis();
-                } catch (JSONException e) {
-                  throw new IllegalStateException(e);
                 }
-              },
-              1000);
+              } catch (JSONException e) {
+                throw new IllegalStateException(e);
+              }
+            }
+          }, 1000);
         },
         1000);
   }
@@ -733,6 +744,8 @@ public class MainActivity extends AppCompatActivity {
   }
 
   public static native void initNative();
+
+  public static native boolean tryAlloc(int bytes);
 
   public static native void initGl();
 
