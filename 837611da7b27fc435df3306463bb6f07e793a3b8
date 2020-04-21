@@ -34,6 +34,75 @@
       "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8b1044f7_2d43823d",
+        "filename": "cert/test/AndroidCertTest/app/src/main/assets/Shaders/DependentTextureReadGLES3Operation/indirect_texture_read.fsh",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-04-21T00:26:18Z",
+      "side": 1,
+      "message": "I was thinking the same thing, Shamyl. I talked it over with Diego and we concluded that the texture parameter GL_REPEAT should do the trick.",
+      "parentUuid": "f70e5c48_90e58210",
+      "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8b9f01a8_fb4edeed",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DependentTextureReadGLES3Operation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 328,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-04-21T00:26:18Z",
+      "side": 1,
+      "message": "What is this function doing? Iterating over the vertices looks like a no-op to me, am I missing something? And is it even necessary to be calling glMapBufferRange instead of glBufferData?",
+      "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3b4a08cd_2a0ed5c5",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DependentTextureReadGLES3Operation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 351,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-04-21T00:26:18Z",
+      "side": 1,
+      "message": "I\u0027m curious why you went the route of procedurally setting the vertex, texcoord, and index data, rather than just making an explicit array of vertices like `GLfloat texcoords[] \u003d {0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0};`. I suppose it doesn\u0027t matter too much, but it might be easier to read/debug that way.",
+      "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f60a65f5_597ca143",
+        "filename": "cert/test/reporting/lib/graphers/dependent_read_suite_handler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-04-21T00:26:18Z",
+      "side": 1,
+      "message": "This can be 2020 now 😊",
+      "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
