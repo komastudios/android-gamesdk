@@ -216,7 +216,7 @@ Java_net_jimblackler_istresser_MainActivity_mmapFileConsume(
 }
 
 extern "C" JNIEXPORT bool JNICALL
-Java_net_jimblackler_istresser_Heuristic_tryAlloc(
+Java_net_jimblackler_istresser_MainActivity_tryAlloc(
     JNIEnv *env, jobject thiz, jint bytes) {
   size_t byte_count = (size_t)bytes;
   char *data = (char *)malloc(byte_count);
