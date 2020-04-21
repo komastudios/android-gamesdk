@@ -73,6 +73,41 @@
     },
     {
       "key": {
+        "uuid": "9da266ff_53ee2a35",
+        "filename": "cert/test/AndroidCertTest/app/src/main/assets/Shaders/DependentTextureReadGLES3Operation/indirect_texture_read.fsh",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-21T02:10:45Z",
+      "side": 1,
+      "message": "Adding some useful documentation about GL_REPEAT\n\nhttps://open.gl/textures",
+      "parentUuid": "401d1891_66cbcd72",
+      "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4d5745c5_fb22a66a",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DependentTextureReadGLES3Operation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-21T02:10:45Z",
+      "side": 1,
+      "message": "I want to document here that Michael came with a valid point about finding a source of truth other than fps to measure throughput.\nHe found, in particular, an OpenGL feature called Timer Query (details available here: https://www.lighthouse3d.com/tutorials/opengl-timer-query/)\n\nUnfortunately this isn\u0027t officially available in OpenGL ES.",
+      "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8b9f01a8_fb4edeed",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DependentTextureReadGLES3Operation.cpp",
         "patchSetId": 1
