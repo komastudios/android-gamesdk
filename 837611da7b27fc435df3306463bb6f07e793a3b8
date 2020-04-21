@@ -266,6 +266,24 @@
     },
     {
       "key": {
+        "uuid": "03268903_44d823be",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DependentTextureReadGLES3Operation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 376,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-21T20:15:09Z",
+      "side": 1,
+      "message": "I had already removed this entire function in my latest patchset. This logic doesn\u0027t exist anymore already. ;-)",
+      "parentUuid": "17e4737c_019f8b78",
+      "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a819076_b4832481",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DependentTextureReadGLES3Operation.cpp",
         "patchSetId": 1
@@ -283,6 +301,24 @@
     },
     {
       "key": {
+        "uuid": "fb75cfdd_a0527db3",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DependentTextureReadGLES3Operation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 398,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-21T20:15:09Z",
+      "side": 1,
+      "message": "Awesome! Will try!!",
+      "parentUuid": "1a819076_b4832481",
+      "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a634379e_78cdedaf",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DependentTextureReadGLES3Operation.cpp",
         "patchSetId": 1
@@ -294,6 +330,24 @@
       "writtenOn": "2020-04-21T19:41:59Z",
       "side": 1,
       "message": "This should probably be GL_STATIC_DRAW if you don\u0027t need to update the data later.",
+      "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "240c6adf_60ae09db",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DependentTextureReadGLES3Operation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 399,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-21T20:15:09Z",
+      "side": 1,
+      "message": "Awesome. Makes sense. I wrote this operation from tweaks to an existing test called VertexStreamingOperation. Looks like this logic was a remnant from that test. Really happy to learn this aspect!!",
+      "parentUuid": "a634379e_78cdedaf",
       "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
