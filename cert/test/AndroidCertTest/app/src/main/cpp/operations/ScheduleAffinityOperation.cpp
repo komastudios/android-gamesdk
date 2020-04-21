@@ -145,9 +145,6 @@ class ScheduleAffinityOperation : public BaseOperation {
                     PickRandomElementExcluding(rng, big_core_indexes,
                                                sched_getcpu());
 
-                Log::D(TAG, "i: %d j: %d big_core_index_to_use: %d",
-                    i, j, big_core_index_to_use);
-
                 if (big_core_index_to_use >= 0) {
                   // set affinity to the chosen cpu
                   Report(datum{"setting_affinity", big_core_index_to_use,
