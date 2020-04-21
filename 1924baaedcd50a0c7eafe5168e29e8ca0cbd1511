@@ -16,6 +16,24 @@
       "revId": "1924baaedcd50a0c7eafe5168e29e8ca0cbd1511",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5c790b07_f23db0dc",
+        "filename": "test/collate/src/main/assets/lookup.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-04-21T13:55:24Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "a7d362ec_2a5cde0a",
+      "revId": "1924baaedcd50a0c7eafe5168e29e8ca0cbd1511",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
