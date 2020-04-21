@@ -1,17 +1,27 @@
 package net.jimblackler.collate;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 
+/**
+ * A tool to analyze the recent run of iStresser in order to extract the record values of certain
+ * memory metrics for all devices in the run.
+ */
 public class Discover {
 
   public static void main(String[] args) throws IOException {
-    Map<String, Long> lowestResults = new HashMap<>();
+    JSONObject recordResults = new JSONObject();
+    ImmutableSet<String> increasing =
+        ImmutableSet.of("VmSize", "oom_score", "nativeAllocated", "summary.graphics",
+            "summary.total-pss");
+    ImmutableSet<String> decreasing = ImmutableSet.of("availMem", "Cached", "MemAvailable");
+
     Collector.cloudCollect(result -> {
       if (result.isEmpty()) {
         return;
@@ -19,44 +29,45 @@ public class Discover {
       JSONObject first = result.getJSONObject(0);
 
       JSONObject params = first.getJSONObject("params");
-      JSONObject params1 = Utils.flattenParams(params);
+      JSONArray coordinates = params.getJSONArray("coordinates");
 
-      if (!params1.toString().equals("{\"malloc\":30}")) {
-        return;
+      for (int coordinateNumber = 0; coordinateNumber != coordinates.length(); coordinateNumber++) {
+        if (coordinates.getInt(coordinateNumber) != 0) {
+          return;
+        }
       }
 
       String fingerprint = first.getJSONObject("build").getString("FINGERPRINT");
-
-      long maxAllocated = 0;
+      JSONObject recordResults0;
+      if (recordResults.has(fingerprint)) {
+        recordResults0 = recordResults.getJSONObject(fingerprint);
+      } else {
+        recordResults0 = new JSONObject();
+        recordResults.put(fingerprint, recordResults0);
+      }
       for (int idx2 = 0; idx2 != result.length(); idx2++) {
         JSONObject row = result.getJSONObject(idx2);
-        if (row.has("allocFailed")) {
+        if (row.has("allocFailed") || row.has("mmapAnonFailed") || row.has("mmapFileFailed")) {
           break;
         }
-        if (!row.has("nativeAllocated")) {
-          continue;
-        }
-        long nativeAllocated = row.getLong("nativeAllocated");
-        if (nativeAllocated > maxAllocated) {
-          maxAllocated = nativeAllocated;
+        for (String key : Sets.union(increasing, decreasing)) {
+          if (!row.has(key)) {
+            continue;
+          }
+          long value = row.getLong(key);
+
+          if (recordResults0.has(key)) {
+            long existing = recordResults0.getLong(key);
+            if (increasing.contains(key) ? value > existing : value < existing) {
+              recordResults0.put(key, value);
+            }
+          } else {
+            recordResults0.put(key, value);
+          }
         }
       }
-
-      if (lowestResults.containsKey(fingerprint)) {
-        if (maxAllocated < lowestResults.get(fingerprint)) {
-          lowestResults.put(fingerprint, maxAllocated);
-        }
-      } else {
-        lowestResults.put(fingerprint, maxAllocated);
-      }
-
     });
-    JSONObject table = new JSONObject();
-    for (Map.Entry<String, Long> entry : lowestResults.entrySet()) {
-      JSONObject settings = new JSONObject();
-      settings.put("maxAllocated", entry.getValue());
-      table.put(entry.getKey(), settings);
-    }
-    Files.write(Paths.get("out.json"), table.toString(2).getBytes());
+
+    Files.write(Paths.get("out.json"), recordResults.toString(2).getBytes());
   }
 }
