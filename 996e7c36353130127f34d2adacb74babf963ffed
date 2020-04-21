@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ea95fb52_c77507cc",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DependentTextureReadGLES3Operation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 367,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-21T20:21:52Z",
+      "side": 1,
+      "message": "(Posting an unresolved comment by Michael, that was made on an earlier version of this source file):\n\nMichael Baxter: I think the `nullptr` here might be the source of the reason why you have to call `glMapBufferRange()` (and therefore `Step()`) later. The vertex data isn\u0027t getting set during initialization here. (It just gets set every time `Step()` is called.) At least, that\u0027s how it appears to me. I think you could just pass in `_vertices.data()` here instead and then delete the code for `MapVerticesBuffer()`, `UnmapVerticesBuffer()`, and `Step()`.",
+      "revId": "996e7c36353130127f34d2adacb74babf963ffed",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e312c27e_f638cdb3",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DependentTextureReadGLES3Operation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 368,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-21T20:21:52Z",
+      "side": 1,
+      "message": "(Posting an unresolved comment by Michael, that was made on an earlier version of this source file):\n\nMichael Baxter: This should probably be GL_STATIC_DRAW if you don\u0027t need to update the data later.",
+      "revId": "996e7c36353130127f34d2adacb74babf963ffed",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
