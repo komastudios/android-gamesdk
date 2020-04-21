@@ -19,11 +19,11 @@
  * ScheduleAffinityOperation
  *
  * This test aims to determine reliability of thread pinning. E.g., if a thread
- * is pinned to a specific core, will the os respect that assignment?
+ * is pinned to a specific big core, will the os respect that assignment?
  *
- * Basic operation is to spawn N threads per CPU, pin them to that CPU, have
- * them run some busy work and periodically report what CPU they're executing
- * on.
+ * Basic operation is to spawn N threads per big core, pin them to that CPU,
+ * have them run some busy work and periodically report what CPU they're
+ * executing on.
  *
  * Inputs:
  *
@@ -118,8 +118,6 @@ class ScheduleAffinityOperation : public BaseOperation {
       const auto c = GetConfiguration<configuration>();
       const auto time_to_run = GetDuration();
 
-      std::random_device rd;
-      std::mt19937 rng(rd());
       std::vector<std::thread> threads;
 
       auto core_sizes = ancer::GetCoreSizes();
@@ -136,17 +134,14 @@ class ScheduleAffinityOperation : public BaseOperation {
         Report(datum{"spawning_batch", original_cpu});
         for (int j = 0; j < c.thread_count; j++) {
           threads.emplace_back(
-              [this, i, j, &c, time_to_run, &big_core_indexes, &rng] {
+              [this, i, j, &c, time_to_run, &big_core_indexes] {
                 // determine cpu core we're on
                 int starting_cpu_index = sched_getcpu();
 
                 // find a big core != current
                 int big_core_index_to_use =
-                    PickRandomElementExcluding(rng, big_core_indexes,
+                    PickRandomElementExcluding(big_core_indexes,
                                                sched_getcpu());
-
-                Log::D(TAG, "i: %d j: %d big_core_index_to_use: %d",
-                    i, j, big_core_index_to_use);
 
                 if (big_core_index_to_use >= 0) {
                   // set affinity to the chosen cpu
@@ -192,16 +187,17 @@ class ScheduleAffinityOperation : public BaseOperation {
 
   // returns a random element from `values` array which is not equal
   // to `excluding`, or -1 if no such value can be found
-  int PickRandomElementExcluding(std::mt19937& rng,
-                                 std::vector<int> values,
+  int PickRandomElementExcluding(std::vector<int> values,
                                  int excluding) {
+    static std::mt19937 random_number_generator(std::random_device{}());
+
     // if there's only one item, return it
     if (values.size() == 1) {
       return values[0] == excluding ? -1 : values[0];
     }
 
     // we know the array has values != excluding, pick one at random
-    std::shuffle(values.begin(), values.end(), rng);
+    std::shuffle(values.begin(), values.end(), random_number_generator);
     for (auto v : values) {
       if (v != excluding) {
         return v;
