@@ -50,8 +50,10 @@
  *
  */
 
+#include <algorithm>
 #include <condition_variable>
 #include <mutex>
+#include <random>
 #include <sched.h>
 #include <thread>
 
@@ -97,9 +99,9 @@ struct datum {
 };
 
 void WriteDatum(report_writers::Struct w, const datum& d) {
-    ADD_DATUM_MEMBER(w, d, message);
-    ADD_DATUM_MEMBER(w, d, expected_cpu);
-    ADD_DATUM_MEMBER(w, d, thread_affinity_set);
+  ADD_DATUM_MEMBER(w, d, message);
+  ADD_DATUM_MEMBER(w, d, expected_cpu);
+  ADD_DATUM_MEMBER(w, d, thread_affinity_set);
 }
 } // anonymous namespace
 
@@ -110,44 +112,62 @@ class ScheduleAffinityOperation : public BaseOperation {
     BaseOperation::Start();
 
     _thread = std::thread{[this] {
-      // NOTE: This will probably change since it was never explicitly
-      // assigned, but it doesn't hurt to note what the spawning thread
-      // is doing.
+      // It doesn't hurt to note what the spawning thread is doing.
       const auto original_cpu = sched_getcpu();
       Report(datum{"spawning_started", original_cpu});
       const auto c = GetConfiguration<configuration>();
       const auto time_to_run = GetDuration();
 
+      std::random_device rd;
+      std::mt19937 rng(rd());
       std::vector<std::thread> threads;
-      threads.reserve(c.thread_count);
 
-      const int cpu_count = android_getCpuCount();
-      for (int i = 0; i < cpu_count;) {
+      auto core_sizes = ancer::GetCoreSizes();
+      std::vector<int> big_core_indexes;
+      for (int i = 0; i < core_sizes.size(); i++) {
+        if (core_sizes[i] == ancer::ThreadAffinity::kBigCore) {
+          big_core_indexes.push_back(i);
+        }
+      }
+      const auto num_big_cores = big_core_indexes.size();
+      for (std::size_t i = 0; i < num_big_cores;) {
         if (IsStopped()) break;
 
         Report(datum{"spawning_batch", original_cpu});
-
-        const auto range_start = i;
-        const auto range_end = range_start + c.thread_count;
-        for (; i < range_end; ++i) {
-          // When we're running the last CPUs, cycle back to the
-          // beginning if we need to grab a few extra to keep
-          // things consistent.
-          const auto cpu = i % cpu_count;
-          // We're looping on ourselves, which means we've requested
-          // more CPUs than we actually have. Just stop the loop and
-          // we should be running everything.
-          if (i >= cpu_count && cpu >= range_start) break;
-
+        for (int j = 0; j < c.thread_count; j++) {
           threads.emplace_back(
-              [this, cpu = cpu, &c, time_to_run] {
-                Report(datum{"setting_affinity", cpu, false});
-                bool success = ancer::SetThreadAffinity(cpu);
-                Report(datum{"did_set_affinity", cpu, success});
+              [this, i, j, &c, time_to_run, &big_core_indexes, &rng] {
+                // determine cpu core we're on
+                int starting_cpu_index = sched_getcpu();
 
-                Report(datum{"work_started", cpu, success});
-                StressCpu(time_to_run, c.report_frequency, cpu, success);
-                Report(datum{"work_finished", cpu, success});
+                // find a big core != current
+                int big_core_index_to_use =
+                    PickRandomElementExcluding(rng, big_core_indexes,
+                                               sched_getcpu());
+
+                Log::D(TAG, "i: %d j: %d big_core_index_to_use: %d",
+                    i, j, big_core_index_to_use);
+
+                if (big_core_index_to_use >= 0) {
+                  // set affinity to the chosen cpu
+                  Report(datum{"setting_affinity", big_core_index_to_use,
+                               false});
+                  bool success = PinThreadToCpu(big_core_index_to_use);
+                  Report(datum{"did_set_affinity", big_core_index_to_use,
+                               success});
+
+                  // start the cpu stress work
+                  Report(datum{"work_started", big_core_index_to_use, success});
+                  StressCpu(time_to_run,
+                            c.report_frequency,
+                            big_core_index_to_use,
+                            success);
+
+                  Report(datum{"work_finished", big_core_index_to_use,
+                               success});
+                } else {
+                  FatalError(TAG, "Unable to find a big-core CPU index to use");
+                }
               });
         }
 
@@ -169,6 +189,53 @@ class ScheduleAffinityOperation : public BaseOperation {
   std::thread _thread;
 
 //==============================================================================
+
+  // returns a random element from `values` array which is not equal
+  // to `excluding`, or -1 if no such value can be found
+  int PickRandomElementExcluding(std::mt19937& rng,
+                                 std::vector<int> values,
+                                 int excluding) {
+    // if there's only one item, return it
+    if (values.size() == 1) {
+      return values[0] == excluding ? -1 : values[0];
+    }
+
+    // we know the array has values != excluding, pick one at random
+    std::shuffle(values.begin(), values.end(), rng);
+    for (auto v : values) {
+      if (v != excluding) {
+        return v;
+      }
+    }
+
+    return -1;
+  }
+
+  // sets the calling thread to run on the cpu with given index
+  bool PinThreadToCpu(int index) {
+    cpu_set_t cpuset;
+    CPU_ZERO(&cpuset);
+    CPU_SET(index, &cpuset);
+
+    if (sched_setaffinity(0, sizeof(cpu_set_t), &cpuset) == -1) {
+      std::string err;
+      switch (errno) {
+        case EFAULT:err = "EFAULT";
+          break;
+        case EINVAL:err = "EINVAL";
+          break;
+        case EPERM:err = "EPERM";
+          break;
+        case ESRCH:err = "ESRCH";
+          break;
+        default:err = "(errno: " + std::to_string(errno) + ")";
+          break;
+      }
+      Log::E(TAG, "PinThreadToCpu() - unable to set; error: " + err);
+      return false;
+    }
+    return true;
+  }
 
   // Workload copied from CalculatePiOperation
   void StressCpu(
