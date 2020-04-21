@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "47653900_82a7271e",
+        "filename": "test/collate/src/main/java/net/jimblackler/collate/Discover.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-04-21T10:17:45Z",
+      "side": 1,
+      "message": "A short comment here for documenting the class would be nice.",
+      "revId": "a1cfac0d725508c549a3c959cb36ee2f8c81db4b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
