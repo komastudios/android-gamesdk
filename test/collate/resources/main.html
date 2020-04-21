@@ -80,6 +80,13 @@
               document.createTextNode(`Params: ${JSON.stringify(flattenParams(first.params))}`));
     }
 
+    {
+      const paragraph = document.createElement("p");
+      section.appendChild(paragraph);
+      paragraph.appendChild(
+          document.createTextNode(`Settings: ${JSON.stringify(first.settings)}`));
+    }
+
     if ("extra" in first) {
       const extra = first.extra;
       {
