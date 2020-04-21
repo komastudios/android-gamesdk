@@ -21,6 +21,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Debug;
 import android.os.Environment;
@@ -83,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
   private final Timer timer = new Timer();
   private final List<byte[]> data = Lists.newArrayList();
+  private JSONObject deviceSettings;
   private long nativeAllocatedByTest;
   private long mmapAnonAllocatedByTest;
   private long mmapFileAllocatedByTest;
@@ -156,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     JSONObject params = flattenParams(params1);
+    deviceSettings= getDeviceSettings();
     setContentView(R.layout.activity_main);
     serviceCommunicationHelper = new ServiceCommunicationHelper(this);
     serviceState = ServiceState.DEALLOCATED;
@@ -220,6 +223,7 @@ public class MainActivity extends AppCompatActivity {
 
       JSONObject report = new JSONObject();
       report.put("params", params1);
+      report.put("settings", deviceSettings);
 
       TestSurface testSurface = findViewById(R.id.glsurfaceView);
       testSurface.setVisibility(View.GONE);
@@ -457,6 +461,28 @@ public class MainActivity extends AppCompatActivity {
       throw new IllegalStateException(e);
     }
     return params;
+  }
+
+  private JSONObject getDeviceSettings() {
+    JSONObject settings = new JSONObject();
+    try {
+      JSONObject lookup = new JSONObject(readStream(getAssets().open("lookup.json")));
+      int bestScore = -1;
+      String best = null;
+      Iterator<String> it = lookup.keys();
+      while (it.hasNext()) {
+        String key = it.next();
+        int score = Utils.mismatchIndex(Build.FINGERPRINT, key);
+        if (score > bestScore) {
+          bestScore = score;
+          best = key;
+        }
+      }
+      settings = lookup.getJSONObject(best);
+    } catch (JSONException | IOException e) {
+      Log.w("Settings problem.", e);
+    }
+    return settings;
   }
 
   private void activateServiceBlocker() {

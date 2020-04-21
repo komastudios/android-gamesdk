@@ -67,4 +67,23 @@ public class Utils {
     float value = Float.parseFloat(str.substring(0, unitPosition));
     return (long) (value * unitMultiplier);
   }
+
+  /**
+   * Return the first index where two strings differ.
+   * @param a The first string to compare.
+   * @param b The second string to compare.
+   * @return The first index where the two strings have a different character, or either terminate.
+   */
+  static int mismatchIndex(CharSequence a, CharSequence b) {
+    int index = 0;
+    while (true) {
+      if (index >= a.length() || index >= b.length()) {
+        return index;
+      }
+      if (a.charAt(index) != b.charAt(index)) {
+        return index;
+      }
+      index++;
+    }
+  }
 }
