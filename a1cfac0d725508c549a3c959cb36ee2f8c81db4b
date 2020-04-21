@@ -16,6 +16,24 @@
       "revId": "a1cfac0d725508c549a3c959cb36ee2f8c81db4b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "42c456bd_43b1b499",
+        "filename": "test/collate/src/main/java/net/jimblackler/collate/Discover.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-04-21T16:27:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "47653900_82a7271e",
+      "revId": "a1cfac0d725508c549a3c959cb36ee2f8c81db4b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
