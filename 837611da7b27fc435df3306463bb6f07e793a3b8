@@ -91,6 +91,41 @@
     },
     {
       "key": {
+        "uuid": "a7853395_9231b9de",
+        "filename": "cert/test/AndroidCertTest/app/src/main/assets/Shaders/DependentTextureReadGLES3Operation/indirect_texture_read.fsh",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-21T05:24:02Z",
+      "side": 1,
+      "message": "Done.\n\nClamp isn\u0027t done here anymore. You\u0027ll need to also take a look to DependentTextureReadGLES3Operation.cpp to find how GL_REPEAT is applied. Great suggestion.",
+      "parentUuid": "9da266ff_53ee2a35",
+      "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c406f0a6_218b80a9",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/Suite.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-21T05:24:02Z",
+      "side": 1,
+      "message": "This could possibly be a race condition or something else. Only affects GLSurfaceViewHostActivity; not SwappyHostActivity. The deal is that I\u0027ve found that a half of the FLT devices crash after completing the test as a consequence of these lines.\nThe crash happens because neither id is found in _operations, nor in _stopped_operations. Affected devices consequently crash unnecessarily after having completed the test, produced all data I need.\nIn all these cases the received operation id is 0. Maybe the original id wasn\u0027t 0 and is either in _operations or in _stopped_operations, but the sent argument id was 0 for some bug elsewhere.\nThe deal is that I couldn\u0027t repro the crash locally. Only affects a few devices but the test had already completed... IMHO, there\u0027s no point in crashing. If the id is missing, the operation is considered stopped.",
+      "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4d5745c5_fb22a66a",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DependentTextureReadGLES3Operation.cpp",
         "patchSetId": 1
@@ -143,6 +178,24 @@
     },
     {
       "key": {
+        "uuid": "edfc5bfb_473e8381",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DependentTextureReadGLES3Operation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 328,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-21T05:24:02Z",
+      "side": 1,
+      "message": "I just tried one more time. I can confirm that if I skip this apparently unnecessary function, the rendering process will draw a black canvas. I guess I have no choice that keeping it for now. :-(",
+      "parentUuid": "f1b9a652_ec02074f",
+      "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3b4a08cd_2a0ed5c5",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DependentTextureReadGLES3Operation.cpp",
         "patchSetId": 1
@@ -178,6 +231,24 @@
     },
     {
       "key": {
+        "uuid": "107930d0_614fc5b8",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DependentTextureReadGLES3Operation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 351,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-21T05:24:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7ef02830_1c626dba",
+      "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f60a65f5_597ca143",
         "filename": "cert/test/reporting/lib/graphers/dependent_read_suite_handler.py",
         "patchSetId": 1
@@ -192,6 +263,24 @@
       "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fac08882_21d7170e",
+        "filename": "cert/test/reporting/lib/graphers/dependent_read_suite_handler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-21T05:24:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f60a65f5_597ca143",
+      "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
