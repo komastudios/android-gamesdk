@@ -1,0 +1,45 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3eb9f284_dcf350b4",
+        "filename": "test/collate/src/main/java/net/jimblackler/collate/Utils.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-04-21T10:21:09Z",
+      "side": 1,
+      "message": "A short comment here for documenting the class would be nice.",
+      "revId": "918803b2dd01ea37ec2d06828ce293fb2815141d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9a7e4d49_55873da5",
+        "filename": "test/collate/src/main/java/net/jimblackler/collate/Utils.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-04-21T10:21:09Z",
+      "side": 1,
+      "message": "\u003e Common typo found: \"seperator\" -- should it be \"separator\"?\n\u003e Note: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.\n\nPlease fix.",
+      "parentUuid": "f31dcf09_b87a2251",
+      "range": {
+        "startLine": 30,
+        "startChar": 13,
+        "endLine": 30,
+        "endChar": 22
+      },
+      "revId": "918803b2dd01ea37ec2d06828ce293fb2815141d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
