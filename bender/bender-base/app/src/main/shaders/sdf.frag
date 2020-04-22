@@ -3,7 +3,7 @@
 
 #include "shader_bindings.h"
 
-layout(set = 0, binding = 1)
+layout(set = FONT_BINDING_SET, binding = FONT_FRAG_SAMPLER_BINDING)
 uniform sampler2D texSampler;
 
 layout(location = 0) in vec2 fragTexCoord;
