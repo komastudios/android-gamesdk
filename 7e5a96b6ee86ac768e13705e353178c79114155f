@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dfe42cac_819f6255",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ScheduleAffinityOperation.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-22T04:42:27Z",
+      "side": 1,
+      "message": "Can I recommend something?\n\nHave, as a first sentence inside this function, the following:\n\n    static std::mt19937 rng(std::random_device{}());\n\nThus, this function doesn\u0027t need to receive it from its caller (which, in turn, won\u0027t have to capture it in a lambda!). Moreover, this way, this random number generator is just restricted (i.e., encapsulated) where it\u0027s really used; while still being created once, preserved between calls. The caller (function Start()) won\u0027t even know about its existence.\n\nEven better if instead of being named \"rng\", was called \"random_number_generator\" 👌",
+      "revId": "7e5a96b6ee86ac768e13705e353178c79114155f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
