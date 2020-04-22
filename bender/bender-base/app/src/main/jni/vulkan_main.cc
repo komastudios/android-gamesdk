@@ -868,12 +868,12 @@ bool VulkanDrawFrame(input::Data *input_data) {
         render_graph_mutex.lock();
         render_graph->GetVisibleMeshes(all_meshes);
         render_graph_mutex.unlock();
-        for (uint32_t i = 0; i < all_meshes.size(); i++) {
-          all_meshes[i]->UpdatePipeline(render_pass);
-          all_meshes[i]->SubmitDraw(renderer->GetCurrentCommandBuffer(),
-                                    renderer->GetCurrentImage());
-          total_triangles += all_meshes[i]->GetTrianglesCount();
-        }
+//        for (uint32_t i = 0; i < all_meshes.size(); i++) {
+//          all_meshes[i]->UpdatePipeline(render_pass);
+//          all_meshes[i]->SubmitDraw(renderer->GetCurrentCommandBuffer(),
+//                                    renderer->GetCurrentImage());
+//          total_triangles += all_meshes[i]->GetTrianglesCount();
+//        }
 
         const char *kMeshNoun = all_meshes.size() == 1 ? "mesh" : "meshes";
         const char *kPolyNoun = "faces/polyhedron";
