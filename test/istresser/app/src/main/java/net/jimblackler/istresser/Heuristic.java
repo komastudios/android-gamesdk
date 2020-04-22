@@ -1,150 +1,173 @@
 package net.jimblackler.istresser;
 
+import android.app.ActivityManager;
+import android.os.Build;
+import android.os.Debug;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Map;
+
+import static com.google.android.apps.internal.games.helperlibrary.Utils.getDebugMemoryInfo;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.getMemoryInfo;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.getOomScore;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.processMeminfo;
+import static com.google.android.apps.internal.games.helperlibrary.Utils.processStatus;
+import static net.jimblackler.istresser.MainActivity.tryAlloc;
 
-import android.app.ActivityManager;
-import android.os.Debug;
-import com.google.common.collect.ImmutableList;
-import java.util.List;
-
-/** An instance of this class describes a single mechanism for determining memory pressure. */
-public abstract class Heuristic {
+/**
+ * Wrapper class for methods related to memory management heuristics.
+ */
+class Heuristic {
 
   /**
    * The value a heuristic returns when asked for memory pressure on the device through the
    * getSignal method. GREEN indicates it is safe to allocate further, YELLOW indicates further
    * allocation shouldn't happen, and RED indicates high memory pressure.
    */
+  static void checkHeuristics(ActivityManager activityManager, JSONObject params,
+                              JSONObject deviceSettings, Reporter reporter) throws JSONException {
+    if (!params.has("heuristics")) {
+      return;
+    }
+    JSONObject heuristics = params.getJSONObject("heuristics");
+
+    int oomScore = getOomScore(activityManager);
+    Map<String, Long> memInfo = processMeminfo();
+    Long commitLimit = memInfo.get("CommitLimit");
+    Long vmSize = processStatus(activityManager).get("VmSize");
+    Long cached = memInfo.get("Cached");
+    Long memAvailable = memInfo.get("MemAvailable");
+    ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
+    long availMem = memoryInfo.availMem;
+
+    if (heuristics.has("vmsize")) {
+
+      if (commitLimit == null || vmSize == null) {
+        reporter.report("cl", Indicator.GREEN);
+      } else {
+        reporter.report("vmsize",
+            vmSize > commitLimit * heuristics.getDouble("vmsize") ? Indicator.RED : Indicator.GREEN);
+      }
+    }
+
+    if (heuristics.has("oom")) {
+      reporter.report("oom",
+          oomScore <= heuristics.getLong("oom") ?
+              Indicator.GREEN : Indicator.RED);
+    }
+
+    if (heuristics.has("try")) {
+      reporter.report("try",
+          tryAlloc((int) Utils.getMemoryQuantity(heuristics, "try")) ?
+              Indicator.GREEN : Indicator.RED);
+    }
+
+    if (heuristics.has("low")) {
+      reporter.report("low",
+          getMemoryInfo(activityManager).lowMemory ? Indicator.RED : Indicator.GREEN);
+    }
+
+    if (heuristics.has("cl")) {
+      if (commitLimit == null) {
+        reporter.report("cl", Indicator.GREEN);
+      } else {
+        reporter.report("cl",
+            Debug.getNativeHeapAllocatedSize() / 1024 > commitLimit * heuristics.getDouble("cl")
+                ? Indicator.RED : Indicator.GREEN);
+      }
+    }
+
+    if (heuristics.has("avail")) {
+      reporter.report("avail",
+          availMem < Utils.getMemoryQuantity(heuristics, "avail") ?
+              Indicator.RED : Indicator.GREEN);
+    }
+
+    if (heuristics.has("cached")) {
+      if (cached == null || cached == 0) {
+        reporter.report("cached", Indicator.GREEN);
+      } else {
+        reporter.report("cached",
+            cached * heuristics.getDouble("cached") <
+                memoryInfo.threshold / 1024 ? Indicator.RED : Indicator.GREEN);
+      }
+    }
+
+    if (heuristics.has("avail2")) {
+      if (memAvailable == null) {
+        reporter.report("avail2", Indicator.GREEN);
+      } else {
+        reporter.report("avail2",
+            memAvailable < Utils.getMemoryQuantity(heuristics, "avail2") ?
+                Indicator.RED : Indicator.GREEN);
+      }
+    }
+
+    if (heuristics.has("nativeAllocated")) {
+      reporter.report("nativeAllocated",
+          Debug.getNativeHeapAllocatedSize() >
+              deviceSettings.getLong("nativeAllocated") * heuristics.getDouble("nativeAllocated") ?
+              Indicator.RED : Indicator.GREEN);
+    }
+
+    if (heuristics.has("VmSize")) {
+      reporter.report("VmSize",
+          vmSize > deviceSettings.getLong("VmSize") * heuristics.getDouble("VmSize") ?
+              Indicator.RED : Indicator.GREEN);
+    }
+
+    if (heuristics.has("oom_score")) {
+      reporter.report("oom_score",
+          oomScore > deviceSettings.getLong("oom_score") * heuristics.getDouble("oom_score") ?
+              Indicator.RED : Indicator.GREEN);
+    }
+    Debug.MemoryInfo debugMemoryInfo = getDebugMemoryInfo(activityManager)[0];
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (heuristics.has("summary.graphics")) {
+        reporter.report("summary.graphics",
+            Long.parseLong(debugMemoryInfo.getMemoryStat("summary.graphics")) >
+                deviceSettings.getLong("summary.graphics") *
+                    heuristics.getDouble("summary.graphics") ? Indicator.RED : Indicator.GREEN);
+      }
+
+      if (heuristics.has("summary.total-pss")) {
+        reporter.report("summary.total-pss",
+            Long.parseLong(debugMemoryInfo.getMemoryStat("summary.total-pss")) >
+                deviceSettings.getLong("summary.total-pss") *
+                    heuristics.getDouble("summary.total-pss") ? Indicator.RED : Indicator.GREEN);
+      }
+    }
+
+    if (heuristics.has("availMem")) {
+      reporter.report("availMem",
+          availMem * heuristics.getDouble("availMem") < deviceSettings.getLong("availMem") ?
+              Indicator.RED : Indicator.GREEN);
+    }
+
+    if (heuristics.has("Cached")) {
+      reporter.report("Cached",
+          cached * heuristics.getDouble("Cached") < deviceSettings.getLong("Cached") ?
+              Indicator.RED : Indicator.GREEN);
+    }
+
+    if (heuristics.has("MemAvailable")) {
+      reporter.report("MemAvailable",
+          memAvailable * heuristics.getDouble("MemAvailable") <
+              deviceSettings.getLong("MemAvailable") ? Indicator.RED : Indicator.GREEN);
+    }
+  }
+
+
   public enum Indicator {
     GREEN,
     YELLOW,
     RED
   }
 
-  /** One word identifiers for various different heuristics. */
-  public enum Identifier {
-    TRIM,
-    OOM,
-    LOW,
-    TRY,
-    CL,
-    AVAIL,
-    CACHED,
-    AVAIL2
+  interface Reporter {
+    void report(String heuristic, Indicator indicator);
   }
-
-  static List<Heuristic> availableHeuristics =
-      ImmutableList.of(
-          /*
-           * Checks the OOM Score of the app; returns RED if the score is over 650, GREEN otherwise.
-           */
-          new Heuristic(Identifier.OOM) {
-            @Override
-            public Indicator getSignal(ActivityManager activityManager) {
-              return getOomScore(activityManager) <= 650 ? Indicator.GREEN : Indicator.RED;
-            }
-          },
-          /*
-           * Tries allocating and then immediately freeing 32 MB memory; returns GREEN if
-           * allocation was successful, RED otherwise.
-           */
-          new Heuristic(Identifier.TRY) {
-            @Override
-            public Indicator getSignal(ActivityManager activityManager) {
-              return tryAlloc(1024 * 1024 * 32) ? Indicator.GREEN : Indicator.RED;
-            }
-          },
-          /*
-           * Checks the lowMemory signal from activityManager's memInfo; returns RED if this signal
-           * is present, GREEN otherwise.
-           */
-          new Heuristic(Identifier.LOW) {
-            @Override
-            public Indicator getSignal(ActivityManager activityManager) {
-              return getMemoryInfo(activityManager).lowMemory ? Indicator.RED : Indicator.GREEN;
-            }
-          },
-          /*
-           * Returns RED if the commit limit is above a level that requires memory to be freed to
-           * prevent the application from being killed, GREEN otherwise.
-           */
-          new Heuristic(Identifier.CL) {
-            @Override
-            public Indicator getSignal(ActivityManager activityManager) {
-              Long value = processMeminfo().get("CommitLimit");
-              if (value == null) {
-                return Indicator.GREEN;
-              }
-              return Debug.getNativeHeapAllocatedSize() / 1024 > value
-                  ? Indicator.RED
-                  : Indicator.GREEN;
-            }
-          },
-          /*
-           * Returns RED if the availMem value is below a level that requires memory to be freed
-           * to prevent the application from being killed, GREEN otherwise.
-           */
-          new Heuristic(Identifier.AVAIL) {
-            @Override
-            public Indicator getSignal(ActivityManager activityManager) {
-              ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
-              if (memoryInfo.availMem < memoryInfo.threshold * 2) {
-                return Indicator.RED;
-              } else if (memoryInfo.availMem < memoryInfo.threshold * 3) {
-                return Indicator.YELLOW;
-              } else {
-                return Indicator.GREEN;
-              }
-            }
-          },
-          /*
-           * Returns RED if the cached value is at a level that requires memory to be freed to
-           * prevent the application from being killed, GREEN otherwise.
-           */
-          new Heuristic(Identifier.CACHED) {
-            @Override
-            public Indicator getSignal(ActivityManager activityManager) {
-              Long value = processMeminfo().get("Cached");
-              if (value == null || value == 0) {
-                return Indicator.GREEN;
-              }
-              ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
-              return value < memoryInfo.threshold / 1024 ? Indicator.RED : Indicator.GREEN;
-            }
-          },
-          /*
-           * Returns RED if the MemAvailable value is at a level that requires memory to be freed to
-           * prevent the application from being killed, GREEN otherwise.
-           */
-          new Heuristic(Identifier.AVAIL2) {
-            @Override
-            public Indicator getSignal(ActivityManager activityManager) {
-              Long value = processMeminfo().get("MemAvailable");
-              if (value == null || value == 0) {
-                return Indicator.GREEN;
-              }
-              ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
-              return value < memoryInfo.threshold * 2 / 1024 ? Indicator.RED : Indicator.GREEN;
-            }
-          });
-
-  private final Identifier identifier;
-
-  Heuristic(Identifier identifier) {
-    this.identifier = identifier;
-  }
-
-  public Identifier getIdentifier() {
-    return identifier;
-  }
-
-  public abstract Indicator getSignal(ActivityManager activityManager);
-
-  static {
-    System.loadLibrary("native-lib");
-  }
-
-  public native boolean tryAlloc(int bytes);
 }
