@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "d1bc4a45_a9b314fc",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/Heuristic.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-04-22T13:20:38Z",
+      "side": 1,
+      "message": "The code at MainActivity isn\u0027t making use of the fact that multiple heuristics can be triggered at the same time anyway. Having this function return a pair of Indicator and triggering heuristic would make everything much simpler (including using arrays for singular values to bypass the limitations of lambda in MainActivity).\n\nThat said; if you feel strongly about using this approach feel free to go ahead with it.",
+      "parentUuid": "cf790892_de85efbc",
+      "range": {
+        "startLine": 30,
+        "startChar": 57,
+        "endLine": 30,
+        "endChar": 74
+      },
+      "revId": "72f16e0750d0a013e9cbdfdb6410a9e7bf543c0c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4269eb37_c61737d4",
         "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
         "patchSetId": 2

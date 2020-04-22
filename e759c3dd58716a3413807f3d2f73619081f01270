@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "625083d1_b5c479e8",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 328,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-04-22T13:20:38Z",
+      "side": 0,
+      "message": "Hmm; you seemed to have removed this break clause (as this is no longer a loop) but you didn\u0027t introduce anything in return. This means a yellow result can overwrite a red result if it is reported later.",
+      "range": {
+        "startLine": 328,
+        "startChar": 20,
+        "endLine": 328,
+        "endChar": 25
+      },
+      "revId": "e759c3dd58716a3413807f3d2f73619081f01270",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
