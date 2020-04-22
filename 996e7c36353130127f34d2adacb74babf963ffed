@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "fb23a8da_d1b0970a",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DependentTextureReadGLES3Operation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 367,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-22T01:49:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ea95fb52_c77507cc",
+      "revId": "996e7c36353130127f34d2adacb74babf963ffed",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e312c27e_f638cdb3",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DependentTextureReadGLES3Operation.cpp",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "996e7c36353130127f34d2adacb74babf963ffed",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8305c3bc_77674a81",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/DependentTextureReadGLES3Operation.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 368,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-22T01:49:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e312c27e_f638cdb3",
+      "revId": "996e7c36353130127f34d2adacb74babf963ffed",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
