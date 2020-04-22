@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b6b52506_4c48c8e5",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/ExternalBufferGLES3Operation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-04-22T17:12:30Z",
+      "side": 1,
+      "message": "My bad, Diego, I should have caught these!",
+      "revId": "5c3ed8a5f79d87ebdd0d6e0ca0230d2a1181dd7c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
