@@ -22,6 +22,30 @@
       "revId": "e759c3dd58716a3413807f3d2f73619081f01270",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0c907464_21014d96",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 328,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-04-22T14:01:54Z",
+      "side": 0,
+      "message": "Good spot.",
+      "parentUuid": "625083d1_b5c479e8",
+      "range": {
+        "startLine": 328,
+        "startChar": 20,
+        "endLine": 328,
+        "endChar": 25
+      },
+      "revId": "e759c3dd58716a3413807f3d2f73619081f01270",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }

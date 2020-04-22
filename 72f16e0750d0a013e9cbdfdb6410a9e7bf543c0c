@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "3bde596b_6b8b190b",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/Heuristic.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-04-22T14:01:54Z",
+      "side": 1,
+      "message": "OK I\u0027ve had another look and you\u0027re right, the code is not fully set up to handle multiple triggering heuristics at once. It still needs to make sure the red light signal takes priority however, and I do think this is the simplest way to do that (with the fix I\u0027m about to write).",
+      "parentUuid": "d1bc4a45_a9b314fc",
+      "range": {
+        "startLine": 30,
+        "startChar": 57,
+        "endLine": 30,
+        "endChar": 74
+      },
+      "revId": "72f16e0750d0a013e9cbdfdb6410a9e7bf543c0c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4269eb37_c61737d4",
         "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
         "patchSetId": 2
