@@ -21,7 +21,7 @@ import subprocess
 import time
 
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
 from bs4 import BeautifulSoup
 
@@ -29,9 +29,10 @@ from lib.build import APP_ID
 
 # -----------------------------------------------------------------------------
 SYSTRACE_LINE_CPU_NUMBER_REGEXP = re.compile(r'(\[\d+\])')
-SYSTRACE_LINE_TIMESTAMP_REGEXP = re.compile(r'(\d+\.?\d*:)')
+SYSTRACE_LINE_TIMESTAMP_REGEXP = re.compile(r'\s(\d+\.?\d*):\s')
 CLOCK_SYNC_MARKER = "ancer::clock_sync"
 CLOCK_SYNC_ISSUE_ID_REGEXP = re.compile(r'\(([0-9]+)\)')
+CLOCK_SYNC_TIMESTAMP_REGEXP = re.compile(r"ancer::clock_sync\((\d+)\)")
 
 # -----------------------------------------------------------------------------
 
@@ -57,46 +58,56 @@ def trim_to_trace(file_data):
     return file_data[start_pos:end_pos]
 
 
-def get_systrace_line_timestamp_ns(line: str) -> float:
+def get_systrace_timestamp_ns(line: str) -> Optional[int]:
     #pylint: disable=line-too-long
     """Get the systrace timestamp in nanoseconds from a systrace line,
     or 0 if not able
     So given the line:
-    <...>-19979 (-----) [000] ...1 23495.016046: tracing_mark_write: C|19865|ancer::clock_sync(417)|23495016024390
+    <...>-19979 (-----) [000] ...1 23495.016046: tracing_mark_write: C|19865|ancer::clock_sync(23495016024390)
     this would return int("23495.016046") * 1e9
     """
     match = SYSTRACE_LINE_TIMESTAMP_REGEXP.search(line)
-    if not match.group():
+    if not match:
         print(f"Unable to find systrace timestamp in line \"{line}\"")
-        return 0
+        return None
 
-    return float(match.group()[:-1]) * 1e9
+    return convert_timestamp_to_int_ns(match.group(1))
 
 
-def get_ancer_clocksync_offset_ns(line: str) -> int:
+def get_ancer_clocksync_timestamp_ns(line: str) -> Optional[int]:
+
+    match = CLOCK_SYNC_TIMESTAMP_REGEXP.search(line)
+
+    if not match:
+        print(f"Unable to find clock sync in line \"{line}\"")
+        return None
+
+    return int(match.group(1))
+
+
+def get_ancer_clocksync_offset_ns(line: str) -> Optional[int]:
     #pylint: disable=line-too-long
-    """Given an ancer::clock_sync line, return the clock skew
+    """Given an ancer::clock_sync line, return the clock skew, which can be
+    added to a systrace timestamp to convert it to reference time.
     So given the line:
-    <...>-19979 (-----) [000] ...1 23495.016046: tracing_mark_write: C|19865|ancer::clock_sync(417)|23495016024390
+    <...>-19979 (-----) [000] ...1 23495.016046: tracing_mark_write: C|19865|ancer::clock_sync(23495016024390)
     This would return -21610 (nanoseconds)
     Returns:
         Nanoseconds of clock skew between the systrace clock and the
         clock used by ancer
     """
 
-    # get the systrace timestamp for our clock_sync line
-    st_timestamp_ns = get_systrace_line_timestamp_ns(line)
+    st_timestamp_ns = get_systrace_timestamp_ns(line)
+    ref_timestamp_ns = get_ancer_clocksync_timestamp_ns(line)
 
-    # get the reference timestamp value from this line - it's the value after |
-    last_pipe_pos = line.rfind('|')
-    ref_timestamp = line[last_pipe_pos + 1:]
-    ref_timestamp_ns = int(ref_timestamp)
+    if not st_timestamp_ns and not ref_timestamp_ns:
+        return None
 
     skew = ref_timestamp_ns - st_timestamp_ns
     return skew
 
 
-def find_timestamp_offset(lines: List[str]) -> Tuple[int, int]:
+def find_timestamp_offset(lines: List[str]) -> Optional[int]:
     """Given a systrace data section split to a line list,
     find the first ancer clock sync marker and determine the clock offset
     in nanoeseconds
@@ -113,8 +124,8 @@ def find_timestamp_offset(lines: List[str]) -> Tuple[int, int]:
 
 
 def filter_systrace_to_interested_lines(systrace_file: Path,
-                                        keywords: List[str],
-                                        pattern: str) -> Tuple[int, List[str]]:
+                                        keywords: List[str], pattern: str
+                                       ) -> Tuple[Optional[int], List[str]]:
     """Trims contents of a systrace file to subset in which we are interested
 
     Given the systrace HTML file `systrace_file`, extract the systrace entries
@@ -129,8 +140,8 @@ def filter_systrace_to_interested_lines(systrace_file: Path,
         pattern: (optional) Regex for finding lines we are interested in
 
     Returns:
-        A tuple of a time offset for clock alignment, and list of lines from the
-        systrace html data which matched the search
+        A tuple of an optional time offset for clock alignment, and list of
+        lines from the systrace html data which matched the search
 
     Note:
         If both keywords are pattern are empty, this will return an empty
@@ -215,7 +226,7 @@ def convert_systrace_line_to_datum(systrace_line: str,
     cpu_id = int(cpu_number_match.group()[1:-1])
     suite_id = "systrace"
 
-    systrace_timestamp = float(timestamp_match.group()[:-1]) * 1e9
+    systrace_timestamp = convert_timestamp_to_int_ns(timestamp_match.group(1))
     timestamp = systrace_timestamp - timestamp_offset_ns
     suite_id = "systrace"
     operation_id = task_name
@@ -237,6 +248,13 @@ def convert_systrace_line_to_datum(systrace_line: str,
         }
     }
 
+
+def convert_timestamp_to_int_ns(timestamp: str) -> int:
+    """
+    Converts a timestamp string of the format "23495.016046" in seconds to
+    an integer in nanoseconds (in the example, 23495016046000).
+    """
+    return int(float(timestamp) * 1e9)
 
 # ------------------------------------------------------------------------------
 
