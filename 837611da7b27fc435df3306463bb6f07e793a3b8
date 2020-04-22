@@ -109,6 +109,24 @@
     },
     {
       "key": {
+        "uuid": "da320c75_f2a19ac7",
+        "filename": "cert/test/AndroidCertTest/app/src/main/assets/Shaders/DependentTextureReadGLES3Operation/indirect_texture_read.fsh",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-04-22T20:15:29Z",
+      "side": 1,
+      "message": "Oh, I totally grok what you\u0027re doing, I\u0027m just saying that calling `glTextParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)` (and same for GL_TEXTURE_WRAP_T) does exactly this same thing. \n\nhttps://open.gl/textures",
+      "parentUuid": "f70e5c48_90e58210",
+      "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c406f0a6_218b80a9",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/Suite.cpp",
         "patchSetId": 1
