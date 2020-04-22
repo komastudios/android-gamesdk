@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "cf790892_de85efbc",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/Heuristic.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-04-22T13:03:20Z",
+      "side": 1,
+      "message": "See the other comment - there can be multiple heuristics triggered. \n\nIt was this or to return a list.",
+      "parentUuid": "2460e29f_8c795019",
+      "range": {
+        "startLine": 30,
+        "startChar": 57,
+        "endLine": 30,
+        "endChar": 74
+      },
+      "revId": "72f16e0750d0a013e9cbdfdb6410a9e7bf543c0c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4269eb37_c61737d4",
         "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
         "patchSetId": 2
