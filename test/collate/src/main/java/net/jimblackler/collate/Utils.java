@@ -13,8 +13,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
-import java.util.stream.Collectors;
 
+/**
+ * Class containing various utility methods used by tools in the package.
+ */
 class Utils {
   static String fileToString(String filename) throws IOException {
     return Files.readString(Paths.get("resources", filename));
@@ -25,13 +27,25 @@ class Utils {
   }
 
   private static String readStream(InputStream inputStream) throws IOException {
+    StringBuilder stringBuilder = new StringBuilder();
     try (BufferedReader bufferedReader =
         new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-      return bufferedReader.lines().collect(Collectors.joining(System.lineSeparator()));
+      String separator = "";
+      while (true) {
+        String line = bufferedReader.readLine();
+        if (line == null) {
+          return stringBuilder.toString();
+        }
+        System.out.println(line);
+        stringBuilder.append(separator);
+        separator = System.lineSeparator();
+        stringBuilder.append(line);
+      }
     }
   }
 
   static String execute(String... args) throws IOException {
+    System.out.println(String.join(" ", args));
     Process process = new ProcessBuilder(args).start();
 
     String input = readStream(process.getInputStream());
