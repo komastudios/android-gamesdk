@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2460e29f_8c795019",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/Heuristic.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-04-22T12:25:45Z",
+      "side": 1,
+      "message": "Why did you implement a reporter here? You could have just returned Indicator after processing all the results.",
+      "range": {
+        "startLine": 30,
+        "startChar": 57,
+        "endLine": 30,
+        "endChar": 74
+      },
+      "revId": "72f16e0750d0a013e9cbdfdb6410a9e7bf543c0c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4269eb37_c61737d4",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 306,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-04-22T12:25:45Z",
+      "side": 1,
+      "message": "This code here could be much simpler if you returned triggering heuristic and indicator from this method.",
+      "range": {
+        "startLine": 306,
+        "startChar": 16,
+        "endLine": 306,
+        "endChar": 42
+      },
+      "revId": "72f16e0750d0a013e9cbdfdb6410a9e7bf543c0c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3a369142_472668d3",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 309,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-04-22T12:25:45Z",
+      "side": 1,
+      "message": "Why did you turn this into an array only to use the 0th element?",
+      "range": {
+        "startLine": 309,
+        "startChar": 43,
+        "endLine": 309,
+        "endChar": 46
+      },
+      "revId": "72f16e0750d0a013e9cbdfdb6410a9e7bf543c0c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
