@@ -127,6 +127,24 @@
     },
     {
       "key": {
+        "uuid": "e83a1c1b_65d7e304",
+        "filename": "cert/test/AndroidCertTest/app/src/main/assets/Shaders/DependentTextureReadGLES3Operation/indirect_texture_read.fsh",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-22T20:41:15Z",
+      "side": 1,
+      "message": "You\u0027re right, Shamyl. Take into account that this is an old patchset. The most recent one does exactly what you said about GL_REPEAT.\n\nThis fragment shader, in its most recent version, looks like this:\n\nhttps://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1289975/4/cert/test/AndroidCertTest/app/src/main/assets/Shaders/DependentTextureReadGLES3Operation/indirect_texture_read.fsh",
+      "parentUuid": "da320c75_f2a19ac7",
+      "revId": "837611da7b27fc435df3306463bb6f07e793a3b8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c406f0a6_218b80a9",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/Suite.cpp",
         "patchSetId": 1
