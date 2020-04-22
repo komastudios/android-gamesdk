@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "f5ca8076_579b2c5e",
+        "filename": "test/collate/src/main/java/net/jimblackler/collate/Utils.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-04-22T18:03:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3eb9f284_dcf350b4",
+      "revId": "918803b2dd01ea37ec2d06828ce293fb2815141d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a7e4d49_55873da5",
         "filename": "test/collate/src/main/java/net/jimblackler/collate/Utils.java",
         "patchSetId": 1
@@ -40,6 +58,30 @@
       "revId": "918803b2dd01ea37ec2d06828ce293fb2815141d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7fe5dc87_9992bf55",
+        "filename": "test/collate/src/main/java/net/jimblackler/collate/Utils.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-04-22T18:03:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a7e4d49_55873da5",
+      "range": {
+        "startLine": 30,
+        "startChar": 13,
+        "endLine": 30,
+        "endChar": 22
+      },
+      "revId": "918803b2dd01ea37ec2d06828ce293fb2815141d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
