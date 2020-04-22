@@ -20,11 +20,6 @@ namespace {
         int val = std::stoi(value);
         return val;
     }
-
-    void WriteVertex(float data, float **ptr) {
-        **ptr = data;
-        (*ptr)++;
-    }
 }
 
 void Font::ParseFontInfo(const char *info_file_path, android_app &android_app_ctx) {
@@ -56,17 +51,39 @@ void Font::ParseFontInfo(const char *info_file_path, android_app &android_app_ct
         line_stream >> info;
 
         if (info == "char") {
-            uint32_t charid = NextValuePair(&line_stream);
-            char_map_[charid].x = NextValuePair(&line_stream);
-            char_map_[charid].y = NextValuePair(&line_stream);
-            char_map_[charid].width = NextValuePair(&line_stream);
-            char_map_[charid].height = NextValuePair(&line_stream);
-            char_map_[charid].x_offset = NextValuePair(&line_stream);
-            char_map_[charid].y_offset = NextValuePair(&line_stream);
-            char_map_[charid].x_advance = NextValuePair(&line_stream);
+            uint32_t charid = static_cast<uint32_t>(NextValuePair(&line_stream));
+            char_map_[charid].x = static_cast<uint16_t>(NextValuePair(&line_stream));
+            char_map_[charid].y = static_cast<uint16_t>(NextValuePair(&line_stream));
+            char_map_[charid].width = static_cast<uint8_t>(NextValuePair(&line_stream));
+            char_map_[charid].height = static_cast<uint8_t>(NextValuePair(&line_stream));
+            char_map_[charid].x_offset = static_cast<int8_t>(NextValuePair(&line_stream));
+            char_map_[charid].y_offset = static_cast<uint8_t>(NextValuePair(&line_stream));
+            char_map_[charid].x_advance = static_cast<uint8_t>(NextValuePair(&line_stream));
             NextValuePair(&line_stream);
             NextValuePair(&line_stream);
         }
+    }
+}
+
+void Font::UpdateFontUBO() {
+    float w = static_cast<float>(texture_->GetWidth());
+    float h = static_cast<float>(texture_->GetHeight());
+    for(int i = 0; i < renderer_.GetDevice().GetSwapchainLength(); ++i) {
+            font_data_ubo_->Update(i, [this, w, h](Font::font_data &font_data) {
+                for(auto &char_data : char_map_) {
+                    int index = char_data.first;
+                    map_character current_char = char_data.second;
+                    float pos_x = static_cast<float>(current_char.x) / w;
+                    float pos_y = static_cast<float>(current_char.y) / h;
+                    float x_off = static_cast<float>(current_char.x_offset) / w;
+                    float y_off = static_cast<float>(current_char.y_offset) / h;
+                    float char_width = static_cast<float>(current_char.width) / w;
+                    float char_height = static_cast<float>(current_char.height) / h;
+                    float x_adv = static_cast<float>(current_char.x_advance) / w;
+                    font_data.positions[index][0] = glm::vec4(pos_x, pos_y, char_width, char_height);
+                    font_data.positions[index][1] = glm::vec4(x_off, y_off, x_adv, 0.0f);
+                }
+            });
     }
 }
 
@@ -74,85 +91,26 @@ void Font::DrawString(const std::string& text, float text_size, float x, float y
                       VkCommandBuffer cmd_buffer, VkRenderPass render_pass, uint_t frame_index) {
     UpdatePipeline(render_pass);
 
-    if((int)frame_index != current_frame_) {
-        offset_ = 0;
-        current_frame_ = frame_index;
-    }
-
-    if(offset_ >= FONT_VERTEX_BUFFER_SIZE) {
-        return;
-    }
-
     if(text_size < 0.0f) {
         text_size = 0.0f;
     }
+    if(text.size() <= 0) {
+        return;
+    }
 
-    float resolution_ratio_x_ = (float) renderer_.GetDevice().GetDisplaySize().width
+    push_constants push_consts;
+
+    float resolution_ratio_x = (float) renderer_.GetDevice().GetDisplaySize().width
         / renderer_.GetDevice().GetDisplaySizeOriented().width;
     float resolution_ratio_y = (float) renderer_.GetDevice().GetDisplaySize().height
         / renderer_.GetDevice().GetDisplaySizeOriented().height;
 
-    float text_size_x = text_size * resolution_ratio_x_;
+    float text_size_x = text_size * resolution_ratio_x;
     float text_size_y = text_size * resolution_ratio_y;
+    push_consts.coordinates = glm::vec4(text_size_x, text_size_y, x, y);
 
-    float w = (float)texture_->GetWidth();
-    float h = (float)texture_->GetHeight();
-
-    float posx = x;
-    float posy = y;
-
-    void *data;
-    CALL_VK(vkMapMemory(renderer_.GetVulkanDevice(), vertexBufferDeviceMemory_, offset_,
-                sizeof(float) * text.size() * FONT_NUM_QUAD_INDICES * FONT_ATTR_COUNT, 0, &data));
-
-    float *head = (float*)data;
-
-    for (auto& c : text) {
-        Character *char_info = &char_map_[c];
-
-        float dimx = (float)(char_info->width);
-        float dimy = (float)(char_info->height);
-
-        float us = char_info->x / w;
-        float ue = (char_info->x + char_info->width) / w;
-        float ts = char_info->y / h;
-        float te = (char_info->y + char_info->height) / h;
-
-        float xo = char_info->x_offset;
-        float yo = char_info->y_offset;
-
-        WriteVertex((posx) + (dimx + xo) / w * text_size_x, &head);
-        WriteVertex((posy) + (dimy + yo) / h * text_size_y, &head);
-        WriteVertex(ue, &head);
-        WriteVertex(te, &head);
-
-
-        WriteVertex((posx) +  (xo) / w * text_size_x, &head);
-        WriteVertex((posy) + (dimy + yo) / h * text_size_y, &head);
-        WriteVertex(us, &head);
-        WriteVertex(te, &head);
-
-        WriteVertex((posx) + (xo) / w * text_size_x, &head);
-        WriteVertex((posy) + (yo) / h * text_size_y, &head);
-        WriteVertex(us, &head);
-        WriteVertex(ts, &head);
-
-        WriteVertex((posx) + (xo) / w * text_size_x, &head);
-        WriteVertex((posy) + (yo) / h * text_size_y, &head);
-        WriteVertex(us, &head);
-        WriteVertex(ts, &head);
-
-        WriteVertex((posx) + (dimx + xo) / w * text_size_x, &head);
-        WriteVertex((posy) + (yo) / h * text_size_y, &head);
-        WriteVertex(ue, &head);
-        WriteVertex(ts, &head);
-
-        WriteVertex((posx) + (dimx + xo) / w * text_size_x, &head);
-        WriteVertex((posy) + (dimy + yo) / h * text_size_y, &head);
-        WriteVertex(ue, &head);
-        WriteVertex(te, &head);
-
-        posx += (float)(char_info->x_advance) / w * text_size_x;
+    for(int i = 0; i < text.size(); ++i) {
+        push_consts.string_data[i / 4] |= static_cast<uint32_t>(static_cast<uint8_t>(text[i])) << 8 * (3 - i % 4);
     }
 
     orientation_matrix_->Update(frame_index, [this](auto &matrix) {
@@ -174,13 +132,16 @@ void Font::DrawString(const std::string& text, float text_size, float x, float y
       }
     });
 
-    vkUnmapMemory(renderer_.GetVulkanDevice(), vertexBufferDeviceMemory_);
-
     vkCmdBindPipeline(cmd_buffer,
                       VK_PIPELINE_BIND_POINT_GRAPHICS,
                       pipeline_);
 
-    vkCmdBindVertexBuffers(cmd_buffer, 0, 1, &vertexBuf_, &offset_);
+    vkCmdPushConstants(cmd_buffer,
+                       layout_,
+                       VK_SHADER_STAGE_VERTEX_BIT,
+                       0,
+                       max_push_const_size,
+                       &push_consts);
 
     vkCmdBindDescriptorSets(cmd_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                             layout_, 0, 1, &font_descriptor_sets_[frame_index], 0, nullptr);
@@ -188,7 +149,6 @@ void Font::DrawString(const std::string& text, float text_size, float x, float y
     vkCmdDraw(cmd_buffer,
               text.size() * FONT_NUM_QUAD_INDICES,
               1, 0, 0);
-    offset_ += sizeof(float) * text.size() * FONT_NUM_QUAD_INDICES * FONT_ATTR_COUNT;
 }
 
 Font::Font(Renderer& renderer, android_app &android_app_ctx,
@@ -197,23 +157,18 @@ Font::Font(Renderer& renderer, android_app &android_app_ctx,
                            font_texture_path, VK_FORMAT_R8G8B8A8_SRGB);
 
     orientation_matrix_ = std::make_unique<UniformBufferObject<glm::mat4>>(renderer_.GetDevice());
+    font_data_ubo_ = std::make_unique<UniformBufferObject<font_data>>(renderer_.GetDevice());
 
+    GetPushConstSize();
     CreateFontShaders(android_app_ctx);
     ParseFontInfo(font_info_path.c_str(), android_app_ctx);
+    UpdateFontUBO();
     CreateSampler();
     CreateDescriptorSetLayout();
     CreateDescriptors(renderer);
-
-    VkDeviceSize bufferSizeVertex = FONT_VERTEX_BUFFER_SIZE;
-    renderer_.GetDevice().CreateBuffer(bufferSizeVertex, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-                          vertexBuf_, vertexBufferDeviceMemory_);
-    offset_ = 0;
-    current_frame_ = -1;
 }
 
 Font::~Font() {
-    vkDestroyBuffer(renderer_.GetVulkanDevice(), vertexBuf_, nullptr);
-    vkFreeMemory(renderer_.GetVulkanDevice(), vertexBufferDeviceMemory_, nullptr);
 
     vkDestroyPipeline(renderer_.GetVulkanDevice(), pipeline_, nullptr);
     vkDestroyPipelineCache(renderer_.GetVulkanDevice(), cache_, nullptr);
@@ -224,6 +179,7 @@ Font::~Font() {
 }
 
 void Font::CreateFontShaders(android_app &android_app_ctx) {
+    // TODO: add empty vertex format to VertexFormat and ShaderState
     benderkit::VertexFormat vertex_format{
             {
                     benderkit::VertexElement::float2,
@@ -270,63 +226,87 @@ void Font::CreateDescriptors(Renderer& renderer) {
     CALL_VK(vkAllocateDescriptorSets(renderer_.GetVulkanDevice(), &allocInfo, font_descriptor_sets_.data()));
 
     for (size_t i = 0; i < renderer_.GetDevice().GetDisplayImages().size(); i++) {
-        VkDescriptorImageInfo imageInfo = {};
-        imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        imageInfo.imageView = texture_->GetImageView();
-        imageInfo.sampler = sampler_;
+        VkDescriptorImageInfo image_info = {};
+        image_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        image_info.imageView = texture_->GetImageView();
+        image_info.sampler = sampler_;
 
-        VkDescriptorBufferInfo bufferInfo = {};
-        bufferInfo.buffer = orientation_matrix_->GetBuffer(i);
-        bufferInfo.offset = 0;
-        bufferInfo.range = sizeof(glm::mat4);
+        VkDescriptorBufferInfo matrix_buffer_info = {};
+        matrix_buffer_info.buffer = orientation_matrix_->GetBuffer(i);
+        matrix_buffer_info.offset = 0;
+        matrix_buffer_info.range = sizeof(glm::mat4);
 
-        std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
+        VkDescriptorBufferInfo font_buffer_info = {};
+        font_buffer_info.buffer = font_data_ubo_->GetBuffer(i);
+        font_buffer_info.offset = 0;
+        font_buffer_info.range = sizeof(Font::font_data);
 
-        descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptorWrites[0].dstSet = font_descriptor_sets_[i];
-        descriptorWrites[0].dstBinding = FONT_FRAG_SAMPLER_BINDING;
-        descriptorWrites[0].dstArrayElement = 0;
-        descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        descriptorWrites[0].descriptorCount = 1;
-        descriptorWrites[0].pImageInfo = &imageInfo;
+        std::array<VkWriteDescriptorSet, 3> write_descriptor = {};
 
-        descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptorWrites[1].dstSet = font_descriptor_sets_[i];
-        descriptorWrites[1].dstBinding = FONT_VERTEX_UBO_BINDING;
-        descriptorWrites[1].dstArrayElement = 0;
-        descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        descriptorWrites[1].descriptorCount = 1;
-        descriptorWrites[1].pBufferInfo = &bufferInfo;
+        write_descriptor[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        write_descriptor[0].dstSet = font_descriptor_sets_[i];
+        write_descriptor[0].dstBinding = FONT_FRAG_SAMPLER_BINDING;
+        write_descriptor[0].dstArrayElement = 0;
+        write_descriptor[0].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        write_descriptor[0].descriptorCount = 1;
+        write_descriptor[0].pImageInfo = &image_info;
+
+        write_descriptor[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        write_descriptor[1].dstSet = font_descriptor_sets_[i];
+        write_descriptor[1].dstBinding = FONT_VERTEX_MATRIX_BINDING;
+        write_descriptor[1].dstArrayElement = 0;
+        write_descriptor[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        write_descriptor[1].descriptorCount = 1;
+        write_descriptor[1].pBufferInfo = &matrix_buffer_info;
+
+        write_descriptor[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        write_descriptor[2].dstSet = font_descriptor_sets_[i];
+        write_descriptor[2].dstBinding = FONT_VERTEX_UBO_BINDING;
+        write_descriptor[2].dstArrayElement = 0;
+        write_descriptor[2].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        write_descriptor[2].descriptorCount = 1;
+        write_descriptor[2].pBufferInfo = &font_buffer_info;
 
         vkUpdateDescriptorSets(renderer_.GetVulkanDevice(),
-                               descriptorWrites.size(), descriptorWrites.data(),
+                               write_descriptor.size(), write_descriptor.data(),
                                0, nullptr);
     }
 }
 
 void Font::CreateDescriptorSetLayout() {
-    VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-    samplerLayoutBinding.binding = FONT_FRAG_SAMPLER_BINDING;
-    samplerLayoutBinding.descriptorCount = 1;
-    samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    samplerLayoutBinding.pImmutableSamplers = nullptr;
-    samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+    VkDescriptorSetLayoutBinding sampler_layout_binding = {
+        .binding = FONT_FRAG_SAMPLER_BINDING,
+        .descriptorCount = 1,
+        .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+        .pImmutableSamplers = nullptr,
+        .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
+    };
+    VkDescriptorSetLayoutBinding orientation_matrix_layout_binding = {
+        .binding = FONT_VERTEX_MATRIX_BINDING,
+        .descriptorCount = 1,
+        .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+        .pImmutableSamplers = nullptr,
+        .stageFlags = VK_SHADER_STAGE_VERTEX_BIT,
+    };
 
-    VkDescriptorSetLayoutBinding orientationMatrixLayoutBinding = {};
-    orientationMatrixLayoutBinding.binding = FONT_VERTEX_UBO_BINDING;
-    orientationMatrixLayoutBinding.descriptorCount = 1;
-    orientationMatrixLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    orientationMatrixLayoutBinding.pImmutableSamplers = nullptr;
-    orientationMatrixLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    VkDescriptorSetLayoutBinding font_ubo_layout_binding = {
+        .binding = FONT_VERTEX_UBO_BINDING,
+        .descriptorCount = 1,
+        .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+        .pImmutableSamplers = nullptr,
+        .stageFlags = VK_SHADER_STAGE_VERTEX_BIT,
+    };
 
-    std::array<VkDescriptorSetLayoutBinding, 2> bindings = { samplerLayoutBinding, orientationMatrixLayoutBinding };
+    std::array<VkDescriptorSetLayoutBinding, 3> bindings = {sampler_layout_binding,
+                                                            orientation_matrix_layout_binding,
+                                                            font_ubo_layout_binding, };
 
-    VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-    layoutInfo.bindingCount = bindings.size();
-    layoutInfo.pBindings = bindings.data();
+    VkDescriptorSetLayoutCreateInfo layout_info = {};
+    layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    layout_info.bindingCount = bindings.size();
+    layout_info.pBindings = bindings.data();
 
-    CALL_VK(vkCreateDescriptorSetLayout(renderer_.GetVulkanDevice(), &layoutInfo, nullptr,
+    CALL_VK(vkCreateDescriptorSetLayout(renderer_.GetVulkanDevice(), &layout_info, nullptr,
                                         &font_descriptors_layout_));
 }
 
@@ -370,8 +350,8 @@ void Font::CreateFontPipeline(VkRenderPass renderPass) {
             .rasterizerDiscardEnable = VK_FALSE,
             .polygonMode = VK_POLYGON_MODE_FILL,
             .lineWidth = 1.0f,
-            .cullMode = VK_CULL_MODE_BACK_BIT,
-            .frontFace = VK_FRONT_FACE_CLOCKWISE,
+            .cullMode = VK_CULL_MODE_FRONT_BIT,
+            .frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE,
             .depthBiasEnable = VK_FALSE,
             .depthBiasConstantFactor = 0.0f,
             .depthBiasClamp = 0.0f,
@@ -414,6 +394,20 @@ void Font::CreateFontPipeline(VkRenderPass renderPass) {
             .flags = 0,
     };
 
+    VkPipelineVertexInputStateCreateInfo empty_input_info = {
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+            .vertexAttributeDescriptionCount = 0,
+            .pVertexAttributeDescriptions = nullptr,
+            .vertexBindingDescriptionCount = 0,
+            .pVertexBindingDescriptions = nullptr,
+    };
+
+    VkPushConstantRange push_const_range = {
+            .stageFlags = VK_SHADER_STAGE_VERTEX_BIT,
+            .offset = 0,
+            .size = max_push_const_size,
+    };
+
     std::array<VkDescriptorSetLayout, 1> layouts;
 
     layouts[FONT_BINDING_SET] = font_descriptors_layout_;
@@ -423,8 +417,8 @@ void Font::CreateFontPipeline(VkRenderPass renderPass) {
             .pNext = nullptr,
             .setLayoutCount = layouts.size(),
             .pSetLayouts = layouts.data(),
-            .pushConstantRangeCount = 0,
-            .pPushConstantRanges = nullptr,
+            .pushConstantRangeCount = 1,
+            .pPushConstantRanges = &push_const_range,
     };
 
     CALL_VK(vkCreatePipelineLayout(renderer_.GetVulkanDevice(), &pipelineLayoutInfo, nullptr,
@@ -462,6 +456,8 @@ void Font::CreateFontPipeline(VkRenderPass renderPass) {
 
     shader_->FillPipelineInfo(&pipelineInfo);
 
+    pipelineInfo.pVertexInputState = &empty_input_info;
+
     CALL_VK(vkCreateGraphicsPipelines(renderer_.GetVulkanDevice(), cache_, 1, &pipelineInfo,
                                       nullptr, &pipeline_));
 }
@@ -473,3 +469,9 @@ void Font::UpdatePipeline(VkRenderPass renderPass) {
     CreateFontPipeline(renderPass);
 }
 
+void Font::GetPushConstSize() {
+    VkPhysicalDeviceProperties device_prop;
+    vkGetPhysicalDeviceProperties(renderer_.GetDevice().GetPhysicalDevice(), &device_prop);
+    max_push_const_size = device_prop.limits.maxPushConstantsSize;
+    LOGE("push constant size: %d", max_push_const_size);
+}
