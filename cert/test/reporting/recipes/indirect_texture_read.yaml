@@ -1,0 +1,2 @@
+build:
+  configuration: recipes/configurations/indirect_texture_read.json

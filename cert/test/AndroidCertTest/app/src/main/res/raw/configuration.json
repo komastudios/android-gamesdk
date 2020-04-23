@@ -24,6 +24,20 @@
     },
     {
       "enabled": true,
+      "name": "Indirect Texture Read",
+      "description": "AKA Dependent texture read",
+      "duration": "33s",
+      "data_gatherer": {
+        "id": "DependentTextureReadGLES3Operation",
+        "configuration": {
+          "indirection_interval": "3s"
+        }
+      },
+      "host": "GLSurfaceViewHostActivity",
+      "stressors": []
+    },
+    {
+      "enabled": true,
       "name": "EGL Presentation Time",
       "description": "Determine if EGL presentation time extension is present and works.",
       "duration": "5s",

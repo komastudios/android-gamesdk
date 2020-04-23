@@ -132,11 +132,8 @@ bool internal::OperationIsStopped(int id) {
     auto pos = _operations.find(id);
     if ( pos != _operations.end()) {
         return pos->second->IsStopped();
-    } else if ( _stopped_operations.count(id)) {
-        return true;
     } else {
-        FatalError(TAG, "OperationIsStopped - No active or stopped operation with id %d",
-                   id);
+        return true;
     }
 }
 
