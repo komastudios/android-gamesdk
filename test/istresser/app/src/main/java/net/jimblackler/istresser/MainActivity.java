@@ -38,7 +38,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -56,6 +55,7 @@ import org.json.JSONObject;
 /** The main activity of the istresser app */
 public class MainActivity extends AppCompatActivity {
 
+  public static final int DELAY_AFTER_RELEASE = 1000;
   private static final String TAG = MainActivity.class.getSimpleName();
 
   // Set MAX_DURATION to zero to stop the app from self-exiting.
@@ -691,16 +691,7 @@ public class MainActivity extends AppCompatActivity {
                     });
 
                 if (anyRed.get()) {
-                  runAfterDelay(
-                      () -> {
-                        try {
-                          resultsStream.println(standardInfo());
-                          latestAllocationTime = System.currentTimeMillis();
-                        } catch (JSONException e) {
-                          throw new IllegalStateException(e);
-                        }
-                      },
-                      1000);
+                  runAfterDelay(this, DELAY_AFTER_RELEASE);
                 } else {
                   latestAllocationTime = System.currentTimeMillis();
                 }
@@ -708,7 +699,7 @@ public class MainActivity extends AppCompatActivity {
                 throw new IllegalStateException(e);
               }
             }
-          }, 1000);
+          }, DELAY_AFTER_RELEASE);
         },
         1000);
   }
