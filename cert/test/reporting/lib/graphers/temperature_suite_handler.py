@@ -22,8 +22,19 @@ from typing import List
 import matplotlib.pyplot as plt
 import numpy as np
 
-from lib.graphers.suite_handler import SuiteHandler
-from lib.report import Datum, Suite
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, SummaryContext, Suite
+import lib.summary_formatters.format_items as fmt
+
+
+class TemperatureSuiteSummarizer(SuiteSummarizer):
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return TemperatureSuiteHandler
+
+    @classmethod
+    def can_handle_datum(cls, datum: Datum):
+        return "WaitForPI" in datum.suite_id
 
 
 class TemperatureSuiteHandler(SuiteHandler):
@@ -37,18 +48,6 @@ class TemperatureSuiteHandler(SuiteHandler):
         self.x_axis = []
         self.max_temperature = []
 
-    @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return suite.name == "WaitForPI"
-
-    @classmethod
-    def can_render_summarization_plot(cls, suites: List['Suite']) -> bool:
-        return False
-
-    @classmethod
-    def render_summarization_plot(cls, suites: List['Suite']) -> str:
-        return None
-
     def filter_temperature(self, datum: Datum) -> type(None):
         """Appends datum temperature info to the proper vectors to graph."""
         self.max_temperature.append(
@@ -56,13 +55,18 @@ class TemperatureSuiteHandler(SuiteHandler):
                 'temperature_info.max_cpu_temperature') / 1000)
         # Divided by 1000 so it's in Celsius degrees (comes in millidegrees)
 
-    def render_plot(self) -> str:
+
+    def render_report(self, ctx: SummaryContext) -> List[fmt.Item]:
+
         for i, datum in enumerate(self.data):
             if datum.operation_id == 'MonitorOperation':
                 self.x_axis.append(self.x_axis_as_seconds[i])
                 self.filter_temperature(datum)
 
-        if len(self.max_temperature) > 0:
-            plt.plot(np.array(self.x_axis), np.array(self.max_temperature))
+        def graph():
+            if len(self.max_temperature) > 0:
+                plt.plot(np.array(self.x_axis), np.array(self.max_temperature))
 
-        return ""
+        device = self.suite.identifier()
+        image = fmt.Image(self.plot(ctx, graph), device)
+        return [image]

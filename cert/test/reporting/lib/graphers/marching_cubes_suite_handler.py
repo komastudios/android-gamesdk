@@ -22,8 +22,9 @@ from typing import List, Union
 import matplotlib.pyplot as plt
 
 from lib.common import nanoseconds_to_milliseconds
-from lib.report import Datum, Suite
-from lib.graphers.suite_handler import SuiteHandler
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, SummaryContext
+import lib.summary_formatters.format_items as fmt
 
 SLEEP_DUR = \
     "marching_cubes_permutation_results.exec_configuration.sleep_config.duration"
@@ -95,6 +96,16 @@ class DataConsistencyError(Exception):
     """Error raised to represent some kind of data inconstency."""
 
 
+class MarchingCubesSummarizer(SuiteSummarizer):
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return MarchingCubesSuiteHandler
+
+    @classmethod
+    def can_handle_datum(cls, datum: Datum):
+        return 'MarchingCubesGLES3Operation' in datum.operation_id
+
+
 class MarchingCubesSuiteHandler(SuiteHandler):
     """SuiteHandler implementation for processing data from
     MarchingCubesGLES3Operation"""
@@ -121,20 +132,7 @@ class MarchingCubesSuiteHandler(SuiteHandler):
             else:
                 self.data_by_thread_setup_floating[thread_setup].append(datum)
 
-    @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return "MarchingCubesGLES3Operation" in suite.data_by_operation_id
-
-    @classmethod
-    def can_render_summarization_plot(cls,
-                                      suites: List['SuiteHandler']) -> bool:
-        return False
-
-    @classmethod
-    def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
-        return None
-
-    def render_plot(self) -> str:
+    def render_report(self, ctx: SummaryContext) -> List[fmt.Item]:
         thread_setups = list(self.data_by_thread_setup_floating.keys())
 
         # THREAD_SETUPS is already in the desired order, so filter it
@@ -142,70 +140,72 @@ class MarchingCubesSuiteHandler(SuiteHandler):
         thread_setups = [ts for ts in THREAD_SETUPS if ts in thread_setups]
         num_rows = len(thread_setups)
 
-        for col, data_by_thread_setup in enumerate([
-                self.data_by_thread_setup_floating,
-                self.data_by_thread_setup_pinned
-        ]):
-            for row, thread_setup in enumerate(thread_setups):
-                idx = 1 + row * 2 + col
-                axes = plt.subplot(num_rows, 2, idx)
+        def graph():
+            for col, data_by_thread_setup in enumerate([
+                    self.data_by_thread_setup_floating,
+                    self.data_by_thread_setup_pinned
+            ]):
+                for row, thread_setup in enumerate(thread_setups):
+                    idx = 1 + row * 2 + col
+                    axes = plt.subplot(num_rows, 2, idx)
 
-                data = data_by_thread_setup[thread_setup]
-                if data:
-                    y_values_by_sleep_dur = {}
-                    for datum in data:
-                        vps = get_datum_value(datum, "median_vps")
-                        sleep_dur = nanoseconds_to_milliseconds(
-                            datum.get_custom_field_numeric(SLEEP_DUR))
-                        y_values_by_sleep_dur[sleep_dur] = vps
+                    data = data_by_thread_setup[thread_setup]
+                    if data:
+                        y_values_by_sleep_dur = {}
+                        for datum in data:
+                            vps = get_datum_value(datum, "median_vps")
+                            sleep_dur = nanoseconds_to_milliseconds(
+                                datum.get_custom_field_numeric(SLEEP_DUR))
+                            y_values_by_sleep_dur[sleep_dur] = vps
 
-                    durs = list(y_values_by_sleep_dur.keys())
-                    durs.sort()
+                        durs = list(y_values_by_sleep_dur.keys())
+                        durs.sort()
 
-                    y_values = [y_values_by_sleep_dur[dur] for dur in durs]
-                    bar_width = 1 / len(y_values)
+                        y_values = [y_values_by_sleep_dur[dur] for dur in durs]
+                        bar_width = 1 / len(y_values)
 
-                    if len(y_values) > 1:
-                        min_y = min(y_values)
-                        max_y = max(y_values)
-                        y_range = max(
-                            max_y - min_y, 10
-                        )  # a little padding in case we have one data point
-                        min_y -= y_range * 0.25
-                        max_y += y_range * 0.25
-                        plt.gca().set_ylim([min_y, max_y])
+                        if len(y_values) > 1:
+                            min_y = min(y_values)
+                            max_y = max(y_values)
+                            y_range = max(
+                                max_y - min_y, 10
+                            )  # a little padding in case we have one data point
+                            min_y -= y_range * 0.25
+                            max_y += y_range * 0.25
+                            plt.gca().set_ylim([min_y, max_y])
+
+                        else:
+                            # some reports have just one value, and that
+                            # wreaks layout havok with the min_y, max_y range
+                            plt.yticks(y_values)
+
+                        plt.xticks(durs, ["{:.2f}".format(d) for d in durs])
+
+                        bar_colors = [(0.25, 0.75, 0.25) if y >= max(y_values) else
+                                    (0.5, 0.5, 0.5) for y in y_values]
+
+                        rendered_bars = plt.bar(durs,
+                                                y_values,
+                                                color=bar_colors,
+                                                width=bar_width)
+
+                        apply_bar_value_labels(axes, rendered_bars)
 
                     else:
-                        # some reports have just one value, and that
-                        # wreaks layout havok with the min_y, max_y range
-                        plt.yticks(y_values)
+                        plt.yticks([])
+                        plt.xticks([])
 
-                    plt.xticks(durs, ["{:.2f}".format(d) for d in durs])
+                    if col == 0:
+                        # only show y labels on col 0
+                        datum = data[0] if data else None
+                        plt.ylabel(y_label(datum, thread_setup))
 
-                    bar_colors = [(0.25, 0.75, 0.25) if y >= max(y_values) else
-                                  (0.5, 0.5, 0.5) for y in y_values]
+                    if row == len(thread_setups) - 1:
+                        # only show x labels on last row
+                        plt.xlabel(X_LABELS[col])
 
-                    rendered_bars = plt.bar(durs,
-                                            y_values,
-                                            color=bar_colors,
-                                            width=bar_width)
+            plt.subplots_adjust(hspace=0.5)
 
-                    apply_bar_value_labels(axes, rendered_bars)
-
-                else:
-                    plt.yticks([])
-                    plt.xticks([])
-
-                if col == 0:
-                    # only show y labels on col 0
-                    datum = data[0] if data else None
-                    plt.ylabel(y_label(datum, thread_setup))
-
-                if row == len(thread_setups) - 1:
-                    # only show x labels on last row
-                    plt.xlabel(X_LABELS[col])
-
-        plt.subplots_adjust(hspace=0.5)
-
-        # no interesting summary
-        return None
+        device = self.suite.identifier()
+        image = fmt.Image(self.plot(ctx, graph), device)
+        return [image]

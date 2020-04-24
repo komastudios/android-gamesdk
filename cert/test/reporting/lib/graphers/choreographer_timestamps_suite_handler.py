@@ -25,10 +25,19 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import numpy as np
 
-from lib.graphers.suite_handler import SuiteHandler
-from lib.report import Suite
-
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, SummaryContext, Suite
+import lib.summary_formatters.format_items as fmt
 import lib.systrace as systrace
+
+class ChoreographerTimestampsSummarizer(SuiteSummarizer):
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return ChoreographerTimestampsSuiteHandler
+
+    @classmethod
+    def can_handle_datum(cls, datum: Datum):
+        return datum.operation_id == 'ChoreographerTimestampsOperation'
 
 
 class ChoreographerTimestampsSuiteHandler(SuiteHandler):
@@ -108,18 +117,10 @@ class ChoreographerTimestampsSuiteHandler(SuiteHandler):
                         timestamps.append(timestamp + offset_ns)
         return timestamps
 
-
-    @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return 'Choreographer Timestamps' in suite.name
-
-    @classmethod
-    def can_render_summarization_plot(cls, suites: List['Suite']) -> bool:
-        return False
-
-    @classmethod
-    def render_summarization_plot(cls, suites: List['Suite']) -> str:
-        return None
+    def render_report(self, ctx: SummaryContext) -> List[fmt.Item]:
+        device = self.suite.identifier()
+        image = fmt.Image(self.plot(ctx, self.render_plot), device)
+        return [image, fmt.Paragraph('choreographer text')]
 
     def render_plot(self) -> str:
         """

@@ -19,9 +19,10 @@ EGL_ANDROID_presentation_time extension."""
 from typing import List, Dict
 from enum import Enum
 
-from lib.graphers.suite_handler import SuiteHandler
-from lib.report import Suite
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, SummaryContext
 from lib.graphers.common_graphers import graph_functional_test_result
+import lib.summary_formatters.format_items as fmt
 
 
 class TestResult(Enum):
@@ -30,6 +31,16 @@ class TestResult(Enum):
     FAILURE = 2
     INCONCLUSIVE = 3
     UNAVAILABLE = 4
+
+
+class EGLPresentationTimeSummarizer(SuiteSummarizer):
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return EGLPresentationTimeSuiteHandler
+
+    @classmethod
+    def can_handle_datum(cls, datum: Datum):
+        return 'EGL Presentation Time' in datum.suite_id
 
 
 class EGLPresentationTimeSuiteHandler(SuiteHandler):
@@ -47,21 +58,10 @@ class EGLPresentationTimeSuiteHandler(SuiteHandler):
             elif 'ext_egl_android_presentation_time' in row.custom:
                 self.extension_availability = row.custom
 
-    @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return 'EGL Presentation Time' in suite.name
-
-    @classmethod
-    def can_render_summarization_plot(cls, suites: List['Suite']) -> bool:
-        return False
-
-    @classmethod
-    def render_summarization_plot(cls, suites: List['Suite']) -> str:
-        return None
-
-    def render_plot(self) -> str:
+    def render_report(self, ctx: SummaryContext) -> List[fmt.Item]:
         """Evalutes the data, renders the (success|failure|inconclusive) plot,
         and returns a list of any issues encountered."""
+
         text = ''
 
         # Evaluate availability
@@ -102,9 +102,12 @@ class EGLPresentationTimeSuiteHandler(SuiteHandler):
         elif result is TestResult.UNAVAILABLE:
             result_flag = 1
 
-        graph_functional_test_result(result_flag, result_labels)
+        def graph():
+            graph_functional_test_result(result_flag, result_labels)
 
-        return text
+        image = fmt.Image(self.plot(ctx, graph))
+        return [image, fmt.Paragraph(text)]
+
 
     def evaluate_availability(self, info: Dict) -> TestResult:
         """Returns a TestResult based on data like the following:
