@@ -27,6 +27,8 @@ from .choreographer_timestamps_suite_handler import \
 from .cpuset_suite_handler import CpusetSuiteHandler
 from .dependent_read_suite_handler import DependentReadSuiteHandler
 from .depth_clear_suite_handler import DepthClearSuiteHandler
+from .egl_get_frame_timestamps_suite_handler import \
+    EGLGetFrameTimestampsSuiteHandler
 from .egl_presentation_time_suite_handler import EGLPresentationTimeSuiteHandler
 from .file_performance_suite_handler import FilePerformanceSuiteHandler
 from .fill_rate_suite_handler import FillRateSuiteHandler
@@ -53,6 +55,7 @@ HANDLERS = [
     CpusetSuiteHandler, \
     DependentReadSuiteHandler, \
     DepthClearSuiteHandler, \
+    EGLGetFrameTimestampsSuiteHandler, \
     EGLPresentationTimeSuiteHandler, \
     FilePerformanceSuiteHandler, \
     FillRateSuiteHandler, \
@@ -70,3 +73,56 @@ HANDLERS = [
 ]
 """List containing all registered SuiteHandler implementations to
 render charts."""
+
+
+from .affinity_test_suite_handler import AffinityTestSummarizer
+from .buffer_storage_suite_handler import BufferStorageSuiteSummarizer
+# from .calculate_wait_pi_suite_handler import CalculateWaitPiSummarizer
+from .choreographer_timestamps_suite_handler import \
+    ChoreographerTimestampsSummarizer
+# from .cpuset_suite_handler import CpusetSummarizer
+# from .dependent_read_suite_handler import DependentReadSummarizer
+from .depth_clear_suite_handler import DepthClearSummarizer
+from .egl_get_frame_timestamps_suite_handler import \
+    EGLGetFrameTimestampsSummarizer
+from .egl_presentation_time_suite_handler import EGLPresentationTimeSummarizer
+# from .file_performance_suite_handler import FilePerformanceSummarizer
+# from .fill_rate_suite_handler import FillRateSummarizer
+# from .gpu_profiling_support_suite_handler import \
+#     GPUProfilingSupportSummarizer
+# from .half_float_precision import HalfFloatPrecisionSummarizer
+# from .marching_cubes_suite_handler import MarchingCubesSummarizer
+# from .mediump_vec_norm_suite_handler import MediumPVecNormSummarizer
+# from .memory_access.single_core_comparison import SingleCoreComparisonSummarizer
+# from .memory_allocation_suite_handler import MemoryAllocationSummarizer
+# from .mprotect_suite_handler import MProtectSummarizer
+# from .nougat_crash_suite_handler import NougatCrashSummarizer
+# from .temperature_suite_handler import TemperatureSummarizer
+# from .vertex_suite_handler import VertexRateSummarizer
+# from .vulkan_varyings_handler import VulkanVaryingsSummarizer
+
+SUMMARIZERS = [
+    AffinityTestSummarizer, \
+    # BufferStorageSummarizer, \
+    # CalculateWaitPiSummarizer, \
+    ChoreographerTimestampsSummarizer, \
+    # CpusetSummarizer, \
+    # DependentReadSummarizer, \
+    DepthClearSummarizer, \
+    # EGLGetFrameTimestampsSummarizer, \
+    EGLGetFrameTimestampsSummarizer,
+    EGLPresentationTimeSummarizer, \
+    # FilePerformanceSummarizer, \
+    # FillRateSummarizer, \
+    # GPUProfilingSupportSummarizer, \
+    # HalfFloatPrecisionSummarizer, \
+    # MarchingCubesSummarizer, \
+    # MediumPVecNormSummarizer, \
+    # MemoryAllocationSummarizer, \
+    # MProtectSummarizer, \
+    # NougatCrashSummarizer, \
+    # SingleCoreComparisonSummarizer, \
+    # TemperatureSummarizer, \
+    # VertexRateSummarizer, \
+    # VulkanVaryingsSummarizer
+]

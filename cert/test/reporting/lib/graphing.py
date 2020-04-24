@@ -17,6 +17,7 @@
 reports.
 """
 
+from copy import deepcopy
 import json
 import platform
 from typing import Dict, List
@@ -24,8 +25,10 @@ from typing import Dict, List
 import matplotlib
 import matplotlib.pyplot as plt
 
+from lib.graphers.__init__ import SUMMARIZERS
 from lib.report import BuildInfo, Datum, Suite
 from lib.graphers.loader import create_suite_handler
+from lib.graphers.suite_handler import SuiteSummarizer
 
 #-------------------------------------------------------------------------------
 
@@ -57,7 +60,16 @@ class UnsupportedReportFormatError(Exception):
 
 
 def load_suites(report_file) -> List[Suite]:
-    """Load and configure suites from a given report JSON file
+    """Load and configure suites from a given report JSON file.
+
+    A report may contain data meant to be handled by several separate suites.
+    For instance, one type of datum may be handled by a monitor operation suite
+    handler, while another may be handled by the suite handler for functional
+    test operation.
+
+    Returned Suites _may_ have an instantiated SuiteHandler as their `handler`
+    property, which can be used to process the results of the Suite.
+
     Args:
         report_file: Report JSON file
     Returns:
@@ -81,11 +93,10 @@ def load_suites(report_file) -> List[Suite]:
                 print(f'Report file {report_file}, line {i}: skipping due to '
                       f'a JSON parsing error "{ex}":\n{line}')
 
-    for suite_name in suite_data:
-        data = suite_data[suite_name]
-        suite = Suite(suite_name, build, data, report_file)
-
+    for suite_id, data in suite_data.items():
+        suite = Suite(suite_id, build, data, report_file)
         suite.handler = create_suite_handler(suite)
+
         if suite.name and not suite.handler:
             print(
                 f"[INFO]\tFound no handler for suite_id" \
@@ -95,3 +106,47 @@ def load_suites(report_file) -> List[Suite]:
         suites.append(suite)
 
     return suites
+
+
+def load_report_data(report_file: str) -> Suite: # TODO: rename, document
+    build: BuildInfo = None
+    data: List[Datum] = []
+    suite_id = ''
+
+    with open(report_file) as file:
+        for i, line in enumerate(file):
+            try:
+                line_dict = json.loads(line)
+                # first line is the build info, every other is a report datum
+                if i == 0:
+                    build = BuildInfo.from_json(line_dict)
+                else:
+                    datum = Datum.from_json(line_dict)
+                    data.append(datum)
+                    suite_id = datum.suite_id
+            except json.decoder.JSONDecodeError as ex:
+                print(f'Report file {report_file}, line {i}: skipping due to '
+                      f'a JSON parsing error "{ex}":\n{line}')
+
+    return Suite(suite_id, build, data, report_file)
+
+
+def load_suite_summarizers(report_files: List[str]) -> List[SuiteSummarizer]:
+    # Load all reports
+    reports: List[Suite] = []
+    for report_file in report_files:
+        reports.append(load_report_data(report_file))
+
+    # Figure out which summarizers to load, initializing them with copies of
+    # the report data.
+    summarizers: List[SuiteSummarizer] = []
+    for summarizer_class in SUMMARIZERS:
+        report_copies = []
+        for report in reports:
+            if summarizer_class.can_handle_report(report):
+                report_copies.append(deepcopy(report))
+        if report_copies:
+            summarizer = summarizer_class(report_copies)
+            summarizers.append(summarizer)
+
+    return summarizers

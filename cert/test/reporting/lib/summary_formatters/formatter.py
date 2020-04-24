@@ -18,7 +18,9 @@
 
 from abc import ABC, abstractclassmethod, abstractmethod
 from pathlib import Path
-from typing import ContextManager, TypeVar, Union
+from typing import ContextManager, List, Optional, TypeVar
+
+import lib.summary_formatters.format_items as fmt
 
 
 class SummaryFormatter(ABC):
@@ -47,6 +49,8 @@ class SummaryFormatter(ABC):
         raise NotImplementedError(
             "SummaryFormatter subclass must implement create_writer()")
 
+    # --------------------------------------------------------------------------
+
     @abstractmethod
     def on_init(self, title: str, summary_utc: str) -> type(None):
         """Writes formatted initial data (title, report time, etc.)
@@ -59,36 +63,15 @@ class SummaryFormatter(ABC):
             "SummaryFormatter subclass must implement on_init()")
 
     @abstractmethod
-    def on_device(self, device_id: str, plot_path: Path,
-                  plot_path_relative: Path,
-                  summary: Union[str, type(None)]) -> type(None):
-        """Writes formatted results for a given device.
+    def on_sections(self, sections: List[fmt.Section]) -> type(None):
+        """Writes formatted summary sections, visually separated by lines or
+        page breaks (depending on how a formatter decides to handle it).
 
         Args:
-            device_id: the device manufacturer, model and API level.
-            plot_path: a Path to the device graph for a given suite.
-            plot_path_relative: the same path, but relative to the summary
-                                being written.
-            summary: a string containing some description about the test run on
-                     the device, or None.
+            sections: A list of sections, each containing a list of format items.
         """
         raise NotImplementedError(
-            "SummaryFormatter subclass must implement on_device()")
-
-    @abstractmethod
-    def on_cross_suite(self, plot_path: Path, plot_path_relative: Path,
-                       summary: Union[str, type(None)]) -> type(None):
-        """Writes a formatted cross suite summary to the report.
-
-        Args:
-            plot_path: a Path to the device graph for a given suite.
-            plot_path_relative: the same path, but relative to the summary
-                                being written.
-            summary: a string containing some description about the test run on
-                     the device, or None.
-        """
-        raise NotImplementedError(
-            "SummaryFormatter subclass must implement on_cross_suite()")
+            "SummaryFormatter subclass must implement on_sections()")
 
     @abstractmethod
     def on_errors_available(self, title: str) -> type(None):
@@ -113,3 +96,43 @@ class SummaryFormatter(ABC):
 
     def on_finish(self) -> type(None):
         """(Optional) Writes formatted closing marks to the summary."""
+
+    # --------------------------------------------------------------------------
+
+    @abstractmethod
+    def write_separator(self):
+        raise NotImplementedError(
+            "SummaryFormatter subclass must implement __write_separator()")
+
+    @abstractmethod
+    def write_heading(self, heading: fmt.Heading):
+        raise NotImplementedError(
+            "SummaryFormatter subclass must implement __write_heading()")
+
+    @abstractmethod
+    def write_paragraph(self, paragraph: fmt.Paragraph):
+        raise NotImplementedError(
+            "SummaryFormatter subclass must implement __write_paragraph()")
+
+    @abstractmethod
+    def write_image(self, image: fmt.Image):
+        raise NotImplementedError(
+            "SummaryFormatter subclass must implement __write_image()")
+
+    @abstractmethod
+    def write_table(self, table: fmt.Table):
+        raise NotImplementedError(
+            "SummaryFormatter subclass must implement __write_table()")
+
+    def write_items(self, items: List[fmt.Item]):
+        for item in items:
+            if isinstance(item, fmt.Paragraph):
+                self.write_paragraph(item)
+            elif isinstance(item, fmt.Heading):
+                self.write_heading(item)
+            elif isinstance(item, fmt.Image):
+                self.write_image(item)
+            elif isinstance(item, fmt.Table):
+                self.write_table(item)
+            else:
+                self.write_paragraph(fmt.Paragraph(f'{item}'))

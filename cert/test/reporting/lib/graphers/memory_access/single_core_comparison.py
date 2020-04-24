@@ -42,11 +42,11 @@ class SingleCoreComparisonHandler(SuiteHandler):
 
     @classmethod
     def can_render_summarization_plot(cls,
-                                      suites: List['SuiteHandler']) -> bool:
+                                      suites: List[SuiteHandler]) -> bool:
         return False
 
     @classmethod
-    def render_summarization_plot(cls, raw_suites: List['SuiteHandler']) -> str:
+    def render_summarization_plot(cls, raw_suites: List[SuiteHandler]) -> str:
         return None
 
 #-------------------------------------------------------------------------------
@@ -154,14 +154,14 @@ class SingleCoreComparisonHandler(SuiteHandler):
     #---------------
 
     @classmethod
-    def handles_entire_report(cls, suites: List['SuiteHandler']):
+    def handles_entire_report(cls, suites: List[SuiteHandler]):
         for suite in suites:
             if "MA:SCC:" in suite.name:
                 return True
         return False
 
     @classmethod
-    def render_report(cls, raw_suites: List['SuiteHandler']):
+    def render_report_legacy(cls, raw_suites: List[SuiteHandler]):
         suites = [
             s.handler for s in raw_suites
             if isinstance(s.handler, SingleCoreComparisonHandler)]
@@ -184,7 +184,7 @@ class SingleCoreComparisonHandler(SuiteHandler):
 
 
     @classmethod
-    def can_render_single(self):
+    def can_render_single(cls):
         return False
 
     # TODO(tmillican@google.com): Refactor names to match functionality

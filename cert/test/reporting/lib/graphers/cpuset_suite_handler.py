@@ -54,14 +54,14 @@ class CpusetSuiteHandler(SuiteHandler):
     def render_summarization_plot(cls, suites: List['Suite']) -> str:
         return None
 
-    def analize_setup(self, datum: Datum):
+    def analyze_setup(self, datum: Datum):
         """Checks success/failure state after setting core affinity to a
         thread. Keeps counters of setup total vs. setup failures"""
         if not datum.get_custom_field("cpuset_enabled"):
             self.cpuset_setup_error += 1
         self.cpuset_setup_total += 1
 
-    def analize_in_progress_event(self, datum: Datum,
+    def analyze_in_progress_event(self, datum: Datum,
                                   timestamp_in_seconds: float):
         """Inspects contents of an in-progress datum, filling the proper
         coordinates (OK, error)."""
@@ -72,7 +72,7 @@ class CpusetSuiteHandler(SuiteHandler):
             self.xs_err.append(timestamp_in_seconds)
             self.ys_err.append(0)
 
-    def analize_test_results(self, datum: Datum):
+    def analyze_test_results(self, datum: Datum):
         """Captures the 'sane' core numbering."""
         self.bigger_cores_first = \
             datum.get_custom_field('bigger_cores_first')

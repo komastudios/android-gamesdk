@@ -28,6 +28,7 @@ from . import HANDLERS
 # -----------------------------------------------------------------------------
 
 
+# TODO(baxtermichael): Delete or modify if possible (even the whole file)
 def create_suite_handler(suite: Suite):
     """Vend a SuiteHandler implementation which is suitable for given suite
     Args:
