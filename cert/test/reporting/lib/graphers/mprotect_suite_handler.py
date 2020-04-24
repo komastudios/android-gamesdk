@@ -20,8 +20,20 @@ from the Vulkan Mprotect test
 from typing import List
 
 from lib.graphers.common_graphers import graph_functional_test_result
-from lib.graphers.suite_handler import SuiteHandler
-from lib.report import Suite
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, ReportContext
+import lib.summary_formatters.format_items as fmt
+
+
+class MProtectSummarizer(SuiteSummarizer):
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return MProtectSuiteHandler
+
+    @classmethod
+    def can_handle_datum(cls, datum: Datum):
+        return 'Vulkan memory write protection' in datum.suite_id
+
 
 class MProtectSuiteHandler(SuiteHandler):
     """Implementation of SuiteHandler to process report data
@@ -35,20 +47,7 @@ class MProtectSuiteHandler(SuiteHandler):
             if datum.operation_id == "VulkanMprotectCheckOperation":
                 self.mprotect_score = datum.get_custom_field("mprotect.score")
 
-    @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return "Vulkan memory write protection" in suite.name
-
-    @classmethod
-    def can_render_summarization_plot(cls,
-                                      suites: List['SuiteHandler']) -> bool:
-        return False
-
-    @classmethod
-    def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
-        return None
-
-    def render_plot(self) -> str:
+    def render_report(self, ctx: ReportContext) -> List[fmt.Item]:
         result_index = 0
         msg = None
 
@@ -78,7 +77,10 @@ class MProtectSuiteHandler(SuiteHandler):
             result_index = 1
             msg = f"Unexpected result: ({self.mprotect_score})"
 
-        graph_functional_test_result(result_index,
-                                     ['UNAVAILABLE', 'UNDETERMINED', 'PASSED'])
+        def graph():
+            graph_functional_test_result(
+                result_index, ['UNAVAILABLE', 'UNDETERMINED', 'PASSED'])
 
-        return msg
+        device = self.suite.identifier()
+        image = fmt.Image(self.plot(ctx, graph), device)
+        return [image, fmt.Paragraph(msg)]

@@ -19,8 +19,19 @@
 from typing import List
 
 from lib.graphers.common_graphers import graph_functional_test_result
-from lib.graphers.suite_handler import SuiteHandler
-from lib.report import Suite
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, ReportContext, Suite
+import lib.summary_formatters.format_items as fmt
+
+
+class NougatCrashSummarizer(SuiteSummarizer):
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return NougatCrashSuiteHandler
+
+    @classmethod
+    def can_handle_datum(cls, datum: Datum):
+        return 'Nougat Crash' in datum.suite_id
 
 
 class NougatCrashSuiteHandler(SuiteHandler):
@@ -32,18 +43,6 @@ class NougatCrashSuiteHandler(SuiteHandler):
         self.__memory_was_constrained = False
         self.__crash_did_happen = False
         self.__test_finished_normally = False
-
-    @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return 'Nougat Crash' in suite.name
-
-    @classmethod
-    def can_render_summarization_plot(cls, suites: List['Suite']) -> bool:
-        return False
-
-    @classmethod
-    def render_summarization_plot(cls, suites: List['Suite']) -> str:
-        return None
 
     def determine_test_result_index(self):
         """Based on collected data, assess whether the test passed, not passed
@@ -89,7 +88,7 @@ class NougatCrashSuiteHandler(SuiteHandler):
 
         return summary
 
-    def render_plot(self) -> str:
+    def render_report(self, ctx: ReportContext) -> List[fmt.Item]:
         for datum in self.data:
             if datum.operation_id == 'NougatSigabrtOperation':
                 event = datum.get_custom_field('event')
@@ -102,7 +101,12 @@ class NougatCrashSuiteHandler(SuiteHandler):
 
         result_index = self.determine_test_result_index()
 
-        graph_functional_test_result(result_index,
-                                     ['CRASH', 'UNDETERMINED', 'PASSED'])
+        def graph():
+            graph_functional_test_result(result_index,
+                                         ['CRASH', 'UNDETERMINED', 'PASSED'])
 
-        return self.compose_summary()
+        device = self.suite.identifier()
+        image = fmt.Image(self.plot(ctx, graph), device)
+        text = fmt.Paragraph(self.compose_summary())
+
+        return [image, text]

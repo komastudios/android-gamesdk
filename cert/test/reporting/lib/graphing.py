@@ -17,6 +17,7 @@
 reports.
 """
 
+from copy import deepcopy
 import json
 import platform
 from typing import Dict, List
@@ -24,8 +25,9 @@ from typing import Dict, List
 import matplotlib
 import matplotlib.pyplot as plt
 
+from lib.graphers.__init__ import SUMMARIZERS
 from lib.report import BuildInfo, Datum, Suite
-from lib.graphers.loader import create_suite_handler
+from lib.graphers.suite_handler import SuiteSummarizer
 
 #-------------------------------------------------------------------------------
 
@@ -44,28 +46,15 @@ plt.rc('ytick', labelsize=SMALL_SIZE)  # fontsize of the tick labels
 plt.rc('legend', fontsize=SMALL_SIZE)  # legend fontsize
 plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
-# ------------------------------------------------------------------------------
-
-
-class UnsupportedReportFormatError(Exception):
-    """Exception raised when a requesting an unsupported format for
-    saving the report.
-    """
-
 
 #-------------------------------------------------------------------------------
 
 
-def load_suites(report_file) -> List[Suite]:
-    """Load and configure suites from a given report JSON file
-    Args:
-        report_file: Report JSON file
-    Returns:
-        list of Suite instances for which a suitable SuiteHandler was found
-    """
+def load_report_data(report_file: str) -> Suite:
+    # TODO(baxtermichael@google.com): Document
     build: BuildInfo = None
-    suite_data: Dict[str, List[Datum]] = {}
-    suites: List[Suite] = []
+    data: List[Datum] = []
+    suite_id = ''
 
     with open(report_file) as file:
         for i, line in enumerate(file):
@@ -76,22 +65,32 @@ def load_suites(report_file) -> List[Suite]:
                     build = BuildInfo.from_json(line_dict)
                 else:
                     datum = Datum.from_json(line_dict)
-                    suite_data.setdefault(datum.suite_id, []).append(datum)
+                    data.append(datum)
+                    suite_id = datum.suite_id
             except json.decoder.JSONDecodeError as ex:
                 print(f'Report file {report_file}, line {i}: skipping due to '
                       f'a JSON parsing error "{ex}":\n{line}')
 
-    for suite_name in suite_data:
-        data = suite_data[suite_name]
-        suite = Suite(suite_name, build, data, report_file)
+    return Suite(suite_id, build, data, report_file)
 
-        suite.handler = create_suite_handler(suite)
-        if suite.name and not suite.handler:
-            print(
-                f"[INFO]\tFound no handler for suite_id" \
-                f" \"{suite.name}\" in \"{report_file}\""
-            )
 
-        suites.append(suite)
+def load_suite_summarizers(report_files: List[str]) -> List[SuiteSummarizer]:
+    # TODO(baxtermichael@google.com): Document
+    # Load all reports
+    reports: List[Suite] = []
+    for report_file in report_files:
+        reports.append(load_report_data(report_file))
 
-    return suites
+    # Figure out which summarizers to load, initializing them with copies of
+    # the report data.
+    summarizers: List[SuiteSummarizer] = []
+    for summarizer_class in SUMMARIZERS:
+        report_copies = []
+        for report in reports:
+            if summarizer_class.can_handle_report(report):
+                report_copies.append(deepcopy(report))
+        if report_copies:
+            summarizer = summarizer_class(report_copies)
+            summarizers.append(summarizer)
+
+    return summarizers

@@ -18,25 +18,26 @@ a Suite and vend the correct SuiteHandler implementation to process
 it and generate reports
 """
 
-from lib.report import Suite
+# from lib.report import Suite
 
 # -----------------------------------------------------------------------------
 
 # import our renderer implementations
-from . import HANDLERS
+# from . import HANDLERS
 
 # -----------------------------------------------------------------------------
 
 
-def create_suite_handler(suite: Suite):
-    """Vend a SuiteHandler implementation which is suitable for given suite
-    Args:
-        suite: A suite of all data from a given test
-    Returns:
-        SuiteHandler implementatin which can render this data
-    """
-    for handler in HANDLERS:
-        if handler.can_handle_suite(suite):
-            return handler(suite)
+# TODO(baxtermichael): Delete or modify if possible (even the whole file)
+# def create_suite_handler(suite: Suite):
+#     """Vend a SuiteHandler implementation which is suitable for given suite
+#     Args:
+#         suite: A suite of all data from a given test
+#     Returns:
+#         SuiteHandler implementatin which can render this data
+#     """
+#     for handler in HANDLERS:
+#         if handler.can_handle_suite(suite):
+#             return handler(suite)
 
-    return None
+#     return None
