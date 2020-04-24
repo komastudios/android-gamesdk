@@ -19,8 +19,16 @@
 from typing import List
 
 from lib.graphers.common_graphers import graph_functional_test_result
-from lib.graphers.suite_handler import SuiteHandler
-from lib.report import Suite
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, SummaryContext, Suite
+import lib.format_items as fmt
+
+
+class NougatCrashSummarizer(SuiteSummarizer):
+    """Suite summarizer for Nougat crash functional test."""
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return NougatCrashSuiteHandler
 
 
 class NougatCrashSuiteHandler(SuiteHandler):
@@ -34,16 +42,8 @@ class NougatCrashSuiteHandler(SuiteHandler):
         self.__test_finished_normally = False
 
     @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return 'Nougat Crash' in suite.name
-
-    @classmethod
-    def can_render_summarization_plot(cls, suites: List['Suite']) -> bool:
-        return False
-
-    @classmethod
-    def render_summarization_plot(cls, suites: List['Suite']) -> str:
-        return None
+    def can_handle_datum(cls, datum: Datum):
+        return "Nougat Crash" in datum.suite_id
 
     def determine_test_result_index(self):
         """Based on collected data, assess whether the test passed, not passed
@@ -89,7 +89,7 @@ class NougatCrashSuiteHandler(SuiteHandler):
 
         return summary
 
-    def render_plot(self) -> str:
+    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
         for datum in self.data:
             if datum.operation_id == 'NougatSigabrtOperation':
                 event = datum.get_custom_field('event')
@@ -102,7 +102,11 @@ class NougatCrashSuiteHandler(SuiteHandler):
 
         result_index = self.determine_test_result_index()
 
-        graph_functional_test_result(result_index,
-                                     ['CRASH', 'UNDETERMINED', 'PASSED'])
+        def graph():
+            graph_functional_test_result(result_index,
+                                         ['CRASH', 'UNDETERMINED', 'PASSED'])
 
-        return self.compose_summary()
+        image_path = self.plot(ctx, graph, '')
+        image = fmt.Image(image_path, self.device())
+        text = fmt.Text(self.compose_summary())
+        return [image, text]

@@ -20,8 +20,17 @@ A grapher for the External Framebuffer operation.
 from typing import List
 
 from lib.graphers.common_graphers import graph_functional_test_result
-from lib.graphers.suite_handler import SuiteHandler
-from lib.report import Suite
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, SummaryContext
+import lib.format_items as fmt
+
+
+class ExternalFramebufferSummarizer(SuiteSummarizer):
+    """Suite summarizer for the External Framebuffer test."""
+
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return ExternalFramebufferSuiteHandler
 
 
 class ExternalFramebufferSuiteHandler(SuiteHandler):
@@ -32,7 +41,7 @@ class ExternalFramebufferSuiteHandler(SuiteHandler):
     def __init__(self, suite):
         super().__init__(suite)
 
-        self.result_index = 0 # fail, unavailable, success
+        self.result_index = 0  # fail, unavailable, success
         self.error_msg = None
         for row in self.data:
             if 'measured_red' in row.custom:
@@ -50,20 +59,19 @@ class ExternalFramebufferSuiteHandler(SuiteHandler):
                 self.result_index = 0 if row.custom['indicates_failure'] else 1
                 break
 
-
     @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return 'External Framebuffer' in suite.name
+    def can_handle_datum(cls, datum: Datum):
+        return 'External Framebuffer' in datum.suite_id
 
-    @classmethod
-    def can_render_summarization_plot(cls, suites: List['Suite']) -> bool:
-        return False
+    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
 
-    @classmethod
-    def render_summarization_plot(cls, suites: List['Suite']) -> str:
-        return None
+        def graph():
+            graph_functional_test_result(self.result_index,
+                                         ['Failed', 'Unavailable', 'Success'])
 
-    def render_plot(self) -> str:
-        graph_functional_test_result(self.result_index,
-                                     ['Failed', 'Unavailable', 'Success'])
-        return self.error_msg
+        image_path = self.plot(ctx, graph, '')
+        image = fmt.Image(image_path, self.device())
+
+        if self.error_msg:
+            return [image, fmt.Text(self.error_msg)]
+        return [image]
