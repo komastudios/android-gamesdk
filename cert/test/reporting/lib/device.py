@@ -16,7 +16,10 @@
 """A catalog of device data indexed by codename.
 """
 
-from typing import Any, Dict, Iterable, List, Union
+import re
+from typing import Any, Dict, Iterable, List, Optional, Union
+
+from lib.common import run_command_with_stdout
 
 
 class DeviceInfo:
@@ -114,6 +117,9 @@ class DeviceInfo:
             f"({self.__codename}) SDK {self.__sdk_version}"
 
 
+#------------------------------------------------------------------------------
+
+
 class DeviceCatalog:
     """Read-only dictionary that retrieves DeviceInfo items based on codename.
     Entries can be added only once. The key is a codename and the value a
@@ -146,7 +152,7 @@ class DeviceCatalog:
                 return True
             return False
 
-        def __getitem__(self, codename: str) -> Union[DeviceInfo, type(None)]:
+        def __getitem__(self, codename: str) -> Optional[DeviceInfo]:
             """Index function. Favors syntax like
 
             device_catalog.push(DeviceInfo("1", "Brand1", "Model1"))
@@ -208,3 +214,130 @@ class DeviceCatalog:
         if DeviceCatalog.__instance is not None:
             DeviceCatalog.__instance.clear()
         DeviceCatalog.__instance = None
+
+
+#------------------------------------------------------------------------------
+
+
+class Device:
+    """Models a physical, unique device. Not a generic device model but a
+    concrete device with serial number."""
+
+    def __init__(self, serial_number: str):
+        self.__serial = serial_number
+        self.__props = self.__getprops()
+
+    def __getprops(self) -> Dict[str, str]:
+        """Runs a shell command to capture all device props. The device must be
+        attached to the host running this script."""
+        stdout = run_command_with_stdout(
+            f'adb -s {self.serial} shell getprop')
+
+        props = {}
+        for line in stdout:
+            prop_parts = re.match(r"^\[(.+)\]: \[(.*)\]$", line)
+            if len(prop_parts.groups()) == 2:
+                props[prop_parts.group(1)] = prop_parts.group(2)
+
+        return props
+
+    @property
+    def id(self):
+        """Id."""
+        return self.getprop('ro.build.id')
+
+    @property
+    def serial(self):
+        """Serial number."""
+        return self.__serial
+
+    @property
+    def display(self):
+        """Display."""
+        return self.getprop('ro.build.display.id')
+
+    @property
+    def product(self):
+        """Product."""
+        return self.getprop('ro.product.name')
+
+    @property
+    def device(self):
+        """Device code."""
+        return self.getprop('ro.product.device')
+
+    @property
+    def board(self):
+        """Board."""
+        return self.getprop('ro.product.board')
+
+    @property
+    def manufacturer(self):
+        """Manufacturer."""
+        return self.getprop('ro.product.manufacturer')
+
+    @property
+    def brand(self):
+        """Brand."""
+        return self.getprop('ro.product.brand')
+
+    @property
+    def model(self):
+        """Model."""
+        return self.getprop('ro.product.model')
+
+    @property
+    def bootloader(self):
+        """Bootloader."""
+        return self.getprop('ro.bootloader')
+
+    @property
+    def hardware(self):
+        """Hardware."""
+        return self.getprop('ro.hardware')
+
+    @property
+    def codename(self):
+        """Codename."""
+        return self.getprop('ro.build.version.codename')
+
+    @property
+    def incremental(self):
+        """Incremental."""
+        return self.getprop('ro.build.version.incremental')
+
+    @property
+    def release(self):
+        """Release."""
+        return self.getprop('ro.build.version.release')
+
+    @property
+    def sdk_int(self):
+        """Android SDK version."""
+        return int(self.getprop('ro.build.version.sdk'))
+
+    @property
+    def preview_sdk_int(self):
+        """Android preview SDK version."""
+        return int(self.getprop('ro.build.version.preview_sdk'))
+
+    @property
+    def fingerprint(self):
+        """Fingerprint."""
+        return self.getprop('ro.build.fingerprint')
+
+    @property
+    def base_os(self):
+        """Base OS."""
+        return self.getprop('ro.build.version.base_os')
+
+    @property
+    def security_patch(self):
+        """Security patch."""
+        return self.getprop('ro.build.version.security_patch')
+
+    def getprop(self, prop: str) -> Optional[str]:
+        """Returns the device property, similar to the value retrieved with
+        $ adb shell getprop <prop>
+        """
+        return self.__props.get(prop)

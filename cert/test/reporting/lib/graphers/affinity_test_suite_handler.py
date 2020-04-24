@@ -41,14 +41,6 @@ class AffinityTestSuiteHandler(SuiteHandler):
     def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
         return None
 
-    @classmethod
-    def handles_entire_report(cls, suites: List['Suite']):
-        return False
-
-    @classmethod
-    def render_report(cls, raw_suites):
-        return None
-
     def render_plot(self) -> str:
         start_misses_by_cpu_id = {}
         work_running_misses_by_cpu_id = {}
