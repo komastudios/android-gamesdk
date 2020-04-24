@@ -29,6 +29,7 @@ import lib.common
 import lib.deployment
 import lib.graphing
 import lib.graphers
+from lib.recipe import Recipe
 
 from lib.devicefarm import DeploymentTarget
 from lib.report import Suite
@@ -153,7 +154,7 @@ class TestReportGeneration(unittest.TestCase):
         recipe_path = Path(
             './test/integration/data/recipes/fake_operation.yaml')
 
-        recipe = lib.common.Recipe(recipe_path, Path(RECIPE_DEFAULTS))
+        recipe = Recipe(recipe_path, Path(RECIPE_DEFAULTS))
         args = {"local": True}
         report_files, out_dir = self.run_operation(recipe, args)
         attached_devices = lib.common.get_attached_devices()
@@ -174,7 +175,7 @@ class TestReportGeneration(unittest.TestCase):
         recipe_path = Path(
             './test/integration/data/recipes/fake_operation.yaml')
 
-        recipe = lib.common.Recipe(recipe_path, Path(RECIPE_DEFAULTS))
+        recipe = Recipe(recipe_path, Path(RECIPE_DEFAULTS))
         args = {
             "ftl": True,
             'ftl-deployment-target': DeploymentTarget.FTL_DEVICES_PRIVATE

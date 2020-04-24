@@ -120,11 +120,3 @@ class DependentReadSuiteHandler(SuiteHandler):
         axes.get_xaxis().set_visible(False)
         axes.set_ylim([0, self.__ys_indirections[-1] + 1])
         axes.set_ylabel('Indirect reads')
-
-    @classmethod
-    def handles_entire_report(cls, suites: List['Suite']):
-        return False
-
-    @classmethod
-    def render_report(cls, raw_suites: List['Suite']):
-        return ''

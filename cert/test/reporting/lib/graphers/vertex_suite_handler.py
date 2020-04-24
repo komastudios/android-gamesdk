@@ -52,14 +52,6 @@ class VertexRateSuiteHandler(SuiteHandler):
         return False
 
     @classmethod
-    def handles_entire_report(cls, suites: List['Suite']):
-        return False
-
-    @classmethod
-    def render_report(cls, raw_suites: List['Suite']):
-        return ''
-
-    @classmethod
     def render_summarization_plot(cls, suites: List['Suite']) -> str:
         return None
 
