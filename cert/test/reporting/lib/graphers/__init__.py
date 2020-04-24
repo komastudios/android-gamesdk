@@ -19,13 +19,6 @@ All SuiteHandler implementations live here. Each must have its class
 registered with the HANDLERS global.
 """
 
-from typing import List
-
-from matplotlib.collections import PatchCollection
-from matplotlib.patches import Circle
-import matplotlib.pyplot as plt
-import numpy as np
-
 from .affinity_test_suite_handler import AffinityTestSuiteHandler
 from .buffer_storage_suite_handler import BufferStorageSuiteHandler
 from .calculate_wait_pi_suite_handler import CalculateWaitPiSuiteHandler
@@ -36,6 +29,8 @@ from .dependent_read_suite_handler import DependentReadSuiteHandler
 from .depth_clear_suite_handler import DepthClearSuiteHandler
 from .file_performance_suite_handler import FilePerformanceSuiteHandler
 from .fill_rate_suite_handler import FillRateSuiteHandler
+from .gpu_profiling_support_suite_handler import \
+    GPUProfilingSupportSuiteHandler
 from .half_float_precision import HalfFloatPrecisionSuiteHandler
 from .marching_cubes_suite_handler import MarchingCubesSuiteHandler
 from .mediump_vec_norm_suite_handler import MediumPVecNormSuiteHandler
@@ -59,6 +54,7 @@ HANDLERS = [
     DepthClearSuiteHandler, \
     FilePerformanceSuiteHandler, \
     FillRateSuiteHandler, \
+    GPUProfilingSupportSuiteHandler, \
     HalfFloatPrecisionSuiteHandler, \
     MarchingCubesSuiteHandler, \
     MediumPVecNormSuiteHandler, \
@@ -72,37 +68,3 @@ HANDLERS = [
 ]
 """List containing all registered SuiteHandler implementations to
 render charts."""
-
-
-def graph_functional_test_result(result_index: int, results: List[str]):
-    """Creates a graph with a circle of a specific color depending on the
-    result index. Red if 0, Yellow if 1 and Green if 2.
-    The graph completes with a result description, applying the index to the
-    results list.
-    """
-    fig, axes = plt.subplots()
-    fig.set_figheight(1)
-    fig.set_figwidth(1)
-
-    xs = [0.16, 0.16, 0.16]
-    ys = [0.84, 0.50, 0.16]
-    radius = 0.15
-
-    border_color = '#620202'
-    colors = ['#ff0000', '#ffff00', '#009c05']
-
-    make_circle = \
-        lambda circle_index: \
-            Circle((xs[circle_index], ys[circle_index]),
-                   radius,
-                   ec=border_color,
-                   fc=colors[circle_index] if result_index == circle_index \
-                       else '#000000cc')
-
-    collection = PatchCollection(
-        [make_circle(0), make_circle(1),
-         make_circle(2)], True)
-    axes.add_collection(collection)
-    axes.annotate(results[result_index], (0.35, ys[result_index] - 0.03))
-
-    axes.set_axis_off()

@@ -21,6 +21,7 @@ from contextlib import contextmanager
 import os
 import shutil
 import time
+from typing import Optional
 from pathlib import Path
 
 from lib.common import run_command, ensure_dir
@@ -110,13 +111,14 @@ def _managed_build(configuration: Path):
 
 def build_apk(clean: bool,
               build_type: str,
-              custom_configuration: Path = None) -> Path:
+              custom_configuration: Path = None) -> Optional[Path]:
     """Builds the AndroidCertTest APK
 
     Args:
         clean: if true, clean and rebuild
         build_type: build type defined in app/build.gradle e.g.,
-            "debug" or "optimizedNative"
+            "debug" or "optimizedNative". A special case is "none", meaning
+            that no APK is built (the case of non-invasive OuterOperation).
         custom_configuration: if provided and exists, is a custom
             configuration.json to build into the ACT app APK
 
@@ -126,6 +128,8 @@ def build_apk(clean: bool,
     Raises:
         BuildError if something goes wrong
     """
+    if build_type == 'none':
+        return None
 
     if custom_configuration and not custom_configuration.exists():
         raise BuildError(f"missing configuration file {custom_configuration}")

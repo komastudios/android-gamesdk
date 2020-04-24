@@ -143,11 +143,3 @@ class CpusetSuiteHandler(SuiteHandler):
         self.format_figure_and_axes(x_axis_as_seconds)
 
         return self.compose_summary()
-
-    @classmethod
-    def handles_entire_report(cls, suites: List['Suite']):
-        return False
-
-    @classmethod
-    def render_report(cls, raw_suites: List['Suite']):
-        return ''

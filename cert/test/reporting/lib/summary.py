@@ -19,12 +19,14 @@
 import json
 import glob
 from pathlib import Path
+import re
 from typing import Dict, List, Union
 
-from lib.common import get_indexable_utc, get_readable_utc, Recipe
+from lib.common import get_indexable_utc, get_readable_utc
 from lib.device import DeviceCatalog
 from lib.gdrive import GDrive, GoogleDriveRelatedError
 from lib.graphing import load_suites
+from lib.recipe import Recipe
 from lib.report import Suite
 from lib.summary_formatters.formatter import SummaryFormatter
 from lib.summary_formatters.loader \
@@ -79,6 +81,15 @@ def __make_image_path(folder: Path, prefix: str, indexer: Indexer) -> Path:
 
     return folder.joinpath("images").joinpath(
         f"{prefix}_{indexer.next_index()}.png")
+
+
+def __default_summary_name_based_on_directory(directory: str) -> str:
+    """Tries to infer the best summary name from specific patterns in the
+    directory it's being stored."""
+    directory_parts = re.match(r"^out\/([^\/]+)(\/?.*)$", directory)
+
+    return directory_parts.group(
+        1) if directory_parts and len(directory_parts.groups()) >= 1 else ""
 
 
 #------------------------------------------------------------------------------
@@ -229,6 +240,9 @@ def generate_summary(reports: List[Path],
         return None
 
     reports_dir = reports[0].parent if len(reports) > 0 else excluded[0].parent
+
+    if not name:
+        name = __default_summary_name_based_on_directory(str(reports_dir))
 
     summary_file_name = f"summary_{get_indexable_utc()}_{name}.{output_format}"
     summary_path = reports_dir.joinpath(summary_file_name)

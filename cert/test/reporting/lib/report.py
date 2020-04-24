@@ -371,7 +371,7 @@ def merge_datums(lines: List[List[Datum]]) -> List[Datum]:
 
 def normalize_report_name(report_file: Path) -> Path:
     """Renames a report JSON file to our naming convention:
-    report_DEVICE_SDK.json
+    <brand>_<model>_<sdk>_report.json
     Args:
         json_file: Path to the JSON report file
     Returns:
@@ -444,7 +444,7 @@ def merge_systrace(report_file: Path, systrace_file: Path,
     offset_ns, useful_lines = filter_systrace_to_interested_lines(
         systrace_file, keywords=systrace_keywords, pattern=None)
 
-    if offset_ns == None:
+    if offset_ns is None:
         print("Unable to convert systrace timestamps")
         offset_ns = 0
 

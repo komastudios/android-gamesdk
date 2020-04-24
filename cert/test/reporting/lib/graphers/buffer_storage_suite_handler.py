@@ -18,9 +18,8 @@ compliance tests.
 """
 
 from typing import List
-import matplotlib.pyplot as plt
-import numpy as np
 
+from lib.graphers.common_graphers import graph_functional_test_result
 from lib.graphers.suite_handler import SuiteHandler
 from lib.report import Suite
 
@@ -52,19 +51,15 @@ class BufferStorageSuiteHandler(SuiteHandler):
         return None
 
     def render_plot(self) -> str:
-        plt.gcf().set_figheight(3)
-        if self.test_result_status is not None:
-            score_color = (0, 1, 0) \
-            if self.test_result_status == 0 else (1, 0, 0)
-            plt.xticks(np.arange(0))
-            plt.yticks(np.arange(0))
-            plt.bar(0, 1, color=score_color)
-
+        result_index = 0
         msg = None
+
         if self.test_result_status is None:
+            result_index = 1
             msg = "Test result status not found."
         elif self.test_result_status == 0:
-            msg = "Passed."
+            result_index = 2
+            msg = ""
         elif self.test_result_status == 1:
             msg = "Feature not found as OpenGL ES extension."
         elif self.test_result_status == 2:
@@ -78,14 +73,10 @@ class BufferStorageSuiteHandler(SuiteHandler):
         elif self.test_result_status == 6:
             msg = "Unexpected success deallocating an immutable buffer store."
         else:
+            result_index = 1
             msg = f"Unexpected result: ({self.test_result_status})"
 
+        graph_functional_test_result(result_index,
+                                     ['UNAVAILABLE', 'UNDETERMINED', 'PASSED'])
+
         return msg
-
-    @classmethod
-    def handles_entire_report(cls, suites: List['Suite']):
-        return False
-
-    @classmethod
-    def render_report(cls, raw_suites: List['SuiteHandler']):
-        return ''
