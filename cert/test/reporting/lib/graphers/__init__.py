@@ -15,58 +15,57 @@
 #
 """The Graphers Module
 
-All SuiteHandler implementations live here. Each must have its class
-registered with the HANDLERS global.
+All SuiteSummarizer implementations live here. Each must have its class
+registered with the SUMMARIZERS global.
 """
 
-from .affinity_test_suite_handler import AffinityTestSuiteHandler
-from .buffer_storage_suite_handler import BufferStorageSuiteHandler
-from .calculate_wait_pi_suite_handler import CalculateWaitPiSuiteHandler
+from .affinity_test_suite_handler import AffinityTestSummarizer
+from .buffer_storage_suite_handler import BufferStorageSuiteSummarizer
+from .calculate_wait_pi_suite_handler import CalculateWaitPiSummarizer
 from .choreographer_timestamps_suite_handler import \
-    ChoreographerTimestampsSuiteHandler
-from .cpuset_suite_handler import CpusetSuiteHandler
-from .dependent_read_suite_handler import DependentReadSuiteHandler
-from .depth_clear_suite_handler import DepthClearSuiteHandler
-from .egl_presentation_time_suite_handler import EGLPresentationTimeSuiteHandler
-from .file_performance_suite_handler import FilePerformanceSuiteHandler
-from .fill_rate_suite_handler import FillRateSuiteHandler
+    ChoreographerTimestampsSummarizer
+from .cpuset_suite_handler import CpusetSuiteSummarizer
+from .dependent_read_suite_handler import DependentReadSummarizer
+from .depth_clear_suite_handler import DepthClearSummarizer
+from .egl_presentation_time_suite_handler import EGLPresentationTimeSummarizer
+from .file_performance_suite_handler import FilePerformanceSummarizer
+from .fill_rate_suite_handler import FillRateSummarizer
 from .gpu_profiling_support_suite_handler import \
-    GPUProfilingSupportSuiteHandler
-from .half_float_precision import HalfFloatPrecisionSuiteHandler
-from .marching_cubes_suite_handler import MarchingCubesSuiteHandler
-from .mediump_vec_norm_suite_handler import MediumPVecNormSuiteHandler
-from .memory_access.single_core_comparison import SingleCoreComparisonHandler
-from .memory_allocation_suite_handler import MemoryAllocationSuiteHandler
-from .mprotect_suite_handler import MProtectSuiteHandler
-from .nougat_crash_suite_handler import NougatCrashSuiteHandler
-from .temperature_suite_handler import TemperatureSuiteHandler
-from .vertex_suite_handler import VertexRateSuiteHandler
-from .vulkan_varyings_handler import VulkanVaryingsHandler
+    GPUProfilingSupportSummarizer
+from .marching_cubes_suite_handler import MarchingCubesSummarizer
+from .mediump_vec_norm_suite_handler import MediumPVecNormSummarizer
+from .memory_access.single_core_comparison import SingleCoreComparisonSummarizer
+from .memory_allocation_suite_handler import MemoryAllocationSuiteSummarizer
+from .mprotect_suite_handler import MProtectSummarizer
+from .nougat_crash_suite_handler import NougatCrashSummarizer
+from .temperature_suite_handler import TemperatureSuiteSummarizer
+from .vertex_suite_handler import VertexRateSuiteSummarizer
+from .vulkan_varyings_handler import VulkanVaryingsSummarizer
 
-# Keep each suite handler alone in its line and we'll avoid zillions of really
-# avoidable merge conflicts
-HANDLERS = [
-    AffinityTestSuiteHandler, \
-    BufferStorageSuiteHandler, \
-    CalculateWaitPiSuiteHandler, \
-    ChoreographerTimestampsSuiteHandler, \
-    CpusetSuiteHandler, \
-    DependentReadSuiteHandler, \
-    DepthClearSuiteHandler, \
-    EGLPresentationTimeSuiteHandler, \
-    FilePerformanceSuiteHandler, \
-    FillRateSuiteHandler, \
-    GPUProfilingSupportSuiteHandler, \
-    HalfFloatPrecisionSuiteHandler, \
-    MarchingCubesSuiteHandler, \
-    MediumPVecNormSuiteHandler, \
-    MemoryAllocationSuiteHandler, \
-    MProtectSuiteHandler, \
-    NougatCrashSuiteHandler, \
-    SingleCoreComparisonHandler, \
-    TemperatureSuiteHandler, \
-    VertexRateSuiteHandler, \
-    VulkanVaryingsHandler
+
+# Keep each suite summarizer alone in its line and we'll avoid zillions
+# of really avoidable merge conflicts.
+SUMMARIZERS = [
+    AffinityTestSummarizer, \
+    BufferStorageSuiteSummarizer, \
+    CalculateWaitPiSummarizer, \
+    ChoreographerTimestampsSummarizer, \
+    CpusetSuiteSummarizer, \
+    DependentReadSummarizer, \
+    DepthClearSummarizer, \
+    EGLPresentationTimeSummarizer, \
+    FilePerformanceSummarizer, \
+    FillRateSummarizer, \
+    GPUProfilingSupportSummarizer, \
+    MarchingCubesSummarizer, \
+    MediumPVecNormSummarizer, \
+    MemoryAllocationSuiteSummarizer, \
+    MProtectSummarizer, \
+    NougatCrashSummarizer, \
+    SingleCoreComparisonSummarizer, \
+    TemperatureSuiteSummarizer, \
+    VertexRateSuiteSummarizer, \
+    VulkanVaryingsSummarizer
 ]
-"""List containing all registered SuiteHandler implementations to
-render charts."""
+"""List containing all registered SuiteHandler implementations
+to render summaries."""

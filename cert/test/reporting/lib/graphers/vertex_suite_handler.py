@@ -23,8 +23,16 @@ from matplotlib.ticker import FormatStrFormatter
 import numpy as np
 
 from lib.common import nanoseconds_to_seconds
-from lib.graphers.suite_handler import SuiteHandler
-from lib.report import Datum, Suite
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, SummaryContext
+import lib.summary_formatters.format_items as fmt
+
+
+class VertexRateSuiteSummarizer(SuiteSummarizer):
+    """Suite summarizer for the Vertex Throughput test."""
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return VertexRateSuiteHandler
 
 
 class VertexRateSuiteHandler(SuiteHandler):
@@ -44,18 +52,10 @@ class VertexRateSuiteHandler(SuiteHandler):
         self.__ys_fps = []
 
     @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return 'Vertex Streaming' in suite.name
+    def can_handle_datum(cls, datum: Datum):
+        return "Vertex Streaming" in datum.suite_id
 
-    @classmethod
-    def can_render_summarization_plot(cls, suites: List['Suite']) -> bool:
-        return False
-
-    @classmethod
-    def render_summarization_plot(cls, suites: List['Suite']) -> str:
-        return None
-
-    def render_plot(self) -> str:
+    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
         for datum in self.data:
             if datum.operation_id == 'VertexStreamGLES3Operation':
                 self.__fill_vertex_data_points(datum)
@@ -64,9 +64,8 @@ class VertexRateSuiteHandler(SuiteHandler):
 
         self.__wrapup_data_points()
 
-        self.__add_charts()
-
-        return None
+        image = fmt.Image(self.plot(ctx, self.__add_charts), self.device())
+        return [image]
 
     def __fill_vertex_data_points(self, vertex_datum: Datum) -> type(None):
         """Segregates vertex rate data points and appends these to collections.

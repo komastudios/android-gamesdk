@@ -16,6 +16,7 @@
 """Helper functions and classes for loading and parsing report JSON files
 """
 
+import copy
 import json
 import os
 import re
@@ -24,10 +25,10 @@ import subprocess
 import sys
 
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from lib.build import APP_ID
-from lib.common import ensure_dir
+from lib.common import ensure_dir, Indexer
 from lib.systrace import filter_systrace_to_interested_lines,\
     convert_systrace_line_to_datum
 from lib.device import DeviceCatalog, DeviceInfo
@@ -36,6 +37,14 @@ NANOSEC_EXPRESSION = r"^(\d+) (nanoseconds|ns|nsec)$"
 MILLISEC_EXPRESSION = r"^(\d+) (milliseconds|ms|msec)$"
 SEC_EXPRESSION = r"^(\d+) (seconds|s|sec)$"
 TIME_EXPRESSIONS = [NANOSEC_EXPRESSION, MILLISEC_EXPRESSION, SEC_EXPRESSION]
+
+
+class SummaryContext():
+    """Context to be passed to a SuiteHandler"""
+    def __init__(self, folder: Path, dpi: int, indexer: Optional[Indexer] = None):
+        self.folder = folder
+        self.dpi = dpi
+        self.indexer = indexer
 
 
 def to_float(val: Any) -> float:
@@ -234,9 +243,9 @@ class BuildInfo:
             and has_lower_numbering(middle_cores, little_cores) \
             and has_lower_numbering(big_cores, little_cores)
 
+
 class Suite:
-    """Suite is a list of datums from a report file of the same suite_id
-    """
+    """Suite is a list of datums from a report file of the same suite_id."""
 
     def __init__(self, name: str, build: BuildInfo, data: List[Datum],
                  file: Path):
@@ -244,7 +253,6 @@ class Suite:
         self.build = build
         self.data = data
         self.file = file
-        self.handler = None
 
         self.data_by_operation_id = {}
         for datum in data:
@@ -263,6 +271,30 @@ class Suite:
         """Composes a human-readable description of the dataset."""
         return f"""{self.name}
 {self.identifier()}"""
+
+
+
+class Report:
+    """Report is a list of datums from a report file."""
+    def __init__(self, build: BuildInfo, data: List[Datum], file: Path):
+        self.build = build
+        self.data = data
+        self.file = file
+
+    def derive_suites(self) -> List[Suite]:
+        """Creates a list of suites from the report's data. The number that will
+        be created depends on the number of unique suite_ids in the data."""
+        suites_data = {}
+        for datum in self.data:
+            # Copy datums to avoid unintended side-effects of modifying both
+            # the report.data and the suite.data.
+            suites_data.setdefault(datum.suite_id,
+                                   []).append(copy.deepcopy(datum))
+        suites = []
+        for suite_id, data in suites_data.items():
+            suites.append(Suite(suite_id, self.build, data, self.file))
+        return suites
+
 
 
 def homologate_build_info(codename: str, api_level: str,
@@ -422,10 +454,11 @@ def extract_log_from_device(device_id: str, dst_dir: Path) -> Path:
         sys.exit(proc.returncode)
         return None
 
-    if dst_file.exists and os.path.getsize(dst_file) > 0:
+    if os.path.exists(dst_file) and os.path.getsize(dst_file) > 0:
         return dst_file
 
-    print(f"Unable to extract report from device {device_id}")
+    print(f"Unable to extract report from device {device_id} " \
+"(missing or empty report file)")
     sys.exit()
     return None
 

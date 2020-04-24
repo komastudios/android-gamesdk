@@ -22,8 +22,17 @@ from typing import List
 import matplotlib.pyplot as plt
 import numpy as np
 
-from lib.graphers.suite_handler import SuiteHandler
-from lib.report import Suite
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, SummaryContext
+import lib.summary_formatters.format_items as fmt
+
+
+class VulkanVaryingsSummarizer(SuiteSummarizer):
+    """Suite summarizer for the Vulkan Varyings test."""
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return VulkanVaryingsHandler
+
 
 class VulkanVaryingsHandler(SuiteHandler):
     """Implementation of SuiteHandler to process report data
@@ -44,31 +53,25 @@ class VulkanVaryingsHandler(SuiteHandler):
                 self.reported_max_components = datum.get_custom_field("reported_max_components")
 
     @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return "Vulkan Varyings Blocks" in suite.name
+    def can_handle_datum(cls, datum: Datum):
+        return "Vulkan Varyings Blocks" in datum.suite_id
 
-    @classmethod
-    def can_render_summarization_plot(cls,
-                                      suites: List['SuiteHandler']) -> bool:
-        return False
+    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
 
-    @classmethod
-    def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
-        return None
+        def graph():
+            #plt.gcf().set_figheight(1.5)
+            if self.found_data:
+                block_color = (0, 1, 0) if self.max_block_components >= \
+                    self.reported_max_components else (1, 0, 0)
+                single_color = (0, 1, 0) if self.max_single_components >= \
+                    self.reported_max_components else (1, 0, 0)
+                yticks = list(set([0, self.max_block_components,
+                                self.max_single_components,
+                                self.reported_max_components]))
+                plt.xticks([0, 1], ["block", "single"])
+                plt.yticks(yticks)
+                plt.bar(0, self.max_block_components, color=block_color)
+                plt.bar(1, self.max_single_components, color=single_color)
 
-    def render_plot(self) -> str:
-        #plt.gcf().set_figheight(1.5)
-        if self.found_data:
-            block_color = (0, 1, 0) if self.max_block_components >= \
-                self.reported_max_components else (1, 0, 0)
-            single_color = (0, 1, 0) if self.max_single_components >= \
-                self.reported_max_components else (1, 0, 0)
-            yticks = list(set([0, self.max_block_components,
-                               self.max_single_components,
-                               self.reported_max_components]))
-            plt.xticks([0, 1], ["block", "single"])
-            plt.yticks(yticks)
-            plt.bar(0, self.max_block_components, color=block_color)
-            plt.bar(1, self.max_single_components, color=single_color)
-
-        return None
+        image = fmt.Image(self.plot(ctx, graph), self.device())
+        return [image]
