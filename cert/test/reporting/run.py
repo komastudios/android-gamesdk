@@ -21,7 +21,7 @@ import argparse
 from pathlib import Path
 import sys
 
-from lib.common import Recipe
+from lib.recipe import Recipe
 from lib.deployment import run_recipe
 from lib.devicefarm import DeploymentTarget
 

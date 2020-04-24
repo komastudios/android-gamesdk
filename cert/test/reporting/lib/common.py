@@ -21,7 +21,6 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List
-import yaml
 
 # ------------------------------------------------------------------------------
 
@@ -145,20 +144,10 @@ def get_attached_devices() -> List[str]:
     Returns:
         List of device ids of attached android devices
     """
-    cmdline = ['adb', 'devices']
-
-    proc = subprocess.run(cmdline,
-                          stdout=subprocess.PIPE,
-                          stderr=subprocess.PIPE,
-                          check=False,
-                          encoding='utf-8')
-
-    if proc.returncode != 0:
-        print(proc.stderr)
-        sys.exit(proc.returncode)
+    stdout = run_command_with_stdout('adb devices')
 
     device_ids = []
-    for device in proc.stdout.splitlines()[1:]:
+    for device in stdout[1:]:
         tokens = device.split()
         if tokens is not None and len(tokens) == 2:
             device_ids.append(tokens[0])
@@ -197,6 +186,20 @@ def run_command(command, display_output: bool = False):
             f"Command {command} exited with non-zero {ret_code} return code")
 
 
+def run_command_with_stdout(command: str, exit_on_error=True) -> List[str]:
+    """Executes the terminal command. If OK, returns a list containing stdout
+    lines. Otherwise prints stderr and finishes execution."""
+    process = subprocess.run(command.split(),
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE,
+                             check=False,
+                             encoding='utf-8')
+    if process.returncode != 0 and exit_on_error:
+        print(process.stderr)
+        sys.exit(process.returncode)
+    return process.stdout.splitlines()
+
+
 # -----------------------------------------------------------------------------
 
 
@@ -213,58 +216,3 @@ def get_indexable_utc() -> str:
     "a couple more minutes".
     """
     return datetime.utcnow().strftime("%Y%m%d-%H%M%S")
-
-
-# -----------------------------------------------------------------------------
-
-
-class Recipe():
-    """Represents a union of two recipe files, the primary and the fallback
-    """
-
-    def __init__(self, recipe: Path, default_recipe: Path):
-        self._recipe_path = recipe
-        self._default_recipe_path = default_recipe
-        self._name = recipe.stem
-
-        with open(recipe) as recipe_file:
-            self._recipe = yaml.load(recipe_file, Loader=yaml.FullLoader)
-
-        with open(default_recipe) as recipe_file:
-            self._default_recipe = yaml.load(recipe_file,
-                                             Loader=yaml.FullLoader)
-
-    def get_recipe_path(self) -> Path:
-        """Get the path to the primary recipe"""
-        return self._recipe_path
-
-    def get_default_recipe_path(self) -> Path:
-        """Get the path to the default/fallback recipe"""
-        return self._default_recipe_path
-
-    def get_recipe(self) -> Dict:
-        """Get the primary recipe"""
-        return self._recipe
-
-    def get_default_recipe(self) -> Dict:
-        """Get the default/fallback recipe"""
-        return self._recipe
-
-    def get_name(self) -> str:
-        """Returns the recipe file name (without extension)."""
-        return self._name
-
-    def lookup(self, key_path: str, fallback: Any = None) -> Any:
-        """Looks up a value in a the recipe file, using the value from
-        default_recipe as a fallback if not present in src
-        Args:
-            key_path: A path to lookup, e.g.,
-                "deployment.local.all_attached_devices"
-        """
-
-        def fallback_default():
-            return dict_lookup(self._default_recipe,
-                               key_path,
-                               fallback=fallback)
-
-        return dict_lookup(self._recipe, key_path, fallback=fallback_default)

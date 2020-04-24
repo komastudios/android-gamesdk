@@ -22,7 +22,6 @@ from typing import List
 import matplotlib.pyplot as plt
 import numpy as np
 
-from lib.common import nanoseconds_to_seconds
 from lib.graphers.suite_handler import SuiteHandler
 from lib.report import Datum, Suite
 
@@ -67,11 +66,3 @@ class TemperatureSuiteHandler(SuiteHandler):
             plt.plot(np.array(self.x_axis), np.array(self.max_temperature))
 
         return ""
-
-    @classmethod
-    def handles_entire_report(cls, suites: List['Suite']):
-        return False
-
-    @classmethod
-    def render_report(cls, raw_suites: List['Suite']):
-        return ''

@@ -18,7 +18,7 @@
 
 from typing import List
 
-import lib.graphers as graph_commons
+from lib.graphers.common_graphers import graph_functional_test_result
 from lib.graphers.suite_handler import SuiteHandler
 from lib.report import Suite
 
@@ -102,15 +102,7 @@ class NougatCrashSuiteHandler(SuiteHandler):
 
         result_index = self.determine_test_result_index()
 
-        graph_commons.graph_functional_test_result(
-            result_index, ['CRASH', 'UNDETERMINED', 'PASSED'])
+        graph_functional_test_result(result_index,
+                                     ['CRASH', 'UNDETERMINED', 'PASSED'])
 
         return self.compose_summary()
-
-    @classmethod
-    def handles_entire_report(cls, suites: List['Suite']):
-        return False
-
-    @classmethod
-    def render_report(cls, raw_suites: List['Suite']):
-        return ''

@@ -19,9 +19,7 @@ from the Vulkan Mprotect test
 
 from typing import List
 
-import matplotlib.pyplot as plt
-import numpy as np
-
+from lib.graphers.common_graphers import graph_functional_test_result
 from lib.graphers.suite_handler import SuiteHandler
 from lib.report import Suite
 
@@ -51,18 +49,14 @@ class MProtectSuiteHandler(SuiteHandler):
         return None
 
     def render_plot(self) -> str:
-        plt.gcf().set_figheight(3)
-        if self.mprotect_score is not None:
-            score_color = (0, 1, 0) if self.mprotect_score == 0 else (1, 0, 0)
-            plt.xticks(np.arange(0))
-            plt.yticks(np.arange(0))
-            plt.bar(0, 1, color=score_color)
-
-        msg = ""
+        result_index = 0
+        msg = None
 
         if self.mprotect_score is None:
+            result_index = 1
             msg = "No mprotect results found."
         elif self.mprotect_score == 0:
+            result_index = 2
             msg = "PASSED."
         elif self.mprotect_score == 1:
             msg = "R/W protect fail."
@@ -81,14 +75,10 @@ class MProtectSuiteHandler(SuiteHandler):
         elif self.mprotect_score == 8:
             msg = "Vulkan isn't supported on this device."
         else:
+            result_index = 1
             msg = f"Unexpected result: ({self.mprotect_score})"
 
+        graph_functional_test_result(result_index,
+                                     ['UNAVAILABLE', 'UNDETERMINED', 'PASSED'])
+
         return msg
-
-    @classmethod
-    def handles_entire_report(cls, suites: List['Suite']):
-        return False
-
-    @classmethod
-    def render_report(cls, raw_suites: List['SuiteHandler']):
-        return ''

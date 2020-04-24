@@ -121,14 +121,6 @@ class ChoreographerTimestampsSuiteHandler(SuiteHandler):
     def render_summarization_plot(cls, suites: List['Suite']) -> str:
         return None
 
-    @classmethod
-    def handles_entire_report(cls, suites: List['Suite']):
-        return False
-
-    @classmethod
-    def render_report(cls, raw_suites: List['SuiteHandler']):
-        return ''
-
     def render_plot(self) -> str:
         """
         We create a plot showing how much the Choreographer timestamps varied

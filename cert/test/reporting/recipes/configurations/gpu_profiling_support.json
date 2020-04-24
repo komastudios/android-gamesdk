@@ -1,0 +1,11 @@
+{
+    "stress_tests": [
+        {
+            "name": "GPU Profiling Tools Support",
+            "description": "Assesses the presence of GPU profiling tools on a device.",
+            "data_gatherer": {
+                "id": "GPUProfilingSupportOperation"
+            }
+        }
+    ]
+}

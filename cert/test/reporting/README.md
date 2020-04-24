@@ -73,10 +73,12 @@ build:
 
 ``` yaml
 build:
+  # The apk type to build. Debug includes symbols. Release is lighter. None is
+  # a special case in which no apk is built. This is the case of outer tests:
+  # tests run entirely from the attached computer via ADB
+  type: [debug|release|none]
   # if true, the APK will be cleaned, then built
   clean: [true|false]
-  # if true, build in release; this may require key signing configuration
-  release: [true|false]
   # if provided, the configuration json will be inserted into the APK
   # this is a convenient way to set up a specific set of suites to run
   configuration: path/to/configuration.json
