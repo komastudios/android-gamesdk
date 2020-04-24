@@ -22,8 +22,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from lib.common import nanoseconds_to_milliseconds
-from lib.graphers.suite_handler import SuiteHandler
-from lib.report import Datum, Suite
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, SummaryContext, Suite
+import lib.summary_formatters.format_items as fmt
+
+
+class DependentReadSummarizer(SuiteSummarizer):
+    """Suite summarizer for the Dependent Texture Read performance test."""
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return DependentReadSuiteHandler
 
 
 class DependentReadSuiteHandler(SuiteHandler):
@@ -40,29 +48,22 @@ class DependentReadSuiteHandler(SuiteHandler):
         self.__ys_max_frame_time = []
 
     @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return "Indirect Texture Read" in suite.name
+    def can_handle_datum(cls, datum: Datum):
+        return "Indirect Texture Read" in datum.suite_id
 
-    @classmethod
-    def can_render_summarization_plot(cls, suites: List['Suite']) -> bool:
-        return False
-
-    @classmethod
-    def render_summarization_plot(cls, suites: List['Suite']) -> str:
-        return None
-
-    def render_plot(self) -> str:
+    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
         self.__compile_data()
         self.__adapt_data_points_for_graphics()
 
-        fig, axs = plt.subplots(3, 1)
-        fig.suptitle(self.title())
+        def graph():
+            _, axs = plt.subplots(3, 1)
+            self.__plot_fps(axs[0])
+            self.__plot_frame_times(axs[1])
+            self.__plot_indirectios(axs[2])
 
-        self.__plot_fps(axs[0])
-        self.__plot_frame_times(axs[1])
-        self.__plot_indirectios(axs[2])
-
-        return None
+        image_path = self.plot(ctx, graph)
+        image = fmt.Image(image_path, self.device())
+        return [image]
 
     def __compile_data(self) -> type(None):
         """Iterates through all test data, segregating data points into their

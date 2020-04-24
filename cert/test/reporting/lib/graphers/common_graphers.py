@@ -27,6 +27,9 @@ def graph_functional_test_result(result_index: int, results: List[str]):
     result index. Red if 0, Yellow if 1 and Green if 2.
     The graph completes with a result description, applying the index to the
     results list.
+
+    Note: Make sure the graph doesn't have a title, as it would appear too large
+    and cover the rest of the graph.
     """
     fig, axes = plt.subplots()
     fig.set_figheight(1)
