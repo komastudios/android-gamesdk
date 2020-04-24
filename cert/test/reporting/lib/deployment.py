@@ -37,7 +37,6 @@ from lib.outer import OuterOperation
 from lib.recipe import Recipe
 from lib.report import extract_and_export, normalize_report_name, \
     merge_systrace
-from lib.summary import perform_summary_if_enabled
 from lib.systrace import LocalSystrace, SystraceParseError
 import lib.tasks_runner
 
@@ -346,8 +345,6 @@ def run_local_deployment(recipe: Recipe, apk: Path, out_dir: Path):
             print(f"[INFO] Running postflight tasks for device {device_id}")
             lib.tasks_runner.run(postflight_tasks, device_id, postflight_env)
 
-    perform_summary_if_enabled(recipe, out_dir)
-
 
 def run_apk_and_collect_results(device_id: str, out_dir: Path,
                                 systrace_enabled: bool,
@@ -418,8 +415,6 @@ def run_ftl_deployment(recipe: Recipe, target_devices: DeploymentTarget,
 
     report_files = process_ftl_reports(out_dir, report_files, systrace_files,
                                        systrace_keywords)
-
-    perform_summary_if_enabled(recipe, out_dir)
 
 
 # ------------------------------------------------------------------------------

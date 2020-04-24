@@ -18,7 +18,9 @@
 
 from abc import ABC, abstractclassmethod, abstractmethod
 from pathlib import Path
-from typing import ContextManager, TypeVar, Union
+from typing import ContextManager, List, Optional, TypeVar
+
+import lib.summary_formatters.format_items as fmt
 
 
 class SummaryFormatter(ABC):
@@ -58,10 +60,11 @@ class SummaryFormatter(ABC):
         raise NotImplementedError(
             "SummaryFormatter subclass must implement on_init()")
 
+    # def on_device(self, device_id: str, plot_path: Path,
+    #               plot_path_relative: Path,
+    #               summary: Optional[str]) -> type(None):
     @abstractmethod
-    def on_device(self, device_id: str, plot_path: Path,
-                  plot_path_relative: Path,
-                  summary: Union[str, type(None)]) -> type(None):
+    def on_device(self, device_id: str, items: List[fmt.Item]) -> type(None):
         """Writes formatted results for a given device.
 
         Args:
@@ -76,8 +79,7 @@ class SummaryFormatter(ABC):
             "SummaryFormatter subclass must implement on_device()")
 
     @abstractmethod
-    def on_cross_suite(self, plot_path: Path, plot_path_relative: Path,
-                       summary: Union[str, type(None)]) -> type(None):
+    def on_cross_suite(self, items: List[fmt.Item]) -> type(None):
         """Writes a formatted cross suite summary to the report.
 
         Args:
@@ -113,3 +115,43 @@ class SummaryFormatter(ABC):
 
     def on_finish(self) -> type(None):
         """(Optional) Writes formatted closing marks to the summary."""
+
+    # --------------------------------------------------------------------------
+
+    @abstractmethod
+    def write_separator(self):
+        raise NotImplementedError(
+            "SummaryFormatter subclass must implement __write_separator()")
+
+    @abstractmethod
+    def write_heading(self, heading: fmt.Heading):
+        raise NotImplementedError(
+            "SummaryFormatter subclass must implement __write_heading()")
+
+    @abstractmethod
+    def write_paragraph(self, paragraph: fmt.Paragraph):
+        raise NotImplementedError(
+            "SummaryFormatter subclass must implement __write_paragraph()")
+
+    @abstractmethod
+    def write_image(self, image: fmt.Image):
+        raise NotImplementedError(
+            "SummaryFormatter subclass must implement __write_image()")
+
+    @abstractmethod
+    def write_table(self, table: fmt.Table):
+        raise NotImplementedError(
+            "SummaryFormatter subclass must implement __write_table()")
+
+    def write_items(self, items: List[fmt.Item]):
+        for item in items:
+            if isinstance(item, fmt.Paragraph):
+                self.write_paragraph(item)
+            elif isinstance(item, fmt.Heading):
+                self.write_heading(item)
+            elif isinstance(item, fmt.Image):
+                self.write_image(item)
+            elif isinstance(item, fmt.Table):
+                self.write_table(item)
+            else:
+                self.write_paragraph(fmt.Paragraph(f'{item}'))

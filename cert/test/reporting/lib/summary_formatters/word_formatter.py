@@ -19,12 +19,13 @@ Word summary formatter.
 
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Union, TypeVar
+from typing import List, TypeVar
 
 from docx import Document
 from docx.shared import Inches
 
 from lib.summary_formatters.formatter import SummaryFormatter
+import lib.summary_formatters.format_items as fmt
 
 
 class WordFormatter(SummaryFormatter):
@@ -46,30 +47,52 @@ class WordFormatter(SummaryFormatter):
         finally:
             self.__writer.save(str(summary_path))
 
+    # --------------------------------------------------------------------------
+
     def on_init(self, title: str, summary_utc: str) -> type(None):
-        self.__writer.add_heading(title, 0)
-        self.__writer.add_paragraph(summary_utc)
+        self.write_heading(fmt.Heading(title, 1))
+        self.write_paragraph(fmt.Paragraph(summary_utc))
 
-    def on_device(self, device_id: str, plot_path: Path,
-                  plot_path_relative: Path,
-                  summary: Union[str, type(None)]) -> type(None):
-        self.__writer.add_heading(device_id, 3)
-        self.__writer.add_picture(str(plot_path), Inches(6.18))
-        if summary is not None:
-            self.__writer.add_paragraph(summary)
+    def on_device(self, device_id: str, items: List[fmt.Item]) -> type(None):
+        self.write_heading(fmt.Heading(device_id, 4))
+        self.write_items(items)
+        self.write_separator()
 
-        self.__writer.add_page_break()
-
-    def on_cross_suite(self, plot_path: Path, plot_path_relative: Path,
-                       summary: Union[str, type(None)]) -> type(None):
-        self.__writer.add_heading("Meta Summary", 2)
-        self.__writer.add_picture(str(plot_path), Inches(6.18))
-        if summary is not None:
-            self.__writer.add_paragraph(summary)
+    def on_cross_suite(self, items: List[fmt.Item]) -> type(None):
+        self.write_heading(fmt.Heading('Meta Summary', 2))
+        self.write_items(items)
+        self.write_separator()
 
     def on_errors_available(self, title: str) -> type(None):
-        self.__writer.add_heading(title, 1)
+        self.write_heading(fmt.Heading(title, 2))
 
     def on_device_error(self, device_id: str, summary: str) -> type(None):
-        self.__writer.add_heading(device_id, 3)
-        self.__writer.add_paragraph(summary)
+        self.write_heading(fmt.Heading(device_id, 4))
+        self.write_paragraph(fmt.Paragraph(summary))
+
+    # --------------------------------------------------------------------------
+
+    def write_separator(self):
+        self.__writer.add_page_break()
+
+    def write_heading(self, heading: fmt.Heading):
+        self.__writer.add_heading(heading.text, heading.level - 1)
+
+    def write_paragraph(self, paragraph: fmt.Paragraph):
+        self.__writer.add_paragraph(paragraph.text)
+
+    def write_image(self, image: fmt.Image):
+        self.__writer.add_picture(str(image.path), Inches(6.18))
+
+    def write_table(self, table: fmt.Table):
+        col_count = max(len(row) for row in table.rows)
+        doc_table = self.__writer.add_table(rows=1, cols=col_count)
+
+        header = doc_table.rows[0].cells
+        for i, col in enumerate(table.header):
+            header[i].text = col
+
+        for row in table.rows:
+            cells = doc_table.add_row().cells
+            for i, col in enumerate(row):
+                cells[i].text = col

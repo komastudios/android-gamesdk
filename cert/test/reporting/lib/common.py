@@ -216,3 +216,19 @@ def get_indexable_utc() -> str:
     "a couple more minutes".
     """
     return datetime.utcnow().strftime("%Y%m%d-%H%M%S")
+
+
+# -----------------------------------------------------------------------------
+
+
+class Indexer:
+    """Utility to get incremental indices."""
+
+    def __init__(self):
+        self.__index = 0
+
+    def next_index(self) -> int:
+        """Returns incremental indices starting from 0 (zero)."""
+        index = self.__index
+        self.__index += 1
+        return index

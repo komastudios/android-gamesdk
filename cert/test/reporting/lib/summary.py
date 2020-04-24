@@ -22,9 +22,10 @@ from pathlib import Path
 import re
 from typing import Dict, List, Union
 
-from lib.common import get_indexable_utc, get_readable_utc
+from lib.common import get_indexable_utc, get_readable_utc, Indexer
 from lib.device import DeviceCatalog
 from lib.gdrive import GDrive, GoogleDriveRelatedError
+from lib.graphers.suite_handler import ReportContext
 from lib.graphing import load_suites
 from lib.recipe import Recipe
 from lib.report import Suite
@@ -63,22 +64,9 @@ def __get_summary_config(recipe: Recipe) -> (bool, str, int):
     return False, "", 0, False
 
 
-class Indexer:
-    """Utility to get incremental indices."""
-
-    def __init__(self):
-        self.__index = 0
-
-    def next_index(self) -> int:
-        """Returns incremental indices starting from 0 (zero)."""
-        index = self.__index
-        self.__index += 1
-        return index
-
-
+# TODO(baxtermichael@google.com): remove
 def __make_image_path(folder: Path, prefix: str, indexer: Indexer) -> Path:
     """Creates image paths base on a folder and incremental indices."""
-
     return folder.joinpath("images").joinpath(
         f"{prefix}_{indexer.next_index()}.png")
 
@@ -92,7 +80,7 @@ def __default_summary_name_based_on_directory(directory: str) -> str:
         1) if directory_parts and len(directory_parts.groups()) >= 1 else ""
 
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 
 def __generate_formatted_summary_from_suites(suites_by_name: Dict[str, Suite],
@@ -108,20 +96,16 @@ def __generate_formatted_summary_from_suites(suites_by_name: Dict[str, Suite],
             formatter.on_init(suite_name, get_readable_utc())
             for suite in suites:
                 if suite.handler.can_render_single():
-                    base_name = suite.file.stem
-                    plot_path = __make_image_path(folder, base_name,
-                                                  image_indexer)
-                    formatter.on_device(
-                        suite.identifier(), plot_path,
-                        plot_path.relative_to(folder),
-                        suite.handler.plot(plot_path, figure_dpi))
+                    context = ReportContext(folder, figure_dpi, image_indexer)
+                    items = suite.handler.render_report(context)
+                    formatter.on_device(suite.identifier(), items)
 
 
 def __generate_formatted_report_summaries(suites_by_report: Dict[str, Suite],
                                           folder: Path,
                                           formatter: SummaryFormatter,
                                           figure_dpi: int) -> type(None):
-    for [report, suites_] in suites_by_report.items():
+    for [_, suites_] in suites_by_report.items():
         suites = [s for s in suites_ if s.handler]
         if not suites:
             continue
@@ -133,12 +117,11 @@ def __generate_formatted_report_summaries(suites_by_report: Dict[str, Suite],
 
         for handler_class in suites_by_handler_class:
             if handler_class.handles_entire_report(suites):
-                plot_path = folder.joinpath("images").joinpath(report + ".png")
-                formatter.on_device(
-                    suites[0].identifier(), plot_path,
-                    plot_path.relative_to(folder),
-                    handler_class.render_entire_report(suites, plot_path,
-                                                       figure_dpi))
+                # plot_path = folder.joinpath("images").joinpath(report + ".png")
+                # TODO(baxtermichael@google.com): handle plot path
+                context = ReportContext(folder, figure_dpi)
+                items = handler_class.render_entire_report(context, suites)
+                formatter.on_device(suites[0].identifier(), items)
 
 
 def __generate_formatted_cross_suite_summary(all_suites: List[Suite],
@@ -157,10 +140,10 @@ def __generate_formatted_cross_suite_summary(all_suites: List[Suite],
         if handler_class.can_render_summarization_plot(suites):
             plot_path = __make_image_path(folder, "meta_summary", \
                                           image_indexer)
+            text_summary = handler_class.summarization_plot(suites, \
+                                                 plot_path, figure_dpi)
             formatter.on_cross_suite(
-                plot_path, plot_path.relative_to(folder),
-                handler_class.summarization_plot(suites, \
-                                                 plot_path, figure_dpi))
+                plot_path, plot_path.relative_to(folder), text_summary)
 
 
 def __generate_formatted_summary_from_errors(excluded: List[Path],
@@ -258,13 +241,14 @@ def generate_summary(reports: List[Path],
     return summary_path
 
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 
 def perform_summary_if_enabled(recipe: Recipe, reports_dir: Path) -> type(None):
     """
     When the recipe enables summary, this function performs all the steps to
-    get it produced.
+    get it produced. It also attempts to publish the summary to Google Drive
+    if the recipe is configured with `"summary.publish": true`.
 
     Args:
         recipe: the input dictionary with test arguments.

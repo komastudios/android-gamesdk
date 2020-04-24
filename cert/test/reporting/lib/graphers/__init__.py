@@ -27,6 +27,8 @@ from .choreographer_timestamps_suite_handler import \
 from .cpuset_suite_handler import CpusetSuiteHandler
 from .dependent_read_suite_handler import DependentReadSuiteHandler
 from .depth_clear_suite_handler import DepthClearSuiteHandler
+from .egl_get_frame_timestamps_suite_handler import \
+    EGLGetFrameTimestampsSuiteHandler
 from .egl_presentation_time_suite_handler import EGLPresentationTimeSuiteHandler
 from .file_performance_suite_handler import FilePerformanceSuiteHandler
 from .fill_rate_suite_handler import FillRateSuiteHandler
@@ -53,6 +55,7 @@ HANDLERS = [
     CpusetSuiteHandler, \
     DependentReadSuiteHandler, \
     DepthClearSuiteHandler, \
+    EGLGetFrameTimestampsSuiteHandler, \
     EGLPresentationTimeSuiteHandler, \
     FilePerformanceSuiteHandler, \
     FillRateSuiteHandler, \
