@@ -19,7 +19,7 @@ Word summary formatter.
 
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Union, TypeVar
+from typing import Optional, TypeVar
 
 from docx import Document
 from docx.shared import Inches
@@ -50,9 +50,39 @@ class WordFormatter(SummaryFormatter):
         self.__writer.add_heading(title, 0)
         self.__writer.add_paragraph(summary_utc)
 
+
+        # TODO(baxtermichael@google.com): handle table parsing from markdown
+        table = self.__writer.add_table(rows=1, cols=3)
+        # table.style = 'Table Grid'
+
+        hdr_cells = table.rows[0].cells
+        hdr_cells[0].text = 'Frame Timestamp Support'
+        hdr_cells[1].text = 'Available'
+        hdr_cells[2].text = 'Working'
+
+        records = (
+            ('Requested Present Time', 'Y', 'Y'),
+            ('Requested Present Time', 'Y', 'Y'),
+            ('Rendering Complete Time', 'N', 'n/a'),
+            ('Composition Latch Time', 'Y', 'Y'),
+            ('First Composition Start Time', 'Y', 'N'),
+            ('Last Composition Start Time', 'Y', 'Y'),
+            ('First Composition GPU Finished Time', 'Y', 'Y'),
+            ('Display Present Time', 'Y', 'Y'),
+            ('Dequeue Ready Time', 'Y', 'Y'),
+            ('Reads Done Time', 'Y', 'Y'),
+        )
+
+        for col1, col2, col3 in records:
+            row_cells = table.add_row().cells
+            row_cells[0].text = col1
+            row_cells[1].text = col2
+            row_cells[2].text = col3
+
+
     def on_device(self, device_id: str, plot_path: Path,
                   plot_path_relative: Path,
-                  summary: Union[str, type(None)]) -> type(None):
+                  summary: Optional[str]) -> type(None):
         self.__writer.add_heading(device_id, 3)
         self.__writer.add_picture(str(plot_path), Inches(6.18))
         if summary is not None:
@@ -61,7 +91,7 @@ class WordFormatter(SummaryFormatter):
         self.__writer.add_page_break()
 
     def on_cross_suite(self, plot_path: Path, plot_path_relative: Path,
-                       summary: Union[str, type(None)]) -> type(None):
+                       summary: Optional[str]) -> type(None):
         self.__writer.add_heading("Meta Summary", 2)
         self.__writer.add_picture(str(plot_path), Inches(6.18))
         if summary is not None:

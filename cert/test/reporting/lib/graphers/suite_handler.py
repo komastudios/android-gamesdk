@@ -23,13 +23,23 @@ to have a domain-specific analysis of the suite's data.
 
 from abc import ABC, abstractclassmethod, abstractmethod
 from pathlib import Path
-from typing import List
+from typing import Callable, List, Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 from lib.common import ensure_dir, nanoseconds_to_seconds
 from lib.report import Suite
+import lib.summary_formatters.format_items as fmt
+from lib.common import Indexer
+
+
+class ReportContext():
+    """Context to be passed to a SuiteHandler"""
+    def __init__(self, folder: Path, dpi: int, indexer: Optional[Indexer] = None):
+        self.folder = folder
+        self.dpi = dpi
+        self.indexer = indexer
 
 
 class SuiteHandler(ABC):
@@ -77,34 +87,52 @@ class SuiteHandler(ABC):
         raise NotImplementedError(
             "SuiteHandler subclass must implement can_handle_suite() function")
 
-    def plot(self, plot_file_name: Path, dpi: int):
-        """Plot this suite's graph
+    def plot(self,
+             ctx: ReportContext,
+             plotter: Callable[[], None],
+             title: str = '',
+             path: Optional[Path] = None) -> Path:
+        """Plot and save a graph as a PNG image.
         Args:
-            plot_file_name: save figure PNG image to this file
-            dpi: figures are saved at this DPI
+            ctx: context used to determine dpi and default path to save image
+            plotter: callback function, used to modify the graph
+            title: graph's title
+            path: save figure PNG image to this file
+        Returns:
+            The path to where the image was saved
         """
-        ensure_dir(plot_file_name)
+        if not path:
+            prefix = self.suite.file.stem
+            indexer = ctx.indexer if ctx.indexer else Indexer()
+            path = self.__make_image_path(ctx.folder, prefix, indexer)
+            print(f"prefix: {prefix}")
+
+        ensure_dir(path)
         plt.ioff()
-        plt.suptitle(self.title())
-        summary_str = self.render_plot()
-        plt.savefig(str(plot_file_name), dpi=dpi)
+        plotter()
+        plt.suptitle(title)
+        plt.savefig(str(path), dpi=ctx.dpi)
         plt.close()
-        return summary_str
+        return path
+
+    def __make_image_path(self, folder: Path, prefix: str, indexer: Indexer) -> Path:
+        """Creates image paths base on a folder and incremental indices."""
+        return folder.joinpath("images").joinpath(
+            f"{prefix}_{indexer.next_index()}.png")
 
     @abstractmethod
-    def render_plot(self) -> str:
-        """Subclasses implement this method to render their data to matplotlib
-        Note: Don't call plt.suptitle() or title() - that's already been done.
-        You're just rendering data to 1 or more figures.
+    def render_report(self, ctx: ReportContext) -> List[fmt.Item]:
+        """Subclasses implement this method to render their portion of the
+        report document.
+        Args:
+            ctx: context used to determine dpi and default paths to save images
         Return:
-            (optional) a summary string for a given dataset
-            If a report has some interesting data (outlier behavior,
-            failures, etc) generate a summary string here and return it.
-            Otherwise, returning None or an empty string will result in
-            nothing printed.
+            List of items that can be written out by the document Formatter.
+            This can include Headers, Paragraphs, Images, Tables, etc., as well
+            as raw strings.
         """
         raise NotImplementedError(
-            "SuiteHandler subclass must implement render_plot() function")
+            "SuiteHandler subclass must implement render_report() function")
 
 
     @classmethod
@@ -123,18 +151,18 @@ class SuiteHandler(ABC):
 
     @classmethod
     def render_entire_report(cls, suites: List['SuiteHandler'],
-                             plot_file_name: Path, dpi: int) -> str:
+                             plot_file_name: Path, dpi: int) -> str: # TODO(baxtermichael@google.com)
         ensure_dir(plot_file_name)
         plt.ioff()
         # TODO(tmillican@google.com): Let report author give a name/description
         plt.suptitle(suites[0].identifier())
-        summary_str = cls.render_report(suites)
+        summary_str = cls.render_report_legacy(suites)
         plt.savefig(str(plot_file_name), dpi=dpi)
         plt.close()
         return summary_str
 
     @classmethod
-    def render_report(cls, raw_suites: List['SuiteHandler']) -> str:
+    def render_report_legacy(cls, raw_suites: List['SuiteHandler']) -> str:
         """Kept for backward compatibility."""
         return ''
 
@@ -172,7 +200,8 @@ class SuiteHandler(ABC):
         )
 
     @abstractclassmethod
-    def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
+    def render_summarization_plot(
+            cls, suites: List['SuiteHandler']) -> Optional[str]:
         """Render a plot representing multiple datasets
 
         Subclass of SuiteHandler that return True for

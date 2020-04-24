@@ -161,7 +161,7 @@ class SingleCoreComparisonHandler(SuiteHandler):
         return False
 
     @classmethod
-    def render_report(cls, raw_suites: List['SuiteHandler']):
+    def render_report_legacy(cls, raw_suites: List['SuiteHandler']):
         suites = [
             s.handler for s in raw_suites
             if isinstance(s.handler, SingleCoreComparisonHandler)]

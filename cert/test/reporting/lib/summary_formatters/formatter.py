@@ -18,7 +18,9 @@
 
 from abc import ABC, abstractclassmethod, abstractmethod
 from pathlib import Path
-from typing import ContextManager, TypeVar, Union
+from typing import ContextManager, List, Optional, TypeVar
+
+import lib.summary_formatters.format_items as fmt
 
 
 class SummaryFormatter(ABC):
@@ -58,10 +60,11 @@ class SummaryFormatter(ABC):
         raise NotImplementedError(
             "SummaryFormatter subclass must implement on_init()")
 
+    # def on_device(self, device_id: str, plot_path: Path,
+    #               plot_path_relative: Path,
+    #               summary: Optional[str]) -> type(None):
     @abstractmethod
-    def on_device(self, device_id: str, plot_path: Path,
-                  plot_path_relative: Path,
-                  summary: Union[str, type(None)]) -> type(None):
+    def on_device(self, device_id: str, items: List[fmt.Item]) -> type(None):
         """Writes formatted results for a given device.
 
         Args:
@@ -76,8 +79,7 @@ class SummaryFormatter(ABC):
             "SummaryFormatter subclass must implement on_device()")
 
     @abstractmethod
-    def on_cross_suite(self, plot_path: Path, plot_path_relative: Path,
-                       summary: Union[str, type(None)]) -> type(None):
+    def on_cross_suite(self, items: List[fmt.Item]) -> type(None):
         """Writes a formatted cross suite summary to the report.
 
         Args:
