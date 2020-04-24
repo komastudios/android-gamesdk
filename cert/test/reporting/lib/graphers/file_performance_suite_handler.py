@@ -14,15 +14,23 @@
 # limitations under the License.
 #
 
-from typing import List, Tuple
+from typing import List
 
 import sys
 import math
+
 import matplotlib.pyplot as plt
 
-from lib.common import nanoseconds_to_seconds
-from lib.report import Datum, Suite
-from lib.graphers.suite_handler import SuiteHandler
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, SummaryContext
+import lib.summary_formatters.format_items as fmt
+
+
+class FilePerformanceSummarizer(SuiteSummarizer):
+    """Suite summarizer for IO Performance operation."""
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return FilePerformanceSuiteHandler
 
 
 class FilePerformanceSuiteHandler(SuiteHandler):
@@ -34,18 +42,8 @@ class FilePerformanceSuiteHandler(SuiteHandler):
         ]
 
     @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return "Workload Configuration Test" in suite.name
-
-    @classmethod
-    def can_render_summarization_plot(cls,
-                                      suites: List['SuiteHandler']) -> bool:
-        return False
-
-    @classmethod
-    def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
-        return None
-
+    def can_handle_datum(cls, datum: Datum):
+        return "Workload Configuration Test" in datum.suite_id
 
     def do_rendering(self, graphs):
         fig = plt.figure()
@@ -88,7 +86,7 @@ class FilePerformanceSuiteHandler(SuiteHandler):
                 plt.plot(procs[thread]['time'], procs[thread]['value'], ls = ls)
 
 
-    def render_plot(self):
+    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
         graphs = []
 
         for d in self.our_data:
@@ -120,4 +118,8 @@ class FilePerformanceSuiteHandler(SuiteHandler):
             graphs[-1]["procs"][thread_id]['value'].append(value)
             graphs[-1]["max_value"] = max(graphs[-1]["max_value"], value)
 
-        self.do_rendering(graphs)
+        def graph():
+            self.do_rendering(graphs)
+
+        image = fmt.Image(self.plot(ctx, graph), self.device())
+        return [image]

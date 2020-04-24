@@ -20,8 +20,17 @@ from the Vulkan Mprotect test
 from typing import List
 
 from lib.graphers.common_graphers import graph_functional_test_result
-from lib.graphers.suite_handler import SuiteHandler
-from lib.report import Suite
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, SummaryContext
+import lib.summary_formatters.format_items as fmt
+
+
+class MProtectSummarizer(SuiteSummarizer):
+    """Suite summarizer for the Vulkan mprotect test."""
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return MProtectSuiteHandler
+
 
 class MProtectSuiteHandler(SuiteHandler):
     """Implementation of SuiteHandler to process report data
@@ -36,19 +45,10 @@ class MProtectSuiteHandler(SuiteHandler):
                 self.mprotect_score = datum.get_custom_field("mprotect.score")
 
     @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return "Vulkan memory write protection" in suite.name
+    def can_handle_datum(cls, datum: Datum):
+        return "Vulkan memory write protection" in datum.suite_id
 
-    @classmethod
-    def can_render_summarization_plot(cls,
-                                      suites: List['SuiteHandler']) -> bool:
-        return False
-
-    @classmethod
-    def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
-        return None
-
-    def render_plot(self) -> str:
+    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
         result_index = 0
         msg = None
 
@@ -78,7 +78,9 @@ class MProtectSuiteHandler(SuiteHandler):
             result_index = 1
             msg = f"Unexpected result: ({self.mprotect_score})"
 
-        graph_functional_test_result(result_index,
-                                     ['UNAVAILABLE', 'UNDETERMINED', 'PASSED'])
+        def graph():
+            graph_functional_test_result(
+                result_index, ['UNAVAILABLE', 'UNDETERMINED', 'PASSED'])
 
-        return msg
+        image = fmt.Image(self.plot(ctx, graph), self.device())
+        return [image, fmt.Text(msg)]

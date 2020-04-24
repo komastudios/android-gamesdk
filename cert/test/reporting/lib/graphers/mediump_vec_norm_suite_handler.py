@@ -18,30 +18,30 @@ reports from mediump vec normalization test
 """
 
 from typing import List
+
 import matplotlib.pyplot as plt
 
-from lib.graphers.suite_handler import SuiteHandler
-from lib.report import Suite
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, SummaryContext
+import lib.summary_formatters.format_items as fmt
+
+
+class MediumPVecNormSummarizer(SuiteSummarizer):
+    """Suite summarizer for Medium Precision Vec Norm operation."""
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return MediumPVecNormSuiteHandler
 
 
 class MediumPVecNormSuiteHandler(SuiteHandler):
-    """SuiteHandler implementation for schedule affinity operation test
+    """SuiteHandler implementation for Medium Precision Vec Norm operation test.
     """
 
     @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return "MediumPVecNormalizationGLES3Operation" in suite.data_by_operation_id
+    def can_handle_datum(cls, datum: Datum):
+        return "MediumPVecNormalizationGLES3Operation" in datum.operation_id
 
-    @classmethod
-    def can_render_summarization_plot(cls,
-                                      suites: List['SuiteHandler']) -> bool:
-        return False
-
-    @classmethod
-    def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
-        return None
-
-    def render_plot(self) -> str:
+    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
         my_data = self.suite.data_by_operation_id[
             "MediumPVecNormalizationGLES3Operation"]
 
@@ -63,16 +63,18 @@ class MediumPVecNormSuiteHandler(SuiteHandler):
                     "mediump_vec_normalization_result.squared_magnitude")
                 errors_by_stage[test].append(squared_mag)
 
-        for i, stage in enumerate(stages):
-            plt.subplot(len(stages), 1, i + 1)
+        def graph():
+            for i, stage in enumerate(stages):
+                plt.subplot(len(stages), 1, i + 1)
 
-            errors = errors_by_stage[stage]
-            errors.sort()
-            bins = list({int(e) for e in errors})
-            bins.sort()
+                errors = errors_by_stage[stage]
+                errors.sort()
+                bins = list({int(e) for e in errors})
+                bins.sort()
 
-            plt.hist(errors, len(bins))
-            plt.xlabel("squared magnitude (rgb)")
-            plt.ylabel(f"{stage}\nerror count")
+                plt.hist(errors, len(bins))
+                plt.xlabel("squared magnitude (rgb)")
+                plt.ylabel(f"{stage}\nerror count")
 
-        return None
+        image = fmt.Image(self.plot(ctx, graph), self.device())
+        return [image]
