@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e33a7dfc_e615cc70",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-04-24T22:54:15Z",
+      "side": 1,
+      "message": "you could return unit32_t from NextValuePair",
+      "revId": "f52ea7a19e5c83c8082edbed3008384647555b5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "de59cb99_b5f45248",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 477,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-04-24T22:54:15Z",
+      "side": 1,
+      "message": "Remove the log if you don\u0027t need it.",
+      "revId": "f52ea7a19e5c83c8082edbed3008384647555b5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "34dcc1cc_76ade32b",
+        "filename": "bender/bender-base/app/src/main/shaders/sdf.vert",
+        "patchSetId": 2
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1376737
+      },
+      "writtenOn": "2020-04-24T22:54:15Z",
+      "side": 1,
+      "message": "I would explore a way to include this struct from a header file that is shared with the C++ code",
+      "revId": "f52ea7a19e5c83c8082edbed3008384647555b5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
