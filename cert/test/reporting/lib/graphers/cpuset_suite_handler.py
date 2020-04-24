@@ -22,8 +22,19 @@ from typing import List
 import matplotlib.pyplot as plt
 import numpy as np
 
-from lib.graphers.suite_handler import SuiteHandler
-from lib.report import Datum, Suite
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, SummaryContext, Suite
+import lib.summary_formatters.format_items as fmt
+
+
+class CpusetSuiteSummarizer(SuiteSummarizer):
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return CpusetSuiteHandler
+
+    @classmethod
+    def can_handle_datum(cls, datum: Datum):
+        return 'Sane CPUSET' in datum.suite_id
 
 
 class CpusetSuiteHandler(SuiteHandler):
@@ -41,27 +52,14 @@ class CpusetSuiteHandler(SuiteHandler):
         self.cpuset_setup_total = 0
         self.cpuset_setup_error = 0
 
-    @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return 'Sane CPUSET' in suite.name
-
-    @classmethod
-    def can_render_summarization_plot(cls,
-                                      suites: List['Suite']) -> bool:
-        return False
-
-    @classmethod
-    def render_summarization_plot(cls, suites: List['Suite']) -> str:
-        return None
-
-    def analize_setup(self, datum: Datum):
+    def analyze_setup(self, datum: Datum):
         """Checks success/failure state after setting core affinity to a
         thread. Keeps counters of setup total vs. setup failures"""
         if not datum.get_custom_field("cpuset_enabled"):
             self.cpuset_setup_error += 1
         self.cpuset_setup_total += 1
 
-    def analize_in_progress_event(self, datum: Datum,
+    def analyze_in_progress_event(self, datum: Datum,
                                   timestamp_in_seconds: float):
         """Inspects contents of an in-progress datum, filling the proper
         coordinates (OK, error)."""
@@ -72,7 +70,7 @@ class CpusetSuiteHandler(SuiteHandler):
             self.xs_err.append(timestamp_in_seconds)
             self.ys_err.append(0)
 
-    def analize_test_results(self, datum: Datum):
+    def analyze_test_results(self, datum: Datum):
         """Captures the 'sane' core numbering."""
         self.bigger_cores_first = \
             datum.get_custom_field('bigger_cores_first')
@@ -128,18 +126,22 @@ class CpusetSuiteHandler(SuiteHandler):
 
         return f'{sanity} {cpuset_enabled}'
 
-    def render_plot(self) -> str:
+    def render_report(self, ctx: SummaryContext) -> List[fmt.Item]:
+
         x_axis_as_seconds = self.get_x_axis_as_seconds()
         for i, datum in enumerate(self.data):
             if datum.operation_id == 'SaneCpusetOperation':
                 stage = datum.get_custom_field('stage')
                 if stage == 'Thread setup':
-                    self.analize_setup(datum)
+                    self.analyze_setup(datum)
                 elif stage == 'Thread in progress':
-                    self.analize_in_progress_event(datum, x_axis_as_seconds[i])
+                    self.analyze_in_progress_event(datum, x_axis_as_seconds[i])
                 elif stage == 'Test summary':
-                    self.analize_test_results(datum)
+                    self.analyze_test_results(datum)
 
-        self.format_figure_and_axes(x_axis_as_seconds)
+        def graph():
+            self.format_figure_and_axes(x_axis_as_seconds)
 
-        return self.compose_summary()
+        image = fmt.Image(self.plot(ctx, graph), self.device())
+        text = fmt.Paragraph(self.compose_summary())
+        return [image, text]

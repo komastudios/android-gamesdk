@@ -17,15 +17,10 @@
 reports.
 """
 
-import json
 import platform
-from typing import Dict, List
 
 import matplotlib
 import matplotlib.pyplot as plt
-
-from lib.report import BuildInfo, Datum, Suite
-from lib.graphers.loader import create_suite_handler
 
 #-------------------------------------------------------------------------------
 
@@ -43,55 +38,3 @@ plt.rc('xtick', labelsize=SMALL_SIZE)  # fontsize of the tick labels
 plt.rc('ytick', labelsize=SMALL_SIZE)  # fontsize of the tick labels
 plt.rc('legend', fontsize=SMALL_SIZE)  # legend fontsize
 plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
-
-# ------------------------------------------------------------------------------
-
-
-class UnsupportedReportFormatError(Exception):
-    """Exception raised when a requesting an unsupported format for
-    saving the report.
-    """
-
-
-#-------------------------------------------------------------------------------
-
-
-def load_suites(report_file) -> List[Suite]:
-    """Load and configure suites from a given report JSON file
-    Args:
-        report_file: Report JSON file
-    Returns:
-        list of Suite instances for which a suitable SuiteHandler was found
-    """
-    build: BuildInfo = None
-    suite_data: Dict[str, List[Datum]] = {}
-    suites: List[Suite] = []
-
-    with open(report_file) as file:
-        for i, line in enumerate(file):
-            try:
-                line_dict = json.loads(line)
-                # first line is the build info, every other is a report datum
-                if i == 0:
-                    build = BuildInfo.from_json(line_dict)
-                else:
-                    datum = Datum.from_json(line_dict)
-                    suite_data.setdefault(datum.suite_id, []).append(datum)
-            except json.decoder.JSONDecodeError as ex:
-                print(f'Report file {report_file}, line {i}: skipping due to '
-                      f'a JSON parsing error "{ex}":\n{line}')
-
-    for suite_name in suite_data:
-        data = suite_data[suite_name]
-        suite = Suite(suite_name, build, data, report_file)
-
-        suite.handler = create_suite_handler(suite)
-        if suite.name and not suite.handler:
-            print(
-                f"[INFO]\tFound no handler for suite_id" \
-                f" \"{suite.name}\" in \"{report_file}\""
-            )
-
-        suites.append(suite)
-
-    return suites

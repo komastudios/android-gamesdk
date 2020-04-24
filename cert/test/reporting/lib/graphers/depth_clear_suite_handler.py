@@ -20,8 +20,19 @@ from typing import List
 
 import matplotlib.pyplot as plt
 
-from lib.report import Suite
-from lib.graphers.suite_handler import SuiteHandler
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, SummaryContext
+import lib.summary_formatters.format_items as fmt
+
+
+class DepthClearSummarizer(SuiteSummarizer):
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return DepthClearSuiteHandler
+
+    @classmethod
+    def can_handle_datum(cls, datum: Datum):
+        return 'DepthClearGLES3Operation' in datum.operation_id
 
 
 class DepthClearSuiteHandler(SuiteHandler):
@@ -45,20 +56,7 @@ class DepthClearSuiteHandler(SuiteHandler):
                 self.depth_bits = depth_bits
                 break
 
-    @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return "DepthClearGLES3Operation" in suite.data_by_operation_id
-
-    @classmethod
-    def can_render_summarization_plot(cls,
-                                      suites: List['SuiteHandler']) -> bool:
-        return False
-
-    @classmethod
-    def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
-        return None
-
-    def render_plot(self):
+    def render_report(self, ctx: SummaryContext) -> List[fmt.Item]:
         errors_at_depth = []
         successes_at_depth = []
 
@@ -72,26 +70,25 @@ class DepthClearSuiteHandler(SuiteHandler):
                 else:
                     errors_at_depth.append(depth)
 
-        plt.subplot(1, 2, 1)
-        plt.ylabel("Errors")
-        plt.xlabel("Depth Clear Value")
-        if errors_at_depth:
-            plt.hist(errors_at_depth, color=(0.6, 0.3, 0.3))
-        else:
-            plt.xticks([])
-            plt.yticks([])
+        def graph():
+            plt.subplot(1, 2, 1)
+            plt.ylabel("Errors")
+            plt.xlabel("Depth Clear Value")
+            if errors_at_depth:
+                plt.hist(errors_at_depth, color=(0.6, 0.3, 0.3))
+            else:
+                plt.xticks([])
+                plt.yticks([])
 
-        plt.subplot(1, 2, 2)
-        plt.ylabel("Success")
-        plt.xlabel("Depth Clear Value")
-        if successes_at_depth:
-            plt.hist(successes_at_depth, color=(0.3, 0.6, 0.3))
-        else:
-            plt.xticks([])
-            plt.yticks([])
-
-
-        plt.subplots_adjust(hspace=1)
+            plt.subplot(1, 2, 2)
+            plt.ylabel("Success")
+            plt.xlabel("Depth Clear Value")
+            if successes_at_depth:
+                plt.hist(successes_at_depth, color=(0.3, 0.6, 0.3))
+            else:
+                plt.xticks([])
+                plt.yticks([])
+            plt.subplots_adjust(hspace=1)
 
         message = ""
         if not errors_at_depth:
@@ -105,4 +102,5 @@ class DepthClearSuiteHandler(SuiteHandler):
         else:
             message += f"\nRan on {int(self.depth_bits)}-bits; requested 32"
 
-        return message
+        image = fmt.Image(self.plot(ctx, graph), self.device())
+        return [image, fmt.Paragraph(message)]

@@ -23,8 +23,19 @@ from matplotlib.ticker import FormatStrFormatter
 import numpy as np
 
 from lib.common import nanoseconds_to_seconds
-from lib.graphers.suite_handler import SuiteHandler
-from lib.report import Datum, Suite
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, SummaryContext
+import lib.summary_formatters.format_items as fmt
+
+
+class FillRateSummarizer(SuiteSummarizer):
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return FillRateSuiteHandler
+
+    @classmethod
+    def can_handle_datum(cls, datum: Datum):
+        return 'GPU fill rate' in datum.suite_id
 
 
 class FillRateSuiteHandler(SuiteHandler):
@@ -44,19 +55,7 @@ class FillRateSuiteHandler(SuiteHandler):
         self.__xs_frame = []
         self.__ys_fps = []
 
-    @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return 'GPU fill rate' in suite.name
-
-    @classmethod
-    def can_render_summarization_plot(cls, suites: List['Suite']) -> bool:
-        return False
-
-    @classmethod
-    def render_summarization_plot(cls, suites: List['Suite']) -> str:
-        return None
-
-    def render_plot(self) -> str:
+    def render_report(self, ctx: SummaryContext) -> List[fmt.Item]:
         for datum in self.data:
             if datum.operation_id == 'FillRateGLES3Operation':
                 self.__quad_data_points(datum)
@@ -65,9 +64,8 @@ class FillRateSuiteHandler(SuiteHandler):
 
         self.__wrapup_data_points()
 
-        self.__add_charts()
-
-        return None
+        image = fmt.Image(self.plot(ctx, self.__add_charts), self.device())
+        return [image]
 
     def __quad_data_points(self, quad_datum: Datum) -> type(None):
         """Segregates fill rate data points and appends these to collections.

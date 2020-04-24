@@ -23,28 +23,27 @@ to have a domain-specific analysis of the suite's data.
 
 from abc import ABC, abstractclassmethod, abstractmethod
 from pathlib import Path
-from typing import List
+from typing import Callable, List, Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 from lib.common import ensure_dir, nanoseconds_to_seconds
-from lib.report import Suite
+from lib.report import Datum, SummaryContext, Suite
+import lib.summary_formatters.format_items as fmt
+from lib.common import Indexer
+
+
+# ------------------------------------------------------------------------------
 
 
 class SuiteHandler(ABC):
-    """SuiteHandler is handles data for a report suite
-    Custom suite handler implemenations may select to render analysis
+    """SuiteHandler handles data for a report suite.
+    Custom suite handler implementations may select to render analysis
     and plots, etc, of collections of Datum instances of the same suite
 
-    Custom implementations at minimum need to implement:
-        - can_handle_suite
-        - render_plt
-
-    Custom implementations may choose to implement:
-        - can_render_summarization_plot
-        - render_summarization_plot (if the above is implemented)
-
+    Custom implementations need to implement:
+        - render_report
     """
 
     def __init__(self, suite: Suite):
@@ -63,81 +62,19 @@ class SuiteHandler(ABC):
         self.cpu_ids = list(self.data_by_cpu_id.keys())
         self.cpu_ids.sort()
 
-    # TODO(tmillican@google.com): Refactor into single/multiple versions
-    @abstractclassmethod
-    def can_handle_suite(cls, suite: Suite):
-        """Check if this SuiteHandler class can be used to handle this
-        suite's data
-        Args:
-            suite: The suite in question
-        Returns:
-            True if this SuiteHandler class should handle
-                the contents of the provided Suite instance
-        """
-        raise NotImplementedError(
-            "SuiteHandler subclass must implement can_handle_suite() function")
-
-    def plot(self, plot_file_name: Path, dpi: int):
-        """Plot this suite's graph
-        Args:
-            plot_file_name: save figure PNG image to this file
-            dpi: figures are saved at this DPI
-        """
-        ensure_dir(plot_file_name)
-        plt.ioff()
-        plt.suptitle(self.title())
-        summary_str = self.render_plot()
-        plt.savefig(str(plot_file_name), dpi=dpi)
-        plt.close()
-        return summary_str
-
     @abstractmethod
-    def render_plot(self) -> str:
-        """Subclasses implement this method to render their data to matplotlib
-        Note: Don't call plt.suptitle() or title() - that's already been done.
-        You're just rendering data to 1 or more figures.
+    def render_report(self, ctx: SummaryContext) -> List[fmt.Item]:
+        """Subclasses implement this method to render their portion of the
+        report document.
+        Args:
+            ctx: context used to determine dpi and default paths to save images
         Return:
-            (optional) a summary string for a given dataset
-            If a report has some interesting data (outlier behavior,
-            failures, etc) generate a summary string here and return it.
-            Otherwise, returning None or an empty string will result in
-            nothing printed.
+            List of items that can be written out by the document Formatter.
+            This can include Headers, Paragraphs, Images, Tables, etc., as well
+            as raw strings.
         """
         raise NotImplementedError(
-            "SuiteHandler subclass must implement render_plot() function")
-
-
-    @classmethod
-    def handles_entire_report(cls, suites: List['Suite']):
-        """Check if this suite handler wants to parse all suites as a single
-        graph.
-        """
-        return False
-
-    #@abstractclassmethod
-    @classmethod
-    def can_render_single(cls):
-        """Check if this suite handler wants to draw its own plot.
-        """
-        return True
-
-    @classmethod
-    def render_entire_report(cls, suites: List['SuiteHandler'],
-                             plot_file_name: Path, dpi: int) -> str:
-        ensure_dir(plot_file_name)
-        plt.ioff()
-        # TODO(tmillican@google.com): Let report author give a name/description
-        plt.suptitle(suites[0].identifier())
-        summary_str = cls.render_report(suites)
-        plt.savefig(str(plot_file_name), dpi=dpi)
-        plt.close()
-        return summary_str
-
-    @classmethod
-    def render_report(cls, raw_suites: List['SuiteHandler']) -> str:
-        """Kept for backward compatibility."""
-        return ''
-
+            "SuiteHandler subclass must implement render_report() function")
 
     def title(self):
         """The title of the figure rendered in render_plot()
@@ -146,68 +83,32 @@ class SuiteHandler(ABC):
         """
         return self.suite.description()
 
-    @abstractclassmethod
-    def can_render_summarization_plot(cls,
-                                      suites: List['SuiteHandler']) -> bool:
-        """Can this SuiteHandler class render summarization plots for a
-        homogenous collection of Suites
-
-        Implementations could, for example, render a histogram of failures
-        by core count, or show which CPU architectures result in some
-        outlier result.
-
-        If a SuiteHandler implementation returns True here, it *must*
-        implement render_summarization_plot()
-
-        Args:
-            suites: Multiple suites of data, each of which have SuiteHandlers
-            of the same class (meaning, they represent different result data)
-            from the same test.
-        Return:
-            True to indicate that a summarization plot can be rendered
-        """
-        raise NotImplementedError(
-            "SuiteHandler subclass must implement "\
-                "can_render_summarization_plot() function"
-        )
-
-    @abstractclassmethod
-    def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
-        """Render a plot representing multiple datasets
-
-        Subclass of SuiteHandler that return True for
-        can_render_summarization_plot() must implement this method.
-
-        Implementations could, for example, render a histogram of failures
-        by core count, or show which CPU architectures result in some
-        outlier result.
-
-        Args:
-            suites: Multiple suites of data, each of which have SuiteHandlers
-            of the same class (meaning, they represent different result data)
-            from the same test.
-        Return:
-            summary string for display in the document, or None if no
-            summary is required
-        """
-        raise NotImplementedError(
-            "SuiteHandler subclass must implement "\
-                "render_summarization_plot() function"
-        )
-
-    @classmethod
-    def summarization_plot(cls, suites: List['SuiteHandler'],
-                           plot_file_name: Path, dpi: int) -> str:
-        """Generates a summarization plot from the provided suites,
-        calling this class's render_summarization_plot implementation"""
-        ensure_dir(plot_file_name)
-        plt.ioff()
-        summary_str = cls.render_summarization_plot(suites)
-        plt.savefig(str(plot_file_name), dpi=dpi)
-        plt.close()
-        return summary_str
+    def device(self):
+        """Returns the device identifier for the Suite bound to the handler"""
+        return self.suite.identifier()
 
     # convenience functions
+
+    def plot(self,
+             ctx: SummaryContext,
+             plotter: Callable[[], None],
+             title: str = '',
+             path: Optional[Path] = None) -> Path:
+        """Convenience method to plot and save a graph as a PNG image.
+        Args:
+            ctx: context used to determine dpi and default path to save image
+            plotter: callback function, used to modify the graph
+            title: graph's title
+            path: save figure PNG image to this file
+        Returns:
+            The path to where the image was saved
+        """
+        if not path:
+            prefix = self.suite.file.stem
+            path = make_image_path(ctx.folder, prefix, ctx.indexer)
+
+        make_plot(path, title, ctx.dpi, plotter)
+        return path
 
     def get_xs_as_nanoseconds(self) -> List[int]:
         """Helper function to get an array of datum timestamps as nanoseconds"""
@@ -221,3 +122,119 @@ class SuiteHandler(ABC):
     def get_ys(self) -> List[float]:
         """Helper function to get an array of datum numeric values"""
         return np.array([d.numeric_value for d in self.data])
+
+
+# ------------------------------------------------------------------------------
+
+
+class SuiteSummarizer:
+    def __init__(self, reports: List[Suite]):
+        """Gets a list of all reports (copies) it can handle.
+        Gives all reports with all datum that pass the filter_datum test
+        (by default, those that pass can_handle_datum).
+        """
+        self.reports = reports
+        for report in reports:
+            report.data = list(filter(self.filter_datum, report.data))
+        default_handler = self.default_handler()
+        self.suite_handlers = [default_handler(r) for r in self.reports]
+
+    def title(self) -> str:
+        if self.suite_handlers:
+            return self.suite_handlers[0].suite.name.title()
+        return ""
+
+    @abstractclassmethod
+    def default_handler(cls) -> SuiteHandler:
+        """If more than one SuiteHandler is needed, override __init__."""
+        raise NotImplementedError(
+            "SuiteSummarizer subclass must implement default_handler() function")
+
+    @classmethod
+    def filter_datum(cls, datum: Datum):
+        """Which data to keep in a report"""
+        return cls.can_handle_datum(datum)
+
+    @abstractclassmethod
+    def can_handle_datum(cls, datum: Datum):
+        """Determines which datum to include when Suites are passed to the
+        __init__ method (thereby also determining which reports are considered).
+        """
+        raise NotImplementedError(
+            "SuiteSummarizer subclass must implement can_handle_datum() function")
+
+    @classmethod
+    def can_handle_report(cls, report: Suite): # TODO: change to Report
+        """An instance _may_ override this if it's desirable"""
+        for datum in report.data:
+            if cls.can_handle_datum(datum):
+                return True
+        return False
+
+    def render_summary(self, ctx: SummaryContext) -> List[fmt.Item]:
+        """An instance _may_ override this if it's desirable"""
+        summary = []
+        for handler in self.suite_handlers:
+            summary.append(fmt.Heading(handler.suite.identifier(), 2))
+            summary.extend(handler.render_report(ctx))
+            summary.append(fmt.Separator())
+        return summary
+
+    def plot(self,
+             ctx: SummaryContext,
+             plotter: Callable[[], None],
+             title: str = '',
+             path: Optional[Path] = None) -> Path:
+        """Plot and save a graph as a PNG image.
+        Args:
+            ctx: context used to determine dpi and default path to save image
+            plotter: callback function, used to modify the graph
+            title: graph's title
+            path: save figure PNG image to this file
+        Returns:
+            The path to where the image was saved
+        """
+        if not path:
+            # TODO(baxtermichael@google.com): consider using title as URI prefix
+            path = make_image_path(ctx.folder, 'summary', ctx.indexer)
+
+        make_plot(path, title, ctx.dpi, plotter)
+        return path
+
+
+# ------------------------------------------------------------------------------
+
+
+def make_image_path(folder: Path,
+                      prefix: str,
+                      indexer: Optional[Indexer] = None) -> Path:
+    """Creates an image path based on folder, prefix and optional increment.
+        Args:
+            folder: path relative to where script is run
+            prefix: the file name prefix (example: "folder/prefix_1.png")
+            indexer: optional indexer for incrementing the prefix name to avoid
+                name collision
+        Returns:
+            The path where a png can be saved.
+        """
+    name = f'{prefix}'
+    if indexer:
+        name += f'_{indexer.next_index()}'
+    return folder.joinpath("images").joinpath(f'{name}.png')
+
+
+def make_plot(path: Path, title: str, dpi: int, plotter: Callable[[], None]):
+    """Plot and save a graph as a PNG image.
+    Args:
+        path: save figure PNG image to this file
+        title: graph's title
+        dpi: resolution for image
+        plotter: callback function, used to modify the graph
+    """
+    ensure_dir(path)
+    plt.ioff()
+    plotter()
+    if title:
+        plt.suptitle(title)
+    plt.savefig(str(path), dpi=dpi)
+    plt.close()
