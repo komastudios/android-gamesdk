@@ -32,34 +32,27 @@ import lib.graphers
 from lib.recipe import Recipe
 
 from lib.devicefarm import DeploymentTarget
-from lib.report import Suite
-from lib.graphers.suite_handler import SuiteHandler
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, SummaryContext
+import lib.summary_formatters.format_items as fmt
 from run import RECIPE_DEFAULTS
 
 
-class FakeOperationSuiteHandler(SuiteHandler):
-    """SuiteHandler implementation for FakeOperation
-    """
+class FakeOperationSummarizer(SuiteSummarizer):
+    """Suite summarizer for the FakeOperation test."""
 
     @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return "FakeOperation" in suite.name
+    def default_handler(cls) -> SuiteHandler:
+        return FakeOperationSuiteHandler
 
-    @classmethod
-    def can_render_summarization_plot(cls,
-                                      suites: List['SuiteHandler']) -> bool:
-        return True
-
-    @classmethod
-    def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
-
+    def render_plot(self):
         # fake summarization plot - just sum up counts
         start_count = 0
         wait_start_count = 0
         wait_end_count = 0
         stop_ordered_count = 0
         heartbeat_count = 0
-        for suite in suites:
+        for suite in self.suites:
             our_data = [
                 datum for datum in suite.data
                 if datum.operation_id == "FakeOperation"
@@ -87,10 +80,28 @@ class FakeOperationSuiteHandler(SuiteHandler):
             ["Start", "WaitStart", "Heartbeat", "StopOrdered", "WaitFinished"])
         plt.xlabel("Event Counts")
 
-        return "Summarization Looks Fantastic"
+    def render_synthesis(self, ctx: SummaryContext) -> List[fmt.Item]:
+        image_path = self.plot(ctx, self.render_plot)
+        image = fmt.Image(image_path)
+        text = fmt.Text("Summarization Looks Fantastic")
+        return [image, text]
 
-    def render_plot(self) -> str:
 
+class FakeOperationSuiteHandler(SuiteHandler):
+    """SuiteHandler implementation for FakeOperation
+    """
+
+    @classmethod
+    def can_handle_datum(cls, datum: Datum):
+        return "FakeOperation" in datum.suite_id
+
+    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
+        image_path = self.plot(ctx, self.render_plot)
+        image = fmt.Image(image_path, self.device())
+        text = fmt.Text("Everything Looks Fine")
+        return [image, text]
+
+    def render_plot(self):
         our_data = [
             datum for datum in self.data
             if datum.operation_id == "FakeOperation"
@@ -124,10 +135,8 @@ class FakeOperationSuiteHandler(SuiteHandler):
             ["Start", "WaitStart", "Heartbeat", "StopOrdered", "WaitFinished"])
         plt.xlabel("Event Counts")
 
-        return "Everything Looks Fine"
 
-
-lib.graphers.HANDLERS.append(FakeOperationSuiteHandler)
+lib.graphers.SUMMARIZERS.append(FakeOperationSummarizer)
 
 
 class TestReportGeneration(unittest.TestCase):

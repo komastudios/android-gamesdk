@@ -24,8 +24,9 @@ from matplotlib.ticker import FormatStrFormatter
 import numpy as np
 
 from lib.common import nanoseconds_to_seconds
-from lib.graphers.suite_handler import SuiteHandler
-from lib.report import Datum, Suite
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, SummaryContext, Suite
+import lib.summary_formatters.format_items as fmt
 
 
 class ThreadChartData:
@@ -78,6 +79,13 @@ class TemperatureChartData:
                 'temperature_info.max_cpu_temperature') / 1000)
 
 
+class CalculateWaitPiSummarizer(SuiteSummarizer):
+    """Suite summarizer for the calculate pi & wait operation."""
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return CalculateWaitPiSuiteHandler
+
+
 class CalculateWaitPiSuiteHandler(SuiteHandler):
     """Grapher for the calculate pi & wait operation."""
 
@@ -91,6 +99,10 @@ class CalculateWaitPiSuiteHandler(SuiteHandler):
         self.__normalize = None
 
         self.__classify_data_by_chart()
+
+    @classmethod
+    def can_handle_datum(cls, datum: Datum):
+        return "WaitForPI" in datum.suite_id
 
     def __classify_data_by_chart(self) -> type(None):
         """Visits all reported data to enrich some details for the graph."""
@@ -135,35 +147,28 @@ class CalculateWaitPiSuiteHandler(SuiteHandler):
                 TemperatureChartData(self.__normalize)
         self.__temperature_data.append(datum)
 
-    @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return 'WaitForPI' in suite.name
+    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
 
-    @classmethod
-    def can_render_summarization_plot(cls, suites: List['Suite']) -> bool:
-        return False
+        def graph():
+            rows, cols = ceil((len(self.__data_by_thread) + 1) / 2), 2
+            fig, axes = plt.subplots(rows, cols)
+            params = self.__runtime_params
+            fig.suptitle(
+                f"{params['wait_method']} "
+                f"({'with' if params['affinity'] else 'without'} affinity)")
+            fig.subplots_adjust(hspace=0.4)
+            charts = axes.flatten()
+            for index, chart_data in enumerate(self.__data_by_thread.values()):
+                self.__render_thread_chart(index, charts[index], chart_data)
 
-    @classmethod
-    def render_summarization_plot(cls, suites: List['Suite']) -> str:
-        return None
+            self.__render_temperature_chart(charts[len(self.__data_by_thread)],
+                                            self.__temperature_data)
+            self.__render_summary_chart(charts[len(charts) - 1],
+                                        self.__data_by_thread.values())
 
-    def render_plot(self) -> str:
-        rows, cols = ceil((len(self.__data_by_thread) + 1) / 2), 2
-        fig, axes = plt.subplots(rows, cols)
-        params = self.__runtime_params
-        fig.suptitle(
-            f"{params['wait_method']} "
-            f"({'with' if params['affinity'] else 'without'} affinity)")
-        fig.subplots_adjust(hspace=0.4)
-        charts = axes.flatten()
-        for index, chart_data in enumerate(self.__data_by_thread.values()):
-            self.__render_thread_chart(index, charts[index], chart_data)
-
-        self.__render_temperature_chart(charts[len(self.__data_by_thread)],
-                                        self.__temperature_data)
-        self.__render_summary_chart(charts[len(charts) - 1],
-                                    self.__data_by_thread.values())
-        return ''
+        image_path = self.plot(ctx, graph)
+        image = fmt.Image(image_path, self.device())
+        return [image]
 
     def __render_thread_chart(self, index, chart, chart_data) -> type(None):
         """Format axis, their limits in order to produce a bar chart for the

@@ -20,8 +20,16 @@ compliance tests.
 from typing import List
 
 from lib.graphers.common_graphers import graph_functional_test_result
-from lib.graphers.suite_handler import SuiteHandler
-from lib.report import Suite
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, SummaryContext
+import lib.summary_formatters.format_items as fmt
+
+
+class BufferStorageSuiteSummarizer(SuiteSummarizer):
+    """Suite summarizer for OpenGL ES buffer storage compliance test."""
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return BufferStorageSuiteHandler
 
 
 class BufferStorageSuiteHandler(SuiteHandler):
@@ -38,19 +46,11 @@ class BufferStorageSuiteHandler(SuiteHandler):
                     "buffer_storage.status")
 
     @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return "GLES3 Buffer Storage" in suite.name
+    def can_handle_datum(cls, datum: Datum):
+        return "GLES3 Buffer Storage" in datum.suite_id
 
-    @classmethod
-    def can_render_summarization_plot(cls,
-                                      suites: List['SuiteHandler']) -> bool:
-        return False
+    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
 
-    @classmethod
-    def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
-        return None
-
-    def render_plot(self) -> str:
         result_index = 0
         msg = None
 
@@ -76,7 +76,10 @@ class BufferStorageSuiteHandler(SuiteHandler):
             result_index = 1
             msg = f"Unexpected result: ({self.test_result_status})"
 
-        graph_functional_test_result(result_index,
-                                     ['UNAVAILABLE', 'UNDETERMINED', 'PASSED'])
+        def graph():
+            graph_functional_test_result(
+                result_index, ['UNAVAILABLE', 'UNDETERMINED', 'PASSED'])
 
-        return msg
+        image_path = self.plot(ctx, graph, '')
+        image = fmt.Image(image_path, self.device())
+        return [image, fmt.Text(msg)]
