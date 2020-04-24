@@ -81,11 +81,3 @@ class BufferStorageSuiteHandler(SuiteHandler):
             msg = f"Unexpected result: ({self.test_result_status})"
 
         return msg
-
-    @classmethod
-    def handles_entire_report(cls, suites: List['Suite']):
-        return False
-
-    @classmethod
-    def render_report(cls, raw_suites: List['SuiteHandler']):
-        return ''

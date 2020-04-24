@@ -18,14 +18,12 @@ reports.
 """
 
 import json
-from pathlib import Path
 import platform
 from typing import Dict, List
 
 import matplotlib
 import matplotlib.pyplot as plt
 
-from lib.common import create_output_dir, remove_files_with_extensions
 from lib.report import BuildInfo, Datum, Suite
 from lib.graphers.loader import create_suite_handler
 
@@ -56,23 +54,6 @@ class UnsupportedReportFormatError(Exception):
 
 
 #-------------------------------------------------------------------------------
-
-
-def setup_report_dir(report_subdir: str) -> Path:
-    """If non-existing, creates the output directory. If non-empty, it removes
-    any existing content from previous reports.
-
-    Args:
-        report_subdir: report sub-directory name.
-
-    Returns:
-        a Path for the report directory/
-    """
-    report_dir = create_output_dir(report_subdir)
-    remove_files_with_extensions(report_dir, [".json", ".csv", ".md", ".html"])
-    remove_files_with_extensions(report_dir.joinpath("images"), [".png"])
-
-    return report_dir
 
 
 def load_suites(report_file) -> List[Suite]:

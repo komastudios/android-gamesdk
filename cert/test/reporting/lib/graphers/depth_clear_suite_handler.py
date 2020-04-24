@@ -58,14 +58,6 @@ class DepthClearSuiteHandler(SuiteHandler):
     def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
         return None
 
-    @classmethod
-    def handles_entire_report(cls, suites: List['Suite']):
-        return False
-
-    @classmethod
-    def render_report(cls, raw_suites: List['SuiteHandler']) -> str:
-        pass
-
     def render_plot(self):
         errors_at_depth = []
         successes_at_depth = []

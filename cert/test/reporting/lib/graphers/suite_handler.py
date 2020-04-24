@@ -107,9 +107,10 @@ class SuiteHandler(ABC):
             "SuiteHandler subclass must implement render_plot() function")
 
 
-    @abstractclassmethod
+    @classmethod
     def handles_entire_report(cls, suites: List['Suite']):
-        """Check if this suite handler wants to parse all suites as a single graph.
+        """Check if this suite handler wants to parse all suites as a single
+        graph.
         """
         return False
 
@@ -132,19 +133,10 @@ class SuiteHandler(ABC):
         plt.close()
         return summary_str
 
-    @abstractclassmethod
+    @classmethod
     def render_report(cls, raw_suites: List['SuiteHandler']) -> str:
-        """Subclass implement this method to render multiple suites' data to matplotlib
-        Note: Don't call suptitle() that's already been done.
-        Return:
-            (optional) a summary string for a given dataset
-            If a report has some interesting data (outlier behavior,
-            failures, etc) generate a summary string here and return it.
-            Otherwise, returning None or an empty string will result in
-            nothing printed.
-        """
-        raise NotImplementedError(
-            "SuiteHandler subclass must implement render_report() function")
+        """Kept for backward compatibility."""
+        return ''
 
 
     def title(self):

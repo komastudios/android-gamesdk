@@ -84,11 +84,3 @@ class MProtectSuiteHandler(SuiteHandler):
             msg = f"Unexpected result: ({self.mprotect_score})"
 
         return msg
-
-    @classmethod
-    def handles_entire_report(cls, suites: List['Suite']):
-        return False
-
-    @classmethod
-    def render_report(cls, raw_suites: List['SuiteHandler']):
-        return ''
