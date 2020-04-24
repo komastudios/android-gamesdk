@@ -27,6 +27,8 @@ from .choreographer_timestamps_suite_handler import \
 from .cpuset_suite_handler import CpusetSuiteHandler
 from .dependent_read_suite_handler import DependentReadSuiteHandler
 from .depth_clear_suite_handler import DepthClearSuiteHandler
+from .egl_get_frame_timestamps_suite_handler import \
+    EGLGetFrameTimestampsSuiteHandler
 from .file_performance_suite_handler import FilePerformanceSuiteHandler
 from .fill_rate_suite_handler import FillRateSuiteHandler
 from .gpu_profiling_support_suite_handler import \
@@ -52,6 +54,7 @@ HANDLERS = [
     CpusetSuiteHandler, \
     DependentReadSuiteHandler, \
     DepthClearSuiteHandler, \
+    EGLGetFrameTimestampsSuiteHandler, \
     FilePerformanceSuiteHandler, \
     FillRateSuiteHandler, \
     GPUProfilingSupportSuiteHandler, \

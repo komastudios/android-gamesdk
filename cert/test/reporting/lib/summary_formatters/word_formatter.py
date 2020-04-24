@@ -50,6 +50,28 @@ class WordFormatter(SummaryFormatter):
         self.__writer.add_heading(title, 0)
         self.__writer.add_paragraph(summary_utc)
 
+        # TODO(baxtermichael@google.com): handle table parsing from markdown
+        table = self.__writer.add_table(rows=1, cols=3)
+        table.style = 'Table Grid'
+
+        hdr_cells = table.rows[0].cells
+        hdr_cells[0].text = 'Qty'
+        hdr_cells[1].text = 'Id'
+        hdr_cells[2].text = 'Desc'
+
+        records = (
+            (1, 'One', '2^0'),
+            (2, 'Two', '2^1'),
+            (3, 'Three', '3^1')
+        )
+
+        for col1, col2, col3 in records:
+            row_cells = table.add_row().cells
+            row_cells[0].text = str(col1)
+            row_cells[1].text = col2
+            row_cells[2].text = col3
+
+
     def on_device(self, device_id: str, plot_path: Path,
                   plot_path_relative: Path,
                   summary: Union[str, type(None)]) -> type(None):
