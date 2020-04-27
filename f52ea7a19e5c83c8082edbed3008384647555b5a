@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "8765e055_1a22c32c",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-04-27T17:03:51Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "e33a7dfc_e615cc70",
+      "revId": "f52ea7a19e5c83c8082edbed3008384647555b5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "de59cb99_b5f45248",
         "filename": "bender/bender-base/app/src/main/jni/font.cc",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "f52ea7a19e5c83c8082edbed3008384647555b5a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5c57d281_69ae727a",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 477,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-04-27T17:03:51Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "de59cb99_b5f45248",
+      "revId": "f52ea7a19e5c83c8082edbed3008384647555b5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "d7e26fcf_daa68c3a",
+        "filename": "bender/bender-base/app/src/main/shaders/sdf.frag",
+        "patchSetId": 2
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-04-27T17:03:51Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "6cd6aaf4_e3c39bea",
+      "revId": "f52ea7a19e5c83c8082edbed3008384647555b5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "34dcc1cc_76ade32b",
         "filename": "bender/bender-base/app/src/main/shaders/sdf.vert",
         "patchSetId": 2
@@ -70,6 +124,24 @@
     },
     {
       "key": {
+        "uuid": "a57f1f40_8fc0ac02",
+        "filename": "bender/bender-base/app/src/main/shaders/sdf.vert",
+        "patchSetId": 2
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-04-27T17:03:51Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "34dcc1cc_76ade32b",
+      "revId": "f52ea7a19e5c83c8082edbed3008384647555b5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d32c188b_f234e513",
         "filename": "bender/bender-base/app/src/main/shaders/sdf.vert",
         "patchSetId": 2
@@ -81,6 +153,24 @@
       "writtenOn": "2020-04-27T14:13:11Z",
       "side": 1,
       "message": "Could you explain a little what current_position is suppose to represent? I\u0027m curious since I was wondering if we couldn\u0027t use it directly somehow to avoid using the conditional statements in the shaders since I think that\u0027s something you want to avoid (or minimize as much as possible) for performance",
+      "revId": "f52ea7a19e5c83c8082edbed3008384647555b5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6c56e9fb_9e31967a",
+        "filename": "bender/bender-base/app/src/main/shaders/sdf.vert",
+        "patchSetId": 2
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-04-27T17:03:51Z",
+      "side": 1,
+      "message": "Yes. current_position is the index of the vertex we are rendering wrt to each quad. The order of the index can be described in the figure below:\n\n 2,3 ---- 4\n | \\      |\n |  \\     | \n |   \\    |\n |    \\   |\n |     \\  |\n |      \\ |\n 1 ----- 0,5\n\nWith the given gl_VertexIndex we can calculate the position and the texture coordinates according to the data in UBOs. I am not sure how we can further limit the usage of conditional statements here.",
+      "parentUuid": "d32c188b_f234e513",
       "revId": "f52ea7a19e5c83c8082edbed3008384647555b5a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
