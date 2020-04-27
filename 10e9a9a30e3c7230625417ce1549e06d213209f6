@@ -22,6 +22,30 @@
       "revId": "10e9a9a30e3c7230625417ce1549e06d213209f6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e6e7dbb7_18adeeb6",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.h",
+        "patchSetId": 7
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-04-27T16:33:59Z",
+      "side": 1,
+      "message": "Simon actually recommended that we do it this way so that it more closely matches the actual data currently seen in the shaders - it is a little more verbose/requires some more maintenance, but I think also this might change in the future again if we change how we store our lights in general, so this is more of a stop gap until then haha",
+      "parentUuid": "59d54323_91f87a0b",
+      "range": {
+        "startLine": 26,
+        "startChar": 4,
+        "endLine": 33,
+        "endChar": 19
+      },
+      "revId": "10e9a9a30e3c7230625417ce1549e06d213209f6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
