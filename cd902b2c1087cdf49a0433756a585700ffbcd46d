@@ -34,6 +34,24 @@
       "revId": "cd902b2c1087cdf49a0433756a585700ffbcd46d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "38883673_0cb4b0b5",
+        "filename": "bender/bender-base/app/build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-04-27T23:11:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5776e27f_ec39e1b9",
+      "revId": "cd902b2c1087cdf49a0433756a585700ffbcd46d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
