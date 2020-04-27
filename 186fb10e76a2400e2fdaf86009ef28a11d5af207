@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a41caa03_cc4a7c96",
+        "filename": "cert/test/reporting/lib/configuration.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-04-27T20:59:23Z",
+      "side": 1,
+      "message": "\"a the\" could be replaced by either word.",
+      "revId": "186fb10e76a2400e2fdaf86009ef28a11d5af207",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8159ce5f_458d8808",
+        "filename": "cert/test/reporting/lib/outer/gpu_profiling_support_operation.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-04-27T20:59:23Z",
+      "side": 1,
+      "message": "Does this test for \"GPU profiling tool\" support in general, or just AGI? It could be helpful to clarify.",
+      "revId": "186fb10e76a2400e2fdaf86009ef28a11d5af207",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
