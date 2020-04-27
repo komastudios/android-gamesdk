@@ -36,6 +36,23 @@
     },
     {
       "key": {
+        "uuid": "6cd6aaf4_e3c39bea",
+        "filename": "bender/bender-base/app/src/main/shaders/sdf.frag",
+        "patchSetId": 2
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-04-27T14:13:11Z",
+      "side": 1,
+      "message": "Could store these values as constants within shader_bindings.h?",
+      "revId": "f52ea7a19e5c83c8082edbed3008384647555b5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "34dcc1cc_76ade32b",
         "filename": "bender/bender-base/app/src/main/shaders/sdf.vert",
         "patchSetId": 2
@@ -47,6 +64,23 @@
       "writtenOn": "2020-04-24T22:54:15Z",
       "side": 1,
       "message": "I would explore a way to include this struct from a header file that is shared with the C++ code",
+      "revId": "f52ea7a19e5c83c8082edbed3008384647555b5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d32c188b_f234e513",
+        "filename": "bender/bender-base/app/src/main/shaders/sdf.vert",
+        "patchSetId": 2
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-04-27T14:13:11Z",
+      "side": 1,
+      "message": "Could you explain a little what current_position is suppose to represent? I\u0027m curious since I was wondering if we couldn\u0027t use it directly somehow to avoid using the conditional statements in the shaders since I think that\u0027s something you want to avoid (or minimize as much as possible) for performance",
       "revId": "f52ea7a19e5c83c8082edbed3008384647555b5a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
