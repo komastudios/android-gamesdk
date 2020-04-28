@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "5711aa02_3caf3171",
+        "filename": "cert/test/reporting/lib/configuration.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-28T15:05:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a41caa03_cc4a7c96",
+      "revId": "186fb10e76a2400e2fdaf86009ef28a11d5af207",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8159ce5f_458d8808",
         "filename": "cert/test/reporting/lib/outer/gpu_profiling_support_operation.py",
         "patchSetId": 3
@@ -30,6 +48,24 @@
       "writtenOn": "2020-04-27T20:59:23Z",
       "side": 1,
       "message": "Does this test for \"GPU profiling tool\" support in general, or just AGI? It could be helpful to clarify.",
+      "revId": "186fb10e76a2400e2fdaf86009ef28a11d5af207",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "30f3ac4d_45bdf007",
+        "filename": "cert/test/reporting/lib/outer/gpu_profiling_support_operation.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-04-28T15:05:00Z",
+      "side": 1,
+      "message": "Great point. I chose to fully rewrite this part because the story behind is a bit ambiguous.\nThe only common thing is that AGI is a single frontend (a single client). Enough to say \"tool\" (singular). But the supporting part this test checks are provided by multiple providers: each GPU manufacturer creates its own. Thus, the plurality comes from the various GPU drivers that AGI deals with (a GPU profiling tool for Snapdragon, another for ...)\nTo complicates matters worse, as per today, only one GPU manufacturer participates in this program, so AGI only interoperates with one backend. But that\u0027s expected to change as more manufacturers ride on.",
+      "parentUuid": "8159ce5f_458d8808",
       "revId": "186fb10e76a2400e2fdaf86009ef28a11d5af207",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
