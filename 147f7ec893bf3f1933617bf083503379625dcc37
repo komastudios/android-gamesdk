@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c7d9a60f_3e3db644",
+        "filename": "build.gradle",
+        "patchSetId": 5
+      },
+      "lineNbr": 470,
+      "author": {
+        "id": 1043845
+      },
+      "writtenOn": "2020-04-28T20:28:20Z",
+      "side": 1,
+      "message": "export_libraries looks wrong. You don\u0027t need to export yourself. This is saying that any library that uses libswappy must link libswappy twice (actually, this says that it must link liblibswappy)",
+      "revId": "147f7ec893bf3f1933617bf083503379625dcc37",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
