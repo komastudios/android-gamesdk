@@ -1,0 +1,123 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c8810868_23292e44",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-04-29T22:16:08Z",
+      "side": 1,
+      "message": "Can we rename this? Maybe mirror whatever it\u0027s named in the .vert (or like idk \"text_push_consts\").",
+      "revId": "a0aa82e7c9bc3fd42cc599f6d33e2ab7b9b40213",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f24089c7_0f9442b5",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-04-29T22:16:08Z",
+      "side": 1,
+      "message": "I\u0027m assuming that this is clearing/rewriting all of the push constants (correct me if I\u0027m wrong), is there a purpose to doing so if our push constants struct is only the minimum supported size?",
+      "revId": "a0aa82e7c9bc3fd42cc599f6d33e2ab7b9b40213",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "df348184_a6ecc1b9",
+        "filename": "bender/bender-base/app/src/main/jni/push_consts_app.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-04-29T22:16:08Z",
+      "side": 1,
+      "message": "What\u0027s the purpose of this header? Is there an issue with using the glm and uint32_t typing in push_constants.h (in terms of includes) and is that something that can be resolved with an #include \u003cglm/glm.hpp\u003e and some linking in the CMakeLists?",
+      "revId": "a0aa82e7c9bc3fd42cc599f6d33e2ab7b9b40213",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9831b0d8_aadbbd80",
+        "filename": "bender/bender-base/app/src/main/shaders/push_constants.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-04-29T22:16:08Z",
+      "side": 1,
+      "message": "Nit, styling for structs as PushConstants. But also, would renaming this struct be helpful, if we needed to use push constants for things other than font? Maybe to like FontPushConstants. Also, maybe would be a good reason to use a static_assert to enforce that the size isn\u0027t larger than minimum supported 32? In case someone would consider changing the struct later or making it clear why the data buffer is 28 long?",
+      "revId": "a0aa82e7c9bc3fd42cc599f6d33e2ab7b9b40213",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7f077d67_0e1d35b8",
+        "filename": "bender/bender-base/app/src/main/shaders/push_constants.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-04-29T22:16:08Z",
+      "side": 1,
+      "message": "Maybe text_data would be clearer? Otherwise a little confusing for why \"string\" when the typing is int.",
+      "revId": "a0aa82e7c9bc3fd42cc599f6d33e2ab7b9b40213",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "87e4a6aa_001de368",
+        "filename": "bender/bender-base/app/src/main/shaders/sdf.vert",
+        "patchSetId": 4
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-04-29T22:16:08Z",
+      "side": 1,
+      "message": "uniform TextData, push_constants text? Naming something that already has layout(push_coonstant) push_consts seems a little unhelpful.",
+      "revId": "a0aa82e7c9bc3fd42cc599f6d33e2ab7b9b40213",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e584b865_30205726",
+        "filename": "bender/bender-base/app/src/main/shaders/sdf.vert",
+        "patchSetId": 4
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-04-29T22:16:08Z",
+      "side": 1,
+      "message": "I think I understand what you\u0027re conveying to Omar about current_position, would it be less confusing to be like \"index_modulo\" or something that\u0027ll convey it\u0027s a vertex index (modulo % 5) rather than a xy or xyz position?",
+      "revId": "a0aa82e7c9bc3fd42cc599f6d33e2ab7b9b40213",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
