@@ -1,0 +1,48 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000002733423",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1298121?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "35f50b81_0912a04d",
+          "description": "Change to \"cert/test/reporting/lib/graphers/egl_presentation_time_suite_handler.py\"",
+          "replacements": [
+            {
+              "path": "cert/test/reporting/lib/graphers/egl_presentation_time_suite_handler.py",
+              "range": {
+                "startLine": 82,
+                "startChar": 34,
+                "endLine": 82,
+                "endChar": 43
+              },
+              "replacement": "successful"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "c3ee3799_e7b9d08e",
+        "filename": "cert/test/reporting/lib/graphers/egl_presentation_time_suite_handler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-04-29T19:24:26Z",
+      "side": 1,
+      "message": "Common typo found: \"sucessful\" -- should it be \"successful\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.",
+      "range": {
+        "startLine": 82,
+        "startChar": 34,
+        "endLine": 82,
+        "endChar": 43
+      },
+      "revId": "23e5ac10a6cb9a764e3b90799fcc1428c4202fef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
