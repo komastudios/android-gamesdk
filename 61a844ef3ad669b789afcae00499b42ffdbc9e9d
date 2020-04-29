@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "04c18f00_9ea0690e",
+        "filename": "bender/bender-base/app/src/main/jni/material.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-04-29T20:40:59Z",
+      "side": 1,
+      "message": "This is maybe not a big deal; would we be able to resolve this issue by just adding a param to change what format the resulting Texture is? Seems like only a slightly more verbose direction compared to just using UNORM by default and picking an in-between data value.",
+      "revId": "61a844ef3ad669b789afcae00499b42ffdbc9e9d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d37bf7fc_8e167111",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-04-29T20:40:59Z",
+      "side": 1,
+      "message": "Minor nit for style (naming with underscores)?",
+      "revId": "61a844ef3ad669b789afcae00499b42ffdbc9e9d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2f0028d8_01c14092",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 8
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-04-29T20:40:59Z",
+      "side": 1,
+      "message": "What are these vec values from (for both this and next line)? And can you make them const or something to make it more clear what they represent?",
+      "revId": "61a844ef3ad669b789afcae00499b42ffdbc9e9d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "83007ca8_c48dd11e",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.vert",
+        "patchSetId": 8
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-04-29T20:40:59Z",
+      "side": 1,
+      "message": "Same comment as above (pull out and name the constant vec).",
+      "revId": "61a844ef3ad669b789afcae00499b42ffdbc9e9d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
