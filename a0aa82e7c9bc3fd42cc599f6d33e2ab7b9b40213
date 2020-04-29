@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "695b6172_f5b49e3d",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-04-29T22:46:23Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "c8810868_23292e44",
+      "revId": "a0aa82e7c9bc3fd42cc599f6d33e2ab7b9b40213",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f24089c7_0f9442b5",
         "filename": "bender/bender-base/app/src/main/jni/font.cc",
         "patchSetId": 4
@@ -30,6 +48,24 @@
       "writtenOn": "2020-04-29T22:16:08Z",
       "side": 1,
       "message": "I\u0027m assuming that this is clearing/rewriting all of the push constants (correct me if I\u0027m wrong), is there a purpose to doing so if our push constants struct is only the minimum supported size?",
+      "revId": "a0aa82e7c9bc3fd42cc599f6d33e2ab7b9b40213",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1ba5d7f5_3720af98",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 4
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-04-29T22:46:23Z",
+      "side": 1,
+      "message": "Firstly there is a mistake that I should have passed sizeof(push_consts) to be more general. max_push_const_size is queried from the physical device limits. In Pixel 4 it only supports 128 bytes at max, which is also the minimum of vulkan implementation.\n\nAfter the function vkCmdPushConstants(), the push constants are copied/transferred to the command buffer, so there is no clearing/rewriting as far as I know. So you can see I kind of allocate a new push_consts (L101) per every call of this function.",
+      "parentUuid": "f24089c7_0f9442b5",
       "revId": "a0aa82e7c9bc3fd42cc599f6d33e2ab7b9b40213",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "5bf10f7b_6ea0a8b7",
+        "filename": "bender/bender-base/app/src/main/jni/push_consts_app.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-04-29T22:46:23Z",
+      "side": 1,
+      "message": "This is a wrapper to enable sharing the same structure header (\"push_constants.h\") with the shader. Since the shader and the application type naming is not compatible so typedef-ing is the way to like converting between them. This could not be done by including glm header or linking in the CMakeLists since it\u0027s more like shader-specific.",
+      "parentUuid": "df348184_a6ecc1b9",
+      "revId": "a0aa82e7c9bc3fd42cc599f6d33e2ab7b9b40213",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "9831b0d8_aadbbd80",
         "filename": "bender/bender-base/app/src/main/shaders/push_constants.h",
         "patchSetId": 4
@@ -67,6 +121,24 @@
       "revId": "a0aa82e7c9bc3fd42cc599f6d33e2ab7b9b40213",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "406843b7_c876fbb3",
+        "filename": "bender/bender-base/app/src/main/shaders/push_constants.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-04-29T22:46:23Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "9831b0d8_aadbbd80",
+      "revId": "a0aa82e7c9bc3fd42cc599f6d33e2ab7b9b40213",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "6b84d0c6_78100d1f",
+        "filename": "bender/bender-base/app/src/main/shaders/push_constants.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-04-29T22:46:23Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "7f077d67_0e1d35b8",
+      "revId": "a0aa82e7c9bc3fd42cc599f6d33e2ab7b9b40213",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "87e4a6aa_001de368",
         "filename": "bender/bender-base/app/src/main/shaders/sdf.vert",
         "patchSetId": 4
@@ -104,6 +194,24 @@
     },
     {
       "key": {
+        "uuid": "4868df5f_2e293e99",
+        "filename": "bender/bender-base/app/src/main/shaders/sdf.vert",
+        "patchSetId": 4
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-04-29T22:46:23Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "87e4a6aa_001de368",
+      "revId": "a0aa82e7c9bc3fd42cc599f6d33e2ab7b9b40213",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e584b865_30205726",
         "filename": "bender/bender-base/app/src/main/shaders/sdf.vert",
         "patchSetId": 4
@@ -118,6 +226,24 @@
       "revId": "a0aa82e7c9bc3fd42cc599f6d33e2ab7b9b40213",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "09761fe1_e8fd82c3",
+        "filename": "bender/bender-base/app/src/main/shaders/sdf.vert",
+        "patchSetId": 4
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-04-29T22:46:23Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "e584b865_30205726",
+      "revId": "a0aa82e7c9bc3fd42cc599f6d33e2ab7b9b40213",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
