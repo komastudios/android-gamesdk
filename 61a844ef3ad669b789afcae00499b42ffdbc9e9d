@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "909c0323_f4dd7d7a",
+        "filename": "bender/bender-base/app/src/main/jni/material.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-04-30T14:57:00Z",
+      "side": 1,
+      "message": "Wouldn\u0027t that be an issue with this being a static variable of Material? Whatever texture gets loaded first will get to pick what the texture format is and then it\u0027s set for the rest of the materials that need a default texture. Also the only time we create the default texture is when one of the passed in textures is null, so we have no real information about what that texture should be (beyond it\u0027s position in the array, but that\u0027s just a stopgap until we figure out a better way to setup our material system)",
+      "parentUuid": "04c18f00_9ea0690e",
+      "revId": "61a844ef3ad669b789afcae00499b42ffdbc9e9d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d37bf7fc_8e167111",
         "filename": "bender/bender-base/app/src/main/jni/renderer.h",
         "patchSetId": 8
@@ -33,6 +51,24 @@
       "revId": "61a844ef3ad669b789afcae00499b42ffdbc9e9d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e2144721_a56319c6",
+        "filename": "bender/bender-base/app/src/main/jni/renderer.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-04-30T14:57:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d37bf7fc_8e167111",
+      "revId": "61a844ef3ad669b789afcae00499b42ffdbc9e9d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "160bd902_f3dc9a83",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.frag",
+        "patchSetId": 8
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-04-30T14:57:00Z",
+      "side": 1,
+      "message": "Ended up changing the uniform buffer to store this information so we can set it CPU side (this is the direction light color/intensity, the vec3 in the vertex shader is the direction light direction) so now it should be clearer!",
+      "parentUuid": "2f0028d8_01c14092",
+      "revId": "61a844ef3ad669b789afcae00499b42ffdbc9e9d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "83007ca8_c48dd11e",
         "filename": "bender/bender-base/app/src/main/shaders/mesh.vert",
         "patchSetId": 8
@@ -64,6 +118,24 @@
       "writtenOn": "2020-04-29T20:40:59Z",
       "side": 1,
       "message": "Same comment as above (pull out and name the constant vec).",
+      "revId": "61a844ef3ad669b789afcae00499b42ffdbc9e9d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fe419814_dfc751f5",
+        "filename": "bender/bender-base/app/src/main/shaders/mesh.vert",
+        "patchSetId": 8
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-04-30T14:57:00Z",
+      "side": 1,
+      "message": "See comment in fragment shader",
+      "parentUuid": "83007ca8_c48dd11e",
       "revId": "61a844ef3ad669b789afcae00499b42ffdbc9e9d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
