@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "0ff020ec_ca9f1c48",
+        "filename": "bender/bender-base/app/src/main/jni/material.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-04-30T15:05:27Z",
+      "side": 1,
+      "message": "Oh got it, I forgot when we discussed this previously about this being static. Is there anything stopping us from holding onto two default textures (one with SRGB and one with UNORM)?",
+      "parentUuid": "909c0323_f4dd7d7a",
+      "revId": "61a844ef3ad669b789afcae00499b42ffdbc9e9d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d37bf7fc_8e167111",
         "filename": "bender/bender-base/app/src/main/jni/renderer.h",
         "patchSetId": 8
