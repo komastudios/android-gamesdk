@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "b936b97d_47d3e261",
+        "filename": "bender/bender-base/app/src/main/jni/material.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1578313
+      },
+      "writtenOn": "2020-04-30T15:10:49Z",
+      "side": 1,
+      "message": "Not necessarily, I thought about making this a vector of default textures but the issue is I\u0027m still not sure how we can decide which default texture to pick based on a nullptr Texture that gets passed into the constructor",
+      "parentUuid": "0ff020ec_ca9f1c48",
+      "revId": "61a844ef3ad669b789afcae00499b42ffdbc9e9d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d37bf7fc_8e167111",
         "filename": "bender/bender-base/app/src/main/jni/renderer.h",
         "patchSetId": 8
