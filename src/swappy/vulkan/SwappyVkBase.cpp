@@ -120,6 +120,10 @@ SwappyVkBase::~SwappyVkBase() {
     destroyVkSyncObjects();
 }
 
+void SwappyVkBase::doSetWindow(ANativeWindow* window) {
+    mCommonBase.setANativeWindow(window);
+}
+
 void SwappyVkBase::doSetSwapInterval(VkSwapchainKHR swapchain, uint64_t swap_ns) {
     Settings::getInstance()->setSwapIntervalNS(swap_ns);
 }
@@ -260,7 +264,6 @@ void SwappyVkBase::destroyVkSyncObjects() {
 
     // Free all sync objects
     for (auto it = mFreeSyncPool.begin(); it != mFreeSyncPool.end(); it++) {
-        auto queue = it->first;
         auto syncList = it->second;
         while (syncList.size() > 0) {
             VkSync sync = syncList.front();

@@ -36,18 +36,23 @@
 
 namespace swappy {
 
+// ANativeWindow_setFrameRate is supported from API 30. To allow compilation for minSDK < 30
+// we need runtime support to call this API.
+using PFN_ANativeWindow_setFrameRate = int32_t (*)(ANativeWindow* window,
+                                                   float frameRate,
+                                                   int8_t compatibility);
+
 using namespace std::chrono_literals;
 
 struct SwappyCommonSettings {
-
-    int sdkVersion;
+    SdkVersion sdkVersion;
 
     std::chrono::nanoseconds refreshPeriod;
     std::chrono::nanoseconds appVsyncOffset;
     std::chrono::nanoseconds sfVsyncOffset;
 
     static bool getFromApp(JNIEnv *env, jobject jactivity, SwappyCommonSettings* out);
-    static int getSDKVersion(JNIEnv *env);
+    static SdkVersion getSDKVersion(JNIEnv *env);
     static bool queryDisplayTimings(JNIEnv *env, jobject jactivity, SwappyCommonSettings* out);
 };
 
@@ -99,6 +104,8 @@ public:
 
     bool isDeviceUnsupported();
 
+    void setANativeWindow(ANativeWindow *window);
+
   protected:
     // Used for testing
     SwappyCommon(const SwappyCommonSettings& settings);
@@ -121,11 +128,15 @@ private:
         bool frameMiss() const { return mFrameMissedDeadline; }
 
         std::chrono::nanoseconds getTime(PipelineMode pipeline) const {
-            if (pipeline == PipelineMode::On) {
-                return std::max(mCpuTime, mGpuTime);
+            if (mCpuTime == 0ns && mGpuTime == 0ns) {
+                return 0ns;
             }
 
-            return mCpuTime + mGpuTime;
+            if (pipeline == PipelineMode::On) {
+                return std::max(mCpuTime, mGpuTime) + FRAME_MARGIN;
+            }
+
+            return mCpuTime + mGpuTime + FRAME_MARGIN;
         }
 
         FrameDuration& operator+=(const FrameDuration& other) {
@@ -157,11 +168,11 @@ private:
     void addFrameDuration(FrameDuration duration);
     std::chrono::nanoseconds wakeClient();
 
-    bool swapFaster(int newSwapInterval) REQUIRES(mFrameDurationsMutex);
+    bool swapFaster(int newSwapInterval) REQUIRES(mLock);
 
     bool swapSlower(const FrameDuration& averageFrameTime,
                     const std::chrono::nanoseconds& upperBound,
-                    int newSwapInterval) REQUIRES(mFrameDurationsMutex);
+                    int newSwapInterval) REQUIRES(mLock);
     bool updateSwapInterval();
     void preSwapBuffersCallbacks();
     void postSwapBuffersCallbacks();
@@ -175,8 +186,8 @@ private:
     void waitUntil(int32_t target);
     void waitUntilTargetFrame();
     void waitOneFrame();
-    void setPreferredRefreshRate(int index);
-    void setPreferredRefreshRate(std::chrono::nanoseconds frameTime);
+    void setPreferredModeId(int index);
+    void setPreferredRefreshRate(std::chrono::nanoseconds frameTime) REQUIRES(mLock);
     int calculateSwapInterval(std::chrono::nanoseconds frameTime,
                               std::chrono::nanoseconds refreshPeriod);
     void updateDisplayTimings();
@@ -184,15 +195,18 @@ private:
     // Waits for the next frame, considering both Choreographer and the prior frame's completion
     bool waitForNextFrame(const SwapHandlers& h);
 
-    bool isSameDuration(std::chrono::nanoseconds period1,
-                        int interval1,
-                        std::chrono::nanoseconds period2,
-                        int interval2);
+    bool isSameDuration(std::chrono::nanoseconds swapIntervaNS1,
+                        std::chrono::nanoseconds swapIntervaNS2);
 
     void onRefreshRateChanged();
 
     const jobject mJactivity;
+    void *mLibAndroid = nullptr;
+    PFN_ANativeWindow_setFrameRate mANativeWindow_setFrameRate = nullptr;
+
     JavaVM *mJVM = nullptr;
+
+    SwappyCommonSettings mCommonSettings;
 
     std::unique_ptr<ChoreographerFilter> mChoreographerFilter;
 
@@ -207,9 +221,7 @@ private:
 
     std::chrono::steady_clock::time_point mSwapTime;
 
-    SwappyCommonSettings mCommonSettings;
-
-    std::mutex mFrameDurationsMutex;
+    std::mutex mLock;
     class FrameDurations {
     public:
         void add(FrameDuration frameDuration);
@@ -226,10 +238,10 @@ private:
         int mMissedFrameCount = 0;
     };
 
-    FrameDurations mFrameDurations GUARDED_BY(mFrameDurationsMutex);
+    FrameDurations mFrameDurations GUARDED_BY(mLock);
 
-    bool mAutoSwapIntervalEnabled GUARDED_BY(mFrameDurationsMutex) = true;
-    bool mPipelineModeAutoMode GUARDED_BY(mFrameDurationsMutex) = true;
+    bool mAutoSwapIntervalEnabled GUARDED_BY(mLock) = true;
+    bool mPipelineModeAutoMode GUARDED_BY(mLock) = true;
 
     static constexpr std::chrono::nanoseconds FRAME_MARGIN = 1ms;
     static constexpr int NON_PIPELINE_PERCENT = 50; // 50%
@@ -238,7 +250,6 @@ private:
     std::chrono::nanoseconds mSwapIntervalNS = 0ns;
     int32_t mAutoSwapInterval;
     std::atomic<std::chrono::nanoseconds> mAutoSwapIntervalThresholdNS = {50ms}; // 20FPS
-    int mSwapIntervalForNewRefresh = 0;
     static constexpr std::chrono::nanoseconds REFRESH_RATE_MARGIN = 500ns;
 
     std::chrono::steady_clock::time_point mStartFrameTime;
@@ -291,10 +302,15 @@ private:
             return !(*this != other);
         }
     };
-    TimingSettings mNextTimingSettings GUARDED_BY(mFrameDurationsMutex) = {};
-    bool mTimingSettingsNeedUpdate GUARDED_BY(mFrameDurationsMutex) = false;
+    TimingSettings mNextTimingSettings GUARDED_BY(mLock) = {};
+    bool mTimingSettingsNeedUpdate GUARDED_BY(mLock) = false;
 
     CPUTracer mCPUTracer;
+
+    ANativeWindow* mWindow GUARDED_BY(mLock) = nullptr;
+    bool mWindowChanged GUARDED_BY(mLock) = false;
+    float mLatestFrameRateVote GUARDED_BY(mLock) = 0.f;
+    static constexpr float FRAME_RATE_VOTE_MARGIN = 1.f; // 1Hz
 };
 
 } //namespace swappy

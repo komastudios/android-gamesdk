@@ -43,6 +43,8 @@ class SwappyGL {
     SwappyGL(JNIEnv *env, jobject jactivity, ConstructorTag);
     static bool init(JNIEnv *env, jobject jactivity);
 
+    static bool setWindow(ANativeWindow* window);
+
     static void onChoreographer(int64_t frameTimeNanos);
 
     static bool swap(EGLDisplay display, EGLSurface surface);
