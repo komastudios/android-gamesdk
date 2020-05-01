@@ -50,11 +50,11 @@ class Settings {
     void addListener(Listener listener);
 
     void setDisplayTimings(const DisplayTimings& displayTimings);
-    void setSwapIntervalNS(uint64_t swap_ns);
+    void setSwapDuration(uint64_t swapNs);
     void setUseAffinity(bool);
 
     const DisplayTimings& getDisplayTimings() const;
-    uint64_t getSwapIntervalNS() const;
+    std::chrono::nanoseconds getSwapDuration() const;
     bool getUseAffinity() const;
 
   private:
@@ -66,7 +66,8 @@ class Settings {
     std::vector<Listener> mListeners GUARDED_BY(mMutex);
 
     DisplayTimings mDisplayTimings GUARDED_BY(mMutex);
-    uint64_t mSwapIntervalNS GUARDED_BY(mMutex) = 16666667L;
+    std::chrono::nanoseconds mSwapDuration GUARDED_BY(mMutex) =
+            std::chrono::nanoseconds(16'666'667L);
     bool mUseAffinity GUARDED_BY(mMutex) = true;
 };
 

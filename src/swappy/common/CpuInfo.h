@@ -56,9 +56,6 @@ private:
     std::vector<Cpu> mCpus;
     std::string mHardware;
 
-    long mMaxFrequency;
-    long mMinFrequency;
-
     unsigned int mNumberOfLittleCores = 0;
     unsigned int mNumberOfBigCores = 0;
 

@@ -164,19 +164,32 @@ bool SwappyVk::GetRefreshCycleDuration(JNIEnv           *env,
                                                       pRefreshDuration);
 }
 
-
 /**
- * Generic/Singleton implementation of swappyVkSetSwapInterval.
+ * Generic/Singleton implementation of swappyVkSetWindow.
  */
-void SwappyVk::SetSwapIntervalNS(VkDevice       device,
-                                 VkSwapchainKHR swapchain,
-                                 uint64_t       swap_ns)
+void SwappyVk::SetWindow(VkDevice       device,
+                         VkSwapchainKHR swapchain,
+                         ANativeWindow* window)
 {
     auto& pImplementation = perDeviceImplementation[device];
     if (!pImplementation) {
         return;
     }
-    pImplementation->doSetSwapInterval(swapchain, swap_ns);
+    pImplementation->doSetWindow(window);
+}
+
+/**
+ * Generic/Singleton implementation of swappyVkSetSwapInterval.
+ */
+void SwappyVk::SetSwapDuration(VkDevice       device,
+                                 VkSwapchainKHR swapchain,
+                                 uint64_t       swapNs)
+{
+    auto& pImplementation = perDeviceImplementation[device];
+    if (!pImplementation) {
+        return;
+    }
+    pImplementation->doSetSwapInterval(swapchain, swapNs);
 }
 
 
@@ -248,9 +261,9 @@ void SwappyVk::SetAutoPipelineMode(bool enabled) {
     }
 }
 
-void SwappyVk::SetMaxAutoSwapIntervalNS(std::chrono::nanoseconds maxSwapNS) {
+void SwappyVk::SetMaxAutoSwapDuration(std::chrono::nanoseconds maxDuration) {
     for (auto i : perSwapchainImplementation) {
-        i.second->setMaxAutoSwapIntervalNS(maxSwapNS);
+        i.second->setMaxAutoSwapDuration(maxDuration);
     }
 }
 
