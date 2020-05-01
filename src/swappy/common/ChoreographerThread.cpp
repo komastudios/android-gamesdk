@@ -250,7 +250,6 @@ private:
     void scheduleNextFrameCallback() override REQUIRES(mWaitingMutex);
 
     JavaVM *mJVM;
-    JNIEnv *mEnv = nullptr;
     jobject mJobj = nullptr;
     jmethodID mJpostFrameCallback = nullptr;
     jmethodID mJterminate = nullptr;

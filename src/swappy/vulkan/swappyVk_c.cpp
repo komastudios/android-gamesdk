@@ -61,6 +61,16 @@ bool SwappyVk_initAndGetRefreshCycleDuration_internal(
                                           pRefreshDuration);
 }
 
+void SwappyVk_setWindow(
+        VkDevice       device,
+        VkSwapchainKHR swapchain,
+        ANativeWindow* window)
+{
+    TRACE_CALL();
+    swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
+    swappy.SetWindow(device, swapchain, window);
+}
+
 void SwappyVk_setSwapIntervalNS(
         VkDevice       device,
         VkSwapchainKHR swapchain,
@@ -68,7 +78,7 @@ void SwappyVk_setSwapIntervalNS(
 {
     TRACE_CALL();
     swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
-    swappy.SetSwapIntervalNS(device, swapchain, swap_ns);
+    swappy.SetSwapDuration(device, swapchain, swap_ns);
 }
 
 VkResult SwappyVk_queuePresent(
@@ -110,7 +120,7 @@ void SwappyVk_setFenceTimeoutNS(uint64_t fence_timeout_ns) {
 void SwappyVk_setMaxAutoSwapIntervalNS(uint64_t max_swap_ns) {
     TRACE_CALL();
     swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
-    swappy.SetMaxAutoSwapIntervalNS(std::chrono::nanoseconds(max_swap_ns));
+    swappy.SetMaxAutoSwapDuration(std::chrono::nanoseconds(max_swap_ns));
 }
 
 uint64_t SwappyVk_getFenceTimeoutNS() {
