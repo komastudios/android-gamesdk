@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "abfe0e02_8eb1f2a8",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 13
+      },
+      "lineNbr": 357,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-05-01T22:22:50Z",
+      "side": 1,
+      "message": "We already have an mSwapDuration for the purpose of keeping track of the actual app\u0027s duration.\nWill change that as well.",
+      "parentUuid": "5e1f8d91_976baa21",
+      "range": {
+        "startLine": 357,
+        "startChar": 15,
+        "endLine": 357,
+        "endChar": 29
+      },
+      "revId": "5f72c53c60ab5a61b2feb9477942a6d324114415",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "101ec9ad_3bd5f1a7",
         "filename": "src/swappy/common/SwappyCommon.cpp",
         "patchSetId": 13
@@ -45,6 +69,30 @@
       "revId": "5f72c53c60ab5a61b2feb9477942a6d324114415",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8ec35885_49755b4e",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 13
+      },
+      "lineNbr": 434,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-05-01T22:22:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "101ec9ad_3bd5f1a7",
+      "range": {
+        "startLine": 434,
+        "startChar": 8,
+        "endLine": 434,
+        "endChar": 21
+      },
+      "revId": "5f72c53c60ab5a61b2feb9477942a6d324114415",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "e41830d0_42e16799",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 13
+      },
+      "lineNbr": 452,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-05-01T22:22:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bedc2de2_e773b9c2",
+      "range": {
+        "startLine": 452,
+        "startChar": 11,
+        "endLine": 452,
+        "endChar": 12
+      },
+      "revId": "5f72c53c60ab5a61b2feb9477942a6d324114415",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "42f21a7c_6bd56a2a",
         "filename": "src/swappy/common/SwappyCommon.cpp",
         "patchSetId": 13
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "9293b760_90cc0175",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 13
+      },
+      "lineNbr": 505,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-05-01T22:22:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "42f21a7c_6bd56a2a",
+      "range": {
+        "startLine": 502,
+        "startChar": 8,
+        "endLine": 505,
+        "endChar": 81
+      },
+      "revId": "5f72c53c60ab5a61b2feb9477942a6d324114415",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ea14c8bf_70a175ee",
         "filename": "src/swappy/common/SwappyCommon.cpp",
         "patchSetId": 13
@@ -108,6 +204,24 @@
       "revId": "5f72c53c60ab5a61b2feb9477942a6d324114415",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9d21e0d3_b22748b5",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 13
+      },
+      "lineNbr": 506,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-05-01T22:22:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ea14c8bf_70a175ee",
+      "revId": "5f72c53c60ab5a61b2feb9477942a6d324114415",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -131,6 +245,30 @@
       "revId": "5f72c53c60ab5a61b2feb9477942a6d324114415",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a41a2f36_4136ab95",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 13
+      },
+      "lineNbr": 512,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-05-01T22:22:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a9079f55_86931b83",
+      "range": {
+        "startLine": 512,
+        "startChar": 29,
+        "endLine": 512,
+        "endChar": 31
+      },
+      "revId": "5f72c53c60ab5a61b2feb9477942a6d324114415",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -180,6 +318,54 @@
     },
     {
       "key": {
+        "uuid": "664188f9_43b90ef2",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 13
+      },
+      "lineNbr": 547,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-05-01T22:22:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "55952bdf_0533ff15",
+      "range": {
+        "startLine": 547,
+        "startChar": 46,
+        "endLine": 547,
+        "endChar": 60
+      },
+      "revId": "5f72c53c60ab5a61b2feb9477942a6d324114415",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e736770f_4942c208",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 13
+      },
+      "lineNbr": 547,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-05-01T22:22:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f3dd9b9d_923a9b2c",
+      "range": {
+        "startLine": 547,
+        "startChar": 19,
+        "endLine": 547,
+        "endChar": 33
+      },
+      "revId": "5f72c53c60ab5a61b2feb9477942a6d324114415",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d70d0287_4eec06db",
         "filename": "src/swappy/common/SwappyCommon.cpp",
         "patchSetId": 13
@@ -200,6 +386,30 @@
       "revId": "5f72c53c60ab5a61b2feb9477942a6d324114415",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "09a149f2_d32e277e",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 13
+      },
+      "lineNbr": 551,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-05-01T22:22:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d70d0287_4eec06db",
+      "range": {
+        "startLine": 550,
+        "startChar": 0,
+        "endLine": 551,
+        "endChar": 19
+      },
+      "revId": "5f72c53c60ab5a61b2feb9477942a6d324114415",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -226,6 +436,30 @@
     },
     {
       "key": {
+        "uuid": "e3a5f006_891f1fd2",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 13
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-05-01T22:22:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "392e2816_8ce2fd0a",
+      "range": {
+        "startLine": 224,
+        "startChar": 15,
+        "endLine": 224,
+        "endChar": 20
+      },
+      "revId": "5f72c53c60ab5a61b2feb9477942a6d324114415",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5c52c8b6_38804b19",
         "filename": "src/swappy/common/SwappyDisplayManager.h",
         "patchSetId": 13
@@ -246,6 +480,30 @@
       "revId": "5f72c53c60ab5a61b2feb9477942a6d324114415",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3b6e0679_22f3a3fa",
+        "filename": "src/swappy/common/SwappyDisplayManager.h",
+        "patchSetId": 13
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-05-01T22:22:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5c52c8b6_38804b19",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 30,
+        "endChar": 57
+      },
+      "revId": "5f72c53c60ab5a61b2feb9477942a6d324114415",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
