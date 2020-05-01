@@ -43,6 +43,8 @@ class SwappyGL {
     SwappyGL(JNIEnv *env, jobject jactivity, ConstructorTag);
     static bool init(JNIEnv *env, jobject jactivity);
 
+    static bool setWindow(ANativeWindow* window);
+
     static void onChoreographer(int64_t frameTimeNanos);
 
     static bool swap(EGLDisplay display, EGLSurface surface);
@@ -50,13 +52,13 @@ class SwappyGL {
     // Pass callbacks for tracing within the swap function
     static void addTracer(const SwappyTracer *tracer);
 
-    static uint64_t getSwapIntervalNS();
+    static std::chrono::nanoseconds getSwapDuration();
 
     static void setAutoSwapInterval(bool enabled);
 
     static void setAutoPipelineMode(bool enabled);
 
-    static void setMaxAutoSwapIntervalNS(std::chrono::nanoseconds maxSwapNS);
+    static void setMaxAutoSwapDuration(std::chrono::nanoseconds maxSwapNS);
 
     static void enableStats(bool enabled);
     static void recordFrameStart(EGLDisplay display, EGLSurface surface);

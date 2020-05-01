@@ -127,6 +127,7 @@ public:
                                     uint32_t                queueFamilyIndex,
                                     const VkPresentInfoKHR* pPresentInfo) = 0;
 
+    void doSetWindow(ANativeWindow* window);
     void doSetSwapInterval(VkSwapchainKHR swapchain,
                            uint64_t       swap_ns);
 
@@ -139,7 +140,7 @@ public:
     void setAutoSwapInterval(bool enabled);
     void setAutoPipelineMode(bool enabled);
 
-    void setMaxAutoSwapIntervalNS(std::chrono::nanoseconds swapMaxNS);
+    void setMaxAutoSwapDuration(std::chrono::nanoseconds swapMaxNS);
 
     void setFenceTimeout(std::chrono::nanoseconds duration);
     std::chrono::nanoseconds getFenceTimeout() const;

@@ -40,6 +40,10 @@ void SwappyGL_onChoreographer(int64_t frameTimeNanos) {
     SwappyGL::onChoreographer(frameTimeNanos);
 }
 
+bool SwappyGL_setWindow(ANativeWindow* window) {
+    return SwappyGL::setWindow(window);
+}
+
 bool SwappyGL_swap(EGLDisplay display, EGLSurface surface) {
     return SwappyGL::swap(display, surface);
 }
@@ -49,7 +53,7 @@ void SwappyGL_setUseAffinity(bool tf) {
 }
 
 void SwappyGL_setSwapIntervalNS(uint64_t swap_ns) {
-    Settings::getInstance()->setSwapIntervalNS(swap_ns);
+    Settings::getInstance()->setSwapDuration(swap_ns);
 }
 
 uint64_t SwappyGL_getRefreshPeriodNanos() {
@@ -61,7 +65,7 @@ bool SwappyGL_getUseAffinity() {
 }
 
 uint64_t SwappyGL_getSwapIntervalNS() {
-    return SwappyGL::getSwapIntervalNS();
+    return SwappyGL::getSwapDuration().count();
 }
 
 void SwappyGL_injectTracer(const SwappyTracer *t) {
@@ -73,7 +77,7 @@ void SwappyGL_setAutoSwapInterval(bool enabled) {
 }
 
 void SwappyGL_setMaxAutoSwapIntervalNS(uint64_t max_swap_ns) {
-    SwappyGL::setMaxAutoSwapIntervalNS(std::chrono::nanoseconds(max_swap_ns));
+    SwappyGL::setMaxAutoSwapDuration(std::chrono::nanoseconds(max_swap_ns));
 }
 
 void SwappyGL_setAutoPipelineMode(bool enabled) {

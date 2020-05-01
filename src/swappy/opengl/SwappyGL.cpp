@@ -62,6 +62,19 @@ void SwappyGL::onChoreographer(int64_t frameTimeNanos) {
     swappy->mCommonBase.onChoreographer(frameTimeNanos);
 }
 
+bool SwappyGL::setWindow(ANativeWindow* window) {
+    TRACE_CALL();
+
+    SwappyGL *swappy = getInstance();
+    if (!swappy) {
+        ALOGE("Failed to get SwappyGL instance in setWindow");
+        return false;
+    }
+
+    swappy->mCommonBase.setANativeWindow(window);
+    return true;
+}
+
 bool SwappyGL::swap(EGLDisplay display, EGLSurface surface) {
     TRACE_CALL();
 
@@ -121,12 +134,12 @@ void SwappyGL::addTracer(const SwappyTracer *tracer) {
         swappy->mCommonBase.addTracerCallbacks(*tracer);
 }
 
-uint64_t SwappyGL::getSwapIntervalNS() {
+nanoseconds SwappyGL::getSwapDuration() {
     SwappyGL *swappy = getInstance();
     if (!swappy || !swappy->enabled()) {
-        return -1;
+        return -1ns;
     }
-    return swappy->mCommonBase.getSwapIntervalNS();
+    return swappy->mCommonBase.getSwapDuration();
 };
 
 void SwappyGL::setAutoSwapInterval(bool enabled) {
@@ -147,13 +160,13 @@ void SwappyGL::setAutoPipelineMode(bool enabled) {
         swappy->mCommonBase.setAutoPipelineMode(enabled);
 }
 
-void SwappyGL::setMaxAutoSwapIntervalNS(std::chrono::nanoseconds maxSwapNS) {
+void SwappyGL::setMaxAutoSwapDuration(std::chrono::nanoseconds maxSwapNS) {
     SwappyGL *swappy = getInstance();
     if (!swappy) {
         return;
     }
     if (swappy->enabled())
-        swappy->mCommonBase.setMaxAutoSwapIntervalNS(maxSwapNS);
+        swappy->mCommonBase.setMaxAutoSwapDuration(maxSwapNS);
 }
 
 void SwappyGL::enableStats(bool enabled) {

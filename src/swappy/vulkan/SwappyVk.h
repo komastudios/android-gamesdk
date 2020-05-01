@@ -68,7 +68,10 @@ public:
                                  VkDevice         device,
                                  VkSwapchainKHR   swapchain,
                                  uint64_t*        pRefreshDuration);
-    void SetSwapIntervalNS(VkDevice       device,
+    void SetWindow(VkDevice       device,
+                   VkSwapchainKHR swapchain,
+                   ANativeWindow* window);
+    void SetSwapDuration(VkDevice       device,
                            VkSwapchainKHR swapchain,
                            uint64_t       swap_ns);
     VkResult QueuePresent(VkQueue                 queue,
@@ -78,7 +81,7 @@ public:
 
     void SetAutoSwapInterval(bool enabled);
     void SetAutoPipelineMode(bool enabled);
-    void SetMaxAutoSwapIntervalNS(std::chrono::nanoseconds maxSwapNS);
+    void SetMaxAutoSwapDuration(std::chrono::nanoseconds maxSwapNS);
     void SetFenceTimeout(std::chrono::nanoseconds duration);
     std::chrono::nanoseconds GetFenceTimeout() const;
 

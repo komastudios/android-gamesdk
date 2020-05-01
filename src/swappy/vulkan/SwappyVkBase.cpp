@@ -120,8 +120,12 @@ SwappyVkBase::~SwappyVkBase() {
     destroyVkSyncObjects();
 }
 
+void SwappyVkBase::doSetWindow(ANativeWindow* window) {
+    mCommonBase.setANativeWindow(window);
+}
+
 void SwappyVkBase::doSetSwapInterval(VkSwapchainKHR swapchain, uint64_t swap_ns) {
-    Settings::getInstance()->setSwapIntervalNS(swap_ns);
+    Settings::getInstance()->setSwapDuration(swap_ns);
 }
 
 VkResult SwappyVkBase::initializeVkSyncObjects(VkQueue   queue,
@@ -260,7 +264,6 @@ void SwappyVkBase::destroyVkSyncObjects() {
 
     // Free all sync objects
     for (auto it = mFreeSyncPool.begin(); it != mFreeSyncPool.end(); it++) {
-        auto queue = it->first;
         auto syncList = it->second;
         while (syncList.size() > 0) {
             VkSync sync = syncList.front();
@@ -344,8 +347,8 @@ void SwappyVkBase::setAutoSwapInterval(bool enabled) {
     mCommonBase.setAutoSwapInterval(enabled);
 }
 
-void SwappyVkBase::setMaxAutoSwapIntervalNS(std::chrono::nanoseconds swapMaxNS) {
-    mCommonBase.setMaxAutoSwapIntervalNS(swapMaxNS);
+void SwappyVkBase::setMaxAutoSwapDuration(std::chrono::nanoseconds swapMaxNS) {
+    mCommonBase.setMaxAutoSwapDuration(swapMaxNS);
 }
 
 void SwappyVkBase::setAutoPipelineMode(bool enabled) {
