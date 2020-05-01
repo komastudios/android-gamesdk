@@ -48,10 +48,10 @@ void Settings::setDisplayTimings(const DisplayTimings& displayTimings) {
     // Notify the listeners without the lock held
     notifyListeners();
 }
-void Settings::setSwapIntervalNS(uint64_t swap_ns) {
+void Settings::setSwapDuration(uint64_t swapNs) {
     {
         std::lock_guard<std::mutex> lock(mMutex);
-        mSwapIntervalNS = swap_ns;
+        mSwapDuration = std::chrono::nanoseconds(swapNs);
     }
     // Notify the listeners without the lock held
     notifyListeners();
@@ -71,9 +71,9 @@ const Settings::DisplayTimings& Settings::getDisplayTimings() const {
     return mDisplayTimings;
 }
 
-uint64_t Settings::getSwapIntervalNS() const {
+std::chrono::nanoseconds Settings::getSwapDuration() const {
     std::lock_guard<std::mutex> lock(mMutex);
-    return mSwapIntervalNS;
+    return mSwapDuration;
 }
 
 bool Settings::getUseAffinity() const {
