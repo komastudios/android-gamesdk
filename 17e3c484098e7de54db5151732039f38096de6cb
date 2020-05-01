@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0830d54b_b3455bd1",
+        "filename": "src/swappy/common/Settings.h",
+        "patchSetId": 14
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2020-05-01T22:39:55Z",
+      "side": 1,
+      "message": "Nit: while you\u0027re at it, swapNs",
+      "range": {
+        "startLine": 53,
+        "startChar": 34,
+        "endLine": 53,
+        "endChar": 41
+      },
+      "revId": "17e3c484098e7de54db5151732039f38096de6cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "afa72ee5_46a19297",
+        "filename": "src/swappy/common/Settings.h",
+        "patchSetId": 14
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2020-05-01T22:39:55Z",
+      "side": 1,
+      "message": "Nit: while you\u0027re touching this, you could add digit separators",
+      "range": {
+        "startLine": 69,
+        "startChar": 89,
+        "endLine": 69,
+        "endChar": 98
+      },
+      "revId": "17e3c484098e7de54db5151732039f38096de6cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3e22fb9b_68060cb9",
+        "filename": "src/swappy/common/SwappyCommon.h",
+        "patchSetId": 14
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2020-05-01T22:39:55Z",
+      "side": 1,
+      "message": "Nit: probably not necessary given the type (and for consistency with other changes)",
+      "range": {
+        "startLine": 251,
+        "startChar": 68,
+        "endLine": 251,
+        "endChar": 70
+      },
+      "revId": "17e3c484098e7de54db5151732039f38096de6cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a13175e6_4b2715e2",
+        "filename": "src/swappy/vulkan/SwappyVk.cpp",
+        "patchSetId": 14
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2020-05-01T22:39:55Z",
+      "side": 1,
+      "message": "Nit: maybe \u0027maxDuration\u0027?",
+      "range": {
+        "startLine": 264,
+        "startChar": 63,
+        "endLine": 264,
+        "endChar": 72
+      },
+      "revId": "17e3c484098e7de54db5151732039f38096de6cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e1f2e913_27478473",
+        "filename": "src/swappy/vulkan/SwappyVk.h",
+        "patchSetId": 14
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1043625
+      },
+      "writtenOn": "2020-05-01T22:39:55Z",
+      "side": 1,
+      "message": "Nit: maybe \u0027maxDuration\u0027?",
+      "range": {
+        "startLine": 84,
+        "startChar": 64,
+        "endLine": 84,
+        "endChar": 66
+      },
+      "revId": "17e3c484098e7de54db5151732039f38096de6cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
