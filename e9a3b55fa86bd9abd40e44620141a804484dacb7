@@ -1,0 +1,92 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000002772293",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1260534?revision\u003d10",
+      "fixSuggestions": [
+        {
+          "fixId": "76cbacd0_1cc94956",
+          "description": "Change to \"src/swappy/common/SwappyCommon.cpp\"",
+          "replacements": [
+            {
+              "path": "src/swappy/common/SwappyCommon.cpp",
+              "range": {
+                "startLine": 588,
+                "startChar": 26,
+                "endLine": 588,
+                "endChar": 33
+              },
+              "replacement": "Percent"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "805dd69e_a84ae829",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 588,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-05-01T19:16:32Z",
+      "side": 1,
+      "message": "Common typo found: \"Precent\" -- should it be \"Percent\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.",
+      "range": {
+        "startLine": 588,
+        "startChar": 26,
+        "endLine": 588,
+        "endChar": 33
+      },
+      "revId": "e9a3b55fa86bd9abd40e44620141a804484dacb7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000002772293",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1260534?revision\u003d10",
+      "fixSuggestions": [
+        {
+          "fixId": "4df3a726_46fed53a",
+          "description": "Change to \"src/swappy/common/SwappyCommon.cpp\"",
+          "replacements": [
+            {
+              "path": "src/swappy/common/SwappyCommon.cpp",
+              "range": {
+                "startLine": 609,
+                "startChar": 46,
+                "endLine": 609,
+                "endChar": 53
+              },
+              "replacement": "Percent"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "18ca73bc_9637b44d",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 609,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-05-01T19:16:32Z",
+      "side": 1,
+      "message": "Common typo found: \"Precent\" -- should it be \"Percent\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.",
+      "range": {
+        "startLine": 609,
+        "startChar": 46,
+        "endLine": 609,
+        "endChar": 53
+      },
+      "revId": "e9a3b55fa86bd9abd40e44620141a804484dacb7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
