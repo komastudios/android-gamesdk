@@ -62,6 +62,19 @@ void SwappyGL::onChoreographer(int64_t frameTimeNanos) {
     swappy->mCommonBase.onChoreographer(frameTimeNanos);
 }
 
+bool SwappyGL::setWindow(ANativeWindow* window) {
+    TRACE_CALL();
+
+    SwappyGL *swappy = getInstance();
+    if (!swappy) {
+        ALOGE("Failed to get SwappyGL instance in swap");
+        return false;
+    }
+
+    swappy->mCommonBase.setANativeWindow(window);
+    return true;
+}
+
 bool SwappyGL::swap(EGLDisplay display, EGLSurface surface) {
     TRACE_CALL();
 
