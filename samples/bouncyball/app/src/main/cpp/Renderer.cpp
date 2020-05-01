@@ -45,7 +45,10 @@ void Renderer::setWindow(ANativeWindow *window, int32_t width, int32_t height) {
 
         ALOGE("Creating window surface %dx%d", width, height);
 
-        if (!window) return;
+        if (!window) {
+            SwappyGL_setWindow(nullptr);
+            return;
+        }
 
         threadState->surface =
             eglCreateWindowSurface(threadState->display, threadState->config, window, NULL);
@@ -55,6 +58,7 @@ void Renderer::setWindow(ANativeWindow *window, int32_t width, int32_t height) {
             threadState->surface = EGL_NO_SURFACE;
             return;
         }
+        SwappyGL_setWindow(window);
 
         threadState->width = width;
         threadState->height = height;

@@ -223,9 +223,9 @@ class Simulator : public ITimeProvider {
             gpuThread_.setFenceTimeout(*p.fenceTimeout);
         }
         if (p.maxAutoSwapInterval)
-            commonBase_->setMaxAutoSwapIntervalNS(*p.maxAutoSwapInterval);
+            commonBase_->setMaxAutoSwapDuration(*p.maxAutoSwapInterval);
         if (p.swapInterval)
-            Settings::getInstance()->setSwapIntervalNS(p.swapInterval->count());
+            Settings::getInstance()->setSwapDuration(p.swapInterval->count());
     }
     void setWorkload(const Workload& w) {
         if (currentWorkload_) {
@@ -360,7 +360,7 @@ class Simulator : public ITimeProvider {
     void postSwapBuffers(duration desiredPresentationTime) {}
     void startFrame(int currentFrame, duration desiredPresentationTime) {}
     void swapIntervalChanged() {
-        auto newSwapInterval = std::chrono::nanoseconds(commonBase_->getSwapIntervalNS());
+        auto newSwapInterval = commonBase_->getSwapDuration();
         swapIntervalChangedEvents.push_back(
                 SwapIntervalChangedEvent {newSwapInterval, timeFromStart()});
     }
