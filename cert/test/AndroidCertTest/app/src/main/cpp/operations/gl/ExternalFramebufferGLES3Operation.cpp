@@ -32,14 +32,17 @@
  *
  * Output report:
  * - datum
- *   - success: true if we were able to create, render to, and read a native
- *              hardware buffer.
- *   - measured_red: the red value sampled from the hardware buffer.
+ *   - success:        true if we were able to create, render to, and read a
+ *                     native hardware buffer.
+ *   - measured_red:   the red value sampled from the hardware buffer.
  *   - measured_green: the green value sampled from the hardware buffer.
- *   - measured_blue: the blue value sampled from the hardware buffer.
+ *   - measured_blue:  the blue value sampled from the hardware buffer.
  *   - measured_alpha: the alpha value sampled from the hardware buffer.
  * - error_message_datum
- *   - error_message: describes the reason the test failed.
+ *   - error_message:     describes an error encountered.
+ *   - indicates_failure: if true, indicates that the test failed; 
+ *                        if false, indicates that it could not proceed but did
+ *                        not fail (i.e., the feature was not available).
  *
  * (Note: the `measured_red`, etc. values are only logged for debugging
  * purposes.)
@@ -63,7 +66,7 @@ using namespace ancer;
 //==============================================================================
 
 namespace {
-constexpr Log::Tag TAG{"ExternalBufferGLES3Operation"};
+constexpr Log::Tag TAG{"ExternalFramebufferGLES3Operation"};
 }  // anonymous namespace
 
 namespace {
@@ -86,21 +89,23 @@ void WriteDatum(report_writers::Struct w, const datum &d) {
 
 struct error_message_datum {
   std::string error_message;
+  bool indicates_failure;
 };
 
 void WriteDatum(report_writers::Struct w, const error_message_datum &d) {
   ADD_DATUM_MEMBER(w, d, error_message);
+  ADD_DATUM_MEMBER(w, d, indicates_failure);
 }
 
 }  // anonymous namespace
 
 //==============================================================================
 
-class ExternalBufferGLES3Operation : public BaseGLES3Operation {
+class ExternalFramebufferGLES3Operation : public BaseGLES3Operation {
  public:
-  ExternalBufferGLES3Operation() = default;
+  ExternalFramebufferGLES3Operation() = default;
 
-  ~ExternalBufferGLES3Operation() {}
+  ~ExternalFramebufferGLES3Operation() {}
 
   void OnGlContextReady(const GLContextConfig &ctx_config) override {
     Log::D(TAG, "GlContextReady");
@@ -137,9 +142,9 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
   void OnHeartbeat(Duration elapsed) override {}
 
  private:
-  void ReportError(const std::string &msg) {
+  void ReportError(const std::string &msg, bool indicate_failure) {
     Log::D(TAG, msg);
-    error_message_datum d{msg};
+    error_message_datum d{msg, indicate_failure};
     Report(d);
   }
 
@@ -160,7 +165,7 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
     libandroid::FP_AHB_ALLOCATE fp_alloc =
         libandroid::GetFP_AHardwareBuffer_allocate();
     if (nullptr == fp_alloc) {
-      ReportError("Failed to locate symbol for AHardwareBuffer_allocate");
+      ReportError("Unable to load symbol for AHardwareBuffer_allocate", false);
       return false;
     }
 
@@ -175,22 +180,22 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
 
     fp_alloc(&h_desc, &_hardware_buffer);
     if (nullptr == _hardware_buffer) {
-      ReportError("Failed to allocate AHardwareBuffer");
+      ReportError("Failed to allocate AHardwareBuffer", true);
       return false;
     }
 
     PFNEGLGETNATIVECLIENTBUFFERANDROIDPROC fp_get_native_client_buffer =
         libegl::PfnGetNativeClientBuffer();
     if (nullptr == fp_get_native_client_buffer) {
-      ReportError(
-          "Failed to locate symbol for eglGetNativeClientBufferANDROID");
+      ReportError("Failed to locate symbol for eglGetNativeClientBufferANDROID",
+                  true);
       return false;
     }
 
     _egl_buffer = fp_get_native_client_buffer(_hardware_buffer);
     if (nullptr == _egl_buffer) {
       DestroyNativeClientBuffer();
-      ReportError("Failed to get native client buffer");
+      ReportError("Failed to get native client buffer", true);
       return false;
     }
 
@@ -201,7 +206,7 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
     libandroid::FP_AHB_RELEASE fp_release =
         libandroid::GetFP_AHardwareBuffer_release();
     if (nullptr == fp_release) {
-      ReportError("Failed to locate symbol for AHardwareBuffer_release");
+      ReportError("Failed to locate symbol for AHardwareBuffer_release", true);
       return false;
     }
 
@@ -221,25 +226,26 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
       EGLint err = eglGetError();
       switch (err) {
         case EGL_BAD_DISPLAY:
-          ReportError("Failed to create EGLImageKHR : EGL_BAD_DISPLAY");
+          ReportError("Failed to create EGLImageKHR : EGL_BAD_DISPLAY", true);
           break;
         case EGL_BAD_CONTEXT:
-          ReportError("Failed to create EGLImageKHR : EGL_BAD_CONTEXT");
+          ReportError("Failed to create EGLImageKHR : EGL_BAD_CONTEXT", true);
           break;
         case EGL_BAD_PARAMETER:
-          ReportError("Failed to create EGLImageKHR : EGL_BAD_PARAMETER");
+          ReportError("Failed to create EGLImageKHR : EGL_BAD_PARAMETER", true);
           break;
         case EGL_BAD_MATCH:
-          ReportError("Failed to create EGLImageKHR : EGL_BAD_MATCH");
+          ReportError("Failed to create EGLImageKHR : EGL_BAD_MATCH", true);
           break;
         case EGL_BAD_ACCESS:
-          ReportError("Failed to create EGLImageKHR : EGL_BAD_ACCESS");
+          ReportError("Failed to create EGLImageKHR : EGL_BAD_ACCESS", true);
           break;
         case EGL_BAD_ALLOC:
-          ReportError("Failed to create EGLImageKHR : EGL_BAD_ALLOC");
+          ReportError("Failed to create EGLImageKHR : EGL_BAD_ALLOC", true);
           break;
         default:
-          ReportError("Failed to create EGLImageKHR : unrecognized error");
+          ReportError("Failed to create EGLImageKHR : unrecognized error",
+                      true);
           break;
       }
       return false;
@@ -270,7 +276,7 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
     glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, _egl_image);
     GLenum err = glGetError();
     if (err != GL_NO_ERROR) {
-      ReportError("Failed to bind EGLImage to texture");
+      ReportError("Failed to bind EGLImage to texture", true);
       return false;
     }
 
@@ -278,7 +284,7 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
                            GL_TEXTURE_2D, _texture, 0);
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (status != GL_FRAMEBUFFER_COMPLETE) {
-      ReportError("Incomplete framebuffer");
+      ReportError("Incomplete framebuffer", true);
       return false;
     }
 
@@ -310,14 +316,14 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
   bool ReadAHardwareBuffer() {
     libandroid::FP_AHB_LOCK fp_lock = libandroid::GetFP_AHardwareBuffer_lock();
     if (nullptr == fp_lock) {
-      ReportError("Failed to load symbol for AHardwareBuffer_lock");
+      ReportError("Failed to load symbol for AHardwareBuffer_lock", true);
       return false;
     }
 
     libandroid::FP_AHB_UNLOCK fp_unlock =
         libandroid::GetFP_AHardwareBuffer_unlock();
     if (nullptr == fp_unlock) {
-      ReportError("Failed to load symbol for AHardwareBuffer_unlock");
+      ReportError("Failed to load symbol for AHardwareBuffer_unlock", true);
       return false;
     }
 
@@ -326,13 +332,14 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
         fp_lock(_hardware_buffer, AHARDWAREBUFFER_USAGE_CPU_READ_MASK, -1,
                 nullptr, &buffer);
     if (lock_result != 0) {
-      ReportError("Failed to lock AHardwareBuffer : " +
-                  std::to_string(lock_result));
+      ReportError(
+          "Failed to lock AHardwareBuffer : " + std::to_string(lock_result),
+          true);
       return false;
     }
 
     if (nullptr == buffer) {
-      ReportError("Failed to map buffer memory");
+      ReportError("Failed to map buffer memory", true);
       return false;
     }
 
@@ -358,8 +365,9 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
 
     const int unlock_result = fp_unlock(_hardware_buffer, nullptr);
     if (unlock_result != 0) {
-      ReportError("Failed to unlock AHardwareBuffer : " +
-                  std::to_string(unlock_result));
+      ReportError(
+          "Failed to unlock AHardwareBuffer : " + std::to_string(unlock_result),
+          true);
       return false;
     }
 
@@ -389,4 +397,4 @@ class ExternalBufferGLES3Operation : public BaseGLES3Operation {
   const uint32_t _framebuffer_height = 512;
 };
 
-EXPORT_ANCER_OPERATION(ExternalBufferGLES3Operation)
+EXPORT_ANCER_OPERATION(ExternalFramebufferGLES3Operation)
