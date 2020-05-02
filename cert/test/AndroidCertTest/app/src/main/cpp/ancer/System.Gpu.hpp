@@ -17,7 +17,13 @@
 #ifndef _SYSTEM_GPU_HPP
 #define _SYSTEM_GPU_HPP
 
+#include <memory>
+#include <sstream>
+
 #include <GLES3/gl32.h>
+#include <jni.h>
+
+#include <ancer/util/Time.hpp>
 
 namespace ancer {
 class FpsCalculator;
@@ -31,6 +37,108 @@ namespace ancer {
  */
 GLuint CreateProgram(const char *vtx_file_name, const char *frg_file_name);
 
+//--------------------------------------------------------------------------------------------------
+
+enum class TexturePostCompressionFormat {
+  NONE,
+  GZIP,
+  LZ4
+};
+
+class TextureMetadata {
+ public:
+  TextureMetadata(const std::string &relative_path, const std::string &filename_stem);
+
+  virtual ~TextureMetadata();
+
+  const std::string &GetRelativePath() const;
+
+  const std::string &GetFilenameStem() const;
+
+  virtual const std::string &GetFilenameExtension() const = 0;
+
+  int32_t GetWidth() const;
+
+  int32_t GetHeight() const;
+
+  bool HasAlpha() const;
+
+  size_t GetSizeAtRest() const;
+
+  size_t GetSizeInMemory() const;
+
+  Milliseconds::rep GetLoadTimeInMillis() const;
+
+  bool Load();
+
+  // TODO(dagum): document that must be run on GLThread exclusively
+  void ApplyBitmap(const GLuint texture_id);
+
+  std::string ToString() const;
+
+ protected:
+  virtual void _Load() = 0;
+  virtual void _ApplyBitmap() = 0;
+  void _ReleaseBitmapData();
+
+  std::string _relative_path;
+  std::string _filename_stem;
+
+  int32_t _width;
+  int32_t _height;
+  bool _has_alpha;
+  std::unique_ptr<u_char> _bitmap_data;
+  size_t _mem_size;
+  size_t _file_size;
+  Milliseconds _load_time_in_millis;
+};
+
+class UncompressedTextureMetadata : public TextureMetadata {
+ public:
+  UncompressedTextureMetadata(const std::string &relative_path, const std::string &filename_stem);
+  virtual const std::string &GetChannels() const = 0;
+};
+
+class PngTextureMetadata : public UncompressedTextureMetadata {
+ public:
+  PngTextureMetadata(const std::string &relative_path, const std::string &filename_stem);
+  const std::string &GetFilenameExtension() const override;
+  const std::string &GetChannels() const override;
+
+ protected:
+  void _Load() override;
+};
+
+class CompressedTextureMetadata : public TextureMetadata {
+ public:
+  CompressedTextureMetadata(const std::string &relative_path,
+                            const std::string &filename_stem,
+                            const TexturePostCompressionFormat post_compression_format
+                            = TexturePostCompressionFormat::NONE);
+
+  const std::string &GetFilenameExtension() const override;
+
+  TexturePostCompressionFormat GetPostCompressionFormat() const;
+
+ protected:
+  virtual const std::string &_GetInnerExtension() const = 0;
+
+  TexturePostCompressionFormat _post_compression_format;
+};
+
+class Etc2TextureMetadata : public CompressedTextureMetadata {
+ public:
+  Etc2TextureMetadata(const std::string &relative_path,
+                      const std::string &filename_stem,
+                      const TexturePostCompressionFormat post_compression_format
+                      = TexturePostCompressionFormat::NONE);
+
+ private:
+  const std::string &_GetInnerExtension() const override;
+};
+
+GLuint SetupTexture();
+
 /**
  * Loads a texture from application's assets/ folder. If texture loads,
  * writes width into out_width, height into out_height, and if the texture
@@ -39,6 +147,8 @@ GLuint CreateProgram(const char *vtx_file_name, const char *frg_file_name);
  */
 GLuint LoadTexture(const char *file_name, int32_t *out_width = nullptr,
                    int32_t *out_height = nullptr, bool *has_alpha = nullptr);
+
+//--------------------------------------------------------------------------------------------------
 
 /**
  * Configuration params for opengl contexts
@@ -60,12 +170,12 @@ struct GLContextConfig {
 };
 
 inline bool operator==(const GLContextConfig &lhs, const GLContextConfig &rhs) {
-  return lhs.red_bits==rhs.red_bits &&
-      lhs.green_bits==rhs.green_bits &&
-      lhs.blue_bits==rhs.blue_bits &&
-      lhs.alpha_bits==rhs.alpha_bits &&
-      lhs.depth_bits==rhs.depth_bits &&
-      lhs.stencil_bits==rhs.stencil_bits;
+  return lhs.red_bits == rhs.red_bits &&
+      lhs.green_bits == rhs.green_bits &&
+      lhs.blue_bits == rhs.blue_bits &&
+      lhs.alpha_bits == rhs.alpha_bits &&
+      lhs.depth_bits == rhs.depth_bits &&
+      lhs.stencil_bits == rhs.stencil_bits;
 }
 
 inline std::ostream &operator<<(std::ostream &os, GLContextConfig c) {

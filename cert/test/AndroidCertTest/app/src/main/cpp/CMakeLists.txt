@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.10.2)
 get_filename_component(CppDir ${CMAKE_CURRENT_SOURCE_DIR} ABSOLUTE)
 get_filename_component(GameSDKDir ${GAMESDK_DIR} ABSOLUTE)
 get_filename_component(LibDir ${CMAKE_CURRENT_SOURCE_DIR}/../../../../common/3rd_party ABSOLUTE)
+get_filename_component(BasisDir ${LibDir}/basis_universal ABSOLUTE)
 get_filename_component(ShadercDir ${ANDROID_NDK}/sources/third_party/shaderc ABSOLUTE)
 get_filename_component(GTestDir ${ANDROID_NDK}/sources/third_party/googletest ABSOLUTE)
 get_filename_component(CpuFeaturesDir ${ANDROID_NDK}/sources/android/cpufeatures ABSOLUTE)
@@ -87,14 +88,18 @@ add_library(${PROJECT_NAME} SHARED
         ancer/Suite.cpp
         ancer/SwappyRenderer.cpp
         ancer/System.cpp
+        ancer/System.Asset.cpp
+        ancer/System.Astc.cpp
         ancer/System.Cpu.cpp
         ancer/System.Gpu.cpp
+        ancer/System.Jpg.cpp
         ancer/System.Memory.cpp
         ancer/System.Temperature.cpp
         ancer/util/Basics.cpp
         ancer/util/Bitmath.cpp
         ancer/util/GLHelpers.cpp
         ancer/util/GLPixelBuffer.cpp
+        ancer/util/GLTexImage2DRenderer.cpp
         ancer/util/JNIHelpers.cpp
         ancer/util/LibAndroid.cpp
         ancer/util/LibEGL.cpp
@@ -149,6 +154,7 @@ add_library(${PROJECT_NAME} SHARED
         operations/gl/MediumPVecNormalizationGLES3Operation.cpp
         operations/gl/ShaderBlobGLES3Operation.cpp
         operations/gl/TeapotRendererGLES3Operation.cpp
+        operations/gl/TextureLoadingGLES3Operation.cpp
         operations/gl/VertexStreamGLES3Operation.cpp
 
         operations/vulkan/VulkanVaryingsTestOperation.cpp
@@ -166,6 +172,7 @@ add_library(${PROJECT_NAME} SHARED
 target_include_directories(${PROJECT_NAME} PUBLIC
         include
         ${CppDir}
+        ${LibDir}
         ${LibDir}/json/include
         ${LibDir}/glm/
         ${GameSDKDir}/include
@@ -187,12 +194,19 @@ add_library(shaderc_lib STATIC IMPORTED)
 set_target_properties(shaderc_lib PROPERTIES IMPORTED_LOCATION
         ${ShadercDir}/libs/${ANDROID_STL}/${ANDROID_ABI}/libshaderc.a)
 
+add_library(basis STATIC
+        ${BasisDir}/jpgd.cpp
+        ${BasisDir}/lodepng.cpp
+        )
+target_compile_options(basis PRIVATE -Wno-error=invalid-noreturn)
+
 target_link_libraries(${PROJECT_NAME}
         GLESv3
         android
         ${log-lib}
         EGL
         shaderc_lib
+        basis
         )
 
 if (CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")

@@ -22,11 +22,13 @@
 #include <string>
 
 #include <jni.h>
-#include <sstream>
 
 #include "Renderer.hpp"
+#include "System.Asset.hpp"
+#include "System.Astc.hpp"
 #include "System.Cpu.hpp"
 #include "System.Gpu.hpp"
+#include "System.Jpg.hpp"
 #include "System.Memory.hpp"
 #include "System.Temperature.hpp"
 
