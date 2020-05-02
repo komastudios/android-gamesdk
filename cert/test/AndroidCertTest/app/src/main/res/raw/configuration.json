@@ -98,7 +98,7 @@
       "description": "Determine if a native hardware buffer can be created and used as render target.",
       "duration": "5s",
       "data_gatherer": {
-        "id": "ExternalBufferGLES3Operation",
+        "id": "ExternalFramebufferGLES3Operation",
         "configuration": {}
       },
       "stressors": []
