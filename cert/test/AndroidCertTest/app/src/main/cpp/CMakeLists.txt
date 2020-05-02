@@ -149,6 +149,7 @@ add_library(${PROJECT_NAME} SHARED
         operations/gl/MediumPVecNormalizationGLES3Operation.cpp
         operations/gl/ShaderBlobGLES3Operation.cpp
         operations/gl/TeapotRendererGLES3Operation.cpp
+        operations/gl/TextureLoadingGLES3Operation.cpp
         operations/gl/VertexStreamGLES3Operation.cpp
 
         operations/vulkan/VulkanVaryingsTestOperation.cpp
