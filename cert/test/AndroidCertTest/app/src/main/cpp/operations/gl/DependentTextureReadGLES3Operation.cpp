@@ -49,9 +49,8 @@
 #include <ancer/DatumReporting.hpp>
 #include <ancer/System.hpp>
 #include <ancer/util/Error.hpp>
+#include <ancer/util/GLTexImage2DRenderer.hpp>
 #include <ancer/util/Json.hpp>
-
-#define SIZEOF_PRIMITIVE_ARRAY(a)    (sizeof(a)/sizeof(a[0]))
 
 using namespace ancer;
 
@@ -91,128 +90,7 @@ void WriteDatum(report_writers::Struct writer, const throughput &throughput) {
 
 //==================================================================================================
 
-namespace {
-struct Vertex {
-  vec2 position;
-  vec2 texture_coordinates;
-
-  enum class Attributes : GLuint {
-    Position,
-    TextureCoordinates
-  };
-};
-}
-
-//==================================================================================================
-
 class DependentTextureReadGLES3Operation : public BaseGLES3Operation {
- private:
-  class Renderer {
-   public:
-    Renderer(const int left,
-             const int top,
-             const int width,
-             const int height) :
-        _width(width), _height(height),
-        _vertex_buffer_object_id(0), _index_buffer_object_id(0), _vertex_buffer_object_state(0),
-        _vertices{{{left, top}, {0, 0}},
-                  {{left + width, top}, {1, 0}},
-                  {{left, top + height}, {0, 1}},
-                  {{left + width, top + height}, {1, 1}}
-        },
-        _indices{0, 1, 2, 1, 3, 2} {
-      CreateGLObjects();
-    }
-
-    virtual ~Renderer() {
-      TeardownGL();
-    }
-
-    void Draw() {
-      ANCER_SCOPED_TRACE("DependentTextureReadGLES3Operation::Renderer::Draw");
-
-      glBindVertexArray(_vertex_buffer_object_state);
-      glDrawElements(GL_TRIANGLES, SIZEOF_PRIMITIVE_ARRAY(_indices), GL_UNSIGNED_SHORT, nullptr);
-    }
-
-//--------------------------------------------------------------------------------------------------
-
-   private:
-    void CreateGLObjects() {
-      // Initialize vertex buffers
-      ANCER_SCOPED_TRACE("DependentTextureReadGLES3Operation::Renderer::Setup");
-
-      glGenBuffers(1, &_vertex_buffer_object_id);
-      glBindBuffer(GL_ARRAY_BUFFER, _vertex_buffer_object_id);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(_vertices), _vertices, GL_STATIC_DRAW);
-
-      glGenBuffers(1, &_index_buffer_object_id);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _index_buffer_object_id);
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(_indices), _indices, GL_STATIC_DRAW);
-
-      glh::CheckGlError("building buffers");
-
-      glGenVertexArrays(1, &_vertex_buffer_object_state);
-      glBindVertexArray(_vertex_buffer_object_state);
-
-      glh::CheckGlError("binding vertex array");
-
-      glVertexAttribPointer(
-          static_cast<GLuint>(Vertex::Attributes::Position), 2, GL_FLOAT, GL_FALSE,
-          sizeof(Vertex),
-          (const GLvoid *) offsetof(Vertex, position));
-
-      glVertexAttribPointer(
-          static_cast<GLuint>(Vertex::Attributes::TextureCoordinates), 2, GL_FLOAT,
-          GL_TRUE,
-          sizeof(Vertex),
-          (const GLvoid *) offsetof(Vertex, texture_coordinates));
-
-      glh::CheckGlError("setting attrib pointers");
-
-      glEnableVertexAttribArray(static_cast<GLuint>(Vertex::Attributes::Position));
-      glEnableVertexAttribArray(static_cast<GLuint>(Vertex::Attributes::TextureCoordinates));
-
-      glBindBuffer(GL_ARRAY_BUFFER, _vertex_buffer_object_id);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _index_buffer_object_id);
-
-      glDisable(GL_CULL_FACE);
-      glDisable(GL_DEPTH_TEST);
-    }
-
-    void TeardownGL() {
-      if (_vertex_buffer_object_state) {
-        glDeleteVertexArrays(1, &_vertex_buffer_object_state);
-      }
-
-      if (_vertex_buffer_object_id) {
-        glDeleteBuffers(1, &_vertex_buffer_object_id);
-      }
-
-      if (_index_buffer_object_id) {
-        glDeleteBuffers(1, &_index_buffer_object_id);
-      }
-    }
-
-//--------------------------------------------------------------------------------------------------
-
-   private:
-    GLuint _vertex_buffer_object_id;
-    GLuint _index_buffer_object_id;
-    GLuint _vertex_buffer_object_state;
-
-//--------------------------------------------------------------------------------------------------
-
-   private:
-    int _width;
-    int _height;
-
-    Vertex _vertices[4];
-    GLushort _indices[6];
-  };
-
-//--------------------------------------------------------------------------------------------------
-
  public:
   DependentTextureReadGLES3Operation() = default;
 
@@ -372,16 +250,8 @@ class DependentTextureReadGLES3Operation : public BaseGLES3Operation {
    * layout dimension that can hold all renderers.
    */
   void SetupRenderer() {
-    int left = 0;
-    int top = 0;
-
     auto size = GetGlContextSize();
-    int width = size.x;
-    int height = size.y;
-
-    _renderer = std::make_unique<Renderer>(
-        left, top, width, height
-    );
+    _renderer = std::make_unique<GLTexImage2DRenderer>(0, 0, size.x, size.y);
   }
 
 //--------------------------------------------------------------------------------------------------
@@ -406,7 +276,7 @@ class DependentTextureReadGLES3Operation : public BaseGLES3Operation {
   configuration _configuration{};
   bool _context_ready = false;
 
-  std::unique_ptr<Renderer> _renderer;
+  std::unique_ptr<GLTexImage2DRenderer> _renderer;
   FpsCalculator *_fps_calculator;
 
   Duration _report_timer;

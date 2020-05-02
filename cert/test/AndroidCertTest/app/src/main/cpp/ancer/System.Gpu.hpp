@@ -31,6 +31,126 @@ namespace ancer {
  */
 GLuint CreateProgram(const char *vtx_file_name, const char *frg_file_name);
 
+//--------------------------------------------------------------------------------------------------
+
+// TODO(dagum): Javadoc all these
+enum class TextureCompressionFormat {
+  JPG,
+  PNG,
+  ASTC,
+  ETC2
+  // TODO(dagum): BASIS
+};
+
+enum class TexturePostCompressionFormat {
+  NONE,
+  GZIP,
+  LZ4
+};
+
+class TextureMetadata {
+ public:
+  TextureMetadata(const std::string &relative_path, const std::string &filename_stem);
+
+  virtual ~TextureMetadata();
+
+  const std::string &GetRelativePath() const;
+
+  const std::string &GetFilenameStem() const;
+
+  virtual const std::string &GetFilenameExtension() const = 0;
+
+  int32_t GetWidth() const;
+
+  int32_t GetHeight() const;
+
+  bool HasAlpha() const;
+
+  virtual bool Load() = 0;
+
+  // TODO(dagum): document that must be run on GLThread exclusively
+  virtual void ApplyBitmap(const GLuint texture_id) = 0;
+
+  std::string ToString() const;
+
+ protected:
+  void ReleaseBitmapData();
+
+  std::string _relative_path;
+  std::string _filename_stem;
+
+  int32_t _width;
+  int32_t _height;
+  bool _has_alpha;
+  void *_bitmap_data;
+};
+
+class UncompressedTextureMetadata : public TextureMetadata {
+ public:
+  UncompressedTextureMetadata(const std::string &relative_path, const std::string &filename_stem);
+  virtual const std::string &GetChannels() const = 0;
+};
+
+class JpgTextureMetadata : public UncompressedTextureMetadata {
+ public:
+  JpgTextureMetadata(const std::string &relative_path, const std::string &filename_stem);
+
+  const std::string &GetFilenameExtension() const override;
+  bool Load() override;
+  void ApplyBitmap(const GLuint texture_id) override;
+  const std::string &GetChannels() const override;
+};
+
+class PngTextureMetadata : public UncompressedTextureMetadata {
+ public:
+  PngTextureMetadata(const std::string &relative_path, const std::string &filename_stem);
+  const std::string &GetFilenameExtension() const override;
+  bool Load() override;
+  const std::string &GetChannels() const override;
+};
+
+class CompressedTextureMetadata : public TextureMetadata {
+ public:
+  CompressedTextureMetadata(const std::string &relative_path,
+                            const std::string &filename_stem,
+                            const TexturePostCompressionFormat post_compression_format
+                            = TexturePostCompressionFormat::NONE);
+
+  const std::string &GetFilenameExtension() const override;
+  bool Load() override;  // TODO(dagum): remove from here. Just temporary to unblock compile
+
+  TexturePostCompressionFormat GetPostCompressionFormat() const;
+
+ private:
+  virtual const std::string &_GetInnerExtension() const = 0;
+
+  TexturePostCompressionFormat _post_compression_format;
+};
+
+class AstcTextureMetadata : public CompressedTextureMetadata {
+ public:
+  AstcTextureMetadata(const std::string &relative_path,
+                      const std::string &filename_stem,
+                      const TexturePostCompressionFormat post_compression_format
+                      = TexturePostCompressionFormat::NONE);
+
+ private:
+  const std::string &_GetInnerExtension() const override;
+};
+
+class Etc2TextureMetadata : public CompressedTextureMetadata {
+ public:
+  Etc2TextureMetadata(const std::string &relative_path,
+                      const std::string &filename_stem,
+                      const TexturePostCompressionFormat post_compression_format
+                      = TexturePostCompressionFormat::NONE);
+
+ private:
+  const std::string &_GetInnerExtension() const override;
+};
+
+GLuint SetupTexture();
+
 /**
  * Loads a texture from application's assets/ folder. If texture loads,
  * writes width into out_width, height into out_height, and if the texture
@@ -39,6 +159,8 @@ GLuint CreateProgram(const char *vtx_file_name, const char *frg_file_name);
  */
 GLuint LoadTexture(const char *file_name, int32_t *out_width = nullptr,
                    int32_t *out_height = nullptr, bool *has_alpha = nullptr);
+
+//--------------------------------------------------------------------------------------------------
 
 /**
  * Configuration params for opengl contexts
@@ -60,12 +182,12 @@ struct GLContextConfig {
 };
 
 inline bool operator==(const GLContextConfig &lhs, const GLContextConfig &rhs) {
-  return lhs.red_bits==rhs.red_bits &&
-      lhs.green_bits==rhs.green_bits &&
-      lhs.blue_bits==rhs.blue_bits &&
-      lhs.alpha_bits==rhs.alpha_bits &&
-      lhs.depth_bits==rhs.depth_bits &&
-      lhs.stencil_bits==rhs.stencil_bits;
+  return lhs.red_bits == rhs.red_bits &&
+      lhs.green_bits == rhs.green_bits &&
+      lhs.blue_bits == rhs.blue_bits &&
+      lhs.alpha_bits == rhs.alpha_bits &&
+      lhs.depth_bits == rhs.depth_bits &&
+      lhs.stencil_bits == rhs.stencil_bits;
 }
 
 inline std::ostream &operator<<(std::ostream &os, GLContextConfig c) {

@@ -16,6 +16,8 @@
 
 #include "System.hpp"
 
+#include <basis_universal/jpgd.h>
+
 #include "util/Error.hpp"
 #include "util/FpsCalculator.hpp"
 #include "util/GLHelpers.hpp"
@@ -43,19 +45,202 @@ GLuint ancer::CreateProgram(const char *vtx_file_name, const char *frg_file_name
 
 //==============================================================================
 
+TextureMetadata::TextureMetadata(
+    const std::string &relative_path, const std::string &filename_stem)
+    :
+    _relative_path{relative_path},
+    _filename_stem{filename_stem},
+    _width{0},
+    _height{0},
+    _has_alpha{false},
+    _bitmap_data{nullptr} {
+}
+
+TextureMetadata::~TextureMetadata() {
+  if (_bitmap_data) {
+    ReleaseBitmapData();
+  }
+}
+
+const std::string &TextureMetadata::GetRelativePath() const {
+  return _relative_path;
+}
+
+const std::string &TextureMetadata::GetFilenameStem() const {
+  return _filename_stem;
+}
+
+int32_t TextureMetadata::GetWidth() const {
+  return _width;
+}
+
+int32_t TextureMetadata::GetHeight() const {
+  return _height;
+}
+
+bool TextureMetadata::HasAlpha() const {
+  return _has_alpha;
+}
+
+std::string TextureMetadata::ToString() const {
+  std::string full_path(_relative_path);
+  if (_relative_path.size()) {
+    full_path.append("/");
+  }
+  full_path.append(_filename_stem).append(".").append(GetFilenameExtension());
+
+  return full_path;
+}
+
+void TextureMetadata::ReleaseBitmapData() {
+  free(_bitmap_data);
+}
+
+UncompressedTextureMetadata::UncompressedTextureMetadata(const std::string &relative_path,
+                                                         const std::string &filename_stem)
+    : TextureMetadata(relative_path, filename_stem) {}
+
+JpgTextureMetadata::JpgTextureMetadata(const std::string &relative_path,
+                                       const std::string &filename_stem)
+    : UncompressedTextureMetadata(relative_path, filename_stem) {}
+
+const std::string &JpgTextureMetadata::GetFilenameExtension() const {
+  static const std::string kJpg("jpg");
+  return kJpg;
+}
+
+bool JpgTextureMetadata::Load() {
+  assert(_bitmap_data == nullptr);
+
+  auto file_path = ToString();
+  JpegDecoderAssetStream asset_stream;
+
+  if (asset_stream.open(file_path)) {
+    int width = 0, height = 0, actual_comps = 0;
+    uint8_t *bitmap_data = jpgd::decompress_jpeg_image_from_stream(
+        &asset_stream,
+        &width,
+        &height,
+        &actual_comps,
+        4,
+        jpgd::jpeg_decoder::cFlagLinearChromaFiltering);
+    if (bitmap_data) {
+      _width = width;
+      _height = height;
+      _has_alpha = false;
+      _bitmap_data = bitmap_data;
+    }
+  }
+
+  return _bitmap_data != nullptr;
+}
+
+void JpgTextureMetadata::ApplyBitmap(const GLuint texture_id) {
+  glBindTexture(GL_TEXTURE_2D, texture_id);
+  glTexImage2D(GL_TEXTURE_2D,
+               0,
+               GL_RGB,
+               _width,
+               _height,
+               0,
+               GL_RGB,
+               GL_UNSIGNED_BYTE,
+               _bitmap_data);
+  ReleaseBitmapData();
+  glGenerateMipmap(GL_TEXTURE_2D);
+}
+
+const std::string &JpgTextureMetadata::GetChannels() const {
+  static const std::string kRgb("rgb");
+  return kRgb;
+}
+
+PngTextureMetadata::PngTextureMetadata(const std::string &relative_path,
+                                       const std::string &filename_stem)
+    : UncompressedTextureMetadata(relative_path, filename_stem) {}
+
+const std::string &PngTextureMetadata::GetFilenameExtension() const {
+  static const std::string kPng("png");
+  return kPng;
+}
+
+bool PngTextureMetadata::Load() {
+  return false;
+}
+
+const std::string &PngTextureMetadata::GetChannels() const {
+  static const std::string kRgba("rgba");
+  return kRgba;
+}
+
+CompressedTextureMetadata::CompressedTextureMetadata(
+    const std::string &relative_path,
+    const std::string &filename_stem,
+    const TexturePostCompressionFormat post_compression_format)
+    : TextureMetadata(relative_path, filename_stem),
+      _post_compression_format{post_compression_format} {
+}
+
+TexturePostCompressionFormat CompressedTextureMetadata::GetPostCompressionFormat() const {
+  return _post_compression_format;
+}
+
+const std::string &CompressedTextureMetadata::GetFilenameExtension() const {
+  static const std::string extension_by_post_compression_format[] = {"", "gz", "lz4"};
+
+  return _post_compression_format == TexturePostCompressionFormat::NONE
+         ?
+         _GetInnerExtension()
+         : extension_by_post_compression_format[static_cast<std::size_t>(_post_compression_format)];
+}
+
+bool CompressedTextureMetadata::Load() {
+  return false;
+}
+
+AstcTextureMetadata::AstcTextureMetadata(const std::string &relative_path,
+                                         const std::string &filename_stem,
+                                         const TexturePostCompressionFormat post_compression_format)
+    : CompressedTextureMetadata(relative_path, filename_stem, post_compression_format) {}
+
+const std::string &AstcTextureMetadata::_GetInnerExtension() const {
+  static const std::string kAstc("astc");
+  return kAstc;
+}
+
+Etc2TextureMetadata::Etc2TextureMetadata(const std::string &relative_path,
+                                         const std::string &filename_stem,
+                                         const TexturePostCompressionFormat post_compression_format)
+    : CompressedTextureMetadata(relative_path, filename_stem, post_compression_format) {}
+
+const std::string &Etc2TextureMetadata::_GetInnerExtension() const {
+  static const std::string kPkm("pkm");
+  return kPkm;
+}
+//--------------------------------------------------------------------------------------------------
+
+// TODO(dagum): document this, telling it must be run from GLThread.
+GLuint ancer::SetupTexture() {
+  GLuint texture_id = 0;
+
+  glGenTextures(1, &texture_id);
+  glBindTexture(GL_TEXTURE_2D, texture_id);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+  return texture_id;
+}
+
 GLuint ancer::LoadTexture(const char *file_name, int32_t *out_width, int32_t *out_height,
                           bool *has_alpha) {
-  GLuint tex = 0;
+  GLuint texture_id = 0;
   jni::SafeJNICall(
-      [&tex, &out_width, &out_height, &has_alpha, file_name](jni::LocalJNIEnv *env) {
+      [&texture_id, &out_width, &out_height, &has_alpha, file_name](jni::LocalJNIEnv *env) {
         jstring name = env->NewStringUTF(file_name);
         jobject activity = env->NewLocalRef(jni::GetActivityWeakGlobalRef());
         jclass activity_class = env->GetObjectClass(activity);
 
-        glGenTextures(1, &tex);
-        glBindTexture(GL_TEXTURE_2D, tex);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        texture_id = SetupTexture();
 
         jmethodID get_asset_helpers_mid = env->GetMethodID(
             activity_class,
@@ -87,7 +272,7 @@ GLuint ancer::LoadTexture(const char *file_name, int32_t *out_width, int32_t *ou
         int32_t height = env->GetIntField(out, fid_height);
 
         if (!ret) {
-          glDeleteTextures(1, &tex);
+          glDeleteTextures(1, &texture_id);
           *out_width = 0;
           *out_height = 0;
           if (has_alpha)
@@ -105,7 +290,7 @@ GLuint ancer::LoadTexture(const char *file_name, int32_t *out_width, int32_t *ou
         }
       });
 
-  return tex;
+  return texture_id;
 }
 
 //==============================================================================
@@ -185,31 +370,31 @@ std::vector<unsigned char> ancer::PNGEncodeRGBABytes(
         // Bitmap config
         jobject argb8888_value =
             jni::GetEnumField(env, "android/graphics/Bitmap$Config", "ARGB_8888");
-        if (argb8888_value==nullptr)
+        if (argb8888_value == nullptr)
           return;
 
         // Bitmap
         jclass bitmap_class = env->FindClass("android/graphics/Bitmap");
-        if (bitmap_class==nullptr)
+        if (bitmap_class == nullptr)
           return;
 
         jmethodID create_bitmap_method_id = env->GetStaticMethodID(
             bitmap_class, "createBitmap",
             "(IILandroid/graphics/Bitmap$Config;Z)Landroid/graphics/Bitmap;");
-        if (create_bitmap_method_id==nullptr)
+        if (create_bitmap_method_id == nullptr)
           return;
 
         jobject bitmap_object =
             env->CallStaticObjectMethod(bitmap_class, create_bitmap_method_id,
                                         width, height, argb8888_value, true);
-        if (bitmap_object==nullptr)
+        if (bitmap_object == nullptr)
           return;
 
         // Set pixel data
         // (Note, we could try to use `setPixels` instead, but we would
         // still need to convert four bytes into a 32-bit jint.)
         jmethodID set_pixel_method_id = env->GetMethodID(bitmap_class, "setPixel", "(III)V");
-        if (set_pixel_method_id==nullptr)
+        if (set_pixel_method_id == nullptr)
           return;
 
         size_t offset = 0;
@@ -231,20 +416,20 @@ std::vector<unsigned char> ancer::PNGEncodeRGBABytes(
         // PNG compression format
         jobject png_format_value =
             jni::GetEnumField(env, "android/graphics/Bitmap$CompressFormat", "PNG");
-        if (png_format_value==nullptr)
+        if (png_format_value == nullptr)
           return;
 
         // Make output stream
         jclass byte_array_os_class = env->FindClass("java/io/ByteArrayOutputStream");
-        if (byte_array_os_class==nullptr)
+        if (byte_array_os_class == nullptr)
           return;
 
         jmethodID byte_array_os_init_id = env->GetMethodID(byte_array_os_class, "<init>", "()V");
-        if (byte_array_os_init_id==nullptr)
+        if (byte_array_os_init_id == nullptr)
           return;
 
         jobject byte_array_os = env->NewObject(byte_array_os_class, byte_array_os_init_id);
-        if (byte_array_os==nullptr)
+        if (byte_array_os == nullptr)
           return;
 
         // Compress as PNG
@@ -253,7 +438,7 @@ std::vector<unsigned char> ancer::PNGEncodeRGBABytes(
                              "compress",
                              "(Landroid/graphics/Bitmap$CompressFormat;"
                              "ILjava/io/OutputStream;)Z");
-        if (compress_method_id==nullptr)
+        if (compress_method_id == nullptr)
           return;
 
         const jboolean compress_result =
@@ -265,12 +450,12 @@ std::vector<unsigned char> ancer::PNGEncodeRGBABytes(
         // Get byte array data
         jmethodID to_byte_array_method_id = env->GetMethodID(
             byte_array_os_class, "toByteArray", "()[B");
-        if (to_byte_array_method_id==nullptr)
+        if (to_byte_array_method_id == nullptr)
           return;
 
         auto byte_result =
             (jbyteArray) env->CallObjectMethod(byte_array_os, to_byte_array_method_id);
-        if (byte_result==nullptr)
+        if (byte_result == nullptr)
           return;
 
         const jsize byte_result_length = env->GetArrayLength(byte_result);
@@ -288,16 +473,16 @@ std::string ancer::Base64EncodeBytes(const unsigned char *bytes, int length) {
   jni::SafeJNICall(
       [&bytes, &length, &encoded](jni::LocalJNIEnv *env) {
         jclass base64_class = env->FindClass("android/util/Base64");
-        if (base64_class==nullptr)
+        if (base64_class == nullptr)
           return;
 
         jmethodID encode_to_string_method_id = env->GetStaticMethodID(
             base64_class, "encodeToString", "([BIII)Ljava/lang/String;");
-        if (encode_to_string_method_id==nullptr)
+        if (encode_to_string_method_id == nullptr)
           return;
 
         jbyteArray bytes_array = env->NewByteArray(length);
-        if (bytes_array==nullptr) {
+        if (bytes_array == nullptr) {
           return;
         }
 
@@ -305,9 +490,9 @@ std::string ancer::Base64EncodeBytes(const unsigned char *bytes, int length) {
 
         auto str = (jstring) env->CallStaticObjectMethod(base64_class, encode_to_string_method_id,
                                                          bytes_array, 0, length, 0);
-        if (str!=nullptr) {
+        if (str != nullptr) {
           const char *cstr = env->GetStringUTFChars(str, nullptr);
-          if (cstr!=nullptr) {
+          if (cstr != nullptr) {
             encoded = std::string(cstr);
             env->ReleaseStringUTFChars(str, cstr);
           }
