@@ -1,3 +1,5 @@
+#version 300 es
+
 /*
  * Copyright 2020 The Android Open Source Project
  *
@@ -14,29 +16,14 @@
  * limitations under the License.
  */
 
-#pragma once
+precision mediump float;
 
-namespace ancer::internal {
-    // In suite.hpp, re-declared here to avoid includes.
-    void SuiteUpdateRenderer();
-}
+uniform sampler2D uTex;
 
+in vec2 vTexCoord;
 
-namespace ancer::internal {
-    inline std::unique_ptr<Renderer> _system_renderer;
+out vec4 outColor;
 
-    template <typename T, typename... Args>
-    void CreateRenderer(Args&&... args) {
-        assert(_system_renderer == nullptr);
-        _system_renderer = T::Create(std::forward<Args>(args)...);
-        SuiteUpdateRenderer();
-    }
-
-    inline Renderer* GetRenderer() {
-        return _system_renderer.get();
-    }
-
-    inline void DestroyRenderer() {
-        _system_renderer.reset();
-    }
+void main() {
+    outColor = texture(uTex, vTexCoord);
 }

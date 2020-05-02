@@ -10,6 +10,19 @@
   "stress_tests": [
     {
       "enabled": true,
+      "name": "Texture Loading",
+      "description": "Comparison between compression strategies",
+      "duration": "0s",
+      "data_gatherer": {
+        "id": "TextureLoadingGLES3Operation",
+        "configuration": {
+        }
+      },
+      "host": "GLSurfaceViewHostActivity",
+      "stressors": []
+    },
+    {
+      "enabled": true,
       "name": "Choreographer Timestamps",
       "description": "Samples timestamps from Choreographer for comparison with VSYNC traces",
       "duration": "5s",

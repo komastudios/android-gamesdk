@@ -55,6 +55,7 @@
 
 #include <ancer/BaseOperation.hpp>
 #include <ancer/DatumReporting.hpp>
+#include <ancer/System.Cpu.hpp>
 #include <ancer/util/Log.hpp>
 #include <ancer/util/Json.hpp>
 
