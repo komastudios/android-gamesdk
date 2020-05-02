@@ -17,7 +17,11 @@
 #ifndef _SYSTEM_GPU_HPP
 #define _SYSTEM_GPU_HPP
 
+#include <memory>
+#include <sstream>
+
 #include <GLES3/gl32.h>
+#include <jni.h>
 
 namespace ancer {
 class FpsCalculator;
@@ -26,10 +30,26 @@ class FpsCalculator;
 namespace ancer {
 
 /**
+ * Load the text from a file in the application's assets/ folder
+ */
+std::string LoadText(const char *file_name);
+
+/**
  * Create gl shader program given the contents of the two shader files in assets/
  * returns handle to program, or 0 if program failed to load or link
  */
 GLuint CreateProgram(const char *vtx_file_name, const char *frg_file_name);
+
+//--------------------------------------------------------------------------------------------------
+
+/**
+ * Avoid repeating ourselves, by creating a new texture and binding it as a 2D.
+ * IMPORTANT: this function must be called exclusively from the GLThread (namely, any OpenGL ES
+ * callback function).
+ *
+ * @return the newly created bound texture, or 0 if something went wrong.
+ */
+GLuint BindNewTexture2D();
 
 /**
  * Loads a texture from application's assets/ folder. If texture loads,
@@ -39,6 +59,8 @@ GLuint CreateProgram(const char *vtx_file_name, const char *frg_file_name);
  */
 GLuint LoadTexture(const char *file_name, int32_t *out_width = nullptr,
                    int32_t *out_height = nullptr, bool *has_alpha = nullptr);
+
+//--------------------------------------------------------------------------------------------------
 
 /**
  * Configuration params for opengl contexts
@@ -60,12 +82,12 @@ struct GLContextConfig {
 };
 
 inline bool operator==(const GLContextConfig &lhs, const GLContextConfig &rhs) {
-  return lhs.red_bits==rhs.red_bits &&
-      lhs.green_bits==rhs.green_bits &&
-      lhs.blue_bits==rhs.blue_bits &&
-      lhs.alpha_bits==rhs.alpha_bits &&
-      lhs.depth_bits==rhs.depth_bits &&
-      lhs.stencil_bits==rhs.stencil_bits;
+  return lhs.red_bits == rhs.red_bits &&
+      lhs.green_bits == rhs.green_bits &&
+      lhs.blue_bits == rhs.blue_bits &&
+      lhs.alpha_bits == rhs.alpha_bits &&
+      lhs.depth_bits == rhs.depth_bits &&
+      lhs.stencil_bits == rhs.stencil_bits;
 }
 
 inline std::ostream &operator<<(std::ostream &os, GLContextConfig c) {

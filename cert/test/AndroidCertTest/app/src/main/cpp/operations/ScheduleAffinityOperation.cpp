@@ -60,6 +60,7 @@
 #include <cpu-features.h>
 
 #include <ancer/BaseOperation.hpp>
+#include <ancer/System.Cpu.hpp>
 #include <ancer/DatumReporting.hpp>
 #include <ancer/util/Basics.hpp>
 #include <ancer/util/Log.hpp>

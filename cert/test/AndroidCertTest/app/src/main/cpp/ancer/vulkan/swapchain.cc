@@ -1,7 +1,6 @@
 #include "swapchain.h"
 
 #include <ancer/util/JNIHelpers.hpp>
-#include <ancer/System.hpp>
 #include <ancer/util/Log.hpp>
 
 #include <swappy/swappyVk.h>

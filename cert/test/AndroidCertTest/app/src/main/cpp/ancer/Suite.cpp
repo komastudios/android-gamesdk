@@ -21,11 +21,11 @@
 #include <mutex>
 #include <set>
 
-#include "BaseOperation.hpp"
-#include "Renderer.hpp"
-#include "Reporting.hpp"
-#include "System.hpp"
-#include "util/Error.hpp"
+#include <ancer/BaseOperation.hpp>
+#include <ancer/Renderer.hpp>
+#include <ancer/Reporting.hpp>
+#include <ancer/System.hpp>
+#include <ancer/util/Error.hpp>
 
 using namespace ancer;
 using namespace ancer::internal;

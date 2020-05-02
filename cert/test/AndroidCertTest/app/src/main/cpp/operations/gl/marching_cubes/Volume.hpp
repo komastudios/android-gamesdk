@@ -21,6 +21,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include <ancer/System.Cpu.hpp>
 #include <ancer/util/UnownedPtr.hpp>
 
 #include "MarchingCubes.hpp"
