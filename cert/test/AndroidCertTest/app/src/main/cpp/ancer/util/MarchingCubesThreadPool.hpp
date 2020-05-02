@@ -30,7 +30,6 @@
 
 #include <ancer/util/Time.hpp>
 #include <ancer/util/Log.hpp>
-#include <ancer/System.hpp>
 
 namespace marching_cubes {
 

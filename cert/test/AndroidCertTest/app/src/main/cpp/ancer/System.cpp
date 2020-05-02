@@ -66,39 +66,3 @@ std::string ancer::RawResourcePath() {
 std::string ancer::ObbPath() {
   return _obb_path.string();
 }
-
-//==============================================================================
-
-std::string ancer::LoadText(const char *file_name) {
-  std::string text;
-  jni::SafeJNICall(
-      [file_name, &text](jni::LocalJNIEnv *env) {
-        jstring name = env->NewStringUTF(file_name);
-        jobject activity = env->NewLocalRef(jni::GetActivityWeakGlobalRef());
-        jclass activity_class = env->GetObjectClass(activity);
-
-        jmethodID get_asset_helpers_mid = env->GetMethodID(
-            activity_class, "getSystemHelpers",
-            "()Lcom/google/gamesdk/gamecert/operationrunner/util/SystemHelpers;"
-        );
-        jobject asset_helpers_instance =
-            env->CallObjectMethod(activity, get_asset_helpers_mid);
-        jclass asset_helpers_class =
-            env->GetObjectClass(asset_helpers_instance);
-
-        jmethodID load_text_mid = env->GetMethodID(
-            asset_helpers_class, "loadText",
-            "(Ljava/lang/String;)Ljava/lang/String;");
-        auto result_j_string = (jstring) env->CallObjectMethod(
-            asset_helpers_instance, load_text_mid,
-            name);
-
-        if (result_j_string) {
-          const char *result_utf_ptr =
-              env->GetStringUTFChars(result_j_string, nullptr);
-          text = std::string(result_utf_ptr);
-          env->ReleaseStringUTFChars(result_j_string, result_utf_ptr);
-        }
-      });
-  return text;
-}

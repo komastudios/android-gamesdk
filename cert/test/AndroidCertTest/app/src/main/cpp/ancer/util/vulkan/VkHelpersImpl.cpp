@@ -635,6 +635,7 @@ bool vulkan::AndroidLoadFile(const char *filePath, std::string *data) {
     }
     data->resize(fileLength);
     AAsset_read(file, &(*data)[0], fileLength);
+    AAsset_close(file);
     return true;
 }
 

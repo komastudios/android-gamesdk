@@ -22,13 +22,8 @@
 #include <string>
 
 #include <jni.h>
-#include <sstream>
 
 #include "Renderer.hpp"
-#include "System.Cpu.hpp"
-#include "System.Gpu.hpp"
-#include "System.Memory.hpp"
-#include "System.Temperature.hpp"
 
 namespace ancer {
 namespace internal {
@@ -48,11 +43,6 @@ void DestroyRenderer();
 [[nodiscard]] std::string InternalDataPath();
 [[nodiscard]] std::string RawResourcePath();
 [[nodiscard]] std::string ObbPath();
-
-/**
- * Load the text from a file in the application's assets/ folder
- */
-std::string LoadText(const char *file_name);
 } // namespace ancer
 
 #include "System.inl"

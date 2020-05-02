@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "System.hpp"
+#include "System.Cpu.hpp"
 
 #include <cpu-features.h>
 #include <device_info/device_info.h>
