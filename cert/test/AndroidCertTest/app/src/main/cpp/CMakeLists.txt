@@ -138,7 +138,7 @@ add_library(${PROJECT_NAME} SHARED
         operations/gl/DualSourceBlendingGLES3Operation.cpp
         operations/gl/EGLGetFrameTimestampsGLES3Operation.cpp
         operations/gl/EGLPresentationTimeGLES3Operation.cpp
-        operations/gl/ExternalBufferGLES3Operation.cpp
+        operations/gl/ExternalFramebufferGLES3Operation.cpp
         operations/gl/FillRateGLES3Operation.cpp
         operations/gl/GetExtensionsGLES3Operation.cpp
         operations/gl/HelloGLES3Operation.cpp
