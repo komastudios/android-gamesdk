@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "df5aaa30_8ab6942f",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-05-04T18:15:49Z",
+      "side": 1,
+      "message": "Actually, was thinking about this, is this difficult to support? Why not just add it to VertexFormat (esp since it\u0027s in Bender Kit so we want it to be generalized anyways).",
+      "revId": "a6f323b8f897c59f91613adc4a1384153923be89",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
