@@ -34,6 +34,24 @@
       "revId": "a6f323b8f897c59f91613adc4a1384153923be89",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f5a00cb6_ff2d84f6",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-05-04T18:52:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "02bf2533_55402b39",
+      "revId": "a6f323b8f897c59f91613adc4a1384153923be89",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
