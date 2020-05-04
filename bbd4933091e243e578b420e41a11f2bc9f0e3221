@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "93995917_8c43f45d",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/ExternalFramebufferGLES3Operation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-05-04T16:11:15Z",
+      "side": 1,
+      "message": "Beware that there is a 23-char limit on the length of a logcat tag up to Android 7.0 (Nougat, API level 23). After that API level, there\u0027s no limit. We are currently setting the minimum supported API to API level 19, I believe. \n\nIf you consider this could be shortened, I\u0027d consider \"ExternalFramebufferGLES\" which is exactly 23 chars length.\n\nhttps://developer.android.com/reference/android/util/Log#isLoggable(java.lang.String,%20int)",
+      "revId": "bbd4933091e243e578b420e41a11f2bc9f0e3221",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
