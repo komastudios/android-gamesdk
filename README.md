@@ -1,21 +1,27 @@
 Android Game SDK
 
+## Integrating the Game SDK in your game
+
+Unless you need to compile the Game SDK from sources, it's recommended that you use the package with the pre-compiled library. You can download it on https://developer.android.com/games/sdk.
+
 ## Build the Game SDK
 
-In order to build the Game SDK, this project must be initialized from a custom repo.
+In order to build the Game SDK, this project must be initialized using the [*repo* tool](https://gerrit.googlesource.com/git-repo/). On [Windows](https://gerrit.googlesource.com/git-repo/+/HEAD/docs/windows.md), we recommend running all commands involving *repo* with Git Bash, to avoid issues with symlinks.
 
 ```bash
 mkdir android-games-sdk
 cd android-games-sdk
 repo init -u https://android.googlesource.com/platform/manifest -b android-games-sdk
 ```
+
 ### Build with locally installed SDK/NDK
 
 If the Android SDK is already installed locally, then download only the Game SDK source and build tools (~500Mb).
 
 ```bash
 repo sync -c -j8 gamesdk
-repo sync -c -j8 prebuilts/cmake/linux-x86 external/modp_b64 external/googletest external/nanopb-c external/protobuf
+repo sync -c -j8 external/modp_b64 external/googletest external/nanopb-c external/protobuf
+repo sync -c -j8 prebuilts/cmake/linux-x86 prebuilts/cmake/windows-x86 prebuilts/cmake/mac-x86
 ```
 
 Point the environment variable `ANDROID_HOME` to your local Android SDK (and `ANDROID_NDK`, if the ndk isn't in `ANDROID_HOME/ndk-bundle`).
@@ -30,11 +36,12 @@ cd gamesdk
 ### Build with specific prebuilt SDKs
 
 Download the project along with specific versions of prebuilt Android SDK and NDK (~4GB).
-First, download the core project and tools
+First, download the core project and tools:
 
 ```bash
 repo sync -c -j8 gamesdk
-repo sync -c -j8 prebuilts/cmake/linux-x86 external/modp_b64 external/googletest external/nanopb-c external/protobuf
+repo sync -c -j8 external/modp_b64 external/googletest external/nanopb-c external/protobuf
+repo sync -c -j8 prebuilts/cmake/linux-x86 prebuilts/cmake/windows-x86 prebuilts/cmake/mac-x86
 ```
 
 Next, use the download script to get prebuilt SDKs and/or NDKs.
@@ -83,7 +90,8 @@ Samples are classic Android projects, using CMake to build the native code. They
 ```bash
 cd samples/bouncyball && ./gradlew assemble
 cd samples/cube && ./gradlew assemble
-cd samples/tuningfork/tftestapp && ./gradlew assemble
+cd samples/tuningfork/scaledballs && ./gradlew assemble
+cd samples/tuningfork/expertballs && ./gradlew assemble
 ```
 
 The Android SDK/NDK exposed using environment variables (`ANDROID_HOME`) will be used for building both the sample project and the Game SDK.
@@ -94,7 +102,8 @@ Open projects using Android Studio:
 
 * `samples/bouncyball`
 * `samples/cube`
-* `samples/tuningfork/tftestapp`
+* `samples/tuningfork/scaledballs`
+* `samples/tuningfork/expertballs`
 
 and run them directly (`Shift + F10` on Linux, `Control + R` on macOS). The local Android SDK/NDK (configured in Android Studio) will be used for building both the sample project and the Game SDK.
 
