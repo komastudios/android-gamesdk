@@ -21,7 +21,7 @@ If the Android SDK is already installed locally, then download only the Game SDK
 ```bash
 repo sync -c -j8 gamesdk
 repo sync -c -j8 external/modp_b64 external/googletest external/nanopb-c external/protobuf
-repo sync -c -j8 prebuilts/cmake/linux-x86 prebuilts/cmake/windows-x86 prebuilts/cmake/mac-x86
+repo sync -c -j8 prebuilts/cmake/linux-x86 prebuilts/cmake/windows-x86 prebuilts/cmake/darwin-x86
 ```
 
 Point the environment variable `ANDROID_HOME` to your local Android SDK (and `ANDROID_NDK`, if the ndk isn't in `ANDROID_HOME/ndk-bundle`).
