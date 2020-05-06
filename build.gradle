@@ -368,11 +368,11 @@ def buildNativeModules(arch, Toolchain toolchain, stl, threadChecks, buildtf, su
         workingDir workingFolder
         commandLine cmdLine
     }
-    
+
     def jsonDescription = new File(joinPath(outputFolder, "abi.json"))
     jsonDescription.text = '{"abi":"'+arch+'","api":'+toolchain.getAndroidVersion()+
-        '"ndk":'+toolchain.getNdkVersionNumber()+',"stl":"'+stl+'"}'
-    
+        ',"ndk":'+toolchain.getNdkVersionNumber()+',"stl":"'+stl+'"}'
+
     return [arch: arch, buildKey: buildKey]
 }
 
@@ -431,7 +431,7 @@ def aarSdkCopy(buildInfo, outFolder) {
     def cmakeFolder = joinPath(getTempPath(), buildKey, '.cmake', 'swappy')
     def buildFolder = joinPath(getPackagePath(), outFolder )
     def libBuildFolder = joinPath(buildFolder, 'prefab','modules', 'swappy', 'libs',
-                                  buildKey)
+                                  'android.'+buildKey)
     def staticsFolder = joinPath(getOutPath(), buildKey)
     def includeBuildFolder = joinPath(buildFolder, 'prefab','modules', 'swappy', 'include')
     def headerFolder = './include/swappy'
