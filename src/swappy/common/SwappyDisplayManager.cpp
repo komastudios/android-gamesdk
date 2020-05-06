@@ -57,8 +57,9 @@ const JNINativeMethod SwappyDisplayManager::SDMNativeMethods[] = {
          (void*)&Java_com_google_androidgamesdk_SwappyDisplayManager_nOnRefreshRateChanged}};
 
 bool SwappyDisplayManager::useSwappyDisplayManager(SdkVersion sdkVersion) {
-    // SwappyDisplayManager uses APIs introduced in SDK 23
-    if (sdkVersion.sdkInt < 23) {
+    // SwappyDisplayManager uses APIs introduced in SDK 23 and we get spurious window messages
+    // for SDK < 28, so restrict here.
+    if (sdkVersion.sdkInt < MIN_SDK_VERSION) {
         return false;
     }
 

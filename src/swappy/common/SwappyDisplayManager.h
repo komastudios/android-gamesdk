@@ -34,7 +34,8 @@ class SwappyDisplayManager {
 public:
     static const char* SDM_CLASS;
     static const JNINativeMethod SDMNativeMethods[];
-    static constexpr int  SDMNativeMethodsSize = 2;
+    static constexpr int SDMNativeMethodsSize = 2;
+    static constexpr int MIN_SDK_VERSION = 28;
 
     static bool useSwappyDisplayManager(SdkVersion sdkVersion);
 
