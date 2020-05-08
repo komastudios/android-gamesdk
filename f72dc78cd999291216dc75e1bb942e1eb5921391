@@ -1,0 +1,48 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000002868099",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1290795?revision\u003d6",
+      "fixSuggestions": [
+        {
+          "fixId": "f473c60b_d0200142",
+          "description": "Change to \"cert/test/reporting/lib/graphers/loader.py\"",
+          "replacements": [
+            {
+              "path": "cert/test/reporting/lib/graphers/loader.py",
+              "range": {
+                "startLine": 37,
+                "startChar": 23,
+                "endLine": 37,
+                "endChar": 36
+              },
+              "replacement": "implementation"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "00f01249_06c4bf2f",
+        "filename": "cert/test/reporting/lib/graphers/loader.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-05-08T06:47:25Z",
+      "side": 1,
+      "message": "Common typo found: \"implementatin\" -- should it be \"implementation\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.",
+      "range": {
+        "startLine": 37,
+        "startChar": 23,
+        "endLine": 37,
+        "endChar": 36
+      },
+      "revId": "f72dc78cd999291216dc75e1bb942e1eb5921391",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
