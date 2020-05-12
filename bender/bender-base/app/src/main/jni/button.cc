@@ -46,11 +46,13 @@ bool Button::TestHit(int x, int y) {
 
 void Button::DrawButton(VkRenderPass render_pass, Font *font, Renderer *renderer) {
   std::string label = pressed_ ? "X" : default_label_;
-  font->DrawString(label,
+  font->DrawString(renderer->GetCurrentCommandBuffer(),
+                   render_pass,
+                   renderer->GetCurrentImage(),
+                   label,
                    1.25f,
                    x_center_ - (label.size() / 2 * FONT_SIZE_RATIO_X),
                    y_center_ - (FONT_SIZE_RATIO_Y),
-                   renderer->GetCurrentCommandBuffer(),
-                   render_pass,
-                   renderer->GetCurrentImage());
+                   glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)
+                   );
 }
