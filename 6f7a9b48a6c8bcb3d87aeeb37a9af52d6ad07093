@@ -1,0 +1,533 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e045d173_b412352d",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-12T20:59:05Z",
+      "side": 1,
+      "message": "Generally I\u0027d avoid lambdas - a private function would work better instead. debugging lambdas can be messy in many debuggers (and stack traces) because they\u0027re new enough that not enough attention has been paid to making them more user-friendly. Might make sense to save them for when you really need to use them. \n\nIn this case, it\u0027s a very standard library-like usage, so it\u0027s ok. \n\n(It\u0027s also easy to end up holding references for longer than you expect with lambda capture - that\u0027s not happening here, but still worth keeping an eye out for).",
+      "range": {
+        "startLine": 71,
+        "startChar": 0,
+        "endLine": 87,
+        "endChar": 5
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ac592874_59a175cb",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-12T20:59:05Z",
+      "side": 1,
+      "message": "This is an ultra-minor nit... but...\ntext.size() should rarely if ever be 0 (if it\u0027s 0, why draw it?). \ntext_size should never be 0.0f in a well-formed program. \n\nso:\n----\nassert(text_size \u003e 0.0f \u0026\u0026 \"text_size must be a positive value greater than zero\");\n\nif ( text.size() \u003d\u003d 0 ) {\n  assert(text.size() !\u003d 0 \u0026\u0026 \"Unexpected empty string. If this can occur regularly in your code remove this assert\");\n  return;\n}\n----\n(note: text.size() can\u0027t ever be \u003c 0 as it\u0027s a size_t which is an unsigned integer).\n\nAlso, the call to UpdatePipeline() should probably come after these checks, not before so that the entire pass is aborted if it fails.",
+      "range": {
+        "startLine": 94,
+        "startChar": 0,
+        "endLine": 99,
+        "endChar": 5
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7f2ce506_647ab3c8",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-12T20:59:05Z",
+      "side": 1,
+      "message": "Allow me to save your some typing :D \n\nFontPushConstants text_push_consts \u003d {};\n\n... is the C++11 and later way to do a memset/calloc/ZeroMemory call :)",
+      "range": {
+        "startLine": 101,
+        "startChar": 2,
+        "endLine": 102,
+        "endChar": 59
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0cb66120_ee2e0600",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-12T20:59:05Z",
+      "side": 1,
+      "message": "Comment what you\u0027re doing to pack/unpack the data to/from bytes here, or hoist this out into a helper function which takes and index and returns a unit for clarity.",
+      "range": {
+        "startLine": 112,
+        "startChar": 0,
+        "endLine": 114,
+        "endChar": 117
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d1e449e6_e615469e",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-12T20:59:05Z",
+      "side": 1,
+      "message": "0.0f, 0.0f, 1.0f",
+      "range": {
+        "startLine": 123,
+        "startChar": 35,
+        "endLine": 123,
+        "endChar": 55
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a1adf922_fb098c02",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-12T20:59:05Z",
+      "side": 1,
+      "message": "0.0f, 0.0f, 1.0f",
+      "range": {
+        "startLine": 128,
+        "startChar": 34,
+        "endLine": 128,
+        "endChar": 55
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "736af6c0_fbdc7955",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-12T20:59:05Z",
+      "side": 1,
+      "message": "Should this be VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK or VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK?",
+      "range": {
+        "startLine": 202,
+        "startChar": 27,
+        "endLine": 203,
+        "endChar": 62
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "87ee38df_b25ba24e",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 238,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-12T20:59:05Z",
+      "side": 1,
+      "message": "You use the cool new syntax elsewhere, so may as well use it here 😊\n\n        VkDescriptorImageInfo image_info {\n          .imageLayout \u003d VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,\n          .imageView \u003d texture_-\u003eGetImageView(),\n          .sampler \u003d sampler_\n        };\n\n        VkDescriptorBufferInfo matrix_buffer_info {\n           .buffer \u003d orientation_matrix_-\u003eGetBuffer(i),\n           .offset \u003d 0,\n           .range \u003d sizeof(glm::mat4)\n        };\n\n        VkDescriptorBufferInfo font_buffer_info {\n           .buffer \u003d font_data_ubo_-\u003eGetBuffer(i),\n           .offset \u003d 0,\n           .range \u003d sizeof(Font::font_data)\n        };\n\n(as per our discussion in the devtech standup this morning, this is supported in Clang 10 onwards, and we are using Clang as our primary compiler on all platforms, so we should be good. It\u0027s also supported in VC++ 2019 onwards. It\u0027s basically a C99 feature, so it\u0027s no biggie).",
+      "range": {
+        "startLine": 224,
+        "startChar": 8,
+        "endLine": 238,
+        "endChar": 0
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "882fb388_d3040c07",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-12T20:59:05Z",
+      "side": 1,
+      "message": "For this I\u0027d just use a simple array.\n\nVkWriteDescriptorSet write_descriptors[3];\nwrite_descriptors[0] \u003d {\n    .sType \u003d VK_STRUCTURE_TYPE ... etcetera....\n};",
+      "range": {
+        "startLine": 238,
+        "startChar": 0,
+        "endLine": 263,
+        "endChar": 60
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1a0a4ffc_770a545d",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 302,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-12T20:59:05Z",
+      "side": 1,
+      "message": "VkDescriptorSetLayoutCreateInfo layout_info {\n       .sType \u003d VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,\n       .bindingCount \u003d bindings.size(),\n       .pBindings \u003d bindings.data()\n    };",
+      "range": {
+        "startLine": 299,
+        "startChar": 0,
+        "endLine": 302,
+        "endChar": 44
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "62ecc050_0f394cd0",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 321,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-12T20:59:05Z",
+      "side": 1,
+      "message": "At some point we should probably move this scissor value to a global used across the entire app, and update it as needed in a single location.",
+      "range": {
+        "startLine": 317,
+        "startChar": 0,
+        "endLine": 321,
+        "endChar": 6
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a0bebf06_caa38f1d",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 331,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-12T20:59:05Z",
+      "side": 1,
+      "message": "I just realized... at some point we should do a cleanup pass and put common depth test and stencil states into a header file for easy re-use.",
+      "range": {
+        "startLine": 331,
+        "startChar": 4,
+        "endLine": 331,
+        "endChar": 59
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5bddbc5b_229c1ea9",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 334,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-12T20:59:05Z",
+      "side": 1,
+      "message": "Should depth writes be disabled as well?",
+      "range": {
+        "startLine": 333,
+        "startChar": 40,
+        "endLine": 334,
+        "endChar": 40
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7a0e301b_01aa7bc4",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 335,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-12T20:59:05Z",
+      "side": 1,
+      "message": "Could leave this as VK_COMPARE_OP_NEVER (0) as depth test is disabled above. Or just don\u0027t initialize at all.",
+      "range": {
+        "startLine": 335,
+        "startChar": 11,
+        "endLine": 335,
+        "endChar": 49
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4867f39e_5fb84898",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 373,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-12T20:59:05Z",
+      "side": 1,
+      "message": "Not sure about the texture format you\u0027re using. Is it RGBA or single channel? This is correct for single-channel (which is also probably right for a font), but wrong for RGBA.",
+      "range": {
+        "startLine": 373,
+        "startChar": 35,
+        "endLine": 373,
+        "endChar": 55
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ffcfa8d6_40c06df1",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 409,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-12T20:59:05Z",
+      "side": 1,
+      "message": "I\u0027d do a single VkDescriptorSetLayout struct here, not a std::array - unless there can ever be more than 1.\n\nVkDescriptorSetLayout layout \u003d font_descriptors_layout_;\n\nVkPipelineLayoutCreateInfo pipelineLayoutInfo {\n            .sType \u003d VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,\n            .pNext \u003d nullptr,\n            .setLayoutCount \u003d 1,\n            .pSetLayouts \u003d \u0026layout,\n            .pushConstantRangeCount \u003d 1,\n            .pPushConstantRanges \u003d \u0026push_const_range,\n    };",
+      "range": {
+        "startLine": 398,
+        "startChar": 0,
+        "endLine": 409,
+        "endChar": 6
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6ac11f59_e81c73bc",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 455,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-12T20:59:05Z",
+      "side": 1,
+      "message": "Consider doing this differently; right now it\u0027s being called for every DrawString call, but should probably be much less frequent, with parts built out of stock states we create on app startup, parts per \"context\" (e.g. a scene), and parts per end-to-end frame we\u0027re rendering. \n\nCan stay as-is for now, but in future we should separate out the high-frequency ops from the low-frequency ones :)",
+      "range": {
+        "startLine": 450,
+        "startChar": 0,
+        "endLine": 455,
+        "endChar": 1
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "96862f05_6722b82c",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-12T20:59:05Z",
+      "side": 1,
+      "message": "Worth defining these as const char* constants or consider using constexpr std::string_view with an _sv type.\n\ne.g.\n\nconstexpr std::string_view kFontSDFPath \u003d \"textures/font_sdf.png\"_sv;",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 46
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "054ca01e_fb7e0dde",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-12T20:59:05Z",
+      "side": 1,
+      "message": "Should replace this with:\nconstexpr size_t kFontNumQuadIndices \u003d 6;\n(macros pollute, so avoid where possible).",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 31
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2a2df8d8_c896a9d1",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-12T20:59:05Z",
+      "side": 1,
+      "message": "Tiny nitpick on reference placement here - should be: android_app\u0026 androidAppCtx. \n\n(or run clang-format or artistic style against your code before checking in, with your preferred formatting rules - I noticed a few other inconsistencies). \n\nIt\u0027s honestly not a huge deal though.",
+      "range": {
+        "startLine": 23,
+        "startChar": 28,
+        "endLine": 23,
+        "endChar": 47
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "150dbc43_1e86796d",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-12T20:59:05Z",
+      "side": 1,
+      "message": "should document why 128 here.",
+      "range": {
+        "startLine": 53,
+        "startChar": 27,
+        "endLine": 53,
+        "endChar": 32
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "587d2490_baa7cfbb",
+        "filename": "bender/bender-base/app/src/main/jni/push_consts_app.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-12T20:59:05Z",
+      "side": 1,
+      "message": "Interesting hack :D I missed where you used the max_push_constant_buffer_size value you grabbed earlier though.",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 105
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d770865e_83cad5eb",
+        "filename": "bender/bender-base/app/src/main/shaders/shader_bindings.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-12T20:59:05Z",
+      "side": 1,
+      "message": "I have some ideas for how we can make this more consumable from C++, but chrome crashed while entering my original version of it. I\u0027ll see if I can add some changes directly to the files for the future.\n\nBasic idea is:\nIn C++, include \"cpp_shader_bindings.h\" with code to tell you if you included \"shader_bindings.h\" by mistake.\nIn GLSL, include shader_bindings.h as today.\nChange this file to use macros to set the constants. (eg. INT_CONSTANT(BINDING_SET_MATERIAL,0); )\n\nIn C++, we\u0027d end up with all the constants in a namespace (e.g. bender::shader_bindings::binding_set_material ), using constexpr to define them.\n\nIn GLSL, we\u0027d end up with const literals (e.g. const int binding_set_material \u003d 0;)\n\n\nThoughts? Worth it or too much?",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 35
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
