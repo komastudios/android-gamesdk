@@ -13,13 +13,17 @@ namespace istresser_consumer {
 
   Consumer::Consumer(int bytes) : vertex_buffer_(0), used_(0) {
     glGenBuffers(1, &vertex_buffer_);
-    istresser_glutils::CheckGlError("glGenBuffers");
+    if (istresser_glutils::CheckGlError("glGenBuffers")) {
+      return;
+    }
     if (vertex_buffer_ == 0) {
       ALOGE("Could not gen buffers.");
       return;
     }
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
-    istresser_glutils::CheckGlError("glBindBuffer");
+    if (istresser_glutils::CheckGlError("glBindBuffer")) {
+      return;
+    }
     unsigned int num_vertices = bytes / sizeof(GLfloat);
     std::vector<GLfloat> vertices;
     vertices.resize(num_vertices);
