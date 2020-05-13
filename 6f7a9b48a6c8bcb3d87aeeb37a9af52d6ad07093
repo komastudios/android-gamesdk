@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "e20b1800_bbd7ff41",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-13T19:44:20Z",
+      "side": 1,
+      "message": "Agreed!",
+      "parentUuid": "17e12fe4_ec38a20b",
+      "range": {
+        "startLine": 71,
+        "startChar": 0,
+        "endLine": 87,
+        "endChar": 5
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ac592874_59a175cb",
         "filename": "bender/bender-base/app/src/main/jni/font.cc",
         "patchSetId": 8
@@ -190,6 +214,30 @@
     },
     {
       "key": {
+        "uuid": "f78f4078_e5b42881",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-13T19:44:20Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "ff20a70e_c295c8e2",
+      "range": {
+        "startLine": 112,
+        "startChar": 0,
+        "endLine": 114,
+        "endChar": 117
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d1e449e6_e615469e",
         "filename": "bender/bender-base/app/src/main/jni/font.cc",
         "patchSetId": 8
@@ -328,6 +376,30 @@
       "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1a26762f_a79184c4",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-13T19:44:20Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "88926290_013a71d5",
+      "range": {
+        "startLine": 202,
+        "startChar": 27,
+        "endLine": 203,
+        "endChar": 62
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -519,6 +591,30 @@
     },
     {
       "key": {
+        "uuid": "059c6a00_5f68a4cc",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 321,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-13T19:44:20Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "bfeb5665_9b98d83f",
+      "range": {
+        "startLine": 317,
+        "startChar": 0,
+        "endLine": 321,
+        "endChar": 6
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a0bebf06_caa38f1d",
         "filename": "bender/bender-base/app/src/main/jni/font.cc",
         "patchSetId": 8
@@ -707,6 +803,30 @@
     },
     {
       "key": {
+        "uuid": "ffd096bc_9babb40e",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 373,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-13T19:44:20Z",
+      "side": 1,
+      "message": "Would it make sense to add an RGBA \"diffuse\" color value to the Push Constant Buffer so that users of the font could select a color to render text in, and how transparency it is?",
+      "parentUuid": "53382afc_852ff946",
+      "range": {
+        "startLine": 373,
+        "startChar": 35,
+        "endLine": 373,
+        "endChar": 55
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ffcfa8d6_40c06df1",
         "filename": "bender/bender-base/app/src/main/jni/font.cc",
         "patchSetId": 8
@@ -798,6 +918,30 @@
       "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b53760ab_7ba064c7",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 455,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-13T19:44:20Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "c47d0b4b_39928e99",
+      "range": {
+        "startLine": 450,
+        "startChar": 0,
+        "endLine": 455,
+        "endChar": 1
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -1071,6 +1215,30 @@
       "side": 1,
       "message": "I think in terms of preventing macro pollution this is totally worth it. I\u0027d like to know how we tell if we include \"shader_bindings.h\" in C++ by mistake and using INT_CONSTANT() \u003c-- is this another macro we have to define?",
       "parentUuid": "d770865e_83cad5eb",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 35
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6e652b9c_d59641c0",
+        "filename": "bender/bender-base/app/src/main/shaders/shader_bindings.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-13T19:44:20Z",
+      "side": 1,
+      "message": "Yep, it\u0027s a another one - I\u0027ll send you a separate email once I hack together something that works a bit more like what I\u0027m thinking of.",
+      "parentUuid": "b1d26c82_a50695ec",
       "range": {
         "startLine": 1,
         "startChar": 0,

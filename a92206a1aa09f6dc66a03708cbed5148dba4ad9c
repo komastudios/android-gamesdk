@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dc007bb3_a5766c63",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 11
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-13T19:44:20Z",
+      "side": 1,
+      "message": "For the C++ side of the code, I wouldn\u0027t actually do this the complex way - it just obscures it.\n\nInstead, you can just do a memcpy of the string to the location it needs to be rendered at.\n\nIn the shader code, it\u0027d make a lot more sense 😊",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 5
+      },
+      "revId": "a92206a1aa09f6dc66a03708cbed5148dba4ad9c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d31923bc_c4be3016",
+        "filename": "bender/bender-base/app/src/main/shaders/sdf.frag",
+        "patchSetId": 11
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-13T19:44:20Z",
+      "side": 1,
+      "message": "Could you document what this is doing? Your choice of using smoothstep is interesting, but I\u0027m not sure why you\u0027d use it, or what exactly it\u0027s doing :) If you can add a few lines of comments it\u0027d be a lot clearer.",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 27
+      },
+      "revId": "a92206a1aa09f6dc66a03708cbed5148dba4ad9c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
