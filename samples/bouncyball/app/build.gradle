@@ -57,5 +57,6 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.0-rc01'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.2'
     implementation 'androidx.preference:preference:1.0.0-rc01'
+    implementation(name: 'gamesdk', ext:'aar')
     testImplementation 'junit:junit:4.12'
 }
