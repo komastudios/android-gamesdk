@@ -7,10 +7,10 @@ set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Werror -Wthread-safety -D _
 # This builds and uses swappy as a static library from a gamesdk package
 include("../../gamesdk.cmake")
 add_gamesdk_target(
-    DO_LOCAL_BUILD
-    GEN_TASK "localBuild"
-    ROOT_DIR "../../.."
-    PACKAGE_DIR "../../../../package/local"
+   DO_LOCAL_BUILD
+   GEN_TASK "localBuild"
+   ROOT_DIR "../../.."
+   PACKAGE_DIR "../../../../package/local"
 )
 
 # Uncomment to add the Game SDK sources as part of the project sources, allowing to develop
