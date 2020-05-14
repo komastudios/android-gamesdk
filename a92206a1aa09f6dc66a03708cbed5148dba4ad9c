@@ -93,6 +93,30 @@
       "revId": "a92206a1aa09f6dc66a03708cbed5148dba4ad9c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "69ad6307_3b5222c6",
+        "filename": "bender/bender-base/app/src/main/shaders/sdf.frag",
+        "patchSetId": 11
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-05-14T00:06:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0f0b52e6_ebc81db7",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 27
+      },
+      "revId": "a92206a1aa09f6dc66a03708cbed5148dba4ad9c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
