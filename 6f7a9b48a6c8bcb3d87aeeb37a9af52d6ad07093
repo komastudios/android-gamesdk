@@ -827,6 +827,30 @@
     },
     {
       "key": {
+        "uuid": "4b809092_79236474",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 373,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-05-14T00:06:06Z",
+      "side": 1,
+      "message": "Oh adding color is a plus to the font rendering! I can look into that. I imagine adding another vec4 in the push constants and mix it with the sdf colors",
+      "parentUuid": "ffd096bc_9babb40e",
+      "range": {
+        "startLine": 373,
+        "startChar": 35,
+        "endLine": 373,
+        "endChar": 55
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ffcfa8d6_40c06df1",
         "filename": "bender/bender-base/app/src/main/jni/font.cc",
         "patchSetId": 8

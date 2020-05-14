@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "949cb87d_fcc21ee4",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 11
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-05-14T00:06:06Z",
+      "side": 1,
+      "message": "For this one I am not pretty sure how it would work using memcpy. I have tried the conversion between string (and array of uint8_t) and uint32_t array using memcpy is shattering the order and the bit pattern. Maybe I am not using it properly.\n\nmemcpy(text_data, text.c_str(), sizeof(char) * text.size());\n\nThat\u0027s why I decided to use this complex way to keep the order of the characters as well as the bit patterns.",
+      "parentUuid": "dc007bb3_a5766c63",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 5
+      },
+      "revId": "a92206a1aa09f6dc66a03708cbed5148dba4ad9c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d31923bc_c4be3016",
         "filename": "bender/bender-base/app/src/main/shaders/sdf.frag",
         "patchSetId": 11
@@ -36,6 +60,30 @@
       "writtenOn": "2020-05-13T19:44:20Z",
       "side": 1,
       "message": "Could you document what this is doing? Your choice of using smoothstep is interesting, but I\u0027m not sure why you\u0027d use it, or what exactly it\u0027s doing :) If you can add a few lines of comments it\u0027d be a lot clearer.",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 27
+      },
+      "revId": "a92206a1aa09f6dc66a03708cbed5148dba4ad9c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0f0b52e6_ebc81db7",
+        "filename": "bender/bender-base/app/src/main/shaders/sdf.frag",
+        "patchSetId": 11
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-05-14T00:06:06Z",
+      "side": 1,
+      "message": "Yes I can work on documenting this.\nThe usage of smoothstep and fwidth are, in my POV, the essentials of SDF font rendering:\n1. They tackle scaling perfectly.\n2. They handle anti-aliasing.\nIt also took me a while to understand how and why these functions are used. So it is worth to leave notes.",
+      "parentUuid": "d31923bc_c4be3016",
       "range": {
         "startLine": 16,
         "startChar": 0,
