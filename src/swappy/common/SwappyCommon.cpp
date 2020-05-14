@@ -338,6 +338,9 @@ void SwappyCommon::updateDisplayTimings() {
     }
 
     std::lock_guard<std::mutex> lock(mMutex);
+    ALOGW_ONCE_IF(!mWindow,
+            "ANativeWindow not configured, frame rate will not be reported to Android platform");
+
     if (!mTimingSettingsNeedUpdate && !mWindowChanged) {
         return;
     }
@@ -717,11 +720,7 @@ int SwappyCommon::calculateSwapInterval(nanoseconds frameTime, nanoseconds refre
 }
 
 void SwappyCommon::setPreferredRefreshRate(nanoseconds frameTime) {
-    if (mANativeWindow_setFrameRate) {
-        if (!mWindow) {
-            ALOGE("ANativeWindow not configured");
-            return;
-        }
+    if (mANativeWindow_setFrameRate && mWindow) {
         auto frameRate = 1e9f / frameTime.count();
 
         frameRate = std::min(frameRate, 1e9f / (mSwapDuration).count());
