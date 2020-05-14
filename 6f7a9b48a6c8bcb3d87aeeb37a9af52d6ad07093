@@ -851,6 +851,30 @@
     },
     {
       "key": {
+        "uuid": "9ef57b46_fe8c645a",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 373,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-05-14T00:07:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4b809092_79236474",
+      "range": {
+        "startLine": 373,
+        "startChar": 35,
+        "endLine": 373,
+        "endChar": 55
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ffcfa8d6_40c06df1",
         "filename": "bender/bender-base/app/src/main/jni/font.cc",
         "patchSetId": 8
@@ -1272,6 +1296,30 @@
       "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d5ae0e14_56f96133",
+        "filename": "bender/bender-base/app/src/main/shaders/shader_bindings.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-05-14T00:07:29Z",
+      "side": 1,
+      "message": "Will add this in a separate CL",
+      "parentUuid": "6e652b9c_d59641c0",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 35
+      },
+      "revId": "6f7a9b48a6c8bcb3d87aeeb37a9af52d6ad07093",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
