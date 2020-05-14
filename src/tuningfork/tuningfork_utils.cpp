@@ -35,11 +35,11 @@
 
 namespace tuningfork {
 
-std::string Base16(const std::vector<char>& bytes) {
+std::string Base16(const std::vector<unsigned char>& bytes) {
     static char hex_char[] = "0123456789abcdef";
     std::string s(bytes.size()*2,' ');
     auto q = s.begin();
-    for(char b: bytes) {
+    for(unsigned char b: bytes) {
         *q++ = hex_char[b>>4];
         *q++ = hex_char[b&0xf];
     }
