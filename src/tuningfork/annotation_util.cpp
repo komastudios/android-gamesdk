@@ -62,11 +62,11 @@ void WriteBase128IntToStream(uint64_t x, std::vector<uint8_t> &bytes) {
 AnnotationId DecodeAnnotationSerialization(const SerializedAnnotation &ser,
                                            const std::vector<uint32_t>& radix_mult,
                                            int loading_annotation_index,
-                                           bool* loading) {
+					   int level_annotation_index,
+                                           bool* loading_out) {
     AnnotationId result = 0;
-    if (loading != nullptr) {
-        *loading = false; // False if annotation not present
-    }
+    AnnotationId result_if_loading = 0;
+    bool loading = false;
     for (int i = 0; i < ser.size(); ++i) {
         int key = GetKeyIndex(ser[i]);
         if (key == kKeyError)
@@ -87,15 +87,26 @@ AnnotationId DecodeAnnotationSerialization(const SerializedAnnotation &ser,
         // We don't allow enums with more that 255 values
         if (value > 0xff)
             return kAnnotationError;
-        if (loading != nullptr && loading_annotation_index == key) {
-            *loading = value > 1;
+        if (loading_annotation_index == key) {
+            loading = value > 1;
         }
+	AnnotationId v;
         if (key > 0)
-            result += radix_mult[key - 1] * value;
+	    v = radix_mult[key - 1] * value;
         else
-            result += value;
+            v = value;
+        result += v;
+	// Only the loading value and the level value are used when loading.
+	if (loading_annotation_index == key || level_annotation_index == key)
+            result_if_loading += v;
     }
-    return result;
+    if (loading_out != nullptr) {
+        *loading_out = loading;
+    }
+    if (loading)
+        return result_if_loading;
+    else
+        return result;
 }
 
 ErrorCode SerializeAnnotationId(uint64_t id, SerializedAnnotation& ser,

@@ -37,6 +37,7 @@ enum ErrorCode {
 AnnotationId DecodeAnnotationSerialization(const SerializedAnnotation &ser,
                                            const std::vector<uint32_t>& radix_mult,
                                            int32_t loading_annotation_index = -1,
+                                           int32_t level_annotation_index = -1,
                                            bool* loading = nullptr);
 
 ErrorCode SerializeAnnotationId(uint64_t id, SerializedAnnotation& ser,
