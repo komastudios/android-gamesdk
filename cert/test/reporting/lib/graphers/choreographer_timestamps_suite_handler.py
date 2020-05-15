@@ -56,13 +56,14 @@ class ChoreographerTimestampsSuiteHandler(SuiteHandler):
 
         # Calculate variance (how much Choreographer timestamps varied from
         # systrace timestamps)
-        for row in self.data:
-            timestamp = row.custom.get('timestamp')
-            if timestamp:
-                index = binary_search_nearest(systrace_timestamps, \
-                    timestamp)
-                sys_ts = systrace_timestamps[index]
-                self.timestamp_variance.append(sys_ts - timestamp)
+        if systrace_timestamps:
+            for row in self.data:
+                timestamp = row.custom.get('timestamp')
+                if timestamp:
+                    index = binary_search_nearest(systrace_timestamps, \
+                        timestamp)
+                    sys_ts = systrace_timestamps[index]
+                    self.timestamp_variance.append(sys_ts - timestamp)
 
 
     def get_systrace_path(self, suite: Suite) -> str:
@@ -137,6 +138,9 @@ class ChoreographerTimestampsSuiteHandler(SuiteHandler):
         # Convert to milliseconds
         variance_ms = [i / 1_000_000 for i in self.timestamp_variance]
 
+        if not variance_ms:
+            return 'Unable to collect timestamps from systrace'
+
         # Set bounds
         max_y = 2.0
         min_y = -max_y
@@ -189,7 +193,7 @@ class ChoreographerTimestampsSuiteHandler(SuiteHandler):
         if highest_val > upper_bound:
             add_region_marker('FAIL', (max_y + upper_bound) / 2, max_y - upper_bound, 'red')
 
-        return None
+        return ''
 
 
 def binary_search_nearest(values: List[int], target: int) -> Optional[int]:
