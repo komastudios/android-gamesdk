@@ -41,11 +41,12 @@ auto const gVertexShader = R"(
       gl_Position = uMVPMatrix * (vPosition * vec4(vec3(uRadius), 1.0));
       vec3 aNormal = normalize( uNormalMatrix * vNormal );
       diffuse = max(dot(aNormal, normalize(uLightDir)), 0.0);
-      ambient = 0.1f;
+      ambient = 0.1;
       aColor = (ambient+diffuse)*vColor;
     }
 )";
 auto const gFragmentShader = R"(
+    precision mediump float;
     varying vec3 aColor;
     void main() {
       gl_FragColor = vec4(aColor, 1.0);
@@ -257,6 +258,11 @@ std::vector<GLfloat> Sphere::initializeVertices(int workload) {
 
 void Sphere::draw(float aspectRatio, const std::vector<Sphere> &spheres, int n_to_draw, int workload) {
     static ProgramState state;
+
+    if (state.program == 0) {
+        ALOGE("Shader program error");
+        return;
+    }
 
     int num_vertices = numVerticesForWorkload(workload);
 
