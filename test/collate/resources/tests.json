@@ -92,42 +92,66 @@
     },
     {
       "heuristics": {
-        "nativeAllocated": 0.9
+        "nativeAllocated": {
+          "red": 0.9,
+          "yellow": 0.8
+        }
       }
     },
     {
       "heuristics": {
-        "VmSize": 0.8
+        "VmSize": {
+          "red": 0.8,
+          "yellow": 0.7
+        }
       }
     },
     {
       "heuristics": {
-        "oom_score": 0.9
+        "oom_score": {
+          "red": 0.9,
+          "yellow": 0.8
+        }
       }
     },
     {
       "heuristics": {
-        "summary.graphics": 0.9
+        "summary.graphics": {
+          "red": 0.9,
+          "yellow": 0.8
+        }
       }
     },
     {
       "heuristics": {
-        "summary.total-pss": 0.9
+        "summary.total-pss": {
+          "red": 0.9,
+          "yellow": 0.8
+        }
       }
     },
     {
       "heuristics": {
-        "availMem": 0.4
+        "availMem": {
+          "red": 0.4,
+          "yellow": 0.3
+        }
       }
     },
     {
       "heuristics": {
-        "Cached": 0.9
+        "Cached": {
+          "red": 0.9,
+          "yellow": 0.8
+        }
       }
     },
     {
       "heuristics": {
-        "MemAvailable": 0.4
+        "MemAvailable": {
+          "red": 0.4,
+          "yellow": 0.3
+        }
       }
     }
   ]

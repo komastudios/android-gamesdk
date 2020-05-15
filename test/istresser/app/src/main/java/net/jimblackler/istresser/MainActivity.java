@@ -679,18 +679,18 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
               try {
                 resultsStream.println(standardInfo());
-                AtomicBoolean anyRed = new AtomicBoolean(false);
+                AtomicBoolean anyWarnings = new AtomicBoolean(false);
                 ActivityManager activityManager =
                     (ActivityManager) Objects.requireNonNull(getSystemService(Context.ACTIVITY_SERVICE));
 
                 Heuristic.checkHeuristics(activityManager, params, deviceSettings,
                     (heuristic, heuristicMemoryPressureLevel) -> {
-                      if (heuristicMemoryPressureLevel == Indicator.RED) {
-                        anyRed.set(true);
+                      if (heuristicMemoryPressureLevel != Indicator.GREEN) {
+                        anyWarnings.set(true);
                       }
                     });
 
-                if (anyRed.get()) {
+                if (anyWarnings.get()) {
                   runAfterDelay(this, DELAY_AFTER_RELEASE);
                 } else {
                   latestAllocationTime = System.currentTimeMillis();
