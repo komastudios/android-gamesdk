@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bae98506_23422dc5",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/BaseOperation.hpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-05-15T22:34:29Z",
+      "side": 1,
+      "message": "I approve of these \u003cancer/foo...\u003e includes universally. (S/R)",
+      "range": {
+        "startLine": 30,
+        "startChar": 9,
+        "endLine": 30,
+        "endChar": 22
+      },
+      "revId": "8a5d569ab30ed1dcd4667a167b35ee7189a13bac",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4b365ab4_5c2c3ccd",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/GLTexImage2DRenderer.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-05-15T22:34:29Z",
+      "side": 1,
+      "message": "It\u0027s a stylistic choice, but I would personally call glBindVertexArray(0) at the end of this method for clean up.",
+      "range": {
+        "startLine": 61,
+        "startChar": 3,
+        "endLine": 61,
+        "endChar": 49
+      },
+      "revId": "8a5d569ab30ed1dcd4667a167b35ee7189a13bac",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e16795cf_7c0ec3e7",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/TextureLoadingGLES3Operation.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-05-15T22:34:29Z",
+      "side": 1,
+      "message": "Is it safe to use const char *? The string is assigned, not constructed, in the ctor, but the std::string char storage is owned by TextureMetadata. I can see below that TextureMetadata clearly outlives load_stats, but this makes me nervous for what could happen in a refactoring.",
+      "range": {
+        "startLine": 84,
+        "startChar": 2,
+        "endLine": 85,
+        "endChar": 27
+      },
+      "revId": "8a5d569ab30ed1dcd4667a167b35ee7189a13bac",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
