@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "dcf37472_e4d63f65",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/GLTexImage2DRenderer.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-05-16T01:38:46Z",
+      "side": 1,
+      "message": "I\u0027ll do it, Shamyl! Marking this unresolved. I learn from the masters. I didn\u0027t know about that but will definitely do here in other places if I find it again.",
+      "parentUuid": "4b365ab4_5c2c3ccd",
+      "range": {
+        "startLine": 61,
+        "startChar": 3,
+        "endLine": 61,
+        "endChar": 49
+      },
+      "revId": "8a5d569ab30ed1dcd4667a167b35ee7189a13bac",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e16795cf_7c0ec3e7",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/TextureLoadingGLES3Operation.cpp",
         "patchSetId": 6
@@ -59,6 +83,30 @@
       "writtenOn": "2020-05-15T22:34:29Z",
       "side": 1,
       "message": "Is it safe to use const char *? The string is assigned, not constructed, in the ctor, but the std::string char storage is owned by TextureMetadata. I can see below that TextureMetadata clearly outlives load_stats, but this makes me nervous for what could happen in a refactoring.",
+      "range": {
+        "startLine": 84,
+        "startChar": 2,
+        "endLine": 85,
+        "endChar": 27
+      },
+      "revId": "8a5d569ab30ed1dcd4667a167b35ee7189a13bac",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e9fe804b_2569e5c8",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/gl/TextureLoadingGLES3Operation.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-05-16T01:38:46Z",
+      "side": 1,
+      "message": "Great point, that will also save me zillions of .c_str() calls.\nWill fix.",
+      "parentUuid": "e16795cf_7c0ec3e7",
       "range": {
         "startLine": 84,
         "startChar": 2,
