@@ -26,15 +26,16 @@ namespace ancer {
 /**
  * ASTC compressed texture.
  */
-class AstcTextureMetadata : public CompressedTextureMetadata {
+class AstcTexture : public CompressedTexture {
  public:
-  AstcTextureMetadata(const std::string &relative_path,
-                      const std::string &filename_stem,
-                      const uint bits_per_pixel,
-                      const TexturePostCompressionFormat post_compression_format
-                      = TexturePostCompressionFormat::NONE);
+  AstcTexture(const std::string &relative_path,
+              const std::string &filename_stem,
+              const TextureChannels channels,
+              const uint bits_per_pixel,
+              const TexturePostCompressionFormat post_compression_format
+              = TexturePostCompressionFormat::NONE);
 
-  AstcTextureMetadata &&MirrorPostCompressed(
+  AstcTexture MirrorPostCompressed(
       const TexturePostCompressionFormat post_compression_format) const;
 
  protected:
