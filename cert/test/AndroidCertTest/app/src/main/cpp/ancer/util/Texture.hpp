@@ -17,11 +17,22 @@
 #ifndef _TEXTURE_HPP
 #define _TEXTURE_HPP
 
+#include <memory>
 #include <string>
+
 #include <GLES3/gl32.h>
+
 #include <ancer/util/Time.hpp>
 
 namespace ancer {
+
+/**
+ * Certain image formats don't handle transparency (the case of BMP or JPG, for example) while
+ * others may or may not handle (like PNG). This information is relevant at the time of defining the
+ * bitmap buffer to be posted to the GPU (e.g., glTexImage2D() or glCompressedTexImage2D()) because
+ * that's how the GPU knows how to render the data.
+ */
+enum TextureChannels { RGB, RGBA };
 
 /**
  * Some texture assets are delivered as they are (e.g., JPG, ASTC, PKM, ...) whereas others are
@@ -32,17 +43,17 @@ enum class TexturePostCompressionFormat {
   /**
    * No post-compression. Just as is.
    */
-  NONE,
+      NONE,
 
   /**
    * Deflated via gzip.
    */
-  GZIP,
+      GZIP,
 
   /**
    * Post-compressed via Lempel-Ziv variation LZ4.
    */
-  LZ4
+      LZ4
 };
 
 //--------------------------------------------------------------------------------------------------
@@ -50,7 +61,7 @@ enum class TexturePostCompressionFormat {
 /**
  * Abstract, base class for all texture types.
  */
-class TextureMetadata {
+class Texture {
  public:
   /**
    * Constructor. Doesn't load the texture from storage into memory. Invoke method Load() to that
@@ -59,17 +70,32 @@ class TextureMetadata {
    * @param relative_path path relative to the texture in the assets folder.
    * @param filename_stem file name without extension (the subclass determines the extension).
    */
-  TextureMetadata(std::string relative_path, std::string filename_stem);
+  Texture(std::string relative_path, std::string filename_stem, const TextureChannels channels);
 
-  TextureMetadata(TextureMetadata &&) = default;
+  Texture(Texture &&) = default;
 
-  virtual ~TextureMetadata();
+  virtual ~Texture();
 
+  /**
+   * Route to the texture, relative to some root. The root could be the assets folder if using the
+   * AssetManager or the app storage folder. This depends more on the component using a Texture.
+   */
   const std::string &GetRelativePath() const;
 
+  /**
+   * Texture filename without the extension.
+   */
   const std::string &GetFilenameStem() const;
 
+  /**
+   * Texture extension.
+   */
   virtual const std::string &GetFilenameExtension() const = 0;
+
+  /**
+   * Channels that are present (RGB or RGBA).
+   */
+  TextureChannels GetChannels() const;
 
   /**
    * Format passed to OpenGL ES when invoking glTexImage2D() or glCompressedImage2D().
@@ -155,6 +181,7 @@ class TextureMetadata {
 
   std::string _relative_path;
   std::string _filename_stem;
+  TextureChannels _channels;
   GLenum _internal_format;
 
   int32_t _width;
@@ -173,14 +200,11 @@ class TextureMetadata {
  * Encoded textures are typically compressed at storage. However, during loading, they get decoded
  * into a fully decompressed bitmap (RGB88 or RGBA8888). 24 or 32 bits per pixel.
  */
-class EncodedTextureMetadata : public TextureMetadata {
+class EncodedTexture : public Texture {
  public:
-  EncodedTextureMetadata(const std::string &relative_path, const std::string &filename_stem);
-
-  /**
-   * Subclasses override this to determine whether "rgb" channels are present or "rgba".
-   */
-  virtual const std::string &GetChannels() const = 0;
+  EncodedTexture(const std::string &relative_path,
+                 const std::string &filename_stem,
+                 const TextureChannels channels);
 };
 
 //--------------------------------------------------------------------------------------------------
@@ -193,7 +217,7 @@ class EncodedTextureMetadata : public TextureMetadata {
  *
  * These compressed images may come further compressed via gzip or lz4.
  */
-class CompressedTextureMetadata : public TextureMetadata {
+class CompressedTexture : public Texture {
  public:
   /**
    * Constructor.
@@ -202,10 +226,10 @@ class CompressedTextureMetadata : public TextureMetadata {
    * @param filename_stem
    * @param post_compression_format (see TexturePostCompressionFormat for a discussion on this).
    */
-  CompressedTextureMetadata(const std::string &relative_path,
-                            const std::string &filename_stem,
-                            const TexturePostCompressionFormat post_compression_format
-                            = TexturePostCompressionFormat::NONE);
+  CompressedTexture(const std::string &relative_path,
+                    const std::string &filename_stem, const TextureChannels channels,
+                    const TexturePostCompressionFormat post_compression_format
+                    = TexturePostCompressionFormat::NONE);
 
   const std::string &GetFilenameExtension() const override;
 

@@ -31,11 +31,14 @@ Log::Tag TAG{"TextureJpg"};
 
 //==================================================================================================
 
+namespace {
 /**
  * Temporary decoder until this project is based on upcoming Android "R". Android "R" NDK brings an
  * ImageDecoder that makes this type irrelevant. For now, we needed to avoid decoding the bitmap via
  * JNI (which is way slower and doesn't work for a fair loading time comparison between texture
  * formats).
+ * This convenience type decodes a JPG asset as it reads it from storage. It does it by subclassing
+ * BASIS jpeg_decoder_stream.
  */
 class JpegDecoderAssetStream : public jpgd::jpeg_decoder_stream {
  public:
@@ -47,7 +50,7 @@ class JpegDecoderAssetStream : public jpgd::jpeg_decoder_stream {
   }
 
   [[nodiscard]] size_t size() const {
-    return _asset.GetLength();
+    return static_cast<size_t>(_asset.GetLength());
   }
 
   int read(jpgd::uint8 *pBuf, int max_bytes_to_read, bool *pEOF_flag) override {
@@ -60,7 +63,8 @@ class JpegDecoderAssetStream : public jpgd::jpeg_decoder_stream {
       return 0;
     }
 
-    int bytes_read = _asset.Read(static_cast<void *>(pBuf), max_bytes_to_read);
+    int bytes_read = _asset.Read(static_cast<void *>(pBuf),
+                                 static_cast<const size_t>(max_bytes_to_read));
     if (bytes_read < max_bytes_to_read) {
       if (bytes_read < 0) {
         _is_error = true;
@@ -78,27 +82,22 @@ class JpegDecoderAssetStream : public jpgd::jpeg_decoder_stream {
   Asset _asset;
   bool _is_eof, _is_error;
 };
+}
 
 //==================================================================================================
 
-JpgTextureMetadata::JpgTextureMetadata(const std::string &relative_path,
-                                       const std::string &filename_stem)
-    : EncodedTextureMetadata(relative_path, filename_stem) {}
+JpgTexture::JpgTexture(const std::string &relative_path, const std::string &filename_stem)
+    : EncodedTexture(relative_path, filename_stem, TextureChannels::RGB) {}
 
-const std::string &JpgTextureMetadata::GetFilenameExtension() const {
+const std::string &JpgTexture::GetFilenameExtension() const {
   static const std::string kJpg("jpg");
   return kJpg;
 }
 
-const std::string &JpgTextureMetadata::GetChannels() const {
-  static const std::string kRgb("rgb");
-  return kRgb;
-}
-
-void JpgTextureMetadata::_Load() {
+void JpgTexture::_Load() {
   static const int kRequiredComponents{4};
 
-  JpegDecoderAssetStream asset_stream{ToString()};
+  ::JpegDecoderAssetStream asset_stream{ToString()};
 
   if (asset_stream) {
     _file_size = asset_stream.size();
@@ -115,12 +114,12 @@ void JpgTextureMetadata::_Load() {
       _height = height;
       _has_alpha = false;
       _bitmap_data = std::unique_ptr<u_char>(bitmap_data);
-      _mem_size = width * kRequiredComponents * height;
+      _mem_size = static_cast<size_t>(width * kRequiredComponents * height);
     }
   }
 }
 
-void JpgTextureMetadata::_ApplyBitmap() {
+void JpgTexture::_ApplyBitmap() {
   glTexImage2D(GL_TEXTURE_2D, 0, _internal_format,
                _width, _height, 0,
                _internal_format, GL_UNSIGNED_BYTE, _bitmap_data.get());

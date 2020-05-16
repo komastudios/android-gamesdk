@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef _SYSTEM_JPG_HPP
-#define _SYSTEM_JPG_HPP
+#ifndef _SYSTEM_PNG_HPP
+#define _SYSTEM_PNG_HPP
 
 #include <string>
 
@@ -24,11 +24,11 @@
 namespace ancer {
 
 /**
- * JPG encoded texture.
+ * PNG encoded texture.
  */
-class JpgTexture : public EncodedTexture {
+class PngTexture : public EncodedTexture {
  public:
-  JpgTexture(const std::string &relative_path, const std::string &filename_stem);
+  PngTexture(const std::string &relative_path, const std::string &filename_stem);
 
   const std::string &GetFilenameExtension() const override;
 
@@ -39,4 +39,4 @@ class JpgTexture : public EncodedTexture {
 
 }
 
-#endif  // _SYSTEM_JPG_HPP
+#endif  // _SYSTEM_PNG_HPP
