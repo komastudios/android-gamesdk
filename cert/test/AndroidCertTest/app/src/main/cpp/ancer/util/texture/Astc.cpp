@@ -74,26 +74,31 @@ GLenum map_bpp_to_internal_format(const uint bits_per_pixel,
 
 //--------------------------------------------------------------------------------------------------
 
-AstcTextureMetadata::AstcTextureMetadata(const std::string &relative_path,
-                                         const std::string &filename_stem,
-                                         const uint bits_per_pixel,
-                                         const TexturePostCompressionFormat post_compression_format)
-    : CompressedTextureMetadata(relative_path,
-                                filename_stem,
-                                post_compression_format),
+AstcTexture::AstcTexture(const std::string &relative_path,
+                         const std::string &filename_stem,
+                         const TextureChannels channels,
+                         const uint bits_per_pixel,
+                         const TexturePostCompressionFormat post_compression_format)
+    : CompressedTexture(relative_path,
+                        filename_stem,
+                        channels,
+                        post_compression_format),
       _bits_per_pixel{bits_per_pixel} {
   _internal_format = ::map_bpp_to_internal_format(bits_per_pixel, _relative_path, _filename_stem);
 }
 
-AstcTextureMetadata &&AstcTextureMetadata::MirrorPostCompressed(
+AstcTexture AstcTexture::MirrorPostCompressed(
     const TexturePostCompressionFormat post_compression_format) const {
-  return std::move(AstcTextureMetadata(_relative_path,
-                                       _filename_stem,
-                                       _bits_per_pixel,
-                                       post_compression_format));
+  std::string filename_stem{_filename_stem};
+  filename_stem.append(".").append(GetFilenameExtension());
+  return AstcTexture(_relative_path,
+                     filename_stem,
+                     _channels,
+                     _bits_per_pixel,
+                     post_compression_format);
 }
 
-void AstcTextureMetadata::_OnBitmapLoaded() {
+void AstcTexture::_OnBitmapLoaded() {
   auto *astc_data_ptr = reinterpret_cast<AstcHeader *>(_bitmap_data.get());
   /* Merge x,y-sizes from 3 chars into one integer value. */
   _width =
@@ -106,7 +111,8 @@ void AstcTextureMetadata::_OnBitmapLoaded() {
   int y_size{_height};
   /* Merge x,y,z-sizes from 3 chars into one integer value. */
   int z_size{
-      astc_data_ptr->z_size[0] + (astc_data_ptr->z_size[1] << 8) + (astc_data_ptr->z_size[2] << 16)};
+      astc_data_ptr->z_size[0] + (astc_data_ptr->z_size[1] << 8)
+          + (astc_data_ptr->z_size[2] << 16)};
 
   /* Compute number of blocks in each direction. */
   /* Number of blocks in the x, y and z direction. */
@@ -118,7 +124,7 @@ void AstcTextureMetadata::_OnBitmapLoaded() {
   _image_size = x_blocks * y_blocks * z_blocks << 4;
 }
 
-void AstcTextureMetadata::_ApplyBitmap() {
+void AstcTexture::_ApplyBitmap() {
   glCompressedTexImage2D(GL_TEXTURE_2D, 0, _internal_format,
                          _width, _height, 0, _image_size,
                          _bitmap_data.get() + sizeof(AstcHeader));
@@ -127,7 +133,7 @@ void AstcTextureMetadata::_ApplyBitmap() {
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
-const std::string &AstcTextureMetadata::_GetInnerExtension() const {
+const std::string &AstcTexture::_GetInnerExtension() const {
   static const std::string kAstc("astc");
   return kAstc;
 }

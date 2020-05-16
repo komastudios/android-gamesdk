@@ -26,12 +26,11 @@ namespace ancer {
 /**
  * JPG encoded texture.
  */
-class JpgTextureMetadata : public EncodedTextureMetadata {
+class JpgTexture : public EncodedTexture {
  public:
-  JpgTextureMetadata(const std::string &relative_path, const std::string &filename_stem);
+  JpgTexture(const std::string &relative_path, const std::string &filename_stem);
 
   const std::string &GetFilenameExtension() const override;
-  const std::string &GetChannels() const override;
 
  protected:
   void _Load() override;

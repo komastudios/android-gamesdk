@@ -26,14 +26,20 @@ namespace ancer {
 /**
  * ETC2 compressed texture.
  */
-class Etc2TextureMetadata : public CompressedTextureMetadata {
+class Etc2Texture : public CompressedTexture {
  public:
-  Etc2TextureMetadata(const std::string &relative_path,
-                      const std::string &filename_stem,
-                      const TexturePostCompressionFormat post_compression_format
-                      = TexturePostCompressionFormat::NONE);
+  Etc2Texture(const std::string &relative_path,
+              const std::string &filename_stem,
+              const TextureChannels channels,
+              const TexturePostCompressionFormat post_compression_format
+              = TexturePostCompressionFormat::NONE);
 
-  Etc2TextureMetadata &&MirrorPostCompressed(
+  /**
+   * Clones this instance on a new one, but with a specific post compression format. Namely, if this
+   * is a plain ETC2 texture, invoking this function with GZIP would return a similar texture but
+   * post-compressed via gzip.
+   */
+  Etc2Texture MirrorPostCompressed(
       const TexturePostCompressionFormat post_compression_format) const;
 
  protected:

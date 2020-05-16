@@ -16,6 +16,10 @@
       "data_gatherer": {
         "id": "TextureLoadingGLES3Operation",
         "configuration": {
+          "texture_families": [
+            "bananas",
+            "grocery"
+          ]
         }
       },
       "host": "GLSurfaceViewHostActivity",

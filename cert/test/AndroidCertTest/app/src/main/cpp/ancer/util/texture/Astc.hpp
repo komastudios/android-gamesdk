@@ -26,15 +26,21 @@ namespace ancer {
 /**
  * ASTC compressed texture.
  */
-class AstcTextureMetadata : public CompressedTextureMetadata {
+class AstcTexture : public CompressedTexture {
  public:
-  AstcTextureMetadata(const std::string &relative_path,
-                      const std::string &filename_stem,
-                      const uint bits_per_pixel,
-                      const TexturePostCompressionFormat post_compression_format
-                      = TexturePostCompressionFormat::NONE);
+  AstcTexture(const std::string &relative_path,
+              const std::string &filename_stem,
+              const TextureChannels channels,
+              const uint bits_per_pixel,
+              const TexturePostCompressionFormat post_compression_format
+              = TexturePostCompressionFormat::NONE);
 
-  AstcTextureMetadata &&MirrorPostCompressed(
+  /**
+   * Clones this instance on a new one, but with a specific post compression format. Namely, if this
+   * is a plain ASTC texture compressed at 4bpp, invoking this function with LZ4 would return a
+   * similar texture but post-compressed via lz4.
+   */
+  AstcTexture MirrorPostCompressed(
       const TexturePostCompressionFormat post_compression_format) const;
 
  protected:

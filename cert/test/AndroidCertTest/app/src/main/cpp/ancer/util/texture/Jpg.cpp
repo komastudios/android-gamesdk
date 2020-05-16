@@ -81,21 +81,15 @@ class JpegDecoderAssetStream : public jpgd::jpeg_decoder_stream {
 
 //==================================================================================================
 
-JpgTextureMetadata::JpgTextureMetadata(const std::string &relative_path,
-                                       const std::string &filename_stem)
-    : EncodedTextureMetadata(relative_path, filename_stem) {}
+JpgTexture::JpgTexture(const std::string &relative_path, const std::string &filename_stem)
+    : EncodedTexture(relative_path, filename_stem, TextureChannels::RGB) {}
 
-const std::string &JpgTextureMetadata::GetFilenameExtension() const {
+const std::string &JpgTexture::GetFilenameExtension() const {
   static const std::string kJpg("jpg");
   return kJpg;
 }
 
-const std::string &JpgTextureMetadata::GetChannels() const {
-  static const std::string kRgb("rgb");
-  return kRgb;
-}
-
-void JpgTextureMetadata::_Load() {
+void JpgTexture::_Load() {
   static const int kRequiredComponents{4};
 
   JpegDecoderAssetStream asset_stream{ToString()};
@@ -120,7 +114,7 @@ void JpgTextureMetadata::_Load() {
   }
 }
 
-void JpgTextureMetadata::_ApplyBitmap() {
+void JpgTexture::_ApplyBitmap() {
   glTexImage2D(GL_TEXTURE_2D, 0, _internal_format,
                _width, _height, 0,
                _internal_format, GL_UNSIGNED_BYTE, _bitmap_data.get());
