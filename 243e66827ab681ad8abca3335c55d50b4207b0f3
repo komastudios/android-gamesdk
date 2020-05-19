@@ -20,6 +20,33 @@
       "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000003048256",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1261110?revision\u003d2",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "ca39d4cd_97ca3d10",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-05-19T23:31:41Z",
+      "side": 1,
+      "message": "Unrecognized license :\nthird party\n",
+      "range": {
+        "startLine": 14,
+        "startChar": 9,
+        "endLine": 14,
+        "endChar": 20
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
