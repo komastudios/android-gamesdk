@@ -82,10 +82,9 @@ class TuningForkRequestServer(ip: String, port: Int, val requestListener: Reques
         private var requestType = "GET"
         private var httpVer = "HTTP/1.1"
         private var contentType = ""
-        private var status = "200"
 
-        val kPageNotFound = "404"
-        val kOkay = "200"
+        val kPageNotFound = 404
+        val kOkay = 200
 
         val kContentTypePattern =
             Regex("([ |\t]*content-type[ |\t]*:)(.*)", RegexOption.IGNORE_CASE)
@@ -201,9 +200,9 @@ class TuningForkRequestServer(ip: String, port: Int, val requestListener: Reques
         }
 
         fun processLocation(out: DataOutputStream?, location: String, postData: String) {
-            var data = ""
 
             println("url location -> $location")
+
             val geturi = Uri.parse("http://localhost$location")
             val dirPath =
                 geturi.path?.split("/".toRegex())?.dropLastWhile({ it.isEmpty() })?.toTypedArray()
@@ -214,13 +213,13 @@ class TuningForkRequestServer(ip: String, port: Int, val requestListener: Reques
                 if (requestType == "POST") {
                     qparms.set("_POST", postData)
                 }
-                data = getResultByName(
+                val (status, data) = getResultByName(
                     dirPath.dropLast(1).joinToString("/"),
                     fileName,
                     qparms
                 )
                 if (out != null)
-                    constructHeader(out, data.length.toString() + "", data)
+                    constructHeader(out, data.length.toString() + "", status, data)
             }
         }
 
@@ -228,7 +227,7 @@ class TuningForkRequestServer(ip: String, port: Int, val requestListener: Reques
             path: String,
             name: String,
             qparms: MutableMap<String, String?>
-        ): String {
+        ): Pair<Int, String> {
             var path = path
             val name_parts = name.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             var function = name
@@ -240,7 +239,7 @@ class TuningForkRequestServer(ip: String, port: Int, val requestListener: Reques
             try {
                 val app = AppKey.parse(path)
                 val postData = qparms["_POST"]
-                val resultBody = if (postData != null) {
+                val result = if (postData != null) {
                     when (function) {
                         "generateTuningParameters" -> requestListener.generateTuningParameters(
                             app,
@@ -251,26 +250,25 @@ class TuningForkRequestServer(ip: String, port: Int, val requestListener: Reques
                         else -> errorResult()
                     }
                 } else errorResult()
-                status = kOkay
-                return resultBody
+                return result
             } catch (er: Exception) {
                 er.printStackTrace()
                 return errorResult()
             }
         }
 
-        fun errorResult(): String {
-            status = kPageNotFound
-            return ("<!DOCTYPE html>"
+        fun errorResult(): Pair<Int, String> {
+            return Pair(kPageNotFound, ("<!DOCTYPE html>"
                     + "<html><head><title>Page not found</title>"
-                    + "</head><body><h3>Requested page not found</h3></body></html>")
+                    + "</head><body><h3>Requested page not found</h3></body></html>"))
         }
 
-        private fun constructHeader(output: DataOutputStream, size: String, data: String) {
+        private fun constructHeader(output: DataOutputStream, size: String, status: Int,
+                                    data: String) {
             val gmtFrmt = SimpleDateFormat("E, d MMM yyyy HH:mm:ss 'GMT'", Locale.US)
             gmtFrmt.timeZone = TimeZone.getTimeZone("GMT")
             val pw = PrintWriter(BufferedWriter(OutputStreamWriter(output)), false)
-            pw.append("HTTP/1.1 ").append(status).append(" \r\n")
+            pw.append("HTTP/1.1 ").append(status.toString()).append(" \r\n")
             if (contentType != null) {
                 printHeader(pw, "Content-Type", contentType)
             }
