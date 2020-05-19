@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d7766dfb_bbc90e6a",
+        "filename": "cert/test/reporting/lib/graphers/loader.py",
+        "patchSetId": 16
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-05-19T07:48:35Z",
+      "side": 1,
+      "message": "I admit that I already objected the original version (create_suite_handler) as I didn\u0027t conceive that more than one handler could handle a same suite. I gave the benefit of doubt that maybe some test was like that.\n\nThis new version seems to take that notion to a new level. Now SuiteSummarizers marshall SuiteHandlers... I just get lost here 😕\nI\u0027m not saying that the design is necessarily bad at all. I just feel like I always hit cases were there was a 1:1 relation between a test report (JSON) and a suite handler that dealt with that report.\nWhen reviewing all suite summarizer implementations, they just have a default suite handler each. So I miss the part where more than one suite handler could be marshalled by a summarizer and the motivation to split the original handlers into handlers and summarizers.\n\nI feel like there shouldn\u0027t be such thing like a \"can_handle\" function being asked to all suite handlers (before this CL) or now all suite summarizers. If I\u0027m right that there\u0027s a 1:1 relation between JSON reports and summarizers, then there should be a straight way to get the instance of the proper summarizer, ignoring the others.",
+      "revId": "22a5a2e6215a54337e7ce05d2bfd2b4d6660212f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "badbb98b_84c5dbab",
+        "filename": "cert/test/reporting/lib/graphers/suite_handler.py",
+        "patchSetId": 16
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-05-19T07:48:35Z",
+      "side": 1,
+      "message": "The original version of this source file, I always said, was something I could barely follow. I knew a few SuiteHandler functions very well and typically by implementing these, I got great reports. But SuiteHandler also had other functions I couldn\u0027t understand what they were for; I did never implement these and nothing bad happened.\n\nSounds like these functions I couldn\u0027t get what they were for were now moved to SuiteSummarizer. This at least makes SuiteHandler simpler, straight to the point. But I must admit I can\u0027t imagine any example where SuiteSummarizer is needed. I\u0027ll take a look at the existing suite handler implementations to see if I find a SuiteSummarizer subclass.",
+      "revId": "22a5a2e6215a54337e7ce05d2bfd2b4d6660212f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "eddbbb63_f20b2518",
+        "filename": "cert/test/reporting/lib/summary_formatters/format_items.py",
+        "patchSetId": 16
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-05-19T07:48:35Z",
+      "side": 1,
+      "message": "I\u0027m really happy about everything this CL is for. A big leap forward in our reporting pipeline.\nYet, I have a minor objection that, these so much useful items, are bound to the notion of formatters.\n\nBoth exist. These abstract items exist. And the formatters, that can take an abstract item and \"write\" it formatted, also exist.\n\nI just have an objection that Items are inherent to formatters. This said in the sense that this source file is inside the summary_formatters directory and it\u0027s called \"format_items.py\".\n\nIn my humble opinion, these items are inherent to summaries (as opposed to be inherent to formatters) and should be outside this summary_formatters directory.\n\nNonetheless, I\u0027m fine to keep it here especially if I don\u0027t convince you with these words 😊",
+      "revId": "22a5a2e6215a54337e7ce05d2bfd2b4d6660212f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "df2823f5_e8be5872",
+        "filename": "cert/test/reporting/lib/summary_formatters/formatter.py",
+        "patchSetId": 16
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-05-19T07:48:35Z",
+      "side": 1,
+      "message": "I think you tried to mean \"SummaryFormatter subclass must implement write_separator()\" (i.e., without the double underscore, as write_separator doesn\u0027t seem to be a private function)\n\nCould that be the case? Same feedback applies to the other abstract \"write_\" functions.",
+      "revId": "22a5a2e6215a54337e7ce05d2bfd2b4d6660212f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
