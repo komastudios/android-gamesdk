@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "a748b9ee_b26a5e84",
+        "filename": "cert/test/reporting/lib/graphers/loader.py",
+        "patchSetId": 16
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-05-19T19:03:17Z",
+      "side": 1,
+      "message": "I gave a lengthier discussion on this in another response, but in brief, there was this existing support for allowing a batch of tests to be run in a single FTL trip, so that precludes the strict 1:1 relationship, which is why I suspect the code wound up evolving around \"SuiteHandlers\" rather than \"ReportHandlers\". I actually looked at the impact of making that change ( to \"ReportHandlers\" instead), and I felt it would have been far too much change, even though we don\u0027t have any cases of batch deployments. So while I feel that abstraction would work, I don\u0027t think it would work for _us_, where we currently are (not wanting to make _more_ changes to code).",
+      "parentUuid": "d7766dfb_bbc90e6a",
+      "revId": "22a5a2e6215a54337e7ce05d2bfd2b4d6660212f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "badbb98b_84c5dbab",
         "filename": "cert/test/reporting/lib/graphers/suite_handler.py",
         "patchSetId": 16
@@ -30,6 +48,41 @@
       "writtenOn": "2020-05-19T07:48:35Z",
       "side": 1,
       "message": "The original version of this source file, I always said, was something I could barely follow. I knew a few SuiteHandler functions very well and typically by implementing these, I got great reports. But SuiteHandler also had other functions I couldn\u0027t understand what they were for; I did never implement these and nothing bad happened.\n\nSounds like these functions I couldn\u0027t get what they were for were now moved to SuiteSummarizer. This at least makes SuiteHandler simpler, straight to the point. But I must admit I can\u0027t imagine any example where SuiteSummarizer is needed. I\u0027ll take a look at the existing suite handler implementations to see if I find a SuiteSummarizer subclass.",
+      "revId": "22a5a2e6215a54337e7ce05d2bfd2b4d6660212f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ae9895dc_1558e7e2",
+        "filename": "cert/test/reporting/lib/graphers/suite_handler.py",
+        "patchSetId": 16
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-05-19T19:03:17Z",
+      "side": 1,
+      "message": "That\u0027s definitely a fair question. There are three specific cases I came across while writing my own tests where the SuiteSummarizer abstraction would fit in perfectly. (I suspect these cases could apply elsewhere.)\n\nThe first was with Shader Blob Cache loading, where it would have been interesting to see a relative \"benchmark\" of sorts between devices. I believe this sort of case is why the `render_summarization_plot` class method was added, but after giving it much thought, it seemed to me that this sort of \"overloaded\" a SuiteHandler\u0027s responsibility. What I mean is, in most cases, we think about a SuiteHandler as pertaining to a _single_ device, but the `render_summarization_plot` class method was meant to pertain to _all_ devices. Since these were class methods, we had to switch tactics from being able to store some internal state (i.e., `self.my_data`) to passing all data through function methods. (You can take a look at \"single_core_comparision.py\" for an example of how this approach looked, compared to what we\u0027re used to.) So the SuiteSummarizer you see here is my attempt to split those two functionalities apart. Basically, one thing looks at a device\u0027s results in isolation (SuiteHandler), and the other can compare all devices at once (SuiteSummarizer).\n\nThe second case is a simple one, which I haven\u0027t added yet because I didn\u0027t want to make this CL even larger. In my next CL, I\u0027ll be using the new tables functionality for the \"EGL Get Frame Timestamps\" report. I use the SuiteSummarizer\u0027s `render` method to print out a sort of preface, once at the top of the document, and then I proceed with the output of each report. If we only had SuiteHandlers, I would have to duplicate this \"preface\" on each device report, and I think that would make the document more laborious to read.\n\nThe third case is also simple, and perhaps the most useful. In just a handful of lines of code, I can make a SuiteSummarizer list, at the top of the document, how many devices passed and how many failed. This saves the reader from having to count on their own through a 140 page document. I think we could get a lot of use out of a high-level first page summary, as it allows us to provide important context and summaries.",
+      "parentUuid": "badbb98b_84c5dbab",
+      "revId": "22a5a2e6215a54337e7ce05d2bfd2b4d6660212f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "83d00ba1_bd00f823",
+        "filename": "cert/test/reporting/lib/graphers/suite_handler.py",
+        "patchSetId": 16
+      },
+      "lineNbr": 239,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-05-19T19:03:17Z",
+      "side": 1,
+      "message": "One thing I want to point out is the three levels of filtering methods (`can_handle_report`, `can_handle_datum`, and `datum_filter`). We could have done with just `can_handle_datum`, but it would put more responsibility on both the caller that initializes a SuiteSummarizer and the `__init__` method of a SuiteSummarizer. So really, two of these are just convenience methods on top of `can_handle_datum`.\n\nMost of our classes so far just use a SuiteHandler\u0027s `can_handle_datum` method, but if you look at \"single_core_comparison.py\", it\u0027s a test that creates variants of itself, modifying the `suite_id` each time, thereby making separate Suites, which in the earlier system meant separate SuiteHandlers as well. What that test _really_ wants is a \"DeviceHandler\", so that it can analyze the data from all the Suites from a single device, all at one time.\n\nI think the crux here is, we may have initially had this need to run a bunch of different tests all at once, but now we almost always run only one test at once. I think that\u0027s why we have this \"Suite\" concept so deeply embedded into this library--in order to allow disparate test to run in one trip to FTL. I think if we only allowed one test at a time, and had a `DeviceHandler` instead of a `SuiteHandler`, it would serve 99% of our cases, and the meaning would be more plain, but I didn\u0027t want to throw out functionality (and potentially break things), and I certainly didn\u0027t want to make even more drastic changes to the code.\n\nIt seems that fundamentally, when we go to write our report handlers, we want to ask one of two things: What are the results from a particular device, and, How do the devices compare to one another. I think some of the complexity originates from having to say, Okay, but what if some other test gets run with yours, how do we determine which data you\u0027ll get?",
       "revId": "22a5a2e6215a54337e7ce05d2bfd2b4d6660212f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
@@ -53,6 +106,24 @@
     },
     {
       "key": {
+        "uuid": "2b8de757_af984432",
+        "filename": "cert/test/reporting/lib/summary_formatters/format_items.py",
+        "patchSetId": 16
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-05-19T19:03:17Z",
+      "side": 1,
+      "message": "I quite agree with your point! I\u0027ve moved the file into the main library directory and updated all the imports (most recent patch set).",
+      "parentUuid": "eddbbb63_f20b2518",
+      "revId": "22a5a2e6215a54337e7ce05d2bfd2b4d6660212f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "df2823f5_e8be5872",
         "filename": "cert/test/reporting/lib/summary_formatters/formatter.py",
         "patchSetId": 16
@@ -67,6 +138,24 @@
       "revId": "22a5a2e6215a54337e7ce05d2bfd2b4d6660212f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "545d1123_a3b70574",
+        "filename": "cert/test/reporting/lib/summary_formatters/formatter.py",
+        "patchSetId": 16
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-05-19T19:03:17Z",
+      "side": 1,
+      "message": "Good catch! I\u0027ll make that change.",
+      "parentUuid": "df2823f5_e8be5872",
+      "revId": "22a5a2e6215a54337e7ce05d2bfd2b4d6660212f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
