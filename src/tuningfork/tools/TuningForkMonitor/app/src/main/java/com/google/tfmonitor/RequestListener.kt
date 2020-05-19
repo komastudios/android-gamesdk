@@ -21,10 +21,10 @@ import com.google.tuningfork.Deserializer
 
 interface RequestListener {
 
-    fun generateTuningParameters(appKey: AppKey, requestString: String): String
+    fun generateTuningParameters(appKey: AppKey, requestString: String): Pair<Int,String>
 
-    fun uploadTelemetry(appKey: AppKey, requetString: String): String
+    fun uploadTelemetry(appKey: AppKey, requestString: String): Pair<Int, String>
 
-    fun debugInfo(appKey: AppKey, requetString: String): String
+    fun debugInfo(appKey: AppKey, requestString: String): Pair<Int, String>
 
 }

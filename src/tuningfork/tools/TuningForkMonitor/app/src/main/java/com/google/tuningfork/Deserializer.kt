@@ -18,6 +18,7 @@ package com.google.tuningfork
 
 import org.json.JSONObject
 import android.util.Base64
+import android.util.Log
 import java.lang.Exception
 
 // These classes are needed because of the lack of Json deserialization in protobuf lite

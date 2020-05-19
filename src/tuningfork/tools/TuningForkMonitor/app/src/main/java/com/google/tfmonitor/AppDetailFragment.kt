@@ -19,9 +19,12 @@ package com.google.tfmonitor
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -46,10 +49,15 @@ class AppDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private lateinit var last_update_time: TextView
     private lateinit var x_min_label: TextView
     private lateinit var x_max_label: TextView
+    private lateinit var getTuningParametersHttpResponseEdit : EditText
+    private lateinit var uploadTelemetryHttpResponseEdit : EditText
 
     private var paused = false
 
     private var known_instrument_keys = ArrayList<Int>()
+
+    private val TUNING_PARAMETERS_HTTP_RESPONSE_KEY = "getTuningParametersHttpResponse"
+    private val UPLOAD_TELEMETRY_HTTP_RESPONSE_KEY = "uploadTelemetryHttpResponse"
 
     private lateinit var datastore: Datastore;
 
@@ -85,6 +93,25 @@ class AppDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
         last_update_time = view.findViewById(R.id.last_update_time)
         x_min_label = view.findViewById(R.id.x_min_label)
         x_max_label = view.findViewById(R.id.x_max_label)
+        getTuningParametersHttpResponseEdit = view.findViewById(R.id.startup_http_response)
+        uploadTelemetryHttpResponseEdit = view.findViewById(R.id.telemetry_http_response)
+
+        getTuningParametersHttpResponseEdit.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(widget: Editable?) {
+                getViewModel().getTuningParametersResponse =
+                    getTuningParametersHttpResponseEdit.text.toString().toInt()
+            }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+        })
+        uploadTelemetryHttpResponseEdit.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(widget: Editable?) {
+                getViewModel().uploadTelemetryResponse =
+                    uploadTelemetryHttpResponseEdit.text.toString().toInt()
+            }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+        })
 
         view.findViewById<ToggleButton>(R.id.play_pause_button).setOnClickListener { v ->
             paused = !(v as ToggleButton).isChecked
