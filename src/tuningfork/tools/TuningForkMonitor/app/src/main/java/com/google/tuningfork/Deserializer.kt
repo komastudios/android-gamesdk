@@ -18,6 +18,7 @@ package com.google.tuningfork
 
 import org.json.JSONObject
 import android.util.Base64
+import android.util.Log
 import java.lang.Exception
 
 // These classes are needed because of the lack of Json deserialization in protobuf lite
@@ -142,6 +143,7 @@ class Deserializer {
     }
 
     fun parseUploadTelemetryRequest(request_string: String): UploadTelemetryRequest {
+        Log.i("ParseU", request_string);
         val request = JSONObject(request_string)
         val name = request.getString("name")
         val session_context = getSessionContext(request, "session_context")

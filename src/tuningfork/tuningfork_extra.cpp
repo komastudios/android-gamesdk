@@ -117,31 +117,39 @@ TFErrorCode StartFidelityParamDownloadThread(const ProtobufSerialization& defaul
         ProtobufSerialization params;
         auto waitTime = std::chrono::milliseconds(initialTimeoutMs);
         bool first_time = true;
+        auto upload_defaults_first_time = [&]() {
+                                   if (first_time) {
+                                       CProtobufSerialization cpbs;
+                                       ToCProtobufSerialization(default_params, cpbs);
+                                       if (fidelity_params_callback)
+                                           fidelity_params_callback(&cpbs);
+                                       CProtobufSerialization_Free(&cpbs);
+                                       first_time = false;
+                                   }
+                               };
         while (!s_kill_thread) {
             auto startTime = std::chrono::steady_clock::now();
             auto err = GetFidelityParameters(default_params,
                                              params, waitTime.count());
-            if (err==TFERROR_OK) {
-                ALOGI("Got fidelity params from server");
-                if (jni::IsValid())
-                    SaveFidelityParams(params);
-                CProtobufSerialization cpbs;
-                ToCProtobufSerialization(params, cpbs);
-                if (fidelity_params_callback) {
-                    fidelity_params_callback(&cpbs);
+            if (err==TFERROR_OK || err==TFERROR_NO_FIDELITY_PARAMS) {
+                if (err==TFERROR_NO_FIDELITY_PARAMS) {
+                    ALOGI("Got empty fidelity params from server");
+                    upload_defaults_first_time();
+                } else {
+                    ALOGI("Got fidelity params from server");
+                    if (jni::IsValid())
+                        SaveFidelityParams(params);
+                    CProtobufSerialization cpbs;
+                    ToCProtobufSerialization(params, cpbs);
+                    if (fidelity_params_callback) {
+                        fidelity_params_callback(&cpbs);
+                    }
+                    CProtobufSerialization_Free(&cpbs);
                 }
-                CProtobufSerialization_Free(&cpbs);
                 break;
             } else {
                 ALOGI("Could not get fidelity params from server : err = %d", err);
-                if (first_time) {
-                    CProtobufSerialization cpbs;
-                    ToCProtobufSerialization(default_params, cpbs);
-                    if (fidelity_params_callback)
-                        fidelity_params_callback(&cpbs);
-                    CProtobufSerialization_Free(&cpbs);
-                    first_time = false;
-                }
+                upload_defaults_first_time();
                 // Wait if the call returned earlier than expected
                 auto dt = std::chrono::steady_clock::now() - startTime;
                 if(waitTime>dt) std::this_thread::sleep_for(waitTime - dt);

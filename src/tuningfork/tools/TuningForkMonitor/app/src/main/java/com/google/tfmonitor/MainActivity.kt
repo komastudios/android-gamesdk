@@ -69,20 +69,20 @@ class MainActivity : AppCompatActivity(), AppChoiceFragment.OnFragmentInteractio
         return ViewModelProvider(viewModelStore, factory).get(MonitorViewModel::class.java)
     }
 
-    override fun generateTuningParameters(appKey: AppKey, requestString: String): String {
+    override fun generateTuningParameters(appKey: AppKey, requestString: String): Pair<Int,String> {
         val deser = Deserializer()
         val req = deser.parseGenerateTuningParametersRequest(requestString)
         return getViewModel().generateTuningParameters(appKey, req)
     }
 
-    override fun uploadTelemetry(appKey: AppKey, requetString: String): String {
+    override fun uploadTelemetry(appKey: AppKey, requetString: String): Pair<Int,String> {
         val deser = Deserializer()
         val req = deser.parseUploadTelemetryRequest(requetString)
         datastore.uploadTelemetryRequest(appKey, req)
         return getViewModel().uploadTelemetry(appKey, req)
     }
 
-    override fun debugInfo(appKey: AppKey, requetString: String): String {
+    override fun debugInfo(appKey: AppKey, requetString: String): Pair<Int,String> {
         val deser = Deserializer()
         val req = deser.parseDebugInfoRequest(requetString)
         datastore.debugInfoRequest(appKey, req)
