@@ -387,6 +387,30 @@
     },
     {
       "key": {
+        "uuid": "501d70a4_f8a09fa5",
+        "filename": "bender/bender-base/app/src/main/jni/texture.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-19T23:31:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4f2c6831_b88281d4",
+      "range": {
+        "startLine": 174,
+        "startChar": 0,
+        "endLine": 177,
+        "endChar": 21
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c7816fb5_b9a50248",
         "filename": "bender/bender-base/app/src/main/jni/texture.cc",
         "patchSetId": 2
@@ -526,6 +550,30 @@
       "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8782ae4b_1d98eedc",
+        "filename": "bender/bender-base/app/src/main/jni/texture.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-19T23:31:29Z",
+      "side": 1,
+      "message": "Thanks! And yeah, poking at it more, you\u0027re right it does look like the commit description - interesting!",
+      "parentUuid": "644ba7ec_5731226c",
+      "range": {
+        "startLine": 24,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 21
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     },
     {
       "key": {
@@ -706,6 +754,30 @@
       "side": 1,
       "message": "Got it; astcenc provides options for sse2, sse4.2, and avx2, but I didn\u0027t know the distinctions so I just went with nointrin when testing.",
       "parentUuid": "ff7a6529_b646ab11",
+      "range": {
+        "startLine": 12,
+        "startChar": 10,
+        "endLine": 12,
+        "endChar": 26
+      },
+      "revId": "243e66827ab681ad8abca3335c55d50b4207b0f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f1af0de8_a78ac4e2",
+        "filename": "bender/bender-base/convert_astc.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-05-19T23:31:29Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "189c69ff_c2754715",
       "range": {
         "startLine": 12,
         "startChar": 10,
