@@ -17,6 +17,7 @@
 #ifndef _SYSTEM_TEMPERATURE_HPP
 #define _SYSTEM_TEMPERATURE_HPP
 
+#include <string>
 #include <vector>
 
 namespace ancer {

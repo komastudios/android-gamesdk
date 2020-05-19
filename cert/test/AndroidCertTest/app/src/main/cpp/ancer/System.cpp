@@ -69,6 +69,8 @@ std::string ancer::ObbPath() {
 
 //==============================================================================
 
+// TODO(dagum): this can and should be ported from its current Java/JNI implementation to full C++
+//              by using System.Asset.hpp type Asset.
 std::string ancer::LoadText(const char *file_name) {
   std::string text;
   jni::SafeJNICall(

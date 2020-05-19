@@ -14,29 +14,30 @@
  * limitations under the License.
  */
 
-#pragma once
+#ifndef _SYSTEM_JPG_HPP
+#define _SYSTEM_JPG_HPP
 
-namespace ancer::internal {
-    // In suite.hpp, re-declared here to avoid includes.
-    void SuiteUpdateRenderer();
+#include <string>
+
+#include <ancer/util/Texture.hpp>
+
+namespace ancer {
+
+/**
+ * JPG encoded texture.
+ */
+class JpgTextureMetadata : public EncodedTextureMetadata {
+ public:
+  JpgTextureMetadata(const std::string &relative_path, const std::string &filename_stem);
+
+  const std::string &GetFilenameExtension() const override;
+  const std::string &GetChannels() const override;
+
+ protected:
+  void _Load() override;
+  void _ApplyBitmap() override;
+};
+
 }
 
-
-namespace ancer::internal {
-    inline std::unique_ptr<Renderer> _system_renderer;
-
-    template <typename T, typename... Args>
-    void CreateRenderer(Args&&... args) {
-        assert(_system_renderer == nullptr);
-        _system_renderer = T::Create(std::forward<Args>(args)...);
-        SuiteUpdateRenderer();
-    }
-
-    inline Renderer* GetRenderer() {
-        return _system_renderer.get();
-    }
-
-    inline void DestroyRenderer() {
-        _system_renderer.reset();
-    }
-}
+#endif  // _SYSTEM_JPG_HPP

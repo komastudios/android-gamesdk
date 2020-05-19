@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "System.hpp"
+#include "System.Memory.hpp"
 
 #include "util/JNIHelpers.hpp"
 

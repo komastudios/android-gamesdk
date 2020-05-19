@@ -33,7 +33,6 @@
 
 #include <ancer/BaseGLES3Operation.hpp>
 #include <ancer/DatumReporting.hpp>
-#include <ancer/System.hpp>
 
 using namespace ancer;
 

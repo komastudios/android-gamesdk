@@ -418,7 +418,7 @@ struct LocalJNIEnv {
 
   virtual jobjectRefType GetObjectRefType(jobject obj) = 0;
 
-  virtual JNIEnv * GetOriginalJNIEnv() = 0;
+  virtual JNIEnv *GetOriginalJNIEnv() = 0;
 };
 
 /**

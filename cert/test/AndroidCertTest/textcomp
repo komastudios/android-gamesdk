@@ -1,0 +1,263 @@
+#!/bin/zsh
+
+#
+# Copyright 2020 The Android Open Source Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# Texture Compressor. For details and usage, run
+# $ . ./textcomp --help
+
+# Echoes all arguments, preceding by a timestamp.
+log() {
+    echo "[$(date +"%T")]" $@
+}
+
+# Explains inputs and outputs.
+show_usage() {
+    echo
+    echo Usage:
+    echo "    $ . $THIS <action> <directory> [<bpp>]"
+    echo
+    echo "Where:"
+    echo "    <action> is astc, etc2 or basis (*)."
+    echo "    <directory> is the path whose files will be compressed."
+    echo "          Compressed textures are left in a directory suffixed with"
+    echo "          action and bpp."
+    echo "          astc and etc2 compress PNG and JPG files, in RGBA and RGB"
+    echo "          channels respectively."
+    echo "          basis compresses PNG and BMP files in RGBA and RGB channels"
+    echo "          respectively."
+    echo "    <bpp> (astc only) target bits-per-pixel. Possible values are 2, 4"
+    echo "          (default) or 8."
+    echo
+    echo "(*) astc and etc2 require command line Mali Texture Compression Tool in"
+    echo "    the PATH. basis requires command line Binomial Basis Universal GPU"
+    echo "    Texture Codec in the PATH."
+}
+
+# Elaborates on what this tool does.
+show_help() {
+    echo "Texture compressor."
+    echo "Compresses textures in different formats, to compare performance of"
+    echo "different approaches (optimize for disk footprint/network transmission,"
+    echo "optimize for rendering, and all the associated transcoding operations"
+    echo "between storage and GPU)."
+    show_usage
+}
+
+# Verifies that the input argument is in the path.
+check_in_path() {
+    which $1
+    return $?
+}
+
+# Removes the final slash of a directory, if present.
+normalize_dir() {
+    _DIR=$1
+    _DIR_LAST_CHAR=`echo "${_DIR: -1}"`
+    if [[ $_DIR_LAST_CHAR == '/' ]]; then
+        _DIR=`echo ${_DIR} | cut -b -$((${#_DIR}-1))`
+    fi
+    echo ${_DIR}
+}
+
+# Restricts input bpp to 2, 4 or 8. If none, assumes 4.
+validate_bpp() {
+    if [ -z $1 ]; then _BPP=4; else _BPP=$1; fi
+    case $_BPP in
+        2|4|8)
+            echo ${_BPP}
+            ;;
+        *)
+            echo
+            ;;
+    esac
+}
+
+# Creates directory only if it doesn't exist.
+make_dir_safe() {
+    if [ ! -d $1 ]; then
+        mkdir -p $1
+    fi
+}
+
+# Given a file path, removes the directory and leaves the file name.
+get_file_name() {
+    echo ${1} | grep -oG '/[^/]*$' | cut -c2-
+}
+
+# Given a file path, returns its extension.
+get_file_extension() {
+    echo ${1} | grep -oG '\.[^.]*$' | cut -c2-
+}
+
+# Given a file path, removes its directory and extension.
+get_file_stem() {
+    _FILE_NAME=`get_file_name ${1}`
+    _FILE_EXTENSION=`get_file_extension ${_FILE_NAME}`
+    echo ${_FILE_NAME} | cut -b -$((${#_FILE_NAME}-${#_FILE_EXTENSION}-1))
+}
+
+# Given a file path, returns its directory.
+get_file_dir() {
+    _FILE_PATH=$1
+    _FILE_NAME=`get_file_name ${_FILE_PATH}`
+    echo ${_FILE_PATH} | cut -b -$((${#_FILE_PATH}-${#_FILE_NAME}-1))
+}
+
+# Deflates the file received as argument into a directory based on the
+# input directory.
+deflate() {
+    _INPUT_FILE=$1
+    _INPUT_FILE_DIR=`get_file_dir ${_INPUT_FILE}`
+    _DEFLATED_DIR=${_INPUT_FILE_DIR}_gz
+    make_dir_safe ${_DEFLATED_DIR}
+    _DEFLATED_FILE=${_DEFLATED_DIR}/`get_file_name ${_INPUT_FILE}`.gz
+    ${DEFLATOR} -9c ${_INPUT_FILE} > ${_DEFLATED_FILE}
+    log "Deflated to ${_DEFLATED_FILE}"
+}
+
+# Compresses the file received as argument into a directory based on the
+# input directory.
+compress_lz4() {
+    _INPUT_FILE=$1
+    _INPUT_FILE_DIR=`get_file_dir ${_INPUT_FILE}`
+    _LZ4_DIR=${_INPUT_FILE_DIR}_lz4
+    make_dir_safe ${_LZ4_DIR}
+    _LZ4_FILE=${_LZ4_DIR}/`get_file_name ${_INPUT_FILE}`.lz4
+    ${LZ4} -9c ${_INPUT_FILE} > ${_LZ4_FILE} 2>/dev/null
+    log "lz4'ed to ${_LZ4_FILE}"
+}
+
+# Compresses the file referred by envvar INPUT_FILE as astc.
+compress_astc() {
+    if [[ $EXTENSION == "png" || $EXTENSION == "jpg" ]]; then
+        _OUTPUT_DIR="${INPUT_DIR}_${ACTION}_${BPP}"
+        make_dir_safe ${_OUTPUT_DIR}
+        OUTPUT_FILE=${_OUTPUT_DIR}/${INPUT_STEM}_${CHANNELS}.astc
+
+        $COMPRESSOR -c "${INPUT_FILE}" "${OUTPUT_FILE}" "${BPP}.0" -thorough > /dev/null
+    fi
+}
+
+# Compresses the file referred by envvar INPUT_FILE as etc2.
+compress_etc2() {
+    if [[ $EXTENSION == "png" || $EXTENSION == "jpg" ]]; then
+        _OUTPUT_DIR="${INPUT_DIR}_${ACTION}"
+        make_dir_safe ${_OUTPUT_DIR}
+        OUTPUT_FILE=${_OUTPUT_DIR}/${INPUT_STEM}_${CHANNELS}.pkm
+
+        $COMPRESSOR "${INPUT_FILE}" "${_OUTPUT_DIR}" -s fast -c etc2 -f ${CHANNELS:u} > /dev/null
+        mv "${_OUTPUT_DIR}/${INPUT_STEM}.pkm" ${OUTPUT_FILE}
+    fi
+}
+
+# Compresses the file referred by envvar INPUT_FILE as basis.
+compress_basis() {
+    if [[ $EXTENSION == "png" || $EXTENSION == "bmp" ]]; then
+        _OUTPUT_DIR="${INPUT_DIR}_${ACTION}"
+        make_dir_safe ${_OUTPUT_DIR}
+        OUTPUT_FILE=${_OUTPUT_DIR}/${INPUT_STEM}_${CHANNELS}.basis
+
+        echo $COMPRESSOR "${_MODE}" -file "${INPUT_FILE}" -output_file "${OUTPUT_FILE}"
+
+        if [[ $EXTENSION == "png" ]]; then
+            $COMPRESSOR -uastc -uastc_level 3 -file "${INPUT_FILE}" -output_file "${OUTPUT_FILE}" > /dev/null
+        else
+            $COMPRESSOR -file "${INPUT_FILE}" -output_file "${OUTPUT_FILE}" > /dev/null
+        fi
+    fi
+}
+
+#==============================================================================
+
+# Main starts here.
+THIS=$0
+ACTION=$1
+
+case $ACTION in
+    astc)
+        COMPRESSOR=`check_in_path astcenc`
+        COMPRESS_FN=compress_astc
+        ;;
+    etc2)
+        COMPRESSOR=`check_in_path etcpack`
+        COMPRESS_FN=compress_etc2
+        ;;
+    basis)
+        COMPRESSOR=`check_in_path basisu`
+        COMPRESS_FN=compress_basis
+        ;;
+    -h|--help)
+        show_help
+        return 0
+        ;;
+    *)
+        if [ -z $ACTION ]; then
+            echo Missing action.
+        else
+            echo "Invalid action: ${ACTION}."
+        fi
+        show_usage
+        ;;
+esac
+
+if [ -z $COMPRESSOR ]; then
+    echo "ERROR: Couldn't find texture compressor for ${ACTION} in PATH. Is it installed?"
+    show_usage
+    return 1
+fi
+
+INPUT_DIR=`normalize_dir ${2}`
+if [ -z $INPUT_DIR ]; then
+    echo "ERROR: Missing directory."
+    show_usage
+    return 1
+fi
+
+BPP=`validate_bpp ${3}`
+if [[ $ACTION == 'astc' ]] && [ -z $BPP ]; then
+    echo "ERROR: Invalid bits-per-second: ${3}"
+    show_usage
+    return 1
+fi
+
+DEFLATOR=`check_in_path gzip`
+if [ -z $DEFLATOR ]; then
+    echo "WARNING: gzip not found in PATH. Skipping deflator."
+fi
+
+LZ4=`check_in_path lz4`
+if [ -z $LZ4 ]; then
+    echo "WARNING: lz4 not found in PATH. Skipping lz4 extra compression."
+fi
+
+while read -d '' INPUT_FILE; do
+    unset OUTPUT_FILE
+    EXTENSION=`get_file_extension ${INPUT_FILE}`
+    if [[ $EXTENSION == "png" || $EXTENSION == "jpg" || $EXTENSION == "bmp" ]]; then
+        INPUT_STEM=`get_file_stem ${INPUT_FILE}`
+        if [[ "$EXTENSION" == "png" ]]; then CHANNELS="rgba"; else CHANNELS="rgb"; fi
+        log Starting ${ACTION} ${INPUT_FILE}...
+        ${COMPRESS_FN}
+        if [ -z $OUTPUT_FILE ]; then
+            log Skipped.
+        else
+            log "${ACTION}'ed at ${OUTPUT_FILE}"
+            deflate ${OUTPUT_FILE}
+            compress_lz4 ${OUTPUT_FILE}
+        fi
+    fi
+done < <(find $INPUT_DIR -maxdepth 1 -type f -name "*.*" -print0)

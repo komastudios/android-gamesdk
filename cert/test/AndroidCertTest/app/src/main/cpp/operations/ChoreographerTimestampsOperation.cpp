@@ -32,7 +32,6 @@
 
 #include <ancer/BaseOperation.hpp>
 #include <ancer/DatumReporting.hpp>
-#include <ancer/System.hpp>
 #include <ancer/util/LibAndroid.hpp>
 #include <ancer/Reporter.hpp>
 

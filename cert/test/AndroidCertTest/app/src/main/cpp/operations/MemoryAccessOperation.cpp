@@ -23,7 +23,7 @@
 #include <ancer/BaseOperation.hpp>
 #include <ancer/DatumReporting.hpp>
 #include <ancer/Reporter.hpp>
-#include <ancer/System.hpp>
+#include <ancer/System.Cpu.hpp>
 #include <ancer/util/Basics.hpp>
 #include <ancer/util/Bitmath.hpp>
 #include <ancer/util/Json.hpp>

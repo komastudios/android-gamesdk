@@ -784,7 +784,7 @@ class LocalJNIEnvImpl final : public jni::LocalJNIEnv {
     return _env->GetObjectRefType(obj);
   }
 
-  JNIEnv * GetOriginalJNIEnv() {
+  JNIEnv *GetOriginalJNIEnv() {
     return _env;
   }
 

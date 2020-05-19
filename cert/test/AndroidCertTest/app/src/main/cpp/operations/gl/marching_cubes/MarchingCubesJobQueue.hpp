@@ -17,7 +17,6 @@
 #ifndef marching_cubes_job_h
 #define marching_cubes_job_h
 
-#include <ancer/System.hpp>
 #include <ancer/util/MarchingCubesThreadPool.hpp>
 
 namespace marching_cubes::job {

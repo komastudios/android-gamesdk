@@ -115,6 +115,8 @@ public class SystemHelpers {
      * @return TextureInformation on the loaded image
      */
     public TextureInformation loadTexture(String path) {
+        // TODO(dagum): this can and should be ported from its current Java/JNI implementation to
+        //              full C++ by using System.Asset.hpp type Asset.
         Bitmap bitmap = null;
         TextureInformation info = new TextureInformation();
         try {
@@ -160,6 +162,8 @@ public class SystemHelpers {
      * @return text content of the file
      */
     public String loadText(String path) {
+        // TODO(dagum): this can and should be ported from its current Java/JNI implementation to
+        //              full C++ by using System.Asset.hpp type Asset.
         try {
             InputStream stream = _context.getAssets().open(path);
             int size = stream.available();
