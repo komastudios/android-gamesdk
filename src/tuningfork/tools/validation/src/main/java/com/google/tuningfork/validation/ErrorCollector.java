@@ -39,4 +39,11 @@ public interface ErrorCollector {
   Boolean hasSettingsErrors();
 
   Multimap<ErrorType, String> getErrors();
+
+  void addWarning(ErrorType errorType, String message);
+
+  Multimap<ErrorType, String> getWarnings();
+
+  Integer getWarningCount();
+
 };

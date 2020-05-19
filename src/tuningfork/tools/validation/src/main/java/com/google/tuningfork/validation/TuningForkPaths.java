@@ -22,18 +22,18 @@ import java.util.regex.Pattern;
 /** Exposes Tuning Fork location patterns for apks/bundles. */
 final class TuningForkPaths {
 
-  public static final String BUNDLE_TUNINGFORK_PATH = "base/assets/tuningfork/";
-  public static final String APK_TUNINGFORK_PATH = "assets/tuningfork/";
+  static final String BUNDLE_TUNINGFORK_PATH = "base/assets/tuningfork/";
+  static final String APK_TUNINGFORK_PATH = "assets/tuningfork/";
 
-  public static Pattern getDescriptorFilePattern(String base) {
+  static Pattern getDescriptorFilePattern(String base) {
     return Pattern.compile(String.format("(%s)dev_tuningfork.descriptor", base));
   }
 
-  public static Pattern getSettingsFilePattern(String base) {
+  static Pattern getSettingsFilePattern(String base) {
     return Pattern.compile(String.format("(%s)tuningfork_settings.bin", base));
   }
 
-  public static Pattern getFidelityParamFilePattern(String base) {
-    return Pattern.compile(String.format("(%s)dev_tuningfork_fidelityparams_.{1,15}.bin", base));
+  static Pattern getFidelityParamFilePattern(String base) {
+    return Pattern.compile(String.format("(%s)dev_tuningfork_fidelityparams_(\\d+).bin", base));
   }
 }
