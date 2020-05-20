@@ -12,9 +12,9 @@
  * limitations under the License.
  */
 
-#include "tuningfork/protobuf_util.h"
 #include "tuningfork/tuningfork.h"
 #include "tuningfork/tuningfork_extra.h"
+#include "protobuf_util.h"
 #include "swappy/swappyGL.h"
 #include "swappy/swappyGL_extra.h"
 #include "full/tuningfork.pb.h"

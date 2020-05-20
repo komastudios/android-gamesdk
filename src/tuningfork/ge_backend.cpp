@@ -3,7 +3,7 @@
 #define LOG_TAG "TuningFork.GE"
 #include "Log.h"
 
-#include "tuningfork/protobuf_util.h"
+#include "protobuf_util.h"
 
 #include "runnable.h"
 #include "web.h"

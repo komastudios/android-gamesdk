@@ -15,7 +15,7 @@
  */
 
 #include "tuningfork_utils.h"
-#include "tuningfork/protobuf_util.h"
+#include "protobuf_util.h"
 
 #include <cstdio>
 #include <sys/stat.h>
