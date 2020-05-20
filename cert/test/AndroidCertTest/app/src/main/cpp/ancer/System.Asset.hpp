@@ -38,11 +38,11 @@ class Asset {
   /**
    * Constructor. The asset instance is opened and ready to be read.
    *
-   * @param relative_path path to the asset, relative to the assets folder. If no asset is available
+   * @param asset_path path to the asset, relative to the assets folder. If no asset is available
    *        at that path, the instance is void (see bool operator).
    * @param opening_mode read NDK AAsset type for a complete discussion.
    */
-  Asset(const std::string &relative_path, const int opening_mode);
+  Asset(const std::string &asset_path, const int opening_mode);
   virtual ~Asset();
 
   /**

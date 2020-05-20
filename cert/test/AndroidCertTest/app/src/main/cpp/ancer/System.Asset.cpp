@@ -24,14 +24,14 @@
 using namespace ancer;
 
 namespace {
-  Log::Tag TAG{"SystemAsset"};
+Log::Tag TAG{"SystemAsset"};
 }
 
 //==================================================================================================
 
 Asset::Asset(const std::string &asset_path, const int opening_mode) {
   AAssetManager *native_asset_manager = nullptr;
-      jni::SafeJNICall([&native_asset_manager](jni::LocalJNIEnv *env) {
+  jni::SafeJNICall([&](jni::LocalJNIEnv *env) {
     jobject activity = env->NewLocalRef(jni::GetActivityWeakGlobalRef());
     jclass activity_class = env->GetObjectClass(activity);
 
@@ -40,9 +40,9 @@ Asset::Asset(const std::string &asset_path, const int opening_mode) {
     );
     jobject java_asset_manager = env->CallObjectMethod(activity, get_assets_method_id);
     native_asset_manager = AAssetManager_fromJava(env->GetOriginalJNIEnv(), java_asset_manager);
+    _asset_ptr = AAssetManager_open(native_asset_manager, asset_path.c_str(), opening_mode);
   });
 
-  _asset_ptr = AAssetManager_open(native_asset_manager, asset_path.c_str(), opening_mode);
   if (not _asset_ptr) {
     Log::E(TAG, "Error opening asset at %s", asset_path.c_str());
   }
@@ -71,7 +71,7 @@ int64_t Asset::GetRemainingLength() const {
 }
 
 bool Asset::IsAllocated() const {
-  return _asset_ptr ? AAsset_isAllocated(_asset_ptr) : false;
+  return _asset_ptr ? static_cast<bool>(AAsset_isAllocated(_asset_ptr)) : false;
 }
 
 int Asset::OpenFileDescriptor(int64_t *outStart, int64_t *outLength) const {
@@ -85,4 +85,3 @@ int Asset::Read(void *buf, const size_t count) const {
 int64_t Asset::Seek(const int64_t offset, const int whence) const {
   return _asset_ptr ? AAsset_seek64(_asset_ptr, offset, whence) : -1;
 }
-

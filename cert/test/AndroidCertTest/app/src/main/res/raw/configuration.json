@@ -16,6 +16,19 @@
       "data_gatherer": {
         "id": "TextureLoadingGLES3Operation",
         "configuration": {
+          "texture_families": [
+            "avocados",
+            "bags",
+            "ballons",
+            "bananas",
+            "cards",
+            "fruit_salad",
+            "grocery",
+            "nuts",
+            "paper",
+            "tomatoes"
+          ],
+          "slideshow_interval": "3.5s"
         }
       },
       "host": "GLSurfaceViewHostActivity",

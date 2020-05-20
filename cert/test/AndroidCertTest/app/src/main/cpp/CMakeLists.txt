@@ -105,6 +105,7 @@ add_library(${PROJECT_NAME} SHARED
         ancer/util/texture/Astc.cpp
         ancer/util/texture/Etc2.cpp
         ancer/util/texture/Jpg.cpp
+        ancer/util/texture/Png.cpp
         ancer/util/ThreadSyncPoint.cpp
         ancer/util/Time.cpp
         ancer/util/VkHelpers.cpp
@@ -196,6 +197,9 @@ add_library(shaderc_lib STATIC IMPORTED)
 set_target_properties(shaderc_lib PROPERTIES IMPORTED_LOCATION
         ${ShadercDir}/libs/${ANDROID_STL}/${ANDROID_ABI}/libshaderc.a)
 
+# We won't need to borrow JPG and PNG decoders once our target SDK version is Android R or later. By
+# then, the NDK provides a C++ accessible ImageDecoder that deals with JPG, PNG and other formats as
+# well.
 add_library(basis STATIC
         ${BasisDir}/jpgd.cpp
         ${BasisDir}/lodepng.cpp

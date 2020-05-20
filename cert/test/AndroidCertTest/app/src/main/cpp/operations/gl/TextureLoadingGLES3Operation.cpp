@@ -44,12 +44,14 @@
 
 #include <algorithm>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <thread>
 #include <vector>
 
 #include <ancer/BaseGLES3Operation.hpp>
 #include <ancer/DatumReporting.hpp>
+#include <ancer/System.Asset.hpp>
 #include <ancer/util/Error.hpp>
 #include <ancer/util/GLTexImage2DRenderer.hpp>
 #include <ancer/util/Json.hpp>
@@ -57,6 +59,7 @@
 #include <ancer/util/texture/Astc.hpp>
 #include <ancer/util/texture/Etc2.hpp>
 #include <ancer/util/texture/Jpg.hpp>
+#include <ancer/util/texture/Png.hpp>
 #include <ancer/util/Time.hpp>
 
 using namespace ancer;
@@ -71,10 +74,14 @@ constexpr Log::Tag TAG{"TextureLoadingGLES3"};
 
 namespace {
 struct configuration {
+  std::vector<std::string> texture_families;
+  std::string texture_families_dir{"Textures/TextureCompression"};
   Seconds slideshow_interval = 1s;
 };
 
 JSON_CONVERTER(configuration) {
+  JSON_REQVAR(texture_families);
+  JSON_OPTVAR(texture_families_dir);
   JSON_OPTVAR(slideshow_interval);
 }
 
@@ -87,7 +94,7 @@ struct load_stats {
   size_t size_in_memory;
   Milliseconds::rep loading_time;
 
-  explicit load_stats(const TextureMetadata &metadata)
+  explicit load_stats(const Texture &metadata)
       : texture_name{metadata.GetFilenameStem()},
         texture_type{metadata.GetFilenameExtension()},
         size_at_rest{metadata.GetSizeAtRest()},
@@ -114,9 +121,9 @@ void WriteDatum(report_writers::Struct writer, const load_stats &load_stats) {
 //==================================================================================================
 
 namespace {
-std::vector<std::unique_ptr<TextureMetadata>> slideshow_textures;
+std::vector<std::unique_ptr<Texture>> slideshow_textures;
 
-inline void PushTextureToSlideshow(TextureMetadata *const texture_metadata) {
+inline void PushTextureToSlideshow(Texture *const texture_metadata) {
   slideshow_textures.emplace_back(texture_metadata);
   Log::D(TAG,
          "%s/%s.%s queued to slideshow",
@@ -129,8 +136,8 @@ template<typename T>
 void PopulateSlideshowWithCompressedTexture(T *const texture_metadata) {
   PushTextureToSlideshow(texture_metadata);
 
-  if (texture_metadata->GetPostCompressionFormat() != TexturePostCompressionFormat::NONE) {
-    std::string filename_stem(texture_metadata->GetFilenameStem());
+  if (texture_metadata->GetPostCompressionFormat() == TexturePostCompressionFormat::NONE) {
+    std::string filename_stem{texture_metadata->GetFilenameStem()};
     filename_stem.append(".").append(texture_metadata->GetFilenameExtension());
 
     PopulateSlideshowWithCompressedTexture(new T{
@@ -142,51 +149,48 @@ void PopulateSlideshowWithCompressedTexture(T *const texture_metadata) {
   }
 }
 
-void PopulateSlideshowWithUncompressedTexture(EncodedTextureMetadata *const texture_metadata) {
+void PopulateSlideshowWithUncompressedTexture(EncodedTexture *const texture_metadata) {
   PushTextureToSlideshow(texture_metadata);
 
-  std::string filename_stem(texture_metadata->GetFilenameStem());
-  filename_stem.append("_").append(texture_metadata->GetChannels());
+  std::string filename_stem{texture_metadata->GetFilenameStem()};
+  filename_stem.append("_").append(
+      texture_metadata->GetChannels() == TextureChannels::RGB ? "rgb" : "rgba");
 
   static const auto astc_supported{
       ancer::glh::IsExtensionSupported("GL_KHR_texture_compression_astc_ldr")};
   if (astc_supported) {
-    PopulateSlideshowWithCompressedTexture(new AstcTextureMetadata{
-        texture_metadata->GetRelativePath() + "/astc/2bpp", filename_stem, 2});
-    PopulateSlideshowWithCompressedTexture(new AstcTextureMetadata{
-        texture_metadata->GetRelativePath() + "/astc/4bpp", filename_stem, 4});
-    PopulateSlideshowWithCompressedTexture(new AstcTextureMetadata{
-        texture_metadata->GetRelativePath() + "/astc/8bpp", filename_stem, 8});
+    uint bpp{1};  // ASTC at three different qualities: 2bpp, 4bpp & 8bpp
+    for (uint iteration{0}; iteration < 3; ++iteration) {
+      bpp *= 2;
+      std::stringstream astc_stem{};
+      astc_stem << filename_stem << '_' << bpp << "bpp";
+      PopulateSlideshowWithCompressedTexture(
+          new AstcTexture{texture_metadata->GetRelativePath(), astc_stem.str(),
+                          texture_metadata->GetChannels(), bpp});
+    }
   } else {
     Log::D(TAG, "Skipping ASTC from slideshow due to lack of hardware support");
     // TODO(dagum): report that hw doesn't support format
   }
 
-  PopulateSlideshowWithCompressedTexture(new Etc2TextureMetadata{
-      texture_metadata->GetRelativePath() + "/etc2", filename_stem});
+  PopulateSlideshowWithCompressedTexture(new Etc2Texture{
+      texture_metadata->GetRelativePath(), filename_stem, texture_metadata->GetChannels()});
 }
 
-void PopulateSlideshowTexturesFromFamilies() {
-  static const std::string kOperationTexturePath{"Textures/TextureCompression"};
-  // TODO(dagum): we must rework entirely the family names. Rather than hardcoded, they'll have to
-  //              be discovered at run-time, in kOperationTexturePath (a family per sub-directory)
-  static std::vector<std::string> texture_family_names({
-                                                           "avocados",
-                                                           "ballons",
-                                                           "bananas",
-                                                           "cards",
-                                                           "tomatoes"
-                                                       });
+void PopulateSlideshowTexturesFromFamilies(const std::vector<std::string> &texture_families,
+                                           const std::string &texture_families_dir) {
+  std::for_each(std::cbegin(texture_families),
+                std::cend(texture_families),
+                [&texture_families_dir](const std::string &texture_family) {
+                  std::string texture_dir{texture_families_dir};
+                  texture_dir.append("/").append(texture_family);
 
-  std::for_each(std::cbegin(texture_family_names),
-                std::cend(texture_family_names),
-                [](const std::string &texture_family_name) {
                   PopulateSlideshowWithUncompressedTexture(
-                      new JpgTextureMetadata{kOperationTexturePath, texture_family_name}
+                      new JpgTexture{texture_dir, texture_family}
                   );
-//                  PopulateSlideshowWithUncompressedTexture(
-//                      new PngTextureMetadata{kOperationTexturePath, texture_family_name}
-//                  );
+                  PopulateSlideshowWithUncompressedTexture(
+                      new PngTexture{texture_dir, texture_family}
+                  );
                 });
 }
 }
@@ -205,9 +209,11 @@ class TextureLoadingGLES3Operation : public BaseGLES3Operation {
   }
 
   void Start() override {
-    ::PopulateSlideshowTexturesFromFamilies();
-    BaseOperation::Start();
+    _configuration = GetConfiguration<configuration>();
+    ::PopulateSlideshowTexturesFromFamilies(_configuration.texture_families,
+                                            _configuration.texture_families_dir);
 
+    BaseGLES3Operation::Start();
     _slideshow_thread = TriggerSlideshowThread();
   }
 
@@ -216,8 +222,6 @@ class TextureLoadingGLES3Operation : public BaseGLES3Operation {
   }
 
   void OnGlContextReady(const GLContextConfig &ctx_config) override {
-    _configuration = GetConfiguration<configuration>();
-
     _egl_context = eglGetCurrentContext();
     if (_egl_context == EGL_NO_CONTEXT) {
       FatalError(TAG, "No EGL context available");
@@ -301,18 +305,19 @@ class TextureLoadingGLES3Operation : public BaseGLES3Operation {
 
   std::thread TriggerSlideshowThread() {
     return std::thread{[this] {
-      while (not this->IsStopped() && not this->_context_ready);
+      while (not IsStopped() && not _context_ready);
 
-      while (not this->IsStopped() && this->_slideshow_index < ::slideshow_textures.size()) {
+      while (not IsStopped() && _slideshow_index < ::slideshow_textures.size()) {
         auto *const texture_metadata = ::slideshow_textures[_slideshow_index].get();
         if ((_new_slide_available = texture_metadata->Load())) {
           Report(load_stats{*texture_metadata});
-        } // TODO(dagum): else report that it couldn't be loaded
-
-        if (not this->IsStopped()) {
-          std::this_thread::sleep_for(this->_configuration.slideshow_interval);
-          ++_slideshow_index;
+          if (not IsStopped()) {
+            std::this_thread::sleep_for(_configuration.slideshow_interval);
+          }
+        } else {
+          Log::E(TAG, "%s loading failed", texture_metadata->ToString().c_str());
         }
+        ++_slideshow_index;
       }
     }};
   }
