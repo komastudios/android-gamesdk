@@ -24,8 +24,16 @@ from matplotlib.ticker import FormatStrFormatter
 import numpy as np
 
 from lib.common import bytes_to_megabytes, nanoseconds_to_seconds
-from lib.graphers.suite_handler import SuiteHandler
-from lib.report import Datum, Suite
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, SummaryContext
+import lib.format_items as fmt
+
+
+class MemoryAllocationSuiteSummarizer(SuiteSummarizer):
+    """Suite summarizer for Memory Allocation tests."""
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return MemoryAllocationSuiteHandler
 
 
 class MemoryAllocationSuiteHandler(SuiteHandler):
@@ -47,27 +55,21 @@ class MemoryAllocationSuiteHandler(SuiteHandler):
         self.__xs_free = []
 
     @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return "Memory allocation" in suite.name
+    def can_handle_datum(cls, datum: Datum):
+        return "Memory allocation" in datum.suite_id
 
-    @classmethod
-    def can_render_summarization_plot(cls,
-                                      suites: List['Suite']) -> bool:
-        return False
-
-    @classmethod
-    def render_summarization_plot(cls, suites: List['Suite']) -> str:
-        return None
-
-    def render_plot(self) -> str:
+    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
         for datum in self.data:
             if datum.operation_id == 'MemoryAllocOperation':
                 self.__segregate_datum_info(datum)
         self.__post_process_data_points()
 
-        self.__arrange_mem_figure(plt.subplot(1, 1, 1))
+        def graph():
+            self.__arrange_mem_figure(plt.subplot(1, 1, 1))
 
-        return None
+        image_path = self.plot(ctx, graph)
+        image = fmt.Image(image_path, self.device())
+        return [image]
 
     def __segregate_datum_info(self, datum: Datum) -> type(None):
         """Receives a datum and uses its info to fill the various data arrays.

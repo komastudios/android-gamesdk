@@ -194,6 +194,9 @@ summary:
   # format for report, presently only "md", "html" and "docx" are supported
   format: [md|html|docx]
 
+  # if true, report will be uploaded to Google Drive
+  publish: [true|false]
+
 ```
 
 ---
@@ -220,11 +223,8 @@ summary:
 ### `graph.py`
 
 ``` bash
-# display a chart for the provided csv file
-python graph.py --interactive path/to/csv.py
-
 # generate an html report with images at 150 dpi using a folder full of reports
-python graph.py --dpi 150 --html path/to/csvs
+python graph.py --dpi 150 path/to/csvs --fmt html
 
 ```
 

@@ -24,6 +24,7 @@ import sys
 from lib.recipe import Recipe
 from lib.deployment import run_recipe
 from lib.devicefarm import DeploymentTarget
+from lib.summary import perform_summary_if_enabled
 
 # ------------------------------------------------------------------------------
 
@@ -109,7 +110,8 @@ The commands are:
         parser.print_help()
         sys.exit(1)
 
-    run_recipe(recipe, extra_args)
+    out_dir = run_recipe(recipe, extra_args)
+    perform_summary_if_enabled(recipe, out_dir)
 
 
 if __name__ == "__main__":
