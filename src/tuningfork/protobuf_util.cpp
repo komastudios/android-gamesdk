@@ -15,8 +15,8 @@
  */
 
 
-#include "tuningfork/protobuf_util.h"
-#include "tuningfork/protobuf_nano_util.h"
+#include "protobuf_util.h"
+#include "protobuf_nano_util.h"
 
 #include <pb_encode.h>
 #include <pb_decode.h>

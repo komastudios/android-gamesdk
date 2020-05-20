@@ -30,7 +30,6 @@ include_directories(${PROTO_GENS_DIR})
 include_directories(${PROTOBUF_SRC_DIR})
 include_directories(${PROTOBUF_NANO_SRC_DIR})
 include_directories(../../common)
-include_directories(../../../../src)
 include_directories(../../../common/include)
 include_directories(../../../../include)
 
@@ -47,6 +46,7 @@ add_library( native-lib
              src/main/cpp/scaledballs.cpp
              ../../common/Renderer.cpp
              ../../common/Scene.cpp
+             ../../common/protobuf_util.cpp
              ${PROTO_GENS_DIR}/full/dev_tuningfork.pb.cc
              ${PROTO_GENS_DIR}/full/tuningfork.pb.cc
 )
