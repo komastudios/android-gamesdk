@@ -137,8 +137,10 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:inputType="numberDecimal"
-                android:text="400"
-                android:textAlignment="center"/>
+                android:selectAllOnFocus="true"
+                android:singleLine="true"
+                android:text="200"
+                android:textAlignment="center" />
 
         </LinearLayout>
 
@@ -204,8 +206,10 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:inputType="numberDecimal"
-                android:text="400"
-                android:textAlignment="center"/>
+                android:selectAllOnFocus="true"
+                android:singleLine="true"
+                android:text="200"
+                android:textAlignment="center" />
 
         </LinearLayout>
 
