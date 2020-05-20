@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "54d53f01_85084c06",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/main/java/com/google/tuningfork/Deserializer.kt",
+        "patchSetId": 2
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-05-20T09:17:29Z",
+      "side": 1,
+      "message": "Do you want to keep this?",
+      "revId": "57a6be9ce2c15c71bf5aec8112d2500be761f4f1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "39bd35e3_ba5ee26d",
+        "filename": "src/tuningfork/tuningfork_extra.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-05-20T09:17:29Z",
+      "side": 1,
+      "message": "nit: intend with just 4 spaces the body of the lambda?\n\n        auto upload_defaults_first_time \u003d [\u0026]() {\n            if (first_time) {\n                CProtobufSerialization cpbs;\n                // ...\n            }\n        };",
+      "revId": "57a6be9ce2c15c71bf5aec8112d2500be761f4f1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
