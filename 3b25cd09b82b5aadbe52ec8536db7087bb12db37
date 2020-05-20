@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "9a6b4c99_f25c4f3a",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/texture/Png.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-05-20T20:05:38Z",
+      "side": 1,
+      "message": "Indeed it is \"Lode\" due to its dependence on that 3rd party. But funny thing is that when I first typed this name, I made a typo and called it \"LoadPngAssetDecoder\" 😊",
+      "parentUuid": "dcd24a03_720d640e",
+      "revId": "3b25cd09b82b5aadbe52ec8536db7087bb12db37",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c95ebc15_d1cfec76",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/texture/Png.cpp",
         "patchSetId": 3
@@ -30,6 +48,24 @@
       "writtenOn": "2020-05-20T18:57:30Z",
       "side": 1,
       "message": "It might be worth mentioning that the caller is responsible for releasing the asset, even though this class is only used internally. Not a requirement, just something to think about, I\u0027ll leave it up to you.",
+      "revId": "3b25cd09b82b5aadbe52ec8536db7087bb12db37",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "22cd2bc9_698bfb14",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/texture/Png.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-05-20T20:05:38Z",
+      "side": 1,
+      "message": "I\u0027ll do, Michael. Let\u0027s come to a deal here: rather than repatching this CL (I\u0027m already working on the next wave on top of it), I\u0027ll make that clarification on the next CL. I already made it, in fact.\n\nGood catch!",
+      "parentUuid": "c95ebc15_d1cfec76",
       "revId": "3b25cd09b82b5aadbe52ec8536db7087bb12db37",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
