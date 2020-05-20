@@ -26,6 +26,7 @@ final class ParserErrorCollector implements ErrorCollector {
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
   private final ListMultimap<ErrorType, String> errors = LinkedListMultimap.create();
+  private final ListMultimap<ErrorType, String> warnings = LinkedListMultimap.create();
 
   @Override
   public Multimap<ErrorType, String> getErrors() {
@@ -94,4 +95,20 @@ final class ParserErrorCollector implements ErrorCollector {
   public Boolean hasSettingsErrors() {
     return hasErrors(ErrorType.ErrorGroup.SETTINGS);
   }
+
+  @Override
+  public Integer getWarningCount() {
+    return warnings.size();
+  }
+
+  @Override
+  public void addWarning(ErrorType errorType, String message) {
+    warnings.put(errorType, message);
+  }
+
+  @Override
+  public Multimap<ErrorType, String> getWarnings() {
+    return warnings;
+  }
+
 }

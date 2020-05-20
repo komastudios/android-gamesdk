@@ -69,7 +69,10 @@ public enum ErrorType {
   // Field initial_request_timeout_ms < 0
   INITIAL_REQUEST_TIMEOUT_INVALID(ErrorGroup.SETTINGS),
   // Field ultimate_request_timeout_ms < 0
-  ULTIMATE_REQUEST_TIMEOUT_INVALID(ErrorGroup.SETTINGS);
+  ULTIMATE_REQUEST_TIMEOUT_INVALID(ErrorGroup.SETTINGS),
+  // Field loading_annotation_index is missing
+  LOADING_ANNOTATION_INDEX_MISSING(ErrorGroup.SETTINGS);
+;
 
   private final ErrorGroup group;
 

@@ -78,15 +78,14 @@ final class ValidationUtil {
     validateSettingsApiKey(settings, errors);
     // We don't validate default_fidelity_parameters_filename
     validateSettingsRequestTimeouts(settings, errors);
+    validateSettingsLoadingAnnotationIndex(settings, errors);
   }
 
   /*
    * Validate Histograms
    * No restrictions since Tuning Fork Scaled allows empty settings.
    * */
-  public static void validateSettingsHistograms(Settings settings, ErrorCollector errors) {
-
-  }
+  public static void validateSettingsHistograms(Settings settings, ErrorCollector errors) {}
 
   /*
    * Validate Aggregation
@@ -106,7 +105,7 @@ final class ValidationUtil {
           ErrorType.AGGREGATION_INSTRUMENTATION_KEY,
           "Aggregation strategy doesn't have max_instrumentation_key field");
     }
-    Integer maxKey = aggregation.getMaxInstrumentationKeys();
+    int maxKey = aggregation.getMaxInstrumentationKeys();
     if (maxKey < 1 || maxKey > MAX_INTSTRUMENTATION_KEYS) {
       errors.addError(
           ErrorType.AGGREGATION_INSTRUMENTATION_KEY,
@@ -115,7 +114,7 @@ final class ValidationUtil {
               MAX_INTSTRUMENTATION_KEYS, maxKey));
     }
 
-    Integer annotationCount = aggregation.getAnnotationEnumSizeCount();
+    int annotationCount = aggregation.getAnnotationEnumSizeCount();
     if (annotationCount != enumSizes.size()) {
       errors.addError(
           ErrorType.AGGREGATION_ANNOTATIONS,
@@ -275,6 +274,14 @@ final class ValidationUtil {
       }
     } else {
         errors.addError(ErrorType.API_KEY_MISSING, "api_key is missing");
+    }
+  }
+
+  private static final void validateSettingsLoadingAnnotationIndex(
+      Settings settings, ErrorCollector errors) {
+    if (!settings.hasLoadingAnnotationIndex()) {
+      errors.addWarning(ErrorType.LOADING_ANNOTATION_INDEX_MISSING,
+          "loading_annotation_index not set");
     }
   }
 

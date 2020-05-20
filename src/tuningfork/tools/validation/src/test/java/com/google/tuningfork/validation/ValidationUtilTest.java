@@ -65,13 +65,26 @@ public final class ValidationUtilTest {
             .setAggregationStrategy(aggregation)
             .addHistograms(Histogram.getDefaultInstance())
             .setApiKey("test-api-key")
+            .setLoadingAnnotationIndex(1)
             .build();
 
     Optional<Settings> parsedSettings =
         ValidationUtil.validateSettings(Arrays.asList(5, 10), settings.toString(), errors);
 
     assertThat(errors.getErrorCount()).isEqualTo(0);
+    assertThat(errors.getWarningCount()).isEqualTo(0);
     assertThat(parsedSettings.get()).isEqualTo(settings);
+  }
+
+    @Test
+  public void settingsLoadingAnnotationIndexWarning() throws Exception {
+    Settings settings = Settings.getDefaultInstance();
+
+    ValidationUtil.validateSettings(Arrays.asList(5, 10), settings.toString(), errors);
+
+    assertThat(errors.getWarningCount()).isEqualTo(1);
+    assertThat(errors.getWarnings().containsKey(ErrorType.LOADING_ANNOTATION_INDEX_MISSING))
+        .isTrue();
   }
 
   @Test
