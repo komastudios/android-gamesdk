@@ -12,14 +12,17 @@ set -e # Exit on error
 export ANDROID_HOME=`pwd`/../prebuilts/sdk
 export ANDROID_NDK_HOME=`pwd`/../prebuilts/ndk/r20
 if [[ $1 == "full" ]]
-    then
-        TARGET=fullSdkZip
-	OUTDIR=fullsdk
-    else
-        TARGET=gamesdkZip
-	OUTDIR=gamesdk
+then
+    TARGET=fullSdkZip
+    AAR_TARGET=gameSdkAAR # TODO: update this once a target is made to package Tuning Fork as an AAR.
+    OUTDIR=fullsdk
+else
+    TARGET=gamesdkZip
+    AAR_TARGET=gameSdkAAR
+    OUTDIR=gamesdk
 fi
 ./gradlew $TARGET
+./gradlew $AAR_TARGET
 
 if [[ -z $DIST_DIR ]]
 then
@@ -101,4 +104,10 @@ fi
 # Calculate hash of the zip file
 pushd $dist_dir
 sha256sum gamesdk.zip > gamesdk.zip.sha256
+popd
+
+# Calculate hash of the Swappy AAR file and add its associated pom file
+cp src/maven/gaming-frame-pacing.pom $dist_dir
+pushd $dist_dir
+sha256sum gaming-frame-pacing.aar > gaming-frame-pacing.aar.sha256
 popd
