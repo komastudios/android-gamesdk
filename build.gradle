@@ -860,6 +860,7 @@ task releaseAarSdkBuild() {
     ext.nativeBuild = { tf,bt -> sdkAarNativeBuild(tf,bt) }
     doLast {
         nativeBuild(withTuningFork, buildType).each {
+            delete getPackagePath()
             aarSdkCopy(it, packageName)
         }
     }
@@ -932,6 +933,7 @@ e.g. SDK=14 NDK=r16 STL='c++_static' ./gradlew specificZip"""
 
 tasks.withType(BuildTask) {
     doLast {
+        delete getPackagePath()
         nativeBuild(withTuningFork, buildType).each {
             sdkCopy(it, packageName, withTuningFork, withStaticLibs,
                     withFullBuildKey, flattenLibs, withSharedLibs)
