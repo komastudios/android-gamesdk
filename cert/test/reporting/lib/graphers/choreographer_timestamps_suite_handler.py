@@ -28,7 +28,6 @@ import numpy as np
 from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
 from lib.report import Datum, SummaryContext, Suite
 import lib.format_items as fmt
-import lib.systrace as systrace
 
 class ChoreographerTimestampsSummarizer(SuiteSummarizer):
     """Suite summarizer for Choreographer Timestamps test."""
@@ -45,78 +44,104 @@ class ChoreographerTimestampsSuiteHandler(SuiteHandler):
     def __init__(self, suite):
         super().__init__(suite)
 
+        choreographer_ts_name = "choreographer_timestamp_ns"
+        egl_frame_ts_name = "egl_frame_timestamp_ns"
+
+        choreographer_timestamps = []
+        egl_frame_timestamps = []
+        egl_missed_frame_ids = []
+
+        for d in self.data:
+            if choreographer_ts_name in d.custom:
+                # Collect Choreographer timestamps
+                choreographer_timestamps.append(
+                    d.get_custom_field(choreographer_ts_name))
+            elif egl_frame_ts_name in d.custom:
+                # Collect EGL display present timestamps
+                if d.get_custom_field("success"):
+                    egl_frame_timestamps.append(
+                        d.get_custom_field(egl_frame_ts_name))
+                else:
+                    egl_missed_frame_ids.append(d.get_custom_field("frame_id"))
+
+        # Calculate variances
         self.timestamp_variance = []
 
-        systrace_path = self.get_systrace_path(suite)
-        if not os.path.exists(systrace_path):
-            print(f"Looking for {systrace_path} but it doesn't exist.")
-            return
+        for timestamp in choreographer_timestamps:
+            index = binary_search_nearest(egl_frame_timestamps, timestamp)
+            egl_timestamp = egl_frame_timestamps[index]
+            self.timestamp_variance.append(egl_timestamp - timestamp)
 
-        offset_ns = self.read_clock_sync_offset_ns(systrace_path)
-        if not offset_ns:
-            print("We weren't able to get a clock sync!")
-            return
+        # systrace_path = self.get_systrace_path(suite)
+        # if not os.path.exists(systrace_path):
+        #     print(f"Looking for {systrace_path} but it doesn't exist.")
+        #     return
 
-        systrace_timestamps = self.get_systrace_timestamps(systrace_path, \
-            offset_ns)
+        # offset_ns = self.read_clock_sync_offset_ns(systrace_path)
+        # if not offset_ns:
+        #     print("We weren't able to get a clock sync!")
+        #     return
+
+        # systrace_timestamps = self.get_systrace_timestamps(systrace_path, \
+        #     offset_ns)
 
         # Calculate variance (how much Choreographer timestamps varied from
         # systrace timestamps)
-        if systrace_timestamps:
-            for row in self.data:
-                timestamp = row.custom.get('timestamp')
-                if timestamp:
-                    index = binary_search_nearest(systrace_timestamps, \
-                        timestamp)
-                    sys_ts = systrace_timestamps[index]
-                    self.timestamp_variance.append(sys_ts - timestamp)
+        # if systrace_timestamps:
+        #     for row in self.data:
+        #         timestamp = row.custom.get('timestamp')
+        #         if timestamp:
+        #             index = binary_search_nearest(systrace_timestamps, \
+        #                 timestamp)
+        #             sys_ts = systrace_timestamps[index]
+        #             self.timestamp_variance.append(sys_ts - timestamp)
 
     @classmethod
     def can_handle_datum(cls, datum: Datum):
         return "ChoreographerTimestampsOperation" in datum.operation_id
 
-    def get_systrace_path(self, suite: Suite) -> str:
-        """
-        Returns the expected path of the systrace file, given the report file
-        path from suite.
-        """
-        report_dir = os.path.dirname(suite.file)
-        report_name = os.path.basename(suite.file)
-        systrace_name = report_name.replace(".json", "_trace.html")
-        systrace_path = os.path.join(report_dir, systrace_name)
-        return systrace_path
+    # def get_systrace_path(self, suite: Suite) -> str:
+    #     """
+    #     Returns the expected path of the systrace file, given the report file
+    #     path from suite.
+    #     """
+    #     report_dir = os.path.dirname(suite.file)
+    #     report_name = os.path.basename(suite.file)
+    #     systrace_name = report_name.replace(".json", "_trace.html")
+    #     systrace_path = os.path.join(report_dir, systrace_name)
+    #     return systrace_path
 
 
-    def read_clock_sync_offset_ns(self, path: str) -> Optional[int]:
-        """
-        Looks for the clock sync marker in the file at `path` and returns the
-        nanosecond offset that can be added to a systrace timestamp to convert
-        it relative to the report file's timestamps. Returns None if the clock
-        sync marker was not present in the file.
-        """
-        with open(path) as file:
-            for line in file:
-                if systrace.CLOCK_SYNC_MARKER in line:
-                    return systrace.get_ancer_clocksync_offset_ns(line)
-            return None
+    # def read_clock_sync_offset_ns(self, path: str) -> Optional[int]:
+    #     """
+    #     Looks for the clock sync marker in the file at `path` and returns the
+    #     nanosecond offset that can be added to a systrace timestamp to convert
+    #     it relative to the report file's timestamps. Returns None if the clock
+    #     sync marker was not present in the file.
+    #     """
+    #     with open(path) as file:
+    #         for line in file:
+    #             if systrace.CLOCK_SYNC_MARKER in line:
+    #                 return systrace.get_ancer_clocksync_offset_ns(line)
+    #         return None
 
 
-    def get_systrace_timestamps(self, path: str, offset_ns: int) -> [int]:
-        """
-        Returns a list of timestamps for "VSYNC-app" traces in the file at
-        `path`, adding `offset_ns` nanoseconds to each timestamp. (This can be
-        used to make them relative to the report file's timestamps.)
-        """
-        timestamps = []
-        with open(path) as file:
-            vsync_pattern = re.compile(r'\s(\d+\.?\d*):\s.*VSYNC-app')
-            for line in file:
-                match = vsync_pattern.search(line)
-                if match:
-                    timestamp = systrace.get_systrace_timestamp_ns(line)
-                    if timestamp:
-                        timestamps.append(timestamp + offset_ns)
-        return timestamps
+    # def get_systrace_timestamps(self, path: str, offset_ns: int) -> [int]:
+    #     """
+    #     Returns a list of timestamps for "VSYNC-app" traces in the file at
+    #     `path`, adding `offset_ns` nanoseconds to each timestamp. (This can be
+    #     used to make them relative to the report file's timestamps.)
+    #     """
+    #     timestamps = []
+    #     with open(path) as file:
+    #         vsync_pattern = re.compile(r'\s(\d+\.?\d*):\s.*VSYNC-app')
+    #         for line in file:
+    #             match = vsync_pattern.search(line)
+    #             if match:
+    #                 timestamp = systrace.get_systrace_timestamp_ns(line)
+    #                 if timestamp:
+    #                     timestamps.append(timestamp + offset_ns)
+    #     return timestamps
 
     def render(self, ctx: SummaryContext) -> List[fmt.Item]:
         image_path = self.plot(ctx, self.render_plot)
@@ -126,11 +151,11 @@ class ChoreographerTimestampsSuiteHandler(SuiteHandler):
     def render_plot(self):
         """
         We create a plot showing how much the Choreographer timestamps varied
-        from the VSYNC values gather from systrace. The graph has an upper and
-        lower bound, such that if a Choreographer timestamp varied from a
-        systrace timestamp by enough to pass the upper or lower bound, we
-        consider the device as failing the test, and the plot will be marked
-        accordingly.
+        from the present values gather from EGL_ANDROID_get_frame_timestamps.
+        The graph has an upper and lower bound, such that if a Choreographer
+        timestamp varied from a present timestamp by enough to pass the upper or
+        lower bound, we consider the device as failing the test, and the plot
+        will be marked accordingly.
         """
 
         _, axes = plt.subplots()
@@ -139,17 +164,17 @@ class ChoreographerTimestampsSuiteHandler(SuiteHandler):
         variance_ms = [i / 1_000_000 for i in self.timestamp_variance]
 
         if not variance_ms:
-            return 'Unable to collect timestamps from systrace'
+            return
 
         # Set bounds
-        max_y = 2.0
+        max_y = 6.0
         min_y = -max_y
         max_x = len(variance_ms)
         axes.axis([0, max_x, min_y, max_y])
         axes.set_xlabel("Frame")
         axes.set_ylabel("Timestamp Variance (ms)")
 
-        upper_bound = 1.0
+        upper_bound = 3.0
         lower_bound = -upper_bound
 
         # Line for upper bound
