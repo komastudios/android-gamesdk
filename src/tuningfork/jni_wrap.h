@@ -36,8 +36,11 @@ class Object {
         va_end(argptr);
     }
     Object(LocalObject&& o) : obj_(std::move(o)) {}
-    Object(jobject o) : obj_(o) {
+    Object(jobject o) {
+        // If there's an exception pending, don't store the reference as it may be invalid and
+        // cause a crash on some devices when released.
         if (!RawExceptionCheck()) {
+            obj_ = o;
             obj_.Cast(); // Cast to the object's own class.
         }
     }
