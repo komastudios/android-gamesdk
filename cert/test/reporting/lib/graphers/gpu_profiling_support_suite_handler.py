@@ -21,7 +21,7 @@ from typing import List
 from lib.graphers.common_graphers import graph_functional_test_result
 from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
 from lib.report import Datum, SummaryContext
-import lib.format_items as fmt
+import lib.items as items
 
 
 class GPUProfilingSupportSummarizer(SuiteSummarizer):
@@ -38,7 +38,7 @@ class GPUProfilingSupportSuiteHandler(SuiteHandler):
     def can_handle_datum(cls, datum: Datum):
         return "GPU Profiling Tools Support" in datum.suite_id
 
-    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
+    def render(self, ctx: SummaryContext) -> List[items.Item]:
         result_index = 1  # Inconclusive until proven otherwise
         for datum in self.data:
             if datum.operation_id == 'GPUProfilingSupportOperation':
@@ -51,5 +51,5 @@ class GPUProfilingSupportSuiteHandler(SuiteHandler):
                 result_index, ['UNSUPPORTED', 'UNDETERMINED', 'SUPPORTED'])
 
         image_path = self.plot(ctx, graph, '')
-        image = fmt.Image(image_path, self.device())
+        image = items.Image(image_path, self.device())
         return [image]

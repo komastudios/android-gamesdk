@@ -16,8 +16,6 @@
 
 #include "Etc2.hpp"
 
-#include <utility>
-
 #include <ancer/util/Log.hpp>
 
 using namespace ancer;
@@ -99,8 +97,8 @@ Etc2Texture::Etc2Texture(const std::string &relative_path,
                         filename_stem,
                         channels,
                         post_compression_format) {
-  _internal_format = GetChannels() == TextureChannels::RGB ? GL_COMPRESSED_RGB8_ETC2
-                                                           : GL_COMPRESSED_RGBA8_ETC2_EAC;
+  _internal_gl_format = GetChannels() == TextureChannels::RGB ? GL_COMPRESSED_RGB8_ETC2
+                                                              : GL_COMPRESSED_RGBA8_ETC2_EAC;
 }
 
 Etc2Texture Etc2Texture::MirrorPostCompressed(
@@ -115,11 +113,11 @@ void Etc2Texture::_OnBitmapLoaded() {
 
   _width = header.GetWidth();
   _height = header.GetHeight();
-  _image_size = header.getSize(_internal_format);
+  _image_size = header.getSize(_internal_gl_format);
 }
 
 void Etc2Texture::_ApplyBitmap() {
-  glCompressedTexImage2D(GL_TEXTURE_2D, 0, _internal_format,
+  glCompressedTexImage2D(GL_TEXTURE_2D, 0, _internal_gl_format,
                          _width, _height, 0, _image_size,
                          _bitmap_data.get() + sizeof(PkmHeader));
 
@@ -132,4 +130,9 @@ void Etc2Texture::_ApplyBitmap() {
 const std::string &Etc2Texture::_GetInnerExtension() const {
   static const std::string kPkm("pkm");
   return kPkm;
+}
+
+std::string Etc2Texture::_GetInnerFormat() const {
+  static const std::string kType{"ETC2"};
+  return kType;
 }

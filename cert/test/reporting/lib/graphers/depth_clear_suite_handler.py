@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 
 from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
 from lib.report import Datum, SummaryContext
-import lib.format_items as fmt
+import lib.items as items
 
 
 class DepthClearSummarizer(SuiteSummarizer):
@@ -57,7 +57,7 @@ class DepthClearSuiteHandler(SuiteHandler):
     def can_handle_datum(cls, datum: Datum):
         return "DepthClearGLES3Operation" in datum.operation_id
 
-    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
+    def render(self, ctx: SummaryContext) -> List[items.Item]:
         errors_at_depth = []
         successes_at_depth = []
 
@@ -104,5 +104,5 @@ class DepthClearSuiteHandler(SuiteHandler):
             message += f"\nRan on {int(self.depth_bits)}-bits; requested 32"
 
         image_path = self.plot(ctx, graph)
-        image = fmt.Image(image_path, self.device())
-        return [image, fmt.Text(message)]
+        image = items.Image(image_path, self.device())
+        return [image, items.Text(message)]

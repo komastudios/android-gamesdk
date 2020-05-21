@@ -25,7 +25,7 @@ import numpy as np
 from lib.common import nanoseconds_to_seconds
 from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
 from lib.report import Datum, SummaryContext
-import lib.format_items as fmt
+import lib.items as items
 
 
 class VertexRateSuiteSummarizer(SuiteSummarizer):
@@ -55,7 +55,7 @@ class VertexRateSuiteHandler(SuiteHandler):
     def can_handle_datum(cls, datum: Datum):
         return "Vertex Streaming" in datum.suite_id
 
-    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
+    def render(self, ctx: SummaryContext) -> List[items.Item]:
         for datum in self.data:
             if datum.operation_id == 'VertexStreamGLES3Operation':
                 self.__fill_vertex_data_points(datum)
@@ -65,7 +65,7 @@ class VertexRateSuiteHandler(SuiteHandler):
         self.__wrapup_data_points()
 
         image_path = self.plot(ctx, self.__add_charts)
-        image = fmt.Image(image_path, self.device())
+        image = items.Image(image_path, self.device())
         return [image]
 
     def __fill_vertex_data_points(self, vertex_datum: Datum) -> type(None):

@@ -18,8 +18,8 @@
 
 from abc import ABC, abstractclassmethod, abstractmethod
 from pathlib import Path
-from typing import ContextManager, List, Optional, TypeVar
-import lib.format_items as fmt
+from typing import ContextManager, List, TypeVar
+import lib.items
 
 
 class SummaryFormatter(ABC):
@@ -51,7 +51,7 @@ class SummaryFormatter(ABC):
     # --------------------------------------------------------------------------
 
     def on_summary(self, title: str, date: str,
-                   items: List[fmt.Item]) -> type(None):
+                   items: List[lib.items.Item]) -> type(None):
         """Writes a formatted summary with title, date, and format items
 
         Args:
@@ -59,10 +59,10 @@ class SummaryFormatter(ABC):
             date: the date string to be printed under a title
             items: a list of format items.
         """
-        self.write_heading(fmt.Heading(title, 1))
-        self.write_text(fmt.Text(date))
+        self.write_heading(lib.items.Heading(title, 1))
+        self.write_text(lib.items.Text(date))
         self.write_items(items)
-        if not isinstance(items[-1], fmt.Separator):
+        if items and not isinstance(items[-1], lib.items.Separator):
             self.write_separator()
 
     @abstractmethod
@@ -101,39 +101,39 @@ class SummaryFormatter(ABC):
             "SummaryFormatter subclass must implement write_separator()")
 
     @abstractmethod
-    def write_heading(self, heading: fmt.Heading):
+    def write_heading(self, heading: lib.items.Heading):
         """Writes a formatted Heading."""
         raise NotImplementedError(
             "SummaryFormatter subclass must implement write_heading()")
 
     @abstractmethod
-    def write_text(self, text: fmt.Text):
+    def write_text(self, text: lib.items.Text):
         """Writes a formatted Text item."""
         raise NotImplementedError(
             "SummaryFormatter subclass must implement write_text()")
 
     @abstractmethod
-    def write_image(self, image: fmt.Image):
+    def write_image(self, image: lib.items.Image):
         """Writes a formatted Image."""
         raise NotImplementedError(
             "SummaryFormatter subclass must implement write_image()")
 
     @abstractmethod
-    def write_table(self, table: fmt.Table):
+    def write_table(self, table: lib.items.Table):
         """Writes a formatted Table."""
         raise NotImplementedError(
             "SummaryFormatter subclass must implement write_table()")
 
-    def write_items(self, items: List[fmt.Item]):
+    def write_items(self, items: List[lib.items.Item]):
         """Writes all items in order."""
         for item in items:
-            if isinstance(item, fmt.Separator):
+            if isinstance(item, lib.items.Separator):
                 self.write_separator()
-            elif isinstance(item, fmt.Text):
+            elif isinstance(item, lib.items.Text):
                 self.write_text(item)
-            elif isinstance(item, fmt.Heading):
+            elif isinstance(item, lib.items.Heading):
                 self.write_heading(item)
-            elif isinstance(item, fmt.Image):
+            elif isinstance(item, lib.items.Image):
                 self.write_image(item)
-            elif isinstance(item, fmt.Table):
+            elif isinstance(item, lib.items.Table):
                 self.write_table(item)

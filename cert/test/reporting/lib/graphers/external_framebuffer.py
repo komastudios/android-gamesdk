@@ -22,7 +22,7 @@ from typing import List
 from lib.graphers.common_graphers import graph_functional_test_result
 from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
 from lib.report import Datum, SummaryContext
-import lib.format_items as fmt
+import lib.items as items
 
 
 class ExternalFramebufferSummarizer(SuiteSummarizer):
@@ -63,15 +63,15 @@ class ExternalFramebufferSuiteHandler(SuiteHandler):
     def can_handle_datum(cls, datum: Datum):
         return 'External Framebuffer' in datum.suite_id
 
-    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
+    def render(self, ctx: SummaryContext) -> List[items.Item]:
 
         def graph():
             graph_functional_test_result(self.result_index,
                                          ['Failed', 'Unavailable', 'Success'])
 
         image_path = self.plot(ctx, graph, '')
-        image = fmt.Image(image_path, self.device())
+        image = items.Image(image_path, self.device())
 
         if self.error_msg:
-            return [image, fmt.Text(self.error_msg)]
+            return [image, items.Text(self.error_msg)]
         return [image]

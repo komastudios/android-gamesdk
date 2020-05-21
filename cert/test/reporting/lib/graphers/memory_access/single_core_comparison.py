@@ -21,7 +21,7 @@ import matplotlib.lines as lines
 
 from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
 from lib.report import Datum, SummaryContext, Suite
-import lib.format_items as fmt
+import lib.items as items
 
 
 class SingleCoreComparisonSummarizer(SuiteSummarizer):
@@ -139,7 +139,7 @@ class SingleCoreComparisonHandler(SuiteHandler):
 
     #---------------
 
-    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
+    def render(self, ctx: SummaryContext) -> List[items.Item]:
         writes = [s for s in self.suites if 'Write' in s.suite_id]
         reads = [s for s in self.suites if 'Read' in s.suite_id]
 
@@ -153,5 +153,5 @@ class SingleCoreComparisonHandler(SuiteHandler):
                             ylabel='KB Read', xlabel='Milliseconds')
             self.draw_datum_set(plot, reads)
 
-        image = fmt.Image(self.plot(ctx, graph), self.device())
+        image = items.Image(self.plot(ctx, graph), self.device())
         return [image]

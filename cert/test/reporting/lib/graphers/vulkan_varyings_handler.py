@@ -20,11 +20,10 @@ from the Vulkan Varyings test
 from typing import List
 
 import matplotlib.pyplot as plt
-import numpy as np
 
 from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
 from lib.report import Datum, SummaryContext
-import lib.format_items as fmt
+import lib.items as items
 
 
 class VulkanVaryingsSummarizer(SuiteSummarizer):
@@ -56,7 +55,7 @@ class VulkanVaryingsHandler(SuiteHandler):
     def can_handle_datum(cls, datum: Datum):
         return "Vulkan Varyings Blocks" in datum.suite_id
 
-    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
+    def render(self, ctx: SummaryContext) -> List[items.Item]:
 
         def graph():
             #plt.gcf().set_figheight(1.5)
@@ -66,13 +65,13 @@ class VulkanVaryingsHandler(SuiteHandler):
                 single_color = (0, 1, 0) if self.max_single_components >= \
                     self.reported_max_components else (1, 0, 0)
                 yticks = list(set([0, self.max_block_components,
-                                self.max_single_components,
-                                self.reported_max_components]))
+                                   self.max_single_components,
+                                   self.reported_max_components]))
                 plt.xticks([0, 1], ["block", "single"])
                 plt.yticks(yticks)
                 plt.bar(0, self.max_block_components, color=block_color)
                 plt.bar(1, self.max_single_components, color=single_color)
 
         image_path = self.plot(ctx, graph)
-        image = fmt.Image(image_path, self.device())
+        image = items.Image(image_path, self.device())
         return [image]
