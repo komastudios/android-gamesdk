@@ -51,10 +51,12 @@
 
 #include <ancer/BaseGLES3Operation.hpp>
 #include <ancer/DatumReporting.hpp>
+#include <ancer/System.hpp>
 #include <ancer/System.Asset.hpp>
 #include <ancer/util/Error.hpp>
 #include <ancer/util/GLTexImage2DRenderer.hpp>
 #include <ancer/util/Json.hpp>
+#include <ancer/util/StatusMessage.inl>
 #include <ancer/util/Texture.hpp>
 #include <ancer/util/texture/Astc.hpp>
 #include <ancer/util/texture/Etc2.hpp>
@@ -87,111 +89,104 @@ JSON_CONVERTER(configuration) {
 
 //--------------------------------------------------------------------------------------------------
 
-struct load_stats {
-  const std::string texture_name;
-  const std::string texture_type;
-  size_t size_at_rest;
-  size_t size_in_memory;
-  Milliseconds::rep loading_time;
+struct texture {
+  std::string name;
+  const std::string format;
+  const std::string channels;
 
-  explicit load_stats(const Texture &metadata)
-      : texture_name{metadata.GetFilenameStem()},
-        texture_type{metadata.GetFilenameExtension()},
-        size_at_rest{metadata.GetSizeAtRest()},
-        size_in_memory{metadata.GetSizeInMemory()},
-        loading_time{metadata.GetLoadTimeInMillis()} {
-    Log::D(TAG,
-           "%s: %.1f KB at rest; %.1f KB in memory; loaded in %d ms",
-           metadata.ToString().c_str(),
-           size_at_rest / 1000.0f,
-           size_in_memory / 1000.0f,
-           loading_time);
+  explicit texture(const Texture &tx) :
+      name{tx.GetFilenameStem()},
+      format{tx.GetFormat()},
+      channels{ToString(tx.GetChannels())} {
+    name.append(".").append(tx.GetFilenameExtension());
   }
 };
 
-void WriteDatum(report_writers::Struct writer, const load_stats &load_stats) {
-  ADD_DATUM_MEMBER(writer, load_stats, texture_name);
-  ADD_DATUM_MEMBER(writer, load_stats, texture_type);
-  ADD_DATUM_MEMBER(writer, load_stats, size_at_rest);
-  ADD_DATUM_MEMBER(writer, load_stats, size_in_memory);
-  ADD_DATUM_MEMBER(writer, load_stats, loading_time);
-}
+void WriteDatum(report_writers::Struct writer, const texture &texture) {
+  ADD_DATUM_MEMBER(writer, texture, name);
+  ADD_DATUM_MEMBER(writer, texture, format);
+  ADD_DATUM_MEMBER(writer, texture, channels);
 }
 
-//==================================================================================================
+enum EventType {
+  LOAD_START,
+  LOAD_END,
+  LOAD_FAILURE,
+  GPU_TRX
+};
 
-namespace {
-std::vector<std::unique_ptr<Texture>> slideshow_textures;
+struct datum {
+  const EventType event_type;
+  const texture texture;
+  const size_t size_at_rest;
+  const size_t size_in_memory;
+  const Milliseconds::rep loading_time;
+  const Milliseconds::rep gpu_trx_time;
 
-inline void PushTextureToSlideshow(Texture *const texture_metadata) {
-  slideshow_textures.emplace_back(texture_metadata);
-  Log::D(TAG,
-         "%s/%s.%s queued to slideshow",
-         texture_metadata->GetRelativePath().c_str(),
-         texture_metadata->GetFilenameStem().c_str(),
-         texture_metadata->GetFilenameExtension().c_str());
-}
+  explicit datum(const EventType event_type, const Texture &tx)
+      : event_type{event_type},
+        texture{tx},
+        size_at_rest{tx.GetSizeAtRest()},
+        size_in_memory{tx.GetSizeInMemory()},
+        loading_time{tx.GetLoadTimeInMillis()},
+        gpu_trx_time{tx.GetGpuTransferTimeInMillis()} {}
+};
 
-template<typename T>
-void PopulateSlideshowWithCompressedTexture(T *const texture_metadata) {
-  PushTextureToSlideshow(texture_metadata);
-
-  if (texture_metadata->GetPostCompressionFormat() == TexturePostCompressionFormat::NONE) {
-    std::string filename_stem{texture_metadata->GetFilenameStem()};
-    filename_stem.append(".").append(texture_metadata->GetFilenameExtension());
-
-    PopulateSlideshowWithCompressedTexture(new T{
-        texture_metadata->MirrorPostCompressed(TexturePostCompressionFormat::GZIP)
-    });
-    PopulateSlideshowWithCompressedTexture(new T{
-        texture_metadata->MirrorPostCompressed(TexturePostCompressionFormat::LZ4)
-    });
-  }
-}
-
-void PopulateSlideshowWithUncompressedTexture(EncodedTexture *const texture_metadata) {
-  PushTextureToSlideshow(texture_metadata);
-
-  std::string filename_stem{texture_metadata->GetFilenameStem()};
-  filename_stem.append("_").append(
-      texture_metadata->GetChannels() == TextureChannels::RGB ? "rgb" : "rgba");
-
-  static const auto astc_supported{
-      ancer::glh::IsExtensionSupported("GL_KHR_texture_compression_astc_ldr")};
-  if (astc_supported) {
-    uint bpp{1};  // ASTC at three different qualities: 2bpp, 4bpp & 8bpp
-    for (uint iteration{0}; iteration < 3; ++iteration) {
-      bpp *= 2;
-      std::stringstream astc_stem{};
-      astc_stem << filename_stem << '_' << bpp << "bpp";
-      PopulateSlideshowWithCompressedTexture(
-          new AstcTexture{texture_metadata->GetRelativePath(), astc_stem.str(),
-                          texture_metadata->GetChannels(), bpp});
+void WriteDatum(report_writers::Struct writer, const datum &event) {
+  switch (event.event_type) {
+    case EventType::LOAD_START: {
+      writer.AddItem("event_type", "TEXTURE_LOAD_START");
+      ADD_DATUM_MEMBER(writer, event, texture);
     }
-  } else {
-    Log::D(TAG, "Skipping ASTC from slideshow due to lack of hardware support");
-    // TODO(dagum): report that hw doesn't support format
-  }
+      break;
 
-  PopulateSlideshowWithCompressedTexture(new Etc2Texture{
-      texture_metadata->GetRelativePath(), filename_stem, texture_metadata->GetChannels()});
+    case EventType::LOAD_FAILURE: {
+      writer.AddItem("event_type", "TEXTURE_LOAD_FAILURE");
+      ADD_DATUM_MEMBER(writer, event, texture);
+
+      Log::E(TAG, "%s: loading failed", event.texture.name.c_str());
+    }
+      break;
+
+    case EventType::LOAD_END: {
+      writer.AddItem("event_type", "TEXTURE_LOAD_END");
+      ADD_DATUM_MEMBER(writer, event, texture);
+      ADD_DATUM_MEMBER(writer, event, size_at_rest);
+      ADD_DATUM_MEMBER(writer, event, size_in_memory);
+      ADD_DATUM_MEMBER(writer, event, loading_time);
+
+      Log::I(TAG,
+             "%s: %.1f KB at rest; %.1f KB in memory; decoded from storage to memory in %d ms",
+             event.texture.name.c_str(),
+             event.size_at_rest / 1000.0f,
+             event.size_in_memory / 1000.0f,
+             event.loading_time);
+    }
+      break;
+
+    case EventType::GPU_TRX: {
+      writer.AddItem("event_type", "TEXTURE_GPU_TRANSFER");
+      ADD_DATUM_MEMBER(writer, event, texture);
+      ADD_DATUM_MEMBER(writer, event, gpu_trx_time);
+
+      Log::I(TAG,
+             "%s: transferred from CPU to GPU in %d ms",
+             event.texture.name.c_str(),
+             event.gpu_trx_time);
+    }
+      break;
+  }
 }
 
-void PopulateSlideshowTexturesFromFamilies(const std::vector<std::string> &texture_families,
-                                           const std::string &texture_families_dir) {
-  std::for_each(std::cbegin(texture_families),
-                std::cend(texture_families),
-                [&texture_families_dir](const std::string &texture_family) {
-                  std::string texture_dir{texture_families_dir};
-                  texture_dir.append("/").append(texture_family);
+struct unsupported_format {
+  std::string texture_format;
+};
 
-                  PopulateSlideshowWithUncompressedTexture(
-                      new JpgTexture{texture_dir, texture_family}
-                  );
-                  PopulateSlideshowWithUncompressedTexture(
-                      new PngTexture{texture_dir, texture_family}
-                  );
-                });
+void WriteDatum(report_writers::Struct writer, const unsupported_format &event) {
+  writer.AddItem("event_type", "UNSUPPORTED_TEXTURE_FORMAT");
+  ADD_DATUM_MEMBER(writer, event, texture_format);
+
+  Log::I(TAG, "Texture format \"%s\" unsupported", event.texture_format.c_str());
 }
 }
 
@@ -204,14 +199,11 @@ class TextureLoadingGLES3Operation : public BaseGLES3Operation {
   ~TextureLoadingGLES3Operation() override {
     glDeleteProgram(_program);
     glDeleteTextures(1, &_texture_id);
-
-    slideshow_textures.clear();
   }
 
   void Start() override {
     _configuration = GetConfiguration<configuration>();
-    ::PopulateSlideshowTexturesFromFamilies(_configuration.texture_families,
-                                            _configuration.texture_families_dir);
+    PopulateSlideshowTexturesFromFamilies();
 
     BaseGLES3Operation::Start();
     _slideshow_thread = TriggerSlideshowThread();
@@ -250,7 +242,7 @@ class TextureLoadingGLES3Operation : public BaseGLES3Operation {
     glh::CheckGlError("TextureLoadingGLES3Operation::Draw(delta_seconds) - superclass");
 
     if (_new_slide_available) {
-      ::slideshow_textures[_slideshow_index]->ApplyBitmap(_texture_id);
+      PostTextureToGpu();
       _new_slide_available = false;
     }
 
@@ -271,6 +263,70 @@ class TextureLoadingGLES3Operation : public BaseGLES3Operation {
 //--------------------------------------------------------------------------------------------------
 
  private:
+  inline void PushTextureToSlideshow(Texture *const texture) {
+    _slideshow_textures.emplace_back(texture);
+    Log::D(TAG, "%s queued to slideshow", ToString(*texture).c_str());
+  }
+
+  template<typename T>
+  void PopulateSlideshowWithCompressedTexture(T *const texture) {
+    PushTextureToSlideshow(texture);
+
+    if (texture->GetPostCompressionFormat() == TexturePostCompressionFormat::NONE) {
+      std::string filename_stem{texture->GetFilenameStem()};
+      filename_stem.append(".").append(texture->GetFilenameExtension());
+
+      PopulateSlideshowWithCompressedTexture(new T{
+          texture->MirrorPostCompressed(TexturePostCompressionFormat::GZIP)
+      });
+      PopulateSlideshowWithCompressedTexture(new T{
+          texture->MirrorPostCompressed(TexturePostCompressionFormat::LZ4)
+      });
+    }
+  }
+
+  void PopulateSlideshowWithUncompressedTexture(EncodedTexture *const texture) {
+    PushTextureToSlideshow(texture);
+
+    std::string filename_stem{texture->GetFilenameStem()};
+    filename_stem.append("_").append(ToString(texture->GetChannels(), false));
+
+    static const auto astc_supported{
+        ancer::glh::IsExtensionSupported("GL_KHR_texture_compression_astc_ldr")};
+    if (astc_supported) {
+      uint bpp{1};  // ASTC at three different qualities: 2bpp, 4bpp & 8bpp
+      for (uint iteration{0}; iteration < 3; ++iteration) {
+        bpp *= 2;
+        std::stringstream astc_stem;
+        astc_stem << filename_stem << '_' << bpp << "bpp";
+        PopulateSlideshowWithCompressedTexture(
+            new AstcTexture{texture->GetRelativePath(), astc_stem.str(),
+                            texture->GetChannels(), bpp});
+      }
+    } else {
+      Report(unsupported_format{"ASTC"});
+    }
+
+    PopulateSlideshowWithCompressedTexture(new Etc2Texture{
+        texture->GetRelativePath(), filename_stem, texture->GetChannels()});
+  }
+
+  void PopulateSlideshowTexturesFromFamilies() {
+    std::for_each(std::cbegin(_configuration.texture_families),
+                  std::cend(_configuration.texture_families),
+                  [this](const std::string &texture_family) {
+                    std::string texture_dir{_configuration.texture_families_dir};
+                    texture_dir.append("/").append(texture_family);
+
+                    PopulateSlideshowWithUncompressedTexture(
+                        new JpgTexture{texture_dir, texture_family}
+                    );
+                    PopulateSlideshowWithUncompressedTexture(
+                        new PngTexture{texture_dir, texture_family}
+                    );
+                  });
+  }
+
   /**
    * Creates a shader program based on app assets.
    * @return the program id.
@@ -307,19 +363,30 @@ class TextureLoadingGLES3Operation : public BaseGLES3Operation {
     return std::thread{[this] {
       while (not IsStopped() && not _context_ready);
 
-      while (not IsStopped() && _slideshow_index < ::slideshow_textures.size()) {
-        auto *const texture_metadata = ::slideshow_textures[_slideshow_index].get();
-        if ((_new_slide_available = texture_metadata->Load())) {
-          Report(load_stats{*texture_metadata});
+      while (not IsStopped() && _slideshow_index < _slideshow_textures.size()) {
+        auto *const p_texture = _slideshow_textures[_slideshow_index].get();
+        Report(datum{EventType::LOAD_START, *p_texture});
+        if ((_new_slide_available = p_texture->Load())) {
+          Report(datum{EventType::LOAD_END, *p_texture});
           if (not IsStopped()) {
             std::this_thread::sleep_for(_configuration.slideshow_interval);
           }
         } else {
-          Log::E(TAG, "%s loading failed", texture_metadata->ToString().c_str());
+          Report(datum{EventType::LOAD_FAILURE, *p_texture});
         }
         ++_slideshow_index;
       }
     }};
+  }
+
+  void PostTextureToGpu() {
+    auto *const p_texture = _slideshow_textures[_slideshow_index].get();
+    p_texture->ApplyBitmap(_texture_id);
+    datum new_texture_drawn{EventType::GPU_TRX, *p_texture};
+    Report(new_texture_drawn);
+    std::stringstream format;
+    format << p_texture->GetFormat() << " (" << ancer::ToString(p_texture->GetChannels()) << ')';
+    ancer::GetStatusMessageManager().SetValue(format.str());
   }
 
   //--------------------------------------------------------------------------------------------------
@@ -340,6 +407,7 @@ class TextureLoadingGLES3Operation : public BaseGLES3Operation {
   configuration _configuration{};
 
   std::thread _slideshow_thread;
+  std::vector<std::unique_ptr<Texture>> _slideshow_textures;
   std::size_t _slideshow_index{0};
   bool _new_slide_available{false};
 

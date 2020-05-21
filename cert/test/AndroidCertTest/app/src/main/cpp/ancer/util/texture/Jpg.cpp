@@ -94,10 +94,15 @@ const std::string &JpgTexture::GetFilenameExtension() const {
   return kJpg;
 }
 
+std::string JpgTexture::GetFormat() const {
+  static const std::string kJpg("JPG");
+  return kJpg;
+}
+
 void JpgTexture::_Load() {
   static const int kRequiredComponents{4};
 
-  ::JpegDecoderAssetStream asset_stream{ToString()};
+  ::JpegDecoderAssetStream asset_stream{ToString(*this)};
 
   if (asset_stream) {
     _file_size = asset_stream.size();
@@ -120,9 +125,9 @@ void JpgTexture::_Load() {
 }
 
 void JpgTexture::_ApplyBitmap() {
-  glTexImage2D(GL_TEXTURE_2D, 0, _internal_format,
+  glTexImage2D(GL_TEXTURE_2D, 0, _internal_gl_format,
                _width, _height, 0,
-               _internal_format, GL_UNSIGNED_BYTE, _bitmap_data.get());
+               _internal_gl_format, GL_UNSIGNED_BYTE, _bitmap_data.get());
 
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

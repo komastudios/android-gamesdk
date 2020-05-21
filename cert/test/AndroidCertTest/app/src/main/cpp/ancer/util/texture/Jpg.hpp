@@ -32,6 +32,8 @@ class JpgTexture : public EncodedTexture {
 
   const std::string &GetFilenameExtension() const override;
 
+  std::string GetFormat() const override;
+
  protected:
   void _Load() override;
   void _ApplyBitmap() override;

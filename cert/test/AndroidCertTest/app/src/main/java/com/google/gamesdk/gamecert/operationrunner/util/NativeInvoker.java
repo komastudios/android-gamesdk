@@ -64,6 +64,17 @@ public class NativeInvoker {
 
     public static native long getCurrentMaxFrameTimeNs();
 
+    /**
+     * True if the native side has a new status message to display on screen since last one.
+     */
+    public static native boolean isNewStatusAvailable();
+
+    /**
+     * Gets the current status from the native side of things. To avoid expensive string
+     * conversions, check whether @isNewStatusAvailable() before calling this method.
+     */
+    public static native String getCurrentStatusMessage();
+
     public static native void openReportFile(String pathToFile);
 
     public static native void openReportFileDescriptor(int fileDescriptor);

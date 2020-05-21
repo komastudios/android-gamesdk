@@ -110,8 +110,13 @@ const std::string &PngTexture::GetFilenameExtension() const {
   return kPng;
 }
 
+std::string PngTexture::GetFormat() const {
+  static const std::string kPng("PNG");
+  return kPng;
+}
+
 void PngTexture::_Load() {
-  if (auto decoder = LodePngAssetDecoder{ToString()}) {
+  if (auto decoder = LodePngAssetDecoder{ToString(*this)}) {
     _bitmap_data = std::unique_ptr<u_char>(
         decoder.Decode(&_width, &_height, &_file_size, &_mem_size));
     _has_alpha = true;
@@ -119,9 +124,9 @@ void PngTexture::_Load() {
 }
 
 void PngTexture::_ApplyBitmap() {
-  glTexImage2D(GL_TEXTURE_2D, 0, _internal_format,
+  glTexImage2D(GL_TEXTURE_2D, 0, _internal_gl_format,
                _width, _height, 0,
-               _internal_format, GL_UNSIGNED_BYTE, _bitmap_data.get());
+               _internal_gl_format, GL_UNSIGNED_BYTE, _bitmap_data.get());
 
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
