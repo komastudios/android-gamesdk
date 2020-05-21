@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 from lib.common import nanoseconds_to_milliseconds
 from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
 from lib.report import Datum, SummaryContext
-import lib.format_items as fmt
+import lib.items as items
 
 SLEEP_DUR = \
     "marching_cubes_permutation_results.exec_configuration.sleep_config.duration"
@@ -133,7 +133,7 @@ class MarchingCubesSuiteHandler(SuiteHandler):
     def can_handle_datum(cls, datum: Datum):
         return "MarchingCubesGLES3Operation" in datum.operation_id
 
-    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
+    def render(self, ctx: SummaryContext) -> List[items.Item]:
         thread_setups = list(self.data_by_thread_setup_floating.keys())
 
         # THREAD_SETUPS is already in the desired order, so filter it
@@ -182,8 +182,9 @@ class MarchingCubesSuiteHandler(SuiteHandler):
 
                         plt.xticks(durs, ["{:.2f}".format(d) for d in durs])
 
-                        bar_colors = [(0.25, 0.75, 0.25) if y >= max(y_values) else
-                                    (0.5, 0.5, 0.5) for y in y_values]
+                        bar_colors = [
+                            (0.25, 0.75, 0.25) if y >= max(y_values) else
+                            (0.5, 0.5, 0.5) for y in y_values]
 
                         rendered_bars = plt.bar(durs,
                                                 y_values,
@@ -208,5 +209,5 @@ class MarchingCubesSuiteHandler(SuiteHandler):
             plt.subplots_adjust(hspace=0.5)
 
         image_path = self.plot(ctx, graph)
-        image = fmt.Image(image_path, self.device())
+        image = items.Image(image_path, self.device())
         return [image]

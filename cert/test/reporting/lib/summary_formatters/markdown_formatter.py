@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import List, TextIO, TypeVar
 
 from lib.summary_formatters.formatter import SummaryFormatter
-import lib.format_items as fmt
+import lib.items as items
 
 
 class MarkdownFormatter(SummaryFormatter):
@@ -41,11 +41,11 @@ class MarkdownFormatter(SummaryFormatter):
     # --------------------------------------------------------------------------
 
     def on_errors_available(self, title: str) -> type(None):
-        self.write_heading(fmt.Heading(title, 2))
+        self.write_heading(items.Heading(title, 2))
 
     def on_device_error(self, device_id: str, summary: str) -> type(None):
-        self.write_heading(fmt.Heading(device_id, 3))
-        self.write_text(fmt.Text(summary))
+        self.write_heading(items.Heading(device_id, 3))
+        self.write_text(items.Text(summary))
         self.write_separator()
 
     # --------------------------------------------------------------------------
@@ -53,19 +53,19 @@ class MarkdownFormatter(SummaryFormatter):
     def write_separator(self):
         self.__writer.write(f'---\n\n')
 
-    def write_heading(self, heading: fmt.Heading):
+    def write_heading(self, heading: items.Heading):
         level = ''.join(['#' for i in range(heading.level)])
         self.__writer.write(f'{level} {heading.text}\n\n')
 
-    def write_text(self, text: fmt.Text):
+    def write_text(self, text: items.Text):
         self.__writer.write(f'{text.text}\n\n')
 
-    def write_image(self, image: fmt.Image):
+    def write_image(self, image: items.Image):
         relative_path = image.path.relative_to(self.__summary_path.parent)
         self.__writer.write(
             f'<img src="{relative_path}" width="90%" alt="{image.alt}" />\n\n')
 
-    def write_table(self, table: fmt.Table):
+    def write_table(self, table: items.Table):
 
         def row_to_str(cells: List[str]):
             return '| ' + ' | '.join(cell for cell in cells) + ' |\n'

@@ -19,7 +19,7 @@ Word summary formatter.
 
 from contextlib import contextmanager
 from pathlib import Path
-from typing import List, TypeVar
+from typing import TypeVar
 
 from docx.oxml.ns import nsdecls
 from docx.oxml import parse_xml
@@ -27,7 +27,7 @@ from docx import Document
 from docx.shared import Inches
 
 from lib.summary_formatters.formatter import SummaryFormatter
-import lib.format_items as fmt
+import lib.items as items
 
 
 class WordFormatter(SummaryFormatter):
@@ -52,27 +52,27 @@ class WordFormatter(SummaryFormatter):
     # --------------------------------------------------------------------------
 
     def on_errors_available(self, title: str) -> type(None):
-        self.write_heading(fmt.Heading(title, 2))
+        self.write_heading(items.Heading(title, 2))
 
     def on_device_error(self, device_id: str, summary: str) -> type(None):
-        self.write_heading(fmt.Heading(device_id, 4))
-        self.write_text(fmt.Text(summary))
+        self.write_heading(items.Heading(device_id, 4))
+        self.write_text(items.Text(summary))
 
     # --------------------------------------------------------------------------
 
     def write_separator(self):
         self.__writer.add_page_break()
 
-    def write_heading(self, heading: fmt.Heading):
+    def write_heading(self, heading: items.Heading):
         self.__writer.add_heading(heading.text, heading.level - 1)
 
-    def write_text(self, text: fmt.Text):
+    def write_text(self, text: items.Text):
         self.__writer.add_paragraph(text.text)
 
-    def write_image(self, image: fmt.Image):
+    def write_image(self, image: items.Image):
         self.__writer.add_picture(str(image.path), Inches(6.18))
 
-    def write_table(self, table: fmt.Table):
+    def write_table(self, table: items.Table):
         col_count = max(len(row) for row in table.rows)
         doc_table = self.__writer.add_table(rows=1, cols=col_count)
         doc_table.style = self.__writer.styles['Light Grid']
@@ -93,4 +93,4 @@ class WordFormatter(SummaryFormatter):
                 cells[i].text = col
                 set_background(cells[i], "FFFFFF")
 
-        self.write_text(fmt.Text("")) # extra line for bottom margin
+        self.write_text(items.Text("")) # extra line for bottom margin

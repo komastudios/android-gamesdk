@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import List, TextIO, TypeVar
 
 from lib.summary_formatters.formatter import SummaryFormatter
-import lib.format_items as fmt
+import lib.items as items
 
 
 class HtmlFormatter(SummaryFormatter):
@@ -50,11 +50,11 @@ class HtmlFormatter(SummaryFormatter):
 """)
 
     def on_errors_available(self, title: str) -> type(None):
-        self.write_heading(fmt.Heading(title, 2))
+        self.write_heading(items.Heading(title, 2))
 
     def on_device_error(self, device_id: str, summary: str) -> type(None):
-        self.write_heading(fmt.Heading(device_id, 3))
-        self.write_text(fmt.Text(summary))
+        self.write_heading(items.Heading(device_id, 3))
+        self.write_text(items.Text(summary))
         self.write_separator()
 
     def on_finish(self) \
@@ -108,20 +108,20 @@ class HtmlFormatter(SummaryFormatter):
     def write_separator(self):
         self.__writer.write('<hr/>\n')
 
-    def write_heading(self, heading: fmt.Heading):
+    def write_heading(self, heading: items.Heading):
         level = heading.level
         self.__writer.write(f'<h{level}>{heading.text}</h{level}>\n')
 
-    def write_text(self, text: fmt.Text):
+    def write_text(self, text: items.Text):
         self.__writer.write(f'<p>{text.text}</p>\n')
 
-    def write_image(self, image: fmt.Image):
+    def write_image(self, image: items.Image):
         relative_path = image.path.relative_to(self.__summary_path.parent)
         self.__writer.write(f"""<div class="figure-container">
     <img src="{relative_path}" alt="{image.alt}" />
 </div>\n""")
 
-    def write_table(self, table: fmt.Table):
+    def write_table(self, table: items.Table):
         def write_row(ele: str, row: List[str]):
             self.__writer.write('\t\t<tr>\n')
             for col in row:
