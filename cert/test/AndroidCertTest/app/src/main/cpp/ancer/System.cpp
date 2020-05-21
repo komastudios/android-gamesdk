@@ -16,9 +16,10 @@
 
 #include "System.hpp"
 
-#include "util/Error.hpp"
-#include "util/JNIHelpers.hpp"
-#include "util/Log.hpp"
+#include <ancer/util/Error.hpp>
+#include <ancer/util/JNIHelpers.hpp>
+#include <ancer/util/Log.hpp>
+#include <ancer/util/StatusMessage.inl>
 
 using namespace ancer;
 
@@ -103,4 +104,11 @@ std::string ancer::LoadText(const char *file_name) {
         }
       });
   return text;
+}
+
+//==============================================================================
+
+StatusMessageManager &ancer::GetStatusMessageManager() {
+  static StatusMessageManager status_message_manager;
+  return status_message_manager;
 }

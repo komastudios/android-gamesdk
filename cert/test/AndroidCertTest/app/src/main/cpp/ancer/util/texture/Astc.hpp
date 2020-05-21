@@ -47,6 +47,7 @@ class AstcTexture : public CompressedTexture {
   void _OnBitmapLoaded() override;
   void _ApplyBitmap() override;
   const std::string &_GetInnerExtension() const override;
+  std::string _GetInnerFormat() const override;
 
   uint _bits_per_pixel;
 };

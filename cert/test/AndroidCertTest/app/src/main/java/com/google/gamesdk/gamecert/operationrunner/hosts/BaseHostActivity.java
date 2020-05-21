@@ -61,6 +61,7 @@ public class BaseHostActivity extends AppCompatActivity
     protected TextView _fpsTextView;
     protected TextView _minFrameTimeTextView;
     protected TextView _maxFrameTimeTextView;
+    protected TextView _statusMessageView;
 
     OperationWrapper _dataGatherer;
     List<OperationWrapper> _stressors = new ArrayList<>();
@@ -93,6 +94,7 @@ public class BaseHostActivity extends AppCompatActivity
         _fpsTextView = findViewById(R.id.fpsTextView);
         _minFrameTimeTextView = findViewById(R.id.minFrameTimeTextView);
         _maxFrameTimeTextView = findViewById(R.id.maxFrameTimeTextView);
+        _statusMessageView = findViewById(R.id.statusView);
         if (!SHOW_TIMING_INFO) {
             if (_fpsTextView != null) {
                 _fpsTextView.setVisibility(View.GONE);
@@ -102,6 +104,9 @@ public class BaseHostActivity extends AppCompatActivity
             }
             if (_maxFrameTimeTextView != null) {
                 _maxFrameTimeTextView.setVisibility(View.GONE);
+            }
+            if (_statusMessageView != null) {
+                _statusMessageView.setVisibility(View.GONE);
             }
         }
 
@@ -207,6 +212,11 @@ public class BaseHostActivity extends AppCompatActivity
                         String.format(Locale.getDefault(),
                                 "%.3f ms",
                                 NativeInvoker.getCurrentMaxFrameTimeNs() / 1e6));
+            }
+            if (_statusMessageView != null) {
+                if (NativeInvoker.isNewStatusAvailable()) {
+                    _statusMessageView.setText(NativeInvoker.getCurrentStatusMessage());
+                }
             }
             _mainThreadPump.postDelayed(this::updateTimingStats, 1000);
         }
