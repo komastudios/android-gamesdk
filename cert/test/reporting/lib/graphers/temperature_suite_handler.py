@@ -24,7 +24,7 @@ import numpy as np
 
 from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
 from lib.report import Datum, SummaryContext, Suite
-import lib.format_items as fmt
+import lib.items as items
 
 
 class TemperatureSuiteSummarizer(SuiteSummarizer):
@@ -60,7 +60,7 @@ class TemperatureSuiteHandler(SuiteHandler):
         # Divided by 1000 so it's in Celsius degrees (comes in millidegrees)
 
 
-    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
+    def render(self, ctx: SummaryContext) -> List[items.Item]:
 
         for i, datum in enumerate(self.data):
             if datum.operation_id == 'MonitorOperation':
@@ -72,5 +72,5 @@ class TemperatureSuiteHandler(SuiteHandler):
                 plt.plot(np.array(self.x_axis), np.array(self.max_temperature))
 
         image_path = self.plot(ctx, graph)
-        image = fmt.Image(image_path, self.device())
+        image = items.Image(image_path, self.device())
         return [image]

@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt
 
 from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
 from lib.report import Datum, SummaryContext
-import lib.format_items as fmt
+import lib.items as items
 
 
 class AffinityTestSummarizer(SuiteSummarizer):
@@ -41,7 +41,7 @@ class AffinityTestSuiteHandler(SuiteHandler):
     def can_handle_datum(cls, datum: Datum):
         return "Affinity Test" in datum.suite_id
 
-    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
+    def render(self, ctx: SummaryContext) -> List[items.Item]:
         start_misses_by_cpu_id = {}
         work_running_misses_by_cpu_id = {}
         finishing_misses_by_cpu_id = {}
@@ -105,5 +105,5 @@ class AffinityTestSuiteHandler(SuiteHandler):
             msg = f"Found {work_running_misses_total} CPU affinity mismatches"
 
         image_path = self.plot(ctx, graph)
-        image = fmt.Image(image_path, self.device())
-        return [image, fmt.Text(msg)]
+        image = items.Image(image_path, self.device())
+        return [image, items.Text(msg)]

@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt
 
 from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
 from lib.report import Datum, SummaryContext
-import lib.format_items as fmt
+import lib.items as items
 
 
 class FilePerformanceSummarizer(SuiteSummarizer):
@@ -86,7 +86,7 @@ class FilePerformanceSuiteHandler(SuiteHandler):
                 plt.plot(procs[thread]['time'], procs[thread]['value'], ls = ls)
 
 
-    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
+    def render(self, ctx: SummaryContext) -> List[items.Item]:
         graphs = []
 
         for d in self.our_data:
@@ -122,5 +122,5 @@ class FilePerformanceSuiteHandler(SuiteHandler):
             self.do_rendering(graphs)
 
         image_path = self.plot(ctx, graph)
-        image = fmt.Image(image_path, self.device())
+        image = items.Image(image_path, self.device())
         return [image]

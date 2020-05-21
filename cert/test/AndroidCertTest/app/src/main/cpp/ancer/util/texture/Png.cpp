@@ -61,7 +61,8 @@ class LodePngAssetDecoder {
    * @param p_height pointer to the place where the PNG height is to be left.
    * @param p_encoded_size pointer to the place where the PNG size at rest is to be left.
    * @param p_decoded_size pointer to the place where the PNG size in memory is to be left.
-   * @return a pointer to the decoded bitmap.
+   * @return a pointer to the decoded bitmap. Its deallocation is this method invoker's
+   *         responsibility.
    */
   u_char *Decode(int32_t *p_width,
                  int32_t *p_height,
@@ -110,8 +111,13 @@ const std::string &PngTexture::GetFilenameExtension() const {
   return kPng;
 }
 
+std::string PngTexture::GetFormat() const {
+  static const std::string kPng("PNG");
+  return kPng;
+}
+
 void PngTexture::_Load() {
-  if (auto decoder = LodePngAssetDecoder{ToString()}) {
+  if (auto decoder = LodePngAssetDecoder{ToString(*this)}) {
     _bitmap_data = std::unique_ptr<u_char>(
         decoder.Decode(&_width, &_height, &_file_size, &_mem_size));
     _has_alpha = true;
@@ -119,9 +125,9 @@ void PngTexture::_Load() {
 }
 
 void PngTexture::_ApplyBitmap() {
-  glTexImage2D(GL_TEXTURE_2D, 0, _internal_format,
+  glTexImage2D(GL_TEXTURE_2D, 0, _internal_gl_format,
                _width, _height, 0,
-               _internal_format, GL_UNSIGNED_BYTE, _bitmap_data.get());
+               _internal_gl_format, GL_UNSIGNED_BYTE, _bitmap_data.get());
 
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

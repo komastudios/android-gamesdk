@@ -16,6 +16,8 @@
 
 #include "Texture.hpp"
 
+#include <sstream>
+
 #include <ancer/System.Asset.hpp>
 #include <ancer/util/Log.hpp>
 
@@ -27,6 +29,16 @@ Log::Tag TAG{"Texture"};
 
 //--------------------------------------------------------------------------------------------------
 
+std::string ancer::ToString(const TextureChannels channels, const bool uppercase) {
+  if (channels == TextureChannels::RGB) {
+    return uppercase ? "RGB" : "rgb";
+  }
+
+  return uppercase ? "RGBA" : "rgba";
+}
+
+//--------------------------------------------------------------------------------------------------
+
 Texture::Texture(std::string relative_path,
                  std::string filename_stem,
                  const TextureChannels channels)
@@ -34,7 +46,7 @@ Texture::Texture(std::string relative_path,
     _relative_path{std::move(relative_path)},
     _filename_stem{std::move(filename_stem)},
     _channels{channels},
-    _internal_format{GL_RGBA},
+    _internal_gl_format{GL_RGBA},
     _width{0},
     _height{0},
     _has_alpha{false},
@@ -60,7 +72,7 @@ TextureChannels Texture::GetChannels() const {
 }
 
 GLenum Texture::GetInternalFormat() const {
-  return _internal_format;
+  return _internal_gl_format;
 }
 
 int32_t Texture::GetWidth() const {
@@ -87,6 +99,10 @@ Milliseconds::rep Texture::GetLoadTimeInMillis() const {
   return _load_time_in_millis.count();
 }
 
+Milliseconds::rep Texture::GetGpuTransferTimeInMillis() const {
+  return _gpu_trx_time_in_millis.count();
+}
+
 bool Texture::Load() {
   assert(_bitmap_data == nullptr);
 
@@ -99,18 +115,12 @@ bool Texture::Load() {
 
 void Texture::ApplyBitmap(const GLuint texture_id) {
   glBindTexture(GL_TEXTURE_2D, texture_id);
+
+  auto start_time = SteadyClock::now();
   _ApplyBitmap();
+  _gpu_trx_time_in_millis = duration_cast<Milliseconds>(SteadyClock::now() - start_time);
+
   _ReleaseBitmapData();
-}
-
-std::string Texture::ToString() const {
-  std::string full_path(_relative_path);
-  if (not _relative_path.empty()) {
-    full_path.append("/");
-  }
-  full_path.append(_filename_stem).append(".").append(GetFilenameExtension());
-
-  return full_path;
 }
 
 void Texture::_ReleaseBitmapData() {
@@ -118,9 +128,25 @@ void Texture::_ReleaseBitmapData() {
   _mem_size = 0;
 }
 
+//--------------------------------------------------------------------------------------------------
+
+std::string ancer::ToString(const Texture &texture) {
+  std::string full_path(texture.GetRelativePath());
+  if (not full_path.empty()) {
+    full_path.append("/");
+  }
+  full_path.append(texture.GetFilenameStem()).append(".").append(texture.GetFilenameExtension());
+
+  return full_path;
+}
+
+//--------------------------------------------------------------------------------------------------
+
 EncodedTexture::EncodedTexture(const std::string &relative_path,
                                const std::string &filename_stem, const TextureChannels channels)
     : Texture(relative_path, filename_stem, channels) {}
+
+//--------------------------------------------------------------------------------------------------
 
 CompressedTexture::CompressedTexture(
     const std::string &relative_path,
@@ -132,7 +158,7 @@ CompressedTexture::CompressedTexture(
 }
 
 void CompressedTexture::_Load() {
-  if (Asset asset{ToString(), AASSET_MODE_STREAMING}) {
+  if (Asset asset{ToString(*this), AASSET_MODE_STREAMING}) {
     _file_size = static_cast<size_t>(asset.GetLength());
     switch (_post_compression_format) {
       case TexturePostCompressionFormat::NONE: {
@@ -142,7 +168,7 @@ void CompressedTexture::_Load() {
         if (asset.Read(_bitmap_data.get(), _file_size) == _file_size) {
           _OnBitmapLoaded();
         } else {
-          Log::E(TAG, "%s reading error", ToString().c_str());
+          Log::E(TAG, "%s reading error", ToString(*this).c_str());
         }
       }
         break;
@@ -165,4 +191,18 @@ const std::string &CompressedTexture::GetFilenameExtension() const {
          ?
          _GetInnerExtension()
          : extension_by_post_compression_format[static_cast<std::size_t>(_post_compression_format)];
+}
+
+std::string CompressedTexture::GetFormat() const {
+  static const std::string format_by_post_compression[] = {"", "Deflated", "LZ4"};
+
+  if (_post_compression_format == TexturePostCompressionFormat::NONE) {
+    return _GetInnerFormat();
+  } else {
+    std::stringstream string_stream;
+    string_stream << format_by_post_compression[static_cast<std::size_t>(_post_compression_format)]
+                  << " (" << _GetInnerFormat() << ')';
+
+    return string_stream.str();
+  }
 }

@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt
 
 from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
 from lib.report import Datum, SummaryContext
-import lib.format_items as fmt
+import lib.items as items
 
 
 class MediumPVecNormSummarizer(SuiteSummarizer):
@@ -41,7 +41,7 @@ class MediumPVecNormSuiteHandler(SuiteHandler):
     def can_handle_datum(cls, datum: Datum):
         return "MediumPVecNormalizationGLES3Operation" in datum.operation_id
 
-    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
+    def render(self, ctx: SummaryContext) -> List[items.Item]:
         my_data = self.suite.data_by_operation_id[
             "MediumPVecNormalizationGLES3Operation"]
 
@@ -77,5 +77,5 @@ class MediumPVecNormSuiteHandler(SuiteHandler):
                 plt.ylabel(f"{stage}\nerror count")
 
         image_path = self.plot(ctx, graph)
-        image = fmt.Image(image_path, self.device())
+        image = items.Image(image_path, self.device())
         return [image]
