@@ -66,10 +66,10 @@ fi
 if [[ $1 == "full" ]]
 then
     # Build samples
-    pushd samples/tuningfork/expertballs
+    pushd samples/tuningfork/experimentsdemo
     ./gradlew build
     popd
-    pushd samples/tuningfork/scaledballs
+    pushd samples/tuningfork/insightsdemo
     ./gradlew build
     popd
     pushd src/tuningfork/tools/TuningForkMonitor
@@ -80,10 +80,10 @@ then
     popd
 
     # Copy to $apk_dir
-    cp samples/tuningfork/expertballs/app/build/outputs/apk/debug/app-debug.apk \
-      $apk_dir/samples/expertballs.apk
-    cp samples/tuningfork/scaledballs/app/build/outputs/apk/debug/app-debug.apk \
-      $apk_dir/samples/scaledballs.apk
+    cp samples/tuningfork/experimentsdemo/app/build/outputs/apk/debug/app-debug.apk \
+      $apk_dir/samples/experimentsdemo.apk
+    cp samples/tuningfork/insightsdemo/app/build/outputs/apk/debug/app-debug.apk \
+      $apk_dir/samples/insightsdemo.apk
     cp src/tuningfork/tools/TuningForkMonitor/app/build/outputs/apk/debug/app-debug.apk \
       $apk_dir/tools/TuningForkMonitor.apk
     cp test/tuningfork/testapp/app/build/outputs/apk/debug/app-debug.apk \

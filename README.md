@@ -90,8 +90,8 @@ Samples are classic Android projects, using CMake to build the native code. They
 ```bash
 cd samples/bouncyball && ./gradlew assemble
 cd samples/cube && ./gradlew assemble
-cd samples/tuningfork/scaledballs && ./gradlew assemble
-cd samples/tuningfork/expertballs && ./gradlew assemble
+cd samples/tuningfork/insightsdemo && ./gradlew assemble
+cd samples/tuningfork/experimentsdemo && ./gradlew assemble
 ```
 
 The Android SDK/NDK exposed using environment variables (`ANDROID_HOME`) will be used for building both the sample project and the Game SDK.
@@ -102,8 +102,8 @@ Open projects using Android Studio:
 
 * `samples/bouncyball`
 * `samples/cube`
-* `samples/tuningfork/scaledballs`
-* `samples/tuningfork/expertballs`
+* `samples/tuningfork/insightsdemo`
+* `samples/tuningfork/experimentsdemo`
 
 and run them directly (`Shift + F10` on Linux, `Control + R` on macOS). The local Android SDK/NDK (configured in Android Studio) will be used for building both the sample project and the Game SDK.
 
