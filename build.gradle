@@ -848,6 +848,11 @@ task releaseSdkBuild(type: BuildTask) {
 }
 // Build everything and package as an aar file
 task releaseAarSdkBuild() {
+    doFirst {
+        // Clear the package path to ensure AAR generation is not polluted
+        // by previous build tasks.
+        delete getPackagePath()
+    }
     dependsOn ':extras:assembleRelease', prepare_proto
     ext.packageName = 'gamesdk'
     ext.flattenLibs = false
@@ -932,6 +937,9 @@ e.g. SDK=14 NDK=r16 STL='c++_static' ./gradlew specificZip"""
 
 tasks.withType(BuildTask) {
     doLast {
+        // Clear the package path to ensure the task zip is not polluted
+        // by previous build tasks.
+        delete getPackagePath()
         nativeBuild(withTuningFork, buildType).each {
             sdkCopy(it, packageName, withTuningFork, withStaticLibs,
                     withFullBuildKey, flattenLibs, withSharedLibs)
