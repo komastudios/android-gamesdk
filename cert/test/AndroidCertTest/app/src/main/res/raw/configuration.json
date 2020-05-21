@@ -37,12 +37,13 @@
     {
       "enabled": true,
       "name": "Choreographer Timestamps",
-      "description": "Samples timestamps from Choreographer for comparison with VSYNC traces",
-      "duration": "5s",
+      "description": "Samples Choreographer timestamps for comparison with EGL get frame timestamps extension",
+      "duration": "15s",
       "data_gatherer": {
         "id": "ChoreographerTimestampsOperation",
         "configuration": {
-          "frame_limit": 240
+          "first_frame_id": 10,
+          "last_frame_id": 610
         }
       },
       "host": "GLSurfaceViewHostActivity",
