@@ -70,6 +70,11 @@ public class ExternalProtoCompiler {
     byte[] result = Files.toByteArray(tempOutFile);
     tempOutFile.delete();
 
+    if (result.length == 0) {
+      throw new CompilationException(
+          String.format("Unable to run protoc (no result returned). Verify the path to the protoc binary."));
+    }
+
     try {
       FileDescriptorSet fileSet = FileDescriptorSet.parseFrom(result);
       if (outFile.isPresent()) {
