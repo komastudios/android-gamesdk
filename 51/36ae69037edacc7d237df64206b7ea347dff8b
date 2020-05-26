@@ -1,0 +1,9 @@
+Open-Source-Licensing+1: Lint 🤖 <android-build-prod-ayeaye@system.gserviceaccount.com>
+Presubmit-Ready+1: Treehugger Robot <treehugger-gerrit@google.com>
+Lint+1: Lint 🤖 <android-build-prod-ayeaye@system.gserviceaccount.com>
+Code-Review+2: Victor Repetskyi <vrepets@google.com>
+Submitted-by: Florian Rival <florianrival@google.com>
+Submitted-at: Tue, 26 May 2020 14:44:51 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1314320
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
