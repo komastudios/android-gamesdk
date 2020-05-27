@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "59094b5d_de91d728",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/System.Gpu.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-05-27T17:24:36Z",
+      "side": 1,
+      "message": "👍(S/R)",
+      "range": {
+        "startLine": 58,
+        "startChar": 0,
+        "endLine": 96,
+        "endChar": 3
+      },
+      "revId": "8f9516e59bfbb4093d9b9f2292a062e8b9fcac70",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "153da3ac_a3132879",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/Texture.hpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-05-27T17:24:36Z",
+      "side": 1,
+      "message": "Is there a reason to not just standardize on upper or lower case? It seems weird to have it be an option. If the reason is that some other component expects uppercase or some specific formatting, I feel like there should be a specific API to get that specifically formatted string.",
+      "range": {
+        "startLine": 37,
+        "startChar": 44,
+        "endLine": 37,
+        "endChar": 71
+      },
+      "revId": "8f9516e59bfbb4093d9b9f2292a062e8b9fcac70",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "78795257_682d61e6",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/texture/Png.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-05-27T17:24:36Z",
+      "side": 1,
+      "message": "Seems like a good use of a unique_ptr...",
+      "range": {
+        "startLine": 64,
+        "startChar": 46,
+        "endLine": 65,
+        "endChar": 28
+      },
+      "revId": "8f9516e59bfbb4093d9b9f2292a062e8b9fcac70",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}

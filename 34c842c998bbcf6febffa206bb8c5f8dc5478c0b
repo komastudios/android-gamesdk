@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8a262dd4_729f18ae",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/gamesdk/gamecert/operationrunner/util/SystemHelpers.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-05-27T17:24:36Z",
+      "side": 0,
+      "message": "Good riddance! I killed this a while back on a private branch while developing the \"infinite runner\" but your approach with dedicated framework for decoders is excellent. (S/R)",
+      "range": {
+        "startLine": 111,
+        "startChar": 3,
+        "endLine": 155,
+        "endChar": 5
+      },
+      "revId": "34c842c998bbcf6febffa206bb8c5f8dc5478c0b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
