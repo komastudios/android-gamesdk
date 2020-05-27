@@ -172,13 +172,6 @@ void WriteDatum(report_writers::Struct writer, const datum &event) {
       ADD_DATUM_MEMBER(writer, event, size_at_rest);
       ADD_DATUM_MEMBER(writer, event, size_in_memory);
       ADD_DATUM_MEMBER(writer, event, loading_time);
-
-      Log::I(TAG,
-             "%s: %.1f KB at rest; %.1f KB in memory; decoded from storage to memory in %d ms",
-             event.texture.name.c_str(),
-             event.size_at_rest / 1000.0f,
-             event.size_in_memory / 1000.0f,
-             event.loading_time);
     }
       break;
 
@@ -188,8 +181,12 @@ void WriteDatum(report_writers::Struct writer, const datum &event) {
       ADD_DATUM_MEMBER(writer, event, gpu_trx_time);
 
       Log::I(TAG,
-             "%s: transferred from CPU to GPU in %d ms",
+             "%s: %.1f KB at rest; %.1f KB in memory; "
+             "%d ms from storage to CPU; %d ms from CPU to GPU",
              event.texture.name.c_str(),
+             event.size_at_rest / 1000.0f,
+             event.size_in_memory / 1000.0f,
+             event.loading_time,
              event.gpu_trx_time);
     }
       break;
@@ -283,7 +280,7 @@ class TextureLoadingGLES3Operation : public BaseGLES3Operation {
  private:
   inline void PushTextureToSlideshow(Texture *const texture) {
     _slideshow_textures.emplace_back(texture);
-    Log::D(TAG, "%s queued to slideshow", ToString(*texture).c_str());
+    Log::D(TAG, "%s queued to slideshow", texture->Str().c_str());
   }
 
   template<typename T>
@@ -307,7 +304,7 @@ class TextureLoadingGLES3Operation : public BaseGLES3Operation {
     PushTextureToSlideshow(texture);
 
     std::string filename_stem{texture->GetFilenameStem()};
-    filename_stem.append("_").append(ToString(texture->GetChannels(), false));
+    filename_stem.append("_").append(ToString(texture->GetChannels()));
 
     static const auto astc_supported{
         ancer::glh::IsExtensionSupported("GL_KHR_texture_compression_astc_ldr")};

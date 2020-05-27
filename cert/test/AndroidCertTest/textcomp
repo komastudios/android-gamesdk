@@ -56,19 +56,19 @@ show_usage() {
     echo "- MyCompressedTextures"
     echo "    +- texture1"
     echo "    |    +- texture1.jpg"
-    echo "    |    +- texture1_rgb_2bpp.astc"
-    echo "    |    +- texture1_rgb_2bpp.astc.gzip"
-    echo "    |    +- texture1_rgb_2bpp.astc.lz4"
+    echo "    |    +- texture1_RGB_2bpp.astc"
+    echo "    |    +- texture1_RGB_2bpp.astc.gzip"
+    echo "    |    +- texture1_RGB_2bpp.astc.lz4"
     echo "    |    +- texture1.png"
-    echo "    |    +- texture1_rgba_2bpp.astc"
-    echo "    |    +- texture1_rgba_2bpp.astc.gzip"
-    echo "    |    +- texture1_rgba_2bpp.astc.lz4"
+    echo "    |    +- texture1_RGBA_2bpp.astc"
+    echo "    |    +- texture1_RGBA_2bpp.astc.gzip"
+    echo "    |    +- texture1_RGBA_2bpp.astc.lz4"
     echo "    |"
     echo "    +- texture2"
     echo "         +- texture2.jpg"
-    echo "         +- texture2_rgb_2bpp.astc"
-    echo "         +- texture2_rgb_2bpp.astc.gzip"
-    echo "         +- texture2_rgb_2bpp.astc.lz4"
+    echo "         +- texture2_RGB_2bpp.astc"
+    echo "         +- texture2_RGB_2bpp.astc.gzip"
+    echo "         +- texture2_RGB_2bpp.astc.lz4"
     echo
 }
 
@@ -283,7 +283,7 @@ while read -rd '' INPUT_FILE; do
         FAMILY_DIR=${OUTPUT_DIR}/${INPUT_STEM}
         make_dir_safe "${FAMILY_DIR}"
 
-        if [[ "$EXTENSION" == "png" ]]; then CHANNELS="rgba"; else CHANNELS="rgb"; fi
+        if [[ "$EXTENSION" == "png" ]]; then CHANNELS="RGBA"; else CHANNELS="RGB"; fi
 
         log "Starting ${ACTION} ${INPUT_FILE}..."
         cp -n "${INPUT_FILE}" "${FAMILY_DIR}"
