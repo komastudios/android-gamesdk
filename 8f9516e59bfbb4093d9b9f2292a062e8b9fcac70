@@ -151,6 +151,24 @@
       "revId": "8f9516e59bfbb4093d9b9f2292a062e8b9fcac70",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "95ec1723_9f28bf95",
+        "filename": "cert/test/reporting/lib/graphers/texture_formats_suite_handler.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-05-27T20:05:04Z",
+      "side": 1,
+      "message": "Sorry my question wasn\u0027t more clear, I meant that \"20\" isn\u0027t a power of 2 (like \"8\", \"16\", \"32\", \"64\"). I wasn\u0027t thinking clearly, this all makes perfect sense now. Thanks 😊",
+      "parentUuid": "db220b89_e6360d32",
+      "revId": "8f9516e59bfbb4093d9b9f2292a062e8b9fcac70",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
