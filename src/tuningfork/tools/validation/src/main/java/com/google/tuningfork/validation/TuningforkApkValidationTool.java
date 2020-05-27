@@ -42,7 +42,7 @@ final class TuningforkApkValidationTool {
     @Parameter(
         names = {"--errorOnExit"},
         description = "Exit with error code if there is an error")
-    public Boolean failOnError;
+    public Boolean failOnError = false;
   }
 
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
