@@ -645,8 +645,8 @@ class MarchingCubesGLES3Operation : public BaseGLES3Operation {
     }
 
     bool Build(const std::string& vert_file, const std::string& frag_file) {
-      auto vert_src = LoadText(vert_file.c_str());
-      auto frag_src = LoadText(frag_file.c_str());
+      auto vert_src = LoadText(vert_file);
+      auto frag_src = LoadText(frag_file);
       _program = glh::CreateProgramSrc(vert_src.c_str(), frag_src.c_str());
       if (_program == 0) {
         return false;

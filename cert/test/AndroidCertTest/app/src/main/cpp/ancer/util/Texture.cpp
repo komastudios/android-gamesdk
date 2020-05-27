@@ -19,6 +19,7 @@
 #include <sstream>
 
 #include <ancer/System.Asset.hpp>
+#include <ancer/util/Gzip.hpp>
 #include <ancer/util/Log.hpp>
 
 using namespace ancer;
@@ -29,12 +30,8 @@ Log::Tag TAG{"Texture"};
 
 //--------------------------------------------------------------------------------------------------
 
-std::string ancer::ToString(const TextureChannels channels, const bool uppercase) {
-  if (channels == TextureChannels::RGB) {
-    return uppercase ? "RGB" : "rgb";
-  }
-
-  return uppercase ? "RGBA" : "rgba";
+std::string ancer::ToString(const TextureChannels channels) {
+  return channels == TextureChannels::RGB ? "RGB" : "RGBA";
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -54,10 +51,6 @@ Texture::Texture(std::string relative_path,
     _mem_size{0},
     _file_size{0},
     _load_time_in_millis{} {}
-
-Texture::~Texture() {
-  _ReleaseBitmapData();
-}
 
 const std::string &Texture::GetRelativePath() const {
   return _relative_path;
@@ -120,22 +113,15 @@ void Texture::ApplyBitmap(const GLuint texture_id) {
   _ApplyBitmap();
   _gpu_trx_time_in_millis = duration_cast<Milliseconds>(SteadyClock::now() - start_time);
 
-  _ReleaseBitmapData();
-}
-
-void Texture::_ReleaseBitmapData() {
   _bitmap_data = nullptr;
-  _mem_size = 0;
 }
 
-//--------------------------------------------------------------------------------------------------
-
-std::string ancer::ToString(const Texture &texture) {
-  std::string full_path(texture.GetRelativePath());
+std::string Texture::Str() const {
+  std::string full_path(GetRelativePath());
   if (not full_path.empty()) {
     full_path.append("/");
   }
-  full_path.append(texture.GetFilenameStem()).append(".").append(texture.GetFilenameExtension());
+  full_path.append(GetFilenameStem()).append(".").append(GetFilenameExtension());
 
   return full_path;
 }
@@ -155,29 +141,6 @@ CompressedTexture::CompressedTexture(
     : Texture(relative_path, filename_stem, channels),
       _post_compression_format{post_compression_format},
       _image_size{0} {
-}
-
-void CompressedTexture::_Load() {
-  if (Asset asset{ToString(*this), AASSET_MODE_STREAMING}) {
-    _file_size = static_cast<size_t>(asset.GetLength());
-    switch (_post_compression_format) {
-      case TexturePostCompressionFormat::NONE: {
-        _bitmap_data = std::unique_ptr<u_char>(new u_char[_file_size]);
-        _mem_size = _file_size;
-
-        if (asset.Read(_bitmap_data.get(), _file_size) == _file_size) {
-          _OnBitmapLoaded();
-        } else {
-          Log::E(TAG, "%s reading error", ToString(*this).c_str());
-        }
-      }
-        break;
-
-      default:
-        // TODO(dagum): implement inflate, lz4 decompression
-        break;
-    }
-  }
 }
 
 TexturePostCompressionFormat CompressedTexture::GetPostCompressionFormat() const {
@@ -204,5 +167,38 @@ std::string CompressedTexture::GetFormat() const {
                   << " (" << _GetInnerFormat() << ')';
 
     return string_stream.str();
+  }
+}
+
+void CompressedTexture::_Load() {
+  switch (_post_compression_format) {
+    case TexturePostCompressionFormat::NONE: {
+      if (Asset asset{Str(), AASSET_MODE_STREAMING}) {
+        _file_size = static_cast<size_t>(asset.GetLength());
+        u_char *bitmap_data = new u_char[_file_size];
+        _bitmap_data = std::unique_ptr<u_char>(bitmap_data);
+        _mem_size = _file_size;
+
+        if (asset.Read(bitmap_data, _file_size) == _file_size) {
+          _OnBitmapLoaded();
+        } else {
+          Log::E(TAG, "%s reading error", Str().c_str());
+        }
+      }
+    }
+      break;
+
+    case TexturePostCompressionFormat::GZIP: {
+      if ((_bitmap_data = gzip::InflateAsset(Str(), &_file_size, &_mem_size))) {
+        _OnBitmapLoaded();
+      } else {
+        Log::E(TAG, "%s inflate error", Str().c_str());
+      }
+    }
+      break;
+
+    case TexturePostCompressionFormat::LZ4:
+      // TODO(dagum): implement lz4 decompression
+      break;
   }
 }

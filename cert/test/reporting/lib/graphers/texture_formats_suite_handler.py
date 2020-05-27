@@ -15,6 +15,7 @@
 #
 """P3.2 Texture Loading Strategies."""
 
+import re
 from typing import Dict, List, Set
 
 import matplotlib.pyplot as plt
@@ -29,16 +30,57 @@ import lib.items as items
 
 class TextureFormatsSuiteSummarizer(SuiteSummarizer):
     """Suite summarizer for texture format comparison."""
+
     @classmethod
     def default_handler(cls) -> SuiteHandler:
         return TextureFormatSuiteHandler
 
 
-class ChannelCompositionStats:
-    """Texture format stats for a particular channel composition."""
+class StatsUtils:
+    """TODO(dagum): document"""
+    JPG = "JPG"
+    PNG = "PNG"
 
-    def __init__(self, channel_composition: str):
+    RGB = "RGB"
+    RGBA = "RGBA"
+
+    DEFLATED = "Deflated"
+    LZ4 = "LZ4"
+
+    @classmethod
+    def is_uncompressed(cls, which_format: str) -> bool:
+        """TODO(dagum): document"""
+        return cls.JPG == which_format or cls.PNG == which_format
+
+    @classmethod
+    def is_post_compressed(cls, which_format: str) -> bool:
+        """TODO(dagum): document"""
+        return cls.DEFLATED == which_format or cls.LZ4 == which_format
+
+    @staticmethod
+    def decompose_format(texture_format: str) -> (str, str):
+        """Given a texture format, it retrieves its original format and,
+        separately, its post-compression.
+        So, if input is "ASTC 2BPP", output is "ASTC 2BPP", "".
+        If "Deflated (ASTC 2BPP)", then "ASTC 2BPP", "Deflated".
+        """
+        parts = re.match(r"^(([^\ ]+)\ \((.*)\))|(.+)$", texture_format)
+        return (parts[4], "") if parts[4] else (parts[3], parts[2])
+
+    @staticmethod
+    def key(channels: str, post_compression: str = "") -> str:
+        """Composes an index key from channels and post_compression."""
+        return f"{channels}-{post_compression}" if post_compression \
+            else channels
+
+
+class ChannelCompositionStats:
+    """Texture format stats for a particular channel composition and
+    compression."""
+
+    def __init__(self, channel_composition: str, post_compression: str):
         self.channel_composition = channel_composition
+        self.post_compression = post_compression
         self.__disk_size_per_format: Dict[str, int] = {}
         self.__mem_size_per_format: Dict[str, int] = {}
         self.__decode_time_per_format: Dict[str, int] = {}
@@ -58,20 +100,18 @@ class ChannelCompositionStats:
     def __apply_load_data_points(self, texture_format: str, datum: Datum):
         """Incorporates size and load time info to stats."""
         if texture_format not in self.missing_formats:
-            accumulate(datum.get_custom_field("size_at_rest"),
-                       texture_format, self.__disk_size_per_format, 1.0/2**20)
-            accumulate(datum.get_custom_field("size_in_memory"),
-                       texture_format, self.__mem_size_per_format, 1.0/2**20)
-            accumulate(datum.get_custom_field("loading_time"),
-                       texture_format, self.__decode_time_per_format,
-                       1.0/10**3)
+            accumulate(datum.get_custom_field("size_at_rest"), texture_format,
+                       self.__disk_size_per_format, 1.0 / 2**20)
+            accumulate(datum.get_custom_field("size_in_memory"), texture_format,
+                       self.__mem_size_per_format, 1.0 / 2**20)
+            accumulate(datum.get_custom_field("loading_time"), texture_format,
+                       self.__decode_time_per_format, 1.0 / 10**3)
 
     def __apply_gpu_transfer(self, texture_format: str, datum: Datum):
         """Incorporates CPU to GPU transfer info to stats."""
         if texture_format not in self.missing_formats:
-            accumulate(datum.get_custom_field("gpu_trx_time"),
-                       texture_format, self.__gpu_trx_time_per_format,
-                       1.0/10**3)
+            accumulate(datum.get_custom_field("gpu_trx_time"), texture_format,
+                       self.__gpu_trx_time_per_format, 1.0 / 10**3)
 
     def __apply_format_failure(self, texture_format: str, datum: Datum):
         """Incorporates info about missing, incomplete texture formats. These
@@ -94,10 +134,16 @@ class ChannelCompositionStats:
         x_limit = max(mem_sizes) * 1.1
 
         axes.set_title("Total size (in Mb)")
-        axes.barh(y - height/2, disk_sizes, height,
-                  label="At rest", color="deepskyblue")
-        axes.barh(y + height/2, mem_sizes, height,
-                  label="In memory", color="sandybrown")
+        axes.barh(y - height / 2,
+                  disk_sizes,
+                  height,
+                  label="At rest",
+                  color="deepskyblue")
+        axes.barh(y + height / 2,
+                  mem_sizes,
+                  height,
+                  label="In memory",
+                  color="sandybrown")
         axes.legend()
 
         axes.set_yticks(y)
@@ -130,8 +176,12 @@ class ChannelCompositionStats:
         for i, (colname, color) in enumerate(zip(time_names, time_colors)):
             widths = data[:, i]
             starts = data_cum[:, i] - widths
-            axes.barh(formats, widths, left=starts, height=0.8,
-                      label=colname, color=color)
+            axes.barh(formats,
+                      widths,
+                      left=starts,
+                      height=0.8,
+                      label=colname,
+                      color=color)
 
         axes.legend(loc='best')
 
@@ -147,35 +197,39 @@ class ChannelCompositionStats:
         formats = list(self.__disk_size_per_format.keys())
         uncompressed_format = formats[0]
 
-        header = [f"Format vs. {uncompressed_format}", "Size at Rest",
-                  "Size in Memory", "Storage to CPU", "CPU to GPU"]
+        header = [
+            f"Format vs. {uncompressed_format}", "Size at Rest",
+            "Size in Memory", "Storage to CPU", "CPU to GPU"
+        ]
         rows = []
 
         def percentual_ratio(values, compressed, uncompressed):
-            return "{:.1%}".format(1.0 *
-                                   values[compressed] / values[uncompressed])
+            return "{:.1%}".format(1.0 * values[compressed] /
+                                   values[uncompressed])
 
         for compressed_format in formats[1:]:
             row = [compressed_format]
-            row.append(percentual_ratio(
-                self.__disk_size_per_format,
-                compressed_format, uncompressed_format))
-            row.append(percentual_ratio(
-                self.__mem_size_per_format,
-                compressed_format, uncompressed_format))
-            row.append(percentual_ratio(
-                self.__decode_time_per_format,
-                compressed_format, uncompressed_format))
-            row.append(percentual_ratio(
-                self.__gpu_trx_time_per_format,
-                compressed_format, uncompressed_format))
+            row.append(
+                percentual_ratio(self.__disk_size_per_format, compressed_format,
+                                 uncompressed_format))
+            row.append(
+                percentual_ratio(self.__mem_size_per_format, compressed_format,
+                                 uncompressed_format))
+            row.append(
+                percentual_ratio(self.__decode_time_per_format,
+                                 compressed_format, uncompressed_format))
+            row.append(
+                percentual_ratio(self.__gpu_trx_time_per_format,
+                                 compressed_format, uncompressed_format))
             rows.append(row)
 
         return items.Table(header, rows)
 
 
-def accumulate(value: int, texture_format: str,
-               accumulators: Dict[str, int], scalar: float = 1.0):
+def accumulate(value: int,
+               texture_format: str,
+               accumulators: Dict[str, int],
+               scalar: float = 1.0):
     """General accumulator function to be used to accumulate all data
     points."""
     accumulator = accumulators.get(texture_format, 0)
@@ -203,7 +257,7 @@ class TextureFormatSuiteHandler(SuiteHandler):
 
     @classmethod
     def can_handle_datum(cls, datum: Datum):
-        return "Texture Loading" in datum.suite_id
+        return "Texture Formats" in datum.suite_id
 
     def __pump_datum_to_stats(self, datum: Datum):
         """Pushes the datum entry to the overall stats."""
@@ -212,29 +266,56 @@ class TextureFormatSuiteHandler(SuiteHandler):
                 or event_type == "TEXTURE_LOAD_FAILURE" \
                 or event_type == "TEXTURE_GPU_TRANSFER":
             channels = datum.get_custom_field("texture.channels")
-            composition_stats = self.__get_composition_stats(channels)
+            texture_format, post_compression = StatsUtils.decompose_format(
+                datum.get_custom_field("texture.format"))
+
+            composition_stats = self.__get_composition_stats(
+                channels, post_compression)
             composition_stats.apply_data_points(event_type, datum)
 
-    def __get_composition_stats(self, channels: str) \
+            if not StatsUtils.is_post_compressed(post_compression) \
+                and not StatsUtils.is_uncompressed(texture_format):
+                composition_stats = self.__get_composition_stats(
+                    channels, StatsUtils.DEFLATED)
+                composition_stats.apply_data_points(event_type, datum)
+
+                composition_stats = self.__get_composition_stats(
+                    channels, StatsUtils.LZ4)
+                composition_stats.apply_data_points(event_type, datum)
+
+
+    def __get_composition_stats(self, channels: str, post_compression: str) \
             -> ChannelCompositionStats:
         """Retrieves stats for a channel composition. If it doesn't exist yet,
         it creates these."""
-        composition_stats = self.__stats_per_composition.get(channels)
+        key = StatsUtils.key(channels, post_compression)
+        composition_stats = self.__stats_per_composition.get(key)
         if composition_stats is None:
-            composition_stats = ChannelCompositionStats(channels)
-            self.__stats_per_composition[channels] = composition_stats
+            composition_stats = ChannelCompositionStats(channels,
+                                                        post_compression)
+            self.__stats_per_composition[key] = composition_stats
 
         return composition_stats
 
     def render(self, ctx: SummaryContext) -> List[items.Item]:
         report_items = []
 
-        report_items.append(self.__produce_graph(ctx))
+        report_items.extend(self.__render_channel_analysis(StatsUtils.RGB, ctx))
+        report_items.extend(self.__render_channel_analysis(
+            StatsUtils.RGBA, ctx))
 
-        for channel in self.__stats_per_composition.values():
-            report_items.append(channel.produce_comparative_table())
+        ##
+        # report_items.append(self.__produce_graph(ctx))
+
+        # for channel in self.__stats_per_composition.values():
+        #     report_items.append(channel.produce_comparative_table())
 
         return report_items
+
+    def __render_channel_analysis(self, channel: str, ctx: SummaryContext) \
+        -> List[items.Item]:
+        """ TODO(dagum): document"""
+        return []
 
     def __produce_graph(self, ctx: SummaryContext) -> items.Image:
         """Creates charts that show the different texture format performances
@@ -251,8 +332,8 @@ class TextureFormatSuiteHandler(SuiteHandler):
         row = 0
 
         def create_axes(column):
-            axes = axislines.Subplot(
-                fig, 3, total_columns, 1 + row * total_columns + column)
+            axes = axislines.Subplot(fig, 3, total_columns,
+                                     1 + row * total_columns + column)
             fig.add_subplot(axes)
             return axes
 

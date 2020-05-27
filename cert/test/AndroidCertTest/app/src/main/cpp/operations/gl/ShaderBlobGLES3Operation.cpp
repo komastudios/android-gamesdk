@@ -198,7 +198,7 @@ std::vector<std::string> GenerateShaderVariants(const std::string& src_path,
                                                 const std::string& identifier) {
   std::vector<std::string> paths;
 
-  const std::string shader_src = LoadText(src_path.c_str());
+  const std::string shader_src = LoadText(src_path);
 
   for (size_t i = 1; i < num_variants + 1; ++i) {
     std::string dst_path = dst_dir;
@@ -300,7 +300,7 @@ class TestIteration {
 
   void CompilePrograms(const std::string& vert_path,
                        const std::vector<std::string>& frag_paths) {
-    const std::string vert_source = LoadText(vert_path.c_str());
+    const std::string vert_source = LoadText(vert_path);
 
     for (const auto& frag_path : frag_paths) {
       const std::string frag_source = LoadTextFromFiles(frag_path.c_str());
@@ -499,7 +499,7 @@ class ShaderBlobGLES3Operation : public BaseGLES3Operation {
     // is elsewhere. Thus, even when creating a shader for debug drawing,
     // we need to place it in the same files directory.
 
-    const std::string src = LoadText(_frag_path.c_str());
+    const std::string src = LoadText(_frag_path);
 
     const std::string dst_path =
         InternalDataPath() + "/" + GetFilename(_frag_path);
