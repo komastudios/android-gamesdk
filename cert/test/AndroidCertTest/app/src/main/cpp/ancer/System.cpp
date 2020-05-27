@@ -15,6 +15,7 @@
  */
 
 #include "System.hpp"
+#include "System.Asset.hpp"
 
 #include <ancer/util/Error.hpp>
 #include <ancer/util/JNIHelpers.hpp>
@@ -70,40 +71,10 @@ std::string ancer::ObbPath() {
 
 //==============================================================================
 
-// TODO(dagum): this can and should be ported from its current Java/JNI implementation to full C++
-//              by using System.Asset.hpp type Asset.
-std::string ancer::LoadText(const char *file_name) {
-  std::string text;
-  jni::SafeJNICall(
-      [file_name, &text](jni::LocalJNIEnv *env) {
-        jstring name = env->NewStringUTF(file_name);
-        jobject activity = env->NewLocalRef(jni::GetActivityWeakGlobalRef());
-        jclass activity_class = env->GetObjectClass(activity);
-
-        jmethodID get_asset_helpers_mid = env->GetMethodID(
-            activity_class, "getSystemHelpers",
-            "()Lcom/google/gamesdk/gamecert/operationrunner/util/SystemHelpers;"
-        );
-        jobject asset_helpers_instance =
-            env->CallObjectMethod(activity, get_asset_helpers_mid);
-        jclass asset_helpers_class =
-            env->GetObjectClass(asset_helpers_instance);
-
-        jmethodID load_text_mid = env->GetMethodID(
-            asset_helpers_class, "loadText",
-            "(Ljava/lang/String;)Ljava/lang/String;");
-        auto result_j_string = (jstring) env->CallObjectMethod(
-            asset_helpers_instance, load_text_mid,
-            name);
-
-        if (result_j_string) {
-          const char *result_utf_ptr =
-              env->GetStringUTFChars(result_j_string, nullptr);
-          text = std::string(result_utf_ptr);
-          env->ReleaseStringUTFChars(result_j_string, result_utf_ptr);
-        }
-      });
-  return text;
+std::string ancer::LoadText(const std::string &file_name) {
+  Asset asset{file_name, AASSET_MODE_BUFFER};
+  return std::string{static_cast<const char *>(asset.GetBuffer()),
+                     static_cast<size_t>(asset.GetLength())};
 }
 
 //==============================================================================

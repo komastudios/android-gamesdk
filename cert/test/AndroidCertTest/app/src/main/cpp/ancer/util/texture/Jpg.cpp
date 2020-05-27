@@ -102,9 +102,7 @@ std::string JpgTexture::GetFormat() const {
 void JpgTexture::_Load() {
   static const int kRequiredComponents{4};
 
-  ::JpegDecoderAssetStream asset_stream{ToString(*this)};
-
-  if (asset_stream) {
+  if (auto asset_stream = ::JpegDecoderAssetStream{Str()}) {
     _file_size = asset_stream.size();
     int width = 0, height = 0, actual_comps = 0;
     uint8_t *bitmap_data = jpgd::decompress_jpeg_image_from_stream(

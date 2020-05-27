@@ -37,7 +37,7 @@ Log::Tag TAG{"SystemGpu"};
 
 //--------------------------------------------------------------------------------------------------
 
-GLuint ancer::CreateProgram(const char *vtx_file_name, const char *frg_file_name) {
+GLuint ancer::CreateProgram(const std::string &vtx_file_name, const std::string &frg_file_name) {
   std::string vtx_src = LoadText(vtx_file_name);
   std::string frag_src = LoadText(frg_file_name);
   if (!vtx_src.empty() && !frag_src.empty()) {

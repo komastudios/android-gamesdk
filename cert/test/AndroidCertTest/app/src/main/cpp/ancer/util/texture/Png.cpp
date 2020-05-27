@@ -61,22 +61,22 @@ class LodePngAssetDecoder {
    * @param p_height pointer to the place where the PNG height is to be left.
    * @param p_encoded_size pointer to the place where the PNG size at rest is to be left.
    * @param p_decoded_size pointer to the place where the PNG size in memory is to be left.
-   * @return a pointer to the decoded bitmap. Its deallocation is this method invoker's
-   *         responsibility.
+   * @return a unique pointer to the decoded bitmap.
    */
-  u_char *Decode(int32_t *p_width,
-                 int32_t *p_height,
-                 size_t *p_encoded_size,
-                 size_t *p_decoded_size) {
+  std::unique_ptr<u_char> Decode(int32_t *const p_width,
+                                 int32_t *const p_height,
+                                 size_t *const p_encoded_size,
+                                 size_t *const p_decoded_size) {
     u_char *p_bitmap{nullptr};
 
     *p_encoded_size = static_cast<size_t>(_asset.GetLength());
-    auto encoded_data = std::unique_ptr<u_char>(new u_char[*p_encoded_size]);
+    u_char *encoded_data = new u_char[*p_encoded_size];
+    auto p_encoded_data = std::unique_ptr<u_char>(encoded_data);
 
-    if (_asset.Read(encoded_data.get(), *p_encoded_size) == *p_encoded_size) {
+    if (_asset.Read(encoded_data, *p_encoded_size) == *p_encoded_size) {
       u_int w, h;
       if (auto error =
-          lodepng_decode(&p_bitmap, &w, &h, &_state, encoded_data.get(), *p_encoded_size)) {
+          lodepng_decode(&p_bitmap, &w, &h, &_state, encoded_data, *p_encoded_size)) {
         Log::E(TAG, "Error decoding asset %s: %s", _asset_path.c_str(), lodepng_error_text(error));
       } else {
         *p_width = w;
@@ -87,7 +87,7 @@ class LodePngAssetDecoder {
       Log::E(TAG, "Reading error in asset %s", _asset_path.c_str());
     }
 
-    return p_bitmap;
+    return std::unique_ptr<u_char>(p_bitmap);
   }
 
   explicit operator bool() const {
@@ -117,7 +117,7 @@ std::string PngTexture::GetFormat() const {
 }
 
 void PngTexture::_Load() {
-  if (auto decoder = LodePngAssetDecoder{ToString(*this)}) {
+  if (auto decoder = ::LodePngAssetDecoder{Str()}) {
     _bitmap_data = std::unique_ptr<u_char>(
         decoder.Decode(&_width, &_height, &_file_size, &_mem_size));
     _has_alpha = true;

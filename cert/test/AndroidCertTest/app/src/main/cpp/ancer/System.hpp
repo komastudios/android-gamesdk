@@ -47,7 +47,7 @@ void DestroyRenderer();
 /**
  * Load the text from a file in the application's assets/ folder
  */
-std::string LoadText(const char *file_name);
+std::string LoadText(const std::string &file_name);
 
 class StatusMessageManager;
 
