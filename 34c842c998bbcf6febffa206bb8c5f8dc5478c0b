@@ -22,6 +22,30 @@
       "revId": "34c842c998bbcf6febffa206bb8c5f8dc5478c0b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9849f22c_4c70234e",
+        "filename": "cert/test/AndroidCertTest/app/src/main/java/com/google/gamesdk/gamecert/operationrunner/util/SystemHelpers.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-05-27T18:32:15Z",
+      "side": 0,
+      "message": "I have in the works a similar one for ancer::LoadText() which we use to load shaders. For some reason, though, the OpenGL ES compiler crashes. I believe that some character encoding fails when read from C++ and not when read from Java, then convert to native via JNI.\nI left that to the end as it\u0027s non-urgent, but it has its days counted.",
+      "parentUuid": "8a262dd4_729f18ae",
+      "range": {
+        "startLine": 111,
+        "startChar": 3,
+        "endLine": 155,
+        "endChar": 5
+      },
+      "revId": "34c842c998bbcf6febffa206bb8c5f8dc5478c0b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }

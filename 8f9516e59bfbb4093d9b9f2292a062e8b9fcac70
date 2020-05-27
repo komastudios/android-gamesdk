@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "0c6678ea_7c6b94ac",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/Texture.hpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-05-27T18:32:15Z",
+      "side": 1,
+      "message": "Good point, Shamyl. Was not an API compatibility issue, actually. I\u0027ll revise this in the fourth CL PROMISED!!",
+      "parentUuid": "153da3ac_a3132879",
+      "range": {
+        "startLine": 37,
+        "startChar": 44,
+        "endLine": 37,
+        "endChar": 71
+      },
+      "revId": "8f9516e59bfbb4093d9b9f2292a062e8b9fcac70",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "78795257_682d61e6",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/texture/Png.cpp",
         "patchSetId": 5
@@ -68,6 +92,30 @@
       "revId": "8f9516e59bfbb4093d9b9f2292a062e8b9fcac70",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e020acfe_e4894479",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/texture/Png.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-05-27T18:32:15Z",
+      "side": 1,
+      "message": "Agree. Let\u0027s do the following: I\u0027m working on the part IV (includes Gzip and other goodies). I want to change it here but should change it in other places as well to keep consistency across formats.\nI\u0027ll flip this into std::unique_ptr in the part IV wave.",
+      "parentUuid": "78795257_682d61e6",
+      "range": {
+        "startLine": 64,
+        "startChar": 46,
+        "endLine": 65,
+        "endChar": 28
+      },
+      "revId": "8f9516e59bfbb4093d9b9f2292a062e8b9fcac70",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
