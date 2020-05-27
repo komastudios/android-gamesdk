@@ -18,7 +18,7 @@
 
 #include <GLES/gl.h>
 
-#include <ancer/System.hpp>
+#include <ancer/System.Gpu.hpp>
 #include <ancer/util/Error.hpp>
 #include <ancer/util/Log.hpp>
 

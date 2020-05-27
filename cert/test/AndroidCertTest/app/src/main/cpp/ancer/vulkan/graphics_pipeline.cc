@@ -248,6 +248,31 @@ Builder &Builder::Layout(VkPipelineLayout pipeline_layout) {
   return *this;
 }
 
+#if 0
+Builder &Builder::Layout(Vulkan &vk,
+                    std::initializer_list<ResourcesLayout> resources_layouts) {
+  VkDescriptorSetLayout layouts[resources_layouts.size()];
+  for(size_t i = 0; i < resources_layouts.size(); ++i) {
+    VK_RETURN_FAIL(vk.GetResourcesStore().Resolve(resources_layouts[i],
+                                                  layouts[i]));
+  }
+  VkPipelineLayout pipeline_layout;
+  VkPipelineLayoutCreateInfo create_info = {
+    /* sType                  */ VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+    /* pNext                  */ nullptr,
+    /* flags                  */ 0,
+    /* setLayoutCount         */ static_cast<uint32_t>(
+                                                     resources_layouts.size()),
+    /* pSetLayouts            */ layouts,
+    /* pushConstantRangeCount */ 0,
+    /* pPushConstantRanges    */ nullptr
+  };
+  VK_RETURN_FAIL(vk->createPipelineLayout(vk->device, &create_info, nullptr,
+                                          &pipeline_layout));
+  return Layout(pipeline_layout);
+}
+#endif
+
 Builder &Builder::RenderPass(const class RenderPass &render_pass,
                              uint32_t subpass) {
   _create_info.renderPass = render_pass.Handle();

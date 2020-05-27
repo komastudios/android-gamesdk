@@ -4,5 +4,5 @@ build:
 deployment:
   ftl:
     devices:
-      # - { model: "sawfish", version: 26 }
-      # - { model: "mlv1", version: 23 }
+      # - { codename: "sawfish", version: 26 }
+      # - { codename: "mlv1", version: 23 }

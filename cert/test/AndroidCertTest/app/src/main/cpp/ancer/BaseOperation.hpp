@@ -27,14 +27,14 @@
 #include <Trace.h>
 
 #include "Reporting.hpp"
-#include "System.hpp"
-#include "util/Error.hpp"
-#include "util/FpsCalculator.hpp"
-#include "util/GLHelpers.hpp"
-#include "util/Json.hpp"
-#include "util/Log.hpp"
-#include "util/Preprocessor.hpp"
-#include "util/Time.hpp"
+#include <ancer/System.Gpu.hpp>
+#include <ancer/util/Error.hpp>
+#include <ancer/util/FpsCalculator.hpp>
+#include <ancer/util/GLHelpers.hpp>
+#include <ancer/util/Json.hpp>
+#include <ancer/util/Log.hpp>
+#include <ancer/util/Preprocessor.hpp>
+#include <ancer/util/Time.hpp>
 
 
 #define ANCER_SCOPED_TRACE(desc) \

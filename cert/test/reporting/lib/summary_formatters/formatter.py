@@ -18,7 +18,8 @@
 
 from abc import ABC, abstractclassmethod, abstractmethod
 from pathlib import Path
-from typing import ContextManager, TypeVar, Union
+from typing import ContextManager, List, Optional, TypeVar
+import lib.format_items as fmt
 
 
 class SummaryFormatter(ABC):
@@ -47,48 +48,22 @@ class SummaryFormatter(ABC):
         raise NotImplementedError(
             "SummaryFormatter subclass must implement create_writer()")
 
-    @abstractmethod
-    def on_init(self, title: str, summary_utc: str) -> type(None):
-        """Writes formatted initial data (title, report time, etc.)
+    # --------------------------------------------------------------------------
+
+    def on_summary(self, title: str, date: str,
+                   items: List[fmt.Item]) -> type(None):
+        """Writes a formatted summary with title, date, and format items
 
         Args:
-            title: the summary title.
-            summary_utc: string containing the UTC at the time of this report.
+            title: the title to appear as an H1.
+            date: the date string to be printed under a title
+            items: a list of format items.
         """
-        raise NotImplementedError(
-            "SummaryFormatter subclass must implement on_init()")
-
-    @abstractmethod
-    def on_device(self, device_id: str, plot_path: Path,
-                  plot_path_relative: Path,
-                  summary: Union[str, type(None)]) -> type(None):
-        """Writes formatted results for a given device.
-
-        Args:
-            device_id: the device manufacturer, model and API level.
-            plot_path: a Path to the device graph for a given suite.
-            plot_path_relative: the same path, but relative to the summary
-                                being written.
-            summary: a string containing some description about the test run on
-                     the device, or None.
-        """
-        raise NotImplementedError(
-            "SummaryFormatter subclass must implement on_device()")
-
-    @abstractmethod
-    def on_cross_suite(self, plot_path: Path, plot_path_relative: Path,
-                       summary: Union[str, type(None)]) -> type(None):
-        """Writes a formatted cross suite summary to the report.
-
-        Args:
-            plot_path: a Path to the device graph for a given suite.
-            plot_path_relative: the same path, but relative to the summary
-                                being written.
-            summary: a string containing some description about the test run on
-                     the device, or None.
-        """
-        raise NotImplementedError(
-            "SummaryFormatter subclass must implement on_cross_suite()")
+        self.write_heading(fmt.Heading(title, 1))
+        self.write_text(fmt.Text(date))
+        self.write_items(items)
+        if not isinstance(items[-1], fmt.Separator):
+            self.write_separator()
 
     @abstractmethod
     def on_errors_available(self, title: str) -> type(None):
@@ -113,3 +88,52 @@ class SummaryFormatter(ABC):
 
     def on_finish(self) -> type(None):
         """(Optional) Writes formatted closing marks to the summary."""
+
+    # --------------------------------------------------------------------------
+
+    @abstractmethod
+    def write_separator(self):
+        """Writes a separator, which visually separates sections of a document,
+        such as by a horizontal line or page break. (The exact implementation is
+        dependent on the Formatter).
+        """
+        raise NotImplementedError(
+            "SummaryFormatter subclass must implement write_separator()")
+
+    @abstractmethod
+    def write_heading(self, heading: fmt.Heading):
+        """Writes a formatted Heading."""
+        raise NotImplementedError(
+            "SummaryFormatter subclass must implement write_heading()")
+
+    @abstractmethod
+    def write_text(self, text: fmt.Text):
+        """Writes a formatted Text item."""
+        raise NotImplementedError(
+            "SummaryFormatter subclass must implement write_text()")
+
+    @abstractmethod
+    def write_image(self, image: fmt.Image):
+        """Writes a formatted Image."""
+        raise NotImplementedError(
+            "SummaryFormatter subclass must implement write_image()")
+
+    @abstractmethod
+    def write_table(self, table: fmt.Table):
+        """Writes a formatted Table."""
+        raise NotImplementedError(
+            "SummaryFormatter subclass must implement write_table()")
+
+    def write_items(self, items: List[fmt.Item]):
+        """Writes all items in order."""
+        for item in items:
+            if isinstance(item, fmt.Separator):
+                self.write_separator()
+            elif isinstance(item, fmt.Text):
+                self.write_text(item)
+            elif isinstance(item, fmt.Heading):
+                self.write_heading(item)
+            elif isinstance(item, fmt.Image):
+                self.write_image(item)
+            elif isinstance(item, fmt.Table):
+                self.write_table(item)

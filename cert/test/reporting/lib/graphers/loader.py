@@ -13,30 +13,50 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-"""Provides factory function create_suite_handler which will "sniff"
-a Suite and vend the correct SuiteHandler implementation to process
-it and generate reports
+"""Provides factory function load_suite_summarizers which will scan a set of
+report files and vend the correct SuiteSummarizer implementation to process
+it and generate summaries.
 """
 
-from lib.report import Suite
+from copy import deepcopy
+from typing import List
+
+from lib.graphers.__init__ import SUMMARIZERS
+from lib.report import Report, Suite, load_report
+from lib.graphers.suite_handler import SuiteSummarizer
 
 # -----------------------------------------------------------------------------
 
-# import our renderer implementations
-from . import HANDLERS
-
-# -----------------------------------------------------------------------------
-
-
-def create_suite_handler(suite: Suite):
-    """Vend a SuiteHandler implementation which is suitable for given suite
-    Args:
-        suite: A suite of all data from a given test
-    Returns:
-        SuiteHandler implementatin which can render this data
+def load_suite_summarizers(report_files: List[str]) -> List[SuiteSummarizer]:
     """
-    for handler in HANDLERS:
-        if handler.can_handle_suite(suite):
-            return handler(suite)
+    Loads report files and determines the set of SuiteSummarizers that claim to
+    be able to handle the report data. SuiteSummarizers are initialized with the
+    report data, which they can then use to marshall their associated
+    SuiteHandlers. A SuiteSummarizer can synthesize results across all of its
+    SuiteHandlers, while each SuiteHandler considers a single report file (or
+    "Suite") in isolation.
 
-    return None
+    Args:
+        report_files: paths to report files.
+    Returns:
+        a list of initialized SuiteSummarizers.
+    """
+    # Load all reports
+    reports: List[Suite] = []
+    for report_file in report_files:
+        build_data, data = load_report(report_file)
+        reports.append(Report(build_data, data, report_file))
+
+    # Figure out which summarizers to load, initializing them with copies of
+    # the report data.
+    summarizers: List[SuiteSummarizer] = []
+    for summarizer_class in SUMMARIZERS:
+        report_copies = []
+        for report in reports:
+            if summarizer_class.can_handle_report(report):
+                report_copies.append(deepcopy(report))
+        if report_copies:
+            summarizer = summarizer_class(report_copies)
+            summarizers.append(summarizer)
+
+    return summarizers

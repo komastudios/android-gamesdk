@@ -417,6 +417,8 @@ struct LocalJNIEnv {
   virtual jlong GetDirectBufferCapacity(jobject buf) = 0;
 
   virtual jobjectRefType GetObjectRefType(jobject obj) = 0;
+
+  virtual JNIEnv *GetOriginalJNIEnv() = 0;
 };
 
 /**

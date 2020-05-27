@@ -28,7 +28,7 @@
  *   - increment: number of renderers to add.
  *
  * Output report: a vertex_throughput element containing:
- * - vertices_per_second: total number of vertices rendered per second. Keep aware that while this
+ * - vertices_per_second: total number of vertices rendered per second. Keep in mind that while this
  *                        number could go up, the frames per second rate could still go down.
  *                        Possibly as a consequence of.
  * - renderers: how many renderers are rendering vertices simultaneously after the last increment.
@@ -41,7 +41,6 @@
 
 #include <ancer/BaseGLES3Operation.hpp>
 #include <ancer/DatumReporting.hpp>
-#include <ancer/System.hpp>
 #include <ancer/util/Error.hpp>
 #include <ancer/util/Json.hpp>
 

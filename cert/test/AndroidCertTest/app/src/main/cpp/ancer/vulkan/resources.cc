@@ -434,6 +434,29 @@ Result ResourcesStore::Resolve(const Resources &resources,
   return Result(VK_ERROR_FRAGMENTED_POOL);
 }
 
+Result ResourcesStore::Resolve(std::initializer_list<ResourcesLayout> layouts,
+                               /* <push constants>, */ VkPipelineLayout &out) {
+  out = VK_NULL_HANDLE;
+  VkDescriptorSetLayout dsls[layouts.size()];
+  uint32_t i = 0;
+  for(auto layout : layouts) {
+    VK_RETURN_FAIL(Resolve(layout, dsls[i]));
+    ++i;
+  }
+  VkPipelineLayoutCreateInfo create_info = {
+    /* sType                  */ VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+    /* pNext                  */ nullptr,
+    /* flags                  */ 0,
+    /* setLayoutCount         */ static_cast<uint32_t>(layouts.size()),
+    /* pSetLayouts            */ dsls,
+    /* pushConstantRangeCount */ 0,
+    /* pPushConstantRanges    */ nullptr
+  };
+  VK_RETURN_FAIL(_vk->createPipelineLayout(_vk->device, &create_info, nullptr,
+                                           &out));
+  return Result::kSuccess;
+}
+
 Result ResourcesStore::Cleanup(bool advance) {
   std::lock_guard<std::mutex> guard(_sets_mutex);
 

@@ -18,11 +18,18 @@ compliance tests.
 """
 
 from typing import List
-import matplotlib.pyplot as plt
-import numpy as np
 
-from lib.graphers.suite_handler import SuiteHandler
-from lib.report import Suite
+from lib.graphers.common_graphers import graph_functional_test_result
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, SummaryContext
+import lib.format_items as fmt
+
+
+class BufferStorageSuiteSummarizer(SuiteSummarizer):
+    """Suite summarizer for OpenGL ES buffer storage compliance test."""
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return BufferStorageSuiteHandler
 
 
 class BufferStorageSuiteHandler(SuiteHandler):
@@ -39,32 +46,20 @@ class BufferStorageSuiteHandler(SuiteHandler):
                     "buffer_storage.status")
 
     @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return "GLES3 Buffer Storage" in suite.name
+    def can_handle_datum(cls, datum: Datum):
+        return "GLES3 Buffer Storage" in datum.suite_id
 
-    @classmethod
-    def can_render_summarization_plot(cls,
-                                      suites: List['SuiteHandler']) -> bool:
-        return False
+    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
 
-    @classmethod
-    def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
-        return None
-
-    def render_plot(self) -> str:
-        plt.gcf().set_figheight(3)
-        if self.test_result_status is not None:
-            score_color = (0, 1, 0) \
-            if self.test_result_status == 0 else (1, 0, 0)
-            plt.xticks(np.arange(0))
-            plt.yticks(np.arange(0))
-            plt.bar(0, 1, color=score_color)
-
+        result_index = 0
         msg = None
+
         if self.test_result_status is None:
+            result_index = 1
             msg = "Test result status not found."
         elif self.test_result_status == 0:
-            msg = "Passed."
+            result_index = 2
+            msg = ""
         elif self.test_result_status == 1:
             msg = "Feature not found as OpenGL ES extension."
         elif self.test_result_status == 2:
@@ -78,14 +73,13 @@ class BufferStorageSuiteHandler(SuiteHandler):
         elif self.test_result_status == 6:
             msg = "Unexpected success deallocating an immutable buffer store."
         else:
+            result_index = 1
             msg = f"Unexpected result: ({self.test_result_status})"
 
-        return msg
+        def graph():
+            graph_functional_test_result(
+                result_index, ['UNAVAILABLE', 'UNDETERMINED', 'PASSED'])
 
-    @classmethod
-    def handles_entire_report(cls, suites: List['Suite']):
-        return False
-
-    @classmethod
-    def render_report(cls, raw_suites: List['SuiteHandler']):
-        return ''
+        image_path = self.plot(ctx, graph, '')
+        image = fmt.Image(image_path, self.device())
+        return [image, fmt.Text(msg)]

@@ -53,7 +53,8 @@
 
 #include <ancer/BaseOperation.hpp>
 #include <ancer/DatumReporting.hpp>
-#include <ancer/System.hpp>
+#include <ancer/System.Memory.hpp>
+#include <ancer/System.Temperature.hpp>
 #include <ancer/util/Json.hpp>
 
 using namespace ancer;

@@ -1,0 +1,5 @@
+build:
+  configuration: recipes/configurations/choreographer_timestamps.json
+
+systrace:
+  enabled: true

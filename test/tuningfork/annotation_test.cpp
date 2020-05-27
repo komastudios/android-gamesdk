@@ -95,3 +95,57 @@ TEST(Annotation, RealWorldUnity) {
     FullCheck( {8,8,16,1,24,1,32,2}, 327, radix_mult, "Unity3");
 
 }
+
+TEST(Annotation, WithLoadingAnnotationIndex) {
+    auto radix_mult = TestSetup( {2, 3, 4} , {3, 12, 60} );
+
+    // No loading_annotation_index
+    // result = 2 + 3*3 + 4*12
+    EXPECT_EQ(DecodeAnnotationSerialization( {1<<3, 2, 2<<3, 3, 3<<3, 4}, radix_mult), 59)
+      << "Loading";
+
+    // With loading_annotation_index = 0
+
+    // No level_annotation_index. Other values are zeroed.
+    // result = 2 + 0*3*3 + 0*4*12
+    EXPECT_EQ(DecodeAnnotationSerialization( {1<<3, 2, 2<<3, 3, 3<<3, 4}, radix_mult, 0), 2)
+      << "Loading 0-";
+    // With level_annotation_index = 1
+    // result = 2 + 3*3 + 0*4*12
+    EXPECT_EQ(DecodeAnnotationSerialization( {1<<3, 2, 2<<3, 3, 3<<3, 4}, radix_mult, 0, 1), 11)
+      << "Loading 00";
+    // With level_annotation_index = 2
+    // result = 2 + 0*3*3 + 4*12
+    EXPECT_EQ(DecodeAnnotationSerialization( {1<<3, 2, 2<<3, 3, 3<<3, 4}, radix_mult, 0, 2), 50)
+      << "Loading 01";
+
+    // With loading_annotation_index = 1
+
+    // No level_annotation_index. Other values are zeroed.
+    // result = 0*2 + 3*3 + 0*4*12
+    EXPECT_EQ(DecodeAnnotationSerialization( {1<<3, 2, 2<<3, 3, 3<<3, 4}, radix_mult, 1), 9)
+      << "Loading 1-";
+    // With level_annotation_index = 0
+    // result = 2 + 3*3 + 0*4*12
+    EXPECT_EQ(DecodeAnnotationSerialization( {1<<3, 2, 2<<3, 3, 3<<3, 4}, radix_mult, 1, 0), 11)
+      << "Loading 10";
+    // With level_annotation_index = 2
+    // result = 0*2 + 3*3 + 4*12
+    EXPECT_EQ(DecodeAnnotationSerialization( {1<<3, 2, 2<<3, 3, 3<<3, 4}, radix_mult, 1, 2), 57)
+      << "Loading 12";
+
+    // With loading_annotation_index = 2
+
+    // No level_annotation_index. Other values are zeroed.
+    // result = 0*2 + 0*3*3 + 4*12
+    EXPECT_EQ(DecodeAnnotationSerialization( {1<<3, 2, 2<<3, 3, 3<<3, 4}, radix_mult, 2), 48)
+      << "Loading 2-";
+    // With level_annotation_index = 0
+    // result = 2 + 0*3*3 + 4*12
+    EXPECT_EQ(DecodeAnnotationSerialization( {1<<3, 2, 2<<3, 3, 3<<3, 4}, radix_mult, 2, 0), 50)
+      << "Loading 20";
+    // With level_annotation_index = 1
+    // result = 0*2 + 3*3 + 4*12
+    EXPECT_EQ(DecodeAnnotationSerialization( {1<<3, 2, 2<<3, 3, 3<<3, 4}, radix_mult, 2, 1), 57)
+      << "Loading 21";
+}

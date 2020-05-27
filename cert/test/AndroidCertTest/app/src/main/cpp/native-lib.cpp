@@ -30,19 +30,21 @@
 #include <gtest/gtest.h>
 #endif
 
-#include "swappy/swappyGL.h"
-#include "swappy/swappyGL_extra.h"
+#include <swappy/swappyGL.h>
+#include <swappy/swappyGL_extra.h>
 
-#include "ancer/BaseOperation.hpp"
-#include "ancer/SwappyRenderer.hpp"
-#include "ancer/Suite.hpp"
-#include "ancer/System.hpp"
-#include "ancer/util/Error.hpp"
-#include "ancer/util/JNIHelpers.hpp"
-#include "ancer/util/Log.hpp"
-#include "ancer/util/FpsCalculator.hpp"
-#include "ancer/util/TestResultPrinter.hpp"
-#include "ancer/util/Time.hpp"
+#include <ancer/BaseOperation.hpp>
+#include <ancer/SwappyRenderer.hpp>
+#include <ancer/Suite.hpp>
+#include <ancer/System.hpp>
+#include <ancer/System.Cpu.hpp>
+#include <ancer/System.Temperature.hpp>
+#include <ancer/util/Error.hpp>
+#include <ancer/util/JNIHelpers.hpp>
+#include <ancer/util/Log.hpp>
+#include <ancer/util/FpsCalculator.hpp>
+#include <ancer/util/TestResultPrinter.hpp>
+#include <ancer/util/Time.hpp>
 
 using namespace ancer;
 

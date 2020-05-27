@@ -27,6 +27,7 @@
 
 #include <ancer/Reporter.hpp>
 #include <ancer/System.hpp>
+#include <ancer/System.Cpu.hpp>
 #include <ancer/DatumReporting.hpp>
 #include <ancer/util/Basics.hpp>
 #include <ancer/util/Bitmath.hpp>

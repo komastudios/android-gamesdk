@@ -1,61 +1,34 @@
 package net.jimblackler.istresser;
 
-import java.io.BufferedReader;
+import android.util.Log;
+
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.security.InvalidParameterException;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/** A helper class with static methods to help with Heuristics and file IO */
 public class Utils {
 
-  /**
-   * Loads all the text from an input string and returns the result as a string.
-   *
-   * @param inputStream The stream to read.
-   * @return All of the text from the stream.
-   * @throws IOException Thrown if a read error occurs.
-   */
-  static String readStream(InputStream inputStream) throws IOException {
-    try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-        BufferedReader reader = new BufferedReader(inputStreamReader)) {
-      String newline = System.getProperty("line.separator");
-      StringBuilder output = new StringBuilder();
-      String line;
-      while ((line = reader.readLine()) != null) {
-        if (output.length() > 0) {
-          output.append(newline);
-        }
-        output.append(line);
-      }
-      return output.toString();
-    }
-  }
+  private static final String TAG = Utils.class.getSimpleName();
 
   /**
-   * Loads all text from the specified file and returns the result as a string.
+   * Gets the size in bytes of the indicated file.
    *
-   * @param filename The name of the file to read.
-   * @return All of the text from the file.
-   * @throws IOException Thrown if a read error occurs.
+   * @param filename The name of the file to get the size for.
+   * @return File size.
+   * @throws IOException Thrown if a filesystem error occurs.
    */
-  static String readFile(String filename) throws IOException {
-    return readStream(new FileInputStream(filename));
-  }
-
   static long getFileSize(String filename) throws IOException {
     return new File(filename).length();
   }
 
   /**
-   * Converts a memory quantity value in a JSON object to a number of bytes.
-   * If no value exists with that key, zero is returned.
-   * If the value is a JSON number, it is interpreted as the number of bytes.
-   * If the value is a JSON string, it is converted according to the specified unit.
-   * e.g. "36K", "52.5 M", "9.1G". No unit is interpreted as bytes.
+   * Converts a memory quantity value in a JSON object to a number of bytes. If no value exists with
+   * that key, zero is returned. If the value is a JSON number, it is interpreted as the number of
+   * bytes. If the value is a JSON string, it is converted according to the specified unit. e.g.
+   * "36K", "52.5 M", "9.1G". No unit is interpreted as bytes.
    *
    * @param jsonObject The JSON object to extract from.
    * @param key The name of the key.
@@ -68,7 +41,7 @@ public class Utils {
     try {
       return jsonObject.getLong(key);
     } catch (JSONException e) {
-      // Ignored by design.
+      Log.v(TAG, key + " is not a number.");
     }
 
     String str;
@@ -93,5 +66,24 @@ public class Utils {
     }
     float value = Float.parseFloat(str.substring(0, unitPosition));
     return (long) (value * unitMultiplier);
+  }
+
+  /**
+   * Return the first index where two strings differ.
+   * @param a The first string to compare.
+   * @param b The second string to compare.
+   * @return The first index where the two strings have a different character, or either terminate.
+   */
+  static int mismatchIndex(CharSequence a, CharSequence b) {
+    int index = 0;
+    while (true) {
+      if (index >= a.length() || index >= b.length()) {
+        return index;
+      }
+      if (a.charAt(index) != b.charAt(index)) {
+        return index;
+      }
+      index++;
+    }
   }
 }

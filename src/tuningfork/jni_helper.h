@@ -205,7 +205,7 @@ std::string GetExceptionMessage();
 //  exception message if one was thrown. Also clears the exception.
 bool CheckForException(std::string& msg);
 
-std::vector<char> GetByteArrayBytesAndDeleteRef(jbyteArray jbs);
+std::vector<unsigned char> GetByteArrayBytesAndDeleteRef(jbyteArray jbs);
 
 // Debugging
 #ifndef NDEBUG

@@ -80,6 +80,13 @@
               document.createTextNode(`Params: ${JSON.stringify(flattenParams(first.params))}`));
     }
 
+    {
+      const paragraph = document.createElement("p");
+      section.appendChild(paragraph);
+      paragraph.appendChild(
+          document.createTextNode(`Settings: ${JSON.stringify(first.settings)}`));
+    }
+
     if ("extra" in first) {
       const extra = first.extra;
       {
@@ -122,19 +129,22 @@
       "oom_score",
       //
       "memoryClass",
+      "mmapAnonAllocatedByTest",
 
       "VmSize",
       "VmRSS",
       "VmData",
 
-      "summary.graphics", "summary.native-heap", "summary.total-pss"
+      "summary.graphics", "summary.native-heap", "summary.total-pss",
 
+      "gl_allocated"
     ];
 
     const memoryFieldsBytes = new Set(
         ["nativeHeap", "recordNativeHeap", "nativeAllocated", "nativeAllocatedByTest",
           "serviceTotalMemory", "maxMemory",  "freeMemory", "availMem", "totalMem", "threshold",
-          "lowMemory", "memoryClass", "availMemPlusNativeAllocated"
+          "lowMemory", "memoryClass", "availMemPlusNativeAllocated", "gl_allocated",
+          "mmapAnonAllocatedByTest"
         ]);
     const memoryFieldsKb = new Set(["MemTotal", "MemAvailable", "Buffers", "Cached",
       "SwapCached", "Active", "Inactive", "Active(anon)",
@@ -275,7 +285,7 @@
         serviceCrashedStart = -1;
       }
 
-      let allocFailed = !!row["allocFailed"];
+      let allocFailed = !!row["allocFailed"] || !!row["mmapAnonFailed"] || !!row["mmapFileFailed"];
       if (allocFailed && allocFailedStart === -1) {
         allocFailedStart = time;
       } else if (!allocFailed && allocFailedStart !== -1) {

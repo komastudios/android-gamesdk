@@ -28,14 +28,16 @@ import time
 from typing import Tuple, Dict, List
 
 from lib.build import APP_ID, build_apk
-from lib.common import run_command, NonZeroSubprocessExitCode, \
-    get_attached_devices, Recipe, get_indexable_utc
-from lib.report import extract_and_export, normalize_report_name, \
-    merge_systrace
-from lib.summary import perform_summary_if_enabled
-from lib.systrace import LocalSystrace, SystraceParseError
+from lib.common import create_output_dir, run_command, \
+    NonZeroSubprocessExitCode, get_attached_devices, get_indexable_utc
+from lib.configuration import Configuration
 from lib.devicefarm import run_on_farm_and_collect_reports, DeploymentTarget
 import lib.graphing
+from lib.outer import OuterOperation
+from lib.recipe import Recipe
+from lib.report import extract_and_export, normalize_report_name, \
+    merge_systrace
+from lib.systrace import LocalSystrace, SystraceParseError
 import lib.tasks_runner
 
 # ------------------------------------------------------------------------------
@@ -61,9 +63,8 @@ def get_systrace_config(recipe: Recipe) -> (bool, List[str], List[str]):
     return enabled, keywords, categories
 
 
-def load_tasks(
-        tasks_dict: List[Dict],
-        task_ctors: Dict) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
+def load_tasks(tasks_dict: List[Dict], task_ctors: Dict
+              ) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
     """Load tasks and create default task environment (internal, called by
     get_preflight_tasks and get_postflight_tasks)
     Args:
@@ -78,8 +79,8 @@ def load_tasks(
     return lib.tasks_runner.load(tasks_dict, task_ctors), env
 
 
-def get_preflight_tasks(
-        recipe: Recipe) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
+def get_preflight_tasks(recipe: Recipe
+                       ) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
     """Load preflight tasks from the local deployment block of the recipe,
     and generate preflight environment
     """
@@ -87,8 +88,8 @@ def get_preflight_tasks(
     return load_tasks(preflight, lib.tasks_runner.PREFLIGHT_TASKS)
 
 
-def get_postflight_tasks(
-        recipe: Recipe) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
+def get_postflight_tasks(recipe: Recipe
+                        ) -> Tuple[List[lib.tasks.Task], lib.tasks.Environment]:
     """Load postflight tasks from the local deployment block of the recipe,
     and generate preflight environment
     """
@@ -171,8 +172,9 @@ def poll_app_active(device_id: str, app_id: str):
     return False
 
 
-def start_test_and_wait_for_completion(
-        local_device_id: str, display_wait_message: bool) -> type(None):
+def start_test_and_wait_for_completion(local_device_id: str,
+                                       display_wait_message: bool
+                                      ) -> type(None):
     """Launches the test on the device. Doesn't return control until execution
     has finished.
 
@@ -284,35 +286,24 @@ def run_local_deployment(recipe: Recipe, apk: Path, out_dir: Path):
     preflight_tasks, preflight_env = get_preflight_tasks(recipe)
     postflight_tasks, postflight_env = get_postflight_tasks(recipe)
 
-    print("Will run local deployment on the following ADB device IDs:" +
+    print("Will run local deployment on the following ADB device IDs: " +
           unpack(devices))
 
-    print(f"\tSystrace: {systrace_enabled} systrace_keywords: " +
-          unpack(systrace_keywords) + "\n\n")
+    print(f"\tSystrace: {systrace_enabled}")
+    if systrace_enabled:
+        print(f"\tKeywords: {unpack(systrace_keywords)}\n\n")
+    else:
+        print('\n')
 
-    def run_and_collect_results(device_id: str, display_wait_message: bool):
-        '''execute apk and collect result report'''
-        # if enabled, start systrace and wait for it
-
-        systracer = block_for_systrace(
-            device_id, out_dir,
-            systrace_categories) if systrace_enabled else None
-
-        # run test!
-        start_test_and_wait_for_completion(device_id, display_wait_message)
-
-        # extract report
-        extract_and_export(
-            device_id,
-            dst_dir=out_dir,
-            systrace_file=systracer.finish() if systracer else None,
-            systrace_keywords=systrace_keywords)
+    configuration = Configuration(
+        recipe.lookup('build.configuration')) if not apk else None
 
     # run install and preflight in serial
     for device_id in devices:
-        print(f"[INFO] Installing APK on device {device_id}")
-        uninstall_apk_from_device(device_id)
-        push_apk_to_device(apk, device_id)
+        if apk:
+            print(f"[INFO] Installing APK on device {device_id}")
+            uninstall_apk_from_device(device_id)
+            push_apk_to_device(apk, device_id)
 
         # run preflight tasks
         if preflight_tasks:
@@ -327,13 +318,25 @@ def run_local_deployment(recipe: Recipe, apk: Path, out_dir: Path):
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             for device_id in devices:
-                executor.submit(run_and_collect_results, device_id, False)
+                if apk:
+                    executor.submit(run_apk_and_collect_results, device_id,
+                                    out_dir, systrace_enabled,
+                                    systrace_keywords, systrace_categories,
+                                    False)
+                else:
+                    executor.submit(run_outer_operation, device_id,
+                                    configuration, out_dir)
 
         print(f"[INFO] All devices finished")
 
     else:
         for device_id in devices:
-            run_and_collect_results(device_id, True)
+            if apk:
+                run_apk_and_collect_results(device_id, out_dir,
+                                            systrace_enabled, systrace_keywords,
+                                            systrace_categories, True)
+            else:
+                run_outer_operation(device_id, configuration, out_dir)
 
     # run the postflight tasks in serial
     if postflight_tasks:
@@ -342,7 +345,36 @@ def run_local_deployment(recipe: Recipe, apk: Path, out_dir: Path):
             print(f"[INFO] Running postflight tasks for device {device_id}")
             lib.tasks_runner.run(postflight_tasks, device_id, postflight_env)
 
-    perform_summary_if_enabled(recipe, out_dir)
+
+def run_apk_and_collect_results(device_id: str, out_dir: Path,
+                                systrace_enabled: bool,
+                                systrace_keywords: List[str],
+                                systrace_categories: List[str],
+                                display_wait_message: bool):
+    '''execute apk and collect result report'''
+    # if enabled, start systrace and wait for it
+
+    systracer = block_for_systrace(
+        device_id, out_dir,
+        systrace_categories) if systrace_enabled else None
+
+    # run test!
+    start_test_and_wait_for_completion(device_id, display_wait_message)
+
+    # extract report
+    extract_and_export(
+        device_id,
+        dst_dir=out_dir,
+        systrace_file=systracer.finish() if systracer else None,
+        systrace_keywords=systrace_keywords)
+
+
+def run_outer_operation(device_id: str, configuration: Configuration,
+                        out_dir: Path):
+    """Instantiates an outer operation and runs it."""
+    operation = OuterOperation.load_from_configuration(configuration)
+    operation.run(device_id, out_dir)
+    normalize_report_name(operation.report)
 
 
 # ------------------------------------------------------------------------------
@@ -358,6 +390,8 @@ def run_ftl_deployment(recipe: Recipe, target_devices: DeploymentTarget,
         apk: Path to the APK to deploy and test
         out_dir: Path to a location to save result JSON reports
     """
+    if recipe.lookup('build.type') == 'none':
+        raise RuntimeError('Outer operations not supported on FTL.')
 
     # first step is to save out an args.yaml file to pass on to gsutil API
     args_dict = recipe.lookup("deployment.ftl.args", fallback=None)
@@ -370,25 +404,20 @@ def run_ftl_deployment(recipe: Recipe, target_devices: DeploymentTarget,
     flags_dict = recipe.lookup("deployment.ftl.flags", {})
 
     devices = recipe.lookup("deployment.ftl.devices", fallback=[])
-    if devices is None:
-        devices = []
+    excluding = recipe.lookup("deployment.ftl.excluding", fallback=[])
 
     systrace_enabled, systrace_keywords, _ = \
         get_systrace_config(recipe)
 
     report_files, systrace_files = run_on_farm_and_collect_reports(
-        args_dict=args_dict,
-        flags_dict=flags_dict,
-        test=active_test,
-        enable_systrace=systrace_enabled,
-        devices=devices,
-        target_devices=target_devices,
-        dst_dir=out_dir)
+        args_dict, flags_dict, active_test, systrace_enabled, devices,
+        excluding, target_devices, out_dir)
 
     report_files = process_ftl_reports(out_dir, report_files, systrace_files,
                                        systrace_keywords)
 
-    perform_summary_if_enabled(recipe, out_dir)
+
+# ------------------------------------------------------------------------------
 
 
 def run_recipe(recipe: Recipe, args: Dict, out_dir: Path = None) -> Path:
@@ -404,7 +433,7 @@ def run_recipe(recipe: Recipe, args: Dict, out_dir: Path = None) -> Path:
     # ensure the out/ dir exists for storing reports/systraces/etc
     # use the name of the provided configuration, or if none, the yaml file
     # to specialize the output dir
-    custom_config = recipe.lookup("build.configuration", fallback=None)
+    custom_config = recipe.lookup("build.configuration", fallback="")
 
     if not out_dir:
         if custom_config:
@@ -412,7 +441,7 @@ def run_recipe(recipe: Recipe, args: Dict, out_dir: Path = None) -> Path:
         else:
             prefix = Path(recipe.get_recipe_path()).stem
 
-        out_dir = lib.graphing.setup_report_dir(prefix)
+        out_dir = create_output_dir(prefix)
 
     # append a timestamped subfolder
     timestamped_folder = get_indexable_utc()
@@ -429,6 +458,7 @@ def run_recipe(recipe: Recipe, args: Dict, out_dir: Path = None) -> Path:
     if args.get("local"):
         run_local_deployment(recipe, apk_path, out_dir)
     if args.get("ftl"):
-        run_ftl_deployment(recipe, args["ftl-deployment-target"], apk_path, out_dir)
+        run_ftl_deployment(recipe, args["ftl-deployment-target"], apk_path,
+                           out_dir)
 
     return out_dir

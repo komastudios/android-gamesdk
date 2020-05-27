@@ -18,10 +18,19 @@ reports from schedule affinity operation.
 """
 
 from typing import List
+
 import matplotlib.pyplot as plt
 
-from lib.graphers.suite_handler import SuiteHandler
-from lib.report import Suite
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, SummaryContext
+import lib.format_items as fmt
+
+
+class AffinityTestSummarizer(SuiteSummarizer):
+    """Suite summarizer for schedule affinity operation test."""
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return AffinityTestSuiteHandler
 
 
 class AffinityTestSuiteHandler(SuiteHandler):
@@ -29,25 +38,16 @@ class AffinityTestSuiteHandler(SuiteHandler):
     """
 
     @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return "Affinity Test" in suite.name
+    def can_handle_datum(cls, datum: Datum):
+        return "Affinity Test" in datum.suite_id
 
-    @classmethod
-    def can_render_summarization_plot(cls,
-                                      suites: List['SuiteHandler']) -> bool:
-        return False
-
-    @classmethod
-    def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
-        return None
-
-    def render_plot(self) -> str:
-        startup_misses_by_cpu_id = {}
+    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
+        start_misses_by_cpu_id = {}
         work_running_misses_by_cpu_id = {}
         finishing_misses_by_cpu_id = {}
 
         buckets_by_message = {
-            "setting_affinity": startup_misses_by_cpu_id,
+            "did_set_affinity": start_misses_by_cpu_id,
             "work_running": work_running_misses_by_cpu_id,
             "work_finished": finishing_misses_by_cpu_id,
         }
@@ -72,34 +72,38 @@ class AffinityTestSuiteHandler(SuiteHandler):
 
         max_misses = 0
         for cpu in cpus:
-            max_misses = max(max_misses, startup_misses_by_cpu_id.get(cpu, 0),
+            max_misses = max(max_misses, start_misses_by_cpu_id.get(cpu, 0),
                              work_running_misses_by_cpu_id.get(cpu, 0),
                              finishing_misses_by_cpu_id.get(cpu, 0))
 
-        for i, cpu in enumerate(cpus):
-            plt.subplot(len(cpus), 1, i + 1)
-            plt.ylabel(f"cpu_{cpu}")
+        def graph():
+            for i, cpu in enumerate(cpus):
+                plt.subplot(len(cpus), 1, i + 1)
+                plt.ylabel(f"cpu_{cpu}")
 
-            plt.gca().set_ylim([0, max(max_misses, 1)])
+                plt.gca().set_ylim([0, max(max_misses, 1)])
 
-            plt.bar([0, 1, 2], [
-                startup_misses_by_cpu_id.get(cpu, 0),
-                work_running_misses_by_cpu_id.get(cpu, 0),
-                finishing_misses_by_cpu_id.get(cpu, 0)
-            ])
+                plt.bar([0, 1, 2], [
+                    start_misses_by_cpu_id.get(cpu, 0),
+                    work_running_misses_by_cpu_id.get(cpu, 0),
+                    finishing_misses_by_cpu_id.get(cpu, 0)
+                ])
 
-            if i == len(cpus) - 1:
-                plt.xticks([0, 1, 2], ["Startup", "Running", "Finishing"])
-                plt.xlabel("Affinity Mismatches")
-            else:
-                plt.xticks([])
+                if i == len(cpus) - 1:
+                    plt.xticks([0, 1, 2], ["Startup", "Running", "Finishing"])
+                    plt.xlabel("Affinity Mismatches")
+                else:
+                    plt.xticks([])
 
         work_running_misses_total = 0
         for count in work_running_misses_by_cpu_id.values():
             work_running_misses_total += count
 
         # report summary if we have misses in working period
+        msg = "PASSED"
         if work_running_misses_total > 0:
-            return f"Found {work_running_misses_total} CPU affinity mismatches"
+            msg = f"Found {work_running_misses_total} CPU affinity mismatches"
 
-        return None
+        image_path = self.plot(ctx, graph)
+        image = fmt.Image(image_path, self.device())
+        return [image, fmt.Text(msg)]

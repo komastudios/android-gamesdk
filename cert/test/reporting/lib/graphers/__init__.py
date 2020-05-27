@@ -15,33 +15,58 @@
 #
 """The Graphers Module
 
-All SuiteHandler implementations live here. Each must have its class
-registered with the HANDLERS global.
+All SuiteSummarizer implementations live here. Each must have its class
+registered with the SUMMARIZERS global.
 """
 
-from .affinity_test_suite_handler import AffinityTestSuiteHandler
-from .buffer_storage_suite_handler import BufferStorageSuiteHandler
-from .calculate_wait_pi_suite_handler import CalculateWaitPiSuiteHandler
-from .cpuset_suite_handler import CpusetSuiteHandler
-from .depth_clear_suite_handler import DepthClearSuiteHandler
-from .file_performance_suite_handler import FilePerformanceSuiteHandler
-from .half_float_precision import HalfFloatPrecisionSuiteHandler
-from .marching_cubes_suite_handler import MarchingCubesSuiteHandler
-from .mediump_vec_norm_suite_handler import MediumPVecNormSuiteHandler
-from .memory_access.single_core_comparison import SingleCoreComparisonHandler
-from .memory_allocation_suite_handler import MemoryAllocationSuiteHandler
-from .mprotect_suite_handler import MProtectSuiteHandler
-from .temperature_suite_handler import TemperatureSuiteHandler
-from .vulkan_varyings_handler import VulkanVaryingsHandler
+from .affinity_test_suite_handler import AffinityTestSummarizer
+from .buffer_storage_suite_handler import BufferStorageSuiteSummarizer
+from .calculate_wait_pi_suite_handler import CalculateWaitPiSummarizer
+from .choreographer_timestamps_suite_handler import \
+    ChoreographerTimestampsSummarizer
+from .cpuset_suite_handler import CpusetSuiteSummarizer
+from .dependent_read_suite_handler import DependentReadSummarizer
+from .depth_clear_suite_handler import DepthClearSummarizer
+from .egl_presentation_time_suite_handler import EGLPresentationTimeSummarizer
+from .external_framebuffer import ExternalFramebufferSummarizer
+from .file_performance_suite_handler import FilePerformanceSummarizer
+from .fill_rate_suite_handler import FillRateSummarizer
+from .gpu_profiling_support_suite_handler import \
+    GPUProfilingSupportSummarizer
+from .marching_cubes_suite_handler import MarchingCubesSummarizer
+from .mediump_vec_norm_suite_handler import MediumPVecNormSummarizer
+from .memory_access.single_core_comparison import SingleCoreComparisonSummarizer
+from .memory_allocation_suite_handler import MemoryAllocationSuiteSummarizer
+from .mprotect_suite_handler import MProtectSummarizer
+from .nougat_crash_suite_handler import NougatCrashSummarizer
+from .temperature_suite_handler import TemperatureSuiteSummarizer
+from .vertex_suite_handler import VertexRateSuiteSummarizer
+from .vulkan_varyings_handler import VulkanVaryingsSummarizer
 
-HANDLERS = [
-    AffinityTestSuiteHandler, BufferStorageSuiteHandler,
-    CalculateWaitPiSuiteHandler, CpusetSuiteHandler,
-    FilePerformanceSuiteHandler, HalfFloatPrecisionSuiteHandler,
-    DepthClearSuiteHandler, MarchingCubesSuiteHandler,
-    MediumPVecNormSuiteHandler, MemoryAllocationSuiteHandler,
-    MProtectSuiteHandler, SingleCoreComparisonHandler, TemperatureSuiteHandler,
-    VulkanVaryingsHandler
+# Keep each suite summarizer alone in its line and we'll avoid zillions
+# of really avoidable merge conflicts.
+SUMMARIZERS = [
+    AffinityTestSummarizer, \
+    BufferStorageSuiteSummarizer, \
+    CalculateWaitPiSummarizer, \
+    ChoreographerTimestampsSummarizer, \
+    CpusetSuiteSummarizer, \
+    DependentReadSummarizer, \
+    DepthClearSummarizer, \
+    EGLPresentationTimeSummarizer, \
+    ExternalFramebufferSummarizer, \
+    FilePerformanceSummarizer, \
+    FillRateSummarizer, \
+    GPUProfilingSupportSummarizer, \
+    MarchingCubesSummarizer, \
+    MediumPVecNormSummarizer, \
+    MemoryAllocationSuiteSummarizer, \
+    MProtectSummarizer, \
+    NougatCrashSummarizer, \
+    SingleCoreComparisonSummarizer, \
+    TemperatureSuiteSummarizer, \
+    VertexRateSuiteSummarizer, \
+    VulkanVaryingsSummarizer
 ]
-"""List containing all registered SuiteHandler implementations to
-render charts."""
+"""List containing all registered SuiteHandler implementations
+to render summaries."""

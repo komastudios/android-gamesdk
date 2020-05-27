@@ -16,7 +16,7 @@
 
 #include "tuningfork/tuningfork.h"
 #include "tuningfork/tuningfork_extra.h"
-#include "tuningfork/protobuf_util.h"
+#include "protobuf_util.h"
 #include "tuningfork_internal.h"
 #include "tuningfork_utils.h"
 #include "jni_helper.h"

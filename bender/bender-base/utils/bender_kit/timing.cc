@@ -63,7 +63,7 @@ void EventTiming::GetFramerate(int num_frames, int *fps, float *frame_time) {
     sum_frame_time += event_buckets_[START_FRAME][most_recent_frame - i]->duration.count();
   }
 
-  *fps = frames_count / (sum_fps * NS_TO_S);
+  *fps = frames_count / (sum_fps * NS_TO_S) + .5;
   *frame_time = (sum_frame_time * NS_TO_MS) / frames_count;
 }
 

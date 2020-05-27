@@ -62,7 +62,7 @@
 
 #include <ancer/BaseOperation.hpp>
 #include <ancer/DatumReporting.hpp>
-#include <ancer/System.hpp>
+#include <ancer/System.Cpu.hpp>
 #include <ancer/util/ThreadSyncPoint.hpp>
 #include <ancer/util/Json.hpp>
 

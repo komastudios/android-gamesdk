@@ -53,6 +53,7 @@
  */
 
 #include "System.hpp"
+#include "System.Temperature.hpp"
 
 #include <algorithm>
 #include <fstream>

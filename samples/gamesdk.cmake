@@ -79,7 +79,11 @@ function(add_gamesdk_target)
 
         # Build Game SDK (Gradle will use local.properties to find the Android SDK/NDK,
         # or the environment variables if no local.properties - i.e: if compiling from command line).
-        file(TO_NATIVE_PATH "${GAMESDK_ROOT_DIR}/gradlew" GAMESDK_GRADLE_BIN)
+        if (${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
+            file(TO_NATIVE_PATH "${GAMESDK_ROOT_DIR}/gradlew.bat" GAMESDK_GRADLE_BIN)
+        else()
+            file(TO_NATIVE_PATH "${GAMESDK_ROOT_DIR}/gradlew" GAMESDK_GRADLE_BIN)
+        endif()
         add_custom_command(
             OUTPUT
                 ${DEP_LIB}

@@ -28,7 +28,9 @@
 namespace {
 
 std::vector<GLfloat> initializeVertices(int segments) {
-    std::vector<GLfloat> vertices = std::vector<GLfloat>(2 * segments + 2);
+    // For a triangle fan, the first vertex is the centre, then the following pairs of points form
+    // trangles with it.
+    std::vector<GLfloat> vertices = std::vector<GLfloat>(2 * (segments+2));
     const float dTheta = static_cast<float>(2 * M_PI / segments);
     for (size_t i = 0; i < segments + 1; i++) {
         vertices[(i + 1) * 2] = cos(dTheta * i);

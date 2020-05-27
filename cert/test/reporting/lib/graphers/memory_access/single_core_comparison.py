@@ -14,47 +14,47 @@
 # limitations under the License.
 #
 
-from typing import List, Tuple
+from typing import List
 
-import sys
-import math
 import matplotlib.pyplot as plt
 import matplotlib.lines as lines
 
-from lib.report import Datum, Suite
-from lib.graphers.suite_handler import SuiteHandler
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, SummaryContext, Suite
+import lib.format_items as fmt
 
+
+class SingleCoreComparisonSummarizer(SuiteSummarizer):
+    """Suite summarizer for the Memory Access test."""
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return SingleCoreComparisonHandler
 
 
 class SingleCoreComparisonHandler(SuiteHandler):
     def __init__(self, suite):
         super().__init__(suite)
-        self.suite_data = [
-            d for d in self.data
-            if "MA:SCC:" in d.suite_id
-            and d.operation_id == "MemoryAccessOperation"
-        ]
 
-    # TODO(tmillican@google.com): Split into single/multi-suite
-    @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return "MA:SCC:" in suite.name
+        self.data_by_id = {}
+        for datum in suite:
+            self.data_by_id.setdefault(datum.suite_id, []).append(datum)
 
-    @classmethod
-    def can_render_summarization_plot(cls,
-                                      suites: List['SuiteHandler']) -> bool:
-        return False
+        self.suites: List[Suite] = []
+        for suite_id, data in self.data_by_id.items():
+            self.suites.append(Suite(suite_id, suite.build, data, suite.file))
+
+        print(self.suites)
 
     @classmethod
-    def render_summarization_plot(cls, raw_suites: List['SuiteHandler']) -> str:
-        return None
+    def can_handle_datum(cls, datum: Datum):
+        return "MA:SCC:" in datum.suite_id \
+        and datum.operation_id == "MemoryAccessOperation"
 
 #-------------------------------------------------------------------------------
 # TODO(tmillican@google.com): Move to general/memory helpers once that exists
 
-    @classmethod
-    def get_core_size(cls, suite, cpu_id):
-        cpu_info = suite.suite.build._d
+    def get_core_size(self, suite: Suite, cpu_id: int) -> str:
+        cpu_info = suite.build._d
         if cpu_id in cpu_info['big_cores']['cpus']:
             return 'Big'
         elif cpu_id in cpu_info['middle_cores']['cpus']:
@@ -62,49 +62,40 @@ class SingleCoreComparisonHandler(SuiteHandler):
         else:
             return 'Little'
 
-
     # TODO(tmillican@google.com): Remove duplication with time/bytes
-    @classmethod
-    def get_time(cls, datum):
+    def get_time(self, datum: Datum) -> int:
         return int(datum.get_custom_field('time').replace(' nanoseconds', ''))
 
-    @classmethod
-    def get_bytes(cls, datum):
+    def get_bytes(self, datum: Datum) -> int:
         return int(datum.get_custom_field('bytes').replace(' bytes', ''))
-
 
     # TODO(tmillican@google.com): Remove duplication with time/bytes
     # TODO(tmillican@google.com): There's probably a more Python-y way to do this
-    @classmethod
-    def get_max_time(cls, suites: List['SingleCoreComparisonHandler']):
+    def get_max_time(self, suites: List[Suite]) -> int:
         v = 0
         for s in suites:
-            if s:
-                data = s.suite_data
-                data.sort(key=lambda d: cls.get_time(d))
-                beg = cls.get_time(data[0])
-                end = cls.get_time(data[-1])
-                value = end - beg
-                v = max(v, value)
+            data = s.data[:]
+            data.sort(key=lambda d: self.get_time(d))
+            beg = self.get_time(data[0])
+            end = self.get_time(data[-1])
+            value = end - beg
+            v = max(v, value)
         return v
 
-    @classmethod
-    def get_max_value(cls, suites: List['SingleCoreComparisonHandler']):
+    def get_max_value(self, suites: List[Suite]) -> int:
         v = 0
         for s in suites:
-            if s:
-                data = s.suite_data
-                data.sort(key=lambda d: cls.get_bytes(d))
-                beg = cls.get_bytes(s.suite_data[0])
-                end = cls.get_bytes(s.suite_data[-1])
-                value = end - beg
-                v = max(v, value)
+            data = s.data[:]
+            data.sort(key=lambda d: self.get_bytes(d))
+            beg = self.get_bytes(s.suite_data[0])
+            end = self.get_bytes(s.suite_data[-1])
+            value = end - beg
+            v = max(v, value)
         return v
 
 #-------------------------------------------------------------------------------
 
-    @classmethod
-    def get_linestyle(cls, core_size):
+    def get_linestyle(self, core_size) -> str:
         if core_size == 'Big':
             return 'solid'
         elif core_size == 'Middle':
@@ -112,81 +103,55 @@ class SingleCoreComparisonHandler(SuiteHandler):
         else:
             return 'dotted'
 
-
-    @classmethod
-    def draw_datum_set(cls, plot, suites: List['SingleCoreComparisonHandler']):
+    def draw_datum_set(self, plot, suites: List[Suite]):
         time_div = 1000000 # NS to MS
         value_div = 1024 # Bytes to KB
 
         # TODO(tmillican@google.com): This seems like something
         #  that should be more straightforward to do, but I
         #  don't know Python that well.
-        max_time = cls.get_max_time(suites) / time_div
-        max_value = cls.get_max_value(suites) / value_div
+        max_time = self.get_max_time(suites) / time_div
+        max_value = self.get_max_value(suites) / value_div
 
         plt.xlim(0, max_time)
         plt.ylim(0, max_value)
 
         plt.legend([
-                lines.Line2D([], [], ls=cls.get_linestyle('Big'), c='k'),
-                lines.Line2D([], [], ls=cls.get_linestyle('Middle'), c='k'),
-                lines.Line2D([], [], ls=cls.get_linestyle('Little'), c='k')
+                lines.Line2D([], [], ls=self.get_linestyle('Big'), c='k'),
+                lines.Line2D([], [], ls=self.get_linestyle('Middle'), c='k'),
+                lines.Line2D([], [], ls=self.get_linestyle('Little'), c='k')
             ], ['Big Cores', 'Middle Cores', 'Little Cores'])
 
         # For big/middle/little
         for suite in suites:
-            if not suite:
-                continue
-
-            data = suite.suite_data
             # Use the last datum for CPU in case it took a while for set
             # affinity to stick
-            linestyle = cls.get_linestyle(cls.get_core_size(suite, data[-1].cpu_id))
+            linestyle = self.get_linestyle(
+                self.get_core_size(suite, suite.data[-1].cpu_id))
 
             times = []
             values = []
-            for d in data:
-                times.append(cls.get_time(d) / time_div)
-                values.append(cls.get_bytes(d) / value_div)
+            for d in suite.data:
+                times.append(self.get_time(d) / time_div)
+                values.append(self.get_bytes(d) / value_div)
 
             plot.plot(times, values, ls=linestyle)
 
     #---------------
 
-    @classmethod
-    def handles_entire_report(cls, suites: List['SuiteHandler']):
-        for suite in suites:
-            if "MA:SCC:" in suite.name:
-                return True
-        return False
+    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
+        writes = [s for s in self.suites if 'Write' in s.suite_id]
+        reads = [s for s in self.suites if 'Read' in s.suite_id]
 
-    @classmethod
-    def render_report(cls, raw_suites: List['SuiteHandler']):
-        suites = [
-            s.handler for s in raw_suites
-            if isinstance(s.handler, SingleCoreComparisonHandler)]
+        def graph():
+            plt.subplots_adjust(wspace=0.25)
+            plot = plt.subplot(1, 2, 1, label='Write', title='Write',
+                            ylabel='KB Written', xlabel='Milliseconds')
+            self.draw_datum_set(plot, writes)
 
-        plt.subplots_adjust(wspace=0.25)
+            plot = plt.subplot(1, 2, 2, label='Read', title='Read',
+                            ylabel='KB Read', xlabel='Milliseconds')
+            self.draw_datum_set(plot, reads)
 
-        writes = [
-            s for s in suites
-            if s.suite_data and 'Write' in s.suite_data[0].suite_id]
-        plot = plt.subplot(1, 2, 1, label='Write', title='Write',
-                           ylabel='KB Written', xlabel='Milliseconds')
-        cls.draw_datum_set(plot, writes)
-
-        reads = [
-            s for s in suites
-            if s.suite_data and 'Read' in s.suite_data[0].suite_id]
-        plot = plt.subplot(1, 2, 2, label='Read', title='Read',
-                           ylabel='KB Read', xlabel='Milliseconds')
-        cls.draw_datum_set(plot, reads)
-
-
-    @classmethod
-    def can_render_single(self):
-        return False
-
-    # TODO(tmillican@google.com): Refactor names to match functionality
-    def render_plot(self):
-        return None
+        image = fmt.Image(self.plot(ctx, graph), self.device())
+        return [image]

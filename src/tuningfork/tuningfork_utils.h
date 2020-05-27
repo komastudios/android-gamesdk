@@ -27,7 +27,7 @@ class AAsset;
 namespace tuningfork {
 
 // Convert an array of bytes into a string hex representation
-std::string Base16(const std::vector<char>& bytes);
+std::string Base16(const std::vector<unsigned char>& bytes);
 
 namespace apk_utils {
 
