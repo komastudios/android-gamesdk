@@ -25,12 +25,19 @@
 
 namespace swappy {
 
+struct SdkVersion {
+    int sdkInt; // Build.VERSION.SDK_INT
+    int previewSdkInt; // Build.VERSION.PREVIEW_SDK_INT
+};
+
 class SwappyDisplayManager {
 public:
-    static constexpr int MIN_SDK_VERSION = 23;
     static const char* SDM_CLASS;
     static const JNINativeMethod SDMNativeMethods[];
-    static constexpr int  SDMNativeMethodsSize = 2;
+    static constexpr int SDMNativeMethodsSize = 2;
+    static constexpr int MIN_SDK_VERSION = 28;
+
+    static bool useSwappyDisplayManager(SdkVersion sdkVersion);
 
     SwappyDisplayManager(JavaVM*, jobject mainActivity);
     ~SwappyDisplayManager();

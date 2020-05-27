@@ -18,7 +18,7 @@
 
 #include "tuningfork/tuningfork.h"
 #include "tuningfork/tuningfork_extra.h"
-#include "tuningfork/protobuf_util.h"
+#include "protobuf_util.h"
 
 #include <stdint.h>
 #include <string>

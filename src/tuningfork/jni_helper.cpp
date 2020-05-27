@@ -166,9 +166,9 @@ int LocalObject::GetIntField(const char* field_name) const {
     else
         return BAD_FIELD;
 }
-std::vector<char> GetByteArrayBytesAndDeleteRef(jbyteArray jbs) {
+std::vector<unsigned char> GetByteArrayBytesAndDeleteRef(jbyteArray jbs) {
     jbyte* bs = Env()->GetByteArrayElements(jbs, 0);
-    std::vector<char> ret(bs, bs + Env()->GetArrayLength(jbs));
+    std::vector<unsigned char> ret(bs, bs + Env()->GetArrayLength(jbs));
     Env()->ReleaseByteArrayElements(jbs, bs, JNI_ABORT);
     Env()->DeleteLocalRef(jbs);
     return ret;

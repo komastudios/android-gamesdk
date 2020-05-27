@@ -23,11 +23,11 @@
 #include <thread>
 #include <EGL/egl.h>
 
-#include "Renderer.hpp"
-#include "System.hpp"
-#include "Thread.h"
-#include "util/WorkerThread.hpp"
-#include "util/FpsCalculator.hpp"
+#include <ancer/Renderer.hpp>
+#include <ancer/System.Gpu.hpp>
+#include <Thread.h>
+#include <ancer/util/WorkerThread.hpp>
+#include <ancer/util/FpsCalculator.hpp>
 
 namespace ancer {
     class BaseOperation;

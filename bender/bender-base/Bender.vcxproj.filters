@@ -93,7 +93,10 @@
     <ClCompile Include="utils\src\obj_loader.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\mattkw\AppData\Local\Android\Sdk\ndk\20.0.5594570\sources\android\native_app_glue\android_native_app_glue.c">
+    <ClCompile Include="$(VS_NdkRoot)\sources\android\native_app_glue\android_native_app_glue.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\src\astc.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -915,6 +918,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="utils\src\obj_loader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\src\astc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\src\circular_buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

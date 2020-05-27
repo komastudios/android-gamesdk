@@ -98,7 +98,6 @@
 
 #include <ancer/BaseGLES3Operation.hpp>
 #include <ancer/DatumReporting.hpp>
-#include <ancer/System.hpp>
 #include <ancer/util/GLPixelBuffer.hpp>
 #include <ancer/util/Json.hpp>
 

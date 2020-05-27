@@ -39,6 +39,11 @@ class MonitorViewModel : ViewModel() {
     private val log = MutableLiveData<String>()
     val logBuilder = StringBuilder()
 
+    private val kDefaultResponse = 200
+
+    var getTuningParametersResponse = kDefaultResponse
+    var uploadTelemetryResponse = kDefaultResponse
+
     fun getLiveApps(): LiveData<List<AppKey>> {
         return liveApplications
     }
@@ -102,28 +107,30 @@ class MonitorViewModel : ViewModel() {
         log.postValue(s) // only works on background thread
     }
 
-    fun generateTuningParameters(app: AppKey, req: GenerateTuningParametersRequest) : String {
+    fun generateTuningParameters(app: AppKey, req: GenerateTuningParametersRequest)
+            : Pair<Int, String> {
         val app = AppKey.parse(req.name)
         addLogLine(app.name + " " + app.version + " generateTuningParameters")
         addAppMaybe(app, AppType.LIVE)
-        return ""
+        return Pair(getTuningParametersResponse, "")
     }
 
-    fun uploadTelemetry(app: AppKey, req: UploadTelemetryRequest) : String {
+    fun uploadTelemetry(app: AppKey, req: UploadTelemetryRequest)
+            : Pair<Int, String> {
         val app = AppKey.parse(req.name)
         addLogLine(app.name + " " + app.version + " uploadTelemetry")
         addAppMaybe(app, AppType.LIVE)
         addAppTelemetry(app, AppTelemetry(req.telemetry))
-        return ""
+        return Pair(uploadTelemetryResponse, "")
     }
 
-    fun debugInfo(app: AppKey, req: DebugInfoRequest) : String {
+    fun debugInfo(app: AppKey, req: DebugInfoRequest) : Pair<Int, String> {
         if (req.dev_tuningfork_descriptor!=null) {
             val desc = deserializeFileDescriptor(req.dev_tuningfork_descriptor)
             val settings = Tuningfork.Settings.parseFrom(req.settings)
             addAppData(app, AppData(desc, settings))
         }
-        return ""
+        return Pair(kDefaultResponse, "")
     }
 
     fun deserializeFileDescriptor(pbytes: ByteArray) : DeserializedTuningForkDescriptor {

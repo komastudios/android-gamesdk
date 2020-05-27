@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.10.2)
 get_filename_component(CppDir ${CMAKE_CURRENT_SOURCE_DIR} ABSOLUTE)
 get_filename_component(GameSDKDir ${GAMESDK_DIR} ABSOLUTE)
 get_filename_component(LibDir ${CMAKE_CURRENT_SOURCE_DIR}/../../../../common/3rd_party ABSOLUTE)
+get_filename_component(BasisDir ${LibDir}/basis_universal ABSOLUTE)
 get_filename_component(ShadercDir ${ANDROID_NDK}/sources/third_party/shaderc ABSOLUTE)
 get_filename_component(GTestDir ${ANDROID_NDK}/sources/third_party/googletest ABSOLUTE)
 get_filename_component(CpuFeaturesDir ${ANDROID_NDK}/sources/android/cpufeatures ABSOLUTE)
@@ -87,6 +88,7 @@ add_library(${PROJECT_NAME} SHARED
         ancer/Suite.cpp
         ancer/SwappyRenderer.cpp
         ancer/System.cpp
+        ancer/System.Asset.cpp
         ancer/System.Cpu.cpp
         ancer/System.Gpu.cpp
         ancer/System.Memory.cpp
@@ -95,9 +97,15 @@ add_library(${PROJECT_NAME} SHARED
         ancer/util/Bitmath.cpp
         ancer/util/GLHelpers.cpp
         ancer/util/GLPixelBuffer.cpp
+        ancer/util/GLTexImage2DRenderer.cpp
         ancer/util/JNIHelpers.cpp
         ancer/util/LibAndroid.cpp
         ancer/util/LibEGL.cpp
+        ancer/util/Texture.cpp
+        ancer/util/texture/Astc.cpp
+        ancer/util/texture/Etc2.cpp
+        ancer/util/texture/Jpg.cpp
+        ancer/util/texture/Png.cpp
         ancer/util/ThreadSyncPoint.cpp
         ancer/util/Time.cpp
         ancer/util/VkHelpers.cpp
@@ -120,22 +128,25 @@ add_library(${PROJECT_NAME} SHARED
 
         # Operations
         operations/CalculatePIOperation.cpp
+        operations/CalculateWaitPIOperation.cpp
+        operations/ChoreographerTimestampsOperation.cpp
         operations/IOPerformanceOperation.cpp
         operations/MemoryAccessOperation.cpp
-        operations/CalculateWaitPIOperation.cpp
-
         operations/MemoryAllocOperation.cpp
         operations/MonitorOperation.cpp
+        operations/NougatSigabrtOperation.cpp
         operations/SaneCpusetOperation.cpp
         operations/ScheduleAffinityOperation.cpp
         operations/ThreadSchedulingOperation.cpp
         operations/VulkanMprotectCheckOperation.cpp
 
         operations/gl/BufferStorageGLES3Operation.cpp
+        operations/gl/DependentTextureReadGLES3Operation.cpp
         operations/gl/DepthClearGLES3Operation.cpp
         operations/gl/DualSourceBlendingGLES3Operation.cpp
         operations/gl/EGLGetFrameTimestampsGLES3Operation.cpp
-        operations/gl/ExternalBufferGLES3Operation.cpp
+        operations/gl/EGLPresentationTimeGLES3Operation.cpp
+        operations/gl/ExternalFramebufferGLES3Operation.cpp
         operations/gl/FillRateGLES3Operation.cpp
         operations/gl/GetExtensionsGLES3Operation.cpp
         operations/gl/HelloGLES3Operation.cpp
@@ -146,6 +157,7 @@ add_library(${PROJECT_NAME} SHARED
         operations/gl/MediumPVecNormalizationGLES3Operation.cpp
         operations/gl/ShaderBlobGLES3Operation.cpp
         operations/gl/TeapotRendererGLES3Operation.cpp
+        operations/gl/TextureLoadingGLES3Operation.cpp
         operations/gl/VertexStreamGLES3Operation.cpp
 
         operations/vulkan/VulkanVaryingsTestOperation.cpp
@@ -163,6 +175,7 @@ add_library(${PROJECT_NAME} SHARED
 target_include_directories(${PROJECT_NAME} PUBLIC
         include
         ${CppDir}
+        ${LibDir}
         ${LibDir}/json/include
         ${LibDir}/glm/
         ${GameSDKDir}/include
@@ -184,12 +197,22 @@ add_library(shaderc_lib STATIC IMPORTED)
 set_target_properties(shaderc_lib PROPERTIES IMPORTED_LOCATION
         ${ShadercDir}/libs/${ANDROID_STL}/${ANDROID_ABI}/libshaderc.a)
 
+# We won't need to borrow JPG and PNG decoders once our target SDK version is Android R or later. By
+# then, the NDK provides a C++ accessible ImageDecoder that deals with JPG, PNG and other formats as
+# well.
+add_library(basis STATIC
+        ${BasisDir}/jpgd.cpp
+        ${BasisDir}/lodepng.cpp
+        )
+target_compile_options(basis PRIVATE -Wno-error=invalid-noreturn)
+
 target_link_libraries(${PROJECT_NAME}
         GLESv3
         android
         ${log-lib}
         EGL
         shaderc_lib
+        basis
         )
 
 if (CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")

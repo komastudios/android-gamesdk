@@ -16,8 +16,6 @@
 
 package com.google.gamesdk.gamecert.operationrunner.hosts;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -30,7 +28,6 @@ import android.view.SurfaceView;
 import androidx.annotation.Nullable;
 
 import com.google.gamesdk.R;
-import com.google.gamesdk.gamecert.operationrunner.transport.Configuration;
 import com.google.gamesdk.gamecert.operationrunner.util.NativeInvoker;
 
 public class SwappyGLHostActivity extends BaseGLHostActivity
@@ -38,13 +35,6 @@ public class SwappyGLHostActivity extends BaseGLHostActivity
 
     public static final String ID = "SwappyGLHostActivity";
     private static final String TAG = "SwappyGLHostActivity";
-
-    public static Intent createIntent(Context ctx,
-                                      Configuration.StressTest stressTest) {
-        Intent i = new Intent(ctx, SwappyGLHostActivity.class);
-        i.putExtra(STRESS_TEST_JSON, stressTest.toJson());
-        return i;
-    }
 
     public static boolean isSupported() {
         return (VERSION.SDK_INT >= VERSION_CODES.N);

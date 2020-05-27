@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-#include "System.hpp"
+#include "System.Gpu.hpp"
 
-#include "util/Error.hpp"
-#include "util/FpsCalculator.hpp"
-#include "util/GLHelpers.hpp"
-#include "util/JNIHelpers.hpp"
-#include "util/Log.hpp"
+#include <ancer/System.hpp>
+#include <ancer/util/Error.hpp>
+#include <ancer/util/FpsCalculator.hpp>
+#include <ancer/util/GLHelpers.hpp>
+#include <ancer/util/JNIHelpers.hpp>
+#include <ancer/util/Log.hpp>
 
 using namespace ancer;
 
-//==============================================================================
-
 namespace {
-Log::Tag TAG{"ancer::system"};
+Log::Tag TAG{"SystemGpu"};
 }
 
-//==============================================================================
+//--------------------------------------------------------------------------------------------------
 
 GLuint ancer::CreateProgram(const char *vtx_file_name, const char *frg_file_name) {
   std::string vtx_src = LoadText(vtx_file_name);
@@ -41,21 +40,27 @@ GLuint ancer::CreateProgram(const char *vtx_file_name, const char *frg_file_name
   return 0;
 }
 
-//==============================================================================
+GLuint ancer::BindNewTexture2D() {
+  GLuint texture_id = 0;
 
+  glGenTextures(1, &texture_id);
+  glBindTexture(GL_TEXTURE_2D, texture_id);
+
+  return texture_id;
+}
+
+// TODO(dagum): this can and should be ported from its current Java/JNI implementation to full C++
+//              by using System.Asset.hpp type Asset.
 GLuint ancer::LoadTexture(const char *file_name, int32_t *out_width, int32_t *out_height,
                           bool *has_alpha) {
-  GLuint tex = 0;
+  GLuint texture_id = 0;
   jni::SafeJNICall(
-      [&tex, &out_width, &out_height, &has_alpha, file_name](jni::LocalJNIEnv *env) {
+      [&texture_id, &out_width, &out_height, &has_alpha, file_name](jni::LocalJNIEnv *env) {
         jstring name = env->NewStringUTF(file_name);
         jobject activity = env->NewLocalRef(jni::GetActivityWeakGlobalRef());
         jclass activity_class = env->GetObjectClass(activity);
 
-        glGenTextures(1, &tex);
-        glBindTexture(GL_TEXTURE_2D, tex);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        texture_id = BindNewTexture2D();
 
         jmethodID get_asset_helpers_mid = env->GetMethodID(
             activity_class,
@@ -87,7 +92,7 @@ GLuint ancer::LoadTexture(const char *file_name, int32_t *out_width, int32_t *ou
         int32_t height = env->GetIntField(out, fid_height);
 
         if (!ret) {
-          glDeleteTextures(1, &tex);
+          glDeleteTextures(1, &texture_id);
           *out_width = 0;
           *out_height = 0;
           if (has_alpha)
@@ -100,22 +105,25 @@ GLuint ancer::LoadTexture(const char *file_name, int32_t *out_width, int32_t *ou
           if (has_alpha)
             *has_alpha = alpha;
 
+          glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+          glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
           // Generate mipmap
           glGenerateMipmap(GL_TEXTURE_2D);
         }
       });
 
-  return tex;
+  return texture_id;
 }
 
-//==============================================================================
+//--------------------------------------------------------------------------------------------------
 
 FpsCalculator &ancer::GetFpsCalculator() {
   static FpsCalculator fps_calc;
   return fps_calc;
 }
 
-//==============================================================================
+//--------------------------------------------------------------------------------------------------
 
 void ancer::BridgeGLContextConfiguration(GLContextConfig src_config,
                                          jobject dst_config) {
@@ -173,7 +181,7 @@ GLContextConfig ancer::BridgeGLContextConfiguration(jobject src_config) {
   return dst_config;
 }
 
-//==============================================================================
+//--------------------------------------------------------------------------------------------------
 
 std::vector<unsigned char> ancer::PNGEncodeRGBABytes(
     unsigned int width, unsigned int height,
@@ -185,31 +193,31 @@ std::vector<unsigned char> ancer::PNGEncodeRGBABytes(
         // Bitmap config
         jobject argb8888_value =
             jni::GetEnumField(env, "android/graphics/Bitmap$Config", "ARGB_8888");
-        if (argb8888_value==nullptr)
+        if (argb8888_value == nullptr)
           return;
 
         // Bitmap
         jclass bitmap_class = env->FindClass("android/graphics/Bitmap");
-        if (bitmap_class==nullptr)
+        if (bitmap_class == nullptr)
           return;
 
         jmethodID create_bitmap_method_id = env->GetStaticMethodID(
             bitmap_class, "createBitmap",
             "(IILandroid/graphics/Bitmap$Config;Z)Landroid/graphics/Bitmap;");
-        if (create_bitmap_method_id==nullptr)
+        if (create_bitmap_method_id == nullptr)
           return;
 
         jobject bitmap_object =
             env->CallStaticObjectMethod(bitmap_class, create_bitmap_method_id,
                                         width, height, argb8888_value, true);
-        if (bitmap_object==nullptr)
+        if (bitmap_object == nullptr)
           return;
 
         // Set pixel data
         // (Note, we could try to use `setPixels` instead, but we would
         // still need to convert four bytes into a 32-bit jint.)
         jmethodID set_pixel_method_id = env->GetMethodID(bitmap_class, "setPixel", "(III)V");
-        if (set_pixel_method_id==nullptr)
+        if (set_pixel_method_id == nullptr)
           return;
 
         size_t offset = 0;
@@ -231,20 +239,20 @@ std::vector<unsigned char> ancer::PNGEncodeRGBABytes(
         // PNG compression format
         jobject png_format_value =
             jni::GetEnumField(env, "android/graphics/Bitmap$CompressFormat", "PNG");
-        if (png_format_value==nullptr)
+        if (png_format_value == nullptr)
           return;
 
         // Make output stream
         jclass byte_array_os_class = env->FindClass("java/io/ByteArrayOutputStream");
-        if (byte_array_os_class==nullptr)
+        if (byte_array_os_class == nullptr)
           return;
 
         jmethodID byte_array_os_init_id = env->GetMethodID(byte_array_os_class, "<init>", "()V");
-        if (byte_array_os_init_id==nullptr)
+        if (byte_array_os_init_id == nullptr)
           return;
 
         jobject byte_array_os = env->NewObject(byte_array_os_class, byte_array_os_init_id);
-        if (byte_array_os==nullptr)
+        if (byte_array_os == nullptr)
           return;
 
         // Compress as PNG
@@ -253,7 +261,7 @@ std::vector<unsigned char> ancer::PNGEncodeRGBABytes(
                              "compress",
                              "(Landroid/graphics/Bitmap$CompressFormat;"
                              "ILjava/io/OutputStream;)Z");
-        if (compress_method_id==nullptr)
+        if (compress_method_id == nullptr)
           return;
 
         const jboolean compress_result =
@@ -265,12 +273,12 @@ std::vector<unsigned char> ancer::PNGEncodeRGBABytes(
         // Get byte array data
         jmethodID to_byte_array_method_id = env->GetMethodID(
             byte_array_os_class, "toByteArray", "()[B");
-        if (to_byte_array_method_id==nullptr)
+        if (to_byte_array_method_id == nullptr)
           return;
 
         auto byte_result =
             (jbyteArray) env->CallObjectMethod(byte_array_os, to_byte_array_method_id);
-        if (byte_result==nullptr)
+        if (byte_result == nullptr)
           return;
 
         const jsize byte_result_length = env->GetArrayLength(byte_result);
@@ -288,16 +296,16 @@ std::string ancer::Base64EncodeBytes(const unsigned char *bytes, int length) {
   jni::SafeJNICall(
       [&bytes, &length, &encoded](jni::LocalJNIEnv *env) {
         jclass base64_class = env->FindClass("android/util/Base64");
-        if (base64_class==nullptr)
+        if (base64_class == nullptr)
           return;
 
         jmethodID encode_to_string_method_id = env->GetStaticMethodID(
             base64_class, "encodeToString", "([BIII)Ljava/lang/String;");
-        if (encode_to_string_method_id==nullptr)
+        if (encode_to_string_method_id == nullptr)
           return;
 
         jbyteArray bytes_array = env->NewByteArray(length);
-        if (bytes_array==nullptr) {
+        if (bytes_array == nullptr) {
           return;
         }
 
@@ -305,9 +313,9 @@ std::string ancer::Base64EncodeBytes(const unsigned char *bytes, int length) {
 
         auto str = (jstring) env->CallStaticObjectMethod(base64_class, encode_to_string_method_id,
                                                          bytes_array, 0, length, 0);
-        if (str!=nullptr) {
+        if (str != nullptr) {
           const char *cstr = env->GetStringUTFChars(str, nullptr);
-          if (cstr!=nullptr) {
+          if (cstr != nullptr) {
             encoded = std::string(cstr);
             env->ReleaseStringUTFChars(str, cstr);
           }

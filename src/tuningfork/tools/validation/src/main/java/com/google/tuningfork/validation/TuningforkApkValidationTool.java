@@ -89,6 +89,9 @@ final class TuningforkApkValidationTool {
     try {
       parser.parseFilesInFolder();
       parser.validate();
+      for (String warningString: errors.getWarnings().values()) {
+        logger.atWarning().log(warningString);
+      }
       if (errors.getErrorCount() == 0) {
         logger.atInfo().log("Tuning Fork settings are valid");
       } else {

@@ -67,22 +67,30 @@ static std::string RequestJson(const ExtraUploadInfo& request_info,
 static TFErrorCode DecodeResponse(const std::string& response, std::vector<uint8_t>& fps,
                            std::string& experiment_id) {
     using namespace json11;
-    ALOGI("Response: %s", response.c_str());
+    if (response.empty()) {
+        ALOGW("Empty response to generateTuningParameters");
+        fps.clear();
+        experiment_id.clear();
+        return TFERROR_NO_FIDELITY_PARAMS;
+    } else {
+        ALOGI("Response to generateTuningParameters: %s", response.c_str());
+    }
     std::string err;
     Json jresponse = Json::parse(response, err);
     if (!err.empty()) {
         ALOGE("Parsing error: %s", err.c_str());
-        return TFERROR_NO_FIDELITY_PARAMS;
+        return TFERROR_GENERATE_TUNING_PARAMETERS_ERROR;
     }
     ALOGV("Response, deserialized: %s", jresponse.dump().c_str());
     if (!jresponse.is_object()) {
         ALOGE("Response not object");
-        return TFERROR_NO_FIDELITY_PARAMS;
+        return TFERROR_GENERATE_TUNING_PARAMETERS_ERROR;
     }
     auto& outer = jresponse.object_items();
     auto iparameters = outer.find("parameters");
     if (iparameters==outer.end()) {
-        ALOGW("No parameters: no fidelity parameters");
+        // Note that this is expected in TuningFork Scaled / Insights
+        ALOGW("No 'parameters' in generateTuningParameters response");
         fps.clear();
         experiment_id.clear();
         return TFERROR_NO_FIDELITY_PARAMS;
@@ -91,7 +99,7 @@ static TFErrorCode DecodeResponse(const std::string& response, std::vector<uint8
         auto& params = iparameters->second;
         if (!params.is_object()) {
             ALOGE("parameters not object");
-            return TFERROR_NO_FIDELITY_PARAMS;
+            return TFERROR_GENERATE_TUNING_PARAMETERS_ERROR;
         }
         auto& inner = params.object_items();
         auto iexperiment_id = inner.find("experimentId");
@@ -102,7 +110,7 @@ static TFErrorCode DecodeResponse(const std::string& response, std::vector<uint8
         else {
             if (!iexperiment_id->second.is_string()) {
                 ALOGE("experimentId is not a string");
-                return TFERROR_NO_FIDELITY_PARAMS;
+                return TFERROR_GENERATE_TUNING_PARAMETERS_ERROR;
             }
             experiment_id = iexperiment_id->second.string_value();
         }
@@ -110,17 +118,18 @@ static TFErrorCode DecodeResponse(const std::string& response, std::vector<uint8
         if (ifps==inner.end()) {
             ALOGW("No serializedFidelityParameters: assuming empty");
             fps.clear();
+	    return TFERROR_NO_FIDELITY_PARAMS;
         }
         else {
             if (!ifps->second.is_string()) {
                 ALOGE("serializedFidelityParameters is not a string");
-                return TFERROR_NO_FIDELITY_PARAMS;
+                return TFERROR_GENERATE_TUNING_PARAMETERS_ERROR;
             }
             std::string sfps = ifps->second.string_value();
             fps.resize(modp_b64_decode_len(sfps.length()));
             if (modp_b64_decode((char*)fps.data(), sfps.c_str(), sfps.length())==-1) {
                 ALOGE("Can't decode base 64 FPs");
-                return TFERROR_NO_FIDELITY_PARAMS;
+                return TFERROR_GENERATE_TUNING_PARAMETERS_ERROR;
             }
         }
     }
@@ -141,7 +150,7 @@ static TFErrorCode DownloadFidelityParams(Request& request,
     if (response_code>=kSuccessCodeMin && response_code<=kSuccessCodeMax)
         ret = DecodeResponse(body, fps, experiment_id);
     else
-        ret = TFERROR_NO_FIDELITY_PARAMS;
+        ret = TFERROR_GENERATE_TUNING_PARAMETERS_RESPONSE_NOT_SUCCESS;
 
     return ret;
 }

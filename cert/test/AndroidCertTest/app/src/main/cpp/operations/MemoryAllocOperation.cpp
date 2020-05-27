@@ -16,8 +16,7 @@
 
 /**
  * This test intends to exhaust the device memory through recurring allocation. It's ready to free
- * all allocated memory upon a system sign that is based on different test scenarios. Once freed,
- * the test completes.
+ * all allocated memory upon a system sign that is based on different test scenarios.
  *
  * These scenarios are:
  * * Out-of-Memory (OOM). Android has a scoring mechanism to measure chances for an app to hit the
@@ -30,13 +29,11 @@
  *
  * Input configuration:
  * - scenario: which of the constrained memory scenarios this test is about. Possible values are
- *             oom, low_memory, try_alloc and memory_limit.
+ *             oom, low_memory, try_alloc and commit_limit.
  * - alloc_size_bytes: how much memory, in bytes, to allocate at a time. Default: zero.
  * - alloc_period: interval between two allocation loop iterations. Default: no wait.
  * - on_trim_triggers_free: if true, if the system issues an onTrimMemory() callback, it releases
- *                          all the memory allocated so far. Then the test resumes memory allocation
- *                          per scenario. In other words, memory deallocated as a reaction to
- *                          onTrimMemory(), i.e., when this flag is true, doesn't end a test.
+ *                          all the memory allocated so far.
  * - restart_pause: if on_trim_triggers_free is true, time to wait before resuming the loop.
  *                  Default is one second.
  *
@@ -65,7 +62,7 @@
 
 #include <ancer/BaseOperation.hpp>
 #include <ancer/DatumReporting.hpp>
-#include <ancer/System.hpp>
+#include <ancer/System.Memory.hpp>
 #include <ancer/util/Json.hpp>
 
 using namespace ancer;
@@ -198,7 +195,6 @@ void WriteDatum(report_writers::Struct w, const datum &d) {
   }
 
   ADD_DATUM_MEMBER(w, d, total_allocation_bytes);
-  w.AddItem("total_allocation_mb", d.total_allocation_bytes*kMbPerByte);
   ADD_DATUM_MEMBER(w, d, sys_mem_info);
 }
 }
@@ -226,19 +222,6 @@ class MemoryAllocOperation : public BaseOperation {
     _threads.emplace_back(
         [=]() {
           _loop();
-        });
-
-    // wait for execution duration to time out
-    _threads.emplace_back(
-        [this]() {
-          while (!IsStopped()) {
-            auto now = SteadyClock::now();
-            if (now - GetStartTime() > GetDuration()) {
-              Stop();
-              return;
-            }
-            std::this_thread::sleep_for(50ms);
-          }
         });
   }
 

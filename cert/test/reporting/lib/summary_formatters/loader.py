@@ -17,7 +17,7 @@
 format.
 """
 
-from typing import TypeVar, Union
+from typing import Optional, TypeVar
 
 from lib.summary_formatters.formatter import SummaryFormatter
 
@@ -34,18 +34,15 @@ __FORMATTERS = {
 #------------------------------------------------------------------------------
 
 
-def get_summary_formatter_type(
-        output_format: str
-) -> Union[TypeVar("SummaryFormatter"), type(None)]:
+def get_summary_formatter_type(output_format: str
+                              ) -> Optional[TypeVar("SummaryFormatter")]:
     """
     Returns a summary formatter type (or None if the format is unsupported).
     """
     return __FORMATTERS.get(output_format)
 
 
-def create_summary_formatter(
-        output_format: str
-) -> Union[SummaryFormatter, type(None)]:
+def create_summary_formatter(output_format: str) -> Optional[SummaryFormatter]:
     """
     Creates a summary formatter instance.
     """

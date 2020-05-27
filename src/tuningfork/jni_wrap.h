@@ -36,8 +36,11 @@ class Object {
         va_end(argptr);
     }
     Object(LocalObject&& o) : obj_(std::move(o)) {}
-    Object(jobject o) : obj_(o) {
+    Object(jobject o) {
+        // If there's an exception pending, don't store the reference as it may be invalid and
+        // cause a crash on some devices when released.
         if (!RawExceptionCheck()) {
+            obj_ = o;
             obj_.Cast(); // Cast to the object's own class.
         }
     }
@@ -267,7 +270,7 @@ class MessageDigest : public java::Object {
         temp.SetObj(o);
         obj_ = std::move(temp);
     }
-    std::vector<char> digest(const std::vector<char>& bs) const {
+    std::vector<unsigned char> digest(const std::vector<unsigned char>& bs) const {
         auto env = Env();
         jbyteArray jbs = env->NewByteArray(bs.size());
         env->SetByteArrayRegion(jbs, 0, bs.size(),
@@ -314,7 +317,7 @@ class ApplicationInfo : public java::Object {
 class PackageInfo : public java::Object {
   public:
     PackageInfo(java::Object&& o) : java::Object(std::move(o)) {}
-    typedef std::vector<char> Signature;
+    typedef std::vector<unsigned char> Signature;
     std::vector<Signature> signatures() const {
         auto env = Env();
         auto jsigs = obj_.GetObjectField("signatures", "[Landroid/content/pm/Signature;");
@@ -322,7 +325,7 @@ class PackageInfo : public java::Object {
         if (sigs == nullptr)  return {};
         int n = env->GetArrayLength(sigs);
         if (n>0) {
-            std::vector<std::vector<char>> ret;
+            std::vector<std::vector<unsigned char>> ret;
             for (int i=0; i<n; ++i) {
                 Object sig(env->GetObjectArrayElement(sigs, i));
                 jbyteArray bytes = reinterpret_cast<jbyteArray>(

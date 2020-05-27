@@ -10,6 +10,76 @@
   "stress_tests": [
     {
       "enabled": true,
+      "name": "Texture Loading",
+      "description": "Comparison between compression strategies",
+      "duration": "0s",
+      "data_gatherer": {
+        "id": "TextureLoadingGLES3Operation",
+        "configuration": {
+          "texture_families": [
+            "avocados",
+            "bags",
+            "ballons",
+            "bananas",
+            "cards",
+            "fruit_salad",
+            "grocery",
+            "nuts",
+            "paper",
+            "tomatoes"
+          ],
+          "slideshow_interval": "3.5s"
+        }
+      },
+      "host": "GLSurfaceViewHostActivity",
+      "stressors": []
+    },
+    {
+      "enabled": true,
+      "name": "Choreographer Timestamps",
+      "description": "Samples timestamps from Choreographer for comparison with VSYNC traces",
+      "duration": "5s",
+      "data_gatherer": {
+        "id": "ChoreographerTimestampsOperation",
+        "configuration": {
+          "frame_limit": 240
+        }
+      },
+      "host": "GLSurfaceViewHostActivity",
+      "stressors": []
+    },
+    {
+      "enabled": true,
+      "name": "Indirect Texture Read",
+      "description": "AKA Dependent texture read",
+      "duration": "33s",
+      "data_gatherer": {
+        "id": "DependentTextureReadGLES3Operation",
+        "configuration": {
+          "indirection_interval": "3s"
+        }
+      },
+      "host": "GLSurfaceViewHostActivity",
+      "stressors": []
+    },
+    {
+      "enabled": true,
+      "name": "EGL Presentation Time",
+      "description": "Determine if EGL presentation time extension is present and works.",
+      "duration": "5s",
+      "data_gatherer": {
+        "id": "EGLPresentationTimeGLES3Operation",
+        "configuration": {
+          "first_frame_id": 20,
+          "last_frame_id": 120,
+          "presentation_delay_ms": 54
+        }
+      },
+      "host": "GLSurfaceViewHostActivity",
+      "stressors": []
+    },
+    {
+      "enabled": true,
       "name": "EGL Get Frame Timestamps",
       "description": "Determine if EGL frame timestamps extension is present and works.",
       "duration": "2s",
@@ -54,7 +124,7 @@
       "description": "Determine if a native hardware buffer can be created and used as render target.",
       "duration": "5s",
       "data_gatherer": {
-        "id": "ExternalBufferGLES3Operation",
+        "id": "ExternalFramebufferGLES3Operation",
         "configuration": {}
       },
       "stressors": []
@@ -445,7 +515,6 @@
       "data_gatherer": {
         "id": "ShaderBlobGLES3Operation",
         "configuration": {
-          "debug_only": true,
           "iterations": 8,
           "trials": 4
         }

@@ -18,68 +18,22 @@
 
 from typing import List
 
-import matplotlib
+from matplotlib.collections import EventCollection
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FormatStrFormatter
 import numpy as np
 
-from lib.common import nanoseconds_to_seconds
-from lib.graphers.suite_handler import SuiteHandler
-from lib.report import Suite
+from lib.common import bytes_to_megabytes, nanoseconds_to_seconds
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, SummaryContext
+import lib.format_items as fmt
 
 
-def plot_event_on_trim_level(fig, xs, ys, label):
-    """Plot on_trim events
-    Args:
-        xs: Seconds
-        ys: OnTrim event levels
-    """
-    for x, y in zip(xs, ys):
-        label = f"on_trim: level {int(y)}"
-        color = [1, 0, 0]
-        fig.axvline(x, color=color, label=label)
-
-
-def plot_event_is_free(fig, xs, ys, label):
-    """Plot is_free events
-    Args:
-        xs: Seconds
-    """
-    mid = (fig.get_ylim()[1] + fig.get_ylim()[0]) / 2
-    for x in xs:
-        color = [0.2, 1, 0.2]
-        fig.scatter(x, mid, color=color, s=10)
-
-
-def plot_default(fig, xs, ys, label, scale_factor=None, y_label_format=None):
-    """In its simplest form, this function plots the renderer data as is.
-    If a scale factor is passed, the y values are adjusted by it.
-    If a format is passed, the y labels are formatted based on it.
-    """
-    if y_label_format is not None:
-        plt.gca().yaxis.set_major_formatter(
-            matplotlib.ticker.FormatStrFormatter(y_label_format))
-
-    plt.plot(xs,
-             ys if scale_factor is None \
-                else ys / scale_factor,
-             label=label)
-
-
-def plot_boolean(fig, xs, ys, label):
-    """Plots boolean values as "Yes" / "No".
-    """
-    plt.yticks([0, 1], ["No", "Yes"])
-    plot_default(fig, xs, ys, label)
-
-
-BYTES_PER_MEGABYTE = 1024 * 1024
-
-
-def plot_memory_as_mb(fig, xs, ys, label):
-    """Given a renderer loaded with memory data in bytes, plots the data as
-    megabytes.
-    """
-    plot_default(fig, xs, ys, label, BYTES_PER_MEGABYTE, "%d mb")
+class MemoryAllocationSuiteSummarizer(SuiteSummarizer):
+    """Suite summarizer for Memory Allocation tests."""
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return MemoryAllocationSuiteHandler
 
 
 class MemoryAllocationSuiteHandler(SuiteHandler):
@@ -89,64 +43,90 @@ class MemoryAllocationSuiteHandler(SuiteHandler):
     def __init__(self, suite):
         super().__init__(suite)
 
-        # we're plotting just these 6 fields
-        self.plotters_by_field_name = {
-            "on_trim_level": plot_event_on_trim_level,
-            "is_free": plot_event_is_free,
-            "sys_mem_info.available_memory": plot_memory_as_mb,
-            "sys_mem_info.native_allocated": plot_memory_as_mb,
-            "sys_mem_info.low_memory": plot_boolean,
-            "total_allocation_bytes": plot_memory_as_mb,
-        }
+        self.__first_timestamp = self.data[0].timestamp
+        self.__last_timestamp = self.data[-1].timestamp
+
+        self.__max_total_mem = 0
+
+        self.__xs = []
+        self.__ys_test_alloc = []
+        self.__ys_sys_free = []
+
+        self.__xs_free = []
 
     @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return "Memory allocation" in suite.name
+    def can_handle_datum(cls, datum: Datum):
+        return "Memory allocation" in datum.suite_id
 
-    @classmethod
-    def can_render_summarization_plot(cls,
-                                      suites: List['SuiteHandler']) -> bool:
-        return False
+    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
+        for datum in self.data:
+            if datum.operation_id == 'MemoryAllocOperation':
+                self.__segregate_datum_info(datum)
+        self.__post_process_data_points()
 
-    @classmethod
-    def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
-        return None
+        def graph():
+            self.__arrange_mem_figure(plt.subplot(1, 1, 1))
 
-    def render_plot(self) -> str:
-        start_time_seconds = self.get_x_axis_as_seconds()[0]
-        end_time_seconds = self.get_x_axis_as_seconds()[-1]
+        image_path = self.plot(ctx, graph)
+        image = fmt.Image(image_path, self.device())
+        return [image]
 
-        rows = len(self.plotters_by_field_name)
-        keys = list(self.plotters_by_field_name.keys())
-        keys.sort()
+    def __segregate_datum_info(self, datum: Datum) -> type(None):
+        """Receives a datum and uses its info to fill the various data arrays.
+        """
+        if datum.get_custom_field("is_on_trim") or \
+            datum.get_custom_field("is_restart"):
+            return
 
-        for i, field_name in enumerate(keys):
-            fig = plt.subplot(rows, 1, i + 1)
-            plt.ylabel(field_name)
-            fig.set_xlim(0, end_time_seconds - start_time_seconds)
+        x = datum.timestamp - self.__first_timestamp
 
-            xs = []
-            ys = []
-            for datum in self.data:
-                value = datum.get_custom_field_numeric(field_name)
-                if value is not None:
-                    s = nanoseconds_to_seconds(
-                        datum.timestamp) - start_time_seconds
-                    xs.append(s)
-                    ys.append(value)
+        if datum.get_custom_field("is_free"):
+            self.__xs_free.append(x)
+            return
 
-            xs = np.array(xs)
-            ys = np.array(ys)
-            self.plotters_by_field_name[field_name](fig, xs, ys, field_name)
+        test_alloc = datum.get_custom_field_numeric("total_allocation_bytes")
+        sys_free = \
+            datum.get_custom_field_numeric("sys_mem_info.available_memory")
 
-        # TODO(shamyl@google.com): Outlier onTrims, etc might make
-        # for interesting summary text
-        return None
+        total_mem = test_alloc + sys_free
+        if self.__max_total_mem < total_mem:
+            self.__max_total_mem = total_mem
 
-    @classmethod
-    def handles_entire_report(cls, suites: List['Suite']):
-        return False
+        self.__xs.append(x)
+        self.__ys_test_alloc.append(test_alloc)
+        self.__ys_sys_free.append(sys_free)
 
-    @classmethod
-    def render_report(cls, raw_suites: List['SuiteHandler']):
-        return ''
+    def __post_process_data_points(self) -> type(None):
+        """Massages data points for rendering with MatPlotLib"""
+        self.__xs = nanoseconds_to_seconds(np.array(self.__xs))
+        self.__ys_test_alloc = \
+            bytes_to_megabytes(np.array(self.__ys_test_alloc))
+        self.__ys_sys_free = bytes_to_megabytes(np.array(self.__ys_sys_free))
+
+        self.__xs_free = nanoseconds_to_seconds(np.array(self.__xs_free))
+
+        self.__max_total_mem = bytes_to_megabytes(self.__max_total_mem)
+
+    def __arrange_mem_figure(self, fig) -> None:
+        """Disposes all graphic components to represent memory usage."""
+        fig.stackplot(self.__xs,
+                      self.__ys_test_alloc,
+                      self.__ys_sys_free,
+                      labels=["Allocated", "Available"])
+        fig.legend(loc='upper left')
+
+        fig.set_xlim(
+            0,
+            nanoseconds_to_seconds(self.__last_timestamp -
+                                   self.__first_timestamp))
+        fig.set_ylim(0, self.__max_total_mem)
+
+        free_events = EventCollection(self.__xs_free,
+                                      color='black',
+                                      linelength=self.__max_total_mem * 2,
+                                      linewidth=0.5,
+                                      linestyle='dashed')
+        fig.add_collection(free_events)
+
+        fig.get_xaxis().set_major_formatter(FormatStrFormatter('%ds'))
+        fig.get_yaxis().set_major_formatter(FormatStrFormatter('%dMb'))

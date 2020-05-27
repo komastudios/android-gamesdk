@@ -28,7 +28,7 @@
 #include <sstream>
 #include <android/asset_manager_jni.h>
 
-#include "tuningfork/protobuf_nano_util.h"
+#include "protobuf_nano_util.h"
 #include "pb_decode.h"
 #include "nano/tuningfork.pb.h"
 #include "nano/descriptor.pb.h"

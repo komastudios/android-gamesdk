@@ -73,10 +73,12 @@ build:
 
 ``` yaml
 build:
+  # The apk type to build. Debug includes symbols. Release is lighter. None is
+  # a special case in which no apk is built. This is the case of outer tests:
+  # tests run entirely from the attached computer via ADB
+  type: [debug|release|none]
   # if true, the APK will be cleaned, then built
   clean: [true|false]
-  # if true, build in release; this may require key signing configuration
-  release: [true|false]
   # if provided, the configuration json will be inserted into the APK
   # this is a convenient way to set up a specific set of suites to run
   configuration: path/to/configuration.json
@@ -157,8 +159,13 @@ deployment:
     # specify certain devices to run on or leave field out to run on all
     # physical devices available to FTL
     devices:
-      - { model: "flo", version: 21 }
-      - { model: "mlv1", version: 23 }
+      - { codename: "flo", sdk_version: 21 }
+      - { codename: "mlv1", sdk_version: 23 }
+
+    # specify certain devices to skip run or leave field out to skip none
+    excluding:
+      - { codename: "flo", sdk_version: 21 }
+      - { codename: "mlv1", sdk_version: 23 }
 
     # flags: this maps directly to the `--flags-file` argument
     # when performing ftl deployment
@@ -184,8 +191,11 @@ summary:
   # if true, report will be generated
   enabled: [true|false]
 
-  # format for report, presently only "md" and "html" are supported
-  format: [md|html]
+  # format for report, presently only "md", "html" and "docx" are supported
+  format: [md|html|docx]
+
+  # if true, report will be uploaded to Google Drive
+  publish: [true|false]
 
 ```
 
@@ -213,11 +223,8 @@ summary:
 ### `graph.py`
 
 ``` bash
-# display a chart for the provided csv file
-python graph.py --interactive path/to/csv.py
-
 # generate an html report with images at 150 dpi using a folder full of reports
-python graph.py --dpi 150 --html path/to/csvs
+python graph.py --dpi 150 path/to/csvs --fmt html
 
 ```
 

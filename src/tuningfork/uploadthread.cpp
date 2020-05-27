@@ -16,7 +16,7 @@
 
 #include "uploadthread.h"
 #include "tuningfork_utils.h"
-#include "tuningfork/protobuf_util.h"
+#include "protobuf_util.h"
 #include "ge_serializer.h"
 #include "web.h"
 #include <sys/system_properties.h>

@@ -21,11 +21,11 @@
 #include <mutex>
 #include <set>
 
-#include "BaseOperation.hpp"
-#include "Renderer.hpp"
-#include "Reporting.hpp"
-#include "System.hpp"
-#include "util/Error.hpp"
+#include <ancer/BaseOperation.hpp>
+#include <ancer/Renderer.hpp>
+#include <ancer/Reporting.hpp>
+#include <ancer/System.hpp>
+#include <ancer/util/Error.hpp>
 
 using namespace ancer;
 using namespace ancer::internal;
@@ -132,11 +132,8 @@ bool internal::OperationIsStopped(int id) {
     auto pos = _operations.find(id);
     if ( pos != _operations.end()) {
         return pos->second->IsStopped();
-    } else if ( _stopped_operations.count(id)) {
-        return true;
     } else {
-        FatalError(TAG, "OperationIsStopped - No active or stopped operation with id %d",
-                   id);
+        return true;
     }
 }
 

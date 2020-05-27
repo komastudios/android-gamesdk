@@ -1,1 +1,2 @@
-include ':app'
+include ':app', ':helperlibrary'
+project(':helperlibrary').projectDir = new File('../helperlibrary/helperlibrary')

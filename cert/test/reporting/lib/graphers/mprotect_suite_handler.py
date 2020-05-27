@@ -19,11 +19,18 @@ from the Vulkan Mprotect test
 
 from typing import List
 
-import matplotlib.pyplot as plt
-import numpy as np
+from lib.graphers.common_graphers import graph_functional_test_result
+from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
+from lib.report import Datum, SummaryContext
+import lib.format_items as fmt
 
-from lib.graphers.suite_handler import SuiteHandler
-from lib.report import Suite
+
+class MProtectSummarizer(SuiteSummarizer):
+    """Suite summarizer for the Vulkan mprotect test."""
+    @classmethod
+    def default_handler(cls) -> SuiteHandler:
+        return MProtectSuiteHandler
+
 
 class MProtectSuiteHandler(SuiteHandler):
     """Implementation of SuiteHandler to process report data
@@ -38,31 +45,18 @@ class MProtectSuiteHandler(SuiteHandler):
                 self.mprotect_score = datum.get_custom_field("mprotect.score")
 
     @classmethod
-    def can_handle_suite(cls, suite: Suite):
-        return "Vulkan memory write protection" in suite.name
+    def can_handle_datum(cls, datum: Datum):
+        return "Vulkan memory write protection" in datum.suite_id
 
-    @classmethod
-    def can_render_summarization_plot(cls,
-                                      suites: List['SuiteHandler']) -> bool:
-        return False
-
-    @classmethod
-    def render_summarization_plot(cls, suites: List['SuiteHandler']) -> str:
-        return None
-
-    def render_plot(self) -> str:
-        plt.gcf().set_figheight(3)
-        if self.mprotect_score is not None:
-            score_color = (0, 1, 0) if self.mprotect_score == 0 else (1, 0, 0)
-            plt.xticks(np.arange(0))
-            plt.yticks(np.arange(0))
-            plt.bar(0, 1, color=score_color)
-
-        msg = ""
+    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
+        result_index = 0
+        msg = None
 
         if self.mprotect_score is None:
+            result_index = 1
             msg = "No mprotect results found."
         elif self.mprotect_score == 0:
+            result_index = 2
             msg = "PASSED."
         elif self.mprotect_score == 1:
             msg = "R/W protect fail."
@@ -81,14 +75,13 @@ class MProtectSuiteHandler(SuiteHandler):
         elif self.mprotect_score == 8:
             msg = "Vulkan isn't supported on this device."
         else:
+            result_index = 1
             msg = f"Unexpected result: ({self.mprotect_score})"
 
-        return msg
+        def graph():
+            graph_functional_test_result(
+                result_index, ['UNAVAILABLE', 'UNDETERMINED', 'PASSED'])
 
-    @classmethod
-    def handles_entire_report(cls, suites: List['Suite']):
-        return False
-
-    @classmethod
-    def render_report(cls, raw_suites: List['SuiteHandler']):
-        return ''
+        image_path = self.plot(ctx, graph, '')
+        image = fmt.Image(image_path, self.device())
+        return [image, fmt.Text(msg)]

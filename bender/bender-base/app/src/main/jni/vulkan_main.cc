@@ -77,6 +77,7 @@ std::vector<std::shared_ptr<Material>> materials;
 std::vector<std::shared_ptr<Material>> baseline_materials;
 std::vector<std::shared_ptr<Geometry>> geometries;
 
+bool use_astc = true; // This is set true for testing ASTC. TODO: replace this with a toggle.
 std::map<std::string, std::shared_ptr<Texture>> loaded_textures;
 std::map<std::string, std::shared_ptr<Material>> loaded_materials;
 
@@ -188,7 +189,6 @@ void CreateButtons() {
       button.SetLabel("Mipmap Switch");
       button.SetPosition(.5, .2, 0, .2);
   });
-#ifndef GDC_DEMO
   user_interface->RegisterButton([] (Button& button) {
       button.on_hold_ = StrafeLeft;
       button.SetLabel("<--");
@@ -219,7 +219,8 @@ void CreateButtons() {
     button.SetLabel("Backward");
     button.SetPosition(.43, .2, .85, .2);
   });
-  user_interface->RegisterButton([] (Button& button) {
+#ifndef GDC_DEMO
+    user_interface->RegisterButton([] (Button& button) {
     button.on_up_ = CreateInstance;
     button.SetLabel("+1 Mesh");
     button.SetPosition(-.2, .2, .4, .2);
@@ -280,12 +281,17 @@ void CreateTextures() {
   });
 }
 
-void AddTexture(std::string file_name){
+void AddTexture(std::string file_name, VkFormat format) {
   if (file_name != "" && loaded_textures.find(file_name) == loaded_textures.end()){
-      loaded_textures[file_name] = std::make_shared<Texture>(*renderer,
-                                                            *android_app_ctx,
-                                                            "textures/" + file_name,
-                                                            VK_FORMAT_R8G8B8A8_SRGB);
+    std::string texture_name = file_name;
+    if (use_astc && file_name.find(".png") != -1) {
+      size_t basename_len = file_name.rfind('.');
+      file_name.replace(basename_len, file_name.size() - basename_len + 1, ".astc");
+    }
+    loaded_textures[texture_name] = std::make_shared<Texture>(*renderer,
+                                                              *android_app_ctx,
+                                                              "textures/" + file_name,
+                                                              format);
   }
 }
 
@@ -313,17 +319,6 @@ void CreateMaterials() {
       materials.push_back(std::make_shared<Material>(*renderer, shaders, materialTextures));
     }
   });
-}
-
-void CreateGeometries() {
-  for (uint32_t i = 0; i < allowedPolyFaces.size(); i++) {
-    std::vector<float> vertex_data;
-    std::vector<uint16_t> index_data;
-    polyhedronGenerators[i](vertex_data, index_data);
-    geometries.push_back(std::make_shared<Geometry>(*device,
-                                                    vertex_data,
-                                                    index_data));
-  }
 }
 
 void CreateFramebuffers(VkRenderPass &render_pass,
@@ -409,7 +404,7 @@ void UpdateCamera(input::Data *input_data) {
   render_graph->SetCameraProjMatrix(proj_matrix);
 }
 
-void UpdateInstances(input::Data *input_data) {
+void UpdateInstances() {
   std::vector<std::shared_ptr<Mesh>> all_meshes;
   Camera camera = render_graph->GetCamera();
   render_graph_mutex.lock();
@@ -423,23 +418,22 @@ void UpdateInstances(input::Data *input_data) {
                                               std::cos(2 * total_time)));
 #endif
 
-    all_meshes[i]->Update(renderer->GetCurrentFrame(), camera);
+    all_meshes[i]->Update(renderer->GetCurrentImage(), camera);
   }
   renderer->UpdateLights(camera.position);
 }
 
 void HandleInput(input::Data *input_data) {
   UpdateCamera(input_data);
-  UpdateInstances(input_data);
+  UpdateInstances();
 }
 
 void CreateShaderState() {
+  // This format matches the format found in ../../utils/packed_types.h
   VertexFormat vertex_format{{
-                                 VertexElement::float3,
-                                 VertexElement::float3,
-                                 VertexElement::float3,
-                                 VertexElement::float3,
-                                 VertexElement::float2,
+                                 VertexElement::snorm4, // position
+                                 VertexElement::snorm4, // qtangent (for tangent space)
+                                 VertexElement::unorm2, // texture coordinates
                              },
   };
 
@@ -528,78 +522,107 @@ void UpdateCameraParameters(){
   }
 }
 
+void ReadStringFromFile(std::istream &data, std::string &result) {
+    uint32_t size;
+    data.read((char *)&size, sizeof(size));
+    result.resize(size);
+    data.read(&result[0], size);
+}
 
+void LoadMaterials(std::stringstream &data, int material_count) {
+    for (int x = 0; x < material_count; x++) {
+        std::string name;
+        MaterialAttributes new_mtl;
+        std::string map_Ka;
+        std::string map_Kd;
+        std::string map_Ke;
+        std::string map_Ks;
+        std::string map_Ns;
+        std::string map_Bump;
 
-void LoadDemoModels() {
-    AAssetDir *dir = AAssetManager_openDir(android_app_ctx->activity->assetManager, "models");
-    const char *file_name;
-    file_name = AAssetDir_getNextFileName(dir);
-    while (file_name != nullptr) {
-        LOGE("%s", file_name);
-        std::string file_name_string(file_name);
-        if (file_name_string.find(".mtl") != -1) {
-            file_name = AAssetDir_getNextFileName(dir);
-            continue;
-        }
+        data.read((char *)&new_mtl.ambient, sizeof(float) * 3);
+        data.read((char *)&new_mtl.diffuse, sizeof(float) * 3);
+        data.read((char *)&new_mtl.specular, sizeof(float) * 3);
+        data.read((char *)&new_mtl.specular.w, sizeof(float));
+        data.read((char *)&new_mtl.bump_multiplier, sizeof(int));
+        ReadStringFromFile(data, name);
+        ReadStringFromFile(data, map_Ka);
+        ReadStringFromFile(data, map_Kd);
+        ReadStringFromFile(data, map_Ke);
+        ReadStringFromFile(data, map_Ks);
+        ReadStringFromFile(data, map_Ns);
+        ReadStringFromFile(data, map_Bump);
 
-        loading_info_mutex.lock();
-        sprintf(loading_info, "Loading: %s", file_name);
-        loading_info_mutex.unlock();
+        AddTexture(map_Ka, VK_FORMAT_R8G8B8A8_SRGB);
+        AddTexture(map_Kd, VK_FORMAT_R8G8B8A8_SRGB);
+        AddTexture(map_Ke, VK_FORMAT_R8G8B8A8_SRGB);
+        AddTexture(map_Ks, VK_FORMAT_R8G8B8A8_SRGB);
+        AddTexture(map_Ns, VK_FORMAT_R8G8B8A8_UNORM);
+        AddTexture(map_Bump, VK_FORMAT_R8G8B8A8_UNORM);
 
-        std::vector<OBJLoader::OBJ> model_data;
-        std::unordered_map<std::string, MTL> mtllib;
-
-        if (!load_mutex.try_lock()) { return; }
-        OBJLoader::LoadOBJ(android_app_ctx->activity->assetManager,
-                           ("models/" + file_name_string).c_str(),
-                           mtllib,
-                           model_data);
-        load_mutex.unlock();
-
-        for (auto obj : model_data) {
-            std::string mtl_name = obj.material_name;
-
-            if (loaded_materials.find(mtl_name) == loaded_materials.end()) {
-                MTL curr_mtl = mtllib[obj.material_name];
-                if (!load_mutex.try_lock()) { return; }
-                AddTexture(curr_mtl.map_Ka);
-                AddTexture(curr_mtl.map_Kd);
-                AddTexture(curr_mtl.map_Ks);
-                AddTexture(curr_mtl.map_Ns);
-                AddTexture(curr_mtl.map_Bump);
-
-                MaterialAttributes new_mtl;
-                new_mtl.ambient = curr_mtl.ambient;
-                new_mtl.specular = glm::vec4(curr_mtl.specular, curr_mtl.specular_exponent);
-                new_mtl.diffuse = curr_mtl.diffuse;
-                std::vector<std::shared_ptr<Texture>> my_textures = {
-                        loaded_textures[curr_mtl.map_Kd],
-                        loaded_textures[curr_mtl.map_Ks],
-                        loaded_textures[curr_mtl.map_Ke],
-                        loaded_textures[curr_mtl.map_Ns],
-                        loaded_textures[curr_mtl.map_Bump]};
-                loaded_materials[mtl_name] = std::make_shared<Material>(*renderer,
-                                                                       shaders,
-                                                                       my_textures,
-                                                                       new_mtl);
-                load_mutex.unlock();
-            }
-
-            if (!load_mutex.try_lock()) { return; }
-            geometries.push_back(
-                    std::make_shared<Geometry>(*device, obj.vertex_buffer, obj.index_buffer));
-            render_graph_mutex.lock();
-            render_graph->AddMesh(std::make_shared<Mesh>(*renderer,
-                                                         loaded_materials[mtl_name],
-                                                         geometries.back()));
-            render_graph_mutex.unlock();
-            load_mutex.unlock();
-        }
-        file_name = AAssetDir_getNextFileName(dir);
+        std::vector<std::shared_ptr<Texture>> my_textures = {
+                loaded_textures[map_Kd],
+                loaded_textures[map_Ks],
+                loaded_textures[map_Ke],
+                loaded_textures[map_Ns],
+                loaded_textures[map_Bump]
+        };
+        loaded_materials[name] = std::make_shared<Material>(*renderer, shaders, my_textures, new_mtl);
     }
-    loading_info_mutex.lock();
-    sprintf(loading_info, " ");
-    loading_info_mutex.unlock();
+}
+
+void LoadMeshes(std::stringstream &data, int mesh_count) {
+    for (int x = 0; x < mesh_count; x++){
+        std::string name, material_name;
+        BoundingBox bounding_box;
+        glm::vec3 scale_factor;
+        uint32_t id, vertex_count, index_count, vertex_offset, index_offset;
+
+        data.read((char *)&id, sizeof(uint32_t));
+        data.read((char *)&bounding_box.min, sizeof(float) * 3);
+        data.read((char *)&bounding_box.max, sizeof(float) * 3);
+        data.read((char *)&bounding_box.center, sizeof(float) * 3);
+        data.read((char *)&scale_factor, sizeof(float) * 3);
+        data.read((char *)&vertex_count, sizeof(uint32_t));
+        data.read((char *)&index_count, sizeof(uint32_t));
+        data.read((char *)&vertex_offset, sizeof(uint32_t));
+        data.read((char *)&index_offset, sizeof(uint32_t));
+        ReadStringFromFile(data, name);
+        ReadStringFromFile(data, material_name);
+        geometries.push_back(std::make_shared<Geometry>(vertex_count, index_count, vertex_offset, index_offset, bounding_box, scale_factor));
+        render_graph->AddMesh(std::make_shared<Mesh>(*renderer, loaded_materials[material_name], geometries.back()));
+    }
+}
+
+
+void LoadDemoModels(AAsset *file) {
+    render_graph_mutex.lock();
+    const char *fileContent = static_cast<const char *>(AAsset_getBuffer(file));
+    std::stringstream data(std::string(fileContent, AAsset_getLength(file)));
+
+    uint32_t material_count, mesh_count, mesh_offset, total_vertex_count, vertex_data_offset, total_index_count, index_data_offset;
+    data.read((char *)&material_count, sizeof(uint32_t));
+    data.read((char *)&mesh_count, sizeof(uint32_t));
+    data.read((char *)&mesh_offset, sizeof(uint32_t));
+    data.read((char *)&total_vertex_count, sizeof(uint32_t));
+    data.read((char *)&vertex_data_offset, sizeof(uint32_t));
+    data.read((char *)&total_index_count, sizeof(uint32_t));
+    data.read((char *)&index_data_offset, sizeof(uint32_t));
+
+    LoadMaterials(data, material_count);
+
+    LoadMeshes(data, mesh_count);
+
+    Geometry::FillVertexBuffer<packed_vertex>(*device, total_vertex_count * sizeof(packed_vertex),
+                                              [&data](packed_vertex *vertex_memory, size_t length) {
+                                                  data.read((char *) vertex_memory, length);
+                                              });
+
+    Geometry::FillIndexBuffer(*device, total_index_count * sizeof(uint16_t),
+                              [&data](uint16_t *index_memory, size_t length) {
+                                  data.read((char *) index_memory, length);
+                              });
+    render_graph_mutex.unlock();
 }
 
 bool InitVulkan(android_app *app) {
@@ -696,18 +719,14 @@ bool InitVulkan(android_app *app) {
 
         CreateMaterials();
 
-        CreateGeometries();
-
-        timing::timer.Time("Create Polyhedron", timing::OTHER, [] {
-            render_graph->AddMesh(std::make_shared<Mesh>(*renderer,
-                                                         baseline_materials[materials_idx],
-                                                         geometries[poly_faces_idx]));
-        });
+        AAsset *file = AAssetManager_open(android_app_ctx->activity->assetManager, "polygon2.soup", AASSET_MODE_BUFFER);
+        LoadDemoModels(file);
     });
 #else
     currently_loading = true;
     load_thread = new std::thread([] {
-        LoadDemoModels();
+        AAsset *file = AAssetManager_open(android_app_ctx->activity->assetManager, "polygon.soup", AASSET_MODE_BUFFER);
+        LoadDemoModels(file);
         currently_loading = false;
     });
 
@@ -786,6 +805,7 @@ void DeleteVulkan(void) {
   materials.clear();
   baseline_materials.clear();
   geometries.clear();
+  Geometry::CleanupStatic(*device);
   shaders.reset();
 
   delete device;
@@ -805,14 +825,13 @@ bool VulkanDrawFrame(input::Data *input_data) {
   last_time = current_time;
   total_time += frame_time;
 
-  timing::timer.Time("Handle Input", timing::OTHER, [input_data] {
-    HandleInput(input_data);
-  });
+  timing::timer.Time("Start Frame", timing::START_FRAME, [&input_data] {
+    renderer->BeginFrame();
+    timing::timer.Time("Handle Input", timing::OTHER, [&input_data] {
+        HandleInput(input_data);
+        user_interface->RunHeldButtons();
+    });
 
-  user_interface->RunHeldButtons();
-
-  renderer->BeginFrame();
-  timing::timer.Time("Start Frame", timing::START_FRAME, [] {
     timing::timer.Time("PrimaryCommandBufferRecording", timing::OTHER, [] {
       renderer->BeginPrimaryCommandBufferRecording();
 
@@ -826,7 +845,7 @@ bool VulkanDrawFrame(input::Data *input_data) {
           .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
           .pNext = nullptr,
           .renderPass = render_pass,
-          .framebuffer = framebuffers[renderer->GetCurrentFrame()],
+          .framebuffer = framebuffers[renderer->GetCurrentImage()],
           .renderArea = {.offset =
               {
                   .x = 0, .y = 0,
@@ -852,7 +871,7 @@ bool VulkanDrawFrame(input::Data *input_data) {
         for (uint32_t i = 0; i < all_meshes.size(); i++) {
           all_meshes[i]->UpdatePipeline(render_pass);
           all_meshes[i]->SubmitDraw(renderer->GetCurrentCommandBuffer(),
-                                   renderer->GetCurrentFrame());
+                                    renderer->GetCurrentImage());
           total_triangles += all_meshes[i]->GetTrianglesCount();
         }
 
@@ -864,12 +883,12 @@ bool VulkanDrawFrame(input::Data *input_data) {
                 allowedPolyFaces[poly_faces_idx], kPolyNoun, total_triangles, kTriangleNoun);
 
         int fps;
-        float frame_time;
-        timing::timer.GetFramerate(100, &fps, &frame_time);
+        float avg_frame_time;
+        timing::timer.GetFramerate(100, &fps, &avg_frame_time);
         sprintf(fps_info,
                 "%2.d FPS  %.3f ms mipmaps: %s",
                 fps,
-                frame_time,
+                avg_frame_time,
                 renderer->MipmapsEnabled() ? "enabled" : "disabled");
 
         loading_info_mutex.lock();

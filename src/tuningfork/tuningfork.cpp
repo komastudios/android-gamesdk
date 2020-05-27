@@ -460,6 +460,7 @@ AnnotationId TuningForkImpl::DecodeAnnotationSerialization(const SerializedAnnot
                                                            bool* loading) const {
     auto id = annotation_util::DecodeAnnotationSerialization(ser, annotation_radix_mult_,
                                                              settings_.loading_annotation_index,
+							     settings_.level_annotation_index,
                                                              loading);
      // Shift over to leave room for the instrument id
     return id * settings_.aggregation_strategy.max_instrumentation_keys;

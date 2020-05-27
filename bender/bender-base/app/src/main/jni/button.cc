@@ -52,5 +52,5 @@ void Button::DrawButton(VkRenderPass render_pass, Font *font, Renderer *renderer
                    y_center_ - (FONT_SIZE_RATIO_Y),
                    renderer->GetCurrentCommandBuffer(),
                    render_pass,
-                   renderer->GetCurrentFrame());
+                   renderer->GetCurrentImage());
 }

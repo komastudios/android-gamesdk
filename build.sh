@@ -12,14 +12,17 @@ set -e # Exit on error
 export ANDROID_HOME=`pwd`/../prebuilts/sdk
 export ANDROID_NDK_HOME=`pwd`/../prebuilts/ndk/r20
 if [[ $1 == "full" ]]
-    then
-        TARGET=fullSdkZip
-	OUTDIR=fullsdk
-    else
-        TARGET=gamesdkZip
-	OUTDIR=gamesdk
+then
+    TARGET=fullSdkZip
+    AAR_TARGET=gameSdkAAR # TODO: update this once a target is made to package Tuning Fork as an AAR.
+    OUTDIR=fullsdk
+else
+    TARGET=gamesdkZip
+    AAR_TARGET=gameSdkAAR
+    OUTDIR=gamesdk
 fi
 ./gradlew $TARGET
+./gradlew $AAR_TARGET
 
 if [[ -z $DIST_DIR ]]
 then
@@ -66,25 +69,28 @@ fi
 if [[ $1 == "full" ]]
 then
     # Build samples
-    pushd samples/tuningfork/expertballs
+    pushd samples/tuningfork/experimentsdemo
     ./gradlew build
     popd
-    pushd samples/tuningfork/scaledballs
+    pushd samples/tuningfork/insightsdemo
+    ./gradlew build
+    popd
+    pushd src/tuningfork/tools/TuningForkMonitor
     ./gradlew build
     popd
     pushd test/tuningfork/testapp
     ./gradlew build
     popd
-    
+
     # Copy to $apk_dir
-    cp samples/tuningfork/expertballs/app/build/outputs/apk/debug/app-debug.apk \
-      $apk_dir/samples/expertballs.apk
-    cp samples/tuningfork/scaledballs/app/build/outputs/apk/debug/app-debug.apk \
-      $apk_dir/samples/scaledballs.apk
+    cp samples/tuningfork/experimentsdemo/app/build/outputs/apk/debug/app-debug.apk \
+      $apk_dir/samples/experimentsdemo.apk
+    cp samples/tuningfork/insightsdemo/app/build/outputs/apk/debug/app-debug.apk \
+      $apk_dir/samples/insightsdemo.apk
     cp src/tuningfork/tools/TuningForkMonitor/app/build/outputs/apk/debug/app-debug.apk \
       $apk_dir/tools/TuningForkMonitor.apk
     cp test/tuningfork/testapp/app/build/outputs/apk/debug/app-debug.apk \
-      $apk_dir/test/tuningforktest.apk    
+      $apk_dir/test/tuningforktest.apk
 fi
 
 # Package the apks into the zip file
@@ -98,4 +104,10 @@ fi
 # Calculate hash of the zip file
 pushd $dist_dir
 sha256sum gamesdk.zip > gamesdk.zip.sha256
+popd
+
+# Calculate hash of the Swappy AAR file and add its associated pom file
+cp src/maven/gaming-frame-pacing.pom $dist_dir
+pushd $dist_dir
+sha256sum gaming-frame-pacing.aar > gaming-frame-pacing.aar.sha256
 popd
