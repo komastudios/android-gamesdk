@@ -133,6 +133,24 @@
       "revId": "8f9516e59bfbb4093d9b9f2292a062e8b9fcac70",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "db220b89_e6360d32",
+        "filename": "cert/test/reporting/lib/graphers/texture_formats_suite_handler.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-05-27T19:36:10Z",
+      "side": 1,
+      "message": "Hi Michael!\nLet me clarify a concept first: 2**20, or 2^20 or \"2 to the 20\" is a power of 2. Not a power of 20. Check here if I don\u0027t convince you 😊 https://en.wikipedia.org/wiki/Power_of_two\n\nNow, with total validity, the question is \"why 20\". I\u0027ll comment that line in the next CL to avoid vagueness. It\u0027s the exponent that converts bytes into megabytes. Will do the development in slow motion:\n\n1 megabyte \u003d 1024 kilobytes (2^10)\n1 kilobyte \u003d 1024 bytes (2^10)\n1 megabyte \u003d 1024 * 1024 bytes\n1 megabyte \u003d 2^10 * 2^10 bytes\n1 megabyte \u003d 2^(10+10) bytes\n1 megabyte \u003d 2^20 bytes\n\nOr which is the same:\n1 byte \u003d 1/2^20 megabytes // my code stopped at this step...\n\n... But I\u0027ll keep going below. Check this out, Michael!! 😮\n1 byte \u003d 2^0/2^20 megabytes  // Provided that 1 \u003d 2^0\n1 byte \u003d 2^(0-20) megabytes\n1 byte \u003d 2^-20 megabytes!!\n\nIn my next CL I\u0027ll better cover this to avoid 20 to show up as a magic number, but I\u0027ll go further and rather than `1.0/2**20` I\u0027ll just go with 2**(-20) 🤓\n\nNevertheless, I\u0027ll create a constant k_bytes_to_megabytes \u003d 2**(-20) with the explanation of how I got to it so in this line that you commented, you\u0027ll see the constant and not its value",
+      "parentUuid": "617f77d6_ffcdf53c",
+      "revId": "8f9516e59bfbb4093d9b9f2292a062e8b9fcac70",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
