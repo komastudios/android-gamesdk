@@ -22,7 +22,6 @@ from pathlib import Path
 import re
 from typing import List, Optional
 
-import lib.graphing # sets font sizes implicitly
 from lib.common import get_indexable_utc, get_readable_utc, Indexer
 from lib.device import DeviceCatalog
 from lib.gdrive import GDrive, GoogleDriveRelatedError
@@ -71,6 +70,23 @@ def __default_summary_name_based_on_directory(directory: str) -> str:
 
     return directory_parts.group(
         1) if directory_parts and len(directory_parts.groups()) >= 1 else ""
+
+
+def __exclude_reports_that_are_to_be_excluded(reports: List[Path],
+                                              excluded: List[Path]) \
+                                                  -> List[Path]:
+    """Certain devices that ended abnormally (and, therefore, have an entry in
+    excluded list) also got some JSON report created, typically truncated,
+    invalid. That's the typical case when the crash didn't happen in the
+    beginning but after some data was produced. That report should not be
+    included in the summary if the device is already in the exclusion list.
+    That's what this function ensures."""
+
+    def report_is_not_in_errors(report: Path) -> bool:
+        return all(
+            report.stem[:-7] + "_error" != elem.stem for elem in excluded)
+
+    return filter(report_is_not_in_errors, reports)
 
 
 # ------------------------------------------------------------------------------
@@ -128,7 +144,9 @@ def __generate_formatted_summary_from_reports(summary_path: Path,
         figure_dpi: image resolution.
     """
     with formatter.create_writer(summary_path):
-        __generate_formatted_summaries(summary_path, reports, formatter,
+        curated_reports = \
+            __exclude_reports_that_are_to_be_excluded(reports, excluded)
+        __generate_formatted_summaries(summary_path, curated_reports, formatter,
                                        figure_dpi)
         __generate_formatted_summary_from_errors(excluded, formatter)
 

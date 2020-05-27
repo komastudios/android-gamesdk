@@ -30,6 +30,12 @@ android {
                 ]
             }
         }
+
+        aaptOptions {
+            // This avoids the Android Asset Packager Tool (aapt) to compress files of any of this
+            // already compressed extensions.
+            noCompress "astc", "pkm", "basis", "gzip", "lz4"
+        }
     }
     buildTypes {
         release {

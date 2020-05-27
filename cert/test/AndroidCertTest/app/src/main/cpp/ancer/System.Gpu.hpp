@@ -34,7 +34,7 @@ namespace ancer {
  * Create gl shader program given the contents of the two shader files in assets/
  * returns handle to program, or 0 if program failed to load or link
  */
-GLuint CreateProgram(const char *vtx_file_name, const char *frg_file_name);
+GLuint CreateProgram(const std::string &vtx_file_name, const std::string &frg_file_name);
 
 //--------------------------------------------------------------------------------------------------
 

@@ -98,6 +98,7 @@ add_library(${PROJECT_NAME} SHARED
         ancer/util/GLHelpers.cpp
         ancer/util/GLPixelBuffer.cpp
         ancer/util/GLTexImage2DRenderer.cpp
+        ancer/util/Gzip.cpp
         ancer/util/JNIHelpers.cpp
         ancer/util/LibAndroid.cpp
         ancer/util/LibEGL.cpp
@@ -213,6 +214,7 @@ target_link_libraries(${PROJECT_NAME}
         EGL
         shaderc_lib
         basis
+        z
         )
 
 if (CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")
