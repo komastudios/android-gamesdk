@@ -116,6 +116,23 @@
       "revId": "8f9516e59bfbb4093d9b9f2292a062e8b9fcac70",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "617f77d6_ffcdf53c",
+        "filename": "cert/test/reporting/lib/graphers/texture_formats_suite_handler.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-05-27T19:08:56Z",
+      "side": 1,
+      "message": "I\u0027m curious, why is there a power of 20 here, rather than a number that\u0027s a power of two? It seems like a \"magic number\" sort of choice, though perhaps I\u0027m missing some crucial relation. (Also, not tremendously important, but this could be 2**-20, since a negative power has the effect of making the inverse, just as 10**-3 makes 0.001.)",
+      "revId": "8f9516e59bfbb4093d9b9f2292a062e8b9fcac70",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
