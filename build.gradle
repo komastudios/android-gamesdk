@@ -425,19 +425,19 @@ def repackArchives(dir, inArs, outAr) {
     }
 }
 
-def aarSdkCopy(buildInfo, outFolder) {
+def copyLibraryToPrefabAar(buildInfo, outFolder, libraryName, prefabName) {
     def arch = buildInfo.arch
     def buildKey = buildInfo.buildKey
-    def cmakeFolder = joinPath(getTempPath(), buildKey, '.cmake', 'swappy')
+    def cmakeFolder = joinPath(getTempPath(), buildKey, '.cmake', libraryName)
     def buildFolder = joinPath(getPackagePath(), outFolder)
-    def sharedLibBuildFolder = joinPath(buildFolder, 'prefab','modules', 'swappy', 'libs',
+    def sharedLibBuildFolder = joinPath(buildFolder, 'prefab','modules', libraryName, 'libs',
                                   'android.'+buildKey)
-    def staticLibBuildFolder = joinPath(buildFolder, 'prefab','modules', 'swappy_static', 'libs',
+    def staticLibBuildFolder = joinPath(buildFolder, 'prefab','modules', libraryName + '_static', 'libs',
                                   'android.'+buildKey)
     def staticsFolder = joinPath(getOutPath(), buildKey)
-    def sharedIncludeBuildFolder = joinPath(buildFolder, 'prefab','modules', 'swappy', 'include', 'swappy')
-    def staticIncludeBuildFolder = joinPath(buildFolder, 'prefab','modules', 'swappy_static', 'include', 'swappy')
-    def headerFolder = './include/swappy'
+    def sharedIncludeBuildFolder = joinPath(buildFolder, 'prefab','modules', libraryName, 'include', libraryName)
+    def staticIncludeBuildFolder = joinPath(buildFolder, 'prefab','modules', libraryName + '_static', 'include', libraryName)
+    def headerFolder = './include/' + libraryName
 
     // TODO: including the dynamic library (uncommenting these next lines)
     // errors because no proper library can be found for module swappy (the shared version),
@@ -463,8 +463,8 @@ def aarSdkCopy(buildInfo, outFolder) {
     if (buildStaticLibrary) {
         copy {
             from file(staticsFolder)
-            include "*.a","*.json"
-            rename("libswappy_static.a", "libswappy.a")
+            include "lib" + libraryName + "_static.a","*.json"
+            rename("lib" + libraryName + "_static.a", "lib" + libraryName + ".a")
             into file(staticLibBuildFolder)
         }
     }
@@ -495,14 +495,14 @@ def aarSdkCopy(buildInfo, outFolder) {
     }
     // 5. Create the json files
     def jsonPrefabDescription = new File(joinPath(buildFolder, 'prefab', 'prefab.json'))
-    jsonPrefabDescription.text = '{"name":"gamesdk","schema_version":1,"dependencies":[],"version":"1.3.0"}'
+    jsonPrefabDescription.text = '{"name":"' + prefabName + '","schema_version":1,"dependencies":[],"version":"1.3.0"}'
     if (buildSharedLibrary) {
-        def jsonModuleDescription = new File(joinPath(buildFolder, 'prefab', 'modules', 'swappy', 'module.json'))
-        jsonModuleDescription.text = '{"library_name": "libswappy", "export_libraries": []}'
+        def jsonModuleDescription = new File(joinPath(buildFolder, 'prefab', 'modules', libraryName, 'module.json'))
+        jsonModuleDescription.text = '{"library_name": "lib' + libraryName + '", "export_libraries": []}'
     }
     if (buildStaticLibrary) {
-        def jsonStaticModuleDescription = new File(joinPath(buildFolder, 'prefab', 'modules', 'swappy_static', 'module.json'))
-        jsonStaticModuleDescription.text = '{"library_name": "libswappy", "export_libraries": []}'
+        def jsonStaticModuleDescription = new File(joinPath(buildFolder, 'prefab', 'modules', libraryName + '_static', 'module.json'))
+        jsonStaticModuleDescription.text = '{"library_name": "lib' + libraryName + '", "export_libraries": []}'
     }
 }
 
@@ -846,8 +846,8 @@ task releaseSdkBuild(type: BuildTask) {
     ext.buildType = "Release";
     ext.nativeBuild = { tf,bt -> sdkNativeBuild(tf,bt) }
 }
-// Build everything and package as an aar file
-task releaseAarSdkBuild() {
+
+task gamingFramePacingAarSdkBuild() {
     doFirst {
         // Clear the package path to ensure AAR generation is not polluted
         // by previous build tasks.
@@ -865,10 +865,58 @@ task releaseAarSdkBuild() {
     ext.nativeBuild = { tf,bt -> sdkAarNativeBuild(tf,bt) }
     doLast {
         nativeBuild(withTuningFork, buildType).each {
-            aarSdkCopy(it, packageName)
+            copyLibraryToPrefabAar(it, packageName, 'swappy', 'gaming-frame-pacing');
         }
     }
 }
+
+// Same as gamingFramePacingAarSdkBuild but with fullsdk package name
+task gamingFramePacingAarFullSdkBuild() {
+    doFirst {
+        // Clear the package path to ensure AAR generation is not polluted
+        // by previous build tasks.
+        delete getPackagePath()
+    }
+    dependsOn ':extras:assembleRelease', prepare_proto
+    ext.packageName = 'fullsdk'
+    ext.flattenLibs = false
+    ext.withTuningFork = false
+    ext.withSharedLibs = true
+    ext.withStaticLibs = true
+    ext.withFullBuildKey = true
+    ext.withSamples = true
+    ext.buildType = "Release";
+    ext.nativeBuild = { tf,bt -> sdkAarNativeBuild(tf,bt) }
+    doLast {
+        nativeBuild(withTuningFork, buildType).each {
+            copyLibraryToPrefabAar(it, packageName, 'swappy', 'gaming-frame-pacing');
+        }
+    }
+}
+
+task gamingPerformanceTunerAarFullSdkBuild() {
+    doFirst {
+        // Clear the package path to ensure AAR generation is not polluted
+        // by previous build tasks.
+        delete getPackagePath()
+    }
+    dependsOn ':extras:assembleRelease', prepare_proto
+    ext.packageName = 'fullsdk'
+    ext.flattenLibs = false
+    ext.withTuningFork = true
+    ext.withSharedLibs = true
+    ext.withStaticLibs = true
+    ext.withFullBuildKey = true
+    ext.withSamples = true
+    ext.buildType = "Release";
+    ext.nativeBuild = { tf,bt -> sdkAarNativeBuild(tf,bt) }
+    doLast {
+        nativeBuild(withTuningFork, buildType).each {
+            copyLibraryToPrefabAar(it, packageName, 'tuningfork', 'gaming-performance-tuner');
+        }
+    }
+}
+
 // Build everything in debug without TF
 task debugSdkBuild(type: BuildTask) {
     dependsOn ':extras:assembleRelease', prepare_proto
@@ -1049,4 +1097,6 @@ addZipTask("fullSdkZip", fullSdkBuild, "gamesdk")
 addZipTask("specificZip", specificBuild, "gamesdk")
 addZipTask("gamesdkZip", releaseSdkBuild, "gamesdk")
 addZipTask("gamesdkDebugZip", debugSdkBuild, "gamesdk_debug")
-addZipTask("gameSdkAAR", releaseAarSdkBuild, "gaming-frame-pacing.aar")
+addZipTask("gamingFramePacingAar", gamingFramePacingAarSdkBuild, "gaming-frame-pacing.aar")
+addZipTask("fullSdkGamingFramePacingAar", gamingFramePacingAarFullSdkBuild, "gaming-frame-pacing.aar")
+addZipTask("fullSdkGamingPerformanceTunerAar", gamingPerformanceTunerAarFullSdkBuild, "gaming-performance-tuner.aar")
