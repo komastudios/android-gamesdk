@@ -14,15 +14,15 @@ export ANDROID_NDK_HOME=`pwd`/../prebuilts/ndk/r20
 if [[ $1 == "full" ]]
 then
     TARGET=fullSdkZip
-    AAR_TARGET=gameSdkAAR # TODO: update this once a target is made to package Tuning Fork as an AAR.
+    AAR_TARGETS=gamingFramePacingAar gamingPerformanceTunerAar
     OUTDIR=fullsdk
 else
     TARGET=gamesdkZip
-    AAR_TARGET=gameSdkAAR
+    AAR_TARGETS=gamingFramePacingAar
     OUTDIR=gamesdk
 fi
 ./gradlew $TARGET
-./gradlew $AAR_TARGET
+./gradlew $AAR_TARGETS
 
 if [[ -z $DIST_DIR ]]
 then
