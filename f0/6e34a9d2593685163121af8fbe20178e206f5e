@@ -1,0 +1,8 @@
+Presubmit-Ready+1: Florian Rival <florianrival@google.com>
+Code-Review+2: Victor Repetskyi <vrepets@google.com>
+Open-Source-Licensing+1: Lint 🤖 <android-build-prod-ayeaye@system.gserviceaccount.com>
+Submitted-by: Florian Rival <florianrival@google.com>
+Submitted-at: Thu, 28 May 2020 14:36:26 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1319015
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
