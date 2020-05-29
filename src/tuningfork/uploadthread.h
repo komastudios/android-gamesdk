@@ -29,7 +29,7 @@ class UploadThread : protected Runnable {
     bool upload_;
     Backend *backend_;
     ProtobufSerialization current_fidelity_params_;
-    UploadCallback upload_callback_;
+    TuningFork_UploadCallback upload_callback_;
     ExtraUploadInfo extra_info_;
     const TFCache* persister_;
  public:
@@ -53,7 +53,7 @@ class UploadThread : protected Runnable {
         extra_info_.experiment_id = experiment_id;
     }
 
-    void SetUploadCallback(UploadCallback upload_callback) {
+    void SetUploadCallback(TuningFork_UploadCallback upload_callback) {
         upload_callback_ = upload_callback;
     }
 

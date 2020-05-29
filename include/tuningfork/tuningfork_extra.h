@@ -30,7 +30,7 @@ extern "C" {
 
 /**
  * @brief Load fidelity params from assets/tuningfork/\<filename\>
- * Ownership of @p fp is passed to the caller: call CProtobufSerialization_Free to deallocate
+ * Ownership of @p fp is passed to the caller: call TuningFork_CProtobufSerialization_free to deallocate
  *  data stored in the struct.
  * @param env JNIEnv
  * @param context Application context
@@ -38,9 +38,9 @@ extern "C" {
  * @param[out] fidelity_params Protocol buffer serialization of fidelity parameters found.
  * @return TFERROR_OK if no error
  */
-TFErrorCode TuningFork_findFidelityParamsInApk(JNIEnv* env, jobject context,
+TuningFork_ErrorCode TuningFork_findFidelityParamsInApk(JNIEnv* env, jobject context,
                                                const char* filename,
-                                               CProtobufSerialization* fidelity_params);
+                                               TuningFork_CProtobufSerialization* fidelity_params);
 
 /**
  * @brief Download fidelity parameters on a separate thread.
@@ -49,7 +49,7 @@ TFErrorCode TuningFork_findFidelityParamsInApk(JNIEnv* env, jobject context,
  * Downloaded params are stored locally and used in preference of default
  *    params when the app is started in future.
  * Requests will timeout according to the initial_request_timeout_ms and
- *  ultimate_request_timeout_ms fields in the TFSettings struct with which Tuning Fork was
+ *  ultimate_request_timeout_ms fields in the TuningFork_Settings struct with which Tuning Fork was
  *  initialized.
  * @param default_params A protobuf serialization containing the fidelity params that
  *  will be used if there is no download connection and there are no saved parameters.
@@ -57,9 +57,9 @@ TFErrorCode TuningFork_findFidelityParamsInApk(JNIEnv* env, jobject context,
  *  saved params.
  * @return TFERROR_OK if no error
  */
-TFErrorCode TuningFork_startFidelityParamDownloadThread(
-                                      const CProtobufSerialization* default_params,
-                                      ProtoCallback fidelity_params_callback);
+TuningFork_ErrorCode TuningFork_startFidelityParamDownloadThread(
+                                      const TuningFork_CProtobufSerialization* default_params,
+                                      TuningFork_FidelityParamsCallback fidelity_params_callback);
 
 /**
  * @brief The TuningFork_init function will save fidelity params to a file
@@ -71,8 +71,8 @@ TFErrorCode TuningFork_startFidelityParamDownloadThread(
  *  is NULL.
  * @return TFERROR_OK if no error
  */
-TFErrorCode TuningFork_saveOrDeleteFidelityParamsFile(JNIEnv* env, jobject context,
-                        const CProtobufSerialization* fidelity_params);
+TuningFork_ErrorCode TuningFork_saveOrDeleteFidelityParamsFile(JNIEnv* env, jobject context,
+                        const TuningFork_CProtobufSerialization* fidelity_params);
 
 #ifdef __cplusplus
 }

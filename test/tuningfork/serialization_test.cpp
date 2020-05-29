@@ -162,7 +162,7 @@ class TestIdProvider : public IdProvider{
                                            bool* loading) const override {
         return 0;
     }
-    TFErrorCode MakeCompoundId(InstrumentationKey k,
+    TuningFork_ErrorCode MakeCompoundId(InstrumentationKey k,
                                uint64_t annotation_id,
                                uint64_t& id) override {
         id = k;

@@ -1307,17 +1307,17 @@ static void demo_draw(struct demo *demo) {
 void swappy_trace_test_preWait(void* userData) {
   DbgMsg("swappy_trace_test_preWait");
 }
-void swappy_trace_test_postWait(void* userData, long cpu_time_ns, long gpu_time_ns) {
-  DbgMsg("swappy_trace_test_postWait: cpu: %ld gpu: %ld", cpu_time_ns, gpu_time_ns);
+void swappy_trace_test_postWait(void* userData, uint64_t cpu_time_ns, uint64_t gpu_time_ns) {
+  DbgMsg("swappy_trace_test_postWait: cpu: %ld gpu: %ld", (long)cpu_time_ns, (long)gpu_time_ns);
 }
 void swappy_trace_test_preSwapBuffers(void* userData) {
   DbgMsg("swappy_trace_test_preSwapBuffers");
 }
-void swappy_trace_test_postSwapBuffers(void* userData, long desiredPresentationTimeMillis){
-  DbgMsg("swappy_trace_test_postSwapBuffers: %ld", desiredPresentationTimeMillis);
+void swappy_trace_test_postSwapBuffers(void* userData, uint64_t desiredPresentationTimeMillis){
+  DbgMsg("swappy_trace_test_postSwapBuffers: %ld", (long)desiredPresentationTimeMillis);
 }
-void swappy_trace_test_startFrame(void* userData, int currentFrame, long currentFrameTimeStampMillis){
-  DbgMsg("swappy_trace_test_startFrame: %d, %ld", currentFrame, currentFrameTimeStampMillis);
+void swappy_trace_test_startFrame(void* userData, int currentFrame, uint64_t desiredPresentationTimeMillis){
+  DbgMsg("swappy_trace_test_startFrame: %d, %ld", currentFrame, (long)desiredPresentationTimeMillis);
 }
 void swappy_trace_test_swapIntervalChanged(void* userData){
   DbgMsg("swappy_trace_test_swapIntervalChanged");

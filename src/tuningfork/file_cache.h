@@ -36,11 +36,11 @@ class FileCache {
 
     const TFCache* GetCCache() const { return &c_cache_;}
 
-    TFErrorCode Get(uint64_t key, CProtobufSerialization* value);
-    TFErrorCode Set(uint64_t key, const CProtobufSerialization* value);
-    TFErrorCode Remove(uint64_t key);
+    TuningFork_ErrorCode Get(uint64_t key, TuningFork_CProtobufSerialization* value);
+    TuningFork_ErrorCode Set(uint64_t key, const TuningFork_CProtobufSerialization* value);
+    TuningFork_ErrorCode Remove(uint64_t key);
 
-    TFErrorCode Clear();
+    TuningFork_ErrorCode Clear();
 };
 
 } // namespace tuningfork
