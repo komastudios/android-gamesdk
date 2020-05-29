@@ -1,0 +1,52 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "beb4360a_0b955ad4",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/Gzip.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-05-29T05:24:10Z",
+      "side": 1,
+      "message": "\u003e Common typo found: \"its a \" -- should it be \"it\u0027s a \"?\n\u003e Note: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.\n\nPlease fix.",
+      "parentUuid": "10893255_7869a851",
+      "range": {
+        "startLine": 131,
+        "startChar": 53,
+        "endLine": 131,
+        "endChar": 59
+      },
+      "revId": "99e835cf1b133dc961a4a651ff654f247cfc2daa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f1e95ce4_3883b05d",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/Gzip.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-05-29T05:24:10Z",
+      "side": 1,
+      "message": "\u003e Common typo found: \"It\u0027s own\" -- should it be \"its own\"?\n\u003e or alternatively, it\u0027s a(n) ...\n\u003e Note: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.\n\nPlease fix.",
+      "parentUuid": "46b563f4_902f6684",
+      "range": {
+        "startLine": 224,
+        "startChar": 44,
+        "endLine": 224,
+        "endChar": 52
+      },
+      "revId": "99e835cf1b133dc961a4a651ff654f247cfc2daa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
