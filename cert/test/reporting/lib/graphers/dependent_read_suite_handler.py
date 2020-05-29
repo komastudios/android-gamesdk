@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 from lib.common import nanoseconds_to_milliseconds
 from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
 from lib.report import Datum, SummaryContext, Suite
-import lib.format_items as fmt
+import lib.items as items
 
 
 class DependentReadSummarizer(SuiteSummarizer):
@@ -51,7 +51,7 @@ class DependentReadSuiteHandler(SuiteHandler):
     def can_handle_datum(cls, datum: Datum):
         return "Indirect Texture Read" in datum.suite_id
 
-    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
+    def render(self, ctx: SummaryContext) -> List[items.Item]:
         self.__compile_data()
         self.__adapt_data_points_for_graphics()
 
@@ -62,7 +62,7 @@ class DependentReadSuiteHandler(SuiteHandler):
             self.__plot_indirectios(axs[2])
 
         image_path = self.plot(ctx, graph)
-        image = fmt.Image(image_path, self.device())
+        image = items.Image(image_path, self.device())
         return [image]
 
     def __compile_data(self) -> type(None):

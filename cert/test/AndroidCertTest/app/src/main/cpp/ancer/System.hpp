@@ -48,6 +48,14 @@ void DestroyRenderer();
  * Load the text from a file in the application's assets/ folder
  */
 std::string LoadText(const char *file_name);
+
+class StatusMessageManager;
+
+/**
+ * The status message manager permits the native side to set a status message that the UI will pick
+ * and display.
+ */
+StatusMessageManager &GetStatusMessageManager();
 } // namespace ancer
 
 #include "System.inl"

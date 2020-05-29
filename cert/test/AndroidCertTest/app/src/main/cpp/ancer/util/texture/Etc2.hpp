@@ -46,6 +46,7 @@ class Etc2Texture : public CompressedTexture {
   void _OnBitmapLoaded() override;
   void _ApplyBitmap() override;
   const std::string &_GetInnerExtension() const override;
+  std::string _GetInnerFormat() const override;
 };
 
 }

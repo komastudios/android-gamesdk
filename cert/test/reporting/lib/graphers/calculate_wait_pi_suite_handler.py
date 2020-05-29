@@ -26,7 +26,7 @@ import numpy as np
 from lib.common import nanoseconds_to_seconds
 from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
 from lib.report import Datum, SummaryContext, Suite
-import lib.format_items as fmt
+import lib.items as items
 
 
 class ThreadChartData:
@@ -147,7 +147,7 @@ class CalculateWaitPiSuiteHandler(SuiteHandler):
                 TemperatureChartData(self.__normalize)
         self.__temperature_data.append(datum)
 
-    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
+    def render(self, ctx: SummaryContext) -> List[items.Item]:
 
         def graph():
             rows, cols = ceil((len(self.__data_by_thread) + 1) / 2), 2
@@ -167,7 +167,7 @@ class CalculateWaitPiSuiteHandler(SuiteHandler):
                                         self.__data_by_thread.values())
 
         image_path = self.plot(ctx, graph)
-        image = fmt.Image(image_path, self.device())
+        image = items.Image(image_path, self.device())
         return [image]
 
     def __render_thread_chart(self, index, chart, chart_data) -> type(None):

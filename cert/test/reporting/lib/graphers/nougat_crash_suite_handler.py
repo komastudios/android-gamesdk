@@ -21,7 +21,7 @@ from typing import List
 from lib.graphers.common_graphers import graph_functional_test_result
 from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
 from lib.report import Datum, SummaryContext, Suite
-import lib.format_items as fmt
+import lib.items as items
 
 
 class NougatCrashSummarizer(SuiteSummarizer):
@@ -89,7 +89,7 @@ class NougatCrashSuiteHandler(SuiteHandler):
 
         return summary
 
-    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
+    def render(self, ctx: SummaryContext) -> List[items.Item]:
         for datum in self.data:
             if datum.operation_id == 'NougatSigabrtOperation':
                 event = datum.get_custom_field('event')
@@ -107,6 +107,6 @@ class NougatCrashSuiteHandler(SuiteHandler):
                                          ['CRASH', 'UNDETERMINED', 'PASSED'])
 
         image_path = self.plot(ctx, graph, '')
-        image = fmt.Image(image_path, self.device())
-        text = fmt.Text(self.compose_summary())
+        image = items.Image(image_path, self.device())
+        text = items.Text(self.compose_summary())
         return [image, text]

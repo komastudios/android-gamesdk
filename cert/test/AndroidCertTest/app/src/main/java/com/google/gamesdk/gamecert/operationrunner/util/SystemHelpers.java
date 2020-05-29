@@ -108,53 +108,6 @@ public class SystemHelpers {
     }
 
     /**
-     * loads an image into the current gl texture unit. Note: this function is
-     * called from native code via JNI.
-     *
-     * @param path path to an image in assets/
-     * @return TextureInformation on the loaded image
-     */
-    public TextureInformation loadTexture(String path) {
-        // TODO(dagum): this can and should be ported from its current Java/JNI implementation to
-        //              full C++ by using System.Asset.hpp type Asset.
-        Bitmap bitmap = null;
-        TextureInformation info = new TextureInformation();
-        try {
-            String str = path;
-            if (!path.startsWith("/")) {
-                str = "/" + path;
-            }
-
-            File file = new File(_context.getExternalFilesDir(null), str);
-            if (file.canRead()) {
-                bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
-            } else {
-                bitmap = BitmapFactory.decodeStream(_context.getResources()
-                        .getAssets().open(path));
-            }
-        } catch (Exception e) {
-            Log.w(TAG, "Couldn't load file: \"" + path + "\"");
-            info.ret = false;
-            return info;
-        }
-
-        if (bitmap == null) {
-            Log.e(TAG, "Couldn't load image: \"" + path + "\"");
-            info.ret = false;
-            return info;
-        }
-
-        GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
-        info.ret = true;
-        info.alphaChannel = bitmap.hasAlpha();
-        info.originalWidth = bitmap.getWidth();
-        info.originalHeight = bitmap.getHeight();
-        info.image = bitmap;
-
-        return info;
-    }
-
-    /**
      * loads a text file. Note: this function is
      * called from native code via JNI.
      *

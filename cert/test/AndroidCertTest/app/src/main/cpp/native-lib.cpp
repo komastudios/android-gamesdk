@@ -43,6 +43,7 @@
 #include <ancer/util/JNIHelpers.hpp>
 #include <ancer/util/Log.hpp>
 #include <ancer/util/FpsCalculator.hpp>
+#include <ancer/util/StatusMessage.inl>
 #include <ancer/util/TestResultPrinter.hpp>
 #include <ancer/util/Time.hpp>
 
@@ -455,6 +456,18 @@ extern "C" JNIEXPORT jlong JNICALL
 Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_getCurrentMaxFrameTimeNs(
         JNIEnv *env, jclass instance) {
     return duration_cast<Nanoseconds>(ancer::GetFpsCalculator().GetMaxFrameTime()).count();
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
+Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_isNewStatusAvailable(
+    JNIEnv* env, jclass instance) {
+    return static_cast<jboolean>(ancer::GetStatusMessageManager().IsNewStatusAvailable());
+}
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_getCurrentStatusMessage(
+    JNIEnv* env, jclass instance) {
+    return env->NewStringUTF(ancer::GetStatusMessageManager().GetValue().c_str());
 }
 
 extern "C" JNIEXPORT void JNICALL
