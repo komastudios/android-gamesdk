@@ -1,0 +1,48 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000003190722",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1316149?revision\u003d2",
+      "fixSuggestions": [
+        {
+          "fixId": "0fc0ac1e_b0778882",
+          "description": "Change to \"cert/test/reporting/lib/graphers/choreographer_timestamps_suite_handler.py\"",
+          "replacements": [
+            {
+              "path": "cert/test/reporting/lib/graphers/choreographer_timestamps_suite_handler.py",
+              "range": {
+                "startLine": 331,
+                "startChar": 33,
+                "endLine": 331,
+                "endChar": 43
+              },
+              "replacement": "significant"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "9c0046b4_4d407e89",
+        "filename": "cert/test/reporting/lib/graphers/choreographer_timestamps_suite_handler.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 331,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-05-29T20:19:40Z",
+      "side": 1,
+      "message": "Common typo found: \"signficant\" -- should it be \"significant\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.",
+      "range": {
+        "startLine": 331,
+        "startChar": 33,
+        "endLine": 331,
+        "endChar": 43
+      },
+      "revId": "ef67cd5207515f51a3034989e96a20d311d6a43b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
