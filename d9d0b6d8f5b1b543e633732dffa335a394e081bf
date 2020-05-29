@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "20b60074_66d63cc8",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-05-29T22:43:33Z",
+      "side": 1,
+      "message": "Why are you getting a looper if it\u0027s not being used? If it\u0027s some kind of criteria (e.g., the egl timings don\u0027t work without a looper instance... weird... you should document it).",
+      "range": {
+        "startLine": 174,
+        "startChar": 4,
+        "endLine": 177,
+        "endChar": 5
+      },
+      "revId": "d9d0b6d8f5b1b543e633732dffa335a394e081bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
