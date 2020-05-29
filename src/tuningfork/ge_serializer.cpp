@@ -350,7 +350,7 @@ struct Hist {
 };
 }
 
-/*static*/ TFErrorCode GESerializer::DeserializeAndMerge(const std::string& evt_json_ser,
+/*static*/ TuningFork_ErrorCode GESerializer::DeserializeAndMerge(const std::string& evt_json_ser,
                                                          IdProvider& id_provider,
                                                          ProngCache& pc) {
     std::string err;

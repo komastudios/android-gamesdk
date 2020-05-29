@@ -42,7 +42,7 @@ bool swappy_enabled = false;
 
 namespace {
 
-constexpr TFInstrumentKey TFTICK_CHOREOGRAPHER = TFTICK_USERDEFINED_BASE;
+constexpr TuningFork_InstrumentKey TFTICK_CHOREOGRAPHER = TFTICK_USERDEFINED_BASE;
 
 std::string ReplaceReturns(const std::string& s) {
     std::string r = s;
@@ -80,18 +80,18 @@ void SetAnnotations() {
         Annotation a;
         a.set_loading(sLoading?proto_tf::LOADING:proto_tf::NOT_LOADING);
         a.set_level((proto_tf::Level)sLevel);
-        auto ser = tf::CProtobufSerialization_Alloc(a);
+        auto ser = tf::TuningFork_CProtobufSerialization_Alloc(a);
         if (TuningFork_setCurrentAnnotation(&ser)!=TFERROR_OK) {
             ALOGW("Bad annotation");
         }
-        CProtobufSerialization_Free(&ser);
+        TuningFork_CProtobufSerialization_free(&ser);
     }
 }
 
 std::mutex mutex;
 std::condition_variable cv;
 bool setFPs = false;
-extern "C" void FidelityParamsCallback(const CProtobufSerialization* params) {
+extern "C" void FidelityParamsCallback(const TuningFork_CProtobufSerialization* params) {
     FidelityParams p;
     // Set default values
     p.set_num_spheres(20);
@@ -118,7 +118,7 @@ jobject tf_activity;
 void InitTf(JNIEnv* env, jobject activity) {
     SwappyGL_init(env, activity);
     swappy_enabled = SwappyGL_isEnabled();
-    TFSettings settings {};
+    TuningFork_Settings settings {};
     if (swappy_enabled) {
         settings.swappy_tracer_fn = &SwappyGL_injectTracer;
         settings.swappy_version = Swappy_version();
@@ -127,7 +127,7 @@ void InitTf(JNIEnv* env, jobject activity) {
 #ifndef NDEBUG
     settings.endpoint_uri_override = "http://localhost:9000";
 #endif
-    TFErrorCode err = TuningFork_init(&settings, env, activity);
+    TuningFork_ErrorCode err = TuningFork_init(&settings, env, activity);
     if (err==TFERROR_OK) {
         TuningFork_setUploadCallback(UploadCallback);
         SetAnnotations();
@@ -230,10 +230,10 @@ Java_com_tuningfork_experimentsdemo_TFTestActivity_setFidelityParameters(JNIEnv 
     FidelityParams p;
     p.set_num_spheres(dis(gen));
     p.set_tesselation_percent(dis(gen));
-    auto params = tf::CProtobufSerialization_Alloc(p);
+    auto params = tf::TuningFork_CProtobufSerialization_Alloc(p);
     TuningFork_setFidelityParameters(&params);
     FidelityParamsCallback(&params);
-    CProtobufSerialization_Free(&params);
+    TuningFork_CProtobufSerialization_free(&params);
 }
 
 }

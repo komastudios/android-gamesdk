@@ -240,7 +240,7 @@ Java_com_google_gamesdk_gamecert_operationrunner_util_NativeInvoker_glSurfaceVie
 // TODO(tmillican@google.com, shamyl@google.com): Move into swappy renderer
 
 namespace {
-    void StartFrameCallback(void*, int, long) {
+    void StartFrameCallback(void*, int, uint64_t) {
         ancer::GetFpsCalculator().UpdateFps();
     }
 
