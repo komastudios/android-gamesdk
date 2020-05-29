@@ -217,14 +217,14 @@ bool DeleteDir(const std::string& path) {
     return true;
 }
 
-bool LoadBytesFromFile(std::string file_name, CProtobufSerialization* params) {
+bool LoadBytesFromFile(std::string file_name, TuningFork_CProtobufSerialization* params) {
     ALOGV("LoadBytesFromFile:%s",file_name.c_str());
     std::ifstream f(file_name, std::ios::binary);
     if (f.good()) {
         f.seekg(0, std::ios::end);
         params->size = f.tellg();
         params->bytes = (uint8_t*)::malloc(params->size);
-        params->dealloc = CProtobufSerialization_Dealloc;
+        params->dealloc = TuningFork_CProtobufSerialization_Dealloc;
         f.seekg(0, std::ios::beg);
         f.read((char*)params->bytes, params->size);
         return true;
@@ -232,7 +232,7 @@ bool LoadBytesFromFile(std::string file_name, CProtobufSerialization* params) {
     return false;
 }
 
-bool SaveBytesToFile(std::string file_name, const CProtobufSerialization* params) {
+bool SaveBytesToFile(std::string file_name, const TuningFork_CProtobufSerialization* params) {
     ALOGV("SaveBytesToFile:%s",file_name.c_str());
     std::ofstream save_file(file_name, std::ios::binary);
     if (save_file.good()) {

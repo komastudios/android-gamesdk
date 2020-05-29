@@ -40,19 +40,19 @@ namespace tuningfork {
 class SwappyTraceWrapper {
     SwappyTracerFn swappyTracerFn_;
     SwappyTracer trace_;
-    TFTraceHandle logicTraceHandle_ = 0;
+    TuningFork_TraceHandle logicTraceHandle_ = 0;
 public:
     SwappyTraceWrapper(const Settings& settings);
     // Swappy trace callbacks
     static void StartFrameCallback(void* userPtr, int /*currentFrame*/,
-                                         long /*currentFrameTimeStampMs*/);
+                                         uint64_t /*desiredPresentationTimeMillis*/);
     static void PreWaitCallback(void* userPtr);
-    static void PostWaitCallback(void* userPtr, long cpu_time_ns, long gpu_time_ns);
+    static void PostWaitCallback(void* userPtr, uint64_t cpu_time_ns, uint64_t gpu_time_ns);
     static void PreSwapBuffersCallback(void* userPtr);
-    static void PostSwapBuffersCallback(void* userPtr, long /*desiredPresentationTimeMs*/);
+    static void PostSwapBuffersCallback(void* userPtr, uint64_t /*desiredPresentationTimeMillis*/);
 
     static void StartFrameCallbackPre1_3(void* userPtr, int /*currentFrame*/,
-                                         long /*currentFrameTimeStampMs*/);
+                                         uint64_t /*desiredPresentationTimeMillis*/);
     static void PreWaitCallbackPre1_3(void* userPtr);
     static void PostWaitCallbackPre1_3(void* userPtr);
 };

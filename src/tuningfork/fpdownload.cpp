@@ -64,7 +64,7 @@ static std::string RequestJson(const ExtraUploadInfo& request_info,
     return result;
 }
 
-static TFErrorCode DecodeResponse(const std::string& response, std::vector<uint8_t>& fps,
+static TuningFork_ErrorCode DecodeResponse(const std::string& response, std::vector<uint8_t>& fps,
                            std::string& experiment_id) {
     using namespace json11;
     if (response.empty()) {
@@ -136,13 +136,13 @@ static TFErrorCode DecodeResponse(const std::string& response, std::vector<uint8
     return TFERROR_OK;
 }
 
-static TFErrorCode DownloadFidelityParams(Request& request,
+static TuningFork_ErrorCode DownloadFidelityParams(Request& request,
                                    const ProtobufSerialization* training_mode_fps,
                                    ProtobufSerialization& fps,
                                    std::string& experiment_id) {
     int response_code;
     std::string body;
-    TFErrorCode ret = request.Send(kRpcName, RequestJson(request.Info(), training_mode_fps),
+    TuningFork_ErrorCode ret = request.Send(kRpcName, RequestJson(request.Info(), training_mode_fps),
                                   response_code, body);
     if (ret!=TFERROR_OK)
         return ret;
@@ -155,7 +155,7 @@ static TFErrorCode DownloadFidelityParams(Request& request,
     return ret;
 }
 
-TFErrorCode ParamsLoader::GetFidelityParams(Request& request,
+TuningFork_ErrorCode ParamsLoader::GetFidelityParams(Request& request,
                                             const ProtobufSerialization* training_mode_fps,
                                             ProtobufSerialization& fidelity_params,
                                             std::string& experiment_id) {

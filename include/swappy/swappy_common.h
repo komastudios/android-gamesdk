@@ -125,7 +125,7 @@ typedef void (*SwappyPreWaitCallback)(void*);
  * @param cpu_time_ns Time for CPU processing of this frame in nanoseconds.
  * @param gpu_time_ns Time for GPU processing of previous frame in nanoseconds.
  */
-typedef void (*SwappyPostWaitCallback)(void*, long cpu_time_ns, long gpu_time_ns);
+typedef void (*SwappyPostWaitCallback)(void*, uint64_t cpu_time_ns, uint64_t gpu_time_ns);
 
 /**
  * Pointer to a function that can be attached to SwappyTracer::preSwapBuffers.
@@ -139,14 +139,14 @@ typedef void (*SwappyPreSwapBuffersCallback)(void*);
  * @param desiredPresentationTimeMillis The target time, in milliseconds, at which the frame
  * would be presented on screen.
  */
-typedef void (*SwappyPostSwapBuffersCallback)(void*, long desiredPresentationTimeMillis);
+typedef void (*SwappyPostSwapBuffersCallback)(void*, uint64_t desiredPresentationTimeMillis);
 
 /**
  * Pointer to a function that can be attached to SwappyTracer::startFrame.
  * @param userData Pointer to arbitrary data, see SwappyTracer::userData.
  * @param desiredPresentationTimeMillis The time, in milliseconds, at which the frame is scheduled to be presented.
  */
-typedef void (*SwappyStartFrameCallback)(void*, int currentFrame, long desiredPresentationTimeMillis);
+typedef void (*SwappyStartFrameCallback)(void*, int currentFrame, uint64_t desiredPresentationTimeMillis);
 
 /**
  * Pointer to a function that can be attached to SwappyTracer::swapIntervalChanged.
