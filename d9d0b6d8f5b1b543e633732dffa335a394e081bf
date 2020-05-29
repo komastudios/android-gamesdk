@@ -2,6 +2,57 @@
   "comments": [
     {
       "key": {
+        "uuid": "df78f8ac_676ac2cf",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-05-29T23:21:03Z",
+      "side": 1,
+      "message": "I think it would be good to tell a bit about cardinality of these output records. Seems to me that this tests produces, if at all, one availability_datum and zero to many choreograper_timestamp, zero to many egl_frame_timestampt_datum.",
+      "revId": "d9d0b6d8f5b1b543e633732dffa335a394e081bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c795b685_9f64af18",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-05-29T23:21:03Z",
+      "side": 1,
+      "message": "It sounds like we report egl_frame_timestamp_datum that contain a frame_id but also some irrelevant timestamp because success if false.\n\nMy objection here is... what\u0027s the usefulness of unsuccessful datums from the perspective of the Python grapher? Are they taken into account at all?\n\nIf not, obvious question is \"why reporting them, then?\"\nIf they are taken into account by the grapher, did you know that you can drop entirely the success flag from the reported JSON, and just report egl_frame_timestamp_datums with egl_frame_timestamp_ns only if success is true?\n\nThat way the Python grapher must acknowledge that egl_frame_timestamp_ns is optional data. You may consider this as a defensive coding suggestion, because the writer of the Python grapher could forget to check if success is true, and just use timestamp_ns (which would contain garbage is success is false). If, instead, timestamp_ns is only emitted if and only if success is true, attempting to use an non-existent timestamp_ns would crash the grapher. A crash for misusing data is, IMHO, better than taking invalid data as valid; although this is debatable.",
+      "revId": "d9d0b6d8f5b1b543e633732dffa335a394e081bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fc6dd72a_68d118f7",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-05-29T23:21:03Z",
+      "side": 1,
+      "message": "(Comes from another feedback comment above)\nConsider this alternative:\n\nvoid WriteDatum(report_writers::Struct w, const egl_frame_timestamp_datum\u0026 d) {\n  ADD_DATUM_MEMBER(w, d, frame_id);\n  if (d.success) {\n    ADD_DATUM_MEMBER(w, d, egl_frame_timestamp_ns);\n  }\n}\n\nIn this version, the Python grapher will not receive success, but if success is false, then it won\u0027t receive egl_frame_timestamp_ns either. Just keep this in mine anytime you have to deal with optional results.",
+      "revId": "d9d0b6d8f5b1b543e633732dffa335a394e081bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "20b60074_66d63cc8",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
         "patchSetId": 3
@@ -22,6 +73,57 @@
       "revId": "d9d0b6d8f5b1b543e633732dffa335a394e081bf",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c10011d0_b528d973",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-05-29T23:21:03Z",
+      "side": 1,
+      "message": "(Comes from earlier feedback)\n\nIf the grapher just ignores entirely egl_frame_timestamp_datum when success is false, then you may opt not to Report(datum) if value \u003d\u003d EGL_TIMESTAMP_INVALID_ANDROID.\n\nAlthough it seems like you want to leave some indication that EGL_TIMESTAMP_INVALID_ANDROID happened.",
+      "revId": "d9d0b6d8f5b1b543e633732dffa335a394e081bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fb952b4c_20a5a7b5",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 326,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-05-29T23:21:03Z",
+      "side": 1,
+      "message": "If _frame_counter \u003e last_frame_id, Report(...) is called. Is that OK?",
+      "revId": "d9d0b6d8f5b1b543e633732dffa335a394e081bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fd3a8627_49fdbac5",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 336,
+      "author": {
+        "id": 1590267
+      },
+      "writtenOn": "2020-05-29T23:21:03Z",
+      "side": 1,
+      "message": "If _frame_counter \u003c first_frame_id, SetupFrameCallback() is called. Is that OK?",
+      "revId": "d9d0b6d8f5b1b543e633732dffa335a394e081bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
