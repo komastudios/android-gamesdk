@@ -59,9 +59,11 @@ bool DeleteFile(const std::string& path);
 
 bool DeleteDir(const std::string& path);
 
-bool LoadBytesFromFile(std::string file_name, CProtobufSerialization* params);
+bool LoadBytesFromFile(std::string file_name,
+    TuningFork_CProtobufSerialization* params);
 
-bool SaveBytesToFile(std::string file_name, const CProtobufSerialization* params);
+bool SaveBytesToFile(std::string file_name,
+    const TuningFork_CProtobufSerialization* params);
 
 // Call NativeContext.getCacheDir via JNI
 std::string GetAppCacheDir();

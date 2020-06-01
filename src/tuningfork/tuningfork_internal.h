@@ -59,7 +59,7 @@ struct Settings {
         uint32_t max_instrumentation_keys;
         std::vector<uint32_t> annotation_enum_size;
     };
-    TFSettings c_settings;
+    TuningFork_Settings c_settings;
     AggregationStrategy aggregation_strategy;
     std::vector<TFHistogram> histograms;
     std::string base_uri;
@@ -100,7 +100,7 @@ class IdProvider {
     virtual ~IdProvider() {}
     virtual uint64_t DecodeAnnotationSerialization(const ProtobufSerialization& ser,
                                                    bool* loading = nullptr) const = 0;
-    virtual TFErrorCode MakeCompoundId(InstrumentationKey k,
+    virtual TuningFork_ErrorCode MakeCompoundId(InstrumentationKey k,
                                        uint64_t annotation_id,
                                        uint64_t& id) = 0;
 };
@@ -108,7 +108,8 @@ class IdProvider {
 class Backend {
 public:
     virtual ~Backend() {};
-    virtual TFErrorCode Process(const std::string& tuningfork_log_event) = 0;
+    virtual TuningFork_ErrorCode Process(
+        const std::string& tuningfork_log_event) = 0;
 };
 
 class Request {
@@ -124,17 +125,21 @@ class Request {
     virtual ~Request() {}
     std::string GetURL(std::string rpcname) const;
     const ExtraUploadInfo& Info() const { return info_; }
-    virtual TFErrorCode Send(const std::string& rpc_name, const std::string& request,
-                             int& response_code, std::string& response_body);
+    virtual TuningFork_ErrorCode Send(
+        const std::string& rpc_name,
+        const std::string& request,
+        int& response_code,
+        std::string& response_body);
 };
 
 class ParamsLoader {
 public:
     virtual ~ParamsLoader() {};
-    virtual TFErrorCode GetFidelityParams(Request& request,
-                                          const ProtobufSerialization* training_mode_fps,
-                                          ProtobufSerialization& fidelity_params,
-                                          std::string& experiment_id);
+    virtual TuningFork_ErrorCode GetFidelityParams(
+        Request& request,
+        const ProtobufSerialization* training_mode_fps,
+        ProtobufSerialization& fidelity_params,
+        std::string& experiment_id);
 };
 
 // TODO(willosborn): remove this
@@ -165,7 +170,7 @@ class IMemInfoProvider {
 // If no backend is passed, the default backend, which uploads to the google endpoint is used.
 // If no timeProvider is passed, std::chrono::steady_clock is used.
 // If no env is passed, there can be no upload or download.
-TFErrorCode Init(const Settings& settings,
+TuningFork_ErrorCode Init(const Settings& settings,
                  const ExtraUploadInfo* extra_info = nullptr,
                  Backend* backend = 0, ParamsLoader* loader = nullptr,
                  ITimeProvider* time_provider = nullptr,
@@ -180,58 +185,63 @@ void CheckSettings(Settings& c_settings, const std::string& save_dir);
 //  as being associated with those parameters.
 // If you subsequently call GetFidelityParameters, any data that is already collected will be
 // submitted to the backend.
-TFErrorCode GetFidelityParameters(const ProtobufSerialization& default_params,
-                                  ProtobufSerialization& params, uint32_t timeout_ms);
+TuningFork_ErrorCode GetFidelityParameters(
+    const ProtobufSerialization& default_params,
+    ProtobufSerialization& params,
+    uint32_t timeout_ms);
 
 // Protobuf serialization of the current annotation
-TFErrorCode SetCurrentAnnotation(const ProtobufSerialization& annotation);
+TuningFork_ErrorCode SetCurrentAnnotation(
+    const ProtobufSerialization& annotation);
 
 // Record a frame tick that will be associated with the instrumentation key and the current
 //   annotation
-TFErrorCode FrameTick(InstrumentationKey id);
+TuningFork_ErrorCode FrameTick(InstrumentationKey id);
 
 // Record a frame tick using an external time, rather than system time
-TFErrorCode FrameDeltaTimeNanos(InstrumentationKey id, Duration dt);
+TuningFork_ErrorCode FrameDeltaTimeNanos(InstrumentationKey id, Duration dt);
 
 // Start a trace segment
-TFErrorCode StartTrace(InstrumentationKey key, TraceHandle& handle);
+TuningFork_ErrorCode StartTrace(InstrumentationKey key, TraceHandle& handle);
 
 // Record a trace with the key and annotation set using startTrace
-TFErrorCode EndTrace(TraceHandle h);
+TuningFork_ErrorCode EndTrace(TraceHandle h);
 
-TFErrorCode SetUploadCallback(UploadCallback cbk);
+TuningFork_ErrorCode SetUploadCallback(TuningFork_UploadCallback cbk);
 
-TFErrorCode Flush();
+TuningFork_ErrorCode Flush();
 
-TFErrorCode Destroy();
+TuningFork_ErrorCode Destroy();
 
 // The default histogram that is used if the user doesn't specify one in Settings
 TFHistogram DefaultHistogram(InstrumentationKey ikey);
 
 // Load default fidelity params from either the saved file or the file in
 //  settings.default_fidelity_parameters_filename, then start the download thread.
-TFErrorCode GetDefaultsFromAPKAndDownloadFPs(const Settings& settings);
+TuningFork_ErrorCode GetDefaultsFromAPKAndDownloadFPs(
+    const Settings& settings);
 
-TFErrorCode KillDownloadThreads();
+TuningFork_ErrorCode KillDownloadThreads();
 
 // Load settings from assets/tuningfork/tuningfork_settings.bin.
 // Ownership of @p settings is passed to the caller: call
-//  TFSettings_Free to deallocate data stored in the struct.
+//  TuningFork_Settings_Free to deallocate data stored in the struct.
 // Returns TFERROR_OK and fills 'settings' if the file could be loaded.
 // Returns TFERROR_NO_SETTINGS if the file was not found.
-TFErrorCode FindSettingsInApk(Settings* settings);
+TuningFork_ErrorCode FindSettingsInApk(Settings* settings);
 
 // Get the current settings (TF must have been initialized)
 const Settings* GetSettings();
 
-TFErrorCode SetFidelityParameters(const ProtobufSerialization& params);
+TuningFork_ErrorCode SetFidelityParameters(
+    const ProtobufSerialization& params);
 
 // Perform a blocking call to upload debug info to a server.
-TFErrorCode UploadDebugInfo(Request& request);
+TuningFork_ErrorCode UploadDebugInfo(Request& request);
 
-TFErrorCode FindFidelityParamsInApk(const std::string& filename,
+TuningFork_ErrorCode FindFidelityParamsInApk(const std::string& filename,
                                     ProtobufSerialization& fp);
 
-TFErrorCode EnableMemoryRecording(bool enable);
+TuningFork_ErrorCode EnableMemoryRecording(bool enable);
 
 } // namespace tuningfork

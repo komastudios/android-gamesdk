@@ -25,6 +25,10 @@
 #include <stdint.h>
 #include <jni.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** @cond INTERNAL */
 
 #define TUNINGFORK_MAJOR_VERSION 0
@@ -42,7 +46,7 @@
  * @brief Instrument keys indicating time periods within a frame.
  *  Keys 64000-65535 are reserved
  */
-enum InstrumentKeys {
+enum TuningFork_InstrumentKeys {
   TFTICK_USERDEFINED_BASE =   0,
   TFTICK_RAW_FRAME_TIME =     64000, ///< If GPU time is available, thisis MAX(CPU_TIME,GPU_TIME)
                                      ///< If not, this is the same as PACED_FRAME_TIME
@@ -54,28 +58,29 @@ enum InstrumentKeys {
 
 /**
  * @brief A series of bytes representing a serialized protocol buffer.
- * @see CProtobufSerialization_Free for how to deallocate the memory once finished with the buffer.
+ * @see TuningFork_CProtobufSerialization_free for how to deallocate
+ * the memory once finished with the buffer.
  */
-struct CProtobufSerialization {
+struct TuningFork_CProtobufSerialization {
     uint8_t* bytes; /// Array of bytes.
     uint32_t size; /// Size of array.
     /// Deallocation callback (may be NULL if not owned).
-    void (*dealloc)(struct CProtobufSerialization*);
+    void (*dealloc)(struct TuningFork_CProtobufSerialization*);
 };
 
 /// The instrumentation key identifies a tick point within a frame or a trace segment
-typedef uint16_t TFInstrumentKey;
+typedef uint16_t TuningFork_InstrumentKey;
 /// A trace handle used in TuningFork_startTrace
-typedef uint64_t TFTraceHandle;
+typedef uint64_t TuningFork_TraceHandle;
 /// A time as milliseconds past the epoch.
-typedef uint64_t TFTimePoint;
+typedef uint64_t TuningFork_TimePoint;
 /// A duration in nanoseconds.
-typedef uint64_t TFDuration;
+typedef uint64_t TuningFork_Duration;
 
 /**
  * @brief All the error codes that can be returned by Tuning Fork functions.
  */
-enum TFErrorCode {
+enum TuningFork_ErrorCode {
   TFERROR_OK = 0,  ///< No error
   TFERROR_NO_SETTINGS =
       1,  ///< No tuningfork_settings.bin found in assets/tuningfork.
@@ -132,71 +137,79 @@ enum TFErrorCode {
 };
 
 /**
- * @defgroup TFCache Tuning Fork cache utilities
+ * @defgroup TuningFork_Cache Tuning Fork cache utilities
  * Optional persistent cache object to use with Tuning Fork.
  * @{
  */
 
 /**
- * @brief Pointer to a function that can be attached to TFCache::get
+ * @brief Pointer to a function that can be attached to TuningFork_Cache::get
  *
  * Function that will be called to get a value for a key.
- * @see TFCache
+ * @see TuningFork_Cache
  */
-typedef TFErrorCode (* PFnTFCacheGet )(uint64_t key, CProtobufSerialization* value,
-                                     void* user_data);
+typedef TuningFork_ErrorCode (* TuningFork_CacheGet )(uint64_t key,
+    TuningFork_CProtobufSerialization* value,
+    void* user_data);
 
 /**
- * @brief Pointer to a function that can be attached to TFCache::set
+ * @brief Pointer to a function that can be attached to TuningFork_Cache::set
  *
  * Function that will be called to set a value for a key.
- * @see TFCache
+ * @see TuningFork_Cache
  */
-typedef TFErrorCode (* PFnTFCacheSet )(uint64_t key, const CProtobufSerialization* value,
-                                     void* user_data);
+typedef TuningFork_ErrorCode (* TuningFork_CacheSet )(uint64_t key,
+    const TuningFork_CProtobufSerialization* value,
+    void* user_data);
 
 /**
- * @brief Pointer to a function that can be attached to TFCache::remove
+ * @brief Pointer to a function that can be attached to TuningFork_Cache::remove
  *
  * Function that will be called to remove an entry in the cache.
- * @see TFCache
+ * @see TuningFork_Cache
  */
-typedef TFErrorCode (* PFnTFCacheRemove )(uint64_t key, void* user_data);
+typedef TuningFork_ErrorCode (* TuningFork_CacheRemove )(uint64_t key,
+    void* user_data);
 
 /**
  * @brief An object used to cache upload data when no connection is available.
  *  If you do not supply one of these, data is saved to a temporary file.
  */
-struct TFCache {
+struct TuningFork_Cache {
   void* user_data; ///< Data passed to each callback.
-  PFnTFCacheSet set; ///< Function to set a value for a key.
-  PFnTFCacheGet get; ///< Function to get a value for a key.
-  PFnTFCacheRemove remove; ///< Function to remove an entry in the cache.
+  TuningFork_CacheSet set; ///< Function to set a value for a key.
+  TuningFork_CacheGet get; ///< Function to get a value for a key.
+  TuningFork_CacheRemove remove; ///< Function to remove an entry in the cache.
 };
 
 /** @} */
 
 /**
- * @brief Pointer to a function that can be attached to TFSettings::fidelity_params_callback
+ * @brief Pointer to a function that can be attached to
+ * TuningFork_Settings::fidelity_params_callback
  *
  * Function that will be called with the fidelity parameters that are downloaded.
- * @see TFSettings
+ * @see TuningFork_Settings
  */
-typedef void (* ProtoCallback )(const CProtobufSerialization*);
+typedef void (* TuningFork_FidelityParamsCallback )(
+    const TuningFork_CProtobufSerialization*);
 
 /**
- * @brief Pointer to a function that can be passed to TuningFork_setUploadCallback.
+ * @brief Pointer to a function that can be passed to
+ * TuningFork_setUploadCallback.
  *
- * Function that will be called on a separate thread every time TuningFork performs an upload.
- * @see TFSettings
+ * Function that will be called on a separate thread every
+ * time TuningFork performs an upload.
+ * @see TuningFork_Settings
  */
-typedef void (* UploadCallback )(const char*, size_t n);
+typedef void (* TuningFork_UploadCallback )(const char*, size_t n);
 
 struct SwappyTracer;
 
 /**
- * @brief Pointer to Swappy_injectTracers that can be attached to TFSettings::swappy_tracer_fn.
- * @see TFSettings
+ * @brief Pointer to Swappy_injectTracers that can be attached
+ * to TuningFork_Settings::swappy_tracer_fn.
+ * @see TuningFork_Settings
  */
 typedef void (* SwappyTracerFn )(const SwappyTracer*);
 
@@ -204,12 +217,12 @@ typedef void (* SwappyTracerFn )(const SwappyTracer*);
  * @brief Initialization settings
  *   Zero any values that are not being used.
  */
-struct TFSettings {
+struct TuningFork_Settings {
   /**
    * Cache object to be used for upload data persistence.
    * If unset, data is persisted to /data/local/tmp/tuningfork
    */
-  const TFCache* persistent_cache;
+  const TuningFork_Cache* persistent_cache;
   /**
    * The address of the Swappy_injectTracers function.
    * If this is unset, you need to call TuningFork_tick yourself.
@@ -221,7 +234,7 @@ struct TFSettings {
    * If set, this is called with the fidelity parameters that are downloaded.
    * If unset, you need to call TuningFork_getFidelityParameters yourself.
    */
-  ProtoCallback fidelity_params_callback;
+  TuningFork_FidelityParamsCallback fidelity_params_callback;
   /**
    * A serialized protobuf containing the fidelity parameters to be uploaded
    *  for training.
@@ -229,7 +242,7 @@ struct TFSettings {
    *  are used instead of the default parameters loaded from the APK, if they
    *  are present and there are neither a successful download nor saved parameters.
    */
-  const CProtobufSerialization* training_fidelity_params;
+  const TuningFork_CProtobufSerialization* training_fidelity_params;
   /**
    * A null-terminated string containing the endpoint that Tuning Fork will connect
    * to for parameter, upload and debug requests.
@@ -243,15 +256,12 @@ struct TFSettings {
   uint32_t swappy_version;
 };
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * @brief Deallocate any memory owned by the procol buffer serialization.
  * @param ser A protocol buffer serialization
  */
-inline void CProtobufSerialization_Free(CProtobufSerialization* ser) {
+inline void TuningFork_CProtobufSerialization_free(
+    TuningFork_CProtobufSerialization* ser) {
     if (ser->dealloc) {
         ser->dealloc(ser);
         ser->dealloc = NULL;
@@ -261,7 +271,8 @@ inline void CProtobufSerialization_Free(CProtobufSerialization* ser) {
 /** @cond INTERNAL */
 
 // Internal init function. Do not call directly.
-TFErrorCode TuningFork_init_internal(const TFSettings *settings, JNIEnv* env, jobject context);
+TuningFork_ErrorCode TuningFork_init_internal(const TuningFork_Settings *settings,
+    JNIEnv* env, jobject context);
 
 // Internal function to track TuningFork version bundled in a binary. Do not call directly.
 // If you are getting linker errors related to TuningFork_version_x_y, you probably have a
@@ -274,9 +285,9 @@ void TUNINGFORK_VERSION_SYMBOL();
  * @brief Initialize Tuning Fork. This must be called before any other functions.
  *
  * The library will load histogram and annotation settings from your tuningfork_settings.bin file.
- * @see TFSettings for the semantics of how other settings change initialization behaviour.
+ * @see TuningFork_Settings for the semantics of how other settings change initialization behaviour.
  *
- * @param settings a TFSettings structure
+ * @param settings a TuningFork_Settings structure
  * @param env a JNIEnv
  * @param context the app context
  *
@@ -284,7 +295,8 @@ void TUNINGFORK_VERSION_SYMBOL();
  *  TFERROR_BAD_SETTINGS if your tuningfork_settings.bin file was invalid or
  *  TFERROR_ALREADY_INITIALIZED if tuningfork was already initialized.
  */
-static inline TFErrorCode TuningFork_init(const TFSettings *settings, JNIEnv* env, jobject context) {
+static inline TuningFork_ErrorCode TuningFork_init(
+    const TuningFork_Settings *settings, JNIEnv* env, jobject context) {
     // This call ensures that the header and the linked library are from the same version
     // (if not, a linker error will be triggered because of an undefined symbol).
     TUNINGFORK_VERSION_SYMBOL();
@@ -313,9 +325,9 @@ static inline TFErrorCode TuningFork_init(const TFSettings *settings, JNIEnv* en
  * @return TFERROR_TIMEOUT if there was a timeout before params could be downloaded.
  *  TFERROR_OK on success.
  */
-TFErrorCode TuningFork_getFidelityParameters(
-    const CProtobufSerialization* defaultParams,
-    CProtobufSerialization* params, uint32_t timeout_ms);
+TuningFork_ErrorCode TuningFork_getFidelityParameters(
+    const TuningFork_CProtobufSerialization* defaultParams,
+    TuningFork_CProtobufSerialization* params, uint32_t timeout_ms);
 
 /**
  * @brief Set the current annotation.
@@ -323,7 +335,8 @@ TFErrorCode TuningFork_getFidelityParameters(
  * @return TFERROR_INVALID_ANNOTATION if annotation is inconsistent with the settings.
  * @return TFERROR_OK on success.
  */
-TFErrorCode TuningFork_setCurrentAnnotation(const CProtobufSerialization* annotation);
+TuningFork_ErrorCode TuningFork_setCurrentAnnotation(
+    const TuningFork_CProtobufSerialization* annotation);
 
 /**
  * @brief Record a frame tick that will be associated with the instrumentation key and the current
@@ -335,7 +348,7 @@ TFErrorCode TuningFork_setCurrentAnnotation(const CProtobufSerialization* annota
  * @return TFERROR_INVALID_INSTRUMENT_KEY if the instrument key is invalid.
  *  TFERROR_OK on success.
  */
-TFErrorCode TuningFork_frameTick(TFInstrumentKey key);
+TuningFork_ErrorCode TuningFork_frameTick(TuningFork_InstrumentKey key);
 
 /**
  * @brief Record a frame tick using an external time, rather than system time.
@@ -345,7 +358,8 @@ TFErrorCode TuningFork_frameTick(TFInstrumentKey key);
  * @return TFERROR_INVALID_INSTRUMENT_KEY if the instrument key is invalid.
  *  TFERROR_OK on success.
  */
-TFErrorCode TuningFork_frameDeltaTimeNanos(TFInstrumentKey key, TFDuration dt);
+TuningFork_ErrorCode TuningFork_frameDeltaTimeNanos(
+    TuningFork_InstrumentKey key, TuningFork_Duration dt);
 
 /**
  * @brief Start a trace segment.
@@ -355,7 +369,8 @@ TFErrorCode TuningFork_frameDeltaTimeNanos(TFInstrumentKey key, TFDuration dt);
  * @return TFERROR_INVALID_INSTRUMENT_KEY if the instrument key is invalid.
  *  TFERROR_OK on success.
  */
-TFErrorCode TuningFork_startTrace(TFInstrumentKey key, TFTraceHandle* handle);
+TuningFork_ErrorCode TuningFork_startTrace(TuningFork_InstrumentKey key,
+    TuningFork_TraceHandle* handle);
 
 /**
  * @brief Stop and record a trace segment.
@@ -363,7 +378,7 @@ TFErrorCode TuningFork_startTrace(TFInstrumentKey key, TFTraceHandle* handle);
  * @return TFERROR_INVALID_TRACE_HANDLE if the handle is invalid.
  * TFERROR_OK on success.
  */
-TFErrorCode TuningFork_endTrace(TFTraceHandle handle);
+TuningFork_ErrorCode TuningFork_endTrace(TuningFork_TraceHandle handle);
 
 /**
  * @brief Force upload of the current histograms.
@@ -371,20 +386,21 @@ TFErrorCode TuningFork_endTrace(TFTraceHandle handle);
  *  TFERROR_PREVIOUS_UPLOAD_PENDING if there is a previous upload blocking this one.
  *  TFERROR_UPLOAD_TOO_FREQUENT if less than a minute has elapsed since the previous upload.
  */
-TFErrorCode TuningFork_flush();
+TuningFork_ErrorCode TuningFork_flush();
 
 /**
  * @brief Set a callback to be called on a separate thread every time TuningFork performs an upload.
  * @param cbk
  * @return TFERROR_OK unless Tuning Fork wasn't initialized.
  */
-TFErrorCode TuningFork_setUploadCallback(UploadCallback cbk);
+TuningFork_ErrorCode TuningFork_setUploadCallback(
+    TuningFork_UploadCallback cbk);
 
 /**
  * @brief Clean up all memory owned by Tuning Fork and kill any threads.
  * @return TFERROR_OK unless Tuning Fork wasn't initialized.
  */
-TFErrorCode TuningFork_destroy();
+TuningFork_ErrorCode TuningFork_destroy();
 
 /**
  * @brief Set the currently active fidelity parameters.
@@ -394,7 +410,8 @@ TFErrorCode TuningFork_destroy();
  * @param params The protocol buffer encoded parameters.
  * @return TFERROR_OK if the parameters could be set.
  */
-TFErrorCode TuningFork_setFidelityParameters(const CProtobufSerialization* params);
+TuningFork_ErrorCode TuningFork_setFidelityParameters(
+    const TuningFork_CProtobufSerialization* params);
 
 /**
  * @brief Enable or disable memory telemetry recording.
@@ -402,7 +419,7 @@ TFErrorCode TuningFork_setFidelityParameters(const CProtobufSerialization* param
  * @param enable If true, memory recording is enabled, if false it is disabled.
  * @return TFERROR_OK unless Tuning Fork wasn't initialized.
  */
-TFErrorCode TuningFork_enableMemoryRecording(bool enable);
+TuningFork_ErrorCode TuningFork_enableMemoryRecording(bool enable);
 
 #ifdef __cplusplus
 }

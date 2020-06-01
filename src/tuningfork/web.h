@@ -30,7 +30,7 @@ class WebRequest : public Request {
     WebRequest(const WebRequest&);
     WebRequest(WebRequest&& rq) = delete;
     WebRequest& operator=(const WebRequest& rq) = delete;
-    TFErrorCode Send(const std::string& rpc_name, const std::string& request_json,
+    TuningFork_ErrorCode Send(const std::string& rpc_name, const std::string& request_json,
                      int& response_code, std::string& response_body) override;
 };
 
