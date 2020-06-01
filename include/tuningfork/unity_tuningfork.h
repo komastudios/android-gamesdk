@@ -30,17 +30,17 @@ extern "C" {
 
 jint JNI_OnLoad(JavaVM* vm, void* reserved);
 
-TFErrorCode Unity_TuningFork_init(
-    ProtoCallback fidelity_params_callback,
-    const CProtobufSerialization* training_fidelity_params,
+TuningFork_ErrorCode Unity_TuningFork_init(
+    TuningFork_FidelityParamsCallback fidelity_params_callback,
+    const TuningFork_CProtobufSerialization* training_fidelity_params,
     const char* endpoint_uri_override);
 
 bool Unity_TuningFork_swappyIsEnabled();
 
-TFErrorCode Unity_TuningFork_findFidelityParamsInApk(
-    const char* filename, CProtobufSerialization* fp);
+TuningFork_ErrorCode Unity_TuningFork_findFidelityParamsInApk(
+    const char* filename, TuningFork_CProtobufSerialization* fp);
 
-TFErrorCode Unity_TuningFork_saveOrDeleteFidelityParamsFile(CProtobufSerialization* fps);
+TuningFork_ErrorCode Unity_TuningFork_saveOrDeleteFidelityParamsFile(TuningFork_CProtobufSerialization* fps);
 
 #ifdef __cplusplus
 }

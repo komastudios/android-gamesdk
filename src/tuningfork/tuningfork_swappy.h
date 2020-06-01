@@ -40,7 +40,7 @@ namespace tuningfork {
 class SwappyTraceWrapper {
     SwappyTracerFn swappyTracerFn_;
     SwappyTracer trace_;
-    TFTraceHandle logicTraceHandle_ = 0;
+    TuningFork_TraceHandle logicTraceHandle_ = 0;
 public:
     SwappyTraceWrapper(const Settings& settings);
     // Swappy trace callbacks

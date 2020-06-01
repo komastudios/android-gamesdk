@@ -86,7 +86,7 @@ bool ByteStream::Write(pb_ostream_t *stream, const uint8_t *buf, size_t count) {
 
 } // namespace tuningfork {
 
-extern "C" void CProtobufSerialization_Dealloc(CProtobufSerialization* c) {
+extern "C" void TuningFork_CProtobufSerialization_Dealloc(TuningFork_CProtobufSerialization* c) {
     if(c->bytes) {
         ::free(c->bytes);
         c->bytes = nullptr;

@@ -22,25 +22,25 @@
 #include <string>
 #include <mutex>
 
-// Implementation of a TFCache that persists to local storage
+// Implementation of a TuningFork_Cache that persists to local storage
 namespace tuningfork {
 
 class FileCache {
     std::string path_;
-    TFCache c_cache_;
+    TuningFork_Cache c_cache_;
     std::mutex mutex_;
   public:
     FileCache(const std::string& path  = "");
 
     void SetDir(const std::string& path  = "") { path_ = path; }
 
-    const TFCache* GetCCache() const { return &c_cache_;}
+    const TuningFork_Cache* GetCCache() const { return &c_cache_;}
 
-    TFErrorCode Get(uint64_t key, CProtobufSerialization* value);
-    TFErrorCode Set(uint64_t key, const CProtobufSerialization* value);
-    TFErrorCode Remove(uint64_t key);
+    TuningFork_ErrorCode Get(uint64_t key, TuningFork_CProtobufSerialization* value);
+    TuningFork_ErrorCode Set(uint64_t key, const TuningFork_CProtobufSerialization* value);
+    TuningFork_ErrorCode Remove(uint64_t key);
 
-    TFErrorCode Clear();
+    TuningFork_ErrorCode Clear();
 };
 
 } // namespace tuningfork

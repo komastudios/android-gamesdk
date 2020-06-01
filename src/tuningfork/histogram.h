@@ -80,7 +80,7 @@ class Histogram : HistogramBase {
         buckets_ = counts;
     }
 
-    TFErrorCode AddCounts(const std::vector<uint32_t>& counts);
+    TuningFork_ErrorCode AddCounts(const std::vector<uint32_t>& counts);
 
     bool operator==(const Histogram& h) const;
 
@@ -249,7 +249,7 @@ bool Histogram<Sample>::operator==(const Histogram& h) const {
 }
 
 template<typename Sample>
-TFErrorCode Histogram<Sample>::AddCounts(const std::vector<uint32_t>& counts) {
+TuningFork_ErrorCode Histogram<Sample>::AddCounts(const std::vector<uint32_t>& counts) {
     if (counts.size()!=buckets_.size())
         return TFERROR_BAD_PARAMETER;
     auto c = counts.begin();

@@ -62,11 +62,11 @@ bool GetSavedFileName(std::string& name) {
 bool GetSavedFidelityParams(ProtobufSerialization& params) {
     std::string save_filename;
     if (GetSavedFileName(save_filename)) {
-        CProtobufSerialization c_params;
+        TuningFork_CProtobufSerialization c_params;
         if (file_utils::LoadBytesFromFile(save_filename, &c_params)) {
             ALOGI("Loaded fps from %s (%u bytes)", save_filename.c_str(), c_params.size);
             params = ToProtobufSerialization(c_params);
-            CProtobufSerialization_Free(&c_params);
+            TuningFork_CProtobufSerialization_free(&c_params);
             return true;
         }
         ALOGI("Couldn't load fps from %s", save_filename.c_str());
@@ -102,8 +102,8 @@ static bool s_kill_thread = false;
 static std::unique_ptr<std::thread> s_fp_thread;
 
 // Download FPs on a separate thread
-TFErrorCode StartFidelityParamDownloadThread(const ProtobufSerialization& default_params,
-                                             ProtoCallback fidelity_params_callback,
+TuningFork_ErrorCode StartFidelityParamDownloadThread(const ProtobufSerialization& default_params,
+                                             TuningFork_FidelityParamsCallback fidelity_params_callback,
                                              int initialTimeoutMs, int ultimateTimeoutMs) {
     if (fidelity_params_callback == nullptr) return TFERROR_BAD_PARAMETER;
     static std::mutex threadMutex;
@@ -119,11 +119,11 @@ TFErrorCode StartFidelityParamDownloadThread(const ProtobufSerialization& defaul
         bool first_time = true;
         auto upload_defaults_first_time = [&]() {
             if (first_time) {
-                CProtobufSerialization cpbs;
+                TuningFork_CProtobufSerialization cpbs;
                 ToCProtobufSerialization(default_params, cpbs);
                 if (fidelity_params_callback)
                     fidelity_params_callback(&cpbs);
-                CProtobufSerialization_Free(&cpbs);
+                TuningFork_CProtobufSerialization_free(&cpbs);
                 first_time = false;
             }
         };
@@ -139,12 +139,12 @@ TFErrorCode StartFidelityParamDownloadThread(const ProtobufSerialization& defaul
                     ALOGI("Got fidelity params from server");
                     if (jni::IsValid())
                         SaveFidelityParams(params);
-                    CProtobufSerialization cpbs;
+                    TuningFork_CProtobufSerialization cpbs;
                     ToCProtobufSerialization(params, cpbs);
                     if (fidelity_params_callback) {
                         fidelity_params_callback(&cpbs);
                     }
-                    CProtobufSerialization_Free(&cpbs);
+                    TuningFork_CProtobufSerialization_free(&cpbs);
                 }
                 break;
             } else {
@@ -168,8 +168,8 @@ TFErrorCode StartFidelityParamDownloadThread(const ProtobufSerialization& defaul
 
 // Load fidelity params from assets/tuningfork/<filename>
 // Ownership of serializations is passed to the caller: call
-//  CProtobufSerialization_Free to deallocate any memory.
-TFErrorCode FindFidelityParamsInApk(const std::string& filename,
+//  TuningFork_CProtobufSerialization_free to deallocate any memory.
+TuningFork_ErrorCode FindFidelityParamsInApk(const std::string& filename,
                                     ProtobufSerialization& fp) {
     std::stringstream full_filename;
     full_filename << "tuningfork/" << filename;
@@ -190,7 +190,7 @@ std::unique_ptr<ProtobufSerialization> GetTrainingParams(const Settings& setting
     return training_params;
 }
 
-TFErrorCode GetDefaultsFromAPKAndDownloadFPs(const Settings& settings) {
+TuningFork_ErrorCode GetDefaultsFromAPKAndDownloadFPs(const Settings& settings) {
     ProtobufSerialization default_params;
     // Use the saved params as default, if they exist
     if (SavedFidelityParamsFileExists()) {
@@ -223,7 +223,7 @@ TFErrorCode GetDefaultsFromAPKAndDownloadFPs(const Settings& settings) {
     return TFERROR_OK;
 }
 
-TFErrorCode KillDownloadThreads() {
+TuningFork_ErrorCode KillDownloadThreads() {
     if (s_fp_thread.get() && s_fp_thread->joinable()) {
         s_kill_thread = true;
         s_fp_thread->join();
@@ -240,9 +240,9 @@ extern "C" {
 using namespace tuningfork;
 
 // Download FPs on a separate thread
-TFErrorCode TuningFork_startFidelityParamDownloadThread(
-                                      const CProtobufSerialization* c_default_params,
-                                      ProtoCallback fidelity_params_callback) {
+TuningFork_ErrorCode TuningFork_startFidelityParamDownloadThread(
+                                      const TuningFork_CProtobufSerialization* c_default_params,
+                                      TuningFork_FidelityParamsCallback fidelity_params_callback) {
     if (c_default_params==nullptr) return TFERROR_BAD_PARAMETER;
     if (fidelity_params_callback==nullptr) return TFERROR_BAD_PARAMETER;
     const Settings* settings = GetSettings();
@@ -255,10 +255,10 @@ TFErrorCode TuningFork_startFidelityParamDownloadThread(
 
 // Load fidelity params from assets/tuningfork/<filename>
 // Ownership of serializations is passed to the caller: call
-//  CProtobufSerialization_Free to deallocate any memory.
-TFErrorCode TuningFork_findFidelityParamsInApk(JNIEnv* env, jobject context,
+//  TuningFork_CProtobufSerialization_free to deallocate any memory.
+TuningFork_ErrorCode TuningFork_findFidelityParamsInApk(JNIEnv* env, jobject context,
                                                const char* filename,
-                                               CProtobufSerialization* c_fps) {
+                                               TuningFork_CProtobufSerialization* c_fps) {
     if (c_fps==nullptr) return TFERROR_BAD_PARAMETER;
     jni::Init(env, context);
     ProtobufSerialization fps;
@@ -268,12 +268,12 @@ TFErrorCode TuningFork_findFidelityParamsInApk(JNIEnv* env, jobject context,
     return TFERROR_OK;
 }
 
-TFErrorCode TuningFork_setUploadCallback(UploadCallback cbk) {
+TuningFork_ErrorCode TuningFork_setUploadCallback(TuningFork_UploadCallback cbk) {
     return tuningfork::SetUploadCallback(cbk);
 }
 
-TFErrorCode TuningFork_saveOrDeleteFidelityParamsFile(JNIEnv* env, jobject context,
-                                                      const CProtobufSerialization* fps) {
+TuningFork_ErrorCode TuningFork_saveOrDeleteFidelityParamsFile(JNIEnv* env, jobject context,
+                                                      const TuningFork_CProtobufSerialization* fps) {
     jni::Init(env, context);
     if(fps) {
         if (SaveFidelityParams(ToProtobufSerialization(*fps)))
