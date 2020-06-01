@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c08d42b3_f0733539",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-06-01T18:49:22Z",
+      "side": 1,
+      "message": "If these are only used by the Unity plugin, why are they in the main tuningfork.h header? Can you put them in a unity-specific header?",
+      "revId": "66af0ab9cb85389fba2a58cd472b842cc817378c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
