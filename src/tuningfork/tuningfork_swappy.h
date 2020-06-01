@@ -20,14 +20,33 @@
 #include "swappy/swappy_common.h"
 #include "tuningfork_internal.h"
 
+// For versions of Swappy < 1.5, the types of times were longs.
+typedef void (*SwappyPostSwapBuffersCallbackPre1_5)(void*,
+    long desiredPresentationTimeMillis);
+typedef void (*SwappyStartFrameCallbackPre1_5)(void*, int currentFrame,
+    long desiredPresentationTimeMillis);
+typedef void (*SwappyPostWaitCallbackPre1_5)(void*,
+    long cpu_time_ns, long gpu_time_ns);
+struct SwappyTracerPre1_5 {
+    SwappyPreWaitCallback preWait;
+    SwappyPostWaitCallbackPre1_5 postWait;
+    SwappyPreSwapBuffersCallback preSwapBuffers;
+    SwappyPostSwapBuffersCallbackPre1_5 postSwapBuffers;
+    SwappyStartFrameCallbackPre1_5 startFrame;
+    void* userData;
+    SwappySwapIntervalChangedCallback swapIntervalChanged;
+};
+constexpr int SWAPPY_VERSION_1_5 = ((1<<16) | 5);
+
 // For versions of Swappy < 1.3, the post-wait callback didn't give gpuTime
+// and types of times were longs.
 typedef SwappyPreWaitCallback SwappyWaitCallback;
 struct SwappyTracerPre1_3 {
     SwappyWaitCallback preWait;
     SwappyWaitCallback postWait;
     SwappyPreSwapBuffersCallback preSwapBuffers;
-    SwappyPostSwapBuffersCallback postSwapBuffers;
-    SwappyStartFrameCallback startFrame;
+    SwappyPostSwapBuffersCallbackPre1_5 postSwapBuffers;
+    SwappyStartFrameCallbackPre1_5 startFrame;
     void* userData;
     SwappySwapIntervalChangedCallback swapIntervalChanged;
 };
@@ -45,14 +64,19 @@ public:
     SwappyTraceWrapper(const Settings& settings);
     // Swappy trace callbacks
     static void StartFrameCallback(void* userPtr, int /*currentFrame*/,
-                                         long /*currentFrameTimeStampMs*/);
+                                         int64_t /*desiredPresentationTimeMillis*/);
     static void PreWaitCallback(void* userPtr);
-    static void PostWaitCallback(void* userPtr, long cpu_time_ns, long gpu_time_ns);
+    static void PostWaitCallback(void* userPtr, int64_t cpu_time_ns, int64_t gpu_time_ns);
     static void PreSwapBuffersCallback(void* userPtr);
-    static void PostSwapBuffersCallback(void* userPtr, long /*desiredPresentationTimeMs*/);
+    static void PostSwapBuffersCallback(void* userPtr, int64_t /*desiredPresentationTimeMillis*/);
+
+    static void StartFrameCallbackPre1_5(void* userPtr, int /*currentFrame*/,
+                                         long /*desiredPresentationTimeMillis*/);
+    static void PostWaitCallbackPre1_5(void* userPtr, long cpuTimeNs, long gpuTimeNs);
+    static void PostSwapBuffersCallbackPre1_5(void* userPtr, long /*desiredPresentationTimeMillis*/);
 
     static void StartFrameCallbackPre1_3(void* userPtr, int /*currentFrame*/,
-                                         long /*currentFrameTimeStampMs*/);
+                                         long /*desiredPresentationTimeMillis*/);
     static void PreWaitCallbackPre1_3(void* userPtr);
     static void PostWaitCallbackPre1_3(void* userPtr);
 };

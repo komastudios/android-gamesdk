@@ -255,9 +255,9 @@ private:
 
     struct SwappyTracerCallbacks {
         std::list<Tracer<>> preWait;
-        std::list<Tracer<long,long>> postWait;
+        std::list<Tracer<int64_t,int64_t>> postWait;
         std::list<Tracer<>> preSwapBuffers;
-        std::list<Tracer<long>> postSwapBuffers;
+        std::list<Tracer<int64_t>> postSwapBuffers;
         std::list<Tracer<int32_t, long>> startFrame;
         std::list<Tracer<>> swapIntervalChanged;
     };
