@@ -69,6 +69,30 @@
       "revId": "ebf0ee241f68d0b18d1e04af5cd0b5c5faf93877",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "04a24a7a_31d46852",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/ancer/util/texture/Png.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-06-01T20:25:41Z",
+      "side": 1,
+      "message": "Sorry!",
+      "parentUuid": "cfccddb0_007275af",
+      "range": {
+        "startLine": 120,
+        "startChar": 23,
+        "endLine": 120,
+        "endChar": 42
+      },
+      "revId": "ebf0ee241f68d0b18d1e04af5cd0b5c5faf93877",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
