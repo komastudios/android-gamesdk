@@ -34,6 +34,24 @@
       "revId": "adebba6d1772db90a54facba067cd040e6c3a64b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "531b716c_0df4194e",
+        "filename": "samples/bouncyball/app/src/main/cpp/Thread.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-06-01T16:35:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "23eb89d4_46f8ba27",
+      "revId": "adebba6d1772db90a54facba067cd040e6c3a64b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
