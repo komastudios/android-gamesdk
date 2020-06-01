@@ -47,7 +47,7 @@ std::string to_string(jstring jstr, JNIEnv *env) {
 
 extern "C" {
 
-void startFrameCallback(void *, int, long) {
+void startFrameCallback(void *, int, int64_t) {
 }
 
 void swapIntervalChangedCallback(void *) {
