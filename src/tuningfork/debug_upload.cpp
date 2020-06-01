@@ -84,10 +84,10 @@ static std::string RequestJson() {
     return result;
 }
 
-TFErrorCode UploadDebugInfo(Request& request) {
+TuningFork_ErrorCode UploadDebugInfo(Request& request) {
     int response_code;
     std::string body;
-    TFErrorCode ret = request.Send(kRpcName, RequestJson(),
+    TuningFork_ErrorCode ret = request.Send(kRpcName, RequestJson(),
                                    response_code, body);
     if (ret!=TFERROR_OK)
         return ret;
