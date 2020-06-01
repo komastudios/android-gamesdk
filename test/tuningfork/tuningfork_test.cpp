@@ -50,7 +50,7 @@ public:
     TestBackend(std::shared_ptr<std::condition_variable> cv_,
                 std::shared_ptr<std::mutex> mutex_) : cv(cv_), mutex(mutex_) {}
 
-    TFErrorCode Process(const TuningForkLogEvent &evt_ser) override {
+    TuningFork_ErrorCode Process(const TuningForkLogEvent &evt_ser) override {
         ALOGI("Process");
         {
             std::lock_guard<std::mutex> lock(*mutex);
@@ -80,7 +80,7 @@ public:
             download_params_(download_params),
             expected_training_params_(expected_training_params) {}
 
-    TFErrorCode GetFidelityParams(Request& request,
+    TuningFork_ErrorCode GetFidelityParams(Request& request,
                                   const ProtobufSerialization* training_mode_params,
                                   ProtobufSerialization &fidelity_params,
                                   std::string& experiment_id) override {
@@ -150,7 +150,7 @@ class TuningForkTest {
     TestTimeProvider time_provider_;
     TestMemInfoProvider meminfo_provider_;
     ExtraUploadInfo extra_upload_info_;
-    TFErrorCode init_return_value_;
+    TuningFork_ErrorCode init_return_value_;
 
     TuningForkTest(const Settings& settings, Duration tick_size = std::chrono::milliseconds(20),
                    const std::shared_ptr<TestParamsLoader>& params_loader
@@ -178,9 +178,9 @@ class TuningForkTest {
 
 };
 
-const CProtobufSerialization* TrainingModeParams() {
+const TuningFork_CProtobufSerialization* TrainingModeParams() {
     static ProtobufSerialization pb = {1,2,3,4,5};
-    static CProtobufSerialization cpb = {};
+    static TuningFork_CProtobufSerialization cpb = {};
     cpb.bytes = pb.data();
     cpb.size = pb.size();
     return &cpb;
@@ -404,7 +404,7 @@ std::condition_variable fp_cv;
 std::mutex fp_mutex;
 int fp_n_callbacks_called = 0;
 ProtobufSerialization default_fps = {1,2,3};
-void FidelityParamsCallback(const CProtobufSerialization* s) {
+void FidelityParamsCallback(const TuningFork_CProtobufSerialization* s) {
     EXPECT_NE(s, nullptr) << "Null FPs in callback";
     auto in_fps = ToProtobufSerialization(*s);
     EXPECT_EQ(in_fps, default_fps) << "Wrong FPs in callback";
@@ -414,7 +414,7 @@ void FidelityParamsCallback(const CProtobufSerialization* s) {
 
 void TestFidelityParamDownloadThread() {
 
-    CProtobufSerialization c_default_fps;
+    TuningFork_CProtobufSerialization c_default_fps;
     ToCProtobufSerialization(default_fps, c_default_fps);
 
     auto settings = TestSettings(Settings::AggregationStrategy::Submission::TICK_BASED, 100, 1, {});
@@ -440,7 +440,7 @@ void TestFidelityParamDownloadThread() {
     EXPECT_EQ(fp_n_callbacks_called, 2);
     EXPECT_EQ(params_loader->n_times_called_, 4);
 
-    CProtobufSerialization_Free(&c_default_fps);
+    TuningFork_CProtobufSerialization_free(&c_default_fps);
 }
 
 TEST(TuningForkTest, TestFidelityParamDownloadThread) {
@@ -459,7 +459,7 @@ class TestRequest: public Request {
   public:
     TestRequest(const Request& r, std::vector<TestResponse> responses)
             : Request(r), responses_(responses) {}
-    TFErrorCode Send(const std::string& rpc_name, const std::string& request,
+    TuningFork_ErrorCode Send(const std::string& rpc_name, const std::string& request,
               int& response_code, std::string& response_body) override {
         EXPECT_LT(next_response_, responses_.size()) << "Unexpected request";
         if (next_response_<responses_.size()) {

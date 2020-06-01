@@ -12,18 +12,22 @@ namespace tf = tuningfork;
 
 namespace {
 
-extern "C" TFErrorCode FileCacheGet(uint64_t key, CProtobufSerialization* value, void* _self) {
+extern "C" TuningFork_ErrorCode FileCacheGet(uint64_t key,
+    TuningFork_CProtobufSerialization* value,
+    void* _self) {
     if (_self==nullptr) return TFERROR_BAD_PARAMETER;
     tf::FileCache* self = static_cast<tf::FileCache*>(_self);
     return self->Get(key, value);
 }
-extern "C" TFErrorCode FileCacheSet(uint64_t key, const CProtobufSerialization* value,
-                                    void* _self) {
+extern "C" TuningFork_ErrorCode FileCacheSet(uint64_t key,
+    const TuningFork_CProtobufSerialization* value,
+    void* _self) {
     if (_self==nullptr) return TFERROR_BAD_PARAMETER;
     tf::FileCache* self = static_cast<tf::FileCache*>(_self);
     return self->Set(key, value);
 }
-extern "C" TFErrorCode FileCacheRemove(uint64_t key, void* _self) {
+extern "C" TuningFork_ErrorCode FileCacheRemove(uint64_t key,
+    void* _self) {
     if (_self==nullptr) return TFERROR_BAD_PARAMETER;
     tf::FileCache* self = static_cast<tf::FileCache*>(_self);
     return self->Remove(key);
@@ -42,10 +46,11 @@ std::string PathToKey(const std::string& path, uint64_t key) {
 }
 
 FileCache::FileCache(const std::string& path) : path_(path) {
-    c_cache_ = TFCache {(void*)this, &FileCacheSet, &FileCacheGet, &FileCacheRemove};
+    c_cache_ = TuningFork_Cache {(void*)this, &FileCacheSet, &FileCacheGet, &FileCacheRemove};
 }
 
-TFErrorCode FileCache::Get(uint64_t key, CProtobufSerialization* value) {
+TuningFork_ErrorCode FileCache::Get(uint64_t key,
+    TuningFork_CProtobufSerialization* value) {
     std::lock_guard<std::mutex> lock(mutex_);
     ALOGV("FileCache::Get %" PRIu64, key);
     if (CheckAndCreateDir(path_)) {
@@ -65,7 +70,8 @@ TFErrorCode FileCache::Get(uint64_t key, CProtobufSerialization* value) {
     return TFERROR_NO_SUCH_KEY;
 }
 
-TFErrorCode FileCache::Set(uint64_t key, const CProtobufSerialization* value) {
+TuningFork_ErrorCode FileCache::Set(uint64_t key,
+    const TuningFork_CProtobufSerialization* value) {
     std::lock_guard<std::mutex> lock(mutex_);
     ALOGV("FileCache::Set %" PRIu64, key);
     if (CheckAndCreateDir(path_)) {
@@ -78,7 +84,7 @@ TFErrorCode FileCache::Set(uint64_t key, const CProtobufSerialization* value) {
     return TFERROR_NO_SUCH_KEY;
 }
 
-TFErrorCode FileCache::Remove(uint64_t key) {
+TuningFork_ErrorCode FileCache::Remove(uint64_t key) {
     std::lock_guard<std::mutex> lock(mutex_);
     ALOGV("FileCache::Remove %" PRIu64, key);
     if (CheckAndCreateDir(path_)) {
@@ -91,7 +97,7 @@ TFErrorCode FileCache::Remove(uint64_t key) {
     return TFERROR_NO_SUCH_KEY;
 }
 
-TFErrorCode FileCache::Clear() {
+TuningFork_ErrorCode FileCache::Clear() {
     std::lock_guard<std::mutex> lock(mutex_);
     ALOGV("FileCache::Clear");
     if (DeleteDir(path_))
