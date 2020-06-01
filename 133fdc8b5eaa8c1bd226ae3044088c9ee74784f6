@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f71b19e7_419fd623",
+        "filename": "include/swappy/swappy_common.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-06-01T13:39:53Z",
+      "side": 0,
+      "message": "This might break backward compatibility on 32-bit platforms, e.g. the Unity plugin upgrades to this API but with an old version of Unity the signature would be different.\nWe need to test that this use-case still works.",
+      "revId": "133fdc8b5eaa8c1bd226ae3044088c9ee74784f6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
