@@ -122,13 +122,13 @@ enum TFErrorCode {
       27,  ///< `TuningFork_startFidelityParamDownloadThread`
            ///< was called more than once, or called when TuningFork_init has
            ///< already started download.
-  TFERROR_PLATFORM_NOT_SUPPORTED =
-      28,  ///< The game or app is run on a platform not supporting Tuning fork.
-           ///< Only used by Unity plugin.
+  TFERROR_PLATFORM_NOT_SUPPORTED = 28,  ///< Obsolete.
   TFERROR_GENERATE_TUNING_PARAMETERS_ERROR =
       29,  ///< An error occurred parsing the response to generateTuningParameters
   TFERROR_GENERATE_TUNING_PARAMETERS_RESPONSE_NOT_SUCCESS =
       30,  ///< The response from generateTuningParameters was not a success code
+
+  // Error codes 100-150 are reserved for engines integrations.
 };
 
 /**
