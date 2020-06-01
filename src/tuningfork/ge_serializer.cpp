@@ -350,9 +350,10 @@ struct Hist {
 };
 }
 
-/*static*/ TFErrorCode GESerializer::DeserializeAndMerge(const std::string& evt_json_ser,
-                                                         IdProvider& id_provider,
-                                                         ProngCache& pc) {
+/*static*/ TuningFork_ErrorCode GESerializer::DeserializeAndMerge(
+    const std::string& evt_json_ser,
+    IdProvider& id_provider,
+    ProngCache& pc) {
     std::string err;
     Json in = Json::parse(evt_json_ser, err);
     if (!err.empty()) {

@@ -17,10 +17,10 @@ constexpr Duration kRequestTimeout = std::chrono::seconds(10);
 const char kRpcName[] = ":uploadTelemetry";
 
 class UltimateUploader : public Runnable {
-    const TFCache* persister_;
+    const TuningFork_Cache* persister_;
     WebRequest request_;
     public:
-    UltimateUploader(const TFCache* persister, const WebRequest& request)
+    UltimateUploader(const TuningFork_Cache* persister, const WebRequest& request)
             : Runnable(), persister_(persister), request_(request) {}
     Duration DoWork() override {
         CheckUploadPending();
@@ -30,15 +30,15 @@ class UltimateUploader : public Runnable {
         Runnable::Run();
     }
     bool CheckUploadPending() {
-        CProtobufSerialization uploading_hists_ser;
+        TuningFork_CProtobufSerialization uploading_hists_ser;
         if (persister_->get(HISTOGRAMS_UPLOADING, &uploading_hists_ser,
                 persister_->user_data)==TFERROR_OK) {
             std::string request_json = ToString(uploading_hists_ser);
-            CProtobufSerialization_Free(&uploading_hists_ser);
+            TuningFork_CProtobufSerialization_free(&uploading_hists_ser);
             int response_code = -1;
             std::string body;
             ALOGV("Got UPLOADING histograms: %s", request_json.c_str());
-            TFErrorCode ret = request_.Send(kRpcName, request_json, response_code, body);
+            TuningFork_ErrorCode ret = request_.Send(kRpcName, request_json, response_code, body);
             if (ret==TFERROR_OK) {
                 ALOGI("UPLOAD request returned %d %s", response_code, body.c_str());
                 if (response_code==200) {
@@ -57,15 +57,15 @@ class UltimateUploader : public Runnable {
     }
 };
 
-TFErrorCode GEBackend::Init(const Settings& settings,
+TuningFork_ErrorCode GEBackend::Init(const Settings& settings,
                            const ExtraUploadInfo& extra_upload_info) {
 
     if (settings.EndpointUri().empty()) {
-        ALOGW("The base URI in Tuning Fork TFSettings is invalid");
+        ALOGW("The base URI in Tuning Fork TuningFork_Settings is invalid");
         return TFERROR_BAD_PARAMETER;
     }
     if (settings.api_key.empty()) {
-        ALOGW("The API key in Tuning Fork TFSettings is invalid");
+        ALOGW("The API key in Tuning Fork TuningFork_Settings is invalid");
         return TFERROR_BAD_PARAMETER;
     }
 
@@ -86,17 +86,17 @@ TFErrorCode GEBackend::Init(const Settings& settings,
 
 GEBackend::~GEBackend() {}
 
-TFErrorCode GEBackend::Process(const std::string &evt_ser) {
+TuningFork_ErrorCode GEBackend::Process(const std::string &evt_ser) {
 
     ALOGV("GEBackend::Process %s",evt_ser.c_str());
 
     // Save event to file
-    CProtobufSerialization uploading_hists_ser;
+    TuningFork_CProtobufSerialization uploading_hists_ser;
     ToCProtobufSerialization(evt_ser, uploading_hists_ser);
     auto ret = persister_->set(HISTOGRAMS_UPLOADING, &uploading_hists_ser,
                                persister_->user_data);
 
-    CProtobufSerialization_Free(&uploading_hists_ser);
+    TuningFork_CProtobufSerialization_free(&uploading_hists_ser);
 
     return ret;
 }

@@ -29,9 +29,10 @@ public:
                                const ExtraUploadInfo& device_info,
                                std::string& evt_json_ser);
 
-    static TFErrorCode DeserializeAndMerge(const std::string& evt_json_ser,
-                                           IdProvider& id_provider,
-                                           ProngCache& pc);
+    static TuningFork_ErrorCode DeserializeAndMerge(
+        const std::string& evt_json_ser,
+        IdProvider& id_provider,
+        ProngCache& pc);
 };
 
 } // namespace tuningfork

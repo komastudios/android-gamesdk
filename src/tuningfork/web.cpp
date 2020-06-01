@@ -35,8 +35,10 @@ std::string Request::GetURL(std::string rpcname) const {
     return url.str();
 }
 
-TFErrorCode Request::Send(const std::string& rpc_name, const std::string& request,
-                          int& response_code, std::string& response_body) {
+TuningFork_ErrorCode Request::Send(const std::string& rpc_name,
+    const std::string& request,
+    int& response_code,
+    std::string& response_body) {
     return TFERROR_OK;
 }
 
@@ -49,8 +51,9 @@ WebRequest::WebRequest(const WebRequest& rhs) :
 }
 
 
-TFErrorCode WebRequest::Send(const std::string& rpc_name, const std::string& request_json,
-                 int& response_code, std::string& response_body) {
+TuningFork_ErrorCode WebRequest::Send(
+    const std::string& rpc_name, const std::string& request_json,
+    int& response_code, std::string& response_body) {
     if (!jni::IsValid()) return TFERROR_JNI_BAD_ENV;
     auto uri = GetURL(rpc_name);
     ALOGI("Connecting to: %s", uri.c_str());
