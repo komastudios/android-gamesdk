@@ -129,6 +129,9 @@ enum TFErrorCode {
       29,  ///< An error occurred parsing the response to generateTuningParameters
   TFERROR_GENERATE_TUNING_PARAMETERS_RESPONSE_NOT_SUCCESS =
       30,  ///< The response from generateTuningParameters was not a success code
+  TFERROR_INVALID_FIDELITY  = 31, ///< Fidelity message is invalid. Only used by Unity plugin.
+  TFERROR_INVALID_MODE =
+      32, ///< Using incorrect API for default/custom modes. Only used by Unity plugin.
 };
 
 /**
