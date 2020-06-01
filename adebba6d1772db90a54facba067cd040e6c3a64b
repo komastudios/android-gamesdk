@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1e08cd0a_d7f069e6",
+        "filename": "samples/bouncyball/app/src/main/cpp/Thread.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-06-01T11:57:23Z",
+      "side": 1,
+      "message": "Are these files expected to be rewritten?",
+      "revId": "adebba6d1772db90a54facba067cd040e6c3a64b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
