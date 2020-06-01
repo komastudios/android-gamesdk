@@ -654,7 +654,7 @@ void SwappyCommon::preSwapBuffersCallbacks() {
 
 void SwappyCommon::postSwapBuffersCallbacks() {
     executeTracers(mInjectedTracers.postSwapBuffers,
-                   (long) mPresentationTime.time_since_epoch().count());
+                   (int64_t) mPresentationTime.time_since_epoch().count());
 }
 
 void SwappyCommon::preWaitCallbacks() {
@@ -668,7 +668,7 @@ void SwappyCommon::postWaitCallbacks(nanoseconds cpuTime, nanoseconds gpuTime) {
 void SwappyCommon::startFrameCallbacks() {
     executeTracers(mInjectedTracers.startFrame,
                    mCurrentFrame,
-                   (long) mPresentationTime.time_since_epoch().count());
+                   (int64_t) mPresentationTime.time_since_epoch().count());
 }
 
 void SwappyCommon::swapIntervalChangedCallbacks() {

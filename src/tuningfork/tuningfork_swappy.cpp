@@ -43,7 +43,7 @@ SwappyTraceWrapper::SwappyTraceWrapper(const Settings& settings)
 
 // Swappy trace callbacks
 void SwappyTraceWrapper::StartFrameCallback(void* userPtr, int /*currentFrame*/,
-                                     long /*currentFrameTimeStampMs*/) {
+                                     int64_t /*desiredPresentationTimeMillis*/) {
     SwappyTraceWrapper* _this = (SwappyTraceWrapper*)userPtr;
     auto err = TuningFork_frameTick(TFTICK_PACED_FRAME_TIME);
     if (err != TFERROR_OK && err != TFERROR_TUNINGFORK_NOT_INITIALIZED) {
@@ -54,8 +54,8 @@ void SwappyTraceWrapper::StartFrameCallback(void* userPtr, int /*currentFrame*/,
 void SwappyTraceWrapper::PreWaitCallback(void* userPtr) {
 }
 
-void SwappyTraceWrapper::PostWaitCallback(void* userPtr, long cpuTimeNs, long gpuTimeNs) {
-    static long prevCpuTimeNs = 0;
+void SwappyTraceWrapper::PostWaitCallback(void* userPtr, int64_t cpuTimeNs, int64_t gpuTimeNs) {
+    static int64_t prevCpuTimeNs = 0;
     SwappyTraceWrapper *_this = (SwappyTraceWrapper *) userPtr;
     auto err = TuningFork_frameDeltaTimeNanos(TFTICK_CPU_TIME, cpuTimeNs);
     if (err != TFERROR_OK && err != TFERROR_TUNINGFORK_NOT_INITIALIZED) {
@@ -80,13 +80,13 @@ void SwappyTraceWrapper::PreSwapBuffersCallback(void* userPtr) {
     // We no longer record the swap time
 }
 
-void SwappyTraceWrapper::PostSwapBuffersCallback(void* userPtr, long /*desiredPresentationTimeMs*/) {
+void SwappyTraceWrapper::PostSwapBuffersCallback(void* userPtr, int64_t /*desiredPresentationTimeMillis*/) {
     // We no longer record the swap time
 }
 
 // Callbacks for swappy version < 1.3 where we don't have direct GPU time
 void SwappyTraceWrapper::StartFrameCallbackPre1_3(void* userPtr, int /*currentFrame*/,
-                                     long /*currentFrameTimeStampMs*/) {
+                                     int64_t /*desiredPresentationTimeMillis*/) {
     SwappyTraceWrapper* _this = (SwappyTraceWrapper*)userPtr;
     // There's no distinction between RAW and PACED frame time for swappy < 1.3
     // since we can't get real raw frame time.
