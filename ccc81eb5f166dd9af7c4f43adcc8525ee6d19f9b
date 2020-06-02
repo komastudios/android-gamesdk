@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a7e2887c_a2fcb2b4",
+        "filename": "src/swappy/vulkan/SwappyVkBase.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 407,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-06-02T16:26:28Z",
+      "side": 1,
+      "message": "In this case we are loosing the fence? Since it is no longer in mWaitingSyncs and we don\u0027t put it back to mSignaledSyncs.",
+      "revId": "ccc81eb5f166dd9af7c4f43adcc8525ee6d19f9b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
