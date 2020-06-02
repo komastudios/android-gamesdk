@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "b62f1987_1beb7d81",
+        "filename": "src/swappy/vulkan/SwappyVkBase.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-06-02T22:45:40Z",
+      "side": 1,
+      "message": "This is called from the destructor. we can\u0027t call vkDestroyFence is the fence is still pending. What else can we do instead of wait?",
+      "parentUuid": "5d32e10c_d2dacc80",
+      "revId": "255afc7fc4e25ea7ae1f137155e6d0c7a9a6f9f6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "85a0c24c_34d583da",
         "filename": "src/swappy/vulkan/SwappyVkBase.cpp",
         "patchSetId": 3
@@ -30,6 +48,24 @@
       "writtenOn": "2020-06-02T19:01:09Z",
       "side": 1,
       "message": "Is this an error? It just means the GPU was doing too much work, which can happen often for a badly tuned game.",
+      "revId": "255afc7fc4e25ea7ae1f137155e6d0c7a9a6f9f6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3d72441f_fd7c2090",
+        "filename": "src/swappy/vulkan/SwappyVkBase.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 395,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-06-02T22:45:40Z",
+      "side": 1,
+      "message": "IIRC the timeout is set to be a large number for the cases where there are driver bugs that the call hangs. We should not timeout on actual frames.",
+      "parentUuid": "85a0c24c_34d583da",
       "revId": "255afc7fc4e25ea7ae1f137155e6d0c7a9a6f9f6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
