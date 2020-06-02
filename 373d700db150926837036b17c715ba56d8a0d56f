@@ -16,6 +16,24 @@
       "revId": "373d700db150926837036b17c715ba56d8a0d56f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7ecf6324_820981f6",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 1157,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-06-02T13:23:37Z",
+      "side": 1,
+      "message": "Indeed, my mistake! Fixed.",
+      "parentUuid": "d9521f4d_df16f7f9",
+      "revId": "373d700db150926837036b17c715ba56d8a0d56f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
