@@ -374,6 +374,8 @@ void SwappyVkBase::waitForFenceThreadMain(ThreadContext& thread) {
             waitingSyncsEmpty = mWaitingSyncs[thread.queue].empty();
         }
 
+        std::chrono::steady_clock::time_point startTime;
+        bool veryLongFrame = false;
         while (!waitingSyncsEmpty) {
             VkSync sync;
             {  // Get the sync object with a lock
@@ -383,11 +385,26 @@ void SwappyVkBase::waitForFenceThreadMain(ThreadContext& thread) {
             }
 
             gamesdk::ScopedTrace tracer("Swappy: GPU frame time");
-            const auto startTime = std::chrono::steady_clock::now();
+            if (!veryLongFrame)
+                startTime = std::chrono::steady_clock::now();
             VkResult result = vkWaitForFences(mDevice, 1, &sync.fence, VK_TRUE,
                                               mCommonBase.getFenceTimeout().count());
             if (result) {
-                ALOGE("Failed to wait for fence %d", result);
+                std::lock_guard <std::mutex> lock(thread.lock);
+                if (!thread.running) {
+                    return;
+                }
+                if (result == VK_TIMEOUT) {
+                    veryLongFrame = true;
+                    mWaitingSyncs[thread.queue].push_front(sync);
+                    continue;
+                } else {
+                    ALOGE("Failed to wait for fence %d", result);
+                }
+            }
+            if (veryLongFrame) {
+                ALOGW("Timeout waiting for fence");
+                veryLongFrame = false;
             }
             vkResetFences(mDevice, 1, &sync.fence);
             mLastFenceTime = std::chrono::steady_clock::now() - startTime;
