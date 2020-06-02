@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d9521f4d_df16f7f9",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 1157,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2020-06-02T13:18:46Z",
+      "side": 1,
+      "message": "Should it be 1.4.0-alpha01 (Previous release was 1.3 ) ?",
+      "revId": "373d700db150926837036b17c715ba56d8a0d56f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
