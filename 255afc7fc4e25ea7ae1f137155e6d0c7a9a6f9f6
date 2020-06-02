@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5d32e10c_d2dacc80",
+        "filename": "src/swappy/vulkan/SwappyVkBase.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-06-02T19:01:09Z",
+      "side": 1,
+      "message": "Why UINT64_MAX rather than mCommonBase.getFenceTimeout()?",
+      "revId": "255afc7fc4e25ea7ae1f137155e6d0c7a9a6f9f6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "85a0c24c_34d583da",
+        "filename": "src/swappy/vulkan/SwappyVkBase.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 395,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-06-02T19:01:09Z",
+      "side": 1,
+      "message": "Is this an error? It just means the GPU was doing too much work, which can happen often for a badly tuned game.",
+      "revId": "255afc7fc4e25ea7ae1f137155e6d0c7a9a6f9f6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
