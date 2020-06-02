@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a7a111d9_59125f83",
+        "filename": "src/tuningfork/tuningfork_swappy.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-06-02T15:50:02Z",
+      "side": 1,
+      "message": "nit: line too long",
+      "revId": "01c490a9afc016ae82545c288c499c36456067be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
