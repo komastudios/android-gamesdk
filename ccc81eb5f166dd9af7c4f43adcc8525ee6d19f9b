@@ -16,6 +16,24 @@
       "revId": "ccc81eb5f166dd9af7c4f43adcc8525ee6d19f9b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "55127da6_b10b1822",
+        "filename": "src/swappy/vulkan/SwappyVkBase.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 407,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-06-02T18:53:12Z",
+      "side": 1,
+      "message": "I don\u0027t think we leak fences. If there\u0027s a timeout, the fence is put back into mWaitingSyncs and we go round the second loop again, waiting for the fence again.  We check if the thread is not running, to avoid waiting an infinite time. Once there\u0027s no timeout, the fence is put into mSignaledSyncs. I guess when we return, we could leak a fence, so we should put it into signaled syncs in that case too, but that\u0027s just at shutdown, usually.",
+      "parentUuid": "a7e2887c_a2fcb2b4",
+      "revId": "ccc81eb5f166dd9af7c4f43adcc8525ee6d19f9b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
