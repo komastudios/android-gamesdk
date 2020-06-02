@@ -27,6 +27,7 @@ PFN_vkDestroyCommandPool vkDestroyCommandPool = nullptr;
 PFN_vkCreateFence vkCreateFence = nullptr;
 PFN_vkDestroyFence vkDestroyFence = nullptr;
 PFN_vkWaitForFences vkWaitForFences = nullptr;
+PFN_vkGetFenceStatus vkGetFenceStatus = nullptr;
 PFN_vkResetFences vkResetFences = nullptr;
 PFN_vkCreateSemaphore vkCreateSemaphore = nullptr;
 PFN_vkDestroySemaphore vkDestroySemaphore = nullptr;
@@ -51,6 +52,8 @@ void LoadVulkanFunctions(const SwappyVkFunctionProvider* pFunctionProvider) {
             pFunctionProvider->getProcAddr("vkDestroyFence"));
         vkWaitForFences = reinterpret_cast<PFN_vkWaitForFences>(
             pFunctionProvider->getProcAddr("vkWaitForFences"));
+        vkGetFenceStatus = reinterpret_cast<PFN_vkGetFenceStatus>(
+                pFunctionProvider->getProcAddr("vkGetFenceStatus"));
         vkResetFences = reinterpret_cast<PFN_vkResetFences>(
             pFunctionProvider->getProcAddr("vkResetFences"));
         vkCreateSemaphore = reinterpret_cast<PFN_vkCreateSemaphore>(
@@ -160,7 +163,7 @@ VkResult SwappyVkBase::initializeVkSyncObjects(VkQueue   queue,
         VkFenceCreateInfo fence_ci = {
             .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
             .pNext = NULL,
-            .flags = 0
+            .flags = VK_FENCE_CREATE_SIGNALED_BIT
         };
         res = vkCreateFence(mDevice, &fence_ci, NULL, &sync.fence);
         if (res) {
@@ -249,9 +252,7 @@ void SwappyVkBase::destroyVkSyncObjects() {
         while (syncList.size() > 0) {
             VkSync sync = syncList.front();
             syncList.pop_front();
-            vkWaitForFences(mDevice, 1, &sync.fence, VK_TRUE,
-                            mCommonBase.getFenceTimeout().count());
-            vkResetFences(mDevice, 1, &sync.fence);
+            vkWaitForFences(mDevice, 1, &sync.fence, VK_TRUE, UINT64_MAX);
             mSignaledSyncs[queue].push_back(sync);
         }
     }
@@ -271,6 +272,7 @@ void SwappyVkBase::destroyVkSyncObjects() {
             vkFreeCommandBuffers(mDevice, mCommandPool[it->first], 1, &sync.command);
             vkDestroyEvent(mDevice, sync.event, NULL);
             vkDestroySemaphore(mDevice, sync.semaphore, NULL);
+            vkResetFences(mDevice, 1, &sync.fence);
             vkDestroyFence(mDevice, sync.fence, NULL);
         }
     }
@@ -312,13 +314,15 @@ VkResult SwappyVkBase::injectFence(VkQueue                 queue,
 
     // If we cross the swap interval threshold, we don't pace at all.
     // In this case we might not have a free fence, so just don't use the fence.
-    if (mFreeSyncPool[queue].empty()) {
+    if (mFreeSyncPool[queue].empty() || vkGetFenceStatus(mDevice, mFreeSyncPool[queue].front().fence) != VK_SUCCESS) {
         *pSemaphore = VK_NULL_HANDLE;
         return VK_SUCCESS;
     }
 
     VkSync sync = mFreeSyncPool[queue].front();
     mFreeSyncPool[queue].pop_front();
+
+    vkResetFences(mDevice, 1, &sync.fence);
 
     VkPipelineStageFlags pipe_stage_flags;
     VkSubmitInfo submit_info;
@@ -389,7 +393,6 @@ void SwappyVkBase::waitForFenceThreadMain(ThreadContext& thread) {
             if (result) {
                 ALOGE("Failed to wait for fence %d", result);
             }
-            vkResetFences(mDevice, 1, &sync.fence);
             mLastFenceTime = std::chrono::steady_clock::now() - startTime;
 
             // Move the sync object to the signaled list
