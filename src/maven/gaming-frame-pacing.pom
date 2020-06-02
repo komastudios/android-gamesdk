@@ -6,7 +6,7 @@
 
   <groupId>androidx.gaming</groupId>
   <artifactId>gaming-frame-pacing</artifactId>
-  <version>1.0.0-alpha01</version>
+  <version>@aarVersion@</version>
   <packaging>aar</packaging>
 
   <licenses>

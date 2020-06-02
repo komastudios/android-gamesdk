@@ -8,6 +8,7 @@ import org.gradle.api.Project;
 import static groovy.lang.Closure.IDENTITY;
 import groovy.util.GroovyCollections;
 import groovyx.gpars.GParsPool;
+import org.apache.tools.ant.filters.ReplaceTokens;
 
 apply plugin: 'java'
 
@@ -1088,6 +1089,58 @@ def addZipTask(name, buildTask, zipName) {
 
 }
 
+// Generate a zip file with the library AAR and its pom file, all versioned,
+// so that it's ready to be uploaded to Maven.
+def addAarMavenZipTask(name, aarBuildTask, libraryName, aarVersion) {
+    def packPath = "fullsdk"
+    def buildFolder = joinPath(getPackagePath(), packPath)
+    def mavenZipContentFolder = joinPath(buildFolder, libraryName + "-maven-zip");
+
+    // After building the AAR, prepare the versioned pom file and AAR file.
+    tasks.register("prepareMavenZipContentFor" + name) {
+        dependsOn aarBuildTask
+
+        doLast {
+            delete mavenZipContentFolder
+            mkdir mavenZipContentFolder
+
+            copy {
+                from file(joinPath(buildFolder, libraryName + ".aar"))
+                into file(joinPath(mavenZipContentFolder))
+                rename libraryName + ".aar", libraryName + "-" + aarVersion + ".aar"
+            }
+
+            copy {
+                from file(joinPath("src", "maven", libraryName + ".pom"))
+                into file(joinPath(mavenZipContentFolder))
+                rename libraryName + ".pom", libraryName + "-" + aarVersion + ".pom"
+                filter(ReplaceTokens, tokens: [aarVersion: aarVersion])
+            }
+        }
+    }
+
+    // Create a zip for upload to Maven.
+    tasks.register(name, Zip) {
+        dependsOn "prepareMavenZipContentFor" + name
+
+        from fileTree(mavenZipContentFolder)
+        destinationDirectory = file(buildFolder)
+        archiveFileName = libraryName + "-maven-zip.zip"
+
+        // Don't lost time compressing already compressed files
+        entryCompression = ZipEntryCompression.STORED
+
+        doLast {
+            if (getDistPath() != getPackagePath()) {
+                copy {
+                    from getPackagePath()
+                    into getDistPath()
+                }
+            }
+        }
+    }
+}
+
 addZipTask("swappyUnityZip", swappyUnityBuild, "builds")
 addZipTask("swappyUnityDebugZip", swappyUnityDebugBuild, "builds")
 addZipTask("unityZip", unityBuild, "builds")
@@ -1100,3 +1153,7 @@ addZipTask("gamesdkDebugZip", debugSdkBuild, "gamesdk_debug")
 addZipTask("gamingFramePacingAar", gamingFramePacingAarSdkBuild, "gaming-frame-pacing.aar")
 addZipTask("fullSdkGamingFramePacingAar", gamingFramePacingAarFullSdkBuild, "gaming-frame-pacing.aar")
 addZipTask("fullSdkGamingPerformanceTunerAar", gamingPerformanceTunerAarFullSdkBuild, "gaming-performance-tuner.aar")
+addAarMavenZipTask("fullSdkGamingFramePacingAarMavenZip", "fullSdkGamingFramePacingAar",
+    "gaming-frame-pacing", "1.5.0-alpha01")
+addAarMavenZipTask("fullSdkGamingPerformanceTunerAarMavenZip", "fullSdkGamingPerformanceTunerAar",
+    "gaming-performance-tuner", "1.0.0-alpha01")
