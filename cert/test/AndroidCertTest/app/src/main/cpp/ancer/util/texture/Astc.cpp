@@ -16,7 +16,7 @@
 
 #include "Astc.hpp"
 
-#include <utility>
+#include <sstream>
 
 #include <ancer/util/Log.hpp>
 #include <GLES2/gl2.h>
@@ -112,7 +112,8 @@ AstcTexture::AstcTexture(const std::string &relative_path,
                         channels,
                         post_compression_format),
       _bits_per_pixel{bits_per_pixel} {
-  _internal_format = ::map_bpp_to_internal_format(bits_per_pixel, _relative_path, _filename_stem);
+  _internal_gl_format =
+      ::map_bpp_to_internal_format(bits_per_pixel, _relative_path, _filename_stem);
 }
 
 AstcTexture AstcTexture::MirrorPostCompressed(
@@ -134,7 +135,7 @@ void AstcTexture::_OnBitmapLoaded() {
 }
 
 void AstcTexture::_ApplyBitmap() {
-  glCompressedTexImage2D(GL_TEXTURE_2D, 0, _internal_format,
+  glCompressedTexImage2D(GL_TEXTURE_2D, 0, _internal_gl_format,
                          _width, _height, 0, _image_size,
                          _bitmap_data.get() + sizeof(AstcHeader));
 
@@ -145,4 +146,11 @@ void AstcTexture::_ApplyBitmap() {
 const std::string &AstcTexture::_GetInnerExtension() const {
   static const std::string kAstc("astc");
   return kAstc;
+}
+
+std::string AstcTexture::_GetInnerFormat() const {
+  std::stringstream type;
+  type << "ASTC " << _bits_per_pixel << "BPP";
+
+  return type.str();
 }

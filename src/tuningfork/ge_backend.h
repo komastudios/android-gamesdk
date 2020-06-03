@@ -31,14 +31,14 @@ class UltimateUploader;
 // Google Endpoint backend
 class GEBackend : public Backend {
 public:
-    TFErrorCode Init(const Settings& settings,
+    TuningFork_ErrorCode Init(const Settings& settings,
                      const ExtraUploadInfo& extra_upload_info);
     ~GEBackend() override;
-    TFErrorCode Process(const std::string &json_event) override;
+    TuningFork_ErrorCode Process(const std::string &json_event) override;
     void KillThreads();
 private:
     std::shared_ptr<UltimateUploader> ultimate_uploader_;
-    const TFCache* persister_;
+    const TuningFork_Cache* persister_;
 };
 
 } //namespace tuningfork {

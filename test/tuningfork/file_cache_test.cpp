@@ -36,16 +36,16 @@ class FileCacheTest {
         EXPECT_EQ(cache_.Clear(), TFERROR_OK);
     }
     void Save(uint64_t key, const ProtobufSerialization& value) {
-        CProtobufSerialization cvalue;
+        TuningFork_CProtobufSerialization cvalue;
         ToCProtobufSerialization(value, cvalue);
         cache_.Set(key, &cvalue);
-        CProtobufSerialization_Free(&cvalue);
+        TuningFork_CProtobufSerialization_free(&cvalue);
     }
     ProtobufSerialization Load(uint64_t key) {
-        CProtobufSerialization cvalue;
+        TuningFork_CProtobufSerialization cvalue;
         if (cache_.Get(key, &cvalue)==TFERROR_OK) {
             auto value = ToProtobufSerialization(cvalue);
-            CProtobufSerialization_Free(&cvalue);
+            TuningFork_CProtobufSerialization_free(&cvalue);
             return value;
         }
         else

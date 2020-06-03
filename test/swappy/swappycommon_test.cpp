@@ -370,7 +370,7 @@ class Simulator : public ITimeProvider {
         Simulator* sim = (Simulator*)userdata;
         sim->preWait();
     }
-    static void postWaitTracer(void *userdata, long cpuTime_ns, long gpuTime_ns) {
+    static void postWaitTracer(void *userdata, int64_t cpuTime_ns, int64_t gpuTime_ns) {
         Simulator* sim = (Simulator*)userdata;
         sim->postWait(std::chrono::nanoseconds(cpuTime_ns), std::chrono::nanoseconds(gpuTime_ns));
     }
@@ -378,12 +378,12 @@ class Simulator : public ITimeProvider {
         Simulator* sim = (Simulator*)userdata;
         sim->preSwapBuffers();
     }
-    static void postSwapBuffersTracer(void *userdata, long desiredPresentationTimeMillis) {
+    static void postSwapBuffersTracer(void *userdata, int64_t desiredPresentationTimeMillis) {
         Simulator* sim = (Simulator*)userdata;
         sim->postSwapBuffers(std::chrono::milliseconds(desiredPresentationTimeMillis));
     }
     static void startFrameTracer(void *userdata, int currentFrame,
-                                 long desiredPresentationTimeMillis) {
+                                 int64_t desiredPresentationTimeMillis) {
         Simulator* sim = (Simulator*)userdata;
         sim->startFrame(currentFrame, std::chrono::milliseconds(desiredPresentationTimeMillis));
     }

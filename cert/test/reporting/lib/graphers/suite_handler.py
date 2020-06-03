@@ -30,7 +30,7 @@ import numpy as np
 
 from lib.common import ensure_dir, nanoseconds_to_seconds
 from lib.report import Datum, Report, Suite, SummaryContext
-import lib.format_items as fmt
+import lib.items
 from lib.common import Indexer
 
 
@@ -71,7 +71,7 @@ class SuiteHandler(ABC):
             "SuiteHandler subclass must implement can_handle_datum() function")
 
     @abstractmethod
-    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
+    def render(self, ctx: SummaryContext) -> List[lib.items.Item]:
         """Subclasses implement this method to render their portion of the
         report document.
         Args:
@@ -198,7 +198,7 @@ class SuiteSummarizer:
 
     # Overridable methods
 
-    def render_synthesis(self, ctx: SummaryContext) -> List[fmt.Item]:
+    def render_synthesis(self, ctx: SummaryContext) -> List[lib.items.Item]:
         """Allows for providing a synthesis (or "summary") of the results across
         all devices (or SuiteHandlers). A synthesis can include graphs, tables,
         text, etc..
@@ -249,7 +249,7 @@ class SuiteSummarizer:
                 return True
         return False
 
-    def render_summary(self, ctx: SummaryContext) -> List[fmt.Item]:
+    def render_summary(self, ctx: SummaryContext) -> List[lib.items.Item]:
         """This method executes the core functionality of this class, collating
         the results from all associated SuiteHandlers and providing any custom
         synthesis or cross-device summary.
@@ -267,9 +267,9 @@ class SuiteSummarizer:
         for handler in self.suite_handlers:
             items = handler.render(ctx)
             if items:
-                reports.append(fmt.Heading(handler.device(), 3))
+                reports.append(lib.items.Heading(handler.device(), 3))
                 reports.extend(items)
-                reports.append(fmt.Separator())
+                reports.append(lib.items.Separator())
 
         # If there's a cross-device summary, add it before per-device reports.
         # (This is called _after_ the SuiteHandlers so that the Summarizer's
@@ -277,7 +277,7 @@ class SuiteSummarizer:
         # of the SuiteHandlers in self.suite_handlers.)
         synthesis = self.render_synthesis(ctx)
         if synthesis:
-            synthesis.append(fmt.Separator())
+            synthesis.append(lib.items.Separator())
             return synthesis + reports
 
         return reports
@@ -320,8 +320,8 @@ class SuiteSummarizer:
 
 
 def make_image_path(folder: Path,
-                      prefix: str,
-                      indexer: Optional[Indexer] = None) -> Path:
+                    prefix: str,
+                    indexer: Optional[Indexer] = None) -> Path:
     """Creates an image path based on folder, prefix and optional increment.
         Args:
             folder: path relative to where script is run

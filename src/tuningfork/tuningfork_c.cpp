@@ -29,14 +29,16 @@ extern "C" {
 namespace tf = tuningfork;
 namespace jni = tuningfork::jni;
 
-TFErrorCode TuningFork_init_internal(const TFSettings *c_settings_in, JNIEnv* env,
-                                     jobject context) {
+TuningFork_ErrorCode TuningFork_init_internal(
+    const TuningFork_Settings *c_settings_in,
+    JNIEnv* env,
+    jobject context) {
     tf::Settings settings {};
     if (c_settings_in != nullptr) {
         settings.c_settings = *c_settings_in;
     }
     jni::Init(env, context);
-    TFErrorCode err = FindSettingsInApk(&settings);
+    TuningFork_ErrorCode err = FindSettingsInApk(&settings);
     if (err!=TFERROR_OK)
         return err;
     std::string default_save_dir = tf::file_utils::GetAppCacheDir() + "/tuningfork";
@@ -54,21 +56,24 @@ TFErrorCode TuningFork_init_internal(const TFSettings *c_settings_in, JNIEnv* en
 // Blocking call to get fidelity parameters from the server.
 // Note that once fidelity parameters are downloaded, any timing information is recorded
 //  as being associated with those parameters.
-TFErrorCode TuningFork_getFidelityParameters(const CProtobufSerialization *default_params,
-                                             CProtobufSerialization *params,
-                                             uint32_t timeout_ms) {
+TuningFork_ErrorCode TuningFork_getFidelityParameters(
+    const TuningFork_CProtobufSerialization *default_params,
+    TuningFork_CProtobufSerialization *params,
+    uint32_t timeout_ms) {
     tf::ProtobufSerialization defaults;
     if(default_params)
         defaults = tf::ToProtobufSerialization(*default_params);
     tf::ProtobufSerialization s;
-    TFErrorCode result = tf::GetFidelityParameters(defaults, s, timeout_ms);
+    TuningFork_ErrorCode result =
+        tf::GetFidelityParameters(defaults, s, timeout_ms);
     if (result==TFERROR_OK && params)
         tf::ToCProtobufSerialization(s, *params);
     return result;
 }
 
 // Protobuf serialization of the current annotation
-TFErrorCode TuningFork_setCurrentAnnotation(const CProtobufSerialization *annotation) {
+TuningFork_ErrorCode TuningFork_setCurrentAnnotation(
+    const TuningFork_CProtobufSerialization *annotation) {
     if (annotation!=nullptr)
         return tf::SetCurrentAnnotation(tf::ToProtobufSerialization(*annotation));
     else
@@ -77,43 +82,46 @@ TFErrorCode TuningFork_setCurrentAnnotation(const CProtobufSerialization *annota
 
 // Record a frame tick that will be associated with the instrumentation key and the current
 //   annotation
-TFErrorCode TuningFork_frameTick(TFInstrumentKey id) {
+TuningFork_ErrorCode TuningFork_frameTick(TuningFork_InstrumentKey id) {
     return tf::FrameTick(id);
 }
 
 // Record a frame tick using an external time, rather than system time
-TFErrorCode TuningFork_frameDeltaTimeNanos(TFInstrumentKey id, TFDuration dt) {
+TuningFork_ErrorCode TuningFork_frameDeltaTimeNanos(
+    TuningFork_InstrumentKey id, TuningFork_Duration dt) {
     return tf::FrameDeltaTimeNanos(id, std::chrono::nanoseconds(dt));
 }
 
 // Start a trace segment
-TFErrorCode  TuningFork_startTrace(TFInstrumentKey key, TFTraceHandle* handle) {
+TuningFork_ErrorCode  TuningFork_startTrace(
+    TuningFork_InstrumentKey key, TuningFork_TraceHandle* handle) {
     if (handle==nullptr) return TFERROR_INVALID_TRACE_HANDLE;
     return tf::StartTrace(key, *handle);
 }
 
 // Record a trace with the key and annotation set using startTrace
-TFErrorCode TuningFork_endTrace(TFTraceHandle h) {
+TuningFork_ErrorCode TuningFork_endTrace(TuningFork_TraceHandle h) {
     return tf::EndTrace(h);
 }
 
-TFErrorCode TuningFork_flush() {
+TuningFork_ErrorCode TuningFork_flush() {
     return tf::Flush();
 }
 
-TFErrorCode TuningFork_destroy() {
+TuningFork_ErrorCode TuningFork_destroy() {
     tf::KillDownloadThreads();
     return tf::Destroy();
 }
 
-TFErrorCode TuningFork_setFidelityParameters(const CProtobufSerialization* params) {
+TuningFork_ErrorCode TuningFork_setFidelityParameters(
+    const TuningFork_CProtobufSerialization* params) {
     if (params!=nullptr)
         return tf::SetFidelityParameters(tf::ToProtobufSerialization(*params));
     else
         return TFERROR_BAD_PARAMETER;
 }
 
-TFErrorCode TuningFork_enableMemoryRecording(bool enable) {
+TuningFork_ErrorCode TuningFork_enableMemoryRecording(bool enable) {
     return tf::EnableMemoryRecording(enable);
 }
 

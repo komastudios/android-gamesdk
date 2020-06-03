@@ -34,7 +34,7 @@ namespace tuningfork {
 
 class DebugBackend : public Backend {
 public:
-    TFErrorCode Process(const std::string& s) override {
+    TuningFork_ErrorCode Process(const std::string& s) override {
         if (s.size() == 0) return TFERROR_BAD_PARAMETER;
         // Split the serialization into <128-byte chunks to avoid logcat line
         //  truncation.
@@ -111,11 +111,11 @@ Duration UploadThread::DoWork() {
         if (upload_)
             backend_->Process(evt_ser_json);
         else {
-            CProtobufSerialization cser;
+            TuningFork_CProtobufSerialization cser;
             ToCProtobufSerialization(evt_ser_json, cser);
             if (persister_)
                 persister_->set(HISTOGRAMS_PAUSED, &cser, persister_->user_data);
-            CProtobufSerialization_Free(&cser);
+            TuningFork_CProtobufSerialization_free(&cser);
         }
         ready_ = nullptr;
     }
@@ -222,14 +222,14 @@ ExtraUploadInfo UploadThread::BuildExtraUploadInfo() {
 
 void UploadThread::InitialChecks(ProngCache& prongs,
                                  IdProvider& id_provider,
-                                 const TFCache* persister) {
+                                 const TuningFork_Cache* persister) {
     persister_ = persister;
     if (!persister_) {
         ALOGE("No persistence mechanism given");
         return;
     }
     // Check for PAUSED prong cache
-    CProtobufSerialization paused_hists_ser;
+    TuningFork_CProtobufSerialization paused_hists_ser;
     if (persister->get(HISTOGRAMS_PAUSED, &paused_hists_ser,
                        persister_->user_data)==TFERROR_OK) {
         std::string paused_hists_str = ToString(paused_hists_ser);
@@ -237,7 +237,7 @@ void UploadThread::InitialChecks(ProngCache& prongs,
         GESerializer::DeserializeAndMerge(paused_hists_str,
                                           id_provider,
                                           prongs);
-        CProtobufSerialization_Free(&paused_hists_ser);
+        TuningFork_CProtobufSerialization_free(&paused_hists_ser);
     }
     else {
         ALOGI("No PAUSED histograms");
