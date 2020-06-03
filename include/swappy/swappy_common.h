@@ -40,7 +40,7 @@
 
 // Internal macros to track Swappy version, do not use directly.
 #define SWAPPY_MAJOR_VERSION 1
-#define SWAPPY_MINOR_VERSION 4
+#define SWAPPY_MINOR_VERSION 5
 #define SWAPPY_PACKED_VERSION ((SWAPPY_MAJOR_VERSION<<16)|(SWAPPY_MINOR_VERSION))
 
 // Internal macros to generate a symbol to track Swappy version, do not use directly.
@@ -125,7 +125,7 @@ typedef void (*SwappyPreWaitCallback)(void*);
  * @param cpu_time_ns Time for CPU processing of this frame in nanoseconds.
  * @param gpu_time_ns Time for GPU processing of previous frame in nanoseconds.
  */
-typedef void (*SwappyPostWaitCallback)(void*, long cpu_time_ns, long gpu_time_ns);
+typedef void (*SwappyPostWaitCallback)(void*, int64_t cpu_time_ns, int64_t gpu_time_ns);
 
 /**
  * Pointer to a function that can be attached to SwappyTracer::preSwapBuffers.
@@ -139,14 +139,14 @@ typedef void (*SwappyPreSwapBuffersCallback)(void*);
  * @param desiredPresentationTimeMillis The target time, in milliseconds, at which the frame
  * would be presented on screen.
  */
-typedef void (*SwappyPostSwapBuffersCallback)(void*, long desiredPresentationTimeMillis);
+typedef void (*SwappyPostSwapBuffersCallback)(void*, int64_t desiredPresentationTimeMillis);
 
 /**
  * Pointer to a function that can be attached to SwappyTracer::startFrame.
  * @param userData Pointer to arbitrary data, see SwappyTracer::userData.
  * @param desiredPresentationTimeMillis The time, in milliseconds, at which the frame is scheduled to be presented.
  */
-typedef void (*SwappyStartFrameCallback)(void*, int currentFrame, long desiredPresentationTimeMillis);
+typedef void (*SwappyStartFrameCallback)(void*, int currentFrame, int64_t desiredPresentationTimeMillis);
 
 /**
  * Pointer to a function that can be attached to SwappyTracer::swapIntervalChanged.
