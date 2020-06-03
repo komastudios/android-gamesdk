@@ -22,6 +22,30 @@
       "revId": "ea75d5abe77a4db1f4085ea9a1e7589fcbf426dc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "868d3d02_1365ded7",
+        "filename": "src/tuningfork/tuningfork_swappy.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-06-03T07:58:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6fa986c1_cd4b6023",
+      "range": {
+        "startLine": 35,
+        "startChar": 0,
+        "endLine": 35,
+        "endChar": 52
+      },
+      "revId": "ea75d5abe77a4db1f4085ea9a1e7589fcbf426dc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
