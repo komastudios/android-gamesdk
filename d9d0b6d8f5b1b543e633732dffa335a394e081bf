@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "097e434b_d4745398",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-06-03T21:59:47Z",
+      "side": 1,
+      "message": "That\u0027s a good point (and a correct assumption). I can definitely update the documentation to reflect this. 😊",
+      "parentUuid": "df78f8ac_676ac2cf",
+      "revId": "d9d0b6d8f5b1b543e633732dffa335a394e081bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c795b685_9f64af18",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
         "patchSetId": 3
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "4238f594_3407d8ff",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-06-03T21:59:47Z",
+      "side": 1,
+      "message": "That\u0027s a fair question. It all comes down to the way the EGL extension operates. You ask it for the ID of the frame you\u0027re currently drawing, and you\u0027re then expected to query it several frames later. You can query a variety of values from it, but the one we care about is the timestamp for when that frame was presented. Obviously only a query performed _after_ the frame is presented will be able to tell you this information. However, there is no guarantee that EGL still has this information--it has a limited buffer and you may encounter a case where it simply can\u0027t tell you when a specific frame was presented, and there\u0027s no way around it. For this specific test, that\u0027s something I want to know about, and it\u0027s something I actually wound up using when debugging some unexpected results.\n\nIn short, there are certainly other ways to write this sort of thing, but I don\u0027t think we want to be omitting data for this case. Good question though.",
+      "parentUuid": "c795b685_9f64af18",
+      "revId": "d9d0b6d8f5b1b543e633732dffa335a394e081bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fc6dd72a_68d118f7",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
         "patchSetId": 3
@@ -47,6 +83,24 @@
       "writtenOn": "2020-05-29T23:21:03Z",
       "side": 1,
       "message": "(Comes from another feedback comment above)\nConsider this alternative:\n\nvoid WriteDatum(report_writers::Struct w, const egl_frame_timestamp_datum\u0026 d) {\n  ADD_DATUM_MEMBER(w, d, frame_id);\n  if (d.success) {\n    ADD_DATUM_MEMBER(w, d, egl_frame_timestamp_ns);\n  }\n}\n\nIn this version, the Python grapher will not receive success, but if success is false, then it won\u0027t receive egl_frame_timestamp_ns either. Just keep this in mine anytime you have to deal with optional results.",
+      "revId": "d9d0b6d8f5b1b543e633732dffa335a394e081bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "22655986_b2893e95",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-06-03T21:59:47Z",
+      "side": 1,
+      "message": "I think my comment on the other point should address this.",
+      "parentUuid": "fc6dd72a_68d118f7",
       "revId": "d9d0b6d8f5b1b543e633732dffa335a394e081bf",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
@@ -76,6 +130,30 @@
     },
     {
       "key": {
+        "uuid": "9e2017e5_151a6c0f",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-06-03T21:59:47Z",
+      "side": 1,
+      "message": "Good question, I don\u0027t actually need to _retain_ looper, so I should probably just make it a local variable. However, I do need to check for it because Choreographer\u0027s `postFrameCallback` function can only be called from a thread with a valid Looper context. (Incidentally, `Start()` has a valid Looper context, but `OnGlContextReady()` does not, which is why I\u0027m doing some initialization here.) I\u0027ll go ahead and document this.",
+      "parentUuid": "20b60074_66d63cc8",
+      "range": {
+        "startLine": 174,
+        "startChar": 4,
+        "endLine": 177,
+        "endChar": 5
+      },
+      "revId": "d9d0b6d8f5b1b543e633732dffa335a394e081bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c10011d0_b528d973",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
         "patchSetId": 3
@@ -87,6 +165,24 @@
       "writtenOn": "2020-05-29T23:21:03Z",
       "side": 1,
       "message": "(Comes from earlier feedback)\n\nIf the grapher just ignores entirely egl_frame_timestamp_datum when success is false, then you may opt not to Report(datum) if value \u003d\u003d EGL_TIMESTAMP_INVALID_ANDROID.\n\nAlthough it seems like you want to leave some indication that EGL_TIMESTAMP_INVALID_ANDROID happened.",
+      "revId": "d9d0b6d8f5b1b543e633732dffa335a394e081bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e821da3f_7ab5da80",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-06-03T21:59:47Z",
+      "side": 1,
+      "message": "You\u0027re correct, we need to know at least the `frame_id` if a timestamp became invalid.",
+      "parentUuid": "c10011d0_b528d973",
       "revId": "d9d0b6d8f5b1b543e633732dffa335a394e081bf",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
@@ -110,6 +206,24 @@
     },
     {
       "key": {
+        "uuid": "bd2e7c59_8b31c8ed",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 326,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-06-03T21:59:47Z",
+      "side": 1,
+      "message": "Yes, it\u0027s okay because _frame_counter could be equal to last_frame_id, and this function only gets called (recursively) so long as _frame_counter \u003c last_frame_id.",
+      "parentUuid": "fb952b4c_20a5a7b5",
+      "revId": "d9d0b6d8f5b1b543e633732dffa335a394e081bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fd3a8627_49fdbac5",
         "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
         "patchSetId": 3
@@ -121,6 +235,24 @@
       "writtenOn": "2020-05-29T23:21:03Z",
       "side": 1,
       "message": "If _frame_counter \u003c first_frame_id, SetupFrameCallback() is called. Is that OK?",
+      "revId": "d9d0b6d8f5b1b543e633732dffa335a394e081bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8c400d4d_b8833078",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 336,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-06-03T21:59:47Z",
+      "side": 1,
+      "message": "Yes, it\u0027s okay because this function is only using first_frame_id to know when to start calling Report(...). Essentially we need the EGL extension to be gathering its timestamps both before and after we start reporting them from Choreographer (because we need a \"background\" to compare against).",
+      "parentUuid": "fd3a8627_49fdbac5",
       "revId": "d9d0b6d8f5b1b543e633732dffa335a394e081bf",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
