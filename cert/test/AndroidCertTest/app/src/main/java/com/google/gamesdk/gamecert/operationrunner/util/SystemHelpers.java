@@ -107,31 +107,6 @@ public class SystemHelpers {
         public Object image;
     }
 
-    /**
-     * loads a text file. Note: this function is
-     * called from native code via JNI.
-     *
-     * @param path path to a text file in assets/
-     * @return text content of the file
-     */
-    public String loadText(String path) {
-        // TODO(dagum): this can and should be ported from its current Java/JNI implementation to
-        //              full C++ by using System.Asset.hpp type Asset.
-        try {
-            InputStream stream = _context.getAssets().open(path);
-            int size = stream.available();
-            byte[] buffer = new byte[size];
-            stream.read(buffer);
-            stream.close();
-            return new String(buffer);
-        } catch (IOException e) {
-            Log.e(TAG, "loadText - unable to load text from file \""
-                    + path + "\"");
-        }
-
-        return null;
-    }
-
     // -------------------------------------------------------------------------
 
     public static class MemoryInformation {
