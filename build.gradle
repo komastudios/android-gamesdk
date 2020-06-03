@@ -1154,6 +1154,6 @@ addZipTask("gamingFramePacingAar", gamingFramePacingAarSdkBuild, "gaming-frame-p
 addZipTask("fullSdkGamingFramePacingAar", gamingFramePacingAarFullSdkBuild, "gaming-frame-pacing.aar")
 addZipTask("fullSdkGamingPerformanceTunerAar", gamingPerformanceTunerAarFullSdkBuild, "gaming-performance-tuner.aar")
 addAarMavenZipTask("fullSdkGamingFramePacingAarMavenZip", "fullSdkGamingFramePacingAar",
-    "gaming-frame-pacing", "1.4.0-alpha01")
+    "gaming-frame-pacing", "1.5.0-alpha01")
 addAarMavenZipTask("fullSdkGamingPerformanceTunerAarMavenZip", "fullSdkGamingPerformanceTunerAar",
     "gaming-performance-tuner", "1.0.0-alpha01")
