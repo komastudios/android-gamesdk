@@ -125,13 +125,13 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     return JNI_VERSION_1_6;
 }
 
-TFErrorCode Unity_TuningFork_init(
-    ProtoCallback fidelity_params_callback,
-    const CProtobufSerialization* training_fidelity_params,
+TuningFork_ErrorCode Unity_TuningFork_init(
+    TuningFork_FidelityParamsCallback fidelity_params_callback,
+    const TuningFork_CProtobufSerialization* training_fidelity_params,
     const char* endpoint_uri_override){
 
     s_swappy_enabled = findSwappy();
-    TFSettings settings {};
+    TuningFork_Settings settings {};
     if (s_swappy_enabled) {
         settings.swappy_tracer_fn = s_swappy_tracer_fn;
     }
@@ -146,12 +146,15 @@ bool Unity_TuningFork_swappyIsEnabled(){
     return s_swappy_enabled;
 }
 
-TFErrorCode Unity_TuningFork_findFidelityParamsInApk(
-        const char* filename, CProtobufSerialization* fp) {
-    return TuningFork_findFidelityParamsInApk(jni::Env(), jni::AppContextGlobalRef(), filename, fp);
+TuningFork_ErrorCode Unity_TuningFork_findFidelityParamsInApk(
+        const char* filename, TuningFork_CProtobufSerialization* fp) {
+    return TuningFork_findFidelityParamsInApk(
+        jni::Env(), jni::AppContextGlobalRef(), filename, fp);
 }
 
-TFErrorCode Unity_TuningFork_saveOrDeleteFidelityParamsFile(CProtobufSerialization* fps) {
-    return TuningFork_saveOrDeleteFidelityParamsFile(jni::Env(), jni::AppContextGlobalRef(), fps);
+TuningFork_ErrorCode Unity_TuningFork_saveOrDeleteFidelityParamsFile(
+    TuningFork_CProtobufSerialization* fps) {
+    return TuningFork_saveOrDeleteFidelityParamsFile(
+        jni::Env(), jni::AppContextGlobalRef(), fps);
 }
 } // extern "C" {

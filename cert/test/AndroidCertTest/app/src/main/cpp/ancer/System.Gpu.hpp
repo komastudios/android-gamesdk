@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <sstream>
+#include <string>
 
 #include <GLES3/gl32.h>
 #include <jni.h>
@@ -52,7 +53,7 @@ GLuint BindNewTexture2D();
  * has an alpha channel writes true into has_alpha. Returns the GL
  * texture id.
  */
-GLuint LoadTexture(const char *file_name, int32_t *out_width = nullptr,
+GLuint LoadTexture(const std::string &asset_path, int32_t *out_width = nullptr,
                    int32_t *out_height = nullptr, bool *has_alpha = nullptr);
 
 //--------------------------------------------------------------------------------------------------

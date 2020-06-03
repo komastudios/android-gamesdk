@@ -26,7 +26,7 @@ import numpy as np
 from lib.common import bytes_to_megabytes, nanoseconds_to_seconds
 from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
 from lib.report import Datum, SummaryContext
-import lib.format_items as fmt
+import lib.items as items
 
 
 class MemoryAllocationSuiteSummarizer(SuiteSummarizer):
@@ -58,7 +58,7 @@ class MemoryAllocationSuiteHandler(SuiteHandler):
     def can_handle_datum(cls, datum: Datum):
         return "Memory allocation" in datum.suite_id
 
-    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
+    def render(self, ctx: SummaryContext) -> List[items.Item]:
         for datum in self.data:
             if datum.operation_id == 'MemoryAllocOperation':
                 self.__segregate_datum_info(datum)
@@ -68,7 +68,7 @@ class MemoryAllocationSuiteHandler(SuiteHandler):
             self.__arrange_mem_figure(plt.subplot(1, 1, 1))
 
         image_path = self.plot(ctx, graph)
-        image = fmt.Image(image_path, self.device())
+        image = items.Image(image_path, self.device())
         return [image]
 
     def __segregate_datum_info(self, datum: Datum) -> type(None):

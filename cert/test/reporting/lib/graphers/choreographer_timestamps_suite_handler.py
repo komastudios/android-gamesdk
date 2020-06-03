@@ -23,11 +23,10 @@ from typing import List, Optional
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
-import numpy as np
 
 from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
 from lib.report import Datum, SummaryContext, Suite
-import lib.format_items as fmt
+import lib.items as items
 import lib.systrace as systrace
 
 class ChoreographerTimestampsSummarizer(SuiteSummarizer):
@@ -118,9 +117,9 @@ class ChoreographerTimestampsSuiteHandler(SuiteHandler):
                         timestamps.append(timestamp + offset_ns)
         return timestamps
 
-    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
+    def render(self, ctx: SummaryContext) -> List[items.Item]:
         image_path = self.plot(ctx, self.render_plot)
-        image = fmt.Image(image_path, self.device())
+        image = items.Image(image_path, self.device())
         return [image]
 
     def render_plot(self):

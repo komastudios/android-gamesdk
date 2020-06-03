@@ -16,12 +16,18 @@
 
 #include "System.Gpu.hpp"
 
+#include <memory>
+#include <regex>
+
 #include <ancer/System.hpp>
 #include <ancer/util/Error.hpp>
 #include <ancer/util/FpsCalculator.hpp>
 #include <ancer/util/GLHelpers.hpp>
 #include <ancer/util/JNIHelpers.hpp>
 #include <ancer/util/Log.hpp>
+#include <ancer/util/Texture.hpp>
+#include <ancer/util/texture/Jpg.hpp>
+#include <ancer/util/texture/Png.hpp>
 
 using namespace ancer;
 
@@ -49,69 +55,45 @@ GLuint ancer::BindNewTexture2D() {
   return texture_id;
 }
 
-// TODO(dagum): this can and should be ported from its current Java/JNI implementation to full C++
-//              by using System.Asset.hpp type Asset.
-GLuint ancer::LoadTexture(const char *file_name, int32_t *out_width, int32_t *out_height,
-                          bool *has_alpha) {
-  GLuint texture_id = 0;
-  jni::SafeJNICall(
-      [&texture_id, &out_width, &out_height, &has_alpha, file_name](jni::LocalJNIEnv *env) {
-        jstring name = env->NewStringUTF(file_name);
-        jobject activity = env->NewLocalRef(jni::GetActivityWeakGlobalRef());
-        jclass activity_class = env->GetObjectClass(activity);
+GLuint ancer::LoadTexture(const std::string &asset_path, int32_t *out_width,
+                          int32_t *out_height, bool *has_alpha) {
+  GLuint texture_id;
 
-        texture_id = BindNewTexture2D();
+  static const std::regex ASSET_PATH_REGEX{R"(((.*)\/)?([^\/\.]*)\.([^.]*))"};
+  std::smatch asset_path_parts;
 
-        jmethodID get_asset_helpers_mid = env->GetMethodID(
-            activity_class,
-            "getSystemHelpers",
-            "()Lcom/google/gamesdk/gamecert/operationrunner/util/SystemHelpers;"
-        );
-        jobject asset_helpers_instance = env->CallObjectMethod(activity, get_asset_helpers_mid);
-        jclass asset_helpers_class = env->GetObjectClass(asset_helpers_instance);
+  if (std::regex_match(asset_path, asset_path_parts, ASSET_PATH_REGEX)) {
+    auto parts_count = asset_path_parts.size();
+    auto extension = asset_path_parts[parts_count - 1].str();
+    auto stem = asset_path_parts[parts_count - 2].str();
+    auto relative_path = parts_count > 2 ? asset_path_parts[parts_count - 3].str() : std::string{};
 
-        jmethodID load_texture_mid = env->GetMethodID(
-            asset_helpers_class, "loadTexture",
-            "(Ljava/lang/String;)Lcom/google/gamesdk/gamecert/operationrunner/"
-            "util/SystemHelpers$TextureInformation;");
+    std::unique_ptr<ancer::Texture> p_texture;
 
-        jobject out = env->CallObjectMethod(asset_helpers_instance, load_texture_mid, name);
+    if (extension == std::string{"png"}) {
+      p_texture = std::make_unique<ancer::PngTexture>(relative_path, stem);
+    } else if (extension == std::string{"jpg"}) {
+      p_texture = std::make_unique<ancer::JpgTexture>(relative_path, stem);
+    } // else other formats to support in the future (ASTC, Gzipped ETC2, ...)
 
-        // extract TextureInformation from out
-        jclass java_cls = LoadClass(
-            env, activity,
-            "com/google/gamesdk/gamecert/operationrunner/util/"
-            "SystemHelpers$TextureInformation");
-        jfieldID fid_ret = env->GetFieldID(java_cls, "ret", "Z");
-        jfieldID fid_has_alpha = env->GetFieldID(java_cls, "alphaChannel", "Z");
-        jfieldID fid_width = env->GetFieldID(java_cls, "originalWidth", "I");
-        jfieldID fid_height = env->GetFieldID(java_cls, "originalHeight", "I");
-        bool ret = env->GetBooleanField(out, fid_ret);
-        bool alpha = env->GetBooleanField(out, fid_has_alpha);
-        int32_t width = env->GetIntField(out, fid_width);
-        int32_t height = env->GetIntField(out, fid_height);
+    if (p_texture->Load()) {
+      *out_width = p_texture->GetWidth();
+      *out_height = p_texture->GetHeight();
+      if (has_alpha) {
+        *has_alpha = p_texture->HasAlpha();
+      }
+      p_texture->ApplyBitmap(texture_id = ancer::BindNewTexture2D());
+    }
+  }
 
-        if (!ret) {
-          glDeleteTextures(1, &texture_id);
-          *out_width = 0;
-          *out_height = 0;
-          if (has_alpha)
-            *has_alpha = false;
-          FatalError(TAG, "loadTexture - unable to load \"%s\"",
-                     file_name);
-        } else {
-          *out_width = width;
-          *out_height = height;
-          if (has_alpha)
-            *has_alpha = alpha;
-
-          glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-          glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-          // Generate mipmap
-          glGenerateMipmap(GL_TEXTURE_2D);
-        }
-      });
+  if (texture_id == 0) {
+    *out_width = 0;
+    *out_height = 0;
+    if (has_alpha) {
+      *has_alpha = false;
+    }
+    FatalError(TAG, "LoadTexture: unable to load \"%s\"", asset_path.c_str());
+  }
 
   return texture_id;
 }

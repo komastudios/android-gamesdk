@@ -45,7 +45,7 @@ constexpr char kPerformanceParametersBaseUri[] =
 bool GetEnumSizesFromDescriptors( std::vector<uint32_t>& enum_sizes);
 
 // Use the default persister if the one passed in is null
-static void CheckPersister(const TFCache*& persister, std::string save_dir) {
+static void CheckPersister(const TuningFork_Cache*& persister, std::string save_dir) {
     if (persister == nullptr) {
         if (save_dir.empty()) {
             // If the save_dir is empty, try the app's cache dir or tmp storage.
@@ -119,8 +119,9 @@ static bool decode_string(pb_istream_t* stream, const pb_field_t *field, void** 
     return true;
 }
 
-static TFErrorCode DeserializeSettings(const ProtobufSerialization& settings_ser,
-                                           Settings* settings) {
+static TuningFork_ErrorCode DeserializeSettings(
+    const ProtobufSerialization& settings_ser,
+    Settings* settings) {
     PBSettings pbsettings = com_google_tuningfork_Settings_init_zero;
     pbsettings.aggregation_strategy.annotation_enum_size.funcs.decode = decodeAnnotationEnumSizes;
     pbsettings.aggregation_strategy.annotation_enum_size.arg = settings;
@@ -154,12 +155,12 @@ static TFErrorCode DeserializeSettings(const ProtobufSerialization& settings_ser
     return TFERROR_OK;
 }
 
-TFErrorCode FindSettingsInApk(Settings* settings) {
+TuningFork_ErrorCode FindSettingsInApk(Settings* settings) {
     if (settings) {
         ProtobufSerialization settings_ser;
         if (apk_utils::GetAssetAsSerialization("tuningfork/tuningfork_settings.bin", settings_ser)) {
             ALOGI("Got settings from tuningfork/tuningfork_settings.bin");
-            TFErrorCode err = DeserializeSettings(settings_ser, settings);
+            TuningFork_ErrorCode err = DeserializeSettings(settings_ser, settings);
             if (err!=TFERROR_OK) return err;
             if (settings->aggregation_strategy.annotation_enum_size.size()==0) {
                 // If enum sizes are missing, use the descriptor in dev_tuningfork.descriptor

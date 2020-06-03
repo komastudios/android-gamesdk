@@ -22,7 +22,7 @@ from enum import Enum
 from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
 from lib.report import Datum, SummaryContext
 from lib.graphers.common_graphers import graph_functional_test_result
-import lib.format_items as fmt
+import lib.items as items
 
 
 class TestResult(Enum):
@@ -59,7 +59,7 @@ class EGLPresentationTimeSuiteHandler(SuiteHandler):
     def can_handle_datum(cls, datum: Datum):
         return "EGL Presentation Time" in datum.suite_id
 
-    def render(self, ctx: SummaryContext) -> List[fmt.Item]:
+    def render(self, ctx: SummaryContext) -> List[items.Item]:
         """Evalutes the data, renders the (success|failure|inconclusive) plot,
         and returns a list of any issues encountered."""
 
@@ -107,8 +107,8 @@ class EGLPresentationTimeSuiteHandler(SuiteHandler):
             graph_functional_test_result(result_flag, result_labels)
 
         image_path = self.plot(ctx, graph, '')
-        image = fmt.Image(image_path, self.device())
-        return [image, fmt.Text(text)]
+        image = items.Image(image_path, self.device())
+        return [image, items.Text(text)]
 
 
     def evaluate_availability(self, info: Dict) -> TestResult:

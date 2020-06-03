@@ -106,16 +106,20 @@ pushd $dist_dir
 sha256sum gamesdk.zip > gamesdk.zip.sha256
 popd
 
-# Calculate hash of the Swappy AAR file and add its associated pom file
-cp src/maven/gaming-frame-pacing.pom $dist_dir
+# Calculate hash of the AAR files
 pushd $dist_dir
 sha256sum gaming-frame-pacing.aar > gaming-frame-pacing.aar.sha256
 popd
-
 if [[ $1 == "full" ]]
 then
-  cp src/maven/gaming-performance-tuner.pom $dist_dir
   pushd $dist_dir
   sha256sum gaming-performance-tuner.aar > gaming-performance-tuner.aar.sha256
   popd
+fi
+
+# Prepare AAR files to be uploaded on Maven
+if [[ $1 == "full" ]]
+then
+  ./gradlew fullSdkGamingFramePacingAarMavenZip
+  ./gradlew fullSdkGamingPerformanceTunerAarMavenZip
 fi
