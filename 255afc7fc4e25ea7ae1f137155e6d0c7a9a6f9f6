@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "673827f8_0cafce80",
+        "filename": "src/swappy/vulkan/SwappyVkBase.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-06-03T12:02:30Z",
+      "side": 1,
+      "message": "Thanks for clairifying",
+      "parentUuid": "b62f1987_1beb7d81",
+      "revId": "255afc7fc4e25ea7ae1f137155e6d0c7a9a6f9f6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "85a0c24c_34d583da",
         "filename": "src/swappy/vulkan/SwappyVkBase.cpp",
         "patchSetId": 3
@@ -69,6 +87,24 @@
       "revId": "255afc7fc4e25ea7ae1f137155e6d0c7a9a6f9f6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "787644dd_2ca0631b",
+        "filename": "src/swappy/vulkan/SwappyVkBase.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 395,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-06-03T12:02:30Z",
+      "side": 1,
+      "message": "Agreed - if we timeout on actual frames, the fence timeout value is too low.",
+      "parentUuid": "3d72441f_fd7c2090",
+      "revId": "255afc7fc4e25ea7ae1f137155e6d0c7a9a6f9f6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
