@@ -18,10 +18,11 @@
 
 #include <string>
 #include <gtest/gtest.h>
+#include <tuningfork/jni_helper.h>
 #include "tuningfork/file_cache.h"
 #include "tuningfork/tuningfork_utils.h"
 #include "tuningfork/protobuf_util.h"
-
+#include "tuningfork_test.h"
 
 namespace test {
 
@@ -32,9 +33,13 @@ constexpr char kBasePath[] = "/data/local/tmp/tuningfork_file_test";
 class FileCacheTest {
     FileCache cache_;
   public:
-    FileCacheTest() : cache_(kBasePath) {
+    FileCacheTest() : cache_(GetPath()) {
         EXPECT_EQ(cache_.Clear(), TFERROR_OK);
     }
+    ~FileCacheTest() {
+        clear_jni_for_tests();
+    }
+    bool IsValid() const { return cache_.IsValid(); }
     void Save(uint64_t key, const ProtobufSerialization& value) {
         TuningFork_CProtobufSerialization cvalue;
         ToCProtobufSerialization(value, cvalue);
@@ -54,36 +59,50 @@ class FileCacheTest {
     void Remove(uint64_t key) {
         cache_.Remove(key);
     }
+    static std::string GetPath() {
+        // Use JNI if we can, for app cache usage rather than /data/local/tmp
+        init_jni_for_tests();
+        if (jni::IsValid()) {
+            return file_utils::GetAppCacheDir()+"/tuningfork_file_test";
+        } else {
+            return kBasePath;
+        }
+    }
+    static std::string LocalFileName(uint64_t key) {
+        std::stringstream str;
+        str << GetPath() << "/local_cache_" << key;
+        return str.str();
+    }
 };
 
-std::string LocalFileName(uint64_t key) {
-    std::stringstream str;
-    str << kBasePath << "/local_cache_" << key;
-    return str.str();
-}
-
-std::vector<uint64_t> keys = {0, 1, 24523, 0xffffff};
+static std::vector<uint64_t> keys = {0, 1, 24523, 0xffffff};
 
 TEST(FileCacheTest, FileSaveLoadOp) {
     FileCacheTest ft;
+    // Some devices don't allow writing to /data/local/tmp, however we don't want to
+    //  give errors when they are run on the command-line.
+    if (!ft.IsValid()) GTEST_SKIP();
     ProtobufSerialization saved = {1, 2, 3};
     for(auto k: keys) {
-        EXPECT_FALSE(file_utils::FileExists(LocalFileName(k)));
+        EXPECT_FALSE(file_utils::FileExists(FileCacheTest::LocalFileName(k)));
         ft.Save(k, saved);
-        EXPECT_TRUE(file_utils::FileExists(LocalFileName(k)));
+        EXPECT_TRUE(file_utils::FileExists(FileCacheTest::LocalFileName(k)));
         EXPECT_EQ(ft.Load(k), saved) << "Save+Load 1";
     }
 }
 
 TEST(FileCacheTest, FileRemoveOp) {
     FileCacheTest ft;
+    // Some devices don't allow writing to /data/local/tmp, however we don't want to
+    //  give errors when they are run on the command-line.
+    if (!ft.IsValid()) GTEST_SKIP();
     ProtobufSerialization saved = {1, 2, 3};
     for(auto k: keys) {
         ft.Save(k, saved);
-        EXPECT_TRUE(file_utils::FileExists(LocalFileName(k)));
+        EXPECT_TRUE(file_utils::FileExists(FileCacheTest::LocalFileName(k)));
         EXPECT_EQ(ft.Load(k), saved) << "Save+Load 2";
         ft.Remove(k);
-        EXPECT_FALSE(file_utils::FileExists(LocalFileName(k)));
+        EXPECT_FALSE(file_utils::FileExists(FileCacheTest::LocalFileName(k)));
         EXPECT_EQ(ft.Load(k), ProtobufSerialization {}) << "Remove";
     }
 }

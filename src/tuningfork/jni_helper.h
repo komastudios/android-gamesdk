@@ -30,6 +30,7 @@ namespace jni {
 
 // Management of jni envs and the app context.
 void Init(JNIEnv* env, jobject ctx);
+void Destroy();
 bool IsValid();
 JNIEnv* Env();
 void DetachThread();

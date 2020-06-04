@@ -106,4 +106,8 @@ TuningFork_ErrorCode FileCache::Clear() {
         return TFERROR_BAD_FILE_OPERATION;
 }
 
+bool FileCache::IsValid() const {
+    return CheckAndCreateDir(path_);
+}
+
 } // namespace tuningfork
