@@ -518,7 +518,7 @@ class FillRateGLES3Operation : public BaseGLES3Operation {
     std::string vertex_file;
     std::string fragment_file;
     std::tie(vertex_file, fragment_file) = RENDERER::GetShaderFiles();
-    _program = CreateProgram(vertex_file.c_str(), fragment_file.c_str());
+    _program = CreateProgram(vertex_file, fragment_file);
 
     if (!_program) {
       FatalError(TAG, "Unable to load quad program");

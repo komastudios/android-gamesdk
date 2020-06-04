@@ -34,7 +34,10 @@ namespace ancer {
  */
 enum TextureChannels { RGB, RGBA };
 
-std::string ToString(const TextureChannels, const bool uppercase = true);
+/**
+ * Returns a human readable version of a TextureChannels value.
+ */
+std::string ToString(const TextureChannels);
 
 /**
  * Some texture assets are delivered as they are (e.g., JPG, ASTC, PKM, ...) whereas others are
@@ -76,7 +79,7 @@ class Texture {
 
   Texture(Texture &&) = default;
 
-  virtual ~Texture();
+  virtual ~Texture() = default;
 
   /**
    * Route to the texture, relative to some root. The root could be the assets folder if using the
@@ -164,6 +167,13 @@ class Texture {
    */
   void ApplyBitmap(const GLuint texture_id);
 
+  /**
+   * Formats the fully qualified texture asset file, relative to the assets folder. Beware that this
+   * function is expensive and idempotent. This means that, for a given texture instance, calling
+   * this function n times will always return the same result.
+   */
+  std::string Str() const;
+
  protected:
   /**
    * Subclasses override this function to implement the loading logic inherent to the texture type.
@@ -176,13 +186,6 @@ class Texture {
    * correspond to the texture type (e.g., internal format, etc.)
    */
   virtual void _ApplyBitmap() = 0;
-
-  /**
-   * Subclass implementers shouldn't need to call this function directly under any circumstance.
-   * It releases the texture CPU memory. Is called by the type own life-cycle functions as soon as
-   * the texture bitmap memory is ready to be released.
-   */
-  void _ReleaseBitmapData();
 
   std::string _relative_path;
   std::string _filename_stem;
@@ -198,13 +201,6 @@ class Texture {
   Milliseconds _load_time_in_millis;
   Milliseconds _gpu_trx_time_in_millis;
 };
-
-/**
- * Formats the fully qualified texture asset file, relative to the assets folder. Beware that this
- * function is expensive and idempotent. This means that, for a given texture instance, calling
- * this function n times will always return the same result.
- */
-std::string ToString(const Texture &texture);
 
 //--------------------------------------------------------------------------------------------------
 
