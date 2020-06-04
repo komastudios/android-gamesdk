@@ -9,7 +9,7 @@
     "stress_tests": [
         {
             "enabled": true,
-            "name": "Texture Loading",
+            "name": "Texture Formats",
             "description": "Comparison between compression strategies",
             "duration": "0s",
             "data_gatherer": {
