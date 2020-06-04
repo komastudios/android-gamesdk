@@ -16,6 +16,24 @@
       "revId": "3d95dcc8c4e6b056895ec3b688273a360ef41373",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "341b27cd_a861bb56",
+        "filename": "test/tuningfork/tuningfork_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 404,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-06-04T13:57:33Z",
+      "side": 0,
+      "message": "It\u0027s required by condition_variable::wait_for. If that call had a predicate, we\u0027d lock any data used by the predicate when we changed it.\nhttps://en.cppreference.com/w/cpp/thread/condition_variable/wait_for",
+      "parentUuid": "f77ff1ba_d754b7df",
+      "revId": "3d95dcc8c4e6b056895ec3b688273a360ef41373",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
