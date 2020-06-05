@@ -16,6 +16,24 @@
       "revId": "b1fccb0a44f46725c05f0c8d49b7329055b371db",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "545a8609_2fd9f19f",
+        "filename": "src/tuningfork/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-06-05T14:58:43Z",
+      "side": 1,
+      "message": "No, good spot!",
+      "parentUuid": "fc629eee_4d44845a",
+      "revId": "b1fccb0a44f46725c05f0c8d49b7329055b371db",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
