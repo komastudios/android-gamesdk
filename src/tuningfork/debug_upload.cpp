@@ -64,7 +64,7 @@ static std::string RequestJson() {
         std::stringstream str;
         str << "dev_tuningfork_fidelityparams_" << i << ".bin";
         ProtobufSerialization fp;
-        if (FindFidelityParamsInApk(str.str(), fp)==TFERROR_OK) {
+        if (FindFidelityParamsInApk(str.str(), fp)==TUNINGFORK_ERROR_OK) {
             std::string fp_b64;
             encode_b64(fp, fp_b64);
             fps.push_back(fp_b64);
@@ -89,13 +89,13 @@ TuningFork_ErrorCode UploadDebugInfo(Request& request) {
     std::string body;
     TuningFork_ErrorCode ret = request.Send(kRpcName, RequestJson(),
                                    response_code, body);
-    if (ret!=TFERROR_OK)
+    if (ret!=TUNINGFORK_ERROR_OK)
         return ret;
 
     if (response_code>=kSuccessCodeMin && response_code<=kSuccessCodeMax)
-        return TFERROR_OK;
+        return TUNINGFORK_ERROR_OK;
     else
-        return TFERROR_BAD_PARAMETER;
+        return TUNINGFORK_ERROR_BAD_PARAMETER;
 }
 
 } // namespace tuningfork

@@ -166,7 +166,7 @@ class TestIdProvider : public IdProvider{
                                uint64_t annotation_id,
                                uint64_t& id) override {
         id = k;
-        return TFERROR_OK;
+        return TUNINGFORK_ERROR_OK;
     }
 };
 
@@ -205,7 +205,7 @@ TEST(SerializationTest, GEDeserialization) {
                   [](uint64_t){ return false; },
                   nullptr);
     TestIdProvider id_provider;
-    EXPECT_EQ(GESerializer::DeserializeAndMerge(evt_ser, id_provider, pc), TFERROR_OK)
+    EXPECT_EQ(GESerializer::DeserializeAndMerge(evt_ser, id_provider, pc), TUNINGFORK_ERROR_OK)
             << "Deserialize single";
     CheckProngCaches(pc, prong_cache);
 }

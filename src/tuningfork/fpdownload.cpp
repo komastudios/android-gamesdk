@@ -72,7 +72,7 @@ static TuningFork_ErrorCode DecodeResponse(const std::string& response,
         ALOGW("Empty response to generateTuningParameters");
         fps.clear();
         experiment_id.clear();
-        return TFERROR_NO_FIDELITY_PARAMS;
+        return TUNINGFORK_ERROR_NO_FIDELITY_PARAMS;
     } else {
         ALOGI("Response to generateTuningParameters: %s", response.c_str());
     }
@@ -80,12 +80,12 @@ static TuningFork_ErrorCode DecodeResponse(const std::string& response,
     Json jresponse = Json::parse(response, err);
     if (!err.empty()) {
         ALOGE("Parsing error: %s", err.c_str());
-        return TFERROR_GENERATE_TUNING_PARAMETERS_ERROR;
+        return TUNINGFORK_ERROR_GENERATE_TUNING_PARAMETERS_ERROR;
     }
     ALOGV("Response, deserialized: %s", jresponse.dump().c_str());
     if (!jresponse.is_object()) {
         ALOGE("Response not object");
-        return TFERROR_GENERATE_TUNING_PARAMETERS_ERROR;
+        return TUNINGFORK_ERROR_GENERATE_TUNING_PARAMETERS_ERROR;
     }
     auto& outer = jresponse.object_items();
     auto iparameters = outer.find("parameters");
@@ -94,13 +94,13 @@ static TuningFork_ErrorCode DecodeResponse(const std::string& response,
         ALOGW("No 'parameters' in generateTuningParameters response");
         fps.clear();
         experiment_id.clear();
-        return TFERROR_NO_FIDELITY_PARAMS;
+        return TUNINGFORK_ERROR_NO_FIDELITY_PARAMS;
     }
     else {
         auto& params = iparameters->second;
         if (!params.is_object()) {
             ALOGE("parameters not object");
-            return TFERROR_GENERATE_TUNING_PARAMETERS_ERROR;
+            return TUNINGFORK_ERROR_GENERATE_TUNING_PARAMETERS_ERROR;
         }
         auto& inner = params.object_items();
         auto iexperiment_id = inner.find("experimentId");
@@ -111,7 +111,7 @@ static TuningFork_ErrorCode DecodeResponse(const std::string& response,
         else {
             if (!iexperiment_id->second.is_string()) {
                 ALOGE("experimentId is not a string");
-                return TFERROR_GENERATE_TUNING_PARAMETERS_ERROR;
+                return TUNINGFORK_ERROR_GENERATE_TUNING_PARAMETERS_ERROR;
             }
             experiment_id = iexperiment_id->second.string_value();
         }
@@ -119,22 +119,22 @@ static TuningFork_ErrorCode DecodeResponse(const std::string& response,
         if (ifps==inner.end()) {
             ALOGW("No serializedFidelityParameters: assuming empty");
             fps.clear();
-	    return TFERROR_NO_FIDELITY_PARAMS;
+	    return TUNINGFORK_ERROR_NO_FIDELITY_PARAMS;
         }
         else {
             if (!ifps->second.is_string()) {
                 ALOGE("serializedFidelityParameters is not a string");
-                return TFERROR_GENERATE_TUNING_PARAMETERS_ERROR;
+                return TUNINGFORK_ERROR_GENERATE_TUNING_PARAMETERS_ERROR;
             }
             std::string sfps = ifps->second.string_value();
             fps.resize(modp_b64_decode_len(sfps.length()));
             if (modp_b64_decode((char*)fps.data(), sfps.c_str(), sfps.length())==-1) {
                 ALOGE("Can't decode base 64 FPs");
-                return TFERROR_GENERATE_TUNING_PARAMETERS_ERROR;
+                return TUNINGFORK_ERROR_GENERATE_TUNING_PARAMETERS_ERROR;
             }
         }
     }
-    return TFERROR_OK;
+    return TUNINGFORK_ERROR_OK;
 }
 
 static TuningFork_ErrorCode DownloadFidelityParams(Request& request,
@@ -146,13 +146,13 @@ static TuningFork_ErrorCode DownloadFidelityParams(Request& request,
     TuningFork_ErrorCode ret = request.Send(
         kRpcName, RequestJson(request.Info(), training_mode_fps),
         response_code, body);
-    if (ret!=TFERROR_OK)
+    if (ret!=TUNINGFORK_ERROR_OK)
         return ret;
 
     if (response_code>=kSuccessCodeMin && response_code<=kSuccessCodeMax)
         ret = DecodeResponse(body, fps, experiment_id);
     else
-        ret = TFERROR_GENERATE_TUNING_PARAMETERS_RESPONSE_NOT_SUCCESS;
+        ret = TUNINGFORK_ERROR_GENERATE_TUNING_PARAMETERS_RESPONSE_NOT_SUCCESS;
 
     return ret;
 }

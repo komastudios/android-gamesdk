@@ -15,20 +15,20 @@ namespace {
 extern "C" TuningFork_ErrorCode FileCacheGet(uint64_t key,
     TuningFork_CProtobufSerialization* value,
     void* _self) {
-    if (_self==nullptr) return TFERROR_BAD_PARAMETER;
+    if (_self==nullptr) return TUNINGFORK_ERROR_BAD_PARAMETER;
     tf::FileCache* self = static_cast<tf::FileCache*>(_self);
     return self->Get(key, value);
 }
 extern "C" TuningFork_ErrorCode FileCacheSet(uint64_t key,
     const TuningFork_CProtobufSerialization* value,
     void* _self) {
-    if (_self==nullptr) return TFERROR_BAD_PARAMETER;
+    if (_self==nullptr) return TUNINGFORK_ERROR_BAD_PARAMETER;
     tf::FileCache* self = static_cast<tf::FileCache*>(_self);
     return self->Set(key, value);
 }
 extern "C" TuningFork_ErrorCode FileCacheRemove(uint64_t key,
     void* _self) {
-    if (_self==nullptr) return TFERROR_BAD_PARAMETER;
+    if (_self==nullptr) return TUNINGFORK_ERROR_BAD_PARAMETER;
     tf::FileCache* self = static_cast<tf::FileCache*>(_self);
     return self->Remove(key);
 }
@@ -60,14 +60,14 @@ TuningFork_ErrorCode FileCache::Get(uint64_t key,
             if (LoadBytesFromFile(key_path, value)) {
                 ALOGV("Loaded key %" PRId64 " from %s (%" PRIu32 " bytes)", key,
                       key_path.c_str(), value->size);
-                return TFERROR_OK;
+                return TUNINGFORK_ERROR_OK;
             }
         }
         else {
             ALOGV("File does not exist");
         }
     }
-    return TFERROR_NO_SUCH_KEY;
+    return TUNINGFORK_ERROR_NO_SUCH_KEY;
 }
 
 TuningFork_ErrorCode FileCache::Set(uint64_t key,
@@ -77,11 +77,12 @@ TuningFork_ErrorCode FileCache::Set(uint64_t key,
     if (CheckAndCreateDir(path_)) {
         auto key_path = PathToKey(path_, key);
         if (SaveBytesToFile(key_path, value)) {
-            ALOGV("Saved key %" PRId64 " to %s (%" PRIu32 " bytes)", key, key_path.c_str(), value->size);
-            return TFERROR_OK;
+            ALOGV("Saved key %" PRId64 " to %s (%" PRIu32 " bytes)", key, key_path.c_str(),
+                    value->size);
+            return TUNINGFORK_ERROR_OK;
         }
     }
-    return TFERROR_NO_SUCH_KEY;
+    return TUNINGFORK_ERROR_NO_SUCH_KEY;
 }
 
 TuningFork_ErrorCode FileCache::Remove(uint64_t key) {
@@ -91,19 +92,19 @@ TuningFork_ErrorCode FileCache::Remove(uint64_t key) {
         auto key_path = PathToKey(path_, key);
         if (DeleteFile(key_path)) {
             ALOGV("Deleted key %" PRId64 " (%s)", key, key_path.c_str());
-            return TFERROR_OK;
+            return TUNINGFORK_ERROR_OK;
         }
     }
-    return TFERROR_NO_SUCH_KEY;
+    return TUNINGFORK_ERROR_NO_SUCH_KEY;
 }
 
 TuningFork_ErrorCode FileCache::Clear() {
     std::lock_guard<std::mutex> lock(mutex_);
     ALOGV("FileCache::Clear");
     if (DeleteDir(path_))
-        return TFERROR_OK;
+        return TUNINGFORK_ERROR_OK;
     else
-        return TFERROR_BAD_FILE_OPERATION;
+        return TUNINGFORK_ERROR_BAD_FILE_OPERATION;
 }
 
 } // namespace tuningfork

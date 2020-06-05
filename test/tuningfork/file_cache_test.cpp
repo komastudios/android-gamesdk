@@ -33,7 +33,7 @@ class FileCacheTest {
     FileCache cache_;
   public:
     FileCacheTest() : cache_(kBasePath) {
-        EXPECT_EQ(cache_.Clear(), TFERROR_OK);
+        EXPECT_EQ(cache_.Clear(), TUNINGFORK_ERROR_OK);
     }
     void Save(uint64_t key, const ProtobufSerialization& value) {
         TuningFork_CProtobufSerialization cvalue;
@@ -43,7 +43,7 @@ class FileCacheTest {
     }
     ProtobufSerialization Load(uint64_t key) {
         TuningFork_CProtobufSerialization cvalue;
-        if (cache_.Get(key, &cvalue)==TFERROR_OK) {
+        if (cache_.Get(key, &cvalue)==TUNINGFORK_ERROR_OK) {
             auto value = ToProtobufSerialization(cvalue);
             TuningFork_CProtobufSerialization_free(&cvalue);
             return value;

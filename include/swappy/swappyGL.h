@@ -65,13 +65,17 @@ void SwappyGL_destroy();
 
 /**
  * @brief Tell Swappy which ANativeWindow to use when calling to ANativeWindow_* API.
- * @param window ANativeWindow that was used to create the EGLSurface
+ * @param window ANativeWindow that was used to create the EGLSurface.
+ * @return true on success, false if Swappy was not initialized.
  */
 bool SwappyGL_setWindow(ANativeWindow* window);
 
 /**
  * @brief Replace calls to eglSwapBuffers with this. Swappy will wait for the previous frame's
  * buffer to be processed by the GPU before actually calling eglSwapBuffers.
+ * @return true on success or false if
+ * 1) Swappy is not initialized or 2) eglSwapBuffers did not return EGL_TRUE.
+ * In the latter case, eglGetError can be used to get the error code.
  */
 bool SwappyGL_swap(EGLDisplay display, EGLSurface surface);
 

@@ -193,7 +193,8 @@ Json::object TelemetryReportJson(const ProngCache& prong_cache,
             duration += p->duration_;
         }
     }
-    int total_size = render_histograms.size() + loading_histograms.size() + loading_events_times.size();
+    int total_size = render_histograms.size() + loading_histograms.size() +
+            loading_events_times.size();
     empty = (total_size==0);
     // Use the average duration for this annotation
     if (!empty)
@@ -358,7 +359,7 @@ struct Hist {
     Json in = Json::parse(evt_json_ser, err);
     if (!err.empty()) {
         ALOGE("Failed to deserialize %s\n%s", evt_json_ser.c_str(), err.c_str());
-        return TFERROR_BAD_PARAMETER;
+        return TUNINGFORK_ERROR_BAD_PARAMETER;
     }
 
     // Deserialize
@@ -369,7 +370,7 @@ struct Hist {
         // Context
         auto& context = telemetry["context"];
         if (context.is_null())
-            return TFERROR_BAD_PARAMETER;
+            return TUNINGFORK_ERROR_BAD_PARAMETER;
         auto annotation = B64Decode(context["annotations"].string_value());
         auto fps = B64Decode(context["tuning_parameters"]["serialized_fidelity_parameters"]
                                  .string_value());
@@ -377,7 +378,7 @@ struct Hist {
         // Report
         auto& report = telemetry["report"]["rendering"];
         if (report.is_null())
-            return TFERROR_BAD_PARAMETER;
+            return TUNINGFORK_ERROR_BAD_PARAMETER;
         for(auto& histogram: report["render_time_histogram"].array_items()) {
             uint64_t instrument_id = histogram["instrument_id"].int_value();
             std::vector<uint32_t> cs;
@@ -394,17 +395,17 @@ struct Hist {
         uint64_t id;
         auto annotation_id = id_provider.DecodeAnnotationSerialization(h.annotation);
         if (annotation_id== annotation_util::kAnnotationError)
-            return TFERROR_BAD_PARAMETER;
+            return TUNINGFORK_ERROR_BAD_PARAMETER;
         auto r = id_provider.MakeCompoundId(h.instrument_id, annotation_id, id);
-        if (r!=TFERROR_OK)
+        if (r!=TUNINGFORK_ERROR_OK)
             return r;
         auto p = pc.Get(id);
         if (p==nullptr)
-            return TFERROR_BAD_PARAMETER;
+            return TUNINGFORK_ERROR_BAD_PARAMETER;
         auto& orig_counts = p->histogram_.buckets();
         p->histogram_.AddCounts(h.counts);
     }
-    return TFERROR_OK;
+    return TUNINGFORK_ERROR_OK;
 }
 
 } // namespace tuningfork

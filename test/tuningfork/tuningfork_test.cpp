@@ -57,7 +57,7 @@ public:
             result = evt_ser;
         }
         cv->notify_all();
-        return TFERROR_OK;
+        return TUNINGFORK_ERROR_OK;
     }
 
     void Clear() { result = ""; }
@@ -94,14 +94,14 @@ public:
         if (n_times_called_ > wait_count_) {
             if (download_params_!=nullptr) {
                 fidelity_params = *download_params_;
-                return TFERROR_OK;
+                return TUNINGFORK_ERROR_OK;
             }
             else {
-                return TFERROR_NO_FIDELITY_PARAMS;
+                return TUNINGFORK_ERROR_NO_FIDELITY_PARAMS;
             }
         }
         else {
-            return TFERROR_GENERATE_TUNING_PARAMETERS_ERROR;
+            return TUNINGFORK_ERROR_GENERATE_TUNING_PARAMETERS_ERROR;
         }
     }
 };
@@ -167,11 +167,11 @@ class TuningForkTest {
                                               params_loader_.get(),
                                               &time_provider_,
                                               &meminfo_provider_);
-        EXPECT_EQ(init_return_value_, TFERROR_OK) << "Bad Init";
+        EXPECT_EQ(init_return_value_, TUNINGFORK_ERROR_OK) << "Bad Init";
     }
 
     ~TuningForkTest() {
-        if (init_return_value_ == TFERROR_OK) {
+        if (init_return_value_ == TUNINGFORK_ERROR_OK) {
             tuningfork::Destroy();
             tuningfork::KillDownloadThreads();
         }
@@ -216,7 +216,8 @@ TuningForkLogEvent TestEndToEnd() {
     for (int i = 0; i < NTICKS; ++i)
         tuningfork::FrameTick(TFTICK_RAW_FRAME_TIME);
     // Wait for the upload thread to complete writing the string
-    EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time)==std::cv_status::no_timeout) << "Timeout";
+    EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time)==std::cv_status::no_timeout)
+        << "Timeout";
 
     return test.Result();
 }
@@ -234,7 +235,8 @@ TuningForkLogEvent TestEndToEndWithAnnotation() {
     for (int i = 0; i < NTICKS; ++i)
         tuningfork::FrameTick(TFTICK_PACED_FRAME_TIME);
     // Wait for the upload thread to complete writing the string
-    EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time)==std::cv_status::no_timeout) << "Timeout";
+    EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time)==std::cv_status::no_timeout)
+        << "Timeout";
 
     return test.Result();
 }
@@ -248,7 +250,8 @@ TuningForkLogEvent TestEndToEndTimeBased() {
     for (int i = 0; i < NTICKS; ++i)
         tuningfork::FrameTick(TFTICK_RAW_FRAME_TIME);
     // Wait for the upload thread to complete writing the string
-    EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time)==std::cv_status::no_timeout) << "Timeout";
+    EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time)==std::cv_status::no_timeout)
+        << "Timeout";
 
     return test.Result();
 }
@@ -263,7 +266,8 @@ TuningForkLogEvent TestEndToEndWithMemory() {
     for (int i = 0; i < NTICKS; ++i)
         tuningfork::FrameTick(TFTICK_RAW_FRAME_TIME);
     // Wait for the upload thread to complete writing the string
-    EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time)==std::cv_status::no_timeout) << "Timeout";
+    EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time)==std::cv_status::no_timeout)
+        << "Timeout";
 
     return test.Result();
 }
@@ -433,15 +437,16 @@ void TestFidelityParamDownloadThread(bool insights) {
     TuningForkTest test(settings, std::chrono::milliseconds(20), params_loader);
 
     auto r = TuningFork_startFidelityParamDownloadThread(nullptr, FidelityParamsCallback);
-    EXPECT_EQ(r, TFERROR_BAD_PARAMETER);
+    EXPECT_EQ(r, TUNINGFORK_ERROR_BAD_PARAMETER);
     std::unique_lock<std::mutex> lock(fp_mutex);
     r = TuningFork_startFidelityParamDownloadThread(&c_default_fps, FidelityParamsCallback);
-    EXPECT_EQ(r, TFERROR_OK);
+    EXPECT_EQ(r, TUNINGFORK_ERROR_OK);
 
     fp_n_callbacks_called = 0;
 
     if (insights) {
-        EXPECT_TRUE(fp_cv.wait_for(lock, s_test_wait_time)!=std::cv_status::timeout) << "Timeout";
+        EXPECT_TRUE(fp_cv.wait_for(lock, s_test_wait_time)!=std::cv_status::timeout)
+          << "Timeout";
         EXPECT_EQ(fp_n_callbacks_called, 1);
         EXPECT_EQ(params_loader->n_times_called_, 1);
     }
@@ -449,7 +454,8 @@ void TestFidelityParamDownloadThread(bool insights) {
         // Wait for the download thread. We have one initial callback with the defaults and
         //  one with the ones from the loader.
         for(int i=0;i<2;++i) {
-            EXPECT_TRUE(fp_cv.wait_for(lock, s_test_wait_time)!=std::cv_status::timeout) << "Timeout";
+            EXPECT_TRUE(fp_cv.wait_for(lock, s_test_wait_time)!=std::cv_status::timeout)
+              << "Timeout";
         }
         EXPECT_EQ(fp_n_callbacks_called, 2);
         EXPECT_EQ(params_loader->n_times_called_, 4);
@@ -486,7 +492,7 @@ class TestRequest: public Request {
                 ++next_response_;
             }
         }
-        return TFERROR_OK;
+        return TUNINGFORK_ERROR_OK;
     }
 };
 
