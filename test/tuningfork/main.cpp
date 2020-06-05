@@ -21,6 +21,10 @@ extern "C" bool init_jni_for_tests() {
   return false;
 }
 
+extern "C" void clear_jni_for_tests() {
+    // Do nothing
+}
+
 int main(int argc, char * argv[]) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
