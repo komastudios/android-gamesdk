@@ -137,7 +137,7 @@ static TuningFork_ErrorCode DeserializeSettings(
     ByteStream str {const_cast<uint8_t*>(settings_ser.data()), settings_ser.size(), 0};
     pb_istream_t stream = {ByteStream::Read, &str, settings_ser.size()};
     if (!pb_decode(&stream, com_google_tuningfork_Settings_fields, &pbsettings))
-        return TFERROR_BAD_SETTINGS;
+        return TUNINGFORK_ERROR_BAD_SETTINGS;
     if(pbsettings.aggregation_strategy.method
           ==com_google_tuningfork_Settings_AggregationStrategy_Submission_TICK_BASED)
         settings->aggregation_strategy.method = Settings::AggregationStrategy::Submission::TICK_BASED;
@@ -152,30 +152,31 @@ static TuningFork_ErrorCode DeserializeSettings(
     // Convert from 1-based to 0 based indices (-1 = not present)
     settings->loading_annotation_index = pbsettings.loading_annotation_index - 1;
     settings->level_annotation_index = pbsettings.level_annotation_index - 1;
-    return TFERROR_OK;
+    return TUNINGFORK_ERROR_OK;
 }
 
 TuningFork_ErrorCode FindSettingsInApk(Settings* settings) {
     if (settings) {
         ProtobufSerialization settings_ser;
-        if (apk_utils::GetAssetAsSerialization("tuningfork/tuningfork_settings.bin", settings_ser)) {
+        if (apk_utils::GetAssetAsSerialization("tuningfork/tuningfork_settings.bin",
+                settings_ser)) {
             ALOGI("Got settings from tuningfork/tuningfork_settings.bin");
             TuningFork_ErrorCode err = DeserializeSettings(settings_ser, settings);
-            if (err!=TFERROR_OK) return err;
+            if (err!=TUNINGFORK_ERROR_OK) return err;
             if (settings->aggregation_strategy.annotation_enum_size.size()==0) {
                 // If enum sizes are missing, use the descriptor in dev_tuningfork.descriptor
                 if (!GetEnumSizesFromDescriptors(
                                           settings->aggregation_strategy.annotation_enum_size)) {
-                    return TFERROR_NO_SETTINGS_ANNOTATION_ENUM_SIZES;
+                    return TUNINGFORK_ERROR_NO_SETTINGS_ANNOTATION_ENUM_SIZES;
                 }
             }
-            return TFERROR_OK;
+            return TUNINGFORK_ERROR_OK;
         }
         else {
-            return TFERROR_NO_SETTINGS;
+            return TUNINGFORK_ERROR_NO_SETTINGS;
         }
     } else {
-        return TFERROR_BAD_PARAMETER;
+        return TUNINGFORK_ERROR_BAD_PARAMETER;
     }
 }
 

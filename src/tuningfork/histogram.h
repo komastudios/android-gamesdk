@@ -55,7 +55,8 @@ class Histogram : HistogramBase {
     size_t next_event_index_;
   public:
 
-    explicit Histogram(Sample start = 0, Sample end = 0, int num_buckets_between = kDefaultNumBuckets,
+    explicit Histogram(Sample start = 0, Sample end = 0,
+                       int num_buckets_between = kDefaultNumBuckets,
                        bool never_bucket = false);
     explicit Histogram(const TFHistogram&, bool never_bucket = false);
 
@@ -72,7 +73,7 @@ class Histogram : HistogramBase {
     std::string ToDebugJSON() const;
 
     // Use the data we have to construct the bucket ranges. This is called automatically after
-    //  the number of samples collected is the same as the number of buckets, if we are auto-ranging.
+    // the number of samples collected is the same as the number of buckets, if we are auto-ranging.
     void CalcBucketsFromSamples();
 
     // Only to be used for testing
@@ -252,12 +253,12 @@ template<typename Sample>
 TuningFork_ErrorCode Histogram<Sample>::AddCounts(
     const std::vector<uint32_t>& counts) {
     if (counts.size()!=buckets_.size())
-        return TFERROR_BAD_PARAMETER;
+        return TUNINGFORK_ERROR_BAD_PARAMETER;
     auto c = counts.begin();
     for(auto& c_orig: buckets_) {
         c_orig += *c++;
     }
-    return TFERROR_OK;
+    return TUNINGFORK_ERROR_OK;
 }
 
 } // namespace tuningfork {

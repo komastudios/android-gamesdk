@@ -226,8 +226,8 @@ TuningFork_ErrorCode KillDownloadThreads();
 // Load settings from assets/tuningfork/tuningfork_settings.bin.
 // Ownership of @p settings is passed to the caller: call
 //  TuningFork_Settings_Free to deallocate data stored in the struct.
-// Returns TFERROR_OK and fills 'settings' if the file could be loaded.
-// Returns TFERROR_NO_SETTINGS if the file was not found.
+// Returns TUNINGFORK_ERROR_OK and fills 'settings' if the file could be loaded.
+// Returns TUNINGFORK_ERROR_NO_SETTINGS if the file was not found.
 TuningFork_ErrorCode FindSettingsInApk(Settings* settings);
 
 // Get the current settings (TF must have been initialized)
