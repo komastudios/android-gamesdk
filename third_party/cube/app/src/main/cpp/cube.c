@@ -447,8 +447,10 @@ struct demo {
 
     uint32_t enabled_extension_count;
     uint32_t enabled_layer_count;
+    uint32_t extension_names_to_free_count;
     char *extension_names[64];
     char *enabled_layers[64];
+    char *extension_names_to_free[64];
 
     int width, height;
     VkFormat format;
@@ -2491,6 +2493,10 @@ static void demo_cleanup(struct demo *demo) {
         }
     }
 
+    for(uint32_t i = 0; i < demo->extension_names_to_free_count; ++i) {
+        free(demo->extension_names_to_free[i]);
+    }
+
     vkDeviceWaitIdle(demo->device);
     vkDestroyDevice(demo->device, NULL);
     if (demo->validate) {
@@ -3389,6 +3395,7 @@ static void demo_init_vk(struct demo *demo) {
     uint32_t device_extension_count = 0;
     VkBool32 swapchainExtFound = 0;
     demo->enabled_extension_count = 0;
+    demo->extension_names_to_free_count = 0;
     memset(demo->extension_names, 0, sizeof(demo->extension_names));
 
     err = vkEnumerateDeviceExtensionProperties(demo->gpu, NULL, &device_extension_count, NULL);
@@ -3459,9 +3466,11 @@ static void demo_init_vk(struct demo *demo) {
                                           swappy_required_extension_names);
         for (uint32_t i = 0; i < swappy_required_extension_count; i++) {
             demo->extension_names[demo->enabled_extension_count++] = swappy_required_extension_names[i];
+            demo->extension_names_to_free[demo->extension_names_to_free_count++] = swappy_required_extension_names[i];
             DbgMsg("SwappyVk requires the following extension: %s\n", swappy_required_extension_names[i]);
         }
 
+        free(swappy_required_extension_names);
         free(device_extensions);
     }
 
