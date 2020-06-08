@@ -27,6 +27,7 @@
 
 #include <vector>
 #include <mutex>
+#include <utility>
 
 #ifndef LOG_TAG
 #define LOG_TAG "TFTest"
@@ -177,6 +178,43 @@ class TestMemInfoProvider : public DefaultMemInfoProvider {
         result_ += 100000000L;
         return result_;
     }
+    uint64_t GetMeminfoOomScore() const override {
+        return 42;
+    }
+    void updateMemInfo() override {
+      memInfo.active = std::make_pair(0, false);
+      memInfo.activeAnon = std::make_pair(0, false);
+      memInfo.activeFile = std::make_pair(0, false);
+      memInfo.anonPages = std::make_pair(0, false);
+      memInfo.commitLimit = std::make_pair(0, false);
+      memInfo.highTotal = std::make_pair(0, false);
+      memInfo.lowTotal = std::make_pair(0, false);
+      memInfo.memAvailable = std::make_pair(0, false);
+
+      memInfo.memFree = std::make_pair(200, true);
+
+      memInfo.memTotal = std::make_pair(0, false);
+      memInfo.vmData = std::make_pair(0, false);
+      memInfo.vmRss = std::make_pair(0, false);
+      memInfo.vmSize = std::make_pair(0, false);
+    }
+    // Activate a few optional metrics
+    // bool IsMeminfoActiveAvailable() const override { return false; }
+    // bool IsMeminfoActiveAnonAvailable() const override { return false; }
+    // bool IsMeminfoActiveFileAvailable() const override { return false; }
+    // bool IsMeminfoAnonPagesAvailable() const override { return false; }//true; }
+    // bool IsMeminfoCommitLimitAvailable() const override { return false; }
+    // bool IsMeminfoHighTotalAvailable() const override { return false; }
+    // bool IsMeminfoLowTotalAvailable() const override { return false; }
+    // bool IsMeminfoMemAvailableAvailable() const override { return false; }
+    // bool IsMeminfoMemFreeAvailable() const override { return false; }//true; }
+    // bool IsMeminfoMemTotalAvailable() const override { return false; }
+    // bool IsMeminfoVmDataAvailable() const override { return false; }
+    // bool IsMeminfoVmRssAvailable() const override { return false; }
+    // bool IsMeminfoVmSizeAvailable() const override { return false; }
+    // Override active optional metrics
+    // uint64_t GetMeminfoAnonPagesBytes() override { return 60000; }
+    // uint64_t GetMeminfoMemFreeBytes() override { return 200; }
 };
 
 class TuningForkTest {
@@ -288,7 +326,7 @@ TuningForkLogEvent TestEndToEndTimeBased() {
 }
 
 TuningForkLogEvent TestEndToEndWithMemory() {
-    const int NTICKS = 101; // note the first tick doesn't add anything to the histogram
+    const int NTICKS = 1001; // note the first tick doesn't add anything to the histogram
     auto settings = TestSettings(Settings::AggregationStrategy::Submission::TICK_BASED, NTICKS - 1,
                                  1, {});
     TuningForkTest test(settings,  std::chrono::milliseconds(20),
@@ -564,11 +602,34 @@ TEST(TuningForkTest, EndToEndWithMemory) {
     TuningForkLogEvent expected = R"TF(
 {
   "name": "applications//apks/0",
-  "session_context":)TF" + session_context + R"TF(,
+  "session_context":{
+    "device": {
+      "brand": "",
+      "build_version": "",
+      "cpu_core_freqs_hz": [],
+      "device": "",
+      "fingerprint": "",
+      "gles_version": {
+        "major": 0,
+        "minor": 0
+      },
+      "model": "",
+      "product": "",
+      "total_memory_bytes": 0
+    },
+    "game_sdk_info": {
+      "session_id": "",
+      "version": "1.0"
+    },
+    "time_period": {
+      "end_time": "1970-01-01T00:00:20.020000Z",
+      "start_time": "1970-01-01T00:00:00.020000Z"
+    }
+  },
   "telemetry": [{
     "context": {
       "annotations": "",
-      "duration": "2s",
+      "duration": "20s",
       "tuning_parameters": {
         "experiment_id": "",
         "serialized_fidelity_parameters": ""
@@ -579,7 +640,7 @@ TEST(TuningForkTest, EndToEndWithMemory) {
         "render_time_histogram": [{
          "counts": [
            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1000, 0, 0, 0, 0, 0, 0,
            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -592,7 +653,7 @@ TEST(TuningForkTest, EndToEndWithMemory) {
   },{
     "context": {
       "annotations": "",
-      "duration": "2s",
+      "duration": "20s",
       "tuning_parameters": {
         "experiment_id": "",
         "serialized_fidelity_parameters": ""
@@ -608,13 +669,45 @@ TEST(TuningForkTest, EndToEndWithMemory) {
                      0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0,
                      0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0,
                      1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1,
-                     0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 22],
+                     0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 922],
          "histogram_config": {
           "bucket_max_bytes": "8000000000",
           "bucket_min_bytes": "0"
          },
          "period_ms": 16,
          "type": 1
+        },
+        {
+          "counts": [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         "histogram_config": {
+          "bucket_max_bytes": "8000000000",
+          "bucket_min_bytes": "0"
+         },
+         "period_ms": 15000,
+         "type": 2
+        },
+        {
+          "counts": [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         "histogram_config": {
+          "bucket_max_bytes": "8000000000",
+          "bucket_min_bytes": "0"
+         },
+         "period_ms": 15000,
+         "type": 3
         }]
       }
     }

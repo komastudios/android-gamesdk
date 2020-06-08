@@ -23,11 +23,39 @@ namespace tuningfork {
 // Provider of system memory information.
 class IMemInfoProvider {
    public:
+    virtual void updateMemInfo() = 0;
     virtual uint64_t GetNativeHeapAllocatedSize() = 0;
     virtual void SetEnabled(bool enable) = 0;
     virtual bool GetEnabled() const = 0;
     virtual void SetDeviceMemoryBytes(uint64_t bytesize) = 0;
     virtual uint64_t GetDeviceMemoryBytes() const = 0;
+    virtual uint64_t GetMeminfoOomScore() const = 0;
+    virtual bool IsMeminfoActiveAvailable() const = 0;
+    virtual bool IsMeminfoActiveAnonAvailable() const = 0;
+    virtual bool IsMeminfoActiveFileAvailable() const = 0;
+    virtual bool IsMeminfoAnonPagesAvailable() const = 0;
+    virtual bool IsMeminfoCommitLimitAvailable() const = 0;
+    virtual bool IsMeminfoHighTotalAvailable() const = 0;
+    virtual bool IsMeminfoLowTotalAvailable() const = 0;
+    virtual bool IsMeminfoMemAvailableAvailable() const = 0;
+    virtual bool IsMeminfoMemFreeAvailable() const = 0;
+    virtual bool IsMeminfoMemTotalAvailable() const = 0;
+    virtual bool IsMeminfoVmDataAvailable() const = 0;
+    virtual bool IsMeminfoVmRssAvailable() const = 0;
+    virtual bool IsMeminfoVmSizeAvailable() const = 0;
+    virtual uint64_t GetMeminfoActiveBytes() const = 0;
+    virtual uint64_t GetMeminfoActiveAnonBytes() const = 0;
+    virtual uint64_t GetMeminfoActiveFileBytes() const = 0;
+    virtual uint64_t GetMeminfoAnonPagesBytes() const = 0;
+    virtual uint64_t GetMeminfoCommitLimitBytes() const = 0;
+    virtual uint64_t GetMeminfoHighTotalBytes() const = 0;
+    virtual uint64_t GetMeminfoLowTotalBytes() const = 0;
+    virtual uint64_t GetMeminfoMemAvailableBytes() const = 0;
+    virtual uint64_t GetMeminfoMemFreeBytes() const = 0;
+    virtual uint64_t GetMeminfoMemTotalBytes() const = 0;
+    virtual uint64_t GetMeminfoVmDataBytes() const = 0;
+    virtual uint64_t GetMeminfoVmRssBytes() const = 0;
+    virtual uint64_t GetMeminfoVmSizeBytes() const = 0;
 };
 
 }  // namespace tuningfork
