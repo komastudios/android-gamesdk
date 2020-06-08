@@ -27,6 +27,7 @@
 
 #include <vector>
 #include <mutex>
+#include <utility>
 
 #ifndef LOG_TAG
 #define LOG_TAG "TFTest"
@@ -177,6 +178,26 @@ class TestMemInfoProvider : public DefaultMemInfoProvider {
         result_ += 100000000L;
         return result_;
     }
+    uint64_t GetMeminfoOomScore() const override {
+        return 42;
+    }
+    void UpdateMemInfo() override {
+      memInfo.active = std::make_pair(0, false);
+      memInfo.activeAnon = std::make_pair(0, false);
+      memInfo.activeFile = std::make_pair(0, false);
+      memInfo.anonPages = std::make_pair(0, false);
+      memInfo.commitLimit = std::make_pair(0, false);
+      memInfo.highTotal = std::make_pair(0, false);
+      memInfo.lowTotal = std::make_pair(0, false);
+      memInfo.memAvailable = std::make_pair(0, false);
+
+      memInfo.memFree = std::make_pair(200, true);
+
+      memInfo.memTotal = std::make_pair(0, false);
+      memInfo.vmData = std::make_pair(0, false);
+      memInfo.vmRss = std::make_pair(0, false);
+      memInfo.vmSize = std::make_pair(0, false);
+    }
 };
 
 class TuningForkTest {
@@ -288,7 +309,7 @@ TuningForkLogEvent TestEndToEndTimeBased() {
 }
 
 TuningForkLogEvent TestEndToEndWithMemory() {
-    const int NTICKS = 101; // note the first tick doesn't add anything to the histogram
+    const int NTICKS = 1001; // note the first tick doesn't add anything to the histogram
     auto settings = TestSettings(Settings::AggregationStrategy::Submission::TICK_BASED, NTICKS - 1,
                                  1, {});
     TuningForkTest test(settings,  std::chrono::milliseconds(20),
@@ -564,11 +585,34 @@ TEST(TuningForkTest, EndToEndWithMemory) {
     TuningForkLogEvent expected = R"TF(
 {
   "name": "applications//apks/0",
-  "session_context":)TF" + session_context + R"TF(,
+  "session_context":{
+    "device": {
+      "brand": "",
+      "build_version": "",
+      "cpu_core_freqs_hz": [],
+      "device": "",
+      "fingerprint": "",
+      "gles_version": {
+        "major": 0,
+        "minor": 0
+      },
+      "model": "",
+      "product": "",
+      "total_memory_bytes": 0
+    },
+    "game_sdk_info": {
+      "session_id": "",
+      "version": "1.0"
+    },
+    "time_period": {
+      "end_time": "1970-01-01T00:00:20.020000Z",
+      "start_time": "1970-01-01T00:00:00.020000Z"
+    }
+  },
   "telemetry": [{
     "context": {
       "annotations": "",
-      "duration": "2s",
+      "duration": "20s",
       "tuning_parameters": {
         "experiment_id": "",
         "serialized_fidelity_parameters": ""
@@ -579,7 +623,7 @@ TEST(TuningForkTest, EndToEndWithMemory) {
         "render_time_histogram": [{
          "counts": [
            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1000, 0, 0, 0, 0, 0, 0,
            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -592,7 +636,7 @@ TEST(TuningForkTest, EndToEndWithMemory) {
   },{
     "context": {
       "annotations": "",
-      "duration": "2s",
+      "duration": "20s",
       "tuning_parameters": {
         "experiment_id": "",
         "serialized_fidelity_parameters": ""
@@ -608,13 +652,45 @@ TEST(TuningForkTest, EndToEndWithMemory) {
                      0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0,
                      0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0,
                      1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1,
-                     0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 22],
+                     0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 922],
          "histogram_config": {
           "bucket_max_bytes": "8000000000",
           "bucket_min_bytes": "0"
          },
          "period_ms": 16,
          "type": 1
+        },
+        {
+          "counts": [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         "histogram_config": {
+          "bucket_max_bytes": "8000000000",
+          "bucket_min_bytes": "0"
+         },
+         "period_ms": 15000,
+         "type": 2
+        },
+        {
+          "counts": [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         "histogram_config": {
+          "bucket_max_bytes": "8000000000",
+          "bucket_min_bytes": "0"
+         },
+         "period_ms": 15000,
+         "type": 3
         }]
       }
     }

@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <utility>
+
 #include "histogram.h"
 #include "jni/jni_wrap.h"
 #include "tuningfork_internal.h"
@@ -26,7 +28,30 @@ namespace tuningfork {
 enum MemoryRecordType {
     INVALID = 0,
     // From calls to android.os.Debug.getNativeHeapAllocatedSize
-    ANDROID_DEBUG_NATIVE_HEAP = 1
+    ANDROID_DEBUG_NATIVE_HEAP,
+    // From /proc/<PID>/oom_score file
+    ANDROID_OOM_SCORE,
+    // From /proc/meminfo and /proc/<PID>/status files
+    ANDROID_PROC_MEM,
+};
+
+// Enum describing collected histograms.
+enum HistogramContentsType {
+    NATIVE_HEAP_ALLOCATED_IX = 0,
+    MEMINFO_OOM_SCORE,
+    MEMINFO_ACTIVE,
+    MEMINFO_ACTIVEANON,
+    MEMINFO_ACTIVEFILE,
+    MEMINFO_ANONPAGES,
+    MEMINFO_COMMITLIMIT,
+    MEMINFO_HIGHTOTAL,
+    MEMINFO_LOWTOTAL,
+    MEMINFO_MEMAVAILABLE,
+    MEMINFO_MEMFREE,
+    MEMINFO_MEMTOTAL,
+    MEMINFO_VMDATA,
+    MEMINFO_VMRSS,
+    MEMINFO_VMSIZE,
 };
 
 struct MemoryHistogram {
@@ -41,6 +66,7 @@ struct MemoryHistogram {
 class MemoryTelemetry {
     std::vector<MemoryHistogram> histograms_;
     SystemTimePoint last_time_;
+    SystemTimePoint last_time_slow_;
     IMemInfoProvider* meminfo_provider_;
 
    public:
@@ -64,17 +90,67 @@ class MemoryTelemetry {
     }
 };
 
+struct MemInfo {
+    bool initialized = false;
+    uint32_t pid;
+    int oom_score;
+    std::pair<uint64_t, bool> active;
+    std::pair<uint64_t, bool> activeAnon;
+    std::pair<uint64_t, bool> activeFile;
+    std::pair<uint64_t, bool> anonPages;
+    std::pair<uint64_t, bool> commitLimit;
+    std::pair<uint64_t, bool> highTotal;
+    std::pair<uint64_t, bool> lowTotal;
+    std::pair<uint64_t, bool> memAvailable;
+    std::pair<uint64_t, bool> memFree;
+    std::pair<uint64_t, bool> memTotal;
+    std::pair<uint64_t, bool> vmData;
+    std::pair<uint64_t, bool> vmRss;
+    std::pair<uint64_t, bool> vmSize;
+};
+
 class DefaultMemInfoProvider : public IMemInfoProvider {
     bool enabled_ = false;
     uint64_t device_memory_bytes = 0;
     jni::android::os::DebugClass android_debug_;
 
+   protected:
+    MemInfo memInfo;
+
    public:
+    void UpdateMemInfo() override;
     uint64_t GetNativeHeapAllocatedSize() override;
     void SetEnabled(bool enable) override;
     bool GetEnabled() const override;
     void SetDeviceMemoryBytes(uint64_t bytesize) override;
     uint64_t GetDeviceMemoryBytes() const override;
+    uint64_t GetMeminfoOomScore() const override;
+    bool IsMeminfoActiveAvailable() const override;
+    bool IsMeminfoActiveAnonAvailable() const override;
+    bool IsMeminfoActiveFileAvailable() const override;
+    bool IsMeminfoAnonPagesAvailable() const override;
+    bool IsMeminfoCommitLimitAvailable() const override;
+    bool IsMeminfoHighTotalAvailable() const override;
+    bool IsMeminfoLowTotalAvailable() const override;
+    bool IsMeminfoMemAvailableAvailable() const override;
+    bool IsMeminfoMemFreeAvailable() const override;
+    bool IsMeminfoMemTotalAvailable() const override;
+    bool IsMeminfoVmDataAvailable() const override;
+    bool IsMeminfoVmRssAvailable() const override;
+    bool IsMeminfoVmSizeAvailable() const override;
+    uint64_t GetMeminfoActiveBytes() const override;
+    uint64_t GetMeminfoActiveAnonBytes() const override;
+    uint64_t GetMeminfoActiveFileBytes() const override;
+    uint64_t GetMeminfoAnonPagesBytes() const override;
+    uint64_t GetMeminfoCommitLimitBytes() const override;
+    uint64_t GetMeminfoHighTotalBytes() const override;
+    uint64_t GetMeminfoLowTotalBytes() const override;
+    uint64_t GetMeminfoMemAvailableBytes() const override;
+    uint64_t GetMeminfoMemFreeBytes() const override;
+    uint64_t GetMeminfoMemTotalBytes() const override;
+    uint64_t GetMeminfoVmDataBytes() const override;
+    uint64_t GetMeminfoVmRssBytes() const override;
+    uint64_t GetMeminfoVmSizeBytes() const override;
 };
 
 }  // namespace tuningfork
