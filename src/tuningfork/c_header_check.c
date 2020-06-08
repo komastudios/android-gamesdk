@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 The Android Open Source Project
+ * Copyright 2020 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,7 @@
  * limitations under the License.
  */
 
-#include "gtest/gtest.h"
+// A C file to make sure the headers are C compatible.
 
-// No jni tests when running on the command-line
-extern "C" bool init_jni_for_tests() {
-  return false;
-}
-
-extern "C" void clear_jni_for_tests() {
-    // Do nothing
-}
-
-int main(int argc, char * argv[]) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
+#include "tuningfork/tuningfork.h"
+#include "tuningfork/tuningfork_extra.h"

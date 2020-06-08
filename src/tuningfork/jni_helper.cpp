@@ -45,6 +45,9 @@ void InitActivityClassLoader() {
 void Init(JNIEnv* env, jobject ctx) {
     Ctx::Init(env, ctx);
 }
+void Destroy() {
+    Ctx::Destroy();
+}
 bool IsValid() {
     return Ctx::Instance()!=nullptr && Ctx::Instance()->IsValid();
 }

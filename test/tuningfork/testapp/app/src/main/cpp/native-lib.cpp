@@ -16,6 +16,7 @@
 
 #include <jni.h>
 #include <string>
+#include <sstream>
 
 #include "tuningfork_test.h"
 #define LOG_TAG "TestApp"
@@ -33,7 +34,10 @@ Java_com_tuningfork_testapp_MainActivity_runTests(
     if (ret_code == 0 ) {
         ALOGV("%s", full_record.c_str());
     } else {
-        ALOGE("%s", full_record.c_str());
+        std::stringstream ss(full_record);
+        for (std::string record_line; std::getline(ss, record_line); ) {
+            ALOGE("%s", record_line.c_str());
+        }
     }
     return env->NewStringUTF((full_record).c_str());
 }

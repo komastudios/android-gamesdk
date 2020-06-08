@@ -81,7 +81,7 @@ void SetAnnotations() {
         a.set_loading(sLoading?proto_tf::LOADING:proto_tf::NOT_LOADING);
         a.set_level((proto_tf::Level)sLevel);
         auto ser = tf::TuningFork_CProtobufSerialization_Alloc(a);
-        if (TuningFork_setCurrentAnnotation(&ser)!=TFERROR_OK) {
+        if (TuningFork_setCurrentAnnotation(&ser)!=TUNINGFORK_ERROR_OK) {
             ALOGW("Bad annotation");
         }
         TuningFork_CProtobufSerialization_free(&ser);
@@ -128,7 +128,7 @@ void InitTf(JNIEnv* env, jobject activity) {
     settings.endpoint_uri_override = "http://localhost:9000";
 #endif
     TuningFork_ErrorCode err = TuningFork_init(&settings, env, activity);
-    if (err==TFERROR_OK) {
+    if (err==TUNINGFORK_ERROR_OK) {
         TuningFork_setUploadCallback(UploadCallback);
         SetAnnotations();
         // Test disabling and enabling memory recording
@@ -168,7 +168,8 @@ Java_com_tuningfork_experimentsdemo_TFTestActivity_initTuningFork(
 }
 
 JNIEXPORT void JNICALL
-Java_com_tuningfork_experimentsdemo_TFTestActivity_onChoreographer(JNIEnv */*env*/, jclass clz, jlong /*frameTimeNanos*/) {
+Java_com_tuningfork_experimentsdemo_TFTestActivity_onChoreographer(JNIEnv */*env*/, jclass clz,
+                                                                   jlong /*frameTimeNanos*/) {
     TuningFork_frameTick(TFTICK_CHOREOGRAPHER);
     // Switch levels and loading state according to the number of ticks we've had.
     constexpr int COUNT_NEXT_LEVEL_START_LOADING = 80;
@@ -191,7 +192,9 @@ Java_com_tuningfork_experimentsdemo_TFTestActivity_onChoreographer(JNIEnv */*env
     }
 }
 JNIEXPORT void JNICALL
-Java_com_tuningfork_experimentsdemo_TFTestActivity_resize(JNIEnv *env, jclass /*clz*/, jobject surface, jint width, jint height) {
+Java_com_tuningfork_experimentsdemo_TFTestActivity_resize(JNIEnv *env, jclass /*clz*/,
+                                                          jobject surface,
+                                                          jint width, jint height) {
     ANativeWindow *window = ANativeWindow_fromSurface(env, surface);
     Renderer::getInstance()->setWindow(window,
                                        static_cast<int32_t>(width),
@@ -214,7 +217,8 @@ Java_com_tuningfork_experimentsdemo_TFTestActivity_stop(JNIEnv */*env*/, jclass 
 }
 
 JNIEXPORT void JNICALL
-Java_com_tuningfork_experimentsdemo_TFTestActivity_raiseSignal(JNIEnv * env, jclass clz, jint signal) {
+Java_com_tuningfork_experimentsdemo_TFTestActivity_raiseSignal(JNIEnv * env, jclass clz,
+                                                               jint signal) {
     std::stringstream ss;
     ss << std::this_thread::get_id();
     ALOGI("raiseSignal %d: [pid: %d], [tid: %d], [thread_id: %s])",

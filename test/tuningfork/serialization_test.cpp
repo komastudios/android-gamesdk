@@ -66,7 +66,7 @@ std::string report_start = R"TF({
     },
     "game_sdk_info": {
       "session_id": "sess",
-      "version": "0.5"
+      "version": "1.0"
     },
     "time_period": {
       "end_time": "1970-01-01T00:00:00.000000Z",
@@ -166,7 +166,7 @@ class TestIdProvider : public IdProvider{
                                uint64_t annotation_id,
                                uint64_t& id) override {
         id = k;
-        return TFERROR_OK;
+        return TUNINGFORK_ERROR_OK;
     }
 };
 
@@ -205,7 +205,7 @@ TEST(SerializationTest, GEDeserialization) {
                   [](uint64_t){ return false; },
                   nullptr);
     TestIdProvider id_provider;
-    EXPECT_EQ(GESerializer::DeserializeAndMerge(evt_ser, id_provider, pc), TFERROR_OK)
+    EXPECT_EQ(GESerializer::DeserializeAndMerge(evt_ser, id_provider, pc), TUNINGFORK_ERROR_OK)
             << "Deserialize single";
     CheckProngCaches(pc, prong_cache);
 }
