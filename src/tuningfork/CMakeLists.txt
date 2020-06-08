@@ -59,6 +59,7 @@ set( TUNINGFORK_SRCS
   jnictx.cpp
   debug_upload.cpp
   memory_telemetry.cpp
+  c_header_check.c
   ${THIRDPARTY_DIR}/json11/json11.cpp
   ${MODPB64_DIR}/modp_b64.cc
   ${PROTO_GENS_DIR}/nano/tuningfork.pb.c
