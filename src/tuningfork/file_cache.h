@@ -41,6 +41,9 @@ class FileCache {
     TuningFork_ErrorCode Remove(uint64_t key);
 
     TuningFork_ErrorCode Clear();
+
+    // Returns false if path is non-writeable
+    bool IsValid() const;
 };
 
 } // namespace tuningfork

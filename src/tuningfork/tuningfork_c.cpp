@@ -39,12 +39,12 @@ TuningFork_ErrorCode TuningFork_init_internal(
     }
     jni::Init(env, context);
     TuningFork_ErrorCode err = FindSettingsInApk(&settings);
-    if (err!=TFERROR_OK)
+    if (err!=TUNINGFORK_ERROR_OK)
         return err;
     std::string default_save_dir = tf::file_utils::GetAppCacheDir() + "/tuningfork";
     CheckSettings(settings, default_save_dir);
     err = tf::Init(settings);
-    if (err!=TFERROR_OK)
+    if (err!=TUNINGFORK_ERROR_OK)
         return err;
     if ( !(settings.default_fidelity_parameters_filename.empty() &&
            settings.c_settings.training_fidelity_params==nullptr)) {
@@ -66,7 +66,7 @@ TuningFork_ErrorCode TuningFork_getFidelityParameters(
     tf::ProtobufSerialization s;
     TuningFork_ErrorCode result =
         tf::GetFidelityParameters(defaults, s, timeout_ms);
-    if (result==TFERROR_OK && params)
+    if (result==TUNINGFORK_ERROR_OK && params)
         tf::ToCProtobufSerialization(s, *params);
     return result;
 }
@@ -77,7 +77,7 @@ TuningFork_ErrorCode TuningFork_setCurrentAnnotation(
     if (annotation!=nullptr)
         return tf::SetCurrentAnnotation(tf::ToProtobufSerialization(*annotation));
     else
-        return TFERROR_INVALID_ANNOTATION;
+        return TUNINGFORK_ERROR_INVALID_ANNOTATION;
 }
 
 // Record a frame tick that will be associated with the instrumentation key and the current
@@ -95,7 +95,7 @@ TuningFork_ErrorCode TuningFork_frameDeltaTimeNanos(
 // Start a trace segment
 TuningFork_ErrorCode  TuningFork_startTrace(
     TuningFork_InstrumentKey key, TuningFork_TraceHandle* handle) {
-    if (handle==nullptr) return TFERROR_INVALID_TRACE_HANDLE;
+    if (handle==nullptr) return TUNINGFORK_ERROR_INVALID_TRACE_HANDLE;
     return tf::StartTrace(key, *handle);
 }
 
@@ -118,7 +118,7 @@ TuningFork_ErrorCode TuningFork_setFidelityParameters(
     if (params!=nullptr)
         return tf::SetFidelityParameters(tf::ToProtobufSerialization(*params));
     else
-        return TFERROR_BAD_PARAMETER;
+        return TUNINGFORK_ERROR_BAD_PARAMETER;
 }
 
 TuningFork_ErrorCode TuningFork_enableMemoryRecording(bool enable) {

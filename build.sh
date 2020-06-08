@@ -31,7 +31,7 @@ else
     dist_dir=$DIST_DIR/$OUTDIR
 fi
 
-relative_apk_dir=gamesdk/apks
+relative_apk_dir=apks
 apk_dir=$dist_dir/$relative_apk_dir
 
 if [[ $1 == "samples" ]] || [[ $1 == "full" ]]

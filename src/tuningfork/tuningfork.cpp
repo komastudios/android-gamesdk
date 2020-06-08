@@ -166,9 +166,9 @@ private:
         InstrumentationKey k, AnnotationId a, uint64_t& id) override {
         int key_index;
         auto err = GetOrCreateInstrumentKeyIndex(k, key_index);
-        if (err!=TFERROR_OK) return err;
+        if (err!=TUNINGFORK_ERROR_OK) return err;
         id = key_index + a;
-        return TFERROR_OK;
+        return TUNINGFORK_ERROR_OK;
     }
 
     SerializedAnnotation SerializeAnnotationId(uint64_t);
@@ -205,7 +205,7 @@ TuningFork_ErrorCode Init(const Settings &settings,
                  IMemInfoProvider *meminfo_provider) {
 
     if (s_impl.get() != nullptr)
-        return TFERROR_ALREADY_INITIALIZED;
+        return TUNINGFORK_ERROR_ALREADY_INITIALIZED;
 
     if (extra_upload_info == nullptr) {
         s_extra_upload_info = UploadThread::BuildExtraUploadInfo();
@@ -214,7 +214,7 @@ TuningFork_ErrorCode Init(const Settings &settings,
 
     if (backend == nullptr) {
         TuningFork_ErrorCode err = s_backend.Init(settings, *extra_upload_info);
-        if (err == TFERROR_OK) {
+        if (err == TUNINGFORK_ERROR_OK) {
             ALOGI("TuningFork.GoogleEndpoint: OK");
             backend = &s_backend;
             loader = &s_loader;
@@ -242,13 +242,13 @@ TuningFork_ErrorCode Init(const Settings &settings,
         s_swappy_tracer = std::unique_ptr<SwappyTraceWrapper>(
             new SwappyTraceWrapper(settings));
     }
-    return TFERROR_OK;
+    return TUNINGFORK_ERROR_OK;
 }
 
 TuningFork_ErrorCode GetFidelityParameters(const ProtobufSerialization &defaultParams,
                                   ProtobufSerialization &params, uint32_t timeout_ms) {
     if (!s_impl) {
-        return TFERROR_TUNINGFORK_NOT_INITIALIZED;
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
     } else {
         return s_impl->GetFidelityParameters(defaultParams,
                                              params, timeout_ms);
@@ -257,7 +257,7 @@ TuningFork_ErrorCode GetFidelityParameters(const ProtobufSerialization &defaultP
 
 TuningFork_ErrorCode FrameTick(InstrumentationKey id) {
     if (!s_impl) {
-        return TFERROR_TUNINGFORK_NOT_INITIALIZED;
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
     } else {
         return s_impl->FrameTick(id);
     }
@@ -265,7 +265,7 @@ TuningFork_ErrorCode FrameTick(InstrumentationKey id) {
 
 TuningFork_ErrorCode FrameDeltaTimeNanos(InstrumentationKey id, Duration dt) {
     if (!s_impl) {
-        return TFERROR_TUNINGFORK_NOT_INITIALIZED;
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
     } else {
         return s_impl->FrameDeltaTimeNanos(id, dt);
     }
@@ -273,7 +273,7 @@ TuningFork_ErrorCode FrameDeltaTimeNanos(InstrumentationKey id, Duration dt) {
 
 TuningFork_ErrorCode StartTrace(InstrumentationKey key, TraceHandle& handle) {
     if (!s_impl) {
-        return TFERROR_TUNINGFORK_NOT_INITIALIZED;
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
     } else {
         return s_impl->StartTrace(key, handle);
     }
@@ -281,7 +281,7 @@ TuningFork_ErrorCode StartTrace(InstrumentationKey key, TraceHandle& handle) {
 
 TuningFork_ErrorCode EndTrace(TraceHandle h) {
     if (!s_impl) {
-        return TFERROR_TUNINGFORK_NOT_INITIALIZED;
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
     } else {
         return s_impl->EndTrace(h);
     }
@@ -289,28 +289,28 @@ TuningFork_ErrorCode EndTrace(TraceHandle h) {
 
 TuningFork_ErrorCode SetCurrentAnnotation(const ProtobufSerialization &ann) {
     if (!s_impl) {
-        return TFERROR_TUNINGFORK_NOT_INITIALIZED;
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
     } else {
         if (s_impl->SetCurrentAnnotation(ann)==-1) {
-            return TFERROR_INVALID_ANNOTATION;
+            return TUNINGFORK_ERROR_INVALID_ANNOTATION;
         } else {
-            return TFERROR_OK;
+            return TUNINGFORK_ERROR_OK;
         }
     }
 }
 
 TuningFork_ErrorCode SetUploadCallback(TuningFork_UploadCallback cbk) {
     if (!s_impl) {
-        return TFERROR_TUNINGFORK_NOT_INITIALIZED;
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
     } else {
         s_impl->SetUploadCallback(cbk);
-        return TFERROR_OK;
+        return TUNINGFORK_ERROR_OK;
     }
 }
 
 TuningFork_ErrorCode Flush() {
     if (!s_impl) {
-        return TFERROR_TUNINGFORK_NOT_INITIALIZED;
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
     } else {
         return s_impl->Flush();
     }
@@ -318,11 +318,11 @@ TuningFork_ErrorCode Flush() {
 
 TuningFork_ErrorCode Destroy() {
     if (!s_impl) {
-        return TFERROR_TUNINGFORK_NOT_INITIALIZED;
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
     } else {
         s_backend.KillThreads();
         s_impl.reset();
-        return TFERROR_OK;
+        return TUNINGFORK_ERROR_OK;
     }
 }
 
@@ -332,12 +332,12 @@ const Settings* GetSettings() {
 }
 
 TuningFork_ErrorCode SetFidelityParameters(const ProtobufSerialization& params) {
-    if (!s_impl) return TFERROR_TUNINGFORK_NOT_INITIALIZED;
+    if (!s_impl) return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
     else return s_impl->SetFidelityParameters(params);
 }
 
 TuningFork_ErrorCode EnableMemoryRecording(bool enable) {
-    if (!s_impl) return TFERROR_TUNINGFORK_NOT_INITIALIZED;
+    if (!s_impl) return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
     else return s_impl->EnableMemoryRecording(enable);
 }
 
@@ -495,11 +495,11 @@ TuningFork_ErrorCode TuningForkImpl::GetFidelityParameters(
         std::string experiment_id;
         if (settings_.EndpointUri().empty()) {
             ALOGW("The base URI in Tuning Fork TuningFork_Settings is invalid");
-            return TFERROR_BAD_PARAMETER;
+            return TUNINGFORK_ERROR_BAD_PARAMETER;
         }
         if (settings_.api_key.empty()) {
           ALOGE("The API key in Tuning Fork TuningFork_Settings is invalid");
-          return TFERROR_BAD_PARAMETER;
+          return TUNINGFORK_ERROR_BAD_PARAMETER;
         }
         ExtraUploadInfo info = UploadThread::BuildExtraUploadInfo();
         Duration timeout = (timeout_ms<=0)
@@ -509,7 +509,7 @@ TuningFork_ErrorCode TuningForkImpl::GetFidelityParameters(
                                              settings_.api_key, timeout));
         auto result = loader_->GetFidelityParams(web_request, training_mode_params_.get(),
                                                  params_ser, experiment_id);
-        if (result==TFERROR_OK) {
+        if (result==TUNINGFORK_ERROR_OK) {
             upload_thread_.SetCurrentFidelityParams(params_ser, experiment_id);
         } else if (training_mode_params_.get()) {
             upload_thread_.SetCurrentFidelityParams(*training_mode_params_, experiment_id);
@@ -520,7 +520,7 @@ TuningFork_ErrorCode TuningForkImpl::GetFidelityParameters(
         return result;
     }
     else
-        return TFERROR_TUNINGFORK_NOT_INITIALIZED;
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
 }
 TuningFork_ErrorCode TuningForkImpl::GetOrCreateInstrumentKeyIndex(
     InstrumentationKey key, int& index) {
@@ -528,7 +528,7 @@ TuningFork_ErrorCode TuningForkImpl::GetOrCreateInstrumentKeyIndex(
     for (int i=0; i<nkeys; ++i) {
         if (ikeys_[i] == key) {
             index = i;
-            return TFERROR_OK;
+            return TUNINGFORK_ERROR_OK;
         }
     }
     // Another thread could have incremented next_ikey while we were checking, but we
@@ -538,42 +538,42 @@ TuningFork_ErrorCode TuningForkImpl::GetOrCreateInstrumentKeyIndex(
     if (next<ikeys_.size()) {
         ikeys_[next] = key;
         index = next;
-        return TFERROR_OK;
+        return TUNINGFORK_ERROR_OK;
     }
     else {
         next_ikey_--;
     }
-    return TFERROR_INVALID_INSTRUMENT_KEY;
+    return TUNINGFORK_ERROR_INVALID_INSTRUMENT_KEY;
 }
 TuningFork_ErrorCode TuningForkImpl::StartTrace(InstrumentationKey key,
     TraceHandle& handle) {
-    if (LoadingNextScene()) return TFERROR_OK; // No recording when loading
+    if (LoadingNextScene()) return TUNINGFORK_ERROR_OK; // No recording when loading
     auto err = MakeCompoundId(key, current_annotation_id_, handle);
-    if (err!=TFERROR_OK) return err;
+    if (err!=TUNINGFORK_ERROR_OK) return err;
     trace_->beginSection("TFTrace");
     live_traces_[handle] = time_provider_->Now();
-    return TFERROR_OK;
+    return TUNINGFORK_ERROR_OK;
 }
 
 TuningFork_ErrorCode TuningForkImpl::EndTrace(TraceHandle h) {
-    if (LoadingNextScene()) return TFERROR_OK; // No recording when loading
-    if (h>=live_traces_.size()) return TFERROR_INVALID_TRACE_HANDLE;
+    if (LoadingNextScene()) return TUNINGFORK_ERROR_OK; // No recording when loading
+    if (h>=live_traces_.size()) return TUNINGFORK_ERROR_INVALID_TRACE_HANDLE;
     auto i = live_traces_[h];
     if (i != TimePoint::min()) {
         trace_->endSection();
         TraceNanos(h, time_provider_->Now() - i);
         live_traces_[h] = TimePoint::min();
-        return TFERROR_OK;
+        return TUNINGFORK_ERROR_OK;
     } else {
-        return TFERROR_INVALID_TRACE_HANDLE;
+        return TUNINGFORK_ERROR_INVALID_TRACE_HANDLE;
     }
 }
 
 TuningFork_ErrorCode TuningForkImpl::FrameTick(InstrumentationKey key) {
-    if (LoadingNextScene()) return TFERROR_OK; // No recording when loading
+    if (LoadingNextScene()) return TUNINGFORK_ERROR_OK; // No recording when loading
     uint64_t compound_id;
     auto err = MakeCompoundId(key, current_annotation_id_, compound_id);
-    if (err!=TFERROR_OK) return err;
+    if (err!=TUNINGFORK_ERROR_OK) return err;
     trace_->beginSection("TFTick");
     current_prong_cache_->Ping(time_provider_->SystemNow());
     auto t = time_provider_->Now();
@@ -581,19 +581,19 @@ TuningFork_ErrorCode TuningForkImpl::FrameTick(InstrumentationKey key) {
     if (p)
         CheckForSubmit(t, p);
     trace_->endSection();
-    return TFERROR_OK;
+    return TUNINGFORK_ERROR_OK;
 }
 
 TuningFork_ErrorCode TuningForkImpl::FrameDeltaTimeNanos(
     InstrumentationKey key, Duration dt) {
-    if (LoadingNextScene()) return TFERROR_OK; // No recording when loading
+    if (LoadingNextScene()) return TUNINGFORK_ERROR_OK; // No recording when loading
     uint64_t compound_id;
     auto err = MakeCompoundId(key, current_annotation_id_, compound_id);
-    if (err!=TFERROR_OK) return err;
+    if (err!=TUNINGFORK_ERROR_OK) return err;
     auto p = TraceNanos(compound_id, dt);
     if (p)
         CheckForSubmit(time_provider_->Now(), p);
-    return TFERROR_OK;
+    return TUNINGFORK_ERROR_OK;
 }
 
 Prong *TuningForkImpl::TickNanos(uint64_t compound_id, TimePoint t) {
@@ -636,7 +636,7 @@ bool TuningForkImpl::ShouldSubmit(TimePoint t, Prong *prong) {
 }
 
 TuningFork_ErrorCode TuningForkImpl::CheckForSubmit(TimePoint t, Prong *prong) {
-    TuningFork_ErrorCode ret_code = TFERROR_OK;
+    TuningFork_ErrorCode ret_code = TUNINGFORK_ERROR_OK;
     if (ShouldSubmit(t, prong)) {
         ret_code = Flush(t, true);
     }
@@ -646,7 +646,8 @@ TuningFork_ErrorCode TuningForkImpl::CheckForSubmit(TimePoint t, Prong *prong) {
 void TuningForkImpl::InitHistogramSettings() {
     auto max_keys = settings_.aggregation_strategy.max_instrumentation_keys;
     if (max_keys!=settings_.histograms.size()) {
-        InstrumentationKey default_keys[] = {TFTICK_RAW_FRAME_TIME, TFTICK_PACED_FRAME_TIME, TFTICK_CPU_TIME, TFTICK_GPU_TIME};
+        InstrumentationKey default_keys[] = {TFTICK_RAW_FRAME_TIME, TFTICK_PACED_FRAME_TIME,
+                                             TFTICK_CPU_TIME, TFTICK_GPU_TIME};
         // Add histograms that are missing
         auto key_present = [this](InstrumentationKey k) {
                                for(auto& h: settings_.histograms) {
@@ -718,9 +719,9 @@ TuningFork_ErrorCode TuningForkImpl::Flush(TimePoint t, bool upload) {
     current_prong_cache_->SetInstrumentKeys(ikeys_);
     if (upload_thread_.Submit(current_prong_cache_, upload)) {
         SwapProngCaches();
-        ret_code = TFERROR_OK;
+        ret_code = TUNINGFORK_ERROR_OK;
     } else {
-        ret_code = TFERROR_PREVIOUS_UPLOAD_PENDING;
+        ret_code = TUNINGFORK_ERROR_PREVIOUS_UPLOAD_PENDING;
     }
     if (upload)
         last_submit_time_ = t;
@@ -737,13 +738,13 @@ void TuningForkImpl::InitTrainingModeParams() {
 TuningFork_ErrorCode TuningForkImpl::SetFidelityParameters(
     const ProtobufSerialization& params) {
     auto flush_result = Flush();
-    if (flush_result!=TFERROR_OK) {
+    if (flush_result!=TUNINGFORK_ERROR_OK) {
         ALOGW("Warning, previous data could not be flushed.");
         SwapProngCaches();
     }
     // We clear the experiment id here.
     upload_thread_.SetCurrentFidelityParams(params, "");
-    return TFERROR_OK;
+    return TUNINGFORK_ERROR_OK;
 }
 
 bool TuningForkImpl::Debugging() const {
@@ -763,7 +764,7 @@ TuningFork_ErrorCode TuningForkImpl::EnableMemoryRecording(bool enable) {
     if (meminfo_provider_ != nullptr) {
         meminfo_provider_->SetEnabled(enable);
     }
-    return TFERROR_OK;
+    return TUNINGFORK_ERROR_OK;
 }
 
 } // namespace tuningfork {

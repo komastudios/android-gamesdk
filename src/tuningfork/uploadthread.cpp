@@ -35,7 +35,7 @@ namespace tuningfork {
 class DebugBackend : public Backend {
 public:
     TuningFork_ErrorCode Process(const std::string& s) override {
-        if (s.size() == 0) return TFERROR_BAD_PARAMETER;
+        if (s.size() == 0) return TUNINGFORK_ERROR_BAD_PARAMETER;
         // Split the serialization into <128-byte chunks to avoid logcat line
         //  truncation.
         constexpr size_t maxStrLen = 128;
@@ -48,7 +48,7 @@ public:
             j += m;
             ALOGI("%s", str.str().c_str());
         }
-        return TFERROR_OK;
+        return TUNINGFORK_ERROR_OK;
     }
 };
 
@@ -231,7 +231,7 @@ void UploadThread::InitialChecks(ProngCache& prongs,
     // Check for PAUSED prong cache
     TuningFork_CProtobufSerialization paused_hists_ser;
     if (persister->get(HISTOGRAMS_PAUSED, &paused_hists_ser,
-                       persister_->user_data)==TFERROR_OK) {
+                       persister_->user_data)==TUNINGFORK_ERROR_OK) {
         std::string paused_hists_str = ToString(paused_hists_ser);
         ALOGI("Got PAUSED histograms: %s", paused_hists_str.c_str());
         GESerializer::DeserializeAndMerge(paused_hists_str,

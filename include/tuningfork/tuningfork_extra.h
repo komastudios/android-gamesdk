@@ -37,7 +37,7 @@ extern "C" {
  * @param context Application context
  * @param filename The filename to load
  * @param[out] fidelity_params Protocol buffer serialization of fidelity parameters found.
- * @return TFERROR_OK if no error
+ * @return TUNINGFORK_ERROR_OK if no error
  */
 TuningFork_ErrorCode TuningFork_findFidelityParamsInApk(
     JNIEnv* env,
@@ -58,7 +58,7 @@ TuningFork_ErrorCode TuningFork_findFidelityParamsInApk(
  *  will be used if there is no download connection and there are no saved parameters.
  * @param fidelity_params_callback is called with any downloaded params or with default /
  *  saved params.
- * @return TFERROR_OK if no error
+ * @return TUNINGFORK_ERROR_OK if no error
  */
 TuningFork_ErrorCode TuningFork_startFidelityParamDownloadThread(
     const TuningFork_CProtobufSerialization* default_params,
@@ -72,7 +72,7 @@ TuningFork_ErrorCode TuningFork_startFidelityParamDownloadThread(
  * @param context Application context.
  * @param fidelity_params The parameters to save. The save file will be deleted if fidelity_params
  *  is NULL.
- * @return TFERROR_OK if no error
+ * @return TUNINGFORK_ERROR_OK if no error
  */
 TuningFork_ErrorCode TuningFork_saveOrDeleteFidelityParamsFile(
     JNIEnv* env,
