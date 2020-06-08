@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <utility>
+
 #include "histogram.h"
 #include "jni/jni_wrap.h"
 #include "tuningfork_internal.h"
@@ -26,7 +28,42 @@ namespace tuningfork {
 enum MemoryRecordType {
     INVALID = 0,
     // From calls to android.os.Debug.getNativeHeapAllocatedSize
-    ANDROID_DEBUG_NATIVE_HEAP = 1
+    ANDROID_DEBUG_NATIVE_HEAP,
+    // From /proc/<PID>/oom_score file
+    ANDROID_OOM_SCORE,
+    // From /proc/meminfo and /proc/<PID>/status files
+    ANDROID_MEMINFO_ACTIVE,
+    ANDROID_MEMINFO_ACTIVEANON,
+    ANDROID_MEMINFO_ACTIVEFILE,
+    ANDROID_MEMINFO_ANONPAGES,
+    ANDROID_MEMINFO_COMMITLIMIT,
+    ANDROID_MEMINFO_HIGHTOTAL,
+    ANDROID_MEMINFO_LOWTOTAL,
+    ANDROID_MEMINFO_MEMAVAILABLE,
+    ANDROID_MEMINFO_MEMFREE,
+    ANDROID_MEMINFO_MEMTOTAL,
+    ANDROID_MEMINFO_VMDATA,
+    ANDROID_MEMINFO_VMRSS,
+    ANDROID_MEMINFO_VMSIZE,
+};
+
+// Enum describing collected histograms.
+enum HistogramContentsType {
+    NATIVE_HEAP_ALLOCATED_IX = 0,
+    MEMINFO_OOM_SCORE,
+    MEMINFO_ACTIVE,
+    MEMINFO_ACTIVEANON,
+    MEMINFO_ACTIVEFILE,
+    MEMINFO_ANONPAGES,
+    MEMINFO_COMMITLIMIT,
+    MEMINFO_HIGHTOTAL,
+    MEMINFO_LOWTOTAL,
+    MEMINFO_MEMAVAILABLE,
+    MEMINFO_MEMFREE,
+    MEMINFO_MEMTOTAL,
+    MEMINFO_VMDATA,
+    MEMINFO_VMRSS,
+    MEMINFO_VMSIZE,
 };
 
 struct MemoryHistogram {
@@ -41,6 +78,7 @@ struct MemoryHistogram {
 class MemoryTelemetry {
     std::vector<MemoryHistogram> histograms_;
     SystemTimePoint last_time_;
+    SystemTimePoint last_time_slow_;
     IMemInfoProvider* meminfo_provider_;
 
    public:
@@ -64,17 +102,67 @@ class MemoryTelemetry {
     }
 };
 
+struct MemInfo {
+    bool initialized = false;
+    uint32_t pid;
+    int oom_score;
+    std::pair<uint64_t, bool> active;
+    std::pair<uint64_t, bool> activeAnon;
+    std::pair<uint64_t, bool> activeFile;
+    std::pair<uint64_t, bool> anonPages;
+    std::pair<uint64_t, bool> commitLimit;
+    std::pair<uint64_t, bool> highTotal;
+    std::pair<uint64_t, bool> lowTotal;
+    std::pair<uint64_t, bool> memAvailable;
+    std::pair<uint64_t, bool> memFree;
+    std::pair<uint64_t, bool> memTotal;
+    std::pair<uint64_t, bool> vmData;
+    std::pair<uint64_t, bool> vmRss;
+    std::pair<uint64_t, bool> vmSize;
+};
+
 class DefaultMemInfoProvider : public IMemInfoProvider {
     bool enabled_ = false;
     uint64_t device_memory_bytes = 0;
     jni::android::os::DebugClass android_debug_;
 
+   protected:
+    MemInfo memInfo;
+
    public:
+    void UpdateMemInfo() override;
     uint64_t GetNativeHeapAllocatedSize() override;
     void SetEnabled(bool enable) override;
     bool GetEnabled() const override;
     void SetDeviceMemoryBytes(uint64_t bytesize) override;
     uint64_t GetDeviceMemoryBytes() const override;
+    uint64_t GetMemInfoOomScore() const override;
+    bool IsMemInfoActiveAvailable() const override;
+    bool IsMemInfoActiveAnonAvailable() const override;
+    bool IsMemInfoActiveFileAvailable() const override;
+    bool IsMemInfoAnonPagesAvailable() const override;
+    bool IsMemInfoCommitLimitAvailable() const override;
+    bool IsMemInfoHighTotalAvailable() const override;
+    bool IsMemInfoLowTotalAvailable() const override;
+    bool IsMemInfoMemAvailableAvailable() const override;
+    bool IsMemInfoMemFreeAvailable() const override;
+    bool IsMemInfoMemTotalAvailable() const override;
+    bool IsMemInfoVmDataAvailable() const override;
+    bool IsMemInfoVmRssAvailable() const override;
+    bool IsMemInfoVmSizeAvailable() const override;
+    uint64_t GetMemInfoActiveBytes() const override;
+    uint64_t GetMemInfoActiveAnonBytes() const override;
+    uint64_t GetMemInfoActiveFileBytes() const override;
+    uint64_t GetMemInfoAnonPagesBytes() const override;
+    uint64_t GetMemInfoCommitLimitBytes() const override;
+    uint64_t GetMemInfoHighTotalBytes() const override;
+    uint64_t GetMemInfoLowTotalBytes() const override;
+    uint64_t GetMemInfoMemAvailableBytes() const override;
+    uint64_t GetMemInfoMemFreeBytes() const override;
+    uint64_t GetMemInfoMemTotalBytes() const override;
+    uint64_t GetMemInfoVmDataBytes() const override;
+    uint64_t GetMemInfoVmRssBytes() const override;
+    uint64_t GetMemInfoVmSizeBytes() const override;
 };
 
 }  // namespace tuningfork
