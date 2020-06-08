@@ -62,7 +62,7 @@ class MemoryTelemetry {
 };
 
 class DefaultMemInfoProvider : public IMemInfoProvider {
-    bool enabled_ = true;
+    bool enabled_ = false;
     uint64_t device_memory_bytes = 0;
     jni::android::os::DebugClass android_debug_;
   public:
