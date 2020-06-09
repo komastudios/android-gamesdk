@@ -441,7 +441,8 @@ TuningFork_ErrorCode TuningFork_setFidelityParameters(
 
 /**
  * @brief Enable or disable memory telemetry recording.
- * By default, memory telemetry recording is turned *on* at initialization.
+ * By default, memory telemetry recording is turned *off* at initialization and currently
+ * the memory statistics are not shown in the Play UI, so it is not recommended to enable.
  * @param enable If true, memory recording is enabled, if false it is disabled.
  * @return TUNINGFORK_ERROR_OK on success.
  * @return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED if Tuning Fork wasn't initialized.
