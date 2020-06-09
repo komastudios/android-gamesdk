@@ -13,7 +13,7 @@ namespace istresser_testrenderer {
 
     ~TestRenderer() = default;
 
-    int64_t Render(int64_t to_allocate);
+    int Render(int to_allocate);
 
     void Release();
   };
