@@ -18,7 +18,9 @@ public class Helper {
   public static JSONObject getBuild() throws JSONException {
     JSONObject build = new JSONObject();
     getStaticFields(build, Build.class);
-    getStaticFields(build, Build.VERSION.class);
+    JSONObject version = new JSONObject();
+    getStaticFields(version, Build.VERSION.class);
+    build.put("version", version);
     return build;
   }
 
