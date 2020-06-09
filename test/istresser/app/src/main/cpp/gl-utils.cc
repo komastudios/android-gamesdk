@@ -9,12 +9,16 @@
 namespace istresser_glutils {
 
   bool CheckGlError(std::string_view funcName) {
-    GLint err = glGetError();
-    if (err != GL_NO_ERROR) {
+    bool result = false;
+    while (true) {
+      GLint err = glGetError();
+      if (err == GL_NO_ERROR) {
+        break;
+      }
+      result = true;
       ALOGE("GL error after %s(): 0x%08x\n", funcName, err);
-      return true;
     }
-    return false;
+    return result;
   }
 
 }  // namespace istresser_glutils
