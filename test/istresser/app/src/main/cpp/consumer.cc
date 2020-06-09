@@ -2,6 +2,7 @@
 
 #include "gl-utils.h"
 #include "android/log.h"
+#include "memory.h"
 #include <EGL/egl.h>
 #include <GLES3/gl32.h>
 #include <cmath>
@@ -25,15 +26,23 @@ namespace istresser_consumer {
       return;
     }
     unsigned int num_vertices = bytes / sizeof(GLfloat);
-    std::vector<GLfloat> vertices;
-    vertices.resize(num_vertices);
-    GLsizeiptr size = (GLsizeiptr)vertices.size() * sizeof(GLfloat);
-    glBufferData(GL_ARRAY_BUFFER, size, &vertices[0], GL_STATIC_DRAW);
+    GLsizeiptr allocateBytes = num_vertices * sizeof(GLfloat);
+    GLfloat *data = (GLfloat *) malloc(allocateBytes);
+
+    if (!data) {
+      ALOGE("Could not malloc for buffer.");
+      return;
+    }
+
+    LcgFill(data, allocateBytes);
+
+    glBufferData(GL_ARRAY_BUFFER, allocateBytes, data, GL_STATIC_DRAW);
+    free(data);
     if (istresser_glutils::CheckGlError("glBufferData")) {
       ALOGE("Could not create buffers.");
       return;
     }
-    used_ = bytes;
+    used_ = allocateBytes;
   }
 
   Consumer::~Consumer() {
@@ -41,8 +50,8 @@ namespace istresser_consumer {
       ALOGE("Consumer was in invalid state - destructor does nothing.");
       return;
     }
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
     glDeleteBuffers(1, &vertex_buffer_);
+    istresser_glutils::CheckGlError("glDeleteBuffers");
   }
 
   int Consumer::GetUsed() { return used_; }
