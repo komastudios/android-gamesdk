@@ -123,3 +123,10 @@ then
   ./gradlew fullSdkGamingFramePacingAarMavenZip
   ./gradlew fullSdkGamingPerformanceTunerAarMavenZip
 fi
+
+pushd $dist_dir
+# Remove intermediate files that would be very costly to store
+rm -rf libs prefab
+# Remove other files that we don't care about and are polluting the output
+rm -rf external third_party src include samples
+popd
