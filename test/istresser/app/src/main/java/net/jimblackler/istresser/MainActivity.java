@@ -3,6 +3,7 @@ package net.jimblackler.istresser;
 import static com.google.android.apps.internal.games.helperlibrary.Helper.getBuild;
 import static net.jimblackler.istresser.ServiceCommunicationHelper.CRASHED_BEFORE;
 import static net.jimblackler.istresser.ServiceCommunicationHelper.TOTAL_MEMORY_MB;
+import static net.jimblackler.istresser.Utils.flattenParams;
 import static net.jimblackler.istresser.Utils.getFileSize;
 import static net.jimblackler.istresser.Utils.getMemoryQuantity;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.getMemoryInfo;
@@ -426,27 +427,6 @@ public class MainActivity extends AppCompatActivity {
         },
         0,
         1000 / 10);
-  }
-
-  private static JSONObject flattenParams(JSONObject params1) {
-    JSONObject params = new JSONObject();
-    try {
-      JSONArray coordinates = params1.getJSONArray("coordinates");
-      JSONArray tests = params1.getJSONArray("tests");
-
-      for (int coordinateNumber = 0; coordinateNumber != coordinates.length(); coordinateNumber++) {
-        JSONArray jsonArray = tests.getJSONArray(coordinateNumber);
-        JSONObject jsonObject = jsonArray.getJSONObject(coordinates.getInt(coordinateNumber));
-        Iterator<String> keys = jsonObject.keys();
-        while (keys.hasNext()) {
-          String key = keys.next();
-          params.put(key, jsonObject.get(key));
-        }
-      }
-    } catch (JSONException e) {
-      throw new IllegalStateException(e);
-    }
-    return params;
   }
 
   private JSONObject getDeviceSettings() {
