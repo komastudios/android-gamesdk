@@ -16,6 +16,24 @@
       "revId": "41422124bb47e73f7665ff7a41a80672a2b77a2c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ba48dd3f_46cfdb93",
+        "filename": "test/collate/src/main/java/net/jimblackler/collate/Utils.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-06-09T13:43:35Z",
+      "side": 1,
+      "message": "It was assumed that the output had the key already bound to a JSONArray. \n\nI\u0027ve relaxed the requirement and made a version that is hopefully clearer to read.",
+      "parentUuid": "0e5fa287_e8049c71",
+      "revId": "41422124bb47e73f7665ff7a41a80672a2b77a2c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
