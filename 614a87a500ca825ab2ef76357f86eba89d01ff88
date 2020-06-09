@@ -16,6 +16,24 @@
       "revId": "614a87a500ca825ab2ef76357f86eba89d01ff88",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a067fc18_87911e18",
+        "filename": "test/istresser/app/src/main/cpp/memory.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-06-09T15:33:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "35f6254e_462e00e3",
+      "revId": "614a87a500ca825ab2ef76357f86eba89d01ff88",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
