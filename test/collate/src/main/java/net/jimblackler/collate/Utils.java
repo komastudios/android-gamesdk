@@ -62,26 +62,55 @@ class Utils {
     return input;
   }
 
-  static JSONObject flattenParams(JSONObject params1) {
+  /**
+   * Selects the parameters for a run based on the 'tests' and 'coordinates' of the test
+   * specification file.
+   * @param spec The test specification file.
+   * @return The selected parameters.
+   */
+  static JSONObject flattenParams(JSONObject spec) {
     JSONObject params = new JSONObject();
     try {
-      JSONArray coordinates = params1.getJSONArray("coordinates");
-      JSONArray tests = params1.getJSONArray("tests");
+      JSONArray coordinates = spec.getJSONArray("coordinates");
+      JSONArray tests = spec.getJSONArray("tests");
 
       for (int coordinateNumber = 0; coordinateNumber != coordinates.length(); coordinateNumber++) {
         JSONArray jsonArray = tests.getJSONArray(coordinateNumber);
         JSONObject jsonObject = jsonArray.getJSONObject(coordinates.getInt(coordinateNumber));
-        Iterator<String> keys = jsonObject.keys();
-        while (keys.hasNext()) {
-          String key = keys.next();
-          params.put(key, jsonObject.get(key));
-        }
+        merge(jsonObject, params);
       }
     } catch (JSONException e) {
-      e.printStackTrace();
-      System.out.println(params1.toString());
+      throw new IllegalStateException(e);
     }
     return params;
+  }
+
+  /**
+   * Creates a deep union of two JSON objects. Arrays are concatenated and dictionaries are merged.
+   * @param in The first JSON object; read only.
+   * @param out The second JSON object and the object into which changes are written
+   */
+  private static void merge(JSONObject in, JSONObject out) throws JSONException {
+    in = new JSONObject(in.toString());
+    Iterator<String> keys = in.keys();
+    while (keys.hasNext()) {
+      String key = keys.next();
+      Object inObject = in.get(key);
+      if (inObject instanceof JSONArray) {
+        JSONArray inArray = (JSONArray) inObject;
+        JSONArray outArray = out.getJSONArray(key);
+        for (int idx = 0; idx != inArray.length(); idx++) {
+          outArray.put(inArray.get(idx));
+        }
+      } else if (inObject instanceof JSONObject) {
+        JSONObject value = (JSONObject) inObject;
+        if (out.has(key)) {
+          merge(value, out.getJSONObject(key));
+          continue;
+        }
+      }
+      out.put(key, inObject);
+    }
   }
 
   static String getProjectId() throws IOException {
