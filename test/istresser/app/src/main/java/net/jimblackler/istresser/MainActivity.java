@@ -103,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
   private long mmapAnonBytesPerMillisecond;
   private long mmapFileBytesPerMillisecond;
   private MmapFileGroup mmapFiles;
+  private long maxConsumer;
 
   enum ServiceState {
     ALLOCATING_MEMORY,
@@ -225,6 +226,8 @@ public class MainActivity extends AppCompatActivity {
 
       TestSurface testSurface = findViewById(R.id.glsurfaceView);
       testSurface.setVisibility(View.GONE);
+      maxConsumer = getMemoryQuantity(params, "maxConsumer");
+      testSurface.getRenderer().setMaxConsumerSize(maxConsumer);
 
       PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
       report.put("version", packageInfo.versionCode);
@@ -714,6 +717,9 @@ public class MainActivity extends AppCompatActivity {
     TestSurface testSurface = findViewById(R.id.glsurfaceView);
     TestRenderer renderer = testSurface.getRenderer();
     report.put("gl_allocated", renderer.getAllocated());
+    if (renderer.getFailed()) {
+      report.put("allocFailed", true);
+    }
     return report;
   }
 
@@ -723,7 +729,7 @@ public class MainActivity extends AppCompatActivity {
 
   public static native void initGl();
 
-  public static native int nativeDraw(long toAllocate);
+  public static native int nativeDraw(int toAllocate);
 
   public static native void release();
 
