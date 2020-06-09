@@ -182,7 +182,11 @@ class Collector {
       storage.get(BlobId.of(bucketName, path)).downloadTo(file);
     }
     try {
-      return Files.readString(file);
+      String s = Files.readString(file);
+      if (s.isEmpty()) {
+        Files.delete(file); // Don't cache an empty file.
+      }
+      return s;
     } catch (MalformedInputException e) {
       throw new IOException(e);
     }
