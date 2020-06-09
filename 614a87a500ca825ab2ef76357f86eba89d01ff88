@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "35f6254e_462e00e3",
+        "filename": "test/istresser/app/src/main/cpp/memory.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-06-09T15:19:29Z",
+      "side": 1,
+      "message": "Nit: do you need \"extern\" here?",
+      "revId": "614a87a500ca825ab2ef76357f86eba89d01ff88",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
