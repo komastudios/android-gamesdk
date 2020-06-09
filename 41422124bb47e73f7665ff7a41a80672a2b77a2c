@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0e5fa287_e8049c71",
+        "filename": "test/collate/src/main/java/net/jimblackler/collate/Utils.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-06-09T12:24:32Z",
+      "side": 1,
+      "message": "Must \"out\" have this same key? You will get an exception otherwise -- but since you\u0027re merging, shouldn\u0027t the key just be created in the output object instead?",
+      "revId": "41422124bb47e73f7665ff7a41a80672a2b77a2c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
