@@ -4,6 +4,7 @@
 // be called first, before the rest of the functions can be used.
 
 #include "test-renderer.h"
+#include "test-vulkan-renderer.h"
 #include "utils.h"
 #include "memory.h"
 #include <android/log.h>
@@ -27,6 +28,7 @@ namespace {
 
   istresser_utils::Utils *utils;
   istresser_testrenderer::TestRenderer *test_renderer;
+  istresser_testvulkanrenderer::TestVulkanRenderer *test_vulkan_renderer;
 }  // namespace
 
 extern "C" JNIEXPORT void JNICALL
@@ -238,5 +240,22 @@ Java_net_jimblackler_istresser_MainActivity_release(
     JNIEnv *env, jclass clazz) {
   if (test_renderer != NULL) {
     test_renderer->Release();
+  }
+}
+
+extern "C"
+JNIEXPORT jlong JNICALL
+Java_net_jimblackler_istresser_MainActivity_vkAlloc(JNIEnv *env, jclass clazz, jlong size) {
+  if (test_vulkan_renderer == NULL) {
+    test_vulkan_renderer = new istresser_testvulkanrenderer::TestVulkanRenderer();
+  }
+  return test_vulkan_renderer->Allocate(size);
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_net_jimblackler_istresser_MainActivity_vkRelease(
+    JNIEnv *env, jclass clazz) {
+  if (test_vulkan_renderer != NULL) {
+    test_vulkan_renderer->Release();
   }
 }
