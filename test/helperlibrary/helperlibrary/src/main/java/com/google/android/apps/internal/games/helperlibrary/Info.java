@@ -29,6 +29,7 @@ public class Info {
   private static final String[] SUMMARY_FIELDS = {
       "summary.graphics", "summary.native-heap", "summary.total-pss"
   };
+  private MapTester mapTester;
   private final long startTime = System.currentTimeMillis();
   /**
    * Gets Android memory metrics.
@@ -50,7 +51,14 @@ public class Info {
       report.put("lowMemory", true);
     }
 
-    report.put("oom_score", getOomScore(activityManager));
+    if (mapTester == null) {
+      mapTester = new MapTester(context.getCacheDir());
+    }
+
+    if (mapTester.warning()) {
+      report.put("mapTester", true);
+      mapTester.reset();
+    }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       Debug.MemoryInfo debugMemoryInfo = getDebugMemoryInfo(activityManager)[0];
