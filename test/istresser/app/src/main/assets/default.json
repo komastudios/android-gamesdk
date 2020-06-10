@@ -3,6 +3,7 @@
     [
       {},
       { "malloc": "40K" },
+      { "vkTest":  "40K" },
       { "mmapAnon": "50K" },
       {
         "mmapFile": "50K",
