@@ -1,0 +1,92 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000003356269",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1328957?revision\u003d3",
+      "fixSuggestions": [
+        {
+          "fixId": "a1121b60_bc5031da",
+          "description": "Change to \"test/istresser/app/src/main/cpp/vulkan_wrapper/vulkan_wrapper.cpp\"",
+          "replacements": [
+            {
+              "path": "test/istresser/app/src/main/cpp/vulkan_wrapper/vulkan_wrapper.cpp",
+              "range": {
+                "startLine": 208,
+                "startChar": 17,
+                "endLine": 208,
+                "endChar": 27
+              },
+              "replacement": "EXTENSIONS"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "3fc347ca_4f302a9a",
+        "filename": "test/istresser/app/src/main/cpp/vulkan_wrapper/vulkan_wrapper.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-06-10T13:17:37Z",
+      "side": 1,
+      "message": "Common typo found: \"EXTENTIONS\" -- should it be \"EXTENSIONS\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.",
+      "range": {
+        "startLine": 208,
+        "startChar": 17,
+        "endLine": 208,
+        "endChar": 27
+      },
+      "revId": "d244bcfc13420b7579c369be05c8d83f686dd028",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000003356269",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1328957?revision\u003d3",
+      "fixSuggestions": [
+        {
+          "fixId": "a8ebf166_18fad122",
+          "description": "Change to \"test/istresser/app/src/main/cpp/vulkan_wrapper/vulkan_wrapper.h\"",
+          "replacements": [
+            {
+              "path": "test/istresser/app/src/main/cpp/vulkan_wrapper/vulkan_wrapper.h",
+              "range": {
+                "startLine": 227,
+                "startChar": 17,
+                "endLine": 227,
+                "endChar": 27
+              },
+              "replacement": "EXTENSIONS"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "4a50adfa_138a82a6",
+        "filename": "test/istresser/app/src/main/cpp/vulkan_wrapper/vulkan_wrapper.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-06-10T13:17:37Z",
+      "side": 1,
+      "message": "Common typo found: \"EXTENTIONS\" -- should it be \"EXTENSIONS\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.",
+      "range": {
+        "startLine": 227,
+        "startChar": 17,
+        "endLine": 227,
+        "endChar": 27
+      },
+      "revId": "d244bcfc13420b7579c369be05c8d83f686dd028",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
