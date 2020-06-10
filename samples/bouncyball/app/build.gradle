@@ -32,12 +32,14 @@ android {
     externalNativeBuild {
         cmake {
             path "CMakeLists.txt"
-            buildStagingDirectory "../../../../out"
         }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    buildFeatures {
+        prefab true
     }
     lintOptions {
         abortOnError false
@@ -57,5 +59,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.0-rc01'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.2'
     implementation 'androidx.preference:preference:1.0.0-rc01'
+    implementation 'androidx.gaming:gaming-frame-pacing:1.5.0-alpha01'
+//    implementation(name: 'gaming-frame-pacing-1.5.0-alpha01', ext:'aar')
     testImplementation 'junit:junit:4.12'
 }

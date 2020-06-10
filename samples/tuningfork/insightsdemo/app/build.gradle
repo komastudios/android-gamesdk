@@ -26,6 +26,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    buildFeatures {
+        prefab true
+    }
     externalNativeBuild {
         cmake {
             path "CMakeLists.txt"
@@ -36,6 +39,11 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:28.0.0'
+
+    implementation 'androidx.gaming:gaming-frame-pacing:1.5.0-alpha01'
+    implementation 'androidx.gaming:gaming-performance-tuner:1.0.0-alpha01'
+//    implementation(name: 'gaming-frame-pacing-1.5.0-alpha01', ext:'aar')
+//    implementation(name: 'gaming-performance-tuner-1.0.0-alpha01', ext:'aar')
 
     // GMS Core dependencies
     implementation "com.google.android.gms:play-services-clearcut:16.0.0"
