@@ -84,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
   private final List<byte[]> data = Lists.newArrayList();
   private JSONObject deviceSettings;
   private long nativeAllocatedByTest;
+  private long vkAllocatedByTest;
   private long mmapAnonAllocatedByTest;
   private long mmapFileAllocatedByTest;
   private long recordNativeHeapAllocatedSize;
@@ -98,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
   private boolean isServiceCrashed = false;
   private long mallocBytesPerMillisecond;
   private long glAllocBytesPerMillisecond;
+  private long vkAllocBytesPerMillisecond;
   private JSONObject params;
   private boolean yellowLightTesting = false;
   private long mmapAnonBytesPerMillisecond;
@@ -259,6 +261,8 @@ public class MainActivity extends AppCompatActivity {
         }
       }
 
+      vkAllocBytesPerMillisecond = getMemoryQuantity(params, "vkTest");
+
       mmapAnonBytesPerMillisecond = getMemoryQuantity(params, "mmapAnon");
 
       mmapFileBytesPerMillisecond = getMemoryQuantity(params, "mmapFile");
@@ -353,6 +357,19 @@ public class MainActivity extends AppCompatActivity {
                   long target = sinceLastAllocation * glAllocBytesPerMillisecond;
                   TestSurface testSurface = findViewById(R.id.glsurfaceView);
                   testSurface.getRenderer().setTarget(target);
+                }
+
+                if (vkAllocBytesPerMillisecond > 0 && shouldAllocate) {
+                  long owed =
+                      sinceLastAllocation * vkAllocBytesPerMillisecond - vkAllocatedByTest;
+                  if (owed > 0) {
+                    long allocated = vkAlloc(owed);
+                    if (allocated >= owed) {
+                      vkAllocatedByTest += owed;
+                    } else {
+                      report.put("allocFailed", true);
+                    }
+                  }
                 }
 
                 if (mmapAnonBytesPerMillisecond > 0) {
@@ -657,6 +674,11 @@ public class MainActivity extends AppCompatActivity {
                   });
             }
           }
+          if (vkAllocBytesPerMillisecond > 0) {
+            vkAllocatedByTest = 0;
+            vkRelease();
+          }
+
           runAfterDelay(new Runnable() {
             @Override
             public void run() {
@@ -709,6 +731,7 @@ public class MainActivity extends AppCompatActivity {
     if (isServiceCrashed) {
       report.put("serviceCrashed", true);
     }
+    report.put("vkAllocatedByTest", vkAllocatedByTest);
     report.put("nativeAllocatedByTest", nativeAllocatedByTest);
     report.put("mmapAnonAllocatedByTest", mmapAnonAllocatedByTest);
     report.put("mmapFileAllocatedByTest", mmapFileAllocatedByTest);
@@ -732,6 +755,10 @@ public class MainActivity extends AppCompatActivity {
   public static native int nativeDraw(int toAllocate);
 
   public static native void release();
+
+  public static native long vkAlloc(long size);
+
+  public static native void vkRelease();
 
   public native void freeAll();
 
