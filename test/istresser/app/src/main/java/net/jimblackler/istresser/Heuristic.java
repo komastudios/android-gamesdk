@@ -60,7 +60,7 @@ class Heuristic {
 
     if (heuristics.has("try")) {
       reporter.report("try",
-          tryAlloc((int) Utils.getMemoryQuantity(heuristics, "try")) ?
+          tryAlloc((int) Utils.getMemoryQuantity(heuristics.get("try"))) ?
               Indicator.GREEN : Indicator.RED);
     }
 
@@ -81,7 +81,7 @@ class Heuristic {
 
     if (heuristics.has("avail")) {
       reporter.report("avail",
-          availMem < Utils.getMemoryQuantity(heuristics, "avail") ?
+          availMem < Utils.getMemoryQuantity(heuristics.get("avail")) ?
               Indicator.RED : Indicator.GREEN);
     }
 
@@ -100,7 +100,7 @@ class Heuristic {
         reporter.report("avail2", Indicator.GREEN);
       } else {
         reporter.report("avail2",
-            memAvailable < Utils.getMemoryQuantity(heuristics, "avail2") ?
+            memAvailable < Utils.getMemoryQuantity(heuristics.get("avail2")) ?
                 Indicator.RED : Indicator.GREEN);
       }
     }

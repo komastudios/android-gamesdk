@@ -6,6 +6,7 @@ import static net.jimblackler.istresser.ServiceCommunicationHelper.TOTAL_MEMORY_
 import static net.jimblackler.istresser.Utils.flattenParams;
 import static net.jimblackler.istresser.Utils.getFileSize;
 import static net.jimblackler.istresser.Utils.getMemoryQuantity;
+import static net.jimblackler.istresser.Utils.getOrDefault;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.getMemoryInfo;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.getOomScore;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.lowMemoryCheck;
@@ -226,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
 
       TestSurface testSurface = findViewById(R.id.glsurfaceView);
       testSurface.setVisibility(View.GONE);
-      maxConsumer = getMemoryQuantity(params, "maxConsumer");
+      maxConsumer = getMemoryQuantity(getOrDefault(params, "maxConsumer", "2048K"));
       testSurface.getRenderer().setMaxConsumerSize(maxConsumer);
 
       PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -242,30 +243,30 @@ public class MainActivity extends AppCompatActivity {
         activateFirebaseBlocker();
       }
 
-      mallocBytesPerMillisecond = getMemoryQuantity(params, "malloc");
+      mallocBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "malloc", 0));
 
-      glAllocBytesPerMillisecond = getMemoryQuantity(params, "glTest");
+      glAllocBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "glTest", 0));
       if (mallocBytesPerMillisecond == 0) {
-        nativeConsume((int) Utils.getMemoryQuantity(params, "mallocFixed"));
+        nativeConsume((int) getMemoryQuantity(getOrDefault(params, "mallocFixed", 0)));
       }
 
       if (glAllocBytesPerMillisecond > 0) {
         testSurface.setVisibility(View.VISIBLE);
       } else {
-        long glFixed = getMemoryQuantity(params, "glFixed");
+        long glFixed = getMemoryQuantity(getOrDefault(params, "glFixed", 0));
         if (glFixed > 0) {
           testSurface.setVisibility(View.VISIBLE);
           testSurface.getRenderer().setTarget(glFixed);
         }
       }
 
-      mmapAnonBytesPerMillisecond = getMemoryQuantity(params, "mmapAnon");
+      mmapAnonBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "mmapAnon", 0));
 
-      mmapFileBytesPerMillisecond = getMemoryQuantity(params, "mmapFile");
+      mmapFileBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "mmapFile", 0));
       if (mmapFileBytesPerMillisecond > 0) {
         String mmapPath = getApplicationContext().getCacheDir().toString();
         int mmapFileCount = params.getInt("mmapFileCount");
-        long mmapFileSize = getMemoryQuantity(params, "mmapFileSize");
+        long mmapFileSize = getMemoryQuantity(params.get("mmapFileSize"));
         mmapFiles = new MmapFileGroup(mmapPath, mmapFileCount, mmapFileSize);
       }
 
