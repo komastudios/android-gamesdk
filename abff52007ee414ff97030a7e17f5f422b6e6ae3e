@@ -1,0 +1,69 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "76450580_530df63f",
+        "filename": "test/istresser/app/src/main/cpp/native-lib.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-06-10T15:04:41Z",
+      "side": 1,
+      "message": "Please fix typo - \"vuklan\"",
+      "revId": "abff52007ee414ff97030a7e17f5f422b6e6ae3e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "46651d2b_2df45fda",
+        "filename": "test/istresser/app/src/main/cpp/vulkan_wrapper/vulkan_wrapper.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-06-10T15:04:41Z",
+      "side": 1,
+      "message": "\u003e Common typo found: \"EXTENTIONS\" -- should it be \"EXTENSIONS\"?\n\u003e Note: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.\n\nPlease fix.",
+      "parentUuid": "1519f60d_f16d6758",
+      "range": {
+        "startLine": 208,
+        "startChar": 17,
+        "endLine": 208,
+        "endChar": 27
+      },
+      "revId": "abff52007ee414ff97030a7e17f5f422b6e6ae3e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dc81fb8a_5efa2a8f",
+        "filename": "test/istresser/app/src/main/cpp/vulkan_wrapper/vulkan_wrapper.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-06-10T15:04:41Z",
+      "side": 1,
+      "message": "\u003e Common typo found: \"EXTENTIONS\" -- should it be \"EXTENSIONS\"?\n\u003e Note: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.\n\nPlease fix.",
+      "parentUuid": "3b957f94_812f09f7",
+      "range": {
+        "startLine": 227,
+        "startChar": 17,
+        "endLine": 227,
+        "endChar": 27
+      },
+      "revId": "abff52007ee414ff97030a7e17f5f422b6e6ae3e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
