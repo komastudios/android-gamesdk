@@ -86,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
   private long nativeAllocatedByTest;
   private long mmapAnonAllocatedByTest;
   private long mmapFileAllocatedByTest;
-  private long recordNativeHeapAllocatedSize;
   private PrintStream resultsStream = System.out;
   private final Info info = new Info();
   private long latestAllocationTime = -1;
@@ -536,9 +535,6 @@ public class MainActivity extends AppCompatActivity {
     runOnUiThread(
         () -> {
           long nativeHeapAllocatedSize = Debug.getNativeHeapAllocatedSize();
-          if (nativeHeapAllocatedSize > recordNativeHeapAllocatedSize) {
-            recordNativeHeapAllocatedSize = nativeHeapAllocatedSize;
-          }
 
           ActivityManager activityManager =
               (ActivityManager) Objects.requireNonNull(this.getSystemService(ACTIVITY_SERVICE));
@@ -561,9 +557,6 @@ public class MainActivity extends AppCompatActivity {
 
           TextView nativeAllocated = findViewById(R.id.nativeAllocated);
           nativeAllocated.setText(memoryString(nativeHeapAllocatedSize));
-
-          TextView recordNativeAllocated = findViewById(R.id.recordNativeAllocated);
-          recordNativeAllocated.setText(memoryString(recordNativeHeapAllocatedSize));
 
           TextView nativeAllocatedByTestTextView = findViewById(R.id.nativeAllocatedByTest);
           nativeAllocatedByTestTextView.setText(memoryString(nativeAllocatedByTest));
