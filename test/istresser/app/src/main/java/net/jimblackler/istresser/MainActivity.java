@@ -31,7 +31,8 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
+import android.webkit.WebView;
+
 import com.google.android.apps.internal.games.helperlibrary.Info;
 import com.google.common.collect.Lists;
 import java.io.File;
@@ -269,9 +270,6 @@ public class MainActivity extends AppCompatActivity {
         mmapFiles = new MmapFileGroup(mmapPath, mmapFileCount, mmapFileSize);
       }
 
-      TextView strategies = findViewById(R.id.strategies);
-      strategies.setText(params.toString());
-
       report.put("build", getBuild());
 
       JSONObject constant = new JSONObject();
@@ -422,7 +420,7 @@ public class MainActivity extends AppCompatActivity {
                 resultsStream.close();
                 finish();
               }
-              updateInfo();
+              updateInfo(report);
             } catch (JSONException e) {
               throw new IllegalStateException(e);
             }
@@ -532,60 +530,20 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
-  private void updateInfo() {
+  private void updateInfo(JSONObject metrics) {
     runOnUiThread(
         () -> {
           long nativeHeapAllocatedSize = Debug.getNativeHeapAllocatedSize();
           if (nativeHeapAllocatedSize > recordNativeHeapAllocatedSize) {
             recordNativeHeapAllocatedSize = nativeHeapAllocatedSize;
           }
-
-          ActivityManager activityManager =
-              (ActivityManager) Objects.requireNonNull(this.getSystemService(ACTIVITY_SERVICE));
-
-          TextView uptime = findViewById(R.id.uptime);
-          float timeRunning = (float) (System.currentTimeMillis() - info.getStartTime()) / 1000;
-          uptime.setText(String.format(Locale.getDefault(), "%.2f", timeRunning));
-
-          TextView freeMemory = findViewById(R.id.freeMemory);
-          freeMemory.setText(memoryString(Runtime.getRuntime().freeMemory()));
-
-          TextView totalMemory = findViewById(R.id.totalMemory);
-          totalMemory.setText(memoryString(Runtime.getRuntime().totalMemory()));
-
-          TextView maxMemory = findViewById(R.id.maxMemory);
-          maxMemory.setText(memoryString(Runtime.getRuntime().maxMemory()));
-
-          TextView nativeHeap = findViewById(R.id.nativeHeap);
-          nativeHeap.setText(memoryString(Debug.getNativeHeapSize()));
-
-          TextView nativeAllocated = findViewById(R.id.nativeAllocated);
-          nativeAllocated.setText(memoryString(nativeHeapAllocatedSize));
-
-          TextView recordNativeAllocated = findViewById(R.id.recordNativeAllocated);
-          recordNativeAllocated.setText(memoryString(recordNativeHeapAllocatedSize));
-
-          TextView nativeAllocatedByTestTextView = findViewById(R.id.nativeAllocatedByTest);
-          nativeAllocatedByTestTextView.setText(memoryString(nativeAllocatedByTest));
-
-          TextView mmapAnonAllocatedByTestTextView = findViewById(R.id.mmapAnonAllocatedByTest);
-          mmapAnonAllocatedByTestTextView.setText(memoryString(mmapAnonAllocatedByTest));
-
-          TextView mmapFileAllocatedByTestTextView = findViewById(R.id.mmapFileAllocatedByTest);
-          mmapFileAllocatedByTestTextView.setText(memoryString(mmapFileAllocatedByTest));
-
-          ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
-          TextView availMemTextView = findViewById(R.id.availMem);
-          availMemTextView.setText(memoryString(memoryInfo.availMem));
-
-          TextView oomScoreTextView = findViewById(R.id.oomScore);
-          oomScoreTextView.setText("" + getOomScore(activityManager));
-
-          TextView lowMemoryTextView = findViewById(R.id.lowMemory);
-          lowMemoryTextView.setText(Boolean.toString(lowMemoryCheck(activityManager)));
-
-          TextView trimMemoryComplete = findViewById(R.id.releases);
-          trimMemoryComplete.setText(String.format(Locale.getDefault(), "%d", releases));
+          WebView webView = findViewById(R.id.webView);
+          try {
+            webView.loadData(metrics.toString(2) + System.lineSeparator() + params.toString(2),
+                "text/plain; charset=utf-8", "UTF-8");
+          } catch (JSONException e) {
+            throw new IllegalStateException(e);
+          }
         });
   }
 
@@ -616,7 +574,7 @@ public class MainActivity extends AppCompatActivity {
       }
       resultsStream.println(report);
 
-      updateInfo();
+      updateInfo(report);
       super.onTrimMemory(level);
     } catch (JSONException e) {
       throw new IllegalStateException(e);
