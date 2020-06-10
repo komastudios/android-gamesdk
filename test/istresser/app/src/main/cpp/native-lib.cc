@@ -223,9 +223,9 @@ Java_net_jimblackler_istresser_MainActivity_initGl(
   test_renderer = new istresser_testrenderer::TestRenderer();
 }
 
-extern "C" JNIEXPORT int JNICALL
+extern "C" JNIEXPORT jint JNICALL
 Java_net_jimblackler_istresser_MainActivity_nativeDraw(
-    JNIEnv *env, jclass clazz, jlong toAllocate) {
+    JNIEnv *env, jclass clazz, jint toAllocate) {
   if (test_renderer != NULL) {
     return test_renderer->Render(toAllocate);
   } else {
