@@ -58,6 +58,7 @@ public class TestRenderer implements GLSurfaceView.Renderer {
         failed = true;
       }
     }
+
   }
 
   public void release() {
@@ -76,6 +77,11 @@ public class TestRenderer implements GLSurfaceView.Renderer {
   }
 
   public void setTarget(long value) {
+    if (value < allocated) {
+      Log.i(TAG, "Requesting target less than allocated");
+      return;
+    }
+
     target = value;
   }
 
