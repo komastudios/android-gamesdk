@@ -423,6 +423,23 @@ class DebugClass {
 
 }; // class Debug
 
+class Build {
+    static constexpr const char class_name[] = "android/os/Build";
+  public:
+    static jni::String MODEL() {
+        return GetStaticStringField(class_name, "MODEL");
+    }
+    static jni::String BRAND() {
+        return GetStaticStringField(class_name, "BRAND");
+    }
+    static jni::String PRODUCT() {
+        return GetStaticStringField(class_name, "PRODUCT");
+    }
+    static jni::String DEVICE() {
+        return GetStaticStringField(class_name, "DEVICE");
+    }
+}; // Class Build
+
 } // namespace os
 
 } // namespace android

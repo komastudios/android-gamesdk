@@ -29,14 +29,19 @@ using namespace json11;
 using namespace test;
 using namespace std::chrono;
 
-ExtraUploadInfo test_device_info {"expt", "sess", 2387, 349587, "fing", "6.3", {1,2,3}, "packname"};
+ExtraUploadInfo test_device_info {"expt", "sess", 2387, 349587, "fing", "6.3", {1,2,3}, "packname",
+                                  0, 10, "MODEL", "BRAND", "PRODUCT", "DEVICE"};
 std::string test_device_info_ser = R"TF({
+  "brand": "BRAND",
   "build_version": "6.3",
   "cpu_core_freqs_hz": [1, 2, 3],
+  "device": "DEVICE",
   "fingerprint": "fing",
   "gles_version": {
     "major": 5, "minor": 21907
   },
+  "model": "MODEL",
+  "product": "PRODUCT",
   "total_memory_bytes": 2387
 })TF";
 
@@ -55,13 +60,17 @@ std::string report_start = R"TF({
   "name": "applications/packname/apks/0",
   "session_context": {
     "device": {
+      "brand": "BRAND",
       "build_version": "6.3",
       "cpu_core_freqs_hz": [1, 2, 3],
+      "device": "DEVICE",
       "fingerprint": "fing",
       "gles_version": {
         "major": 5,
         "minor": 21907
       },
+      "model": "MODEL",
+      "product": "PRODUCT",
       "total_memory_bytes": 2387
     },
     "game_sdk_info": {

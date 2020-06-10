@@ -24,6 +24,12 @@ android::content::Context AppContext() {
     return Env()->NewLocalRef(AppContextGlobalRef());
 }
 
+namespace android {
+namespace os {
+constexpr const char Build::class_name[];
+}
+}
+
 } // namespace jni
 
 } // namespace tuningfork
