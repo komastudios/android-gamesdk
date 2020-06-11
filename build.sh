@@ -93,6 +93,25 @@ then
       $apk_dir/test/tuningforktest.apk
 fi
 
+# Istresser and related
+if [[ $1 == "full" ]]
+then
+    # Build istresser
+    pushd test/istresser
+    ./gradlew build
+    popd
+    # Build memory grabber
+    pushd test/grabber
+    ./gradlew build
+    popd
+
+    # Copy to $apk_dir
+    cp test/istresser/app/build/outputs/apk/debug/app-debug.apk \
+      $apk_dir/test/istresser.apk
+    cp test/grabber/app/build/outputs/apk/debug/app-debug.apk \
+      $apk_dir/test/grabber.apk
+fi
+
 # Package the apks into the zip file
 if [[ $1 == "samples" ]] || [[ $1 == "full" ]]
 then
@@ -130,3 +149,4 @@ rm -rf libs prefab
 # Remove other files that we don't care about and are polluting the output
 rm -rf external third_party src include samples aar
 popd
+
