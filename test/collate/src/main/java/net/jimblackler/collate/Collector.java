@@ -41,15 +41,18 @@ class Collector {
       "nextPageToken,"
           + "steps(stepId,dimensionValue,testExecutionStep(toolExecution(toolOutputs,toolLogs)))";
 
-  static void deviceCollect(Consumer<? super JSONArray> emitter, int scenario)
-      throws IOException, InterruptedException {
+  static void deviceCollect(String appName, Consumer<? super JSONArray> emitter)
+      throws IOException {
     // Requires adb root
     Path outputFile = Files.createTempFile("data-", ".json");
     //noinspection HardcodedFileSeparator
-    Runtime.getRuntime()
-        .exec("adb pull /data/media/0/results" + scenario + ".json " + outputFile)
-        .waitFor();
-    collectResult(emitter, Files.readString(outputFile), null);
+    String files = Utils.execute(
+        "adb", "shell", "find", "/storage/emulated/0/Android/data/" +
+        appName + "/files", "-type", "f");
+    for (String file : files.split(System.lineSeparator())) {
+      Utils.execute("adb", "pull", file, outputFile.toString());
+      collectResult(emitter, Files.readString(outputFile), null);
+    }
   }
 
   static void cloudCollect(Consumer<? super JSONArray> emitter) throws IOException {

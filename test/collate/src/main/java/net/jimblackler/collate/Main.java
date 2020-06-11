@@ -14,7 +14,7 @@ class Main {
   public static void main(String[] args) throws IOException, InterruptedException {
     Path directory = Files.createTempDirectory("report-");
     JSONArray collect = new JSONArray();
-    Collector.deviceCollect(collect::put, SCENARIO);
+    Collector.deviceCollect("net.jimblackler.istresser", collect::put);
     Desktop.getDesktop().browse(writeGraphs(directory, collect));
   }
 
