@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-#include "jni/jni_helper.h"
+#pragma once
 
-#include "gtest/gtest.h"
+#include <cstdint>
 
-// This function must be declared externally and should call jni::Init and return true if a java
-// environment is available. If there is no Java env available, return false.
-extern "C" bool init_jni_for_tests();
+namespace tuningfork {
 
-using namespace tuningfork;
+// Provider of system memory information.
+class IMemInfoProvider {
+  public:
+    virtual uint64_t GetNativeHeapAllocatedSize() = 0;
+    virtual void SetEnabled(bool enable) = 0;
+    virtual bool GetEnabled() const = 0;
+    virtual void SetDeviceMemoryBytes(uint64_t bytesize) = 0;
+    virtual uint64_t GetDeviceMemoryBytes() const = 0;
+};
 
-TEST(JNI, Init) {
-    EXPECT_EQ(jni::IsValid(), false) << ": should not be valid before init";
-    if (init_jni_for_tests()) {
-        EXPECT_EQ(jni::IsValid(), true) << ": should be valid after init";
-    }
-}
+} // namespace tuningfork

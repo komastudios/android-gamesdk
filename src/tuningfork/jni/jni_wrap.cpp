@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Android Open Source Project
+ * Copyright 2019 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-#include "jni/jni_helper.h"
+#include "jni/jni_wrap.h"
 
-#include "gtest/gtest.h"
+namespace tuningfork {
 
-// This function must be declared externally and should call jni::Init and return true if a java
-// environment is available. If there is no Java env available, return false.
-extern "C" bool init_jni_for_tests();
+namespace jni {
 
-using namespace tuningfork;
-
-TEST(JNI, Init) {
-    EXPECT_EQ(jni::IsValid(), false) << ": should not be valid before init";
-    if (init_jni_for_tests()) {
-        EXPECT_EQ(jni::IsValid(), true) << ": should be valid after init";
-    }
+android::content::Context AppContext() {
+    return Env()->NewLocalRef(AppContextGlobalRef());
 }
+
+namespace android {
+namespace os {
+constexpr const char Build::class_name[];
+}
+}
+
+} // namespace jni
+
+} // namespace tuningfork
