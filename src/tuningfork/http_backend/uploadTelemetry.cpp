@@ -57,8 +57,7 @@ class UltimateUploader : public Runnable {
     }
 };
 
-TuningFork_ErrorCode HttpBackend::Init(const Settings& settings,
-                           const ExtraUploadInfo& extra_upload_info) {
+TuningFork_ErrorCode HttpBackend::Init(const Settings& settings) {
 
     if (settings.EndpointUri().empty()) {
         ALOGW("The base URI in Tuning Fork TuningFork_Settings is invalid");
@@ -69,15 +68,14 @@ TuningFork_ErrorCode HttpBackend::Init(const Settings& settings,
         return TUNINGFORK_ERROR_BAD_PARAMETER;
     }
 
-    Request rq(extra_upload_info, settings.EndpointUri(), settings.api_key, kRequestTimeout);
-    HttpRequest web_request(rq);
+    HttpRequest request(settings.EndpointUri(), settings.api_key, kRequestTimeout);
 
     persister_ = settings.c_settings.persistent_cache;
 
     // TODO(b/140367226): Initialize a Java JobScheduler if we can
 
     if( ultimate_uploader_.get() == nullptr) {
-        ultimate_uploader_ = std::make_shared<UltimateUploader>(persister_, web_request);
+        ultimate_uploader_ = std::make_shared<UltimateUploader>(persister_, request);
         ultimate_uploader_->Start();
     }
 
@@ -86,6 +84,7 @@ TuningFork_ErrorCode HttpBackend::Init(const Settings& settings,
 
 HttpBackend::~HttpBackend() {}
 
+// This persists the histograms and the ultimate uploader, above, uploads them.
 TuningFork_ErrorCode HttpBackend::UploadTelemetry(const std::string &evt_ser) {
 
     ALOGV("HttpBackend::Process %s",evt_ser.c_str());

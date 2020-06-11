@@ -20,17 +20,16 @@
 
 #include "tuningfork/tuningfork.h"
 #include "proto/protobuf_util.h"
-#include "core/extra_upload_info.h"
+#include "core/request_info.h"
 #include "core/id_provider.h"
 #include "core/prong.h"
 
 namespace tuningfork {
 
-class GESerializer {
+class JsonSerializer {
 public:
     static void SerializeEvent(const ProngCache& t,
-                               const ProtobufSerialization& fidelity_params,
-                               const ExtraUploadInfo& device_info,
+                               const RequestInfo& device_info,
                                std::string& evt_json_ser);
 
     static TuningFork_ErrorCode DeserializeAndMerge(

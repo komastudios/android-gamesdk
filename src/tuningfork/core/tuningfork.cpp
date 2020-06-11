@@ -103,7 +103,6 @@ private:
     std::unique_ptr<ProtobufSerialization> training_mode_params_;
 public:
     TuningForkImpl(const Settings& settings,
-                   const ExtraUploadInfo& extra_upload_info,
                    IBackend *backend,
                    ITimeProvider *time_provider,
                    IMemInfoProvider* memory_provider);
@@ -189,27 +188,27 @@ static std::unique_ptr<TuningForkImpl> s_impl;
 static std::unique_ptr<ChronoTimeProvider> s_chrono_time_provider
         = std::make_unique<ChronoTimeProvider>();
 static HttpBackend s_backend;
-static ExtraUploadInfo s_extra_upload_info;
 static std::unique_ptr<SwappyTraceWrapper> s_swappy_tracer;
 static std::unique_ptr<DefaultMemInfoProvider> s_meminfo_provider =
         std::make_unique<DefaultMemInfoProvider>();
 
 TuningFork_ErrorCode Init(const Settings &settings,
-                 const ExtraUploadInfo* extra_upload_info,
-                 IBackend *backend,
-                 ITimeProvider *time_provider,
-                 IMemInfoProvider *meminfo_provider) {
+                          const RequestInfo* request_info,
+                          IBackend *backend,
+                          ITimeProvider *time_provider,
+                          IMemInfoProvider *meminfo_provider) {
 
     if (s_impl.get() != nullptr)
         return TUNINGFORK_ERROR_ALREADY_INITIALIZED;
 
-    if (extra_upload_info == nullptr) {
-        s_extra_upload_info = UploadThread::BuildExtraUploadInfo();
-        extra_upload_info = &s_extra_upload_info;
+    if (request_info != nullptr) {
+        RequestInfo::CachedValue() = *request_info;
+    } else {
+        RequestInfo::CachedValue() = RequestInfo::ForThisGameAndDevice();
     }
 
     if (backend == nullptr) {
-        TuningFork_ErrorCode err = s_backend.Init(settings, *extra_upload_info);
+        TuningFork_ErrorCode err = s_backend.Init(settings);
         if (err == TUNINGFORK_ERROR_OK) {
             ALOGI("TuningFork.GoogleEndpoint: OK");
             backend = &s_backend;
@@ -225,10 +224,10 @@ TuningFork_ErrorCode Init(const Settings &settings,
 
     if (meminfo_provider == nullptr) {
         meminfo_provider = s_meminfo_provider.get();
-        meminfo_provider->SetDeviceMemoryBytes(extra_upload_info->total_memory_bytes);
+        meminfo_provider->SetDeviceMemoryBytes(RequestInfo::CachedValue().total_memory_bytes);
     }
 
-    s_impl = std::make_unique<TuningForkImpl>(settings, *extra_upload_info,
+    s_impl = std::make_unique<TuningForkImpl>(settings,
                                               backend, time_provider,
                                               meminfo_provider);
 
@@ -337,14 +336,13 @@ TuningFork_ErrorCode EnableMemoryRecording(bool enable) {
 }
 
 TuningForkImpl::TuningForkImpl(const Settings& settings,
-                               const ExtraUploadInfo& extra_upload_info,
                                IBackend *backend,
                                ITimeProvider *time_provider,
                                IMemInfoProvider* meminfo_provider) :
                                      settings_(settings),
                                      trace_(gamesdk::Trace::create()),
                                      backend_(backend),
-                                     upload_thread_(backend, extra_upload_info),
+                                     upload_thread_(backend),
                                      current_annotation_id_(0),
                                      time_provider_(time_provider),
                                      meminfo_provider_(meminfo_provider),
@@ -493,19 +491,18 @@ TuningFork_ErrorCode TuningForkImpl::GetFidelityParameters(
       ALOGE("The API key in Tuning Fork TuningFork_Settings is invalid");
       return TUNINGFORK_ERROR_BAD_PARAMETER;
     }
-    ExtraUploadInfo info = UploadThread::BuildExtraUploadInfo();
     Duration timeout = (timeout_ms<=0)
                        ? std::chrono::milliseconds(settings_.initial_request_timeout_ms)
                        : std::chrono::milliseconds(timeout_ms);
-    HttpRequest web_request(Request(info, settings_.EndpointUri(),
-                                         settings_.api_key, timeout));
+    HttpRequest web_request(settings_.EndpointUri(), settings_.api_key, timeout);
     auto result = backend_->GenerateTuningParameters(web_request, training_mode_params_.get(),
                                              params_ser, experiment_id);
     if (result==TUNINGFORK_ERROR_OK) {
-        upload_thread_.SetCurrentFidelityParams(params_ser, experiment_id);
+        RequestInfo::CachedValue().current_fidelity_parameters = params_ser;
     } else if (training_mode_params_.get()) {
-        upload_thread_.SetCurrentFidelityParams(*training_mode_params_, experiment_id);
+        RequestInfo::CachedValue().current_fidelity_parameters = *training_mode_params_;
     }
+    RequestInfo::CachedValue().experiment_id = experiment_id;
     if (Debugging() && jni::IsValid()) {
         backend_->UploadDebugInfo(web_request);
     }
@@ -731,8 +728,9 @@ TuningFork_ErrorCode TuningForkImpl::SetFidelityParameters(
         ALOGW("Warning, previous data could not be flushed.");
         SwapProngCaches();
     }
+    RequestInfo::CachedValue().current_fidelity_parameters = params;
     // We clear the experiment id here.
-    upload_thread_.SetCurrentFidelityParams(params, "");
+    RequestInfo::CachedValue().experiment_id = "";
     return TUNINGFORK_ERROR_OK;
 }
 

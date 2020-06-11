@@ -31,12 +31,11 @@ class UltimateUploader;
 // Google Endpoint backend
 class HttpBackend : public IBackend {
 public:
-    TuningFork_ErrorCode Init(const Settings& settings,
-                     const ExtraUploadInfo& extra_upload_info);
+    TuningFork_ErrorCode Init(const Settings& settings);
     ~HttpBackend() override;
 
     // Perform a blocking call to get fidelity parameters from the server.
-    TuningFork_ErrorCode GenerateTuningParameters(Request& request,
+    TuningFork_ErrorCode GenerateTuningParameters(HttpRequest& request,
         const ProtobufSerialization* training_mode_fps,
         ProtobufSerialization& fidelity_params,
         std::string& experiment_id) override;
@@ -46,7 +45,7 @@ public:
         const std::string& tuningfork_log_event) override;
 
     // Perform a blocking call to upload debug info to a server.
-    virtual TuningFork_ErrorCode UploadDebugInfo(Request& request) override;
+    virtual TuningFork_ErrorCode UploadDebugInfo(HttpRequest& request) override;
 
     void KillThreads();
 private:

@@ -27,12 +27,10 @@ class UploadThread : protected Runnable {
     const ProngCache *ready_;
     bool upload_;
     IBackend *backend_;
-    ProtobufSerialization current_fidelity_params_;
     TuningFork_UploadCallback upload_callback_;
-    ExtraUploadInfo extra_info_;
     const TuningFork_Cache* persister_;
  public:
-    UploadThread(IBackend *backend, const ExtraUploadInfo& extraInfo);
+    UploadThread(IBackend *backend);
     ~UploadThread();
 
     void InitialChecks(ProngCache& prongs,
@@ -46,18 +44,9 @@ class UploadThread : protected Runnable {
     // If upload is false, the cache is serialized and saved, not uploaded.
     bool Submit(const ProngCache *prongs, bool upload);
 
-    void SetCurrentFidelityParams(const ProtobufSerialization &fp,
-                                  const std::string& experiment_id) {
-        current_fidelity_params_ = fp;
-        extra_info_.experiment_id = experiment_id;
-    }
-
     void SetUploadCallback(TuningFork_UploadCallback upload_callback) {
         upload_callback_ = upload_callback;
     }
-
-    // Note that this won't include a valid experiment_id
-    static ExtraUploadInfo BuildExtraUploadInfo();
 
 };
 

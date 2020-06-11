@@ -63,7 +63,7 @@ public:
         return TUNINGFORK_ERROR_OK;
     }
 
-    TuningFork_ErrorCode GenerateTuningParameters(Request& request,
+    TuningFork_ErrorCode GenerateTuningParameters(HttpRequest& request,
                                   const ProtobufSerialization* training_mode_params,
                                   ProtobufSerialization &fidelity_params,
                                   std::string& experiment_id) override {
@@ -75,7 +75,7 @@ public:
         }
     }
 
-    TuningFork_ErrorCode UploadDebugInfo(Request& request) override {
+    TuningFork_ErrorCode UploadDebugInfo(HttpRequest& request) override {
         return TUNINGFORK_ERROR_OK;
     }
 
@@ -104,7 +104,7 @@ public:
             download_params_(download_params),
             expected_training_params_(expected_training_params) {}
 
-    TuningFork_ErrorCode GenerateTuningParameters(Request& request,
+    TuningFork_ErrorCode GenerateTuningParameters(HttpRequest& request,
                                   const ProtobufSerialization* training_mode_params,
                                   ProtobufSerialization &fidelity_params,
                                   std::string& experiment_id) override {
@@ -133,7 +133,7 @@ public:
         return TUNINGFORK_ERROR_OK;
     }
 
-    TuningFork_ErrorCode UploadDebugInfo(Request& request) override {
+    TuningFork_ErrorCode UploadDebugInfo(HttpRequest& request) override {
         return TUNINGFORK_ERROR_OK;
     }
 
@@ -186,7 +186,6 @@ class TuningForkTest {
     TestBackend test_backend_;
     TestTimeProvider time_provider_;
     TestMemInfoProvider meminfo_provider_;
-    ExtraUploadInfo extra_upload_info_;
     TuningFork_ErrorCode init_return_value_;
 
     TuningForkTest(const Settings& settings, Duration tick_size = std::chrono::milliseconds(20),
@@ -194,8 +193,9 @@ class TuningForkTest {
                    = std::make_shared<TestDownloadBackend>(),
                   bool enable_meminfo = false)
             : test_backend_(cv_, rmutex_, download_backend),
-              time_provider_(tick_size), meminfo_provider_(enable_meminfo), extra_upload_info_({}) {
-        init_return_value_ = tuningfork::Init(settings, &extra_upload_info_, &test_backend_,
+              time_provider_(tick_size), meminfo_provider_(enable_meminfo) {
+        RequestInfo info = {};
+        init_return_value_ = tuningfork::Init(settings, &info, &test_backend_,
                                               &time_provider_,
                                               &meminfo_provider_);
         EXPECT_EQ(init_return_value_, TUNINGFORK_ERROR_OK) << "Bad Init";
@@ -510,12 +510,12 @@ struct TestResponse {
     std::string response_body;
 };
 
-class TestRequest: public Request {
+class TestRequest: public HttpRequest {
     std::vector<TestResponse> responses_;
     int next_response_ = 0;
   public:
-    TestRequest(const Request& r, std::vector<TestResponse> responses)
-            : Request(r), responses_(responses) {}
+    TestRequest(const HttpRequest& r, std::vector<TestResponse> responses)
+            : HttpRequest(r), responses_(responses) {}
     TuningFork_ErrorCode Send(const std::string& rpc_name, const std::string& request,
               int& response_code, std::string& response_body) override {
         EXPECT_LT(next_response_, responses_.size()) << "Unexpected request";
@@ -551,8 +551,7 @@ static const std::string empty_tuning_parameters_request = R"({
 
 TEST(TuningForkTest, TestFidelityParamDownloadRequest) {
     HttpBackend backend;
-    ExtraUploadInfo info ({});
-    Request inner_request(info, "https://test.google.com", "dummy_api_key",
+    HttpRequest inner_request("https://test.google.com", "dummy_api_key",
                           std::chrono::milliseconds(1000));
     TestRequest request(inner_request, {{empty_tuning_parameters_request, 200, "out"}});
     ProtobufSerialization fps;

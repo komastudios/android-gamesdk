@@ -43,6 +43,7 @@ set( TUNINGFORK_SRCS
   core/file_cache.cpp
   core/memory_telemetry.cpp
   core/prong.cpp
+  core/request_info.cpp
   core/tuningfork.cpp
   core/tuningfork_c.cpp
   core/tuningfork_extra.cpp
@@ -53,7 +54,7 @@ set( TUNINGFORK_SRCS
   core/uploadthread.cpp
   http_backend/debugInfo.cpp
   http_backend/generateTuningParameters.cpp
-  http_backend/serializer.cpp
+  http_backend/json_serializer.cpp
   http_backend/uploadTelemetry.cpp
   http_backend/http_request.cpp
   jni/jni_helper.cpp

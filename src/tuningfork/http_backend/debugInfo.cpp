@@ -102,7 +102,7 @@ static std::string RequestJson() {
     return result;
 }
 
-TuningFork_ErrorCode HttpBackend::UploadDebugInfo(Request& request) {
+TuningFork_ErrorCode HttpBackend::UploadDebugInfo(HttpRequest& request) {
     int response_code;
     std::string body;
     TuningFork_ErrorCode ret = request.Send(kRpcName, RequestJson(),

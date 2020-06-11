@@ -19,23 +19,26 @@
 #include <string>
 
 #include "tuningfork/tuningfork.h"
-#include "core/request.h"
+#include "core/common.h"
+#include "core/request_info.h"
 
 namespace tuningfork {
 
 const uint64_t HISTOGRAMS_PAUSED = 0;
 const uint64_t HISTOGRAMS_UPLOADING = 1;
 
-// Http implementation of a Request.
-// TODO (willosborn): replace Request with this or re-engineer.
-class HttpRequest : public Request {
+// Request to an HTTP endpoint.
+class HttpRequest {
+    std::string base_url_;
+    std::string api_key_;
+    Duration timeout_;
   public:
-    HttpRequest(const Request& inner);
-    HttpRequest(const HttpRequest&);
-    HttpRequest(HttpRequest&& rq) = delete;
-    HttpRequest& operator=(const HttpRequest& rq) = delete;
-    TuningFork_ErrorCode Send(const std::string& rpc_name, const std::string& request_json,
-                     int& response_code, std::string& response_body) override;
+    HttpRequest(std::string base_url, std::string api_key, Duration timeout)
+     : base_url_(base_url), api_key_(api_key), timeout_(timeout) {}
+    virtual ~HttpRequest() {}
+    std::string GetURL(std::string rpcname) const;
+    virtual TuningFork_ErrorCode Send(const std::string& rpc_name, const std::string& request_json,
+                     int& response_code, std::string& response_body);
 };
 
 } // namespace tuningfork

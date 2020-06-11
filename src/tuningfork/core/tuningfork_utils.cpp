@@ -250,14 +250,14 @@ namespace json_utils {
 
 using namespace json11;
 
-std::string GetResourceName(const ExtraUploadInfo& request_info) {
+std::string GetResourceName(const RequestInfo& request_info) {
     std::stringstream str;
     str << "applications/"<< request_info.apk_package_name<<"/apks/";
     str << request_info.apk_version_code;
     return str.str();
 }
 
-Json::object DeviceSpecJson(const ExtraUploadInfo& request_info) {
+Json::object DeviceSpecJson(const RequestInfo& request_info) {
     Json gles_version = Json::object {
         {"major", static_cast<int>(request_info.gl_es_version>>16)},
         {"minor", static_cast<int>(request_info.gl_es_version&0xffff)}};

@@ -17,7 +17,7 @@
 #include "tf_test_utils.h"
 
 #include <gtest/gtest.h>
-#include "http_backend/serializer.h"
+#include "http_backend/json_serializer.h"
 #include "core/tuningfork_utils.h"
 
 #include <chrono>
@@ -29,7 +29,7 @@ using namespace json11;
 using namespace test;
 using namespace std::chrono;
 
-ExtraUploadInfo test_device_info {"expt", "sess", 2387, 349587, "fing", "6.3", {1,2,3}, "packname",
+RequestInfo test_device_info {"expt", {}, "sess", 2387, 349587, "fing", "6.3", {1,2,3}, "packname",
                                   0, 10, "MODEL", "BRAND", "PRODUCT", "DEVICE"};
 std::string test_device_info_ser = R"TF({
   "brand": "BRAND",
@@ -45,7 +45,7 @@ std::string test_device_info_ser = R"TF({
   "total_memory_bytes": 2387
 })TF";
 
-void CheckDeviceInfo(const ExtraUploadInfo& info) {
+void CheckDeviceInfo(const RequestInfo& info) {
     EXPECT_EQ(json_utils::GetResourceName(info),
               "applications/packname/apks/0") << "GetResourceName";
     EXPECT_TRUE(CompareIgnoringWhitespace(Json(json_utils::DeviceSpecJson(info)).dump(),
@@ -124,10 +124,8 @@ TEST(SerializationTest, SerializationWithLoading) {
                            [](uint64_t){ return SerializedAnnotation(); },
                            [](uint64_t id){ return id == 0; },
                            nullptr);
-    ProtobufSerialization fidelity_params;
-    ExtraUploadInfo device_info;
     std::string evt_ser;
-    GESerializer::SerializeEvent(prong_cache, fidelity_params, test_device_info, evt_ser);
+    JsonSerializer::SerializeEvent(prong_cache, test_device_info, evt_ser);
     auto empty_report = report_start + report_end;
     EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, empty_report))
         << evt_ser << "\n!=\n" << empty_report;
@@ -141,7 +139,7 @@ TEST(SerializationTest, SerializationWithLoading) {
     EXPECT_NE(p2, nullptr);
     p2->Trace(milliseconds(10));
 
-    GESerializer::SerializeEvent(prong_cache, fidelity_params, test_device_info, evt_ser);
+    JsonSerializer::SerializeEvent(prong_cache, test_device_info, evt_ser);
     auto report = report_start + single_tick_with_loading + report_end;
     EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, report)) << evt_ser << "\n!=\n" << report;
 }
@@ -197,17 +195,15 @@ TEST(SerializationTest, GEDeserialization) {
                            [](uint64_t){ return SerializedAnnotation(); },
                            [](uint64_t){ return false; },
                            nullptr);
-    ProtobufSerialization fidelity_params;
-    ExtraUploadInfo device_info;
     std::string evt_ser;
-    GESerializer::SerializeEvent(prong_cache, fidelity_params, test_device_info, evt_ser);
+    JsonSerializer::SerializeEvent(prong_cache, test_device_info, evt_ser);
     auto empty_report = report_start + report_end;
     EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, empty_report))
         << evt_ser << "\n!=\n" << empty_report;
     // Fill in some data
     auto p = prong_cache.Get(0);
     p->Trace(milliseconds(30));
-    GESerializer::SerializeEvent(prong_cache, fidelity_params, test_device_info, evt_ser);
+    JsonSerializer::SerializeEvent(prong_cache, test_device_info, evt_ser);
     auto report = report_start + single_tick + report_end;
     EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, report)) << evt_ser << "\n!=\n" << report;
     ProngCache pc(1/*size*/, 1/*max_instrumentation_keys*/, {DefaultHistogram()},
@@ -215,7 +211,7 @@ TEST(SerializationTest, GEDeserialization) {
                   [](uint64_t){ return false; },
                   nullptr);
     TestIdProvider id_provider;
-    EXPECT_EQ(GESerializer::DeserializeAndMerge(evt_ser, id_provider, pc), TUNINGFORK_ERROR_OK)
+    EXPECT_EQ(JsonSerializer::DeserializeAndMerge(evt_ser, id_provider, pc), TUNINGFORK_ERROR_OK)
             << "Deserialize single";
     CheckProngCaches(pc, prong_cache);
 }
