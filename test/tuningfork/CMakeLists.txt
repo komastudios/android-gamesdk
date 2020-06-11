@@ -48,7 +48,7 @@ add_subdirectory("../../src/tuningfork"
 
 include_directories(
   "${ANDROID_GTEST_DIR}/googletest/include"
-  ../../src
+  ../../src/tuningfork
   ../../src/common
   ../../include
   ../../../external/nanopb-c
