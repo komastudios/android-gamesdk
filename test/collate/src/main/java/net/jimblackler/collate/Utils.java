@@ -8,6 +8,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,6 +20,14 @@ import java.util.Iterator;
  * Class containing various utility methods used by tools in the package.
  */
 class Utils {
+
+  private static final PrintStream NULL_PRINT_STREAM = new PrintStream(new OutputStream() {
+    @Override
+    public void write(int b) {
+
+    }
+  });
+
   static String fileToString(String filename) throws IOException {
     return Files.readString(Paths.get("resources", filename));
   }
@@ -26,7 +36,7 @@ class Utils {
     Files.copy(Paths.get("resources", filename), directory.resolve(filename));
   }
 
-  private static String readStream(InputStream inputStream) throws IOException {
+  private static String readStream(InputStream inputStream, PrintStream out) throws IOException {
     StringBuilder stringBuilder = new StringBuilder();
     try (BufferedReader bufferedReader =
         new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
@@ -36,7 +46,7 @@ class Utils {
         if (line == null) {
           return stringBuilder.toString();
         }
-        System.out.println(line);
+        out.println(line);
         stringBuilder.append(separator);
         separator = System.lineSeparator();
         stringBuilder.append(line);
@@ -44,22 +54,46 @@ class Utils {
     }
   }
 
-  static String execute(String... args) throws IOException {
-    System.out.println(String.join(" ", args));
-    Process process = new ProcessBuilder(args).start();
+  static String executeSilent(String... args) throws IOException {
+    return execute(NULL_PRINT_STREAM, args);
+  }
 
-    String input = readStream(process.getInputStream());
-    String error = readStream(process.getErrorStream());
-    try {
-      process.waitFor();
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
+  static String execute(String... args) throws IOException {
+    return execute(System.out, args);
+  }
+
+  static String execute(PrintStream out, String... args) throws IOException {
+    out.println(String.join(" ", args));
+    int sleepFor = 0;
+    for (int attempt = 0; attempt != 10; attempt++) {
+      Process process = new ProcessBuilder(args).start();
+
+      String input = readStream(process.getInputStream(), out);
+      String error = readStream(process.getErrorStream(), out);
+      try {
+        process.waitFor();
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+      int exit = process.exitValue();
+      if (exit != 0) {
+        if (error.contains("Broken pipe") || error.contains("Can't find service")) {
+          sleepFor += 10;
+          out.println(error);
+          out.print("Retrying in " + sleepFor + " seconds... ");
+          try {
+            Thread.sleep(sleepFor * 1000L);
+          } catch (InterruptedException e) {
+            // Intentionally ignored.
+          }
+          out.println("done");
+          continue;
+        }
+        throw new IOException(error);
+      }
+      return input;
     }
-    int exit = process.exitValue();
-    if (exit != 0) {
-      throw new IOException(error);
-    }
-    return input;
+    throw new IOException("Maximum attempts reached");
   }
 
   /**
