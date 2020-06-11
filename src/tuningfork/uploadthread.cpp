@@ -214,6 +214,10 @@ ExtraUploadInfo UploadThread::BuildExtraUploadInfo() {
         extra_info.apk_version_code = apk_utils::GetVersionCode(
                                        &extra_info.apk_package_name,
                                        &extra_info.gl_es_version);
+        extra_info.model = jni::android::os::Build::MODEL().C();
+        extra_info.brand = jni::android::os::Build::BRAND().C();
+        extra_info.product = jni::android::os::Build::PRODUCT().C();
+        extra_info.device = jni::android::os::Build::DEVICE().C();
     }
     extra_info.tuningfork_version = TUNINGFORK_PACKED_VERSION;
 

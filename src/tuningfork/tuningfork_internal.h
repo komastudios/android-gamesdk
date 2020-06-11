@@ -93,6 +93,10 @@ struct ExtraUploadInfo {
     std::string apk_package_name;
     uint32_t apk_version_code;
     uint32_t tuningfork_version;
+    std::string model;
+    std::string brand;
+    std::string product;
+    std::string device;
 };
 
 class IdProvider {

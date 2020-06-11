@@ -268,7 +268,11 @@ Json::object DeviceSpecJson(const ExtraUploadInfo& request_info) {
         {"total_memory_bytes", static_cast<double>(request_info.total_memory_bytes)},
         {"build_version", request_info.build_version_sdk},
         {"gles_version", gles_version},
-        {"cpu_core_freqs_hz", freqs}};
+        {"cpu_core_freqs_hz", freqs},
+        {"model", request_info.model},
+        {"brand", request_info.brand},
+        {"product", request_info.product},
+        {"device", request_info.device}};
 }
 
 } // namespace json_utils

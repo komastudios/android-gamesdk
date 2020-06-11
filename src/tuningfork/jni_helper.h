@@ -208,6 +208,8 @@ bool CheckForException(std::string& msg);
 
 std::vector<unsigned char> GetByteArrayBytesAndDeleteRef(jbyteArray jbs);
 
+jni::String GetStaticStringField(const char* class_name, const char* field_name);
+
 // Debugging
 #ifndef NDEBUG
 void DumpLocalRefTable();

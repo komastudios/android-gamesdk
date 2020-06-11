@@ -287,13 +287,17 @@ static std::string ReplaceReturns(std::string in) {
 static const std::string session_context = R"TF(
 {
   "device": {
+    "brand": "",
     "build_version": "",
     "cpu_core_freqs_hz": [],
+    "device": "",
     "fingerprint": "",
     "gles_version": {
       "major": 0,
       "minor": 0
     },
+    "model": "",
+    "product": "",
     "total_memory_bytes": 0
   },
   "game_sdk_info": {
@@ -497,15 +501,19 @@ class TestRequest: public Request {
 };
 
 static const std::string empty_tuning_parameters_request = R"({
-"device_spec": {
-  "build_version": "",
-  "cpu_core_freqs_hz": [],
-  "fingerprint": "",
-  "gles_version": {
-    "major": 0,
-    "minor": 0
-  },
-  "total_memory_bytes": 0
+  "device_spec": {
+    "brand": "",
+    "build_version": "",
+    "cpu_core_freqs_hz": [],
+    "device": "",
+    "fingerprint": "",
+    "gles_version": {
+      "major": 0,
+      "minor": 0
+    },
+    "model": "",
+    "product": "",
+    "total_memory_bytes": 0
   },
   "name": "applications//apks/0"
 })";

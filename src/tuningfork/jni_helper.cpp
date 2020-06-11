@@ -177,6 +177,15 @@ std::vector<unsigned char> GetByteArrayBytesAndDeleteRef(jbyteArray jbs) {
     return ret;
 }
 
+jni::String GetStaticStringField(const char* class_name, const char* field_name) {
+    JNIEnv* env = Env();
+    LocalObject obj;
+    obj.Cast(class_name);
+    jclass clz = obj;
+    jfieldID fid = env->GetStaticFieldID(clz, field_name, "Ljava/lang/String;");
+    return (jstring)env->GetStaticObjectField(clz, fid);
+}
+
 #ifndef NDEBUG
 void DumpLocalRefTable()
 {
