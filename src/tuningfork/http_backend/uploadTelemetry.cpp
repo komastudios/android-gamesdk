@@ -3,59 +3,15 @@
 #define LOG_TAG "TuningFork.GE"
 #include "Log.h"
 
-#include "proto/protobuf_util.h"
-
 #include "core/runnable.h"
-#include "http_request.h"
 #include "core/tuningfork_utils.h"
+#include "http_request.h"
+#include "proto/protobuf_util.h"
+#include "ultimate_uploader.h"
 
 namespace tuningfork {
 
-constexpr Duration kUploadCheckInterval = std::chrono::seconds(10);
 constexpr Duration kRequestTimeout = std::chrono::seconds(10);
-
-const char kRpcName[] = ":uploadTelemetry";
-
-class UltimateUploader : public Runnable {
-    const TuningFork_Cache* persister_;
-    HttpRequest request_;
-    public:
-    UltimateUploader(const TuningFork_Cache* persister, const HttpRequest& request)
-            : Runnable(), persister_(persister), request_(request) {}
-    Duration DoWork() override {
-        CheckUploadPending();
-        return kUploadCheckInterval;
-    }
-    void Run() override {
-        Runnable::Run();
-    }
-    bool CheckUploadPending() {
-        TuningFork_CProtobufSerialization uploading_hists_ser;
-        if (persister_->get(HISTOGRAMS_UPLOADING, &uploading_hists_ser,
-                persister_->user_data)==TUNINGFORK_ERROR_OK) {
-            std::string request_json = ToString(uploading_hists_ser);
-            TuningFork_CProtobufSerialization_free(&uploading_hists_ser);
-            int response_code = -1;
-            std::string body;
-            ALOGV("Got UPLOADING histograms: %s", request_json.c_str());
-            TuningFork_ErrorCode ret = request_.Send(kRpcName, request_json, response_code, body);
-            if (ret==TUNINGFORK_ERROR_OK) {
-                ALOGI("UPLOAD request returned %d %s", response_code, body.c_str());
-                if (response_code==200) {
-                    persister_->remove(HISTOGRAMS_UPLOADING, persister_->user_data);
-                    return true;
-                }
-            }
-            else
-                ALOGW("Error %d when sending UPLOAD request\n%s", ret, request_json.c_str());
-        }
-        else {
-            ALOGV("No upload pending");
-            return true;
-        }
-        return false;
-    }
-};
 
 TuningFork_ErrorCode HttpBackend::Init(const Settings& settings) {
 
