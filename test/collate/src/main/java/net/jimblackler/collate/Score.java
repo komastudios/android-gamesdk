@@ -149,9 +149,7 @@ public class Score {
         };
 
     if (USE_DEVICE) {
-      for (int scenario = 1; scenario <= DEVICE_SCENARIOS; scenario++) {
-        Collector.deviceCollect(collect, scenario);
-      }
+      Collector.deviceCollect("net.jimblackler.istresser", collect);
     } else {
       Collector.cloudCollect(collect);
     }
