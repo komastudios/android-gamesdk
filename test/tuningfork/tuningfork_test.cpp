@@ -15,9 +15,10 @@
  */
 #include "tf_test_utils.h"
 
-#include "tuningfork/protobuf_util.h"
-#include "tuningfork/tuningfork_internal.h"
-#include "tuningfork/memory_telemetry.h"
+#include "proto/protobuf_util.h"
+#include "core/tuningfork_internal.h"
+#include "core/memory_telemetry.h"
+#include "http_backend/http_backend.h"
 
 #include "full/tuningfork.pb.h"
 #include "full/dev_tuningfork.pb.h"
@@ -45,12 +46,14 @@ typedef std::string TuningForkLogEvent;
 static const std::string kCacheDir = "/data/local/tmp/tuningfork_test";
 const Duration s_test_wait_time = std::chrono::seconds(1);
 
-class TestBackend : public Backend {
+class TestBackend : public IBackend {
 public:
     TestBackend(std::shared_ptr<std::condition_variable> cv_,
-                std::shared_ptr<std::mutex> mutex_) : cv(cv_), mutex(mutex_) {}
+                std::shared_ptr<std::mutex> mutex_,
+                std::shared_ptr<IBackend> dl_backend_ = std::shared_ptr<IBackend>())
+                 : cv(cv_), mutex(mutex_), dl_backend(dl_backend_) {}
 
-    TuningFork_ErrorCode Process(const TuningForkLogEvent &evt_ser) override {
+    TuningFork_ErrorCode UploadTelemetry(const TuningForkLogEvent &evt_ser) override {
         ALOGI("Process");
         {
             std::lock_guard<std::mutex> lock(*mutex);
@@ -60,27 +63,48 @@ public:
         return TUNINGFORK_ERROR_OK;
     }
 
+    TuningFork_ErrorCode GenerateTuningParameters(Request& request,
+                                  const ProtobufSerialization* training_mode_params,
+                                  ProtobufSerialization &fidelity_params,
+                                  std::string& experiment_id) override {
+        if (dl_backend) {
+            return dl_backend->GenerateTuningParameters(request, training_mode_params, fidelity_params,
+                                                 experiment_id);
+        } else {
+            return TUNINGFORK_ERROR_OK;
+        }
+    }
+
+    TuningFork_ErrorCode UploadDebugInfo(Request& request) override {
+        return TUNINGFORK_ERROR_OK;
+    }
+
     void Clear() { result = ""; }
+
+    void SetDownloadBackend(const std::shared_ptr<IBackend>& dl) {
+        dl_backend = dl;
+    }
 
     TuningForkLogEvent result;
     std::shared_ptr<std::condition_variable> cv;
     std::shared_ptr<std::mutex> mutex;
+    std::shared_ptr<IBackend> dl_backend;
 };
 
-class TestParamsLoader : public ParamsLoader {
+class TestDownloadBackend : public IBackend {
 public:
     int n_times_called_ = 0;
     int wait_count_ = 0;
     const ProtobufSerialization* download_params_;
     const ProtobufSerialization* expected_training_params_;
-    TestParamsLoader(int wait_count = 0,
+    TestDownloadBackend(int wait_count = 0,
                      const ProtobufSerialization* download_params = nullptr,
                      const ProtobufSerialization* expected_training_params = nullptr) :
             wait_count_(wait_count),
             download_params_(download_params),
             expected_training_params_(expected_training_params) {}
 
-    TuningFork_ErrorCode GetFidelityParams(Request& request,
+    TuningFork_ErrorCode GenerateTuningParameters(Request& request,
                                   const ProtobufSerialization* training_mode_params,
                                   ProtobufSerialization &fidelity_params,
                                   std::string& experiment_id) override {
@@ -104,6 +128,15 @@ public:
             return TUNINGFORK_ERROR_GENERATE_TUNING_PARAMETERS_ERROR;
         }
     }
+
+    TuningFork_ErrorCode UploadTelemetry(const TuningForkLogEvent &evt_ser) override {
+        return TUNINGFORK_ERROR_OK;
+    }
+
+    TuningFork_ErrorCode UploadDebugInfo(Request& request) override {
+        return TUNINGFORK_ERROR_OK;
+    }
+
 };
 
 // Increment time with a known tick size
@@ -151,20 +184,18 @@ class TuningForkTest {
     std::shared_ptr<std::condition_variable> cv_ = std::make_shared<std::condition_variable>();
     std::shared_ptr<std::mutex> rmutex_ = std::make_shared<std::mutex>();
     TestBackend test_backend_;
-    std::shared_ptr<TestParamsLoader> params_loader_;
     TestTimeProvider time_provider_;
     TestMemInfoProvider meminfo_provider_;
     ExtraUploadInfo extra_upload_info_;
     TuningFork_ErrorCode init_return_value_;
 
     TuningForkTest(const Settings& settings, Duration tick_size = std::chrono::milliseconds(20),
-                   const std::shared_ptr<TestParamsLoader>& params_loader
-                   = std::make_shared<TestParamsLoader>(),
+                   const std::shared_ptr<TestDownloadBackend>& download_backend
+                   = std::make_shared<TestDownloadBackend>(),
                   bool enable_meminfo = false)
-            : test_backend_(cv_, rmutex_), params_loader_(params_loader),
+            : test_backend_(cv_, rmutex_, download_backend),
               time_provider_(tick_size), meminfo_provider_(enable_meminfo), extra_upload_info_({}) {
         init_return_value_ = tuningfork::Init(settings, &extra_upload_info_, &test_backend_,
-                                              params_loader_.get(),
                                               &time_provider_,
                                               &meminfo_provider_);
         EXPECT_EQ(init_return_value_, TUNINGFORK_ERROR_OK) << "Bad Init";
@@ -193,7 +224,7 @@ const TuningFork_CProtobufSerialization* TrainingModeParams() {
 
 Settings TestSettings(Settings::AggregationStrategy::Submission method, int n_ticks, int n_keys,
                       std::vector<uint32_t> annotation_size,
-                      const std::vector<TFHistogram>& hists = {}) {
+                      const std::vector<Settings::Histogram>& hists = {}) {
     Settings s {};
     s.aggregation_strategy.method = method;
     s.aggregation_strategy.intervalms_or_count = n_ticks;
@@ -261,7 +292,7 @@ TuningForkLogEvent TestEndToEndWithMemory() {
     auto settings = TestSettings(Settings::AggregationStrategy::Submission::TICK_BASED, NTICKS - 1,
                                  1, {});
     TuningForkTest test(settings,  std::chrono::milliseconds(20),
-                        std::make_shared<TestParamsLoader>(), /*enable_meminfo*/ true);
+                        std::make_shared<TestDownloadBackend>(), /*enable_meminfo*/ true);
     std::unique_lock<std::mutex> lock(*test.rmutex_);
     for (int i = 0; i < NTICKS; ++i)
         tuningfork::FrameTick(TFTICK_RAW_FRAME_TIME);
@@ -431,10 +462,10 @@ void TestFidelityParamDownloadThread(bool insights) {
     settings.api_key = "dummy_api_key";
     settings.c_settings.training_fidelity_params = nullptr;
 
-    auto params_loader = insights?std::make_shared<TestParamsLoader>(/*wait_count*/0, nullptr):
-                                  std::make_shared<TestParamsLoader>(/*wait_count*/3, &default_fps);
+    auto download_backend = insights?std::make_shared<TestDownloadBackend>(/*wait_count*/0, nullptr):
+                                  std::make_shared<TestDownloadBackend>(/*wait_count*/3, &default_fps);
 
-    TuningForkTest test(settings, std::chrono::milliseconds(20), params_loader);
+    TuningForkTest test(settings, std::chrono::milliseconds(20), download_backend);
 
     auto r = TuningFork_startFidelityParamDownloadThread(nullptr, FidelityParamsCallback);
     EXPECT_EQ(r, TUNINGFORK_ERROR_BAD_PARAMETER);
@@ -448,7 +479,7 @@ void TestFidelityParamDownloadThread(bool insights) {
         EXPECT_TRUE(fp_cv.wait_for(lock, s_test_wait_time)!=std::cv_status::timeout)
           << "Timeout";
         EXPECT_EQ(fp_n_callbacks_called, 1);
-        EXPECT_EQ(params_loader->n_times_called_, 1);
+        EXPECT_EQ(download_backend->n_times_called_, 1);
     }
     else {
         // Wait for the download thread. We have one initial callback with the defaults and
@@ -458,7 +489,7 @@ void TestFidelityParamDownloadThread(bool insights) {
               << "Timeout";
         }
         EXPECT_EQ(fp_n_callbacks_called, 2);
-        EXPECT_EQ(params_loader->n_times_called_, 4);
+        EXPECT_EQ(download_backend->n_times_called_, 4);
     }
 
     TuningFork_CProtobufSerialization_free(&c_default_fps);
@@ -511,14 +542,14 @@ static const std::string empty_tuning_parameters_request = R"({
 })";
 
 TEST(TuningForkTest, TestFidelityParamDownloadRequest) {
-    ParamsLoader p;
+    HttpBackend backend;
     ExtraUploadInfo info ({});
     Request inner_request(info, "https://test.google.com", "dummy_api_key",
                           std::chrono::milliseconds(1000));
     TestRequest request(inner_request, {{empty_tuning_parameters_request, 200, "out"}});
     ProtobufSerialization fps;
     std::string experiment_id;
-    p.GetFidelityParams(request, nullptr, fps, experiment_id);
+    backend.GenerateTuningParameters(request, nullptr, fps, experiment_id);
 }
 
 TEST(TuningForkTest, EndToEndWithMemory) {

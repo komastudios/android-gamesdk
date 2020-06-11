@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
-#include "jni/jni_helper.h"
+#pragma once
 
-#include "gtest/gtest.h"
+#include "tuningfork/tuningfork.h"
+#include "core/common.h"
+#include "proto/protobuf_util.h"
 
-// This function must be declared externally and should call jni::Init and return true if a java
-// environment is available. If there is no Java env available, return false.
-extern "C" bool init_jni_for_tests();
+class AAsset;
 
-using namespace tuningfork;
+namespace tuningfork {
 
-TEST(JNI, Init) {
-    EXPECT_EQ(jni::IsValid(), false) << ": should not be valid before init";
-    if (init_jni_for_tests()) {
-        EXPECT_EQ(jni::IsValid(), true) << ": should be valid after init";
-    }
-}
+class IdProvider {
+  public:
+    virtual ~IdProvider() {}
+    virtual uint64_t DecodeAnnotationSerialization(const ProtobufSerialization& ser,
+                                                   bool* loading = nullptr) const = 0;
+    virtual TuningFork_ErrorCode MakeCompoundId(InstrumentationKey k,
+                                       uint64_t annotation_id,
+                                       uint64_t& id) = 0;
+};
+
+} // namespace tuningfork

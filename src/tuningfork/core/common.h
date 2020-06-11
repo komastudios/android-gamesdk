@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-#include "jni/jni_helper.h"
+#pragma once
 
-#include "gtest/gtest.h"
+#include <stdint.h>
+#include <chrono>
 
-// This function must be declared externally and should call jni::Init and return true if a java
-// environment is available. If there is no Java env available, return false.
-extern "C" bool init_jni_for_tests();
+// Common type definitions
 
-using namespace tuningfork;
+namespace tuningfork {
 
-TEST(JNI, Init) {
-    EXPECT_EQ(jni::IsValid(), false) << ": should not be valid before init";
-    if (init_jni_for_tests()) {
-        EXPECT_EQ(jni::IsValid(), true) << ": should be valid after init";
-    }
-}
+// The instrumentation key identifies a tick point within a frame or a trace segment
+typedef uint16_t InstrumentationKey;
+typedef uint64_t TraceHandle;
+typedef std::chrono::steady_clock::time_point TimePoint;
+typedef std::chrono::steady_clock::duration Duration;
+typedef std::chrono::system_clock::time_point SystemTimePoint;
+typedef std::chrono::system_clock::duration SystemDuration;
+
+} // namespace tuningfork
