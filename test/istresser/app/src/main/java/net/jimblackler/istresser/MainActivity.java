@@ -48,6 +48,7 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import net.jimblackler.istresser.Heuristic.Indicator;
 import org.apache.commons.io.FileUtils;
@@ -294,6 +295,16 @@ public class MainActivity extends AppCompatActivity {
       throw new IllegalStateException(e);
     }
 
+    AtomicReference<JSONArray> criticalLogLines = new AtomicReference<>();
+
+    new LogMonitor(line -> {
+      if (line.contains("Out of memory")) {
+        if (criticalLogLines.get() == null) {
+          criticalLogLines.set(new JSONArray());
+        }
+        criticalLogLines.get().put(line);
+      }});
+
     appSwitchTimerStart = System.currentTimeMillis();
     latestAllocationTime = info.getStartTime();
 
@@ -303,6 +314,10 @@ public class MainActivity extends AppCompatActivity {
           public void run() {
             try {
               JSONObject report = standardInfo();
+              if (criticalLogLines.get() != null) {
+                report.put("criticalLogLines", criticalLogLines.get());
+                criticalLogLines.set(null);
+              }
               long sinceLastAllocation = System.currentTimeMillis() - latestAllocationTime;
               if (sinceLastAllocation > 0) {
                 boolean shouldAllocate = true;
