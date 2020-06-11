@@ -9,10 +9,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -58,40 +55,18 @@ public class Utils {
   }
 
   /**
-   * Return a collection of the process identifiers associated with the running app.
-   *
-   * @param activityManager The ActivityManager.
-   * @return The collection of PIDs.
-   */
-  private static Collection<Integer> getPids(ActivityManager activityManager) {
-    Collection<Integer> pids = new ArrayList<>();
-    List<ActivityManager.RunningAppProcessInfo> runningAppProcessInfos =
-        activityManager.getRunningAppProcesses();
-    if (runningAppProcessInfos != null) {
-      for (ActivityManager.RunningAppProcessInfo runningAppProcessInfo : runningAppProcessInfos) {
-        pids.add(runningAppProcessInfo.pid);
-      }
-    }
-    return pids;
-  }
-
-  /**
    * Returns the OOM score associated with the main application process. As multiple processes can
    * be associated with an app the largest OOM score of all process is selected.
    *
    * @param activityManager The ActivityManager.
-   * @return The OOM score.
+   * @return The OOM score, or -1 if the score cannot be obtained.
    */
   public static int getOomScore(ActivityManager activityManager) {
     try {
-      int largestOom = 0;
-      for (int pid : getPids(activityManager)) {
-        int oom = Integer.parseInt(readFile(("/proc/" + pid) + "/oom_score"));
-        largestOom = Math.max(largestOom, oom);
-      }
-      return largestOom;
+      int pid = android.os.Process.myPid();
+      return Integer.parseInt(readFile(("/proc/" + pid) + "/oom_score"));
     } catch (IOException | NumberFormatException e) {
-      return 0;
+      return -1;
     }
   }
 
@@ -131,30 +106,25 @@ public class Utils {
 
   /**
    * Return a dictionary of values extracted from the application processes' /proc/../status files.
-   * Where multiple processes are found, for each case the highest value is selected.
    *
    * @param activityManager The ActivityManager.
-   * @return A dictionary of values.
+   * @return A dictionary of values, in bytes.
    */
   public static Map<String, Long> processStatus(ActivityManager activityManager) {
     Map<String, Long> output = new HashMap<>();
-    for (int pid : getPids(activityManager)) {
-      String filename = "/proc/" + pid + "/status";
-      try {
-        String meminfoText = readFile(filename);
-        Pattern pattern = Pattern.compile("([a-zA-Z]+)[^\\d]*(\\d+) kB.*\n");
-        Matcher matcher = pattern.matcher(meminfoText);
-        while (matcher.find()) {
-          String key = matcher.group(1);
-          long value = Long.parseLong(Objects.requireNonNull(matcher.group(2)));
-          Long existingValue = output.get(key);
-          if (existingValue == null || existingValue < value) {
-            output.put(key, value);
-          }
-        }
-      } catch (IOException e) {
-        Log.w(TAG, "Failed to read " + filename);
+    int pid = android.os.Process.myPid();
+    String filename = "/proc/" + pid + "/status";
+    try {
+      String meminfoText = readFile(filename);
+      Pattern pattern = Pattern.compile("([a-zA-Z]+)[^\\d]*(\\d+) kB.*\n");
+      Matcher matcher = pattern.matcher(meminfoText);
+      while (matcher.find()) {
+        String key = matcher.group(1);
+        long value = Long.parseLong(Objects.requireNonNull(matcher.group(2)));
+        output.put(key, value * 1024);
       }
+    } catch (IOException e) {
+      Log.w(TAG, "Failed to read " + filename);
     }
     return output;
   }
@@ -176,15 +146,6 @@ public class Utils {
    * @return The process memory info.
    */
   public static Debug.MemoryInfo[] getDebugMemoryInfo(ActivityManager activityManager) {
-    return activityManager.getProcessMemoryInfo(toArray(getPids(activityManager)));
-  }
-
-  private static int[] toArray(Collection<Integer> ints) {
-    int[] array = new int[ints.size()];
-    int idx = 0;
-    for (int i : ints) {
-      array[idx++] = i;
-    }
-    return array;
+    return activityManager.getProcessMemoryInfo(new int[]{android.os.Process.myPid()});
   }
 }
