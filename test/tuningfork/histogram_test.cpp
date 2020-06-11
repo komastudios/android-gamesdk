@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "tuningfork/histogram.h"
+#include "core/histogram.h"
 
 #include "gtest/gtest.h"
 

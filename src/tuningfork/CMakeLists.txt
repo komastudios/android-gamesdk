@@ -23,6 +23,7 @@ protobuf_generate_nano_c( ${CMAKE_CURRENT_SOURCE_DIR}/proto
 protobuf_generate_nano_c( ${CMAKE_CURRENT_SOURCE_DIR}/proto
   proto/descriptor.proto)
 
+include_directories( . )
 include_directories(${PROTOBUF_NANO_SRC_DIR})
 include_directories( ../../include )
 include_directories( ../../src/swappy )
@@ -37,29 +38,29 @@ include_directories(${PROTO_GENS_DIR})
 add_definitions(-DPB_FIELD_16BIT)
 
 set( TUNINGFORK_SRCS
-  crash_handler.cpp
-  prong.cpp
-  uploadthread.cpp
-  tuningfork.cpp
-  tuningfork_c.cpp
-  protobuf_util.cpp
-  annotation_util.cpp
-  tuningfork_extra.cpp
-  tuningfork_utils.cpp
-  tuningfork_settings.cpp
-  tuningfork_swappy.cpp
-  unity_tuningfork.cpp
-  fpdownload.cpp
-  ge_backend.cpp
-  ge_serializer.cpp
-  file_cache.cpp
-  web.cpp
-  jni_helper.cpp
-  jni_wrap.cpp
-  jnictx.cpp
-  debug_upload.cpp
-  memory_telemetry.cpp
   c_header_check.c
+  core/crash_handler.cpp
+  core/file_cache.cpp
+  core/memory_telemetry.cpp
+  core/prong.cpp
+  core/tuningfork.cpp
+  core/tuningfork_c.cpp
+  core/tuningfork_extra.cpp
+  core/tuningfork_settings.cpp
+  core/tuningfork_swappy.cpp
+  core/annotation_util.cpp
+  core/tuningfork_utils.cpp
+  core/uploadthread.cpp
+  http_backend/debugInfo.cpp
+  http_backend/generateTuningParameters.cpp
+  http_backend/serializer.cpp
+  http_backend/uploadTelemetry.cpp
+  http_backend/http_request.cpp
+  jni/jni_helper.cpp
+  jni/jni_wrap.cpp
+  jni/jnictx.cpp
+  proto/protobuf_util.cpp
+  unity/unity_tuningfork.cpp
   ${THIRDPARTY_DIR}/json11/json11.cpp
   ${MODPB64_DIR}/modp_b64.cc
   ${PROTO_GENS_DIR}/nano/tuningfork.pb.c

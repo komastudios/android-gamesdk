@@ -18,10 +18,10 @@
 
 #include <string>
 #include <gtest/gtest.h>
-#include <tuningfork/jni_helper.h>
-#include "tuningfork/file_cache.h"
-#include "tuningfork/tuningfork_utils.h"
-#include "tuningfork/protobuf_util.h"
+#include "jni/jni_helper.h"
+#include "core/file_cache.h"
+#include "core/tuningfork_utils.h"
+#include "proto/protobuf_util.h"
 #include "tuningfork_test.h"
 
 namespace test {
