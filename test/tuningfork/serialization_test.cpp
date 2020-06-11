@@ -17,8 +17,8 @@
 #include "tf_test_utils.h"
 
 #include <gtest/gtest.h>
-#include "tuningfork/ge_serializer.h"
-#include "tuningfork/tuningfork_utils.h"
+#include "http_backend/serializer.h"
+#include "core/tuningfork_utils.h"
 
 #include <chrono>
 
@@ -110,7 +110,8 @@ std::string single_tick_with_loading = R"TF({
 })TF";
 
 TEST(SerializationTest, SerializationWithLoading) {
-    ProngCache prong_cache(2/*size*/, 2/*max_instrumentation_keys*/, {DefaultHistogram(1)},
+    ProngCache prong_cache(2/*size*/, 2/*max_instrumentation_keys*/,
+                           { Settings::DefaultHistogram(1) },
                            [](uint64_t){ return SerializedAnnotation(); },
                            [](uint64_t id){ return id == 0; },
                            nullptr);
@@ -178,7 +179,7 @@ void CheckProngCaches(const ProngCache& pc0, const ProngCache& pc1) {
     EXPECT_EQ(p0->histogram_, p1->histogram_);
 }
 
-TFHistogram DefaultHistogram() {
+Settings::Histogram DefaultHistogram() {
     return {-1,10,40,30};
 }
 

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-#include "tuningfork/annotation_util.h"
+#include "core/annotation_util.h"
 
 #include "gtest/gtest.h"
 
-using namespace annotation_util;
+using namespace tuningfork::annotation_util;
 
 std::vector<uint32_t> TestSetup(const std::vector<uint32_t>& enum_sizes,
                            const std::vector<uint32_t>& expected){
