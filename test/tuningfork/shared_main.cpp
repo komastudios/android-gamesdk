@@ -21,7 +21,7 @@
 
 #include "gtest/gtest.h"
 
-#include "tuningfork/jni_helper.h"
+#include "jni/jni_helper.h"
 
 using ::testing::EmptyTestEventListener;
 using ::testing::InitGoogleTest;

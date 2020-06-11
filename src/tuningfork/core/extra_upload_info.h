@@ -14,19 +14,27 @@
  * limitations under the License.
  */
 
-#include "jni/jni_helper.h"
+#pragma once
 
-#include "gtest/gtest.h"
+#include <string>
+#include <cstdint>
+#include <vector>
 
-// This function must be declared externally and should call jni::Init and return true if a java
-// environment is available. If there is no Java env available, return false.
-extern "C" bool init_jni_for_tests();
+namespace tuningfork {
 
-using namespace tuningfork;
+// Extra information that is uploaded with the proto including device information, game
+// package information and session information.
+struct ExtraUploadInfo {
+    std::string experiment_id;
+    std::string session_id;
+    uint64_t total_memory_bytes;
+    uint32_t gl_es_version;
+    std::string build_fingerprint;
+    std::string build_version_sdk;
+    std::vector<uint64_t> cpu_max_freq_hz;
+    std::string apk_package_name;
+    uint32_t apk_version_code;
+    uint32_t tuningfork_version;
+};
 
-TEST(JNI, Init) {
-    EXPECT_EQ(jni::IsValid(), false) << ": should not be valid before init";
-    if (init_jni_for_tests()) {
-        EXPECT_EQ(jni::IsValid(), true) << ": should be valid after init";
-    }
-}
+} // namespace tuningfork
