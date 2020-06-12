@@ -33,6 +33,7 @@ public class Launcher {
     } else {
       cloudLaunch();
     }
+    Score.go(USE_DEVICE);
   }
 
   private static void deviceLaunch() throws IOException {

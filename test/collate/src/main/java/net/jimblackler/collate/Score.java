@@ -19,9 +19,12 @@ import org.json.JSONObject;
 
 public class Score {
   private static final boolean USE_DEVICE = false;
-  private static final int DEVICE_SCENARIOS = 1;
 
-  public static void main(String[] args) throws IOException, InterruptedException {
+  public static void main(String[] args) throws IOException {
+    go(USE_DEVICE);
+  }
+
+  static void go(boolean useDevice) throws IOException {
     Map<String, List<Result>> out = new HashMap<>();
     Map<String, JSONObject> builds = new HashMap<>();
     Path directory = Files.createTempDirectory("report-");
@@ -148,7 +151,7 @@ public class Score {
                   group.toString()));
         };
 
-    if (USE_DEVICE) {
+    if (useDevice) {
       Collector.deviceCollect("net.jimblackler.istresser", collect);
     } else {
       Collector.cloudCollect(null, collect);
