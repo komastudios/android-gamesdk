@@ -156,6 +156,24 @@ public class MainActivity extends AppCompatActivity {
         throw new IllegalStateException(e);
       }
     }
+    if (resultsStream == System.out) {
+      try {
+        JSONArray coordinates = params1.getJSONArray("coordinates");
+        StringBuilder coordsString = new StringBuilder();
+        for (int coordinateNumber = 0; coordinateNumber != coordinates.length();
+             coordinateNumber++) {
+          coordsString.append("_").append(coordinates.getInt(coordinateNumber));
+        }
+        String fileName = getExternalFilesDir(null) + "/results" + coordsString + ".json";
+        if (!new File(fileName).exists()) {
+          // We deliberately do not overwrite the result for the case where Android automatically
+          // relaunches the intent following a crash.
+          resultsStream = new PrintStream(fileName);
+        }
+      } catch (FileNotFoundException | JSONException e) {
+        throw new IllegalStateException(e);
+      }
+    }
 
     params = flattenParams(params1);
     deviceSettings= getDeviceSettings();
