@@ -90,7 +90,6 @@ public class MainActivity extends Activity {
   private PrintStream resultsStream = System.out;
   private final Info info = new Info();
   private long latestAllocationTime = -1;
-  private int releases;
   private long appSwitchTimerStart;
   private long lastLaunched;
   private int serviceTotalMb = 0;
@@ -642,7 +641,6 @@ public class MainActivity extends Activity {
           resultsStream.println(report2);
           if (nativeAllocatedByTest > 0) {
             nativeAllocatedByTest = 0;
-            releases++;
             freeAll();
           }
           mmapAnonFreeAll();
