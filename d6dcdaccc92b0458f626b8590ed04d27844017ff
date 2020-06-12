@@ -16,6 +16,24 @@
       "revId": "d6dcdaccc92b0458f626b8590ed04d27844017ff",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "75c1031b_c589e566",
+        "filename": "src/tuningfork/core/request_info.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-06-12T11:27:01Z",
+      "side": 1,
+      "message": "Yeah, good point. I\u0027ll change it in a future CL.",
+      "parentUuid": "5a67a06f_a9ee9a32",
+      "revId": "d6dcdaccc92b0458f626b8590ed04d27844017ff",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
