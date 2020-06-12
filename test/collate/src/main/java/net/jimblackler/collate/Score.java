@@ -151,7 +151,7 @@ public class Score {
     if (USE_DEVICE) {
       Collector.deviceCollect("net.jimblackler.istresser", collect);
     } else {
-      Collector.cloudCollect(collect);
+      Collector.cloudCollect(null, collect);
     }
 
     JSONArray _tests = tests.get();

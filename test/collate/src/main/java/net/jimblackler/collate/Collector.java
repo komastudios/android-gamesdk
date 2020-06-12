@@ -6,7 +6,6 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.toolresults.ToolResults;
 import com.google.api.services.toolresults.model.Execution;
 import com.google.api.services.toolresults.model.FileReference;
-import com.google.api.services.toolresults.model.History;
 import com.google.api.services.toolresults.model.ListExecutionsResponse;
 import com.google.api.services.toolresults.model.ListHistoriesResponse;
 import com.google.api.services.toolresults.model.ListStepsResponse;
@@ -55,7 +54,7 @@ class Collector {
     }
   }
 
-  static void cloudCollect(Consumer<? super JSONArray> emitter) throws IOException {
+  static void cloudCollect(String historyId, Consumer<? super JSONArray> emitter) throws IOException {
     String projectId = Utils.getProjectId();
     String accessToken = Auth.getAccessToken();
     GoogleCredentials credentials1 = GoogleCredentials.create(new AccessToken(accessToken, null));
@@ -72,11 +71,11 @@ class Collector {
             .setApplicationName(projectId)
             .build();
 
-    ListHistoriesResponse historiesResponse =
-        toolResults.projects().histories().list(projectId).setPageSize(1).execute();
-    History history = historiesResponse.getHistories().get(0);
-
-    String historyId = history.getHistoryId();
+    if (historyId == null) {
+      ListHistoriesResponse historiesResponse =
+          toolResults.projects().histories().list(projectId).setPageSize(1).execute();
+      historyId = historiesResponse.getHistories().get(0).getHistoryId();
+    }
     ToolResults.Projects.Histories.Executions.List list =
         toolResults.projects().histories().executions().list(projectId, historyId);
     while (true) {
