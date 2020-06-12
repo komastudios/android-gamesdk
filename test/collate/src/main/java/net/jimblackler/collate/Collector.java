@@ -25,7 +25,9 @@ import java.nio.charset.MalformedInputException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -38,9 +40,8 @@ import org.json.JSONTokener;
 class Collector {
 
   private static final Pattern BAD_CHARS = Pattern.compile("[^a-zA-Z0-9-_.]");
-  private static final String FIELDS =
-      "nextPageToken,"
-          + "steps(stepId,dimensionValue,testExecutionStep(toolExecution(toolOutputs,toolLogs)))";
+  private static final String FIELDS = "nextPageToken," +
+      "steps(state,stepId,dimensionValue,testExecutionStep(toolExecution(toolOutputs,toolLogs)))";
 
   static void deviceCollect(String appName, Consumer<? super JSONArray> emitter)
       throws IOException {
@@ -86,92 +87,106 @@ class Collector {
           toolResults.projects().histories().list(projectId).setPageSize(1).execute();
       historyId = historiesResponse.getHistories().get(0).getHistoryId();
     }
-    ToolResults.Projects.Histories.Executions.List list =
-        toolResults.projects().histories().executions().list(projectId, historyId);
-    while (true) {
-      ListExecutionsResponse response = list.execute();
-      for (Execution execution : response.getExecutions()) {
-        String executionId = execution.getExecutionId();
-        ToolResults.Projects.Histories.Executions.Steps.List list1 =
-            toolResults
-                .projects()
-                .histories()
-                .executions()
-                .steps()
-                .list(projectId, historyId, executionId)
-                .setFields(FIELDS);
+
+    Collection<String> reported = new HashSet<>();
+
+    do {
+      while (true) {
+        int inProgress = 0;
+        ToolResults.Projects.Histories.Executions.List list =
+            toolResults.projects().histories().executions().list(projectId, historyId);
         while (true) {
-          ListStepsResponse response1 = list1.execute();
-          if (response1.isEmpty()) {
-            break;
-          }
-          for (Step step : response1.getSteps()) {
-            TestExecutionStep testExecutionStep = step.getTestExecutionStep();
-            if (testExecutionStep == null) {
-              continue;
-            }
-            ToolExecution toolExecution = testExecutionStep.getToolExecution();
-            if (toolExecution == null) {
-              continue;
-            }
-            JSONObject extra = new JSONObject();
-            //noinspection HardcodedFileSeparator
-            extra.put(
-                "resultsPage",
-                "https://console.firebase.google.com/project/" + projectId + "/testlab/histories/"
-                    + historyId
-                    + "/matrices/"
-                    + executionId
-                    + "/executions/"
-                    + step.getStepId());
-            for (StepDimensionValueEntry entry : step.getDimensionValue()) {
-              if ("Model".equals(entry.getKey())) {
-                String id = entry.getValue();
-                if (launcherDevices.containsKey(id)) {
-                  extra.put("fromLauncher", launcherDevices.get(id));
-                }
+          ListExecutionsResponse response = list.execute();
+          for (Execution execution : response.getExecutions()) {
+            String executionId = execution.getExecutionId();
+            ToolResults.Projects.Histories.Executions.Steps.List list1 =
+                toolResults
+                    .projects()
+                    .histories()
+                    .executions()
+                    .steps()
+                    .list(projectId, historyId, executionId)
+                    .setFields(FIELDS);
+            while (true) {
+              ListStepsResponse response1 = list1.execute();
+              if (response1.isEmpty()) {
                 break;
               }
-            }
-            List<FileReference> toolLogs = toolExecution.getToolLogs();
-            if (toolLogs == null) {
-              continue;
-            }
-            String logsUrl =
-                toolLogs.get(0).getFileUri().replace("gs://", "https://storage.cloud.google.com/");
-            extra.put("logs", logsUrl);
-
-            JSONObject dimensions = new JSONObject();
-            for (StepDimensionValueEntry pair : step.getDimensionValue()) {
-              dimensions.put(pair.getKey(), pair.getValue());
-            }
-            extra.put("dimensions", dimensions);
-            List<ToolOutputReference> toolOutputs = toolExecution.getToolOutputs();
-            if (toolOutputs == null || toolOutputs.isEmpty()) {
-              continue;
-            }
-            ToolOutputReference toolOutputReference = toolOutputs.get(0);
-            URI uri = URI.create(toolOutputReference.getOutput().getFileUri());
-            try {
-              String contents = getContents(storage, uri.getHost(), uri.getPath().substring(1));
-              collectResult(emitter, contents, extra);
-            } catch (IOException e) {
-              e.printStackTrace();
+              for (Step step : response1.getSteps()) {
+                if ("inProgress".equals(step.getState())) {
+                  inProgress++;
+                }
+                TestExecutionStep testExecutionStep = step.getTestExecutionStep();
+                if (testExecutionStep == null) {
+                  continue;
+                }
+                ToolExecution toolExecution = testExecutionStep.getToolExecution();
+                if (toolExecution == null) {
+                  continue;
+                }
+                String stepId = step.getStepId();
+                if (!reported.add(stepId)) {
+                  continue;
+                }
+                JSONObject extra = new JSONObject();
+                //noinspection HardcodedFileSeparator
+                extra.put(
+                    "resultsPage",
+                    "https://console.firebase.google.com/project/" + projectId +
+                        "/testlab/histories/"
+                        + historyId
+                        + "/matrices/"
+                        + executionId
+                        + "/executions/"
+                        + stepId);
+                for (StepDimensionValueEntry entry : step.getDimensionValue()) {
+                  if ("Model".equals(entry.getKey())) {
+                    String id = entry.getValue();
+                    if (launcherDevices.containsKey(id)) {
+                      extra.put("fromLauncher", launcherDevices.get(id));
+                    }
+                    break;
+                  }
+                }
+                List<FileReference> toolLogs = toolExecution.getToolLogs();
+                if (toolLogs == null) {
+                  continue;
+                }
+                String logsUrl = toolLogs.get(0).getFileUri()
+                    .replace("gs://", "https://storage.cloud.google.com/");
+                extra.put("logs", logsUrl);
+                List<ToolOutputReference> toolOutputs = toolExecution.getToolOutputs();
+                if (toolOutputs == null || toolOutputs.isEmpty()) {
+                  continue;
+                }
+                ToolOutputReference toolOutputReference = toolOutputs.get(0);
+                URI uri = URI.create(toolOutputReference.getOutput().getFileUri());
+                try {
+                  String contents = getContents(storage, uri.getHost(), uri.getPath().substring(1));
+                  collectResult(emitter, contents, extra);
+                } catch (IOException e) {
+                  e.printStackTrace();
+                }
+              }
+              String nextPageToken1 = response1.getNextPageToken();
+              if (nextPageToken1 == null) {
+                break;
+              }
+              list1.setPageToken(nextPageToken1);
             }
           }
-          String nextPageToken1 = response1.getNextPageToken();
-          if (nextPageToken1 == null) {
+          String nextPageToken = response.getNextPageToken();
+          if (nextPageToken == null) {
             break;
           }
-          list1.setPageToken(nextPageToken1);
+          list.setPageToken(nextPageToken);
         }
+        if (inProgress == 0) {
+          break;
+        }
+        System.out.println(inProgress + " runs in progress");
       }
-      String nextPageToken = response.getNextPageToken();
-      if (nextPageToken == null) {
-        break;
-      }
-      list.setPageToken(nextPageToken);
-    }
+    } while (reported.isEmpty());
   }
 
   private static void collectResult(
