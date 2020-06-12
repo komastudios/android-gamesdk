@@ -148,6 +148,14 @@ public class MainActivity extends Activity {
       }
     }
 
+    if (launchIntent.hasExtra("Params")) {
+      try {
+        params1 = new JSONObject(Objects.requireNonNull(launchIntent.getStringExtra("Params")));
+      } catch (JSONException e) {
+        throw new IllegalStateException(e);
+      }
+    }
+
     if (params1 == null) {
       try {
         params1 = new JSONObject(readStream(getAssets().open("default.json")));
