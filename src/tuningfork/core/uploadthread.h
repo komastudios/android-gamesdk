@@ -17,13 +17,12 @@
 #pragma once
 
 #include "backend.h"
-#include "prong.h"
 #include "runnable.h"
 #include "session.h"
 
 namespace tuningfork {
 
-class UploadThread : protected Runnable {
+class UploadThread : public Runnable {
    private:
     const Session* ready_;
     bool upload_;
@@ -44,7 +43,7 @@ class UploadThread : protected Runnable {
     // Returns true if we submitted, false if we are waiting for a previous
     // submit to complete If upload is false, the cache is serialized and saved,
     // not uploaded.
-    bool Submit(const Session* prongs, bool upload);
+    bool Submit(const Session* session, bool upload);
 
     void SetUploadCallback(TuningFork_UploadCallback upload_callback) {
         upload_callback_ = upload_callback;

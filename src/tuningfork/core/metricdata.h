@@ -1,5 +1,6 @@
+
 /*
- * Copyright 2019 The Android Open Source Project
+ * Copyright 2020 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +17,22 @@
 
 #pragma once
 
-#include <string>
+#include <cstdint>
+#include <unordered_map>
+#include <vector>
 
-#include "core/id_provider.h"
-#include "core/session.h"
+#include "common.h"
 
 namespace tuningfork {
 
-class JsonSerializer {
-   public:
-    static void SerializeEvent(const Session& t, const RequestInfo& device_info,
-                               std::string& evt_json_ser);
-
-    static TuningFork_ErrorCode DeserializeAndMerge(
-        const std::string& evt_json_ser, IdProvider& id_provider, Session& t);
+// A histogram or time-series stored inside a Session.
+struct MetricData {
+    enum class Type { FRAME_TIME, LOADING_TIME, MEMORY };
+    MetricData(Type t) : type(t) {}
+    Type type;
+    virtual ~MetricData() {}
+    virtual void Clear() = 0;
+    virtual size_t Count() const = 0;
 };
 
 }  // namespace tuningfork

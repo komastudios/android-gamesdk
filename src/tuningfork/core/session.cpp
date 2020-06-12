@@ -19,66 +19,63 @@
 
 namespace tuningfork {
 
-// Allocate all the prongs up front
-Session::Session(
-    size_t size, int max_num_instrumentation_keys,
-    const std::vector<Settings::Histogram>& histogram_settings,
-    const std::function<SerializedAnnotation(uint64_t)>& serializeId,
-    const std::function<bool(uint64_t)>& is_loading_id,
-    IMemInfoProvider* meminfo_provider)
-    : prongs_(size),
-      max_num_instrumentation_keys_(max_num_instrumentation_keys),
-      memory_telemetry_(meminfo_provider) {
-    // Allocate all the prongs
-    InstrumentationKey ikey = 0;
-    for (int i = 0; i < size; ++i) {
-        auto& p = prongs_[i];
-        SerializedAnnotation annotation = serializeId(i);
-        if (is_loading_id(i)) {
-            if (ikey == 0) {
-                // Use the default, auto-sizing histogram for loading times
-                p = std::make_unique<Prong>(ikey, annotation,
-                                            Settings::Histogram{}, true);
-            }
-        } else {
-            auto& h =
-                histogram_settings[ikey < histogram_settings.size() ? ikey : 0];
-            p = std::make_unique<Prong>(ikey, annotation, h);
-        }
-        ++ikey;
-        if (ikey >= max_num_instrumentation_keys) ikey = 0;
-    }
+void FrameTimeData::Tick(TimePoint t) {
+    if (last_time_ != TimePoint::min()) Record(t - last_time_);
+    last_time_ = t;
 }
 
-Prong* Session::Get(uint64_t compound_id) const {
-    if (compound_id >= prongs_.size()) {
-        ALOGW(
-            "You have overrun the number of histograms (are your "
-            "Settings correct?)");
-        return nullptr;
-    }
-    return prongs_[compound_id].get();
+void FrameTimeData::Record(Duration dt) {
+    // The histogram stores millisecond values as doubles
+    histogram_.Add(
+        double(
+            std::chrono::duration_cast<std::chrono::nanoseconds>(dt).count()) /
+        1000000);
+    duration_ += dt;
 }
 
-void Session::Clear() {
-    for (auto& p : prongs_) {
-        if (p.get() != nullptr) p->Clear();
+void FrameTimeData::Clear() {
+    last_time_ = TimePoint::min();
+    histogram_.Clear();
+}
+
+void LoadingTimeData::Record(Duration dt) {
+    // The histogram stores millisecond values as doubles
+    histogram_.Add(
+        double(
+            std::chrono::duration_cast<std::chrono::nanoseconds>(dt).count()) /
+        1000000);
+    duration_ += dt;
+}
+
+FrameTimeData* Session::CreateFrameTimeHistogram(
+    const FrameTimeMetric& metric, uint64_t id,
+    const Settings::Histogram& settings) {
+    if (metric_data_.size() >= max_histogram_size_) return nullptr;
+    metric_data_[id] = std::make_unique<FrameTimeData>(metric, settings);
+    return reinterpret_cast<FrameTimeData*>(metric_data_[id].get());
+}
+
+LoadingTimeData* Session::CreateLoadingTimeSeries(
+    const LoadingTimeMetric& metric, uint64_t id) {
+    if (metric_data_.size() >= max_histogram_size_) return nullptr;
+    metric_data_[id] = std::make_unique<LoadingTimeData>(metric);
+    return reinterpret_cast<LoadingTimeData*>(metric_data_[id].get());
+}
+
+MemoryData* Session::CreateMemoryHistogram(
+    const MemoryMetric& metric, uint64_t id,
+    const Settings::Histogram& settings) {
+    if (metric_data_.size() >= max_histogram_size_) return nullptr;
+    metric_data_[id] = std::make_unique<MemoryData>(metric, settings);
+    return reinterpret_cast<MemoryData*>(metric_data_[id].get());
+}
+
+void Session::ClearData() {
+    for (auto& p : metric_data_) {
+        if (p.second.get() != nullptr) p.second->Clear();
     }
     time_.start = SystemTimePoint();
     time_.end = SystemTimePoint();
-    memory_telemetry_.Clear();
-}
-
-void Session::SetInstrumentKeys(
-    const std::vector<InstrumentationKey>& instrument_keys) {
-    auto nAnnotations = prongs_.size() / max_num_instrumentation_keys_;
-    for (int j = 0; j < nAnnotations; ++j) {
-        for (int i = 0; i < instrument_keys.size(); ++i) {
-            auto k = instrument_keys[i];
-            auto& p = prongs_[i + j * max_num_instrumentation_keys_];
-            if (p.get() != nullptr) p->SetInstrumentKey(k);
-        }
-    }
 }
 
 void Session::Ping(SystemTimePoint t) {
@@ -86,7 +83,12 @@ void Session::Ping(SystemTimePoint t) {
         time_.start = t;
     }
     time_.end = t;
-    memory_telemetry_.Ping(t);
+}
+
+void Session::Clear() {
+    metric_data_.clear();
+    time_.start = SystemTimePoint();
+    time_.end = SystemTimePoint();
 }
 
 }  // namespace tuningfork

@@ -28,7 +28,7 @@ const char kUploadRpcName[] = ":uploadTelemetry";
 
 UltimateUploader::UltimateUploader(const TuningFork_Cache* persister,
                                    const HttpRequest& request)
-    : Runnable(), persister_(persister), request_(request) {}
+    : Runnable(nullptr), persister_(persister), request_(request) {}
 Duration UltimateUploader::DoWork() {
     CheckUploadPending();
     return kUploadCheckInterval;

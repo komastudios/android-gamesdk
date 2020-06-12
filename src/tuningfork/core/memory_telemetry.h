@@ -18,88 +18,22 @@
 
 #include <utility>
 
-#include "histogram.h"
+#include "core/async_telemetry.h"
+#include "core/common.h"
+#include "core/histogram.h"
+#include "core/memory_metric.h"
 #include "jni/jni_wrap.h"
-#include "tuningfork_internal.h"
 
 namespace tuningfork {
 
-// Enum describing how the memory records were obtained.
-enum MemoryRecordType {
-    INVALID = 0,
-    // From calls to android.os.Debug.getNativeHeapAllocatedSize
-    ANDROID_DEBUG_NATIVE_HEAP,
-    // From /proc/<PID>/oom_score file
-    ANDROID_OOM_SCORE,
-    // From /proc/meminfo and /proc/<PID>/status files
-    ANDROID_MEMINFO_ACTIVE,
-    ANDROID_MEMINFO_ACTIVEANON,
-    ANDROID_MEMINFO_ACTIVEFILE,
-    ANDROID_MEMINFO_ANONPAGES,
-    ANDROID_MEMINFO_COMMITLIMIT,
-    ANDROID_MEMINFO_HIGHTOTAL,
-    ANDROID_MEMINFO_LOWTOTAL,
-    ANDROID_MEMINFO_MEMAVAILABLE,
-    ANDROID_MEMINFO_MEMFREE,
-    ANDROID_MEMINFO_MEMTOTAL,
-    ANDROID_MEMINFO_VMDATA,
-    ANDROID_MEMINFO_VMRSS,
-    ANDROID_MEMINFO_VMSIZE,
-};
-
-// Enum describing collected histograms.
-enum HistogramContentsType {
-    NATIVE_HEAP_ALLOCATED_IX = 0,
-    MEMINFO_OOM_SCORE,
-    MEMINFO_ACTIVE,
-    MEMINFO_ACTIVEANON,
-    MEMINFO_ACTIVEFILE,
-    MEMINFO_ANONPAGES,
-    MEMINFO_COMMITLIMIT,
-    MEMINFO_HIGHTOTAL,
-    MEMINFO_LOWTOTAL,
-    MEMINFO_MEMAVAILABLE,
-    MEMINFO_MEMFREE,
-    MEMINFO_MEMTOTAL,
-    MEMINFO_VMDATA,
-    MEMINFO_VMRSS,
-    MEMINFO_VMSIZE,
-};
-
-struct MemoryHistogram {
-    // The type of memory record.
-    MemoryRecordType type;
-    // How often a memory record was taken in milliseconds.
-    uint32_t period_ms;
-
-    Histogram<uint64_t> histogram;
-};
+class Session;
 
 class MemoryTelemetry {
-    std::vector<MemoryHistogram> histograms_;
-    SystemTimePoint last_time_;
-    SystemTimePoint last_time_slow_;
-    IMemInfoProvider* meminfo_provider_;
-
    public:
-    // Construct with default histogram settings.
-    MemoryTelemetry(IMemInfoProvider* meminfo_provider);
-
-    // Get a reference to the current histogram being filled.
-    const std::vector<MemoryHistogram>& GetHistograms() const {
-        return histograms_;
-    }
-
-    // Record memory usage, if enough time has passed since the previous tick
-    // and the memory_provider is not null.
-    void Ping(SystemTimePoint t);
-
-    // Clear the histograms
-    void Clear() {
-        for (auto& h : histograms_) {
-            h.histogram.Clear();
-        }
-    }
+    static void CreateMemoryHistograms(Session& session,
+                                       IMemInfoProvider* mem_info_provider);
+    static void SetUpAsyncWork(AsyncTelemetry& async,
+                               IMemInfoProvider* mem_info_provider);
 };
 
 struct MemInfo {
@@ -131,6 +65,7 @@ class DefaultMemInfoProvider : public IMemInfoProvider {
 
    public:
     void UpdateMemInfo() override;
+    void UpdateOomScore() override;
     uint64_t GetNativeHeapAllocatedSize() override;
     void SetEnabled(bool enable) override;
     bool GetEnabled() const override;
@@ -163,6 +98,50 @@ class DefaultMemInfoProvider : public IMemInfoProvider {
     uint64_t GetMemInfoVmDataBytes() const override;
     uint64_t GetMemInfoVmRssBytes() const override;
     uint64_t GetMemInfoVmSizeBytes() const override;
+};
+
+class MemoryMetricOp : public WorkOp {
+   protected:
+    IMemInfoProvider* mem_info_provider_;
+    uint64_t metric_id_;
+
+   public:
+    MemoryMetricOp(IMemInfoProvider* m, uint64_t metric_id,
+                   Duration min_interval)
+        : WorkOp(min_interval), mem_info_provider_(m), metric_id_(metric_id) {}
+    virtual void DoWork(Session* session) override;
+    virtual uint64_t Measure() { return 0; }
+};
+
+class DebugNativeHeapOp : public MemoryMetricOp {
+   public:
+    DebugNativeHeapOp(IMemInfoProvider* m)
+        : MemoryMetricOp(
+              m,
+              kMemoryMetricBase + MemoryRecordType::ANDROID_DEBUG_NATIVE_HEAP,
+              kFastMemoryMetricInterval) {}
+    virtual uint64_t Measure() override {
+        return mem_info_provider_->GetNativeHeapAllocatedSize();
+    }
+};
+
+class OomScoreOp : public MemoryMetricOp {
+   public:
+    OomScoreOp(IMemInfoProvider* m)
+        : MemoryMetricOp(m, kMemoryMetricBase + ANDROID_OOM_SCORE,
+                         kSlowMemoryMetricInterval) {}
+    virtual uint64_t Measure() override {
+        mem_info_provider_->UpdateOomScore();
+        return mem_info_provider_->GetMemInfoOomScore();
+    }
+};
+
+class MemInfoOp : public MemoryMetricOp {
+   public:
+    MemInfoOp(IMemInfoProvider* m)
+        : MemoryMetricOp(m, kMemoryMetricBase + ANDROID_MEMINFO_ACTIVE,
+                         kSlowMemoryMetricInterval) {}
+    virtual void DoWork(Session* session) override;
 };
 
 }  // namespace tuningfork

@@ -18,6 +18,7 @@
 #include <memory>
 
 #include "Trace.h"
+#include "async_telemetry.h"
 #include "crash_handler.h"
 #include "session.h"
 #include "tuningfork_internal.h"
@@ -30,8 +31,8 @@ class TuningForkImpl : public IdProvider {
    private:
     CrashHandler crash_handler_;
     Settings settings_;
-    std::unique_ptr<Session> prong_caches_[2];
-    Session *current_prong_cache_;
+    std::unique_ptr<Session> sessions_[2];
+    Session *current_session_;
     TimePoint last_submit_time_;
     std::unique_ptr<gamesdk::Trace> trace_;
     std::vector<TimePoint> live_traces_;
@@ -46,11 +47,16 @@ class TuningForkImpl : public IdProvider {
     std::atomic<int> next_ikey_;
     TimePoint loading_start_;
     std::unique_ptr<ProtobufSerialization> training_mode_params_;
+    std::unique_ptr<AsyncTelemetry> async_telemetry_;
 
    public:
     TuningForkImpl(const Settings &settings, IBackend *backend,
                    ITimeProvider *time_provider,
                    IMemInfoProvider *memory_provider);
+
+    ~TuningForkImpl();
+
+    static TuningForkImpl *Instance();
 
     void InitHistogramSettings();
 
@@ -91,13 +97,13 @@ class TuningForkImpl : public IdProvider {
     TuningFork_ErrorCode EnableMemoryRecording(bool enable);
 
    private:
-    Prong *TickNanos(uint64_t compound_id, TimePoint t);
+    MetricData *TickNanos(uint64_t compound_id, TimePoint t);
 
-    Prong *TraceNanos(uint64_t compound_id, Duration dt);
+    MetricData *TraceNanos(uint64_t compound_id, Duration dt);
 
-    TuningFork_ErrorCode CheckForSubmit(TimePoint t, Prong *prong);
+    TuningFork_ErrorCode CheckForSubmit(TimePoint t, MetricData *prong);
 
-    bool ShouldSubmit(TimePoint t, Prong *prong);
+    bool ShouldSubmit(TimePoint t, MetricData *prong);
 
     AnnotationId DecodeAnnotationSerialization(const SerializedAnnotation &ser,
                                                bool *loading) const override;
@@ -130,6 +136,16 @@ class TuningForkImpl : public IdProvider {
     void SwapSessions();
 
     bool Debugging() const;
+
+    void InitAsyncTelemetry();
+
+    void CreateSessionFrameHistograms(
+        Session &session, size_t size, int max_num_instrumentation_keys,
+        const std::vector<Settings::Histogram> &histogram_settings);
+
+    void CreateMemoryHistograms(Session &session);
+
+    void AddMemoryMetrics();
 };
 
 }  // namespace tuningfork

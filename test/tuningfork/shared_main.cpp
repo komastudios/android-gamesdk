@@ -38,7 +38,7 @@ static jobject s_context = 0;
 
 // Record the output of googletest tests
 class GTestRecorder : public EmptyTestEventListener {
-    std::set<std::string> tests_started;
+    std::vector<std::string> tests_started;
     std::set<std::string> tests_completed;
     std::vector<std::string> success_invocations;  // Only from SUCCESS macros
     std::vector<std::string>
@@ -58,13 +58,17 @@ class GTestRecorder : public EmptyTestEventListener {
 
     // Called before a test starts.
     void OnTestStart(const TestInfo& test_info) override {
-        tests_started.insert(std::string(test_info.test_case_name()) + "." +
-                             test_info.name());
+        tests_started.push_back(std::string(test_info.test_case_name()) + "." +
+                                test_info.name());
     }
 
     // Called after a failed assertion or a SUCCEED() invocation.
     void OnTestPartResult(const TestPartResult& test_part_result) override {
         std::stringstream record;
+        // This assumes we are not running tests in parallel, so the last one
+        // added to tests_started is the test we are getting the partial result
+        // for.
+        record << tests_started.back() << '\n';
         record << test_part_result.file_name() << ":"
                << test_part_result.line_number() << '\n'
                << test_part_result.summary() << '\n';
@@ -91,7 +95,9 @@ class GTestRecorder : public EmptyTestEventListener {
             result << s << '\n';
         }
         std::set<std::string> not_completed;
-        std::set_difference(tests_started.begin(), tests_started.end(),
+        std::set<std::string> tests_started_set(tests_started.begin(),
+                                                tests_started.end());
+        std::set_difference(tests_started_set.begin(), tests_started_set.end(),
                             tests_completed.begin(), tests_completed.end(),
                             std::inserter(not_completed, not_completed.end()));
         if (not_completed.size() > 0) {
