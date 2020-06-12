@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <chrono>
 #include <fstream>
 #include <iterator>
 #include <sstream>
@@ -28,113 +29,76 @@
 
 #define LOG_TAG "TuningFork"
 #include "Log.h"
+#include "session.h"
 
 namespace tuningfork {
 
 static const uint64_t HIST_START = 0;
 static const uint64_t DEFAULT_HIST_END = 10000000000L;  // 10GB
 static const uint32_t NUM_BUCKETS = 200;
-static const uint32_t UPDATE_PERIOD_MS = 16;
-static const uint32_t SLOW_UPDATE_PERIOD_MS = 15000;
 
 constexpr size_t BYTES_IN_KB = 1024;
 
 using memInfoMap = std::unordered_map<std::string, size_t>;
 
-static MemoryHistogram makeMemoryHistogram(IMemInfoProvider *meminfo_provider,
-                                           MemoryRecordType type,
-                                           uint32_t period) {
-    return MemoryHistogram{
-        type, period,
-        Histogram<uint64_t>{HIST_START,
-                            (meminfo_provider != nullptr
-                                 ? meminfo_provider->GetDeviceMemoryBytes()
-                                 : DEFAULT_HIST_END),
-                            NUM_BUCKETS}};
+using namespace std::chrono;
+
+void MemoryTelemetry::CreateMemoryHistograms(
+    Session &session, IMemInfoProvider *mem_info_provider) {
+    Settings::Histogram hist_settings{};
+    if (mem_info_provider != nullptr)
+        hist_settings.bucket_max = mem_info_provider->GetDeviceMemoryBytes();
+    else
+        hist_settings.bucket_max = DEFAULT_HIST_END;
+    hist_settings.n_buckets = NUM_BUCKETS;
+    session.CreateMemoryHistogram(
+        MemoryMetric(ANDROID_DEBUG_NATIVE_HEAP, kFastMemoryMetricInterval),
+        kMemoryMetricBase + ANDROID_DEBUG_NATIVE_HEAP, hist_settings);
+    for (int i = ANDROID_OOM_SCORE; i < END; ++i)
+        session.CreateMemoryHistogram(
+            MemoryMetric((MemoryRecordType)i, kSlowMemoryMetricInterval),
+            kMemoryMetricBase + i, hist_settings);
 }
 
-MemoryTelemetry::MemoryTelemetry(IMemInfoProvider *meminfo_provider)
-    : histograms_{makeMemoryHistogram(meminfo_provider,
-                                      ANDROID_DEBUG_NATIVE_HEAP,
-                                      UPDATE_PERIOD_MS),
-                  makeMemoryHistogram(meminfo_provider, ANDROID_OOM_SCORE,
-                                      SLOW_UPDATE_PERIOD_MS),
-                  makeMemoryHistogram(meminfo_provider, ANDROID_MEMINFO_ACTIVE,
-                                      SLOW_UPDATE_PERIOD_MS),
-                  makeMemoryHistogram(meminfo_provider,
-                                      ANDROID_MEMINFO_ACTIVEANON,
-                                      SLOW_UPDATE_PERIOD_MS),
-                  makeMemoryHistogram(meminfo_provider,
-                                      ANDROID_MEMINFO_ACTIVEFILE,
-                                      SLOW_UPDATE_PERIOD_MS),
-                  makeMemoryHistogram(meminfo_provider,
-                                      ANDROID_MEMINFO_ANONPAGES,
-                                      SLOW_UPDATE_PERIOD_MS),
-                  makeMemoryHistogram(meminfo_provider,
-                                      ANDROID_MEMINFO_COMMITLIMIT,
-                                      SLOW_UPDATE_PERIOD_MS),
-                  makeMemoryHistogram(meminfo_provider,
-                                      ANDROID_MEMINFO_HIGHTOTAL,
-                                      SLOW_UPDATE_PERIOD_MS),
-                  makeMemoryHistogram(meminfo_provider,
-                                      ANDROID_MEMINFO_LOWTOTAL,
-                                      SLOW_UPDATE_PERIOD_MS),
-                  makeMemoryHistogram(meminfo_provider,
-                                      ANDROID_MEMINFO_MEMAVAILABLE,
-                                      SLOW_UPDATE_PERIOD_MS),
-                  makeMemoryHistogram(meminfo_provider, ANDROID_MEMINFO_MEMFREE,
-                                      SLOW_UPDATE_PERIOD_MS),
-                  makeMemoryHistogram(meminfo_provider,
-                                      ANDROID_MEMINFO_MEMTOTAL,
-                                      SLOW_UPDATE_PERIOD_MS),
-                  makeMemoryHistogram(meminfo_provider, ANDROID_MEMINFO_VMDATA,
-                                      SLOW_UPDATE_PERIOD_MS),
-                  makeMemoryHistogram(meminfo_provider, ANDROID_MEMINFO_VMRSS,
-                                      SLOW_UPDATE_PERIOD_MS),
-                  makeMemoryHistogram(meminfo_provider, ANDROID_MEMINFO_VMSIZE,
-                                      SLOW_UPDATE_PERIOD_MS)},
-      meminfo_provider_(meminfo_provider) {
-    // We don't have any histograms if the memory provider is null.
-    if (meminfo_provider_ == nullptr) histograms_.clear();
+void MemoryTelemetry::SetUpAsyncWork(AsyncTelemetry &async,
+                                     IMemInfoProvider *mem_info_provider) {
+    async.AddTask(std::make_shared<DebugNativeHeapTask>(mem_info_provider));
+    async.AddTask(std::make_shared<OomScoreTask>(mem_info_provider));
+    async.AddTask(std::make_shared<MemInfoTask>(mem_info_provider));
 }
 
-#define UPDATE_OPT_HIST(label, metric)                       \
-    if (meminfo_provider_->IsMemInfo##metric##Available()) { \
-        histograms_[label].histogram.Add(                    \
-            meminfo_provider_->GetMemInfo##metric##Bytes()); \
+void MemoryMetricTask::DoWork(Session *session) {
+    if (mem_info_provider_ != nullptr && mem_info_provider_->GetEnabled()) {
+        uint64_t value = Measure();
+        auto d = session->GetData<MemoryMetricData>(metric_id_);
+        d->Record(value);
+    }
+}
+
+#define UPDATE_OPT_HIST(label, metric)                                  \
+    if (mem_info_provider_->IsMemInfo##metric##Available()) {           \
+        auto d = session->GetData<MemoryMetricData>(kMemoryMetricBase + \
+                                                    ANDROID_##label);   \
+        d->Record(mem_info_provider_->GetMemInfo##metric##Bytes());     \
     }
 
-void MemoryTelemetry::Ping(SystemTimePoint t) {
-    if (meminfo_provider_ != nullptr && meminfo_provider_->GetEnabled()) {
-        auto dt = t - last_time_;
-        if (dt > std::chrono::milliseconds(UPDATE_PERIOD_MS)) {
-            histograms_[NATIVE_HEAP_ALLOCATED_IX].histogram.Add(
-                meminfo_provider_->GetNativeHeapAllocatedSize());
+void MemInfoTask::DoWork(Session *session) {
+    if (mem_info_provider_ != nullptr && mem_info_provider_->GetEnabled()) {
+        mem_info_provider_->UpdateMemInfo();
 
-            last_time_ = t;
-        }
-        dt = t - last_time_slow_;
-        if (dt > std::chrono::milliseconds(SLOW_UPDATE_PERIOD_MS)) {
-            meminfo_provider_->UpdateMemInfo();
-            histograms_[MEMINFO_OOM_SCORE].histogram.Add(
-                meminfo_provider_->GetMemInfoOomScore());
-
-            UPDATE_OPT_HIST(MEMINFO_ACTIVE, Active);
-            UPDATE_OPT_HIST(MEMINFO_ACTIVEANON, ActiveAnon);
-            UPDATE_OPT_HIST(MEMINFO_ACTIVEFILE, ActiveFile);
-            UPDATE_OPT_HIST(MEMINFO_ANONPAGES, AnonPages);
-            UPDATE_OPT_HIST(MEMINFO_COMMITLIMIT, CommitLimit);
-            UPDATE_OPT_HIST(MEMINFO_HIGHTOTAL, HighTotal);
-            UPDATE_OPT_HIST(MEMINFO_LOWTOTAL, LowTotal);
-            UPDATE_OPT_HIST(MEMINFO_MEMAVAILABLE, MemAvailable);
-            UPDATE_OPT_HIST(MEMINFO_MEMFREE, MemFree);
-            UPDATE_OPT_HIST(MEMINFO_MEMTOTAL, MemTotal);
-            UPDATE_OPT_HIST(MEMINFO_VMDATA, VmData);
-            UPDATE_OPT_HIST(MEMINFO_VMRSS, VmRss);
-            UPDATE_OPT_HIST(MEMINFO_VMSIZE, VmSize);
-
-            last_time_slow_ = t;
-        }
+        UPDATE_OPT_HIST(MEMINFO_ACTIVE, Active);
+        UPDATE_OPT_HIST(MEMINFO_ACTIVEANON, ActiveAnon);
+        UPDATE_OPT_HIST(MEMINFO_ACTIVEFILE, ActiveFile);
+        UPDATE_OPT_HIST(MEMINFO_ANONPAGES, AnonPages);
+        UPDATE_OPT_HIST(MEMINFO_COMMITLIMIT, CommitLimit);
+        UPDATE_OPT_HIST(MEMINFO_HIGHTOTAL, HighTotal);
+        UPDATE_OPT_HIST(MEMINFO_LOWTOTAL, LowTotal);
+        UPDATE_OPT_HIST(MEMINFO_MEMAVAILABLE, MemAvailable);
+        UPDATE_OPT_HIST(MEMINFO_MEMFREE, MemFree);
+        UPDATE_OPT_HIST(MEMINFO_MEMTOTAL, MemTotal);
+        UPDATE_OPT_HIST(MEMINFO_VMDATA, VmData);
+        UPDATE_OPT_HIST(MEMINFO_VMRSS, VmRss);
+        UPDATE_OPT_HIST(MEMINFO_VMSIZE, VmSize);
     }
 }
 
@@ -200,17 +164,18 @@ void DefaultMemInfoProvider::UpdateMemInfo() {
     memInfo.vmData = getMemInfoValueFromData(data, "VmData");
     memInfo.vmRss = getMemInfoValueFromData(data, "VmRSS");
     memInfo.vmSize = getMemInfoValueFromData(data, "VmSize");
+}
 
-    ss_path.clear();
-    ss_path.str(std::string());
+void DefaultMemInfoProvider::UpdateOomScore() {
+    std::stringstream ss_path;
     ss_path << "/proc/" << memInfo.pid << "/oom_score";
     std::ifstream oom_file(ss_path.str());
     if (!oom_file) {
-        ALOGE("Could not open %s", ss_path.str().c_str());
+        ALOGE_ONCE("Could not open %s", ss_path.str().c_str());
     } else {
         oom_file >> memInfo.oom_score;
         if (!oom_file) {
-            ALOGE("Bad conversion in %s", ss_path.str().c_str());
+            ALOGE_ONCE("Bad conversion in %s", ss_path.str().c_str());
         }
     }
 }
