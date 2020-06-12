@@ -20,6 +20,8 @@
 #include <mutex>
 #include <condition_variable>
 
+#include "core/common.h"
+
 namespace tuningfork {
 
 // Sub-class this class in order to create a separate thread that calls DoWork and then waits

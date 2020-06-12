@@ -24,9 +24,6 @@
 
 namespace tuningfork {
 
-const uint64_t HISTOGRAMS_PAUSED = 0;
-const uint64_t HISTOGRAMS_UPLOADING = 1;
-
 // Request to an HTTP endpoint.
 class HttpRequest {
     std::string base_url_;

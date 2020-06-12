@@ -24,6 +24,10 @@
 
 namespace tuningfork {
 
+// Constants used by the upload threads for coordinating persisting and uploading histograms.
+const uint64_t HISTOGRAMS_PAUSED = 0;
+const uint64_t HISTOGRAMS_UPLOADING = 1;
+
 // Interface for download and upload of information from Tuning Fork.
 class IBackend {
 public:
