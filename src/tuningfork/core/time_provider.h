@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-#include "jni/jni_helper.h"
+#pragma once
 
-#include "gtest/gtest.h"
+#include <chrono>
 
-// This function must be declared externally and should call jni::Init and return true if a java
-// environment is available. If there is no Java env available, return false.
-extern "C" bool init_jni_for_tests();
+namespace tuningfork {
 
-using namespace tuningfork;
+// You can provide your own time source rather than steady_clock by inheriting this and passing
+//   it to Init. Useful in tests.
+class ITimeProvider {
+public:
+    virtual std::chrono::steady_clock::time_point Now() = 0;
+    virtual std::chrono::system_clock::time_point SystemNow() = 0;
+};
 
-TEST(JNI, Init) {
-    EXPECT_EQ(jni::IsValid(), false) << ": should not be valid before init";
-    if (init_jni_for_tests()) {
-        EXPECT_EQ(jni::IsValid(), true) << ": should be valid after init";
-    }
-}
+} // namespace tuningfork
