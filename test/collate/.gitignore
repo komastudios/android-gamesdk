@@ -1,6 +1,7 @@
 .idea
 out
-/cache/
-/target/
+cache
+reports
+target
 creds.json
 resources/sorter.js
