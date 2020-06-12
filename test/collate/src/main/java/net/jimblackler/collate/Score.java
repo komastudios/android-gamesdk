@@ -110,7 +110,7 @@ public class Score {
               largest = score;
             }
 
-            if (row.has("trigger")) {
+            if (row.has("trigger") && !row.optBoolean("paused", false)) {
               long top = score;
               if (top < lowestTop) {
                 lowestTop = top;
