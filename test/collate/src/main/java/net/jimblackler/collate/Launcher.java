@@ -125,8 +125,29 @@ public class Launcher {
         "--async",
         "--format", "json"));
 
-    Collection<String> devices = getDevices();
-    System.out.println(devices);
+    Collection<String> devices = new ArrayList<>();
+
+    Collection < String > devicesOut = new ArrayList<>();
+    DeviceFetcher.fetch(device -> {
+      if (devicesOut.size() >= MAX_DEVICES) {
+        return;
+      }
+      if (!device.getString("formFactor").equals("PHONE")) {
+        return;
+      }
+      if (!device.getString("form").equals("PHYSICAL")) {
+        return;
+      }
+      JSONArray supportedVersionIds = device.getJSONArray("supportedVersionIds");
+      for (int idx2 = 0; idx2 != supportedVersionIds.length(); idx2++) {
+        int versionId = supportedVersionIds.getInt(idx2);
+        if (versionId < MIN_VERSION) {
+          continue;
+        }
+        String id = device.getString("id");
+        devicesOut.add(String.format("--device=model=%s,version=%d", id, versionId));
+      }
+    });
 
     Path[] grabberCopy = {null};
 
@@ -221,44 +242,6 @@ public class Launcher {
         break;
       }
     }
-  }
-
-  private static Collection<String> getDevices() throws IOException {
-    Collection<String> devicesOut = new ArrayList<>();
-    String[] args1 = {
-      Config.GCLOUD_EXECUTABLE.toString(),
-      "beta", "firebase", "test", "android", "models", "list",
-      "--format", "json"
-    };
-
-    String text = Utils.execute(args1);
-    JSONTokener jsonTokener = new JSONTokener(text);
-    JSONArray devices = new JSONArray(jsonTokener);
-    int count = 0;
-    for (int idx = 0; idx != devices.length(); idx++) {
-      JSONObject device = devices.getJSONObject(idx);
-      if (!device.getString("formFactor").equals("PHONE")) {
-        continue;
-      }
-      if (!device.getString("form").equals("PHYSICAL")) {
-        continue;
-      }
-
-      JSONArray supportedVersionIds = device.getJSONArray("supportedVersionIds");
-      for (int idx2 = 0; idx2 != supportedVersionIds.length(); idx2++) {
-        int versionId = supportedVersionIds.getInt(idx2);
-        if (versionId < MIN_VERSION) {
-          continue;
-        }
-        devicesOut.add(
-            String.format("--device=model=%s,version=%d", device.getString("id"), versionId));
-        count++;
-        if (count >= MAX_DEVICES) {
-          return devicesOut;
-        }
-      }
-    }
-    return devicesOut;
   }
 
   private interface LaunchClient {
