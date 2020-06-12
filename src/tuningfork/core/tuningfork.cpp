@@ -22,20 +22,16 @@
 #include <sstream>
 #include <vector>
 
+#include "tuningfork_impl.h"
 #include "tuningfork_internal.h"
 
 #define LOG_TAG "TuningFork"
 #include "Log.h"
-#include "Trace.h"
 #include "annotation_util.h"
-#include "crash_handler.h"
 #include "histogram.h"
 #include "http_backend/http_backend.h"
-#include "prong.h"
-#include "tuningfork_impl.h"
-#include "tuningfork_swappy.h"
+#include "memory_telemetry.h"
 #include "tuningfork_utils.h"
-#include "uploadthread.h"
 
 /* Annotations come into tuning fork as a serialized protobuf. The protobuf can
  * only have enums in it. We form an integer annotation id from the annotation
