@@ -16,16 +16,16 @@
 
 #pragma once
 
-#include <string>
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #include "proto/protobuf_util.h"
 
 namespace tuningfork {
 
-// Extra information that is sent with requests including device information, game
-// package information and session information.
+// Extra information that is sent with requests including device information,
+// game package information and session information.
 struct RequestInfo {
     std::string experiment_id;
     ProtobufSerialization current_fidelity_parameters;
@@ -43,12 +43,12 @@ struct RequestInfo {
     std::string product;
     std::string device;
 
-    // Note that this will include an empty experiment_id and current_fidelity_parameters.
+    // Note that this will include an empty experiment_id and
+    // current_fidelity_parameters.
     static RequestInfo ForThisGameAndDevice();
 
     // We have a globally accessible cached value
     static RequestInfo& CachedValue();
-
 };
 
-} // namespace tuningfork
+}  // namespace tuningfork

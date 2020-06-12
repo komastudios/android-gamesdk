@@ -16,9 +16,9 @@
 
 #pragma once
 
-#include "tuningfork_internal.h"
 #include "histogram.h"
 #include "jni/jni_wrap.h"
+#include "tuningfork_internal.h"
 
 namespace tuningfork {
 
@@ -42,20 +42,23 @@ class MemoryTelemetry {
     std::vector<MemoryHistogram> histograms_;
     SystemTimePoint last_time_;
     IMemInfoProvider* meminfo_provider_;
-  public:
+
+   public:
     // Construct with default histogram settings.
     MemoryTelemetry(IMemInfoProvider* meminfo_provider);
 
     // Get a reference to the current histogram being filled.
-    const std::vector<MemoryHistogram>& GetHistograms() const { return histograms_; }
+    const std::vector<MemoryHistogram>& GetHistograms() const {
+        return histograms_;
+    }
 
-    // Record memory usage, if enough time has passed since the previous tick and the
-    // memory_provider is not null.
+    // Record memory usage, if enough time has passed since the previous tick
+    // and the memory_provider is not null.
     void Ping(SystemTimePoint t);
 
     // Clear the histograms
     void Clear() {
-        for(auto& h: histograms_) {
+        for (auto& h : histograms_) {
             h.histogram.Clear();
         }
     }
@@ -65,7 +68,8 @@ class DefaultMemInfoProvider : public IMemInfoProvider {
     bool enabled_ = false;
     uint64_t device_memory_bytes = 0;
     jni::android::os::DebugClass android_debug_;
-  public:
+
+   public:
     uint64_t GetNativeHeapAllocatedSize() override;
     void SetEnabled(bool enable) override;
     bool GetEnabled() const override;
@@ -73,4 +77,4 @@ class DefaultMemInfoProvider : public IMemInfoProvider {
     uint64_t GetDeviceMemoryBytes() const override;
 };
 
-}
+}  // namespace tuningfork

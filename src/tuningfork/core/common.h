@@ -17,13 +17,15 @@
 #pragma once
 
 #include <stdint.h>
+
 #include <chrono>
 
 // Common type definitions
 
 namespace tuningfork {
 
-// The instrumentation key identifies a tick point within a frame or a trace segment
+// The instrumentation key identifies a tick point within a frame or a trace
+// segment
 typedef uint16_t InstrumentationKey;
 typedef uint64_t AnnotationId;
 typedef uint64_t TraceHandle;
@@ -32,4 +34,4 @@ typedef std::chrono::steady_clock::duration Duration;
 typedef std::chrono::system_clock::time_point SystemTimePoint;
 typedef std::chrono::system_clock::duration SystemDuration;
 
-} // namespace tuningfork
+}  // namespace tuningfork

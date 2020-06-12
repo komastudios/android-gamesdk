@@ -23,31 +23,31 @@
 namespace tuningfork {
 
 class UploadThread : protected Runnable {
-  private:
-    const ProngCache *ready_;
+   private:
+    const ProngCache* ready_;
     bool upload_;
-    IBackend *backend_;
+    IBackend* backend_;
     TuningFork_UploadCallback upload_callback_;
     const TuningFork_Cache* persister_;
- public:
-    UploadThread(IBackend *backend);
+
+   public:
+    UploadThread(IBackend* backend);
     ~UploadThread();
 
-    void InitialChecks(ProngCache& prongs,
-                       IdProvider& id_provider,
+    void InitialChecks(ProngCache& prongs, IdProvider& id_provider,
                        const TuningFork_Cache* persister);
 
     void Start() override;
     Duration DoWork() override;
 
-    // Returns true if we submitted, false if we are waiting for a previous submit to complete
-    // If upload is false, the cache is serialized and saved, not uploaded.
-    bool Submit(const ProngCache *prongs, bool upload);
+    // Returns true if we submitted, false if we are waiting for a previous
+    // submit to complete If upload is false, the cache is serialized and saved,
+    // not uploaded.
+    bool Submit(const ProngCache* prongs, bool upload);
 
     void SetUploadCallback(TuningFork_UploadCallback upload_callback) {
         upload_callback_ = upload_callback;
     }
-
 };
 
-} // namespace tuningfork {
+}  // namespace tuningfork

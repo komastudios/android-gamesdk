@@ -19,10 +19,10 @@
 #include <cstring>
 #include <sstream>
 
-#include "proto/protobuf_util.h"
-#include "http_backend/json_serializer.h"
 #include "http_backend/http_request.h"
+#include "http_backend/json_serializer.h"
 #include "modp_b64.h"
+#include "proto/protobuf_util.h"
 
 #define LOG_TAG "TuningFork"
 #include "Log.h"
@@ -30,13 +30,13 @@
 namespace tuningfork {
 
 class DebugBackend : public IBackend {
-public:
+   public:
     TuningFork_ErrorCode UploadTelemetry(const std::string& s) override {
         if (s.size() == 0) return TUNINGFORK_ERROR_BAD_PARAMETER;
         // Split the serialization into <128-byte chunks to avoid logcat line
         //  truncation.
         constexpr size_t maxStrLen = 128;
-        int n = (s.size() + maxStrLen - 1) / maxStrLen; // Round up
+        int n = (s.size() + maxStrLen - 1) / maxStrLen;  // Round up
         for (int i = 0, j = 0; i < n; ++i) {
             std::stringstream str;
             str << "(TJS" << (i + 1) << "/" << n << ")";
@@ -47,18 +47,19 @@ public:
         }
         return TUNINGFORK_ERROR_OK;
     }
-  TuningFork_ErrorCode GenerateTuningParameters(HttpRequest& request,
-                                                const ProtobufSerialization* training_mode_fps,
-                                                ProtobufSerialization& fidelity_params,
-                                                std::string& experiment_id) override {
-      return TUNINGFORK_ERROR_OK;
-  }
-  TuningFork_ErrorCode UploadDebugInfo(HttpRequest& request) override {
-      return TUNINGFORK_ERROR_OK;
-  }
+    TuningFork_ErrorCode GenerateTuningParameters(
+        HttpRequest& request, const ProtobufSerialization* training_mode_fps,
+        ProtobufSerialization& fidelity_params,
+        std::string& experiment_id) override {
+        return TUNINGFORK_ERROR_OK;
+    }
+    TuningFork_ErrorCode UploadDebugInfo(HttpRequest& request) override {
+        return TUNINGFORK_ERROR_OK;
+    }
 };
 
-static std::unique_ptr<DebugBackend> s_debug_backend = std::make_unique<DebugBackend>();
+static std::unique_ptr<DebugBackend> s_debug_backend =
+    std::make_unique<DebugBackend>();
 
 void Runnable::Start() {
     if (thread_) {
@@ -85,18 +86,16 @@ void Runnable::Stop() {
     thread_->join();
 }
 
-UploadThread::UploadThread(IBackend *backend) : Runnable(),
-                                                backend_(backend),
-                                                upload_callback_(nullptr),
-                                                persister_(nullptr) {
-    if (backend_ == nullptr)
-        backend_ = s_debug_backend.get();
+UploadThread::UploadThread(IBackend* backend)
+    : Runnable(),
+      backend_(backend),
+      upload_callback_(nullptr),
+      persister_(nullptr) {
+    if (backend_ == nullptr) backend_ = s_debug_backend.get();
     Start();
 }
 
-UploadThread::~UploadThread() {
-    Stop();
-}
+UploadThread::~UploadThread() { Stop(); }
 
 void UploadThread::Start() {
     ready_ = nullptr;
@@ -106,8 +105,9 @@ void UploadThread::Start() {
 Duration UploadThread::DoWork() {
     if (ready_) {
         std::string evt_ser_json;
-        JsonSerializer::SerializeEvent(*ready_, RequestInfo::CachedValue(), evt_ser_json);
-        if(upload_callback_) {
+        JsonSerializer::SerializeEvent(*ready_, RequestInfo::CachedValue(),
+                                       evt_ser_json);
+        if (upload_callback_) {
             upload_callback_(evt_ser_json.c_str(), evt_ser_json.size());
         }
         if (upload_)
@@ -116,7 +116,8 @@ Duration UploadThread::DoWork() {
             TuningFork_CProtobufSerialization cser;
             ToCProtobufSerialization(evt_ser_json, cser);
             if (persister_)
-                persister_->set(HISTOGRAMS_PAUSED, &cser, persister_->user_data);
+                persister_->set(HISTOGRAMS_PAUSED, &cser,
+                                persister_->user_data);
             TuningFork_CProtobufSerialization_free(&cser);
         }
         ready_ = nullptr;
@@ -124,8 +125,9 @@ Duration UploadThread::DoWork() {
     return std::chrono::seconds(1);
 }
 
-// Returns true if we submitted, false if we are waiting for a previous submit to complete
-bool UploadThread::Submit(const ProngCache *prongs, bool upload) {
+// Returns true if we submitted, false if we are waiting for a previous submit
+// to complete
+bool UploadThread::Submit(const ProngCache* prongs, bool upload) {
     if (ready_ == nullptr) {
         {
             std::lock_guard<std::mutex> lock(mutex_);
@@ -138,8 +140,7 @@ bool UploadThread::Submit(const ProngCache *prongs, bool upload) {
         return false;
 }
 
-void UploadThread::InitialChecks(ProngCache& prongs,
-                                 IdProvider& id_provider,
+void UploadThread::InitialChecks(ProngCache& prongs, IdProvider& id_provider,
                                  const TuningFork_Cache* persister) {
     persister_ = persister;
     if (!persister_) {
@@ -149,17 +150,15 @@ void UploadThread::InitialChecks(ProngCache& prongs,
     // Check for PAUSED prong cache
     TuningFork_CProtobufSerialization paused_hists_ser;
     if (persister->get(HISTOGRAMS_PAUSED, &paused_hists_ser,
-                       persister_->user_data)==TUNINGFORK_ERROR_OK) {
+                       persister_->user_data) == TUNINGFORK_ERROR_OK) {
         std::string paused_hists_str = ToString(paused_hists_ser);
         ALOGI("Got PAUSED histograms: %s", paused_hists_str.c_str());
-        JsonSerializer::DeserializeAndMerge(paused_hists_str,
-                                          id_provider,
-                                          prongs);
+        JsonSerializer::DeserializeAndMerge(paused_hists_str, id_provider,
+                                            prongs);
         TuningFork_CProtobufSerialization_free(&paused_hists_ser);
-    }
-    else {
+    } else {
         ALOGI("No PAUSED histograms");
     }
 }
 
-} // namespace tuningfork
+}  // namespace tuningfork

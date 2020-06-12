@@ -16,23 +16,25 @@
 
 #pragma once
 
-#include <thread>
-#include <mutex>
 #include <condition_variable>
+#include <mutex>
+#include <thread>
 
 #include "core/common.h"
 
 namespace tuningfork {
 
-// Sub-class this class in order to create a separate thread that calls DoWork and then waits
+// Sub-class this class in order to create a separate thread that calls DoWork
+// and then waits
 //  the time returned until calling it again.
 class Runnable {
-protected:
+   protected:
     std::unique_ptr<std::thread> thread_;
     std::mutex mutex_;
     std::condition_variable cv_;
     bool do_quit_;
-public:
+
+   public:
     Runnable() {}
     virtual ~Runnable() {}
     virtual void Start();
@@ -42,4 +44,4 @@ public:
     virtual Duration DoWork() = 0;
 };
 
-} // namespace tuningfork
+}  // namespace tuningfork

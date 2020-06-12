@@ -17,13 +17,14 @@
 #include "request_info.h"
 
 #include <sys/system_properties.h>
-#include <fstream>
-#include <sstream>
-#include <memory>
-#include <cmath>
 
-#include "tuningfork_utils.h"
+#include <cmath>
+#include <fstream>
+#include <memory>
+#include <sstream>
+
 #include "jni/jni_wrap.h"
+#include "tuningfork_utils.h"
 
 namespace {
 
@@ -38,19 +39,19 @@ std::string slurpFile(const char* fname) {
 }
 
 const char* skipSpace(const char* q) {
-    while(*q && (*q==' ' || *q=='\t')) ++q;
+    while (*q && (*q == ' ' || *q == '\t')) ++q;
     return q;
 }
 std::string getSystemPropViaGet(const char* key) {
-    char buffer[PROP_VALUE_MAX + 1]="";  // +1 for terminator
+    char buffer[PROP_VALUE_MAX + 1] = "";  // +1 for terminator
     int bufferLen = __system_property_get(key, buffer);
-    if(bufferLen>0)
+    if (bufferLen > 0)
         return buffer;
     else
         return "";
 }
 
-} // anonymous namespace
+}  // anonymous namespace
 
 namespace tuningfork {
 
@@ -83,8 +84,7 @@ RequestInfo RequestInfo::ForThisGameAndDevice() {
     info.build_version_sdk = getSystemPropViaGet("ro.build.version.sdk");
     info.build_fingerprint = getSystemPropViaGet("ro.build.fingerprint");
 
-    if (jni::IsValid())
-        info.session_id = UniqueId();
+    if (jni::IsValid()) info.session_id = UniqueId();
 
     info.cpu_max_freq_hz.clear();
     for (int index = 1;; ++index) {
@@ -92,18 +92,16 @@ RequestInfo RequestInfo::ForThisGameAndDevice() {
         str << "/sys/devices/system/cpu/cpu" << index
             << "/cpufreq/cpuinfo_max_freq";
         auto cpu_freq_file = slurpFile(str.str().c_str());
-        if (cpu_freq_file.empty())
-            break;
+        if (cpu_freq_file.empty()) break;
         uint64_t freq;
         std::istringstream cstr(cpu_freq_file);
         cstr >> freq;
-        info.cpu_max_freq_hz.push_back(freq * 1000); // File is in kHz
+        info.cpu_max_freq_hz.push_back(freq * 1000);  // File is in kHz
     }
 
     if (jni::IsValid()) {
         info.apk_version_code = apk_utils::GetVersionCode(
-            &info.apk_package_name,
-            &info.gl_es_version);
+            &info.apk_package_name, &info.gl_es_version);
         info.model = jni::android::os::Build::MODEL().C();
         info.brand = jni::android::os::Build::BRAND().C();
         info.product = jni::android::os::Build::PRODUCT().C();
@@ -115,8 +113,6 @@ RequestInfo RequestInfo::ForThisGameAndDevice() {
 
 static RequestInfo s_request_info;
 
-/*static*/ RequestInfo& RequestInfo::CachedValue() {
-    return s_request_info;
-}
+/*static*/ RequestInfo& RequestInfo::CachedValue() { return s_request_info; }
 
-} // namespace tuningfork
+}  // namespace tuningfork

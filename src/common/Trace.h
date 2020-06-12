@@ -16,28 +16,29 @@
 
 #pragma once
 
-#include <dlfcn.h>
-#include <memory>
-
 #include <android/log.h>
 #include <android/trace.h>
+#include <dlfcn.h>
+
+#include <memory>
 
 namespace gamesdk {
 
 class Trace {
-  public:
+   public:
     using ATrace_beginSection_type = void (*)(const char *sectionName);
     using ATrace_endSection_type = void (*)();
     using ATrace_isEnabled_type = bool (*)();
-    using ATrace_setCounter_type = void (*)(const char *counterName, int64_t counterValue);
+    using ATrace_setCounter_type = void (*)(const char *counterName,
+                                            int64_t counterValue);
 
     Trace() {
-        __android_log_print(ANDROID_LOG_INFO, "Trace", "Unable to load NDK tracing APIs");
+        __android_log_print(ANDROID_LOG_INFO, "Trace",
+                            "Unable to load NDK tracing APIs");
     }
 
     Trace(ATrace_beginSection_type beginSection,
-          ATrace_endSection_type endSection,
-          ATrace_isEnabled_type isEnabled,
+          ATrace_endSection_type endSection, ATrace_isEnabled_type isEnabled,
           ATrace_setCounter_type setCounter)
         : ATrace_beginSection(beginSection),
           ATrace_endSection(endSection),
@@ -69,15 +70,15 @@ class Trace {
         }
 
         auto setCounter = reinterpret_cast<ATrace_setCounter_type>(
-                dlsym(libandroid, "ATrace_setCounter"));
-        /* ATrace_setCounter was added in API 29, continue even if it is not available */
+            dlsym(libandroid, "ATrace_setCounter"));
+        /* ATrace_setCounter was added in API 29, continue even if it is not
+         * available */
 
-        return std::make_unique<Trace>(beginSection, endSection, isEnabled, setCounter);
+        return std::make_unique<Trace>(beginSection, endSection, isEnabled,
+                                       setCounter);
     }
 
-    bool isAvailable() const {
-        return ATrace_beginSection != nullptr;
-    }
+    bool isAvailable() const { return ATrace_beginSection != nullptr; }
 
     bool isEnabled() const {
         return (ATrace_isEnabled != nullptr) && ATrace_isEnabled();
@@ -112,7 +113,7 @@ class Trace {
         return trace.get();
     };
 
-  private:
+   private:
     const ATrace_beginSection_type ATrace_beginSection = nullptr;
     const ATrace_endSection_type ATrace_endSection = nullptr;
     const ATrace_isEnabled_type ATrace_isEnabled = nullptr;
@@ -139,14 +140,17 @@ struct ScopedTrace {
         trace->endSection();
     }
 
-  private:
+   private:
     bool mIsTracing = false;
 };
 
-} // namespace gamesdk
+}  // namespace gamesdk
 
-#define PASTE_HELPER_HELPER(a, b) a ## b
+#define PASTE_HELPER_HELPER(a, b) a##b
 #define PASTE_HELPER(a, b) PASTE_HELPER_HELPER(a, b)
-#define TRACE_CALL() gamesdk::ScopedTrace PASTE_HELPER(scopedTrace, __LINE__)(__PRETTY_FUNCTION__)
-#define TRACE_INT(name, value) gamesdk::Trace::getInstance()->setCounter(name, value)
+#define TRACE_CALL()                               \
+    gamesdk::ScopedTrace PASTE_HELPER(scopedTrace, \
+                                      __LINE__)(__PRETTY_FUNCTION__)
+#define TRACE_INT(name, value) \
+    gamesdk::Trace::getInstance()->setCounter(name, value)
 #define TRACE_ENABLED() gamesdk::Trace::getInstance()->isEnabled()
