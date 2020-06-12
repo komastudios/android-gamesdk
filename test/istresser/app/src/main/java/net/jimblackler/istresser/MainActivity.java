@@ -4,6 +4,7 @@ import static com.google.android.apps.internal.games.helperlibrary.Helper.getBui
 import static net.jimblackler.istresser.ServiceCommunicationHelper.CRASHED_BEFORE;
 import static net.jimblackler.istresser.ServiceCommunicationHelper.TOTAL_MEMORY_MB;
 import static net.jimblackler.istresser.Utils.flattenParams;
+import static net.jimblackler.istresser.Utils.getDuration;
 import static net.jimblackler.istresser.Utils.getFileSize;
 import static net.jimblackler.istresser.Utils.getMemoryQuantity;
 import static net.jimblackler.istresser.Utils.getOrDefault;
@@ -56,11 +57,7 @@ import org.json.JSONObject;
 /** The main activity of the istresser app */
 public class MainActivity extends Activity {
 
-  public static final int DELAY_AFTER_RELEASE = 1000;
   private static final String TAG = MainActivity.class.getSimpleName();
-
-  // Set MAX_DURATION to zero to stop the app from self-exiting.
-  private static final int MAX_DURATION = 1000 * 60 * 10;
 
   // Set LAUNCH_DURATION to a value in milliseconds to trigger the launch test.
   private static final int LAUNCH_DURATION = 0;
@@ -104,6 +101,8 @@ public class MainActivity extends Activity {
   private long mmapFileBytesPerMillisecond;
   private MmapFileGroup mmapFiles;
   private long maxConsumer;
+  private long delayBeforeRelease;
+  private long delayAfterRelease;
 
   enum ServiceState {
     ALLOCATING_MEMORY,
@@ -175,6 +174,10 @@ public class MainActivity extends Activity {
     }
 
     params = flattenParams(params1);
+    long timeout = getDuration(getOrDefault(params, "timeout", "10m"));
+    delayBeforeRelease = getDuration(getOrDefault(params, "delayBeforeRelease", "1s"));
+    delayAfterRelease = getDuration(getOrDefault(params, "delayAfterRelease", "1s"));
+    int samplesPerSecond = (int) getOrDefault(params, "samplesPerSecond", 4);
     deviceSettings= getDeviceSettings();
     setContentView(R.layout.activity_main);
     serviceCommunicationHelper = new ServiceCommunicationHelper(this);
@@ -450,7 +453,7 @@ public class MainActivity extends Activity {
                   lastLaunched = 0;
                 }
               }
-              if (timeRunning > MAX_DURATION) {
+              if (timeRunning > timeout) {
                 try {
                   report = standardInfo();
                   report.put("exiting", true);
@@ -462,7 +465,7 @@ public class MainActivity extends Activity {
 
               resultsStream.println(report);
 
-              if (timeRunning > MAX_DURATION) {
+              if (timeRunning > timeout) {
                 resultsStream.close();
                 finish();
               }
@@ -473,7 +476,7 @@ public class MainActivity extends Activity {
           }
         },
         0,
-        1000 / 10);
+        1000 / samplesPerSecond);
   }
 
   private JSONObject getDeviceSettings() {
@@ -678,7 +681,7 @@ public class MainActivity extends Activity {
                     });
 
                 if (anyWarnings.get()) {
-                  runAfterDelay(this, DELAY_AFTER_RELEASE);
+                  runAfterDelay(this, delayAfterRelease);
                 } else {
                   latestAllocationTime = System.currentTimeMillis();
                 }
@@ -686,12 +689,12 @@ public class MainActivity extends Activity {
                 throw new IllegalStateException(e);
               }
             }
-          }, DELAY_AFTER_RELEASE);
+          }, delayAfterRelease);
         },
-        1000);
+        delayBeforeRelease);
   }
 
-  private void runAfterDelay(Runnable runnable, int delay) {
+  private void runAfterDelay(Runnable runnable, long delay) {
 
     timer.schedule(
         new TimerTask() {
