@@ -1051,6 +1051,22 @@ task localDeviceInfoUnitTests {
     }
 }
 
+task format {
+    doLast {
+        def formattedFiles =
+            fileTree(dir: 'src', include: ['**/*.cpp', '**/*.c', '**/*.h'], excludes: ["protobuf"]) +
+            fileTree(dir: 'include', include: ['**/*.h'], excludes: ["third_party"])
+
+        formattedFiles.files.each { file ->
+            exec {
+                commandLine "/bin/bash"
+                args "-c", "clang-format -i " + file
+                workingDir projectDir
+            }
+        }
+    }
+}
+
 // Zipping things up
 def addZipTask(name, buildTask, zipName) {
     def packPath = buildTask.packageName

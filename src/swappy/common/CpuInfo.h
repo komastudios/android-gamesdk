@@ -18,19 +18,16 @@
 
 #include <sched.h>
 
-#include <vector>
 #include <map>
 #include <string>
+#include <vector>
 
 namespace swappy {
 
 class CpuInfo {
-public:
+   public:
     struct Cpu {
-        enum class Type {
-            Little,
-            Big
-        };
+        enum class Type { Little, Big };
 
         int id;
         int package_id;
@@ -52,7 +49,7 @@ public:
     cpu_set_t getLittleCoresMask() const;
     cpu_set_t getBigCoresMask() const;
 
-private:
+   private:
     std::vector<Cpu> mCpus;
     std::string mHardware;
 
@@ -65,4 +62,4 @@ private:
 
 unsigned int to_mask(cpu_set_t cpu_set);
 
-} // namespace swappy
+}  // namespace swappy

@@ -16,13 +16,15 @@
 
 #pragma once
 
-#include "core/common.h"
 #include <string>
 #include <vector>
 
+#include "core/common.h"
+
 namespace tuningfork {
 
-// Internal representation of TuningFork settings, including the C settings passed to Init
+// Internal representation of TuningFork settings, including the C settings
+// passed to Init
 //  and the settings loaded from the tuningfork_settings.bin file.
 struct Settings {
     struct Histogram {
@@ -32,10 +34,7 @@ struct Settings {
         int32_t n_buckets;
     };
     struct AggregationStrategy {
-        enum class Submission {
-            TICK_BASED,
-            TIME_BASED
-        };
+        enum class Submission { TICK_BASED, TIME_BASED };
         Submission method;
         uint32_t intervalms_or_count;
         uint32_t max_instrumentation_keys;
@@ -54,29 +53,30 @@ struct Settings {
 
     std::string EndpointUri() const {
         std::string uri;
-        if (c_settings.endpoint_uri_override==nullptr)
+        if (c_settings.endpoint_uri_override == nullptr)
             uri = base_uri;
         else
             uri = c_settings.endpoint_uri_override;
-        if (!uri.empty() && uri.back()!='/')
-            uri += '/';
+        if (!uri.empty() && uri.back() != '/') uri += '/';
         return uri;
     }
 
-    // Check validity of the settings, filling in defaults where there are missing values, and use
-    //  save_dir to initialize the persister if it's not already set in c_settings.
+    // Check validity of the settings, filling in defaults where there are
+    // missing values, and use
+    //  save_dir to initialize the persister if it's not already set in
+    //  c_settings.
     void Check(const std::string& save_dir);
 
-    // The default histogram that is used if the user doesn't specify one in Settings
+    // The default histogram that is used if the user doesn't specify one in
+    // Settings
     static Settings::Histogram DefaultHistogram(InstrumentationKey ikey);
 
     // Load settings from assets/tuningfork/tuningfork_settings.bin.
     // Ownership of @p settings is passed to the caller: call
     //  TuningFork_Settings_Free to deallocate data stored in the struct.
-    // Returns TUNINGFORK_ERROR_OK and fills 'settings' if the file could be loaded.
-    // Returns TUNINGFORK_ERROR_NO_SETTINGS if the file was not found.
+    // Returns TUNINGFORK_ERROR_OK and fills 'settings' if the file could be
+    // loaded. Returns TUNINGFORK_ERROR_NO_SETTINGS if the file was not found.
     static TuningFork_ErrorCode FindInApk(Settings* settings);
-
 };
 
-} // namespace tuningfork
+}  // namespace tuningfork

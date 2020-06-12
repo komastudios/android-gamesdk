@@ -22,7 +22,7 @@ namespace tuningfork {
 
 // Provider of system memory information.
 class IMemInfoProvider {
-  public:
+   public:
     virtual uint64_t GetNativeHeapAllocatedSize() = 0;
     virtual void SetEnabled(bool enable) = 0;
     virtual bool GetEnabled() const = 0;
@@ -30,4 +30,4 @@ class IMemInfoProvider {
     virtual uint64_t GetDeviceMemoryBytes() const = 0;
 };
 
-} // namespace tuningfork
+}  // namespace tuningfork

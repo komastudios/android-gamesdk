@@ -2,7 +2,6 @@
 
 #define LOG_TAG "TuningFork.GE"
 #include "Log.h"
-
 #include "core/runnable.h"
 #include "core/tuningfork_utils.h"
 #include "http_request.h"
@@ -14,7 +13,6 @@ namespace tuningfork {
 constexpr Duration kRequestTimeout = std::chrono::seconds(10);
 
 TuningFork_ErrorCode HttpBackend::Init(const Settings& settings) {
-
     if (settings.EndpointUri().empty()) {
         ALOGW("The base URI in Tuning Fork TuningFork_Settings is invalid");
         return TUNINGFORK_ERROR_BAD_PARAMETER;
@@ -24,14 +22,16 @@ TuningFork_ErrorCode HttpBackend::Init(const Settings& settings) {
         return TUNINGFORK_ERROR_BAD_PARAMETER;
     }
 
-    HttpRequest request(settings.EndpointUri(), settings.api_key, kRequestTimeout);
+    HttpRequest request(settings.EndpointUri(), settings.api_key,
+                        kRequestTimeout);
 
     persister_ = settings.c_settings.persistent_cache;
 
     // TODO(b/140367226): Initialize a Java JobScheduler if we can
 
-    if( ultimate_uploader_.get() == nullptr) {
-        ultimate_uploader_ = std::make_shared<UltimateUploader>(persister_, request);
+    if (ultimate_uploader_.get() == nullptr) {
+        ultimate_uploader_ =
+            std::make_shared<UltimateUploader>(persister_, request);
         ultimate_uploader_->Start();
     }
 
@@ -41,9 +41,8 @@ TuningFork_ErrorCode HttpBackend::Init(const Settings& settings) {
 HttpBackend::~HttpBackend() {}
 
 // This persists the histograms and the ultimate uploader, above, uploads them.
-TuningFork_ErrorCode HttpBackend::UploadTelemetry(const std::string &evt_ser) {
-
-    ALOGV("HttpBackend::Process %s",evt_ser.c_str());
+TuningFork_ErrorCode HttpBackend::UploadTelemetry(const std::string& evt_ser) {
+    ALOGV("HttpBackend::Process %s", evt_ser.c_str());
 
     // Save event to file
     TuningFork_CProtobufSerialization uploading_hists_ser;
@@ -57,8 +56,7 @@ TuningFork_ErrorCode HttpBackend::UploadTelemetry(const std::string &evt_ser) {
 }
 
 void HttpBackend::KillThreads() {
-    if (ultimate_uploader_)
-        ultimate_uploader_->Stop();
+    if (ultimate_uploader_) ultimate_uploader_->Stop();
 }
 
-} //namespace tuningfork {
+}  // namespace tuningfork

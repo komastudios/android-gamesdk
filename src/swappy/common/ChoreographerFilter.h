@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-
 #pragma once
 
-#include <vector>
-#include <mutex>
 #include <condition_variable>
+#include <mutex>
+#include <vector>
+
 #include "Settings.h"
 #include "Thread.h"
 
 namespace swappy {
 
 class ChoreographerFilter {
-  public:
+   public:
     using Worker = std::function<std::chrono::nanoseconds()>;
 
     explicit ChoreographerFilter(std::chrono::nanoseconds refreshPeriod,
@@ -36,7 +36,7 @@ class ChoreographerFilter {
 
     void onChoreographer();
 
-  private:
+   private:
     void launchThreadsLocked();
     void terminateThreadsLocked();
 
@@ -63,4 +63,4 @@ class ChoreographerFilter {
     const Worker mDoWork;
 };
 
-} // namespace swappy
+}  // namespace swappy

@@ -17,25 +17,27 @@
 
 #pragma once
 
-#include "proto/protobuf_util.h"
-
 #include "core/runnable.h"
-#include "http_request.h"
 #include "core/tuningfork_utils.h"
+#include "http_request.h"
+#include "proto/protobuf_util.h"
 
 namespace tuningfork {
 
-// This class periodically listens on a separate thread for upload packets from the
-// persister and performs the HTTP request to do the upload.
+// This class periodically listens on a separate thread for upload packets from
+// the persister and performs the HTTP request to do the upload.
 class UltimateUploader : public Runnable {
     const TuningFork_Cache* persister_;
     HttpRequest request_;
-  public:
-    UltimateUploader(const TuningFork_Cache* persister, const HttpRequest& request);
+
+   public:
+    UltimateUploader(const TuningFork_Cache* persister,
+                     const HttpRequest& request);
     virtual Duration DoWork() override;
     virtual void Run() override;
- private:
+
+   private:
     bool CheckUploadPending();
 };
 
-} // namespace tuningfork
+}  // namespace tuningfork

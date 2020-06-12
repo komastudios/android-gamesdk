@@ -3,37 +3,34 @@
 #include "tuningfork_utils.h"
 
 #define LOG_TAG "TuningFork"
-#include "Log.h"
-
 #include <cinttypes>
 #include <sstream>
+
+#include "Log.h"
 
 namespace tf = tuningfork;
 
 namespace {
 
-extern "C" TuningFork_ErrorCode FileCacheGet(uint64_t key,
-    TuningFork_CProtobufSerialization* value,
-    void* _self) {
-    if (_self==nullptr) return TUNINGFORK_ERROR_BAD_PARAMETER;
+extern "C" TuningFork_ErrorCode FileCacheGet(
+    uint64_t key, TuningFork_CProtobufSerialization* value, void* _self) {
+    if (_self == nullptr) return TUNINGFORK_ERROR_BAD_PARAMETER;
     tf::FileCache* self = static_cast<tf::FileCache*>(_self);
     return self->Get(key, value);
 }
-extern "C" TuningFork_ErrorCode FileCacheSet(uint64_t key,
-    const TuningFork_CProtobufSerialization* value,
-    void* _self) {
-    if (_self==nullptr) return TUNINGFORK_ERROR_BAD_PARAMETER;
+extern "C" TuningFork_ErrorCode FileCacheSet(
+    uint64_t key, const TuningFork_CProtobufSerialization* value, void* _self) {
+    if (_self == nullptr) return TUNINGFORK_ERROR_BAD_PARAMETER;
     tf::FileCache* self = static_cast<tf::FileCache*>(_self);
     return self->Set(key, value);
 }
-extern "C" TuningFork_ErrorCode FileCacheRemove(uint64_t key,
-    void* _self) {
-    if (_self==nullptr) return TUNINGFORK_ERROR_BAD_PARAMETER;
+extern "C" TuningFork_ErrorCode FileCacheRemove(uint64_t key, void* _self) {
+    if (_self == nullptr) return TUNINGFORK_ERROR_BAD_PARAMETER;
     tf::FileCache* self = static_cast<tf::FileCache*>(_self);
     return self->Remove(key);
 }
 
-} // anonymous namespace
+}  // anonymous namespace
 
 namespace tuningfork {
 
@@ -46,11 +43,12 @@ std::string PathToKey(const std::string& path, uint64_t key) {
 }
 
 FileCache::FileCache(const std::string& path) : path_(path) {
-    c_cache_ = TuningFork_Cache {(void*)this, &FileCacheSet, &FileCacheGet, &FileCacheRemove};
+    c_cache_ = TuningFork_Cache{(void*)this, &FileCacheSet, &FileCacheGet,
+                                &FileCacheRemove};
 }
 
 TuningFork_ErrorCode FileCache::Get(uint64_t key,
-    TuningFork_CProtobufSerialization* value) {
+                                    TuningFork_CProtobufSerialization* value) {
     std::lock_guard<std::mutex> lock(mutex_);
     ALOGV("FileCache::Get %" PRIu64, key);
     if (CheckAndCreateDir(path_)) {
@@ -62,23 +60,22 @@ TuningFork_ErrorCode FileCache::Get(uint64_t key,
                       key_path.c_str(), value->size);
                 return TUNINGFORK_ERROR_OK;
             }
-        }
-        else {
+        } else {
             ALOGV("File does not exist");
         }
     }
     return TUNINGFORK_ERROR_NO_SUCH_KEY;
 }
 
-TuningFork_ErrorCode FileCache::Set(uint64_t key,
-    const TuningFork_CProtobufSerialization* value) {
+TuningFork_ErrorCode FileCache::Set(
+    uint64_t key, const TuningFork_CProtobufSerialization* value) {
     std::lock_guard<std::mutex> lock(mutex_);
     ALOGV("FileCache::Set %" PRIu64, key);
     if (CheckAndCreateDir(path_)) {
         auto key_path = PathToKey(path_, key);
         if (SaveBytesToFile(key_path, value)) {
-            ALOGV("Saved key %" PRId64 " to %s (%" PRIu32 " bytes)", key, key_path.c_str(),
-                    value->size);
+            ALOGV("Saved key %" PRId64 " to %s (%" PRIu32 " bytes)", key,
+                  key_path.c_str(), value->size);
             return TUNINGFORK_ERROR_OK;
         }
     }
@@ -107,8 +104,6 @@ TuningFork_ErrorCode FileCache::Clear() {
         return TUNINGFORK_ERROR_BAD_FILE_OPERATION;
 }
 
-bool FileCache::IsValid() const {
-    return CheckAndCreateDir(path_);
-}
+bool FileCache::IsValid() const { return CheckAndCreateDir(path_); }
 
-} // namespace tuningfork
+}  // namespace tuningfork
