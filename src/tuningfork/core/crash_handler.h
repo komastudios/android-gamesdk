@@ -17,24 +17,26 @@
 #pragma once
 
 #include <signal.h>
+
 #include <functional>
 #include <string>
 
 namespace tuningfork {
 
-    class CrashHandler {
-    public:
-        CrashHandler();
-        void Init(std::function<bool(void)> callback);
-        virtual ~CrashHandler();
-    private:
-        std::function<bool(void)> callback_;
-        bool handler_inited_ = false;
-        static bool InstallHandlerLocked();
-        static void RestoreHandlerLocked();
-        static void SignalHandler(int sig, siginfo_t* info, void* ucontext);
+class CrashHandler {
+   public:
+    CrashHandler();
+    void Init(std::function<bool(void)> callback);
+    virtual ~CrashHandler();
 
-        bool HandlerSignal(int sig, siginfo_t* info, void* ucontext);
-    };
+   private:
+    std::function<bool(void)> callback_;
+    bool handler_inited_ = false;
+    static bool InstallHandlerLocked();
+    static void RestoreHandlerLocked();
+    static void SignalHandler(int sig, siginfo_t* info, void* ucontext);
 
-}
+    bool HandlerSignal(int sig, siginfo_t* info, void* ucontext);
+};
+
+}  // namespace tuningfork

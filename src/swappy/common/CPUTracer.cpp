@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
+#include "CPUTracer.h"
+
 #include <memory>
 
-#include "CPUTracer.h"
-#include "../../common/Trace.h"
 #include "../../common/Log.h"
+#include "../../common/Trace.h"
 
 namespace swappy {
 
 CPUTracer::CPUTracer() {}
 
-CPUTracer::~CPUTracer() {
-    joinThread();
-}
+CPUTracer::~CPUTracer() { joinThread(); }
 
 void CPUTracer::joinThread() {
     bool join = false;
@@ -79,4 +78,4 @@ void CPUTracer::threadMain() NO_THREAD_SAFETY_ANALYSIS {
     }
 }
 
-} // namespace swappy
+}  // namespace swappy

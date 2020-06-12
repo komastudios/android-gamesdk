@@ -25,10 +25,9 @@
 #include <string>
 #include <thread>
 
+#include "Log.h"
 #include "Settings.h"
 #include "Thread.h"
-
-#include "Log.h"
 #include "Trace.h"
 
 using namespace std::chrono_literals;
@@ -37,17 +36,18 @@ using time_point = std::chrono::steady_clock::time_point;
 namespace {
 
 class Timer {
-  public:
-    Timer(std::chrono::nanoseconds refreshPeriod, std::chrono::nanoseconds appToSfDelay)
-        : mRefreshPeriod(refreshPeriod),
-          mAppToSfDelay(appToSfDelay) {}
+   public:
+    Timer(std::chrono::nanoseconds refreshPeriod,
+          std::chrono::nanoseconds appToSfDelay)
+        : mRefreshPeriod(refreshPeriod), mAppToSfDelay(appToSfDelay) {}
 
-    // Returns false if we have detected that we have received the same timestamp multiple times
-    // so that the caller can wait for fresh timestamps
+    // Returns false if we have detected that we have received the same
+    // timestamp multiple times so that the caller can wait for fresh timestamps
     bool addTimestamp(time_point point) {
-        // Keep track of the previous timestamp and how many times we've seen it to determine if
-        // we've stopped receiving Choreographer callbacks, which would indicate that we should
-        // probably stop until we see them again (e.g., if the app has been moved to the background)
+        // Keep track of the previous timestamp and how many times we've seen it
+        // to determine if we've stopped receiving Choreographer callbacks,
+        // which would indicate that we should probably stop until we see them
+        // again (e.g., if the app has been moved to the background)
         if (point == mLastTimestamp) {
             if (mRepeatCount++ > 5) {
                 return false;
@@ -68,7 +68,8 @@ class Timer {
             return true;
         }
 
-        // TODO: 0.2 weighting factor for exponential smoothing is completely arbitrary
+        // TODO: 0.2 weighting factor for exponential smoothing is completely
+        // arbitrary
         mRefreshPeriod += delta * 2 / 10;
         mBaseTime += mRefreshPeriod;
 
@@ -89,7 +90,7 @@ class Timer {
         std::this_thread::sleep_until(targetTime);
     }
 
-  private:
+   private:
     std::chrono::nanoseconds mRefreshPeriod;
     const std::chrono::nanoseconds mAppToSfDelay;
     time_point mBaseTime = std::chrono::steady_clock::now();
@@ -98,7 +99,7 @@ class Timer {
     int32_t mRepeatCount = 0;
 };
 
-} // anonymous namespace
+}  // anonymous namespace
 
 namespace swappy {
 
@@ -135,7 +136,8 @@ void ChoreographerFilter::launchThreadsLocked() {
 
     const int32_t numThreads = getNumCpus() > 2 ? 2 : 1;
     for (int32_t thread = 0; thread < numThreads; ++thread) {
-        mThreadPool.push_back(Thread([this, thread]() { threadMain(mUseAffinity, thread); }));
+        mThreadPool.push_back(
+            Thread([this, thread]() { threadMain(mUseAffinity, thread); }));
     }
 }
 
@@ -146,7 +148,7 @@ void ChoreographerFilter::terminateThreadsLocked() {
         mCondition.notify_all();
     }
 
-    for (auto &thread : mThreadPool) {
+    for (auto& thread : mThreadPool) {
         thread.join();
     }
     mThreadPool.clear();
@@ -154,9 +156,11 @@ void ChoreographerFilter::terminateThreadsLocked() {
 
 void ChoreographerFilter::onSettingsChanged() {
     const bool useAffinity = Settings::getInstance()->getUseAffinity();
-    const Settings::DisplayTimings& displayTimings = Settings::getInstance()->getDisplayTimings();
+    const Settings::DisplayTimings& displayTimings =
+        Settings::getInstance()->getDisplayTimings();
     std::lock_guard<std::mutex> lock(mThreadPoolMutex);
-    if (useAffinity == mUseAffinity && mRefreshPeriod == displayTimings.refreshPeriod) {
+    if (useAffinity == mUseAffinity &&
+        mRefreshPeriod == displayTimings.refreshPeriod) {
         return;
     }
 
@@ -164,10 +168,12 @@ void ChoreographerFilter::onSettingsChanged() {
     mUseAffinity = useAffinity;
     mRefreshPeriod = displayTimings.refreshPeriod;
     mAppToSfDelay = displayTimings.sfOffset - displayTimings.appOffset;
-    ALOGV("onSettingsChanged(): refreshPeriod=%lld, appOffset=%lld, sfOffset=%lld",
-          (long long)displayTimings.refreshPeriod.count(),
-          (long long)displayTimings.appOffset.count(),
-          (long long)displayTimings.sfOffset.count());
+    ALOGV(
+        "onSettingsChanged(): refreshPeriod=%lld, appOffset=%lld, "
+        "sfOffset=%lld",
+        (long long)displayTimings.refreshPeriod.count(),
+        (long long)displayTimings.appOffset.count(),
+        (long long)displayTimings.sfOffset.count());
     launchThreadsLocked();
 }
 
@@ -191,13 +197,16 @@ void ChoreographerFilter::threadMain(bool useAffinity, int32_t thread) {
         auto workDuration = mWorkDuration;
         lock.unlock();
 
-        // If we have received the same timestamp multiple times, it probably means that the app
-        // has stopped sending them to us, which could indicate that it's no longer running. If we
-        // detect that, we stop until we see a fresh timestamp to avoid spinning forever in the
+        // If we have received the same timestamp multiple times, it probably
+        // means that the app has stopped sending them to us, which could
+        // indicate that it's no longer running. If we detect that, we stop
+        // until we see a fresh timestamp to avoid spinning forever in the
         // background.
         if (!timer.addTimestamp(timestamp)) {
             lock.lock();
-            mCondition.wait(lock, [=]() { return !mIsRunning || (mLastTimestamp != timestamp); });
+            mCondition.wait(lock, [=]() {
+                return !mIsRunning || (mLastTimestamp != timestamp);
+            });
             timestamp = mLastTimestamp;
             lock.unlock();
             timer.addTimestamp(timestamp);
@@ -220,4 +229,4 @@ void ChoreographerFilter::threadMain(bool useAffinity, int32_t thread) {
     }
 }
 
-} // namespace swappy
+}  // namespace swappy

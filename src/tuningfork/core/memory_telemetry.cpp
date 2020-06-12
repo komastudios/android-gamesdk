@@ -19,28 +19,25 @@
 namespace tuningfork {
 
 static const uint64_t HIST_START = 0;
-static const uint64_t DEFAULT_HIST_END = 10000000000L; // 10GB
+static const uint64_t DEFAULT_HIST_END = 10000000000L;  // 10GB
 static const uint32_t NUM_BUCKETS = 200;
 static const uint32_t UPDATE_PERIOD_MS = 16;
 
 constexpr int NATIVE_HEAP_ALLOCATED_IX = 0;
 
 MemoryTelemetry::MemoryTelemetry(IMemInfoProvider* meminfo_provider)
-        : histograms_{
-    MemoryHistogram {
-        ANDROID_DEBUG_NATIVE_HEAP, // type
-        UPDATE_PERIOD_MS, // period_ms
-        Histogram<uint64_t> {
-            HIST_START,
-            meminfo_provider!=nullptr?meminfo_provider->GetDeviceMemoryBytes():DEFAULT_HIST_END,
-            NUM_BUCKETS
-        } // histogram
-    }
-}, meminfo_provider_(meminfo_provider)
-{
+    : histograms_{MemoryHistogram{
+          ANDROID_DEBUG_NATIVE_HEAP,  // type
+          UPDATE_PERIOD_MS,           // period_ms
+          Histogram<uint64_t>{HIST_START,
+                              meminfo_provider != nullptr
+                                  ? meminfo_provider->GetDeviceMemoryBytes()
+                                  : DEFAULT_HIST_END,
+                              NUM_BUCKETS}  // histogram
+      }},
+      meminfo_provider_(meminfo_provider) {
     // We don't have any histograms if the memory provider is null.
-    if (meminfo_provider_ == nullptr)
-        histograms_.clear();
+    if (meminfo_provider_ == nullptr) histograms_.clear();
 }
 
 void MemoryTelemetry::Ping(SystemTimePoint t) {
@@ -62,13 +59,9 @@ uint64_t DefaultMemInfoProvider::GetNativeHeapAllocatedSize() {
     return 0;
 }
 
-void DefaultMemInfoProvider::SetEnabled(bool enabled) {
-    enabled_ = enabled;
-}
+void DefaultMemInfoProvider::SetEnabled(bool enabled) { enabled_ = enabled; }
 
-bool DefaultMemInfoProvider::GetEnabled() const {
-    return enabled_;
-}
+bool DefaultMemInfoProvider::GetEnabled() const { return enabled_; }
 
 void DefaultMemInfoProvider::SetDeviceMemoryBytes(uint64_t bytesize) {
     device_memory_bytes = bytesize;
@@ -78,4 +71,4 @@ uint64_t DefaultMemInfoProvider::GetDeviceMemoryBytes() const {
     return device_memory_bytes;
 }
 
-} // namespace tuningfork
+}  // namespace tuningfork

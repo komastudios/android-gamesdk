@@ -16,14 +16,16 @@
 
 #pragma once
 
-#include "tuningfork_internal.h"
+#include <inttypes.h>
+
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "histogram.h"
 #include "memory_telemetry.h"
-#include <inttypes.h>
-#include <vector>
-#include <map>
-#include <string>
-#include <memory>
+#include "tuningfork_internal.h"
 
 namespace tuningfork {
 
@@ -31,7 +33,7 @@ typedef ProtobufSerialization SerializedAnnotation;
 
 // A prong holds a histogram for a given annotation and instrument key
 class Prong {
-public:
+   public:
     struct TimeInterval {
         std::chrono::system_clock::time_point start, end;
     };
@@ -43,7 +45,7 @@ public:
     bool loading_;
 
     Prong(InstrumentationKey instrumentation_key = 0,
-          const SerializedAnnotation &annotation = {},
+          const SerializedAnnotation& annotation = {},
           const Settings::Histogram& histogram_settings = {},
           bool loading = false);
 
@@ -66,26 +68,32 @@ class ProngCache {
     int max_num_instrumentation_keys_;
     Prong::TimeInterval time_;
     MemoryTelemetry memory_telemetry_;
-public:
+
+   public:
     ProngCache(size_t size, int max_num_instrumentation_keys,
                const std::vector<Settings::Histogram>& histogram_settings,
                const std::function<SerializedAnnotation(uint64_t)>& serializeId,
                const std::function<bool(uint64_t)>& is_loading_id,
                IMemInfoProvider* meminfo_provider);
 
-    Prong *Get(uint64_t compound_id) const;
+    Prong* Get(uint64_t compound_id) const;
 
     void Clear();
 
-    void SetInstrumentKeys(const std::vector<InstrumentationKey>& instrument_keys);
+    void SetInstrumentKeys(
+        const std::vector<InstrumentationKey>& instrument_keys);
 
     // Update times
     void Ping(SystemTimePoint t);
 
     Prong::TimeInterval time() const { return time_; }
-    const std::vector<std::unique_ptr<Prong>>& prongs() const { return prongs_; }
+    const std::vector<std::unique_ptr<Prong>>& prongs() const {
+        return prongs_;
+    }
 
-    const MemoryTelemetry& GetMemoryTelemetry() const { return memory_telemetry_; }
+    const MemoryTelemetry& GetMemoryTelemetry() const {
+        return memory_telemetry_;
+    }
 };
 
-} // namespace tuningfork {
+}  // namespace tuningfork

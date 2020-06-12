@@ -15,18 +15,16 @@
  * limitations under the License.
  */
 
-#include "http_backend.h"
-
 #include <sstream>
 
-#define LOG_TAG "TuningFork:DebugUpload"
-#include "Log.h"
+#include "http_backend.h"
 
+#define LOG_TAG "TuningFork:DebugUpload"
+#include "../../third_party/json11/json11.hpp"
+#include "Log.h"
 #include "core/tuningfork_internal.h"
 #include "core/tuningfork_utils.h"
 #include "http_request.h"
-
-#include "../../third_party/json11/json11.hpp"
 #include "modp_b64.h"
 
 namespace tuningfork {
@@ -43,9 +41,9 @@ const int MAX_N_FP_FILES = 32;
 bool encode_b64(const ProtobufSerialization& params, std::string& result) {
     size_t len = params.size();
     std::string dest(modp_b64_encode_len(len), '\0');
-    size_t encoded_len = modp_b64_encode(const_cast<char*>(dest.c_str()),
-                                         reinterpret_cast<const char*>(params.data()),
-                                         len);
+    size_t encoded_len =
+        modp_b64_encode(const_cast<char*>(dest.c_str()),
+                        reinterpret_cast<const char*>(params.data()), len);
     if (encoded_len != -1) {
         dest.resize(encoded_len);
         result = dest;
@@ -56,20 +54,19 @@ bool encode_b64(const ProtobufSerialization& params, std::string& result) {
 }
 // Add a serialization of the params as 'field_name' in 'obj'.
 static void add_params(const ProtobufSerialization& params, Json::object& obj,
-    const std::string& field_name) {
+                       const std::string& field_name) {
     std::string dest;
     if (encode_b64(params, dest)) {
         obj[field_name] = dest;
     }
 }
 
-
 static std::string RequestJson() {
-    Json::object request_obj = Json::object {};
+    Json::object request_obj = Json::object{};
     // Add in other info for the debug monitor
     ProtobufSerialization descriptor_ser;
-    if (apk_utils::GetAssetAsSerialization("tuningfork/dev_tuningfork.descriptor",
-                                           descriptor_ser)) {
+    if (apk_utils::GetAssetAsSerialization(
+            "tuningfork/dev_tuningfork.descriptor", descriptor_ser)) {
         add_params(descriptor_ser, request_obj, "dev_tuningfork_descriptor");
     }
     ProtobufSerialization settings_ser;
@@ -78,22 +75,20 @@ static std::string RequestJson() {
         add_params(settings_ser, request_obj, "settings");
     }
     std::vector<std::string> fps;
-    for(int i=0; i<MAX_N_FP_FILES; ++i) {
+    for (int i = 0; i < MAX_N_FP_FILES; ++i) {
         std::stringstream str;
         str << "dev_tuningfork_fidelityparams_" << i << ".bin";
         ProtobufSerialization fp;
-        if (FindFidelityParamsInApk(str.str(), fp)==TUNINGFORK_ERROR_OK) {
+        if (FindFidelityParamsInApk(str.str(), fp) == TUNINGFORK_ERROR_OK) {
             std::string fp_b64;
             encode_b64(fp, fp_b64);
             fps.push_back(fp_b64);
-        }
-        else {
+        } else {
             // Allow starting at 0 or 1
-            if (i!=0)
-                break;
+            if (i != 0) break;
         }
     }
-    if (fps.size()>0) {
+    if (fps.size() > 0) {
         request_obj["fidelity_param_sets"] = Json(fps);
     }
     Json request_json = request_obj;
@@ -105,15 +100,14 @@ static std::string RequestJson() {
 TuningFork_ErrorCode HttpBackend::UploadDebugInfo(HttpRequest& request) {
     int response_code;
     std::string body;
-    TuningFork_ErrorCode ret = request.Send(kRpcName, RequestJson(),
-                                   response_code, body);
-    if (ret!=TUNINGFORK_ERROR_OK)
-        return ret;
+    TuningFork_ErrorCode ret =
+        request.Send(kRpcName, RequestJson(), response_code, body);
+    if (ret != TUNINGFORK_ERROR_OK) return ret;
 
-    if (response_code>=kSuccessCodeMin && response_code<=kSuccessCodeMax)
+    if (response_code >= kSuccessCodeMin && response_code <= kSuccessCodeMax)
         return TUNINGFORK_ERROR_OK;
     else
         return TUNINGFORK_ERROR_BAD_PARAMETER;
 }
 
-} // namespace tuningfork
+}  // namespace tuningfork

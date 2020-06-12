@@ -17,22 +17,22 @@
 #include "prong.h"
 
 #define LOG_TAG "TuningFork"
-#include "Log.h"
-
-#include <string>
 #include <sstream>
+#include <string>
+
+#include "Log.h"
 
 namespace tuningfork {
 
 Prong::Prong(InstrumentationKey instrumentation_key,
-             const SerializedAnnotation &annotation,
-             const Settings::Histogram& histogram_settings,
-             bool loading)
-        : instrumentation_key_(instrumentation_key), annotation_(annotation),
-          histogram_(histogram_settings, loading),
-          last_time_(TimePoint::min()),
-          duration_(Duration::zero()),
-          loading_(loading) {}
+             const SerializedAnnotation& annotation,
+             const Settings::Histogram& histogram_settings, bool loading)
+    : instrumentation_key_(instrumentation_key),
+      annotation_(annotation),
+      histogram_(histogram_settings, loading),
+      last_time_(TimePoint::min()),
+      duration_(Duration::zero()),
+      loading_(loading) {}
 
 void Prong::Tick(TimePoint t) {
     if (last_time_ != std::chrono::steady_clock::time_point::min())
@@ -43,7 +43,9 @@ void Prong::Tick(TimePoint t) {
 void Prong::Trace(Duration dt) {
     // The histogram stores millisecond values as doubles
     histogram_.Add(
-        double(std::chrono::duration_cast<std::chrono::nanoseconds>(dt).count()) / 1000000);
+        double(
+            std::chrono::duration_cast<std::chrono::nanoseconds>(dt).count()) /
+        1000000);
     duration_ += dt;
 }
 
@@ -52,80 +54,80 @@ void Prong::Clear() {
     histogram_.Clear();
 }
 
-size_t Prong::Count() const {
-    return histogram_.Count();
-}
+size_t Prong::Count() const { return histogram_.Count(); }
 
 void Prong::SetInstrumentKey(InstrumentationKey key) {
     instrumentation_key_ = key;
 }
 
 // Allocate all the prongs up front
-ProngCache::ProngCache(size_t size, int max_num_instrumentation_keys,
-                       const std::vector<Settings::Histogram> &histogram_settings,
-                       const std::function<SerializedAnnotation(uint64_t)> &seralizeId,
-                       const std::function<bool(uint64_t)>& is_loading_id,
-                       IMemInfoProvider* meminfo_provider)
-    : prongs_(size), max_num_instrumentation_keys_(max_num_instrumentation_keys),
+ProngCache::ProngCache(
+    size_t size, int max_num_instrumentation_keys,
+    const std::vector<Settings::Histogram>& histogram_settings,
+    const std::function<SerializedAnnotation(uint64_t)>& seralizeId,
+    const std::function<bool(uint64_t)>& is_loading_id,
+    IMemInfoProvider* meminfo_provider)
+    : prongs_(size),
+      max_num_instrumentation_keys_(max_num_instrumentation_keys),
       memory_telemetry_(meminfo_provider) {
     // Allocate all the prongs
     InstrumentationKey ikey = 0;
     for (int i = 0; i < size; ++i) {
-        auto &p = prongs_[i];
+        auto& p = prongs_[i];
         SerializedAnnotation annotation = seralizeId(i);
         if (is_loading_id(i)) {
             if (ikey == 0) {
                 // Use the default, auto-sizing histogram for loading times
-                p = std::make_unique<Prong>(ikey, annotation, Settings::Histogram{}, true);
+                p = std::make_unique<Prong>(ikey, annotation,
+                                            Settings::Histogram{}, true);
             }
-        }
-        else {
-            auto& h = histogram_settings[ikey<histogram_settings.size()?ikey:0];
+        } else {
+            auto& h =
+                histogram_settings[ikey < histogram_settings.size() ? ikey : 0];
             p = std::make_unique<Prong>(ikey, annotation, h);
         }
         ++ikey;
-        if (ikey >= max_num_instrumentation_keys)
-            ikey = 0;
+        if (ikey >= max_num_instrumentation_keys) ikey = 0;
     }
 }
 
-Prong *ProngCache::Get(uint64_t compound_id) const {
+Prong* ProngCache::Get(uint64_t compound_id) const {
     if (compound_id >= prongs_.size()) {
-        ALOGW("You have overrun the number of histograms (are your "
-              "Settings correct?)");
+        ALOGW(
+            "You have overrun the number of histograms (are your "
+            "Settings correct?)");
         return nullptr;
     }
     return prongs_[compound_id].get();
 }
 
 void ProngCache::Clear() {
-    for (auto &p: prongs_) {
-        if (p.get() != nullptr)
-            p->Clear();
+    for (auto& p : prongs_) {
+        if (p.get() != nullptr) p->Clear();
     }
     time_.start = SystemTimePoint();
     time_.end = SystemTimePoint();
     memory_telemetry_.Clear();
 }
 
-void ProngCache::SetInstrumentKeys(const std::vector<InstrumentationKey>& instrument_keys) {
-    auto nAnnotations = prongs_.size()/max_num_instrumentation_keys_;
-    for (int j=0; j<nAnnotations; ++j) {
-        for (int i=0; i<instrument_keys.size(); ++i) {
+void ProngCache::SetInstrumentKeys(
+    const std::vector<InstrumentationKey>& instrument_keys) {
+    auto nAnnotations = prongs_.size() / max_num_instrumentation_keys_;
+    for (int j = 0; j < nAnnotations; ++j) {
+        for (int i = 0; i < instrument_keys.size(); ++i) {
             auto k = instrument_keys[i];
-            auto& p = prongs_[i + j*max_num_instrumentation_keys_];
-            if (p.get() != nullptr)
-                p->SetInstrumentKey(k);
+            auto& p = prongs_[i + j * max_num_instrumentation_keys_];
+            if (p.get() != nullptr) p->SetInstrumentKey(k);
         }
     }
 }
 
 void ProngCache::Ping(SystemTimePoint t) {
-    if(time_.start==SystemTimePoint()) {
+    if (time_.start == SystemTimePoint()) {
         time_.start = t;
     }
     time_.end = t;
     memory_telemetry_.Ping(t);
 }
 
-}
+}  // namespace tuningfork

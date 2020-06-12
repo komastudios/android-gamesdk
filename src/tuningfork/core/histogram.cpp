@@ -16,11 +16,7 @@
 
 #include "histogram.h"
 
-#include <sstream>
 #include <cmath>
+#include <sstream>
 
-
-namespace tuningfork {
-
-
-} // namespace tuningfork
+namespace tuningfork {}  // namespace tuningfork

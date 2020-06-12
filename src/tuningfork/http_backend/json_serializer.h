@@ -18,24 +18,23 @@
 
 #include <string>
 
-#include "tuningfork/tuningfork.h"
-#include "proto/protobuf_util.h"
-#include "core/request_info.h"
 #include "core/id_provider.h"
 #include "core/prong.h"
+#include "core/request_info.h"
+#include "proto/protobuf_util.h"
+#include "tuningfork/tuningfork.h"
 
 namespace tuningfork {
 
 class JsonSerializer {
-public:
+   public:
     static void SerializeEvent(const ProngCache& t,
                                const RequestInfo& device_info,
                                std::string& evt_json_ser);
 
     static TuningFork_ErrorCode DeserializeAndMerge(
-        const std::string& evt_json_ser,
-        IdProvider& id_provider,
+        const std::string& evt_json_ser, IdProvider& id_provider,
         ProngCache& pc);
 };
 
-} // namespace tuningfork
+}  // namespace tuningfork

@@ -16,22 +16,22 @@
 
 #include <string>
 
-#include "tuningfork/tuningfork.h"
 #include "proto/protobuf_util.h"
 #include "settings.h"
+#include "tuningfork/tuningfork.h"
 
 namespace tuningfork {
 
 // Load default fidelity params from either the saved file or the file in
-//  settings.default_fidelity_parameters_filename, then start the download thread.
-TuningFork_ErrorCode GetDefaultsFromAPKAndDownloadFPs(
-    const Settings& settings);
+//  settings.default_fidelity_parameters_filename, then start the download
+//  thread.
+TuningFork_ErrorCode GetDefaultsFromAPKAndDownloadFPs(const Settings& settings);
 
 // Kill all the threads the GetDefaults... may have started.
 TuningFork_ErrorCode KillDownloadThreads();
 
 // Read a fidelity parameter file from assets/tuningfork/<filename> in the APK.
 TuningFork_ErrorCode FindFidelityParamsInApk(const std::string& filename,
-                                    ProtobufSerialization& fp);
+                                             ProtobufSerialization& fp);
 
-} // namespace tuningfork
+}  // namespace tuningfork

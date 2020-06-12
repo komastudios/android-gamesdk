@@ -27,7 +27,7 @@ namespace jni {
 namespace java {
 
 class Object {
-  public:
+   public:
     LocalObject obj_;
     Object(const char* className, const char* ctorSig, ...) {
         va_list argptr;
@@ -37,19 +37,15 @@ class Object {
     }
     Object(LocalObject&& o) : obj_(std::move(o)) {}
     Object(jobject o) {
-        // If there's an exception pending, don't store the reference as it may be invalid and
-        // cause a crash on some devices when released.
+        // If there's an exception pending, don't store the reference as it may
+        // be invalid and cause a crash on some devices when released.
         if (!RawExceptionCheck()) {
             obj_ = o;
-            obj_.Cast(); // Cast to the object's own class.
+            obj_.Cast();  // Cast to the object's own class.
         }
     }
-    bool valid() const {
-        return !obj_.ClassIsNull();
-    }
-    void CallVVMethod(const char* name) {
-        obj_.CallVoidMethod(name, "()V");
-    }
+    bool valid() const { return !obj_.ClassIsNull(); }
+    void CallVVMethod(const char* name) { obj_.CallVoidMethod(name, "()V"); }
     void CallIVMethod(const char* name, int a) {
         obj_.CallVoidMethod(name, "(I)V", a);
     }
@@ -60,8 +56,7 @@ class Object {
         obj_.CallVoidMethod(name, "(Z)V", a);
     }
     void CallSVMethod(const char* name, const char* a) {
-        obj_.CallVoidMethod(name, "(Ljava/lang/String;)V",
-                       String(a).J());
+        obj_.CallVoidMethod(name, "(Ljava/lang/String;)V", String(a).J());
     }
     String CallVSMethod(const char* name) {
         return obj_.CallStringMethod(name, "()Ljava/lang/String;");
@@ -82,10 +77,12 @@ class Object {
         jobject o = obj_.CallObjectMethod(name, str.str().c_str());
         return Object(o);
     }
-    Object CallSIOMethod(const char* name, const char* a, int b, const char* returnClass) {
+    Object CallSIOMethod(const char* name, const char* a, int b,
+                         const char* returnClass) {
         std::stringstream str;
         str << "(Ljava/lang/String;I)L" << returnClass << ";";
-        jobject o = obj_.CallObjectMethod(name, str.str().c_str(), String(a).J(), b);
+        jobject o =
+            obj_.CallObjectMethod(name, str.str().c_str(), String(a).J(), b);
         return Object(o);
     }
 };
@@ -93,91 +90,74 @@ class Object {
 namespace io {
 
 class OutputStream : public Object {
-  public:
+   public:
     OutputStream(Object&& o) : Object(std::move(o)) {}
-    void close() {
-        CallVVMethod("close");
-    }
+    void close() { CallVVMethod("close"); }
 };
 
 class OutputStreamWriter : public Object {
-  public:
+   public:
     OutputStreamWriter(OutputStream& o, const std::string& s)
-      : Object("java/io/OutputStreamWriter", "(Ljava/io/OutputStream;Ljava/lang/String;)V",
-               (jobject)o.obj_,
-               String(s.c_str()).J()) {}
+        : Object("java/io/OutputStreamWriter",
+                 "(Ljava/io/OutputStream;Ljava/lang/String;)V", (jobject)o.obj_,
+                 String(s.c_str()).J()) {}
 };
 
 class Writer : public Object {
-  public:
+   public:
     Writer(Object&& o) : Object(std::move(o)) {}
-    void write(const std::string& s) {
-        CallSVMethod("write", s.c_str());
-    }
-    void flush() {
-        CallVVMethod("flush");
-    }
-    void close() {
-        CallVVMethod("close");
-    }
+    void write(const std::string& s) { CallSVMethod("write", s.c_str()); }
+    void flush() { CallVVMethod("flush"); }
+    void close() { CallVVMethod("close"); }
 };
 
 class BufferedWriter : public Writer {
-  public:
+   public:
     BufferedWriter(const Writer& w)
-            : Writer(Object("java/io/BufferedWriter",
-                            "(Ljava/io/Writer;)V", (jobject)w.obj_)) {}
+        : Writer(Object("java/io/BufferedWriter", "(Ljava/io/Writer;)V",
+                        (jobject)w.obj_)) {}
 };
 
 class InputStream : public Object {
-  public:
+   public:
     InputStream(Object&& o) : Object(std::move(o)) {}
-    void close() {
-        CallVVMethod("close");
-    }
+    void close() { CallVVMethod("close"); }
 };
 
 class Reader : public Object {
-  public:
+   public:
     Reader(Object&& o) : Object(std::move(o)) {}
-    jni::String readLine() {
-        return CallVSMethod("readLine");
-    }
-    void close() {
-        CallVVMethod("close");
-    }
+    jni::String readLine() { return CallVSMethod("readLine"); }
+    void close() { CallVVMethod("close"); }
 };
 
 class InputStreamReader : public Reader {
-  public:
+   public:
     InputStreamReader(const InputStream& is, const std::string& s)
-            : Reader(Object("java/io/InputStreamReader",
-                            "(Ljava/io/InputStream;Ljava/lang/String;)V",
-                            (jobject)is.obj_,
-                            String(s.c_str()).J())) {}
+        : Reader(Object("java/io/InputStreamReader",
+                        "(Ljava/io/InputStream;Ljava/lang/String;)V",
+                        (jobject)is.obj_, String(s.c_str()).J())) {}
 };
 
 class BufferedReader : public Reader {
-  public:
+   public:
     BufferedReader(const Reader& r)
-            : Reader(Object("java/io/BufferedReader", "(Ljava/io/Reader;)V", (jobject)r.obj_))
-    {}
+        : Reader(Object("java/io/BufferedReader", "(Ljava/io/Reader;)V",
+                        (jobject)r.obj_)) {}
 };
 
-class File: public Object {
-  public:
+class File : public Object {
+   public:
     File(Object&& o) : Object(std::move(o)) {}
-    jni::String getPath() {
-        return CallVSMethod("getPath");
-    }
+    jni::String getPath() { return CallVSMethod("getPath"); }
 };
 
-} // namespace io
+}  // namespace io
 
 namespace util {
 
 class UUID : public Object {
-  public:
+   public:
     UUID(LocalObject&& o) : Object(std::move(o)) {}
     static UUID randomUUID() {
         LocalObject obj(nullptr, Env()->FindClass("java/util/UUID"));
@@ -185,58 +165,42 @@ class UUID : public Object {
         obj.SetObj(o);
         return obj;
     }
-    jni::String toString() {
-        return CallVSMethod("toString");
-    }
+    jni::String toString() { return CallVSMethod("toString"); }
 };
 
-} // namespace util
+}  // namespace util
 
 namespace net {
 
 class URLConnection : public Object {
-  public:
+   public:
     URLConnection(Object&& o) : Object(std::move(o)) {}
 };
 
 class HttpURLConnection : public URLConnection {
-  public:
+   public:
     HttpURLConnection(URLConnection&& u) : URLConnection(std::move(u)) {
         obj_.Cast("java/net/HttpURLConnection");
     }
     void setRequestMethod(const std::string& method) {
         CallSVMethod("setRequestMethod", method.c_str());
     }
-    void setConnectTimeout(int t) {
-        CallIVMethod("setConnectTimeout", t);
-    }
+    void setConnectTimeout(int t) { CallIVMethod("setConnectTimeout", t); }
     void setReadTimeout(int timeout) {
         CallIVMethod("setReadTimeout", timeout);
     }
-    void setDoOutput(bool d) {
-        CallZVMethod("setDoOutput", d);
-    }
-    void setDoInput(bool d) {
-        CallZVMethod("setDoInput", d);
-    }
-    void setUseCaches(bool d) {
-        CallZVMethod("setUseCaches", d);
-    }
+    void setDoOutput(bool d) { CallZVMethod("setDoOutput", d); }
+    void setDoInput(bool d) { CallZVMethod("setDoInput", d); }
+    void setUseCaches(bool d) { CallZVMethod("setUseCaches", d); }
     void setRequestProperty(const std::string& name, const std::string& value) {
         CallSSVMethod("setRequestProperty", name.c_str(), value.c_str());
     }
     io::OutputStream getOutputStream() {
         return CallVOMethod("getOutputStream", "java/io/OutputStream");
     }
-    void connect() {
-        CallVVMethod("connect");
-    }
-    void disconnect() {
-        CallVVMethod("disconnect");
-    }
-    int getResponseCode() {
-        return CallVIMethod("getResponseCode");
-    }
+    void connect() { CallVVMethod("connect"); }
+    void disconnect() { CallVVMethod("disconnect"); }
+    int getResponseCode() { return CallVIMethod("getResponseCode"); }
     jni::String getResponseMessage() {
         return CallVSMethod("getResponseMessage");
     }
@@ -246,45 +210,47 @@ class HttpURLConnection : public URLConnection {
 };
 
 class URL : public Object {
-  public:
+   public:
     URL(LocalObject o) : Object(o) {}
     URL(const std::string& s)
-            : Object("java/net/URL", "(Ljava/lang/String;)V", String(s.c_str()).J()) {}
+        : Object("java/net/URL", "(Ljava/lang/String;)V",
+                 String(s.c_str()).J()) {}
     URLConnection openConnection() {
-        return URLConnection(Object(obj_.CallObjectMethod("openConnection",
-                                                          "()Ljava/net/URLConnection;")));
+        return URLConnection(Object(obj_.CallObjectMethod(
+            "openConnection", "()Ljava/net/URLConnection;")));
     }
 };
 
-} // namespace net
+}  // namespace net
 
 namespace security {
 
 class MessageDigest : public java::Object {
-  public:
+   public:
     MessageDigest(const std::string& instance) : java::Object(nullptr) {
         LocalObject temp(nullptr, FindClass("java/security/MessageDigest"));
-        auto o = temp.CallStaticObjectMethod("getInstance",
-                                             "(Ljava/lang/String;)Ljava/security/MessageDigest;",
-                                             String(instance.c_str()).J());
+        auto o = temp.CallStaticObjectMethod(
+            "getInstance", "(Ljava/lang/String;)Ljava/security/MessageDigest;",
+            String(instance.c_str()).J());
         temp.SetObj(o);
         obj_ = std::move(temp);
     }
-    std::vector<unsigned char> digest(const std::vector<unsigned char>& bs) const {
+    std::vector<unsigned char> digest(
+        const std::vector<unsigned char>& bs) const {
         auto env = Env();
         jbyteArray jbs = env->NewByteArray(bs.size());
         env->SetByteArrayRegion(jbs, 0, bs.size(),
-                                       reinterpret_cast<const jbyte*>(bs.data()));
-        jbyteArray out = reinterpret_cast<jbyteArray>(obj_.CallObjectMethod("digest",
-                                                                            "([B)[B", jbs));
+                                reinterpret_cast<const jbyte*>(bs.data()));
+        jbyteArray out = reinterpret_cast<jbyteArray>(
+            obj_.CallObjectMethod("digest", "([B)[B", jbs));
         env->DeleteLocalRef(jbs);
         return GetByteArrayBytesAndDeleteRef(out);
     }
 };
 
-} // namespace security
+}  // namespace security
 
-} // namespace java
+}  // namespace java
 
 namespace android {
 
@@ -293,10 +259,12 @@ namespace content {
 namespace pm {
 
 class FeatureInfo : public java::Object {
-  public:
+   public:
     FeatureInfo(java::Object&& o) : java::Object(std::move(o)) {
-        jni::String jname((jstring)obj_.GetObjectField("name", "Ljava/lang/String;").ObjNewRef());
-        if(jname.J() != nullptr) name = jname.C();
+        jni::String jname(
+            (jstring)obj_.GetObjectField("name", "Ljava/lang/String;")
+                .ObjNewRef());
+        if (jname.J() != nullptr) name = jname.C();
         reqGlEsVersion = obj_.GetIntField("reqGlEsVersion");
     }
     static constexpr int GL_ES_VERSION_UNDEFINED = 0x0000000;
@@ -306,49 +274,45 @@ class FeatureInfo : public java::Object {
 };
 
 class ApplicationInfo : public java::Object {
-  public:
+   public:
     ApplicationInfo(java::Object&& o) : java::Object(std::move(o)) {}
-    int flags() const {
-        return obj_.GetIntField("flags");
-    }
+    int flags() const { return obj_.GetIntField("flags"); }
     static const int FLAG_DEBUGGABLE = 2;
 };
 
 class PackageInfo : public java::Object {
-  public:
+   public:
     PackageInfo(java::Object&& o) : java::Object(std::move(o)) {}
     typedef std::vector<unsigned char> Signature;
     std::vector<Signature> signatures() const {
         auto env = Env();
-        auto jsigs = obj_.GetObjectField("signatures", "[Landroid/content/pm/Signature;");
+        auto jsigs = obj_.GetObjectField("signatures",
+                                         "[Landroid/content/pm/Signature;");
         jobjectArray sigs = jsigs.AsObjectArray();
-        if (sigs == nullptr)  return {};
+        if (sigs == nullptr) return {};
         int n = env->GetArrayLength(sigs);
-        if (n>0) {
+        if (n > 0) {
             std::vector<std::vector<unsigned char>> ret;
-            for (int i=0; i<n; ++i) {
+            for (int i = 0; i < n; ++i) {
                 Object sig(env->GetObjectArrayElement(sigs, i));
                 jbyteArray bytes = reinterpret_cast<jbyteArray>(
                     sig.obj_.CallObjectMethod("toByteArray", "()[B"));
                 ret.push_back(GetByteArrayBytesAndDeleteRef(bytes));
             }
             return ret;
-        }
-        else
+        } else
             return {};
     }
-    int versionCode() const {
-        return obj_.GetIntField("versionCode");
-    }
+    int versionCode() const { return obj_.GetIntField("versionCode"); }
     ApplicationInfo applicationInfo() const {
-        auto appInfo = obj_.GetObjectField("applicationInfo",
-                                           "[Landroid/content/pm/ApplicationInfo;");
+        auto appInfo = obj_.GetObjectField(
+            "applicationInfo", "[Landroid/content/pm/ApplicationInfo;");
         return ApplicationInfo(std::move(appInfo));
     }
 };
 
 class PackageManager : public java::Object {
-  public:
+   public:
     PackageManager(java::Object&& o) : java::Object(std::move(o)) {}
     static constexpr int GET_SIGNATURES = 0x0000040;
     PackageInfo getPackageInfo(const std::string& name, int flags) {
@@ -358,13 +322,13 @@ class PackageManager : public java::Object {
     std::vector<FeatureInfo> getSystemAvailableFeatures() {
         auto env = Env();
         auto jfeatures = CallAOMethod("getSystemAvailableFeatures",
-                                                "android/content/pm/FeatureInfo");
-        if (jfeatures.obj_.IsNull())  return {};
+                                      "android/content/pm/FeatureInfo");
+        if (jfeatures.obj_.IsNull()) return {};
         jobjectArray features = jfeatures.obj_.AsObjectArray();
         int n = env->GetArrayLength(features);
         std::vector<FeatureInfo> ret;
-        if (n>0) {
-            for (int i=0; i<n; ++i) {
+        if (n > 0) {
+            for (int i = 0; i < n; ++i) {
                 FeatureInfo f(Object(env->GetObjectArrayElement(features, i)));
                 ret.push_back(std::move(f));
             }
@@ -373,26 +337,25 @@ class PackageManager : public java::Object {
     }
 };
 
-} //namespace pm
+}  // namespace pm
 
 namespace res {
 
 class AssetManager : public java::Object {
-  public:
+   public:
     AssetManager(java::Object&& o) : java::Object(std::move(o)) {}
 };
 
-} // namespace res
+}  // namespace res
 
 class Context : public java::Object {
-  public:
+   public:
     Context(jobject o) : java::Object(o) {}
     pm::PackageManager getPackageManager() {
-        return CallVOMethod("getPackageManager", "android/content/pm/PackageManager");
+        return CallVOMethod("getPackageManager",
+                            "android/content/pm/PackageManager");
     }
-    jni::String getPackageName() {
-        return CallVSMethod("getPackageName");
-    }
+    jni::String getPackageName() { return CallVSMethod("getPackageName"); }
     res::AssetManager getAssets() {
         return CallVOMethod("getAssets", "android/content/res/AssetManager");
     }
@@ -401,31 +364,34 @@ class Context : public java::Object {
     }
 };
 
-} // namespace content
+}  // namespace content
 
 namespace os {
 
 class DebugClass {
     jmethodID getNativeHeapAllocatedSize_method_id_;
-  public:
+
+   public:
     static uint64_t getNativeHeapAllocatedSize() {
         JNIEnv* env = Env();
-        if ( env != nullptr) {
+        if (env != nullptr) {
             LocalObject obj;
             obj.Cast("android/os/Debug");
             jclass clz = obj;
-            jmethodID method = env->GetStaticMethodID(clz, "getNativeHeapAllocatedSize", "()J" );
-            if (method!=NULL)
+            jmethodID method = env->GetStaticMethodID(
+                clz, "getNativeHeapAllocatedSize", "()J");
+            if (method != NULL)
                 return (uint64_t)env->CallStaticLongMethod(clz, method);
         }
         return 0;
     }
 
-}; // class Debug
+};  // class Debug
 
 class Build {
     static constexpr const char class_name[] = "android/os/Build";
-  public:
+
+   public:
     static jni::String MODEL() {
         return GetStaticStringField(class_name, "MODEL");
     }
@@ -438,15 +404,15 @@ class Build {
     static jni::String DEVICE() {
         return GetStaticStringField(class_name, "DEVICE");
     }
-}; // Class Build
+};  // Class Build
 
-} // namespace os
+}  // namespace os
 
-} // namespace android
+}  // namespace android
 
 // A local jni reference to the app context
 android::content::Context AppContext();
 
-} // namespace jni
+}  // namespace jni
 
-} // namespace tuningfork
+}  // namespace tuningfork

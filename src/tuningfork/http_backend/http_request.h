@@ -18,9 +18,9 @@
 
 #include <string>
 
-#include "tuningfork/tuningfork.h"
 #include "core/common.h"
 #include "core/request_info.h"
+#include "tuningfork/tuningfork.h"
 
 namespace tuningfork {
 
@@ -29,13 +29,16 @@ class HttpRequest {
     std::string base_url_;
     std::string api_key_;
     Duration timeout_;
-  public:
+
+   public:
     HttpRequest(std::string base_url, std::string api_key, Duration timeout)
-     : base_url_(base_url), api_key_(api_key), timeout_(timeout) {}
+        : base_url_(base_url), api_key_(api_key), timeout_(timeout) {}
     virtual ~HttpRequest() {}
     std::string GetURL(std::string rpcname) const;
-    virtual TuningFork_ErrorCode Send(const std::string& rpc_name, const std::string& request_json,
-                     int& response_code, std::string& response_body);
+    virtual TuningFork_ErrorCode Send(const std::string& rpc_name,
+                                      const std::string& request_json,
+                                      int& response_code,
+                                      std::string& response_body);
 };
 
-} // namespace tuningfork
+}  // namespace tuningfork

@@ -20,12 +20,13 @@
 
 namespace tuningfork {
 
-// You can provide your own time source rather than steady_clock by inheriting this and passing
+// You can provide your own time source rather than steady_clock by inheriting
+// this and passing
 //   it to Init. Useful in tests.
 class ITimeProvider {
-public:
+   public:
     virtual std::chrono::steady_clock::time_point Now() = 0;
     virtual std::chrono::system_clock::time_point SystemNow() = 0;
 };
 
-} // namespace tuningfork
+}  // namespace tuningfork
