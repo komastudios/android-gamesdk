@@ -12,6 +12,7 @@ import static com.google.android.apps.internal.games.helperlibrary.Utils.process
 import static com.google.android.apps.internal.games.helperlibrary.Utils.readFile;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.readStream;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -26,7 +27,6 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
@@ -54,7 +54,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /** The main activity of the istresser app */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
   public static final int DELAY_AFTER_RELEASE = 1000;
   private static final String TAG = MainActivity.class.getSimpleName();
