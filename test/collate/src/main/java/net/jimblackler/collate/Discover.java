@@ -22,7 +22,7 @@ public class Discover {
             "summary.total-pss");
     ImmutableSet<String> decreasing = ImmutableSet.of("availMem", "Cached", "MemAvailable");
 
-    Collector.cloudCollect(result -> {
+    Collector.cloudCollect(null, result -> {
       if (result.isEmpty()) {
         return;
       }
