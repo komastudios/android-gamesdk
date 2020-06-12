@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-#include "tuningfork/tuningfork.h"
-#include "tuningfork/tuningfork_extra.h"
-#include "proto/protobuf_util.h"
-#include "tuningfork_internal.h"
-#include "settings.h"
-#include "tuningfork_utils.h"
-#include "jni/jni_helper.h"
-
 #include <cstdlib>
 #include <cstring>
+
+#include "jni/jni_helper.h"
+#include "proto/protobuf_util.h"
+#include "settings.h"
+#include "tuningfork/tuningfork.h"
+#include "tuningfork/tuningfork_extra.h"
+#include "tuningfork_internal.h"
+#include "tuningfork_utils.h"
 
 extern "C" {
 
@@ -31,43 +31,39 @@ namespace tf = tuningfork;
 namespace jni = tuningfork::jni;
 
 TuningFork_ErrorCode TuningFork_init_internal(
-    const TuningFork_Settings *c_settings_in,
-    JNIEnv* env,
-    jobject context) {
-    tf::Settings settings {};
+    const TuningFork_Settings *c_settings_in, JNIEnv *env, jobject context) {
+    tf::Settings settings{};
     if (c_settings_in != nullptr) {
         settings.c_settings = *c_settings_in;
     }
     jni::Init(env, context);
     TuningFork_ErrorCode err = tf::Settings::FindInApk(&settings);
-    if (err!=TUNINGFORK_ERROR_OK)
-        return err;
-    std::string default_save_dir = tf::file_utils::GetAppCacheDir() + "/tuningfork";
+    if (err != TUNINGFORK_ERROR_OK) return err;
+    std::string default_save_dir =
+        tf::file_utils::GetAppCacheDir() + "/tuningfork";
     settings.Check(default_save_dir);
     err = tf::Init(settings);
-    if (err!=TUNINGFORK_ERROR_OK)
-        return err;
-    if ( !(settings.default_fidelity_parameters_filename.empty() &&
-           settings.c_settings.training_fidelity_params==nullptr)) {
+    if (err != TUNINGFORK_ERROR_OK) return err;
+    if (!(settings.default_fidelity_parameters_filename.empty() &&
+          settings.c_settings.training_fidelity_params == nullptr)) {
         err = GetDefaultsFromAPKAndDownloadFPs(settings);
     }
     return err;
 }
 
 // Blocking call to get fidelity parameters from the server.
-// Note that once fidelity parameters are downloaded, any timing information is recorded
+// Note that once fidelity parameters are downloaded, any timing information is
+// recorded
 //  as being associated with those parameters.
 TuningFork_ErrorCode TuningFork_getFidelityParameters(
     const TuningFork_CProtobufSerialization *default_params,
-    TuningFork_CProtobufSerialization *params,
-    uint32_t timeout_ms) {
+    TuningFork_CProtobufSerialization *params, uint32_t timeout_ms) {
     tf::ProtobufSerialization defaults;
-    if(default_params)
-        defaults = tf::ToProtobufSerialization(*default_params);
+    if (default_params) defaults = tf::ToProtobufSerialization(*default_params);
     tf::ProtobufSerialization s;
     TuningFork_ErrorCode result =
         tf::GetFidelityParameters(defaults, s, timeout_ms);
-    if (result==TUNINGFORK_ERROR_OK && params)
+    if (result == TUNINGFORK_ERROR_OK && params)
         tf::ToCProtobufSerialization(s, *params);
     return result;
 }
@@ -75,28 +71,30 @@ TuningFork_ErrorCode TuningFork_getFidelityParameters(
 // Protobuf serialization of the current annotation
 TuningFork_ErrorCode TuningFork_setCurrentAnnotation(
     const TuningFork_CProtobufSerialization *annotation) {
-    if (annotation!=nullptr)
-        return tf::SetCurrentAnnotation(tf::ToProtobufSerialization(*annotation));
+    if (annotation != nullptr)
+        return tf::SetCurrentAnnotation(
+            tf::ToProtobufSerialization(*annotation));
     else
         return TUNINGFORK_ERROR_INVALID_ANNOTATION;
 }
 
-// Record a frame tick that will be associated with the instrumentation key and the current
+// Record a frame tick that will be associated with the instrumentation key and
+// the current
 //   annotation
 TuningFork_ErrorCode TuningFork_frameTick(TuningFork_InstrumentKey id) {
     return tf::FrameTick(id);
 }
 
 // Record a frame tick using an external time, rather than system time
-TuningFork_ErrorCode TuningFork_frameDeltaTimeNanos(
-    TuningFork_InstrumentKey id, TuningFork_Duration dt) {
+TuningFork_ErrorCode TuningFork_frameDeltaTimeNanos(TuningFork_InstrumentKey id,
+                                                    TuningFork_Duration dt) {
     return tf::FrameDeltaTimeNanos(id, std::chrono::nanoseconds(dt));
 }
 
 // Start a trace segment
-TuningFork_ErrorCode  TuningFork_startTrace(
-    TuningFork_InstrumentKey key, TuningFork_TraceHandle* handle) {
-    if (handle==nullptr) return TUNINGFORK_ERROR_INVALID_TRACE_HANDLE;
+TuningFork_ErrorCode TuningFork_startTrace(TuningFork_InstrumentKey key,
+                                           TuningFork_TraceHandle *handle) {
+    if (handle == nullptr) return TUNINGFORK_ERROR_INVALID_TRACE_HANDLE;
     return tf::StartTrace(key, *handle);
 }
 
@@ -105,9 +103,7 @@ TuningFork_ErrorCode TuningFork_endTrace(TuningFork_TraceHandle h) {
     return tf::EndTrace(h);
 }
 
-TuningFork_ErrorCode TuningFork_flush() {
-    return tf::Flush();
-}
+TuningFork_ErrorCode TuningFork_flush() { return tf::Flush(); }
 
 TuningFork_ErrorCode TuningFork_destroy() {
     tf::KillDownloadThreads();
@@ -115,8 +111,8 @@ TuningFork_ErrorCode TuningFork_destroy() {
 }
 
 TuningFork_ErrorCode TuningFork_setFidelityParameters(
-    const TuningFork_CProtobufSerialization* params) {
-    if (params!=nullptr)
+    const TuningFork_CProtobufSerialization *params) {
+    if (params != nullptr)
         return tf::SetFidelityParameters(tf::ToProtobufSerialization(*params));
     else
         return TUNINGFORK_ERROR_BAD_PARAMETER;
@@ -133,4 +129,4 @@ void TUNINGFORK_VERSION_SYMBOL() {
     // undefined symbol, as the name of the function depends on the version.
 }
 
-} // extern "C" {
+}  // extern "C" {

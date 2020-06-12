@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
- /***************************************************************************************************
+/***************************************************************************************************
  *
  * Per-Device concrete/derived class for the "Android fallback" path (uses
  * Choreographer to try to get presents to occur at the desired time).
@@ -27,21 +27,18 @@
 
 namespace swappy {
 
-class SwappyVkFallback : public SwappyVkBase
-{
-public:
-    SwappyVkFallback(JNIEnv           *env,
-                     jobject          jactivity,
-                     VkPhysicalDevice physicalDevice,
-                     VkDevice         device,
+class SwappyVkFallback : public SwappyVkBase {
+   public:
+    SwappyVkFallback(JNIEnv* env, jobject jactivity,
+                     VkPhysicalDevice physicalDevice, VkDevice device,
                      const SwappyVkFunctionProvider* provider);
 
     virtual bool doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
-                                           uint64_t*      pRefreshDuration) override;
+                                           uint64_t* pRefreshDuration) override;
 
-    virtual VkResult doQueuePresent(VkQueue                 queue,
-                                    uint32_t                queueFamilyIndex,
-                                    const VkPresentInfoKHR* pPresentInfo) override;
+    virtual VkResult doQueuePresent(
+        VkQueue queue, uint32_t queueFamilyIndex,
+        const VkPresentInfoKHR* pPresentInfo) override;
 };
 
 }  // namespace swappy

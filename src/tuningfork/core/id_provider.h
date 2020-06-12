@@ -16,28 +16,28 @@
 
 #pragma once
 
-#include "tuningfork/tuningfork.h"
 #include "core/common.h"
 #include "proto/protobuf_util.h"
+#include "tuningfork/tuningfork.h"
 
 class AAsset;
 
 namespace tuningfork {
 
-// Interface to an object that can decode protobuf serializations of Annotations and
-// create compound ids using an InstrumentationKey.
+// Interface to an object that can decode protobuf serializations of Annotations
+// and create compound ids using an InstrumentationKey.
 class IdProvider {
-  public:
+   public:
     virtual ~IdProvider() {}
-    // Decode <ser> into an AnnotationId. If loading is non-null, it returns whether the
-    // annotation is a loading annotation.
-    virtual AnnotationId DecodeAnnotationSerialization(const ProtobufSerialization& ser,
-                                                   bool* loading = nullptr) const = 0;
+    // Decode <ser> into an AnnotationId. If loading is non-null, it returns
+    // whether the annotation is a loading annotation.
+    virtual AnnotationId DecodeAnnotationSerialization(
+        const ProtobufSerialization& ser, bool* loading = nullptr) const = 0;
     // Return a new id that is made up of <annotation_id> and <k>.
     // Gives an error if the id is out-of-bounds.
     virtual TuningFork_ErrorCode MakeCompoundId(InstrumentationKey k,
-                                       AnnotationId annotation_id,
-                                       AnnotationId& id) = 0;
+                                                AnnotationId annotation_id,
+                                                AnnotationId& id) = 0;
 };
 
-} // namespace tuningfork
+}  // namespace tuningfork

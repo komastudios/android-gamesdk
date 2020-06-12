@@ -24,16 +24,14 @@ namespace swappy {
 
 std::unique_ptr<Settings> Settings::instance;
 
-Settings *Settings::getInstance() {
+Settings* Settings::getInstance() {
     if (!instance) {
         instance = std::make_unique<Settings>(ConstructorTag{});
     }
     return instance.get();
 }
 
-void Settings::reset() {
-    instance.reset();
-}
+void Settings::reset() { instance.reset(); }
 
 void Settings::addListener(Listener listener) {
     std::lock_guard<std::mutex> lock(mMutex);
@@ -90,9 +88,9 @@ void Settings::notifyListeners() {
     }
 
     // Call the listeners without the lock held
-    for (const auto &listener : listeners) {
+    for (const auto& listener : listeners) {
         listener();
     }
 }
 
-} // namespace swappy
+}  // namespace swappy

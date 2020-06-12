@@ -18,34 +18,33 @@
 
 #include <string>
 
-#include "tuningfork/tuningfork.h"
-#include "proto/protobuf_util.h"
 #include "http_backend/http_request.h"
+#include "proto/protobuf_util.h"
+#include "tuningfork/tuningfork.h"
 
 namespace tuningfork {
 
-// Constants used by the upload threads for coordinating persisting and uploading histograms.
+// Constants used by the upload threads for coordinating persisting and
+// uploading histograms.
 const uint64_t HISTOGRAMS_PAUSED = 0;
 const uint64_t HISTOGRAMS_UPLOADING = 1;
 
 // Interface for download and upload of information from Tuning Fork.
 class IBackend {
-public:
-    virtual ~IBackend() {};
+   public:
+    virtual ~IBackend(){};
 
     // Perform a blocking call to get fidelity parameters from the server.
-    virtual TuningFork_ErrorCode GenerateTuningParameters(HttpRequest& request,
-        const ProtobufSerialization* training_mode_fps,
-        ProtobufSerialization& fidelity_params,
-        std::string& experiment_id) = 0;
+    virtual TuningFork_ErrorCode GenerateTuningParameters(
+        HttpRequest& request, const ProtobufSerialization* training_mode_fps,
+        ProtobufSerialization& fidelity_params, std::string& experiment_id) = 0;
 
     // Perform a blocking call to upload telemetry info to a server.
     virtual TuningFork_ErrorCode UploadTelemetry(
         const std::string& tuningfork_log_event) = 0;
 
     // Perform a blocking call to upload debug info to a server.
-    virtual TuningFork_ErrorCode UploadDebugInfo(HttpRequest& request)  = 0;
-
+    virtual TuningFork_ErrorCode UploadDebugInfo(HttpRequest& request) = 0;
 };
 
-} // namespace tuningfork
+}  // namespace tuningfork

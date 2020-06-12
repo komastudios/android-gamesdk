@@ -16,40 +16,41 @@
 
 #pragma once
 
-#include "EGL.h"
-#include "SwappyCommon.h"
-#include "Thread.h"
+#include <swappy/swappyGL_extra.h>
 
 #include <array>
 #include <map>
 #include <vector>
 
-#include <swappy/swappyGL_extra.h>
+#include "EGL.h"
+#include "SwappyCommon.h"
+#include "Thread.h"
 
 using TimePoint = std::chrono::steady_clock::time_point;
 using namespace std::chrono_literals;
 
 namespace swappy {
 
-
 class FrameStatistics {
-public:
+   public:
     FrameStatistics(const EGL& egl, const SwappyCommon& swappyCommon)
-        : mEgl(egl), mSwappyCommon(swappyCommon) {};
+        : mEgl(egl), mSwappyCommon(swappyCommon){};
     ~FrameStatistics() = default;
 
     void capture(EGLDisplay dpy, EGLSurface surface);
 
     SwappyStats getStats();
 
-private:
+   private:
     static constexpr int MAX_FRAME_LAG = 10;
     static constexpr std::chrono::nanoseconds LOG_EVERY_N_NS = 1s;
 
-    void updateFrames(EGLnsecsANDROID start, EGLnsecsANDROID end, uint64_t stat[]);
+    void updateFrames(EGLnsecsANDROID start, EGLnsecsANDROID end,
+                      uint64_t stat[]);
     void updateIdleFrames(EGL::FrameTimestamps& frameStats) REQUIRES(mMutex);
     void updateLateFrames(EGL::FrameTimestamps& frameStats) REQUIRES(mMutex);
-    void updateOffsetFromPreviousFrame(EGL::FrameTimestamps& frameStats) REQUIRES(mMutex);
+    void updateOffsetFromPreviousFrame(EGL::FrameTimestamps& frameStats)
+        REQUIRES(mMutex);
     void updateLatencyFrames(EGL::FrameTimestamps& frameStats,
                              TimePoint frameStartTime) REQUIRES(mMutex);
     void logFrames() REQUIRES(mMutex);
@@ -67,7 +68,7 @@ private:
     EGLnsecsANDROID mPrevFrameTime = 0;
 
     std::mutex mMutex;
-    SwappyStats mStats GUARDED_BY(mMutex)= {};
+    SwappyStats mStats GUARDED_BY(mMutex) = {};
 };
 
-} //namespace swappy
+}  // namespace swappy
