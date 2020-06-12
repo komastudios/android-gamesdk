@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a67a06f_a9ee9a32",
+        "filename": "src/tuningfork/core/request_info.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-06-12T11:11:51Z",
+      "side": 1,
+      "message": "ubernit: I would have made this a bit more obvious that this is a single global value by prefix it by Global (orSingleton, or Unique or something like that?). \"Cached\" is more hinting at some that is cached for performance reason. While it\u0027s the case, it\u0027s also used as a global \"data store\", so I would make it very obvious that when you\u0027re accessing this, you\u0027re reading or mutating a global variable.",
+      "revId": "d6dcdaccc92b0458f626b8590ed04d27844017ff",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
