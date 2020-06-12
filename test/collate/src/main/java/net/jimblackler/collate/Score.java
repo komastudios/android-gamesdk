@@ -89,7 +89,8 @@ public class Score {
             if (row.has("exiting")) {
               exited = true;
             }
-            if (row.has("allocFailed") || row.has("mmapAnonFailed") || row.has("mmapFileFailed")) {
+            if (row.has("allocFailed") || row.has("mmapAnonFailed") || row.has("mmapFileFailed") ||
+                row.has("criticalLogLines"))  {
               allocFailed = true;
             }
             if (row.has("serviceCrashed")) {
