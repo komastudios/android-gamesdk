@@ -26,6 +26,7 @@
 
 #define LOG_TAG "TuningFork"
 #include "Log.h"
+#include "tuningfork_impl.h"
 
 namespace tuningfork {
 
@@ -61,33 +62,8 @@ class DebugBackend : public IBackend {
 static std::unique_ptr<DebugBackend> s_debug_backend =
     std::make_unique<DebugBackend>();
 
-void Runnable::Start() {
-    if (thread_) {
-        ALOGW("Can't start an already running thread");
-        return;
-    }
-    do_quit_ = false;
-    thread_ = std::make_unique<std::thread>([&] { Run(); });
-}
-void Runnable::Run() {
-    while (!do_quit_) {
-        std::unique_lock<std::mutex> lock(mutex_);
-        auto wait_time = DoWork();
-        cv_.wait_for(lock, wait_time);
-    }
-}
-void Runnable::Stop() {
-    if (!thread_->joinable()) {
-        ALOGW("Can't stop a thread that's not started");
-        return;
-    }
-    do_quit_ = true;
-    cv_.notify_one();
-    thread_->join();
-}
-
 UploadThread::UploadThread(IBackend* backend)
-    : Runnable(),
+    : Runnable(nullptr),
       backend_(backend),
       upload_callback_(nullptr),
       persister_(nullptr) {
@@ -127,12 +103,12 @@ Duration UploadThread::DoWork() {
 
 // Returns true if we submitted, false if we are waiting for a previous submit
 // to complete
-bool UploadThread::Submit(const Session* prongs, bool upload) {
+bool UploadThread::Submit(const Session* session, bool upload) {
     if (ready_ == nullptr) {
         {
             std::lock_guard<std::mutex> lock(mutex_);
             upload_ = upload;
-            ready_ = prongs;
+            ready_ = session;
         }
         cv_.notify_one();
         return true;
@@ -140,21 +116,21 @@ bool UploadThread::Submit(const Session* prongs, bool upload) {
         return false;
 }
 
-void UploadThread::InitialChecks(Session& prongs, IdProvider& id_provider,
+void UploadThread::InitialChecks(Session& session, IdProvider& id_provider,
                                  const TuningFork_Cache* persister) {
     persister_ = persister;
     if (!persister_) {
         ALOGE("No persistence mechanism given");
         return;
     }
-    // Check for PAUSED prong cache
+    // Check for PAUSED session
     TuningFork_CProtobufSerialization paused_hists_ser;
     if (persister->get(HISTOGRAMS_PAUSED, &paused_hists_ser,
                        persister_->user_data) == TUNINGFORK_ERROR_OK) {
         std::string paused_hists_str = ToString(paused_hists_ser);
         ALOGI("Got PAUSED histograms: %s", paused_hists_str.c_str());
         JsonSerializer::DeserializeAndMerge(paused_hists_str, id_provider,
-                                            prongs);
+                                            session);
         TuningFork_CProtobufSerialization_free(&paused_hists_ser);
     } else {
         ALOGI("No PAUSED histograms");

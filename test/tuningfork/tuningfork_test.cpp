@@ -37,12 +37,14 @@ using namespace test;
 
 namespace tuningfork_test {
 
+using namespace std::chrono;
+
 using ::com::google::tuningfork::Annotation;
 using ::com::google::tuningfork::FidelityParams;
 typedef std::string TuningForkLogEvent;
 
 static const std::string kCacheDir = "/data/local/tmp/tuningfork_test";
-const Duration s_test_wait_time = std::chrono::seconds(1);
+const Duration s_test_wait_time = seconds(1);
 
 class TestBackend : public IBackend {
    public:
@@ -141,27 +143,28 @@ class TestDownloadBackend : public IBackend {
 // Increment time with a known tick size
 class TestTimeProvider : public ITimeProvider {
    public:
-    TestTimeProvider(
-        Duration tick_size_ = std::chrono::milliseconds(20),
-        SystemDuration system_tick_size_ = std::chrono::milliseconds(20))
-        : tick_size(tick_size_), system_tick_size(system_tick_size_) {}
+    TestTimeProvider(Duration tick_size_ = milliseconds(20),
+                     SystemDuration system_tick_size_ = milliseconds(20))
+        : tick_size(tick_size_), system_tick_size(system_tick_size_) {
+        Reset();
+    }
 
     TimePoint t;
     SystemTimePoint st;
     Duration tick_size;
     SystemDuration system_tick_size;
 
-    TimePoint Now() override {
-        t += tick_size;
-        return t;
-    }
-    SystemTimePoint SystemNow() override {
-        st += system_tick_size;
-        return st;
-    }
+    TimePoint Now() override { return t; }
+
+    SystemTimePoint SystemNow() override { return st; }
     void Reset() {
         t = TimePoint();
         st = SystemTimePoint();
+    }
+
+    void Increment() {
+        t += tick_size;
+        st += system_tick_size;
     }
 };
 
@@ -169,13 +172,14 @@ class TestMemInfoProvider : public DefaultMemInfoProvider {
     uint64_t result_;
 
    public:
-    TestMemInfoProvider(bool enabled) : result_(0) {
+    TestMemInfoProvider(bool enabled) : result_(0), numNativeHeapRequests(0) {
         SetEnabled(enabled);
         SetDeviceMemoryBytes(8000000000);
     }
     uint64_t GetNativeHeapAllocatedSize() override {
         // Crank up the memory with each call
         result_ += 100000000L;
+        ++numNativeHeapRequests;
         return result_;
     }
     uint64_t GetMemInfoOomScore() const override { return 42; }
@@ -196,6 +200,8 @@ class TestMemInfoProvider : public DefaultMemInfoProvider {
         memInfo.vmRss = std::make_pair(0, false);
         memInfo.vmSize = std::make_pair(0, false);
     }
+    void UpdateOomScore() override {}
+    uint32_t numNativeHeapRequests;
 };
 
 class TuningForkTest {
@@ -209,8 +215,7 @@ class TuningForkTest {
     TuningFork_ErrorCode init_return_value_;
 
     TuningForkTest(
-        const Settings& settings,
-        Duration tick_size = std::chrono::milliseconds(20),
+        const Settings& settings, Duration tick_size = milliseconds(20),
         const std::shared_ptr<TestDownloadBackend>& download_backend =
             std::make_shared<TestDownloadBackend>(),
         bool enable_meminfo = false)
@@ -232,6 +237,16 @@ class TuningForkTest {
     }
 
     TuningForkLogEvent Result() const { return test_backend_.result; }
+
+    void WaitForMemoryUpdates(size_t expected_num_requests) {
+        const int maxWaits = 10;
+        int waits = 0;
+        while (waits++ < maxWaits && meminfo_provider_.numNativeHeapRequests <
+                                         expected_num_requests) {
+            std::this_thread::sleep_for(milliseconds(10));
+        }
+    }
+    void IncrementTime() { time_provider_.Increment(); }
 };
 
 const TuningFork_CProtobufSerialization* TrainingModeParams() {
@@ -267,8 +282,10 @@ TuningForkLogEvent TestEndToEnd() {
                      NTICKS - 1, 1, {});
     TuningForkTest test(settings);
     std::unique_lock<std::mutex> lock(*test.rmutex_);
-    for (int i = 0; i < NTICKS; ++i)
+    for (int i = 0; i < NTICKS; ++i) {
+        test.IncrementTime();
         tuningfork::FrameTick(TFTICK_RAW_FRAME_TIME);
+    }
     // Wait for the upload thread to complete writing the string
     EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time) ==
                 std::cv_status::no_timeout)
@@ -285,13 +302,15 @@ TuningForkLogEvent TestEndToEndWithAnnotation() {
     auto settings =
         TestSettings(Settings::AggregationStrategy::Submission::TICK_BASED,
                      NTICKS - 1, 2, {3});
-    TuningForkTest test(settings, std::chrono::milliseconds(10));
+    TuningForkTest test(settings, milliseconds(10));
     Annotation ann;
     ann.set_level(com::google::tuningfork::LEVEL_1);
     tuningfork::SetCurrentAnnotation(Serialize(ann));
     std::unique_lock<std::mutex> lock(*test.rmutex_);
-    for (int i = 0; i < NTICKS; ++i)
+    for (int i = 0; i < NTICKS; ++i) {
+        test.IncrementTime();
         tuningfork::FrameTick(TFTICK_PACED_FRAME_TIME);
+    }
     // Wait for the upload thread to complete writing the string
     EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time) ==
                 std::cv_status::no_timeout)
@@ -306,10 +325,12 @@ TuningForkLogEvent TestEndToEndTimeBased() {
     auto settings =
         TestSettings(Settings::AggregationStrategy::Submission::TIME_BASED,
                      10100, 1, {}, {{TFTICK_RAW_FRAME_TIME, 50, 150, 10}});
-    TuningForkTest test(settings, std::chrono::milliseconds(100));
+    TuningForkTest test(settings, milliseconds(100));
     std::unique_lock<std::mutex> lock(*test.rmutex_);
-    for (int i = 0; i < NTICKS; ++i)
+    for (int i = 0; i < NTICKS; ++i) {
+        test.IncrementTime();
         tuningfork::FrameTick(TFTICK_RAW_FRAME_TIME);
+    }
     // Wait for the upload thread to complete writing the string
     EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time) ==
                 std::cv_status::no_timeout)
@@ -324,12 +345,20 @@ TuningForkLogEvent TestEndToEndWithMemory() {
     auto settings =
         TestSettings(Settings::AggregationStrategy::Submission::TICK_BASED,
                      NTICKS - 1, 1, {});
-    TuningForkTest test(settings, std::chrono::milliseconds(20),
+    milliseconds tickDuration(20);
+    TuningForkTest test(settings, tickDuration,
                         std::make_shared<TestDownloadBackend>(),
                         /*enable_meminfo*/ true);
     std::unique_lock<std::mutex> lock(*test.rmutex_);
-    for (int i = 0; i < NTICKS; ++i)
+    for (int i = 0; i < NTICKS; ++i) {
+        test.IncrementTime();
         tuningfork::FrameTick(TFTICK_RAW_FRAME_TIME);
+        // Put in a small sleep so we don't outpace the memory recording thread
+        std::this_thread::sleep_for(milliseconds(1));
+    }
+    // Wait for the async metric thread to process 2s worth of memory requests
+    test.WaitForMemoryUpdates((NTICKS * tickDuration) /
+                              kFastMemoryMetricInterval);
     // Wait for the upload thread to complete writing the string
     EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time) ==
                 std::cv_status::no_timeout)
@@ -510,8 +539,7 @@ void TestFidelityParamDownloadThread(bool insights) {
                                      : std::make_shared<TestDownloadBackend>(
                                            /*wait_count*/ 3, &default_fps);
 
-    TuningForkTest test(settings, std::chrono::milliseconds(20),
-                        download_backend);
+    TuningForkTest test(settings, milliseconds(20), download_backend);
 
     auto r = TuningFork_startFidelityParamDownloadThread(
         nullptr, FidelityParamsCallback);
@@ -600,7 +628,7 @@ static const std::string empty_tuning_parameters_request = R"({
 TEST(TuningForkTest, TestFidelityParamDownloadRequest) {
     HttpBackend backend;
     HttpRequest inner_request("https://test.google.com", "dummy_api_key",
-                              std::chrono::milliseconds(1000));
+                              milliseconds(1000));
     TestRequest request(inner_request,
                         {{empty_tuning_parameters_request, 200, "out"}});
     ProtobufSerialization fps;
@@ -672,7 +700,24 @@ TEST(TuningForkTest, EndToEndWithMemory) {
     },
     "report": {
       "memory": {
-        "memory_histogram": [{
+        "memory_histogram": [
+        {
+          "counts": [0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         "histogram_config": {
+          "bucket_max_bytes": "8000000000",
+          "bucket_min_bytes": "0"
+         },
+         "period_ms": 1000,
+         "type": 11
+        },
+        {
           "counts": [0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0,
                      1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1,
                      0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0,
@@ -680,16 +725,16 @@ TEST(TuningForkTest, EndToEndWithMemory) {
                      0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0,
                      0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0,
                      1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1,
-                     0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 922],
+                     0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 120],
          "histogram_config": {
           "bucket_max_bytes": "8000000000",
           "bucket_min_bytes": "0"
          },
-         "period_ms": 16,
+         "period_ms": 100,
          "type": 1
         },
         {
-          "counts": [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          "counts": [0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -701,24 +746,8 @@ TEST(TuningForkTest, EndToEndWithMemory) {
           "bucket_max_bytes": "8000000000",
           "bucket_min_bytes": "0"
          },
-         "period_ms": 15000,
+         "period_ms": 1000,
          "type": 2
-        },
-        {
-          "counts": [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-         "histogram_config": {
-          "bucket_max_bytes": "8000000000",
-          "bucket_min_bytes": "0"
-         },
-         "period_ms": 15000,
-         "type": 11
         }]
       }
     }

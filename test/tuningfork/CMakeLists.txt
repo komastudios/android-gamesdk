@@ -41,7 +41,7 @@ protobuf_generate_nano_c( ${CMAKE_CURRENT_SOURCE_DIR}/proto
   proto/dev_tuningfork.proto
 )
 
-message( STATUS "B CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
+option(TUNINGFORK_TEST_OPTION "" ON)
 add_subdirectory("../../src/tuningfork"
   tuningfork-build
 )

@@ -24,6 +24,7 @@ namespace tuningfork {
 class IMemInfoProvider {
    public:
     virtual void UpdateMemInfo() = 0;
+    virtual void UpdateOomScore() = 0;
     virtual uint64_t GetNativeHeapAllocatedSize() = 0;
     virtual void SetEnabled(bool enable) = 0;
     virtual bool GetEnabled() const = 0;
