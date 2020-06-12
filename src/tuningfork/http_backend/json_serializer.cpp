@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "serializer.h"
+#include "json_serializer.h"
 
 #include <set>
 #include <sstream>
@@ -79,12 +79,12 @@ using namespace json11;
 using namespace std::chrono;
 using namespace date;
 
-Json::object GameSdkInfoJson(const ExtraUploadInfo& device_info) {
+Json::object GameSdkInfoJson(const RequestInfo& request_info) {
     std::stringstream version_str;
     version_str << TUNINGFORK_MAJOR_VERSION << "." << TUNINGFORK_MINOR_VERSION;
     return Json::object {
         {"version", version_str.str() },
-        {"session_id", device_info.session_id}
+        {"session_id", request_info.session_id}
     };
 }
 
@@ -145,14 +145,13 @@ std::string JsonUint64(uint64_t x) {
 }
 Json::object TelemetryContextJson(const ProngCache& prong_cache,
                                   const SerializedAnnotation& annotation,
-                                  const ProtobufSerialization& fidelity_params,
-                                  const ExtraUploadInfo& device_info,
+                                  const RequestInfo& request_info,
                                   const Duration& duration) {
     return Json::object {
         {"annotations", B64Encode(annotation)},
         {"tuning_parameters", Json::object {
-                {"experiment_id", device_info.experiment_id},
-                {"serialized_fidelity_parameters", B64Encode(fidelity_params)}
+                {"experiment_id", request_info.experiment_id},
+                {"serialized_fidelity_parameters", B64Encode(request_info.current_fidelity_parameters)}
             }
         },
         {"duration", DurationToSecondsString(duration)}
@@ -256,15 +255,13 @@ Json::object MemoryTelemetryReportJson(const ProngCache& prong_cache,
 
 Json::object TelemetryJson(const ProngCache& prong_cache,
                            const SerializedAnnotation& annotation,
-                           const ProtobufSerialization& fidelity_params,
-                           const ExtraUploadInfo& device_info,
+                           const RequestInfo& request_info,
                            Duration& duration,
                            bool& empty)
 {
     auto report = TelemetryReportJson(prong_cache, annotation, empty, duration);
     return Json::object {
-        {"context", TelemetryContextJson(prong_cache, annotation,
-                                         fidelity_params, device_info, duration)},
+        {"context", TelemetryContextJson(prong_cache, annotation, request_info, duration)},
         {"report", report}
     };
 
@@ -272,25 +269,22 @@ Json::object TelemetryJson(const ProngCache& prong_cache,
 
 Json::object MemoryTelemetryJson(const ProngCache& prong_cache,
                                  const SerializedAnnotation& annotation,
-                                 const ProtobufSerialization& fidelity_params,
-                                 const ExtraUploadInfo& device_info,
+                                 const RequestInfo& request_info,
                                  const Duration& duration,
                                  bool& empty) {
     auto report = MemoryTelemetryReportJson(prong_cache, annotation, empty);
     return Json::object {
-        {"context", TelemetryContextJson(prong_cache, annotation,
-                                         fidelity_params, device_info, duration)},
+        {"context", TelemetryContextJson(prong_cache, annotation, request_info, duration)},
         {"report", report}
     };
 }
 
-/*static*/ void GESerializer::SerializeEvent(const ProngCache& prongs,
-                                             const ProtobufSerialization& fidelity_params,
-                                             const ExtraUploadInfo& device_info,
+/*static*/ void JsonSerializer::SerializeEvent(const ProngCache& prongs,
+                                             const RequestInfo& request_info,
                                              std::string& evt_json_ser) {
     Json session_context = Json::object {
-        {"device", json_utils::DeviceSpecJson(device_info)},
-        {"game_sdk_info", GameSdkInfoJson(device_info)},
+        {"device", json_utils::DeviceSpecJson(request_info)},
+        {"game_sdk_info", GameSdkInfoJson(request_info)},
         {"time_period",
             Json::object {
                 {"start_time", TimeToRFC3339(prongs.time().start)},
@@ -309,7 +303,7 @@ Json::object MemoryTelemetryJson(const ProngCache& prong_cache,
     for(auto& a: annotations) {
         bool empty;
         Duration duration;
-        auto tel = TelemetryJson(prongs, a, fidelity_params, device_info, duration, empty);
+        auto tel = TelemetryJson(prongs, a, request_info, duration, empty);
         sum_duration += duration;
         if(!empty)
             telemetry.push_back(tel);
@@ -320,12 +314,12 @@ Json::object MemoryTelemetryJson(const ProngCache& prong_cache,
         // histogram, but each report needs to be associated with a context, including an
         // annotation. We use the first one and expect it to be ignored  on the Play side.
         auto& a = *annotations.begin();
-        auto tel = MemoryTelemetryJson(prongs, a, fidelity_params, device_info, sum_duration, empty);
+        auto tel = MemoryTelemetryJson(prongs, a, request_info, sum_duration, empty);
         if(!empty)
             telemetry.push_back(tel);
     }
     Json upload_telemetry_request = Json::object {
-        {"name", json_utils::GetResourceName(device_info)},
+        {"name", json_utils::GetResourceName(request_info)},
         {"session_context", session_context},
         {"telemetry", telemetry}
     };
@@ -351,7 +345,7 @@ struct Hist {
 };
 }
 
-/*static*/ TuningFork_ErrorCode GESerializer::DeserializeAndMerge(
+/*static*/ TuningFork_ErrorCode JsonSerializer::DeserializeAndMerge(
     const std::string& evt_json_ser,
     IdProvider& id_provider,
     ProngCache& pc) {

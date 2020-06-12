@@ -74,10 +74,10 @@ namespace json_utils {
 
 // Resource name for the tuning parameters of an apk, identified by package
 // name and version code.
-std::string GetResourceName(const ExtraUploadInfo& request_info);
+std::string GetResourceName(const RequestInfo& request_info);
 
 // See DeviceSpec in proto/performanceparameters.proto
-json11::Json::object DeviceSpecJson(const ExtraUploadInfo& request_info);
+json11::Json::object DeviceSpecJson(const RequestInfo& request_info);
 
 } // namespace json_utils
 

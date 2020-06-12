@@ -20,7 +20,7 @@
 
 #include "tuningfork/tuningfork.h"
 #include "proto/protobuf_util.h"
-#include "request.h"
+#include "http_backend/http_request.h"
 
 namespace tuningfork {
 
@@ -30,7 +30,7 @@ public:
     virtual ~IBackend() {};
 
     // Perform a blocking call to get fidelity parameters from the server.
-    virtual TuningFork_ErrorCode GenerateTuningParameters(Request& request,
+    virtual TuningFork_ErrorCode GenerateTuningParameters(HttpRequest& request,
         const ProtobufSerialization* training_mode_fps,
         ProtobufSerialization& fidelity_params,
         std::string& experiment_id) = 0;
@@ -40,7 +40,7 @@ public:
         const std::string& tuningfork_log_event) = 0;
 
     // Perform a blocking call to upload debug info to a server.
-    virtual TuningFork_ErrorCode UploadDebugInfo(Request& request)  = 0;
+    virtual TuningFork_ErrorCode UploadDebugInfo(HttpRequest& request)  = 0;
 
 };
 

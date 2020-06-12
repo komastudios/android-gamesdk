@@ -20,12 +20,15 @@
 #include <cstdint>
 #include <vector>
 
+#include "proto/protobuf_util.h"
+
 namespace tuningfork {
 
-// Extra information that is uploaded with the proto including device information, game
+// Extra information that is sent with requests including device information, game
 // package information and session information.
-struct ExtraUploadInfo {
+struct RequestInfo {
     std::string experiment_id;
+    ProtobufSerialization current_fidelity_parameters;
     std::string session_id;
     uint64_t total_memory_bytes;
     uint32_t gl_es_version;
@@ -39,6 +42,13 @@ struct ExtraUploadInfo {
     std::string brand;
     std::string product;
     std::string device;
+
+    // Note that this will include an empty experiment_id and current_fidelity_parameters.
+    static RequestInfo ForThisGameAndDevice();
+
+    // We have a globally accessible cached value
+    static RequestInfo& CachedValue();
+
 };
 
 } // namespace tuningfork

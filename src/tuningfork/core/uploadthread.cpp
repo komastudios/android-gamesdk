@@ -16,15 +16,11 @@
 
 #include "uploadthread.h"
 
-#include <sys/system_properties.h>
 #include <cstring>
-#include <fstream>
 #include <sstream>
-#include <cmath>
 
-#include "tuningfork_utils.h"
 #include "proto/protobuf_util.h"
-#include "http_backend/serializer.h"
+#include "http_backend/json_serializer.h"
 #include "http_backend/http_request.h"
 #include "modp_b64.h"
 
@@ -51,13 +47,13 @@ public:
         }
         return TUNINGFORK_ERROR_OK;
     }
-  TuningFork_ErrorCode GenerateTuningParameters(Request& request,
+  TuningFork_ErrorCode GenerateTuningParameters(HttpRequest& request,
                                                 const ProtobufSerialization* training_mode_fps,
                                                 ProtobufSerialization& fidelity_params,
                                                 std::string& experiment_id) override {
       return TUNINGFORK_ERROR_OK;
   }
-  TuningFork_ErrorCode UploadDebugInfo(Request& request) override {
+  TuningFork_ErrorCode UploadDebugInfo(HttpRequest& request) override {
       return TUNINGFORK_ERROR_OK;
   }
 };
@@ -89,12 +85,10 @@ void Runnable::Stop() {
     thread_->join();
 }
 
-UploadThread::UploadThread(IBackend *backend, const ExtraUploadInfo& extraInfo) : Runnable(),
-                                               backend_(backend),
-                                               current_fidelity_params_(0),
-                                               upload_callback_(nullptr),
-                                               extra_info_(extraInfo),
-                                               persister_(nullptr) {
+UploadThread::UploadThread(IBackend *backend) : Runnable(),
+                                                backend_(backend),
+                                                upload_callback_(nullptr),
+                                                persister_(nullptr) {
     if (backend_ == nullptr)
         backend_ = s_debug_backend.get();
     Start();
@@ -112,9 +106,7 @@ void UploadThread::Start() {
 Duration UploadThread::DoWork() {
     if (ready_) {
         std::string evt_ser_json;
-        GESerializer::SerializeEvent(*ready_, current_fidelity_params_,
-                                     extra_info_,
-                                     evt_ser_json);
+        JsonSerializer::SerializeEvent(*ready_, RequestInfo::CachedValue(), evt_ser_json);
         if(upload_callback_) {
             upload_callback_(evt_ser_json.c_str(), evt_ser_json.size());
         }
@@ -146,94 +138,6 @@ bool UploadThread::Submit(const ProngCache *prongs, bool upload) {
         return false;
 }
 
-namespace {
-
-// TODO(willosborn): replace these with device_info library calls once they are available
-
-std::string slurpFile(const char* fname) {
-    std::ifstream f(fname);
-    if (f.good()) {
-        std::stringstream str;
-        str << f.rdbuf();
-        return str.str();
-    }
-    return "";
-}
-
-const char* skipSpace(const char* q) {
-    while(*q && (*q==' ' || *q=='\t')) ++q;
-    return q;
-}
-std::string getSystemPropViaGet(const char* key) {
-    char buffer[PROP_VALUE_MAX + 1]="";  // +1 for terminator
-    int bufferLen = __system_property_get(key, buffer);
-    if(bufferLen>0)
-        return buffer;
-    else
-        return "";
-}
-
-}
-
-/* static */
-ExtraUploadInfo UploadThread::BuildExtraUploadInfo() {
-    ExtraUploadInfo extra_info;
-    // Total memory
-    std::string s = slurpFile("/proc/meminfo");
-    if (!s.empty()) {
-        // Lines like 'MemTotal:        3749460 kB'
-        std::string to_find("MemTotal:");
-        auto it = s.find(to_find);
-        if(it!=std::string::npos) {
-            const char* p = s.data() + it + to_find.length();
-            p = skipSpace(p);
-            std::istringstream str(p);
-            uint64_t x;
-            str >> x;
-            std::string units;
-            str >> units;
-            static std::string unitPrefix = "bBkKmMgGtTpP";
-            auto j = unitPrefix.find(units[0]);
-            uint64_t mult = 1;
-            if (j!=std::string::npos) {
-                mult = ::pow(1024L,j/2);
-            }
-            extra_info.total_memory_bytes = x*mult;
-        }
-    }
-    extra_info.build_version_sdk = getSystemPropViaGet("ro.build.version.sdk");
-    extra_info.build_fingerprint = getSystemPropViaGet("ro.build.fingerprint");
-
-    if (jni::IsValid())
-        extra_info.session_id = UniqueId();
-
-    extra_info.cpu_max_freq_hz.clear();
-    for(int index = 1;;++index) {
-        std::stringstream str;
-        str << "/sys/devices/system/cpu/cpu" << index << "/cpufreq/cpuinfo_max_freq";
-        auto cpu_freq_file = slurpFile(str.str().c_str());
-        if (cpu_freq_file.empty())
-            break;
-        uint64_t freq;
-        std::istringstream cstr(cpu_freq_file);
-        cstr >> freq;
-        extra_info.cpu_max_freq_hz.push_back(freq*1000); // File is in kHz
-    }
-
-    if (jni::IsValid()) {
-        extra_info.apk_version_code = apk_utils::GetVersionCode(
-                                       &extra_info.apk_package_name,
-                                       &extra_info.gl_es_version);
-        extra_info.model = jni::android::os::Build::MODEL().C();
-        extra_info.brand = jni::android::os::Build::BRAND().C();
-        extra_info.product = jni::android::os::Build::PRODUCT().C();
-        extra_info.device = jni::android::os::Build::DEVICE().C();
-    }
-    extra_info.tuningfork_version = TUNINGFORK_PACKED_VERSION;
-
-    return extra_info;
-}
-
 void UploadThread::InitialChecks(ProngCache& prongs,
                                  IdProvider& id_provider,
                                  const TuningFork_Cache* persister) {
@@ -248,7 +152,7 @@ void UploadThread::InitialChecks(ProngCache& prongs,
                        persister_->user_data)==TUNINGFORK_ERROR_OK) {
         std::string paused_hists_str = ToString(paused_hists_ser);
         ALOGI("Got PAUSED histograms: %s", paused_hists_str.c_str());
-        GESerializer::DeserializeAndMerge(paused_hists_str,
+        JsonSerializer::DeserializeAndMerge(paused_hists_str,
                                           id_provider,
                                           prongs);
         TuningFork_CProtobufSerialization_free(&paused_hists_ser);

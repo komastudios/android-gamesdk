@@ -27,29 +27,13 @@
 
 namespace tuningfork {
 
-std::string Request::GetURL(std::string rpcname) const {
+std::string HttpRequest::GetURL(std::string rpcname) const {
     std::stringstream url;
     url << base_url_;
-    url << json_utils::GetResourceName(info_);
+    url << json_utils::GetResourceName(RequestInfo::CachedValue());
     url << rpcname;
     return url.str();
 }
-
-TuningFork_ErrorCode Request::Send(const std::string& rpc_name,
-    const std::string& request,
-    int& response_code,
-    std::string& response_body) {
-    return TUNINGFORK_ERROR_OK;
-}
-
-HttpRequest::HttpRequest(const Request& inner) :
-        Request(inner) {
-}
-
-HttpRequest::HttpRequest(const HttpRequest& rhs) :
-        Request(rhs) {
-}
-
 
 TuningFork_ErrorCode HttpRequest::Send(
     const std::string& rpc_name, const std::string& request_json,

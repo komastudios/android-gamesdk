@@ -52,7 +52,7 @@ static void add_params(const ProtobufSerialization& params, Json::object& obj,
     }
 }
 
-static std::string RequestJson(const ExtraUploadInfo& request_info,
+static std::string RequestJson(const RequestInfo& request_info,
                         const ProtobufSerialization* training_mode_params) {
     Json::object request_obj = Json::object {
         {"name", json_utils::GetResourceName(request_info)},
@@ -139,14 +139,14 @@ static TuningFork_ErrorCode DecodeResponse(const std::string& response,
     return TUNINGFORK_ERROR_OK;
 }
 
-static TuningFork_ErrorCode DownloadFidelityParams(Request& request,
+static TuningFork_ErrorCode DownloadFidelityParams(HttpRequest& request,
     const ProtobufSerialization* training_mode_fps,
     ProtobufSerialization& fps,
     std::string& experiment_id) {
     int response_code;
     std::string body;
     TuningFork_ErrorCode ret = request.Send(
-        kRpcName, RequestJson(request.Info(), training_mode_fps),
+        kRpcName, RequestJson(RequestInfo::CachedValue(), training_mode_fps),
         response_code, body);
     if (ret!=TUNINGFORK_ERROR_OK)
         return ret;
@@ -159,7 +159,7 @@ static TuningFork_ErrorCode DownloadFidelityParams(Request& request,
     return ret;
 }
 
-TuningFork_ErrorCode HttpBackend::GenerateTuningParameters(Request& request,
+TuningFork_ErrorCode HttpBackend::GenerateTuningParameters(HttpRequest& request,
     const ProtobufSerialization* training_mode_fps,
     ProtobufSerialization& fidelity_params,
     std::string& experiment_id) {

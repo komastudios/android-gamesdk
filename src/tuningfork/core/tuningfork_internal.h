@@ -22,10 +22,9 @@
 
 #include "core/backend.h"
 #include "core/common.h"
-#include "core/extra_upload_info.h"
+#include "core/request_info.h"
 #include "core/id_provider.h"
 #include "core/meminfo_provider.h"
-#include "core/request.h"
 #include "core/settings.h"
 #include "core/time_provider.h"
 #include "core/tuningfork_extra.h"
@@ -35,12 +34,13 @@
 
 namespace tuningfork {
 
+// If no request_info is passed, the info for this device and game are used.
 // If no backend is passed, the default backend, which uploads to the google http endpoint is used.
 // If no timeProvider is passed, std::chrono::steady_clock is used.
 // If no env is passed, there can be no upload or download.
 TuningFork_ErrorCode Init(const Settings& settings,
-                 const ExtraUploadInfo* extra_info = nullptr,
-                 IBackend* backend = 0,
+                 const RequestInfo* request_info = nullptr,
+                 IBackend* backend = nullptr,
                  ITimeProvider* time_provider = nullptr,
                  IMemInfoProvider* meminfo_provider = nullptr);
 
