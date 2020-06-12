@@ -1,0 +1,48 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000003404181",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1333174?revision\u003d3",
+      "fixSuggestions": [
+        {
+          "fixId": "4c5016e3_1d8f12e4",
+          "description": "Change to \"src/tuningfork/core/prong.cpp\"",
+          "replacements": [
+            {
+              "path": "src/tuningfork/core/prong.cpp",
+              "range": {
+                "startLine": 67,
+                "startChar": 57,
+                "endLine": 67,
+                "endChar": 65
+              },
+              "replacement": "serialize"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "8f5c4e3d_be15a74a",
+        "filename": "src/tuningfork/core/prong.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-06-12T14:33:51Z",
+      "side": 1,
+      "message": "Common typo found: \"seralize\" -- should it be \"serialize\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.",
+      "range": {
+        "startLine": 67,
+        "startChar": 57,
+        "endLine": 67,
+        "endChar": 65
+      },
+      "revId": "06a3954d7894510d270d950f4ea63396ed8ec5ef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
