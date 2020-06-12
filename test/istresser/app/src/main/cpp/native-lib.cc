@@ -22,8 +22,6 @@
 
 namespace {
   constexpr char kAppName[] = "istresser";
-  static constexpr uint32_t kLcgPrime1 = 214013;
-  static constexpr uint32_t kLcgPrime2 = 2531011;
   static constexpr size_t randomFileBufSize = 16 * 1024;
 
   istresser_utils::Utils *utils;
@@ -77,7 +75,7 @@ static void ReadAndIgnore(void *addr, size_t byte_len) {
   }
 }
 
-extern "C" JNIEXPORT bool JNICALL
+extern "C" JNIEXPORT jboolean JNICALL
 Java_net_jimblackler_istresser_MainActivity_nativeConsume(
     JNIEnv *env, jobject instance, jint bytes) {
   utils->mtx.lock();
@@ -207,9 +205,9 @@ Java_net_jimblackler_istresser_MainActivity_mmapFileConsume(
   return addr == MAP_FAILED ? 0 : byte_count;
 }
 
-extern "C" JNIEXPORT bool JNICALL
+extern "C" JNIEXPORT jboolean JNICALL
 Java_net_jimblackler_istresser_MainActivity_tryAlloc(
-    JNIEnv *env, jobject thiz, jint bytes) {
+    JNIEnv *env, jclass thiz, jint bytes) {
   size_t byte_count = (size_t)bytes;
   char *data = (char *)malloc(byte_count);
   if (data) {
