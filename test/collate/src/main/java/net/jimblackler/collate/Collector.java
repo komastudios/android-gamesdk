@@ -25,7 +25,9 @@ import java.nio.charset.MalformedInputException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import org.json.JSONArray;
@@ -58,6 +60,12 @@ class Collector {
       throws IOException {
     String projectId = Utils.getProjectId();
     String accessToken = Auth.getAccessToken();
+
+    Map<String, JSONObject> launcherDevices = new HashMap<>();
+    DeviceFetcher.fetch(device -> {
+      launcherDevices.put(device.getString("id"), device);
+    });
+
     GoogleCredentials credentials1 = GoogleCredentials.create(new AccessToken(accessToken, null));
     Storage storage = StorageOptions.newBuilder().setCredentials(credentials1).build().getService();
 
@@ -116,6 +124,15 @@ class Collector {
                     + executionId
                     + "/executions/"
                     + step.getStepId());
+            for (StepDimensionValueEntry entry : step.getDimensionValue()) {
+              if ("Model".equals(entry.getKey())) {
+                String id = entry.getValue();
+                if (launcherDevices.containsKey(id)) {
+                  extra.put("fromLauncher", launcherDevices.get(id));
+                }
+                break;
+              }
+            }
             List<FileReference> toolLogs = toolExecution.getToolLogs();
             if (toolLogs == null) {
               continue;
