@@ -141,6 +141,7 @@ void InitTf(JNIEnv* env, jobject activity) {
     if (err==TUNINGFORK_ERROR_OK) {
         TuningFork_setUploadCallback(UploadCallback);
         SetAnnotations();
+        TuningFork_enableMemoryRecording(true);
     } else {
         ALOGW("Error initializing TuningFork: %d", err);
     }

@@ -88,7 +88,7 @@ std::string report_end = "]}";
 std::string single_tick_with_loading = R"TF({
   "context": {
     "annotations": "",
-    "duration": "0.755s",
+    "duration": "1.51s",
     "tuning_parameters": {
       "experiment_id": "expt",
       "serialized_fidelity_parameters": ""
@@ -112,35 +112,38 @@ std::string single_tick_with_loading = R"TF({
                                             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      "instrument_id": 1
+      "instrument_id": 1234
       }]
     }
   }
 })TF";
 
 TEST(SerializationTest, SerializationWithLoading) {
-    Session prong_cache(
-        2 /*size*/, 2 /*max_instrumentation_keys*/,
-        {Settings::DefaultHistogram(1)},
-        [](uint64_t) { return SerializedAnnotation(); },
-        [](uint64_t id) { return id == 0; }, nullptr);
+    Session session(2 /* capacity */);
+    session.CreateLoadingTimeSeries(LoadingTimeMetric(),
+                                    MetricId::LoadingTime(0));
+    session.CreateFrameTimeHistogram(FrameTimeMetric(0),
+                                     MetricId::FrameTime(1, 0),
+                                     Settings::DefaultHistogram(1));
+
     std::string evt_ser;
-    JsonSerializer::SerializeEvent(prong_cache, test_device_info, evt_ser);
+    session.SetInstrumentationKeys({1234});
+    JsonSerializer::SerializeEvent(session, test_device_info, evt_ser);
     auto empty_report = report_start + report_end;
     EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, empty_report))
         << evt_ser << "\n!=\n"
         << empty_report;
 
     // Fill in some data
-    auto p1 = prong_cache.Get(0);
-    EXPECT_NE(p1, nullptr);
-    p1->Trace(milliseconds(1500));
+    auto p1 = session.GetData<LoadingTimeMetricData>(MetricId::LoadingTime(0));
+    ASSERT_NE(p1, nullptr);
+    p1->Record(milliseconds(1500));
 
-    auto p2 = prong_cache.Get(1);
-    EXPECT_NE(p2, nullptr);
-    p2->Trace(milliseconds(10));
+    auto p2 = session.GetData<FrameTimeMetricData>(MetricId::FrameTime(1, 0));
+    ASSERT_NE(p2, nullptr);
+    p2->Record(milliseconds(10));
 
-    JsonSerializer::SerializeEvent(prong_cache, test_device_info, evt_ser);
+    JsonSerializer::SerializeEvent(session, test_device_info, evt_ser);
     auto report = report_start + single_tick_with_loading + report_end;
     EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, report))
         << evt_ser << "\n!=\n"
@@ -175,15 +178,15 @@ class TestIdProvider : public IdProvider {
     }
     TuningFork_ErrorCode MakeCompoundId(InstrumentationKey k,
                                         uint64_t annotation_id,
-                                        uint64_t& id) override {
-        id = k;
+                                        MetricId& id) override {
+        id.base = k;
         return TUNINGFORK_ERROR_OK;
     }
 };
 
 void CheckSessions(const Session& pc0, const Session& pc1) {
-    Prong* p0 = pc0.Get(0);
-    Prong* p1 = pc1.Get(0);
+    auto p0 = pc0.GetData<FrameTimeMetricData>(MetricId::FrameTime(0, 0));
+    auto p1 = pc1.GetData<FrameTimeMetricData>(MetricId::FrameTime(0, 0));
     EXPECT_TRUE(p0 != nullptr && p1 != nullptr);
     EXPECT_EQ(p0->histogram_, p1->histogram_);
 }
@@ -191,33 +194,32 @@ void CheckSessions(const Session& pc0, const Session& pc1) {
 Settings::Histogram DefaultHistogram() { return {-1, 10, 40, 30}; }
 
 TEST(SerializationTest, GEDeserialization) {
-    Session prong_cache(
-        1 /*size*/, 1 /*max_instrumentation_keys*/, {DefaultHistogram()},
-        [](uint64_t) { return SerializedAnnotation(); },
-        [](uint64_t) { return false; }, nullptr);
+    Session session(1 /* capacity */);
+    FrameTimeMetric metric(0);
+    MetricId metric_id{0};
+    session.CreateFrameTimeHistogram(metric, metric_id, DefaultHistogram());
     std::string evt_ser;
-    JsonSerializer::SerializeEvent(prong_cache, test_device_info, evt_ser);
+    JsonSerializer::SerializeEvent(session, test_device_info, evt_ser);
     auto empty_report = report_start + report_end;
     EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, empty_report))
         << evt_ser << "\n!=\n"
         << empty_report;
     // Fill in some data
-    auto p = prong_cache.Get(0);
-    p->Trace(milliseconds(30));
-    JsonSerializer::SerializeEvent(prong_cache, test_device_info, evt_ser);
+    auto p = session.GetData<FrameTimeMetricData>(metric_id);
+    p->Record(milliseconds(30));
+    JsonSerializer::SerializeEvent(session, test_device_info, evt_ser);
     auto report = report_start + single_tick + report_end;
     EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, report))
         << evt_ser << "\n!=\n"
         << report;
-    Session pc(
-        1 /*size*/, 1 /*max_instrumentation_keys*/, {DefaultHistogram()},
-        [](uint64_t) { return SerializedAnnotation(); },
-        [](uint64_t) { return false; }, nullptr);
+    Session session1(1 /*capacity*/);
+    session1.CreateFrameTimeHistogram(metric, metric_id, DefaultHistogram());
     TestIdProvider id_provider;
-    EXPECT_EQ(JsonSerializer::DeserializeAndMerge(evt_ser, id_provider, pc),
-              TUNINGFORK_ERROR_OK)
+    EXPECT_EQ(
+        JsonSerializer::DeserializeAndMerge(evt_ser, id_provider, session1),
+        TUNINGFORK_ERROR_OK)
         << "Deserialize single";
-    CheckSessions(pc, prong_cache);
+    CheckSessions(session1, session);
 }
 
 }  // namespace serialization_test

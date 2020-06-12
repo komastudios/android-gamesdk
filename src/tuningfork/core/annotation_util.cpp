@@ -151,7 +151,7 @@ void SetUpAnnotationRadixes(std::vector<uint32_t>& radix_mult,
     }
     auto n = enum_sizes.size();
     if (n == 0) {
-        // With no annotations, we just have 1 possible prong per key
+        // With no annotations, we just have 1 possible histogram per key
         radix_mult.resize(1);
         radix_mult[0] = 1;
     } else {

@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.4.1)
 
+option(TUNINGFORK_TEST_OPTION "Set TUNINGFORK_TEST C++ flag")
+
 include("../protobuf/protobuf.cmake")
 set( MODPB64_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../external/modp_b64")
 set( THIRDPARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../third_party")
@@ -10,6 +12,10 @@ set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffunction-sections -fdata-sections" )
 set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g0")
+
+if (${TUNINGFORK_TEST_OPTION})
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DTUNINGFORK_TEST" )
+endif (${TUNINGFORK_TEST_OPTION})
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
 set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--gc-sections,-s")
@@ -40,11 +46,12 @@ add_definitions(-DPB_FIELD_16BIT)
 set( TUNINGFORK_SRCS
   c_header_check.c
   core/annotation_util.cpp
+  core/async_telemetry.cpp
   core/crash_handler.cpp
   core/file_cache.cpp
   core/memory_telemetry.cpp
-  core/prong.cpp
   core/request_info.cpp
+  core/runnable.cpp
   core/session.cpp
   core/tuningfork.cpp
   core/tuningfork_c.cpp
