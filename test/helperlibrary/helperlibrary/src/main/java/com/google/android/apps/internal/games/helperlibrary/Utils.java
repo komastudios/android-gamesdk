@@ -85,7 +85,7 @@ public class Utils {
   /**
    * Returns a dictionary of values extracted from the /proc/meminfo file.
    *
-   * @return A dictionary of values.
+   * @return A dictionary of values, in bytes.
    */
   public static Map<String, Long> processMeminfo() {
     Map<String, Long> output = new HashMap<>();
@@ -96,7 +96,8 @@ public class Utils {
       Pattern pattern = Pattern.compile("([^:]+)[^\\d]*(\\d+).*\n");
       Matcher matcher = pattern.matcher(meminfoText);
       while (matcher.find()) {
-        output.put(matcher.group(1), Long.parseLong(Objects.requireNonNull(matcher.group(2))));
+        output.put(matcher.group(1),
+            Long.parseLong(Objects.requireNonNull(matcher.group(2))) * 1024);
       }
     } catch (IOException e) {
       Log.w(TAG, "Failed to read " + filename);

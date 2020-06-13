@@ -74,7 +74,7 @@ class Heuristic {
         reporter.report("cl", Indicator.GREEN);
       } else {
         reporter.report("cl",
-            Debug.getNativeHeapAllocatedSize() / 1024 > commitLimit * heuristics.getDouble("cl")
+            Debug.getNativeHeapAllocatedSize()  > commitLimit * heuristics.getDouble("cl")
                 ? Indicator.RED : Indicator.GREEN);
       }
     }
