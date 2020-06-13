@@ -140,30 +140,6 @@
       "gl_allocated"
     ];
 
-    const memoryFieldsBytes = new Set(
-        ["nativeHeap", "recordNativeHeap", "nativeAllocated", "nativeAllocatedByTest",
-          "serviceTotalMemory", "maxMemory",  "freeMemory", "availMem", "totalMem", "threshold",
-          "lowMemory", "memoryClass", "availMemPlusNativeAllocated", "gl_allocated",
-          "mmapAnonAllocatedByTest"
-        ]);
-    const memoryFieldsKb = new Set(["MemTotal", "MemAvailable", "Buffers", "Cached",
-      "SwapCached", "Active", "Inactive", "Active(anon)",
-      "Inactive(anon)", "Active(file)", "Inactive(file)", "Unevictable",
-      "Mlocked", "SwapTotal", "SwapFree", "Dirty",
-      "Writeback", "AnonPages", "Mapped", "Shmem",
-      "Slab", "SReclaimable", "SUnreclaim", "KernelStack",
-      "PageTables", "NFS_Unstable", "Bounce", "WritebackTmp",
-      "CommitLimit", "Committed_AS", "VmallocTotal", "VmallocUsed",
-      "VmallocChunk", "CmaTotal", "CmaFree", "MemFree",
-      "nativePrivateDirty", "nativePss", "nativeSharedDirty",
-      "totalPss", "totalPrivateDirty", "totalSharedDirty",
-
-      "VmSize", "VmStk", "VmRSS", "VmLck", "VmPin", "VmLib", "VmHWM", "VmSwap", "VmPTE", "VmExe",
-      "VmData", "VmPeak",
-
-      "summary.graphics", "summary.native-heap", "summary.native-heap", "summary.total-pss"
-
-    ]);
     const highlights = [];
 
     const annotations = [];
@@ -190,12 +166,10 @@
         let combined = {...row, ...constant};
         if (field in combined) {
           let value = combined[field];
-          if (memoryFieldsBytes.has(field)) {
-            value /= 1024 * 1024; // MB
-          } else if (memoryFieldsKb.has(field)) {
-            value /= 1024; // MB
-          } else if (field === "time") {
+          if (field === "time") {
             value /= 1000;
+          } else if (field !== "oom_score") {
+            value /= 1024 * 1024; // MB
           }
           rowOut.push(value);
           doneOne = true;
