@@ -8,7 +8,6 @@ import android.os.Build.VERSION_CODES;
 import android.util.Log;
 
 class ServiceCommunicationHelper {
-
   private static final String ACTION_TYPE = "action";
   private static final String QUERY_ACTION = "query";
   private static final String ALLOCATE_MEMORY_ACTION = "allocate";
@@ -29,17 +28,14 @@ class ServiceCommunicationHelper {
   }
 
   void allocateServerMemory(int megabytes) {
-
     if (VERSION.SDK_INT >= VERSION_CODES.O) {
-    Intent intent = new Intent();
-    intent.setComponent(
-        new ComponentName(
-            "com.google.gamesdk.grabber",
-            "com.google.gamesdk.grabber.MemoryPressureService"));
-    intent.putExtra(ACTION_TYPE, ALLOCATE_MEMORY_ACTION);
-    intent.putExtra(TOTAL_MEMORY_MB, megabytes);
-    intent.putExtra(FIRST_TIME, isFirstTime);
-    isFirstTime = false;
+      Intent intent = new Intent();
+      intent.setComponent(new ComponentName(
+          "com.google.gamesdk.grabber", "com.google.gamesdk.grabber.MemoryPressureService"));
+      intent.putExtra(ACTION_TYPE, ALLOCATE_MEMORY_ACTION);
+      intent.putExtra(TOTAL_MEMORY_MB, megabytes);
+      intent.putExtra(FIRST_TIME, isFirstTime);
+      isFirstTime = false;
       context.startForegroundService(intent);
     } else {
       Log.w(TAG, "Unable to request server memory, version is below 26");
@@ -48,14 +44,12 @@ class ServiceCommunicationHelper {
 
   void queryServerMemory() {
     if (VERSION.SDK_INT >= VERSION_CODES.O) {
-    Intent intent = new Intent();
-    intent.setComponent(
-        new ComponentName(
-            "com.google.gamesdk.grabber",
-            "com.google.gamesdk.grabber.MemoryPressureService"));
-    intent.putExtra(ACTION_TYPE, QUERY_ACTION);
-    intent.putExtra(FIRST_TIME, isFirstTime);
-    isFirstTime = false;
+      Intent intent = new Intent();
+      intent.setComponent(new ComponentName(
+          "com.google.gamesdk.grabber", "com.google.gamesdk.grabber.MemoryPressureService"));
+      intent.putExtra(ACTION_TYPE, QUERY_ACTION);
+      intent.putExtra(FIRST_TIME, isFirstTime);
+      isFirstTime = false;
       context.startForegroundService(intent);
     } else {
       Log.w(TAG, "Unable to query server memory, version is below 26");
@@ -64,14 +58,12 @@ class ServiceCommunicationHelper {
 
   void freeServerMemory() {
     if (VERSION.SDK_INT >= VERSION_CODES.O) {
-    Intent intent = new Intent();
-    intent.setComponent(
-        new ComponentName(
-            "com.google.gamesdk.grabber",
-            "com.google.gamesdk.grabber.MemoryPressureService"));
-    intent.putExtra(ACTION_TYPE, FREE_MEMORY_ACTION);
-    intent.putExtra(FIRST_TIME, isFirstTime);
-    isFirstTime = false;
+      Intent intent = new Intent();
+      intent.setComponent(new ComponentName(
+          "com.google.gamesdk.grabber", "com.google.gamesdk.grabber.MemoryPressureService"));
+      intent.putExtra(ACTION_TYPE, FREE_MEMORY_ACTION);
+      intent.putExtra(FIRST_TIME, isFirstTime);
+      isFirstTime = false;
       context.startForegroundService(intent);
     } else {
       Log.w(TAG, "Unable to free server memory, version is below 26");

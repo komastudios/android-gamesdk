@@ -1,7 +1,6 @@
 package net.jimblackler.istresser;
 
 import android.util.Log;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +11,6 @@ import java.nio.charset.StandardCharsets;
  * A long-running service that sends every new log line to a client.
  */
 public class LogMonitor {
-
   private static final String TAG = LogMonitor.class.getSimpleName();
 
   interface LogReaderClient {
@@ -32,7 +30,6 @@ public class LogMonitor {
       try (InputStream inputStream = Runtime.getRuntime().exec("logcat").getInputStream();
            BufferedReader bufferedReader =
                new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-
         // Initially all log lines already present on the log are discarded. The class is only for
         // monitoring future log activity.
         while (bufferedReader.ready()) {

@@ -1,6 +1,10 @@
 package net.jimblackler.istresser;
 
 import static com.google.android.apps.internal.games.helperlibrary.Helper.getBuild;
+import static com.google.android.apps.internal.games.helperlibrary.Utils.getMemoryInfo;
+import static com.google.android.apps.internal.games.helperlibrary.Utils.processMeminfo;
+import static com.google.android.apps.internal.games.helperlibrary.Utils.readFile;
+import static com.google.android.apps.internal.games.helperlibrary.Utils.readStream;
 import static net.jimblackler.istresser.ServiceCommunicationHelper.CRASHED_BEFORE;
 import static net.jimblackler.istresser.ServiceCommunicationHelper.TOTAL_MEMORY_MB;
 import static net.jimblackler.istresser.Utils.flattenParams;
@@ -8,10 +12,6 @@ import static net.jimblackler.istresser.Utils.getDuration;
 import static net.jimblackler.istresser.Utils.getFileSize;
 import static net.jimblackler.istresser.Utils.getMemoryQuantity;
 import static net.jimblackler.istresser.Utils.getOrDefault;
-import static com.google.android.apps.internal.games.helperlibrary.Utils.getMemoryInfo;
-import static com.google.android.apps.internal.games.helperlibrary.Utils.processMeminfo;
-import static com.google.android.apps.internal.games.helperlibrary.Utils.readFile;
-import static com.google.android.apps.internal.games.helperlibrary.Utils.readStream;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -26,12 +26,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import androidx.annotation.Nullable;
-import androidx.core.content.FileProvider;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
-
+import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import com.google.android.apps.internal.games.helperlibrary.Info;
 import com.google.common.collect.Lists;
 import java.io.File;
@@ -47,7 +46,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-
 import net.jimblackler.istresser.Heuristic.Indicator;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -56,7 +54,6 @@ import org.json.JSONObject;
 
 /** The main activity of the istresser app */
 public class MainActivity extends Activity {
-
   private static final String TAG = MainActivity.class.getSimpleName();
 
   // Set LAUNCH_DURATION to a value in milliseconds to trigger the launch test.
@@ -132,9 +129,8 @@ public class MainActivity extends Activity {
         if (logPath != null) {
           Log.i(TAG, "Log file " + logPath);
           try {
-            resultsStream =
-                new PrintStream(
-                    Objects.requireNonNull(getContentResolver().openOutputStream(logFile)));
+            resultsStream = new PrintStream(
+                Objects.requireNonNull(getContentResolver().openOutputStream(logFile)));
           } catch (FileNotFoundException e) {
             throw new IllegalStateException(e);
           }
@@ -186,7 +182,7 @@ public class MainActivity extends Activity {
     delayBeforeRelease = getDuration(getOrDefault(params, "delayBeforeRelease", "1s"));
     delayAfterRelease = getDuration(getOrDefault(params, "delayAfterRelease", "1s"));
     int samplesPerSecond = (int) getOrDefault(params, "samplesPerSecond", 4);
-    deviceSettings= getDeviceSettings();
+    deviceSettings = getDeviceSettings();
     setContentView(R.layout.activity_main);
     serviceCommunicationHelper = new ServiceCommunicationHelper(this);
     serviceState = ServiceState.DEALLOCATED;
@@ -195,58 +191,56 @@ public class MainActivity extends Activity {
 
     try {
       // Setting up broadcast receiver
-      BroadcastReceiver receiver =
-          new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-              isServiceCrashed = intent.getBooleanExtra(CRASHED_BEFORE, false);
-              serviceTotalMb = intent.getIntExtra(TOTAL_MEMORY_MB, 0);
-              switch (serviceState) {
-                case ALLOCATING_MEMORY:
-                  serviceState = ServiceState.ALLOCATED;
+      BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+          isServiceCrashed = intent.getBooleanExtra(CRASHED_BEFORE, false);
+          serviceTotalMb = intent.getIntExtra(TOTAL_MEMORY_MB, 0);
+          switch (serviceState) {
+            case ALLOCATING_MEMORY:
+              serviceState = ServiceState.ALLOCATED;
 
-                  new Thread() {
-                    @Override
-                    public void run() {
-                      try {
-                        Thread.sleep(BACKGROUND_PRESSURE_PERIOD_SECONDS * 1000);
-                      } catch (Exception e) {
-                        if (e instanceof InterruptedException) {
-                          Thread.currentThread().interrupt();
-                        }
-                        throw new IllegalStateException(e);
-                      }
-                      serviceState = ServiceState.FREEING_MEMORY;
-                      serviceCommunicationHelper.freeServerMemory();
+              new Thread() {
+                @Override
+                public void run() {
+                  try {
+                    Thread.sleep(BACKGROUND_PRESSURE_PERIOD_SECONDS * 1000);
+                  } catch (Exception e) {
+                    if (e instanceof InterruptedException) {
+                      Thread.currentThread().interrupt();
                     }
-                  }.start();
+                    throw new IllegalStateException(e);
+                  }
+                  serviceState = ServiceState.FREEING_MEMORY;
+                  serviceCommunicationHelper.freeServerMemory();
+                }
+              }.start();
 
-                  break;
-                case FREEING_MEMORY:
-                  serviceState = ServiceState.DEALLOCATED;
+              break;
+            case FREEING_MEMORY:
+              serviceState = ServiceState.DEALLOCATED;
 
-                  new Thread() {
-                    @Override
-                    public void run() {
-                      try {
-                        Thread.sleep(BACKGROUND_PRESSURE_PERIOD_SECONDS * 1000);
-                      } catch (Exception e) {
-                        if (e instanceof InterruptedException) {
-                          Thread.currentThread().interrupt();
-                        }
-                        throw new IllegalStateException(e);
-                      }
-                      serviceState = ServiceState.ALLOCATING_MEMORY;
-                      serviceCommunicationHelper.allocateServerMemory(
-                          BACKGROUND_MEMORY_PRESSURE_MB);
+              new Thread() {
+                @Override
+                public void run() {
+                  try {
+                    Thread.sleep(BACKGROUND_PRESSURE_PERIOD_SECONDS * 1000);
+                  } catch (Exception e) {
+                    if (e instanceof InterruptedException) {
+                      Thread.currentThread().interrupt();
                     }
-                  }.start();
+                    throw new IllegalStateException(e);
+                  }
+                  serviceState = ServiceState.ALLOCATING_MEMORY;
+                  serviceCommunicationHelper.allocateServerMemory(BACKGROUND_MEMORY_PRESSURE_MB);
+                }
+              }.start();
 
-                  break;
-                default:
-              }
-            }
-          };
+              break;
+            default:
+          }
+        }
+      };
       registerReceiver(receiver, new IntentFilter("com.google.gamesdk.grabber.RETURN"));
 
       JSONObject report = new JSONObject();
@@ -328,164 +322,158 @@ public class MainActivity extends Activity {
           criticalLogLines.set(new JSONArray());
         }
         criticalLogLines.get().put(line);
-      }});
+      }
+    });
 
     appSwitchTimerStart = System.currentTimeMillis();
     latestAllocationTime = info.getStartTime();
 
-    timer.schedule(
-        new TimerTask() {
-          @Override
-          public void run() {
-            try {
-              JSONObject report = standardInfo();
-              if (criticalLogLines.get() != null) {
-                report.put("criticalLogLines", criticalLogLines.get());
-                criticalLogLines.set(null);
-              }
-              long sinceLastAllocation = System.currentTimeMillis() - latestAllocationTime;
-              if (sinceLastAllocation > 0) {
-                boolean shouldAllocate = true;
-                Indicator[] maxMemoryPressureLevel = {Indicator.GREEN};
-                String[] triggeringHeuristic = {null};
+    timer.schedule(new TimerTask() {
+      @Override
+      public void run() {
+        try {
+          JSONObject report = standardInfo();
+          if (criticalLogLines.get() != null) {
+            report.put("criticalLogLines", criticalLogLines.get());
+            criticalLogLines.set(null);
+          }
+          long sinceLastAllocation = System.currentTimeMillis() - latestAllocationTime;
+          if (sinceLastAllocation > 0) {
+            boolean shouldAllocate = true;
+            Indicator[] maxMemoryPressureLevel = {Indicator.GREEN};
+            String[] triggeringHeuristic = {null};
 
-                Heuristic.checkHeuristics(activityManager, params,
-                    deviceSettings.getJSONObject("limits"),
-                    (heuristic, heuristicMemoryPressureLevel) -> {
-                      if (heuristicMemoryPressureLevel == Indicator.GREEN) {
-                        // GREEN heuristic does nothing here.
-                        return;
-                      }
-                      if (maxMemoryPressureLevel[0] == Indicator.RED) {
-                        // RED cannot be overwritten.
-                        return;
-                      }
-                      triggeringHeuristic[0] = heuristic;
-                      maxMemoryPressureLevel[0] = heuristicMemoryPressureLevel;
-                  });
-
-                if (yellowLightTesting) {
-                  if (maxMemoryPressureLevel[0] == Indicator.RED) {
-                    shouldAllocate = false;
-                    freeMemory(MEMORY_TO_FREE_PER_CYCLE_MB * BYTES_IN_MEGABYTE);
-                  } else if (maxMemoryPressureLevel[0] == Indicator.YELLOW) {
-                    shouldAllocate = false;
-                    // Allocating 0 MB
+            Heuristic.checkHeuristics(activityManager, params,
+                deviceSettings.getJSONObject("limits"),
+                (heuristic, heuristicMemoryPressureLevel) -> {
+                  if (heuristicMemoryPressureLevel == Indicator.GREEN) {
+                    // GREEN heuristic does nothing here.
+                    return;
                   }
+                  if (maxMemoryPressureLevel[0] == Indicator.RED) {
+                    // RED cannot be overwritten.
+                    return;
+                  }
+                  triggeringHeuristic[0] = heuristic;
+                  maxMemoryPressureLevel[0] = heuristicMemoryPressureLevel;
+                });
+
+            if (yellowLightTesting) {
+              if (maxMemoryPressureLevel[0] == Indicator.RED) {
+                shouldAllocate = false;
+                freeMemory(MEMORY_TO_FREE_PER_CYCLE_MB * BYTES_IN_MEGABYTE);
+              } else if (maxMemoryPressureLevel[0] == Indicator.YELLOW) {
+                shouldAllocate = false;
+                // Allocating 0 MB
+              }
+              latestAllocationTime = System.currentTimeMillis();
+            } else {
+              if (maxMemoryPressureLevel[0] == Indicator.RED) {
+                shouldAllocate = false;
+                releaseMemory(report, triggeringHeuristic[0]);
+              }
+            }
+
+            if (mallocBytesPerMillisecond > 0 && shouldAllocate) {
+              int owed = (int) (sinceLastAllocation * mallocBytesPerMillisecond);
+              if (owed > 0) {
+                boolean succeeded = nativeConsume(owed);
+                if (succeeded) {
+                  nativeAllocatedByTest += owed;
                   latestAllocationTime = System.currentTimeMillis();
                 } else {
-                  if (maxMemoryPressureLevel[0] == Indicator.RED) {
-                    shouldAllocate = false;
-                    releaseMemory(report, triggeringHeuristic[0]);
-                  }
-                }
-
-                if (mallocBytesPerMillisecond > 0 && shouldAllocate) {
-                  int owed = (int) (sinceLastAllocation * mallocBytesPerMillisecond);
-                  if (owed > 0) {
-                    boolean succeeded = nativeConsume(owed);
-                    if (succeeded) {
-                      nativeAllocatedByTest += owed;
-                      latestAllocationTime = System.currentTimeMillis();
-                    } else {
-                      report.put("allocFailed", true);
-                    }
-                  }
-                }
-                if (glAllocBytesPerMillisecond > 0 && shouldAllocate) {
-                  long target = sinceLastAllocation * glAllocBytesPerMillisecond;
-                  TestSurface testSurface = findViewById(R.id.glsurfaceView);
-                  testSurface.getRenderer().setTarget(target);
-                }
-
-                if (vkAllocBytesPerMillisecond > 0 && shouldAllocate) {
-                  long owed =
-                      sinceLastAllocation * vkAllocBytesPerMillisecond - vkAllocatedByTest;
-                  if (owed > 0) {
-                    long allocated = vkAlloc(owed);
-                    if (allocated >= owed) {
-                      vkAllocatedByTest += owed;
-                    } else {
-                      report.put("allocFailed", true);
-                    }
-                  }
-                }
-
-                if (mmapAnonBytesPerMillisecond > 0) {
-                  long owed = sinceLastAllocation * mmapAnonBytesPerMillisecond;
-                  if (owed > MMAP_ANON_BLOCK_BYTES) {
-                    long allocated = mmapAnonConsume(owed);
-                    if (allocated != 0) {
-                      mmapAnonAllocatedByTest += allocated;
-                      latestAllocationTime = System.currentTimeMillis();
-                    } else {
-                      report.put("mmapAnonFailed", true);
-                    }
-                  }
-                }
-                if (mmapFileBytesPerMillisecond > 0) {
-                  long owed = sinceLastAllocation * mmapFileBytesPerMillisecond;
-                  if (owed > MMAP_FILE_BLOCK_BYTES) {
-                    MmapFileInfo file = mmapFiles.alloc(owed);
-                    long allocated =
-                        mmapFileConsume(file.getPath(), file.getAllocSize(), file.getOffset());
-                    if (allocated == 0) {
-                      report.put("mmapFileFailed", true);
-                    } else {
-                      mmapFileAllocatedByTest += allocated;
-                      latestAllocationTime = System.currentTimeMillis();
-                    }
-                  }
+                  report.put("allocFailed", true);
                 }
               }
-              long timeRunning = System.currentTimeMillis() - info.getStartTime();
-              if (LAUNCH_DURATION != 0) {
-                long appSwitchTimeRunning = System.currentTimeMillis() - appSwitchTimerStart;
-                if (appSwitchTimeRunning > LAUNCH_DURATION && lastLaunched < LAUNCH_DURATION) {
-                  lastLaunched = appSwitchTimeRunning;
-                  Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                  File file =
-                      new File(
-                          Environment.getExternalStoragePublicDirectory(
-                              Environment.DIRECTORY_PICTURES)
-                              + File.separator
-                              + "pic.jpg");
-                  String authority = getApplicationContext().getPackageName() + ".provider";
-                  Uri uriForFile = FileProvider.getUriForFile(MainActivity.this, authority, file);
-                  intent.putExtra(MediaStore.EXTRA_OUTPUT, uriForFile);
-                  startActivityForResult(intent, 1);
-                }
-                if (appSwitchTimeRunning > RETURN_DURATION && lastLaunched < RETURN_DURATION) {
-                  lastLaunched = appSwitchTimeRunning;
-                  finishActivity(1);
-                  appSwitchTimerStart = System.currentTimeMillis();
-                  lastLaunched = 0;
-                }
-              }
-              if (timeRunning > timeout) {
-                try {
-                  report = standardInfo();
-                  report.put("exiting", true);
-                  resultsStream.println(report);
-                } catch (JSONException e) {
-                  throw new IllegalStateException(e);
-                }
-              }
+            }
+            if (glAllocBytesPerMillisecond > 0 && shouldAllocate) {
+              long target = sinceLastAllocation * glAllocBytesPerMillisecond;
+              TestSurface testSurface = findViewById(R.id.glsurfaceView);
+              testSurface.getRenderer().setTarget(target);
+            }
 
+            if (vkAllocBytesPerMillisecond > 0 && shouldAllocate) {
+              long owed = sinceLastAllocation * vkAllocBytesPerMillisecond - vkAllocatedByTest;
+              if (owed > 0) {
+                long allocated = vkAlloc(owed);
+                if (allocated >= owed) {
+                  vkAllocatedByTest += owed;
+                } else {
+                  report.put("allocFailed", true);
+                }
+              }
+            }
+
+            if (mmapAnonBytesPerMillisecond > 0) {
+              long owed = sinceLastAllocation * mmapAnonBytesPerMillisecond;
+              if (owed > MMAP_ANON_BLOCK_BYTES) {
+                long allocated = mmapAnonConsume(owed);
+                if (allocated != 0) {
+                  mmapAnonAllocatedByTest += allocated;
+                  latestAllocationTime = System.currentTimeMillis();
+                } else {
+                  report.put("mmapAnonFailed", true);
+                }
+              }
+            }
+            if (mmapFileBytesPerMillisecond > 0) {
+              long owed = sinceLastAllocation * mmapFileBytesPerMillisecond;
+              if (owed > MMAP_FILE_BLOCK_BYTES) {
+                MmapFileInfo file = mmapFiles.alloc(owed);
+                long allocated =
+                    mmapFileConsume(file.getPath(), file.getAllocSize(), file.getOffset());
+                if (allocated == 0) {
+                  report.put("mmapFileFailed", true);
+                } else {
+                  mmapFileAllocatedByTest += allocated;
+                  latestAllocationTime = System.currentTimeMillis();
+                }
+              }
+            }
+          }
+          long timeRunning = System.currentTimeMillis() - info.getStartTime();
+          if (LAUNCH_DURATION != 0) {
+            long appSwitchTimeRunning = System.currentTimeMillis() - appSwitchTimerStart;
+            if (appSwitchTimeRunning > LAUNCH_DURATION && lastLaunched < LAUNCH_DURATION) {
+              lastLaunched = appSwitchTimeRunning;
+              Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+              File file = new File(
+                  Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                  + File.separator + "pic.jpg");
+              String authority = getApplicationContext().getPackageName() + ".provider";
+              Uri uriForFile = FileProvider.getUriForFile(MainActivity.this, authority, file);
+              intent.putExtra(MediaStore.EXTRA_OUTPUT, uriForFile);
+              startActivityForResult(intent, 1);
+            }
+            if (appSwitchTimeRunning > RETURN_DURATION && lastLaunched < RETURN_DURATION) {
+              lastLaunched = appSwitchTimeRunning;
+              finishActivity(1);
+              appSwitchTimerStart = System.currentTimeMillis();
+              lastLaunched = 0;
+            }
+          }
+          if (timeRunning > timeout) {
+            try {
+              report = standardInfo();
+              report.put("exiting", true);
               resultsStream.println(report);
-
-              if (timeRunning > timeout) {
-                resultsStream.close();
-                finish();
-              }
-              updateInfo(report);
             } catch (JSONException e) {
               throw new IllegalStateException(e);
             }
           }
-        },
-        0,
-        1000 / samplesPerSecond);
+
+          resultsStream.println(report);
+
+          if (timeRunning > timeout) {
+            resultsStream.close();
+            finish();
+          }
+          updateInfo(report);
+        } catch (JSONException e) {
+          throw new IllegalStateException(e);
+        }
+      }
+    }, 0, 1000 / samplesPerSecond);
   }
 
   private JSONObject getDeviceSettings() {
@@ -591,16 +579,15 @@ public class MainActivity extends Activity {
   }
 
   private void updateInfo(JSONObject metrics) {
-    runOnUiThread(
-        () -> {
-          WebView webView = findViewById(R.id.webView);
-          try {
-            webView.loadData(metrics.toString(2) + System.lineSeparator() + params.toString(2),
-                "text/plain; charset=utf-8", "UTF-8");
-          } catch (JSONException e) {
-            throw new IllegalStateException(e);
-          }
-        });
+    runOnUiThread(() -> {
+      WebView webView = findViewById(R.id.webView);
+      try {
+        webView.loadData(metrics.toString(2) + System.lineSeparator() + params.toString(2),
+            "text/plain; charset=utf-8", "UTF-8");
+      } catch (JSONException e) {
+        throw new IllegalStateException(e);
+      }
+    });
   }
 
   void jvmConsume(int bytes) {
@@ -617,7 +604,6 @@ public class MainActivity extends Activity {
 
   @Override
   public void onTrimMemory(int level) {
-
     try {
       JSONObject report = standardInfo();
       report.put("onTrimMemory", level);
@@ -644,78 +630,72 @@ public class MainActivity extends Activity {
       throw new IllegalStateException(e);
     }
     latestAllocationTime = -1;
-    runAfterDelay(
-        () -> {
-          JSONObject report2;
+    runAfterDelay(() -> {
+      JSONObject report2;
+      try {
+        report2 = standardInfo();
+      } catch (JSONException e) {
+        throw new IllegalStateException(e);
+      }
+      resultsStream.println(report2);
+      if (nativeAllocatedByTest > 0) {
+        nativeAllocatedByTest = 0;
+        freeAll();
+      }
+      mmapAnonFreeAll();
+      mmapAnonAllocatedByTest = 0;
+      data.clear();
+      if (glAllocBytesPerMillisecond > 0) {
+        TestSurface testSurface = findViewById(R.id.glsurfaceView);
+        if (testSurface != null) {
+          testSurface.queueEvent(() -> {
+            TestRenderer renderer = testSurface.getRenderer();
+            renderer.release();
+          });
+        }
+      }
+      if (vkAllocBytesPerMillisecond > 0) {
+        vkAllocatedByTest = 0;
+        vkRelease();
+      }
+
+      runAfterDelay(new Runnable() {
+        @Override
+        public void run() {
           try {
-            report2 = standardInfo();
+            resultsStream.println(standardInfo());
+            AtomicBoolean anyWarnings = new AtomicBoolean(false);
+            ActivityManager activityManager = (ActivityManager) Objects.requireNonNull(
+                getSystemService(Context.ACTIVITY_SERVICE));
+
+            Heuristic.checkHeuristics(activityManager, params,
+                deviceSettings.getJSONObject("limits"),
+                (heuristic, heuristicMemoryPressureLevel) -> {
+                  if (heuristicMemoryPressureLevel != Indicator.GREEN) {
+                    anyWarnings.set(true);
+                  }
+                });
+
+            if (anyWarnings.get()) {
+              runAfterDelay(this, delayAfterRelease);
+            } else {
+              latestAllocationTime = System.currentTimeMillis();
+            }
           } catch (JSONException e) {
             throw new IllegalStateException(e);
           }
-          resultsStream.println(report2);
-          if (nativeAllocatedByTest > 0) {
-            nativeAllocatedByTest = 0;
-            freeAll();
-          }
-          mmapAnonFreeAll();
-          mmapAnonAllocatedByTest = 0;
-          data.clear();
-          if (glAllocBytesPerMillisecond > 0) {
-            TestSurface testSurface = findViewById(R.id.glsurfaceView);
-            if (testSurface != null) {
-              testSurface.queueEvent(
-                  () -> {
-                    TestRenderer renderer = testSurface.getRenderer();
-                    renderer.release();
-                  });
-            }
-          }
-          if (vkAllocBytesPerMillisecond > 0) {
-            vkAllocatedByTest = 0;
-            vkRelease();
-          }
-
-          runAfterDelay(new Runnable() {
-            @Override
-            public void run() {
-              try {
-                resultsStream.println(standardInfo());
-                AtomicBoolean anyWarnings = new AtomicBoolean(false);
-                ActivityManager activityManager =
-                    (ActivityManager) Objects.requireNonNull(getSystemService(Context.ACTIVITY_SERVICE));
-
-                Heuristic.checkHeuristics(activityManager, params,
-                    deviceSettings.getJSONObject("limits"),
-                    (heuristic, heuristicMemoryPressureLevel) -> {
-                      if (heuristicMemoryPressureLevel != Indicator.GREEN) {
-                        anyWarnings.set(true);
-                      }
-                    });
-
-                if (anyWarnings.get()) {
-                  runAfterDelay(this, delayAfterRelease);
-                } else {
-                  latestAllocationTime = System.currentTimeMillis();
-                }
-              } catch (JSONException e) {
-                throw new IllegalStateException(e);
-              }
-            }
-          }, delayAfterRelease);
-        },
-        delayBeforeRelease);
+        }
+      }, delayAfterRelease);
+    }, delayBeforeRelease);
   }
 
   private void runAfterDelay(Runnable runnable, long delay) {
-
-    timer.schedule(
-        new TimerTask() {
-          @Override
-          public void run() {
-            runnable.run();
-          }
-        },
-        delay);
+    timer.schedule(new TimerTask() {
+      @Override
+      public void run() {
+        runnable.run();
+      }
+    }, delay);
   }
 
   private JSONObject standardInfo() throws JSONException {
