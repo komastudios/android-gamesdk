@@ -83,7 +83,7 @@ public class MainActivity extends Activity {
   private long mmapFileAllocatedByTest;
   private PrintStream resultsStream = System.out;
   private final Info info = new Info();
-  private long latestAllocationTime = -1;
+  private long allocationStartedTime = -1;
   private long appSwitchTimerStart;
   private long lastLaunched;
   private int serviceTotalMb = 0;
@@ -326,7 +326,7 @@ public class MainActivity extends Activity {
     });
 
     appSwitchTimerStart = System.currentTimeMillis();
-    latestAllocationTime = info.getStartTime();
+    allocationStartedTime = info.getStartTime();
 
     timer.schedule(new TimerTask() {
       @Override
@@ -337,96 +337,109 @@ public class MainActivity extends Activity {
             report.put("criticalLogLines", criticalLogLines.get());
             criticalLogLines.set(null);
           }
-          long sinceLastAllocation = System.currentTimeMillis() - latestAllocationTime;
-          if (sinceLastAllocation > 0) {
-            boolean shouldAllocate = true;
-            Indicator[] maxMemoryPressureLevel = {Indicator.GREEN};
-            String[] triggeringHeuristic = {null};
+          if (allocationStartedTime != -1) {
+            long sinceAllocationStarted = System.currentTimeMillis() - allocationStartedTime;
+            if (sinceAllocationStarted > 0) {
+              boolean shouldAllocate = true;
+              Indicator[] maxMemoryPressureLevel = {Indicator.GREEN};
+              String[] triggeringHeuristic = {null};
 
-            Heuristic.checkHeuristics(activityManager, params,
-                deviceSettings.getJSONObject("limits"),
-                (heuristic, heuristicMemoryPressureLevel) -> {
-                  if (heuristicMemoryPressureLevel == Indicator.GREEN) {
-                    // GREEN heuristic does nothing here.
-                    return;
+              Heuristic.checkHeuristics(activityManager, params,
+                  deviceSettings.getJSONObject("limits"),
+                  (heuristic, heuristicMemoryPressureLevel) -> {
+                    if (heuristicMemoryPressureLevel == Indicator.GREEN) {
+                      // GREEN heuristic does nothing here.
+                      return;
+                    }
+                    if (maxMemoryPressureLevel[0] == Indicator.RED) {
+                      // RED cannot be overwritten.
+                      return;
+                    }
+                    triggeringHeuristic[0] = heuristic;
+                    maxMemoryPressureLevel[0] = heuristicMemoryPressureLevel;
+                  });
+
+              if (yellowLightTesting) {
+                if (maxMemoryPressureLevel[0] == Indicator.RED) {
+                  shouldAllocate = false;
+                  freeMemory(MEMORY_TO_FREE_PER_CYCLE_MB * BYTES_IN_MEGABYTE);
+                } else if (maxMemoryPressureLevel[0] == Indicator.YELLOW) {
+                  shouldAllocate = false;
+                  // Allocating 0 MB
+                }
+                allocationStartedTime = System.currentTimeMillis();
+              } else {
+                if (maxMemoryPressureLevel[0] == Indicator.RED) {
+                  shouldAllocate = false;
+                  releaseMemory(report, triggeringHeuristic[0]);
+                }
+              }
+              if (mallocBytesPerMillisecond > 0 && shouldAllocate) {
+                long owed =
+                    sinceAllocationStarted * mallocBytesPerMillisecond - nativeAllocatedByTest;
+                if (owed > 0) {
+                  boolean succeeded = nativeConsume((int) owed);
+                  if (succeeded) {
+                    nativeAllocatedByTest += owed;
+                  } else {
+                    report.put("allocFailed", true);
                   }
-                  if (maxMemoryPressureLevel[0] == Indicator.RED) {
-                    // RED cannot be overwritten.
-                    return;
+                }
+              }
+              if (glAllocBytesPerMillisecond > 0 && shouldAllocate) {
+                long target = sinceAllocationStarted * glAllocBytesPerMillisecond;
+                TestSurface testSurface = findViewById(R.id.glsurfaceView);
+                testSurface.getRenderer().setTarget(target);
+              }
+
+              if (vkAllocBytesPerMillisecond > 0 && shouldAllocate) {
+                long owed = sinceAllocationStarted * vkAllocBytesPerMillisecond - vkAllocatedByTest;
+                if (owed > 0) {
+                  long allocated = vkAlloc(owed);
+                  if (allocated >= owed) {
+                    vkAllocatedByTest += owed;
+                  } else {
+                    report.put("allocFailed", true);
                   }
-                  triggeringHeuristic[0] = heuristic;
-                  maxMemoryPressureLevel[0] = heuristicMemoryPressureLevel;
-                });
-
-            if (yellowLightTesting) {
-              if (maxMemoryPressureLevel[0] == Indicator.RED) {
-                shouldAllocate = false;
-                freeMemory(MEMORY_TO_FREE_PER_CYCLE_MB * BYTES_IN_MEGABYTE);
-              } else if (maxMemoryPressureLevel[0] == Indicator.YELLOW) {
-                shouldAllocate = false;
-                // Allocating 0 MB
-              }
-              latestAllocationTime = System.currentTimeMillis();
-            } else {
-              if (maxMemoryPressureLevel[0] == Indicator.RED) {
-                shouldAllocate = false;
-                releaseMemory(report, triggeringHeuristic[0]);
-              }
-            }
-
-            if (mallocBytesPerMillisecond > 0 && shouldAllocate) {
-              int owed = (int) (sinceLastAllocation * mallocBytesPerMillisecond);
-              if (owed > 0) {
-                boolean succeeded = nativeConsume(owed);
-                if (succeeded) {
-                  nativeAllocatedByTest += owed;
-                  latestAllocationTime = System.currentTimeMillis();
-                } else {
-                  report.put("allocFailed", true);
                 }
               }
-            }
-            if (glAllocBytesPerMillisecond > 0 && shouldAllocate) {
-              long target = sinceLastAllocation * glAllocBytesPerMillisecond;
-              TestSurface testSurface = findViewById(R.id.glsurfaceView);
-              testSurface.getRenderer().setTarget(target);
-            }
 
-            if (vkAllocBytesPerMillisecond > 0 && shouldAllocate) {
-              long owed = sinceLastAllocation * vkAllocBytesPerMillisecond - vkAllocatedByTest;
-              if (owed > 0) {
-                long allocated = vkAlloc(owed);
-                if (allocated >= owed) {
-                  vkAllocatedByTest += owed;
-                } else {
-                  report.put("allocFailed", true);
+              if (vkAllocBytesPerMillisecond > 0 && shouldAllocate) {
+                long owed = sinceAllocationStarted * vkAllocBytesPerMillisecond - vkAllocatedByTest;
+                if (owed > 0) {
+                  long allocated = vkAlloc(owed);
+                  if (allocated >= owed) {
+                    vkAllocatedByTest += owed;
+                  } else {
+                    report.put("allocFailed", true);
+                  }
                 }
               }
-            }
 
-            if (mmapAnonBytesPerMillisecond > 0) {
-              long owed = sinceLastAllocation * mmapAnonBytesPerMillisecond;
-              if (owed > MMAP_ANON_BLOCK_BYTES) {
-                long allocated = mmapAnonConsume(owed);
-                if (allocated != 0) {
-                  mmapAnonAllocatedByTest += allocated;
-                  latestAllocationTime = System.currentTimeMillis();
-                } else {
-                  report.put("mmapAnonFailed", true);
+              if (mmapAnonBytesPerMillisecond > 0) {
+                long owed =
+                    sinceAllocationStarted * mmapAnonBytesPerMillisecond - mmapAnonAllocatedByTest;
+                if (owed > MMAP_ANON_BLOCK_BYTES) {
+                  long allocated = mmapAnonConsume(owed);
+                  if (allocated != 0) {
+                    mmapAnonAllocatedByTest += allocated;
+                  } else {
+                    report.put("mmapAnonFailed", true);
+                  }
                 }
               }
-            }
-            if (mmapFileBytesPerMillisecond > 0) {
-              long owed = sinceLastAllocation * mmapFileBytesPerMillisecond;
-              if (owed > MMAP_FILE_BLOCK_BYTES) {
-                MmapFileInfo file = mmapFiles.alloc(owed);
-                long allocated =
-                    mmapFileConsume(file.getPath(), file.getAllocSize(), file.getOffset());
-                if (allocated == 0) {
-                  report.put("mmapFileFailed", true);
-                } else {
-                  mmapFileAllocatedByTest += allocated;
-                  latestAllocationTime = System.currentTimeMillis();
+              if (mmapFileBytesPerMillisecond > 0) {
+                long owed =
+                    sinceAllocationStarted * mmapFileBytesPerMillisecond - mmapFileAllocatedByTest;
+                if (owed > MMAP_FILE_BLOCK_BYTES) {
+                  MmapFileInfo file = mmapFiles.alloc(owed);
+                  long allocated =
+                      mmapFileConsume(file.getPath(), file.getAllocSize(), file.getOffset());
+                  if (allocated == 0) {
+                    report.put("mmapFileFailed", true);
+                  } else {
+                    mmapFileAllocatedByTest += allocated;
+                  }
                 }
               }
             }
@@ -629,7 +642,7 @@ public class MainActivity extends Activity {
     } catch (JSONException e) {
       throw new IllegalStateException(e);
     }
-    latestAllocationTime = -1;
+    allocationStartedTime = -1;
     runAfterDelay(() -> {
       JSONObject report2;
       try {
@@ -679,7 +692,7 @@ public class MainActivity extends Activity {
             if (anyWarnings.get()) {
               runAfterDelay(this, delayAfterRelease);
             } else {
-              latestAllocationTime = System.currentTimeMillis();
+              allocationStartedTime = System.currentTimeMillis();
             }
           } catch (JSONException e) {
             throw new IllegalStateException(e);
@@ -700,7 +713,7 @@ public class MainActivity extends Activity {
 
   private JSONObject standardInfo() throws JSONException {
     JSONObject report = info.getMemoryMetrics(this);
-    boolean paused = latestAllocationTime == -1;
+    boolean paused = allocationStartedTime == -1;
     if (paused) {
       report.put("paused", true);
     }
