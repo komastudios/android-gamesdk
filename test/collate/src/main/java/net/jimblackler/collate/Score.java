@@ -31,126 +31,119 @@ public class Score {
     final int[] variations = {0};
     AtomicReference<JSONArray> tests = new AtomicReference<>();
     Map<Integer, JSONObject> paramsMap = new HashMap<>();
-    Consumer<JSONArray> collect =
-        result -> {
-          if (result.isEmpty()) {
-            return;
-          }
-          JSONObject first = result.getJSONObject(0);
-          JSONObject params = first.getJSONObject("params");
+    Consumer<JSONArray> collect = result -> {
+      if (result.isEmpty()) {
+        return;
+      }
+      JSONObject first = result.getJSONObject(0);
+      JSONObject params = first.getJSONObject("params");
 
-          JSONObject runParameters = Utils.flattenParams(params);
-          JSONArray coordinates = params.getJSONArray("coordinates");
-          tests.set(params.getJSONArray("tests"));
-          int total = 1;
-          int variationNumber = 0;
-          for (int coordinateNumber = coordinates.length() - 1;
-              coordinateNumber >= 0;
-              coordinateNumber--) {
-            int bound = tests.get().getJSONArray(coordinateNumber).length();
-            int value = coordinates.getInt(coordinateNumber);
-            variationNumber += value * total;
-            total *= bound;
-          }
-          if (variations[0] == 0) {
-            variations[0] = total;
-          } else {
-            assert variations[0] == total;
-          }
-          paramsMap.put(variationNumber, runParameters);
+      JSONObject runParameters = Utils.flattenParams(params);
+      JSONArray coordinates = params.getJSONArray("coordinates");
+      tests.set(params.getJSONArray("tests"));
+      int total = 1;
+      int variationNumber = 0;
+      for (int coordinateNumber = coordinates.length() - 1; coordinateNumber >= 0;
+           coordinateNumber--) {
+        int bound = tests.get().getJSONArray(coordinateNumber).length();
+        int value = coordinates.getInt(coordinateNumber);
+        variationNumber += value * total;
+        total *= bound;
+      }
+      if (variations[0] == 0) {
+        variations[0] = total;
+      } else {
+        assert variations[0] == total;
+      }
+      paramsMap.put(variationNumber, runParameters);
 
-          assert first.has("build");
-          JSONObject build = first.getJSONObject("build");
-          String id = build.toString();
-          if (first.has("extra")) {
-            JSONObject extra = first.getJSONObject("extra");
-            if (extra.has("dimensions")) {
-              JSONObject dimensions = extra.getJSONObject("dimensions");
-              id = dimensions.toString();
-            }
-          }
-          builds.put(id, build);
+      assert first.has("build");
+      JSONObject build = first.getJSONObject("build");
+      String id = build.toString();
+      if (first.has("extra")) {
+        JSONObject extra = first.getJSONObject("extra");
+        if (extra.has("dimensions")) {
+          JSONObject dimensions = extra.getJSONObject("dimensions");
+          id = dimensions.toString();
+        }
+      }
+      builds.put(id, build);
 
-          long lowestTop = Long.MAX_VALUE;
-          long largest = 0;
-          boolean exited = false;
-          boolean allocFailed = false;
-          boolean serviceCrashed = false;
+      long lowestTop = Long.MAX_VALUE;
+      long largest = 0;
+      boolean exited = false;
+      boolean allocFailed = false;
+      boolean serviceCrashed = false;
 
-          List<JSONObject> results = Lists.newArrayList();
-          for (int idx2 = 0; idx2 != result.length(); idx2++) {
-            JSONObject jsonObject = result.getJSONObject(idx2);
-            if (jsonObject.has("time")) {
-              results.add(jsonObject);
-            }
-          }
-          results.sort(Comparator.comparingLong(o -> o.getLong("time")));
-          for (JSONObject row : results) {
-            if (row.has("exiting")) {
-              exited = true;
-            }
-            if (row.has("allocFailed") || row.has("mmapAnonFailed") || row.has("mmapFileFailed") ||
-                row.has("criticalLogLines"))  {
-              allocFailed = true;
-            }
-            if (row.has("serviceCrashed")) {
-              serviceCrashed = true;
-            }
-            if (!row.has("nativeAllocated")) {
-              continue;
-            }
-            long score;
-            if (runParameters.has("glTest")) {
-              score = row.getLong("gl_allocated");
-            } else if (runParameters.has("mmapAnon")) {
-              score = row.getLong("mmapAnonAllocatedByTest");
-            } else if (runParameters.has("mmapFile")) {
-              score = row.getLong("mmapFileAllocatedByTest");
-            } else {
-              score = row.getLong("nativeAllocated");
-            }
+      List<JSONObject> results = Lists.newArrayList();
+      for (int idx2 = 0; idx2 != result.length(); idx2++) {
+        JSONObject jsonObject = result.getJSONObject(idx2);
+        if (jsonObject.has("time")) {
+          results.add(jsonObject);
+        }
+      }
+      results.sort(Comparator.comparingLong(o -> o.getLong("time")));
+      for (JSONObject row : results) {
+        if (row.has("exiting")) {
+          exited = true;
+        }
+        if (row.has("allocFailed") || row.has("mmapAnonFailed") || row.has("mmapFileFailed")
+            || row.has("criticalLogLines")) {
+          allocFailed = true;
+        }
+        if (row.has("serviceCrashed")) {
+          serviceCrashed = true;
+        }
+        if (!row.has("nativeAllocated")) {
+          continue;
+        }
+        long score;
+        if (runParameters.has("glTest")) {
+          score = row.getLong("gl_allocated");
+        } else if (runParameters.has("mmapAnon")) {
+          score = row.getLong("mmapAnonAllocatedByTest");
+        } else if (runParameters.has("mmapFile")) {
+          score = row.getLong("mmapFileAllocatedByTest");
+        } else {
+          score = row.getLong("nativeAllocated");
+        }
 
-            if (score > largest) {
-              largest = score;
-            }
+        if (score > largest) {
+          largest = score;
+        }
 
-            if (row.has("trigger") && !row.optBoolean("paused", false)) {
-              long top = score;
-              if (top < lowestTop) {
-                lowestTop = top;
-              }
-            }
+        if (row.has("trigger") && !row.optBoolean("paused", false)) {
+          long top = score;
+          if (top < lowestTop) {
+            lowestTop = top;
           }
+        }
+      }
 
-          float score = (lowestTop == Long.MAX_VALUE ? (float) largest : (float) lowestTop)
-              / (1024 * 1024);
-          List<Result> results0;
-          if (out.containsKey(id)) {
-            results0 = out.get(id);
-          } else {
-            results0 = new ArrayList<>();
-            while (results0.size() < variations[0]) {
-              results0.add(null);
-            }
-            out.put(id, results0);
-          }
-          JSONArray results1 = new JSONArray();
-          results1.put(result);
-          while (results0.size() <= variations[0] - 1) {
-            results0.add(null);
-          }
-          assert results0.get(variationNumber) == null;
-          JSONObject group = new JSONObject(runParameters.toString());
-          group.remove("heuristics");
-          results0.set(
-              variationNumber,
-              new Result(
-                  score,
-                  Main.writeGraphs(directory, results1),
-                  exited && !allocFailed,
-                  serviceCrashed,
-                  group.toString()));
-        };
+      float score =
+          (lowestTop == Long.MAX_VALUE ? (float) largest : (float) lowestTop) / (1024 * 1024);
+      List<Result> results0;
+      if (out.containsKey(id)) {
+        results0 = out.get(id);
+      } else {
+        results0 = new ArrayList<>();
+        while (results0.size() < variations[0]) {
+          results0.add(null);
+        }
+        out.put(id, results0);
+      }
+      JSONArray results1 = new JSONArray();
+      results1.put(result);
+      while (results0.size() <= variations[0] - 1) {
+        results0.add(null);
+      }
+      assert results0.get(variationNumber) == null;
+      JSONObject group = new JSONObject(runParameters.toString());
+      group.remove("heuristics");
+      results0.set(variationNumber,
+          new Result(score, Main.writeGraphs(directory, results1), exited && !allocFailed,
+              serviceCrashed, group.toString()));
+    };
 
     if (useDevice) {
       Collector.deviceCollect("net.jimblackler.istresser", collect);
@@ -162,8 +155,7 @@ public class Score {
   }
 
   private static URI writeReport(Map<String, List<Result>> rows, Map<String, JSONObject> builds,
-                                 Path directory, int variation, JSONArray tests)
-      throws IOException {
+      Path directory, int variation, JSONArray tests) throws IOException {
     StringBuilder body = new StringBuilder();
     writeTable(body, rows, builds, tests, directory, variation);
 
@@ -177,10 +169,8 @@ public class Score {
     return outputFile.toUri();
   }
 
-  private static void writeTable(StringBuilder body,
-                                 Map<String, List<Result>> rows,
-                                 Map<String, JSONObject> builds,
-                                 JSONArray tests, Path directory, int variation) {
+  private static void writeTable(StringBuilder body, Map<String, List<Result>> rows,
+      Map<String, JSONObject> builds, JSONArray tests, Path directory, int variation) {
     int rowspan = tests.length() + 1;
 
     int colspan = variation;
@@ -222,9 +212,7 @@ public class Score {
       for (int repeat = 0; repeat != repeats; repeat++) {
         for (int param = 0; param < test.length(); param++) {
           JSONObject _param = test.getJSONObject(param);
-          body.append("<th colspan=" + colspan + ">")
-              .append(toString(_param))
-              .append("</th>");
+          body.append("<th colspan=" + colspan + ">").append(toString(_param)).append("</th>");
         }
       }
       body.append("</tr>");

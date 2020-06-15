@@ -29,13 +29,9 @@ class Main {
         int count = 0;
         while (true) {
           String coordinates = params.getJSONArray("coordinates").toString();
-          String name =
-              build.getString("ID")
-                  + "_"
-                  + build.getString("RELEASE")
-                  + coordinates.replace("[", "_").replace(",", "_").replace("]", "")
-                  + (count > 0 ? "_" + count : "")
-                  + ".html";
+          String name = build.getString("ID") + "_" + build.getString("RELEASE")
+              + coordinates.replace("[", "_").replace(",", "_").replace("]", "")
+              + (count > 0 ? "_" + count : "") + ".html";
           outputFile = directory.resolve(name);
           if (!Files.exists(outputFile)) {
             break;
@@ -46,9 +42,9 @@ class Main {
         outputFile = Files.createTempFile(directory, "report-", ".html");
       }
       String content = Utils.fileToString("main.html");
-      //noinspection HardcodedFileSeparator
+      // noinspection HardcodedFileSeparator
       content = content.replace("[/*data*/]", results.toString());
-      //noinspection HardcodedFileSeparator
+      // noinspection HardcodedFileSeparator
       content = content.replace("/*css*/", Utils.fileToString("report.css"));
       Files.writeString(outputFile, content);
       return outputFile.toUri();

@@ -38,19 +38,17 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 class Collector {
-
   private static final Pattern BAD_CHARS = Pattern.compile("[^a-zA-Z0-9-_.]");
-  private static final String FIELDS = "nextPageToken," +
-      "steps(state,stepId,dimensionValue,testExecutionStep(toolExecution(toolOutputs,toolLogs)))";
+  private static final String FIELDS = "nextPageToken,"
+      + "steps(state,stepId,dimensionValue,testExecutionStep(toolExecution(toolOutputs,toolLogs)))";
 
   static void deviceCollect(String appName, Consumer<? super JSONArray> emitter)
       throws IOException {
     // Requires adb root
     Path outputFile = Files.createTempFile("data-", ".json");
-    //noinspection HardcodedFileSeparator
-    String files = Utils.execute(
-        "adb", "shell", "find", "/storage/emulated/0/Android/data/" +
-        appName + "/files", "-type", "f");
+    // noinspection HardcodedFileSeparator
+    String files = Utils.execute("adb", "shell", "find",
+        "/storage/emulated/0/Android/data/" + appName + "/files", "-type", "f");
     for (String file : files.split(System.lineSeparator())) {
       Utils.execute("adb", "pull", file, outputFile.toString());
       collectResult(emitter, Files.readString(outputFile), null);
@@ -63,9 +61,7 @@ class Collector {
     String accessToken = Auth.getAccessToken();
 
     Map<String, JSONObject> launcherDevices = new HashMap<>();
-    DeviceFetcher.fetch(device -> {
-      launcherDevices.put(device.getString("id"), device);
-    });
+    DeviceFetcher.fetch(device -> { launcherDevices.put(device.getString("id"), device); });
 
     GoogleCredentials credentials1 = GoogleCredentials.create(new AccessToken(accessToken, null));
     Storage storage = StorageOptions.newBuilder().setCredentials(credentials1).build().getService();
@@ -73,9 +69,8 @@ class Collector {
     GoogleCredential credentials =
         new GoogleCredential.Builder().build().setAccessToken(accessToken);
     ToolResults toolResults =
-        new ToolResults.Builder(
-                new NetHttpTransport(),
-                new JacksonFactory(),
+        new ToolResults
+            .Builder(new NetHttpTransport(), new JacksonFactory(),
                 new NetHttpTransport().createRequestFactory(credentials).getInitializer())
             .setServicePath(ToolResults.DEFAULT_SERVICE_PATH)
             .setApplicationName(projectId)
@@ -100,8 +95,7 @@ class Collector {
           for (Execution execution : response.getExecutions()) {
             String executionId = execution.getExecutionId();
             ToolResults.Projects.Histories.Executions.Steps.List list1 =
-                toolResults
-                    .projects()
+                toolResults.projects()
                     .histories()
                     .executions()
                     .steps()
@@ -131,16 +125,11 @@ class Collector {
                 JSONObject extra = new JSONObject();
                 extra.put("historyId", historyId);
                 extra.put("step", new JSONObject(step.toString()));
-                //noinspection HardcodedFileSeparator
-                extra.put(
-                    "resultsPage",
-                    "https://console.firebase.google.com/project/" + projectId +
-                        "/testlab/histories/"
-                        + historyId
-                        + "/matrices/"
-                        + executionId
-                        + "/executions/"
-                        + stepId);
+                // noinspection HardcodedFileSeparator
+                extra.put("resultsPage",
+                    "https://console.firebase.google.com/project/" + projectId
+                        + "/testlab/histories/" + historyId + "/matrices/" + executionId
+                        + "/executions/" + stepId);
                 for (StepDimensionValueEntry entry : step.getDimensionValue()) {
                   if ("Model".equals(entry.getKey())) {
                     String id = entry.getValue();
@@ -154,8 +143,8 @@ class Collector {
                 if (toolLogs == null) {
                   continue;
                 }
-                String logsUrl = toolLogs.get(0).getFileUri()
-                    .replace("gs://", "https://storage.cloud.google.com/");
+                String logsUrl = toolLogs.get(0).getFileUri().replace(
+                    "gs://", "https://storage.cloud.google.com/");
                 extra.put("logs", logsUrl);
                 List<ToolOutputReference> toolOutputs = toolExecution.getToolOutputs();
                 if (toolOutputs == null || toolOutputs.isEmpty()) {
