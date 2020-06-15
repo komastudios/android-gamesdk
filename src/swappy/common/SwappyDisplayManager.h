@@ -16,22 +16,23 @@
 
 #pragma once
 
+#include <jni.h>
+
 #include <condition_variable>
 #include <functional>
 #include <map>
 #include <memory>
 #include <mutex>
 
-
 namespace swappy {
 
 struct SdkVersion {
-    int sdkInt; // Build.VERSION.SDK_INT
-    int previewSdkInt; // Build.VERSION.PREVIEW_SDK_INT
+    int sdkInt;         // Build.VERSION.SDK_INT
+    int previewSdkInt;  // Build.VERSION.PREVIEW_SDK_INT
 };
 
 class SwappyDisplayManager {
-public:
+   public:
     static const char* SDM_CLASS;
     static const JNINativeMethod SDMNativeMethods[];
     static constexpr int SDMNativeMethodsSize = 2;
@@ -50,7 +51,7 @@ public:
 
     void setPreferredRefreshRate(int index);
 
-private:
+   private:
     JavaVM* mJVM;
     std::mutex mMutex;
     std::condition_variable mCondition;
@@ -63,4 +64,4 @@ private:
     friend class SwappyDisplayManagerJNI;
 };
 
-} // namespace swappy
+}  // namespace swappy

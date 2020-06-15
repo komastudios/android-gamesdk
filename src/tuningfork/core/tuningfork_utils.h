@@ -16,11 +16,10 @@
 
 #pragma once
 
-#include "tuningfork_internal.h"
-
 #include <string>
 
 #include "json11/json11.hpp"
+#include "tuningfork_internal.h"
 
 class AAsset;
 
@@ -45,7 +44,7 @@ std::string GetSignature();
 // Get whether the ApplicationInfo indicates the APK is debuggable
 bool GetDebuggable();
 
-} // namespace apk_utils
+}  // namespace apk_utils
 
 namespace file_utils {
 
@@ -60,15 +59,15 @@ bool DeleteFile(const std::string& path);
 bool DeleteDir(const std::string& path);
 
 bool LoadBytesFromFile(std::string file_name,
-    TuningFork_CProtobufSerialization* params);
+                       TuningFork_CProtobufSerialization* params);
 
 bool SaveBytesToFile(std::string file_name,
-    const TuningFork_CProtobufSerialization* params);
+                     const TuningFork_CProtobufSerialization* params);
 
 // Call NativeContext.getCacheDir via JNI
 std::string GetAppCacheDir();
 
-} // namespace file_utils
+}  // namespace file_utils
 
 namespace json_utils {
 
@@ -79,9 +78,9 @@ std::string GetResourceName(const RequestInfo& request_info);
 // See DeviceSpec in proto/performanceparameters.proto
 json11::Json::object DeviceSpecJson(const RequestInfo& request_info);
 
-} // namespace json_utils
+}  // namespace json_utils
 
 // Get a unique identifier using java.util.UUID
 std::string UniqueId();
 
-} // namespace tuningfork
+}  // namespace tuningfork

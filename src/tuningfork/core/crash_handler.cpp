@@ -18,51 +18,52 @@
 
 #if __ANDROID_API__ < 16 || ANDROID_NDK_VERSION <= 14
 namespace tuningfork {
-    CrashHandler::CrashHandler() { }
-    CrashHandler::~CrashHandler() { }
-    void CrashHandler::Init(std::function<bool(void)> callback) { }
-}
+CrashHandler::CrashHandler() {}
+CrashHandler::~CrashHandler() {}
+void CrashHandler::Init(std::function<bool(void)> callback) {}
+}  // namespace tuningfork
 #else
 
-#include <vector>
 #include <pthread.h>
 #include <sys/syscall.h>
 #include <unistd.h>
-#include <functional>
-#include <cstring>
-#include <cstdlib>
-#include <algorithm>
 
+#include <algorithm>
+#include <cstdlib>
+#include <cstring>
+#include <functional>
+#include <vector>
 
 #include "Log.h"
 #define LOG_TAG "TFCrashHandler"
 
-namespace tuningfork{
+namespace tuningfork {
 
-namespace{
+namespace {
 
-const int signals[]{
-    SIGILL,
-    SIGTRAP,
-    SIGABRT,
-    SIGBUS,
-    SIGFPE,
-    SIGSEGV
-};
+const int signals[]{SIGILL, SIGTRAP, SIGABRT, SIGBUS, SIGFPE, SIGSEGV};
 
 const int numSignals = sizeof(signals) / sizeof(signals[0]);
 
-//static
-const char* GetSignalName(int signal) {
-    switch(signal) {
-        case SIGILL: return "SIGILL";
-        case SIGTRAP: return "SIGTRAP";
-        case SIGABRT: return "SIGABRT";
-        case SIGBUS: return "SIGBUS";
-        case SIGFPE: return "SIGFPE";
-        case SIGKILL: return "SIGKILL";
-        case SIGSEGV: return "SIGSEGV";
-        default: return "UNKNOWN SIGNAL";
+// static
+const char *GetSignalName(int signal) {
+    switch (signal) {
+        case SIGILL:
+            return "SIGILL";
+        case SIGTRAP:
+            return "SIGTRAP";
+        case SIGABRT:
+            return "SIGABRT";
+        case SIGBUS:
+            return "SIGBUS";
+        case SIGFPE:
+            return "SIGFPE";
+        case SIGKILL:
+            return "SIGKILL";
+        case SIGSEGV:
+            return "SIGSEGV";
+        default:
+            return "UNKNOWN SIGNAL";
     }
 }
 
@@ -80,7 +81,7 @@ struct kernel_sigset_t {
 struct kernel_sigaction {
     union {
         void (*sa_handler_x)(int);
-        void (*sa_sigaction_x)(int, siginfo_t*, void*);
+        void (*sa_sigaction_x)(int, siginfo_t *, void *);
     };
     size_t sa_flags;
     void (*sa_restorer)();
@@ -88,19 +89,19 @@ struct kernel_sigaction {
 };
 
 void InstallAlternateStackLocked() {
-    if(stack_installed) return;
+    if (stack_installed) return;
 
     std::memset(&old_stack, 0, sizeof(old_stack));
     std::memset(&new_stack, 0, sizeof(new_stack));
 
     static const unsigned kSigStackSize = std::max(16384, SIGSTKSZ);
 
-    if(sigaltstack(nullptr, &old_stack) == -1 || !old_stack.ss_sp ||
+    if (sigaltstack(nullptr, &old_stack) == -1 || !old_stack.ss_sp ||
         old_stack.ss_size < kSigStackSize) {
         new_stack.ss_sp = std::calloc(1, kSigStackSize);
         new_stack.ss_size = kSigStackSize;
 
-        if(sigaltstack(&new_stack, nullptr) == -1) {
+        if (sigaltstack(&new_stack, nullptr) == -1) {
             free(new_stack.ss_sp);
             return;
         }
@@ -109,18 +110,18 @@ void InstallAlternateStackLocked() {
 }
 
 void RestoreAlternateStackLocked() {
-    if(!stack_installed) return;
+    if (!stack_installed) return;
 
     stack_t current_stack;
-    if(sigaltstack(nullptr, &current_stack) == -1) return;
+    if (sigaltstack(nullptr, &current_stack) == -1) return;
 
-    if(current_stack.ss_sp == new_stack.ss_sp) {
-        if(old_stack.ss_sp) {
-            if(sigaltstack(&old_stack, nullptr) == -1) return;
+    if (current_stack.ss_sp == new_stack.ss_sp) {
+        if (old_stack.ss_sp) {
+            if (sigaltstack(&old_stack, nullptr) == -1) return;
         } else {
             stack_t disable_stack;
             disable_stack.ss_flags = SS_DISABLE;
-            if(sigaltstack(&disable_stack, nullptr) == -1) return;
+            if (sigaltstack(&disable_stack, nullptr) == -1) return;
         }
     }
 
@@ -135,18 +136,18 @@ void InstallDefaultHandler(int sig) {
     syscall(__NR_rt_sigaction, sig, &sa, NULL, sizeof(kernel_sigset_t));
 }
 
-std::vector<CrashHandler*>* g_handler_stack_ = NULL;
+std::vector<CrashHandler *> *g_handler_stack_ = NULL;
 pthread_mutex_t handler_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-}
+}  // namespace
 
-CrashHandler::CrashHandler() { }
+CrashHandler::CrashHandler() {}
 
 void CrashHandler::Init(std::function<bool(void)> callback) {
-    if(handler_inited_) return;
+    if (handler_inited_) return;
     pthread_mutex_lock(&handler_mutex);
-    if(!g_handler_stack_) {
-        g_handler_stack_ = new std::vector<CrashHandler*>;
+    if (!g_handler_stack_) {
+        g_handler_stack_ = new std::vector<CrashHandler *>;
     }
     InstallAlternateStackLocked();
     InstallHandlerLocked();
@@ -158,12 +159,12 @@ void CrashHandler::Init(std::function<bool(void)> callback) {
 }
 
 CrashHandler::~CrashHandler() {
-    if(!handler_inited_) return;
+    if (!handler_inited_) return;
     pthread_mutex_lock(&handler_mutex);
-    std::vector<CrashHandler*>::iterator handler =
-            std::find(g_handler_stack_->begin(), g_handler_stack_->end(), this);
+    std::vector<CrashHandler *>::iterator handler =
+        std::find(g_handler_stack_->begin(), g_handler_stack_->end(), this);
     g_handler_stack_->erase(handler);
-    if(g_handler_stack_->empty()) {
+    if (g_handler_stack_->empty()) {
         delete g_handler_stack_;
         g_handler_stack_ = NULL;
         RestoreAlternateStackLocked();
@@ -171,60 +172,60 @@ CrashHandler::~CrashHandler() {
     }
     pthread_mutex_unlock(&handler_mutex);
 }
-//static
+// static
 bool CrashHandler::InstallHandlerLocked() {
-    if(handlers_installed) return false;
+    if (handlers_installed) return false;
 
-   for(int i = 0; i < numSignals; ++i) {
-       if(sigaction(signals[i], NULL, &old_handlers[i]) == -1) {
-           ALOGI("%s", "Not able to store old handler");
-           return false;
-       }
-   }
+    for (int i = 0; i < numSignals; ++i) {
+        if (sigaction(signals[i], NULL, &old_handlers[i]) == -1) {
+            ALOGI("%s", "Not able to store old handler");
+            return false;
+        }
+    }
 
-   struct sigaction sa;
-   memset(&sa, 0, sizeof(sa));
-   sigemptyset(&sa.sa_mask);
+    struct sigaction sa;
+    memset(&sa, 0, sizeof(sa));
+    sigemptyset(&sa.sa_mask);
 
-   for(int i = 0; i < numSignals; ++i){
-       sigaddset(&sa.sa_mask, signals[i]);
-   }
+    for (int i = 0; i < numSignals; ++i) {
+        sigaddset(&sa.sa_mask, signals[i]);
+    }
 
-   sa.sa_sigaction = SignalHandler;
-   sa.sa_flags = SA_ONSTACK | SA_SIGINFO;
+    sa.sa_sigaction = SignalHandler;
+    sa.sa_flags = SA_ONSTACK | SA_SIGINFO;
 
-   for(int i = 0; i < numSignals; ++i) {
-       if(sigaction(signals[i], &sa, NULL) == -1) {
-           ALOGI("%s", "Not able to store old handler 2");
-       }
-   }
-   handlers_installed = true;
-   return true;
+    for (int i = 0; i < numSignals; ++i) {
+        if (sigaction(signals[i], &sa, NULL) == -1) {
+            ALOGI("%s", "Not able to store old handler 2");
+        }
+    }
+    handlers_installed = true;
+    return true;
 }
-//static
+// static
 void CrashHandler::RestoreHandlerLocked() {
-    if(!handlers_installed) return;
+    if (!handlers_installed) return;
 
-    for(int i = 0; i < numSignals; ++i) {
-        if(sigaction(signals[i], &old_handlers[i], NULL) == -1) {
+    for (int i = 0; i < numSignals; ++i) {
+        if (sigaction(signals[i], &old_handlers[i], NULL) == -1) {
             InstallDefaultHandler(signals[i]);
         }
     }
     handlers_installed = false;
 }
-//static
+// static
 void CrashHandler::SignalHandler(int sig, siginfo_t *info, void *ucontext) {
     pthread_mutex_lock(&handler_mutex);
     struct sigaction cur_handler;
-    if(sigaction(sig, NULL, &cur_handler) == 0 &&
-            (cur_handler.sa_flags & SA_SIGINFO) == 0) {
+    if (sigaction(sig, NULL, &cur_handler) == 0 &&
+        (cur_handler.sa_flags & SA_SIGINFO) == 0) {
         sigemptyset(&cur_handler.sa_mask);
         sigaddset(&cur_handler.sa_mask, sig);
 
         cur_handler.sa_sigaction = SignalHandler;
         cur_handler.sa_flags = SA_ONSTACK | SA_SIGINFO;
 
-        if(sigaction(sig, &cur_handler, NULL) == -1) {
+        if (sigaction(sig, &cur_handler, NULL) == -1) {
             InstallDefaultHandler(sig);
         }
         pthread_mutex_unlock(&handler_mutex);
@@ -232,27 +233,28 @@ void CrashHandler::SignalHandler(int sig, siginfo_t *info, void *ucontext) {
     }
 
     bool handled = false;
-    for(int i = g_handler_stack_->size() - 1; !handled && i >= 0; --i) {
+    for (int i = g_handler_stack_->size() - 1; !handled && i >= 0; --i) {
         handled = (*g_handler_stack_)[i]->HandlerSignal(sig, info, ucontext);
     }
 
-    if(handled)
+    if (handled)
         InstallDefaultHandler(sig);
-    else RestoreHandlerLocked();
+    else
+        RestoreHandlerLocked();
     pthread_mutex_unlock(&handler_mutex);
 
-    if(info->si_code <= 0 || sig ==SIGABRT) {
-        if(tgkill(getpid(), syscall(__NR_gettid), sig) < 0) {
+    if (info->si_code <= 0 || sig == SIGABRT) {
+        if (tgkill(getpid(), syscall(__NR_gettid), sig) < 0) {
             _exit(1);
         }
     }
 }
 
 bool CrashHandler::HandlerSignal(int sig, siginfo_t *info, void *ucontext) {
-    ALOGI("HandlerSignal: sig %d, name %s, pid %d",
-            sig, GetSignalName(sig), info->si_pid);
+    ALOGI("HandlerSignal: sig %d, name %s, pid %d", sig, GetSignalName(sig),
+          info->si_pid);
 
-    if(callback_) {
+    if (callback_) {
         callback_();
     }
     // Crash is not handled here, return false to restore other signal handlers.

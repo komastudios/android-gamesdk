@@ -16,11 +16,11 @@
 
 #pragma once
 
+#include <mutex>
+#include <string>
+
 #include "tuningfork/tuningfork.h"
 #include "tuningfork_internal.h"
-
-#include <string>
-#include <mutex>
 
 // Implementation of a TuningFork_Cache that persists to local storage
 namespace tuningfork {
@@ -29,15 +29,18 @@ class FileCache {
     std::string path_;
     TuningFork_Cache c_cache_;
     std::mutex mutex_;
-  public:
-    FileCache(const std::string& path  = "");
 
-    void SetDir(const std::string& path  = "") { path_ = path; }
+   public:
+    FileCache(const std::string& path = "");
 
-    const TuningFork_Cache* GetCCache() const { return &c_cache_;}
+    void SetDir(const std::string& path = "") { path_ = path; }
 
-    TuningFork_ErrorCode Get(uint64_t key, TuningFork_CProtobufSerialization* value);
-    TuningFork_ErrorCode Set(uint64_t key, const TuningFork_CProtobufSerialization* value);
+    const TuningFork_Cache* GetCCache() const { return &c_cache_; }
+
+    TuningFork_ErrorCode Get(uint64_t key,
+                             TuningFork_CProtobufSerialization* value);
+    TuningFork_ErrorCode Set(uint64_t key,
+                             const TuningFork_CProtobufSerialization* value);
     TuningFork_ErrorCode Remove(uint64_t key);
 
     TuningFork_ErrorCode Clear();
@@ -46,4 +49,4 @@ class FileCache {
     bool IsValid() const;
 };
 
-} // namespace tuningfork
+}  // namespace tuningfork

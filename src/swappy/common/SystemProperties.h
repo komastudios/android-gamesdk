@@ -23,9 +23,9 @@
 // adb shell setprop swappy.property value
 //
 
-std::string getSystemPropViaGet(const char* key, std::string default_value = "");
+std::string getSystemPropViaGet(const char* key,
+                                std::string default_value = "");
 
 int getSystemPropViaGetAsInt(const char* key, int default_value = 0);
 
 int getSystemPropViaGetAsBool(const char* key, bool default_value = false);
-

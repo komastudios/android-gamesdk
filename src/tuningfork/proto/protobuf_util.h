@@ -16,19 +16,20 @@
 
 /**
  * @defgroup Protobuf_util Protocol Buffer utilities
- * Helper functions for converting between C and C++ protocol buffer serializations.
+ * Helper functions for converting between C and C++ protocol buffer
+ * serializations.
  * @{
  */
 
 #pragma once
 
-#include "tuningfork/tuningfork.h"
-
-#include <vector>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <string>
+#include <vector>
+
+#include "tuningfork/tuningfork.h"
 
 /** @cond INTERNAL */
 
@@ -88,7 +89,7 @@ inline std::string ToString(const TuningFork_CProtobufSerialization& cpbs) {
  * @brief Deserialize an STL vector of bytes to a protocol buffer object.
  */
 template <typename T>
-bool Deserialize(const std::vector<uint8_t> &ser, T &pb) {
+bool Deserialize(const std::vector<uint8_t>& ser, T& pb) {
     return pb.ParseFromArray(ser.data(), ser.size());
 }
 
@@ -96,7 +97,7 @@ bool Deserialize(const std::vector<uint8_t> &ser, T &pb) {
  * @brief Serialize a protocol buffer object to an STL vector of bytes.
  */
 template <typename T>
-bool Serialize(const T &pb, std::vector<uint8_t> &ser) {
+bool Serialize(const T& pb, std::vector<uint8_t>& ser) {
     ser.resize(pb.ByteSize());
     return pb.SerializeToArray(ser.data(), ser.size());
 }
@@ -105,7 +106,7 @@ bool Serialize(const T &pb, std::vector<uint8_t> &ser) {
  * @brief Serialize a protocol buffer object to an STL vector of bytes.
  */
 template <typename T>
-std::vector<uint8_t> Serialize(const T &pb) {
+std::vector<uint8_t> Serialize(const T& pb) {
     std::vector<uint8_t> ser(pb.ByteSize());
     pb.SerializeToArray(ser.data(), ser.size());
     return ser;
@@ -119,7 +120,7 @@ std::vector<uint8_t> Serialize(const T &pb) {
  */
 template <typename T>
 TuningFork_CProtobufSerialization TuningFork_CProtobufSerialization_Alloc(
-    const T &pb) {
+    const T& pb) {
     TuningFork_CProtobufSerialization cser;
     cser.bytes = (uint8_t*)::malloc(pb.ByteSize());
     cser.size = pb.ByteSize();
@@ -128,6 +129,6 @@ TuningFork_CProtobufSerialization TuningFork_CProtobufSerialization_Alloc(
     return cser;
 }
 
-} // namespace tuningfork {
+}  // namespace tuningfork
 
 /** @} */

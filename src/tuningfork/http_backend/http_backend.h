@@ -16,10 +16,11 @@
 
 #pragma once
 
-#include <sstream>
 #include <jni.h>
-#include <string>
+
 #include <memory>
+#include <sstream>
+#include <string>
 
 #include "core/tuningfork_internal.h"
 #include "http_request.h"
@@ -30,13 +31,13 @@ class UltimateUploader;
 
 // Google Endpoint backend
 class HttpBackend : public IBackend {
-public:
+   public:
     TuningFork_ErrorCode Init(const Settings& settings);
     ~HttpBackend() override;
 
     // Perform a blocking call to get fidelity parameters from the server.
-    TuningFork_ErrorCode GenerateTuningParameters(HttpRequest& request,
-        const ProtobufSerialization* training_mode_fps,
+    TuningFork_ErrorCode GenerateTuningParameters(
+        HttpRequest& request, const ProtobufSerialization* training_mode_fps,
         ProtobufSerialization& fidelity_params,
         std::string& experiment_id) override;
 
@@ -48,9 +49,10 @@ public:
     virtual TuningFork_ErrorCode UploadDebugInfo(HttpRequest& request) override;
 
     void KillThreads();
-private:
+
+   private:
     std::shared_ptr<UltimateUploader> ultimate_uploader_;
     const TuningFork_Cache* persister_;
 };
 
-} //namespace tuningfork {
+}  // namespace tuningfork

@@ -19,12 +19,13 @@
 #include <condition_variable>
 #include <memory>
 #include <mutex>
+
 #include "Thread.h"
 
 namespace swappy {
 
 class CPUTracer {
-public:
+   public:
     CPUTracer();
     ~CPUTracer();
 
@@ -33,7 +34,7 @@ public:
     void startTrace();
     void endTrace();
 
-private:
+   private:
     void threadMain();
     void joinThread();
 
@@ -44,4 +45,4 @@ private:
     bool mTrace GUARDED_BY(mMutex) = false;
 };
 
-} // namespace swappy
+}  // namespace swappy
