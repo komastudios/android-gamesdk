@@ -19,11 +19,11 @@ import org.json.JSONObject;
 
 /** A class to provide metrics of current memory usage to an application in JSON format. */
 public class Info {
-  private static final List<String> MEMINFO_FIELDS =
-      Arrays.asList("Cached", "MemFree", "MemAvailable", "SwapFree");
-  private static final List<String> STATUS_FIELDS = Arrays.asList("VmSize", "VmRSS", "VmData");
+  private static final List<String> MEMINFO_FIELDS = Arrays.asList("Active", "Active(anon)",
+      "Active(file)", "AnonPages", "MemAvailable", "MemFree", "VmData", "VmRSS");
+  private static final List<String> STATUS_FIELDS = Arrays.asList("VmRSS", "VmSize");
   private static final String[] SUMMARY_FIELDS = {
-      "summary.graphics", "summary.native-heap", "summary.total-pss"};
+      "summary.native-heap", "summary.graphics", "summary.total-pss", "summary.total-swap"};
   private MapTester mapTester;
   private final long startTime = System.currentTimeMillis();
   /**
