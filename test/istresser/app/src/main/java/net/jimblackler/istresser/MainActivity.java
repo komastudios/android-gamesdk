@@ -708,11 +708,21 @@ public class MainActivity extends Activity {
     if (isServiceCrashed) {
       report.put("serviceCrashed", true);
     }
-    report.put("vkAllocatedByTest", vkAllocatedByTest);
-    report.put("nativeAllocatedByTest", nativeAllocatedByTest);
-    report.put("mmapAnonAllocatedByTest", mmapAnonAllocatedByTest);
-    report.put("mmapFileAllocatedByTest", mmapFileAllocatedByTest);
-    report.put("serviceTotalMemory", BYTES_IN_MEGABYTE * serviceTotalMb);
+    if (vkAllocatedByTest > 0) {
+      report.put("vkAllocatedByTest", vkAllocatedByTest);
+    }
+    if (nativeAllocatedByTest > 0) {
+      report.put("nativeAllocatedByTest", nativeAllocatedByTest);
+    }
+    if (mmapAnonAllocatedByTest > 0) {
+      report.put("mmapAnonAllocatedByTest", mmapAnonAllocatedByTest);
+    }
+    if (mmapFileAllocatedByTest > 0) {
+      report.put("mmapFileAllocatedByTest", mmapFileAllocatedByTest);
+    }
+    if (serviceTotalMb > 0) {
+      report.put("serviceTotalMemory", BYTES_IN_MEGABYTE * serviceTotalMb);
+    }
 
     TestSurface testSurface = findViewById(R.id.glsurfaceView);
     TestRenderer renderer = testSurface.getRenderer();
