@@ -349,7 +349,8 @@ public class MainActivity extends Activity {
                 Indicator[] maxMemoryPressureLevel = {Indicator.GREEN};
                 String[] triggeringHeuristic = {null};
 
-                Heuristic.checkHeuristics(activityManager, params, deviceSettings,
+                Heuristic.checkHeuristics(activityManager, params,
+                    deviceSettings.getJSONObject("limits"),
                     (heuristic, heuristicMemoryPressureLevel) -> {
                       if (heuristicMemoryPressureLevel == Indicator.GREEN) {
                         // GREEN heuristic does nothing here.
@@ -502,7 +503,9 @@ public class MainActivity extends Activity {
           best = key;
         }
       }
-      settings = lookup.getJSONObject(best);
+      settings.put("limits", lookup.getJSONObject(best));
+      settings.put("matched", best);
+      settings.put("fingerprint", Build.FINGERPRINT);
     } catch (JSONException | IOException e) {
       Log.w("Settings problem.", e);
     }
@@ -681,7 +684,8 @@ public class MainActivity extends Activity {
                 ActivityManager activityManager =
                     (ActivityManager) Objects.requireNonNull(getSystemService(Context.ACTIVITY_SERVICE));
 
-                Heuristic.checkHeuristics(activityManager, params, deviceSettings,
+                Heuristic.checkHeuristics(activityManager, params,
+                    deviceSettings.getJSONObject("limits"),
                     (heuristic, heuristicMemoryPressureLevel) -> {
                       if (heuristicMemoryPressureLevel != Indicator.GREEN) {
                         anyWarnings.set(true);
