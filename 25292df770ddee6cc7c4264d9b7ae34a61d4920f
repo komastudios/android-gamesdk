@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0e2a8398_84e145ee",
+        "filename": "PREUPLOAD.cfg",
+        "patchSetId": 2
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-06-15T14:17:55Z",
+      "side": 1,
+      "message": "Please also include test/helperlibrary",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 56
+      },
+      "revId": "25292df770ddee6cc7c4264d9b7ae34a61d4920f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
