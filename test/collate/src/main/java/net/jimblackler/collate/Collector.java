@@ -60,135 +60,136 @@ class Collector {
   static void cloudCollect(String historyId, Consumer<? super JSONArray> emitter)
       throws IOException {
     String projectId = Utils.getProjectId();
-    String accessToken = Auth.getAccessToken();
 
     Map<String, JSONObject> launcherDevices = new HashMap<>();
     DeviceFetcher.fetch(device -> {
       launcherDevices.put(device.getString("id"), device);
     });
 
-    GoogleCredentials credentials1 = GoogleCredentials.create(new AccessToken(accessToken, null));
-    Storage storage = StorageOptions.newBuilder().setCredentials(credentials1).build().getService();
-
-    GoogleCredential credentials =
-        new GoogleCredential.Builder().build().setAccessToken(accessToken);
-    ToolResults toolResults =
-        new ToolResults.Builder(
-                new NetHttpTransport(),
-                new JacksonFactory(),
-                new NetHttpTransport().createRequestFactory(credentials).getInitializer())
-            .setServicePath(ToolResults.DEFAULT_SERVICE_PATH)
-            .setApplicationName(projectId)
-            .build();
-
-    if (historyId == null) {
-      // If no historyId supplied, get the latest run.
-      ListHistoriesResponse historiesResponse =
-          toolResults.projects().histories().list(projectId).setPageSize(1).execute();
-      historyId = historiesResponse.getHistories().get(0).getHistoryId();
-    }
-
+    int inProgress = 0;
     Collection<String> reported = new HashSet<>();
-
     do {
-      while (true) {
-        int inProgress = 0;
-        ToolResults.Projects.Histories.Executions.List list =
-            toolResults.projects().histories().executions().list(projectId, historyId);
+      String accessToken = Auth.getAccessToken();
+      try {
+        GoogleCredentials credentials1 =
+            GoogleCredentials.create(new AccessToken(accessToken, null));
+        Storage storage =
+            StorageOptions.newBuilder().setCredentials(credentials1).build().getService();
+
+        GoogleCredential credentials =
+            new GoogleCredential.Builder().build().setAccessToken(accessToken);
+        ToolResults toolResults =
+            new ToolResults
+                .Builder(new NetHttpTransport(), new JacksonFactory(),
+                new NetHttpTransport().createRequestFactory(credentials).getInitializer())
+                .setServicePath(ToolResults.DEFAULT_SERVICE_PATH)
+                .setApplicationName(projectId)
+                .build();
+
+        if (historyId == null) {
+          // If no historyId supplied, get the latest run.
+          ListHistoriesResponse historiesResponse =
+              toolResults.projects().histories().list(projectId).setPageSize(1).execute();
+          historyId = historiesResponse.getHistories().get(0).getHistoryId();
+        }
+
         while (true) {
-          ListExecutionsResponse response = list.execute();
-          for (Execution execution : response.getExecutions()) {
-            String executionId = execution.getExecutionId();
-            ToolResults.Projects.Histories.Executions.Steps.List list1 =
-                toolResults
-                    .projects()
-                    .histories()
-                    .executions()
-                    .steps()
-                    .list(projectId, historyId, executionId)
-                    .setFields(FIELDS);
-            while (true) {
-              ListStepsResponse response1 = list1.execute();
-              if (response1.isEmpty()) {
-                break;
-              }
-              for (Step step : response1.getSteps()) {
-                if ("inProgress".equals(step.getState())) {
-                  inProgress++;
+          inProgress = 0;
+          ToolResults.Projects.Histories.Executions.List list =
+              toolResults.projects().histories().executions().list(projectId, historyId);
+          while (true) {
+            ListExecutionsResponse response = list.execute();
+            for (Execution execution : response.getExecutions()) {
+              String executionId = execution.getExecutionId();
+              ToolResults.Projects.Histories.Executions.Steps.List list1 =
+                  toolResults.projects()
+                      .histories()
+                      .executions()
+                      .steps()
+                      .list(projectId, historyId, executionId)
+                      .setFields(FIELDS);
+              while (true) {
+                ListStepsResponse response1 = list1.execute();
+                if (response1.isEmpty()) {
+                  break;
                 }
-                TestExecutionStep testExecutionStep = step.getTestExecutionStep();
-                if (testExecutionStep == null) {
-                  continue;
-                }
-                ToolExecution toolExecution = testExecutionStep.getToolExecution();
-                if (toolExecution == null) {
-                  continue;
-                }
-                String stepId = step.getStepId();
-                if (!reported.add(stepId)) {
-                  continue;
-                }
-                JSONObject extra = new JSONObject();
-                extra.put("historyId", historyId);
-                extra.put("step", new JSONObject(step.toString()));
-                //noinspection HardcodedFileSeparator
-                extra.put(
-                    "resultsPage",
-                    "https://console.firebase.google.com/project/" + projectId +
-                        "/testlab/histories/"
-                        + historyId
-                        + "/matrices/"
-                        + executionId
-                        + "/executions/"
-                        + stepId);
-                for (StepDimensionValueEntry entry : step.getDimensionValue()) {
-                  if ("Model".equals(entry.getKey())) {
-                    String id = entry.getValue();
-                    if (launcherDevices.containsKey(id)) {
-                      extra.put("fromLauncher", launcherDevices.get(id));
+                for (Step step : response1.getSteps()) {
+                  if ("inProgress".equals(step.getState())) {
+                    inProgress++;
+                  }
+                  TestExecutionStep testExecutionStep = step.getTestExecutionStep();
+                  if (testExecutionStep == null) {
+                    continue;
+                  }
+                  ToolExecution toolExecution = testExecutionStep.getToolExecution();
+                  if (toolExecution == null) {
+                    continue;
+                  }
+                  String stepId = step.getStepId();
+                  if (!reported.add(stepId)) {
+                    continue;
+                  }
+                  JSONObject extra = new JSONObject();
+                  extra.put("historyId", historyId);
+                  extra.put("step", new JSONObject(step.toString()));
+                  // noinspection HardcodedFileSeparator
+                  extra.put("resultsPage",
+                      "https://console.firebase.google.com/project/" + projectId +
+                          "/testlab/histories/" + historyId +
+                          "/matrices/" + executionId +
+                          "/executions/" + stepId);
+                  for (StepDimensionValueEntry entry : step.getDimensionValue()) {
+                    if ("Model".equals(entry.getKey())) {
+                      String id = entry.getValue();
+                      if (launcherDevices.containsKey(id)) {
+                        extra.put("fromLauncher", launcherDevices.get(id));
+                      }
+                      break;
                     }
-                    break;
+                  }
+                  List<FileReference> toolLogs = toolExecution.getToolLogs();
+                  if (toolLogs == null) {
+                    continue;
+                  }
+                  String logsUrl = toolLogs.get(0).getFileUri().replace(
+                      "gs://", "https://storage.cloud.google.com/");
+                  extra.put("logs", logsUrl);
+                  List<ToolOutputReference> toolOutputs = toolExecution.getToolOutputs();
+                  if (toolOutputs == null || toolOutputs.isEmpty()) {
+                    continue;
+                  }
+                  ToolOutputReference toolOutputReference = toolOutputs.get(0);
+                  URI uri = URI.create(toolOutputReference.getOutput().getFileUri());
+                  try {
+                    String contents = getContents(
+                        storage, uri.getHost(), uri.getPath().substring(1));
+                    collectResult(emitter, contents, extra);
+                  } catch (IOException e) {
+                    e.printStackTrace();
                   }
                 }
-                List<FileReference> toolLogs = toolExecution.getToolLogs();
-                if (toolLogs == null) {
-                  continue;
+                String nextPageToken1 = response1.getNextPageToken();
+                if (nextPageToken1 == null) {
+                  break;
                 }
-                String logsUrl = toolLogs.get(0).getFileUri()
-                    .replace("gs://", "https://storage.cloud.google.com/");
-                extra.put("logs", logsUrl);
-                List<ToolOutputReference> toolOutputs = toolExecution.getToolOutputs();
-                if (toolOutputs == null || toolOutputs.isEmpty()) {
-                  continue;
-                }
-                ToolOutputReference toolOutputReference = toolOutputs.get(0);
-                URI uri = URI.create(toolOutputReference.getOutput().getFileUri());
-                try {
-                  String contents = getContents(storage, uri.getHost(), uri.getPath().substring(1));
-                  collectResult(emitter, contents, extra);
-                } catch (IOException e) {
-                  e.printStackTrace();
-                }
+                list1.setPageToken(nextPageToken1);
               }
-              String nextPageToken1 = response1.getNextPageToken();
-              if (nextPageToken1 == null) {
-                break;
-              }
-              list1.setPageToken(nextPageToken1);
             }
+            String nextPageToken = response.getNextPageToken();
+            if (nextPageToken == null) {
+              break;
+            }
+            list.setPageToken(nextPageToken);
           }
-          String nextPageToken = response.getNextPageToken();
-          if (nextPageToken == null) {
+          if (inProgress == 0) {
             break;
           }
-          list.setPageToken(nextPageToken);
+          System.out.println(inProgress + " runs in progress");
         }
-        if (inProgress == 0) {
-          break;
-        }
-        System.out.println(inProgress + " runs in progress");
+      } catch (IOException e) {
+        e.printStackTrace();
       }
-    } while (reported.isEmpty());
+    } while (inProgress != 0 || reported.isEmpty());
   }
 
   private static void collectResult(
