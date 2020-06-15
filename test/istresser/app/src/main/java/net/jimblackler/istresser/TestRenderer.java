@@ -1,18 +1,16 @@
 package net.jimblackler.istresser;
 
+import static javax.microedition.khronos.opengles.GL10.GL_MAX_ELEMENTS_VERTICES;
+
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
-
 import java.nio.IntBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import static javax.microedition.khronos.opengles.GL10.GL_MAX_ELEMENTS_VERTICES;
-
 public class TestRenderer implements GLSurfaceView.Renderer {
-
   private static final String TAG = TestRenderer.class.getSimpleName();
 
   private static final int VIEWPORT_X = 0;

@@ -1,14 +1,5 @@
 package net.jimblackler.istresser;
 
-import android.app.ActivityManager;
-import android.os.Build;
-import android.os.Debug;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.Map;
-
 import static com.google.android.apps.internal.games.helperlibrary.Utils.getDebugMemoryInfo;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.getMemoryInfo;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.getOomScore;
@@ -16,18 +7,24 @@ import static com.google.android.apps.internal.games.helperlibrary.Utils.process
 import static com.google.android.apps.internal.games.helperlibrary.Utils.processStatus;
 import static net.jimblackler.istresser.MainActivity.tryAlloc;
 
+import android.app.ActivityManager;
+import android.os.Build;
+import android.os.Debug;
+import java.util.Map;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Wrapper class for methods related to memory management heuristics.
  */
 class Heuristic {
-
   /**
    * The value a heuristic returns when asked for memory pressure on the device through the
    * getSignal method. GREEN indicates it is safe to allocate further, YELLOW indicates further
    * allocation shouldn't happen, and RED indicates high memory pressure.
    */
   static void checkHeuristics(ActivityManager activityManager, JSONObject params,
-                              JSONObject deviceSettings, Reporter reporter) throws JSONException {
+      JSONObject deviceSettings, Reporter reporter) throws JSONException {
     if (!params.has("heuristics")) {
       return;
     }
@@ -43,30 +40,29 @@ class Heuristic {
     long availMem = memoryInfo.availMem;
 
     if (heuristics.has("vmsize")) {
-
       if (commitLimit == null || vmSize == null) {
         reporter.report("cl", Indicator.GREEN);
       } else {
         reporter.report("vmsize",
-            vmSize > commitLimit * heuristics.getDouble("vmsize") ? Indicator.RED : Indicator.GREEN);
+            vmSize > commitLimit * heuristics.getDouble("vmsize") ? Indicator.RED
+                                                                  : Indicator.GREEN);
       }
     }
 
     if (heuristics.has("oom")) {
-      reporter.report("oom",
-          oomScore <= heuristics.getLong("oom") ?
-              Indicator.GREEN : Indicator.RED);
+      reporter.report(
+          "oom", oomScore <= heuristics.getLong("oom") ? Indicator.GREEN : Indicator.RED);
     }
 
     if (heuristics.has("try")) {
       reporter.report("try",
-          tryAlloc((int) Utils.getMemoryQuantity(heuristics.get("try"))) ?
-              Indicator.GREEN : Indicator.RED);
+          tryAlloc((int) Utils.getMemoryQuantity(heuristics.get("try"))) ? Indicator.GREEN
+                                                                         : Indicator.RED);
     }
 
     if (heuristics.has("low")) {
-      reporter.report("low",
-          getMemoryInfo(activityManager).lowMemory ? Indicator.RED : Indicator.GREEN);
+      reporter.report(
+          "low", getMemoryInfo(activityManager).lowMemory ? Indicator.RED : Indicator.GREEN);
     }
 
     if (heuristics.has("cl")) {
@@ -75,14 +71,15 @@ class Heuristic {
       } else {
         reporter.report("cl",
             Debug.getNativeHeapAllocatedSize() > commitLimit * heuristics.getDouble("cl")
-                ? Indicator.RED : Indicator.GREEN);
+                ? Indicator.RED
+                : Indicator.GREEN);
       }
     }
 
     if (heuristics.has("avail")) {
       reporter.report("avail",
-          availMem < Utils.getMemoryQuantity(heuristics.get("avail")) ?
-              Indicator.RED : Indicator.GREEN);
+          availMem < Utils.getMemoryQuantity(heuristics.get("avail")) ? Indicator.RED
+                                                                      : Indicator.GREEN);
     }
 
     if (heuristics.has("cached")) {
@@ -90,8 +87,9 @@ class Heuristic {
         reporter.report("cached", Indicator.GREEN);
       } else {
         reporter.report("cached",
-            cached * heuristics.getDouble("cached") <
-                memoryInfo.threshold / 1024 ? Indicator.RED : Indicator.GREEN);
+            cached * heuristics.getDouble("cached") < memoryInfo.threshold / 1024
+                ? Indicator.RED
+                : Indicator.GREEN);
       }
     }
 
@@ -100,8 +98,8 @@ class Heuristic {
         reporter.report("avail2", Indicator.GREEN);
       } else {
         reporter.report("avail2",
-            memAvailable < Utils.getMemoryQuantity(heuristics.get("avail2")) ?
-                Indicator.RED : Indicator.GREEN);
+            memAvailable < Utils.getMemoryQuantity(heuristics.get("avail2")) ? Indicator.RED
+                                                                             : Indicator.GREEN);
       }
     }
 
@@ -109,11 +107,11 @@ class Heuristic {
     long nativeAllocatedLimit = deviceSettings.optLong("nativeAllocated");
     if (nativeAllocatedParams != null && nativeAllocatedLimit > 0) {
       Indicator level = Indicator.GREEN;
-      if (Debug.getNativeHeapAllocatedSize() >
-          nativeAllocatedLimit * nativeAllocatedParams.getDouble("red")) {
+      if (Debug.getNativeHeapAllocatedSize()
+          > nativeAllocatedLimit * nativeAllocatedParams.getDouble("red")) {
         level = Indicator.RED;
-      } else if (Debug.getNativeHeapAllocatedSize() >
-          nativeAllocatedLimit * nativeAllocatedParams.getDouble("yellow")) {
+      } else if (Debug.getNativeHeapAllocatedSize()
+          > nativeAllocatedLimit * nativeAllocatedParams.getDouble("yellow")) {
         level = Indicator.YELLOW;
       }
       reporter.report("nativeAllocated", level);
@@ -152,8 +150,8 @@ class Heuristic {
         long summaryGraphics = Long.parseLong(debugMemoryInfo.getMemoryStat("summary.graphics"));
         if (summaryGraphics > summaryGraphicsLimit * summaryGraphicsParams.getDouble("red")) {
           level = Indicator.RED;
-        } else if (summaryGraphics >
-            summaryGraphicsLimit * summaryGraphicsParams.getDouble("yellow")) {
+        } else if (summaryGraphics
+            > summaryGraphicsLimit * summaryGraphicsParams.getDouble("yellow")) {
           level = Indicator.YELLOW;
         }
         reporter.report("summary.graphics", level);
@@ -166,8 +164,8 @@ class Heuristic {
         long summaryTotalPss = Long.parseLong(debugMemoryInfo.getMemoryStat("summary.total-pss"));
         if (summaryTotalPss > summaryTotalPssLimit * summaryTotalPssParams.getDouble("red")) {
           level = Indicator.RED;
-        } else if (summaryTotalPss >
-            summaryTotalPssLimit * summaryTotalPssParams.getDouble("yellow")) {
+        } else if (summaryTotalPss
+            > summaryTotalPssLimit * summaryTotalPssParams.getDouble("yellow")) {
           level = Indicator.YELLOW;
         }
         reporter.report("summary.total-pss", level);
@@ -211,12 +209,7 @@ class Heuristic {
     }
   }
 
-
-  public enum Indicator {
-    GREEN,
-    YELLOW,
-    RED
-  }
+  public enum Indicator { GREEN, YELLOW, RED }
 
   interface Reporter {
     void report(String heuristic, Indicator indicator);

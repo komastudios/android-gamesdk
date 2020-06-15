@@ -2,7 +2,6 @@ package net.jimblackler.istresser;
 
 import java.io.File;
 import java.io.IOException;
-
 import java.util.Iterator;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,7 +9,6 @@ import org.json.JSONObject;
 
 /** A helper class with static methods to help with Heuristics and file IO */
 public class Utils {
-
   private static final String TAG = Utils.class.getSimpleName();
 
   /**
@@ -38,7 +36,6 @@ public class Utils {
     }
 
     if (object instanceof String) {
-
       String str = ((String) object).toUpperCase();
       int unitPosition = str.indexOf('K');
       long unitMultiplier = 1024;
