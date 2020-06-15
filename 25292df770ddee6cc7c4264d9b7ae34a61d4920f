@@ -22,6 +22,30 @@
       "revId": "25292df770ddee6cc7c4264d9b7ae34a61d4920f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f955bc50_f91bdc69",
+        "filename": "PREUPLOAD.cfg",
+        "patchSetId": 2
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-06-15T15:20:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0e2a8398_84e145ee",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 56
+      },
+      "revId": "25292df770ddee6cc7c4264d9b7ae34a61d4920f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
