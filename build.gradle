@@ -1,3 +1,6 @@
+import com.google.androidgamesdk.SpecificToolchain
+import com.google.androidgamesdk.LocalToolchain
+import com.google.androidgamesdk.Toolchain
 
 import java.nio.file.Paths
 import org.gradle.internal.logging.text.StyledTextOutput;
@@ -9,39 +12,21 @@ import static groovy.lang.Closure.IDENTITY;
 import groovy.util.GroovyCollections;
 import groovyx.gpars.GParsPool;
 import org.apache.tools.ant.filters.ReplaceTokens;
+import com.google.androidgamesdk.ExternalToolName;
+import static com.google.androidgamesdk.OsSpecificTools.osFolderName;
 
-apply plugin: 'java'
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.3.2'
+        classpath "org.codehaus.gpars:gpars:1.2.0"
+    }
+}
 
 defaultTasks 'cleanPath', 'archiveZip'
-
-enum ExternalToolName { PROTOBUF, CMAKE }
-
-def osFolderName(externalToolName) {
-    if (OperatingSystem.current().isMacOsX()) {
-        if (externalToolName == ExternalToolName.PROTOBUF) {
-            return "mac";
-        } else if (externalToolName == ExternalToolName.CMAKE) {
-            return "darwin-x86"
-        }
-    } else if (OperatingSystem.current().isLinux())
-        return "linux-x86";
-    else if (OperatingSystem.current().isWindows()) {
-        if (externalToolName == ExternalToolName.PROTOBUF) {
-            return "win";
-        } else if (externalToolName == ExternalToolName.CMAKE) {
-            return "windows-x86";
-        }
-    }
-
-    throw new GradleException("Unsupported OS");
-}
-
-def osExecutableSuffix() {
-    if (OperatingSystem.current().isWindows())
-        return ".exe"
-    else
-        return ""
-}
 
 def protobufInstallDir() {
     return new File("$projectDir/third_party/protobuf-3.0.0/install/"
@@ -91,156 +76,12 @@ task prepare_proto(dependsOn: prepare_proto_before) {
     }
 }
 
-buildscript {
-    repositories {
-        google()
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.2'
-        classpath "org.codehaus.gpars:gpars:1.2.0"
-    }
-}
 
 allprojects {
     buildDir = getOutPath()
     repositories {
         google()
         jcenter()
-    }
-}
-
-abstract class Toolchain {
-    protected Project project_;
-    protected String androidVersion_;
-    protected String ndkVersion_;
-    abstract String getAndroidNDKPath();
-    public String getAndroidVersion() { return androidVersion_; }
-    public String getNdkVersion() { return ndkVersion_; }
-    public String getNdkVersionNumber() {
-        def (n) = ndkVersion_ =~ /[0-9]+/;
-        return n;
-    }
-    public String getBuildKey(String arch, String stl, String buildType) {
-        return arch + "_API" + androidVersion_ + "_NDK" + getNdkVersionNumber() + '_' +
-            sanitize(stl)+ '_'+buildType
-    }
-    protected String getNdkVersionFromPropertiesFile() {
-        def f = new File(getAndroidNDKPath(), 'source.properties')
-        if (!f.exists()) {
-            println "Warning: can't get NDK version"
-            return "UNKNOWN"
-        }
-        else {
-            Properties props = new Properties()
-            f.withInputStream {
-                props.load(it)
-            }
-            def ver = props."Pkg.Revision"
-            def parts = ver.findAll("[^.]+")
-            // Ignore the minor version
-            return parts[0]
-        }
-    }
-    private String sanitize(String s) {
-        return s.replaceAll(/[+]/, "p")
-    }
-    String findNDKTool(String name) {
-        def tools = project_.fileTree(project_.joinPath(getAndroidNDKPath(), 'toolchains')).matching {
-            include '**/bin/' + name + project_.osExecutableSuffix()
-            // Be sure not to use tools that would not support architectures for which we're buidling:
-            exclude "**/aarch64-*", "**/arm-*"
-        }
-        if (tools==null || tools.size() == 0) {
-            throw new GradleException('No ' + name + ' found in ' + ndkPath_ + '/toolchains')
-        }
-        return tools.getFiles().last().toString()
-    }
-    String getArPath() {
-        return findNDKTool("ar")
-    }
-    public String getCMakePath() {
-        return new File("${project_.projectDir}/../prebuilts/cmake/"
-                        + project_.osFolderName(ExternalToolName.CMAKE)
-                        + "/bin/cmake" + project_.osExecutableSuffix()).getPath()
-    }
-    public String getNinjaPath() {
-        return new File("${project_.projectDir}/../prebuilts/cmake/"
-                        + project_.osFolderName(ExternalToolName.CMAKE)
-                        + "/bin/ninja" + project_.osExecutableSuffix()).getPath()
-    }
-}
-class SpecificToolchain extends Toolchain {
-    SpecificToolchain(Project project, String androidVersion, String ndkVersion) {
-        project_ = project
-        androidVersion_ = androidVersion
-        ndkVersion_ = ndkVersion
-    }
-    public String getAndroidNDKPath() {
-        return new File("${project_.projectDir}/../prebuilts/ndk/" + ndkVersion_).getPath()
-    }
-}
-class LocalToolchain extends Toolchain {
-    String sdkPath_;
-    String ndkPath_;
-    String adbPath_;
-    LocalToolchain(Project project, String androidVersion) {
-        project_ = project
-        androidVersion_ = androidVersion
-        sdkPath_ = System.getenv("ANDROID_HOME")
-        if(sdkPath_ == null && project.rootProject.file('local.properties').isFile()) {
-            Properties properties = new Properties()
-            properties.load(project.rootProject.file('local.properties').newDataInputStream())
-            sdkPath_ = properties.getProperty('sdk.dir')
-        }
-        if(sdkPath_ == null)
-            throw new GradleException('Must set ANDROID_HOME or sdk.dir in local.properties')
-
-        // Try to find a side-by-side NDK if a specific version is specified
-        def requestedNdkRevision = System.getenv("ANDROID_NDK_REVISION")
-        if (requestedNdkRevision != null) {
-            def ndkSideBySidePath = project_.joinPath(sdkPath_, 'ndk', requestedNdkRevision);
-            if (project_.file(ndkSideBySidePath).exists())
-                ndkPath_ = ndkSideBySidePath;
-
-            // Don't throw an error if not found, as the version might be the default one
-            // installed (see next lines).
-        }
-
-        // Try to find the NDK specified in ANDROID_NDK or the default one.
-        if(ndkPath_ == null) {
-            ndkPath_ = System.getenv("ANDROID_NDK")
-        }
-        if(ndkPath_ == null) {
-            ndkPath_ = System.getenv("ANDROID_NDK_HOME")
-        }
-        if(ndkPath_ == null && project.rootProject.file('local.properties').isFile()) {
-            Properties properties = new Properties()
-            properties.load(project.rootProject.file('local.properties').newDataInputStream())
-            ndkPath_ = properties.getProperty('ndk.dir')
-        }
-        if(ndkPath_ == null) {
-            ndkPath_ = project_.joinPath(sdkPath_, 'ndk-bundle')
-            if (!project_.file(ndkPath_).exists())
-                throw new GradleException('No NDK found in SDK: must set ANDROID_NDK or ANDROID_NDK_REVISION with the version of a NDK installed in the SDK "ndk" folder (NDK side-by-side).')
-        }
-
-        // Get the version of the NDK that was found and sanity check that it's the proper one.
-        ndkVersion_ = getNdkVersionFromPropertiesFile()
-        adbPath_ = project_.joinPath(sdkPath_, 'platform-tools', 'adb')
-
-        if (requestedNdkRevision != null) {
-            def requestNDKMajorVersion = requestedNdkRevision.findAll("[^.]+")
-            if (ndkVersion_ != requestNDKMajorVersion[0]) {
-                throw new GradleException("You specified NDK $requestedNdkRevision but only NDK $ndkVersion_ was found in $ndkPath_. Verify that you have the requested NDK installed with the SDK manager.")
-            }
-        }
-    }
-    String getAndroidNDKPath() {
-        return ndkPath_;
-    }
-    String getAdbPath() {
-        return adbPath_;
     }
 }
 
@@ -390,8 +231,6 @@ task cleanPath(type: Delete) {
     delete getTempPath()
     delete getBuildPath()
 }
-
-clean.dependsOn cleanPath
 
 def executeCmd(cmd, dir) {
     def out = new StringBuilder()
