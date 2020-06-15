@@ -158,10 +158,32 @@ public class Score {
       Collector.cloudCollect(null, collect);
     }
 
-    JSONArray _tests = tests.get();
-    int rowspan = _tests.length() + 1;
+    Desktop.getDesktop().browse(writeReport(out, builds, directory, variations[0], tests.get()));
+  }
+
+  private static URI writeReport(Map<String, List<Result>> rows, Map<String, JSONObject> builds,
+                                 Path directory, int variation, JSONArray tests)
+      throws IOException {
     StringBuilder body = new StringBuilder();
-    int colspan = variations[0];
+    writeTable(body, rows, builds, tests, directory, variation);
+
+    Utils.copy(directory, "report.css");
+    Utils.copy(directory, "sorter.js");
+    String content = Utils.fileToString("score.html");
+    content = content.replace("<!--body-->", body);
+
+    Path outputFile = directory.resolve("index.html");
+    Files.writeString(outputFile, content);
+    return outputFile.toUri();
+  }
+
+  private static void writeTable(StringBuilder body,
+                                 Map<String, List<Result>> rows,
+                                 Map<String, JSONObject> builds,
+                                 JSONArray tests, Path directory, int variation) {
+    int rowspan = tests.length() + 1;
+
+    int colspan = variation;
     body.append("<table>")
         .append("<thead>")
         .append("<tr>")
@@ -182,8 +204,8 @@ public class Score {
         .append("</tr>");
 
     int repeats = 1;
-    for (int idx = 0; idx < _tests.length(); idx++) {
-      JSONArray test = _tests.getJSONArray(idx);
+    for (int idx = 0; idx < tests.length(); idx++) {
+      JSONArray test = tests.getJSONArray(idx);
       colspan /= test.length();
       body.append("<tr>");
 
@@ -210,7 +232,7 @@ public class Score {
     }
     body.append("</thead>");
 
-    for (Map.Entry<String, List<Result>> row : out.entrySet()) {
+    for (Map.Entry<String, List<Result>> row : rows.entrySet()) {
       body.append("<tr>");
 
       String id = row.getKey();
@@ -276,15 +298,6 @@ public class Score {
       body.append("</tr>");
     }
     body.append("</table>");
-
-    Utils.copy(directory, "report.css");
-    Utils.copy(directory, "sorter.js");
-    String content = Utils.fileToString("score.html");
-    content = content.replace("<!--body-->", body);
-
-    Path outputFile = directory.resolve("index.html");
-    Files.writeString(outputFile, content);
-    Desktop.getDesktop().browse(outputFile.toUri());
   }
 
   private static String toString(Object obj) {
