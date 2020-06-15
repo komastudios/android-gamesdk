@@ -129,6 +129,8 @@ class Collector {
                   continue;
                 }
                 JSONObject extra = new JSONObject();
+                extra.put("historyId", historyId);
+                extra.put("step", new JSONObject(step.toString()));
                 //noinspection HardcodedFileSeparator
                 extra.put(
                     "resultsPage",
