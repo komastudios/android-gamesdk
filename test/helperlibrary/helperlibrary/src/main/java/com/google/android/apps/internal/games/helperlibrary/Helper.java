@@ -1,16 +1,15 @@
 package com.google.android.apps.internal.games.helperlibrary;
 
 import android.os.Build;
-
+import java.lang.reflect.Field;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Field;
-
-/** A class to provide information about the current Android build to an application in JSON
- * format. */
+/**
+ * A class to provide information about the current Android build to an application in JSON
+ * format.
+ */
 public class Helper {
-
   /**
    * Copies the Android build data into a JSON object.
    * @return A JSONObject containing the Android build data.

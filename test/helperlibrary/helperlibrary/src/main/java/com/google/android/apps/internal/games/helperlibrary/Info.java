@@ -1,34 +1,29 @@
 package com.google.android.apps.internal.games.helperlibrary;
 
-import android.app.ActivityManager;
-import android.content.Context;
-import android.os.Build;
-import android.os.Debug;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 import static com.google.android.apps.internal.games.helperlibrary.Utils.getDebugMemoryInfo;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.getOomScore;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.lowMemoryCheck;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.processMeminfo;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.processStatus;
 
+import android.app.ActivityManager;
+import android.content.Context;
+import android.os.Build;
+import android.os.Debug;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /** A class to provide metrics of current memory usage to an application in JSON format. */
 public class Info {
-
   private static final List<String> MEMINFO_FIELDS =
       Arrays.asList("Cached", "MemFree", "MemAvailable", "SwapFree");
-  private static final List<String> STATUS_FIELDS =
-      Arrays.asList("VmSize", "VmRSS", "VmData");
+  private static final List<String> STATUS_FIELDS = Arrays.asList("VmSize", "VmRSS", "VmData");
   private static final String[] SUMMARY_FIELDS = {
-      "summary.graphics", "summary.native-heap", "summary.total-pss"
-  };
+      "summary.graphics", "summary.native-heap", "summary.total-pss"};
   private MapTester mapTester;
   private final long startTime = System.currentTimeMillis();
   /**
@@ -42,8 +37,8 @@ public class Info {
     report.put("time", System.currentTimeMillis() - startTime);
     report.put("nativeAllocated", Debug.getNativeHeapAllocatedSize());
 
-    ActivityManager activityManager = (ActivityManager)
-        Objects.requireNonNull(context.getSystemService((Context.ACTIVITY_SERVICE)));
+    ActivityManager activityManager = (ActivityManager) Objects.requireNonNull(
+        context.getSystemService((Context.ACTIVITY_SERVICE)));
     ActivityManager.MemoryInfo memoryInfo = Utils.getMemoryInfo(activityManager);
     report.put("availMem", memoryInfo.availMem);
     boolean lowMemory = lowMemoryCheck(activityManager);
