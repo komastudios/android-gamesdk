@@ -1,9 +1,5 @@
 package net.jimblackler.collate;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,17 +11,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Class containing various utility methods used by tools in the package.
  */
 class Utils {
-
   private static final PrintStream NULL_PRINT_STREAM = new PrintStream(new OutputStream() {
     @Override
-    public void write(int b) {
-
-    }
+    public void write(int b) {}
   });
 
   static String fileToString(String filename) throws IOException {
@@ -39,7 +35,7 @@ class Utils {
   private static String readStream(InputStream inputStream, PrintStream out) throws IOException {
     StringBuilder stringBuilder = new StringBuilder();
     try (BufferedReader bufferedReader =
-        new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+             new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
       String separator = "";
       while (true) {
         String line = bufferedReader.readLine();
