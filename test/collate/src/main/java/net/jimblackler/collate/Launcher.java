@@ -25,7 +25,7 @@ public class Launcher {
   private static final int MIN_VERSION = 26;
   private static final int MAX_DEVICES = Integer.MAX_VALUE;
   private static final String STANDARD_APK_PATH = "app/build/outputs/apk/debug/app-debug.apk";
-  private static final int DEVICE_TIMEOUT = 1000 * 11 * 60;
+  private static final long EXTRA_TIMEOUT = 1000 * 10;  // Allow extra time to start test on device.
 
   public static void main(String[] args) throws IOException {
     if (USE_DEVICE) {
@@ -64,6 +64,7 @@ public class Launcher {
         Utils.execute("adb", "install", apkPath.toString());
       }
 
+      long timeout = Utils.getDuration(Utils.getOrDefault(flattened, "timeout", "10m"));
       Utils.execute("adb", "shell", "am", "start", "-S", "-W", "-n",
           pack + "/" + pack + ".MainActivity",
           "--es", "\"Params\"", jsonToShellParameter(paramsIn));
@@ -73,7 +74,7 @@ public class Launcher {
       long started = currentTimeMillis();
       while (true) {
         try {
-          if (currentTimeMillis() > started + DEVICE_TIMEOUT) {
+          if (currentTimeMillis() > started + timeout + EXTRA_TIMEOUT) {
             break;
           }
           int newPid = getPid(pack.get());
