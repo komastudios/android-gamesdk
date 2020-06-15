@@ -2,24 +2,21 @@ package net.jimblackler.collate;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * A tool to analyze the recent run of iStresser in order to extract the record values of certain
  * memory metrics for all devices in the run.
  */
 public class Discover {
-
   public static void main(String[] args) throws IOException {
     JSONObject recordResults = new JSONObject();
-    ImmutableSet<String> increasing =
-        ImmutableSet.of("VmSize", "oom_score", "nativeAllocated", "summary.graphics",
-            "summary.total-pss");
+    ImmutableSet<String> increasing = ImmutableSet.of(
+        "VmSize", "oom_score", "nativeAllocated", "summary.graphics", "summary.total-pss");
     ImmutableSet<String> decreasing = ImmutableSet.of("availMem", "Cached", "MemAvailable");
 
     Collector.cloudCollect(null, result -> {

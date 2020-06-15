@@ -15,7 +15,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -66,8 +65,8 @@ public class Launcher {
 
       long timeout = Utils.getDuration(Utils.getOrDefault(flattened, "timeout", "10m"));
       Utils.execute("adb", "shell", "am", "start", "-S", "-W", "-n",
-          pack + "/" + pack + ".MainActivity",
-          "--es", "\"Params\"", jsonToShellParameter(paramsIn));
+          pack + "/" + pack + ".MainActivity", "--es", "\"Params\"",
+          jsonToShellParameter(paramsIn));
 
       // Wait for process to end or for the run to time out.
       int pid = 0;
@@ -117,19 +116,15 @@ public class Launcher {
   }
 
   private static void cloudLaunch() throws IOException {
-
     Path grabberPath = Config.GRABBER_BASE.resolve(STANDARD_APK_PATH);
 
-    List<String> baseCommands = new ArrayList<>(Arrays.asList(
-        Config.GCLOUD_EXECUTABLE.toString(),
-        "beta", "firebase", "test", "android", "run",
-        "--type", "game-loop",
-        "--async",
-        "--format", "json"));
+    List<String> baseCommands =
+        new ArrayList<>(Arrays.asList(Config.GCLOUD_EXECUTABLE.toString(), "beta", "firebase",
+            "test", "android", "run", "--type", "game-loop", "--async", "--format", "json"));
 
     Collection<String> devices = new ArrayList<>();
 
-    Collection < String > devicesOut = new ArrayList<>();
+    Collection<String> devicesOut = new ArrayList<>();
     DeviceFetcher.fetch(device -> {
       if (devicesOut.size() >= MAX_DEVICES) {
         return;
@@ -228,7 +223,6 @@ public class Launcher {
       while (true) {
         int e = coordinates.get(coordinateNumber) + 1;
         if (e >= tests.getJSONArray(coordinateNumber).length()) {
-
           coordinates.set(coordinateNumber, 0);
           coordinateNumber--;
           if (coordinateNumber < 0) {

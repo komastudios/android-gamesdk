@@ -26,12 +26,9 @@ class Auth {
         JSONObject obj = new JSONObject(Files.readString(Path.of("creds.json")));
         GoogleClientSecrets googleClientSecrets = getGoogleClientSecrets();
         GoogleTokenResponse response =
-            new GoogleRefreshTokenRequest(
-                    new NetHttpTransport(),
-                    new JacksonFactory(),
-                    obj.getString("refreshToken"),
-                    googleClientSecrets.getInstalled().getClientId(),
-                    googleClientSecrets.getInstalled().getClientSecret())
+            new GoogleRefreshTokenRequest(new NetHttpTransport(), new JacksonFactory(),
+                obj.getString("refreshToken"), googleClientSecrets.getInstalled().getClientId(),
+                googleClientSecrets.getInstalled().getClientSecret())
                 .execute();
         return response.getAccessToken();
       } catch (NoSuchFileException e) {
@@ -45,12 +42,9 @@ class Auth {
     GoogleClientSecrets googleClientSecrets = getGoogleClientSecrets();
 
     GoogleAuthorizationCodeFlow flow =
-        new GoogleAuthorizationCodeFlow.Builder(
-                new NetHttpTransport(),
-                new JacksonFactory(),
-                googleClientSecrets,
-                ImmutableList.of(
-                    "https://www.googleapis.com/auth/devstorage.read_only",
+        new GoogleAuthorizationCodeFlow
+            .Builder(new NetHttpTransport(), new JacksonFactory(), googleClientSecrets,
+                ImmutableList.of("https://www.googleapis.com/auth/devstorage.read_only",
                     "https://www.googleapis.com/auth/cloud-platform"))
             .build();
 
@@ -64,7 +58,7 @@ class Auth {
     String authorizationCode;
 
     try (BufferedReader bufferedReader =
-        new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8))) {
+             new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8))) {
       authorizationCode = bufferedReader.readLine();
     }
     // Exchange for an access and refresh token.
@@ -72,9 +66,8 @@ class Auth {
         flow.newTokenRequest(authorizationCode).setRedirectUri(redirectUri).execute();
 
     if (response.getRefreshToken() == null) {
-      System.out.println(
-          "To receive a new refresh token please revoke the previous refresh "
-              + "token first: https://security.google.com/settings/u/0/security/permissions");
+      System.out.println("To receive a new refresh token please revoke the previous refresh "
+          + "token first: https://security.google.com/settings/u/0/security/permissions");
     }
 
     try (FileWriter file = new FileWriter("creds.json", StandardCharsets.UTF_8)) {
@@ -86,8 +79,7 @@ class Auth {
   }
 
   private static GoogleClientSecrets getGoogleClientSecrets() throws IOException {
-    return GoogleClientSecrets.load(
-        JacksonFactory.getDefaultInstance(),
+    return GoogleClientSecrets.load(JacksonFactory.getDefaultInstance(),
         new InputStreamReader(
             Main.class.getResourceAsStream("/clientSecrets.json"), StandardCharsets.UTF_8));
   }
