@@ -1,7 +1,6 @@
 package com.google.android.apps.internal.games.helperlibrary;
 
 import android.util.Log;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,7 +14,6 @@ import java.nio.channels.FileChannel;
  * unloaded it is a signal that memory is running low on the device.
  */
 public class MapTester {
-
   private static final String TAG = MapTester.class.getSimpleName();
 
   private MappedByteBuffer map;

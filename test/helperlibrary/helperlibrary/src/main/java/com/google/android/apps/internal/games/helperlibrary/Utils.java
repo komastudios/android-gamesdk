@@ -3,7 +3,6 @@ package com.google.android.apps.internal.games.helperlibrary;
 import android.app.ActivityManager;
 import android.os.Debug;
 import android.util.Log;
-
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,7 +16,6 @@ import java.util.regex.Pattern;
 
 /** A helper class with static methods to help with Heuristics and file IO */
 public class Utils {
-
   private static final String TAG = Utils.class.getSimpleName();
 
   /**
@@ -96,8 +94,8 @@ public class Utils {
       Pattern pattern = Pattern.compile("([^:]+)[^\\d]*(\\d+).*\n");
       Matcher matcher = pattern.matcher(meminfoText);
       while (matcher.find()) {
-        output.put(matcher.group(1),
-            Long.parseLong(Objects.requireNonNull(matcher.group(2))) * 1024);
+        output.put(
+            matcher.group(1), Long.parseLong(Objects.requireNonNull(matcher.group(2))) * 1024);
       }
     } catch (IOException e) {
       Log.w(TAG, "Failed to read " + filename);
@@ -106,7 +104,8 @@ public class Utils {
   }
 
   /**
-   * Return a dictionary of values extracted from the application processes' /proc/../status files.
+   * Return a dictionary of values extracted from the application processes' /proc/../status
+   * files.
    *
    * @param activityManager The ActivityManager.
    * @return A dictionary of values, in bytes.
@@ -147,6 +146,6 @@ public class Utils {
    * @return The process memory info.
    */
   public static Debug.MemoryInfo[] getDebugMemoryInfo(ActivityManager activityManager) {
-    return activityManager.getProcessMemoryInfo(new int[]{android.os.Process.myPid()});
+    return activityManager.getProcessMemoryInfo(new int[] {android.os.Process.myPid()});
   }
 }
