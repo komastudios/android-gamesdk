@@ -1,6 +1,7 @@
 package com.google.android.apps.internal.games.helperlibrary;
 
 import static com.google.android.apps.internal.games.helperlibrary.Utils.getDebugMemoryInfo;
+import static com.google.android.apps.internal.games.helperlibrary.Utils.getOomScore;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.lowMemoryCheck;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.processMeminfo;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.processStatus;
@@ -56,6 +57,7 @@ public class Info {
       mapTester.reset();
     }
 
+    report.put("oom_score", getOomScore(activityManager));
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       Debug.MemoryInfo debugMemoryInfo = getDebugMemoryInfo(activityManager)[0];
       for (String key : SUMMARY_FIELDS) {
