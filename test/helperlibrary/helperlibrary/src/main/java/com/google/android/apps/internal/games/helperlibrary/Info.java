@@ -94,4 +94,8 @@ public class Info {
     }
     return report;
   }
+
+  public JSONObject getBaseline() {
+    return baseline;
+  }
 }

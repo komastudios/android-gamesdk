@@ -23,21 +23,20 @@ class Heuristic {
    * getSignal method. GREEN indicates it is safe to allocate further, YELLOW indicates further
    * allocation shouldn't happen, and RED indicates high memory pressure.
    */
-  static void checkHeuristics(ActivityManager activityManager, JSONObject params,
-      JSONObject deviceSettings, Reporter reporter) throws JSONException {
+  static void checkHeuristics(JSONObject metrics, JSONObject baseline, JSONObject params,
+                              JSONObject deviceSettings, Reporter reporter) throws JSONException {
     if (!params.has("heuristics")) {
       return;
     }
     JSONObject heuristics = params.getJSONObject("heuristics");
 
-    int oomScore = getOomScore(activityManager);
+    int oomScore = metrics.getInt("oom_score");
     Map<String, Long> memInfo = processMeminfo();
     Long commitLimit = memInfo.get("CommitLimit");
-    Long vmSize = processStatus(activityManager).get("VmSize");
+    Long vmSize = metrics.getLong("VmSize");
     Long cached = memInfo.get("Cached");
     Long memAvailable = memInfo.get("MemAvailable");
-    ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
-    long availMem = memoryInfo.availMem;
+    long availMem = metrics.getLong("availMem");
 
     if (heuristics.has("vmsize")) {
       if (commitLimit == null || vmSize == null) {
@@ -62,7 +61,7 @@ class Heuristic {
 
     if (heuristics.has("low")) {
       reporter.report(
-          "low", getMemoryInfo(activityManager).lowMemory ? Indicator.RED : Indicator.GREEN);
+          "low", metrics.optBoolean("lowMemory") ? Indicator.RED : Indicator.GREEN);
     }
 
     if (heuristics.has("cl")) {
@@ -82,12 +81,13 @@ class Heuristic {
                                                                       : Indicator.GREEN);
     }
 
+    JSONObject constant = baseline.getJSONObject("constant");
     if (heuristics.has("cached")) {
       if (cached == null || cached == 0) {
         reporter.report("cached", Indicator.GREEN);
       } else {
         reporter.report("cached",
-            cached * heuristics.getDouble("cached") < memoryInfo.threshold / 1024
+            cached * heuristics.getDouble("cached") < constant.getLong("threshold") / 1024
                 ? Indicator.RED
                 : Indicator.GREEN);
       }
@@ -140,14 +140,13 @@ class Heuristic {
       }
       reporter.report("oom_score", level);
     }
-    Debug.MemoryInfo debugMemoryInfo = getDebugMemoryInfo(activityManager)[0];
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       JSONObject summaryGraphicsParams = heuristics.optJSONObject("summary.graphics");
       long summaryGraphicsLimit = deviceSettings.optLong("summary.graphics");
       if (summaryGraphicsParams != null && summaryGraphicsLimit > 0) {
         Indicator level = Indicator.GREEN;
-        long summaryGraphics = Long.parseLong(debugMemoryInfo.getMemoryStat("summary.graphics"));
+        long summaryGraphics = metrics.getLong("summary.graphics");
         if (summaryGraphics > summaryGraphicsLimit * summaryGraphicsParams.getDouble("red")) {
           level = Indicator.RED;
         } else if (summaryGraphics
@@ -161,7 +160,7 @@ class Heuristic {
       long summaryTotalPssLimit = deviceSettings.optLong("summary.total-pss");
       if (summaryTotalPssParams != null && summaryTotalPssLimit > 0) {
         Indicator level = Indicator.GREEN;
-        long summaryTotalPss = Long.parseLong(debugMemoryInfo.getMemoryStat("summary.total-pss"));
+        long summaryTotalPss = metrics.getLong("summary.total-pss");
         if (summaryTotalPss > summaryTotalPssLimit * summaryTotalPssParams.getDouble("red")) {
           level = Indicator.RED;
         } else if (summaryTotalPss

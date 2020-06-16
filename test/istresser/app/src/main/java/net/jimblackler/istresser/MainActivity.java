@@ -240,6 +240,7 @@ public class MainActivity extends Activity {
       registerReceiver(receiver, new IntentFilter("com.google.gamesdk.grabber.RETURN"));
 
       JSONObject report = new JSONObject();
+      report.put("metrics", info.getMemoryMetrics(this));
       report.put("params", params1);
       report.put("settings", deviceSettings);
 
@@ -316,6 +317,7 @@ public class MainActivity extends Activity {
       public void run() {
         try {
           JSONObject report = standardInfo();
+          JSONObject metrics = report.getJSONObject("metrics");
           if (criticalLogLines.get() != null) {
             report.put("criticalLogLines", criticalLogLines.get());
             criticalLogLines.set(null);
@@ -327,8 +329,8 @@ public class MainActivity extends Activity {
               Indicator[] maxMemoryPressureLevel = {Indicator.GREEN};
               String[] triggeringHeuristic = {null};
 
-              Heuristic.checkHeuristics(activityManager, params,
-                  deviceSettings.getJSONObject("limits"),
+              Heuristic.checkHeuristics(
+                  metrics, info.getBaseline(), params, deviceSettings.getJSONObject("limits"),
                   (heuristic, heuristicMemoryPressureLevel) -> {
                     if (heuristicMemoryPressureLevel == Indicator.GREEN) {
                       // GREEN heuristic does nothing here.
@@ -450,9 +452,7 @@ public class MainActivity extends Activity {
           }
           if (timeRunning > timeout) {
             try {
-              report = standardInfo();
               report.put("exiting", true);
-              resultsStream.println(report);
             } catch (JSONException e) {
               throw new IllegalStateException(e);
             }
@@ -660,12 +660,10 @@ public class MainActivity extends Activity {
         public void run() {
           try {
             resultsStream.println(standardInfo());
+            JSONObject metrics = info.getMemoryMetrics(MainActivity.this);
             AtomicBoolean anyWarnings = new AtomicBoolean(false);
-            ActivityManager activityManager = (ActivityManager) Objects.requireNonNull(
-                getSystemService(Context.ACTIVITY_SERVICE));
-
-            Heuristic.checkHeuristics(activityManager, params,
-                deviceSettings.getJSONObject("limits"),
+            Heuristic.checkHeuristics(
+                metrics, info.getBaseline(), params, deviceSettings.getJSONObject("limits"),
                 (heuristic, heuristicMemoryPressureLevel) -> {
                   if (heuristicMemoryPressureLevel != Indicator.GREEN) {
                     anyWarnings.set(true);
@@ -695,7 +693,8 @@ public class MainActivity extends Activity {
   }
 
   private JSONObject standardInfo() throws JSONException {
-    JSONObject report = info.getMemoryMetrics(this);
+    JSONObject report = new JSONObject();
+    report.put("metrics", info.getMemoryMetrics(this));
     report.put("time", System.currentTimeMillis() - allocationStartedTime);
     boolean paused = allocationStartedTime == -1;
     if (paused) {
