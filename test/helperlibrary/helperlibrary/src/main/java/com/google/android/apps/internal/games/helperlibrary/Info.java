@@ -1,7 +1,6 @@
 package com.google.android.apps.internal.games.helperlibrary;
 
 import static com.google.android.apps.internal.games.helperlibrary.Utils.getDebugMemoryInfo;
-import static com.google.android.apps.internal.games.helperlibrary.Utils.getOomScore;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.lowMemoryCheck;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.processMeminfo;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.processStatus;
@@ -21,10 +20,13 @@ import org.json.JSONObject;
 public class Info {
   private static final List<String> MEMINFO_FIELDS = Arrays.asList("Active", "Active(anon)",
       "Active(file)", "AnonPages", "MemAvailable", "MemFree", "VmData", "VmRSS");
+  private static final List<String> MEMINFO_FIELDS_CONSTANT =
+      Arrays.asList("CommitLimit", "HighTotal", "LowTotal", "MemTotal");
   private static final List<String> STATUS_FIELDS = Arrays.asList("VmRSS", "VmSize");
   private static final String[] SUMMARY_FIELDS = {
       "summary.native-heap", "summary.graphics", "summary.total-pss", "summary.total-swap"};
   private MapTester mapTester;
+  private JSONObject baseline;
 
   /**
    * Gets Android memory metrics.
@@ -61,8 +63,8 @@ public class Info {
       }
     }
 
-    Map<String, Long> values = processMeminfo();
-    for (Map.Entry<String, Long> pair : values.entrySet()) {
+    Map<String, Long> memInfo = processMeminfo();
+    for (Map.Entry<String, Long> pair : memInfo.entrySet()) {
       String key = pair.getKey();
       if (MEMINFO_FIELDS.contains(key)) {
         report.put(key, pair.getValue());
@@ -74,6 +76,19 @@ public class Info {
       if (STATUS_FIELDS.contains(key)) {
         report.put(key, pair.getValue());
       }
+    }
+    if (baseline == null) {
+      JSONObject constant = new JSONObject();
+      for (Map.Entry<String, Long> pair : memInfo.entrySet()) {
+        String key = pair.getKey();
+        if (MEMINFO_FIELDS_CONSTANT.contains(key)) {
+          constant.put(key, pair.getValue());
+        }
+      }
+      constant.put("totalMem", memoryInfo.totalMem);
+      constant.put("threshold", memoryInfo.threshold);
+      report.put("constant", constant);
+      baseline = new JSONObject(report.toString());
     }
     return report;
   }
