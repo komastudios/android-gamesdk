@@ -57,6 +57,9 @@ class Collector {
 
   static void cloudCollect(String historyId, Consumer<? super JSONArray> emitter)
       throws IOException {
+    int sleepFor = 0;
+    int ioSleepFor = 0;
+
     String projectId = Utils.getProjectId();
 
     Map<String, JSONObject> launcherDevices = new HashMap<>();
@@ -90,6 +93,7 @@ class Collector {
         }
 
         while (true) {
+          int fetched = 0;
           inProgress = 0;
           ToolResults.Projects.Histories.Executions.List list =
               toolResults.projects().histories().executions().list(projectId, historyId);
@@ -125,6 +129,7 @@ class Collector {
                   if (!reported.add(stepId)) {
                     continue;
                   }
+                  fetched++;
                   JSONObject extra = new JSONObject();
                   extra.put("historyId", historyId);
                   extra.put("step", new JSONObject(step.toString()));
@@ -180,9 +185,30 @@ class Collector {
             break;
           }
           System.out.println(inProgress + " runs in progress");
+          if (fetched == 0) {
+            sleepFor += 10;
+            System.out.print("Nothing fetched so sleeping for " + sleepFor + " seconds... ");
+            try {
+              Thread.sleep(sleepFor * 1000L);
+            } catch (InterruptedException ignored) {
+              // Ignored by design.
+            }
+            System.out.println("done");
+          } else {
+            sleepFor = 0;
+          }
         }
+        ioSleepFor = 0;
       } catch (IOException e) {
         e.printStackTrace();
+        ioSleepFor += 10;
+        System.out.print("IO error so sleeping for " + ioSleepFor + " seconds... ");
+        try {
+          Thread.sleep(ioSleepFor * 1000L);
+        } catch (InterruptedException ignored) {
+          // Ignored by design.
+        }
+        System.out.println("done");
       }
     } while (inProgress != 0 || reported.isEmpty());
   }
