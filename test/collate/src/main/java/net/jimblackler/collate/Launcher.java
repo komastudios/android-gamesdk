@@ -24,7 +24,7 @@ import org.json.JSONTokener;
 public class Launcher {
   private static final boolean USE_DEVICE = false;
   private static final int MIN_VERSION = 26;
-  private static final int MAX_DEVICES = Integer.MAX_VALUE;
+  private static final int MAX_DEVICES = 2;
   private static final String STANDARD_APK_PATH = "app/build/outputs/apk/debug/app-debug.apk";
   private static final long EXTRA_TIMEOUT = 1000 * 10;  // Allow extra time to start test on device.
 

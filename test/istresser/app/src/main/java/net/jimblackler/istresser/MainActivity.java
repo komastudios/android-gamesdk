@@ -292,19 +292,6 @@ public class MainActivity extends Activity {
 
       report.put("build", getBuild());
 
-      JSONObject constant = new JSONObject();
-      ActivityManager.MemoryInfo memoryInfo = getMemoryInfo(activityManager);
-      constant.put("totalMem", memoryInfo.totalMem);
-      constant.put("threshold", memoryInfo.threshold);
-      constant.put("memoryClass", activityManager.getMemoryClass() * BYTES_IN_MEGABYTE);
-
-      Long commitLimit = processMeminfo().get("CommitLimit");
-      if (commitLimit != null) {
-        constant.put("CommitLimit", commitLimit);
-      }
-
-      report.put("constant", constant);
-
       resultsStream.println(report);
     } catch (IOException | JSONException | PackageManager.NameNotFoundException e) {
       throw new IllegalStateException(e);
