@@ -95,6 +95,9 @@ class Collector {
               toolResults.projects().histories().executions().list(projectId, historyId);
           while (true) {
             ListExecutionsResponse response = list.execute();
+            if (response == null) {
+              break;
+            }
             for (Execution execution : response.getExecutions()) {
               String executionId = execution.getExecutionId();
               ToolResults.Projects.Histories.Executions.Steps.List list1 =
