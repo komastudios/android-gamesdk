@@ -110,10 +110,6 @@ public class MainActivity extends Activity {
 
   private ServiceState serviceState;
 
-  private static String memoryString(long bytes) {
-    return String.format(Locale.getDefault(), "%.1f MB", (float) bytes / BYTES_IN_MEGABYTE);
-  }
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
