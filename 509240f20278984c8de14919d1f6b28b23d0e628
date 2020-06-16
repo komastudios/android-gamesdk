@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ff7c18ff_17f65ed0",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-06-16T16:40:46Z",
+      "side": 1,
+      "message": "nit: \"parameterless parameters\" is confusing - maybe \"flag arguments\", \"keyword arguments\" or something of the sort?",
+      "revId": "509240f20278984c8de14919d1f6b28b23d0e628",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
