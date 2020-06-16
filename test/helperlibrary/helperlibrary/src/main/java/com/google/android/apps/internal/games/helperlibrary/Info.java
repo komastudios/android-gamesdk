@@ -25,7 +25,7 @@ public class Info {
   private static final String[] SUMMARY_FIELDS = {
       "summary.native-heap", "summary.graphics", "summary.total-pss", "summary.total-swap"};
   private MapTester mapTester;
-  private final long startTime = System.currentTimeMillis();
+
   /**
    * Gets Android memory metrics.
    *
@@ -34,7 +34,6 @@ public class Info {
    */
   public JSONObject getMemoryMetrics(Context context) throws JSONException {
     JSONObject report = new JSONObject();
-    report.put("time", System.currentTimeMillis() - startTime);
     report.put("nativeAllocated", Debug.getNativeHeapAllocatedSize());
 
     ActivityManager activityManager = (ActivityManager) Objects.requireNonNull(
@@ -77,9 +76,5 @@ public class Info {
       }
     }
     return report;
-  }
-
-  public long getStartTime() {
-    return startTime;
   }
 }

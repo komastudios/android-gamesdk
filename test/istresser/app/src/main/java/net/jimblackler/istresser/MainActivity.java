@@ -321,8 +321,8 @@ public class MainActivity extends Activity {
       }
     });
 
-    appSwitchTimerStart = System.currentTimeMillis();
-    allocationStartedTime = info.getStartTime();
+    allocationStartedTime = System.currentTimeMillis();
+    appSwitchTimerStart = allocationStartedTime;
 
     timer.schedule(new TimerTask() {
       @Override
@@ -440,7 +440,7 @@ public class MainActivity extends Activity {
               }
             }
           }
-          long timeRunning = System.currentTimeMillis() - info.getStartTime();
+          long timeRunning = System.currentTimeMillis() - allocationStartedTime;
           if (LAUNCH_DURATION != 0) {
             long appSwitchTimeRunning = System.currentTimeMillis() - appSwitchTimerStart;
             if (appSwitchTimeRunning > LAUNCH_DURATION && lastLaunched < LAUNCH_DURATION) {
@@ -709,6 +709,7 @@ public class MainActivity extends Activity {
 
   private JSONObject standardInfo() throws JSONException {
     JSONObject report = info.getMemoryMetrics(this);
+    report.put("time", System.currentTimeMillis() - allocationStartedTime);
     boolean paused = allocationStartedTime == -1;
     if (paused) {
       report.put("paused", true);
