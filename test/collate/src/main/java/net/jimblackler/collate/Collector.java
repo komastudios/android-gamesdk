@@ -158,18 +158,22 @@ class Collector {
                       "gs://", "https://storage.cloud.google.com/");
                   extra.put("logs", logsUrl);
                   List<ToolOutputReference> toolOutputs = toolExecution.getToolOutputs();
-                  if (toolOutputs == null || toolOutputs.isEmpty()) {
-                    continue;
+                  String contents = "";
+                  if (toolOutputs != null) {
+                    for (ToolOutputReference toolOutputReference : toolOutputs) {
+                      URI uri = URI.create(toolOutputReference.getOutput().getFileUri());
+                      if (!uri.getPath().endsWith(".json")) {
+                        continue;
+                      }
+                      try {
+                        contents = getContents(storage, uri.getHost(), uri.getPath().substring(1));
+                        break;
+                      } catch (IOException e) {
+                        e.printStackTrace();
+                      }
+                    }
                   }
-                  ToolOutputReference toolOutputReference = toolOutputs.get(0);
-                  URI uri = URI.create(toolOutputReference.getOutput().getFileUri());
-                  try {
-                    String contents =
-                        getContents(storage, uri.getHost(), uri.getPath().substring(1));
-                    collectResult(emitter, contents, extra);
-                  } catch (IOException e) {
-                    e.printStackTrace();
-                  }
+                  collectResult(emitter, contents, extra);
                 }
                 String nextPageToken1 = response1.getNextPageToken();
                 if (nextPageToken1 == null) {
