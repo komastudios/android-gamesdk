@@ -8,6 +8,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -192,8 +194,9 @@ public class Launcher {
   }
 
   private static void doLaunch(LaunchClient client) throws IOException {
-    UUID uuid = UUID.randomUUID();
-    String id = uuid.toString();
+    OffsetDateTime now = OffsetDateTime.now();
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss");
+    String id = formatter.format(now);
     Date date = new Date();
 
     JSONArray tests = new JSONArray(Utils.fileToString("tests.json"));
