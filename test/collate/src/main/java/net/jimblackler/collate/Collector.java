@@ -190,19 +190,19 @@ class Collector {
   private static void collectResult(
       Consumer<? super JSONArray> emitter, String text, JSONObject extra) {
     JSONArray data = new JSONArray();
-    JSONTokener jsonTokener = new JSONTokener(text);
-    try {
-      while (true) {
-        JSONObject value = new JSONObject(jsonTokener);
-        if (extra != null) {
-          value.put("extra", extra);
-          extra = null;
-        }
+    text.lines().forEach(line -> {
+      line = line.trim();
+      try {
+        JSONObject value = new JSONObject(line);
         data.put(value);
+      } catch (JSONException e) {
+        System.out.println("Not JSON: " + line);
       }
-    } catch (JSONException e) {
-      // Silent by design.
+    });
+    if (data.isEmpty()) {
+      data.put(new JSONObject());
     }
+    data.getJSONObject(0).put("extra", extra);
     emitter.accept(data);
   }
 
