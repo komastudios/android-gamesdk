@@ -12,6 +12,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import org.json.JSONArray;
@@ -31,10 +33,28 @@ public class Score {
     final int[] variations = {0};
     AtomicReference<JSONArray> tests = new AtomicReference<>();
     Map<Integer, JSONObject> paramsMap = new HashMap<>();
+    AtomicReference<Timer> timer = new AtomicReference<>();
     Consumer<JSONArray> collect = result -> {
-      if (result.isEmpty()) {
-        return;
+      if (timer.get() != null) {
+        timer.get().cancel();
       }
+      timer.set(new Timer());
+      TimerTask task = new TimerTask() {
+        @Override
+        public void run() {
+          JSONArray _tests = tests.get();
+          if (_tests == null || _tests.isEmpty()) {
+            return;
+          }
+          try {
+            writeReport(out, builds, directory, variations[0], tests.get());
+          } catch (IOException e) {
+            throw new IllegalStateException(e);
+          }
+        }
+      };
+      timer.get().schedule(task, 1000 * 10);
+
       JSONObject first = result.getJSONObject(0);
       JSONObject params = first.getJSONObject("params");
 
@@ -151,6 +171,9 @@ public class Score {
       Collector.cloudCollect(null, collect);
     }
 
+    if (timer.get() != null) {
+      timer.get().cancel();
+    }
     Desktop.getDesktop().browse(writeReport(out, builds, directory, variations[0], tests.get()));
   }
 
