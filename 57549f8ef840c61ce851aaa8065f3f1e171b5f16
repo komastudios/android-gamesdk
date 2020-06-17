@@ -16,6 +16,24 @@
       "revId": "57549f8ef840c61ce851aaa8065f3f1e171b5f16",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fb001d12_a5f2b8fe",
+        "filename": "test/helperlibrary/helperlibrary/src/main/java/com/google/android/apps/internal/games/helperlibrary/Info.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-06-17T10:46:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a5421e19_df02604e",
+      "revId": "57549f8ef840c61ce851aaa8065f3f1e171b5f16",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
