@@ -18,6 +18,7 @@ class SpecificToolchainTest {
     fun generateProperBuildKeys() {
         val project = createMockProject()
         val toolchain = SpecificToolchain(project, "15", "21")
-        assertEquals("x86_API15_NDK21_cpp_static_release", toolchain.getBuildKey("x86", "c++_static", "release"))
+        val buildOptions = BuildOptions("release", false, "c++_static", "x86")
+        assertEquals("x86_API15_NDK21_cpp_static_release", toolchain.getBuildKey(buildOptions))
     }
 }
