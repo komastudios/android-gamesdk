@@ -167,7 +167,6 @@ public class Launcher {
       if (flattened.has("firebase")) {
         JSONObject firebase = flattened.getJSONObject("firebase");
         for (String key : firebase.keySet()) {
-          commands.add("--" + key + "=" + firebase.get(key));
           Object value = firebase.get(key);
           if (value.equals(Boolean.TRUE)) {
             commands.add("--" + key);
