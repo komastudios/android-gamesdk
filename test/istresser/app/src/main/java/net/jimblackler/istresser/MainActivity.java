@@ -82,6 +82,7 @@ public class MainActivity extends Activity {
   private PrintStream resultsStream = System.out;
   private final Info info = new Info();
   private long allocationStartedTime = -1;
+  private long testStartTime;
   private long appSwitchTimerStart;
   private long lastLaunched;
   private int serviceTotalMb = 0;
@@ -307,8 +308,9 @@ public class MainActivity extends Activity {
       }
     });
 
-    allocationStartedTime = System.currentTimeMillis();
-    appSwitchTimerStart = allocationStartedTime;
+    testStartTime = System.currentTimeMillis();
+    appSwitchTimerStart = testStartTime;
+    allocationStartedTime = testStartTime;
 
     timer.schedule(new TimerTask() {
       @Override
@@ -427,7 +429,7 @@ public class MainActivity extends Activity {
               }
             }
           }
-          long timeRunning = System.currentTimeMillis() - allocationStartedTime;
+          long timeRunning = System.currentTimeMillis() - testStartTime;
           if (LAUNCH_DURATION != 0) {
             long appSwitchTimeRunning = System.currentTimeMillis() - appSwitchTimerStart;
             if (appSwitchTimeRunning > LAUNCH_DURATION && lastLaunched < LAUNCH_DURATION) {
@@ -693,7 +695,7 @@ public class MainActivity extends Activity {
   private JSONObject standardInfo() throws JSONException {
     JSONObject report = new JSONObject();
     report.put("metrics", info.getMemoryMetrics(this));
-    report.put("time", System.currentTimeMillis() - allocationStartedTime);
+    report.put("time", System.currentTimeMillis() - testStartTime);
     boolean paused = allocationStartedTime == -1;
     if (paused) {
       report.put("paused", true);
