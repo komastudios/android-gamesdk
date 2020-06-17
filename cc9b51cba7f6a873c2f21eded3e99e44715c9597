@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0becdf3e_2c218b05",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 349,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-06-17T20:09:48Z",
+      "side": 0,
+      "message": "It looks like this line has been lost here. Where is the part where the yellow signal is processed?",
+      "range": {
+        "startLine": 349,
+        "startChar": 0,
+        "endLine": 349,
+        "endChar": 75
+      },
+      "revId": "cc9b51cba7f6a873c2f21eded3e99e44715c9597",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
