@@ -38,13 +38,10 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import net.jimblackler.istresser.Heuristic.Indicator;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -326,37 +323,31 @@ public class MainActivity extends Activity {
             long sinceAllocationStarted = System.currentTimeMillis() - allocationStartedTime;
             if (sinceAllocationStarted > 0) {
               boolean shouldAllocate = true;
-              Indicator[] maxMemoryPressureLevel = {Indicator.GREEN};
-              String[] triggeringHeuristic = {null};
 
-              Heuristic.checkHeuristics(
-                  metrics, info.getBaseline(), params, deviceSettings.getJSONObject("limits"),
-                  (heuristic, heuristicMemoryPressureLevel) -> {
-                    if (heuristicMemoryPressureLevel == Indicator.GREEN) {
-                      // GREEN heuristic does nothing here.
-                      return;
-                    }
-                    if (maxMemoryPressureLevel[0] == Indicator.RED) {
-                      // RED cannot be overwritten.
-                      return;
-                    }
-                    triggeringHeuristic[0] = heuristic;
-                    maxMemoryPressureLevel[0] = heuristicMemoryPressureLevel;
-                  });
+              JSONObject result0 = Heuristic.checkHeuristics(
+                  metrics, info.getBaseline(), params, deviceSettings.getJSONObject("limits"));
 
-              if (yellowLightTesting) {
-                if (maxMemoryPressureLevel[0] == Indicator.RED) {
+              if (result0.has("warnings")) {
+                JSONArray warnings = result0.getJSONArray("warnings");
+                boolean anyRed = false;
+                for (int idx = 0; idx != warnings.length(); idx++) {
+                  JSONObject heuristic = warnings.getJSONObject(idx);
+                  if ("red".equals(heuristic.getString("level"))) {
+                    anyRed = true;
+                    break;
+                  }
+                }
+
+                if (yellowLightTesting) {
                   shouldAllocate = false;
-                  freeMemory(MEMORY_TO_FREE_PER_CYCLE_MB * BYTES_IN_MEGABYTE);
-                } else if (maxMemoryPressureLevel[0] == Indicator.YELLOW) {
+                  if (anyRed) {
+                    freeMemory(MEMORY_TO_FREE_PER_CYCLE_MB * BYTES_IN_MEGABYTE);
+                  }
+                } else if (anyRed) {
                   shouldAllocate = false;
                   // Allocating 0 MB
-                }
-                allocationStartedTime = System.currentTimeMillis();
-              } else {
-                if (maxMemoryPressureLevel[0] == Indicator.RED) {
-                  shouldAllocate = false;
-                  releaseMemory(report, triggeringHeuristic[0]);
+                  report.put("warnings", warnings);
+                  releaseMemory();
                 }
               }
               if (mallocBytesPerMillisecond > 0 && shouldAllocate) {
@@ -607,7 +598,13 @@ public class MainActivity extends Activity {
       if (params.has("heuristics")) {
         JSONObject heuristics = params.getJSONObject("heuristics");
         if (heuristics.has("trim")) {
-          releaseMemory(report, "trim");
+          JSONArray warnings = new JSONArray();
+          JSONObject warning = new JSONObject();
+          warning.put("trim", true);
+          warning.put("level", "red");
+          warnings.put(warning);
+          report.put("warnings", warnings);
+          releaseMemory();
         }
       }
       resultsStream.println(report);
@@ -619,12 +616,7 @@ public class MainActivity extends Activity {
     }
   }
 
-  private void releaseMemory(JSONObject report, String trigger) {
-    try {
-      report.put("trigger", trigger);
-    } catch (JSONException e) {
-      throw new IllegalStateException(e);
-    }
+  private void releaseMemory() {
     allocationStartedTime = -1;
     runAfterDelay(() -> {
       JSONObject report2;
@@ -659,22 +651,19 @@ public class MainActivity extends Activity {
         @Override
         public void run() {
           try {
-            resultsStream.println(standardInfo());
-            JSONObject metrics = info.getMemoryMetrics(MainActivity.this);
-            AtomicBoolean anyWarnings = new AtomicBoolean(false);
-            Heuristic.checkHeuristics(
-                metrics, info.getBaseline(), params, deviceSettings.getJSONObject("limits"),
-                (heuristic, heuristicMemoryPressureLevel) -> {
-                  if (heuristicMemoryPressureLevel != Indicator.GREEN) {
-                    anyWarnings.set(true);
-                  }
-                });
-
-            if (anyWarnings.get()) {
-              runAfterDelay(this, delayAfterRelease);
-            } else {
-              allocationStartedTime = System.currentTimeMillis();
+            JSONObject report = standardInfo();
+            JSONObject metrics = report.getJSONObject("metrics");
+            JSONObject result = Heuristic.checkHeuristics(
+                metrics, info.getBaseline(), params, deviceSettings.getJSONObject("limits"));
+            report.put("heuristics", result);
+            if (result.has("warnings")) {
+              if (result.getJSONArray("warnings").length() > 0) {
+                runAfterDelay(this, delayAfterRelease);
+              } else {
+                allocationStartedTime = System.currentTimeMillis();
+              }
             }
+            resultsStream.println(report);
           } catch (JSONException e) {
             throw new IllegalStateException(e);
           }
