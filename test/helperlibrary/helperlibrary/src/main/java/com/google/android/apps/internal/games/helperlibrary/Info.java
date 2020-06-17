@@ -26,6 +26,7 @@ public class Info {
   private static final List<String> STATUS_FIELDS = Arrays.asList("VmRSS", "VmSize");
   private static final String[] SUMMARY_FIELDS = {
       "summary.native-heap", "summary.graphics", "summary.total-pss", "summary.total-swap"};
+  private static final long BYTES_IN_KILOBYTE = 1024;
   private MapTester mapTester;
   private JSONObject baseline;
 
@@ -59,9 +60,15 @@ public class Info {
 
     report.put("oom_score", getOomScore(activityManager));
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      Debug.MemoryInfo debugMemoryInfo = getDebugMemoryInfo(activityManager)[0];
-      for (String key : SUMMARY_FIELDS) {
-        report.put(key, Long.parseLong(debugMemoryInfo.getMemoryStat(key)));
+      Debug.MemoryInfo[] debugMemoryInfos = getDebugMemoryInfo(activityManager);
+      if (debugMemoryInfos.length > 0) {
+        for (String key : SUMMARY_FIELDS) {
+          long value = 0;
+          for (Debug.MemoryInfo debugMemoryInfo : debugMemoryInfos) {
+            value += Long.parseLong(debugMemoryInfo.getMemoryStat(key));
+          }
+          report.put(key, value * BYTES_IN_KILOBYTE);
+        }
       }
     }
 
