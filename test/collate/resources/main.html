@@ -89,6 +89,22 @@
 
     if ("extra" in first) {
       const extra = first.extra;
+      if ("fromLauncher" in extra) {
+        const fromLauncher = extra.fromLauncher;
+        const h1 = document.createElement("h1");
+        section.appendChild(h1);
+        let fullName;
+        if (fromLauncher.name.indexOf(fromLauncher.manufacturer) === -1) {
+          fullName = `${fromLauncher.manufacturer} ${fromLauncher.name}`;
+        } else {
+          fullName = fromLauncher.name;
+        }
+        fullName += ` (${fromLauncher.id})`;
+        h1.appendChild(document.createTextNode(fullName));
+        const img = document.createElement("img");
+        img.src = fromLauncher.thumbnailUrl;
+        h1.appendChild(img);
+      }
       {
         const paragraph = document.createElement("p");
         section.appendChild(paragraph);
