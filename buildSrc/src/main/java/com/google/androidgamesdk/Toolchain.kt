@@ -20,9 +20,9 @@ abstract class Toolchain {
     fun getNdkVersionNumber(): String {
         return extractNdkMajorVersion(ndkVersion_)
     }
-    fun getBuildKey(arch: String, stl: String, buildType: String): String {
-        return arch + "_API" + androidVersion_ + "_NDK" + getNdkVersionNumber() + '_' +
-                sanitize(stl)+ '_'+buildType
+    fun getBuildKey(buildOptions: BuildOptions): String {
+        return buildOptions.arch + "_API" + androidVersion_ + "_NDK" + getNdkVersionNumber() + '_' +
+                sanitize(buildOptions.stl!!)+ '_' + buildOptions.buildType
     }
     protected fun getNdkVersionFromPropertiesFile(): String {
         val file = File(getAndroidNDKPath(), "source.properties")
