@@ -139,20 +139,16 @@
       // ActivityManager blockw
       "availMem", "totalMem", "threshold",
       // Runtime / Debug block
-      "nativeAllocated",
+      "applicationAllocated",
       "serviceTotalMemory",
       // proc/pid block
       "oom_score",
-      //
-      "mmapAnonAllocatedByTest",
 
       "VmSize",
       "VmRSS",
       "VmData",
 
       "summary.graphics", "summary.native-heap", "summary.total-pss",
-
-      "gl_allocated"
     ];
 
     const highlights = [];
@@ -173,6 +169,13 @@
       }
       if (!("metrics" in row)) {
         continue;
+      }
+      {
+        let applicationAllocated = 0;
+        for (const [field, value] of Object.entries(row.testMetrics).sort()) {
+          applicationAllocated += value;
+        }
+        combined.applicationAllocated = applicationAllocated;
       }
       const metrics = row.metrics;
       const rowOut = [];
@@ -201,7 +204,7 @@
       if ("exiting" in row) {
         annotations.push(
             {
-              series: "nativeAllocated",
+              series: "applicationAllocated",
               x: time,
               shortText: "E",
               text: "Exiting"
@@ -211,7 +214,7 @@
       if ("onDestroy" in row) {
         annotations.push(
             {
-              series: "nativeAllocated",
+              series: "applicationAllocated",
               x: time,
               shortText: "D",
               text: "onDestroy"
@@ -221,7 +224,7 @@
       if ("onTrimMemory" in row) {
         annotations.push(
             {
-              series: "nativeAllocated",
+              series: "applicationAllocated",
               x: time,
               shortText: row.onTrimMemory,
               text: onTrimCodes[row.onTrimMemory]
@@ -232,7 +235,7 @@
       if ("trigger" in row) {
         annotations.push(
             {
-              series: "nativeAllocated",
+              series: "applicationAllocated",
               x: time,
               shortText: row.trigger,
               text: row.trigger
@@ -312,7 +315,7 @@
       highlightSeriesOpts:
           {strokeWidth: 2, strokeBorderWidth: 1, highlightCircleSize: 5},
       series: {
-        nativeAllocated: {strokeWidth: 4, color: 'black'},
+        applicationAllocated: {strokeWidth: 4, color: 'black'},
         oom_score: {axis: "y2"},
       },
       axes: {
