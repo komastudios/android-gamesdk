@@ -175,9 +175,6 @@
         continue;
       }
       const metrics = row.metrics;
-      if ("availMem" in metrics && "nativeAllocated" in row) {
-        row.availMemPlusNativeAllocated = metrics.availMem + row.nativeAllocated;
-      }
       const rowOut = [];
 
       let doneOne = false;
