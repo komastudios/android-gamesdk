@@ -114,18 +114,12 @@ public class Score {
         if (row.has("serviceCrashed")) {
           serviceCrashed = true;
         }
-        if (!row.has("nativeAllocated")) {
-          continue;
-        }
-        long score;
-        if (runParameters.has("glTest")) {
-          score = row.getLong("gl_allocated");
-        } else if (runParameters.has("mmapAnon")) {
-          score = row.getLong("mmapAnonAllocatedByTest");
-        } else if (runParameters.has("mmapFile")) {
-          score = row.getLong("mmapFileAllocatedByTest");
-        } else {
-          score = row.getLong("nativeAllocated");
+        long score = 0;
+        if (row.has("testMetrics")) {
+          JSONObject testMetrics = row.getJSONObject("testMetrics");
+          for (String key : testMetrics.keySet()) {
+            score += testMetrics.getLong(key);
+          }
         }
 
         if (score > largest) {
