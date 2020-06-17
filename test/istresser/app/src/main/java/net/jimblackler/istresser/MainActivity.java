@@ -704,28 +704,34 @@ public class MainActivity extends Activity {
     if (isServiceCrashed) {
       report.put("serviceCrashed", true);
     }
+
+    JSONObject testMetrics = new JSONObject();
     if (vkAllocatedByTest > 0) {
-      report.put("vkAllocatedByTest", vkAllocatedByTest);
+      testMetrics.put("vkAllocatedByTest", vkAllocatedByTest);
     }
     if (nativeAllocatedByTest > 0) {
-      report.put("nativeAllocatedByTest", nativeAllocatedByTest);
+      testMetrics.put("nativeAllocatedByTest", nativeAllocatedByTest);
     }
     if (mmapAnonAllocatedByTest > 0) {
-      report.put("mmapAnonAllocatedByTest", mmapAnonAllocatedByTest);
+      testMetrics.put("mmapAnonAllocatedByTest", mmapAnonAllocatedByTest);
     }
-    if (mmapFileAllocatedByTest > 0) {
-      report.put("mmapFileAllocatedByTest", mmapFileAllocatedByTest);
+    if (mmapAnonAllocatedByTest > 0) {
+      testMetrics.put("mmapFileAllocatedByTest", mmapFileAllocatedByTest);
     }
     if (serviceTotalMb > 0) {
-      report.put("serviceTotalMemory", BYTES_IN_MEGABYTE * serviceTotalMb);
+      testMetrics.put("serviceTotalMemory", BYTES_IN_MEGABYTE * serviceTotalMb);
     }
 
     TestSurface testSurface = findViewById(R.id.glsurfaceView);
     TestRenderer renderer = testSurface.getRenderer();
-    report.put("gl_allocated", renderer.getAllocated());
+    long glAllocated = renderer.getAllocated();
+    if (glAllocated > 0) {
+      testMetrics.put("gl_allocated", glAllocated);
+    }
     if (renderer.getFailed()) {
       report.put("allocFailed", true);
     }
+    report.put("testMetrics", testMetrics);
     return report;
   }
 
