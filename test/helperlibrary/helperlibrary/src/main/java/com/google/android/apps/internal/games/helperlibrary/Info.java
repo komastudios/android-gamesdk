@@ -59,9 +59,15 @@ public class Info {
 
     report.put("oom_score", getOomScore(activityManager));
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      Debug.MemoryInfo debugMemoryInfo = getDebugMemoryInfo(activityManager)[0];
-      for (String key : SUMMARY_FIELDS) {
-        report.put(key, Long.parseLong(debugMemoryInfo.getMemoryStat(key)));
+      Debug.MemoryInfo[] debugMemoryInfos = getDebugMemoryInfo(activityManager);
+      if (debugMemoryInfos.length > 0) {
+        for (String key : SUMMARY_FIELDS) {
+          long value = 0;
+          for (Debug.MemoryInfo debugMemoryInfo : debugMemoryInfos) {
+            value += Long.parseLong(debugMemoryInfo.getMemoryStat(key));
+          }
+          report.put(key, value * 1024);
+        }
       }
     }
 
