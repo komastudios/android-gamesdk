@@ -39,8 +39,6 @@ import org.json.JSONTokener;
 
 class Collector {
   private static final Pattern BAD_CHARS = Pattern.compile("[^a-zA-Z0-9-_.]");
-  private static final String FIELDS = "nextPageToken,"
-      + "steps(state,stepId,dimensionValue,testExecutionStep(toolExecution(toolOutputs,toolLogs)))";
 
   static void deviceCollect(String appName, Consumer<? super JSONArray> emitter)
       throws IOException {
@@ -109,8 +107,7 @@ class Collector {
                       .histories()
                       .executions()
                       .steps()
-                      .list(projectId, historyId, executionId)
-                      .setFields(FIELDS);
+                      .list(projectId, historyId, executionId);
               while (true) {
                 ListStepsResponse response1 = list1.execute();
                 if (response1.isEmpty()) {
