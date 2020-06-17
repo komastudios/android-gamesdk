@@ -243,6 +243,7 @@ public class Score {
       String id = row.getKey();
       JSONObject build = builds.get(id);
 
+      final JSONObject version = build.getJSONObject("version");
       body.append("<td>")
           .append(build.getString("MANUFACTURER"))
           .append("</td>")
@@ -250,10 +251,10 @@ public class Score {
           .append(build.getString("MODEL"))
           .append("</td>")
           .append("<td>")
-          .append(build.getInt("SDK_INT"))
+          .append(version.getInt("SDK_INT"))
           .append("</td>")
           .append("<td>")
-          .append(build.getString("RELEASE"))
+          .append(version.getString("RELEASE"))
           .append("</td>");
 
       Map<String, Float> maxScore = new HashMap<>();
