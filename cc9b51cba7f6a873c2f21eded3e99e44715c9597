@@ -22,6 +22,30 @@
       "revId": "cc9b51cba7f6a873c2f21eded3e99e44715c9597",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b3629bd5_9a47309c",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 349,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-06-17T23:41:11Z",
+      "side": 0,
+      "message": "It is obtuse I will admit.\n\nThe code is under if clause result0.has(\"warnings\") on line 328. This means at least one \u0027red\u0027 or \u0027yellow\u0027 warning happened (since we no longer report \u0027green\u0027 warnings). The only statement under the existing \u003d\u003dIndicator.YELLOW is shouldAllocate\u003dfalse, but this also happens for \u003d\u003dIndicator.RED. Therefore we should always do shouldAllocate\u003dfalse here, and that covers the code apparently removed.\n\nIf my logic is wrong let me know and I\u0027ll post submit a fix.",
+      "parentUuid": "0becdf3e_2c218b05",
+      "range": {
+        "startLine": 349,
+        "startChar": 0,
+        "endLine": 349,
+        "endChar": 75
+      },
+      "revId": "cc9b51cba7f6a873c2f21eded3e99e44715c9597",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
