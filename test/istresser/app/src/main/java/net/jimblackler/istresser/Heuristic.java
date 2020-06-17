@@ -5,6 +5,7 @@ import static net.jimblackler.istresser.Utils.optLong;
 
 import android.os.Build;
 import android.os.Debug;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,10 +18,11 @@ class Heuristic {
    * getSignal method. GREEN indicates it is safe to allocate further, YELLOW indicates further
    * allocation shouldn't happen, and RED indicates high memory pressure.
    */
-  static void checkHeuristics(JSONObject metrics, JSONObject baseline, JSONObject params,
-                              JSONObject deviceSettings, Reporter reporter) throws JSONException {
+  static JSONObject checkHeuristics(JSONObject metrics, JSONObject baseline, JSONObject params,
+                                    JSONObject deviceSettings) throws JSONException {
+    JSONObject results = new JSONObject();
     if (!params.has("heuristics")) {
-      return;
+      return results;
     }
     JSONObject heuristics = params.getJSONObject("heuristics");
 
@@ -32,178 +34,229 @@ class Heuristic {
     Long memAvailable = optLong(metrics, "MemAvailable");
     long availMem = metrics.getLong("availMem");
 
+    JSONArray warnings = new JSONArray();
+
     if (heuristics.has("vmsize")) {
-      if (commitLimit == null || vmSize == null) {
-        reporter.report("cl", Indicator.GREEN);
-      } else {
-        reporter.report("vmsize",
-            vmSize > commitLimit * heuristics.getDouble("vmsize") ? Indicator.RED
-                                                                  : Indicator.GREEN);
+      if (commitLimit != null && vmSize != null &&
+          vmSize > commitLimit * heuristics.getDouble("vmsize")) {
+        JSONObject warning = new JSONObject();
+        warning.put("vmsize", heuristics.get("vmsize"));
+        warning.put("level", "red");
+        warnings.put(warning);
       }
     }
 
     if (heuristics.has("oom")) {
-      reporter.report(
-          "oom", oomScore <= heuristics.getLong("oom") ? Indicator.GREEN : Indicator.RED);
+      if (oomScore > heuristics.getLong("oom")) {
+        JSONObject warning = new JSONObject();
+        warning.put("oom", heuristics.get("oom"));
+        warning.put("level", "red");
+        warnings.put(warning);
+      }
     }
 
     if (heuristics.has("try")) {
-      reporter.report("try",
-          tryAlloc((int) Utils.getMemoryQuantity(heuristics.get("try"))) ? Indicator.GREEN
-                                                                         : Indicator.RED);
+      if (!tryAlloc((int) Utils.getMemoryQuantity(heuristics.get("try")))) {
+        JSONObject warning = new JSONObject();
+        warning.put("try", heuristics.get("try"));
+        warning.put("level", "red");
+        warnings.put(warning);
+      }
     }
 
     if (heuristics.has("low")) {
-      reporter.report(
-          "low", metrics.optBoolean("lowMemory") ? Indicator.RED : Indicator.GREEN);
+      if (metrics.optBoolean("lowMemory")) {
+        JSONObject warning = new JSONObject();
+        warning.put("low", heuristics.get("low"));
+        warning.put("level", "red");
+        warnings.put(warning);
+      }
     }
 
     if (heuristics.has("cl")) {
-      if (commitLimit == null) {
-        reporter.report("cl", Indicator.GREEN);
-      } else {
-        reporter.report("cl",
-            Debug.getNativeHeapAllocatedSize() > commitLimit * heuristics.getDouble("cl")
-                ? Indicator.RED
-                : Indicator.GREEN);
+      if (commitLimit != null && Debug.getNativeHeapAllocatedSize() >
+          commitLimit * heuristics.getDouble("cl")) {
+        JSONObject warning = new JSONObject();
+        warning.put("cl", heuristics.get("cl"));
+        warning.put("level", "red");
+        warnings.put(warning);
       }
     }
 
     if (heuristics.has("avail")) {
-      reporter.report("avail",
-          availMem < Utils.getMemoryQuantity(heuristics.get("avail")) ? Indicator.RED
-                                                                      : Indicator.GREEN);
+      if (availMem < Utils.getMemoryQuantity(heuristics.get("avail"))) {
+        JSONObject warning = new JSONObject();
+        warning.put("avail", heuristics.get("avail"));
+        warning.put("level", "red");
+        warnings.put(warning);
+      }
     }
 
     if (heuristics.has("cached")) {
-      if (cached == null || cached == 0) {
-        reporter.report("cached", Indicator.GREEN);
-      } else {
-        reporter.report("cached",
-            cached * heuristics.getDouble("cached") < constant.getLong("threshold") / 1024
-                ? Indicator.RED
-                : Indicator.GREEN);
+      if (cached != null && cached != 0 &&
+          cached * heuristics.getDouble("cached") < constant.getLong("threshold") / 1024) {
+        JSONObject warning = new JSONObject();
+        warning.put("cached", heuristics.get("cached"));
+        warning.put("level", "red");
+        warnings.put(warning);
       }
     }
 
     if (heuristics.has("avail2")) {
-      if (memAvailable == null) {
-        reporter.report("avail2", Indicator.GREEN);
-      } else {
-        reporter.report("avail2",
-            memAvailable < Utils.getMemoryQuantity(heuristics.get("avail2")) ? Indicator.RED
-                                                                             : Indicator.GREEN);
+      if (memAvailable != null &&
+          memAvailable < Utils.getMemoryQuantity(heuristics.get("avail2"))) {
+        JSONObject warning = new JSONObject();
+        warning.put("avail2", heuristics.get("avail2"));
+        warning.put("level", "red");
+        warnings.put(warning);
       }
     }
 
     JSONObject nativeAllocatedParams = heuristics.optJSONObject("nativeAllocated");
     long nativeAllocatedLimit = deviceSettings.optLong("nativeAllocated");
     if (nativeAllocatedParams != null && nativeAllocatedLimit > 0) {
-      Indicator level = Indicator.GREEN;
+      String level = null;
       if (Debug.getNativeHeapAllocatedSize()
           > nativeAllocatedLimit * nativeAllocatedParams.getDouble("red")) {
-        level = Indicator.RED;
+        level = "red";
       } else if (Debug.getNativeHeapAllocatedSize()
           > nativeAllocatedLimit * nativeAllocatedParams.getDouble("yellow")) {
-        level = Indicator.YELLOW;
+        level = "yellow";
       }
-      reporter.report("nativeAllocated", level);
+      if (level != null) {
+        JSONObject warning = new JSONObject();
+        warning.put("nativeAllocated", heuristics.get("nativeAllocated"));
+        warning.put("level", level);
+        warnings.put(warning);
+      }
     }
 
     JSONObject vmSizeParams = heuristics.optJSONObject("VmSize");
     long vmSizeLimit = deviceSettings.optLong("VmSize");
     if (vmSizeParams != null && vmSize != null && vmSizeLimit > 0) {
-      Indicator level = Indicator.GREEN;
+      String level = null;
       if (vmSize > vmSizeLimit * vmSizeParams.getDouble("red")) {
-        level = Indicator.RED;
+        level = "red";
       } else if (vmSize > vmSizeLimit * vmSizeParams.getDouble("yellow")) {
-        level = Indicator.YELLOW;
+        level = "yellow";
       }
-      reporter.report("VmSize", level);
+      if (level != null) {
+        JSONObject warning = new JSONObject();
+        warning.put("VmSize", heuristics.get("VmSize"));
+        warning.put("level", level);
+        warnings.put(warning);
+      }
     }
 
     JSONObject oomScoreParams = heuristics.optJSONObject("oom_score");
     long oomScoreLimit = deviceSettings.optLong("oom_score");
     if (oomScoreParams != null && oomScoreLimit > 0) {
-      Indicator level = Indicator.GREEN;
+      String level = null;
       if (oomScore > oomScoreLimit * oomScoreParams.getDouble("red")) {
-        level = Indicator.RED;
+        level = "red";
       } else if (oomScore > oomScoreLimit * oomScoreParams.getDouble("yellow")) {
-        level = Indicator.YELLOW;
+        level = "yellow";
       }
-      reporter.report("oom_score", level);
+      if (level != null) {
+        JSONObject warning = new JSONObject();
+        warning.put("oom_score", heuristics.get("oom_score"));
+        warning.put("level", level);
+        warnings.put(warning);
+      }
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       JSONObject summaryGraphicsParams = heuristics.optJSONObject("summary.graphics");
       long summaryGraphicsLimit = deviceSettings.optLong("summary.graphics");
       if (summaryGraphicsParams != null && summaryGraphicsLimit > 0) {
-        Indicator level = Indicator.GREEN;
+        String level = null;
         long summaryGraphics = metrics.getLong("summary.graphics");
         if (summaryGraphics > summaryGraphicsLimit * summaryGraphicsParams.getDouble("red")) {
-          level = Indicator.RED;
+          level = "red";
         } else if (summaryGraphics
             > summaryGraphicsLimit * summaryGraphicsParams.getDouble("yellow")) {
-          level = Indicator.YELLOW;
+          level = "yellow";
         }
-        reporter.report("summary.graphics", level);
+        if (level != null) {
+          JSONObject warning = new JSONObject();
+          warning.put("summary.graphics", heuristics.get("summary.graphics"));
+          warning.put("level", level);
+          warnings.put(warning);
+        }
       }
 
       JSONObject summaryTotalPssParams = heuristics.optJSONObject("summary.total-pss");
       long summaryTotalPssLimit = deviceSettings.optLong("summary.total-pss");
       if (summaryTotalPssParams != null && summaryTotalPssLimit > 0) {
-        Indicator level = Indicator.GREEN;
+        String level = null;
         long summaryTotalPss = metrics.getLong("summary.total-pss");
         if (summaryTotalPss > summaryTotalPssLimit * summaryTotalPssParams.getDouble("red")) {
-          level = Indicator.RED;
+          level = "red";
         } else if (summaryTotalPss
             > summaryTotalPssLimit * summaryTotalPssParams.getDouble("yellow")) {
-          level = Indicator.YELLOW;
+          level = "yellow";
         }
-        reporter.report("summary.total-pss", level);
+        if (level != null) {
+          JSONObject warning = new JSONObject();
+          warning.put("summary.total-pss", heuristics.get("summary.total-pss"));
+          warning.put("level", level);
+          warnings.put(warning);
+        }
       }
     }
 
     JSONObject availMemParams = heuristics.optJSONObject("availMem");
     long availMemLimit = deviceSettings.optLong("availMem");
     if (availMemParams != null && availMemLimit > 0) {
-      Indicator level = Indicator.GREEN;
+      String level = null;
       if (availMem * availMemParams.getDouble("red") < availMemLimit) {
-        level = Indicator.RED;
+        level = "red";
       } else if (availMem * availMemParams.getDouble("yellow") < availMemLimit) {
-        level = Indicator.YELLOW;
+        level = "yellow";
       }
-      reporter.report("availMem", level);
+      if (level != null) {
+        JSONObject warning = new JSONObject();
+        warning.put("availMem", heuristics.get("availMem"));
+        warning.put("level", level);
+        warnings.put(warning);
+      }
     }
 
     JSONObject cachedParams = heuristics.optJSONObject("Cached");
     long cachedLimit = deviceSettings.optLong("Cached");
     if (cachedParams != null && cached != null && cachedLimit > 0) {
-      Indicator level = Indicator.GREEN;
+      String level = null;
       if (cached * cachedParams.getDouble("red") < cachedLimit) {
-        level = Indicator.RED;
+        level = "red";
       } else if (cached * cachedParams.getDouble("yellow") < cachedLimit) {
-        level = Indicator.YELLOW;
+        level = "yellow";
       }
-      reporter.report("Cached", level);
+      if (level != null) {
+        JSONObject warning = new JSONObject();
+        warning.put("Cached", heuristics.get("Cached"));
+        warning.put("level", level);
+        warnings.put(warning);
+      }
     }
 
     JSONObject memAvailableParams = heuristics.optJSONObject("MemAvailable");
     long memAvailableLimit = deviceSettings.optLong("MemAvailable");
     if (memAvailableParams != null && memAvailable != null && memAvailableLimit > 0) {
-      Indicator level = Indicator.GREEN;
+      String level = null;
       if (memAvailable * memAvailableParams.getDouble("red") < memAvailableLimit) {
-        level = Indicator.RED;
+        level = "red";
       } else if (memAvailable * memAvailableParams.getDouble("yellow") < memAvailableLimit) {
-        level = Indicator.YELLOW;
+        level = "yellow";
       }
-      reporter.report("MemAvailable", level);
+      if (level != null) {
+        JSONObject warning = new JSONObject();
+        warning.put("MemAvailable", heuristics.get("MemAvailable"));
+        warning.put("level", level);
+        warnings.put(warning);
+      }
     }
-  }
+    results.put("warnings", warnings);
 
-  public enum Indicator { GREEN, YELLOW, RED }
-
-  interface Reporter {
-    void report(String heuristic, Indicator indicator);
+    return results;
   }
 }
