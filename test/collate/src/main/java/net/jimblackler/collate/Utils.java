@@ -1,6 +1,7 @@
 package net.jimblackler.collate;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -29,7 +30,12 @@ class Utils {
   }
 
   static void copy(Path directory, String filename) throws IOException {
-    Files.copy(Paths.get("resources", filename), directory.resolve(filename));
+    Path fullPath = directory.resolve(filename);
+    File file = fullPath.toFile();
+    if (file.exists()) {
+      file.delete();
+    }
+    Files.copy(Paths.get("resources", filename), fullPath);
   }
 
   private static String readStream(InputStream inputStream, PrintStream out) throws IOException {
