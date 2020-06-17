@@ -29,9 +29,8 @@ class Main {
         int count = 0;
         while (true) {
           String coordinates = params.getJSONArray("coordinates").toString();
-          String name = build.getString("ID") + "_" + build.getString("RELEASE")
-              + coordinates.replace("[", "_").replace(",", "_").replace("]", "")
-              + (count > 0 ? "_" + count : "") + ".html";
+          String name = build.getString("DEVICE") + (count > 0 ? "_" + count : "")
+              + coordinates.replace("[", "_").replace(",", "-").replace("]", "") + ".html";
           outputFile = directory.resolve(name);
           if (!Files.exists(outputFile)) {
             break;
