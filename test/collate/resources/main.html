@@ -111,34 +111,6 @@
     section.appendChild(graphDiv);
     graphDiv.classList.add("graph");
 
-    const fields = [
-      "time",
-      // proc/meminfo block
-      "CommitLimit",
-      "Cached",
-      "MemFree",
-      "MemAvailable",
-      "SwapFree",
-
-      // ActivityManager blockw
-      "availMem", "totalMem", "threshold",
-      // Runtime / Debug block
-      "nativeAllocated",
-      "serviceTotalMemory",
-      // proc/pid block
-      "oom_score",
-      //
-      "mmapAnonAllocatedByTest",
-
-      "VmSize",
-      "VmRSS",
-      "VmData",
-
-      "summary.graphics", "summary.native-heap", "summary.total-pss",
-
-      "gl_allocated"
-    ];
-
     const highlights = [];
 
     const annotations = [];
@@ -151,6 +123,8 @@
 
     let time = 0;
 
+    const fields = ["Time"];
+    const rowOut = [0];
     for (const row of result) {
       if (!("time" in row)) {
         continue;
@@ -158,32 +132,40 @@
       if (!("metrics" in row)) {
         continue;
       }
-      const metrics = row.metrics;
-      if ("availMem" in metrics && "nativeAllocated" in row) {
-        row.availMemPlusNativeAllocated = metrics.availMem + row.nativeAllocated;
+      rowOut[0] = row.time / 1000;
+      const combined = {};
+      for (const [field, value] of Object.entries(constant).sort()) {
+        combined[field] = value;
       }
-      const rowOut = [];
 
-      let doneOne = false;
-      for (const field of fields) {
-        let combined = {...row, ...metrics, ...constant};
-        if (field in combined) {
-          let value = combined[field];
-          if (field === "time") {
-            value /= 1000;
-          } else if (field !== "oom_score") {
-            value /= 1024 * 1024; // MB
-          }
-          rowOut.push(value);
-          doneOne = true;
-        } else {
-          rowOut.push(0)
+      for (const [field, value] of Object.entries(row).sort()) {
+        combined[field] = value;
+      }
+
+      if ("metrics" in row) {
+        if ("availMem" in metrics && "nativeAllocated" in row) {
+          row.availMemPlusNativeAllocated = metrics.availMem + row.nativeAllocated;
+        }
+        for (const [field, value] of Object.entries(row.metrics).sort()) {
+          combined[field] = value;
         }
       }
 
-      if (doneOne) {
-        graphData.push(rowOut);
+      for (const [field, value] of Object.entries(combined)) {
+        if (typeof value !== 'number') {
+          continue;
+        }
+        if (fields.indexOf(field) === -1) {
+          fields.push(field);
+          for (const existingRow of graphData) {
+            existingRow.push(0);
+          }
+        }
+        rowOut[fields.indexOf(field)] = field === "oom_score" ? value : value / (1024 * 1024);
       }
+
+      graphData.push(rowOut.slice(0));
+
       time = rowOut[0];
       if ("exiting" in row) {
         annotations.push(
