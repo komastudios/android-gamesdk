@@ -1,2 +1,17 @@
 build:
   configuration: recipes/configurations/choreographer_timestamps.json
+
+systrace:
+  enabled: true
+  # custom categories (only supported for local deployment)
+  categories: "sched freq idle am wm gfx view input"
+
+deployment:
+  ftl:
+    enabled: true
+    devices:
+      - { codename: "walleye", sdk_version: 28 }
+      - { codename: "blueline", sdk_version: 29 }
+      - { codename: "SO-03J", sdk_version: 26 }
+      - { codename: "aura", sdk_version: 27 }
+      - { codename: "G8142", sdk_version: 26 }

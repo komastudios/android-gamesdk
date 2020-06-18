@@ -26,7 +26,6 @@ from lib.graphers.suite_handler import SuiteHandler, SuiteSummarizer
 from lib.report import Datum, SummaryContext
 import lib.items as items
 
-
 # The maximum number of milliseconds a Choreographer timestamp can be from an
 # EGL timestamp before the comparison is considered to be incompatible.
 # (In other words, only allow for about half of 16.7 ms frame time.)
@@ -35,6 +34,18 @@ MAX_COMPARABLE_VARIANCE_MS = 8
 # The arbitrary, maximum variance in milliseconds between a Choreographer
 # timestamp and an EGL timestamp that is considered "passing".
 MAX_PASSING_VARIANCE_MS = 3
+
+
+class ChoreographerTimestamp:
+
+    def __init__(self, timestamp_ns, vsync_offset_ns):
+        self.timestamp_ns = timestamp_ns
+        self.vsync_offset_ns = vsync_offset_ns
+
+    def adjusted_timestamp(self):
+        """Returns what the timestamp would have been without the VSYNC offset.
+        """
+        return self.timestamp_ns - self.vsync_offset_ns
 
 
 class ChoreographerTimestampsSummarizer(SuiteSummarizer):
@@ -77,6 +88,7 @@ class ChoreographerTimestampsSuiteHandler(SuiteHandler):
 
         # Collected data
         self.choreographer_timestamps = []
+        self.vsync_offsets = {}
         self.egl_frame_timestamps = []
         self.egl_missed_frame_ids = []
         self.has_corrected_timestamps = False
@@ -85,6 +97,7 @@ class ChoreographerTimestampsSuiteHandler(SuiteHandler):
         # Data for plotting
         self.timestamp_pairs = []
         self.timestamp_variance = []
+        self.variance_vsync_offsets = []  # temporary (for diagnostic)
 
         self.parse_data()
         self.group_timestamps()
@@ -96,6 +109,7 @@ class ChoreographerTimestampsSuiteHandler(SuiteHandler):
 
     def parse_data(self):
         choreographer_ts_name = "choreographer_timestamp_ns"
+        vsync_offset_name = "vsync_offset_ns"
         egl_frame_ts_name = "egl_frame_timestamp_ns"
 
         # Order data from report file
@@ -116,6 +130,7 @@ class ChoreographerTimestampsSuiteHandler(SuiteHandler):
             elif choreographer_ts_name in d.custom:
                 # Collect Choreographer timestamps
                 choreographer_ts = d.get_custom_field(choreographer_ts_name)
+                vsync_offset_ns = d.get_custom_field(vsync_offset_name)
 
                 # Check if timestamps need to be corrected (as in the case where
                 # they were truncated to 32-bit integers).
@@ -127,7 +142,9 @@ class ChoreographerTimestampsSuiteHandler(SuiteHandler):
                 if choreographer_ts != corrected_ts:
                     self.has_corrected_timestamps = True
 
+                corrected_ts -= vsync_offset_ns
                 self.choreographer_timestamps.append(corrected_ts)
+                self.vsync_offsets[corrected_ts] = vsync_offset_ns
 
             elif egl_frame_ts_name in d.custom:
                 # Collect EGL display present timestamps
@@ -187,6 +204,8 @@ class ChoreographerTimestampsSuiteHandler(SuiteHandler):
         for choreographer_ts, egl_ts in self.timestamp_pairs:
             variance = egl_ts - choreographer_ts
             self.timestamp_variance.append(variance)
+            self.variance_vsync_offsets.append(
+                self.vsync_offsets[choreographer_ts])
 
     def render(self, ctx: SummaryContext) -> List[items.Item]:
         # Fail early if there is not enough data to run the evaluation
@@ -221,8 +240,8 @@ class ChoreographerTimestampsSuiteHandler(SuiteHandler):
         return self.render_report(ctx)
 
     def render_report(self, ctx: SummaryContext):
-        image_path = self.plot(ctx, self.render_plot)
-        image = items.Image(image_path, self.device())
+        variance_image_path = self.plot(ctx, self.render_variance_plot)
+        variance_image = items.Image(variance_image_path, self.device())
 
         msg = "- Fail\n" if self.fail else "- Pass\n"
         if self.has_corrected_timestamps:
@@ -236,9 +255,24 @@ class ChoreographerTimestampsSuiteHandler(SuiteHandler):
             label = "timestamps" if unused_count > 1 else "timestamp"
             msg += f"- {unused_count} unused Choreographer {label}\n"
 
-        return [image, items.Text(msg)]
+        choreographer_detal_title = "Choreographer Deltas"
+        choreographer_delta_image_path = self.plot(
+            ctx, self.render_choreographer_delta_plot,
+            choreographer_detal_title)
+        choreographer_delta_image = items.Image(choreographer_delta_image_path,
+                                                choreographer_detal_title)
 
-    def render_plot(self):
+        egl_delta_title = "EGL Display Present Deltas"
+        egl_delta_image_path = self.plot(ctx, self.render_egl_delta_plot,
+                                         egl_delta_title)
+        egl_delta_image = items.Image(egl_delta_image_path, egl_delta_title)
+
+        return [
+            variance_image, choreographer_delta_image, egl_delta_image,
+            items.Text(msg)
+        ]
+
+    def render_variance_plot(self):
         """
         We create a plot showing how much the Choreographer timestamps varied
         from the present values gather from EGL_ANDROID_get_frame_timestamps.
@@ -255,6 +289,8 @@ class ChoreographerTimestampsSuiteHandler(SuiteHandler):
 
         if not variance_ms:
             return
+
+        offsets_ms = [i / 1_000_000 for i in self.variance_vsync_offsets]
 
         # Set bounds
         max_y = MAX_COMPARABLE_VARIANCE_MS
@@ -280,7 +316,9 @@ class ChoreographerTimestampsSuiteHandler(SuiteHandler):
             color='black')
 
         # Plot points
-        axes.plot(variance_ms)
+        axes.plot(variance_ms, label="Variance")
+        axes.plot(offsets_ms, label="VSYNC offset")
+        axes.legend()
 
         # Set PASS/FAIL indicators
         lowest_val = min(variance_ms)
@@ -311,6 +349,39 @@ class ChoreographerTimestampsSuiteHandler(SuiteHandler):
             self.fail = True
             add_region_marker('FAIL', (max_y + upper_bound) / 2,
                               max_y - upper_bound, 'red')
+
+    def render_choreographer_delta_plot(self):
+        choreographer_deltas = []
+        prev_choreographer_ts = None
+
+        for choreographer_ts, _ in self.timestamp_pairs:
+            choreographer_ts /= 1_000_000
+            if prev_choreographer_ts:
+                choreographer_deltas.append(choreographer_ts -
+                                            prev_choreographer_ts)
+            prev_choreographer_ts = choreographer_ts
+
+        _, axes = plt.subplots()
+        axes.axis([0, len(self.timestamp_pairs) - 1, 0, 67])
+        axes.set_xlabel("Frame")
+        axes.set_ylabel("Delta (ms)")
+        axes.plot(choreographer_deltas)
+
+    def render_egl_delta_plot(self):
+        egl_deltas = []
+        prev_egl_ts = None
+
+        for _, egl_ts in self.timestamp_pairs:
+            egl_ts /= 1_000_000
+            if prev_egl_ts:
+                egl_deltas.append(egl_ts - prev_egl_ts)
+            prev_egl_ts = egl_ts
+
+        _, axes = plt.subplots()
+        axes.axis([0, len(self.timestamp_pairs) - 1, 0, 67])
+        axes.set_xlabel("Frame")
+        axes.set_ylabel("Delta (ms)")
+        axes.plot(egl_deltas)
 
 
 def binary_search_nearest(values: List[int], target: int) -> Optional[int]:

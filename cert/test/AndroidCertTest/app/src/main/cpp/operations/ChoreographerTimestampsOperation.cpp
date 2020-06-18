@@ -115,11 +115,13 @@ void WriteDatum(report_writers::Struct w, const availability_datum& d) {
 
 struct choreographer_timestamp_datum {
   long choreographer_timestamp_ns;
+  int32_t vsync_offset_ns;
 };
 
 void WriteDatum(report_writers::Struct w,
                 const choreographer_timestamp_datum& d) {
   ADD_DATUM_MEMBER(w, d, choreographer_timestamp_ns);
+  ADD_DATUM_MEMBER(w, d, vsync_offset_ns);
 }
 
 struct egl_frame_timestamp_datum {
@@ -329,7 +331,10 @@ class ChoreographerTimestampsOperation : public BaseGLES3Operation {
 
     std::lock_guard guard{self->_frame_counter_mutex};
     if (self->_frame_counter > self->_configuration.first_frame_id) {
-      self->Report(choreographer_timestamp_datum{frame_time_nanos});
+      choreographer_timestamp_datum datum = {};
+      datum.choreographer_timestamp_ns = frame_time_nanos;
+      datum.vsync_offset_ns = GetAppVsyncOffsetNanos();
+      self->Report(datum);
     }
 
     // The counter must be incremented after a timestamp has been logged, but
