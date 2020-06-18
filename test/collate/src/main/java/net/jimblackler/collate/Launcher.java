@@ -3,6 +3,7 @@ package net.jimblackler.collate;
 import static java.lang.System.currentTimeMillis;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
+import com.google.common.collect.ImmutableSet;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -24,9 +25,17 @@ import org.json.JSONTokener;
 public class Launcher {
   private static final boolean USE_DEVICE = false;
   private static final int MIN_VERSION = 26;
+  private static final boolean USE_WHITELIST = false;
   private static final int MAX_DEVICES = Integer.MAX_VALUE;
   private static final String STANDARD_APK_PATH = "app/build/outputs/apk/debug/app-debug.apk";
   private static final long EXTRA_TIMEOUT = 1000 * 10;  // Allow extra time to start test on device.
+  private static final ImmutableSet<String> whitelist = ImmutableSet.of("602SO", "A0001",
+      "A1N_sprout", "ASUS_X00T_3", "ASUS_Z01H_1", "FRT", "G8142", "H8416", "HWCOR", "HWMHA",
+      "HWMHA", "OnePlus5T", "OnePlus6T", "SC-02K", "a9y18qltechn", "addison", "albus", "aljeter_n",
+      "athene_f", "aura", "blueline", "capricorn", "cheryl", "crownqlteue", "cruiserltesq",
+      "deen_sprout", "flame", "g3", "hammerhead", "harpia", "hero2qlteatt", "hero2qltevzw",
+      "heroqltetfnvzw", "hlte", "htc_m8", "hwALE-H", "j1acevelteub", "james", "jeter", "lithium",
+      "lucye", "lv0", "m0", "mlv1", "poseidonlteatt", "potter", "shamu", "victara");
 
   public static void main(String[] args) throws IOException {
     if (USE_DEVICE) {
@@ -128,7 +137,7 @@ public class Launcher {
 
     Collection<String> devicesOut = new ArrayList<>();
     DeviceFetcher.fetch(device -> {
-      if (devicesOut.size() >= MAX_DEVICES) {
+      if (!USE_WHITELIST && devices.size() >= MAX_DEVICES) {
         return;
       }
       if (!device.getString("formFactor").equals("PHONE")) {
@@ -144,6 +153,9 @@ public class Launcher {
           continue;
         }
         String id = device.getString("id");
+        if (USE_WHITELIST && !whitelist.contains(id)) {
+          continue;
+        }
         devicesOut.add(String.format("--device=model=%s,version=%d", id, versionId));
       }
     });
