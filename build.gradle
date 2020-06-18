@@ -16,6 +16,8 @@ import groovyx.gpars.GParsPool;
 import org.apache.tools.ant.filters.ReplaceTokens;
 import com.google.androidgamesdk.ExternalToolName;
 import static com.google.androidgamesdk.OsSpecificTools.osFolderName;
+import static com.google.androidgamesdk.CMakeWrapper.runAndroidCMake;
+import static com.google.androidgamesdk.CMakeWrapper.runHostCMake;
 
 buildscript {
     repositories {
@@ -113,64 +115,6 @@ def getTempPath() {
     return new File("$projectDir/../.temp").getPath()//.getAbsolutePath()
 }
 
-def useNinja() {
-    return true;
-}
-
-def runCmake(BuildFolders buildFolders, Toolchain toolchain, BuildOptions buildOptions, buildTuningFork) {
-    def ndkPath = toolchain.getAndroidNDKPath()
-    def toolchainFilePath = ndkPath + "/build/cmake/android.toolchain.cmake"
-    def androidVersion = toolchain.getAndroidVersion()
-    def buildtfval = buildTuningFork ? "ON" : "OFF"
-    def protocBinDir = protobufInstallDir() + "/bin"
-    def threadFlags = "-DGAMESDK_THREAD_CHECKS=" + (buildOptions.threadChecks ? "1" : "0")
-    mkdir buildFolders.workingFolder
-    mkdir buildFolders.outputFolder
-
-    def cxx_flags = "-DANDROID_NDK_VERSION=${toolchain.getNdkVersionNumber()}"
-    if (buildOptions.stl=="gnustl_static" || buildOptions.stl=="gnustl_shared")
-        cxx_flags += " -DANDROID_GNUSTL"
-
-    def cmdLine = [toolchain.getCMakePath(),
-                   buildFolders.projectFolder,
-                   "-DCMAKE_BUILD_TYPE=" + buildOptions.buildType,
-                   "-DANDROID_PLATFORM=android-$androidVersion",
-                   "-DANDROID_NDK=$ndkPath",
-                   "-DANDROID_STL=" + buildOptions.stl,
-                   "-DANDROID_ABI=" + buildOptions.arch,
-                   "-DANDROID_UNIFIED_HEADERS=1",
-                   "-DCMAKE_CXX_FLAGS=$cxx_flags",
-                   "-DCMAKE_TOOLCHAIN_FILE=$toolchainFilePath",
-                   "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=" + buildFolders.outputFolder,
-                   "-DGAMESDK_BUILD_TUNINGFORK=$buildtfval",
-                   threadFlags]
-
-    if (useNinja()) {
-        cmdLine += ["-DCMAKE_MAKE_PROGRAM=" + toolchain.getNinjaPath(),
-                    "-GNinja"]
-    }
-    exec {
-        environment "PATH", "$protocBinDir:${environment.PATH}"
-        workingDir buildFolders.workingFolder
-        commandLine cmdLine
-    }
-}
-
-def hostCmake(BuildFolders buildFolders, toolchain, buildType) {
-    mkdir buildFolders.workingFolder
-    mkdir buildFolders.outputFolder
-
-    def cmdLine = [toolchain.getCMakePath(),
-                   buildFolders.projectFolder,
-                   "-DCMAKE_BUILD_TYPE=$buildType",
-                   "-DCMAKE_CXX_FLAGS=",
-                   "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=" + buildFolders.outputFolder
-                   ]
-    exec {
-        workingDir buildFolders.workingFolder
-        commandLine cmdLine
-    }
-}
 
 def buildHostModule(subdir, buildType) {
     def toolchain = getLocalToolchain();
@@ -180,7 +124,7 @@ def buildHostModule(subdir, buildType) {
     def cmakeProjectFolder = joinPath("$projectDir", subdir)
     def buildFolders = new BuildFolders(cmakeProjectFolder, workingFolder, outputFolder)
 
-    hostCmake(buildFolders, toolchain, buildType)
+    runHostCMake(project, buildFolders, toolchain, buildType)
 
     def cmdLine = ["make", "-j"]
     exec {
@@ -198,9 +142,9 @@ def buildNativeModules(BuildOptions buildOptions, Toolchain toolchain, buildtf, 
     def cmakeProjectFolder = joinPath("$projectDir", subdir)
     def buildFolders = new BuildFolders(cmakeProjectFolder, workingFolder, outputFolder)
 
-    runCmake(buildFolders, toolchain, buildOptions, buildtf)
+    runAndroidCMake(project, buildFolders, toolchain, buildOptions, buildtf)
 
-    def cmdLine = useNinja() ? [toolchain.getNinjaPath()] : ["make", "-j"]
+    def cmdLine = !toolchain.getNinjaPath().isEmpty() ? [toolchain.getNinjaPath()] : ["make", "-j"]
     exec {
         workingDir workingFolder
         commandLine cmdLine
