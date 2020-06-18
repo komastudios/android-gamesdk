@@ -1,11 +1,9 @@
 package net.jimblackler.collate;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -15,9 +13,6 @@ import org.json.JSONObject;
 public class Discover {
   public static void main(String[] args) throws IOException {
     JSONObject recordResults = new JSONObject();
-    ImmutableSet<String> increasing = ImmutableSet.of(
-        "VmSize", "oom_score", "nativeAllocated", "summary.graphics", "summary.total-pss");
-    ImmutableSet<String> decreasing = ImmutableSet.of("availMem", "Cached", "MemAvailable");
 
     Collector.cloudCollect(null, result -> {
       if (result.isEmpty()) {
@@ -26,45 +21,104 @@ public class Discover {
       JSONObject first = result.getJSONObject(0);
 
       JSONObject params = first.getJSONObject("params");
-      JSONArray coordinates = params.getJSONArray("coordinates");
-
-      for (int coordinateNumber = 0; coordinateNumber != coordinates.length(); coordinateNumber++) {
-        if (coordinates.getInt(coordinateNumber) != 0) {
-          return;
-        }
+      JSONObject flattened = Utils.flattenParams(params);
+      if (flattened.has("heuristics") && !flattened.getJSONObject("heuristics").isEmpty()) {
+        // Runs with heuristics are not useful.
+        return;
       }
-
-      String fingerprint = first.getJSONObject("build").getString("FINGERPRINT");
-      JSONObject recordResults0;
-      if (recordResults.has(fingerprint)) {
-        recordResults0 = recordResults.getJSONObject(fingerprint);
-      } else {
-        recordResults0 = new JSONObject();
-        recordResults.put(fingerprint, recordResults0);
+      if (!flattened.has("malloc") && !flattened.has("glTest")) {
+        // Only interested in these kinds of stress tests.
+        return;
       }
+      JSONObject baseline = null;
+      JSONObject limit = null;
+      JSONObject firstFailed = null;
       for (int idx2 = 0; idx2 != result.length(); idx2++) {
         JSONObject row = result.getJSONObject(idx2);
-        if (row.has("allocFailed") || row.has("mmapAnonFailed") || row.has("mmapFileFailed")) {
+        if (row.optBoolean("activityPaused")) {
+          // The run was interrupted and is unusable.
+          limit = null;
           break;
         }
-        for (String key : Sets.union(increasing, decreasing)) {
-          if (!row.has(key)) {
-            continue;
+        if (!row.has("time")) {
+          continue;
+        }
+        long time = row.getLong("time");
+        if (row.has("allocFailed") || row.has("mmapAnonFailed") || row.has("mmapFileFailed")
+            || row.has("criticalLogLines")) {
+          if (firstFailed == null || time < firstFailed.getLong("time")) {
+            firstFailed = row;
           }
-          long value = row.getLong(key);
+        }
+        if (firstFailed != null && time >= firstFailed.getLong("time")) {
+          continue;
+        }
+        if (!row.has("metrics")) {
+          continue;
+        }
+        if (baseline == null || time < baseline.getLong("time")) {
+          // Baseline is the earliest reading.
+          baseline = row;
+        }
+        if (limit == null || time > limit.getLong("time")) {
+          // Limit is the latest reading.
+          limit = row;
+        }
+      }
+      if (limit != null) {
+        String fingerprint = first.getJSONObject("build").getString("FINGERPRINT");
+        JSONObject baselineCurrent = baseline.getJSONObject("metrics");
+        JSONObject limitCurrent = limit.getJSONObject("metrics");
 
-          if (recordResults0.has(key)) {
-            long existing = recordResults0.getLong(key);
-            if (increasing.contains(key) ? value > existing : value < existing) {
-              recordResults0.put(key, value);
+        JSONObject testMetrics = limit.getJSONObject("testMetrics");
+        long total = 0;
+        for (String key : testMetrics.keySet()) {
+          total += testMetrics.getLong(key);
+        }
+        limitCurrent.put("applicationAllocated", total);
+
+        if (recordResults.has(fingerprint)) {
+          // Multiple results are combined.
+          // We take the metric result with the smallest ('worst') delta in every case.
+          JSONObject recordResult;
+          recordResult = recordResults.getJSONObject(fingerprint);
+          JSONObject limitPrevious = recordResult.getJSONObject("limit");
+          JSONObject baselinePrevious = recordResult.getJSONObject("baseline");
+          for (String key : limitPrevious.keySet()) {
+            try {
+              if (!(limitPrevious.get(key) instanceof Number)) {
+                continue;
+              }
+              if (!baselinePrevious.has(key)) {
+                if (limitCurrent.getLong(key) < limitPrevious.getLong(key)) {
+                  limitPrevious.put(key, limitCurrent.getLong(key));
+                }
+                continue;
+              }
+              if (!(baselinePrevious.get(key) instanceof Number)) {
+                continue;
+              }
+              long previous = limitPrevious.getLong(key) - baselinePrevious.getLong(key);
+              long baselineCurrentValue = baselineCurrent.getLong(key);
+              long limitCurrentValue = limitCurrent.getLong(key);
+              long current = limitCurrentValue - baselineCurrentValue;
+              if (Math.abs(current) < Math.abs(previous)) {
+                baselinePrevious.put(key, baselineCurrentValue);
+                limitPrevious.put(key, limitCurrentValue);
+              }
+            } catch (JSONException e) {
+              throw new IllegalStateException(e);
             }
-          } else {
-            recordResults0.put(key, value);
           }
+        } else {
+          JSONObject recordResult = new JSONObject();
+          recordResult.put("baseline", baselineCurrent);
+          recordResult.put("limit", limitCurrent);
+          recordResults.put(fingerprint, recordResult);
         }
       }
     });
 
-    Files.write(Paths.get("out.json"), recordResults.toString(2).getBytes());
+    Files.write(Paths.get("lookup.json"), recordResults.toString(2).getBytes());
   }
 }

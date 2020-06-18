@@ -173,6 +173,14 @@
         }
       }
 
+      if ("predictions" in row) {
+        const predictions = row.predictions;
+        for (const [field, value] of Object.entries(predictions).sort()) {
+          const totalPrediction = value + row.applicationAllocated;
+          combined["prediction_" + field] = totalPrediction >= 0 ? totalPrediction : 0;
+        }
+      }
+
       for (const [field, value] of Object.entries(combined)) {
         if (typeof value !== 'number') {
           continue;
