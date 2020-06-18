@@ -27,9 +27,6 @@ class Heuristic {
   static JSONObject checkHeuristics(JSONObject metrics, JSONObject baseline, JSONObject params,
                                     JSONObject deviceSettings) throws JSONException {
     JSONObject results = new JSONObject();
-    if (!params.has("heuristics")) {
-      return results;
-    }
 
     JSONObject deviceLimit = deviceSettings.getJSONObject("limit");
     JSONObject deviceBaseline = deviceSettings.getJSONObject("baseline");
