@@ -178,8 +178,6 @@ public class MainActivity extends Activity {
     setContentView(R.layout.activity_main);
     serviceCommunicationHelper = new ServiceCommunicationHelper(this);
     serviceState = ServiceState.DEALLOCATED;
-    ActivityManager activityManager =
-        (ActivityManager) Objects.requireNonNull(getSystemService(Context.ACTIVITY_SERVICE));
 
     try {
       // Setting up broadcast receiver
@@ -326,6 +324,10 @@ public class MainActivity extends Activity {
 
               JSONObject result0 = Heuristic.checkHeuristics(
                   metrics, info.getBaseline(), params, deviceSettings.getJSONObject("limits"));
+
+              if (result0.has("predictions")) {
+                report.put("predictions", result0.getJSONObject("predictions"));
+              }
 
               if (result0.has("warnings")) {
                 JSONArray warnings = result0.getJSONArray("warnings");
@@ -658,6 +660,7 @@ public class MainActivity extends Activity {
             report.put("heuristics", result);
             if (result.has("warnings")) {
               if (result.getJSONArray("warnings").length() > 0) {
+                report.put("failedToClear", true);
                 runAfterDelay(this, delayAfterRelease);
               } else {
                 allocationStartedTime = System.currentTimeMillis();
