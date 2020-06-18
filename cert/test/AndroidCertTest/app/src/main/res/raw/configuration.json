@@ -38,12 +38,12 @@
       "enabled": true,
       "name": "Choreographer Timestamps",
       "description": "Samples Choreographer timestamps for comparison with EGL get frame timestamps extension",
-      "duration": "15s",
+      "duration": "20s",
       "data_gatherer": {
         "id": "ChoreographerTimestampsOperation",
         "configuration": {
-          "first_frame_id": 10,
-          "last_frame_id": 610
+          "first_frame_id": 180,
+          "last_frame_id": 780
         }
       },
       "host": "GLSurfaceViewHostActivity",

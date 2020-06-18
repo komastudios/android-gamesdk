@@ -186,6 +186,9 @@ deployment:
         type: game-loop
         timeout: 1500 # 25 minutes
 
+    # specify whether to record a video of the run (default is false)
+    record_video: [true|false]
+
 # generation of summary report
 summary:
   # if true, report will be generated
