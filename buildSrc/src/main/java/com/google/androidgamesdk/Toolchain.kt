@@ -88,6 +88,13 @@ abstract class Toolchain {
         ).path
     }
 
+    fun getProtobufInstallPath(): String {
+        return File(
+            "${project_.projectDir}/third_party/protobuf-3.0.0/install/" +
+                osFolderName(ExternalToolName.PROTOBUF)
+        ).path
+    }
+
     protected fun extractNdkMajorVersion(ndkVersion: String): String {
         val majorVersionPattern = Pattern.compile("[0-9]+")
         val matcher = majorVersionPattern.matcher(ndkVersion)
