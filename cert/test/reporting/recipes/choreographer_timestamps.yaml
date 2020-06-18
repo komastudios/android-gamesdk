@@ -1,2 +1,11 @@
 build:
   configuration: recipes/configurations/choreographer_timestamps.json
+
+systrace:
+  enabled: true
+  # custom categories (only supported for local deployment)
+  categories: "sched freq idle am wm gfx view input"
+
+deployment:
+  ftl:
+    enabled: true

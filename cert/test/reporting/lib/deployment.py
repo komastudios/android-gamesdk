@@ -409,9 +409,11 @@ def run_ftl_deployment(recipe: Recipe, target_devices: DeploymentTarget,
     systrace_enabled, systrace_keywords, _ = \
         get_systrace_config(recipe)
 
+    video_enabled = recipe.lookup("deployment.ftl.record_video", fallback=False)
+
     report_files, systrace_files = run_on_farm_and_collect_reports(
-        args_dict, flags_dict, active_test, systrace_enabled, devices,
-        excluding, target_devices, out_dir)
+        args_dict, flags_dict, active_test, systrace_enabled, video_enabled,
+        devices, excluding, target_devices, out_dir)
 
     report_files = process_ftl_reports(out_dir, report_files, systrace_files,
                                        systrace_keywords)

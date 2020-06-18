@@ -163,6 +163,38 @@ GLContextConfig ancer::BridgeGLContextConfiguration(jobject src_config) {
   return dst_config;
 }
 
+int32_t ancer::GetAppVsyncOffsetNanos() {
+  int32_t offset = 0;
+
+  jobject activity = jni::GetActivityWeakGlobalRef();
+  if (activity == NULL) {
+    return 0; // throw
+  }
+
+  jni::SafeJNICall([activity, &offset](jni::LocalJNIEnv *env) {
+    jclass activity_class = env->FindClass("android/app/NativeActivity");
+    jclass window_manager_class = env->FindClass("android/view/WindowManager");
+    jclass display_class = env->FindClass("android/view/Display");
+
+    jmethodID get_window_manager = env->GetMethodID(
+        activity_class, "getWindowManager", "()Landroid/view/WindowManager;");
+    jmethodID get_default_display = env->GetMethodID(
+        window_manager_class, "getDefaultDisplay", "()Landroid/view/Display;");
+    jobject wm = env->CallObjectMethod(activity, get_window_manager);
+    jobject display = env->CallObjectMethod(wm, get_default_display);
+
+    jmethodID get_vsync_offset_nanos = env->GetMethodID(display_class, "getAppVsyncOffsetNanos", "()J");
+    if (get_vsync_offset_nanos == 0) {
+      return; // throw
+    }
+
+    const long app_vsync_offset = env->CallLongMethod(display, get_vsync_offset_nanos);
+    offset = static_cast<int32_t>(app_vsync_offset);
+  });
+
+  return offset;
+}
+
 //--------------------------------------------------------------------------------------------------
 
 std::vector<unsigned char> ancer::PNGEncodeRGBABytes(

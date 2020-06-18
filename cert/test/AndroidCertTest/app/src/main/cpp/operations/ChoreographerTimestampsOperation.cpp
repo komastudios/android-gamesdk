@@ -25,13 +25,14 @@
  *
  * Input configuration:
  * - first_frame_id: The first frame for which to capture timestamps.
- * - last_frame_id: The last frame for which to capture timestamps.
+ * - last_frame_id:  The last frame for which to capture timestamps.
  *
  * Output report: Expect one "availability_datum" and zero or more of
  *                "choreographer_timestamp_datum" and
  *                "egl_frame_timestamp_datum" (though not necessarily the same
  *                number of them).
- * - availability_datum
+ * 
+ * - availability_datum:
  *   - has_egl_extension:                     True if EGL_ANDROID_get_frame_
  *                                            timestamps extension is available.
  *   - enable_surface_timestamps_success:     True if succeeded in enable
@@ -49,8 +50,10 @@
  *                                            EGL ext getFrameTimestampSupported
  *                                            is available.
  * 
- * - choreographer_timestamp_datum: timestamp in nanoseconds corresponding with
- *                                  a callback from Choreographer.
+ * - choreographer_timestamp_datum: 
+ *   - choreographer_timestamp_ns: timestamp in nanoseconds corresponding with
+ *                                 a callback from Choreographer.
+ *   - vsync_offset_ns:            VSYNC offset from GetAppVsyncOffsetNanos.
  *
  * - egl_frame_timestamp_datum:
  *   - frame_id:               frame ID assigned by EGL.
@@ -115,11 +118,13 @@ void WriteDatum(report_writers::Struct w, const availability_datum& d) {
 
 struct choreographer_timestamp_datum {
   long choreographer_timestamp_ns;
+  int32_t vsync_offset_ns;
 };
 
 void WriteDatum(report_writers::Struct w,
                 const choreographer_timestamp_datum& d) {
   ADD_DATUM_MEMBER(w, d, choreographer_timestamp_ns);
+  ADD_DATUM_MEMBER(w, d, vsync_offset_ns);
 }
 
 struct egl_frame_timestamp_datum {
@@ -329,7 +334,10 @@ class ChoreographerTimestampsOperation : public BaseGLES3Operation {
 
     std::lock_guard guard{self->_frame_counter_mutex};
     if (self->_frame_counter > self->_configuration.first_frame_id) {
-      self->Report(choreographer_timestamp_datum{frame_time_nanos});
+      choreographer_timestamp_datum datum = {};
+      datum.choreographer_timestamp_ns = frame_time_nanos;
+      datum.vsync_offset_ns = GetAppVsyncOffsetNanos();
+      self->Report(datum);
     }
 
     // The counter must be incremented after a timestamp has been logged, but
