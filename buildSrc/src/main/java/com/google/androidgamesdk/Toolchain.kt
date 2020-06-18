@@ -11,26 +11,33 @@ import java.util.regex.Pattern
 
 
 abstract class Toolchain {
-    abstract protected var project_: Project;
-    abstract protected var androidVersion_: String
-    abstract protected var ndkVersion_: String
-    abstract fun getAndroidNDKPath(): String;
-    fun getAndroidVersion(): String { return androidVersion_; }
-    fun getNdkVersion(): String { return ndkVersion_; }
+    protected abstract var project_: Project
+    protected abstract var androidVersion_: String
+    protected abstract var ndkVersion_: String
+    abstract fun getAndroidNDKPath(): String
+    fun getAndroidVersion(): String {
+        return androidVersion_
+    }
+
+    fun getNdkVersion(): String {
+        return ndkVersion_
+    }
+
     fun getNdkVersionNumber(): String {
         return extractNdkMajorVersion(ndkVersion_)
     }
+
     fun getBuildKey(buildOptions: BuildOptions): String {
         return buildOptions.arch + "_API" + androidVersion_ + "_NDK" + getNdkVersionNumber() + '_' +
-                sanitize(buildOptions.stl!!)+ '_' + buildOptions.buildType
+                sanitize(buildOptions.stl!!) + '_' + buildOptions.buildType
     }
+
     protected fun getNdkVersionFromPropertiesFile(): String {
         val file = File(getAndroidNDKPath(), "source.properties")
         if (!file.exists()) {
             println("Warning: can't get NDK version from source.properties")
             return "UNKNOWN"
-        }
-        else {
+        } else {
             val props = loadPropertiesFromFile(file)
             val ver = props["Pkg.Revision"]
             if (ver is String) {
@@ -40,9 +47,11 @@ abstract class Toolchain {
             return "UNKNOWN"
         }
     }
+
     private fun sanitize(s: String): String {
         return s.replace('+', 'p')
     }
+
     fun findNDKTool(name: String): String {
         val searchedPath = joinPath(getAndroidNDKPath(), "toolchains")
         val tools = project_.fileTree(searchedPath).matching {
@@ -53,27 +62,35 @@ abstract class Toolchain {
         if (tools.isEmpty) {
             throw GradleException("No $name found in $searchedPath")
         }
-        return tools.getFiles().last().toString()
+        return tools.files.last().toString()
     }
+
     fun getArPath(): String {
         return findNDKTool("ar")
     }
-    fun getCMakePath(): String  {
+
+    fun getCMakePath(): String {
         return File("${project_.projectDir}/../prebuilts/cmake/"
                 + osFolderName(ExternalToolName.CMAKE)
-                + "/bin/cmake" + osExecutableSuffix()).getPath()
+                + "/bin/cmake" + osExecutableSuffix()).path
     }
-    fun getNinjaPath(): String  {
+
+    fun getNinjaPath(): String {
         return File("${project_.projectDir}/../prebuilts/cmake/"
                 + osFolderName(ExternalToolName.CMAKE)
-                + "/bin/ninja" + osExecutableSuffix()).getPath()
+                + "/bin/ninja" + osExecutableSuffix()).path
+    }
+
+    fun getProtobufInstallPath(): String {
+        return File("${project_.projectDir}/third_party/protobuf-3.0.0/install/"
+                + osFolderName(ExternalToolName.PROTOBUF)).path
     }
 
     protected fun extractNdkMajorVersion(ndkVersion: String): String {
         val majorVersionPattern = Pattern.compile("[0-9]+")
         val matcher = majorVersionPattern.matcher(ndkVersion)
         if (matcher.find()) {
-            return matcher.group();
+            return matcher.group()
         }
         return "UNKNOWN"
     }
@@ -82,8 +99,8 @@ abstract class Toolchain {
         val props = Properties()
         val inputStream = file.inputStream()
         props.load(inputStream)
-        inputStream.close();
+        inputStream.close()
 
-        return props;
+        return props
     }
 }
