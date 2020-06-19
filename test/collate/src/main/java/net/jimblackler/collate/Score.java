@@ -82,8 +82,9 @@ public class Score {
       String id = build.toString();
       if (first.has("extra")) {
         JSONObject extra = first.getJSONObject("extra");
-        if (extra.has("dimensions")) {
-          JSONObject dimensions = extra.getJSONObject("dimensions");
+        if (extra.has("step")) {
+          JSONObject step = extra.getJSONObject("step");
+          JSONArray dimensions = step.getJSONArray("dimensionValue");
           id = dimensions.toString();
         }
       }
