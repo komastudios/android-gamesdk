@@ -108,7 +108,7 @@ public class Score {
           exited = true;
         }
         if (row.has("allocFailed") || row.has("mmapAnonFailed") || row.has("mmapFileFailed")
-            || row.has("criticalLogLines")) {
+            || row.has("criticalLogLines") || row.has("failedToClear")) {
           allocFailed = true;
         }
         if (row.has("serviceCrashed")) {

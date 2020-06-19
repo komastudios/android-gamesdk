@@ -658,6 +658,7 @@ public class MainActivity extends Activity {
             report.put("heuristics", result);
             if (result.has("warnings")) {
               if (result.getJSONArray("warnings").length() > 0) {
+                report.put("failedToClear", true);
                 runAfterDelay(this, delayAfterRelease);
               } else {
                 allocationStartedTime = System.currentTimeMillis();
