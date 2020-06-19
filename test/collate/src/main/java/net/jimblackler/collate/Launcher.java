@@ -129,10 +129,9 @@ public class Launcher {
   private static void cloudLaunch() throws IOException {
     Path grabberPath = Config.GRABBER_BASE.resolve(STANDARD_APK_PATH);
 
-    List<String> baseCommands =
-        new ArrayList<>(Arrays.asList(Config.GCLOUD_EXECUTABLE.toString(), "beta", "firebase",
-            "test", "android", "run", "--type", "game-loop", "--async", "--format", "json"));
-
+    List<String> baseCommands = new ArrayList<>(Arrays.asList(Config.GCLOUD_EXECUTABLE.toString(),
+        "beta", "firebase", "test", "android", "run", "--type", "game-loop", "--async",
+        "--scenario-numbers", "1", "--format", "json"));
     Collection<String> devices = new ArrayList<>();
 
     Collection<String> devicesOut = new ArrayList<>();
