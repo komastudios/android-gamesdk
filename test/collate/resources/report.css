@@ -11,6 +11,34 @@ th, td {
   padding: 5px;
 }
 
+ol {
+  margin: 0;
+}
+
+details > summary > span {
+  display: inline-block;
+  max-width: 600px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+details[open] > summary > span {
+  display: none;
+}
+
+summary:focus {
+  outline: none;
+}
+
+summary::-webkit-details-marker {
+  color: lightgrey;
+}
+
+span.link {
+  margin-right: 10px;
+}
+
 span.key {
   display: inline-block;
   font-weight: normal;
