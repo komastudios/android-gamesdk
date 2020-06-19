@@ -9,8 +9,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 class Main {
-  private static final int SCENARIO = 1;
-
   public static void main(String[] args) throws IOException, InterruptedException {
     Path directory = Files.createTempDirectory("report-");
     JSONArray collect = new JSONArray();
