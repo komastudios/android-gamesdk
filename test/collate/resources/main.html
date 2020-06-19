@@ -6,6 +6,14 @@
 <style>/*css*/</style>
 <script type="module">
 
+  function hashCode(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + (hash << 5) - hash;
+    }
+    return hash;
+  }
+
   function flattenParams(params1) {
     let params = {};
     const coordinates = params1.coordinates;
@@ -234,6 +242,7 @@
     let time = 0;
 
     const fields = ["Time"];
+    const series = {};
     const combined = {};
     const rowOut = [0];
     for (const row of result) {
@@ -278,6 +287,10 @@
           continue;
         }
         if (fields.indexOf(field) === -1) {
+          series[field] = {color: `hsl(${hashCode(field) % 360}, 100%, 30%)`};
+          if (first.flattened.heuristics && field in first.flattened.heuristics) {
+            series[field].strokeWidth = 3;
+          }
           fields.push(field);
           for (const existingRow of graphData) {
             existingRow.push(0);
@@ -414,6 +427,14 @@
       highlights.push([allocFailedStart, time, "lightblue"]);
     }
 
+    if ("applicationAllocated" in series) {
+      series.applicationAllocated.strokeWidth = 4;
+      series.applicationAllocated.color = "black";
+    }
+    if ("oom_score" in series) {
+      series.oom_score.axis = "y2";
+    }
+
     const graph = new Dygraph(graphDiv, graphData, {
       height: 800,
       labels: fields,
@@ -422,10 +443,7 @@
       strokeBorderWidth: 1,
       highlightSeriesOpts:
           {strokeWidth: 2, strokeBorderWidth: 1, highlightCircleSize: 5},
-      series: {
-        applicationAllocated: {strokeWidth: 4, color: 'black'},
-        oom_score: {axis: "y2"},
-      },
+      series: series,
       axes: {
         x: {drawGrid: false},
         y: {independentTicks: true},
