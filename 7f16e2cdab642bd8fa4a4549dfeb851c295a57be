@@ -1,0 +1,118 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0dd79704_be7ff19d",
+        "filename": "src/tuningfork/core/memory_telemetry.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-06-19T09:53:13Z",
+      "side": 1,
+      "message": "nit: could this be a static function \"makeMemoryHistogram\"? just a bit worried of macros in general. :) Return value optimization should avoid the extra copy returned by the function.",
+      "revId": "7f16e2cdab642bd8fa4a4549dfeb851c295a57be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4c3670cf_fa6b4491",
+        "filename": "src/tuningfork/core/memory_telemetry.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-06-19T09:53:13Z",
+      "side": 1,
+      "message": "nit: const reference for the string?",
+      "revId": "7f16e2cdab642bd8fa4a4549dfeb851c295a57be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c9484ca1_fe3c0af9",
+        "filename": "src/tuningfork/core/memory_telemetry.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-06-19T09:53:13Z",
+      "side": 1,
+      "message": "Is this android specific? 😮",
+      "revId": "7f16e2cdab642bd8fa4a4549dfeb851c295a57be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4ccd9122_e10d8b8e",
+        "filename": "src/tuningfork/core/memory_telemetry.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-06-19T09:53:13Z",
+      "side": 1,
+      "message": "ubernit: this is returning some value to be stored in Mem Info from the data. Can we name this getMemInfoValueFromData?",
+      "range": {
+        "startLine": 147,
+        "startChar": 33,
+        "endLine": 147,
+        "endChar": 48
+      },
+      "revId": "7f16e2cdab642bd8fa4a4549dfeb851c295a57be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "74331328_5cfbabbd",
+        "filename": "src/tuningfork/core/memory_telemetry.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-06-19T09:53:13Z",
+      "side": 1,
+      "message": "Can you pass both arguments by const reference? Would avoid a copy of the data (and key) each time this function is called.",
+      "range": {
+        "startLine": 147,
+        "startChar": 49,
+        "endLine": 148,
+        "endChar": 64
+      },
+      "revId": "7f16e2cdab642bd8fa4a4549dfeb851c295a57be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e7b9211b_8f94ff8d",
+        "filename": "src/tuningfork/core/memory_telemetry.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-06-19T09:53:13Z",
+      "side": 1,
+      "message": "ubernit: all the rest of the code is using \"MemInfo\" instead of \"Meminfo\". Can we capitalize the I for these methods as well? :)",
+      "revId": "7f16e2cdab642bd8fa4a4549dfeb851c295a57be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
