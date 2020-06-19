@@ -327,6 +327,10 @@ public class MainActivity extends Activity {
               JSONObject result0 = Heuristic.checkHeuristics(
                   metrics, info.getBaseline(), params, deviceSettings.getJSONObject("limits"));
 
+              if (result0.has("predictions")) {
+                report.put("predictions", result0.getJSONObject("predictions"));
+              }
+
               if (result0.has("warnings")) {
                 JSONArray warnings = result0.getJSONArray("warnings");
                 boolean anyRed = false;
