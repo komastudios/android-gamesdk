@@ -1,17 +1,16 @@
 package net.jimblackler.istresser;
 
-import static net.jimblackler.istresser.MainActivity.tryAlloc;
 import static net.jimblackler.istresser.Utils.optLong;
 
 import android.os.Build;
 import android.os.Debug;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import com.google.android.apps.internal.games.helperlibrary.TryAllocTester;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Wrapper class for methods related to memory management heuristics.
@@ -62,7 +61,7 @@ class Heuristic {
       }
 
       if (heuristics.has("try")) {
-        if (!tryAlloc((int) Utils.getMemoryQuantity(heuristics.get("try")))) {
+        if (!TryAllocTester.tryAlloc((int) Utils.getMemoryQuantity(heuristics.get("try")))) {
           JSONObject warning = new JSONObject();
           warning.put("try", heuristics.get("try"));
           warning.put("level", "red");

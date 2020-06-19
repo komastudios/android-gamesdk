@@ -728,8 +728,6 @@ public class MainActivity extends Activity {
 
   public static native void initNative();
 
-  public static native boolean tryAlloc(int bytes);
-
   public static native void initGl();
 
   public static native int nativeDraw(int toAllocate);

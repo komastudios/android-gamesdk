@@ -205,18 +205,6 @@ Java_net_jimblackler_istresser_MainActivity_mmapFileConsume(
   return addr == MAP_FAILED ? 0 : byte_count;
 }
 
-extern "C" JNIEXPORT jboolean JNICALL
-Java_net_jimblackler_istresser_MainActivity_tryAlloc(
-    JNIEnv *env, jclass thiz, jint bytes) {
-  size_t byte_count = (size_t)bytes;
-  char *data = (char *)malloc(byte_count);
-  if (data) {
-    free(data);
-    return true;
-  }
-  return false;
-}
-
 extern "C" JNIEXPORT void JNICALL
 Java_net_jimblackler_istresser_MainActivity_initGl(
     JNIEnv *env, jclass thiz) {
