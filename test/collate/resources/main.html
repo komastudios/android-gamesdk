@@ -7,18 +7,34 @@
 <script type="module">
 
   function flattenParams(params1) {
-    debugger;
     let params = {};
     const coordinates = params1.coordinates;
     const tests = params1.tests;
 
     for (let coordinateNumber = 0; coordinateNumber !== coordinates.length; coordinateNumber++) {
       const dimensionParams = tests[coordinateNumber][coordinates[coordinateNumber]];
-      for (const [key, value] of Object.entries(dimensionParams)) {
-        params[key] = value;
-      }
+      merge(dimensionParams, params);
     }
     return params;
+  }
+
+  function merge(in0, out)  {
+    in0 = JSON.parse(JSON.stringify(in0));  // Allows copies of mutables to be taken safely.
+    for (const [key, value] of Object.entries(in0)) {
+      if (key in out) {
+        const outObject = out[key];
+        if (Array.isArray(outObject) && Array.isArray(value)) {
+          for (let idx = 0; idx !== value.length; idx++) {
+            outObject.push(value[idx]);
+          }
+          continue;
+        } else if (outObject.constructor === Object && value.constructor === Object) {
+          merge(value, outObject);
+          continue;
+        }
+      }
+      out[key] = value;
+    }
   }
 
   const capitalizeFirstLetter =
