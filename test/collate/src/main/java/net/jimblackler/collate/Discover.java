@@ -20,6 +20,11 @@ public class Discover {
       }
       JSONObject first = result.getJSONObject(0);
 
+      if (!first.has("params")) {
+        System.out.println("No usable results. Data returned was:");
+        System.out.println(result.toString(2));
+        return;
+      }
       JSONObject params = first.getJSONObject("params");
       JSONObject flattened = Utils.flattenParams(params);
       if (flattened.has("heuristics") && !flattened.getJSONObject("heuristics").isEmpty()) {
