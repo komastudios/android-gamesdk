@@ -79,6 +79,15 @@ class Heuristic {
         }
       }
 
+      if (heuristics.has("mapTester")) {
+        if (metrics.optBoolean("mapTester")) {
+          JSONObject warning = new JSONObject();
+          warning.put("mapTester", heuristics.get("mapTester"));
+          warning.put("level", "red");
+          warnings.put(warning);
+        }
+      }
+
       if (heuristics.has("cl")) {
         if (commitLimit != null && Debug.getNativeHeapAllocatedSize() >
             commitLimit * heuristics.getDouble("cl")) {
