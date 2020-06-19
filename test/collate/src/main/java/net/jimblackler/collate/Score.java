@@ -86,8 +86,9 @@ public class Score {
       if (first.has("extra")) {
         JSONObject extra = first.getJSONObject("extra");
         historyId.set(extra.getString("historyId"));
-        if (extra.has("dimensions")) {
-          JSONObject dimensions = extra.getJSONObject("dimensions");
+        if (extra.has("step")) {
+          JSONObject step = extra.getJSONObject("step");
+          JSONArray dimensions = step.getJSONArray("dimensionValue");
           id = dimensions.toString();
         }
       }
