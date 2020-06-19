@@ -42,25 +42,6 @@ class Heuristic {
 
       JSONArray warnings = new JSONArray();
       JSONObject heuristics = params.getJSONObject("heuristics");
-      if (heuristics.has("vmsize")) {
-        if (commitLimit != null && vmSize != null &&
-            vmSize > commitLimit * heuristics.getDouble("vmsize")) {
-          JSONObject warning = new JSONObject();
-          warning.put("vmsize", heuristics.get("vmsize"));
-          warning.put("level", "red");
-          warnings.put(warning);
-        }
-      }
-
-      if (heuristics.has("oom")) {
-        if (oomScore > heuristics.getLong("oom")) {
-          JSONObject warning = new JSONObject();
-          warning.put("oom", heuristics.get("oom"));
-          warning.put("level", "red");
-          warnings.put(warning);
-        }
-      }
-
       if (heuristics.has("try")) {
         if (!tryAlloc((int) Utils.getMemoryQuantity(heuristics.get("try")))) {
           JSONObject warning = new JSONObject();
@@ -75,98 +56,6 @@ class Heuristic {
           JSONObject warning = new JSONObject();
           warning.put("low", heuristics.get("low"));
           warning.put("level", "red");
-          warnings.put(warning);
-        }
-      }
-
-      if (heuristics.has("cl")) {
-        if (commitLimit != null && Debug.getNativeHeapAllocatedSize() >
-            commitLimit * heuristics.getDouble("cl")) {
-          JSONObject warning = new JSONObject();
-          warning.put("cl", heuristics.get("cl"));
-          warning.put("level", "red");
-          warnings.put(warning);
-        }
-      }
-
-      if (heuristics.has("avail")) {
-        if (availMem < Utils.getMemoryQuantity(heuristics.get("avail"))) {
-          JSONObject warning = new JSONObject();
-          warning.put("avail", heuristics.get("avail"));
-          warning.put("level", "red");
-          warnings.put(warning);
-        }
-      }
-
-      if (heuristics.has("cached")) {
-        if (cached != null && cached != 0 &&
-            cached * heuristics.getDouble("cached") < constant.getLong("threshold") / 1024) {
-          JSONObject warning = new JSONObject();
-          warning.put("cached", heuristics.get("cached"));
-          warning.put("level", "red");
-          warnings.put(warning);
-        }
-      }
-
-      if (heuristics.has("avail2")) {
-        if (memAvailable != null &&
-            memAvailable < Utils.getMemoryQuantity(heuristics.get("avail2"))) {
-          JSONObject warning = new JSONObject();
-          warning.put("avail2", heuristics.get("avail2"));
-          warning.put("level", "red");
-          warnings.put(warning);
-        }
-      }
-
-      JSONObject nativeAllocatedParams = heuristics.optJSONObject("nativeAllocated");
-      long nativeAllocatedLimit = deviceLimit.optLong("nativeAllocated");
-      if (nativeAllocatedParams != null && nativeAllocatedLimit > 0) {
-        String level = null;
-        if (Debug.getNativeHeapAllocatedSize()
-            > nativeAllocatedLimit * nativeAllocatedParams.getDouble("red")) {
-          level = "red";
-        } else if (Debug.getNativeHeapAllocatedSize()
-            > nativeAllocatedLimit * nativeAllocatedParams.getDouble("yellow")) {
-          level = "yellow";
-        }
-        if (level != null) {
-          JSONObject warning = new JSONObject();
-          warning.put("nativeAllocated", heuristics.get("nativeAllocated"));
-          warning.put("level", level);
-          warnings.put(warning);
-        }
-      }
-
-      JSONObject vmSizeParams = heuristics.optJSONObject("VmSize");
-      long vmSizeLimit = deviceLimit.optLong("VmSize");
-      if (vmSizeParams != null && vmSize != null && vmSizeLimit > 0) {
-        String level = null;
-        if (vmSize > vmSizeLimit * vmSizeParams.getDouble("red")) {
-          level = "red";
-        } else if (vmSize > vmSizeLimit * vmSizeParams.getDouble("yellow")) {
-          level = "yellow";
-        }
-        if (level != null) {
-          JSONObject warning = new JSONObject();
-          warning.put("VmSize", heuristics.get("VmSize"));
-          warning.put("level", level);
-          warnings.put(warning);
-        }
-      }
-
-      JSONObject oomScoreParams = heuristics.optJSONObject("oom_score");
-      long oomScoreLimit = deviceLimit.optLong("oom_score");
-      if (oomScoreParams != null && oomScoreLimit > 0) {
-        String level = null;
-        if (oomScore > oomScoreLimit * oomScoreParams.getDouble("red")) {
-          level = "red";
-        } else if (oomScore > oomScoreLimit * oomScoreParams.getDouble("yellow")) {
-          level = "yellow";
-        }
-        if (level != null) {
-          JSONObject warning = new JSONObject();
-          warning.put("oom_score", heuristics.get("oom_score"));
-          warning.put("level", level);
           warnings.put(warning);
         }
       }
