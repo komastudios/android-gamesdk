@@ -59,7 +59,7 @@
       },
       {
         "heuristics": {
-          "low": true
+          "lowMemory": true
         }
       },
       {

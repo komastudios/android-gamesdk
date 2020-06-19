@@ -70,10 +70,10 @@ class Heuristic {
         }
       }
 
-      if (heuristics.has("low")) {
+      if (heuristics.has("lowMemory")) {
         if (metrics.optBoolean("lowMemory")) {
           JSONObject warning = new JSONObject();
-          warning.put("low", heuristics.get("low"));
+          warning.put("lowMemory", heuristics.get("lowMemory"));
           warning.put("level", "red");
           warnings.put(warning);
         }
