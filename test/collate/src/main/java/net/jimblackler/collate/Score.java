@@ -2,6 +2,7 @@ package net.jimblackler.collate;
 
 import com.google.api.client.util.Lists;
 import java.awt.Desktop;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -16,6 +17,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -29,10 +31,11 @@ public class Score {
   static void go(boolean useDevice) throws IOException {
     Map<String, List<Result>> out = new HashMap<>();
     Map<String, JSONObject> builds = new HashMap<>();
-    Path directory = Files.createTempDirectory("report-");
+    AtomicReference<Path> directory = new AtomicReference<>();
     final int[] variations = {0};
     AtomicReference<JSONArray> tests = new AtomicReference<>();
     Map<Integer, JSONObject> paramsMap = new HashMap<>();
+    AtomicReference<String> historyId = new AtomicReference<>();
     AtomicReference<Timer> timer = new AtomicReference<>();
     Consumer<JSONArray> collect = result -> {
       if (timer.get() != null) {
@@ -47,7 +50,7 @@ public class Score {
             return;
           }
           try {
-            writeReport(out, builds, directory, variations[0], tests.get());
+            writeReport(out, builds, directory.get(), variations[0], tests.get());
           } catch (IOException e) {
             throw new IllegalStateException(e);
           }
@@ -82,6 +85,7 @@ public class Score {
       String id = build.toString();
       if (first.has("extra")) {
         JSONObject extra = first.getJSONObject("extra");
+        historyId.set(extra.getString("historyId"));
         if (extra.has("dimensions")) {
           JSONObject dimensions = extra.getJSONObject("dimensions");
           id = dimensions.toString();
@@ -154,8 +158,27 @@ public class Score {
       assert results0.get(variationNumber) == null;
       JSONObject group = new JSONObject(runParameters.toString());
       group.remove("heuristics");
+      if (directory.get() == null) {
+        String dirName = historyId.get();
+        if (dirName == null) {
+          dirName = params.getString("run");
+        }
+        directory.set(Path.of("reports").resolve(dirName));
+        try {
+          if (directory.get().toFile().exists()) {
+            // Empty the directory if it already exists.
+            try (Stream<Path> files = Files.walk(directory.get())) {
+              files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+            }
+          } else {
+            Files.createDirectory(directory.get());
+          }
+        } catch (IOException e) {
+          throw new IllegalStateException(e);
+        }
+      }
       results0.set(variationNumber,
-          new Result(score, Main.writeGraphs(directory, results1), exited && !allocFailed,
+          new Result(score, Main.writeGraphs(directory.get(), results1), exited && !allocFailed,
               serviceCrashed, group.toString()));
     };
 
@@ -168,7 +191,8 @@ public class Score {
     if (timer.get() != null) {
       timer.get().cancel();
     }
-    Desktop.getDesktop().browse(writeReport(out, builds, directory, variations[0], tests.get()));
+    Desktop.getDesktop().browse(
+        writeReport(out, builds, directory.get(), variations[0], tests.get()));
   }
 
   private static URI writeReport(Map<String, List<Result>> rows, Map<String, JSONObject> builds,
