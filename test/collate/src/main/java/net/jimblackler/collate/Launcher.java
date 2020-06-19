@@ -112,7 +112,7 @@ public class Launcher {
    * @return The PID.
    */
   private static int getPid(String pack) throws IOException {
-    return Integer.parseInt(Utils.execute("adb", "shell", "pidof", pack));
+    return Integer.parseInt(Utils.executeSilent("adb", "shell", "pidof", pack));
   }
 
   /**
