@@ -12,7 +12,6 @@ import static net.jimblackler.istresser.Utils.getMemoryQuantity;
 import static net.jimblackler.istresser.Utils.getOrDefault;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -178,8 +177,6 @@ public class MainActivity extends Activity {
     setContentView(R.layout.activity_main);
     serviceCommunicationHelper = new ServiceCommunicationHelper(this);
     serviceState = ServiceState.DEALLOCATED;
-    ActivityManager activityManager =
-        (ActivityManager) Objects.requireNonNull(getSystemService(Context.ACTIVITY_SERVICE));
 
     try {
       // Setting up broadcast receiver
