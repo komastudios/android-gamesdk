@@ -31,112 +31,6 @@
         "heuristics": {
           "trim": true
         }
-      },
-      {
-        "heuristics": {
-          "vmsize": 0.95
-        }
-      },
-      {
-        "heuristics": {
-          "oom": 400
-        }
-      },
-      {
-        "heuristics": {
-          "oom": 450
-        }
-      },
-      {
-        "heuristics": {
-          "oom": 500
-        }
-      },
-      {
-        "heuristics": {
-          "try": "64M"
-        }
-      },
-      {
-        "heuristics": {
-          "lowMemory": true
-        }
-      },
-      {
-        "heuristics": {
-          "cl": 0.95
-        }
-      },
-      {
-        "heuristics": {
-          "avail": "200M"
-        }
-      },
-      {
-        "heuristics": {
-          "avail": "300M"
-        }
-      },
-      {
-        "heuristics": {
-          "cached": 1.0
-        }
-      },
-      {
-        "heuristics": {
-          "avail2": "200M"
-        }
-      },
-      {
-        "heuristics": {
-          "avail2": "300M"
-        }
-      },
-      {
-        "heuristics": {
-          "nativeAllocated": 0.9
-        }
-      },
-      {
-        "heuristics": {
-          "VmSize": 0.8
-        }
-      },
-      {
-        "heuristics": {
-          "oom_score": 0.9
-        }
-      },
-      {
-        "heuristics": {
-          "summary.graphics": 0.9
-        }
-      },
-      {
-        "heuristics": {
-          "summary.total-pss": 0.9
-        }
-      },
-      {
-        "heuristics": {
-          "availMem": 0.4
-        }
-      },
-      {
-        "heuristics": {
-          "Cached": 0.9
-        }
-      },
-      {
-        "heuristics": {
-          "MemAvailable": 0.4
-        }
-      }
-    ],
-    [
-      {},
-      {
-        "yellowLightTesting": true
       }
     ]
   ],
@@ -145,7 +39,5 @@
     0,
     1,
     0
-  ],
-  "run": "43a57d56-7fc1-49f1-89fc-9da39bb5be91",
-  "started": 1581508211344
+  ]
 }
