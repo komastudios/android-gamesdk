@@ -62,7 +62,6 @@
     document.body.appendChild(section);
 
     const build = first["build"];
-    const constant = first["metrics"]["constant"];
 
     const heading = document.createElement("h1");
     section.appendChild(heading);
@@ -156,6 +155,7 @@
     let time = 0;
 
     const fields = ["Time"];
+    const combined = {};
     const rowOut = [0];
     for (const row of result) {
       if (!("time" in row)) {
@@ -171,21 +171,18 @@
           applicationAllocated += value;
         }
       }
-      row.applicationAllocated = applicationAllocated;
+      combined.applicationAllocated = applicationAllocated;
 
       rowOut[0] = row.time / 1000;
-      const combined = {};
-      for (const [field, value] of Object.entries(constant).sort()) {
-        combined[field] = value;
-      }
-
-      for (const [field, value] of Object.entries(row).sort()) {
-        combined[field] = value;
-      }
 
       if ("metrics" in row) {
         for (const [field, value] of Object.entries(row.metrics).sort()) {
           combined[field] = value;
+        }
+        if ("constant" in row.metrics) {
+          for (const [field, value] of Object.entries(row.metrics.constant).sort()) {
+            combined[field] = value;
+          }
         }
       }
 
