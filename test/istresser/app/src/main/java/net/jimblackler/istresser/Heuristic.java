@@ -1,9 +1,5 @@
 package net.jimblackler.istresser;
 
-import static net.jimblackler.istresser.Utils.optLong;
-
-import android.os.Build;
-import android.os.Debug;
 import com.google.android.apps.internal.games.helperlibrary.TryAllocTester;
 import java.util.Collections;
 import java.util.Iterator;
@@ -223,7 +219,7 @@ class Heuristic {
         }
 
         float percentageEstimate = (float) delta / deviceDelta;
-        predictions.put(key, (long) (applicationAllocated * percentageEstimate));
+        predictions.put(key, (long) (applicationAllocated * (1.0f - percentageEstimate)));
       }
 
       results.put("predictions", predictions);
