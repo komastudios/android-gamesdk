@@ -132,7 +132,6 @@ public class Launcher {
         "--scenario-numbers", "1", "--format", "json"));
     Collection<String> devices = new ArrayList<>();
 
-    Collection<String> devicesOut = new ArrayList<>();
     DeviceFetcher.fetch(device -> {
       if (!USE_WHITELIST && devices.size() >= MAX_DEVICES) {
         return;
@@ -153,7 +152,7 @@ public class Launcher {
         if (USE_WHITELIST && !whitelist.contains(id)) {
           continue;
         }
-        devicesOut.add(String.format("--device=model=%s,version=%d", id, versionId));
+        devices.add(String.format("--device=model=%s,version=%d", id, versionId));
       }
     });
 
