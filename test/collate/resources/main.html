@@ -156,6 +156,7 @@
     let time = 0;
 
     const fields = ["Time"];
+    const combined = {};
     const rowOut = [0];
     for (const row of result) {
       if (!("time" in row)) {
@@ -174,9 +175,10 @@
       row.applicationAllocated = applicationAllocated;
 
       rowOut[0] = row.time / 1000;
-      const combined = {};
-      for (const [field, value] of Object.entries(constant).sort()) {
-        combined[field] = value;
+      if ("constant" in row) {
+        for (const [field, value] of Object.entries(row.constant).sort()) {
+          combined[field] = value;
+        }
       }
 
       for (const [field, value] of Object.entries(row).sort()) {
