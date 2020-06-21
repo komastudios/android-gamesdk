@@ -34,9 +34,10 @@ public class Info {
    * Gets Android memory metrics.
    *
    * @param context The current Android context.
+   * @param fetchDebug Whether to fetch debug-based params.
    * @return A JSONObject containing current memory metrics.
    */
-  public JSONObject getMemoryMetrics(Context context) throws JSONException {
+  public JSONObject getMemoryMetrics(Context context, boolean fetchDebug) throws JSONException {
     JSONObject report = new JSONObject();
     report.put("nativeAllocated", Debug.getNativeHeapAllocatedSize());
 
@@ -59,7 +60,7 @@ public class Info {
     }
 
     report.put("oom_score", getOomScore(activityManager));
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && fetchDebug) {
       Debug.MemoryInfo[] debugMemoryInfos = getDebugMemoryInfo(activityManager);
       if (debugMemoryInfos.length > 0) {
         for (String key : SUMMARY_FIELDS) {

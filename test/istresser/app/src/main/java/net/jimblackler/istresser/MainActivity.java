@@ -233,7 +233,7 @@ public class MainActivity extends Activity {
       registerReceiver(receiver, new IntentFilter("com.google.gamesdk.grabber.RETURN"));
 
       JSONObject report = new JSONObject();
-      report.put("metrics", info.getMemoryMetrics(this));
+      report.put("metrics", info.getMemoryMetrics(this, false));
       report.put("params", params1);
       report.put("settings", deviceSettings);
 
@@ -685,7 +685,7 @@ public class MainActivity extends Activity {
 
   private JSONObject standardInfo() throws JSONException {
     JSONObject report = new JSONObject();
-    report.put("metrics", info.getMemoryMetrics(this));
+    report.put("metrics", info.getMemoryMetrics(this, false));
     report.put("time", System.currentTimeMillis() - testStartTime);
     boolean paused = allocationStartedTime == -1;
     if (paused) {
