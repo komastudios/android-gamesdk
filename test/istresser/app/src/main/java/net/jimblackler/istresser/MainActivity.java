@@ -259,7 +259,7 @@ public class MainActivity extends Activity {
 
       glAllocBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "glTest", 0));
       if (mallocBytesPerMillisecond == 0) {
-        nativeConsume((int) getMemoryQuantity(getOrDefault(params, "mallocFixed", 0)));
+        nativeConsume(getMemoryQuantity(getOrDefault(params, "mallocFixed", 0)));
       }
 
       if (glAllocBytesPerMillisecond > 0) {
@@ -355,7 +355,7 @@ public class MainActivity extends Activity {
                 long owed =
                     sinceAllocationStarted * mallocBytesPerMillisecond - nativeAllocatedByTest;
                 if (owed > 0) {
-                  boolean succeeded = nativeConsume((int) owed);
+                  boolean succeeded = nativeConsume(owed);
                   if (succeeded) {
                     nativeAllocatedByTest += owed;
                   } else {
@@ -742,7 +742,7 @@ public class MainActivity extends Activity {
 
   public native void freeMemory(int bytes);
 
-  public native boolean nativeConsume(int bytes);
+  public native boolean nativeConsume(long bytes);
 
   public native void mmapAnonFreeAll();
 
