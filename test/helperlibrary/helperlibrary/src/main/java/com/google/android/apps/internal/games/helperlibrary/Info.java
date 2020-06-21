@@ -2,7 +2,6 @@ package com.google.android.apps.internal.games.helperlibrary;
 
 import static com.google.android.apps.internal.games.helperlibrary.Utils.getDebugMemoryInfo;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.getOomScore;
-import static com.google.android.apps.internal.games.helperlibrary.Utils.lowMemoryCheck;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.processMeminfo;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.processStatus;
 
@@ -42,10 +41,10 @@ public class Info {
 
     ActivityManager activityManager = (ActivityManager) Objects.requireNonNull(
         context.getSystemService((Context.ACTIVITY_SERVICE)));
-    ActivityManager.MemoryInfo memoryInfo = Utils.getMemoryInfo(activityManager);
+    ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+    activityManager.getMemoryInfo(memoryInfo);
     report.put("availMem", memoryInfo.availMem);
-    boolean lowMemory = lowMemoryCheck(activityManager);
-    if (lowMemory) {
+    if (memoryInfo.lowMemory) {
       report.put("lowMemory", true);
     }
 
@@ -58,7 +57,7 @@ public class Info {
       mapTester.reset();
     }
 
-    report.put("oom_score", getOomScore(activityManager));
+    report.put("oom_score", getOomScore());
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       Debug.MemoryInfo[] debugMemoryInfos = getDebugMemoryInfo(activityManager);
       if (debugMemoryInfos.length > 0) {
@@ -80,7 +79,7 @@ public class Info {
       }
     }
 
-    for (Map.Entry<String, Long> pair : processStatus(activityManager).entrySet()) {
+    for (Map.Entry<String, Long> pair : processStatus().entrySet()) {
       String key = pair.getKey();
       if (STATUS_FIELDS.contains(key)) {
         report.put(key, pair.getValue());
