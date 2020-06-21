@@ -177,6 +177,9 @@ public class MainActivity extends Activity {
     setContentView(R.layout.activity_main);
     serviceCommunicationHelper = new ServiceCommunicationHelper(this);
     serviceState = ServiceState.DEALLOCATED;
+    testStartTime = System.currentTimeMillis();
+    appSwitchTimerStart = testStartTime;
+    allocationStartedTime = testStartTime;
 
     try {
       // Setting up broadcast receiver
@@ -232,8 +235,7 @@ public class MainActivity extends Activity {
       };
       registerReceiver(receiver, new IntentFilter("com.google.gamesdk.grabber.RETURN"));
 
-      JSONObject report = new JSONObject();
-      report.put("metrics", info.getMemoryMetrics(this));
+      JSONObject report = standardInfo();
       report.put("params", params1);
       report.put("settings", deviceSettings);
 
@@ -301,10 +303,6 @@ public class MainActivity extends Activity {
         criticalLogLines.get().put(line);
       }
     });
-
-    testStartTime = System.currentTimeMillis();
-    appSwitchTimerStart = testStartTime;
-    allocationStartedTime = testStartTime;
 
     timer.schedule(new TimerTask() {
       @Override
