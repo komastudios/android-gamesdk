@@ -352,7 +352,7 @@ public class MainActivity extends Activity {
               if (mallocBytesPerMillisecond > 0 && shouldAllocate) {
                 long owed =
                     sinceAllocationStarted * mallocBytesPerMillisecond - nativeAllocatedByTest;
-                if (owed > 0) {
+                if (owed > 0 && owed <= Integer.MAX_VALUE) {
                   boolean succeeded = nativeConsume((int) owed);
                   if (succeeded) {
                     nativeAllocatedByTest += owed;
