@@ -17,6 +17,8 @@ import java.util.regex.Pattern;
 /** A helper class with static methods to help with Heuristics and file IO */
 public class Utils {
   private static final String TAG = Utils.class.getSimpleName();
+  private static final Pattern MEMINFO_REGEX = Pattern.compile("([^:]+)[^\\d]*(\\d+).*\n");
+  private static final Pattern PROC_REGEX = Pattern.compile("([a-zA-Z]+)[^\\d]*(\\d+) kB.*\n");
 
   /**
    * Loads all the text from an input string and returns the result as a string.
@@ -91,8 +93,7 @@ public class Utils {
     String filename = "/proc/meminfo";
     try {
       String meminfoText = readFile(filename);
-      Pattern pattern = Pattern.compile("([^:]+)[^\\d]*(\\d+).*\n");
-      Matcher matcher = pattern.matcher(meminfoText);
+      Matcher matcher = MEMINFO_REGEX.matcher(meminfoText);
       while (matcher.find()) {
         output.put(
             matcher.group(1), Long.parseLong(Objects.requireNonNull(matcher.group(2))) * 1024);
@@ -116,8 +117,7 @@ public class Utils {
     String filename = "/proc/" + pid + "/status";
     try {
       String meminfoText = readFile(filename);
-      Pattern pattern = Pattern.compile("([a-zA-Z]+)[^\\d]*(\\d+) kB.*\n");
-      Matcher matcher = pattern.matcher(meminfoText);
+      Matcher matcher = PROC_REGEX.matcher(meminfoText);
       while (matcher.find()) {
         String key = matcher.group(1);
         long value = Long.parseLong(Objects.requireNonNull(matcher.group(2)));
