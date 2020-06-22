@@ -22,6 +22,30 @@
       "revId": "50c8c0a8b523141b098a9a9b05c9204725089dda",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "86ada7ab_486362c3",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 358,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-06-22T13:52:27Z",
+      "side": 1,
+      "message": "Ultimately, we malloc the memory, and that is bound by SIZE_T_MAX, which on Android is an unsigned int. That\u0027s why I made the allocator take an int.\n\nI\u0027ve reimplemented it a (hopefully) safer and clearer way and done what you asked. PTAL.",
+      "parentUuid": "c9062ae9_252f649c",
+      "range": {
+        "startLine": 358,
+        "startChar": 38,
+        "endLine": 358,
+        "endChar": 63
+      },
+      "revId": "50c8c0a8b523141b098a9a9b05c9204725089dda",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
