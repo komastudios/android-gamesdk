@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "32164d38_09af7af0",
+        "filename": "buildSrc/src/main/java/com/google/androidgamesdk/Toolchain.kt",
+        "patchSetId": 5
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-06-22T14:21:20Z",
+      "side": 1,
+      "message": "(I\u0027ve left comment about it in another cl too): sdk / ndk depends on the build type and settings, then ninja/cmake/prototobuf are always same/static, maybe move this to OsSpecificTools.getCMake() / OsSpecificTools.getNinja() + some tests can be added what all these paths are valid (at least for current platform)",
+      "range": {
+        "startLine": 75,
+        "startChar": 3,
+        "endLine": 89,
+        "endChar": 5
+      },
+      "revId": "b47890c0a6d3fb92d357f4f40c0f35894a6d78ea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
