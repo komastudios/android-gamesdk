@@ -333,6 +333,16 @@
         );
       }
 
+      if ("metrics" in row && "mapTester" in row.metrics) {
+        annotations.push(
+            {
+              series: "nativeAllocated",
+              x: time,
+              shortText: "M",
+              text: "M"
+            }
+        );
+      }
       if ("warnings" in row) {
         const warnings = row.warnings;
         for (let idx = 0; idx !== warnings.length; idx++) {
