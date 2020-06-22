@@ -261,6 +261,17 @@
         }
       }
 
+      if ("criticalLogLines" in row) {
+        annotations.push(
+            {
+              series: "applicationAllocated",
+              x: time,
+              shortText: "L",
+              text: row.criticalLogLines[0]
+            }
+        );
+      }
+
       if ("activityPaused" in row) {
         if (row["activityPaused"]) {
           if (activityPausedStart === -1) {
