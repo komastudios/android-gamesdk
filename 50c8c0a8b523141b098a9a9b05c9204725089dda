@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c9062ae9_252f649c",
+        "filename": "test/istresser/app/src/main/java/net/jimblackler/istresser/MainActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 358,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-06-22T10:40:22Z",
+      "side": 1,
+      "message": "maybe you should change this method so that it can take a long as a parameter? Why are you ignoring when it passes Integer.MAX_VALUE?",
+      "range": {
+        "startLine": 358,
+        "startChar": 38,
+        "endLine": 358,
+        "endChar": 63
+      },
+      "revId": "50c8c0a8b523141b098a9a9b05c9204725089dda",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
