@@ -37,6 +37,7 @@ public class Info {
    * @return A JSONObject containing current memory metrics.
    */
   public JSONObject getMemoryMetrics(Context context, boolean fetchDebug) throws JSONException {
+    long time = System.currentTimeMillis();
     JSONObject report = new JSONObject();
     report.put("nativeAllocated", Debug.getNativeHeapAllocatedSize());
 
@@ -99,6 +100,9 @@ public class Info {
       report.put("constant", constant);
       baseline = new JSONObject(report.toString());
     }
+    JSONObject meta = new JSONObject();
+    meta.put("duration", System.currentTimeMillis() - time);
+    report.put("meta", meta);
     return report;
   }
 
