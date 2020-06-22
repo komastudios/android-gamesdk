@@ -22,6 +22,30 @@
       "revId": "df164582446786cf62e202c3a10e4428145f0709",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3a9fcfea_6ebc88a6",
+        "filename": "buildSrc/src/main/java/com/google/androidgamesdk/Toolchain.kt",
+        "patchSetId": 6
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-06-22T15:06:40Z",
+      "side": 1,
+      "message": "They still rely on project_ which is stored in the toolchain. Do you think it\u0027s still better to make them \"static\" functions taking project as argument? No strong opinion on my side.",
+      "parentUuid": "c54df163_1819f707",
+      "range": {
+        "startLine": 83,
+        "startChar": 3,
+        "endLine": 96,
+        "endChar": 5
+      },
+      "revId": "df164582446786cf62e202c3a10e4428145f0709",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
