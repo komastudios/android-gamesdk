@@ -77,21 +77,26 @@ static void ReadAndIgnore(void *addr, size_t byte_len) {
 
 extern "C" JNIEXPORT jboolean JNICALL
 Java_net_jimblackler_istresser_MainActivity_nativeConsume(
-    JNIEnv *env, jobject instance, jint bytes) {
+    JNIEnv *env, jobject instance, jlong bytes) {
   utils->mtx.lock();
-  size_t byte_count = (size_t)bytes;
-  char *data = (char *)malloc(byte_count);
+  bool result = true;
+  while (result && bytes > 0) {
+    size_t byte_count = bytes > SIZE_T_MAX ? SIZE_T_MAX : bytes;
+    char *data = (char *)malloc(byte_count);
 
-  if (data) {
-    utils->allocated.push_back(data);
-    utils->allocated_size.push_back(byte_count);
-    LcgFill(data, byte_count);
-  } else {
-    __android_log_print(ANDROID_LOG_WARN, kAppName, "Could not allocate");
+    if (data) {
+      utils->allocated.push_back(data);
+      utils->allocated_size.push_back(byte_count);
+      LcgFill(data, byte_count);
+    } else {
+      result = false;
+      __android_log_print(ANDROID_LOG_WARN, kAppName, "Could not allocate");
+    }
+    bytes -= byte_count;
   }
 
   utils->mtx.unlock();
-  return data != nullptr;
+  return result;
 }
 
 extern "C" JNIEXPORT void JNICALL
