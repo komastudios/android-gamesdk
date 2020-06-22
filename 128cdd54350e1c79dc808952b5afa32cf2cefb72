@@ -70,6 +70,30 @@
       "revId": "128cdd54350e1c79dc808952b5afa32cf2cefb72",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "94326df3_6e52e83b",
+        "filename": "buildSrc/src/main/java/com/google/androidgamesdk/BuildOptions.kt",
+        "patchSetId": 5
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-06-22T17:00:03Z",
+      "side": 1,
+      "message": "I fixed the issue by removing entirely the need for a builder, BuildOptions and BuildFolders are now separate, and BuildOptions is always entirely defined when constructed. No more immutability problem, no more null check problems, and BuildFolders is now passed separately to Cmake than BuildOptions, which make sense because they are two different things :)",
+      "parentUuid": "2e2b8c9b_59f34ef3",
+      "range": {
+        "startLine": 3,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 24
+      },
+      "revId": "128cdd54350e1c79dc808952b5afa32cf2cefb72",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
