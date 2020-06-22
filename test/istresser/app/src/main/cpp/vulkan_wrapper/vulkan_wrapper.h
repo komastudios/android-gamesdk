@@ -29,18 +29,25 @@ extern PFN_vkCreateInstance vkCreateInstance;
 extern PFN_vkDestroyInstance vkDestroyInstance;
 extern PFN_vkEnumeratePhysicalDevices vkEnumeratePhysicalDevices;
 extern PFN_vkGetPhysicalDeviceFeatures vkGetPhysicalDeviceFeatures;
-extern PFN_vkGetPhysicalDeviceFormatProperties vkGetPhysicalDeviceFormatProperties;
-extern PFN_vkGetPhysicalDeviceImageFormatProperties vkGetPhysicalDeviceImageFormatProperties;
+extern PFN_vkGetPhysicalDeviceFormatProperties
+    vkGetPhysicalDeviceFormatProperties;
+extern PFN_vkGetPhysicalDeviceImageFormatProperties
+    vkGetPhysicalDeviceImageFormatProperties;
 extern PFN_vkGetPhysicalDeviceProperties vkGetPhysicalDeviceProperties;
-extern PFN_vkGetPhysicalDeviceQueueFamilyProperties vkGetPhysicalDeviceQueueFamilyProperties;
-extern PFN_vkGetPhysicalDeviceMemoryProperties vkGetPhysicalDeviceMemoryProperties;
+extern PFN_vkGetPhysicalDeviceQueueFamilyProperties
+    vkGetPhysicalDeviceQueueFamilyProperties;
+extern PFN_vkGetPhysicalDeviceMemoryProperties
+    vkGetPhysicalDeviceMemoryProperties;
 extern PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr;
 extern PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr;
 extern PFN_vkCreateDevice vkCreateDevice;
 extern PFN_vkDestroyDevice vkDestroyDevice;
-extern PFN_vkEnumerateInstanceExtensionProperties vkEnumerateInstanceExtensionProperties;
-extern PFN_vkEnumerateDeviceExtensionProperties vkEnumerateDeviceExtensionProperties;
-extern PFN_vkEnumerateInstanceLayerProperties vkEnumerateInstanceLayerProperties;
+extern PFN_vkEnumerateInstanceExtensionProperties
+    vkEnumerateInstanceExtensionProperties;
+extern PFN_vkEnumerateDeviceExtensionProperties
+    vkEnumerateDeviceExtensionProperties;
+extern PFN_vkEnumerateInstanceLayerProperties
+    vkEnumerateInstanceLayerProperties;
 extern PFN_vkEnumerateDeviceLayerProperties vkEnumerateDeviceLayerProperties;
 extern PFN_vkGetDeviceQueue vkGetDeviceQueue;
 extern PFN_vkQueueSubmit vkQueueSubmit;
@@ -57,8 +64,10 @@ extern PFN_vkBindBufferMemory vkBindBufferMemory;
 extern PFN_vkBindImageMemory vkBindImageMemory;
 extern PFN_vkGetBufferMemoryRequirements vkGetBufferMemoryRequirements;
 extern PFN_vkGetImageMemoryRequirements vkGetImageMemoryRequirements;
-extern PFN_vkGetImageSparseMemoryRequirements vkGetImageSparseMemoryRequirements;
-extern PFN_vkGetPhysicalDeviceSparseImageFormatProperties vkGetPhysicalDeviceSparseImageFormatProperties;
+extern PFN_vkGetImageSparseMemoryRequirements
+    vkGetImageSparseMemoryRequirements;
+extern PFN_vkGetPhysicalDeviceSparseImageFormatProperties
+    vkGetPhysicalDeviceSparseImageFormatProperties;
 extern PFN_vkQueueBindSparse vkQueueBindSparse;
 extern PFN_vkCreateFence vkCreateFence;
 extern PFN_vkDestroyFence vkDestroyFence;
@@ -165,10 +174,14 @@ extern PFN_vkCmdExecuteCommands vkCmdExecuteCommands;
 
 // VK_KHR_surface
 extern PFN_vkDestroySurfaceKHR vkDestroySurfaceKHR;
-extern PFN_vkGetPhysicalDeviceSurfaceSupportKHR vkGetPhysicalDeviceSurfaceSupportKHR;
-extern PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR vkGetPhysicalDeviceSurfaceCapabilitiesKHR;
-extern PFN_vkGetPhysicalDeviceSurfaceFormatsKHR vkGetPhysicalDeviceSurfaceFormatsKHR;
-extern PFN_vkGetPhysicalDeviceSurfacePresentModesKHR vkGetPhysicalDeviceSurfacePresentModesKHR;
+extern PFN_vkGetPhysicalDeviceSurfaceSupportKHR
+    vkGetPhysicalDeviceSurfaceSupportKHR;
+extern PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR;
+extern PFN_vkGetPhysicalDeviceSurfaceFormatsKHR
+    vkGetPhysicalDeviceSurfaceFormatsKHR;
+extern PFN_vkGetPhysicalDeviceSurfacePresentModesKHR
+    vkGetPhysicalDeviceSurfacePresentModesKHR;
 
 // VK_KHR_swapchain
 extern PFN_vkCreateSwapchainKHR vkCreateSwapchainKHR;
@@ -178,9 +191,12 @@ extern PFN_vkAcquireNextImageKHR vkAcquireNextImageKHR;
 extern PFN_vkQueuePresentKHR vkQueuePresentKHR;
 
 // VK_KHR_display
-extern PFN_vkGetPhysicalDeviceDisplayPropertiesKHR vkGetPhysicalDeviceDisplayPropertiesKHR;
-extern PFN_vkGetPhysicalDeviceDisplayPlanePropertiesKHR vkGetPhysicalDeviceDisplayPlanePropertiesKHR;
-extern PFN_vkGetDisplayPlaneSupportedDisplaysKHR vkGetDisplayPlaneSupportedDisplaysKHR;
+extern PFN_vkGetPhysicalDeviceDisplayPropertiesKHR
+    vkGetPhysicalDeviceDisplayPropertiesKHR;
+extern PFN_vkGetPhysicalDeviceDisplayPlanePropertiesKHR
+    vkGetPhysicalDeviceDisplayPlanePropertiesKHR;
+extern PFN_vkGetDisplayPlaneSupportedDisplaysKHR
+    vkGetDisplayPlaneSupportedDisplaysKHR;
 extern PFN_vkGetDisplayModePropertiesKHR vkGetDisplayModePropertiesKHR;
 extern PFN_vkCreateDisplayModeKHR vkCreateDisplayModeKHR;
 extern PFN_vkGetDisplayPlaneCapabilitiesKHR vkGetDisplayPlaneCapabilitiesKHR;
@@ -192,25 +208,29 @@ extern PFN_vkCreateSharedSwapchainsKHR vkCreateSharedSwapchainsKHR;
 #ifdef VK_USE_PLATFORM_XLIB_KHR
 // VK_KHR_xlib_surface
 extern PFN_vkCreateXlibSurfaceKHR vkCreateXlibSurfaceKHR;
-extern PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR vkGetPhysicalDeviceXlibPresentationSupportKHR;
+extern PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR
+    vkGetPhysicalDeviceXlibPresentationSupportKHR;
 #endif
 
 #ifdef VK_USE_PLATFORM_XCB_KHR
 // VK_KHR_xcb_surface
 extern PFN_vkCreateXcbSurfaceKHR vkCreateXcbSurfaceKHR;
-extern PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR vkGetPhysicalDeviceXcbPresentationSupportKHR;
+extern PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR
+    vkGetPhysicalDeviceXcbPresentationSupportKHR;
 #endif
 
 #ifdef VK_USE_PLATFORM_WAYLAND_KHR
 // VK_KHR_wayland_surface
 extern PFN_vkCreateWaylandSurfaceKHR vkCreateWaylandSurfaceKHR;
-extern PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR vkGetPhysicalDeviceWaylandPresentationSupportKHR;
+extern PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
+    vkGetPhysicalDeviceWaylandPresentationSupportKHR;
 #endif
 
 #ifdef VK_USE_PLATFORM_MIR_KHR
 // VK_KHR_mir_surface
 extern PFN_vkCreateMirSurfaceKHR vkCreateMirSurfaceKHR;
-extern PFN_vkGetPhysicalDeviceMirPresentationSupportKHR vkGetPhysicalDeviceMirPresentationSupportKHR;
+extern PFN_vkGetPhysicalDeviceMirPresentationSupportKHR
+    vkGetPhysicalDeviceMirPresentationSupportKHR;
 #endif
 
 #ifdef VK_USE_PLATFORM_ANDROID_KHR
@@ -221,7 +241,8 @@ extern PFN_vkCreateAndroidSurfaceKHR vkCreateAndroidSurfaceKHR;
 #ifdef VK_USE_PLATFORM_WIN32_KHR
 // VK_KHR_win32_surface
 extern PFN_vkCreateWin32SurfaceKHR vkCreateWin32SurfaceKHR;
-extern PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR vkGetPhysicalDeviceWin32PresentationSupportKHR;
+extern PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR
+    vkGetPhysicalDeviceWin32PresentationSupportKHR;
 #endif
 
 #ifdef USE_DEBUG_EXTENSIONS
@@ -232,5 +253,4 @@ extern PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallbackEXT;
 extern PFN_vkDebugReportMessageEXT vkDebugReportMessageEXT;
 #endif
 
-
-#endif // VULKAN_WRAPPER_H
+#endif  // VULKAN_WRAPPER_H
