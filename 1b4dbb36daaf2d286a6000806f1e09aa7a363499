@@ -93,6 +93,30 @@
       "revId": "1b4dbb36daaf2d286a6000806f1e09aa7a363499",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "373d5e09_b686e8f8",
+        "filename": "buildSrc/src/main/java/com/google/androidgamesdk/LocalToolchain.kt",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-06-22T14:21:51Z",
+      "side": 1,
+      "message": "👍",
+      "parentUuid": "5e84c0cc_24dcc964",
+      "range": {
+        "startLine": 15,
+        "startChar": 4,
+        "endLine": 15,
+        "endChar": 8
+      },
+      "revId": "1b4dbb36daaf2d286a6000806f1e09aa7a363499",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
