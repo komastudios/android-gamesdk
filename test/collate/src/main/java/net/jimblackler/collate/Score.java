@@ -176,9 +176,8 @@ public class Score {
             try (Stream<Path> files = Files.walk(directory.get())) {
               files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
             }
-          } else {
-            Files.createDirectory(directory.get());
           }
+          Files.createDirectory(directory.get());
         } catch (IOException e) {
           throw new IllegalStateException(e);
         }
