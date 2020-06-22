@@ -58,28 +58,15 @@ public class Utils {
    * Returns the OOM score associated with the main application process. As multiple processes can
    * be associated with an app the largest OOM score of all process is selected.
    *
-   * @param activityManager The ActivityManager.
    * @return The OOM score, or -1 if the score cannot be obtained.
    */
-  public static int getOomScore(ActivityManager activityManager) {
+  public static int getOomScore() {
     try {
       int pid = android.os.Process.myPid();
       return Integer.parseInt(readFile(("/proc/" + pid) + "/oom_score"));
     } catch (IOException | NumberFormatException e) {
       return -1;
     }
-  }
-
-  /**
-   * Returns the Activity Manager's MemoryInfo object.
-   *
-   * @param activityManager The ActivityManager.
-   * @return The MemoryInfo object.
-   */
-  public static ActivityManager.MemoryInfo getMemoryInfo(ActivityManager activityManager) {
-    ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
-    activityManager.getMemoryInfo(memoryInfo);
-    return memoryInfo;
   }
 
   /**
@@ -108,10 +95,9 @@ public class Utils {
    * Return a dictionary of values extracted from the application processes' /proc/../status
    * files.
    *
-   * @param activityManager The ActivityManager.
    * @return A dictionary of values, in bytes.
    */
-  public static Map<String, Long> processStatus(ActivityManager activityManager) {
+  public static Map<String, Long> processStatus() {
     Map<String, Long> output = new HashMap<>();
     int pid = android.os.Process.myPid();
     String filename = "/proc/" + pid + "/status";
@@ -127,16 +113,6 @@ public class Utils {
       Log.w(TAG, "Failed to read " + filename);
     }
     return output;
-  }
-
-  /**
-   * Returns 'true' if the memory info 'low memory' value is currently true.
-   *
-   * @param activityManager The ActivityManager.
-   * @return The low memory status.
-   */
-  public static boolean lowMemoryCheck(ActivityManager activityManager) {
-    return getMemoryInfo(activityManager).lowMemory;
   }
 
   /**
