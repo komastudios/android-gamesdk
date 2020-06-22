@@ -29,12 +29,10 @@ public class Score {
   }
 
   static void go(boolean useDevice) throws IOException {
-    Map<String, List<Result>> out = new HashMap<>();
+    Map<String, Map<String, Result>> out = new HashMap<>();
     Map<String, JSONObject> builds = new HashMap<>();
     AtomicReference<Path> directory = new AtomicReference<>();
-    final int[] variations = {0};
     AtomicReference<JSONArray> tests = new AtomicReference<>();
-    Map<Integer, JSONObject> paramsMap = new HashMap<>();
     AtomicReference<String> historyId = new AtomicReference<>();
     AtomicReference<Timer> timer = new AtomicReference<>();
     Consumer<JSONArray> collect = result -> {
@@ -50,7 +48,7 @@ public class Score {
             return;
           }
           try {
-            writeReport(out, builds, directory.get(), variations[0], tests.get());
+            writeReport(out, builds, directory.get(), tests.get());
           } catch (IOException e) {
             throw new IllegalStateException(e);
           }
@@ -69,21 +67,6 @@ public class Score {
       JSONObject runParameters = Utils.flattenParams(params);
       JSONArray coordinates = params.getJSONArray("coordinates");
       tests.set(params.getJSONArray("tests"));
-      int total = 1;
-      int variationNumber = 0;
-      for (int coordinateNumber = coordinates.length() - 1; coordinateNumber >= 0;
-           coordinateNumber--) {
-        int bound = tests.get().getJSONArray(coordinateNumber).length();
-        int value = coordinates.getInt(coordinateNumber);
-        variationNumber += value * total;
-        total *= bound;
-      }
-      if (variations[0] == 0) {
-        variations[0] = total;
-      } else {
-        assert variations[0] == total;
-      }
-      paramsMap.put(variationNumber, runParameters);
 
       assert first.has("build");
       JSONObject build = first.getJSONObject("build");
@@ -146,22 +129,15 @@ public class Score {
 
       float score =
           (lowestTop == Long.MAX_VALUE ? (float) largest : (float) lowestTop) / (1024 * 1024);
-      List<Result> results0;
+      Map<String, Result> results0;
       if (out.containsKey(id)) {
         results0 = out.get(id);
       } else {
-        results0 = new ArrayList<>();
-        while (results0.size() < variations[0]) {
-          results0.add(null);
-        }
+        results0 = new HashMap<>();
         out.put(id, results0);
       }
       JSONArray results1 = new JSONArray();
       results1.put(result);
-      while (results0.size() <= variations[0] - 1) {
-        results0.add(null);
-      }
-      assert results0.get(variationNumber) == null;
       JSONObject group = new JSONObject(runParameters.toString());
       group.remove("heuristics");
       if (directory.get() == null) {
@@ -182,7 +158,7 @@ public class Score {
           throw new IllegalStateException(e);
         }
       }
-      results0.set(variationNumber,
+      results0.put(coordinates.toString(),
           new Result(score, Main.writeGraphs(directory.get(), results1), exited && !allocFailed,
               serviceCrashed, group.toString()));
     };
@@ -196,14 +172,13 @@ public class Score {
     if (timer.get() != null) {
       timer.get().cancel();
     }
-    Desktop.getDesktop().browse(
-        writeReport(out, builds, directory.get(), variations[0], tests.get()));
+    Desktop.getDesktop().browse(writeReport(out, builds, directory.get(), tests.get()));
   }
 
-  private static URI writeReport(Map<String, List<Result>> rows, Map<String, JSONObject> builds,
-      Path directory, int variation, JSONArray tests) throws IOException {
+  private static URI writeReport(Map<String, Map<String, Result>> rows,
+      Map<String, JSONObject> builds, Path directory, JSONArray tests) throws IOException {
     StringBuilder body = new StringBuilder();
-    writeTable(body, rows, builds, tests, directory, variation);
+    writeTable(body, rows, builds, tests, directory);
 
     Utils.copy(directory, "report.css");
     Utils.copy(directory, "sorter.js");
@@ -215,11 +190,11 @@ public class Score {
     return outputFile.toUri();
   }
 
-  private static void writeTable(StringBuilder body, Map<String, List<Result>> rows,
-      Map<String, JSONObject> builds, JSONArray tests, Path directory, int variation) {
+  private static void writeTable(StringBuilder body, Map<String, Map<String, Result>> rows,
+      Map<String, JSONObject> builds, JSONArray tests, Path directory) {
     int rowspan = tests.length() + 1;
 
-    int colspan = variation;
+    int colspan = getTotalVariations(tests);
     body.append("<table>")
         .append("<thead>")
         .append("<tr>")
@@ -237,8 +212,6 @@ public class Score {
         .append("</th>")
         .append("<th rowspan=" + rowspan + " >")
         .append("Release")
-        .append("</th>")
-        .append("<th colspan=" + colspan + ">")
         .append("</th>")
         .append("</tr>");
 
@@ -269,7 +242,7 @@ public class Score {
     }
     body.append("</thead>");
 
-    for (Map.Entry<String, List<Result>> row : rows.entrySet()) {
+    for (Map.Entry<String, Map<String, Result>> row : rows.entrySet()) {
       body.append("<tr>");
 
       String id = row.getKey();
@@ -294,7 +267,8 @@ public class Score {
 
       Map<String, Float> maxScore = new HashMap<>();
 
-      for (Result result : row.getValue()) {
+      for (Map.Entry<String, Result> entry : row.getValue().entrySet()) {
+        Result result = entry.getValue();
         if (result != null && result.isAcceptable()) {
           String group = result.getGroup();
           if (maxScore.containsKey(group)) {
@@ -305,7 +279,8 @@ public class Score {
         }
       }
 
-      for (Result result : row.getValue()) {
+      for (Map.Entry<String, Result> entry : row.getValue().entrySet()) {
+        Result result = entry.getValue();
         if (result == null) {
           body.append("<td/>");
           continue;
@@ -339,6 +314,15 @@ public class Score {
       body.append("</tr>");
     }
     body.append("</table>");
+  }
+
+  private static int getTotalVariations(JSONArray tests) {
+    int total = 1;
+    for (int idx = 0; idx != tests.length(); idx++) {
+      JSONArray test = tests.getJSONArray(idx);
+      total *= test.length();
+    }
+    return total;
   }
 
   private static String toString(Object obj) {
