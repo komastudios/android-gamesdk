@@ -241,15 +241,24 @@
         );
       }
 
-      if ("trigger" in row) {
-        annotations.push(
-            {
-              series: "applicationAllocated",
-              x: time,
-              shortText: row.trigger,
-              text: row.trigger
-            }
-        );
+      if ("warnings" in row) {
+        const warnings = row.warnings;
+        for (let idx = 0; idx !== warnings.length; idx++) {
+          let warning = warnings[idx];
+          if (warning.level !== "red") {
+            continue;
+          }
+          for (const key of warning) {
+            annotations.push(
+                {
+                  series: "applicationAllocated",
+                  x: time,
+                  shortText: key,
+                  text: key
+                }
+            );
+          }
+        }
       }
 
       if ("activityPaused" in row) {
