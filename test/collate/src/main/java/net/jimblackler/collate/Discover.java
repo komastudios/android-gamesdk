@@ -61,9 +61,12 @@ public class Discover {
         if (!row.has("metrics")) {
           continue;
         }
-        if (baseline == null || time < baseline.getLong("time")) {
-          // Baseline is the earliest reading.
-          baseline = row;
+        JSONObject metrics = row.getJSONObject("metrics");
+        if (metrics.has("constant")) {
+          if (baseline == null || time < baseline.getLong("time")) {
+            // Baseline is the earliest reading with 'constant'.
+            baseline = row;
+          }
         }
         if (limit == null || time > limit.getLong("time")) {
           // Limit is the latest reading.
