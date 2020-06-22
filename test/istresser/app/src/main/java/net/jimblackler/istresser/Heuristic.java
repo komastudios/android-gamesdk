@@ -21,6 +21,7 @@ class Heuristic {
    */
   static JSONObject checkHeuristics(JSONObject metrics, JSONObject baseline, JSONObject params,
                                     JSONObject deviceSettings) throws JSONException {
+    long time = System.currentTimeMillis();
     JSONObject results = new JSONObject();
 
     JSONObject deviceLimit = deviceSettings.getJSONObject("limit");
@@ -224,6 +225,9 @@ class Heuristic {
 
       results.put("predictions", predictions);
     }
+    JSONObject meta = new JSONObject();
+    meta.put("duration", System.currentTimeMillis() - time);
+    results.put("meta", meta);
     return results;
   }
 }
