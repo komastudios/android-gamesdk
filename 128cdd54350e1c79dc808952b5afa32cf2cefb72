@@ -46,6 +46,30 @@
       "revId": "128cdd54350e1c79dc808952b5afa32cf2cefb72",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2e2b8c9b_59f34ef3",
+        "filename": "buildSrc/src/main/java/com/google/androidgamesdk/BuildOptions.kt",
+        "patchSetId": 5
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-06-22T14:49:51Z",
+      "side": 1,
+      "message": "The Builder pattern is interesting, but is a bit complex here to use because I need to make a copy of the \"BuildOptions\" object for each single build. Failure to do so has very bad results, as a single \"BuildOptions\" will live in memory and so later builds will overwrite the options of the first builds (which is hard to debug, I made the mistake previously and could not understand why builds were working and other failing). The \"withStl\"/\"withArch\"/\"withBuildFolders\" ensures that a copy of the object is returned, eliminating any risk of \"I forgot to call copy/clone/build\" in the caller code.\n\nAlso if it was Kotlin code that was calling we could use simply copy with optional arguments:\n`copy(stl \u003d ..., arch \u003d ...)`, `copy(stl \u003d ...)`, `copy(buildFolders \u003d ...)` which is more concise than builders :) (unfortunately the main build.gradle script is still in Groovy).\n\nThe downside is the need to call isCompleted which is less safe at the end (because you can forget to call it and use null members)... though it could return an object with non null members, like a Builder. Wdyt?",
+      "parentUuid": "ae6a87f8_9c394afa",
+      "range": {
+        "startLine": 3,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 24
+      },
+      "revId": "128cdd54350e1c79dc808952b5afa32cf2cefb72",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
