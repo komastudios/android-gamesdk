@@ -1,6 +1,7 @@
 package com.google.android.apps.internal.games.helperlibrary;
 
 import android.os.Build;
+import android.util.Log;
 import java.lang.reflect.Field;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,16 +11,21 @@ import org.json.JSONObject;
  * format.
  */
 public class Helper {
+  private static final String TAG = Helper.class.getSimpleName();
   /**
    * Copies the Android build data into a JSON object.
    * @return A JSONObject containing the Android build data.
    */
-  public static JSONObject getBuild() throws JSONException {
+  public static JSONObject getBuild() {
     JSONObject build = new JSONObject();
-    getStaticFields(build, Build.class);
-    JSONObject version = new JSONObject();
-    getStaticFields(version, Build.VERSION.class);
-    build.put("version", version);
+    try {
+      getStaticFields(build, Build.class);
+      JSONObject version = new JSONObject();
+      getStaticFields(version, Build.VERSION.class);
+      build.put("version", version);
+    } catch (JSONException ex) {
+      Log.w(TAG, "Problem getting build data", ex);
+    }
     return build;
   }
 
