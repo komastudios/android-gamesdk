@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d4f09cd7_1eb98024",
+        "filename": "build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-06-22T12:30:47Z",
+      "side": 1,
+      "message": "Is that intended to be commented?",
+      "range": {
+        "startLine": 235,
+        "startChar": 0,
+        "endLine": 235,
+        "endChar": 28
+      },
+      "revId": "1b4dbb36daaf2d286a6000806f1e09aa7a363499",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "db43a245_65d91765",
+        "filename": "buildSrc/src/main/java/com/google/androidgamesdk/LocalToolchain.kt",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-06-22T12:30:47Z",
+      "side": 1,
+      "message": "can this be splitted a bit? e.g move sdkPath_ search logic into separate function",
+      "range": {
+        "startLine": 15,
+        "startChar": 4,
+        "endLine": 15,
+        "endChar": 8
+      },
+      "revId": "1b4dbb36daaf2d286a6000806f1e09aa7a363499",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
