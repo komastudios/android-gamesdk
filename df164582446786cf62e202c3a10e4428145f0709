@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c54df163_1819f707",
+        "filename": "buildSrc/src/main/java/com/google/androidgamesdk/Toolchain.kt",
+        "patchSetId": 6
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-06-22T12:52:20Z",
+      "side": 1,
+      "message": "What about moving all these into OsSpecificTools and maybe call it just Tools, with Tools.getProtoPath(), Tools.getNinjaPath()?",
+      "range": {
+        "startLine": 83,
+        "startChar": 3,
+        "endLine": 96,
+        "endChar": 5
+      },
+      "revId": "df164582446786cf62e202c3a10e4428145f0709",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
