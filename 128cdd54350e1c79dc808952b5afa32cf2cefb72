@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "762a82db_8ba50acf",
+        "filename": "buildSrc/src/main/java/com/google/androidgamesdk/BuildOptions.kt",
+        "patchSetId": 5
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-06-22T13:15:55Z",
+      "side": 1,
+      "message": "Can you use Builder here?\n\nBuildOptions.Builder()\n   .buildType(...)\n   .threadChecks(...)\n   .stl(...)\n   .arch(..)\n   .apply();\n\nYou can assert in apply, and remove withStl() / withArch(), pass Builder instead and create BuildOptions in apply().",
+      "range": {
+        "startLine": 3,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 24
+      },
+      "revId": "128cdd54350e1c79dc808952b5afa32cf2cefb72",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
