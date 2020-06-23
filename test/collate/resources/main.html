@@ -194,21 +194,27 @@
       {
         const paragraph = document.createElement("p");
         section.appendChild(paragraph);
-        const anchor = document.createElement("a");
-        paragraph.appendChild(anchor);
-        anchor.href = extra.resultsPage;
-        anchor.appendChild(document.createTextNode("Results page"));
-      }
-      {
-        const paragraph = document.createElement("p");
-        section.appendChild(paragraph);
-        const toolLogs = extra.step.testExecutionStep.toolExecution.toolLogs;
-        for (let idx = 0; idx !== toolLogs.length; idx++) {
+        {
+          const span = document.createElement("span");
+          span.classList.add("link");
           const anchor = document.createElement("a");
-          paragraph.appendChild(anchor);
-          anchor.href = toolLogs[idx].fileUri;
-          anchor.addEventListener("click", linkClicked, false);
-          anchor.appendChild(document.createTextNode("Logs"));
+          anchor.href = extra.resultsPage;
+          anchor.appendChild(document.createTextNode("Results page"));
+          span.appendChild(anchor);
+          paragraph.appendChild(span);
+        }
+        {
+          const span = document.createElement("span");
+          span.classList.add("link");
+          const toolLogs = extra.step.testExecutionStep.toolExecution.toolLogs;
+          for (let idx = 0; idx !== toolLogs.length; idx++) {
+            const anchor = document.createElement("a");
+            span.appendChild(anchor);
+            anchor.href = toolLogs[idx].fileUri;
+            anchor.addEventListener("click", linkClicked, false);
+            anchor.appendChild(document.createTextNode("Logs"));
+          }
+          paragraph.appendChild(span);
         }
       }
     }
