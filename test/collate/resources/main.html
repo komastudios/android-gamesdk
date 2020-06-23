@@ -354,7 +354,10 @@
           if (warning.level !== "red") {
             continue;
           }
-          for (const key of warning) {
+          for (const [key, value] of Object.entries(warning)) {
+            if (value.constructor !== Object) {
+              continue;
+            }
             annotations.push(
                 {
                   series: "applicationAllocated",
