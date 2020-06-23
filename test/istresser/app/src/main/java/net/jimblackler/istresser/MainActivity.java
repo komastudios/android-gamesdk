@@ -7,7 +7,6 @@ import static net.jimblackler.istresser.ServiceCommunicationHelper.CRASHED_BEFOR
 import static net.jimblackler.istresser.ServiceCommunicationHelper.TOTAL_MEMORY_MB;
 import static net.jimblackler.istresser.Utils.flattenParams;
 import static net.jimblackler.istresser.Utils.getDuration;
-import static net.jimblackler.istresser.Utils.getFileSize;
 import static net.jimblackler.istresser.Utils.getMemoryQuantity;
 import static net.jimblackler.istresser.Utils.getOrDefault;
 
@@ -756,9 +755,9 @@ public class MainActivity extends Activity {
     private final String path;
     private long offset;
 
-    public MmapFileInfo(String path) throws IOException {
+    public MmapFileInfo(String path) {
       this.path = path;
-      fileSize = getFileSize(path);
+      fileSize = new File(path).length();
       offset = 0;
     }
 

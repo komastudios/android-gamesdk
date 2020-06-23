@@ -1,7 +1,5 @@
 package net.jimblackler.istresser;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Iterator;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,17 +8,6 @@ import org.json.JSONObject;
 /** A helper class with static methods to help with Heuristics and file IO */
 public class Utils {
   private static final String TAG = Utils.class.getSimpleName();
-
-  /**
-   * Gets the size in bytes of the indicated file.
-   *
-   * @param filename The name of the file to get the size for.
-   * @return File size.
-   * @throws IOException Thrown if a filesystem error occurs.
-   */
-  static long getFileSize(String filename) throws IOException {
-    return new File(filename).length();
-  }
 
   /**
    * Converts a memory quantity value in an object to a number of bytes. If the value is a number,
