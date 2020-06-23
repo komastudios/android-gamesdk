@@ -149,27 +149,6 @@ public class Utils {
   }
 
   /**
-   * Return the value of the key in the object if it exists and is a number, in long form.
-   * Otherwise reutrn null.
-   * @param object The object to extract the value from.
-   * @param key The key associated with the value.
-   * @return The associated numeric value as a long, or 'null'.
-   */
-  static Long optLong(JSONObject object, String key) {
-    if (object.has(key)) {
-      try {
-        Object value = object.get(key);
-        if (value instanceof Number) {
-          return ((Number)value).longValue();
-        }
-      } catch (JSONException ignored) {
-        // Intentionally ignored.
-      }
-    }
-    return null;
-  }
-
-  /**
    * Creates a deep union of two JSON objects. Arrays are concatenated and dictionaries are merged.
    * @param in The first JSON object; read only.
    * @param out The second JSON object and the object into which changes are written.
