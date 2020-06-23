@@ -202,10 +202,14 @@
       {
         const paragraph = document.createElement("p");
         section.appendChild(paragraph);
-        const anchor = document.createElement("a");
-        paragraph.appendChild(anchor);
-        anchor.href = extra.logs;
-        anchor.appendChild(document.createTextNode("Logs"));
+        const toolLogs = extra.step.testExecutionStep.toolExecution.toolLogs;
+        for (let idx = 0; idx !== toolLogs.length; idx++) {
+          const anchor = document.createElement("a");
+          paragraph.appendChild(anchor);
+          anchor.href = toolLogs[idx].fileUri;
+          anchor.addEventListener("click", linkClicked, false);
+          anchor.appendChild(document.createTextNode("Logs"));
+        }
       }
     }
 

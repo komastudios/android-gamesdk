@@ -5,7 +5,6 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.toolresults.ToolResults;
 import com.google.api.services.toolresults.model.Execution;
-import com.google.api.services.toolresults.model.FileReference;
 import com.google.api.services.toolresults.model.ListExecutionsResponse;
 import com.google.api.services.toolresults.model.ListHistoriesResponse;
 import com.google.api.services.toolresults.model.ListStepsResponse;
@@ -146,13 +145,7 @@ class Collector {
                       break;
                     }
                   }
-                  List<FileReference> toolLogs = toolExecution.getToolLogs();
-                  if (toolLogs == null) {
-                    continue;
-                  }
-                  String logsUrl = toolLogs.get(0).getFileUri().replace(
-                      "gs://", "https://storage.cloud.google.com/");
-                  extra.put("logs", logsUrl);
+
                   List<ToolOutputReference> toolOutputs = toolExecution.getToolOutputs();
                   String contents = "";
                   if (toolOutputs != null) {
