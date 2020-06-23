@@ -220,17 +220,6 @@ public class Score {
       JSONArray test = tests.getJSONArray(idx);
       colspan /= test.length();
       body.append("<tr>");
-
-      if (false) {
-        body.append("<th>")
-            .append("</th>")
-            .append("<th>")
-            .append("</th>")
-            .append("<th>")
-            .append("</th>")
-            .append("<th>")
-            .append("</th>");
-      }
       for (int repeat = 0; repeat != repeats; repeat++) {
         for (int param = 0; param < test.length(); param++) {
           JSONObject _param = test.getJSONObject(param);
