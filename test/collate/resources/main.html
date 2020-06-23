@@ -132,47 +132,6 @@
     const section = document.createElement("section");
     document.body.appendChild(section);
 
-    const build = first["build"];
-
-    const heading = document.createElement("h1");
-    section.appendChild(heading);
-    heading.appendChild(document.createTextNode(
-        capitalizeFirstLetter(build.MANUFACTURER) + " " + build.MODEL));
-
-    const table = document.createElement("table");
-    section.appendChild(table);
-
-    for (const [key, value] of Object.entries(build)) {
-      const row = document.createElement("tr");
-      table.appendChild(row);
-      {
-        const cell = document.createElement("td");
-        row.appendChild(cell);
-        const node = document.createTextNode(key);
-        cell.appendChild(node);
-      }
-      {
-        const cell = document.createElement("td");
-        row.appendChild(cell);
-        const node = document.createTextNode(value);
-        cell.appendChild(node);
-      }
-    }
-
-    {
-      const paragraph = document.createElement("p");
-      section.appendChild(paragraph);
-      paragraph.appendChild(
-              document.createTextNode(`Params: ${JSON.stringify(flattenParams(first.params))}`));
-    }
-
-    {
-      const paragraph = document.createElement("p");
-      section.appendChild(paragraph);
-      paragraph.appendChild(
-          document.createTextNode(`Settings: ${JSON.stringify(first.settings)}`));
-    }
-
     if ("extra" in first) {
       const extra = first.extra;
       if ("fromLauncher" in extra) {
