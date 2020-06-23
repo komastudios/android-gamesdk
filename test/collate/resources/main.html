@@ -249,6 +249,8 @@
     const series = {};
     const combined = {};
     const rowOut = [0];
+    let totalDuration = 0;
+    let durationCount = 0;
     for (const row of result) {
       if (!("time" in row)) {
         continue;
@@ -275,6 +277,10 @@
           for (const [field, value] of Object.entries(row.metrics.constant).sort()) {
             combined[field] = value;
           }
+        }
+        if ("meta" in row.metrics) {
+          totalDuration += row.metrics.meta.duration;
+          durationCount++;
         }
       }
 
@@ -483,6 +489,12 @@
     });
 
     graph.ready(() => graph.setAnnotations(annotations));
+    if (durationCount > 0) {
+      const paragraph = document.createElement("p");
+      section.appendChild(paragraph);
+      paragraph.appendChild(document.createTextNode(
+          `Average duration ${(totalDuration / durationCount).toFixed(2)}`));
+    }
   }
 </script>
 </html>
