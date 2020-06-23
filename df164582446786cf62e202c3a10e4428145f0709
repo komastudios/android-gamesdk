@@ -46,6 +46,30 @@
       "revId": "df164582446786cf62e202c3a10e4428145f0709",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2b86b7bd_0cb70155",
+        "filename": "buildSrc/src/main/java/com/google/androidgamesdk/Toolchain.kt",
+        "patchSetId": 6
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-06-23T09:48:45Z",
+      "side": 1,
+      "message": "I am okay to leave these in Toolchain then (resolving both comments)",
+      "parentUuid": "3a9fcfea_6ebc88a6",
+      "range": {
+        "startLine": 83,
+        "startChar": 3,
+        "endLine": 96,
+        "endChar": 5
+      },
+      "revId": "df164582446786cf62e202c3a10e4428145f0709",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
