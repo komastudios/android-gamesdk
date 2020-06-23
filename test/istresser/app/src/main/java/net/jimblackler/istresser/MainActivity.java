@@ -1,6 +1,8 @@
 package net.jimblackler.istresser;
 
 import static com.google.android.apps.internal.games.helperlibrary.Helper.getBuild;
+import static com.google.android.apps.internal.games.helperlibrary.Heuristic.checkHeuristics;
+import static com.google.android.apps.internal.games.helperlibrary.Utils.getMemoryQuantity;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.readFile;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.readStream;
 import static net.jimblackler.istresser.ServiceCommunicationHelper.CRASHED_BEFORE;
@@ -8,7 +10,6 @@ import static net.jimblackler.istresser.ServiceCommunicationHelper.TOTAL_MEMORY_
 import static net.jimblackler.istresser.Utils.flattenParams;
 import static net.jimblackler.istresser.Utils.getDuration;
 import static net.jimblackler.istresser.Utils.getFileSize;
-import static net.jimblackler.istresser.Utils.getMemoryQuantity;
 import static net.jimblackler.istresser.Utils.getOrDefault;
 
 import android.app.Activity;
@@ -28,6 +29,7 @@ import android.view.View;
 import android.webkit.WebView;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
+import com.google.android.apps.internal.games.helperlibrary.Heuristic;
 import com.google.android.apps.internal.games.helperlibrary.Info;
 import com.google.common.collect.Lists;
 import java.io.File;
@@ -319,7 +321,7 @@ public class MainActivity extends Activity {
             if (sinceAllocationStarted > 0) {
               boolean shouldAllocate = true;
 
-              JSONObject result0 = Heuristic.checkHeuristics(
+              JSONObject result0 = checkHeuristics(
                   metrics, info.getBaseline(), params, deviceSettings.getJSONObject("limits"));
 
               if (result0.has("predictions")) {
