@@ -11,8 +11,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicReference;
@@ -178,7 +181,18 @@ public class Score {
   private static URI writeReport(Map<String, Map<String, Result>> rows,
       Map<String, JSONObject> builds, Path directory, JSONArray tests) throws IOException {
     StringBuilder body = new StringBuilder();
-    writeTable(body, rows, builds, tests, directory);
+    // The vertical orders are the variations of the graphs. The vertical order refers to how the
+    // dimensions will be ordered in the header, which is arranged like a tree. The first group is
+    // at the top of the tree. The final group will appear as multiple leaves at the base of the
+    // tree.
+    List<List<Integer>> verticalOrders = getPermutations(tests.length());
+    for (List<Integer> verticalOrder : verticalOrders) {
+      if (!worthRendering(verticalOrder, tests)) {
+        continue;
+      }
+      writeTable(body, rows, builds, tests, directory, verticalOrder);
+      body.append("</br>");
+    }
 
     Utils.copy(directory, "report.css");
     Utils.copy(directory, "sorter.js");
@@ -190,8 +204,65 @@ public class Score {
     return outputFile.toUri();
   }
 
+  /**
+   * Determines if a vertical group order will have an effective duplicate or not.
+   * In short, there is no point repositioning the dimensions of length 1, since
+   * that will only result in duplicates of the actual groupings.
+   * @param verticalOrder The vertical group order under consideration.
+   * @param objects The array of dimension arrays.
+   * @return true if the permutation is the definitive version.
+   */
+  private static boolean worthRendering(Iterable<Integer> verticalOrder, JSONArray objects) {
+    int original = 0;
+    for (int idx : verticalOrder) {
+      if (idx != original) {
+        int n = objects.getJSONArray(idx).length();
+        if (n <= 1) {
+          return false;
+        }
+      }
+      original++;
+    }
+    return true;
+  }
+
+  /**
+   * Get a list of all possible orderings of a given permutation.
+   * For example: '2' would return 1,2; 2,1
+   * @param size
+   * @return The list of possible orderings.
+   */
+  private static List<List<Integer>> getPermutations(int size) {
+    List<List<Integer>> out = new ArrayList<>();
+    Set<Integer> used = new HashSet<>();
+    List<Integer> base = new ArrayList<>();
+    getPermutations(base, used, size, out);
+    return out;
+  }
+
+  private static void getPermutations(
+      List<Integer> base, Set<Integer> used, int size, List<List<Integer>> out) {
+    if (used.size() == size) {
+      out.add(new ArrayList<>(base));
+      return;
+    }
+    for (int i = 0; i != size; i++) {
+      if (used.contains(i)) {
+        continue;
+      }
+      used.add(i);
+      base.add(i);
+
+      getPermutations(base, used, size, out);
+
+      base.remove(base.size() - 1);
+      used.remove(i);
+    }
+  }
+
   private static void writeTable(StringBuilder body, Map<String, Map<String, Result>> rows,
-      Map<String, JSONObject> builds, JSONArray tests, Path directory) {
+      Map<String, JSONObject> builds, JSONArray tests, Path directory,
+      List<Integer> verticalOrder) {
     int rowspan = tests.length() + 1;
 
     int colspan = getTotalVariations(tests);
@@ -216,21 +287,11 @@ public class Score {
         .append("</tr>");
 
     int repeats = 1;
-    for (int idx = 0; idx < tests.length(); idx++) {
+    for (int idx : verticalOrder) {
       JSONArray test = tests.getJSONArray(idx);
       colspan /= test.length();
       body.append("<tr>");
 
-      if (false) {
-        body.append("<th>")
-            .append("</th>")
-            .append("<th>")
-            .append("</th>")
-            .append("<th>")
-            .append("</th>")
-            .append("<th>")
-            .append("</th>");
-      }
       for (int repeat = 0; repeat != repeats; repeat++) {
         for (int param = 0; param < test.length(); param++) {
           JSONObject _param = test.getJSONObject(param);
@@ -242,10 +303,12 @@ public class Score {
     }
     body.append("</thead>");
 
+    List<JSONArray> horizontalOrder = getHorizontalOrder(tests, verticalOrder);
     for (Map.Entry<String, Map<String, Result>> row : rows.entrySet()) {
       body.append("<tr>");
 
       String id = row.getKey();
+      Map<String, Result> rows0 = row.getValue();
       JSONObject build = builds.get(id);
 
       final JSONObject version = build.getJSONObject("version");
@@ -267,7 +330,9 @@ public class Score {
 
       Map<String, Float> maxScore = new HashMap<>();
 
-      for (Result result : row.getValue().values()) {
+      for (int idx = 0; idx != horizontalOrder.size(); idx++) {
+        JSONArray coords = horizontalOrder.get(idx);
+        Result result = rows0.get(coords.toString());
         if (result != null && result.isAcceptable()) {
           String group = result.getGroup();
           if (maxScore.containsKey(group)) {
@@ -278,7 +343,9 @@ public class Score {
         }
       }
 
-      for (Result result : row.getValue().values()) {
+      for (int idx = 0; idx != horizontalOrder.size(); idx++) {
+        JSONArray coords = horizontalOrder.get(idx);
+        Result result = rows0.get(coords.toString());
         if (result == null) {
           body.append("<td/>");
           continue;
@@ -312,6 +379,43 @@ public class Score {
       body.append("</tr>");
     }
     body.append("</table>");
+  }
+
+  /**
+   * Use the vertical order to determine the dimension selections for every test in the table,
+   * arranged from left to right.
+   * @param tests The test dimensions to reorder.
+   * @param verticalOrder The new order to use.
+   * @return The selections for the tests in an array, ordered left to right.
+   */
+  private static List<JSONArray> getHorizontalOrder(JSONArray tests, List<Integer> verticalOrder) {
+    List<JSONArray> horizontalOrder = new ArrayList<>();
+    JSONArray base = new JSONArray();
+    for (int idx = 0; idx < tests.length(); idx++) {
+      base.put(0);
+    }
+
+    while (true) {
+      horizontalOrder.add(new JSONArray(base.toString()));
+      boolean rolledOver = true;
+      ListIterator<Integer> it = verticalOrder.listIterator(verticalOrder.size());
+      while (it.hasPrevious()) {
+        int idx = it.previous();
+        JSONArray test = tests.getJSONArray(idx);
+        int value = base.getInt(idx);
+        if (value == test.length() - 1) {
+          base.put(idx, 0);
+        } else {
+          base.put(idx, value + 1);
+          rolledOver = false;
+          break;
+        }
+      }
+      if (rolledOver) {
+        break;
+      }
+    }
+    return horizontalOrder;
   }
 
   private static int getTotalVariations(JSONArray tests) {
