@@ -1,6 +1,5 @@
-package net.jimblackler.istresser;
+package com.google.android.apps.internal.games.helperlibrary;
 
-import com.google.android.apps.internal.games.helperlibrary.TryAllocTester;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -11,7 +10,7 @@ import org.json.JSONObject;
 /**
  * Wrapper class for methods related to memory management heuristics.
  */
-class Heuristic {
+public class Heuristic {
   private static final List<String> PREDICTION_FIELDS = Collections.singletonList("oom_score");
 
   /**
@@ -19,8 +18,8 @@ class Heuristic {
    * getSignal method. GREEN indicates it is safe to allocate further, YELLOW indicates further
    * allocation shouldn't happen, and RED indicates high memory pressure.
    */
-  static JSONObject checkHeuristics(JSONObject metrics, JSONObject baseline, JSONObject params,
-                                    JSONObject deviceSettings) throws JSONException {
+  public static JSONObject checkHeuristics(JSONObject metrics, JSONObject baseline,
+      JSONObject params, JSONObject deviceSettings) throws JSONException {
     long time = System.currentTimeMillis();
     JSONObject results = new JSONObject();
 
