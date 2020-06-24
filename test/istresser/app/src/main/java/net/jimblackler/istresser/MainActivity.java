@@ -9,8 +9,6 @@ import static net.jimblackler.istresser.ServiceCommunicationHelper.CRASHED_BEFOR
 import static net.jimblackler.istresser.ServiceCommunicationHelper.TOTAL_MEMORY_MB;
 import static net.jimblackler.istresser.Utils.flattenParams;
 import static net.jimblackler.istresser.Utils.getDuration;
-import static net.jimblackler.istresser.Utils.getFileSize;
-import static net.jimblackler.istresser.Utils.getMemoryQuantity;
 import static net.jimblackler.istresser.Utils.getOrDefault;
 
 import android.app.Activity;
@@ -79,7 +77,7 @@ public class MainActivity extends Activity {
   private long mmapAnonAllocatedByTest;
   private long mmapFileAllocatedByTest;
   private PrintStream resultsStream = System.out;
-  private final Info info = new Info();
+  private Info info;
   private long allocationStartedTime = -1;
   private long testStartTime;
   private long appSwitchTimerStart;
@@ -111,6 +109,7 @@ public class MainActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    info = new Info(this, false);
     initNative();
 
     Intent launchIntent = getIntent();
@@ -238,7 +237,9 @@ public class MainActivity extends Activity {
       };
       registerReceiver(receiver, new IntentFilter("com.google.gamesdk.grabber.RETURN"));
 
-      JSONObject report = standardInfo();
+      JSONObject report = new JSONObject();
+      report.put("time", System.currentTimeMillis() - testStartTime);
+      report.put("metrics", info.getBaseline());
       report.put("params", params1);
       report.put("settings", deviceSettings);
 
@@ -686,7 +687,7 @@ public class MainActivity extends Activity {
 
   private JSONObject standardInfo() throws JSONException {
     JSONObject report = new JSONObject();
-    report.put("metrics", info.getMemoryMetrics(this, false));
+    report.put("metrics", info.getMemoryMetrics(false));
     report.put("time", System.currentTimeMillis() - testStartTime);
     boolean paused = allocationStartedTime == -1;
     if (paused) {
