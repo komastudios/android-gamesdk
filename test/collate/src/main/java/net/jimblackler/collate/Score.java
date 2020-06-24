@@ -48,7 +48,8 @@ public class Score {
             return;
           }
           try {
-            writeReport(out, builds, directory.get(), tests.get());
+            URI uri = writeReport(out, builds, directory.get(), tests.get());
+            System.out.println(uri);
           } catch (IOException e) {
             throw new IllegalStateException(e);
           }
@@ -158,9 +159,10 @@ public class Score {
           throw new IllegalStateException(e);
         }
       }
+      URI uri = Main.writeGraphs(directory.get(), results1);
+      System.out.println(uri);
       results0.put(coordinates.toString(),
-          new Result(score, Main.writeGraphs(directory.get(), results1), exited && !allocFailed,
-              serviceCrashed, group.toString()));
+          new Result(score, uri, exited && !allocFailed, serviceCrashed, group.toString()));
     };
 
     if (useDevice) {
@@ -172,7 +174,8 @@ public class Score {
     if (timer.get() != null) {
       timer.get().cancel();
     }
-    Desktop.getDesktop().browse(writeReport(out, builds, directory.get(), tests.get()));
+    URI uri = writeReport(out, builds, directory.get(), tests.get());
+    System.out.println(uri);
   }
 
   private static URI writeReport(Map<String, Map<String, Result>> rows,
