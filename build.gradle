@@ -1,3 +1,8 @@
+import com.google.androidgamesdk.BuildFolders
+import com.google.androidgamesdk.BuildOptions
+import com.google.androidgamesdk.SpecificToolchain
+import com.google.androidgamesdk.LocalToolchain
+import com.google.androidgamesdk.Toolchain
 
 import java.nio.file.Paths
 import org.gradle.internal.logging.text.StyledTextOutput;
@@ -9,39 +14,23 @@ import static groovy.lang.Closure.IDENTITY;
 import groovy.util.GroovyCollections;
 import groovyx.gpars.GParsPool;
 import org.apache.tools.ant.filters.ReplaceTokens;
+import com.google.androidgamesdk.ExternalToolName;
+import static com.google.androidgamesdk.OsSpecificTools.osFolderName;
+import static com.google.androidgamesdk.CMakeWrapper.runAndroidCMake;
+import static com.google.androidgamesdk.CMakeWrapper.runHostCMake;
 
-apply plugin: 'java'
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.3.2'
+        classpath "org.codehaus.gpars:gpars:1.2.0"
+    }
+}
 
 defaultTasks 'cleanPath', 'archiveZip'
-
-enum ExternalToolName { PROTOBUF, CMAKE }
-
-def osFolderName(externalToolName) {
-    if (OperatingSystem.current().isMacOsX()) {
-        if (externalToolName == ExternalToolName.PROTOBUF) {
-            return "mac";
-        } else if (externalToolName == ExternalToolName.CMAKE) {
-            return "darwin-x86"
-        }
-    } else if (OperatingSystem.current().isLinux())
-        return "linux-x86";
-    else if (OperatingSystem.current().isWindows()) {
-        if (externalToolName == ExternalToolName.PROTOBUF) {
-            return "win";
-        } else if (externalToolName == ExternalToolName.CMAKE) {
-            return "windows-x86";
-        }
-    }
-
-    throw new GradleException("Unsupported OS");
-}
-
-def osExecutableSuffix() {
-    if (OperatingSystem.current().isWindows())
-        return ".exe"
-    else
-        return ""
-}
 
 def protobufInstallDir() {
     return new File("$projectDir/third_party/protobuf-3.0.0/install/"
@@ -91,156 +80,12 @@ task prepare_proto(dependsOn: prepare_proto_before) {
     }
 }
 
-buildscript {
-    repositories {
-        google()
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.2'
-        classpath "org.codehaus.gpars:gpars:1.2.0"
-    }
-}
 
 allprojects {
     buildDir = getOutPath()
     repositories {
         google()
         jcenter()
-    }
-}
-
-abstract class Toolchain {
-    protected Project project_;
-    protected String androidVersion_;
-    protected String ndkVersion_;
-    abstract String getAndroidNDKPath();
-    public String getAndroidVersion() { return androidVersion_; }
-    public String getNdkVersion() { return ndkVersion_; }
-    public String getNdkVersionNumber() {
-        def (n) = ndkVersion_ =~ /[0-9]+/;
-        return n;
-    }
-    public String getBuildKey(String arch, String stl, String buildType) {
-        return arch + "_API" + androidVersion_ + "_NDK" + getNdkVersionNumber() + '_' +
-            sanitize(stl)+ '_'+buildType
-    }
-    protected String getNdkVersionFromPropertiesFile() {
-        def f = new File(getAndroidNDKPath(), 'source.properties')
-        if (!f.exists()) {
-            println "Warning: can't get NDK version"
-            return "UNKNOWN"
-        }
-        else {
-            Properties props = new Properties()
-            f.withInputStream {
-                props.load(it)
-            }
-            def ver = props."Pkg.Revision"
-            def parts = ver.findAll("[^.]+")
-            // Ignore the minor version
-            return parts[0]
-        }
-    }
-    private String sanitize(String s) {
-        return s.replaceAll(/[+]/, "p")
-    }
-    String findNDKTool(String name) {
-        def tools = project_.fileTree(project_.joinPath(getAndroidNDKPath(), 'toolchains')).matching {
-            include '**/bin/' + name + project_.osExecutableSuffix()
-            // Be sure not to use tools that would not support architectures for which we're buidling:
-            exclude "**/aarch64-*", "**/arm-*"
-        }
-        if (tools==null || tools.size() == 0) {
-            throw new GradleException('No ' + name + ' found in ' + ndkPath_ + '/toolchains')
-        }
-        return tools.getFiles().last().toString()
-    }
-    String getArPath() {
-        return findNDKTool("ar")
-    }
-    public String getCMakePath() {
-        return new File("${project_.projectDir}/../prebuilts/cmake/"
-                        + project_.osFolderName(ExternalToolName.CMAKE)
-                        + "/bin/cmake" + project_.osExecutableSuffix()).getPath()
-    }
-    public String getNinjaPath() {
-        return new File("${project_.projectDir}/../prebuilts/cmake/"
-                        + project_.osFolderName(ExternalToolName.CMAKE)
-                        + "/bin/ninja" + project_.osExecutableSuffix()).getPath()
-    }
-}
-class SpecificToolchain extends Toolchain {
-    SpecificToolchain(Project project, String androidVersion, String ndkVersion) {
-        project_ = project
-        androidVersion_ = androidVersion
-        ndkVersion_ = ndkVersion
-    }
-    public String getAndroidNDKPath() {
-        return new File("${project_.projectDir}/../prebuilts/ndk/" + ndkVersion_).getPath()
-    }
-}
-class LocalToolchain extends Toolchain {
-    String sdkPath_;
-    String ndkPath_;
-    String adbPath_;
-    LocalToolchain(Project project, String androidVersion) {
-        project_ = project
-        androidVersion_ = androidVersion
-        sdkPath_ = System.getenv("ANDROID_HOME")
-        if(sdkPath_ == null && project.rootProject.file('local.properties').isFile()) {
-            Properties properties = new Properties()
-            properties.load(project.rootProject.file('local.properties').newDataInputStream())
-            sdkPath_ = properties.getProperty('sdk.dir')
-        }
-        if(sdkPath_ == null)
-            throw new GradleException('Must set ANDROID_HOME or sdk.dir in local.properties')
-
-        // Try to find a side-by-side NDK if a specific version is specified
-        def requestedNdkRevision = System.getenv("ANDROID_NDK_REVISION")
-        if (requestedNdkRevision != null) {
-            def ndkSideBySidePath = project_.joinPath(sdkPath_, 'ndk', requestedNdkRevision);
-            if (project_.file(ndkSideBySidePath).exists())
-                ndkPath_ = ndkSideBySidePath;
-
-            // Don't throw an error if not found, as the version might be the default one
-            // installed (see next lines).
-        }
-
-        // Try to find the NDK specified in ANDROID_NDK or the default one.
-        if(ndkPath_ == null) {
-            ndkPath_ = System.getenv("ANDROID_NDK")
-        }
-        if(ndkPath_ == null) {
-            ndkPath_ = System.getenv("ANDROID_NDK_HOME")
-        }
-        if(ndkPath_ == null && project.rootProject.file('local.properties').isFile()) {
-            Properties properties = new Properties()
-            properties.load(project.rootProject.file('local.properties').newDataInputStream())
-            ndkPath_ = properties.getProperty('ndk.dir')
-        }
-        if(ndkPath_ == null) {
-            ndkPath_ = project_.joinPath(sdkPath_, 'ndk-bundle')
-            if (!project_.file(ndkPath_).exists())
-                throw new GradleException('No NDK found in SDK: must set ANDROID_NDK or ANDROID_NDK_REVISION with the version of a NDK installed in the SDK "ndk" folder (NDK side-by-side).')
-        }
-
-        // Get the version of the NDK that was found and sanity check that it's the proper one.
-        ndkVersion_ = getNdkVersionFromPropertiesFile()
-        adbPath_ = project_.joinPath(sdkPath_, 'platform-tools', 'adb')
-
-        if (requestedNdkRevision != null) {
-            def requestNDKMajorVersion = requestedNdkRevision.findAll("[^.]+")
-            if (ndkVersion_ != requestNDKMajorVersion[0]) {
-                throw new GradleException("You specified NDK $requestedNdkRevision but only NDK $ndkVersion_ was found in $ndkPath_. Verify that you have the requested NDK installed with the SDK manager.")
-            }
-        }
-    }
-    String getAndroidNDKPath() {
-        return ndkPath_;
-    }
-    String getAdbPath() {
-        return adbPath_;
     }
 }
 
@@ -270,81 +115,16 @@ def getTempPath() {
     return new File("$projectDir/../.temp").getPath()//.getAbsolutePath()
 }
 
-def useNinja() {
-    return true;
-}
-
-def cmake(projectFolder, workingFolder, outputFolder, arch, toolchain, stl,
-          threadChecks, buildTuningFork, buildType = "Release") {
-    def ndkPath = toolchain.getAndroidNDKPath()
-    def toolchainFilePath = ndkPath + "/build/cmake/android.toolchain.cmake"
-    def androidVersion = toolchain.getAndroidVersion()
-    def ninjaPath = toolchain.getNinjaPath()
-    def buildtfval = buildTuningFork ? "ON" : "OFF"
-    def protocBinDir = protobufInstallDir() + "/bin"
-    mkdir workingFolder
-    mkdir outputFolder
-
-    def threadFlags = ""
-    if (threadChecks) {
-        threadFlags = "-DGAMESDK_THREAD_CHECKS=1"
-    } else {
-        threadFlags = "-DGAMESDK_THREAD_CHECKS=0"
-    }
-
-    def cxx_flags = "-DANDROID_NDK_VERSION=${toolchain.getNdkVersionNumber()}"
-    if (stl=="gnustl_static" || stl=="gnustl_shared")
-        cxx_flags += " -DANDROID_GNUSTL"
-
-    def cmdLine = [toolchain.getCMakePath(),
-                   "$projectFolder",
-                   "-DCMAKE_BUILD_TYPE=$buildType",
-                   "-DANDROID_PLATFORM=android-$androidVersion",
-                   "-DANDROID_NDK=$ndkPath",
-                   "-DANDROID_STL=$stl",
-                   "-DANDROID_ABI=$arch",
-                   "-DANDROID_UNIFIED_HEADERS=1",
-                   "-DCMAKE_CXX_FLAGS=$cxx_flags",
-                   "-DCMAKE_TOOLCHAIN_FILE=$toolchainFilePath",
-                   "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=$outputFolder",
-                   "-DGAMESDK_BUILD_TUNINGFORK=$buildtfval",
-                   threadFlags]
-
-    if (useNinja()) {
-        cmdLine += ["-DCMAKE_MAKE_PROGRAM=" + "$ninjaPath",
-                    "-GNinja"]
-    }
-    exec {
-        environment "PATH", "$protocBinDir:${environment.PATH}"
-        workingDir workingFolder
-        commandLine cmdLine
-    }
-}
-
-def hostCmake(projectFolder, workingFolder, outputFolder, toolchain, buildType) {
-    mkdir workingFolder
-    mkdir outputFolder
-
-    def cmdLine = [toolchain.getCMakePath(),
-                   "$projectFolder",
-                   "-DCMAKE_BUILD_TYPE=$buildType",
-                   "-DCMAKE_CXX_FLAGS=",
-                   "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=$outputFolder"
-                   ]
-    exec {
-        workingDir workingFolder
-        commandLine cmdLine
-    }
-}
 
 def buildHostModule(subdir, buildType) {
     def toolchain = getLocalToolchain();
     def buildKey = "host"
     def workingFolder = joinPath(getTempPath(), buildKey, '.cmake')
     def outputFolder = joinPath(getOutPath(), buildKey)
-    def cmakeProjectLocation = joinPath("$projectDir", subdir)
+    def cmakeProjectFolder = joinPath("$projectDir", subdir)
+    def buildFolders = new BuildFolders(cmakeProjectFolder, workingFolder, outputFolder)
 
-    hostCmake(cmakeProjectLocation, workingFolder, outputFolder, toolchain, buildType)
+    runHostCMake(project, buildFolders, toolchain, buildType)
 
     def cmdLine = ["make", "-j"]
     exec {
@@ -354,34 +134,27 @@ def buildHostModule(subdir, buildType) {
     return [buildKey: buildKey, outputFolder: outputFolder]
 }
 
-def buildNativeModules(arch, Toolchain toolchain, stl, threadChecks, buildtf, subdir = "src",
-                       buildType = "Release") {
-    def buildKey = toolchain.getBuildKey(arch, stl, buildType)
+def buildNativeModules(BuildOptions buildOptions, Toolchain toolchain, buildtf, subdir) {
+    def buildKey = toolchain.getBuildKey(buildOptions)
+
     def workingFolder = joinPath(getTempPath(), buildKey, '.cmake')
     def outputFolder = joinPath(getOutPath(), buildKey)
-    def cmakeProjectLocation = joinPath("$projectDir", subdir)
+    def cmakeProjectFolder = joinPath("$projectDir", subdir)
+    def buildFolders = new BuildFolders(cmakeProjectFolder, workingFolder, outputFolder)
 
-    cmake(cmakeProjectLocation, workingFolder, outputFolder, arch, toolchain,
-          stl, threadChecks, buildtf, buildType)
+    runAndroidCMake(project, buildFolders, toolchain, buildOptions, buildtf)
 
-    def cmdLine = useNinja() ? [toolchain.getNinjaPath()] : ["make", "-j"]
+    def cmdLine = !toolchain.getNinjaPath().isEmpty() ? [toolchain.getNinjaPath()] : ["make", "-j"]
     exec {
         workingDir workingFolder
         commandLine cmdLine
     }
 
     def jsonDescription = new File(joinPath(outputFolder, "abi.json"))
-    jsonDescription.text = '{"abi":"'+arch+'","api":'+toolchain.getAndroidVersion()+
-        ',"ndk":'+toolchain.getNdkVersionNumber()+',"stl":"'+stl+'"}'
+    jsonDescription.text = '{"abi":"'+buildOptions.arch+'","api":'+toolchain.getAndroidVersion()+
+        ',"ndk":'+toolchain.getNdkVersionNumber()+',"stl":"'+buildOptions.stl+'"}'
 
-    return [arch: arch, buildKey: buildKey]
-}
-
-def buildNativeModules(arch, androidVersion, ndkVersion, stl, threadChecks,
-                       buildtf, buildType) {
-    return buildNativeModules(arch,
-                              new SpecificToolchain(project, androidVersion, ndkVersion),
-                              stl, threadChecks, buildtf, "src", buildType)
+    return [arch: buildOptions.arch, buildKey: buildKey]
 }
 
 task cleanPath(type: Delete) {
@@ -390,8 +163,6 @@ task cleanPath(type: Delete) {
     delete getTempPath()
     delete getBuildPath()
 }
-
-clean.dependsOn cleanPath
 
 def executeCmd(cmd, dir) {
     def out = new StringBuilder()
@@ -685,24 +456,34 @@ def versionMappingPost17() { return [ [["r18"], [16,17,18,19,21,22,23,24,26,27,2
 def unityNativeBuild(withTuningFork=false, buildType="Release") {
     def threadChecks = false
     return defaultAbis().collect {
-        buildNativeModules(it, "21", "r19", "c++_static", threadChecks, withTuningFork, buildType)
+        buildNativeModules(
+                new BuildOptions(buildType, threadChecks,  "c++_static", it),
+                new SpecificToolchain(project, "21", "r19"),
+                withTuningFork,
+                "src")
     }
 }
 
 def sdkNativeBuild(withTuningFork = true, buildType="Release") {
     def threadChecks = false
+
     def versions = versionMapping().collectMany { GroovyCollections.combinations(it) }
     def versionsPost17 = versionMappingPost17().collectMany { GroovyCollections.combinations(it) }
     def allCombos = GroovyCollections.combinations(defaultAbis(), versions, allSTLs()) +
         GroovyCollections.combinations(defaultAbis(), versionsPost17, post17STLs());
     GParsPool.withPool {
         return allCombos.collectParallel { x ->
+            def arch = x[0];
+            def stl = x[2];
             buildNativeModules(
-                /*arch=*/ x[0],
-                /*androidVersion=*/ x[1][1].toString(),
-                /*ndkVersion=*/ x[1][0],
-                /*stlVersion=*/ x[2],
-                threadChecks, withTuningFork, buildType)
+                    new BuildOptions(buildType, threadChecks, stl, arch),
+                    new SpecificToolchain(
+                            project,
+                            /*androidVersion=*/ x[1][1].toString(),
+                            /*ndkVersion=*/ x[1][0]
+                    ),
+                    withTuningFork,
+                    "src")
         }
     }
 }
@@ -727,6 +508,7 @@ def aarVersionMapping64BitsPost17() { return [ [["r18"], [21,22,23,24,26,27,28]]
 
 def sdkAarNativeBuild(withTuningFork = true, buildType="Release") {
     def threadChecks = false
+
     def versions32Bits = aarVersionMapping32Bits().collectMany { GroovyCollections.combinations(it) }
     def versions32BitsPost17 = aarVersionMapping32BitsPost17().collectMany { GroovyCollections.combinations(it) }
     def versions64Bits = aarVersionMapping64Bits().collectMany { GroovyCollections.combinations(it) }
@@ -738,12 +520,17 @@ def sdkAarNativeBuild(withTuningFork = true, buildType="Release") {
         GroovyCollections.combinations(abis64Bits(), versions64BitsPost17, aarPost17STLs());
     GParsPool.withPool {
         return allCombos.collectParallel { x ->
+            def arch = x[0]
+            def stl = x[2]
             buildNativeModules(
-                /*arch=*/ x[0],
-                /*androidVersion=*/ x[1][1].toString(),
-                /*ndkVersion=*/ x[1][0],
-                /*stlVersion=*/ x[2],
-                threadChecks, withTuningFork, buildType)
+                    new BuildOptions(buildType, threadChecks, stl, arch),
+                    new SpecificToolchain(
+                            project,
+                            /*androidVersion=*/ x[1][1].toString(),
+                            /*ndkVersion=*/ x[1][0]
+                    ),
+                    withTuningFork,
+                    "src")
         }
     }
 }
@@ -751,9 +538,14 @@ def sdkAarNativeBuild(withTuningFork = true, buildType="Release") {
 def specificNativeBuild(sdkVersion, ndkVersion, stlVersion, withTuningFork = false,
                         buildType="Release") {
     def threadChecks = false
+
+    def toolchain = new SpecificToolchain(project, sdkVersion, ndkVersion)
     return defaultAbis().collect {
-        buildNativeModules(it, sdkVersion, ndkVersion, stlVersion, threadChecks, withTuningFork,
-                           buildType)
+        buildNativeModules(
+                new BuildOptions(buildType, threadChecks, stlVersion, it),
+                toolchain,
+                withTuningFork,
+                "src")
     }
 }
 
@@ -765,10 +557,10 @@ def getLocalToolchain() {
 
 def localNativeBuild(withTuningFork = false, subdir = "src", buildType="Release") {
     def toolchain = getLocalToolchain();
-    def stl = "c++_static"
     def threadChecks = true
     return defaultAbis().collect {
-        buildNativeModules(it, toolchain , stl, threadChecks, withTuningFork, subdir, buildType)
+        def buildOptions = new BuildOptions(buildType, threadChecks, "c++_static", it)
+        buildNativeModules(buildOptions, toolchain, withTuningFork, subdir)
     }
 }
 
