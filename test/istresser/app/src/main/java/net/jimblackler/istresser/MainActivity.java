@@ -79,7 +79,7 @@ public class MainActivity extends Activity {
   private long mmapAnonAllocatedByTest;
   private long mmapFileAllocatedByTest;
   private PrintStream resultsStream = System.out;
-  private final Info info = new Info();
+  private final Info info = new Info(this, false);
   private long allocationStartedTime = -1;
   private long testStartTime;
   private long appSwitchTimerStart;
@@ -686,7 +686,7 @@ public class MainActivity extends Activity {
 
   private JSONObject standardInfo() throws JSONException {
     JSONObject report = new JSONObject();
-    report.put("metrics", info.getMemoryMetrics(this, false));
+    report.put("metrics", info.getMemoryMetrics(false));
     report.put("time", System.currentTimeMillis() - testStartTime);
     boolean paused = allocationStartedTime == -1;
     if (paused) {
