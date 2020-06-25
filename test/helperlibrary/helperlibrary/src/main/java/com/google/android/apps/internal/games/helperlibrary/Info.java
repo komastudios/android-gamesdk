@@ -18,7 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /** A class to provide metrics of current memory usage to an application in JSON format. */
-public class Info {
+public final class Info {
   private static final String TAG = Info.class.getSimpleName();
 
   private static final List<String> MEMINFO_FIELDS = Arrays.asList("Active", "Active(anon)",
@@ -29,33 +29,41 @@ public class Info {
   private static final String[] SUMMARY_FIELDS = {
       "summary.native-heap", "summary.graphics", "summary.total-pss", "summary.total-swap"};
   private static final long BYTES_IN_KILOBYTE = 1024;
-  private MapTester mapTester;
-  private JSONObject baseline;
+  private final boolean fetchDebug;
+  private final MapTester mapTester;
+  private final JSONObject baseline;
+  private final ActivityManager activityManager;
+
+  /**
+   * Create an Android memory metrics fetcher.
+   *
+   * @param context The Android context to employ.
+   * @param fetchDebug Whether to fetch debug-based params.
+   */
+  public Info(Context context, boolean fetchDebug) {
+    this.fetchDebug = fetchDebug;
+    mapTester = new MapTester(context.getCacheDir());
+    activityManager = (ActivityManager) context.getSystemService((Context.ACTIVITY_SERVICE));
+    baseline = getMemoryMetrics(true);
+  }
 
   /**
    * Gets Android memory metrics.
    *
-   * @param context The current Android context.
-   * @param fetchDebug Whether to fetch debug-based params.
+   * @param fetchConstants Whether to fetch metrics that never change.
    * @return A JSONObject containing current memory metrics.
    */
-  public JSONObject getMemoryMetrics(Context context, boolean fetchDebug) {
+  public JSONObject getMemoryMetrics(boolean fetchConstants) {
     long time = System.currentTimeMillis();
     JSONObject report = new JSONObject();
     try {
       report.put("nativeAllocated", Debug.getNativeHeapAllocatedSize());
 
-      ActivityManager activityManager = (ActivityManager) Objects.requireNonNull(
-          context.getSystemService((Context.ACTIVITY_SERVICE)));
       ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
       activityManager.getMemoryInfo(memoryInfo);
       report.put("availMem", memoryInfo.availMem);
       if (memoryInfo.lowMemory) {
         report.put("lowMemory", true);
-      }
-
-      if (mapTester == null) {
-        mapTester = new MapTester(context.getCacheDir());
       }
 
       if (mapTester.warning()) {
@@ -91,7 +99,7 @@ public class Info {
           report.put(key, pair.getValue());
         }
       }
-      if (baseline == null) {
+      if (fetchConstants) {
         JSONObject constant = new JSONObject();
         for (Map.Entry<String, Long> pair : memInfo.entrySet()) {
           String key = pair.getKey();
@@ -102,7 +110,6 @@ public class Info {
         constant.put("totalMem", memoryInfo.totalMem);
         constant.put("threshold", memoryInfo.threshold);
         report.put("constant", constant);
-        baseline = new JSONObject(report.toString());
       }
       JSONObject meta = new JSONObject();
       meta.put("duration", System.currentTimeMillis() - time);
