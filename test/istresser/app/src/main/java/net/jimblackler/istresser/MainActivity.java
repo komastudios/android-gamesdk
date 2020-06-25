@@ -1,6 +1,5 @@
 package net.jimblackler.istresser;
 
-import static com.google.android.apps.internal.games.helperlibrary.DeviceSettings.getDeviceSettings;
 import static com.google.android.apps.internal.games.helperlibrary.Helper.getBuild;
 import static com.google.android.apps.internal.games.helperlibrary.Heuristic.checkHeuristics;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.getMemoryQuantity;
@@ -28,7 +27,6 @@ import android.view.View;
 import android.webkit.WebView;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
-import com.google.android.apps.internal.games.helperlibrary.DeviceSettings;
 import com.google.android.apps.internal.games.helperlibrary.Heuristic;
 import com.google.android.apps.internal.games.helperlibrary.Info;
 import com.google.common.collect.Lists;
@@ -71,7 +69,6 @@ public class MainActivity extends Activity {
 
   private final Timer timer = new Timer();
   private final List<byte[]> data = Lists.newArrayList();
-  private JSONObject deviceSettings;
   private long nativeAllocatedByTest;
   private long vkAllocatedByTest;
   private long mmapAnonAllocatedByTest;
@@ -175,7 +172,6 @@ public class MainActivity extends Activity {
     delayBeforeRelease = getDuration(getOrDefault(params, "delayBeforeRelease", "1s"));
     delayAfterRelease = getDuration(getOrDefault(params, "delayAfterRelease", "1s"));
     int samplesPerSecond = (int) getOrDefault(params, "samplesPerSecond", 4);
-    deviceSettings = getDeviceSettings(getAssets());
     setContentView(R.layout.activity_main);
     serviceCommunicationHelper = new ServiceCommunicationHelper(this);
     serviceState = ServiceState.DEALLOCATED;
@@ -241,7 +237,7 @@ public class MainActivity extends Activity {
       report.put("time", System.currentTimeMillis() - testStartTime);
       report.put("metrics", info.getBaseline());
       report.put("params", params1);
-      report.put("settings", deviceSettings);
+      report.put("settings", info.getDeviceSettings());
 
       TestSurface testSurface = findViewById(R.id.glsurfaceView);
       testSurface.setVisibility(View.GONE);
@@ -323,8 +319,7 @@ public class MainActivity extends Activity {
             if (sinceAllocationStarted > 0) {
               boolean shouldAllocate = true;
 
-              JSONObject result0 = checkHeuristics(
-                  metrics, info.getBaseline(), params, deviceSettings.getJSONObject("limits"));
+              JSONObject result0 = checkHeuristics(info, metrics, params);
 
               if (result0.has("predictions")) {
                 report.put("predictions", result0.getJSONObject("predictions"));
@@ -632,8 +627,7 @@ public class MainActivity extends Activity {
           try {
             JSONObject report = standardInfo();
             JSONObject metrics = report.getJSONObject("metrics");
-            JSONObject result = Heuristic.checkHeuristics(
-                metrics, info.getBaseline(), params, deviceSettings.getJSONObject("limits"));
+            JSONObject result = checkHeuristics(info, metrics, params);
             report.put("heuristics", result);
             if (result.has("warnings")) {
               if (result.getJSONArray("warnings").length() > 0) {

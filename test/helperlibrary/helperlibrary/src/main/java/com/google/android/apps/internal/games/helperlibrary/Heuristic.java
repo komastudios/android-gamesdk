@@ -20,11 +20,13 @@ public class Heuristic {
    * getSignal method. GREEN indicates it is safe to allocate further, YELLOW indicates further
    * allocation shouldn't happen, and RED indicates high memory pressure.
    */
-  public static JSONObject checkHeuristics(
-      JSONObject metrics, JSONObject baseline, JSONObject params, JSONObject deviceSettings) {
+  public static JSONObject checkHeuristics(Info info, JSONObject metrics, JSONObject params) {
     long time = System.currentTimeMillis();
     JSONObject results = new JSONObject();
+
     try {
+      JSONObject baseline = info.getBaseline();
+      JSONObject deviceSettings = info.getDeviceSettings().getJSONObject("limits");
       JSONObject deviceLimit = deviceSettings.getJSONObject("limit");
       JSONObject deviceBaseline = deviceSettings.getJSONObject("baseline");
 

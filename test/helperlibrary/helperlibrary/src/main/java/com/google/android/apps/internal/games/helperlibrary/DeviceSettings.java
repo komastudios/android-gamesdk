@@ -30,7 +30,7 @@ public class DeviceSettings {
     }
   }
 
-  public static JSONObject getDeviceSettings(AssetManager assets) {
+  static JSONObject getDeviceSettings(AssetManager assets) {
     JSONObject settings = new JSONObject();
     try {
       JSONObject lookup = new JSONObject(readStream(assets.open("lookup.json")));
