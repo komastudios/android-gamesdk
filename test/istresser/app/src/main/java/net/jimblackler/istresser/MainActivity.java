@@ -1,5 +1,6 @@
 package net.jimblackler.istresser;
 
+import static com.google.android.apps.internal.games.helperlibrary.DeviceSettings.getDeviceSettings;
 import static com.google.android.apps.internal.games.helperlibrary.Helper.getBuild;
 import static com.google.android.apps.internal.games.helperlibrary.Heuristic.checkHeuristics;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.getMemoryQuantity;
@@ -19,7 +20,6 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -28,6 +28,7 @@ import android.view.View;
 import android.webkit.WebView;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
+import com.google.android.apps.internal.games.helperlibrary.DeviceSettings;
 import com.google.android.apps.internal.games.helperlibrary.Heuristic;
 import com.google.android.apps.internal.games.helperlibrary.Info;
 import com.google.common.collect.Lists;
@@ -36,7 +37,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Timer;
@@ -175,7 +175,7 @@ public class MainActivity extends Activity {
     delayBeforeRelease = getDuration(getOrDefault(params, "delayBeforeRelease", "1s"));
     delayAfterRelease = getDuration(getOrDefault(params, "delayAfterRelease", "1s"));
     int samplesPerSecond = (int) getOrDefault(params, "samplesPerSecond", 4);
-    deviceSettings = getDeviceSettings();
+    deviceSettings = getDeviceSettings(getAssets());
     setContentView(R.layout.activity_main);
     serviceCommunicationHelper = new ServiceCommunicationHelper(this);
     serviceState = ServiceState.DEALLOCATED;
@@ -464,30 +464,6 @@ public class MainActivity extends Activity {
         }
       }
     }, 0, 1000 / samplesPerSecond);
-  }
-
-  private JSONObject getDeviceSettings() {
-    JSONObject settings = new JSONObject();
-    try {
-      JSONObject lookup = new JSONObject(readStream(getAssets().open("lookup.json")));
-      int bestScore = -1;
-      String best = null;
-      Iterator<String> it = lookup.keys();
-      while (it.hasNext()) {
-        String key = it.next();
-        int score = Utils.mismatchIndex(Build.FINGERPRINT, key);
-        if (score > bestScore) {
-          bestScore = score;
-          best = key;
-        }
-      }
-      settings.put("limits", lookup.getJSONObject(best));
-      settings.put("matched", best);
-      settings.put("fingerprint", Build.FINGERPRINT);
-    } catch (JSONException | IOException e) {
-      Log.w("Settings problem.", e);
-    }
-    return settings;
   }
 
   private void activateServiceBlocker() {
