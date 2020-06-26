@@ -3,15 +3,14 @@ import com.google.androidgamesdk.BuildOptions
 import com.google.androidgamesdk.SpecificToolchain
 import com.google.androidgamesdk.LocalToolchain
 import com.google.androidgamesdk.Toolchain
+import com.google.androidgamesdk.NativeLibrary
+import com.google.androidgamesdk.NativeLibrary.SampleFolder
 
 import java.nio.file.Paths
-import org.gradle.internal.logging.text.StyledTextOutput;
 import org.gradle.internal.logging.text.StyledTextOutputFactory;
 import static org.gradle.internal.logging.text.StyledTextOutput.Style;
 import org.gradle.internal.os.OperatingSystem;
-import org.gradle.api.Project;
 import static groovy.lang.Closure.IDENTITY;
-import groovy.util.GroovyCollections;
 import groovyx.gpars.GParsPool;
 import org.apache.tools.ant.filters.ReplaceTokens;
 import com.google.androidgamesdk.ExternalToolName;
@@ -32,13 +31,29 @@ buildscript {
 
 defaultTasks 'cleanPath', 'archiveZip'
 
+def joinPath(String first, String... more) {
+    return Paths.get(first, more).toString()
+}
+
+def swappyNativeLibrary = new NativeLibrary('swappy', 'GAMESDK_BUILD_SWAPPY')
+        .setAarLibrary("gaming-frame-pacing", "1.5.0")
+        .addSampleAndroidProject(new SampleFolder(joinPath('samples', "bouncyball")))
+        .addSampleAndroidProject(new SampleFolder(joinPath('samples', "cube")))
+        .addSampleAndroidProject(new SampleFolder(joinPath('third_party', "cube")))
+def tuningForkNativeLibrary = new NativeLibrary('tuningfork', 'GAMESDK_BUILD_TUNINGFORK')
+        .setAarLibrary("gaming-performance-tuner", "1.0.0")
+        .addSampleAndroidProject(new SampleFolder(joinPath('samples', 'tuningfork', 'insightsdemo')))
+        .addSampleAndroidProject(new SampleFolder(joinPath('samples', 'tuningfork', 'experimentsdemo')))
+        .addSampleAndroidProject(new SampleFolder(joinPath('src', 'tuningfork', 'tools', 'validation')))
+        .addSampleExtraFolder(new SampleFolder(joinPath('samples', 'tuningfork', "common")))
+        .addSampleExtraFolder(new SampleFolder(joinPath('src', 'protobuf')))
+        .addSampleExtraFolder(new SampleFolder(joinPath('third_party', 'protobuf-3.0.0')))
+        .addSampleExtraFolder(new SampleFolder(joinPath('..', 'external', 'nanopb-c'), joinPath('external', 'nanopb-c')))
+        .addSampleExtraFolder(new SampleFolder(joinPath('src', 'tuningfork', 'proto')).include('tuningfork.proto'))
+
 def protobufInstallDir() {
     return new File("$projectDir/third_party/protobuf-3.0.0/install/"
         + osFolderName(ExternalToolName.PROTOBUF)).getPath()
-}
-
-def joinPath(String first, String... more) {
-    return Paths.get(first, more).toString()
 }
 
 def getEnvironment() {
@@ -117,7 +132,7 @@ def getTempPath() {
 
 
 def buildHostModule(subdir, buildType) {
-    def toolchain = getLocalToolchain();
+    def toolchain = getLocalToolchain()
     def buildKey = "host"
     def workingFolder = joinPath(getTempPath(), buildKey, '.cmake')
     def outputFolder = joinPath(getOutPath(), buildKey)
@@ -134,7 +149,7 @@ def buildHostModule(subdir, buildType) {
     return [buildKey: buildKey, outputFolder: outputFolder]
 }
 
-def buildNativeModules(BuildOptions buildOptions, Toolchain toolchain, buildtf, subdir) {
+def buildNativeModules(BuildOptions buildOptions, Toolchain toolchain, Collection<NativeLibrary> libraries, subdir) {
     def buildKey = toolchain.getBuildKey(buildOptions)
 
     def workingFolder = joinPath(getTempPath(), buildKey, '.cmake')
@@ -142,7 +157,7 @@ def buildNativeModules(BuildOptions buildOptions, Toolchain toolchain, buildtf, 
     def cmakeProjectFolder = joinPath("$projectDir", subdir)
     def buildFolders = new BuildFolders(cmakeProjectFolder, workingFolder, outputFolder)
 
-    runAndroidCMake(project, buildFolders, toolchain, buildOptions, buildtf)
+    runAndroidCMake(project, buildFolders, toolchain, buildOptions, libraries)
 
     def cmdLine = !toolchain.getNinjaPath().isEmpty() ? [toolchain.getNinjaPath()] : ["make", "-j"]
     exec {
@@ -235,7 +250,7 @@ def copyLibraryToPrefabAar(buildInfo, outFolder, libraryName, prefabName) {
     if (buildStaticLibrary) {
         copy {
             from file(staticsFolder)
-            include "lib" + libraryName + "_static.a","*.json"
+            include("lib" + libraryName + "_static.a", "*.json")
             rename("lib" + libraryName + "_static.a", "lib" + libraryName + ".a")
             into file(staticLibBuildFolder)
         }
@@ -278,7 +293,7 @@ def copyLibraryToPrefabAar(buildInfo, outFolder, libraryName, prefabName) {
     }
 }
 
-def sdkCopy(buildInfo, outFolder, all = true, staticToo = false,
+def sdkCopy(buildInfo, outFolder, Collection<NativeLibrary> libraries, staticToo = false,
             useFullBuildKey = false, flattenLibDirs = false, shared = true) {
     def arch = buildInfo.arch
     def buildKey = buildInfo.buildKey
@@ -288,24 +303,27 @@ def sdkCopy(buildInfo, outFolder, all = true, staticToo = false,
                                   useFullBuildKey ? buildKey : arch, 'lib')
 
     if (shared) {
-        copy {
-            from file(cmakeFolder)
-            include all ? "*/lib*.so" : "swappy*/lib*.so"
-            into file(libBuildFolder)
-            includeEmptyDirs = false
-            if (flattenLibDirs) {
-                eachFile {
-                    path = name
+        libraries.forEach({ nativeLibrary ->
+            copy {
+                from file(cmakeFolder)
+                include nativeLibrary.nativeLibraryName + "*/lib*.so"
+                into file(libBuildFolder)
+                includeEmptyDirs = false
+                if (flattenLibDirs) {
+                    eachFile {
+                        path = name
+                    }
                 }
             }
-        }
+        })
     }
     if (staticToo) {
         def staticsFolder = joinPath(getOutPath(), buildKey)
         def staticLibsBuildFolder = joinPath(buildFolder, 'libs', buildKey)
-        def staticLibs = ['libswappy_static.a']
-        if (all)
-            staticLibs += 'libtuningfork_static.a'
+        def staticLibs = []
+        libraries.forEach({nativeLibrary ->
+            staticLibs += "lib" + nativeLibrary.nativeLibraryName + "_static.a"
+        })
         repackArchives(staticsFolder, staticLibs, 'libgamesdk.a')
         copy {
             from file(staticsFolder)
@@ -315,19 +333,21 @@ def sdkCopy(buildInfo, outFolder, all = true, staticToo = false,
     }
 }
 
-def copyExtras(outFolder, all = true) {
+def copyExtras(outFolder, Collection<NativeLibrary> libraries) {
     def buildFolder = getPackagePath() + '/' + outFolder
     def headerFolder = './include'
     def aarFolder = joinPath(getOutPath(), 'outputs', 'aar')
     def includeBuildFolder = joinPath(buildFolder, 'include')
     def aarBuildFolder = joinPath(buildFolder, 'aar')
 
-    copy {
-        from file(headerFolder)
-        include all ? "*/*.h" : "swappy*/*.h"
-        into file(includeBuildFolder)
-        includeEmptyDirs = false
-    }
+    libraries.forEach({ nativeLibrary ->
+        copy {
+            from file(headerFolder)
+            include nativeLibrary.nativeLibraryName + "*/*.h"
+            into file(includeBuildFolder)
+            includeEmptyDirs = false
+        }
+    })
     copy {
         from file(aarFolder)
         into file(aarBuildFolder)
@@ -344,7 +364,7 @@ def copyDocs(outFolder) {
 
 // Copy samples for packaging. Also rename CMakeLists.txt files so that the
 // one distributed are using the packaged game sdk.
-def copySamples(outFolder, includeTuningForkSamples = true) {
+def copySamples(outFolder, Collection<NativeLibrary> libraries) {
     def buildFolder = getPackagePath() + '/' + outFolder
 
     // CMake utility for the Game SDK
@@ -359,84 +379,30 @@ def copySamples(outFolder, includeTuningForkSamples = true) {
         into file(joinPath(buildFolder, 'samples', 'common'))
     }
 
-    // Bouncyball
-    copy {
-        from file(joinPath('samples', "bouncyball"))
-        into file(joinPath(buildFolder, 'samples', "bouncyball"))
-        exclude '**/build', '**/out', "local.properties", "**/.externalNativeBuild", "**/.gradle",
-            "**/OWNERS", "**/.idea", '**/CMakeLists.txt'
-        rename 'CMakeLists.for-samples-in-archive.txt', 'CMakeLists.txt'
-        includeEmptyDirs = false
-    }
-
-    // Cube
-    copy {
-        from file(joinPath('samples', "cube"))
-        into file(joinPath(buildFolder, 'samples', "cube"))
-        exclude '**/build', '**/out', "local.properties", "**/.externalNativeBuild",
-            "**/.gradle", "**/OWNERS", "**/.idea"
-        includeEmptyDirs = false
-    }
-    copy {
-        from file(joinPath('third_party', "cube"))
-        into file(joinPath(buildFolder, 'third_party', "cube"))
-        rename 'CMakeLists.for-samples-in-archive.txt', 'CMakeLists.txt'
-        exclude '**/build', '**/out', "local.properties", "**/.externalNativeBuild", "**/.gradle",
-            "**/OWNERS", "**/.idea"
-        includeEmptyDirs = false
-    }
-
-    if (includeTuningForkSamples) {
-        // All Tuning Fork sample common files
-        copy {
-            from file(joinPath('samples', 'tuningfork', "common"))
-            into file(joinPath(buildFolder, 'samples', 'tuningfork', 'common'))
-        }
-
-        copy {
-                from file(joinPath('samples', "tuningfork", "experimentsdemo"))
-                into file(joinPath(buildFolder, 'samples', "tuningfork", "experimentsdemo"))
+    // Library specific files
+    libraries.forEach({ nativeLibrary ->
+        nativeLibrary.sampleAndroidProjectPaths.forEach({sampleFolder ->
+            copy {
+                from file(sampleFolder.sourcePath)
+                into file(joinPath(buildFolder, sampleFolder.destinationPath))
                 exclude '**/build', '**/out', "local.properties", "**/.externalNativeBuild", "**/.gradle",
-            "**/OWNERS", "**/.idea", '**/CMakeLists.txt'
+                        "**/OWNERS", "**/.idea", '**/CMakeLists.txt'
                 rename 'CMakeLists.for-samples-in-archive.txt', 'CMakeLists.txt'
                 includeEmptyDirs = false
-        }
-        copy {
-                from file(joinPath('samples', "tuningfork", "insightsdemo"))
-                into file(joinPath(buildFolder, 'samples', "tuningfork", "insightsdemo"))
-                exclude '**/build', '**/out', "local.properties", "**/.externalNativeBuild", "**/.gradle",
-            "**/OWNERS", "**/.idea", '**/CMakeLists.txt'
-                rename 'CMakeLists.for-samples-in-archive.txt', 'CMakeLists.txt'
+            }
+        })
+
+        nativeLibrary.sampleExtraFolderPaths.forEach({sampleFolder ->
+            copy {
+                from file(sampleFolder.sourcePath)
+                into file(joinPath(buildFolder, sampleFolder.destinationPath))
+                if (sampleFolder.includePattern != null) {
+                    include sampleFolder.includePattern
+                }
                 includeEmptyDirs = false
-        }
-        copy {
-                from file(joinPath('src', 'protobuf'))
-                into file(joinPath(buildFolder, 'src', 'protobuf'))
-                includeEmptyDirs = false
-        }
-        copy {
-                from file(joinPath('third_party', 'protobuf-3.0.0'))
-                into file(joinPath(buildFolder, 'third_party', 'protobuf-3.0.0'))
-                includeEmptyDirs = false
-        }
-        copy {
-                from file(joinPath('..', 'external', 'nanopb-c'))
-                into file(joinPath(buildFolder, 'external', 'nanopb-c'))
-                includeEmptyDirs = false
-        }
-        copy {
-                from file(joinPath('src', 'tuningfork', 'tools', 'validation'))
-                into file(joinPath(buildFolder, 'src', 'tuningfork', 'tools', 'validation'))
-                exclude '**/build'
-                includeEmptyDirs = false
-        }
-        copy {
-                from file(joinPath('src', 'tuningfork', 'proto'))
-                into file(joinPath(buildFolder, 'src', 'tuningfork', 'proto'))
-                include 'tuningfork.proto'
-                includeEmptyDirs = false
-        }
-    }
+            }
+        })
+    })
 }
 
 def abis32Bits() { return ["armeabi-v7a", "x86"] }
@@ -453,18 +419,18 @@ def versionMappingPost17() { return [ [["r18"], [16,17,18,19,21,22,23,24,26,27,2
                                [["r20"], [16,17,18,19,21,22,23,24,26,27,28]],
                                [["r21"], [16,17,18,19,21,22,23,24,26,27,28,29]]] }
 
-def unityNativeBuild(withTuningFork=false, buildType="Release") {
+def unityNativeBuild(libraries, buildType="Release") {
     def threadChecks = false
     return defaultAbis().collect {
         buildNativeModules(
                 new BuildOptions(buildType, threadChecks,  "c++_static", it),
                 new SpecificToolchain(project, "21", "r19"),
-                withTuningFork,
+                libraries,
                 "src")
     }
 }
 
-def sdkNativeBuild(withTuningFork = true, buildType="Release") {
+def sdkNativeBuild(libraries, buildType="Release") {
     def threadChecks = false
 
     def versions = versionMapping().collectMany { GroovyCollections.combinations(it) }
@@ -482,7 +448,7 @@ def sdkNativeBuild(withTuningFork = true, buildType="Release") {
                             /*androidVersion=*/ x[1][1].toString(),
                             /*ndkVersion=*/ x[1][0]
                     ),
-                    withTuningFork,
+                    libraries,
                     "src")
         }
     }
@@ -506,7 +472,7 @@ def aarVersionMapping64BitsPost17() { return [ [["r18"], [21,22,23,24,26,27,28]]
                                [["r20"], [21,22,23,24,26,27,28]],
                                [["r21"], [21,22,23,24,26,27,28,29]]] }
 
-def sdkAarNativeBuild(withTuningFork = true, buildType="Release") {
+def sdkAarNativeBuild(libraries, buildType) {
     def threadChecks = false
 
     def versions32Bits = aarVersionMapping32Bits().collectMany { GroovyCollections.combinations(it) }
@@ -529,13 +495,13 @@ def sdkAarNativeBuild(withTuningFork = true, buildType="Release") {
                             /*androidVersion=*/ x[1][1].toString(),
                             /*ndkVersion=*/ x[1][0]
                     ),
-                    withTuningFork,
+                    libraries,
                     "src")
         }
     }
 }
 
-def specificNativeBuild(sdkVersion, ndkVersion, stlVersion, withTuningFork = false,
+def specificNativeBuild(sdkVersion, ndkVersion, stlVersion, libraries,
                         buildType="Release") {
     def threadChecks = false
 
@@ -544,7 +510,7 @@ def specificNativeBuild(sdkVersion, ndkVersion, stlVersion, withTuningFork = fal
         buildNativeModules(
                 new BuildOptions(buildType, threadChecks, stlVersion, it),
                 toolchain,
-                withTuningFork,
+                libraries,
                 "src")
     }
 }
@@ -555,12 +521,12 @@ def getLocalToolchain() {
     return new LocalToolchain(project, kApiLevel)
 }
 
-def localNativeBuild(withTuningFork = false, subdir = "src", buildType="Release") {
+def localNativeBuild(libraries, subdir = "src", buildType="Release") {
     def toolchain = getLocalToolchain();
     def threadChecks = true
     return defaultAbis().collect {
         def buildOptions = new BuildOptions(buildType, threadChecks, "c++_static", it)
-        buildNativeModules(buildOptions, toolchain, withTuningFork, subdir)
+        buildNativeModules(buildOptions, toolchain, libraries, subdir)
     }
 }
 
@@ -577,25 +543,25 @@ task swappyUnityBuild(type: BuildTask) {
     dependsOn ':extras:assembleRelease'
     ext.packageName = 'swappyUnity'
     ext.flattenLibs = true
-    ext.withTuningFork = false
+    ext.libraries = [swappyNativeLibrary]
     ext.withSharedLibs = false
     ext.withStaticLibs = true
     ext.withFullBuildKey = true
     ext.withSamples = false
     ext.buildType = "Release";
-    ext.nativeBuild = { tf,bt -> unityNativeBuild(tf,bt) }
+    ext.nativeBuild = { libraries, bt -> unityNativeBuild(libraries, bt) }
 }
 task swappyUnityDebugBuild(type: BuildTask) {
     dependsOn ':extras:assembleRelease'
     ext.packageName = 'swappyUnity'
     ext.flattenLibs = true
-    ext.withTuningFork = false
+    ext.libraries = [swappyNativeLibrary]
     ext.withSharedLibs = true
     ext.withStaticLibs = true
     ext.withFullBuildKey = true
     ext.withSamples = false
     ext.buildType = "Debug";
-    ext.nativeBuild = { tf,bt -> unityNativeBuild(tf,bt) }
+    ext.nativeBuild = { libraries, bt -> unityNativeBuild(libraries, bt) }
 }
 
 // Full build including tuning fork for unity, shared libraries only
@@ -603,13 +569,13 @@ task unityBuild(type: BuildTask) {
     dependsOn ':extras:assembleRelease', prepare_proto
     ext.packageName = 'unity'
     ext.flattenLibs = true
-    ext.withTuningFork = true
+    ext.libraries = [swappyNativeLibrary, tuningForkNativeLibrary]
     ext.withSharedLibs = false
     ext.withStaticLibs = true
     ext.withFullBuildKey = true
     ext.withSamples = false
     ext.buildType = "Release";
-    ext.nativeBuild = { tf,bt -> unityNativeBuild(tf,bt) }
+    ext.nativeBuild = { libraries, bt -> unityNativeBuild(libraries, bt) }
 }
 
 // Build everything
@@ -617,13 +583,13 @@ task fullSdkBuild(type: BuildTask) {
     dependsOn ':extras:assembleRelease', prepare_proto
     ext.packageName = 'fullsdk'
     ext.flattenLibs = false
-    ext.withTuningFork = true
+    ext.libraries = [swappyNativeLibrary, tuningForkNativeLibrary]
     ext.withSharedLibs = true
     ext.withStaticLibs = true
     ext.withFullBuildKey = true
     ext.withSamples = true
     ext.buildType = "Release"
-    ext.nativeBuild = { tf,bt -> sdkNativeBuild(tf,bt) }
+    ext.nativeBuild = { libraries, bt -> sdkNativeBuild(libraries, bt) }
 }
 
 // Build everything without TF
@@ -631,13 +597,13 @@ task releaseSdkBuild(type: BuildTask) {
     dependsOn ':extras:assembleRelease', prepare_proto
     ext.packageName = 'gamesdk'
     ext.flattenLibs = false
-    ext.withTuningFork = false
+    ext.libraries = [swappyNativeLibrary]
     ext.withSharedLibs = true
     ext.withStaticLibs = true
     ext.withFullBuildKey = true
     ext.withSamples = true
     ext.buildType = "Release";
-    ext.nativeBuild = { tf,bt -> sdkNativeBuild(tf,bt) }
+    ext.nativeBuild = { libraries, bt -> sdkNativeBuild(libraries, bt) }
 }
 
 task gamingFramePacingAarSdkBuild() {
@@ -649,15 +615,15 @@ task gamingFramePacingAarSdkBuild() {
     dependsOn ':extras:assembleRelease', prepare_proto
     ext.packageName = 'gamesdk'
     ext.flattenLibs = false
-    ext.withTuningFork = false
+    ext.libraries = [swappyNativeLibrary]
     ext.withSharedLibs = true
     ext.withStaticLibs = true
     ext.withFullBuildKey = true
     ext.withSamples = true
     ext.buildType = "Release";
-    ext.nativeBuild = { tf,bt -> sdkAarNativeBuild(tf,bt) }
+    ext.nativeBuild = { libraries, bt -> sdkAarNativeBuild(libraries, bt) }
     doLast {
-        nativeBuild(withTuningFork, buildType).each {
+        nativeBuild(libraries, buildType).each {
             copyLibraryToPrefabAar(it, packageName, 'swappy', 'gaming-frame-pacing');
         }
     }
@@ -673,15 +639,15 @@ task gamingFramePacingAarFullSdkBuild() {
     dependsOn ':extras:assembleRelease', prepare_proto
     ext.packageName = 'fullsdk'
     ext.flattenLibs = false
-    ext.withTuningFork = false
+    ext.libraries = [swappyNativeLibrary]
     ext.withSharedLibs = true
     ext.withStaticLibs = true
     ext.withFullBuildKey = true
     ext.withSamples = true
     ext.buildType = "Release";
-    ext.nativeBuild = { tf,bt -> sdkAarNativeBuild(tf,bt) }
+    ext.nativeBuild = { libraries, bt -> sdkAarNativeBuild(libraries, bt) }
     doLast {
-        nativeBuild(withTuningFork, buildType).each {
+        nativeBuild(libraries, buildType).each {
             copyLibraryToPrefabAar(it, packageName, 'swappy', 'gaming-frame-pacing');
         }
     }
@@ -696,15 +662,15 @@ task gamingPerformanceTunerAarFullSdkBuild() {
     dependsOn ':extras:assembleRelease', prepare_proto
     ext.packageName = 'fullsdk'
     ext.flattenLibs = false
-    ext.withTuningFork = true
+    ext.libraries = [swappyNativeLibrary, tuningForkNativeLibrary]
     ext.withSharedLibs = true
     ext.withStaticLibs = true
     ext.withFullBuildKey = true
     ext.withSamples = true
     ext.buildType = "Release";
-    ext.nativeBuild = { tf,bt -> sdkAarNativeBuild(tf,bt) }
+    ext.nativeBuild = { libraries, bt -> sdkAarNativeBuild(libraries, bt) }
     doLast {
-        nativeBuild(withTuningFork, buildType).each {
+        nativeBuild(libraries, buildType).each {
             copyLibraryToPrefabAar(it, packageName, 'tuningfork', 'gaming-performance-tuner');
         }
     }
@@ -715,13 +681,13 @@ task debugSdkBuild(type: BuildTask) {
     dependsOn ':extras:assembleRelease', prepare_proto
     ext.packageName = 'gamesdk_debug'
     ext.flattenLibs = false
-    ext.withTuningFork = false
+    ext.libraries = [swappyNativeLibrary]
     ext.withSharedLibs = true
     ext.withStaticLibs = true
     ext.withFullBuildKey = true
     ext.withSamples = true
     ext.buildType = "Debug";
-    ext.nativeBuild = { tf,bt -> sdkNativeBuild(tf,bt) }
+    ext.nativeBuild = { libraries, bt -> sdkNativeBuild(libraries, bt) }
 }
 
 // Build using local SDK, no tuning fork
@@ -729,13 +695,13 @@ task localBuild(type: BuildTask) {
     dependsOn ':extras:assembleRelease'
     ext.packageName = 'local'
     ext.flattenLibs = false
-    ext.withTuningFork = false;
+    ext.libraries = [swappyNativeLibrary];
     ext.withSharedLibs = true
     ext.withStaticLibs = true;
     ext.withFullBuildKey = false;
     ext.withSamples = false;
     ext.buildType = defaultBuildType();
-    ext.nativeBuild = { tf,bt -> localNativeBuild(tf, "src", bt) }
+    ext.nativeBuild = { libraries, bt -> localNativeBuild(libraries, "src", bt) }
 }
 
 // Build using local SDK, with tuning fork
@@ -743,26 +709,26 @@ task localTfBuild(type: BuildTask) {
     dependsOn ':extras:assembleRelease', prepare_proto
     ext.packageName = 'localtf'
     ext.flattenLibs = false
-    ext.withTuningFork = true;
+    ext.libraries = [swappyNativeLibrary, tuningForkNativeLibrary];
     ext.withSharedLibs = true
     ext.withStaticLibs = true;
     ext.withFullBuildKey = false;
     ext.withSamples = false;
     ext.buildType = defaultBuildType();
-    ext.nativeBuild = { tf,bt -> localNativeBuild(tf, "src", bt) }
+    ext.nativeBuild = { libraries, bt -> localNativeBuild(libraries, "src", bt) }
 }
 
 task specificBuild(type: BuildTask) {
     dependsOn ':extras:assembleRelease'
     ext.packageName = "specific"
     ext.flattenLibs = false
-    ext.withTuningFork = false;
+    ext.libraries = [swappyNativeLibrary];
     ext.withSharedLibs = true
     ext.withStaticLibs = true;
     ext.withFullBuildKey = false;
     ext.withSamples = true;
     ext.buildType = defaultBuildType();
-    ext.nativeBuild = { tf,bt ->
+    ext.nativeBuild = { libraries, bt ->
         def sdk = System.getenv("SDK")
         def ndk = System.getenv("NDK")
         def stl = System.getenv("STL")
@@ -772,7 +738,7 @@ Must set SDK, NDK and STL for a specific build,
 e.g. SDK=14 NDK=r16 STL='c++_static' ./gradlew specificZip"""
             )
         }
-        specificNativeBuild(sdk, ndk, stl, tf, bt)
+        specificNativeBuild(sdk, ndk, stl, libraries, bt)
     }
 }
 
@@ -781,16 +747,16 @@ tasks.withType(BuildTask) {
         // Clear the package path to ensure the task zip is not polluted
         // by previous build tasks.
         delete getPackagePath()
-        nativeBuild(withTuningFork, buildType).each {
-            sdkCopy(it, packageName, withTuningFork, withStaticLibs,
+        nativeBuild(libraries, buildType).each {
+            sdkCopy(it, packageName, libraries, withStaticLibs,
                     withFullBuildKey, flattenLibs, withSharedLibs)
         }
-        copyExtras(packageName, withTuningFork)
+        copyExtras(packageName, libraries)
 
         copyDocs(packageName)
 
         if (withSamples) {
-            copySamples(packageName, withTuningFork)
+            copySamples(packageName, libraries)
         }
     }
 }
@@ -808,7 +774,7 @@ task localUnitTests {
         def parch = 'arm64-v8a'
         if (project.hasProperty('arch'))
             parch = arch
-        def buildInfo = localNativeBuild(true, "test/$pcomponent")
+        def buildInfo = localNativeBuild([swappyNativeLibrary, tuningForkNativeLibrary], "test/$pcomponent")
         def buildKey = buildInfo.buildKey.findAll{it.contains(parch)}[0]
         def cmakeFolder = getTempPath() + "/$buildKey/.cmake"
         def toolchain = getLocalToolchain();
