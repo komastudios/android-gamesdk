@@ -18,7 +18,7 @@ class CMakeWrapper {
             buildFolders: BuildFolders,
             toolchain: Toolchain,
             buildOptions: BuildOptions,
-            buildTuningFork: Boolean
+            libraries: Collection<NativeLibrary>
         ) {
             ensureFoldersReady(project, buildFolders)
 
@@ -26,7 +26,6 @@ class CMakeWrapper {
             val toolchainFilePath = ndkPath +
                 "/build/cmake/android.toolchain.cmake"
             val androidVersion = toolchain.getAndroidVersion()
-            val buildtfval = if (buildTuningFork) "ON" else "OFF"
 
             var cxx_flags =
                 "-DANDROID_NDK_VERSION=${toolchain.getNdkVersionNumber()}"
@@ -47,12 +46,16 @@ class CMakeWrapper {
                 "-DCMAKE_CXX_FLAGS=$cxx_flags",
                 "-DCMAKE_TOOLCHAIN_FILE=$toolchainFilePath",
                 "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=" + buildFolders.outputFolder,
-                "-DGAMESDK_BUILD_TUNINGFORK=$buildtfval",
                 "-DGAMESDK_THREAD_CHECKS=" +
                     (if (buildOptions.threadChecks) "1" else "0"),
                 "-DCMAKE_MAKE_PROGRAM=" + toolchain.getNinjaPath(),
                 "-GNinja"
             )
+
+            libraries.forEach { nativeLibrary ->
+                val nativeLibraryCMakeOption = nativeLibrary.cmakeOption
+                cmdLine.add("-D$nativeLibraryCMakeOption=ON")
+            }
 
             project.exec {
                 val protocBinDir = toolchain.getProtobufInstallPath() + "/bin"
