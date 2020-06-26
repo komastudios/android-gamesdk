@@ -1,5 +1,6 @@
 package com.google.android.apps.internal.games.helperlibrary;
 
+import android.content.Context;
 import android.util.Log;
 import java.util.Collections;
 import java.util.Iterator;
@@ -11,24 +12,39 @@ import org.json.JSONObject;
 /**
  * Wrapper class for methods related to memory management heuristics.
  */
-public class Heuristic {
+public class Heuristic extends Info {
   private static final String TAG = Info.class.getSimpleName();
   private static final List<String> PREDICTION_FIELDS = Collections.singletonList("oom_score");
+  private final JSONObject deviceSettings;
+  private final JSONObject params;
+
+  /**
+   * Create an Android memory metrics fetcher.
+   *
+   * @param context The Android context to employ.
+   * @param params The active configuration.
+   * @param fetchDebug Whether to fetch debug-based params.
+   */
+  public Heuristic(Context context, JSONObject params, boolean fetchDebug) {
+    super(context, fetchDebug);
+    this.params = params;
+    deviceSettings = DeviceSettings.getDeviceSettings(context.getAssets());
+  }
 
   /**
    * The value a heuristic returns when asked for memory pressure on the device through the
    * getSignal method. GREEN indicates it is safe to allocate further, YELLOW indicates further
    * allocation shouldn't happen, and RED indicates high memory pressure.
    */
-  public static JSONObject checkHeuristics(Info info, JSONObject metrics, JSONObject params) {
+  public JSONObject checkHeuristics(JSONObject metrics) {
     long time = System.currentTimeMillis();
     JSONObject results = new JSONObject();
 
     try {
-      JSONObject baseline = info.getBaseline();
-      JSONObject deviceSettings = info.getDeviceSettings().getJSONObject("limits");
-      JSONObject deviceLimit = deviceSettings.getJSONObject("limit");
-      JSONObject deviceBaseline = deviceSettings.getJSONObject("baseline");
+      JSONObject baseline = getBaseline();
+      JSONObject limits = deviceSettings.getJSONObject("limits");
+      JSONObject deviceLimit = limits.getJSONObject("limit");
+      JSONObject deviceBaseline = limits.getJSONObject("baseline");
 
       if (params.has("heuristics")) {
         JSONArray warnings = new JSONArray();
@@ -236,5 +252,9 @@ public class Heuristic {
       Log.w(TAG, "Problem performing memory analysis", ex);
     }
     return results;
+  }
+
+  public JSONObject getDeviceSettings() {
+    return deviceSettings;
   }
 }

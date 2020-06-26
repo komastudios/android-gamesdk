@@ -18,7 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /** A class to provide metrics of current memory usage to an application in JSON format. */
-public final class Info {
+public class Info {
   private static final String TAG = Info.class.getSimpleName();
 
   private static final Collection<String> MEMINFO_FIELDS = new HashSet<>(Arrays.asList("Active",
@@ -34,7 +34,6 @@ public final class Info {
   private final MapTester mapTester;
   private final JSONObject baseline;
   private final ActivityManager activityManager;
-  private final JSONObject deviceSettings;
 
   /**
    * Create an Android memory metrics fetcher.
@@ -44,7 +43,6 @@ public final class Info {
    */
   public Info(Context context, boolean fetchDebug) {
     this.fetchDebug = fetchDebug;
-    deviceSettings = DeviceSettings.getDeviceSettings(context.getAssets());
     mapTester = new MapTester(context.getCacheDir());
     activityManager = (ActivityManager) context.getSystemService((Context.ACTIVITY_SERVICE));
     baseline = getMemoryMetrics(true);
@@ -125,9 +123,5 @@ public final class Info {
 
   public JSONObject getBaseline() {
     return baseline;
-  }
-
-  public JSONObject getDeviceSettings() {
-    return deviceSettings;
   }
 }
