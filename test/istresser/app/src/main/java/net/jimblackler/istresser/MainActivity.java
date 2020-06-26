@@ -1,7 +1,6 @@
 package net.jimblackler.istresser;
 
 import static com.google.android.apps.internal.games.helperlibrary.Helper.getBuild;
-import static com.google.android.apps.internal.games.helperlibrary.Heuristic.checkHeuristics;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.getMemoryQuantity;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.readFile;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.readStream;
@@ -28,7 +27,6 @@ import android.webkit.WebView;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import com.google.android.apps.internal.games.helperlibrary.Heuristic;
-import com.google.android.apps.internal.games.helperlibrary.Info;
 import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -74,7 +72,7 @@ public class MainActivity extends Activity {
   private long mmapAnonAllocatedByTest;
   private long mmapFileAllocatedByTest;
   private PrintStream resultsStream = System.out;
-  private Info info;
+  private Heuristic heuristic;
   private long allocationStartedTime = -1;
   private long testStartTime;
   private long appSwitchTimerStart;
@@ -106,7 +104,6 @@ public class MainActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    info = new Info(this, false);
     initNative();
 
     Intent launchIntent = getIntent();
@@ -168,6 +165,7 @@ public class MainActivity extends Activity {
     }
 
     params = flattenParams(params1);
+    heuristic = new Heuristic(this, params, false);
     long timeout = getDuration(getOrDefault(params, "timeout", "10m"));
     delayBeforeRelease = getDuration(getOrDefault(params, "delayBeforeRelease", "1s"));
     delayAfterRelease = getDuration(getOrDefault(params, "delayAfterRelease", "1s"));
@@ -235,9 +233,9 @@ public class MainActivity extends Activity {
 
       JSONObject report = new JSONObject();
       report.put("time", System.currentTimeMillis() - testStartTime);
-      report.put("metrics", info.getBaseline());
+      report.put("metrics", heuristic.getBaseline());
       report.put("params", params1);
-      report.put("settings", info.getDeviceSettings());
+      report.put("settings", heuristic.getDeviceSettings());
 
       TestSurface testSurface = findViewById(R.id.glsurfaceView);
       testSurface.setVisibility(View.GONE);
@@ -319,7 +317,7 @@ public class MainActivity extends Activity {
             if (sinceAllocationStarted > 0) {
               boolean shouldAllocate = true;
 
-              JSONObject result0 = checkHeuristics(info, metrics, params);
+              JSONObject result0 = heuristic.checkHeuristics(metrics);
 
               if (result0.has("predictions")) {
                 report.put("predictions", result0.getJSONObject("predictions"));
@@ -627,7 +625,7 @@ public class MainActivity extends Activity {
           try {
             JSONObject report = standardInfo();
             JSONObject metrics = report.getJSONObject("metrics");
-            JSONObject result = checkHeuristics(info, metrics, params);
+            JSONObject result = heuristic.checkHeuristics(metrics);
             report.put("heuristics", result);
             if (result.has("warnings")) {
               if (result.getJSONArray("warnings").length() > 0) {
@@ -657,7 +655,7 @@ public class MainActivity extends Activity {
 
   private JSONObject standardInfo() throws JSONException {
     JSONObject report = new JSONObject();
-    report.put("metrics", info.getMemoryMetrics(false));
+    report.put("metrics", heuristic.getMemoryMetrics(false));
     report.put("time", System.currentTimeMillis() - testStartTime);
     boolean paused = allocationStartedTime == -1;
     if (paused) {
