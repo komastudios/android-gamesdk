@@ -11,9 +11,9 @@ import android.os.Build;
 import android.os.Debug;
 import android.util.Log;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,11 +21,12 @@ import org.json.JSONObject;
 public final class Info {
   private static final String TAG = Info.class.getSimpleName();
 
-  private static final List<String> MEMINFO_FIELDS = Arrays.asList("Active", "Active(anon)",
-      "Active(file)", "AnonPages", "MemAvailable", "MemFree", "VmData", "VmRSS");
-  private static final List<String> MEMINFO_FIELDS_CONSTANT =
-      Arrays.asList("CommitLimit", "HighTotal", "LowTotal", "MemTotal");
-  private static final List<String> STATUS_FIELDS = Arrays.asList("VmRSS", "VmSize");
+  private static final Collection<String> MEMINFO_FIELDS = new HashSet<>(Arrays.asList("Active",
+      "Active(anon)", "Active(file)", "AnonPages", "MemAvailable", "MemFree", "VmData", "VmRSS"));
+  private static final Collection<String> MEMINFO_FIELDS_CONSTANT =
+      new HashSet<>(Arrays.asList("CommitLimit", "HighTotal", "LowTotal", "MemTotal"));
+  private static final Collection<String> STATUS_FIELDS =
+      new HashSet<>(Arrays.asList("VmRSS", "VmSize"));
   private static final String[] SUMMARY_FIELDS = {
       "summary.native-heap", "summary.graphics", "summary.total-pss", "summary.total-swap"};
   private static final long BYTES_IN_KILOBYTE = 1024;
