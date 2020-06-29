@@ -13,16 +13,13 @@ export ANDROID_HOME=`pwd`/../prebuilts/sdk
 export ANDROID_NDK_HOME=`pwd`/../prebuilts/ndk/r20
 if [[ $1 == "full" ]]
 then
-    TARGET=fullSdkZip
-    AAR_TARGETS="fullSdkGamingFramePacingAar fullSdkGamingPerformanceTunerAar"
-    OUTDIR=fullsdk
+    ./gradlew build -Plibraries=swappy,tuningfork -PpackageName=fullsdk -PincludeSamples=true
+    ./gradlew buildAar -Plibraries=swappy -PpackageName=fullsdk
+    ./gradlew buildAar -Plibraries=tuningfork -PpackageName=fullsdk
 else
-    TARGET=gamesdkZip
-    AAR_TARGETS=gamingFramePacingAar
-    OUTDIR=gamesdk
+    ./gradlew build -Plibraries=swappy -PincludeSamples=true
+    ./gradlew buildAar -Plibraries=swappy -PpackageName=fullsdk
 fi
-./gradlew $TARGET
-./gradlew $AAR_TARGETS
 
 if [[ -z $DIST_DIR ]]
 then
@@ -93,25 +90,6 @@ then
       $apk_dir/test/tuningforktest.apk
 fi
 
-# Istresser and related
-if [[ $1 == "full" ]]
-then
-    # Build istresser
-    pushd test/istresser
-    ./gradlew build
-    popd
-    # Build memory grabber
-    pushd test/grabber
-    ./gradlew build
-    popd
-
-    # Copy to $apk_dir
-    cp test/istresser/app/build/outputs/apk/debug/app-debug.apk \
-      $apk_dir/test/istresser.apk
-    cp test/grabber/app/build/outputs/apk/debug/app-debug.apk \
-      $apk_dir/test/grabber.apk
-fi
-
 # Package the apks into the zip file
 if [[ $1 == "samples" ]] || [[ $1 == "full" ]]
 then
@@ -137,10 +115,10 @@ then
 fi
 
 # Prepare AAR files to be uploaded on Maven
+./gradlew packageMavenZip -Plibraries=swappy
 if [[ $1 == "full" ]]
 then
-  ./gradlew fullSdkGamingFramePacingAarMavenZip
-  ./gradlew fullSdkGamingPerformanceTunerAarMavenZip
+  ./gradlew packageMavenZip -Plibraries=tuningfork
 fi
 
 pushd $dist_dir
