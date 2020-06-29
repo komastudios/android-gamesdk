@@ -29,8 +29,6 @@ buildscript {
     }
 }
 
-defaultTasks 'cleanPath', 'archiveZip'
-
 def joinPath(String first, String... more) {
     return Paths.get(first, more).toString()
 }
@@ -103,6 +101,8 @@ allprojects {
         jcenter()
     }
 }
+
+def allLibraries = [swappyNativeLibrary, tuningForkNativeLibrary]
 
 def getBuildPath() {
     return new File("$projectDir/build").getPath()
@@ -212,7 +212,9 @@ def repackArchives(dir, inArs, outAr) {
     }
 }
 
-def copyLibraryToPrefabAar(buildInfo, outFolder, libraryName, prefabName) {
+def copyLibraryToPrefabAar(buildInfo, outFolder, library) {
+    def libraryName = library.nativeLibraryName
+    def prefabName = library.aarLibraryName
     def arch = buildInfo.arch
     def buildKey = buildInfo.buildKey
     def cmakeFolder = joinPath(getTempPath(), buildKey, '.cmake', libraryName)
@@ -516,8 +518,8 @@ def specificNativeBuild(sdkVersion, ndkVersion, stlVersion, libraries,
 }
 
 def getLocalToolchain() {
-    def kApiLevel = project.hasProperty("GAMESDK_ANDROID_API_LEVEL") ?
-        project.GAMESDK_ANDROID_API_LEVEL : "24"
+    def kApiLevel = project.hasProperty("androidApiLevel") ?
+        project.androidApiLevel : "24"
     return new LocalToolchain(project, kApiLevel)
 }
 
@@ -530,204 +532,91 @@ def localNativeBuild(libraries, subdir = "src", buildType="Release") {
     }
 }
 
-def defaultBuildType() {
-    return project.hasProperty("GAMESDK_BUILD_TYPE") ?
-        project.GAMESDK_BUILD_TYPE : "Release"
+def getBuildType() {
+    return project.hasProperty("buildType") ?
+        project.buildType : "Release"
+}
+
+def getPackageName() {
+    return project.hasProperty("packageName") ?
+            project.packageName : "gamesdk"
+}
+
+def shouldIncludeSamples() {
+    return project.hasProperty("includeSamples") ?
+        project.includeSamples : false
+}
+
+def getLibraries(allLibraries) {
+    if (!project.hasProperty("libraries")) {
+        return []
+    }
+
+    def requestedLibraryNames = project.libraries.split(',');
+    return requestedLibraryNames.collect { requestedLibraryName ->
+        def library = allLibraries.find {
+            library -> library.nativeLibraryName == requestedLibraryName
+        }
+        if (library == null) {
+            throw new GradleException("Library ${requestedLibraryName} does not exist.")
+        }
+        
+        return library
+    }
 }
 
 class BuildTask extends DefaultTask {
 }
 
-// Just build swappy shared libraries
-task swappyUnityBuild(type: BuildTask) {
-    dependsOn ':extras:assembleRelease'
-    ext.packageName = 'swappyUnity'
-    ext.flattenLibs = true
-    ext.libraries = [swappyNativeLibrary]
-    ext.withSharedLibs = false
-    ext.withStaticLibs = true
-    ext.withFullBuildKey = true
-    ext.withSamples = false
-    ext.buildType = "Release";
-    ext.nativeBuild = { libraries, bt -> unityNativeBuild(libraries, bt) }
-}
-task swappyUnityDebugBuild(type: BuildTask) {
-    dependsOn ':extras:assembleRelease'
-    ext.packageName = 'swappyUnity'
-    ext.flattenLibs = true
-    ext.libraries = [swappyNativeLibrary]
-    ext.withSharedLibs = true
-    ext.withStaticLibs = true
-    ext.withFullBuildKey = true
-    ext.withSamples = false
-    ext.buildType = "Debug";
-    ext.nativeBuild = { libraries, bt -> unityNativeBuild(libraries, bt) }
-}
-
-// Full build including tuning fork for unity, shared libraries only
-task unityBuild(type: BuildTask) {
+task build(type: BuildTask) {
     dependsOn ':extras:assembleRelease', prepare_proto
-    ext.packageName = 'unity'
-    ext.flattenLibs = true
-    ext.libraries = [swappyNativeLibrary, tuningForkNativeLibrary]
-    ext.withSharedLibs = false
-    ext.withStaticLibs = true
-    ext.withFullBuildKey = true
-    ext.withSamples = false
-    ext.buildType = "Release";
-    ext.nativeBuild = { libraries, bt -> unityNativeBuild(libraries, bt) }
-}
-
-// Build everything
-task fullSdkBuild(type: BuildTask) {
-    dependsOn ':extras:assembleRelease', prepare_proto
-    ext.packageName = 'fullsdk'
+    ext.packageName = getPackageName()
     ext.flattenLibs = false
-    ext.libraries = [swappyNativeLibrary, tuningForkNativeLibrary]
+    ext.libraries = getLibraries(allLibraries)
     ext.withSharedLibs = true
     ext.withStaticLibs = true
     ext.withFullBuildKey = true
-    ext.withSamples = true
-    ext.buildType = "Release"
+    ext.withSamples = shouldIncludeSamples()
+    ext.buildType = getBuildType()
     ext.nativeBuild = { libraries, bt -> sdkNativeBuild(libraries, bt) }
 }
 
-// Build everything without TF
-task releaseSdkBuild(type: BuildTask) {
+task buildUnity(type: BuildTask) {
     dependsOn ':extras:assembleRelease', prepare_proto
-    ext.packageName = 'gamesdk'
-    ext.flattenLibs = false
-    ext.libraries = [swappyNativeLibrary]
+    ext.packageName = getPackageName()
+    ext.flattenLibs = true
+    ext.libraries = getLibraries(allLibraries)
     ext.withSharedLibs = true
     ext.withStaticLibs = true
     ext.withFullBuildKey = true
-    ext.withSamples = true
-    ext.buildType = "Release";
-    ext.nativeBuild = { libraries, bt -> sdkNativeBuild(libraries, bt) }
+    ext.withSamples = shouldIncludeSamples()
+    ext.buildType = getBuildType()
+    ext.nativeBuild = { libraries, bt -> unityNativeBuild(libraries, bt) }
 }
 
-task gamingFramePacingAarSdkBuild() {
-    doFirst {
-        // Clear the package path to ensure AAR generation is not polluted
-        // by previous build tasks.
-        delete getPackagePath()
-    }
-    dependsOn ':extras:assembleRelease', prepare_proto
-    ext.packageName = 'gamesdk'
-    ext.flattenLibs = false
-    ext.libraries = [swappyNativeLibrary]
-    ext.withSharedLibs = true
-    ext.withStaticLibs = true
-    ext.withFullBuildKey = true
-    ext.withSamples = true
-    ext.buildType = "Release";
-    ext.nativeBuild = { libraries, bt -> sdkAarNativeBuild(libraries, bt) }
-    doLast {
-        nativeBuild(libraries, buildType).each {
-            copyLibraryToPrefabAar(it, packageName, 'swappy', 'gaming-frame-pacing');
-        }
-    }
-}
-
-// Same as gamingFramePacingAarSdkBuild but with fullsdk package name
-task gamingFramePacingAarFullSdkBuild() {
-    doFirst {
-        // Clear the package path to ensure AAR generation is not polluted
-        // by previous build tasks.
-        delete getPackagePath()
-    }
-    dependsOn ':extras:assembleRelease', prepare_proto
-    ext.packageName = 'fullsdk'
-    ext.flattenLibs = false
-    ext.libraries = [swappyNativeLibrary]
-    ext.withSharedLibs = true
-    ext.withStaticLibs = true
-    ext.withFullBuildKey = true
-    ext.withSamples = true
-    ext.buildType = "Release";
-    ext.nativeBuild = { libraries, bt -> sdkAarNativeBuild(libraries, bt) }
-    doLast {
-        nativeBuild(libraries, buildType).each {
-            copyLibraryToPrefabAar(it, packageName, 'swappy', 'gaming-frame-pacing');
-        }
-    }
-}
-
-task gamingPerformanceTunerAarFullSdkBuild() {
-    doFirst {
-        // Clear the package path to ensure AAR generation is not polluted
-        // by previous build tasks.
-        delete getPackagePath()
-    }
-    dependsOn ':extras:assembleRelease', prepare_proto
-    ext.packageName = 'fullsdk'
-    ext.flattenLibs = false
-    ext.libraries = [swappyNativeLibrary, tuningForkNativeLibrary]
-    ext.withSharedLibs = true
-    ext.withStaticLibs = true
-    ext.withFullBuildKey = true
-    ext.withSamples = true
-    ext.buildType = "Release";
-    ext.nativeBuild = { libraries, bt -> sdkAarNativeBuild(libraries, bt) }
-    doLast {
-        nativeBuild(libraries, buildType).each {
-            copyLibraryToPrefabAar(it, packageName, 'tuningfork', 'gaming-performance-tuner');
-        }
-    }
-}
-
-// Build everything in debug without TF
-task debugSdkBuild(type: BuildTask) {
-    dependsOn ':extras:assembleRelease', prepare_proto
-    ext.packageName = 'gamesdk_debug'
-    ext.flattenLibs = false
-    ext.libraries = [swappyNativeLibrary]
-    ext.withSharedLibs = true
-    ext.withStaticLibs = true
-    ext.withFullBuildKey = true
-    ext.withSamples = true
-    ext.buildType = "Debug";
-    ext.nativeBuild = { libraries, bt -> sdkNativeBuild(libraries, bt) }
-}
-
-// Build using local SDK, no tuning fork
-task localBuild(type: BuildTask) {
+task buildLocal(type: BuildTask) {
     dependsOn ':extras:assembleRelease'
-    ext.packageName = 'local'
+    ext.packageName = getPackageName()
     ext.flattenLibs = false
-    ext.libraries = [swappyNativeLibrary];
+    ext.libraries = getLibraries(allLibraries);
     ext.withSharedLibs = true
-    ext.withStaticLibs = true;
-    ext.withFullBuildKey = false;
-    ext.withSamples = false;
-    ext.buildType = defaultBuildType();
+    ext.withStaticLibs = true
+    ext.withFullBuildKey = false
+    ext.withSamples = shouldIncludeSamples()
+    ext.buildType = getBuildType()
     ext.nativeBuild = { libraries, bt -> localNativeBuild(libraries, "src", bt) }
 }
 
-// Build using local SDK, with tuning fork
-task localTfBuild(type: BuildTask) {
-    dependsOn ':extras:assembleRelease', prepare_proto
-    ext.packageName = 'localtf'
-    ext.flattenLibs = false
-    ext.libraries = [swappyNativeLibrary, tuningForkNativeLibrary];
-    ext.withSharedLibs = true
-    ext.withStaticLibs = true;
-    ext.withFullBuildKey = false;
-    ext.withSamples = false;
-    ext.buildType = defaultBuildType();
-    ext.nativeBuild = { libraries, bt -> localNativeBuild(libraries, "src", bt) }
-}
-
-task specificBuild(type: BuildTask) {
+task buildSpecific(type: BuildTask) {
     dependsOn ':extras:assembleRelease'
-    ext.packageName = "specific"
+    ext.packageName = getPackageName()
     ext.flattenLibs = false
-    ext.libraries = [swappyNativeLibrary];
+    ext.libraries = getLibraries(allLibraries)
     ext.withSharedLibs = true
-    ext.withStaticLibs = true;
-    ext.withFullBuildKey = false;
-    ext.withSamples = true;
-    ext.buildType = defaultBuildType();
+    ext.withStaticLibs = true
+    ext.withFullBuildKey = false
+    ext.withSamples = shouldIncludeSamples()
+    ext.buildType = getBuildType()
     ext.nativeBuild = { libraries, bt ->
         def sdk = System.getenv("SDK")
         def ndk = System.getenv("NDK")
@@ -743,6 +632,14 @@ e.g. SDK=14 NDK=r16 STL='c++_static' ./gradlew specificZip"""
 }
 
 tasks.withType(BuildTask) {
+    doFirst {
+        // Ensure some libraries to build were set
+        if (libraries.isEmpty()) {
+            throw new GradleException("""
+Must specify which libraries to build,
+e.g. ./gradlew build -Plibraries=swappy,tuningfork""")
+        }
+    }
     doLast {
         // Clear the package path to ensure the task zip is not polluted
         // by previous build tasks.
@@ -757,6 +654,30 @@ tasks.withType(BuildTask) {
 
         if (withSamples) {
             copySamples(packageName, libraries)
+        }
+    }
+}
+
+// Build task for making an AAR that can be used with Prefab
+task buildAar {
+    doFirst {
+        // Clear the package path to ensure AAR generation is not polluted
+        // by previous build tasks.
+        delete getPackagePath()
+    }
+    dependsOn ':extras:assembleRelease', prepare_proto
+    ext.packageName = getPackageName()
+    ext.flattenLibs = false
+    ext.libraries = getLibraries(allLibraries)
+    ext.withSharedLibs = true
+    ext.withStaticLibs = true
+    ext.withFullBuildKey = true
+    ext.withSamples = shouldIncludeSamples()
+    ext.buildType = getBuildType()
+    ext.nativeBuild = { libraries, bt -> sdkAarNativeBuild(libraries, bt) }
+    doLast {
+        nativeBuild(libraries, buildType).each { buildInfo ->
+            libraries.forEach { library -> copyLibraryToPrefabAar(buildInfo, packageName, library) }
         }
     }
 }
@@ -819,12 +740,11 @@ task format {
 }
 
 // Zipping things up
-def addZipTask(name, buildTask, zipName) {
+def addZipTask(name, buildTask, archName) {
     def packPath = buildTask.packageName
     tasks.register(name, Zip) {
         dependsOn buildTask
         def buildFolder = joinPath(getPackagePath(), packPath)
-        def archName = zipName + (zipName.contains(".") ? "" : ".zip")
 
         from fileTree(buildFolder)
         exclude archName
@@ -832,7 +752,7 @@ def addZipTask(name, buildTask, zipName) {
         archiveFileName = archName
 
         doLast {
-            def outFolder = getBuildPath();\
+            def outFolder = getBuildPath();
             mkdir outFolder;
 
             copy {
@@ -856,25 +776,24 @@ def addZipTask(name, buildTask, zipName) {
 
 }
 
-// Generate a zip file with the library AAR and its pom file, all versioned,
-// so that it's ready to be uploaded to Maven.
-def addAarMavenZipTask(name, aarBuildTask, libraryName, aarVersion) {
-    def packPath = "fullsdk"
-    def buildFolder = joinPath(getPackagePath(), packPath)
-    def mavenZipContentFolder = joinPath(buildFolder, libraryName + "-maven-zip");
+task prepareMavenZipContent {
+    description "Build the AAR and prepare the versioned pom file for the specified library"
+    dependsOn "packageAar"
 
-    // After building the AAR, prepare the versioned pom file and AAR file.
-    tasks.register("prepareMavenZipContentFor" + name) {
-        dependsOn aarBuildTask
+    doLast {
+        def buildFolder = joinPath(getPackagePath(), getPackageName())
+        def mavenZipContentFolder = joinPath(buildFolder, "maven-zip");
+        delete mavenZipContentFolder
+        mkdir mavenZipContentFolder
 
-        doLast {
-            delete mavenZipContentFolder
-            mkdir mavenZipContentFolder
+        getLibraries(allLibraries).forEach { nativeLibrary ->
+            def libraryName = nativeLibrary.aarLibraryName
+            def aarVersion = nativeLibrary.aarVersion
 
             copy {
-                from file(joinPath(buildFolder, libraryName + ".aar"))
+                from file(joinPath(buildFolder, "gamesdk.aar"))
                 into file(joinPath(mavenZipContentFolder))
-                rename libraryName + ".aar", libraryName + "-" + aarVersion + ".aar"
+                rename "gamesdk.aar", libraryName + "-" + aarVersion + ".aar"
             }
 
             copy {
@@ -885,42 +804,35 @@ def addAarMavenZipTask(name, aarBuildTask, libraryName, aarVersion) {
             }
         }
     }
+}
 
-    // Create a zip for upload to Maven.
-    tasks.register(name, Zip) {
-        dependsOn "prepareMavenZipContentFor" + name
+// Generate a zip file with the library AAR and its pom file, all versioned,
+// so that it's ready to be uploaded to Maven.
+task packageMavenZip(type: Zip) {
+    dependsOn prepareMavenZipContent
 
-        from fileTree(mavenZipContentFolder)
-        destinationDirectory = file(buildFolder)
-        archiveFileName = libraryName + "-maven-zip.zip"
+    def buildFolder = joinPath(getPackagePath(), getPackageName())
+    def mavenZipContentFolder = joinPath(buildFolder, "maven-zip")
+    from fileTree(mavenZipContentFolder)
+    destinationDirectory = file(buildFolder)
+    def aarName = getLibraries(allLibraries).collect { it.aarLibraryName }.join('-')
+    archiveFileName = aarName + "-maven-zip.zip"
 
-        // Don't lost time compressing already compressed files
-        entryCompression = ZipEntryCompression.STORED
+    // Don't lose time compressing already compressed files
+    entryCompression = ZipEntryCompression.STORED
 
-        doLast {
-            if (getDistPath() != getPackagePath()) {
-                copy {
-                    from getPackagePath()
-                    into getDistPath()
-                }
+    doLast {
+        if (getDistPath() != getPackagePath()) {
+            copy {
+                from getPackagePath()
+                into getDistPath()
             }
         }
     }
 }
 
-addZipTask("swappyUnityZip", swappyUnityBuild, "builds")
-addZipTask("swappyUnityDebugZip", swappyUnityDebugBuild, "builds")
-addZipTask("unityZip", unityBuild, "builds")
-addZipTask("archiveZip", localBuild, "gamesdk")
-addZipTask("archiveTfZip", localTfBuild, "gamesdk")
-addZipTask("fullSdkZip", fullSdkBuild, "gamesdk")
-addZipTask("specificZip", specificBuild, "gamesdk")
-addZipTask("gamesdkZip", releaseSdkBuild, "gamesdk")
-addZipTask("gamesdkDebugZip", debugSdkBuild, "gamesdk_debug")
-addZipTask("gamingFramePacingAar", gamingFramePacingAarSdkBuild, "gaming-frame-pacing.aar")
-addZipTask("fullSdkGamingFramePacingAar", gamingFramePacingAarFullSdkBuild, "gaming-frame-pacing.aar")
-addZipTask("fullSdkGamingPerformanceTunerAar", gamingPerformanceTunerAarFullSdkBuild, "gaming-performance-tuner.aar")
-addAarMavenZipTask("fullSdkGamingFramePacingAarMavenZip", "fullSdkGamingFramePacingAar",
-    "gaming-frame-pacing", "1.5.0-alpha01")
-addAarMavenZipTask("fullSdkGamingPerformanceTunerAarMavenZip", "fullSdkGamingPerformanceTunerAar",
-    "gaming-performance-tuner", "1.0.0-alpha01")
+addZipTask("packageUnityZip", buildUnity, "builds.zip")
+addZipTask("packageZip", build, "gamesdk.zip")
+addZipTask("packageLocalZip", buildLocal, "gamesdk.zip")
+addZipTask("packageSpecificZip", buildSpecific, "gamesdk.zip")
+addZipTask("packageAar", buildAar, "gamesdk.aar")

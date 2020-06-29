@@ -13,16 +13,15 @@ export ANDROID_HOME=`pwd`/../prebuilts/sdk
 export ANDROID_NDK_HOME=`pwd`/../prebuilts/ndk/r20
 if [[ $1 == "full" ]]
 then
-    TARGET=fullSdkZip
-    AAR_TARGETS="fullSdkGamingFramePacingAar fullSdkGamingPerformanceTunerAar"
     OUTDIR=fullsdk
+    ./gradlew packageZip -Plibraries=swappy,tuningfork -PpackageName=fullsdk -PincludeSamples=true
+    ./gradlew packageMavenZip -Plibraries=swappy -PpackageName=fullsdk
+    ./gradlew packageMavenZip -Plibraries=tuningfork -PpackageName=fullsdk
 else
-    TARGET=gamesdkZip
-    AAR_TARGETS=gamingFramePacingAar
     OUTDIR=gamesdk
+    ./gradlew packageZip -Plibraries=swappy -PincludeSamples=true
+    ./gradlew packageMavenZip -Plibraries=swappy
 fi
-./gradlew $TARGET
-./gradlew $AAR_TARGETS
 
 if [[ -z $DIST_DIR ]]
 then
@@ -105,24 +104,6 @@ fi
 pushd $dist_dir
 sha256sum gamesdk.zip > gamesdk.zip.sha256
 popd
-
-# Calculate hash of the AAR files
-pushd $dist_dir
-sha256sum gaming-frame-pacing.aar > gaming-frame-pacing.aar.sha256
-popd
-if [[ $1 == "full" ]]
-then
-  pushd $dist_dir
-  sha256sum gaming-performance-tuner.aar > gaming-performance-tuner.aar.sha256
-  popd
-fi
-
-# Prepare AAR files to be uploaded on Maven
-if [[ $1 == "full" ]]
-then
-  ./gradlew fullSdkGamingFramePacingAarMavenZip
-  ./gradlew fullSdkGamingPerformanceTunerAarMavenZip
-fi
 
 pushd $dist_dir
 # Remove intermediate files that would be very costly to store
