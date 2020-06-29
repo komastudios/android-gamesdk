@@ -63,7 +63,7 @@ else ()
             DO_LOCAL_BUILD
             ROOT_DIR "${GameSDKDir}"
             PACKAGE_DIR "${GameSDKDir}/../package/local"
-            GEN_TASK "localBuild"
+            LIBRARIES "swappy"
     )
 endif ()
 
