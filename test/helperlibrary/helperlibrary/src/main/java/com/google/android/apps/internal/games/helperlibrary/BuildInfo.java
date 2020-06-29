@@ -10,8 +10,8 @@ import org.json.JSONObject;
  * A class to provide information about the current Android build to an application in JSON
  * format.
  */
-public class Helper {
-  private static final String TAG = Helper.class.getSimpleName();
+public class BuildInfo {
+  private static final String TAG = BuildInfo.class.getSimpleName();
   /**
    * Copies the Android build data into a JSON object.
    * @return A JSONObject containing the Android build data.

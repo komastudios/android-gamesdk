@@ -10,39 +10,39 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Wrapper class for methods related to memory management heuristics.
+ * Wrapper class for methods related to memory advice.
  */
-public class Heuristic extends Info {
-  private static final String TAG = Info.class.getSimpleName();
+public class MemoryAdvisor extends MemoryMonitor {
+  private static final String TAG = MemoryMonitor.class.getSimpleName();
   private static final List<String> PREDICTION_FIELDS = Collections.singletonList("oom_score");
-  private final JSONObject deviceSettings;
+  private final JSONObject deviceProfile;
   private final JSONObject params;
 
   /**
-   * Create an Android memory metrics fetcher.
+   * Create an Android memory advice fetcher.
    *
    * @param context The Android context to employ.
    * @param params The active configuration.
    * @param fetchDebug Whether to fetch debug-based params.
    */
-  public Heuristic(Context context, JSONObject params, boolean fetchDebug) {
+  public MemoryAdvisor(Context context, JSONObject params, boolean fetchDebug) {
     super(context, fetchDebug);
     this.params = params;
-    deviceSettings = DeviceSettings.getDeviceSettings(context.getAssets());
+    deviceProfile = DeviceProfile.getDeviceProfile(context.getAssets());
   }
 
   /**
-   * The value a heuristic returns when asked for memory pressure on the device through the
+   * The value the advisor returns when asked for memory pressure on the device through the
    * getSignal method. GREEN indicates it is safe to allocate further, YELLOW indicates further
    * allocation shouldn't happen, and RED indicates high memory pressure.
    */
-  public JSONObject checkHeuristics(JSONObject metrics) {
+  public JSONObject getAdvice(JSONObject metrics) {
     long time = System.currentTimeMillis();
     JSONObject results = new JSONObject();
 
     try {
       JSONObject baseline = getBaseline();
-      JSONObject limits = deviceSettings.getJSONObject("limits");
+      JSONObject limits = deviceProfile.getJSONObject("limits");
       JSONObject deviceLimit = limits.getJSONObject("limit");
       JSONObject deviceBaseline = limits.getJSONObject("baseline");
 
@@ -254,7 +254,7 @@ public class Heuristic extends Info {
     return results;
   }
 
-  public JSONObject getDeviceSettings() {
-    return deviceSettings;
+  public JSONObject getDeviceProfile() {
+    return deviceProfile;
   }
 }

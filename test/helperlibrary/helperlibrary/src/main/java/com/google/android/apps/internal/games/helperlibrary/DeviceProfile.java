@@ -10,7 +10,7 @@ import java.util.Iterator;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class DeviceSettings {
+public class DeviceProfile {
   /**
    * Return the first index where two strings differ.
    * @param a The first string to compare.
@@ -30,7 +30,7 @@ public class DeviceSettings {
     }
   }
 
-  static JSONObject getDeviceSettings(AssetManager assets) {
+  static JSONObject getDeviceProfile(AssetManager assets) {
     JSONObject settings = new JSONObject();
     try {
       JSONObject lookup = new JSONObject(readStream(assets.open("lookup.json")));
@@ -49,7 +49,7 @@ public class DeviceSettings {
       settings.put("matched", best);
       settings.put("fingerprint", Build.FINGERPRINT);
     } catch (JSONException | IOException e) {
-      Log.w("Settings problem.", e);
+      Log.w("Profile problem.", e);
     }
     return settings;
   }
