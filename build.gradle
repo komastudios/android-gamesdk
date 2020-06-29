@@ -516,8 +516,8 @@ def specificNativeBuild(sdkVersion, ndkVersion, stlVersion, libraries,
 }
 
 def getLocalToolchain() {
-    def kApiLevel = project.hasProperty("GAMESDK_ANDROID_API_LEVEL") ?
-        project.GAMESDK_ANDROID_API_LEVEL : "24"
+    def kApiLevel = project.hasProperty("androidApiLevel") ?
+        project.androidApiLevel : "24"
     return new LocalToolchain(project, kApiLevel)
 }
 
@@ -530,9 +530,9 @@ def localNativeBuild(libraries, subdir = "src", buildType="Release") {
     }
 }
 
-def defaultBuildType() {
-    return project.hasProperty("GAMESDK_BUILD_TYPE") ?
-        project.GAMESDK_BUILD_TYPE : "Release"
+def getBuildType() {
+    return project.hasProperty("buildType") ?
+        project.buildType : "Release"
 }
 
 class BuildTask extends DefaultTask {
@@ -700,7 +700,7 @@ task localBuild(type: BuildTask) {
     ext.withStaticLibs = true;
     ext.withFullBuildKey = false;
     ext.withSamples = false;
-    ext.buildType = defaultBuildType();
+    ext.buildType = getBuildType();
     ext.nativeBuild = { libraries, bt -> localNativeBuild(libraries, "src", bt) }
 }
 
@@ -714,7 +714,7 @@ task localTfBuild(type: BuildTask) {
     ext.withStaticLibs = true;
     ext.withFullBuildKey = false;
     ext.withSamples = false;
-    ext.buildType = defaultBuildType();
+    ext.buildType = getBuildType();
     ext.nativeBuild = { libraries, bt -> localNativeBuild(libraries, "src", bt) }
 }
 
@@ -727,7 +727,7 @@ task specificBuild(type: BuildTask) {
     ext.withStaticLibs = true;
     ext.withFullBuildKey = false;
     ext.withSamples = true;
-    ext.buildType = defaultBuildType();
+    ext.buildType = getBuildType();
     ext.nativeBuild = { libraries, bt ->
         def sdk = System.getenv("SDK")
         def ndk = System.getenv("NDK")
