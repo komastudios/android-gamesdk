@@ -236,6 +236,24 @@
     },
     {
       "key": {
+        "uuid": "73a9949c_4dfd6466",
+        "filename": "src/tuningfork/core/memory_telemetry.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-06-29T15:13:21Z",
+      "side": 1,
+      "message": "It could be. I went by the comment \"how the memory records were obtained\" and figured that if they came from the same source, they should share the record type. Will fix this.\n\nAbout server-side, the Play team confirmed to me that extraneous proto fields will be ignored by the backend, so I suppose we can commit in any order. But surely it\u0027s a good idea to do the other CL ASAP.",
+      "parentUuid": "416a19b4_63ee4b1e",
+      "revId": "7f16e2cdab642bd8fa4a4549dfeb851c295a57be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e7b9211b_8f94ff8d",
         "filename": "src/tuningfork/core/memory_telemetry.h",
         "patchSetId": 5
@@ -282,6 +300,24 @@
       "writtenOn": "2020-06-29T14:38:04Z",
       "side": 1,
       "message": "I don\u0027t think this is necessary. Why the duplicate session_context?",
+      "revId": "7f16e2cdab642bd8fa4a4549dfeb851c295a57be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a602fc8f_9b927c3e",
+        "filename": "test/tuningfork/tuningfork_test.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 588,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-06-29T15:13:21Z",
+      "side": 1,
+      "message": "To test the longer acquisition interval, the test length had to change for this one test, and therefore the end time had to change. We could not duplicate this and make all tests last for the longer duration, but then we have to change the expected results for all other tests (because there will be more data points). Happy to do it either way.",
+      "parentUuid": "082d5d77_96b85632",
       "revId": "7f16e2cdab642bd8fa4a4549dfeb851c295a57be",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
