@@ -29,8 +29,10 @@ Use the following gradle tasks to build the Game SDK with or without Tuning Fork
 
 ```bash
 cd gamesdk
-./gradlew archiveZip # Without Tuning Fork
-./gradlew archiveTfZip # With Tuning Fork
+# Build Swappy:
+./gradlew packageLocalZip -Plibraries=swappy -PpackageName=local
+# Build Swappy and Tuning Fork:
+./gradlew packageLocalZip -Plibraries=swappy,tuningfork -PpackageName=localtf
 ```
 
 ### Build with specific prebuilt SDKs
@@ -55,8 +57,10 @@ Finally, build the Game SDK using downloaded prebuilts.
 
 ```bash
 cd gamesdk
-ANDROID_HOME=`pwd`/../prebuilts/sdk ANDROID_NDK=`pwd`/../prebuilts/ndk/r20 ./gradlew archiveZip # Without Tuning Fork
-ANDROID_HOME=`pwd`/../prebuilts/sdk ANDROID_NDK=`pwd`/../prebuilts/ndk/r20 ./gradlew archiveTfZip # With Tuning Fork
+# Build and package Swappy in a ZIP file:
+ANDROID_HOME=`pwd`/../prebuilts/sdk ANDROID_NDK=`pwd`/../prebuilts/ndk/r20 ./gradlew packageLocalZip -Plibraries=swappy -PpackageName=local
+# Build and package Swappy and Tuning Fork in a ZIP file:
+ANDROID_HOME=`pwd`/../prebuilts/sdk ANDROID_NDK=`pwd`/../prebuilts/ndk/r20 ./gradlew packageLocalZip -Plibraries=swappy,tuningfork -PpackageName=localtf
 ```
 
 ### Build with all prebuilt SDKs
@@ -71,7 +75,7 @@ Build static and dynamic libraries for several SDK/NDK pairs.
 
 ```bash
 cd gamesdk
-ANDROID_HOME=`pwd`/../prebuilts/sdk ./gradlew gamesdkZip
+ANDROID_HOME=`pwd`/../prebuilts/sdk ./gradlew packageZip -Plibraries==swappy,tuningfork
 ```
 
 ## Tests
