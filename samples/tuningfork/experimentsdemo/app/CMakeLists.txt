@@ -14,8 +14,8 @@ include("../../../gamesdk.cmake")
 add_gamesdk_target(
     DO_LOCAL_BUILD
     ROOT_DIR "../../../.."
-    PACKAGE_DIR "../../../../../package/localtf"
-    GEN_TASK "localTfBuild"
+    PACKAGE_DIR "../../../../../package/local"
+    LIBRARIES "swappy,tuningfork"
 )
 
 # Uncomment to add the Game SDK sources as part of the project sources, allowing to develop
