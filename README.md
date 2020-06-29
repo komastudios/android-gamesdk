@@ -28,6 +28,7 @@ Point the environment variable `ANDROID_HOME` to your local Android SDK (and `AN
 Use the following gradle tasks to build the Game SDK with or without Tuning Fork (default target is `archiveZip`).
 
 ```bash
+#TODO: Adapt this and rest of README
 cd gamesdk
 ./gradlew archiveZip # Without Tuning Fork
 ./gradlew archiveTfZip # With Tuning Fork

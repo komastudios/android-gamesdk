@@ -8,6 +8,8 @@
 # ./build.sh full
 #   Builds the gamesdk with Tuning Fork and all samples
 
+#TODO: adapt this
+
 set -e # Exit on error
 export ANDROID_HOME=`pwd`/../prebuilts/sdk
 export ANDROID_NDK_HOME=`pwd`/../prebuilts/ndk/r20
