@@ -10,7 +10,7 @@ add_gamesdk_target(
     DO_LOCAL_BUILD
     ROOT_DIR "../../.."
     PACKAGE_DIR "../../../../package/local"
-    GEN_TASK "localBuild"
+    LIBRARIES "swappy"
 )
 
 # Uncomment to add the Game SDK sources as part of the project sources, allowing to develop
