@@ -219,6 +219,23 @@
     },
     {
       "key": {
+        "uuid": "416a19b4_63ee4b1e",
+        "filename": "src/tuningfork/core/memory_telemetry.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-06-29T14:38:04Z",
+      "side": 1,
+      "message": "We need a different MemoryRecordType for each histogram, don\u0027t we? The server needs to differentiate between them.\nNote that before this can be committed, the server-side proto needs updating too:\nhttps://source.corp.google.com/piper///depot/google3/google/android/performanceparameters/v1/performanceparameters.proto",
+      "revId": "7f16e2cdab642bd8fa4a4549dfeb851c295a57be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e7b9211b_8f94ff8d",
         "filename": "src/tuningfork/core/memory_telemetry.h",
         "patchSetId": 5
@@ -251,6 +268,23 @@
       "revId": "7f16e2cdab642bd8fa4a4549dfeb851c295a57be",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "082d5d77_96b85632",
+        "filename": "test/tuningfork/tuningfork_test.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 588,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-06-29T14:38:04Z",
+      "side": 1,
+      "message": "I don\u0027t think this is necessary. Why the duplicate session_context?",
+      "revId": "7f16e2cdab642bd8fa4a4549dfeb851c295a57be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
