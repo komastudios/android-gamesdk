@@ -127,7 +127,7 @@ Duration UploadThread::DoWork() {
 
 // Returns true if we submitted, false if we are waiting for a previous submit
 // to complete
-bool UploadThread::Submit(const ProngCache* prongs, bool upload) {
+bool UploadThread::Submit(const Session* prongs, bool upload) {
     if (ready_ == nullptr) {
         {
             std::lock_guard<std::mutex> lock(mutex_);
@@ -140,7 +140,7 @@ bool UploadThread::Submit(const ProngCache* prongs, bool upload) {
         return false;
 }
 
-void UploadThread::InitialChecks(ProngCache& prongs, IdProvider& id_provider,
+void UploadThread::InitialChecks(Session& prongs, IdProvider& id_provider,
                                  const TuningFork_Cache* persister) {
     persister_ = persister;
     if (!persister_) {

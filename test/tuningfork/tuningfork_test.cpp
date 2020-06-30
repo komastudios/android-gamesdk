@@ -690,7 +690,7 @@ TEST(TuningForkTest, EndToEndWithMemory) {
           "bucket_min_bytes": "0"
          },
          "period_ms": 15000,
-         "type": 3
+         "type": 11
         }]
       }
     }

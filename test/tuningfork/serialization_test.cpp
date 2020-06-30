@@ -119,7 +119,7 @@ std::string single_tick_with_loading = R"TF({
 })TF";
 
 TEST(SerializationTest, SerializationWithLoading) {
-    ProngCache prong_cache(2/*size*/, 2/*max_instrumentation_keys*/,
+    Session prong_cache(2/*size*/, 2/*max_instrumentation_keys*/,
                            { Settings::DefaultHistogram(1) },
                            [](uint64_t){ return SerializedAnnotation(); },
                            [](uint64_t id){ return id == 0; },
@@ -179,7 +179,7 @@ class TestIdProvider : public IdProvider{
 };
 
 
-void CheckProngCaches(const ProngCache& pc0, const ProngCache& pc1) {
+void CheckSessions(const Session& pc0, const Session& pc1) {
     Prong* p0 = pc0.Get(0);
     Prong* p1 = pc1.Get(0);
     EXPECT_TRUE(p0!=nullptr && p1!=nullptr);
@@ -191,7 +191,7 @@ Settings::Histogram DefaultHistogram() {
 }
 
 TEST(SerializationTest, GEDeserialization) {
-    ProngCache prong_cache(1/*size*/, 1/*max_instrumentation_keys*/, {DefaultHistogram()},
+    Session prong_cache(1/*size*/, 1/*max_instrumentation_keys*/, {DefaultHistogram()},
                            [](uint64_t){ return SerializedAnnotation(); },
                            [](uint64_t){ return false; },
                            nullptr);
@@ -206,14 +206,14 @@ TEST(SerializationTest, GEDeserialization) {
     JsonSerializer::SerializeEvent(prong_cache, test_device_info, evt_ser);
     auto report = report_start + single_tick + report_end;
     EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, report)) << evt_ser << "\n!=\n" << report;
-    ProngCache pc(1/*size*/, 1/*max_instrumentation_keys*/, {DefaultHistogram()},
+    Session pc(1/*size*/, 1/*max_instrumentation_keys*/, {DefaultHistogram()},
                   [](uint64_t){ return SerializedAnnotation(); },
                   [](uint64_t){ return false; },
                   nullptr);
     TestIdProvider id_provider;
     EXPECT_EQ(JsonSerializer::DeserializeAndMerge(evt_ser, id_provider, pc), TUNINGFORK_ERROR_OK)
             << "Deserialize single";
-    CheckProngCaches(pc, prong_cache);
+    CheckSessions(pc, prong_cache);
 }
 
 } // namespace serialization_test
