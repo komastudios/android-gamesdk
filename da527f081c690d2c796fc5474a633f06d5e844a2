@@ -1,0 +1,92 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000003686077",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1352857?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "bdcdf40f_d4cc677d",
+          "description": "Change to \"src/tuningfork/core/session.cpp\"",
+          "replacements": [
+            {
+              "path": "src/tuningfork/core/session.cpp",
+              "range": {
+                "startLine": 26,
+                "startChar": 57,
+                "endLine": 26,
+                "endChar": 65
+              },
+              "replacement": "serialize"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "129966f8_2493cb35",
+        "filename": "src/tuningfork/core/session.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-06-30T15:27:01Z",
+      "side": 1,
+      "message": "Common typo found: \"seralize\" -- should it be \"serialize\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.",
+      "range": {
+        "startLine": 26,
+        "startChar": 57,
+        "endLine": 26,
+        "endChar": 65
+      },
+      "revId": "da527f081c690d2c796fc5474a633f06d5e844a2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000003686077",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1352857?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "645f03ea_04660df8",
+          "description": "Change to \"src/tuningfork/core/session.cpp\"",
+          "replacements": [
+            {
+              "path": "src/tuningfork/core/session.cpp",
+              "range": {
+                "startLine": 36,
+                "startChar": 42,
+                "endLine": 36,
+                "endChar": 50
+              },
+              "replacement": "serialize"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "fbd0d11d_73d63d29",
+        "filename": "src/tuningfork/core/session.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-06-30T15:27:01Z",
+      "side": 1,
+      "message": "Common typo found: \"seralize\" -- should it be \"serialize\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.",
+      "range": {
+        "startLine": 36,
+        "startChar": 42,
+        "endLine": 36,
+        "endChar": 50
+      },
+      "revId": "da527f081c690d2c796fc5474a633f06d5e844a2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
