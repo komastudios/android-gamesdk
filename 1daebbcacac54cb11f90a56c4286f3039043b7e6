@@ -19,6 +19,29 @@
     },
     {
       "key": {
+        "uuid": "1e562d65_ce17d6a4",
+        "filename": "cert/test/reporting/lib/devicefarm.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1557643
+      },
+      "writtenOn": "2020-06-30T16:33:51Z",
+      "side": 1,
+      "message": "Nice!",
+      "range": {
+        "startLine": 163,
+        "startChar": 8,
+        "endLine": 163,
+        "endChar": 66
+      },
+      "revId": "1daebbcacac54cb11f90a56c4286f3039043b7e6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5285538f_441da74d",
         "filename": "cert/test/reporting/recipes/choreographer_timestamps.yaml",
         "patchSetId": 3
