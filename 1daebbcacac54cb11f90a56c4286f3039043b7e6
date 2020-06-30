@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "8570663b_9e4dbf72",
+        "filename": "cert/test/AndroidCertTest/app/src/main/cpp/operations/ChoreographerTimestampsOperation.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-06-30T21:02:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aec5b1d9_909ba4a1",
+      "revId": "1daebbcacac54cb11f90a56c4286f3039043b7e6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1e562d65_ce17d6a4",
         "filename": "cert/test/reporting/lib/devicefarm.py",
         "patchSetId": 3
@@ -53,6 +71,24 @@
       "writtenOn": "2020-06-30T01:34:28Z",
       "side": 1,
       "message": "👏👏👏👏👏👏👏",
+      "revId": "1daebbcacac54cb11f90a56c4286f3039043b7e6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "015754c8_bd9cca29",
+        "filename": "cert/test/reporting/recipes/choreographer_timestamps.yaml",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1599245
+      },
+      "writtenOn": "2020-06-30T21:02:49Z",
+      "side": 1,
+      "message": "I should note, this doesn\u0027t technically do anything for FTL deployments, it\u0027s just part of the default copy/paste from the README, if I recall.",
+      "parentUuid": "5285538f_441da74d",
       "revId": "1daebbcacac54cb11f90a56c4286f3039043b7e6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
