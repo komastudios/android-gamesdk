@@ -22,6 +22,30 @@
       "revId": "6cc49eb2337638674e28bd9d596b6c0387a325b5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3aa975df_3211bfc7",
+        "filename": "test/istresser/gradle/wrapper/gradle-wrapper.properties",
+        "patchSetId": 3
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-06-30T19:58:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9b996c82_2d9a3d54",
+      "range": {
+        "startLine": 6,
+        "startChar": 59,
+        "endLine": 6,
+        "endChar": 79
+      },
+      "revId": "6cc49eb2337638674e28bd9d596b6c0387a325b5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
