@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "eaf80e3a_f2074a06",
+        "filename": "gradle/wrapper/gradle-wrapper.properties",
+        "patchSetId": 2
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-06-30T18:47:48Z",
+      "side": 1,
+      "message": "After https://r.android.com/1352850 is submitted this will not be needed. Also, does this work OK with the other apps using this wrapper (none of them break)?",
+      "revId": "6cfc26dcacbc4c76e0e2c67473050a8bd76f1061",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
