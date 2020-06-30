@@ -165,7 +165,7 @@ public class MainActivity extends Activity {
     }
 
     params = flattenParams(params1);
-    memoryAdvisor = new MemoryAdvisor(this, params, false);
+    memoryAdvisor = new MemoryAdvisor(this, params);
     long timeout = getDuration(getOrDefault(params, "timeout", "10m"));
     delayBeforeRelease = getDuration(getOrDefault(params, "delayBeforeRelease", "1s"));
     delayAfterRelease = getDuration(getOrDefault(params, "delayAfterRelease", "1s"));
