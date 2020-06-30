@@ -23,10 +23,9 @@ public class MemoryAdvisor extends MemoryMonitor {
    *
    * @param context The Android context to employ.
    * @param params The active configuration.
-   * @param fetchDebug Whether to fetch debug-based params.
    */
-  public MemoryAdvisor(Context context, JSONObject params, boolean fetchDebug) {
-    super(context, fetchDebug);
+  public MemoryAdvisor(Context context, JSONObject params) {
+    super(context, params.optBoolean("fetchDebug"));
     this.params = params;
     deviceProfile = DeviceProfile.getDeviceProfile(context.getAssets());
   }
