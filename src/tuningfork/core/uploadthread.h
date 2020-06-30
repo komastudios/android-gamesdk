@@ -19,12 +19,13 @@
 #include "backend.h"
 #include "prong.h"
 #include "runnable.h"
+#include "session.h"
 
 namespace tuningfork {
 
 class UploadThread : protected Runnable {
    private:
-    const ProngCache* ready_;
+    const Session* ready_;
     bool upload_;
     IBackend* backend_;
     TuningFork_UploadCallback upload_callback_;
@@ -34,7 +35,7 @@ class UploadThread : protected Runnable {
     UploadThread(IBackend* backend);
     ~UploadThread();
 
-    void InitialChecks(ProngCache& prongs, IdProvider& id_provider,
+    void InitialChecks(Session& prongs, IdProvider& id_provider,
                        const TuningFork_Cache* persister);
 
     void Start() override;
@@ -43,7 +44,7 @@ class UploadThread : protected Runnable {
     // Returns true if we submitted, false if we are waiting for a previous
     // submit to complete If upload is false, the cache is serialized and saved,
     // not uploaded.
-    bool Submit(const ProngCache* prongs, bool upload);
+    bool Submit(const Session* prongs, bool upload);
 
     void SetUploadCallback(TuningFork_UploadCallback upload_callback) {
         upload_callback_ = upload_callback;
