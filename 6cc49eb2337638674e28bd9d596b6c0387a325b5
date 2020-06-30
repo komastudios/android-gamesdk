@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9b996c82_2d9a3d54",
+        "filename": "test/istresser/gradle/wrapper/gradle-wrapper.properties",
+        "patchSetId": 3
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-06-30T14:24:35Z",
+      "side": 1,
+      "message": "There is a later version gradle-6.5.1-all.zip",
+      "range": {
+        "startLine": 6,
+        "startChar": 59,
+        "endLine": 6,
+        "endChar": 79
+      },
+      "revId": "6cc49eb2337638674e28bd9d596b6c0387a325b5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
