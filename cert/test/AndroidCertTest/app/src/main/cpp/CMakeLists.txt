@@ -140,6 +140,7 @@ add_library(${PROJECT_NAME} SHARED
         operations/ThreadSchedulingOperation.cpp
         operations/VulkanMprotectCheckOperation.cpp
 
+        operations/gl/BigLittleCore.cpp
         operations/gl/BufferStorageGLES3Operation.cpp
         operations/gl/DependentTextureReadGLES3Operation.cpp
         operations/gl/DepthClearGLES3Operation.cpp

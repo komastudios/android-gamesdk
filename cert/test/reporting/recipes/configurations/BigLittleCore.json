@@ -1,0 +1,22 @@
+{
+    "auto_run": false,
+    "host": "GLSurfaceViewHostActivity",
+    "defaultMonitors": [
+        {
+            "id": "MonitorOperation"
+        }
+    ],
+    "stress_tests": [
+        {
+            "enabled": true,
+            "name": "Get GLES3 Extensions",
+            "description": "Gets a list of GLES and EGL extensions available on the device",
+            "duration": "5s",
+            "data_gatherer": {
+                "id": "BigLittleCoreTest",
+                "configuration": {}
+            },
+            "stressors": []
+        }
+    ]
+}

@@ -131,6 +131,17 @@
     },
     {
       "enabled": true,
+      "name": "Big little core tests",
+      "description": "Test big and little cores 18",
+      "duration": "0s",
+      "data_gatherer": {
+        "id": "BigLittleCoreTest",
+        "configuration": {}
+      },
+      "stressors": []
+    },
+    {
+      "enabled": true,
       "name": "Get GLES3 Extensions",
       "description": "Gets a list of GLES and EGL extensions available on the device",
       "duration": "0s",
