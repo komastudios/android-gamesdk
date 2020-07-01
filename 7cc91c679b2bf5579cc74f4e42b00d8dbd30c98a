@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2bbfe226_26516d07",
+        "filename": "src/tuningfork/http_backend/json_serializer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-07-01T08:52:31Z",
+      "side": 1,
+      "message": "Might be worth (in a follow up CL) rename the prong_cache variables to session for consistency",
+      "revId": "7cc91c679b2bf5579cc74f4e42b00d8dbd30c98a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
