@@ -24,6 +24,11 @@
     },
     {
       "heuristics": {
+        "onTrim": true
+      }
+    },
+    {
+      "heuristics": {
         "oom_score": {
           "deltaLimit": {
             "red": 0.85,

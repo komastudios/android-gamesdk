@@ -34,6 +34,7 @@ public class MemoryMonitor {
   private final MapTester mapTester;
   private final JSONObject baseline;
   private final ActivityManager activityManager;
+  private int latestOnTrimLevel;
 
   /**
    * Create an Android memory metrics fetcher.
@@ -55,7 +56,6 @@ public class MemoryMonitor {
    * @return A JSONObject containing current memory metrics.
    */
   public JSONObject getMemoryMetrics(boolean fetchConstants) {
-    long time = System.currentTimeMillis();
     JSONObject report = new JSONObject();
     try {
       report.put("nativeAllocated", Debug.getNativeHeapAllocatedSize());
@@ -70,6 +70,11 @@ public class MemoryMonitor {
       if (mapTester.warning()) {
         report.put("mapTester", true);
         mapTester.reset();
+      }
+
+      if (latestOnTrimLevel > 0) {
+        report.put("onTrim", latestOnTrimLevel);
+        latestOnTrimLevel = 0;
       }
 
       report.put("oom_score", getOomScore());
@@ -119,6 +124,12 @@ public class MemoryMonitor {
       Log.w(TAG, "Problem getting memory metrics", ex);
     }
     return report;
+  }
+
+  public void setOnTrim(int level) {
+    if (level > latestOnTrimLevel) {
+      latestOnTrimLevel = level;
+    }
   }
 
   public JSONObject getBaseline() {

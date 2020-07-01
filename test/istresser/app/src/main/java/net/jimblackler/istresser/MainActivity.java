@@ -553,29 +553,8 @@ public class MainActivity extends Activity {
 
   @Override
   public void onTrimMemory(int level) {
-    try {
-      JSONObject report = standardInfo();
-      report.put("onTrimMemory", level);
-
-      if (params.has("heuristics")) {
-        JSONObject heuristics = params.getJSONObject("heuristics");
-        if (heuristics.has("trim")) {
-          JSONArray warnings = new JSONArray();
-          JSONObject warning = new JSONObject();
-          warning.put("trim", true);
-          warning.put("level", "red");
-          warnings.put(warning);
-          report.put("warnings", warnings);
-          releaseMemory();
-        }
-      }
-      resultsStream.println(report);
-
-      updateInfo(report);
-      super.onTrimMemory(level);
-    } catch (JSONException e) {
-      throw new IllegalStateException(e);
-    }
+    memoryAdvisor.setOnTrim(level);
+    super.onTrimMemory(level);
   }
 
   private void releaseMemory() {
