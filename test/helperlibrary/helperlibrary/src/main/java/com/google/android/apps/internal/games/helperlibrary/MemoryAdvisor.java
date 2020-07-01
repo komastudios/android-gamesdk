@@ -31,6 +31,36 @@ public class MemoryAdvisor extends MemoryMonitor {
   }
 
   /**
+   * Returns 'true' if there are any low memory warnings in the advice object.
+   * @param advice The advice object returned by getAdvice().
+   * @return if there are any low memory warnings in the advice object.
+   */
+  public static boolean anyWarnings(JSONObject advice) {
+    JSONArray warnings = advice.optJSONArray("warnings");
+    return warnings != null && warnings.length() > 0;
+  }
+
+  /**
+   * Return 'true' if there are any 'red' (critical) warnings in the advice object.
+   * @param advice The advice object returned by getAdvice().
+   * @return if there are any 'red' (critical) warnings in the advice object.
+   */
+  public static boolean anyRedWarnings(JSONObject advice) {
+    JSONArray warnings = advice.optJSONArray("warnings");
+    if (warnings == null) {
+      return false;
+    }
+
+    for (int idx = 0; idx != warnings.length(); idx++) {
+      JSONObject warning = warnings.optJSONObject(idx);
+      if (warning != null && "red".equals(warning.optString("level"))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
    * The value the advisor returns when asked for memory pressure on the device through the
    * getSignal method. GREEN indicates it is safe to allocate further, YELLOW indicates further
    * allocation shouldn't happen, and RED indicates high memory pressure.

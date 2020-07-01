@@ -317,32 +317,22 @@ public class MainActivity extends Activity {
             if (sinceAllocationStarted > 0) {
               boolean shouldAllocate = true;
 
-              JSONObject result0 = memoryAdvisor.getAdvice(metrics);
+              JSONObject advice = memoryAdvisor.getAdvice(metrics);
 
-              if (result0.has("predictions")) {
-                report.put("predictions", result0.getJSONObject("predictions"));
+              if (advice.has("predictions")) {
+                report.put("predictions", advice.getJSONObject("predictions"));
               }
 
-              if (result0.has("warnings")) {
-                JSONArray warnings = result0.getJSONArray("warnings");
-                boolean anyRed = false;
-                for (int idx = 0; idx != warnings.length(); idx++) {
-                  JSONObject heuristic = warnings.getJSONObject(idx);
-                  if ("red".equals(heuristic.getString("level"))) {
-                    anyRed = true;
-                    break;
-                  }
-                }
-
+              if (MemoryAdvisor.anyWarnings(advice)) {
                 if (yellowLightTesting) {
                   shouldAllocate = false;
-                  if (anyRed) {
+                  if (MemoryAdvisor.anyRedWarnings(advice)) {
                     freeMemory(MEMORY_TO_FREE_PER_CYCLE_MB * BYTES_IN_MEGABYTE);
                   }
-                } else if (anyRed) {
+                } else if (MemoryAdvisor.anyRedWarnings(advice)) {
                   shouldAllocate = false;
                   // Allocating 0 MB
-                  report.put("warnings", warnings);
+                  report.put("warnings", advice.getJSONArray("warnings"));
                   releaseMemory();
                 }
               }
@@ -625,15 +615,13 @@ public class MainActivity extends Activity {
           try {
             JSONObject report = standardInfo();
             JSONObject metrics = report.getJSONObject("metrics");
-            JSONObject result = memoryAdvisor.getAdvice(metrics);
-            report.put("heuristics", result);
-            if (result.has("warnings")) {
-              if (result.getJSONArray("warnings").length() > 0) {
-                report.put("failedToClear", true);
-                runAfterDelay(this, delayAfterRelease);
-              } else {
-                allocationStartedTime = System.currentTimeMillis();
-              }
+            JSONObject advice = memoryAdvisor.getAdvice(metrics);
+            report.put("advice", advice);
+            if (MemoryAdvisor.anyWarnings(advice)) {
+              report.put("failedToClear", true);
+              runAfterDelay(this, delayAfterRelease);
+            } else {
+              allocationStartedTime = System.currentTimeMillis();
             }
             resultsStream.println(report);
           } catch (JSONException e) {
