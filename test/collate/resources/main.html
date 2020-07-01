@@ -220,7 +220,14 @@
       if (!("time" in row)) {
         continue;
       }
-      if (!("metrics" in row)) {
+      let advice;
+      let metrics;
+      if ("advice" in row) {
+        advice = row.advice;
+        metrics = advice.metrics;
+      } else if ("metrics" in row) {
+        metrics = row.metrics;
+      } else {
         continue;
       }
 
@@ -234,23 +241,21 @@
 
       rowOut[0] = row.time / 1000;
 
-      if ("metrics" in row) {
-        for (const [field, value] of Object.entries(row.metrics).sort()) {
+      for (const [field, value] of Object.entries(metrics).sort()) {
+        combined[field] = value;
+      }
+      if ("constant" in metrics) {
+        for (const [field, value] of Object.entries(metrics.constant).sort()) {
           combined[field] = value;
         }
-        if ("constant" in row.metrics) {
-          for (const [field, value] of Object.entries(row.metrics.constant).sort()) {
-            combined[field] = value;
-          }
-        }
-        if ("meta" in row.metrics) {
-          totalDuration += row.metrics.meta.duration;
-          durationCount++;
-        }
+      }
+      if (advice && "meta" in advice) {
+        totalDuration += advice.meta.duration;
+        durationCount++;
       }
 
-      if ("predictions" in row) {
-        const predictions = row.predictions;
+      if (advice && "predictions" in advice) {
+        const predictions = advice.predictions;
         for (const [field, value] of Object.entries(predictions).sort()) {
           const totalPrediction = value + combined.applicationAllocated;
           combined["prediction_" + field] = totalPrediction >= 0 ? totalPrediction : 0;
@@ -297,18 +302,18 @@
             }
         );
       }
-      if ("onTrimMemory" in row) {
+      if ("onTrimMemory" in metrics) {
         annotations.push(
             {
               series: "applicationAllocated",
               x: time,
-              shortText: row.onTrimMemory,
+              shortText: metrics.onTrimMemory,
               text: onTrimCodes[row.onTrimMemory]
             }
         );
       }
 
-      if ("metrics" in row && "mapTester" in row.metrics) {
+      if ("mapTester" in metrics) {
         annotations.push(
             {
               series: "nativeAllocated",
@@ -318,8 +323,8 @@
             }
         );
       }
-      if ("warnings" in row) {
-        const warnings = row.warnings;
+      if (advice && "warnings" in advice) {
+        const warnings = advice.warnings;
         for (let idx = 0; idx !== warnings.length; idx++) {
           let warning = warnings[idx];
           if (warning.level !== "red") {
@@ -371,14 +376,12 @@
         pausedStart = -1;
       }
 
-      if ("metrics" in row) {
-        let lowMemory = !!row.metrics.lowMemory;
-        if (lowMemory && lowMemoryStart === -1) {
-          lowMemoryStart = time;
-        } else if (!lowMemory && lowMemoryStart !== -1) {
-          highlights.push([lowMemoryStart, time, "pink"]);
-          lowMemoryStart = -1;
-        }
+      let lowMemory = !!metrics.lowMemory;
+      if (lowMemory && lowMemoryStart === -1) {
+        lowMemoryStart = time;
+      } else if (!lowMemory && lowMemoryStart !== -1) {
+        highlights.push([lowMemoryStart, time, "pink"]);
+        lowMemoryStart = -1;
       }
 
       let serviceCrashed = !!row["serviceCrashed"];
