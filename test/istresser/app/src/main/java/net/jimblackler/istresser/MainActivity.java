@@ -307,7 +307,6 @@ public class MainActivity extends Activity {
       public void run() {
         try {
           JSONObject report = standardInfo();
-          JSONObject metrics = report.getJSONObject("metrics");
           if (criticalLogLines.get() != null) {
             report.put("criticalLogLines", criticalLogLines.get());
             criticalLogLines.set(null);
@@ -317,11 +316,8 @@ public class MainActivity extends Activity {
             if (sinceAllocationStarted > 0) {
               boolean shouldAllocate = true;
 
-              JSONObject advice = memoryAdvisor.getAdvice(metrics);
-
-              if (advice.has("predictions")) {
-                report.put("predictions", advice.getJSONObject("predictions"));
-              }
+              JSONObject advice = memoryAdvisor.getAdvice();
+              report.put("advice", advice);
 
               if (MemoryAdvisor.anyWarnings(advice)) {
                 if (yellowLightTesting) {
@@ -332,7 +328,6 @@ public class MainActivity extends Activity {
                 } else if (MemoryAdvisor.anyRedWarnings(advice)) {
                   shouldAllocate = false;
                   // Allocating 0 MB
-                  report.put("warnings", advice.getJSONArray("warnings"));
                   releaseMemory();
                 }
               }
@@ -435,6 +430,9 @@ public class MainActivity extends Activity {
             }
           }
 
+          if (!report.has("advice")) {  // 'advice' already includes metrics.
+            report.put("metrics", memoryAdvisor.getMemoryMetrics(false));
+          }
           resultsStream.println(report);
 
           if (timeRunning > timeout) {
@@ -491,6 +489,7 @@ public class MainActivity extends Activity {
     try {
       JSONObject report = standardInfo();
       report.put("onDestroy", true);
+      report.put("metrics", memoryAdvisor.getMemoryMetrics(false));
       resultsStream.println(report);
     } catch (JSONException e) {
       throw new IllegalStateException(e);
@@ -509,6 +508,7 @@ public class MainActivity extends Activity {
     try {
       JSONObject report = standardInfo();
       report.put("activityPaused", true);
+      report.put("metrics", memoryAdvisor.getMemoryMetrics(false));
       resultsStream.println(report);
     } catch (JSONException e) {
       throw new IllegalStateException(e);
@@ -521,6 +521,7 @@ public class MainActivity extends Activity {
     try {
       JSONObject report = standardInfo();
       report.put("activityPaused", false);
+      report.put("metrics", memoryAdvisor.getMemoryMetrics(false));
       resultsStream.println(report);
     } catch (JSONException e) {
       throw new IllegalStateException(e);
@@ -563,6 +564,7 @@ public class MainActivity extends Activity {
       JSONObject report2;
       try {
         report2 = standardInfo();
+        report2.put("metrics", memoryAdvisor.getMemoryMetrics(false));
       } catch (JSONException e) {
         throw new IllegalStateException(e);
       }
@@ -593,8 +595,7 @@ public class MainActivity extends Activity {
         public void run() {
           try {
             JSONObject report = standardInfo();
-            JSONObject metrics = report.getJSONObject("metrics");
-            JSONObject advice = memoryAdvisor.getAdvice(metrics);
+            JSONObject advice = memoryAdvisor.getAdvice();
             report.put("advice", advice);
             if (MemoryAdvisor.anyWarnings(advice)) {
               report.put("failedToClear", true);
@@ -622,7 +623,6 @@ public class MainActivity extends Activity {
 
   private JSONObject standardInfo() throws JSONException {
     JSONObject report = new JSONObject();
-    report.put("metrics", memoryAdvisor.getMemoryMetrics(false));
     report.put("time", System.currentTimeMillis() - testStartTime);
     boolean paused = allocationStartedTime == -1;
     if (paused) {
