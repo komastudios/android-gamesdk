@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+#include <atomic>
+#include <memory>
+
 #include "Trace.h"
 #include "crash_handler.h"
 #include "session.h"

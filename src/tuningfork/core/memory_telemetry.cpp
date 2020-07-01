@@ -16,6 +16,7 @@
 
 #include "memory_telemetry.h"
 
+#include <stdlib.h>
 #include <unistd.h>
 
 #include <fstream>
@@ -161,7 +162,7 @@ static void getMemInfoFromFile(memInfoMap &data, const std::string &path) {
             std::string &key = split[0];
             // Remove colon at end of first word
             key.pop_back();
-            size_t value = std::stoul(split[1]) * BYTES_IN_KB;
+            size_t value = atoi(split[1].c_str()) * BYTES_IN_KB;
             if (data.find(key) == data.end() || data[key] < value) {
                 data[split[0]] = value;
             }
