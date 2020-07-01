@@ -297,13 +297,13 @@
             }
         );
       }
-      if ("onTrimMemory" in row) {
+      if ("onTrim" in row) {
         annotations.push(
             {
               series: "applicationAllocated",
               x: time,
-              shortText: row.onTrimMemory,
-              text: onTrimCodes[row.onTrimMemory]
+              shortText: metrics.onTrim,
+              text: onTrimCodes[row.onTrim]
             }
         );
       }

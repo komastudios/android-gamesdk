@@ -105,6 +105,15 @@ public class MemoryAdvisor extends MemoryMonitor {
           }
         }
 
+        if (heuristics.has("onTrim")) {
+          if (metrics.optInt("onTrim") > 0) {
+            JSONObject warning = new JSONObject();
+            warning.put("onTrim", heuristics.get("onTrim"));
+            warning.put("level", "red");
+            warnings.put(warning);
+          }
+        }
+
         // Handler for device-based metrics.
         Iterator<String> it = heuristics.keys();
         while (it.hasNext()) {
