@@ -16,6 +16,24 @@
       "revId": "7cc91c679b2bf5579cc74f4e42b00d8dbd30c98a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0769cfab_b2b56ad9",
+        "filename": "src/tuningfork/http_backend/json_serializer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-01T11:37:39Z",
+      "side": 1,
+      "message": "Yep, there\u0027s a follow up to this that does more comprehensive changes and fixes this.",
+      "parentUuid": "2bbfe226_26516d07",
+      "revId": "7cc91c679b2bf5579cc74f4e42b00d8dbd30c98a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
