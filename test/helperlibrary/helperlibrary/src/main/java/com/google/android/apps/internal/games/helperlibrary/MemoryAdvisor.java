@@ -65,9 +65,10 @@ public class MemoryAdvisor extends MemoryMonitor {
    * getSignal method. GREEN indicates it is safe to allocate further, YELLOW indicates further
    * allocation shouldn't happen, and RED indicates high memory pressure.
    */
-  public JSONObject getAdvice(JSONObject metrics) {
+  public JSONObject getAdvice() {
     long time = System.currentTimeMillis();
     JSONObject results = new JSONObject();
+    JSONObject metrics = getMemoryMetrics(false);
 
     try {
       results.put("metrics", metrics);
@@ -244,7 +245,9 @@ public class MemoryAdvisor extends MemoryMonitor {
           }
         }
 
-        results.put("warnings", warnings);
+        if (warnings.length() > 0) {
+          results.put("warnings", warnings);
+        }
       }
 
       if (deviceLimit.has("applicationAllocated")) {
