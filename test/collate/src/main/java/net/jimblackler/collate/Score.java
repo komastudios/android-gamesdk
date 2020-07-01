@@ -66,13 +66,13 @@ public class Score {
         return;
       }
       JSONObject params = first.getJSONObject("params");
-
-      JSONObject runParameters = Utils.flattenParams(params);
+      JSONObject deviceInfo = first.getJSONObject("deviceInfo");
+      JSONObject runParameters = deviceInfo.getJSONObject("params");
       JSONArray coordinates = params.getJSONArray("coordinates");
       tests.set(params.getJSONArray("tests"));
 
-      assert first.has("build");
-      JSONObject build = first.getJSONObject("build");
+      assert deviceInfo.has("build");
+      JSONObject build = deviceInfo.getJSONObject("build");
       String id = build.toString();
       if (first.has("extra")) {
         JSONObject extra = first.getJSONObject("extra");

@@ -32,7 +32,7 @@ public class MemoryMonitor {
   private static final long BYTES_IN_KILOBYTE = 1024;
   private final boolean fetchDebug;
   private final MapTester mapTester;
-  private final JSONObject baseline;
+  protected final JSONObject baseline;
   private final ActivityManager activityManager;
   private int latestOnTrimLevel;
 
@@ -117,9 +117,6 @@ public class MemoryMonitor {
         constant.put("threshold", memoryInfo.threshold);
         report.put("constant", constant);
       }
-      JSONObject meta = new JSONObject();
-      meta.put("duration", System.currentTimeMillis() - time);
-      report.put("meta", meta);
     } catch (JSONException ex) {
       Log.w(TAG, "Problem getting memory metrics", ex);
     }
@@ -130,9 +127,5 @@ public class MemoryMonitor {
     if (level > latestOnTrimLevel) {
       latestOnTrimLevel = level;
     }
-  }
-
-  public JSONObject getBaseline() {
-    return baseline;
   }
 }

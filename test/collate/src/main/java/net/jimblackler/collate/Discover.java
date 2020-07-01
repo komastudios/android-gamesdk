@@ -26,7 +26,8 @@ public class Discover {
         return;
       }
       JSONObject params = first.getJSONObject("params");
-      JSONObject flattened = Utils.flattenParams(params);
+      JSONObject deviceInfo = first.getJSONObject("deviceInfo");
+      JSONObject flattened = deviceInfo.getJSONObject("params");
       if (flattened.has("heuristics") && !flattened.getJSONObject("heuristics").isEmpty()) {
         // Runs with heuristics are not useful.
         return;

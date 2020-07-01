@@ -16,7 +16,7 @@ public class BuildInfo {
    * Copies the Android build data into a JSON object.
    * @return A JSONObject containing the Android build data.
    */
-  public static JSONObject getBuild() {
+  static JSONObject getBuild() {
     JSONObject build = new JSONObject();
     try {
       getStaticFields(build, Build.class);

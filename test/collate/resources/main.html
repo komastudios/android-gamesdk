@@ -14,37 +14,6 @@
     return hash;
   }
 
-  function flattenParams(params1) {
-    let params = {};
-    const coordinates = params1.coordinates;
-    const tests = params1.tests;
-
-    for (let coordinateNumber = 0; coordinateNumber !== coordinates.length; coordinateNumber++) {
-      const dimensionParams = tests[coordinateNumber][coordinates[coordinateNumber]];
-      merge(dimensionParams, params);
-    }
-    return params;
-  }
-
-  function merge(in0, out)  {
-    in0 = JSON.parse(JSON.stringify(in0));  // Allows copies of mutables to be taken safely.
-    for (const [key, value] of Object.entries(in0)) {
-      if (key in out) {
-        const outObject = out[key];
-        if (Array.isArray(outObject) && Array.isArray(value)) {
-          for (let idx = 0; idx !== value.length; idx++) {
-            outObject.push(value[idx]);
-          }
-          continue;
-        } else if (outObject.constructor === Object && value.constructor === Object) {
-          merge(value, outObject);
-          continue;
-        }
-      }
-      out[key] = value;
-    }
-  }
-
   function linkClicked(evt) {
     evt.target.href = evt.target.href.replace("gs://", "https://storage.cloud.google.com/");
   }
@@ -126,6 +95,7 @@
   for (const result of data) {
 
     const first = result[0];
+    const deviceInfo = first.deviceInfo;
 
     result.sort((a, b) => a.time > b.time ? 1 : -1);
 
@@ -178,7 +148,6 @@
       }
     }
 
-    first.flattened = flattenParams(first.params);
     {
       const paragraph = document.createElement("p");
       section.appendChild(paragraph);
@@ -263,7 +232,7 @@
         }
         if (fields.indexOf(field) === -1) {
           series[field] = {color: `hsl(${hashCode(field) % 360}, 100%, 30%)`};
-          if (first.flattened.heuristics && field in first.flattened.heuristics) {
+          if (deviceInfo.params.heuristics && field in deviceInfo.params.heuristics) {
             series[field].strokeWidth = 3;
           }
           fields.push(field);

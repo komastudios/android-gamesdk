@@ -70,7 +70,7 @@ public class MemoryAdvisor extends MemoryMonitor {
     JSONObject results = new JSONObject();
 
     try {
-      JSONObject baseline = getBaseline();
+      results.put("metrics", metrics);
       JSONObject limits = deviceProfile.getJSONObject("limits");
       JSONObject deviceLimit = limits.getJSONObject("limit");
       JSONObject deviceBaseline = limits.getJSONObject("baseline");
@@ -292,7 +292,16 @@ public class MemoryAdvisor extends MemoryMonitor {
     return results;
   }
 
-  public JSONObject getDeviceProfile() {
-    return deviceProfile;
+  public JSONObject getDeviceInfo() {
+    JSONObject deviceInfo = new JSONObject();
+    try {
+      deviceInfo.put("build", BuildInfo.getBuild());
+      deviceInfo.put("baseline", baseline);
+      deviceInfo.put("deviceProfile", deviceProfile);
+      deviceInfo.put("params", params);
+    } catch (JSONException ex) {
+      Log.w(TAG, "Problem getting device info", ex);
+    }
+    return deviceInfo;
   }
 }

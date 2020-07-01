@@ -1,6 +1,5 @@
 package net.jimblackler.istresser;
 
-import static com.google.android.apps.internal.games.helperlibrary.BuildInfo.getBuild;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.getMemoryQuantity;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.readFile;
 import static com.google.android.apps.internal.games.helperlibrary.Utils.readStream;
@@ -233,9 +232,8 @@ public class MainActivity extends Activity {
 
       JSONObject report = new JSONObject();
       report.put("time", System.currentTimeMillis() - testStartTime);
-      report.put("metrics", memoryAdvisor.getBaseline());
+      report.put("deviceInfo", memoryAdvisor.getDeviceInfo());
       report.put("params", params1);
-      report.put("profile", memoryAdvisor.getDeviceProfile());
 
       TestSurface testSurface = findViewById(R.id.glsurfaceView);
       testSurface.setVisibility(View.GONE);
@@ -283,8 +281,6 @@ public class MainActivity extends Activity {
         long mmapFileSize = getMemoryQuantity(params.get("mmapFileSize"));
         mmapFiles = new MmapFileGroup(mmapPath, mmapFileCount, mmapFileSize);
       }
-
-      report.put("build", getBuild());
 
       resultsStream.println(report);
     } catch (IOException | JSONException | PackageManager.NameNotFoundException e) {

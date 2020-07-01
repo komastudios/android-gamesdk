@@ -23,7 +23,8 @@ class Main {
         JSONArray result = results.getJSONArray(0);
         JSONObject first = result.getJSONObject(0);
         JSONObject params = first.getJSONObject("params");
-        JSONObject build = first.getJSONObject("build");
+        JSONObject deviceInfo = first.getJSONObject("deviceInfo");
+        JSONObject build = deviceInfo.getJSONObject("build");
         int count = 0;
         while (true) {
           String coordinates = params.getJSONArray("coordinates").toString();
