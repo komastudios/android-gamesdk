@@ -141,7 +141,7 @@ std::string JsonUint64(uint64_t x) {
     s << x;
     return s.str();
 }
-Json::object TelemetryContextJson(const ProngCache& prong_cache,
+Json::object TelemetryContextJson(const Session& prong_cache,
                                   const SerializedAnnotation& annotation,
                                   const RequestInfo& request_info,
                                   const Duration& duration) {
@@ -154,7 +154,7 @@ Json::object TelemetryContextJson(const ProngCache& prong_cache,
         {"duration", DurationToSecondsString(duration)}};
 }
 
-Json::object TelemetryReportJson(const ProngCache& prong_cache,
+Json::object TelemetryReportJson(const Session& prong_cache,
                                  const SerializedAnnotation& annotation,
                                  bool& empty, Duration& duration) {
     std::vector<Json::object> render_histograms;
@@ -210,7 +210,7 @@ Json::object TelemetryReportJson(const ProngCache& prong_cache,
     }
     return ret;
 }
-Json::object MemoryTelemetryReportJson(const ProngCache& prong_cache,
+Json::object MemoryTelemetryReportJson(const Session& prong_cache,
                                        const SerializedAnnotation& annotation,
                                        bool& empty) {
     std::vector<Json::object> memory_histograms;
@@ -246,7 +246,7 @@ Json::object MemoryTelemetryReportJson(const ProngCache& prong_cache,
     return ret;
 }
 
-Json::object TelemetryJson(const ProngCache& prong_cache,
+Json::object TelemetryJson(const Session& prong_cache,
                            const SerializedAnnotation& annotation,
                            const RequestInfo& request_info, Duration& duration,
                            bool& empty) {
@@ -257,7 +257,7 @@ Json::object TelemetryJson(const ProngCache& prong_cache,
         {"report", report}};
 }
 
-Json::object MemoryTelemetryJson(const ProngCache& prong_cache,
+Json::object MemoryTelemetryJson(const Session& prong_cache,
                                  const SerializedAnnotation& annotation,
                                  const RequestInfo& request_info,
                                  const Duration& duration, bool& empty) {
@@ -268,7 +268,7 @@ Json::object MemoryTelemetryJson(const ProngCache& prong_cache,
         {"report", report}};
 }
 
-/*static*/ void JsonSerializer::SerializeEvent(const ProngCache& prongs,
+/*static*/ void JsonSerializer::SerializeEvent(const Session& prongs,
                                                const RequestInfo& request_info,
                                                std::string& evt_json_ser) {
     Json session_context = Json::object{
@@ -329,7 +329,7 @@ struct Hist {
 }  // namespace
 
 /*static*/ TuningFork_ErrorCode JsonSerializer::DeserializeAndMerge(
-    const std::string& evt_json_ser, IdProvider& id_provider, ProngCache& pc) {
+    const std::string& evt_json_ser, IdProvider& id_provider, Session& pc) {
     std::string err;
     Json in = Json::parse(evt_json_ser, err);
     if (!err.empty()) {

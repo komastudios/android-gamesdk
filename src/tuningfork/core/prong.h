@@ -29,8 +29,6 @@
 
 namespace tuningfork {
 
-typedef ProtobufSerialization SerializedAnnotation;
-
 // A prong holds a histogram for a given annotation and instrument key
 class Prong {
    public:
@@ -60,40 +58,6 @@ class Prong {
     void SetInstrumentKey(InstrumentationKey key);
 
     bool IsLoading() const { return loading_; }
-};
-
-// Simple fixed-size cache
-class ProngCache {
-    std::vector<std::unique_ptr<Prong>> prongs_;
-    int max_num_instrumentation_keys_;
-    Prong::TimeInterval time_;
-    MemoryTelemetry memory_telemetry_;
-
-   public:
-    ProngCache(size_t size, int max_num_instrumentation_keys,
-               const std::vector<Settings::Histogram>& histogram_settings,
-               const std::function<SerializedAnnotation(uint64_t)>& serializeId,
-               const std::function<bool(uint64_t)>& is_loading_id,
-               IMemInfoProvider* meminfo_provider);
-
-    Prong* Get(uint64_t compound_id) const;
-
-    void Clear();
-
-    void SetInstrumentKeys(
-        const std::vector<InstrumentationKey>& instrument_keys);
-
-    // Update times
-    void Ping(SystemTimePoint t);
-
-    Prong::TimeInterval time() const { return time_; }
-    const std::vector<std::unique_ptr<Prong>>& prongs() const {
-        return prongs_;
-    }
-
-    const MemoryTelemetry& GetMemoryTelemetry() const {
-        return memory_telemetry_;
-    }
 };
 
 }  // namespace tuningfork
