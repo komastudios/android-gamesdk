@@ -10,7 +10,7 @@ import java.util.Iterator;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class DeviceProfile {
+class DeviceProfile {
   /**
    * Return the first index where two strings differ.
    * @param a The first string to compare.

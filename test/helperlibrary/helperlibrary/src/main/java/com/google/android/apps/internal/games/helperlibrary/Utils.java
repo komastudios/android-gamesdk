@@ -97,7 +97,7 @@ public class Utils {
    *
    * @return A dictionary of values, in bytes.
    */
-  public static Map<String, Long> processStatus() {
+  static Map<String, Long> processStatus() {
     Map<String, Long> output = new HashMap<>();
     int pid = android.os.Process.myPid();
     String filename = "/proc/" + pid + "/status";
@@ -121,7 +121,7 @@ public class Utils {
    * @param activityManager The ActivityManager.
    * @return The process memory info.
    */
-  public static Debug.MemoryInfo[] getDebugMemoryInfo(ActivityManager activityManager) {
+  static Debug.MemoryInfo[] getDebugMemoryInfo(ActivityManager activityManager) {
     return activityManager.getProcessMemoryInfo(new int[] {android.os.Process.myPid()});
   }
 
