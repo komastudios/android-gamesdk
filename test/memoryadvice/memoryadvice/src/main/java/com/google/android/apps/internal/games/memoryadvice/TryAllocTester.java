@@ -1,6 +1,6 @@
 package com.google.android.apps.internal.games.memoryadvice;
 
-public class TryAllocTester {
+class TryAllocTester {
   static {
     System.loadLibrary("try-alloc-lib");
   }
@@ -11,5 +11,5 @@ public class TryAllocTester {
    * @param bytes The number of bytes to allocate.
    * @return 'true' if the allocation attempt was successful.
    */
-  public static native boolean tryAlloc(int bytes);
+  static native boolean tryAlloc(int bytes);
 }

@@ -18,7 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /** A class to provide metrics of current memory usage to an application in JSON format. */
-public class MemoryMonitor {
+class MemoryMonitor {
   private static final String TAG = MemoryMonitor.class.getSimpleName();
 
   private static final Collection<String> MEMINFO_FIELDS = new HashSet<>(Arrays.asList("Active",
@@ -42,7 +42,7 @@ public class MemoryMonitor {
    * @param context The Android context to employ.
    * @param fetchDebug Whether to fetch debug-based params.
    */
-  public MemoryMonitor(Context context, boolean fetchDebug) {
+  MemoryMonitor(Context context, boolean fetchDebug) {
     this.fetchDebug = fetchDebug;
     mapTester = new MapTester(context.getCacheDir());
     activityManager = (ActivityManager) context.getSystemService((Context.ACTIVITY_SERVICE));

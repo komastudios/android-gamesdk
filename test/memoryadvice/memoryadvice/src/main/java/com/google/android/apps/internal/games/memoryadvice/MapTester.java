@@ -13,7 +13,7 @@ import java.nio.channels.FileChannel;
  * A class to use a small memory mapped file as a memory warning canary. When the file has been
  * unloaded it is a signal that memory is running low on the device.
  */
-public class MapTester {
+class MapTester {
   private static final String TAG = MapTester.class.getSimpleName();
 
   private MappedByteBuffer map;
