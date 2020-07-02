@@ -796,39 +796,30 @@ tasks.withType(BuildTask) {
 }
 
 task localUnitTests {
-    // These unit tests require a connected ARM64 device to run
+    // These unit tests require a single connected device with target architecture set by the
+    // project property 'arch'.
+    // Set the property 'component' to 'tuningfork' or 'swappy' to run the required test suite.
+    // e.g. ./gradlew localUnitTests -Parch=x86 -Pcomponent=tuningfork
+    // arch defaults to 'arm64-v8a' and component to 'tuningfork' if they are not set.
     doLast {
-        def buildInfo = localNativeBuild(true, "test/tuningfork")
-        def buildKey = buildInfo.buildKey.findAll{it.contains('arm64-v8a')}[0]
-        def cmakeFolder = getTempPath() + '/' + buildKey + '/.cmake'
+        def pcomponent = 'tuningfork'
+        if (project.hasProperty('component'))
+            pcomponent = component
+        def parch = 'arm64-v8a'
+        if (project.hasProperty('arch'))
+            parch = arch
+        def buildInfo = localNativeBuild(true, "test/$pcomponent")
+        def buildKey = buildInfo.buildKey.findAll{it.contains(parch)}[0]
+        def cmakeFolder = getTempPath() + "/$buildKey/.cmake"
         def toolchain = getLocalToolchain();
         def adb = toolchain.getAdbPath();
         exec {
             workingDir cmakeFolder
-            commandLine adb, "push", "tuningfork_test", "/data/local/tmp"
+            commandLine adb, "push", "${pcomponent}_test", "/data/local/tmp"
         }
         exec {
             workingDir cmakeFolder
-            commandLine adb, "shell", "/data/local/tmp/tuningfork_test"
-        }
-    }
-}
-
-task localSwappyUnitTests {
-    // These unit tests require a connected ARM64 device to run
-    doLast {
-        def buildInfo = localNativeBuild(false, "test/swappy")
-        def buildKey = buildInfo.buildKey.findAll{it.contains('arm64-v8a')}[0]
-        def cmakeFolder = getTempPath() + '/' + buildKey + '/.cmake'
-        def toolchain = getLocalToolchain();
-        def adb = toolchain.getAdbPath();
-        exec {
-            workingDir cmakeFolder
-            commandLine adb, "push", "swappy_test", "/data/local/tmp"
-        }
-        exec {
-            workingDir cmakeFolder
-            commandLine adb, "shell", "/data/local/tmp/swappy_test"
+            commandLine adb, "shell", "/data/local/tmp/${pcomponent}_test"
         }
     }
 }
@@ -847,7 +838,9 @@ task format {
     doLast {
         def formattedFiles =
             fileTree(dir: 'src', include: ['**/*.cpp', '**/*.c', '**/*.h'], excludes: ["protobuf"]) +
-            fileTree(dir: 'include', include: ['**/*.h'], excludes: ["third_party"])
+            fileTree(dir: 'include', include: ['**/*.h'], excludes: ["third_party"]) +
+            fileTree(dir: 'test/swappy', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
+            fileTree(dir: 'test/tuningfork', include: ['**/*.cpp', '**/*.c', '**/*.h'])
 
         formattedFiles.files.each { file ->
             exec {
