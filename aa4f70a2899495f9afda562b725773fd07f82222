@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "67eea58d_b3b50008",
+        "filename": "build.gradle",
+        "patchSetId": 5
+      },
+      "lineNbr": 806,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-07-02T11:21:17Z",
+      "side": 1,
+      "message": "Nice :) I refactored library handling in aosp/1352366 to have an argument very similar to your \"component\" property - I\u0027ll update this to take advantage of libraries like the other build commands according to what is the first CL to get merged.",
+      "revId": "aa4f70a2899495f9afda562b725773fd07f82222",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
