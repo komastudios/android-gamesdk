@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-#include "tf_test_utils.h"
-
 #include <gtest/gtest.h>
-#include "http_backend/json_serializer.h"
-#include "core/tuningfork_utils.h"
 
 #include <chrono>
+
+#include "core/tuningfork_utils.h"
+#include "http_backend/json_serializer.h"
+#include "tf_test_utils.h"
 
 namespace serialization_test {
 
@@ -29,8 +29,9 @@ using namespace json11;
 using namespace test;
 using namespace std::chrono;
 
-RequestInfo test_device_info {"expt", {}, "sess", 2387, 349587, "fing", "6.3", {1,2,3}, "packname",
-                                  0, 10, "MODEL", "BRAND", "PRODUCT", "DEVICE"};
+RequestInfo test_device_info{"expt", {},      "sess",    2387,       349587,
+                             "fing", "6.3",   {1, 2, 3}, "packname", 0,
+                             10,     "MODEL", "BRAND",   "PRODUCT",  "DEVICE"};
 std::string test_device_info_ser = R"TF({
   "brand": "BRAND",
   "build_version": "6.3",
@@ -46,15 +47,14 @@ std::string test_device_info_ser = R"TF({
 })TF";
 
 void CheckDeviceInfo(const RequestInfo& info) {
-    EXPECT_EQ(json_utils::GetResourceName(info),
-              "applications/packname/apks/0") << "GetResourceName";
-    EXPECT_TRUE(CompareIgnoringWhitespace(Json(json_utils::DeviceSpecJson(info)).dump(),
-                                          test_device_info_ser))<< "DeviceSpecJson";
+    EXPECT_EQ(json_utils::GetResourceName(info), "applications/packname/apks/0")
+        << "GetResourceName";
+    EXPECT_TRUE(CompareIgnoringWhitespace(
+        Json(json_utils::DeviceSpecJson(info)).dump(), test_device_info_ser))
+        << "DeviceSpecJson";
 }
 
-TEST(SerializationTest, DeviceInfo) {
-    CheckDeviceInfo(test_device_info);
-}
+TEST(SerializationTest, DeviceInfo) { CheckDeviceInfo(test_device_info); }
 
 std::string report_start = R"TF({
   "name": "applications/packname/apks/0",
@@ -119,16 +119,17 @@ std::string single_tick_with_loading = R"TF({
 })TF";
 
 TEST(SerializationTest, SerializationWithLoading) {
-    Session prong_cache(2/*size*/, 2/*max_instrumentation_keys*/,
-                           { Settings::DefaultHistogram(1) },
-                           [](uint64_t){ return SerializedAnnotation(); },
-                           [](uint64_t id){ return id == 0; },
-                           nullptr);
+    Session prong_cache(
+        2 /*size*/, 2 /*max_instrumentation_keys*/,
+        {Settings::DefaultHistogram(1)},
+        [](uint64_t) { return SerializedAnnotation(); },
+        [](uint64_t id) { return id == 0; }, nullptr);
     std::string evt_ser;
     JsonSerializer::SerializeEvent(prong_cache, test_device_info, evt_ser);
     auto empty_report = report_start + report_end;
     EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, empty_report))
-        << evt_ser << "\n!=\n" << empty_report;
+        << evt_ser << "\n!=\n"
+        << empty_report;
 
     // Fill in some data
     auto p1 = prong_cache.Get(0);
@@ -141,7 +142,9 @@ TEST(SerializationTest, SerializationWithLoading) {
 
     JsonSerializer::SerializeEvent(prong_cache, test_device_info, evt_ser);
     auto report = report_start + single_tick_with_loading + report_end;
-    EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, report)) << evt_ser << "\n!=\n" << report;
+    EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, report))
+        << evt_ser << "\n!=\n"
+        << report;
 }
 
 std::string single_tick = R"TF({
@@ -164,56 +167,57 @@ std::string single_tick = R"TF({
   }
 })TF";
 
-class TestIdProvider : public IdProvider{
-  public:
+class TestIdProvider : public IdProvider {
+   public:
     uint64_t DecodeAnnotationSerialization(const ProtobufSerialization& ser,
                                            bool* loading) const override {
         return 0;
     }
     TuningFork_ErrorCode MakeCompoundId(InstrumentationKey k,
-                               uint64_t annotation_id,
-                               uint64_t& id) override {
+                                        uint64_t annotation_id,
+                                        uint64_t& id) override {
         id = k;
         return TUNINGFORK_ERROR_OK;
     }
 };
 
-
 void CheckSessions(const Session& pc0, const Session& pc1) {
     Prong* p0 = pc0.Get(0);
     Prong* p1 = pc1.Get(0);
-    EXPECT_TRUE(p0!=nullptr && p1!=nullptr);
+    EXPECT_TRUE(p0 != nullptr && p1 != nullptr);
     EXPECT_EQ(p0->histogram_, p1->histogram_);
 }
 
-Settings::Histogram DefaultHistogram() {
-    return {-1,10,40,30};
-}
+Settings::Histogram DefaultHistogram() { return {-1, 10, 40, 30}; }
 
 TEST(SerializationTest, GEDeserialization) {
-    Session prong_cache(1/*size*/, 1/*max_instrumentation_keys*/, {DefaultHistogram()},
-                           [](uint64_t){ return SerializedAnnotation(); },
-                           [](uint64_t){ return false; },
-                           nullptr);
+    Session prong_cache(
+        1 /*size*/, 1 /*max_instrumentation_keys*/, {DefaultHistogram()},
+        [](uint64_t) { return SerializedAnnotation(); },
+        [](uint64_t) { return false; }, nullptr);
     std::string evt_ser;
     JsonSerializer::SerializeEvent(prong_cache, test_device_info, evt_ser);
     auto empty_report = report_start + report_end;
     EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, empty_report))
-        << evt_ser << "\n!=\n" << empty_report;
+        << evt_ser << "\n!=\n"
+        << empty_report;
     // Fill in some data
     auto p = prong_cache.Get(0);
     p->Trace(milliseconds(30));
     JsonSerializer::SerializeEvent(prong_cache, test_device_info, evt_ser);
     auto report = report_start + single_tick + report_end;
-    EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, report)) << evt_ser << "\n!=\n" << report;
-    Session pc(1/*size*/, 1/*max_instrumentation_keys*/, {DefaultHistogram()},
-                  [](uint64_t){ return SerializedAnnotation(); },
-                  [](uint64_t){ return false; },
-                  nullptr);
+    EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, report))
+        << evt_ser << "\n!=\n"
+        << report;
+    Session pc(
+        1 /*size*/, 1 /*max_instrumentation_keys*/, {DefaultHistogram()},
+        [](uint64_t) { return SerializedAnnotation(); },
+        [](uint64_t) { return false; }, nullptr);
     TestIdProvider id_provider;
-    EXPECT_EQ(JsonSerializer::DeserializeAndMerge(evt_ser, id_provider, pc), TUNINGFORK_ERROR_OK)
-            << "Deserialize single";
+    EXPECT_EQ(JsonSerializer::DeserializeAndMerge(evt_ser, id_provider, pc),
+              TUNINGFORK_ERROR_OK)
+        << "Deserialize single";
     CheckSessions(pc, prong_cache);
 }
 
-} // namespace serialization_test
+}  // namespace serialization_test
