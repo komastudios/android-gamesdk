@@ -1,9 +1,9 @@
-package com.google.android.apps.internal.games.helperlibrary;
+package com.google.android.apps.internal.games.memoryadvice;
 
-import static com.google.android.apps.internal.games.helperlibrary.Utils.getDebugMemoryInfo;
-import static com.google.android.apps.internal.games.helperlibrary.Utils.getOomScore;
-import static com.google.android.apps.internal.games.helperlibrary.Utils.processMeminfo;
-import static com.google.android.apps.internal.games.helperlibrary.Utils.processStatus;
+import static com.google.android.apps.internal.games.memoryadvice.Utils.getDebugMemoryInfo;
+import static com.google.android.apps.internal.games.memoryadvice.Utils.getOomScore;
+import static com.google.android.apps.internal.games.memoryadvice.Utils.processMeminfo;
+import static com.google.android.apps.internal.games.memoryadvice.Utils.processStatus;
 
 import android.app.ActivityManager;
 import android.content.Context;

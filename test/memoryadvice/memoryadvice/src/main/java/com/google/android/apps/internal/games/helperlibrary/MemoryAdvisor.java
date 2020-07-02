@@ -1,4 +1,4 @@
-package com.google.android.apps.internal.games.helperlibrary;
+package com.google.android.apps.internal.games.memoryadvice;
 
 import android.content.Context;
 import android.util.Log;

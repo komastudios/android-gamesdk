@@ -1,8 +1,8 @@
 package net.jimblackler.istresser;
 
-import static com.google.android.apps.internal.games.helperlibrary.Utils.getMemoryQuantity;
-import static com.google.android.apps.internal.games.helperlibrary.Utils.readFile;
-import static com.google.android.apps.internal.games.helperlibrary.Utils.readStream;
+import static com.google.android.apps.internal.games.memoryadvice.Utils.getMemoryQuantity;
+import static com.google.android.apps.internal.games.memoryadvice.Utils.readFile;
+import static com.google.android.apps.internal.games.memoryadvice.Utils.readStream;
 import static net.jimblackler.istresser.ServiceCommunicationHelper.CRASHED_BEFORE;
 import static net.jimblackler.istresser.ServiceCommunicationHelper.TOTAL_MEMORY_MB;
 import static net.jimblackler.istresser.Utils.flattenParams;
@@ -25,7 +25,7 @@ import android.view.View;
 import android.webkit.WebView;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
-import com.google.android.apps.internal.games.helperlibrary.MemoryAdvisor;
+import com.google.android.apps.internal.games.memoryadvice.MemoryAdvisor;
 import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.FileNotFoundException;
