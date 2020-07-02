@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-#include <set>
 #include <algorithm>
-#include <string>
+#include <set>
 #include <sstream>
+#include <string>
 
 #include "gtest/gtest.h"
-
 #include "jni/jni_helper.h"
 
 using ::testing::EmptyTestEventListener;
@@ -41,10 +40,12 @@ static jobject s_context = 0;
 class GTestRecorder : public EmptyTestEventListener {
     std::set<std::string> tests_started;
     std::set<std::string> tests_completed;
-    std::vector<std::string> success_invocations; // Only from SUCCESS macros
-    std::vector<std::string> failed_invocations; // From any failed EXPECT or ASSERT
+    std::vector<std::string> success_invocations;  // Only from SUCCESS macros
+    std::vector<std::string>
+        failed_invocations;  // From any failed EXPECT or ASSERT
     bool overall_success;
- private:
+
+   private:
     // Called before any test activity starts.
     void OnTestProgramStart(const UnitTest& /* unit_test */) override {
         overall_success = false;
@@ -57,14 +58,16 @@ class GTestRecorder : public EmptyTestEventListener {
 
     // Called before a test starts.
     void OnTestStart(const TestInfo& test_info) override {
-        tests_started.insert(std::string(test_info.test_case_name()) + "." + test_info.name());
+        tests_started.insert(std::string(test_info.test_case_name()) + "." +
+                             test_info.name());
     }
 
     // Called after a failed assertion or a SUCCEED() invocation.
     void OnTestPartResult(const TestPartResult& test_part_result) override {
         std::stringstream record;
-        record << test_part_result.file_name() << ":" << test_part_result.line_number() << '\n' <<
-               test_part_result.summary() << '\n';
+        record << test_part_result.file_name() << ":"
+               << test_part_result.line_number() << '\n'
+               << test_part_result.summary() << '\n';
         if (test_part_result.failed()) {
             failed_invocations.push_back(record.str());
         } else {
@@ -74,45 +77,50 @@ class GTestRecorder : public EmptyTestEventListener {
 
     // Called after a test ends.
     void OnTestEnd(const TestInfo& test_info) override {
-        tests_completed.insert(std::string(test_info.test_case_name()) + "." + test_info.name());
+        tests_completed.insert(std::string(test_info.test_case_name()) + "." +
+                               test_info.name());
     }
- public:
+
+   public:
     std::string GetResult() const {
         std::stringstream result;
-        result << "TESTS " << (overall_success ? "SUCCEEDED" : "FAILED") << '\n';
+        result << "TESTS " << (overall_success ? "SUCCEEDED" : "FAILED")
+               << '\n';
         result << "\nTests that ran to completion:\n";
-        for(auto s: tests_completed) { result << s << '\n'; }
+        for (auto s : tests_completed) {
+            result << s << '\n';
+        }
         std::set<std::string> not_completed;
         std::set_difference(tests_started.begin(), tests_started.end(),
-            tests_completed.begin(), tests_completed.end(),
-            std::inserter(not_completed, not_completed.end()));
-        if (not_completed.size()>0) {
+                            tests_completed.begin(), tests_completed.end(),
+                            std::inserter(not_completed, not_completed.end()));
+        if (not_completed.size() > 0) {
             result << "\nTests that started but failed to complete:\n";
-            for (auto s: not_completed) { result << s << '\n'; }
+            for (auto s : not_completed) {
+                result << s << '\n';
+            }
         }
         if (!failed_invocations.empty()) {
             result << "\nFailures:\n";
-            for (auto s: failed_invocations) result << s << '\n';
+            for (auto s : failed_invocations) result << s << '\n';
         }
         if (!success_invocations.empty()) {
             result << "\nExplicitly recorded successes:\n";
-            for (auto s: success_invocations) result << s << '\n';
+            for (auto s : success_invocations) result << s << '\n';
         }
         return result.str();
     }
 };  // class GTestRecorder
 
-}
+}  // namespace
 
 extern "C" bool init_jni_for_tests() {
     tuningfork::jni::Init(s_env, s_context);
     return true;
 }
-extern "C" void clear_jni_for_tests() {
-    tuningfork::jni::Destroy();
-}
+extern "C" void clear_jni_for_tests() { tuningfork::jni::Destroy(); }
 
-extern "C" int shared_main(int argc, char * argv[], JNIEnv* env, jobject context,
+extern "C" int shared_main(int argc, char* argv[], JNIEnv* env, jobject context,
                            std::string& messages) {
     ::testing::InitGoogleTest(&argc, argv);
 

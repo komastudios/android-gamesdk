@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+#include "gtest/gtest.h"
 #include "jni/jni_helper.h"
 
-#include "gtest/gtest.h"
-
-// This function must be declared externally and should call jni::Init and return true if a java
-// environment is available. If there is no Java env available, return false.
+// This function must be declared externally and should call jni::Init and
+// return true if a java environment is available. If there is no Java env
+// available, return false.
 extern "C" bool init_jni_for_tests();
 
 using namespace tuningfork;

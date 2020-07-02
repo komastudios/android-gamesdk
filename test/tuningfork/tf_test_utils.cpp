@@ -23,20 +23,19 @@ bool CompareIgnoringWhitespace(std::string s0, std::string s1) {
     bool in_string = false;
     auto a = s0.begin();
     auto b = s1.begin();
-    while(true) {
+    while (true) {
         if (!in_string) {
-            while( a!=s0.end() && isspace(*a)) a++;
-            while( b!=s1.end() && isspace(*b)) b++;
+            while (a != s0.end() && isspace(*a)) a++;
+            while (b != s1.end() && isspace(*b)) b++;
         }
-        if (a==s0.end()) break;
-        if (b==s1.end()) return false;
-        if (*a!=*b) return false;
-        if (*a=='"')
-            in_string = !in_string;
+        if (a == s0.end()) break;
+        if (b == s1.end()) return false;
+        if (*a != *b) return false;
+        if (*a == '"') in_string = !in_string;
         ++a;
         ++b;
     }
-    return b==s1.end();
+    return b == s1.end();
 }
 
-}
+}  // namespace test
