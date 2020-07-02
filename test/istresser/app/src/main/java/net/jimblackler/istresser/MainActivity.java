@@ -98,7 +98,7 @@ public class MainActivity extends Activity {
     DEALLOCATED,
   }
 
-  private ServiceState serviceState;
+  xprivate ServiceState serviceState;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
