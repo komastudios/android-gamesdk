@@ -5,6 +5,7 @@ import com.google.androidgamesdk.LocalToolchain
 import com.google.androidgamesdk.Toolchain
 import com.google.androidgamesdk.NativeLibrary
 import com.google.androidgamesdk.NativeLibrary.SampleFolder
+import com.google.androidgamesdk.ToolchainEnumerator
 
 import java.nio.file.Paths
 import org.gradle.internal.logging.text.StyledTextOutputFactory;
@@ -407,23 +408,10 @@ def copySamples(outFolder, Collection<NativeLibrary> libraries) {
     })
 }
 
-def abis32Bits() { return ["armeabi-v7a", "x86"] }
-def abis64Bits() { return ["arm64-v8a", "x86_64"] }
-def defaultAbis() { return abis32Bits() + abis64Bits() }
-def allSTLs() { return ["c++_static", "c++_shared", "gnustl_static", "gnustl_shared"] }
-def post17STLs() { return ["c++_static", "c++_shared"] }
-def versionMapping() { return [ [["r14"], [14,15,16,17,18,19,20,21,22,23,24]],
-                               [["r15"], [14,15,16,17,18,19,21,22,23,24,26]],
-                               [["r16"], [14,15,16,17,18,19,21,22,23,24,26,27]],
-                               [["r17"], [14,15,16,17,18,19,21,22,23,24,26,27,28]]] }
-def versionMappingPost17() { return [ [["r18"], [16,17,18,19,21,22,23,24,26,27,28]],
-                               [["r19"], [16,17,18,19,21,22,23,24,26,27,28]],
-                               [["r20"], [16,17,18,19,21,22,23,24,26,27,28]],
-                               [["r21"], [16,17,18,19,21,22,23,24,26,27,28,29]]] }
-
 def unityNativeBuild(libraries, buildType="Release") {
     def threadChecks = false
-    return defaultAbis().collect {
+    def allAbis = new ToolchainEnumerator().allAbis
+    return allAbis.collect {
         buildNativeModules(
                 new BuildOptions(buildType, threadChecks,  "c++_static", it),
                 new SpecificToolchain(project, "21", "r19"),
@@ -434,69 +422,34 @@ def unityNativeBuild(libraries, buildType="Release") {
 
 def sdkNativeBuild(libraries, buildType="Release") {
     def threadChecks = false
-
-    def versions = versionMapping().collectMany { GroovyCollections.combinations(it) }
-    def versionsPost17 = versionMappingPost17().collectMany { GroovyCollections.combinations(it) }
-    def allCombos = GroovyCollections.combinations(defaultAbis(), versions, allSTLs()) +
-        GroovyCollections.combinations(defaultAbis(), versionsPost17, post17STLs());
+    def allToolchains = new ToolchainEnumerator().enumerateAllToolchains(project)
     GParsPool.withPool {
-        return allCombos.collectParallel { x ->
-            def arch = x[0];
-            def stl = x[2];
+        return allToolchains.collectParallel { enumeratedToolchain ->
             buildNativeModules(
-                    new BuildOptions(buildType, threadChecks, stl, arch),
-                    new SpecificToolchain(
-                            project,
-                            /*androidVersion=*/ x[1][1].toString(),
-                            /*ndkVersion=*/ x[1][0]
-                    ),
+                    new BuildOptions(
+                            buildType,
+                            threadChecks,
+                            enumeratedToolchain.stl,
+                            enumeratedToolchain.abi),
+                    enumeratedToolchain.toolchain,
                     libraries,
                     "src")
         }
     }
 }
 
-// For the AAR, only build the dynamic libraries against shared STL.
-def aarSTLs() { return ["c++_shared", "gnustl_shared"] }
-def aarPost17STLs() { return ["c++_shared"] }
-
-// In the AAR, library search is handled by Prefab, that looks for API 21 for 64 bits architectures
-// even if a lower API level is requested. We need to build a different set of libraries for 32 and
-// 64 bits as a consequence.
-def aarVersionMapping32Bits() { return versionMapping() }
-def aarVersionMapping32BitsPost17() { return versionMappingPost17() }
-def aarVersionMapping64Bits() { return [ [["r14"], [21,22,23,24]],
-                               [["r15"], [21,22,23,24,26]],
-                               [["r16"], [21,22,23,24,26,27]],
-                               [["r17"], [21,22,23,24,26,27,28]]] }
-def aarVersionMapping64BitsPost17() { return [ [["r18"], [21,22,23,24,26,27,28]],
-                               [["r19"], [21,22,23,24,26,27,28]],
-                               [["r20"], [21,22,23,24,26,27,28]],
-                               [["r21"], [21,22,23,24,26,27,28,29]]] }
-
 def sdkAarNativeBuild(libraries, buildType) {
     def threadChecks = false
-
-    def versions32Bits = aarVersionMapping32Bits().collectMany { GroovyCollections.combinations(it) }
-    def versions32BitsPost17 = aarVersionMapping32BitsPost17().collectMany { GroovyCollections.combinations(it) }
-    def versions64Bits = aarVersionMapping64Bits().collectMany { GroovyCollections.combinations(it) }
-    def versions64BitsPost17 = aarVersionMapping64BitsPost17().collectMany { GroovyCollections.combinations(it) }
-    def allCombos =
-        GroovyCollections.combinations(abis32Bits(), versions32Bits, aarSTLs()) +
-        GroovyCollections.combinations(abis32Bits(), versions32BitsPost17, aarPost17STLs()) +
-        GroovyCollections.combinations(abis64Bits(), versions64Bits, aarSTLs()) +
-        GroovyCollections.combinations(abis64Bits(), versions64BitsPost17, aarPost17STLs());
+    def allAarToolchains = new ToolchainEnumerator().enumerateAllAarToolchains(project)
     GParsPool.withPool {
-        return allCombos.collectParallel { x ->
-            def arch = x[0]
-            def stl = x[2]
+        return allAarToolchains.collectParallel { enumeratedToolchain ->
             buildNativeModules(
-                    new BuildOptions(buildType, threadChecks, stl, arch),
-                    new SpecificToolchain(
-                            project,
-                            /*androidVersion=*/ x[1][1].toString(),
-                            /*ndkVersion=*/ x[1][0]
-                    ),
+                    new BuildOptions(
+                            buildType,
+                            threadChecks,
+                            enumeratedToolchain.stl,
+                            enumeratedToolchain.abi),
+                    enumeratedToolchain.toolchain,
                     libraries,
                     "src")
         }
