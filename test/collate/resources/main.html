@@ -18,6 +18,22 @@
     evt.target.href = evt.target.href.replace("gs://", "https://storage.cloud.google.com/");
   }
 
+  function rowMetrics(row) {
+    if ("advice" in row) {
+      return row.advice.metrics;
+    } else if ("deviceInfo" in row) {
+      return row.deviceInfo.baseline;
+    } else if ("metrics" in row) {
+      return row.metrics;
+    } else {
+      return undefined;
+    }
+  }
+
+  function rowTime(row) {
+    return rowMetrics(row).meta.time;
+  }
+
   function appendStyledJson(node, obj) {
     if (Array.isArray(obj)) {
       const ol = document.createElement("ol");
@@ -186,9 +202,6 @@
     let totalDuration = 0;
     let durationCount = 0;
     for (const row of result) {
-      if (!("time" in row)) {
-        continue;
-      }
       let advice;
       let metrics;
       if ("advice" in row) {
@@ -199,6 +212,7 @@
       } else {
         continue;
       }
+      const time = (metrics.meta.time - deviceInfo.baseline.meta.time) / 1000;
 
       let applicationAllocated = 0;
       if ("testMetrics" in row) {
@@ -208,7 +222,7 @@
       }
       combined.applicationAllocated = applicationAllocated;
 
-      rowOut[0] = row.time / 1000;
+      rowOut[0] = time;
 
       for (const [field, value] of Object.entries(metrics).sort()) {
         combined[field] = value;
@@ -250,7 +264,6 @@
 
       graphData.push(rowOut.slice(0));
 
-      time = rowOut[0];
       if ("exiting" in row) {
         annotations.push(
             {

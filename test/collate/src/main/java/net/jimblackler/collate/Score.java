@@ -94,11 +94,11 @@ public class Score {
       List<JSONObject> results = Lists.newArrayList();
       for (int idx2 = 0; idx2 != result.length(); idx2++) {
         JSONObject jsonObject = result.getJSONObject(idx2);
-        if (jsonObject.has("time")) {
+        if (ReportUtils.rowMetrics(jsonObject) != null) {
           results.add(jsonObject);
         }
       }
-      results.sort(Comparator.comparingLong(o -> o.getLong("time")));
+      results.sort(Comparator.comparingLong(ReportUtils::rowTime));
       for (JSONObject row : results) {
         if (row.has("exiting")) {
           exited = true;
