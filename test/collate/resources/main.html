@@ -113,7 +113,7 @@
     const first = result[0];
     const deviceInfo = first.deviceInfo;
 
-    result.sort((a, b) => a.time > b.time ? 1 : -1);
+    result.sort((a, b) => rowTime(a) > rowTime(b) ? 1 : -1);
 
     const section = document.createElement("section");
     document.body.appendChild(section);
@@ -214,7 +214,7 @@
       } else {
         continue;
       }
-      const time = (metrics.meta.time - deviceInfo.baseline.meta.time) / 1000;
+      time = (metrics.meta.time - deviceInfo.baseline.meta.time) / 1000;
 
       let applicationAllocated = 0;
       if ("testMetrics" in row) {
