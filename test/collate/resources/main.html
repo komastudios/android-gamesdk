@@ -194,6 +194,8 @@
       if ("advice" in row) {
         advice = row.advice;
         metrics = advice.metrics;
+      } else if ("deviceInfo" in row) {
+        metrics = row.deviceInfo.baseline;
       } else if ("metrics" in row) {
         metrics = row.metrics;
       } else {
