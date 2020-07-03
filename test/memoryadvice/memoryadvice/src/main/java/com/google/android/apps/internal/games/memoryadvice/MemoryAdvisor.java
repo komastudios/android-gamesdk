@@ -66,6 +66,35 @@ public class MemoryAdvisor extends MemoryMonitor {
   }
 
   /**
+   * Returns an estimate for the amount of memory that can safely be allocated,
+   * in bytes.
+   * @param advice The advice object returned by getAdvice().
+   * @return an estimate for the amount of memory that can safely be allocated,
+   * in bytes. 0 if no estimate is available.
+   */
+  public static long availabilityEstimate(JSONObject advice) {
+    if (!advice.has("predictions")) {
+      return 0;
+    }
+    try {
+      long smallestEstimate = Long.MAX_VALUE;
+      JSONObject predictions = advice.getJSONObject("predictions");
+      Iterator<String> it = predictions.keys();
+      if (!it.hasNext()) {
+        return 0;
+      }
+      do {
+        String key = it.next();
+        smallestEstimate = Math.min(smallestEstimate, predictions.getLong(key));
+      } while (it.hasNext());
+      return smallestEstimate;
+    } catch (JSONException ex) {
+      Log.w(TAG, "Problem getting memory estimate", ex);
+    }
+    return 0;
+  }
+
+  /**
    * Return 'true' if there are any 'red' (critical) warnings in the advice object.
    * @param advice The advice object returned by getAdvice().
    * @return if there are any 'red' (critical) warnings in the advice object.
