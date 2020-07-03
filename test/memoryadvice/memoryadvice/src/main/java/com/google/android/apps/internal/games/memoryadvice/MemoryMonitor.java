@@ -117,6 +117,9 @@ class MemoryMonitor {
         constant.put("threshold", memoryInfo.threshold);
         report.put("constant", constant);
       }
+      JSONObject meta = new JSONObject();
+      meta.put("time", System.currentTimeMillis());
+      report.put("meta", meta);
     } catch (JSONException ex) {
       Log.w(TAG, "Problem getting memory metrics", ex);
     }
