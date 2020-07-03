@@ -3,10 +3,10 @@
 ---
 
 ## Installation
-Build the gamesdk `archiveZip` target:
+Build the gamesdk `swappy` library:
 ```
 $ cd ../../gamesdk
-$ ./gradlew archiveZip
+$ ./gradlew packageLocalZip -Plibraries=swappy -PpackageName=local
 ```
 
 Vulkan requires that `Shaderc` (an NDK dependency) is built:
