@@ -1,13 +1,18 @@
 package com.google.android.apps.internal.games.memoryadvice;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.util.Log;
+
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import static com.google.android.apps.internal.games.memoryadvice.Utils.readStream;
 
 /**
  * Wrapper class for methods related to memory advice.
@@ -17,6 +22,26 @@ public class MemoryAdvisor extends MemoryMonitor {
   private static final List<String> PREDICTION_FIELDS = Collections.singletonList("oom_score");
   private final JSONObject deviceProfile;
   private final JSONObject params;
+
+  /**
+   * Create an Android memory advice fetcher.
+   *
+   * @param context The Android context to employ.
+   */
+  public MemoryAdvisor(Context context) {
+    this(context, getDefaultParams(context.getAssets()));
+  }
+
+  private static JSONObject getDefaultParams(AssetManager assets) {
+    JSONObject params;
+    try {
+      params = new JSONObject(readStream(assets.open("default.json")));
+    } catch (JSONException | IOException ex) {
+      Log.e(TAG, "Problem getting default params", ex);
+      params = new JSONObject();
+    }
+    return params;
+  }
 
   /**
    * Create an Android memory advice fetcher.

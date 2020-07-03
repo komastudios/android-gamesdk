@@ -1,0 +1,10 @@
+{
+  "heuristics": {
+    "oom_score": {
+      "deltaLimit": {
+        "red": 0.85,
+        "yellow": 0.75
+      }
+    }
+  }
+}
