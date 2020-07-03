@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "76d1ca69_f8de699e",
+        "filename": "build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 527,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-03T13:26:14Z",
+      "side": 1,
+      "message": "uber nit: ws",
+      "revId": "b35c93e4415489fa34df7e14e15cffe54834da6a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
