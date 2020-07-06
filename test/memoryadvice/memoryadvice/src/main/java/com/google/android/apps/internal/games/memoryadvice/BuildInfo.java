@@ -23,6 +23,9 @@ class BuildInfo {
       JSONObject version = new JSONObject();
       getStaticFields(version, Build.VERSION.class);
       build.put("version", version);
+      JSONObject jsonObject = new JSONObject();
+      getStaticFields(jsonObject, BuildConfig.class);
+      build.put("library", jsonObject);
     } catch (JSONException ex) {
       Log.w(TAG, "Problem getting build data", ex);
     }
