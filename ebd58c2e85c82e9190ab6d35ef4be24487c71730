@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "848a3e5c_cd6ade68",
+        "filename": "src/swappy/vulkan/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-06T17:36:41Z",
+      "side": 1,
+      "message": "Do we even need the perDeviceImplementation? Looking at the code it looks like we can cache the swapchain and use perSwapchainImplementation everytime.\nIf this is true than we don\u0027t need to store the device at all (I may be missing something though)",
+      "range": {
+        "startLine": 228,
+        "startChar": 21,
+        "endLine": 228,
+        "endChar": 44
+      },
+      "revId": "ebd58c2e85c82e9190ab6d35ef4be24487c71730",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
