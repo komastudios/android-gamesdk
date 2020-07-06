@@ -70,7 +70,8 @@ class SwappyVk {
     void SetSwapDuration(VkDevice device, VkSwapchainKHR swapchain,
                          uint64_t swapNs);
     VkResult QueuePresent(VkQueue queue, const VkPresentInfoKHR* pPresentInfo);
-    void DestroySwapchain(VkDevice device, VkSwapchainKHR swapchain);
+    void DestroySwapchain(VkSwapchainKHR swapchain);
+    void DestroyDevice(VkDevice device);
 
     void SetAutoSwapInterval(bool enabled);
     void SetAutoPipelineMode(bool enabled);
