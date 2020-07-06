@@ -468,7 +468,8 @@ def specificNativeBuild(specificToolchainConfiguration, libraries,
 def getLocalToolchain() {
     def kApiLevel = project.hasProperty("androidApiLevel") ?
         project.androidApiLevel : "24"
-    return new LocalToolchain(project, kApiLevel)
+    def ndkVersion = project.hasProperty("ndk") ? project.ndk : null;
+    return new LocalToolchain(project, kApiLevel, ndkVersion)
 }
 
 def localNativeBuild(libraries, subdir = "src", buildType="Release") {
