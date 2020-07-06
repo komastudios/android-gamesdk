@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8dc8245d_a14b7abd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-07-06T16:48:03Z",
+      "side": 1,
+      "message": "Did not get the time to fully review and understand this, will continue tomorrow",
+      "revId": "eeffddc3f6354c8676dee4328c8ab3060c890723",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "62b451d1_5e4e1c34",
+        "filename": "src/tuningfork/core/async_telemetry.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-07-06T16:48:03Z",
+      "side": 1,
+      "message": "I don\u0027t see work_duration used apart from an assignment here, is it useful to keep it as a member variable?",
+      "revId": "eeffddc3f6354c8676dee4328c8ab3060c890723",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "35cb5997_6e2e3864",
+        "filename": "src/tuningfork/core/runnable.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-07-06T16:48:03Z",
+      "side": 1,
+      "message": "I\u0027m thinking we could almost guard this test only constructor or test only code behind a TUNINGFORK_TEST or any define set only for tests? Is it worth doing?",
+      "revId": "eeffddc3f6354c8676dee4328c8ab3060c890723",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
