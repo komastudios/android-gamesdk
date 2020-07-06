@@ -148,6 +148,8 @@ class SwappyVkBase {
 
     void addTracer(const SwappyTracer* tracer);
 
+    VkDevice getDevice() const { return mDevice; }
+
    protected:
     struct VkSync {
         VkFence fence;

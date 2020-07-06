@@ -1487,7 +1487,7 @@ static void demo_prepare_buffers(struct demo *demo) {
     // Note: destroying the swapchain also cleans up all its associated
     // presentable images once the platform is done with them.
     if (oldSwapchain != VK_NULL_HANDLE) {
-        SwappyVk_destroySwapchain(demo->device, oldSwapchain);
+        SwappyVk_destroySwapchain(oldSwapchain);
         demo->fpDestroySwapchainKHR(demo->device, oldSwapchain, NULL);
     }
 
@@ -2469,7 +2469,7 @@ static void demo_cleanup(struct demo *demo) {
             vkDestroySampler(demo->device, demo->textures[i].sampler, NULL);
         }
 
-        SwappyVk_destroySwapchain(demo->device, demo->swapchain);
+        SwappyVk_destroySwapchain(demo->swapchain);
         demo->fpDestroySwapchainKHR(demo->device, demo->swapchain, NULL);
         demo->swapchain = VK_NULL_HANDLE;
 
@@ -2498,6 +2498,7 @@ static void demo_cleanup(struct demo *demo) {
     }
 
     vkDeviceWaitIdle(demo->device);
+    SwappyVk_destroyDevice(demo->device);
     vkDestroyDevice(demo->device, NULL);
     if (demo->validate) {
         demo->DestroyDebugUtilsMessengerEXT(demo->inst, demo->dbg_messenger, NULL);

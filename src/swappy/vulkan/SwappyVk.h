@@ -70,7 +70,8 @@ class SwappyVk {
     void SetSwapDuration(VkDevice device, VkSwapchainKHR swapchain,
                          uint64_t swapNs);
     VkResult QueuePresent(VkQueue queue, const VkPresentInfoKHR* pPresentInfo);
-    void DestroySwapchain(VkDevice device, VkSwapchainKHR swapchain);
+    void DestroySwapchain(VkSwapchainKHR swapchain);
+    void DestroyDevice(VkDevice device);
 
     void SetAutoSwapInterval(bool enabled);
     void SetAutoPipelineMode(bool enabled);
@@ -85,7 +86,6 @@ class SwappyVk {
 
    private:
     std::map<VkPhysicalDevice, bool> doesPhysicalDeviceHaveGoogleDisplayTiming;
-    std::map<VkDevice, std::shared_ptr<SwappyVkBase>> perDeviceImplementation;
     std::map<VkSwapchainKHR, std::shared_ptr<SwappyVkBase>>
         perSwapchainImplementation;
 

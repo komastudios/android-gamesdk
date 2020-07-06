@@ -117,7 +117,7 @@ bool SwappyVk::GetRefreshCycleDuration(JNIEnv* env, jobject jactivity,
                                        VkDevice device,
                                        VkSwapchainKHR swapchain,
                                        uint64_t* pRefreshDuration) {
-    auto& pImplementation = perDeviceImplementation[device];
+    auto& pImplementation = perSwapchainImplementation[swapchain];
     if (!pImplementation) {
         if (!InitFunctions()) {
             // If Vulkan doesn't exist, bail-out early
@@ -154,9 +154,6 @@ bool SwappyVk::GetRefreshCycleDuration(JNIEnv* env, jobject jactivity,
         }
     }
 
-    // Cache the per-swapchain pointer to the derived class:
-    perSwapchainImplementation[swapchain] = pImplementation;
-
     // Now, call that derived class to get the refresh duration to return
     return pImplementation->doGetRefreshCycleDuration(swapchain,
                                                       pRefreshDuration);
@@ -167,7 +164,7 @@ bool SwappyVk::GetRefreshCycleDuration(JNIEnv* env, jobject jactivity,
  */
 void SwappyVk::SetWindow(VkDevice device, VkSwapchainKHR swapchain,
                          ANativeWindow* window) {
-    auto& pImplementation = perDeviceImplementation[device];
+    auto& pImplementation = perSwapchainImplementation[swapchain];
     if (!pImplementation) {
         return;
     }
@@ -179,7 +176,7 @@ void SwappyVk::SetWindow(VkDevice device, VkSwapchainKHR swapchain,
  */
 void SwappyVk::SetSwapDuration(VkDevice device, VkSwapchainKHR swapchain,
                                uint64_t swapNs) {
-    auto& pImplementation = perDeviceImplementation[device];
+    auto& pImplementation = perSwapchainImplementation[swapchain];
     if (!pImplementation) {
         return;
     }
@@ -218,16 +215,23 @@ VkResult SwappyVk::QueuePresent(VkQueue queue,
     }
 }
 
-void SwappyVk::DestroySwapchain(VkDevice device, VkSwapchainKHR swapchain) {
-    auto pImpl = perSwapchainImplementation[swapchain].get();
-    // Count the number of swapchains using this implementation.
-    // NB std::count_if isn't present in earlier NDKs :(
-    int n = 0;
-    for (auto& it : perSwapchainImplementation) {
-        if (it.second.get() == pImpl) ++n;
+void SwappyVk::DestroySwapchain(VkSwapchainKHR swapchain) {
+    auto swapchain_it = perSwapchainImplementation.find(swapchain);
+    if (swapchain_it == perSwapchainImplementation.end()) return;
+    perSwapchainImplementation.erase(swapchain);
+}
+
+void SwappyVk::DestroyDevice(VkDevice device) {
+    {
+        // Erase swapchains
+        auto it = perSwapchainImplementation.begin();
+        while (it != perSwapchainImplementation.end()) {
+            if (it->second->getDevice() == device)
+                it = perSwapchainImplementation.erase(it);
+        }
     }
-    // Remove the device if there are no other swapchains referring to it.
-    if (n == 1) {
+    {
+        // Erase the device
         auto it = perQueueFamilyIndex.begin();
         while (it != perQueueFamilyIndex.end()) {
             if (it->second.device == device) {
@@ -236,9 +240,7 @@ void SwappyVk::DestroySwapchain(VkDevice device, VkSwapchainKHR swapchain) {
                 ++it;
             }
         }
-        perDeviceImplementation.erase(device);
     }
-    perSwapchainImplementation.erase(swapchain);
 }
 
 void SwappyVk::SetAutoSwapInterval(bool enabled) {
@@ -260,13 +262,13 @@ void SwappyVk::SetMaxAutoSwapDuration(std::chrono::nanoseconds maxDuration) {
 }
 
 void SwappyVk::SetFenceTimeout(std::chrono::nanoseconds t) {
-    for (auto i : perDeviceImplementation) {
+    for (auto i : perSwapchainImplementation) {
         i.second->setFenceTimeout(t);
     }
 }
 std::chrono::nanoseconds SwappyVk::GetFenceTimeout() const {
-    auto it = perDeviceImplementation.begin();
-    if (it != perDeviceImplementation.end())
+    auto it = perSwapchainImplementation.begin();
+    if (it != perSwapchainImplementation.end())
         return it->second->getFenceTimeout();
     return std::chrono::nanoseconds(0);
 }

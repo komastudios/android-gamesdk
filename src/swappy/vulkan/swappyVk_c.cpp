@@ -69,10 +69,16 @@ VkResult SwappyVk_queuePresent(VkQueue queue,
     return swappy.QueuePresent(queue, pPresentInfo);
 }
 
-void SwappyVk_destroySwapchain(VkDevice device, VkSwapchainKHR swapchain) {
+void SwappyVk_destroySwapchain(VkSwapchainKHR swapchain) {
     TRACE_CALL();
     swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
-    swappy.DestroySwapchain(device, swapchain);
+    swappy.DestroySwapchain(swapchain);
+}
+
+void SwappyVk_destroyDevice(VkDevice device) {
+    TRACE_CALL();
+    swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
+    swappy.DestroyDevice(device);
 }
 
 void SwappyVk_setAutoSwapInterval(bool enabled) {
