@@ -19,10 +19,8 @@ class BuildInfo {
   static JSONObject getBuild() {
     JSONObject build = new JSONObject();
     try {
-      getStaticFields(build, Build.class);
-      JSONObject version = new JSONObject();
-      getStaticFields(version, Build.VERSION.class);
-      build.put("version", version);
+      build.put("fields", getStaticFields(Build.class));
+      build.put("version", getStaticFields(Build.VERSION.class));
     } catch (JSONException ex) {
       Log.w(TAG, "Problem getting build data", ex);
     }
@@ -31,10 +29,11 @@ class BuildInfo {
 
   /**
    * Use reflection to copy all the static fields from the specified class into a JSON object.
-   * @param object The JSONObject to receive the data.
    * @param aClass The class to copy static fields from.
+   * @return the fields in a JSONObject.
    */
-  private static void getStaticFields(JSONObject object, Class<?> aClass) throws JSONException {
+  private static JSONObject getStaticFields(Class<?> aClass) throws JSONException {
+    JSONObject object = new JSONObject();
     for (Field field : aClass.getFields()) {
       if (!java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
         continue;
@@ -45,5 +44,6 @@ class BuildInfo {
         // Silent by design.
       }
     }
+    return object;
   }
 }
