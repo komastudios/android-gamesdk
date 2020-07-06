@@ -33,7 +33,7 @@ class DeviceProfile {
   static JSONObject getDeviceProfile(AssetManager assets) {
     JSONObject profile = new JSONObject();
     try {
-      JSONObject lookup = new JSONObject(readStream(assets.open("lookup.json")));
+      JSONObject lookup = new JSONObject(readStream(assets.open("memoryadvice/lookup.json")));
       int bestScore = -1;
       String best = null;
       Iterator<String> it = lookup.keys();
