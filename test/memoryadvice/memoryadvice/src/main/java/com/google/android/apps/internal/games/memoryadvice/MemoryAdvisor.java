@@ -35,7 +35,7 @@ public class MemoryAdvisor extends MemoryMonitor {
   private static JSONObject getDefaultParams(AssetManager assets) {
     JSONObject params;
     try {
-      params = new JSONObject(readStream(assets.open("default.json")));
+      params = new JSONObject(readStream(assets.open("memoryadvice/default.json")));
     } catch (JSONException | IOException ex) {
       Log.e(TAG, "Problem getting default params", ex);
       params = new JSONObject();
