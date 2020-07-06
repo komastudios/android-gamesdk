@@ -21,6 +21,7 @@ class BuildInfo {
     try {
       build.put("fields", getStaticFields(Build.class));
       build.put("version", getStaticFields(Build.VERSION.class));
+      build.put("library", getStaticFields(BuildConfig.class));
     } catch (JSONException ex) {
       Log.w(TAG, "Problem getting build data", ex);
     }
