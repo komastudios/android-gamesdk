@@ -75,6 +75,12 @@ void SwappyVk_destroySwapchain(VkDevice device, VkSwapchainKHR swapchain) {
     swappy.DestroySwapchain(device, swapchain);
 }
 
+void SwappyVk_destroyDevice(VkDevice device) {
+    TRACE_CALL();
+    swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
+    swappy.DestroyDevice(device);
+}
+
 void SwappyVk_setAutoSwapInterval(bool enabled) {
     TRACE_CALL();
     swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
