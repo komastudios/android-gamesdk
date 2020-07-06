@@ -9,14 +9,14 @@ import org.gradle.api.Project
  */
 class LocalToolchain(
     override var project_: Project,
-    override var androidVersion_: String
+    override var androidVersion_: String,
+    val requestedNdkRevision: String?
 ) : Toolchain() {
     private var ndkPath: String? = null
     private var adbPath: String? = null
     override var ndkVersion_: String = "UNKNOWN"
 
     init {
-        val requestedNdkRevision = System.getenv("ANDROID_NDK_REVISION")
 
         // Find the local SDK and the local NDK, optionally the specific
         // version that was requested.

@@ -88,7 +88,7 @@ function(add_gamesdk_target)
             OUTPUT
                 ${DEP_LIB}
             COMMAND
-                ${CMAKE_COMMAND} -E env ANDROID_NDK_REVISION=${GAMESDK_ANDROID_NDK_VERSION} ${GAMESDK_GRADLE_BIN} buildLocal -Plibraries=${GAMESDK_LIBRARIES} -PandroidApiLevel=${GAMESDK_ANDROID_API_LEVEL} -PbuildType=${GAMESDK_BUILD_TYPE} -PpackageName=local
+                ${GAMESDK_GRADLE_BIN} buildLocal -Plibraries=${GAMESDK_LIBRARIES} -PandroidApiLevel=${GAMESDK_ANDROID_API_LEVEL} -PbuildType=${GAMESDK_BUILD_TYPE} -PpackageName=local -Pndk=${GAMESDK_ANDROID_NDK_VERSION}
             VERBATIM
             WORKING_DIRECTORY
                 "${GAMESDK_ROOT_DIR}"
