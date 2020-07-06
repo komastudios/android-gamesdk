@@ -320,10 +320,15 @@ public class MemoryAdvisor extends MemoryMonitor {
     return results;
   }
 
-  public JSONObject getDeviceInfo() {
+  /**
+   * Fetch information about the device.
+   * @param context The Android context.
+   * @return Information about the device, in a JSONObject.
+   */
+  public JSONObject getDeviceInfo(Context context) {
     JSONObject deviceInfo = new JSONObject();
     try {
-      deviceInfo.put("build", BuildInfo.getBuild());
+      deviceInfo.put("build", BuildInfo.getBuild(context));
       deviceInfo.put("baseline", baseline);
       deviceInfo.put("deviceProfile", deviceProfile);
       deviceInfo.put("params", params);
