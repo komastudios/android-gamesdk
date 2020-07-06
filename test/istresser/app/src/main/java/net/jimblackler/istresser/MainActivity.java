@@ -231,7 +231,7 @@ public class MainActivity extends Activity {
       registerReceiver(receiver, new IntentFilter("com.google.gamesdk.grabber.RETURN"));
 
       JSONObject report = new JSONObject();
-      report.put("deviceInfo", memoryAdvisor.getDeviceInfo());
+      report.put("deviceInfo", memoryAdvisor.getDeviceInfo(this));
       report.put("params", params1);
 
       TestSurface testSurface = findViewById(R.id.glsurfaceView);
