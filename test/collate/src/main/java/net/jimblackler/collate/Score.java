@@ -313,15 +313,16 @@ public class Score {
       Map<String, Result> rows0 = row.getValue();
       JSONObject build = builds.get(id);
 
-      final JSONObject version = build.getJSONObject("version");
+      JSONObject version = build.getJSONObject("version");
+      JSONObject fields = build.getJSONObject("fields");
       body.append("<td>")
-          .append(build.getString("MANUFACTURER"))
+          .append(fields.getString("MANUFACTURER"))
           .append("</td>")
           .append("<td>")
-          .append(build.getString("MODEL"))
+          .append(fields.getString("MODEL"))
           .append("</td>")
           .append("<td>")
-          .append(build.getString("DEVICE"))
+          .append(fields.getString("DEVICE"))
           .append("</td>")
           .append("<td>")
           .append(version.getInt("SDK_INT"))

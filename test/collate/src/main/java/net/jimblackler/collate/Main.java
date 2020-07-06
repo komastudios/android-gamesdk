@@ -25,10 +25,11 @@ class Main {
         JSONObject params = first.getJSONObject("params");
         JSONObject deviceInfo = first.getJSONObject("deviceInfo");
         JSONObject build = deviceInfo.getJSONObject("build");
+        JSONObject fields = build.getJSONObject("fields");
         int count = 0;
         while (true) {
           String coordinates = params.getJSONArray("coordinates").toString();
-          String name = build.getString("DEVICE") + (count > 0 ? "_" + count : "")
+          String name = fields.getString("DEVICE") + (count > 0 ? "_" + count : "")
               + coordinates.replace("[", "_").replace(",", "-").replace("]", "") + ".html";
           outputFile = directory.resolve(name);
           if (!Files.exists(outputFile)) {
