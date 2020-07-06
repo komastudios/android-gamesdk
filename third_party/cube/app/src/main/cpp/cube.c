@@ -2498,6 +2498,7 @@ static void demo_cleanup(struct demo *demo) {
     }
 
     vkDeviceWaitIdle(demo->device);
+    SwappyVk_destroyDevice(demo->device);
     vkDestroyDevice(demo->device, NULL);
     if (demo->validate) {
         demo->DestroyDebugUtilsMessengerEXT(demo->inst, demo->dbg_messenger, NULL);
