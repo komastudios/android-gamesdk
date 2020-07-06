@@ -296,7 +296,7 @@ def copyLibraryToPrefabAar(buildInfo, outFolder, library) {
     }
 }
 
-def sdkCopy(buildInfo, outFolder, Collection<NativeLibrary> libraries, staticToo = false,
+def copyLibs(buildInfo, outFolder, Collection<NativeLibrary> libraries, staticToo = false,
             useFullBuildKey = false, flattenLibDirs = false, shared = true) {
     def arch = buildInfo.arch
     def buildKey = buildInfo.buildKey
@@ -336,12 +336,10 @@ def sdkCopy(buildInfo, outFolder, Collection<NativeLibrary> libraries, staticToo
     }
 }
 
-def copyExtras(outFolder, Collection<NativeLibrary> libraries) {
+def copyIncludes(outFolder, Collection<NativeLibrary> libraries) {
     def buildFolder = getPackagePath() + '/' + outFolder
     def headerFolder = './include'
-    def aarFolder = joinPath(getOutPath(), 'outputs', 'aar')
     def includeBuildFolder = joinPath(buildFolder, 'include')
-    def aarBuildFolder = joinPath(buildFolder, 'aar')
 
     libraries.forEach({ nativeLibrary ->
         copy {
@@ -351,11 +349,6 @@ def copyExtras(outFolder, Collection<NativeLibrary> libraries) {
             includeEmptyDirs = false
         }
     })
-    copy {
-        from file(aarFolder)
-        into file(aarBuildFolder)
-        includeEmptyDirs = false
-    }
 }
 
 def copyDocs(outFolder) {
@@ -602,10 +595,10 @@ e.g. ./gradlew build -Plibraries=swappy,tuningfork""")
         // by previous build tasks.
         delete getPackagePath()
         nativeBuild(libraries, buildType).each {
-            sdkCopy(it, packageName, libraries, withStaticLibs,
+            copyLibs(it, packageName, libraries, withStaticLibs,
                     withFullBuildKey, flattenLibs, withSharedLibs)
         }
-        copyExtras(packageName, libraries)
+        copyIncludes(packageName, libraries)
 
         copyDocs(packageName)
 
