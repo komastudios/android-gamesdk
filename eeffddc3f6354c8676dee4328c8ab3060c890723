@@ -53,6 +53,24 @@
     },
     {
       "key": {
+        "uuid": "37882149_50029ef5",
+        "filename": "src/tuningfork/core/async_telemetry.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-07T12:31:00Z",
+      "side": 1,
+      "message": "It was added when I had a more sophisticated scheduling strategy but can be removed now we just have the simplified version.",
+      "parentUuid": "62b451d1_5e4e1c34",
+      "revId": "eeffddc3f6354c8676dee4328c8ab3060c890723",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "35cb5997_6e2e3864",
         "filename": "src/tuningfork/core/runnable.h",
         "patchSetId": 4
@@ -67,6 +85,24 @@
       "revId": "eeffddc3f6354c8676dee4328c8ab3060c890723",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "43753b7d_a31f95cb",
+        "filename": "src/tuningfork/core/runnable.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-07T12:31:00Z",
+      "side": 1,
+      "message": "I\u0027ve put a check in, behind a TUNINGFORK_TEST flag.",
+      "parentUuid": "35cb5997_6e2e3864",
+      "revId": "eeffddc3f6354c8676dee4328c8ab3060c890723",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -87,6 +123,24 @@
     },
     {
       "key": {
+        "uuid": "0c0f73cb_2efe6cce",
+        "filename": "src/tuningfork/core/session.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-07T12:31:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6ea7c206_a4a799b6",
+      "revId": "eeffddc3f6354c8676dee4328c8ab3060c890723",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a7d82aed_5840ff3a",
         "filename": "src/tuningfork/core/session.h",
         "patchSetId": 4
@@ -101,6 +155,24 @@
       "revId": "eeffddc3f6354c8676dee4328c8ab3060c890723",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9d37c044_c4b0f3c0",
+        "filename": "src/tuningfork/core/session.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-07T12:31:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a7d82aed_5840ff3a",
+      "revId": "eeffddc3f6354c8676dee4328c8ab3060c890723",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
