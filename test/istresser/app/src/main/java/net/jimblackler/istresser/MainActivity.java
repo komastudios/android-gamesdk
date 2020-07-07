@@ -47,7 +47,7 @@ public class MainActivity extends Activity {
   private static final String TAG = MainActivity.class.getSimpleName();
 
   // Set LAUNCH_DURATION to a value in milliseconds to trigger the launch test.
-  private static final int LAUNCH_DURATION = 0;
+  private xstatic final int LAUNCH_DURATION = 0;
   private static final int RETURN_DURATION = LAUNCH_DURATION + 1000 * 20;
   private static final int BACKGROUND_MEMORY_PRESSURE_MB = 500;
   private static final int BACKGROUND_PRESSURE_PERIOD_SECONDS = 30;
