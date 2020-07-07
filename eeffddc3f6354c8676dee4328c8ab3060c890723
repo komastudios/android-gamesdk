@@ -19,6 +19,23 @@
     },
     {
       "key": {
+        "uuid": "b25239e9_4f5d7cec",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-07-07T11:02:50Z",
+      "side": 1,
+      "message": "Added a few nits. The approach with metric data classes seems cleaner/easier to understand than previously 👍 \nI\u0027ll re-review this another team after you\u0027ve answered to comments because it\u0027s a large CL, hard to grasp everything the first time ;)",
+      "revId": "eeffddc3f6354c8676dee4328c8ab3060c890723",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "62b451d1_5e4e1c34",
         "filename": "src/tuningfork/core/async_telemetry.cpp",
         "patchSetId": 4
@@ -47,6 +64,40 @@
       "writtenOn": "2020-07-06T16:48:03Z",
       "side": 1,
       "message": "I\u0027m thinking we could almost guard this test only constructor or test only code behind a TUNINGFORK_TEST or any define set only for tests? Is it worth doing?",
+      "revId": "eeffddc3f6354c8676dee4328c8ab3060c890723",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6ea7c206_a4a799b6",
+        "filename": "src/tuningfork/core/session.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-07-07T11:02:50Z",
+      "side": 1,
+      "message": "ubernit: for consistency, add the same comment as above/below? \"Create an associated object, unless capacity has been reached [...]\"",
+      "revId": "eeffddc3f6354c8676dee4328c8ab3060c890723",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a7d82aed_5840ff3a",
+        "filename": "src/tuningfork/core/session.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-07-07T11:02:50Z",
+      "side": 1,
+      "message": "ubernit: GetNonEmptyHistograms?\n\nfunctions without a verb in their name always makes me question if they are a getter or setter/doing some action (the \"const\" is a good hint, but not visible in the call sites)",
       "revId": "eeffddc3f6354c8676dee4328c8ab3060c890723",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
