@@ -1,0 +1,31 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000003765417",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1355740?revision\u003d2",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "d674d82d_202b2cb4",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-07-07T11:43:03Z",
+      "side": 1,
+      "message": "Unrecognized license :\nAgree...licenses\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 1,
+        "endLine": 7,
+        "endChar": 22
+      },
+      "revId": "4f8e5fbe44bcac854fadbffd6635fdb2e021a721",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
