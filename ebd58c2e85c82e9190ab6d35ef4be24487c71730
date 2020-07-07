@@ -22,6 +22,30 @@
       "revId": "ebd58c2e85c82e9190ab6d35ef4be24487c71730",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "69886726_9b55a6a7",
+        "filename": "src/swappy/vulkan/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-07T12:56:23Z",
+      "side": 1,
+      "message": "Currently we have one SwappyVkBase instance per device, with multiple swap chains possible on that device, and we could do this without storing the perDeviceImplementation map but I think it makes it easier to keep it.\n\nOr should we be having one SwappyVkBase instance per swapchain? Can we have different timings on different windows?\n\nI also noticed that in SwappyVk::QueuePresent we only look at the first swapchain in the VkPresentInfoKHR::pSwapchains array. I guess having one queue present to multiple swapchains here is very niche (window mirroring?), but do we need to present to them all?",
+      "parentUuid": "848a3e5c_cd6ade68",
+      "range": {
+        "startLine": 228,
+        "startChar": 21,
+        "endLine": 228,
+        "endChar": 44
+      },
+      "revId": "ebd58c2e85c82e9190ab6d35ef4be24487c71730",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
