@@ -71,7 +71,8 @@ public class Discover {
         }
       }
       if (limit != null) {
-        String fingerprint = deviceInfo.getJSONObject("build").getString("FINGERPRINT");
+        String fingerprint =
+            deviceInfo.getJSONObject("build").getJSONObject("fields").getString("FINGERPRINT");
         JSONObject baselineCurrent = deviceInfo.getJSONObject("baseline");
         JSONObject limitCurrent = ReportUtils.rowMetrics(limit);
 
