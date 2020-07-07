@@ -46,6 +46,30 @@
       "revId": "ebd58c2e85c82e9190ab6d35ef4be24487c71730",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bc19309c_674db9a5",
+        "filename": "src/swappy/vulkan/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-07T22:02:52Z",
+      "side": 1,
+      "message": "I think we should have one SwappyVkBase instance per swapchain. Each Swapchain corresponds to a different surface and the fact that they share the same device doesn\u0027t really matter. So if we keep a SwappyVkBase per swapchain we handle all cases",
+      "parentUuid": "69886726_9b55a6a7",
+      "range": {
+        "startLine": 228,
+        "startChar": 21,
+        "endLine": 228,
+        "endChar": 44
+      },
+      "revId": "ebd58c2e85c82e9190ab6d35ef4be24487c71730",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
