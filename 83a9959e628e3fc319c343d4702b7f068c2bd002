@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "93a2cd78_a36a522d",
+        "filename": "src/swappy/vulkan/SwappyVk.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 230,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-08T22:13:33Z",
+      "side": 1,
+      "message": "missing \n\n } else { \n    ++it; \n }",
+      "revId": "83a9959e628e3fc319c343d4702b7f068c2bd002",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "240c688a_ca82069d",
+        "filename": "src/swappy/vulkan/SwappyVk.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-08T22:13:33Z",
+      "side": 1,
+      "message": "Nit: Maybe let\u0027s keep the prototype as is?",
+      "revId": "83a9959e628e3fc319c343d4702b7f068c2bd002",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
