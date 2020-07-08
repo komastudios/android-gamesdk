@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cfdf211a_0b505b3e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-07-08T09:30:45Z",
+      "side": 1,
+      "message": "Added a few more questions",
+      "revId": "f7342fe1f97574e4e6b8a42431ae6678c507b839",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "66bcb4df_bb46779c",
+        "filename": "src/tuningfork/core/memory_metric.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-07-08T09:30:45Z",
+      "side": 1,
+      "message": "Can you explain/comment the choice of this constant?",
+      "revId": "f7342fe1f97574e4e6b8a42431ae6678c507b839",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "14a9e4c9_38d6f7aa",
+        "filename": "test/tuningfork/serialization_test.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-07-08T09:30:45Z",
+      "side": 1,
+      "message": "Why is 4 necessary here? I don\u0027t see how it translates to the single Loading Time metric and the one histogram for frame time?",
+      "revId": "f7342fe1f97574e4e6b8a42431ae6678c507b839",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
