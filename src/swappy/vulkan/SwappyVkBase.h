@@ -145,6 +145,7 @@ class SwappyVkBase {
 
     void setFenceTimeout(std::chrono::nanoseconds duration);
     std::chrono::nanoseconds getFenceTimeout() const;
+    std::chrono::nanoseconds getSwapInterval();
 
     void addTracer(const SwappyTracer* tracer);
 

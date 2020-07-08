@@ -269,10 +269,19 @@ void SwappyVk::SetFenceTimeout(std::chrono::nanoseconds t) {
         i.second->setFenceTimeout(t);
     }
 }
+
 std::chrono::nanoseconds SwappyVk::GetFenceTimeout() const {
     auto it = perSwapchainImplementation.begin();
-    if (it != perSwapchainImplementation.end())
+    if (it != perSwapchainImplementation.end()) {
         return it->second->getFenceTimeout();
+    }
+    return std::chrono::nanoseconds(0);
+}
+
+std::chrono::nanoseconds SwappyVk::GetSwapInterval(VkSwapchainKHR swapchain) {
+    auto it = perSwapchainImplementation.find(swapchain);
+    if (it != perSwapchainImplementation.end())
+        return it->second->getSwapInterval();
     return std::chrono::nanoseconds(0);
 }
 
