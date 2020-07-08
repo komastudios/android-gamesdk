@@ -34,6 +34,24 @@
       "revId": "69b7c77aef7480ab997e5ecba61902c07951d4bd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "15503821_45976a5c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-08T16:20:17Z",
+      "side": 1,
+      "message": "It\u0027s more the distinction between SDK (which can have several platforms / api levels in it) and the api level itself, I was thinking of.",
+      "parentUuid": "578ca450_ff133c08",
+      "revId": "69b7c77aef7480ab997e5ecba61902c07951d4bd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
