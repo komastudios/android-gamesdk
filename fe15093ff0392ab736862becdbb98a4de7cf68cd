@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3b880896_fcc065db",
+        "filename": "include/swappy/swappyVk.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 311,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-08T22:16:48Z",
+      "side": 1,
+      "message": "We should get the swapchain for that function as we have a different instance per swapchain",
+      "range": {
+        "startLine": 311,
+        "startChar": 35,
+        "endLine": 311,
+        "endChar": 37
+      },
+      "revId": "fe15093ff0392ab736862becdbb98a4de7cf68cd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "395bf2a7_10c9d2c4",
+        "filename": "include/swappy/swappy_common.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-08T22:16:48Z",
+      "side": 1,
+      "message": "will conflict with aosp/1355731",
+      "range": {
+        "startLine": 43,
+        "startChar": 29,
+        "endLine": 43,
+        "endChar": 30
+      },
+      "revId": "fe15093ff0392ab736862becdbb98a4de7cf68cd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "53cc766a_e357f360",
+        "filename": "src/swappy/vulkan/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 276,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-08T22:16:48Z",
+      "side": 1,
+      "message": "what\u0027s special about the first one? swapchain should actually be a parameter",
+      "revId": "fe15093ff0392ab736862becdbb98a4de7cf68cd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
