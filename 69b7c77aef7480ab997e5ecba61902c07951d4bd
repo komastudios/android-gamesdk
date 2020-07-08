@@ -16,6 +16,24 @@
       "revId": "69b7c77aef7480ab997e5ecba61902c07951d4bd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "578ca450_ff133c08",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-07-08T14:07:07Z",
+      "side": 1,
+      "message": "That\u0027s fair, should rather be sdkVersion or apiLevel (much like ndk could be ndkVersion and stl be stlFlavour) - and it\u0027s the build \"type\" (local or not) that decides in which paths the sdk/ndks are searched.",
+      "parentUuid": "e148fe1f_032f7166",
+      "revId": "69b7c77aef7480ab997e5ecba61902c07951d4bd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
