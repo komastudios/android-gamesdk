@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e148fe1f_032f7166",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-08T13:17:35Z",
+      "side": 1,
+      "message": "I wonder if we should rename sdk to apiLevel rather than the other way around. It was a bit of a misnomer to use sdk when the SDK we use is the local one or the one in prebuilts/sdk, and this variable really sets the Android platform level. WDYT?",
+      "revId": "69b7c77aef7480ab997e5ecba61902c07951d4bd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
