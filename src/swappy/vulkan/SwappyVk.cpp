@@ -264,10 +264,18 @@ void SwappyVk::SetFenceTimeout(std::chrono::nanoseconds t) {
         i.second->setFenceTimeout(t);
     }
 }
+
 std::chrono::nanoseconds SwappyVk::GetFenceTimeout() const {
     auto it = perDeviceImplementation.begin();
     if (it != perDeviceImplementation.end())
         return it->second->getFenceTimeout();
+    return std::chrono::nanoseconds(0);
+}
+
+std::chrono::nanoseconds SwappyVk::GetSwapInterval() {
+    auto it = perDeviceImplementation.begin();
+    if (it != perDeviceImplementation.end())
+        return it->second->getSwapInterval();
     return std::chrono::nanoseconds(0);
 }
 

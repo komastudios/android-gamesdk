@@ -305,6 +305,11 @@ typedef struct SwappyVkFunctionProvider {
 void SwappyVk_setFunctionProvider(
     const SwappyVkFunctionProvider* pSwappyVkFunctionProvider);
 
+/**
+ * @brief Get the swap interval value, in nanoseconds.
+ */
+uint64_t SwappyVk_getSwapIntervalNS();
+
 #ifdef __cplusplus
 }  // extern "C"
 #endif

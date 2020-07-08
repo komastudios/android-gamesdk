@@ -419,6 +419,10 @@ std::chrono::nanoseconds SwappyVkBase::getFenceTimeout() const {
     return mCommonBase.getFenceTimeout();
 }
 
+std::chrono::nanoseconds SwappyVkBase::getSwapInterval() {
+    return mCommonBase.getSwapDuration();
+}
+
 void SwappyVkBase::addTracer(const SwappyTracer* tracer) {
     mCommonBase.addTracerCallbacks(*tracer);
 }

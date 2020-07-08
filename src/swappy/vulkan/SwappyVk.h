@@ -77,6 +77,7 @@ class SwappyVk {
     void SetMaxAutoSwapDuration(std::chrono::nanoseconds maxDuration);
     void SetFenceTimeout(std::chrono::nanoseconds duration);
     std::chrono::nanoseconds GetFenceTimeout() const;
+    std::chrono::nanoseconds GetSwapInterval();
 
     void addTracer(const SwappyTracer* t);
 
