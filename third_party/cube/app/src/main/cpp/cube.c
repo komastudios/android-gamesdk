@@ -1556,6 +1556,8 @@ static void demo_prepare_buffers(struct demo *demo) {
     // Refresh rate of this demo is locked to 30 FPS.
     SwappyVk_setSwapIntervalNS(demo->device, demo->swapchain, SWAPPY_SWAP_30FPS);
 
+    DbgMsg("Swappy swap interval = %" PRIu64 " ns", SwappyVk_getSwapIntervalNS(demo->swapchain));
+
     if (!demo->tracer_injected) {
       SwappyTracer tracer;
       tracer.preWait = swappy_trace_test_preWait;

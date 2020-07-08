@@ -118,4 +118,10 @@ void SwappyVk_setFunctionProvider(
     swappy.SetFunctionProvider(pSwappyVkFunctionProvider);
 }
 
+uint64_t SwappyVk_getSwapIntervalNS(VkSwapchainKHR swapchain) {
+    TRACE_CALL();
+    swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
+    return swappy.GetSwapInterval(swapchain).count();
+}
+
 }  // extern "C"
