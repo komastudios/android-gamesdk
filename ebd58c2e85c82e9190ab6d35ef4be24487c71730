@@ -70,6 +70,30 @@
       "revId": "ebd58c2e85c82e9190ab6d35ef4be24487c71730",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f52fb516_5f5f510c",
+        "filename": "src/swappy/vulkan/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-08T12:50:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bc19309c_674db9a5",
+      "range": {
+        "startLine": 228,
+        "startChar": 21,
+        "endLine": 228,
+        "endChar": 44
+      },
+      "revId": "ebd58c2e85c82e9190ab6d35ef4be24487c71730",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
