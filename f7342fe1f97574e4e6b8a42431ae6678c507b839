@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "973f5c2e_ed21c00a",
+        "filename": "src/tuningfork/core/memory_metric.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-09T16:22:36Z",
+      "side": 1,
+      "message": "I\u0027ve added a MetricId struct to replace the uint64_t used before, which should make things clearer.",
+      "parentUuid": "66bcb4df_bb46779c",
+      "revId": "f7342fe1f97574e4e6b8a42431ae6678c507b839",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "14a9e4c9_38d6f7aa",
         "filename": "test/tuningfork/serialization_test.cpp",
         "patchSetId": 5
@@ -50,6 +68,24 @@
       "revId": "f7342fe1f97574e4e6b8a42431ae6678c507b839",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9ba40414_43204347",
+        "filename": "test/tuningfork/serialization_test.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-09T16:22:36Z",
+      "side": 1,
+      "message": "You\u0027re right, 2 will suffice",
+      "parentUuid": "14a9e4c9_38d6f7aa",
+      "revId": "f7342fe1f97574e4e6b8a42431ae6678c507b839",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
