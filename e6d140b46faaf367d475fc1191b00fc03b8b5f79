@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a00ea92a_85c8305f",
+        "filename": "include/swappy/swappyVk.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-09T22:12:56Z",
+      "side": 1,
+      "message": "let\u0027s remove the unused from the doc? we may need to use it in the future",
+      "range": {
+        "startLine": 200,
+        "startChar": 66,
+        "endLine": 200,
+        "endChar": 73
+      },
+      "revId": "e6d140b46faaf367d475fc1191b00fc03b8b5f79",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
