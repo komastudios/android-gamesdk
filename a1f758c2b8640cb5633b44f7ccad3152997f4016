@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f4b310d7_1dd7aa0a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-09T22:15:27Z",
+      "side": 1,
+      "message": "LGTM. We need to rebase this on top of aosp/1355731 before merge.",
+      "revId": "a1f758c2b8640cb5633b44f7ccad3152997f4016",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6d13a923_6e440ef7",
+        "filename": "src/swappy/vulkan/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 277,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-09T22:15:27Z",
+      "side": 1,
+      "message": "Nit: add {}",
+      "revId": "a1f758c2b8640cb5633b44f7ccad3152997f4016",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
