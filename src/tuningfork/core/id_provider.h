@@ -17,6 +17,7 @@
 #pragma once
 
 #include "core/common.h"
+#include "metric.h"
 #include "proto/protobuf_util.h"
 #include "tuningfork/tuningfork.h"
 
@@ -29,15 +30,16 @@ namespace tuningfork {
 class IdProvider {
    public:
     virtual ~IdProvider() {}
-    // Decode <ser> into an AnnotationId. If loading is non-null, it returns
-    // whether the annotation is a loading annotation.
+    // Decode <ser> into an AnnotationId. If loading is non-null, it sets it
+    // according to whether the annotation is a loading annotation.
     virtual AnnotationId DecodeAnnotationSerialization(
         const ProtobufSerialization& ser, bool* loading = nullptr) const = 0;
+
     // Return a new id that is made up of <annotation_id> and <k>.
     // Gives an error if the id is out-of-bounds.
     virtual TuningFork_ErrorCode MakeCompoundId(InstrumentationKey k,
                                                 AnnotationId annotation_id,
-                                                AnnotationId& id) = 0;
+                                                MetricId& id) = 0;
 };
 
 }  // namespace tuningfork

@@ -18,6 +18,7 @@
 #include <memory>
 
 #include "Trace.h"
+#include "async_telemetry.h"
 #include "crash_handler.h"
 #include "session.h"
 #include "tuningfork_internal.h"
@@ -30,8 +31,8 @@ class TuningForkImpl : public IdProvider {
    private:
     CrashHandler crash_handler_;
     Settings settings_;
-    std::unique_ptr<Session> prong_caches_[2];
-    Session *current_prong_cache_;
+    std::unique_ptr<Session> sessions_[2];
+    Session *current_session_;
     TimePoint last_submit_time_;
     std::unique_ptr<gamesdk::Trace> trace_;
     std::vector<TimePoint> live_traces_;
@@ -39,18 +40,21 @@ class TuningForkImpl : public IdProvider {
     UploadThread upload_thread_;
     SerializedAnnotation current_annotation_;
     std::vector<uint32_t> annotation_radix_mult_;
-    AnnotationId current_annotation_id_;
+    MetricId current_annotation_id_;
     ITimeProvider *time_provider_;
     IMemInfoProvider *meminfo_provider_;
     std::vector<InstrumentationKey> ikeys_;
     std::atomic<int> next_ikey_;
     TimePoint loading_start_;
     std::unique_ptr<ProtobufSerialization> training_mode_params_;
+    std::unique_ptr<AsyncTelemetry> async_telemetry_;
 
    public:
     TuningForkImpl(const Settings &settings, IBackend *backend,
                    ITimeProvider *time_provider,
                    IMemInfoProvider *memory_provider);
+
+    ~TuningForkImpl();
 
     void InitHistogramSettings();
 
@@ -64,7 +68,7 @@ class TuningForkImpl : public IdProvider {
         ProtobufSerialization &fidelityParams, uint32_t timeout_ms);
 
     // Returns the set annotation id or -1 if it could not be set
-    uint64_t SetCurrentAnnotation(const ProtobufSerialization &annotation);
+    MetricId SetCurrentAnnotation(const ProtobufSerialization &annotation);
 
     TuningFork_ErrorCode FrameTick(InstrumentationKey id);
 
@@ -91,32 +95,21 @@ class TuningForkImpl : public IdProvider {
     TuningFork_ErrorCode EnableMemoryRecording(bool enable);
 
    private:
-    Prong *TickNanos(uint64_t compound_id, TimePoint t);
+    MetricData *TickNanos(MetricId compound_id, TimePoint t);
 
-    Prong *TraceNanos(uint64_t compound_id, Duration dt);
+    MetricData *TraceNanos(MetricId compound_id, Duration dt);
 
-    TuningFork_ErrorCode CheckForSubmit(TimePoint t, Prong *prong);
+    TuningFork_ErrorCode CheckForSubmit(TimePoint t, MetricData *metric_data);
 
-    bool ShouldSubmit(TimePoint t, Prong *prong);
+    bool ShouldSubmit(TimePoint t, MetricData *metric_data);
 
     AnnotationId DecodeAnnotationSerialization(const SerializedAnnotation &ser,
                                                bool *loading) const override;
-
-    uint32_t GetInstrumentationKey(uint64_t compoundId) {
-        return compoundId %
-               settings_.aggregation_strategy.max_instrumentation_keys;
-    }
-
-    TuningFork_ErrorCode MakeCompoundId(InstrumentationKey k, AnnotationId a,
-                                        uint64_t &id) override {
-        int key_index;
-        auto err = GetOrCreateInstrumentKeyIndex(k, key_index);
-        if (err != TUNINGFORK_ERROR_OK) return err;
-        id = key_index + a;
-        return TUNINGFORK_ERROR_OK;
-    }
-
-    SerializedAnnotation SerializeAnnotationId(uint64_t);
+    // Return a new id that is made up of <annotation_id> and <k>.
+    // Gives an error if the id is out-of-bounds.
+    virtual TuningFork_ErrorCode MakeCompoundId(InstrumentationKey k,
+                                                AnnotationId annotation_id,
+                                                MetricId &id) override;
 
     bool keyIsValid(InstrumentationKey key) const;
 
@@ -130,6 +123,16 @@ class TuningForkImpl : public IdProvider {
     void SwapSessions();
 
     bool Debugging() const;
+
+    void InitAsyncTelemetry();
+
+    void CreateSessionFrameHistograms(
+        Session &session, size_t size, int max_num_instrumentation_keys,
+        const std::vector<Settings::Histogram> &histogram_settings);
+
+    void CreateMemoryHistograms(Session &session);
+
+    void AddMemoryMetrics();
 };
 
 }  // namespace tuningfork

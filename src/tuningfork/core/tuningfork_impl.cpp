@@ -16,11 +16,9 @@
 
 #include "tuningfork_impl.h"
 
-#include <atomic>
 #include <chrono>
 #include <cinttypes>
 #include <map>
-#include <memory>
 #include <sstream>
 #include <vector>
 
@@ -29,6 +27,8 @@
 #include "annotation_util.h"
 #include "histogram.h"
 #include "http_backend/http_backend.h"
+#include "memory_telemetry.h"
+#include "metric.h"
 #include "tuningfork_utils.h"
 
 namespace tuningfork {
@@ -40,7 +40,7 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
       trace_(gamesdk::Trace::create()),
       backend_(backend),
       upload_thread_(backend),
-      current_annotation_id_(0),
+      current_annotation_id_(MetricId::FrameTime(0, 0)),
       time_provider_(time_provider),
       meminfo_provider_(meminfo_provider),
       ikeys_(settings.aggregation_strategy.max_instrumentation_keys),
@@ -68,26 +68,26 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
     InitAnnotationRadixes();
     InitTrainingModeParams();
 
-    size_t max_num_prongs_ = 0;
+    size_t max_num_frametime_metrics = 0;
     int max_ikeys = settings.aggregation_strategy.max_instrumentation_keys;
 
     if (annotation_radix_mult_.size() == 0 || max_ikeys == 0)
         ALOGE(
             "Neither max_annotations nor max_instrumentation_keys can be zero");
     else
-        max_num_prongs_ = max_ikeys * annotation_radix_mult_.back();
-    auto serializeId = [this](uint64_t id) {
-        return SerializeAnnotationId(id);
-    };
-    auto isLoading = [this](uint64_t id) { return IsLoadingAnnotationId(id); };
-    prong_caches_[0] = std::make_unique<Session>(
-        max_num_prongs_, max_ikeys, settings_.histograms, serializeId,
-        isLoading, meminfo_provider);
-    prong_caches_[1] = std::make_unique<Session>(
-        max_num_prongs_, max_ikeys, settings_.histograms, serializeId,
-        isLoading, meminfo_provider);
-    current_prong_cache_ = prong_caches_[0].get();
-    live_traces_.resize(max_num_prongs_);
+        max_num_frametime_metrics = max_ikeys * annotation_radix_mult_.back();
+    int max_num_other_metrics =
+        MemoryRecordType::END;  // Number of memory metrics
+    for (int i = 0; i < 2; ++i) {
+        sessions_[i] = std::make_unique<Session>(max_num_frametime_metrics +
+                                                 max_num_other_metrics);
+        CreateSessionFrameHistograms(*sessions_[i], max_num_frametime_metrics,
+                                     max_ikeys, settings_.histograms);
+        MemoryTelemetry::CreateMemoryHistograms(*sessions_[i],
+                                                meminfo_provider_);
+    }
+    current_session_ = sessions_[0].get();
+    live_traces_.resize(max_num_frametime_metrics);
     for (auto &t : live_traces_) t = TimePoint::min();
     auto crash_callback = [this]() -> bool {
         std::stringstream ss;
@@ -101,38 +101,70 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
 
     // Check if there are any files waiting to be uploaded
     // + merge any histograms that are persisted.
-    upload_thread_.InitialChecks(*current_prong_cache_, *this,
+    upload_thread_.InitialChecks(*current_session_, *this,
                                  settings_.c_settings.persistent_cache);
+
+    InitAsyncTelemetry();
 
     ALOGI("TuningFork initialized");
 }
 
+TuningForkImpl::~TuningForkImpl() {
+    // Stop the threads before we delete Tuning Fork internals
+    upload_thread_.Stop();
+    async_telemetry_->Stop();
+}
+
+void TuningForkImpl::CreateSessionFrameHistograms(
+    Session &session, size_t size, int max_num_instrumentation_keys,
+    const std::vector<Settings::Histogram> &histogram_settings) {
+    InstrumentationKey ikey = 0;
+    for (uint64_t i = 0; i < size; ++i) {
+        auto aid = i / max_num_instrumentation_keys;
+        SerializedAnnotation ann;
+        annotation_util::SerializeAnnotationId(aid, ann,
+                                               annotation_radix_mult_);
+        if (IsLoadingAnnotationId(aid)) {
+            if (ikey == 0) {
+                session.CreateLoadingTimeSeries(LoadingTimeMetric(ann),
+                                                MetricId::LoadingTime(aid));
+            }
+            // Don't create histograms for other instrument keys when loading
+        } else {
+            auto &h =
+                histogram_settings[ikey < histogram_settings.size() ? ikey : 0];
+            session.CreateFrameTimeHistogram(FrameTimeMetric(ikey, ann),
+                                             MetricId::FrameTime(aid, ikey), h);
+        }
+        ++ikey;
+        if (ikey >= max_num_instrumentation_keys) ikey = 0;
+    }
+}
+
 // Return the set annotation id or -1 if it could not be set
-uint64_t TuningForkImpl::SetCurrentAnnotation(
+MetricId TuningForkImpl::SetCurrentAnnotation(
     const ProtobufSerialization &annotation) {
     current_annotation_ = annotation;
     bool loading;
     auto id = DecodeAnnotationSerialization(annotation, &loading);
     if (id == annotation_util::kAnnotationError) {
         ALOGW("Error setting annotation of size %zu", annotation.size());
-        current_annotation_id_ = 0;
-        return annotation_util::kAnnotationError;
+        current_annotation_id_ = MetricId::FrameTime(0, 0);
+        return MetricId{annotation_util::kAnnotationError};
     } else {
         // Check if we have started or stopped loading
         if (LoadingNextScene()) {
             if (!loading) {
                 // We've stopped loading: record the time
                 auto dt = time_provider_->Now() - loading_start_;
-                TraceNanos(current_annotation_id_, dt);
+                auto h = current_session_->GetData<LoadingTimeMetricData>(
+                    MetricId::LoadingTime(
+                        current_annotation_id_.detail.annotation));
+                if (h) h->Record(dt);
                 int cnt =
                     (int)std::chrono::duration_cast<std::chrono::milliseconds>(
                         dt)
                         .count();
-                bool isLoading = IsLoadingAnnotationId(current_annotation_id_);
-                ALOGI("Scene loading %" PRIu64 " (%s) took %d ms",
-                      current_annotation_id_, isLoading ? "true" : "false",
-                      cnt);
-                current_annotation_id_ = id;
                 loading_start_ = TimePoint::min();
             }
         } else {
@@ -142,34 +174,31 @@ uint64_t TuningForkImpl::SetCurrentAnnotation(
             }
         }
         ALOGV("Set annotation id to %" PRIu64, id);
-        current_annotation_id_ = id;
+        current_annotation_id_ = MetricId::FrameTime(id, 0);
         return current_annotation_id_;
     }
 }
 
 AnnotationId TuningForkImpl::DecodeAnnotationSerialization(
     const SerializedAnnotation &ser, bool *loading) const {
-    auto id = annotation_util::DecodeAnnotationSerialization(
+    auto aid = annotation_util::DecodeAnnotationSerialization(
         ser, annotation_radix_mult_, settings_.loading_annotation_index,
         settings_.level_annotation_index, loading);
-    // Shift over to leave room for the instrument id
-    return id * settings_.aggregation_strategy.max_instrumentation_keys;
+    return aid;
 }
-
-SerializedAnnotation TuningForkImpl::SerializeAnnotationId(AnnotationId id) {
-    SerializedAnnotation ann;
-    AnnotationId a =
-        id / settings_.aggregation_strategy.max_instrumentation_keys;
-    annotation_util::SerializeAnnotationId(a, ann, annotation_radix_mult_);
-    return ann;
+TuningFork_ErrorCode TuningForkImpl::MakeCompoundId(InstrumentationKey key,
+                                                    AnnotationId annotation_id,
+                                                    MetricId &id) {
+    int key_index;
+    auto err = GetOrCreateInstrumentKeyIndex(key, key_index);
+    if (err != TUNINGFORK_ERROR_OK) return err;
+    id = MetricId::FrameTime(annotation_id, key_index);
+    return TUNINGFORK_ERROR_OK;
 }
-
 bool TuningForkImpl::IsLoadingAnnotationId(AnnotationId id) const {
     if (settings_.loading_annotation_index == -1) return false;
-    AnnotationId a =
-        id / settings_.aggregation_strategy.max_instrumentation_keys;
     int value;
-    if (annotation_util::Value(a, settings_.loading_annotation_index,
+    if (annotation_util::Value(id, settings_.loading_annotation_index,
                                annotation_radix_mult_,
                                value) == annotation_util::NO_ERROR) {
         return value > 1;
@@ -220,9 +249,8 @@ TuningFork_ErrorCode TuningForkImpl::GetOrCreateInstrumentKeyIndex(
         }
     }
     // Another thread could have incremented next_ikey while we were checking,
-    // but we
-    //  mandate that different threads not use the same key, so we are OK adding
-    //  our key, if we can.
+    // but we mandate that different threads not use the same key, so we are OK
+    // adding our key, if we can.
     int next = next_ikey_++;
     if (next < ikeys_.size()) {
         ikeys_[next] = key;
@@ -237,8 +265,12 @@ TuningFork_ErrorCode TuningForkImpl::StartTrace(InstrumentationKey key,
                                                 TraceHandle &handle) {
     if (LoadingNextScene())
         return TUNINGFORK_ERROR_OK;  // No recording when loading
-    auto err = MakeCompoundId(key, current_annotation_id_, handle);
+
+    MetricId id{0};
+    auto err =
+        MakeCompoundId(key, current_annotation_id_.detail.annotation, id);
     if (err != TUNINGFORK_ERROR_OK) return err;
+    handle = id.base;
     trace_->beginSection("TFTrace");
     live_traces_[handle] = time_provider_->Now();
     return TUNINGFORK_ERROR_OK;
@@ -251,7 +283,7 @@ TuningFork_ErrorCode TuningForkImpl::EndTrace(TraceHandle h) {
     auto i = live_traces_[h];
     if (i != TimePoint::min()) {
         trace_->endSection();
-        TraceNanos(h, time_provider_->Now() - i);
+        TraceNanos(MetricId{h}, time_provider_->Now() - i);
         live_traces_[h] = TimePoint::min();
         return TUNINGFORK_ERROR_OK;
     } else {
@@ -262,13 +294,14 @@ TuningFork_ErrorCode TuningForkImpl::EndTrace(TraceHandle h) {
 TuningFork_ErrorCode TuningForkImpl::FrameTick(InstrumentationKey key) {
     if (LoadingNextScene())
         return TUNINGFORK_ERROR_OK;  // No recording when loading
-    uint64_t compound_id;
-    auto err = MakeCompoundId(key, current_annotation_id_, compound_id);
+    MetricId id{0};
+    auto err =
+        MakeCompoundId(key, current_annotation_id_.detail.annotation, id);
     if (err != TUNINGFORK_ERROR_OK) return err;
     trace_->beginSection("TFTick");
-    current_prong_cache_->Ping(time_provider_->SystemNow());
+    current_session_->Ping(time_provider_->SystemNow());
     auto t = time_provider_->Now();
-    auto p = TickNanos(compound_id, t);
+    auto p = TickNanos(id, t);
     if (p) CheckForSubmit(t, p);
     trace_->endSection();
     return TUNINGFORK_ERROR_OK;
@@ -278,31 +311,32 @@ TuningFork_ErrorCode TuningForkImpl::FrameDeltaTimeNanos(InstrumentationKey key,
                                                          Duration dt) {
     if (LoadingNextScene())
         return TUNINGFORK_ERROR_OK;  // No recording when loading
-    uint64_t compound_id;
-    auto err = MakeCompoundId(key, current_annotation_id_, compound_id);
+    MetricId id{0};
+    auto err =
+        MakeCompoundId(key, current_annotation_id_.detail.annotation, id);
     if (err != TUNINGFORK_ERROR_OK) return err;
-    auto p = TraceNanos(compound_id, dt);
+    auto p = TraceNanos(id, dt);
     if (p) CheckForSubmit(time_provider_->Now(), p);
     return TUNINGFORK_ERROR_OK;
 }
 
-Prong *TuningForkImpl::TickNanos(uint64_t compound_id, TimePoint t) {
+MetricData *TuningForkImpl::TickNanos(MetricId compound_id, TimePoint t) {
     // Find the appropriate histogram and add this time
-    Prong *p = current_prong_cache_->Get(compound_id);
+    auto p = current_session_->GetData<FrameTimeMetricData>(compound_id);
     if (p)
         p->Tick(t);
     else
-        ALOGW("Bad id or limit of number of prongs reached");
+        ALOGW("Bad id or limit of number of metrics reached");
     return p;
 }
 
-Prong *TuningForkImpl::TraceNanos(uint64_t compound_id, Duration dt) {
+MetricData *TuningForkImpl::TraceNanos(MetricId compound_id, Duration dt) {
     // Find the appropriate histogram and add this time
-    Prong *h = current_prong_cache_->Get(compound_id);
+    auto h = current_session_->GetData<FrameTimeMetricData>(compound_id);
     if (h)
-        h->Trace(dt);
+        h->Record(dt);
     else
-        ALOGW("Bad id or limit of number of prongs reached");
+        ALOGW("Bad id or limit of number of metrics reached");
     return h;
 }
 
@@ -310,21 +344,22 @@ void TuningForkImpl::SetUploadCallback(TuningFork_UploadCallback cbk) {
     upload_thread_.SetUploadCallback(cbk);
 }
 
-bool TuningForkImpl::ShouldSubmit(TimePoint t, Prong *prong) {
+bool TuningForkImpl::ShouldSubmit(TimePoint t, MetricData *histogram) {
     auto method = settings_.aggregation_strategy.method;
     auto count = settings_.aggregation_strategy.intervalms_or_count;
     switch (settings_.aggregation_strategy.method) {
         case Settings::AggregationStrategy::Submission::TIME_BASED:
             return (t - last_submit_time_) >= std::chrono::milliseconds(count);
         case Settings::AggregationStrategy::Submission::TICK_BASED:
-            if (prong) return prong->Count() >= count;
+            if (histogram) return histogram->Count() >= count;
     }
     return false;
 }
 
-TuningFork_ErrorCode TuningForkImpl::CheckForSubmit(TimePoint t, Prong *prong) {
+TuningFork_ErrorCode TuningForkImpl::CheckForSubmit(TimePoint t,
+                                                    MetricData *histogram) {
     TuningFork_ErrorCode ret_code = TUNINGFORK_ERROR_OK;
-    if (ShouldSubmit(t, prong)) {
+    if (ShouldSubmit(t, histogram)) {
         ret_code = Flush(t, true);
     }
     return ret_code;
@@ -404,19 +439,20 @@ TuningFork_ErrorCode TuningForkImpl::Flush() {
 }
 
 void TuningForkImpl::SwapSessions() {
-    if (current_prong_cache_ == prong_caches_[0].get()) {
-        prong_caches_[1]->Clear();
-        current_prong_cache_ = prong_caches_[1].get();
+    if (current_session_ == sessions_[0].get()) {
+        sessions_[1]->ClearData();
+        current_session_ = sessions_[1].get();
     } else {
-        prong_caches_[0]->Clear();
-        current_prong_cache_ = prong_caches_[0].get();
+        sessions_[0]->ClearData();
+        current_session_ = sessions_[0].get();
     }
+    async_telemetry_->SetSession(current_session_);
 }
 TuningFork_ErrorCode TuningForkImpl::Flush(TimePoint t, bool upload) {
     ALOGV("Flush %d", upload);
     TuningFork_ErrorCode ret_code;
-    current_prong_cache_->SetInstrumentKeys(ikeys_);
-    if (upload_thread_.Submit(current_prong_cache_, upload)) {
+    current_session_->SetInstrumentationKeys(ikeys_);
+    if (upload_thread_.Submit(current_session_, upload)) {
         SwapSessions();
         ret_code = TUNINGFORK_ERROR_OK;
     } else {
@@ -464,6 +500,13 @@ TuningFork_ErrorCode TuningForkImpl::EnableMemoryRecording(bool enable) {
         meminfo_provider_->SetEnabled(enable);
     }
     return TUNINGFORK_ERROR_OK;
+}
+
+void TuningForkImpl::InitAsyncTelemetry() {
+    async_telemetry_ = std::make_unique<AsyncTelemetry>(time_provider_);
+    MemoryTelemetry::SetUpAsyncWork(*async_telemetry_, meminfo_provider_);
+    async_telemetry_->SetSession(current_session_);
+    async_telemetry_->Start();
 }
 
 }  // namespace tuningfork

@@ -22,6 +22,7 @@
 #define LOG_TAG "TuningFork"
 #include "Log.h"
 #include "core/annotation_util.h"
+#include "core/tuningfork_impl.h"
 #include "core/tuningfork_utils.h"
 #include "modp_b64.h"
 
@@ -141,8 +142,7 @@ std::string JsonUint64(uint64_t x) {
     s << x;
     return s.str();
 }
-Json::object TelemetryContextJson(const Session& prong_cache,
-                                  const SerializedAnnotation& annotation,
+Json::object TelemetryContextJson(const SerializedAnnotation& annotation,
                                   const RequestInfo& request_info,
                                   const Duration& duration) {
     return Json::object{
@@ -154,54 +154,45 @@ Json::object TelemetryContextJson(const Session& prong_cache,
         {"duration", DurationToSecondsString(duration)}};
 }
 
-Json::object TelemetryReportJson(const Session& prong_cache,
+Json::object TelemetryReportJson(const Session& session,
                                  const SerializedAnnotation& annotation,
                                  bool& empty, Duration& duration) {
     std::vector<Json::object> render_histograms;
-    std::vector<Json::object> loading_histograms;
     std::vector<int> loading_events_times;  // Ignore fractional milliseconds
     duration = Duration::zero();
-    for (auto& p : prong_cache.prongs()) {
-        if (p.get() != nullptr && p->Count() > 0 &&
-            p->annotation_ == annotation) {
-            if (p->histogram_.GetMode() != HistogramBase::Mode::HISTOGRAM) {
-                for (auto c : p->histogram_.samples()) {
-                    auto v = static_cast<int>(c);
-                    if (v != 0) loading_events_times.push_back(v);
-                }
-            } else {
-                std::vector<int32_t> counts;
-                for (auto& c : p->histogram_.buckets())
-                    counts.push_back(static_cast<int32_t>(c));
-                Json::object o{{"counts", counts}};
-                if (p->IsLoading()) {
-                    // Should never get here: we make loading histograms
-                    // events-only in prong.cpp
-                    loading_histograms.push_back(o);
-                } else {
-                    o["instrument_id"] = p->instrumentation_key_;
-                    render_histograms.push_back(o);
-                }
-            }
-            duration += p->duration_;
-        }
+    for (const auto& th :
+         session.GetNonEmptyHistograms<FrameTimeMetricData>()) {
+        const auto& ft = th.second->metric_;
+        if (ft.annotation_ != annotation) continue;
+        std::vector<int32_t> counts;
+        for (auto& c : th.second->histogram_.buckets())
+            counts.push_back(static_cast<int32_t>(c));
+        Json::object o{{"counts", counts}};
+        o["instrument_id"] =
+            session.GetInstrumentationKey(ft.instrumentation_key_index_);
+        render_histograms.push_back(o);
+        duration += th.second->duration_;
     }
-    int total_size = render_histograms.size() + loading_histograms.size() +
-                     loading_events_times.size();
+    for (const auto& th :
+         session.GetNonEmptyHistograms<LoadingTimeMetricData>()) {
+        const auto& lt = th.second->metric_;
+        if (lt.annotation_ != annotation) continue;
+        for (auto c : th.second->histogram_.samples()) {
+            auto v = static_cast<int>(c);
+            if (v != 0) loading_events_times.push_back(v);
+        }
+        duration += th.second->duration_;
+    }
+    int total_size = render_histograms.size() + loading_events_times.size();
     empty = (total_size == 0);
-    // Use the average duration for this annotation
-    if (!empty) duration /= total_size;
     Json::object ret;
     if (render_histograms.size() > 0) {
         ret["rendering"] =
             Json::object{{"render_time_histogram", render_histograms}};
     }
-    // Loading histograms
-    if (loading_histograms.size() > 0 || loading_events_times.size() > 0) {
+    // Loading events
+    if (loading_events_times.size() > 0) {
         Json::object loading;
-        if (loading_histograms.size() > 0) {
-            loading["loading_time_histogram"] = loading_histograms;
-        }
         if (loading_events_times.size() > 0) {
             loading["loading_events"] =
                 Json::object{{"times_ms", loading_events_times}};
@@ -210,30 +201,25 @@ Json::object TelemetryReportJson(const Session& prong_cache,
     }
     return ret;
 }
-Json::object MemoryTelemetryReportJson(const Session& prong_cache,
+Json::object MemoryTelemetryReportJson(const Session& session,
                                        const SerializedAnnotation& annotation,
                                        bool& empty) {
     std::vector<Json::object> memory_histograms;
-    for (auto& mem_histogram :
-         prong_cache.GetMemoryTelemetry().GetHistograms()) {
-        auto h = mem_histogram.histogram;
-        if (h.Count() != 0) {
-            if (h.GetMode() == HistogramBase::Mode::AUTO_RANGE)
-                h.CalcBucketsFromSamples();
-            std::vector<int32_t> counts;
-            for (auto c : h.buckets())
-                counts.push_back(static_cast<int32_t>(c));
-
-            Json::object histogram_config{
-                {"bucket_min_bytes", JsonUint64(h.BucketStart())},
-                {"bucket_max_bytes", JsonUint64(h.BucketEnd())}};
-            Json::object o{
-                {"type", mem_histogram.type},
-                {"period_ms", static_cast<int>(mem_histogram.period_ms)},
-                {"histogram_config", histogram_config},
-                {"counts", counts}};
-            memory_histograms.push_back(o);
-        }
+    for (const auto& th : session.GetNonEmptyHistograms<MemoryMetricData>()) {
+        const auto& mh = th.second->metric_;
+        auto& h = th.second->histogram_;
+        if (h.GetMode() == HistogramBase::Mode::AUTO_RANGE)
+            const_cast<Histogram<uint64_t>*>(&h)->CalcBucketsFromSamples();
+        std::vector<int32_t> counts;
+        for (auto c : h.buckets()) counts.push_back(static_cast<int32_t>(c));
+        Json::object histogram_config{
+            {"bucket_min_bytes", JsonUint64(h.BucketStart())},
+            {"bucket_max_bytes", JsonUint64(h.BucketEnd())}};
+        Json::object o{{"type", mh.memory_record_type_},
+                       {"period_ms", static_cast<int>(mh.period_ms_)},
+                       {"histogram_config", histogram_config},
+                       {"counts", counts}};
+        memory_histograms.push_back(o);
     }
     // Memory histogram
     Json::object ret;
@@ -246,48 +232,50 @@ Json::object MemoryTelemetryReportJson(const Session& prong_cache,
     return ret;
 }
 
-Json::object TelemetryJson(const Session& prong_cache,
+Json::object TelemetryJson(const Session& session,
                            const SerializedAnnotation& annotation,
                            const RequestInfo& request_info, Duration& duration,
                            bool& empty) {
-    auto report = TelemetryReportJson(prong_cache, annotation, empty, duration);
+    auto report = TelemetryReportJson(session, annotation, empty, duration);
     return Json::object{
-        {"context",
-         TelemetryContextJson(prong_cache, annotation, request_info, duration)},
+        {"context", TelemetryContextJson(annotation, request_info, duration)},
         {"report", report}};
 }
 
-Json::object MemoryTelemetryJson(const Session& prong_cache,
+Json::object MemoryTelemetryJson(const Session& session,
                                  const SerializedAnnotation& annotation,
                                  const RequestInfo& request_info,
                                  const Duration& duration, bool& empty) {
-    auto report = MemoryTelemetryReportJson(prong_cache, annotation, empty);
+    auto report = MemoryTelemetryReportJson(session, annotation, empty);
     return Json::object{
-        {"context",
-         TelemetryContextJson(prong_cache, annotation, request_info, duration)},
+        {"context", TelemetryContextJson(annotation, request_info, duration)},
         {"report", report}};
 }
 
-/*static*/ void JsonSerializer::SerializeEvent(const Session& prongs,
+/*static*/ void JsonSerializer::SerializeEvent(const Session& session,
                                                const RequestInfo& request_info,
                                                std::string& evt_json_ser) {
     Json session_context = Json::object{
         {"device", json_utils::DeviceSpecJson(request_info)},
         {"game_sdk_info", GameSdkInfoJson(request_info)},
         {"time_period",
-         Json::object{{"start_time", TimeToRFC3339(prongs.time().start)},
-                      {"end_time", TimeToRFC3339(prongs.time().end)}}}};
+         Json::object{{"start_time", TimeToRFC3339(session.time().start)},
+                      {"end_time", TimeToRFC3339(session.time().end)}}}};
     std::vector<Json::object> telemetry;
     // Loop over unique annotations
     std::set<SerializedAnnotation> annotations;
-    for (auto& p : prongs.prongs()) {
-        if (p.get() != nullptr) annotations.insert(p->annotation_);
+    for (const auto& p : session.GetNonEmptyHistograms<FrameTimeMetricData>()) {
+        annotations.insert(p.second->metric_.annotation_);
+    }
+    for (const auto& p :
+         session.GetNonEmptyHistograms<LoadingTimeMetricData>()) {
+        annotations.insert(p.second->metric_.annotation_);
     }
     Duration sum_duration = Duration::zero();
     for (auto& a : annotations) {
         bool empty;
         Duration duration;
-        auto tel = TelemetryJson(prongs, a, request_info, duration, empty);
+        auto tel = TelemetryJson(session, a, request_info, duration, empty);
         sum_duration += duration;
         if (!empty) telemetry.push_back(tel);
     }
@@ -299,7 +287,7 @@ Json::object MemoryTelemetryJson(const Session& prong_cache,
         // expect it to be ignored  on the Play side.
         auto& a = *annotations.begin();
         auto tel =
-            MemoryTelemetryJson(prongs, a, request_info, sum_duration, empty);
+            MemoryTelemetryJson(session, a, request_info, sum_duration, empty);
         if (!empty) telemetry.push_back(tel);
     }
     Json upload_telemetry_request =
@@ -329,7 +317,8 @@ struct Hist {
 }  // namespace
 
 /*static*/ TuningFork_ErrorCode JsonSerializer::DeserializeAndMerge(
-    const std::string& evt_json_ser, IdProvider& id_provider, Session& pc) {
+    const std::string& evt_json_ser, IdProvider& id_provider,
+    Session& session) {
     std::string err;
     Json in = Json::parse(evt_json_ser, err);
     if (!err.empty()) {
@@ -369,14 +358,14 @@ struct Hist {
 
     // Merge
     for (auto& h : hists) {
-        uint64_t id;
+        MetricId id{0};
         auto annotation_id =
             id_provider.DecodeAnnotationSerialization(h.annotation);
         if (annotation_id == annotation_util::kAnnotationError)
             return TUNINGFORK_ERROR_BAD_PARAMETER;
         auto r = id_provider.MakeCompoundId(h.instrument_id, annotation_id, id);
         if (r != TUNINGFORK_ERROR_OK) return r;
-        auto p = pc.Get(id);
+        auto p = session.GetData<FrameTimeMetricData>(id);
         if (p == nullptr) return TUNINGFORK_ERROR_BAD_PARAMETER;
         auto& orig_counts = p->histogram_.buckets();
         p->histogram_.AddCounts(h.counts);
