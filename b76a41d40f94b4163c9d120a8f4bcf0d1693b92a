@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "92369332_7c73ab7c",
+        "filename": "src/tuningfork/core/tuningfork_impl.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-07-10T11:40:22Z",
+      "side": 0,
+      "message": "Glad to see this gone 👍",
+      "revId": "b76a41d40f94b4163c9d120a8f4bcf0d1693b92a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fcfd3ce8_a2f5c9ad",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-07-10T11:40:22Z",
+      "side": 1,
+      "message": "Looks good to me! MetricId makes things clearer :)",
+      "revId": "af9bd0df8c0282e36d6b86a44d20373498382eeb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7914486f_903bb403",
+        "filename": "src/tuningfork/core/metric.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-07-10T11:40:22Z",
+      "side": 1,
+      "message": "Nice usage of union to codify how is the metric id interpreted 👍",
+      "revId": "af9bd0df8c0282e36d6b86a44d20373498382eeb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
