@@ -33,6 +33,24 @@
       "revId": "a1f758c2b8640cb5633b44f7ccad3152997f4016",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3bd615a6_baca1ea5",
+        "filename": "src/swappy/vulkan/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 277,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-10T12:00:00Z",
+      "side": 1,
+      "message": "Done, although it\u0027s not required by the Google C++ coding standard.",
+      "parentUuid": "6d13a923_6e440ef7",
+      "revId": "a1f758c2b8640cb5633b44f7ccad3152997f4016",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
