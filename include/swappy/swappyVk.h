@@ -192,18 +192,27 @@ VkResult SwappyVk_queuePresent(VkQueue queue,
                                const VkPresentInfoKHR* pPresentInfo);
 
 /**
- * @brief Destroy SwappyVk instance associated to the swapchain
+ * @brief Destroy the SwappyVk instance associated with a swapchain.
  *
- * This API is expected to be called before calling to vkDestroySwapchainKHR()
+ * This API is expected to be called before calling vkDestroySwapchainKHR()
  * so Swappy can cleanup its internal state.
- * Note that if you only have one swapchain for the device,
- * this function will also clean up any resources associated with the device.
  *
- * @param[in]  device     - The VkDevice associated with SwappyVk
+ * @param[in]  device    - The VkDevice associated with SwappyVk
  * @param[in]  swapchain - The VkSwapchainKHR the application wants Swappy to
- * swap
+ * destroy
  */
 void SwappyVk_destroySwapchain(VkDevice device, VkSwapchainKHR swapchain);
+
+/**
+ * @brief Destroy any swapchains associated with the device and clean up the
+ * device's resources
+ *
+ * This function should be called after SwappyVk_destroySwapchain if you no
+ * longer need the device.
+ *
+ * @param[in]  device     - The VkDevice associated with SwappyVk
+ */
+void SwappyVk_destroyDevice(VkDevice device);
 
 /**
  * @brief Enables Auto-Swap-Interval feature for all instances.
