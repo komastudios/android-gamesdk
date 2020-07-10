@@ -22,6 +22,30 @@
       "revId": "e6d140b46faaf367d475fc1191b00fc03b8b5f79",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d96d7f5a_2281c66a",
+        "filename": "include/swappy/swappyVk.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-10T09:15:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a00ea92a_85c8305f",
+      "range": {
+        "startLine": 200,
+        "startChar": 66,
+        "endLine": 200,
+        "endChar": 73
+      },
+      "revId": "e6d140b46faaf367d475fc1191b00fc03b8b5f79",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
