@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3f9bd543_ff7e4927",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 772,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-13T18:51:38Z",
+      "side": 1,
+      "message": "Reading through the code I think that the check is for making sure that we switch to a better refresh is we indeed swap faster, but there is a buf with the sign:\n\n if (swapDuration \u003e mSwapDuration) {\n     continue;\n }\n\nSo with this code we will not consider any swap durations that are longer than the current one. Does this make sense?",
+      "revId": "937d41553f9d2df1bcdbab3b11d68d3fc2578a97",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
