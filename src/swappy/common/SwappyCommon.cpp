@@ -770,17 +770,13 @@ void SwappyCommon::setPreferredRefreshRate(nanoseconds frameTime) {
                 calculateSwapInterval(frameTime, period);
             const nanoseconds swapDuration = period * swapIntervalForPeriod;
 
-            if (swapDuration < mSwapDuration) {
-                continue;
-            }
-
             if (swapDuration < minSwapDuration ||
                 (bestRefreshConfigFound && period > bestRefreshConfig.first &&
                  isWithinMargin(swapDuration, minSwapDuration))) {
                 bestRefreshConfigFound = true;
                 minSwapDuration = swapDuration;
                 bestRefreshConfig = refreshRate;
-                ALOGV("Found better refresh %.2f", 1e9f / period.count());
+                ALOGV("Found possibly better refresh %.2f", 1e9f / period.count());
             };
         }
 
