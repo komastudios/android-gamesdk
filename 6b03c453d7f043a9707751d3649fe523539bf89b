@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "661eb16b_98d2048f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-13T12:43:51Z",
+      "side": 1,
+      "message": "I\u0027m not sure of the purpose of the check I\u0027ve removed - something to do with reducing power consumption according to the comment above it? - but it causes auto-mode to not swap faster again following a decision to swap slower after being backgrounded",
+      "revId": "6b03c453d7f043a9707751d3649fe523539bf89b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
