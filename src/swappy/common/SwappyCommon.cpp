@@ -770,7 +770,7 @@ void SwappyCommon::setPreferredRefreshRate(nanoseconds frameTime) {
                 calculateSwapInterval(frameTime, period);
             const nanoseconds swapDuration = period * swapIntervalForPeriod;
 
-            if (swapDuration < mSwapDuration) {
+            if (swapDuration > mSwapDuration) {
                 continue;
             }
 
