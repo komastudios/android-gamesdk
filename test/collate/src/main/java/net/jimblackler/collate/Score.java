@@ -157,6 +157,7 @@ public class Score {
             }
           }
           Files.createDirectory(directory.get());
+          Utils.copy(directory.get(), "report.css");
         } catch (IOException e) {
           throw new IllegalStateException(e);
         }
@@ -196,8 +197,6 @@ public class Score {
       body.append("</br>");
     }
 
-    Utils.copy(directory, "report.css");
-    Utils.copy(directory, "sorter.js");
     String content = Utils.fileToString("score.html");
     content = content.replace("<!--body-->", body);
 

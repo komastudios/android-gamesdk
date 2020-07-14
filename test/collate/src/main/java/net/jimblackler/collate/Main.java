@@ -43,8 +43,6 @@ class Main {
       String content = Utils.fileToString("main.html");
       // noinspection HardcodedFileSeparator
       content = content.replace("[/*data*/]", results.toString());
-      // noinspection HardcodedFileSeparator
-      content = content.replace("/*css*/", Utils.fileToString("report.css"));
       Files.writeString(outputFile, content);
       return outputFile.toUri();
     } catch (IOException ex) {
