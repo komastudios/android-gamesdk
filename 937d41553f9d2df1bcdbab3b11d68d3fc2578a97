@@ -16,6 +16,24 @@
       "revId": "937d41553f9d2df1bcdbab3b11d68d3fc2578a97",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ee284caf_ae3f78b0",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 772,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-14T11:29:50Z",
+      "side": 1,
+      "message": "Yes, thanks.",
+      "parentUuid": "3f9bd543_ff7e4927",
+      "revId": "937d41553f9d2df1bcdbab3b11d68d3fc2578a97",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
