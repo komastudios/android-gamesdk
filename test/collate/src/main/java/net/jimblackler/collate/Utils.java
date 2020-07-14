@@ -7,12 +7,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
+import java.util.stream.Stream;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,18 +32,20 @@ class Utils {
     return Files.readString(Paths.get("resources", filename));
   }
 
-  static void copy(Path directory, String filename) throws IOException {
-    Path fullPath = directory.resolve(filename);
-    File file = fullPath.toFile();
-    if (file.exists()) {
-      file.delete();
+  public static void copyFolder(Path from, Path to) throws IOException {
+    Files.createDirectory(to);
+    try (Stream<Path> stream = Files.walk(from)) {
+      stream.forEachOrdered(path -> {
+        if (Files.isDirectory(path)) {
+          return;
+        }
+        try {
+          Files.copy(path, to.resolve(from.relativize(path)));
+        } catch (IOException e) {
+          throw new IllegalStateException(e);
+        }
+      });
     }
-    try {
-      Files.createDirectory(fullPath.getParent());
-    } catch (FileAlreadyExistsException ex) {
-      // Intentionally ignored.
-    }
-    Files.copy(Paths.get("resources", filename), fullPath);
   }
 
   private static String readStream(InputStream inputStream, PrintStream out) throws IOException {
