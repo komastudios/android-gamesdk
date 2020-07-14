@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,6 +35,11 @@ class Utils {
     File file = fullPath.toFile();
     if (file.exists()) {
       file.delete();
+    }
+    try {
+      Files.createDirectory(fullPath.getParent());
+    } catch (FileAlreadyExistsException ex) {
+      // Intentionally ignored.
     }
     Files.copy(Paths.get("resources", filename), fullPath);
   }

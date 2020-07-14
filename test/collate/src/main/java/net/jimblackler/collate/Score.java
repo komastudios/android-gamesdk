@@ -157,6 +157,7 @@ public class Score {
             }
           }
           Files.createDirectory(directory.get());
+          Utils.copy(directory.get(), "static/report.js");
         } catch (IOException e) {
           throw new IllegalStateException(e);
         }
