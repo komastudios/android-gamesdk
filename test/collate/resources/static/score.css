@@ -1,0 +1,26 @@
+span.key {
+  display: inline-block;
+  font-weight: normal;
+  margin-right: 7px;
+}
+
+span.value {
+  display: inline-block;
+  margin-right: 7px;
+}
+
+td.best {
+  background: lightgreen;
+}
+
+td.good {
+  background: #dfffdf;
+}
+
+td.unacceptable {
+  text-decoration: line-through;
+}
+
+td.serviceCrashed {
+  font-weight: bold;
+}
