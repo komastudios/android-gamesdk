@@ -1,43 +1,14 @@
 {
   "tests": [
     [
-      {},
-      { "malloc": "40K" },
-      { "vkTest":  "40K" },
-      { "mmapAnon": "50K" },
       {
-        "mmapFile": "50K",
-        "mmapFileNames": [
-          "test0.dat",
-          "test1.dat",
-          "test2.dat",
-          "test3.dat",
-          "test4.dat",
-          "test5.dat",
-          "test6.dat",
-          "test7.dat"
-        ]
-      }
-    ],
-    [
-      {},
-      {
-        "firebaseBlocker": true
-      }
-    ],
-    [
-      {},
-      {
-        "heuristics": {
-          "trim": true
-        }
+        "glTest": "40K",
+        "maxConsumer": "2048K",
+        "timeout": "10m"
       }
     ]
   ],
   "coordinates": [
-    2,
-    0,
-    1,
     0
   ]
 }
