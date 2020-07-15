@@ -109,6 +109,7 @@ public class MainActivity extends Activity {
 
     JSONObject params1 = null;
     if ("com.google.intent.action.TEST_LOOP".equals(launchIntent.getAction())) {
+      // Parameters for an automatic run have been set via Firebase Test Loop.
       Uri logFile = launchIntent.getData();
       if (logFile != null) {
         String logPath = logFile.getEncodedPath();
@@ -130,6 +131,7 @@ public class MainActivity extends Activity {
     }
 
     if (launchIntent.hasExtra("Params")) {
+      // Parameters for an automatic run have been set via Intent.
       try {
         params1 = new JSONObject(Objects.requireNonNull(launchIntent.getStringExtra("Params")));
       } catch (JSONException e) {
@@ -138,6 +140,7 @@ public class MainActivity extends Activity {
     }
 
     if (params1 == null) {
+      // Must be manually launched. Get the parameters from the local default.json.
       try {
         params1 = new JSONObject(readStream(getAssets().open("default.json")));
       } catch (IOException | JSONException e) {
@@ -145,6 +148,7 @@ public class MainActivity extends Activity {
       }
     }
     if (resultsStream == System.out) {
+      // This run is not running on Firebase. Determine the filename.
       try {
         JSONArray coordinates = params1.getJSONArray("coordinates");
         StringBuilder coordsString = new StringBuilder();
