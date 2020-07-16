@@ -713,14 +713,15 @@ void SwappyCommon::setAutoPipelineMode(bool enabled) {
     }
 }
 
-void SwappyCommon::setPreferredModeId(int modeId) {
+bool SwappyCommon::setPreferredModeId(int modeId) {
     if (!mDisplayManager || modeId < 0 || mNextModeId == modeId) {
-        return;
+        return false;
     }
 
     mNextModeId = modeId;
     mDisplayManager->setPreferredRefreshRate(modeId);
     ALOGV("setPreferredModeId set to %d", modeId);
+    return true;
 }
 
 int SwappyCommon::calculateSwapInterval(nanoseconds frameTime,
@@ -763,16 +764,12 @@ void SwappyCommon::setPreferredRefreshRate(nanoseconds frameTime) {
         //      power consumption.
         bool bestRefreshConfigFound = false;
         std::pair<nanoseconds, int> bestRefreshConfig;
-        nanoseconds minSwapDuration = 1s;
+        nanoseconds minSwapDuration = mCommonSettings.refreshPeriod * mAutoSwapInterval;
         for (const auto& refreshRate : *mSupportedRefreshRates) {
             const auto period = refreshRate.first;
             const int swapIntervalForPeriod =
                 calculateSwapInterval(frameTime, period);
             const nanoseconds swapDuration = period * swapIntervalForPeriod;
-
-            if (swapDuration > mSwapDuration) {
-                continue;
-            }
 
             if (swapDuration < minSwapDuration ||
                 (bestRefreshConfigFound && period > bestRefreshConfig.first &&
@@ -780,7 +777,6 @@ void SwappyCommon::setPreferredRefreshRate(nanoseconds frameTime) {
                 bestRefreshConfigFound = true;
                 minSwapDuration = swapDuration;
                 bestRefreshConfig = refreshRate;
-                ALOGV("Found better refresh %.2f", 1e9f / period.count());
             };
         }
 
@@ -788,7 +784,9 @@ void SwappyCommon::setPreferredRefreshRate(nanoseconds frameTime) {
         if (bestRefreshConfigFound) {
             TRACE_INT("preferredRefreshPeriod",
                       bestRefreshConfig.first.count());
-            setPreferredModeId(bestRefreshConfig.second);
+            if (setPreferredModeId(bestRefreshConfig.second) && mAutoSwapIntervalEnabled) {
+                mAutoSwapInterval = calculateSwapInterval(frameTime, bestRefreshConfig.first);
+            }
         }
     }
 }

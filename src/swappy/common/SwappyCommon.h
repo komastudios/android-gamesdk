@@ -196,7 +196,7 @@ class SwappyCommon {
     void waitUntil(int32_t target);
     void waitUntilTargetFrame();
     void waitOneFrame();
-    void setPreferredModeId(int index);
+    bool setPreferredModeId(int index);
     void setPreferredRefreshRate(std::chrono::nanoseconds frameTime)
         REQUIRES(mMutex);
     int calculateSwapInterval(std::chrono::nanoseconds frameTime,
