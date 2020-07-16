@@ -1,18 +1,19 @@
-export function appendStyledJson(node, obj) {
+export function getDataExplorer(obj) {
   if (Array.isArray(obj)) {
     const ol = document.createElement('ol');
     ol.setAttribute('start', 0);
     for (let idx = 0; idx !== obj.length; idx++) {
       const li = document.createElement('li');
-      appendStyledJson(li, obj[idx]);
+      li.appendChild(getDataExplorer(obj[idx]));
       ol.appendChild(li);
     }
-    node.appendChild(ol);
+    return ol;
   } else if (typeof obj === 'object') {
     const table = document.createElement('table');
     for (const [key, value] of Object.entries(obj)) {
       const tr = document.createElement('tr');
       const td0 = document.createElement('td');
+      td0.classList.add('key');
       td0.appendChild(document.createTextNode(key));
       tr.appendChild(td0);
       const td1 = document.createElement('td');
@@ -24,15 +25,15 @@ export function appendStyledJson(node, obj) {
         span.appendChild(text);
         summary.appendChild(span);
         details.appendChild(summary);
-        appendStyledJson(details, value);
+        details.appendChild(getDataExplorer(value));
         td1.appendChild(details);
       } else {
-        appendStyledJson(td1, value);
+        td1.appendChild(getDataExplorer(value));
       }
       tr.appendChild(td1);
       table.appendChild(tr);
     }
-    node.append(table);
+    return table;
   } else {
     if (typeof obj !== 'string') {
       obj = obj.toString();
@@ -41,16 +42,16 @@ export function appendStyledJson(node, obj) {
     if (/[\r\n]/.exec(obj)) {
       const pre = document.createElement('pre');
       pre.appendChild(textNode);
-      node.appendChild(pre);
+      return pre;
     } else {
       const a = document.createElement('a');
       a.appendChild(textNode);
       a.setAttribute('target', '_blank');
       a.href = obj;
       if (a.href === obj) {
-        node.appendChild(a);
+        return a;
       } else {
-        node.appendChild(textNode);
+        return textNode;
       }
     }
   }
