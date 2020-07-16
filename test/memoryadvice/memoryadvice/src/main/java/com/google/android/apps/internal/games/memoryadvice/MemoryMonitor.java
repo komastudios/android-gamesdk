@@ -10,9 +10,7 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Debug;
 import android.util.Log;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,16 +19,7 @@ import org.json.JSONObject;
 class MemoryMonitor {
   private static final String TAG = MemoryMonitor.class.getSimpleName();
 
-  private static final Collection<String> MEMINFO_FIELDS = new HashSet<>(Arrays.asList("Active",
-      "Active(anon)", "Active(file)", "AnonPages", "MemAvailable", "MemFree", "VmData", "VmRSS"));
-  private static final Collection<String> MEMINFO_FIELDS_CONSTANT =
-      new HashSet<>(Arrays.asList("CommitLimit", "HighTotal", "LowTotal", "MemTotal"));
-  private static final Collection<String> STATUS_FIELDS =
-      new HashSet<>(Arrays.asList("VmRSS", "VmSize"));
-  private static final String[] SUMMARY_FIELDS = {
-      "summary.native-heap", "summary.graphics", "summary.total-pss", "summary.total-swap"};
   private static final long BYTES_IN_KILOBYTE = 1024;
-  private final boolean fetchDebug;
   private final MapTester mapTester;
   protected final JSONObject baseline;
   private final ActivityManager activityManager;
@@ -39,32 +28,55 @@ class MemoryMonitor {
   /**
    * Create an Android memory metrics fetcher.
    *
-   * @param context The Android context to employ.
-   * @param fetchDebug Whether to fetch debug-based params.
+   * @param context  The Android context to employ.
+   * @param metrics The constant metrics to fetch - constant and variable.
    */
-  MemoryMonitor(Context context, boolean fetchDebug) {
-    this.fetchDebug = fetchDebug;
+  MemoryMonitor(Context context, JSONObject metrics) {
     mapTester = new MapTester(context.getCacheDir());
     activityManager = (ActivityManager) context.getSystemService((Context.ACTIVITY_SERVICE));
-    baseline = getMemoryMetrics(true);
+
+    try {
+      baseline = getMemoryMetrics(metrics.getJSONObject("variable"));
+      baseline.put("constant", getMemoryMetrics(metrics.getJSONObject("constant")));
+    } catch (JSONException e) {
+      throw new IllegalStateException(e);
+    }
   }
 
   /**
    * Gets Android memory metrics.
    *
-   * @param fetchConstants Whether to fetch metrics that never change.
+   * @param fields The fields to fetch in a JSON dictionary.
    * @return A JSONObject containing current memory metrics.
    */
-  public JSONObject getMemoryMetrics(boolean fetchConstants) {
+  public JSONObject getMemoryMetrics(JSONObject fields) {
     JSONObject report = new JSONObject();
     try {
-      report.put("nativeAllocated", Debug.getNativeHeapAllocatedSize());
+      if (fields.has("debug")) {
+        JSONObject debug = fields.getJSONObject("debug");
+        if (debug.optBoolean("nativeHeapAllocatedSize")) {
+          report.put("nativeAllocated", Debug.getNativeHeapAllocatedSize());
+        }
+      }
 
-      ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
-      activityManager.getMemoryInfo(memoryInfo);
-      report.put("availMem", memoryInfo.availMem);
-      if (memoryInfo.lowMemory) {
-        report.put("lowMemory", true);
+      if (fields.has("MemoryInfo")) {
+        JSONObject memoryInfoFields = fields.getJSONObject("MemoryInfo");
+        if (memoryInfoFields.length() > 0) {
+          ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+          activityManager.getMemoryInfo(memoryInfo);
+          if (memoryInfoFields.has("availMem")) {
+            report.put("availMem", memoryInfo.availMem);
+          }
+          if (memoryInfoFields.has("lowMemory") && memoryInfo.lowMemory) {
+            report.put("lowMemory", true);
+          }
+          if (memoryInfoFields.has("totalMem")) {
+            report.put("totalMem", memoryInfo.totalMem);
+          }
+          if (memoryInfoFields.has("threshold")) {
+            report.put("threshold", memoryInfo.threshold);
+          }
+        }
       }
 
       if (mapTester.warning()) {
@@ -77,46 +89,56 @@ class MemoryMonitor {
         latestOnTrimLevel = 0;
       }
 
-      report.put("oom_score", getOomScore());
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && fetchDebug) {
-        Debug.MemoryInfo[] debugMemoryInfos = getDebugMemoryInfo(activityManager);
-        if (debugMemoryInfos.length > 0) {
-          for (String key : SUMMARY_FIELDS) {
-            long value = 0;
-            for (Debug.MemoryInfo debugMemoryInfo : debugMemoryInfos) {
-              value += Long.parseLong(debugMemoryInfo.getMemoryStat(key));
+      if (fields.has("proc")) {
+        JSONObject procFields = fields.getJSONObject("proc");
+        if (procFields.optBoolean("oom_score")) {
+          report.put("oom_score", getOomScore());
+        }
+      }
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && fields.has("summary")) {
+        JSONObject summary = fields.getJSONObject("summary");
+        if (summary.length() > 0) {
+          Debug.MemoryInfo[] debugMemoryInfos = getDebugMemoryInfo(activityManager);
+          if (debugMemoryInfos.length > 0) {
+            Iterator<String> it = summary.keys();
+            while (it.hasNext()) {
+              String key = it.next();
+              long value = 0;
+              for (Debug.MemoryInfo debugMemoryInfo : debugMemoryInfos) {
+                value += Long.parseLong(debugMemoryInfo.getMemoryStat(key));
+              }
+              report.put(key, value * BYTES_IN_KILOBYTE);
             }
-            report.put(key, value * BYTES_IN_KILOBYTE);
           }
         }
       }
 
-      Map<String, Long> memInfo = processMeminfo();
-      for (Map.Entry<String, Long> pair : memInfo.entrySet()) {
-        String key = pair.getKey();
-        if (MEMINFO_FIELDS.contains(key)) {
-          report.put(key, pair.getValue());
+      if (fields.has("meminfo")) {
+        JSONObject meminfoFields = fields.getJSONObject("meminfo");
+        if (meminfoFields.length() > 0) {
+          Map<String, Long> memInfo = processMeminfo();
+          for (Map.Entry<String, Long> pair : memInfo.entrySet()) {
+            String key = pair.getKey();
+            if (meminfoFields.optBoolean(key)) {
+              report.put(key, pair.getValue());
+            }
+          }
         }
       }
 
-      for (Map.Entry<String, Long> pair : processStatus().entrySet()) {
-        String key = pair.getKey();
-        if (STATUS_FIELDS.contains(key)) {
-          report.put(key, pair.getValue());
-        }
-      }
-      if (fetchConstants) {
-        JSONObject constant = new JSONObject();
-        for (Map.Entry<String, Long> pair : memInfo.entrySet()) {
-          String key = pair.getKey();
-          if (MEMINFO_FIELDS_CONSTANT.contains(key)) {
-            constant.put(key, pair.getValue());
+      if (fields.has("status")) {
+        JSONObject status = fields.getJSONObject("status");
+        if (status.length() > 0) {
+          for (Map.Entry<String, Long> pair : processStatus().entrySet()) {
+            String key = pair.getKey();
+            if (status.optBoolean(key)) {
+              report.put(key, pair.getValue());
+            }
           }
         }
-        constant.put("totalMem", memoryInfo.totalMem);
-        constant.put("threshold", memoryInfo.threshold);
-        report.put("constant", constant);
       }
+
       JSONObject meta = new JSONObject();
       meta.put("time", System.currentTimeMillis());
       report.put("meta", meta);
