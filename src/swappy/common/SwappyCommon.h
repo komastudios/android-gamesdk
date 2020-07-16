@@ -196,8 +196,8 @@ class SwappyCommon {
     void waitUntil(int32_t target);
     void waitUntilTargetFrame();
     void waitOneFrame();
-    void setPreferredModeId(int index);
-    void setPreferredRefreshRate(std::chrono::nanoseconds frameTime)
+    void setPreferredDisplayModeId(int index);
+    void setPreferredRefreshPeriod(std::chrono::nanoseconds frameTime)
         REQUIRES(mMutex);
     int calculateSwapInterval(std::chrono::nanoseconds frameTime,
                               std::chrono::nanoseconds refreshPeriod);
@@ -206,8 +206,6 @@ class SwappyCommon {
     // Waits for the next frame, considering both Choreographer and the prior
     // frame's completion
     bool waitForNextFrame(const SwapHandlers& h);
-
-    bool isWithinMargin(std::chrono::nanoseconds a, std::chrono::nanoseconds b);
 
     void onRefreshRateChanged();
 
@@ -295,8 +293,8 @@ class SwappyCommon {
     std::unique_ptr<SwappyDisplayManager> mDisplayManager;
     int mNextModeId = -1;
 
-    std::shared_ptr<SwappyDisplayManager::RefreshRateMap>
-        mSupportedRefreshRates;
+    std::shared_ptr<SwappyDisplayManager::RefreshPeriodMap>
+        mSupportedRefreshPeriods;
 
     struct TimingSettings {
         std::chrono::nanoseconds refreshPeriod = {};

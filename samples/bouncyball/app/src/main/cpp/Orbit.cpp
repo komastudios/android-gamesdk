@@ -50,6 +50,12 @@ extern "C" {
 void startFrameCallback(void *, int, int64_t) {
 }
 
+void postWaitCallback(void*, int64_t cpu, int64_t gpu) {
+    auto renderer = Renderer::getInstance();
+    double frameTime = std::max(cpu, gpu);
+    renderer->frameTimeStats().add(frameTime);
+}
+
 void swapIntervalChangedCallback(void *) {
     uint64_t swap_ns = SwappyGL_getSwapIntervalNS();
     ALOGI("Swappy changed swap interval to %.2fms", swap_ns / 1e6f);
@@ -86,7 +92,7 @@ Java_com_prefabulated_bouncyball_OrbitActivity_nInit(JNIEnv *env, jobject activi
 
     SwappyTracer tracers;
     tracers.preWait = nullptr;
-    tracers.postWait = nullptr;
+    tracers.postWait = postWaitCallback;
     tracers.preSwapBuffers = nullptr;
     tracers.postSwapBuffers = nullptr;
     tracers.startFrame = startFrameCallback;
@@ -137,6 +143,25 @@ Java_com_prefabulated_bouncyball_OrbitActivity_nSetAutoSwapInterval(JNIEnv *env,
 JNIEXPORT float JNICALL
 Java_com_prefabulated_bouncyball_OrbitActivity_nGetAverageFps(JNIEnv * /* env */, jobject /* this */) {
     return Renderer::getInstance()->getAverageFps();
+}
+
+JNIEXPORT float JNICALL
+Java_com_prefabulated_bouncyball_OrbitActivity_nGetRefreshPeriodNS(JNIEnv * /* env */, jobject /* this */) {
+    return SwappyGL_getRefreshPeriodNanos();
+}
+
+JNIEXPORT float JNICALL
+Java_com_prefabulated_bouncyball_OrbitActivity_nGetSwapIntervalNS(JNIEnv * /* env */, jobject /* this */) {
+    return SwappyGL_getSwapIntervalNS();
+}
+
+JNIEXPORT float JNICALL
+Java_com_prefabulated_bouncyball_OrbitActivity_nGetPipelineFrameTimeNS(JNIEnv * /* env */, jobject /* this */) {
+    return Renderer::getInstance()->frameTimeStats().mean();
+}
+JNIEXPORT float JNICALL
+Java_com_prefabulated_bouncyball_OrbitActivity_nGetPipelineFrameTimeStdDevNS(JNIEnv * /* env */, jobject /* this */) {
+    return sqrt( Renderer::getInstance()->frameTimeStats().var());
 }
 
 JNIEXPORT void JNICALL

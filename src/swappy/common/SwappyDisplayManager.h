@@ -45,19 +45,20 @@ class SwappyDisplayManager {
 
     bool isInitialized() { return mInitialized; }
 
-    using RefreshRateMap = std::map<std::chrono::nanoseconds, int>;
+    // Map from refresh period to display mode id
+    using RefreshPeriodMap = std::map<std::chrono::nanoseconds, int>;
 
-    std::shared_ptr<RefreshRateMap> getSupportedRefreshRates();
+    std::shared_ptr<RefreshPeriodMap> getSupportedRefreshPeriods();
 
-    void setPreferredRefreshRate(int index);
+    void setPreferredDisplayModeId(int index);
 
    private:
     JavaVM* mJVM;
     std::mutex mMutex;
     std::condition_variable mCondition;
-    std::shared_ptr<RefreshRateMap> mSupportedRefreshRates;
+    std::shared_ptr<RefreshPeriodMap> mSupportedRefreshPeriods;
     jobject mJthis = nullptr;
-    jmethodID mSetPreferredRefreshRate = nullptr;
+    jmethodID mSetPreferredDisplayModeId = nullptr;
     jmethodID mTerminate = nullptr;
     bool mInitialized = false;
 

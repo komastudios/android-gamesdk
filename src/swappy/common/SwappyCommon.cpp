@@ -326,7 +326,7 @@ bool SwappyCommon::waitForNextFrame(const SwapHandlers& h) {
 void SwappyCommon::updateDisplayTimings() {
     // grab a pointer to the latest supported refresh rates
     if (mDisplayManager) {
-        mSupportedRefreshRates = mDisplayManager->getSupportedRefreshRates();
+        mSupportedRefreshPeriods = mDisplayManager->getSupportedRefreshPeriods();
     }
 
     std::lock_guard<std::mutex> lock(mMutex);
@@ -369,11 +369,11 @@ void SwappyCommon::updateDisplayTimings() {
         mAutoSwapInterval =
             calculateSwapInterval(mSwapDuration, mCommonSettings.refreshPeriod);
         mPipelineMode = PipelineMode::On;
-        setPreferredRefreshRate(mSwapDuration);
+        setPreferredRefreshPeriod(mSwapDuration);
     }
 
     if (mNextModeId == -1 && mLatestFrameRateVote == 0) {
-        setPreferredRefreshRate(mSwapDuration);
+        setPreferredRefreshPeriod(mSwapDuration);
     }
 
     mFrameDurations.clear();
@@ -464,8 +464,8 @@ void SwappyCommon::FrameDurations::add(FrameDuration frameDuration) {
 }
 
 bool SwappyCommon::FrameDurations::hasEnoughSamples() const {
-    return !mFrames.empty() && mFrames.back().first - mFrames.front().first >
-                                   FRAME_DURATION_SAMPLE_SECONDS;
+    return (!mFrames.empty()) && (mFrames.back().first - mFrames.front().first >
+                                  FRAME_DURATION_SAMPLE_SECONDS);
 }
 
 SwappyCommon::FrameDuration SwappyCommon::FrameDurations::getAverageFrameTime()
@@ -555,11 +555,6 @@ bool SwappyCommon::swapFaster(int newSwapInterval) {
     return swappedFaster;
 }
 
-bool SwappyCommon::isWithinMargin(nanoseconds a, nanoseconds b) {
-    static constexpr std::chrono::nanoseconds MARGIN = 1ms;
-    return std::abs((a - b).count()) < MARGIN.count();
-}
-
 bool SwappyCommon::updateSwapInterval() {
     std::lock_guard<std::mutex> lock(mMutex);
     if (!mAutoSwapIntervalEnabled) return false;
@@ -633,7 +628,7 @@ bool SwappyCommon::updateSwapInterval() {
         mFrameDurations.clear();
     }
 
-    setPreferredRefreshRate(pipelineFrameTime);
+    setPreferredRefreshPeriod(pipelineFrameTime);
 
     return configChanged;
 }
@@ -713,14 +708,14 @@ void SwappyCommon::setAutoPipelineMode(bool enabled) {
     }
 }
 
-void SwappyCommon::setPreferredModeId(int modeId) {
+void SwappyCommon::setPreferredDisplayModeId(int modeId) {
     if (!mDisplayManager || modeId < 0 || mNextModeId == modeId) {
         return;
     }
 
     mNextModeId = modeId;
-    mDisplayManager->setPreferredRefreshRate(modeId);
-    ALOGV("setPreferredModeId set to %d", modeId);
+    mDisplayManager->setPreferredDisplayModeId(modeId);
+    ALOGV("setPreferredDisplayModeId set to %d", modeId);
 }
 
 int SwappyCommon::calculateSwapInterval(nanoseconds frameTime,
@@ -737,7 +732,7 @@ int SwappyCommon::calculateSwapInterval(nanoseconds frameTime,
             (framesPerRefreshRemainder > REFRESH_RATE_MARGIN.count() ? 1 : 0));
 }
 
-void SwappyCommon::setPreferredRefreshRate(nanoseconds frameTime) {
+void SwappyCommon::setPreferredRefreshPeriod(nanoseconds frameTime) {
     if (mANativeWindow_setFrameRate && mWindow) {
         auto frameRate = 1e9f / frameTime.count();
 
@@ -753,42 +748,39 @@ void SwappyCommon::setPreferredRefreshRate(nanoseconds frameTime) {
 
         TRACE_INT("preferredRefreshPeriod", (int)frameRate);
     } else {
-        if (!mDisplayManager || !mSupportedRefreshRates) {
+        if (!mDisplayManager || !mSupportedRefreshPeriods) {
             return;
         }
-        // Loop across all supported refresh rate to find the best refresh rate.
-        // Best refresh rate means:
-        //      Shortest swap period that can still accommodate the frame time
-        //      can be achieved at the lowest refresh rate possible to optimize
-        //      power consumption.
-        bool bestRefreshConfigFound = false;
+        // Loop across all supported refresh periods to find the best refresh period.
+        // Best refresh period means:
+        //      Shortest swap period that can still accommodate the frame time and that
+        //      has the longest refresh period possible to optimize power consumption.
         std::pair<nanoseconds, int> bestRefreshConfig;
         nanoseconds minSwapDuration = 1s;
-        for (const auto& refreshRate : *mSupportedRefreshRates) {
-            const auto period = refreshRate.first;
+        for (const auto& refreshConfig : *mSupportedRefreshPeriods) {
+            const auto period = refreshConfig.first;
             const int swapIntervalForPeriod =
                 calculateSwapInterval(frameTime, period);
             const nanoseconds swapDuration = period * swapIntervalForPeriod;
 
-            if (swapDuration > mSwapDuration) {
+            // Don't allow swapping faster than mSwapDuration (see public header)
+            if (swapDuration + FRAME_MARGIN < mSwapDuration) {
                 continue;
             }
 
-            if (swapDuration < minSwapDuration ||
-                (bestRefreshConfigFound && period > bestRefreshConfig.first &&
-                 isWithinMargin(swapDuration, minSwapDuration))) {
-                bestRefreshConfigFound = true;
+            // We iterate in ascending order of refresh period, so accepting any better or
+            // equal-within-margin duration here chooses the longest refresh period possible.
+            if (swapDuration < minSwapDuration + FRAME_MARGIN) {
                 minSwapDuration = swapDuration;
-                bestRefreshConfig = refreshRate;
-                ALOGV("Found better refresh %.2f", 1e9f / period.count());
-            };
+                bestRefreshConfig = refreshConfig;
+            }
         }
 
-        // Check if we there is a potential better refresh rate
-        if (bestRefreshConfigFound) {
+        // Switch if we have a potentially better refresh rate
+        {
             TRACE_INT("preferredRefreshPeriod",
                       bestRefreshConfig.first.count());
-            setPreferredModeId(bestRefreshConfig.second);
+            setPreferredDisplayModeId(bestRefreshConfig.second);
         }
     }
 }
