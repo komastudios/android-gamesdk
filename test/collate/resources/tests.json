@@ -7,7 +7,47 @@
         "no-record-video": true,
         "timeout" : "11m"
       },
-      "orientation" : "landscape"
+      "orientation" : "landscape",
+      "metrics": {
+        "constant": {
+          "MemoryInfo": {
+            "totalMem": true,
+            "threshold": true
+          },
+          "meminfo": {
+            "CommitLimit": true,
+            "HighTotal": true,
+            "LowTotal": true,
+            "MemTotal": true
+          }
+        },
+        "variable": {
+          "debug": {
+            "nativeHeapAllocatedSize": true
+          },
+          "MemoryInfo": {
+            "availMem": true,
+            "lowMemory": true
+          },
+          "meminfo": {
+            "Active": true,
+            "Active(anon)": true,
+            "Active(file)": true,
+            "AnonPages": true,
+            "MemAvailable": true,
+            "MemFree": true,
+            "VmData": true,
+            "VmRSS": true
+          },
+          "proc": {
+            "oom_score": true
+          },
+          "status": {
+            "VmRSS": true,
+            "VmSize": true
+          }
+        }
+      }
     }
   ],
   [
