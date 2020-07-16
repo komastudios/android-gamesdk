@@ -16,6 +16,64 @@
       "revId": "de46787a4824f5a3e489a49b6d882a4f5396dff0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "09b3e4b8_3974563f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-16T18:44:36Z",
+      "side": 1,
+      "message": "\u003e I think there was confusion between mSwapDuration, which is the requested duration, and the actual current swap duration, i.e. autoSwapInterval * refresh period, in the preferred refresh rate calculation.\n\nWhere is this confusion in code? \n\n\u003e Also, the autoSwapInterval was not updated to take into account the new refresh rate.\n\u003e Does this make sense, Ady?\n\nIt should, in updateDisplayTimings(). There we recalculate it based on the refresh rate. Please note that onces you setPreferredModeId() the refresh rate haven\u0027t change yet (and might never change, this depends on the device). The refresh rate changes when we get onSettingsChanged() which is trigger based on the refresh rate callback.\n\u003e \n\u003e There\u0027s also the question of whether we should be updating the refresh rate at all if auto mode is not enabled. WDYT?\n\u003e \n\nI don\u0027t think we should mix the two. Since our API for setting swap interval takes time as a parameter, it is valid for Swappy to change the refresh rate to best natch the time (i.e. is one calls (setSwapIntervalNS(11ms) Swappy should try to switch to 90Hz if available, even if the device us at 60Hz as it will achieve 45fps swap as oppose to 30fps).",
+      "parentUuid": "11236302_79c6063b",
+      "revId": "de46787a4824f5a3e489a49b6d882a4f5396dff0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "47ce124e_bc98accf",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 767,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-16T18:44:36Z",
+      "side": 1,
+      "message": "Why do we need to change that? setting the minSwapDuration to the current duration might avoid switching to a lower refresh rate (i.e. we are running 30fps@90Hz and we want to switch to 30fps@60Hz). The SwapDuration might still higher because of the match calculation and we will miss that. This is why we have isWithinMargin() to know whether two swap intervals are equal)",
+      "revId": "de46787a4824f5a3e489a49b6d882a4f5396dff0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "00c9c9a6_d987444e",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 788,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-16T18:44:36Z",
+      "side": 1,
+      "message": "we shouldn\u0027t update mAutoSwapInterval here. All the interval members are updated in updateDisplayTimings() so we will have a single point where everything gets updated (else we might have inconsistent data during a single swap). The other thing to note here is that setPreferredModeId() is not guaranteed to change the refresh rate (and the timings are not known either). The refresh rate changes when we get onSettingsChanged() which is trigger based on the refresh rate callback.",
+      "range": {
+        "startLine": 788,
+        "startChar": 16,
+        "endLine": 788,
+        "endChar": 33
+      },
+      "revId": "de46787a4824f5a3e489a49b6d882a4f5396dff0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
