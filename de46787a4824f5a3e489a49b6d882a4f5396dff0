@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "11236302_79c6063b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-16T16:32:08Z",
+      "side": 1,
+      "message": "I think there was confusion between mSwapDuration, which is the requested duration, and the actual current swap duration, i.e. autoSwapInterval * refresh period, in the preferred refresh rate calculation.\nAlso, the autoSwapInterval was not updated to take into account the new refresh rate.\nDoes this make sense, Ady?\n\nThere\u0027s also the question of whether we should be updating the refresh rate at all if auto mode is not enabled. WDYT?\n",
+      "revId": "de46787a4824f5a3e489a49b6d882a4f5396dff0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
