@@ -6,5 +6,24 @@
         "yellow": 0.75
       }
     }
+  },
+  "metrics": {
+    "constant": {
+      "MemoryInfo": {
+        "totalMem": true,
+        "threshold": true
+      },
+      "meminfo": {
+        "CommitLimit": true,
+        "HighTotal": true,
+        "LowTotal": true,
+        "MemTotal": true
+      }
+    },
+    "variable": {
+      "proc": {
+        "oom_score": true
+      }
+    }
   }
 }

@@ -50,7 +50,7 @@ public class MemoryAdvisor extends MemoryMonitor {
    * @param params The active configuration.
    */
   public MemoryAdvisor(Context context, JSONObject params) {
-    super(context, params.optBoolean("fetchDebug"));
+    super(context, params.optJSONObject("metrics"));
     this.params = params;
     deviceProfile = DeviceProfile.getDeviceProfile(context.getAssets());
   }
@@ -122,9 +122,10 @@ public class MemoryAdvisor extends MemoryMonitor {
   public JSONObject getAdvice() {
     long time = System.currentTimeMillis();
     JSONObject results = new JSONObject();
-    JSONObject metrics = getMemoryMetrics(false);
 
     try {
+      JSONObject metricsParams = params.getJSONObject("metrics");
+      JSONObject metrics = getMemoryMetrics(metricsParams.getJSONObject("variable"));
       results.put("metrics", metrics);
       JSONObject limits = deviceProfile.getJSONObject("limits");
       JSONObject deviceLimit = limits.getJSONObject("limit");
