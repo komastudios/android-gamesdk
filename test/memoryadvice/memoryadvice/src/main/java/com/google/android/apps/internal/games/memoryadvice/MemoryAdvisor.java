@@ -52,7 +52,7 @@ public class MemoryAdvisor extends MemoryMonitor {
   public MemoryAdvisor(Context context, JSONObject params) {
     super(context, params.optBoolean("fetchDebug"));
     this.params = params;
-    deviceProfile = DeviceProfile.getDeviceProfile(context.getAssets());
+    deviceProfile = DeviceProfile.getDeviceProfile(context.getAssets(), params, baseline);
   }
 
   /**
