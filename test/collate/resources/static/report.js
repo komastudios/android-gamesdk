@@ -1,4 +1,4 @@
-import {appendStyledJson} from './dataExplorer.js';
+import {getDataExplorer} from './dataExplorer.js';
 
 function hashCode(str) {
   let hash = 0;
@@ -101,7 +101,7 @@ for (const result of data) {
   {
     const paragraph = document.createElement('p');
     section.appendChild(paragraph);
-    appendStyledJson(paragraph, first);
+    paragraph.appendChild(getDataExplorer(first));
     const anchor = document.createElement('a');
     const label = document.createTextNode('Download JSON');
     anchor.appendChild(label);
