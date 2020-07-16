@@ -5,7 +5,9 @@ set( THIRD_PARTY_LOCATION "${_MY_DIR}/../../third_party")
 
 # Include Google Test
 set(ANDROID_GTEST_DIR "../../../external/googletest")
-add_subdirectory("${ANDROID_GTEST_DIR}/googletest"
+set(BUILD_GMOCK OFF)
+set(INSTALL_GTEST OFF)
+add_subdirectory("${ANDROID_GTEST_DIR}"
   googletest-build
 )
 include_directories( "${ANDROID_GTEST_DIR}/googletest/include" )
