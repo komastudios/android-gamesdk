@@ -25,6 +25,30 @@
             android:text="@string/fps"
             android:textAppearance="@style/InfoTextMedium" />
 
+        <TextView
+            android:id="@+id/frameTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:text="Frame time:"
+            android:textAppearance="@style/InfoTextMedium" />
+
+        <TextView
+            android:id="@+id/refreshPeriod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:text="Refresh period:"
+            android:textAppearance="@style/InfoTextMedium" />
+
+        <TextView
+            android:id="@+id/swapInterval"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:text="Swap inteval:"
+            android:textAppearance="@style/InfoTextMedium" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

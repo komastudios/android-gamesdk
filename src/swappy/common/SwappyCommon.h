@@ -207,7 +207,9 @@ class SwappyCommon {
     // frame's completion
     bool waitForNextFrame(const SwapHandlers& h);
 
-    bool isWithinMargin(std::chrono::nanoseconds a, std::chrono::nanoseconds b);
+    // a < b + MARGIN
+    bool isBetterWithinMargin(std::chrono::nanoseconds a,
+                              std::chrono::nanoseconds b);
 
     void onRefreshRateChanged();
 

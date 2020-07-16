@@ -464,8 +464,8 @@ void SwappyCommon::FrameDurations::add(FrameDuration frameDuration) {
 }
 
 bool SwappyCommon::FrameDurations::hasEnoughSamples() const {
-    return !mFrames.empty() && mFrames.back().first - mFrames.front().first >
-                                   FRAME_DURATION_SAMPLE_SECONDS;
+    return (!mFrames.empty()) && (mFrames.back().first - mFrames.front().first >
+                                  FRAME_DURATION_SAMPLE_SECONDS);
 }
 
 SwappyCommon::FrameDuration SwappyCommon::FrameDurations::getAverageFrameTime()
@@ -555,9 +555,10 @@ bool SwappyCommon::swapFaster(int newSwapInterval) {
     return swappedFaster;
 }
 
-bool SwappyCommon::isWithinMargin(nanoseconds a, nanoseconds b) {
+// Checks whether a < b + MARGIN
+bool SwappyCommon::isBetterWithinMargin(nanoseconds a, nanoseconds b) {
     static constexpr std::chrono::nanoseconds MARGIN = 1ms;
-    return std::abs((a - b).count()) < MARGIN.count();
+    return (a - b).count() < MARGIN.count();
 }
 
 bool SwappyCommon::updateSwapInterval() {
@@ -764,24 +765,24 @@ void SwappyCommon::setPreferredRefreshRate(nanoseconds frameTime) {
         bool bestRefreshConfigFound = false;
         std::pair<nanoseconds, int> bestRefreshConfig;
         nanoseconds minSwapDuration = 1s;
+        // Iterate through refresh rates in ascending order
         for (const auto& refreshRate : *mSupportedRefreshRates) {
             const auto period = refreshRate.first;
             const int swapIntervalForPeriod =
                 calculateSwapInterval(frameTime, period);
             const nanoseconds swapDuration = period * swapIntervalForPeriod;
 
-            if (swapDuration > mSwapDuration) {
+            if (swapDuration < mSwapDuration) {
                 continue;
             }
 
             if (swapDuration < minSwapDuration ||
-                (bestRefreshConfigFound && period > bestRefreshConfig.first &&
-                 isWithinMargin(swapDuration, minSwapDuration))) {
+                (bestRefreshConfigFound &&
+                 isBetterWithinMargin(swapDuration, minSwapDuration))) {
                 bestRefreshConfigFound = true;
                 minSwapDuration = swapDuration;
                 bestRefreshConfig = refreshRate;
-                ALOGV("Found better refresh %.2f", 1e9f / period.count());
-            };
+            }
         }
 
         // Check if we there is a potential better refresh rate
