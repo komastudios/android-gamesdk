@@ -24,7 +24,8 @@ set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions" )
 
 set(ANDROID_GTEST_DIR "../../../external/googletest")
-add_subdirectory("${ANDROID_GTEST_DIR}/googletest"
+set(BUILD_GMOCK OFF)
+add_subdirectory("${ANDROID_GTEST_DIR}"
    googletest-build
 )
 
