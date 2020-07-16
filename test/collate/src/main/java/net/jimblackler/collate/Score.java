@@ -22,6 +22,8 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 public class Score {
   private static final boolean USE_DEVICE = false;
@@ -296,7 +298,10 @@ public class Score {
       for (int repeat = 0; repeat != repeats; repeat++) {
         for (int param = 0; param < test.length(); param++) {
           JSONObject _param = test.getJSONObject(param);
-          body.append("<th colspan=" + colspan + ">").append(toString(_param)).append("</th>");
+          Node dataExplorer = DataExplorer.getDataExplorer(HtmlUtils.getDocument(), _param);
+          body.append("<th colspan=" + colspan + " class='params'>")
+              .append(HtmlUtils.toString(dataExplorer))
+              .append("</th>");
         }
       }
       body.append("</tr>");
@@ -427,35 +432,6 @@ public class Score {
       total *= test.length();
     }
     return total;
-  }
-
-  private static String toString(Object obj) {
-    StringBuilder builder = new StringBuilder();
-    if (obj instanceof JSONObject) {
-      JSONObject obj2 = (JSONObject) obj;
-      String divider = "";
-      for (String key : obj2.keySet()) {
-        builder.append(divider)
-            .append("<span class='key'>")
-            .append(key)
-            .append("</span>")
-            .append("<span class='value'>")
-            .append(toString(obj2.get(key)))
-            .append("</span>");
-        divider = " ";
-      }
-    } else if (obj instanceof JSONArray) {
-      JSONArray array = (JSONArray) obj;
-      for (int idx = 0; idx < array.length(); idx++) {
-        if (idx > 0) {
-          builder.append(", ");
-        }
-        builder.append(toString(array.get(idx)));
-      }
-    } else {
-      builder.append(obj);
-    }
-    return builder.toString();
   }
 
   private static class Result {
