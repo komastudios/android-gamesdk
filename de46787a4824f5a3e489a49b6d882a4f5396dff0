@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "8dd1794f_e821eaa1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-17T16:45:56Z",
+      "side": 1,
+      "message": "The confusion was in my head, don\u0027t worry. I thought mSwapDuration was the current swap duration.\n\nThanks for clarification on the other 2 points. I see that mAutoSwapInterval is updated in updateDisplayTimings even with auto-mode off, so we\u0027re ok.",
+      "parentUuid": "09b3e4b8_3974563f",
+      "revId": "de46787a4824f5a3e489a49b6d882a4f5396dff0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "47ce124e_bc98accf",
         "filename": "src/swappy/common/SwappyCommon.cpp",
         "patchSetId": 1
@@ -51,6 +69,24 @@
       "revId": "de46787a4824f5a3e489a49b6d882a4f5396dff0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7946f141_5d1d90cf",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 767,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-17T16:45:56Z",
+      "side": 1,
+      "message": "I thought that the check for swapDuration \u003e mSwapDuration could be moved out of the loop into the initial value of minSwapDuration, but it can\u0027t, I see that from your use-case now.\n\nI\u0027ve put the sign in the comparison at line 773 back to where it was before: I think we had it wrong in the previous change. This guards against swapping to a faster rate than mSwapDuration, which we need. And I\u0027ve changed the margin calculation to allow faster refresh rates, which should fix the original Unity issue.",
+      "parentUuid": "47ce124e_bc98accf",
+      "revId": "de46787a4824f5a3e489a49b6d882a4f5396dff0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -74,6 +110,30 @@
       "revId": "de46787a4824f5a3e489a49b6d882a4f5396dff0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1e8e4242_9c7eccb4",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 788,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-17T16:45:56Z",
+      "side": 1,
+      "message": "Ok, understood, thanks.",
+      "parentUuid": "00c9c9a6_d987444e",
+      "range": {
+        "startLine": 788,
+        "startChar": 16,
+        "endLine": 788,
+        "endChar": 33
+      },
+      "revId": "de46787a4824f5a3e489a49b6d882a4f5396dff0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
