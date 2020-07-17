@@ -1,0 +1,48 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000003919481",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1364739?revision\u003d2",
+      "fixSuggestions": [
+        {
+          "fixId": "cc6d17fa_21c274b3",
+          "description": "Change to \"samples/bouncyball/app/src/main/res/layout/activity_orbit.xml\"",
+          "replacements": [
+            {
+              "path": "samples/bouncyball/app/src/main/res/layout/activity_orbit.xml",
+              "range": {
+                "startLine": 49,
+                "startChar": 31,
+                "endLine": 49,
+                "endChar": 38
+              },
+              "replacement": "interval"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "64bde8f5_f4804666",
+        "filename": "samples/bouncyball/app/src/main/res/layout/activity_orbit.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-07-17T16:40:49Z",
+      "side": 1,
+      "message": "Common typo found: \"inteval\" -- should it be \"interval\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.",
+      "range": {
+        "startLine": 49,
+        "startChar": 31,
+        "endLine": 49,
+        "endChar": 38
+      },
+      "revId": "c87f18c6740f0935c9710cd02f8d3ae5700b8c27",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
