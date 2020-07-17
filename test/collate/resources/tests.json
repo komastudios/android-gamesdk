@@ -19,6 +19,11 @@
             "HighTotal": true,
             "LowTotal": true,
             "MemTotal": true
+          },
+          "ActivityManager": {
+            "MemoryClass": true,
+            "LargeMemoryClass": true,
+            "LowRamDevice": true
           }
         },
         "variable": {

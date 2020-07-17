@@ -18,6 +18,7 @@ class MemoryMonitor {
   private static final String TAG = MemoryMonitor.class.getSimpleName();
 
   private static final long BYTES_IN_KILOBYTE = 1024;
+  private static final long BYTES_IN_MEGABYTE = BYTES_IN_KILOBYTE * 1024;
   private final MapTester mapTester;
   protected final JSONObject baseline;
   private final ActivityManager activityManager;
@@ -100,6 +101,19 @@ class MemoryMonitor {
           if (metricsOut.length() > 0) {
             report.put("MemoryInfo", metricsOut);
           }
+        }
+      }
+
+      if (fields.has("ActivityManager")) {
+        JSONObject activityManagerFields = fields.getJSONObject("ActivityManager");
+        if (activityManagerFields.has("MemoryClass")) {
+          report.put("MemoryClass", activityManager.getMemoryClass() * BYTES_IN_MEGABYTE);
+        }
+        if (activityManagerFields.has("LargeMemoryClass")) {
+          report.put("LargeMemoryClass", activityManager.getLargeMemoryClass() * BYTES_IN_MEGABYTE);
+        }
+        if (activityManagerFields.has("LowRamDevice")) {
+          report.put("LowRamDevice", activityManager.isLowRamDevice());
         }
       }
 

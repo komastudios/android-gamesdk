@@ -48,6 +48,11 @@
               "summary.graphics": true,
               "summary.total-pss": true,
               "summary.total-swap": true
+            },
+            "ActivityManager": {
+              "MemoryClass": true,
+              "LargeMemoryClass": true,
+              "LowRamDevice": true
             }
           }
         },
