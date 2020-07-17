@@ -55,14 +55,13 @@ public class Utils {
   }
 
   /**
-   * Returns the OOM score associated with the main application process. As multiple processes can
-   * be associated with an app the largest OOM score of all process is selected.
+   * Returns the OOM score associated with a process.
    *
    * @return The OOM score, or -1 if the score cannot be obtained.
+   * @param pid The process ID (pid).
    */
-  static int getOomScore() {
+  static int getOomScore(int pid) {
     try {
-      int pid = android.os.Process.myPid();
       return Integer.parseInt(readFile(("/proc/" + pid) + "/oom_score"));
     } catch (IOException | NumberFormatException e) {
       return -1;
@@ -92,14 +91,14 @@ public class Utils {
   }
 
   /**
-   * Return a dictionary of values extracted from the application processes' /proc/../status
+   * Return a dictionary of values extracted from a processes' /proc/../status
    * files.
    *
+   * @param pid The process ID (pid).
    * @return A dictionary of values, in bytes.
    */
-  static Map<String, Long> processStatus() {
+  static Map<String, Long> processStatus(int pid) {
     Map<String, Long> output = new HashMap<>();
-    int pid = android.os.Process.myPid();
     String filename = "/proc/" + pid + "/status";
     try {
       String meminfoText = readFile(filename);
@@ -113,16 +112,6 @@ public class Utils {
       Log.w(TAG, "Failed to read " + filename);
     }
     return output;
-  }
-
-  /**
-   * Returns the process memory info for the application.
-   *
-   * @param activityManager The ActivityManager.
-   * @return The process memory info.
-   */
-  static Debug.MemoryInfo[] getDebugMemoryInfo(ActivityManager activityManager) {
-    return activityManager.getProcessMemoryInfo(new int[] {android.os.Process.myPid()});
   }
 
   /**
