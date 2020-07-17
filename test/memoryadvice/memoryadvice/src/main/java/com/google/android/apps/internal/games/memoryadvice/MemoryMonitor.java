@@ -1,6 +1,5 @@
 package com.google.android.apps.internal.games.memoryadvice;
 
-import static com.google.android.apps.internal.games.memoryadvice.Utils.getDebugMemoryInfo;
 import static com.google.android.apps.internal.games.memoryadvice.Utils.getOomScore;
 import static com.google.android.apps.internal.games.memoryadvice.Utils.processMeminfo;
 import static com.google.android.apps.internal.games.memoryadvice.Utils.processStatus;
@@ -77,9 +76,10 @@ class MemoryMonitor {
         latestOnTrimLevel = 0;
       }
 
-      report.put("oom_score", getOomScore());
+      int pid = android.os.Process.myPid();
+      report.put("oom_score", getOomScore(pid));
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && fetchDebug) {
-        Debug.MemoryInfo[] debugMemoryInfos = getDebugMemoryInfo(activityManager);
+        Debug.MemoryInfo[] debugMemoryInfos = activityManager.getProcessMemoryInfo(new int[] {pid});
         if (debugMemoryInfos.length > 0) {
           for (String key : SUMMARY_FIELDS) {
             long value = 0;
@@ -99,7 +99,7 @@ class MemoryMonitor {
         }
       }
 
-      for (Map.Entry<String, Long> pair : processStatus().entrySet()) {
+      for (Map.Entry<String, Long> pair : processStatus(pid).entrySet()) {
         String key = pair.getKey();
         if (STATUS_FIELDS.contains(key)) {
           report.put(key, pair.getValue());
