@@ -1,0 +1,164 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bda71d4a_1e0068df",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-17T17:27:35Z",
+      "side": 1,
+      "message": "Can you please add a sentence to describe why this change is needed?",
+      "revId": "ce30fc13ca6ae05303d79f3b9af819caaac21fd5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7b81dac5_a8ffab6a",
+        "filename": "samples/bouncyball/app/src/main/cpp/Orbit.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-17T17:27:35Z",
+      "side": 1,
+      "message": "This looks unrelated to swap duration?",
+      "revId": "ce30fc13ca6ae05303d79f3b9af819caaac21fd5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0ad31f3f_1ae4ea57",
+        "filename": "samples/bouncyball/app/src/main/cpp/Orbit.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-17T17:27:35Z",
+      "side": 1,
+      "message": "spacing",
+      "range": {
+        "startLine": 64,
+        "startChar": 14,
+        "endLine": 64,
+        "endChar": 15
+      },
+      "revId": "ce30fc13ca6ae05303d79f3b9af819caaac21fd5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ca0b2c86_57559279",
+        "filename": "samples/bouncyball/app/src/main/cpp/Orbit.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-17T17:27:35Z",
+      "side": 1,
+      "message": "please use consistent spacing between operators \u003d\u003e x - prevMean",
+      "range": {
+        "startLine": 65,
+        "startChar": 76,
+        "endLine": 65,
+        "endChar": 77
+      },
+      "revId": "ce30fc13ca6ae05303d79f3b9af819caaac21fd5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "491a7342_2e85a801",
+        "filename": "samples/bouncyball/app/src/main/cpp/Orbit.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-17T17:27:35Z",
+      "side": 1,
+      "message": "instead of a global bar, can you please add it to one of the singletons? (perhaps Renderer)",
+      "revId": "ce30fc13ca6ae05303d79f3b9af819caaac21fd5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "415511be_9193e4d0",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 769,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-17T17:27:35Z",
+      "side": 1,
+      "message": "So we are storing durations and not rates (i.e. ns not Hz) - let\u0027s rename this to better reflect that (like mSupportedRefreshPeriods or mSupportedRefreshDurations)",
+      "range": {
+        "startLine": 769,
+        "startChar": 40,
+        "endLine": 769,
+        "endChar": 62
+      },
+      "revId": "ce30fc13ca6ae05303d79f3b9af819caaac21fd5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "302fca06_ccba0a7a",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 775,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-17T17:27:35Z",
+      "side": 1,
+      "message": "This confuses me again... why do we filter out swapDurations smaller than the programmed? to make sure we don\u0027t swap faster? \nwe should probably check for isWithinMargin to make sure we don\u0027t filter out a valid swap duration",
+      "range": {
+        "startLine": 775,
+        "startChar": 29,
+        "endLine": 775,
+        "endChar": 30
+      },
+      "revId": "ce30fc13ca6ae05303d79f3b9af819caaac21fd5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "75ec986b_910449cb",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 779,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-17T17:27:35Z",
+      "side": 1,
+      "message": "The way I understand the old condition is:\n1. either we found a better (i.e. shorter; faster] swap duration [swapDuration \u003c minSwapDuration] \n2. we found a similar swap duration but the refresh rate is lower (i.e. better power efficiency) [bestRefreshConfigFound \u0026\u0026 period \u003e bestRefreshConfig.first \u0026\u0026                 isWithinMargin(swapDuration, minSwapDuration)]\n\n\nWith the new condition:\n1. either we found a better (i.e. shorter; faster] swap duration [swapDuration \u003c minSwapDuration] \n2. we found a not-worse swap duration and the refresh rate must be lower since we iterate mSupportedRefreshRates in ascending order [isBetterWithinMargin(swapDuration, minSwapDuration)] you force swapDuration to be smaller than minSwapDuration\n\nDo I understand the new condition correctly?",
+      "revId": "ce30fc13ca6ae05303d79f3b9af819caaac21fd5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
