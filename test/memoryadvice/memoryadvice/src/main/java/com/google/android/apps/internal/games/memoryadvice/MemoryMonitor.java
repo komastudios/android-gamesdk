@@ -9,7 +9,6 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Debug;
 import android.util.Log;
-import java.util.Iterator;
 import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,27 +51,42 @@ class MemoryMonitor {
     JSONObject report = new JSONObject();
     try {
       if (fields.has("debug")) {
-        JSONObject debug = fields.getJSONObject("debug");
-        if (debug.optBoolean("nativeHeapAllocatedSize")) {
-          report.put("nativeAllocated", Debug.getNativeHeapAllocatedSize());
+        Object debugFieldsValue = fields.get("debug");
+        JSONObject debug =
+            debugFieldsValue instanceof JSONObject ? (JSONObject) debugFieldsValue : null;
+        boolean allFields = debugFieldsValue instanceof Boolean && (Boolean) debugFieldsValue;
+        if (allFields || (debug != null && debug.optBoolean("nativeHeapAllocatedSize"))) {
+          report.put("NativeHeapAllocatedSize", Debug.getNativeHeapAllocatedSize());
+        }
+        if (allFields || (debug != null && debug.optBoolean("NativeHeapFreeSize"))) {
+          report.put("NativeHeapFreeSize", Debug.getNativeHeapFreeSize());
+        }
+        if (allFields || (debug != null && debug.optBoolean("NativeHeapSize"))) {
+          report.put("NativeHeapSize", Debug.getNativeHeapSize());
+        }
+        if (allFields || (debug != null && debug.optBoolean("Pss"))) {
+          report.put("Pss", Debug.getNativeHeapSize());
         }
       }
 
       if (fields.has("MemoryInfo")) {
-        JSONObject memoryInfoFields = fields.getJSONObject("MemoryInfo");
-        if (memoryInfoFields.length() > 0) {
+        Object memoryInfoValue = fields.get("MemoryInfo");
+        JSONObject memoryInfoFields =
+            memoryInfoValue instanceof JSONObject ? (JSONObject) memoryInfoValue : null;
+        boolean allFields = memoryInfoValue instanceof Boolean && (Boolean) memoryInfoValue;
+        if (allFields || (memoryInfoFields != null && memoryInfoFields.length() > 0)) {
           ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
           activityManager.getMemoryInfo(memoryInfo);
-          if (memoryInfoFields.has("availMem")) {
+          if (allFields || memoryInfoFields.has("availMem")) {
             report.put("availMem", memoryInfo.availMem);
           }
-          if (memoryInfoFields.has("lowMemory") && memoryInfo.lowMemory) {
+          if ((allFields || memoryInfoFields.has("lowMemory")) && memoryInfo.lowMemory) {
             report.put("lowMemory", true);
           }
-          if (memoryInfoFields.has("totalMem")) {
+          if (allFields || memoryInfoFields.has("totalMem")) {
             report.put("totalMem", memoryInfo.totalMem);
           }
-          if (memoryInfoFields.has("threshold")) {
+          if (allFields || memoryInfoFields.has("threshold")) {
             report.put("threshold", memoryInfo.threshold);
           }
         }
@@ -90,38 +104,44 @@ class MemoryMonitor {
 
       int pid = android.os.Process.myPid();
       if (fields.has("proc")) {
-        JSONObject procFields = fields.getJSONObject("proc");
-        if (procFields.optBoolean("oom_score")) {
+        Object procFieldsValue = fields.get("proc");
+        JSONObject procFields =
+            procFieldsValue instanceof JSONObject ? (JSONObject) procFieldsValue : null;
+        boolean allFields = procFieldsValue instanceof Boolean && (Boolean) procFieldsValue;
+        if (allFields || procFields.optBoolean("oom_score")) {
           report.put("oom_score", getOomScore(pid));
         }
       }
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && fields.has("summary")) {
-        JSONObject summary = fields.getJSONObject("summary");
-        if (summary.length() > 0) {
+        Object summaryValue = fields.get("summary");
+        JSONObject summary = summaryValue instanceof JSONObject ? (JSONObject) summaryValue : null;
+        boolean allFields = summaryValue instanceof Boolean && (Boolean) summaryValue;
+        if (allFields || (summary != null && summary.length() > 0)) {
           Debug.MemoryInfo[] debugMemoryInfos =
               activityManager.getProcessMemoryInfo(new int[] {pid});
-          if (debugMemoryInfos.length > 0) {
-            Iterator<String> it = summary.keys();
-            while (it.hasNext()) {
-              String key = it.next();
-              long value = 0;
-              for (Debug.MemoryInfo debugMemoryInfo : debugMemoryInfos) {
-                value += Long.parseLong(debugMemoryInfo.getMemoryStat(key));
+          for (Debug.MemoryInfo debugMemoryInfo : debugMemoryInfos) {
+            for (Map.Entry<String, String> entry : debugMemoryInfo.getMemoryStats().entrySet()) {
+              String key = entry.getKey();
+              if (allFields || summary.has(key)) {
+                long value = Long.parseLong(entry.getValue()) * BYTES_IN_KILOBYTE;
+                report.put(key, report.optLong(key) + value);
               }
-              report.put(key, value * BYTES_IN_KILOBYTE);
             }
           }
         }
       }
 
       if (fields.has("meminfo")) {
-        JSONObject meminfoFields = fields.getJSONObject("meminfo");
-        if (meminfoFields.length() > 0) {
+        Object meminfoFieldsValue = fields.get("meminfo");
+        JSONObject meminfoFields =
+            meminfoFieldsValue instanceof JSONObject ? (JSONObject) meminfoFieldsValue : null;
+        boolean allFields = meminfoFieldsValue instanceof Boolean && (Boolean) meminfoFieldsValue;
+        if (allFields || (meminfoFields != null && meminfoFields.length() > 0)) {
           Map<String, Long> memInfo = processMeminfo();
           for (Map.Entry<String, Long> pair : memInfo.entrySet()) {
             String key = pair.getKey();
-            if (meminfoFields.optBoolean(key)) {
+            if (allFields || meminfoFields.optBoolean(key)) {
               report.put(key, pair.getValue());
             }
           }
@@ -129,11 +149,13 @@ class MemoryMonitor {
       }
 
       if (fields.has("status")) {
-        JSONObject status = fields.getJSONObject("status");
-        if (status.length() > 0) {
+        Object statusValue = fields.get("status");
+        JSONObject status = statusValue instanceof JSONObject ? (JSONObject) statusValue : null;
+        boolean allFields = statusValue instanceof Boolean && (Boolean) statusValue;
+        if (allFields || (status != null && status.length() > 0)) {
           for (Map.Entry<String, Long> pair : processStatus(pid).entrySet()) {
             String key = pair.getKey();
-            if (status.optBoolean(key)) {
+            if (allFields || status.optBoolean(key)) {
               report.put(key, pair.getValue());
             }
           }
