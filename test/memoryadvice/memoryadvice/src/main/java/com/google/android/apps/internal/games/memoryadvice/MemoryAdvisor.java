@@ -115,6 +115,33 @@ public class MemoryAdvisor extends MemoryMonitor {
   }
 
   /**
+   * Find a Long in a JSON object, even when it is nested in sub-dictionaries in the object.
+   * @param object The object to search.
+   * @param key The key of the Long to find.
+   * @return The value of he Long.
+   */
+  private static Long getValue(JSONObject object, String key) {
+    try {
+      if (object.has(key)) {
+        return object.getLong(key);
+      }
+      Iterator<String> it = object.keys();
+      while (it.hasNext()) {
+        Object value = object.get(it.next());
+        if (value instanceof JSONObject) {
+          Long value1 = getValue((JSONObject) value, key);
+          if (value1 != null) {
+            return value1;
+          }
+        }
+      }
+    } catch (JSONException ex) {
+      Log.w(TAG, "Problem fetching value", ex);
+    }
+    return null;
+  }
+
+  /**
    * The value the advisor returns when asked for memory pressure on the device through the
    * getSignal method. GREEN indicates it is safe to allocate further, YELLOW indicates further
    * allocation shouldn't happen, and RED indicates high memory pressure.
@@ -181,31 +208,32 @@ public class MemoryAdvisor extends MemoryMonitor {
             break;
           }
 
-          if (!metrics.has(key)) {
+          Long metricValue = getValue(metrics, key);
+          if (metricValue == null) {
             continue;
           }
 
-          if (!baseline.has(key)) {
+          Long deviceLimitValue = getValue(deviceLimit, key);
+          if (deviceLimitValue == null) {
             continue;
           }
 
-          if (!deviceLimit.has(key)) {
+          Long deviceBaselineValue = getValue(deviceBaseline, key);
+          if (deviceBaselineValue == null) {
             continue;
           }
 
-          if (!deviceBaseline.has(key)) {
+          Long baselineValue = getValue(baseline, key);
+          if (baselineValue == null) {
             continue;
           }
 
-          long deviceLimitValue = deviceLimit.getLong(key);
-          long deviceBaselineValue = deviceBaseline.getLong(key);
           boolean increasing = deviceLimitValue > deviceBaselineValue;
 
           // Fires warnings as metrics approach absolute values.
           // Example: "Active": {"fixed": {"red": "300M", "yellow": "400M"}}
           if (heuristic.has("fixed")) {
             JSONObject fixed = heuristic.getJSONObject("fixed");
-            long metricValue = metrics.getLong(key);
             long red = Utils.getMemoryQuantity(fixed.get("red"));
             long yellow = Utils.getMemoryQuantity(fixed.get("yellow"));
             String level = null;
@@ -228,8 +256,6 @@ public class MemoryAdvisor extends MemoryMonitor {
           // Example: "availMem": {"baselineRatio": {"red": 0.30, "yellow": 0.40}}
           if (heuristic.has("baselineRatio")) {
             JSONObject baselineRatio = heuristic.getJSONObject("baselineRatio");
-            long metricValue = metrics.getLong(key);
-            long baselineValue = baseline.getLong(key);
 
             String level = null;
             if (increasing ? metricValue > baselineValue * baselineRatio.getDouble("red")
@@ -256,14 +282,13 @@ public class MemoryAdvisor extends MemoryMonitor {
           if (heuristic.has("deltaLimit")) {
             JSONObject deltaLimit = heuristic.getJSONObject("deltaLimit");
             long limitValue = deviceLimitValue - deviceBaselineValue;
-            long metricValue = metrics.getLong(key) - baseline.getLong(key);
-
+            long relativeValue = metricValue - baselineValue;
             String level = null;
-            if (increasing ? metricValue > limitValue * deltaLimit.getDouble("red")
-                           : metricValue < limitValue * deltaLimit.getDouble("red")) {
+            if (increasing ? relativeValue > limitValue * deltaLimit.getDouble("red")
+                           : relativeValue < limitValue * deltaLimit.getDouble("red")) {
               level = "red";
-            } else if (increasing ? metricValue > limitValue * deltaLimit.getDouble("yellow")
-                                  : metricValue < limitValue * deltaLimit.getDouble("yellow")) {
+            } else if (increasing ? relativeValue > limitValue * deltaLimit.getDouble("yellow")
+                                  : relativeValue < limitValue * deltaLimit.getDouble("yellow")) {
               level = "yellow";
             }
             if (level != null) {
@@ -280,7 +305,6 @@ public class MemoryAdvisor extends MemoryMonitor {
           // Example: "VmRSS": {"deltaLimit": {"red": 0.90, "yellow": 0.75}}
           if (heuristic.has("limit")) {
             JSONObject limit = heuristic.getJSONObject("limit");
-            long metricValue = metrics.getLong(key);
             String level = null;
             if (increasing ? metricValue > deviceLimitValue * limit.getDouble("red")
                            : metricValue * limit.getDouble("red") < deviceLimitValue) {
@@ -305,44 +329,53 @@ public class MemoryAdvisor extends MemoryMonitor {
         }
       }
 
-      if (deviceLimit.has("applicationAllocated")) {
-        long applicationAllocated = deviceLimit.getLong("applicationAllocated");
-        JSONObject predictions = new JSONObject();
+      if (deviceLimit.has("stressed")) {
+        JSONObject stressed = deviceLimit.getJSONObject("stressed");
+        if (stressed.has("applicationAllocated")) {
+          long applicationAllocated = stressed.getLong("applicationAllocated");
+          JSONObject predictions = new JSONObject();
+          JSONObject predictionsParams = params.getJSONObject("predictions");
 
-        Iterator<String> it = metrics.keys();
-        while (it.hasNext()) {
-          String key = it.next();
+          Iterator<String> it = predictionsParams.keys();
 
-          if (!PREDICTION_FIELDS.contains(key)) {
-            continue;
+          while (it.hasNext()) {
+            String key = it.next();
+
+            Long metricValue = getValue(metrics, key);
+            if (metricValue == null) {
+              continue;
+            }
+
+            Long deviceLimitValue = getValue(deviceLimit, key);
+            if (deviceLimitValue == null) {
+              continue;
+            }
+
+            Long deviceBaselineValue = getValue(deviceBaseline, key);
+            if (deviceBaselineValue == null) {
+              continue;
+            }
+
+            Long baselineValue = getValue(baseline, key);
+            if (baselineValue == null) {
+              continue;
+            }
+
+            long delta = metricValue - baselineValue;
+            long deviceDelta = deviceLimitValue - deviceBaselineValue;
+            if (deviceDelta == 0) {
+              continue;
+            }
+
+            float percentageEstimate = (float) delta / deviceDelta;
+            predictions.put(key, (long) (applicationAllocated * (1.0f - percentageEstimate)));
           }
 
-          if (!baseline.has(key)) {
-            continue;
-          }
-
-          if (!deviceLimit.has(key)) {
-            continue;
-          }
-
-          if (!deviceBaseline.has(key)) {
-            continue;
-          }
-
-          long delta = metrics.getLong(key) - baseline.getLong(key);
-          long deviceDelta = deviceLimit.getLong(key) - deviceBaseline.getLong(key);
-          if (deviceDelta == 0) {
-            continue;
-          }
-
-          float percentageEstimate = (float) delta / deviceDelta;
-          predictions.put(key, (long) (applicationAllocated * (1.0f - percentageEstimate)));
+          results.put("predictions", predictions);
+          JSONObject meta = new JSONObject();
+          meta.put("duration", System.currentTimeMillis() - time);
+          results.put("meta", meta);
         }
-
-        results.put("predictions", predictions);
-        JSONObject meta = new JSONObject();
-        meta.put("duration", System.currentTimeMillis() - time);
-        results.put("meta", meta);
       }
     } catch (JSONException ex) {
       Log.w(TAG, "Problem performing memory analysis", ex);
