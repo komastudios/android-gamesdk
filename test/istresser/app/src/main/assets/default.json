@@ -50,6 +50,9 @@
               "summary.total-swap": true
             }
           }
+        },
+        "predictions": {
+          "oom_score": true
         }
       }
     ]

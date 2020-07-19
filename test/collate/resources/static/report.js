@@ -31,7 +31,15 @@ function rowTime(row) {
   return rowMetrics(row).meta.time;
 }
 
-const capitalizeFirstLetter = str => str.charAt(0).toUpperCase() + str.slice(1);
+function getValues(combined, object) {
+  for (const [key, value] of Object.entries(object)) {
+    if (Number.isInteger(value)) {
+      combined[key] = value;
+    } else if (value.constructor === Object) {
+      getValues(combined, value);
+    }
+  }
+}
 
 const onTrimCodes = {
   0: 'TRIM_MEMORY_UNKNOWN',
@@ -138,16 +146,8 @@ for (const result of data) {
   let totalDuration = 0;
   let durationCount = 0;
   for (const row of result) {
-    let advice;
-    let metrics;
-    if ('advice' in row) {
-      advice = row.advice;
-      metrics = advice.metrics;
-    } else if ('deviceInfo' in row) {
-      metrics = row.deviceInfo.baseline;
-    } else if ('metrics' in row) {
-      metrics = row.metrics;
-    } else {
+    let metrics = rowMetrics(row);
+    if (!metrics) {
       continue;
     }
     time = (metrics.meta.time - deviceInfo.baseline.meta.time) / 1000;
@@ -162,14 +162,10 @@ for (const result of data) {
 
     rowOut[0] = time;
 
-    for (const [field, value] of Object.entries(metrics).sort()) {
-      combined[field] = value;
-    }
-    if ('constant' in metrics) {
-      for (const [field, value] of Object.entries(metrics.constant).sort()) {
-        combined[field] = value;
-      }
-    }
+    getValues(combined, metrics);
+    delete combined.time;
+    delete combined.onTrim;
+    const advice = row.advice;
     if (advice && 'meta' in advice) {
       totalDuration += advice.meta.duration;
       durationCount++;
