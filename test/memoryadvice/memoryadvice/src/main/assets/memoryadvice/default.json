@@ -25,5 +25,8 @@
         "oom_score": true
       }
     }
+  },
+  "predictions": {
+    "oom_score": true
   }
 }

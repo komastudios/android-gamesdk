@@ -35,7 +35,10 @@ class MemoryMonitor {
 
     try {
       baseline = getMemoryMetrics(metrics.getJSONObject("variable"));
-      baseline.put("constant", getMemoryMetrics(metrics.getJSONObject("constant")));
+      JSONObject constant = metrics.optJSONObject("constant");
+      if (constant != null) {
+        baseline.put("constant", getMemoryMetrics(constant));
+      }
     } catch (JSONException e) {
       throw new IllegalStateException(e);
     }
@@ -51,21 +54,25 @@ class MemoryMonitor {
     JSONObject report = new JSONObject();
     try {
       if (fields.has("debug")) {
+        JSONObject metricsOut = new JSONObject();
         Object debugFieldsValue = fields.get("debug");
         JSONObject debug =
             debugFieldsValue instanceof JSONObject ? (JSONObject) debugFieldsValue : null;
         boolean allFields = debugFieldsValue instanceof Boolean && (Boolean) debugFieldsValue;
         if (allFields || (debug != null && debug.optBoolean("nativeHeapAllocatedSize"))) {
-          report.put("NativeHeapAllocatedSize", Debug.getNativeHeapAllocatedSize());
+          metricsOut.put("NativeHeapAllocatedSize", Debug.getNativeHeapAllocatedSize());
         }
         if (allFields || (debug != null && debug.optBoolean("NativeHeapFreeSize"))) {
-          report.put("NativeHeapFreeSize", Debug.getNativeHeapFreeSize());
+          metricsOut.put("NativeHeapFreeSize", Debug.getNativeHeapFreeSize());
         }
         if (allFields || (debug != null && debug.optBoolean("NativeHeapSize"))) {
-          report.put("NativeHeapSize", Debug.getNativeHeapSize());
+          metricsOut.put("NativeHeapSize", Debug.getNativeHeapSize());
         }
         if (allFields || (debug != null && debug.optBoolean("Pss"))) {
-          report.put("Pss", Debug.getNativeHeapSize());
+          metricsOut.put("Pss", Debug.getNativeHeapSize());
+        }
+        if (metricsOut.length() > 0) {
+          report.put("debug", metricsOut);
         }
       }
 
@@ -75,19 +82,23 @@ class MemoryMonitor {
             memoryInfoValue instanceof JSONObject ? (JSONObject) memoryInfoValue : null;
         boolean allFields = memoryInfoValue instanceof Boolean && (Boolean) memoryInfoValue;
         if (allFields || (memoryInfoFields != null && memoryInfoFields.length() > 0)) {
+          JSONObject metricsOut = new JSONObject();
           ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
           activityManager.getMemoryInfo(memoryInfo);
           if (allFields || memoryInfoFields.has("availMem")) {
-            report.put("availMem", memoryInfo.availMem);
+            metricsOut.put("availMem", memoryInfo.availMem);
           }
           if ((allFields || memoryInfoFields.has("lowMemory")) && memoryInfo.lowMemory) {
-            report.put("lowMemory", true);
+            metricsOut.put("lowMemory", true);
           }
           if (allFields || memoryInfoFields.has("totalMem")) {
-            report.put("totalMem", memoryInfo.totalMem);
+            metricsOut.put("totalMem", memoryInfo.totalMem);
           }
           if (allFields || memoryInfoFields.has("threshold")) {
-            report.put("threshold", memoryInfo.threshold);
+            metricsOut.put("threshold", memoryInfo.threshold);
+          }
+          if (metricsOut.length() > 0) {
+            report.put("MemoryInfo", metricsOut);
           }
         }
       }
@@ -108,8 +119,12 @@ class MemoryMonitor {
         JSONObject procFields =
             procFieldsValue instanceof JSONObject ? (JSONObject) procFieldsValue : null;
         boolean allFields = procFieldsValue instanceof Boolean && (Boolean) procFieldsValue;
+        JSONObject metricsOut = new JSONObject();
         if (allFields || procFields.optBoolean("oom_score")) {
-          report.put("oom_score", getOomScore(pid));
+          metricsOut.put("oom_score", getOomScore(pid));
+        }
+        if (metricsOut.length() > 0) {
+          report.put("proc", metricsOut);
         }
       }
 
@@ -120,14 +135,18 @@ class MemoryMonitor {
         if (allFields || (summary != null && summary.length() > 0)) {
           Debug.MemoryInfo[] debugMemoryInfos =
               activityManager.getProcessMemoryInfo(new int[] {pid});
+          JSONObject metricsOut = new JSONObject();
           for (Debug.MemoryInfo debugMemoryInfo : debugMemoryInfos) {
             for (Map.Entry<String, String> entry : debugMemoryInfo.getMemoryStats().entrySet()) {
               String key = entry.getKey();
               if (allFields || summary.has(key)) {
                 long value = Long.parseLong(entry.getValue()) * BYTES_IN_KILOBYTE;
-                report.put(key, report.optLong(key) + value);
+                metricsOut.put(key, metricsOut.optLong(key) + value);
               }
             }
+          }
+          if (metricsOut.length() > 0) {
+            report.put("summary", metricsOut);
           }
         }
       }
@@ -138,12 +157,16 @@ class MemoryMonitor {
             meminfoFieldsValue instanceof JSONObject ? (JSONObject) meminfoFieldsValue : null;
         boolean allFields = meminfoFieldsValue instanceof Boolean && (Boolean) meminfoFieldsValue;
         if (allFields || (meminfoFields != null && meminfoFields.length() > 0)) {
+          JSONObject metricsOut = new JSONObject();
           Map<String, Long> memInfo = processMeminfo();
           for (Map.Entry<String, Long> pair : memInfo.entrySet()) {
             String key = pair.getKey();
             if (allFields || meminfoFields.optBoolean(key)) {
-              report.put(key, pair.getValue());
+              metricsOut.put(key, pair.getValue());
             }
+          }
+          if (metricsOut.length() > 0) {
+            report.put("meminfo", metricsOut);
           }
         }
       }
@@ -153,11 +176,15 @@ class MemoryMonitor {
         JSONObject status = statusValue instanceof JSONObject ? (JSONObject) statusValue : null;
         boolean allFields = statusValue instanceof Boolean && (Boolean) statusValue;
         if (allFields || (status != null && status.length() > 0)) {
+          JSONObject metricsOut = new JSONObject();
           for (Map.Entry<String, Long> pair : processStatus(pid).entrySet()) {
             String key = pair.getKey();
             if (allFields || status.optBoolean(key)) {
-              report.put(key, pair.getValue());
+              metricsOut.put(key, pair.getValue());
             }
+          }
+          if (metricsOut.length() > 0) {
+            report.put("status", metricsOut);
           }
         }
       }
