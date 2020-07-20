@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d6e20297_2cecffd9",
+        "filename": "test/memoryadvice/memoryadvice/src/main/java/com/google/android/apps/internal/games/memoryadvice/DeviceProfile.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-07-20T12:02:57Z",
+      "side": 1,
+      "message": "Nit: one \"it\" is probably not too confusing but it2, it3 starts to get unwieldy. Since this is pre-existing I\u0027ll leave it just as a nit",
+      "revId": "d3c431ab37d91170fe5685af8095d29e34e4e0bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
