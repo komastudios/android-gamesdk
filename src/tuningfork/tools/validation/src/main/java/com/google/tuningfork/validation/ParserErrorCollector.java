@@ -102,6 +102,11 @@ final class ParserErrorCollector implements ErrorCollector {
   }
 
   @Override
+  public Integer getWarningCount(ErrorType errorType) {
+    return warnings.get(errorType).size();
+  }
+
+  @Override
   public void addWarning(ErrorType errorType, String message) {
     warnings.put(errorType, message);
   }
