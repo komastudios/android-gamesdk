@@ -22,15 +22,29 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.flogger.FluentLogger;
 import com.google.common.io.Files;
 import com.google.protobuf.ByteString;
+import com.google.protobuf.Descriptors;
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.FileDescriptor;
+import com.google.protobuf.DynamicMessage;
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.tuningfork.Tuningfork.Settings;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/** Tuningfork validation tool. Parses proto and settings files and validates them. */
+/**
+ * Tuningfork validation tool. Parses proto and settings files and validates them.
+ */
 public class DeveloperTuningforkParser {
 
   private Optional<File> devTuningforkProto = Optional.empty();
@@ -134,11 +148,17 @@ public class DeveloperTuningforkParser {
           FolderConfig.DEV_FIDELITY_TEXTPROTO);
     }
 
+    List<ByteString> filesContent = new ArrayList<>();
     devFidelityFiles.forEach(
-        textprotoFile -> encodeBinaryAndValidateDevFidelity(fidelityField, textprotoFile));
+        textprotoFile -> {
+          encodeBinary(fidelityField, textprotoFile, filesContent);
+        });
+
+    validateDevFidelityParams(fidelityField, filesContent);
   }
 
-  private void encodeBinaryAndValidateDevFidelity(Descriptor fidelityField, File textprotoFile) {
+  private void encodeBinary(Descriptor fidelityField, File textprotoFile,
+      List<ByteString> filesContent) {
     File binaryFile;
     try {
       binaryFile =
@@ -165,7 +185,26 @@ public class DeveloperTuningforkParser {
           e);
       return;
     }
-    ValidationUtil.validateDevFidelityParams(content, fidelityField, errors);
+    filesContent.add(content);
+  }
+
+  private void validateDevFidelityParams(Descriptor fidelityField, List<ByteString> filesContent) {
+    List<DynamicMessage> fidelityMessages = new ArrayList<>();
+
+    for(ByteString content : filesContent) {
+      ValidationUtil.validateDevFidelityParams(content, fidelityField, errors);
+      try {
+        DynamicMessage fidelityMessage =
+            DynamicMessage.parseFrom(fidelityField, content);
+        fidelityMessages.add(fidelityMessage);
+      } catch (InvalidProtocolBufferException e) {
+        errors.addError(
+            ErrorType.DEV_FIDELITY_PARAMETERS_PARSING,
+            "Fidelity parameters not parsed properly", e);
+      }
+    }
+
+    ValidationUtil.validateDevFidelityParamsOrder(fidelityField, fidelityMessages, errors);
   }
 
   private static String getBinaryPathForTextprotoPath(File textprotoFile) {
@@ -185,9 +224,25 @@ public class DeveloperTuningforkParser {
     return Optional.of(content);
   }
 
+  private static int getFileNumberHelper(File file) {
+    Pattern p = Pattern.compile("\\d+");
+    Matcher matcher = p.matcher(file.getName());
+    if(matcher.find()) {
+      return Integer.parseInt(matcher.group(0));
+    }
+    return 0;
+  }
+
   private static ImmutableList<File> findDevFidelityParams(File folder) throws IOException {
     Pattern devFidelityPattern = Pattern.compile(FolderConfig.DEV_FIDELITY_TEXTPROTO);
-    return ImmutableList.copyOf(
+    List<File> files = Arrays.asList(
         folder.listFiles((dir, filename) -> devFidelityPattern.matcher(filename).find()));
+    Collections.sort(files, new Comparator<File>() {
+      @Override
+      public int compare(File file1, File file2) {
+        return getFileNumberHelper(file1) - getFileNumberHelper(file2);
+      }
+    });
+    return ImmutableList.copyOf(files);
   }
 }

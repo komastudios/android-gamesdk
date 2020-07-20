@@ -18,15 +18,26 @@ package com.google.tuningfork.validation;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import com.google.common.io.Files;
 import com.google.protobuf.ByteString;
+import com.google.protobuf.Descriptors;
 import com.google.protobuf.Descriptors.Descriptor;
 
+import com.google.protobuf.DynamicMessage;
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.tuningfork.Tuningfork.Settings;
 import com.google.tuningfork.Tuningfork.Settings.AggregationStrategy;
 import com.google.tuningfork.Tuningfork.Settings.Histogram;
+import com.google.tuningfork.DevTuningfork.FidelityParams;
+import com.google.tuningfork.DevTuningfork.QualitySettings;
+import com.sun.corba.se.impl.dynamicany.DynAnyBasicImpl;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -48,6 +59,7 @@ public final class ValidationUtilTest {
       };
 
   private final ProtoCompilerHelper helper = new ProtoCompilerHelper(tempFolder);
+  private static final File PROTOC_BINARY = ProtocBinary.get();
 
   final String tuningforkPath = "assets/tuningfork";
 
@@ -76,7 +88,7 @@ public final class ValidationUtilTest {
     assertThat(parsedSettings.get()).isEqualTo(settings);
   }
 
-    @Test
+  @Test
   public void settingsLoadingAnnotationIndexWarning() throws Exception {
     Settings settings = Settings.getDefaultInstance();
 
@@ -305,5 +317,150 @@ public final class ValidationUtilTest {
     assertThat(errors.getErrorCount(ErrorType.API_KEY_INVALID)).isEqualTo(1);
   }
 
+  @Test
+  public void checkZeroEnumWarning() throws Exception {
+    Settings settings =
+        Settings.newBuilder()
+            .setAggregationStrategy(
+                AggregationStrategy.newBuilder()
+                    .addAllAnnotationEnumSize(Arrays.asList(2))
+                    .setMaxInstrumentationKeys(100))
+            .addHistograms(Histogram.getDefaultInstance())
+            .setApiKey("test-api-key")
+            .build();
 
+    FidelityParams devParameters1 =
+        FidelityParams.newBuilder()
+            .setIntField(10)
+            .setFloatField(1.5f)
+            .setQualitySettings(QualitySettings.UNKNOWN_QUALITY)
+            .build();
+
+    TestdataHelper thelper = new TestdataHelper(tempFolder);
+    DeveloperTuningforkParser parser = new DeveloperTuningforkParser(errors, tempFolder.getRoot(),
+        PROTOC_BINARY);
+
+    thelper.getFile("dev_tuningfork.proto");
+    thelper.createFile("tuningfork_settings.txt", settings.toString());
+    thelper.createFile("dev_tuningfork_fidelityparams_1.txt", devParameters1.toString());
+
+    parser.parseFilesInFolder();
+    parser.validate();
+
+    assertThat(errors.getWarningCount(ErrorType.DEV_FIDELITY_PARAMETERS_ENUMS_ZERO)).isEqualTo(1);
+  }
+
+  @Test
+  public void devParamsCorrectOrder() throws Exception {
+    Settings settings =
+        Settings.newBuilder()
+            .setAggregationStrategy(
+                AggregationStrategy.newBuilder()
+                    .addAllAnnotationEnumSize(Arrays.asList(2))
+                    .setMaxInstrumentationKeys(100))
+            .addHistograms(Histogram.getDefaultInstance())
+            .setApiKey("test-api-key")
+            .build();
+
+    FidelityParams devParameters1 =
+        FidelityParams.newBuilder()
+            .setIntField(10)
+            .setFloatField(1.5f)
+            .setQualitySettings(QualitySettings.FAST)
+            .build();
+
+    FidelityParams devParameters2 =
+        FidelityParams.newBuilder()
+            .setIntField(10)
+            .setFloatField(1.4f)
+            .setQualitySettings(QualitySettings.GOOD)
+            .build();
+
+    FidelityParams devParameters3 =
+        FidelityParams.newBuilder()
+            .setIntField(20)
+            .setFloatField(1.3f)
+            .setQualitySettings(QualitySettings.BEAUTIFUL)
+            .build();
+
+    FidelityParams devParameters4 =
+        FidelityParams.newBuilder()
+            .setIntField(30)
+            .setFloatField(1.3f)
+            .setQualitySettings(QualitySettings.FANTASTIC)
+            .build();
+
+    TestdataHelper thelper = new TestdataHelper(tempFolder);
+    DeveloperTuningforkParser parser = new DeveloperTuningforkParser(errors, tempFolder.getRoot(),
+        PROTOC_BINARY);
+
+    thelper.getFile("dev_tuningfork.proto");
+    thelper.createFile("tuningfork_settings.txt", settings.toString());
+    thelper.createFile("dev_tuningfork_fidelityparams_1.txt", devParameters1.toString());
+    thelper.createFile("dev_tuningfork_fidelityparams_2.txt", devParameters2.toString());
+    thelper.createFile("dev_tuningfork_fidelityparams_3.txt", devParameters3.toString());
+    thelper.createFile("dev_tuningfork_fidelityparams_4.txt", devParameters4.toString());
+
+    parser.parseFilesInFolder();
+    parser.validate();
+
+    assertThat(errors.getWarningCount(ErrorType.DEV_FIDELITY_PARAMETERS_ORDER)).isEqualTo(0);
+  }
+
+  @Test
+  public void devParamsIncorrectOrder() throws Exception {
+    Settings settings =
+        Settings.newBuilder()
+            .setAggregationStrategy(
+                AggregationStrategy.newBuilder()
+                    .addAllAnnotationEnumSize(Arrays.asList(2))
+                    .setMaxInstrumentationKeys(100))
+            .addHistograms(Histogram.getDefaultInstance())
+            .setApiKey("test-api-key")
+            .build();
+
+    FidelityParams devParameters1 =
+        FidelityParams.newBuilder()
+            .setIntField(10)
+            .setFloatField(1.5f)
+            .setQualitySettings(QualitySettings.FAST)
+            .build();
+
+    FidelityParams devParameters2 =
+        FidelityParams.newBuilder()
+            .setIntField(20)
+            .setFloatField(1.4f)
+            .setQualitySettings(QualitySettings.GOOD)
+            .build();
+
+    FidelityParams devParameters3 =
+        FidelityParams.newBuilder()
+            .setIntField(20)
+            .setFloatField(1.3f)
+            .setQualitySettings(QualitySettings.BEAUTIFUL)
+            .build();
+
+    FidelityParams devParameters4 =
+        FidelityParams.newBuilder()
+            .setIntField(10)
+            .setFloatField(1.3f)
+            .setQualitySettings(QualitySettings.FANTASTIC)
+            .build();
+
+    TestdataHelper thelper = new TestdataHelper(tempFolder);
+    DeveloperTuningforkParser parser = new DeveloperTuningforkParser(errors, tempFolder.getRoot(),
+        PROTOC_BINARY);
+
+    thelper.getFile("dev_tuningfork.proto");
+    thelper.createFile("tuningfork_settings.txt", settings.toString());
+    thelper.createFile("dev_tuningfork_fidelityparams_1.txt", devParameters1.toString());
+    thelper.createFile("dev_tuningfork_fidelityparams_2.txt", devParameters2.toString());
+    thelper.createFile("dev_tuningfork_fidelityparams_3.txt", devParameters3.toString());
+    thelper.createFile("dev_tuningfork_fidelityparams_4.txt", devParameters4.toString());
+
+    parser.parseFilesInFolder();
+    parser.validate();
+
+    assertThat(errors.getWarningCount(ErrorType.DEV_FIDELITY_PARAMETERS_ORDER)).isEqualTo(1);
+  }
 }

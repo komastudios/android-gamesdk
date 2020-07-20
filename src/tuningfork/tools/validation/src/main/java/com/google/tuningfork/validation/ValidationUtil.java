@@ -19,8 +19,11 @@ package com.google.tuningfork.validation;
 import com.google.common.collect.ImmutableList;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors.Descriptor;
+import com.google.protobuf.Descriptors.EnumValueDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.DynamicMessage;
+import com.google.protobuf.EnumValue;
+import com.google.protobuf.Field;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.TextFormat;
 import com.google.protobuf.TextFormat.ParseException;
@@ -29,13 +32,20 @@ import com.google.tuningfork.Tuningfork.Settings.AggregationStrategy;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 
-/** Utility methods for validating Tuning Fork protos and settings. */
+/**
+ * Utility methods for validating Tuning Fork protos and settings.
+ */
 final class ValidationUtil {
 
-  private ValidationUtil() {}
+  private ValidationUtil() {
+  }
 
   private static final Integer MAX_INTSTRUMENTATION_KEYS = 256;
 
@@ -85,7 +95,8 @@ final class ValidationUtil {
    * Validate Histograms
    * No restrictions since Tuning Fork Scaled allows empty settings.
    * */
-  public static void validateSettingsHistograms(Settings settings, ErrorCollector errors) {}
+  public static void validateSettingsHistograms(Settings settings, ErrorCollector errors) {
+  }
 
   /*
    * Validate Aggregation
@@ -145,6 +156,70 @@ final class ValidationUtil {
       return;
     }
     devFidelityList.forEach(entry -> validateDevFidelityParams(entry, fidelityParamsDesc, errors));
+  }
+
+  /*
+   * Helper method to check if [...,valueA, valueB, valueC,...] are in order.
+   * They are in order if (valueA - valueB) * (valueC - valueB) >= 0.
+   * */
+  private static final boolean hasComparisonErrorsWithPrevValue(float[] firstComparison,
+      Object fieldValue,
+      HashMap<FieldDescriptor, Float> prevValueForDescriptor, FieldDescriptor currentField,
+      int fieldsIndex,
+      ErrorCollector errors) {
+    float currentComparison = prevValueForDescriptor.containsKey(currentField) ?
+        Float.parseFloat(fieldValue.toString()) - prevValueForDescriptor.get(currentField) : 0;
+
+    if (currentComparison * firstComparison[fieldsIndex] < 0) {
+      errors
+          .addWarning(ErrorType.DEV_FIDELITY_PARAMETERS_ORDER, "Fidelity parameters should be " +
+              "in either increasing or decreasing order.");
+      return true;
+    }
+
+    if (firstComparison[fieldsIndex] == 0 && currentComparison != 0) {
+      firstComparison[fieldsIndex] = currentComparison;
+    }
+    prevValueForDescriptor.put(currentField, Float.valueOf(fieldValue.toString()));
+    return false;
+  }
+
+  /*
+   * Validate content of fidelity parameters from all dev_tuningfork_fidelityparams_*.bin files.
+   * These should be in either increasing/decreasing order, and at least one value must be
+   * different than zero.
+   * Only works for int32, float, enums.
+   * */
+  public static final void validateDevFidelityParamsOrder(
+      Descriptor fidelityParamsDesc,
+      List<DynamicMessage> fidelityMessages,
+      ErrorCollector errors) {
+    float[] firstComparison = new float[fidelityParamsDesc.getFields().size()];
+    HashMap<FieldDescriptor, Float> prevValueForDescriptor = new HashMap<>();
+    List<FieldDescriptor> fields = fidelityParamsDesc.getFields();
+
+    validationLoop:
+    for (int fidelityMsgIndex = 0; fidelityMsgIndex < fidelityMessages.size(); fidelityMsgIndex++) {
+      for (int fieldsIndex = 0; fieldsIndex < fields.size(); fieldsIndex++) {
+        FieldDescriptor currentField = fields.get(fieldsIndex);
+        Object fieldValue = fidelityMessages.get(fidelityMsgIndex).getField(currentField);
+
+        if (fieldValue instanceof EnumValueDescriptor) {
+          if (((EnumValueDescriptor) fieldValue).getNumber() == 0) {
+            errors.addWarning(ErrorType.DEV_FIDELITY_PARAMETERS_ENUMS_ZERO, "Enums usually "
+                + "don't have 0 values.");
+            continue;
+          } else {
+            fieldValue = ((EnumValueDescriptor) fieldValue).getNumber();
+          }
+        }
+
+        if (hasComparisonErrorsWithPrevValue(firstComparison, fieldValue, prevValueForDescriptor,
+            currentField, fieldsIndex, errors) == true) {
+          break validationLoop;
+        }
+      }
+    }
   }
 
   /*
@@ -273,7 +348,7 @@ final class ValidationUtil {
         errors.addError(ErrorType.API_KEY_INVALID, "api_key not set to a valid value");
       }
     } else {
-        errors.addError(ErrorType.API_KEY_MISSING, "api_key is missing");
+      errors.addError(ErrorType.API_KEY_MISSING, "api_key is missing");
     }
   }
 
