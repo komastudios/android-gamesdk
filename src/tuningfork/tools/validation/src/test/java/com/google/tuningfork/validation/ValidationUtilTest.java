@@ -19,6 +19,7 @@ package com.google.tuningfork.validation;
 import static com.google.common.truth.Truth.assertThat;
 
 import com.google.protobuf.ByteString;
+import com.google.protobuf.Descriptors;
 import com.google.protobuf.Descriptors.Descriptor;
 
 import com.google.tuningfork.Tuningfork.Settings;
@@ -26,6 +27,8 @@ import com.google.tuningfork.Tuningfork.Settings.AggregationStrategy;
 import com.google.tuningfork.Tuningfork.Settings.Histogram;
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import org.junit.Rule;
 import org.junit.Test;
@@ -76,7 +79,7 @@ public final class ValidationUtilTest {
     assertThat(parsedSettings.get()).isEqualTo(settings);
   }
 
-    @Test
+  @Test
   public void settingsLoadingAnnotationIndexWarning() throws Exception {
     Settings settings = Settings.getDefaultInstance();
 
@@ -305,5 +308,46 @@ public final class ValidationUtilTest {
     assertThat(errors.getErrorCount(ErrorType.API_KEY_INVALID)).isEqualTo(1);
   }
 
+  @Test
+  public void allFidelityZero() throws Exception {
+    Descriptor desc =
+        helper.getDescriptor(
+            "fidelity_params_valid.proto",
+            "Getting FidelityParams field from proto",
+            "FidelityParams");
 
+    List<Descriptors.FieldDescriptor> fields = desc.getFields();
+    HashMap<Descriptors.FieldDescriptor, float[]> fidelityParams = new HashMap<>();
+
+    for (Descriptors.FieldDescriptor field : fields) {
+      fidelityParams.put(field, new float[5]);
+    }
+
+    ValidationUtil.validateFidelityParamsOrder(fidelityParams, errors);
+    assertThat(errors.getErrorCount(ErrorType.DEV_FIDELITY_PARAMETERS_ZERO))
+        .isEqualTo(fields.size());
+  }
+
+
+  @Test
+  public void validInvalidFidelityOrder() throws Exception {
+    Descriptor desc =
+        helper.getDescriptor(
+            "fidelity_params_valid.proto",
+            "Getting FidelityParams field from proto",
+            "FidelityParams");
+
+    List<Descriptors.FieldDescriptor> fields = desc.getFields();
+    HashMap<Descriptors.FieldDescriptor, float[]> fidelityParams = new HashMap<>();
+
+    fidelityParams
+        .put(fields.get(0), new float[]{2 * fields.size(), 3 * fields.size(), fields.size()});
+    for (int i = 2; i <= fields.size(); i++) {
+      int slope = (int) Math.pow(-1, i);
+      fidelityParams.put(fields.get(i - 1), new float[]{slope * i, 2 * slope * i, 3 * slope * i});
+    }
+
+    ValidationUtil.validateFidelityParamsOrder(fidelityParams, errors);
+    assertThat(errors.getErrorCount(ErrorType.DEV_FIDELITY_PARAMETERS_ORDER)).isEqualTo(1);
+  }
 }

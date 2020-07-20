@@ -21,6 +21,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.DynamicMessage;
+import com.google.protobuf.Field;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.TextFormat;
 import com.google.protobuf.TextFormat.ParseException;
@@ -29,13 +30,17 @@ import com.google.tuningfork.Tuningfork.Settings.AggregationStrategy;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-/** Utility methods for validating Tuning Fork protos and settings. */
+/**
+ * Utility methods for validating Tuning Fork protos and settings.
+ */
 final class ValidationUtil {
 
-  private ValidationUtil() {}
+  private ValidationUtil() {
+  }
 
   private static final Integer MAX_INTSTRUMENTATION_KEYS = 256;
 
@@ -85,7 +90,8 @@ final class ValidationUtil {
    * Validate Histograms
    * No restrictions since Tuning Fork Scaled allows empty settings.
    * */
-  public static void validateSettingsHistograms(Settings settings, ErrorCollector errors) {}
+  public static void validateSettingsHistograms(Settings settings, ErrorCollector errors) {
+  }
 
   /*
    * Validate Aggregation
@@ -145,6 +151,41 @@ final class ValidationUtil {
       return;
     }
     devFidelityList.forEach(entry -> validateDevFidelityParams(entry, fidelityParamsDesc, errors));
+  }
+
+  /*
+   * Validate content of fidelity parameters from all dev_tuningfork_fidelityparams_*.bin files.
+   * These should be in either increasing/decreasing order, and at least one value must be
+   * different than zero.
+   * */
+  public static final void validateFidelityParamsOrder(
+      HashMap<FieldDescriptor, float[]> fidelityValues,
+      ErrorCollector errors) {
+    for (HashMap.Entry<FieldDescriptor, float[]> fidelityValue : fidelityValues.entrySet()) {
+      int zeros = fidelityValue.getValue()[0] == 0 ? 1 : 0;
+      float prevComparison = 0;
+      float currentComparison;
+
+      for (int i = 1; i < fidelityValue.getValue().length; i++) {
+        currentComparison = fidelityValue.getValue()[i] - fidelityValue.getValue()[i - 1];
+
+        if (currentComparison * prevComparison < 0) {
+          errors.addError(ErrorType.DEV_FIDELITY_PARAMETERS_ORDER, "Fidelity parameters should be" +
+              "in either increasing or decreasing order.");
+          break;
+        }
+
+        prevComparison = currentComparison;
+        if (currentComparison == 0) {
+          zeros++;
+        }
+      }
+
+      if (zeros == fidelityValue.getValue().length) {
+        errors.addError(ErrorType.DEV_FIDELITY_PARAMETERS_ZERO, "At least one fidelity parameter" +
+            "must be different than zero.");
+      }
+    }
   }
 
   /*
@@ -273,7 +314,7 @@ final class ValidationUtil {
         errors.addError(ErrorType.API_KEY_INVALID, "api_key not set to a valid value");
       }
     } else {
-        errors.addError(ErrorType.API_KEY_MISSING, "api_key is missing");
+      errors.addError(ErrorType.API_KEY_MISSING, "api_key is missing");
     }
   }
 

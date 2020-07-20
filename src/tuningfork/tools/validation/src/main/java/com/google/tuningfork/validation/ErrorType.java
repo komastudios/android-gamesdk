@@ -41,6 +41,10 @@ public enum ErrorType {
   DEV_FIDELITY_PARAMETERS_ENCODING(ErrorGroup.DEV_FIDELITY),
   // Fidelity parameters: error reading file fidelity parameters file.
   DEV_FIDELITY_PARAMETERS_READING(ErrorGroup.DEV_FIDELITY),
+  // Fidelity parameters: not in increasing/decreasing order.
+  DEV_FIDELITY_PARAMETERS_ORDER(ErrorGroup.DEV_FIDELITY),
+  // Fidelity parameters can't all have zero-values.
+  DEV_FIDELITY_PARAMETERS_ZERO(ErrorGroup.DEV_FIDELITY),
   // Failed to parse the settings file.
   SETTINGS_PARSING(ErrorGroup.SETTINGS),
   // Failed to find the settings file.
@@ -71,8 +75,7 @@ public enum ErrorType {
   // Field ultimate_request_timeout_ms < 0
   ULTIMATE_REQUEST_TIMEOUT_INVALID(ErrorGroup.SETTINGS),
   // Field loading_annotation_index is missing
-  LOADING_ANNOTATION_INDEX_MISSING(ErrorGroup.SETTINGS);
-;
+  LOADING_ANNOTATION_INDEX_MISSING(ErrorGroup.SETTINGS);;
 
   private final ErrorGroup group;
 
@@ -84,7 +87,9 @@ public enum ErrorType {
     this.group = group;
   }
 
-  /** Validation group of errors */
+  /**
+   * Validation group of errors
+   */
   public enum ErrorGroup {
     ANNOTATION,
     FIDELITY,
