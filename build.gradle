@@ -35,12 +35,12 @@ def joinPath(String first, String... more) {
 }
 
 def swappyNativeLibrary = new NativeLibrary('swappy', 'GAMESDK_BUILD_SWAPPY')
-        .setAarLibrary("gaming-frame-pacing", "1.5.0")
+        .setAarLibrary("games-frame-pacing", "1.5.0")
         .addSampleAndroidProject(new SampleFolder(joinPath('samples', "bouncyball")))
         .addSampleAndroidProject(new SampleFolder(joinPath('samples', "cube")))
         .addSampleAndroidProject(new SampleFolder(joinPath('third_party', "cube")))
 def tuningForkNativeLibrary = new NativeLibrary('tuningfork', 'GAMESDK_BUILD_TUNINGFORK')
-        .setAarLibrary("gaming-performance-tuner", "1.0.0")
+        .setAarLibrary("games-performance-tuner", "1.0.0")
         .addSampleAndroidProject(new SampleFolder(joinPath('samples', 'tuningfork', 'insightsdemo')))
         .addSampleAndroidProject(new SampleFolder(joinPath('samples', 'tuningfork', 'experimentsdemo')))
         .addSampleAndroidProject(new SampleFolder(joinPath('src', 'tuningfork', 'tools', 'validation')))

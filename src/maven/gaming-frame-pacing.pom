@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>androidx.games</groupId>
-  <artifactId>gaming-frame-pacing</artifactId>
+  <artifactId>games-frame-pacing</artifactId>
   <version>@aarVersion@</version>
   <packaging>aar</packaging>
 

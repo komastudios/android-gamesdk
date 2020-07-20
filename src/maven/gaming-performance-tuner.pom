@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>androidx.games</groupId>
-  <artifactId>gaming-performance-tuner</artifactId>
+  <artifactId>games-performance-tuner</artifactId>
   <version>@aarVersion@</version>
   <packaging>aar</packaging>
 
