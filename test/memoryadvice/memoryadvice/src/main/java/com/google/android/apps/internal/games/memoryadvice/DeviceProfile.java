@@ -106,16 +106,25 @@ class DeviceProfile {
       int totalUnion = 0;
       Iterator<String> it2 = prospectBaseline.keys();
       while (it2.hasNext()) {
-        String metric = it2.next();
-        if (!baseline.has(metric)) {
+        String groupName = it2.next();
+        if (!baseline.has(groupName)) {
           continue;
         }
-        totalUnion++;
-        SortedSet<Long> values = baselineValuesTable.get(metric);
-        int prospectPosition = getPositionInList(values, prospectBaseline.getLong(metric));
-        int ownPosition = getPositionInList(values, baseline.getLong(metric));
-        float score = (float) Math.abs(prospectPosition - ownPosition) / values.size();
-        totalScore += score;
+        JSONObject prospectBaselineGroup = prospectBaseline.getJSONObject(groupName);
+        JSONObject baselineGroup = baseline.getJSONObject(groupName);
+        Iterator<String> it3 = prospectBaselineGroup.keys();
+        while (it3.hasNext()) {
+          String metric = it3.next();
+          if (!baselineGroup.has(metric)) {
+            continue;
+          }
+          totalUnion++;
+          SortedSet<Long> values = baselineValuesTable.get(metric);
+          int prospectPosition = getPositionInList(values, prospectBaselineGroup.getLong(metric));
+          int ownPosition = getPositionInList(values, baselineGroup.getLong(metric));
+          float score = (float) Math.abs(prospectPosition - ownPosition) / values.size();
+          totalScore += score;
+        }
       }
 
       if (totalUnion > 0) {
@@ -159,16 +168,21 @@ class DeviceProfile {
     Map<String, SortedSet<Long>> table = new HashMap<>();
     Iterator<String> it = lookup.keys();
     while (it.hasNext()) {
-      String key = it.next();
-      JSONObject limits = lookup.getJSONObject(key);
+      String device = it.next();
+      JSONObject limits = lookup.getJSONObject(device);
       JSONObject prospectBaseline = limits.getJSONObject("baseline");
       Iterator<String> it2 = prospectBaseline.keys();
       while (it2.hasNext()) {
-        String metric = it2.next();
-        if (!table.containsKey(metric)) {
-          table.put(metric, new TreeSet<Long>());
+        String groupName = it2.next();
+        JSONObject group = prospectBaseline.getJSONObject(groupName);
+        Iterator<String> it3 = group.keys();
+        while (it3.hasNext()) {
+          String metric = it3.next();
+          if (!table.containsKey(metric)) {
+            table.put(metric, new TreeSet<Long>());
+          }
+          table.get(metric).add(group.getLong(metric));
         }
-        table.get(metric).add(prospectBaseline.getLong(metric));
       }
     }
     return table;

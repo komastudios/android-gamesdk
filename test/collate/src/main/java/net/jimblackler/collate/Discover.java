@@ -81,7 +81,9 @@ public class Discover {
         for (String key : testMetrics.keySet()) {
           total += testMetrics.getLong(key);
         }
-        limitCurrent.put("applicationAllocated", total);
+        JSONObject stressedGroup = new JSONObject();
+        stressedGroup.put("applicationAllocated", total);
+        limitCurrent.put("stressed", stressedGroup);
 
         if (recordResults.has(fingerprint)) {
           // Multiple results are combined.
@@ -90,27 +92,40 @@ public class Discover {
           recordResult = recordResults.getJSONObject(fingerprint);
           JSONObject limitPrevious = recordResult.getJSONObject("limit");
           JSONObject baselinePrevious = recordResult.getJSONObject("baseline");
-          for (String key : limitPrevious.keySet()) {
+          for (String groupName : limitPrevious.keySet()) {
             try {
-              if (!(limitPrevious.get(key) instanceof Number)) {
+              JSONObject limitPreviousGroup = limitPrevious.optJSONObject(groupName);
+              if (limitPreviousGroup == null) {
                 continue;
               }
-              if (!baselinePrevious.has(key)) {
-                if (limitCurrent.getLong(key) < limitPrevious.getLong(key)) {
-                  limitPrevious.put(key, limitCurrent.getLong(key));
+              JSONObject limitCurrentGroup = limitCurrent.getJSONObject(groupName);
+              JSONObject baselineCurrentGroup = baselineCurrent.optJSONObject(groupName);
+              if (baselineCurrentGroup == null) {
+                continue;
+              }
+              JSONObject baselinePreviousGroup = baselinePrevious.getJSONObject(groupName);
+              for (String key : limitPreviousGroup.keySet()) {
+                if (!(limitPreviousGroup.get(key) instanceof Number)) {
+                  continue;
                 }
-                continue;
-              }
-              if (!(baselinePrevious.get(key) instanceof Number)) {
-                continue;
-              }
-              long previous = limitPrevious.getLong(key) - baselinePrevious.getLong(key);
-              long baselineCurrentValue = baselineCurrent.getLong(key);
-              long limitCurrentValue = limitCurrent.getLong(key);
-              long current = limitCurrentValue - baselineCurrentValue;
-              if (Math.abs(current) < Math.abs(previous)) {
-                baselinePrevious.put(key, baselineCurrentValue);
-                limitPrevious.put(key, limitCurrentValue);
+                if (!baselinePreviousGroup.has(key)) {
+                  if (limitCurrentGroup.getLong(key) < limitPreviousGroup.getLong(key)) {
+                    limitPreviousGroup.put(key, limitCurrentGroup.getLong(key));
+                  }
+                  continue;
+                }
+                if (!(baselinePreviousGroup.get(key) instanceof Number)) {
+                  continue;
+                }
+                long previous =
+                    limitPreviousGroup.getLong(key) - baselinePreviousGroup.getLong(key);
+                long baselineCurrentValue = baselineCurrentGroup.getLong(key);
+                long limitCurrentValue = limitCurrentGroup.getLong(key);
+                long current = limitCurrentValue - baselineCurrentValue;
+                if (Math.abs(current) < Math.abs(previous)) {
+                  baselinePreviousGroup.put(key, baselineCurrentValue);
+                  limitPreviousGroup.put(key, limitCurrentValue);
+                }
               }
             } catch (JSONException e) {
               throw new IllegalStateException(e);

@@ -47,6 +47,9 @@
             "VmSize": true
           }
         }
+      },
+      "predictions": {
+        "oom_score": true
       }
     }
   ],
