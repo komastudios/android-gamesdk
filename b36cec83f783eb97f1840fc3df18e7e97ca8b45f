@@ -1,0 +1,75 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000003941427",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1366843?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "25c73c75_049e0577",
+          "description": "Change to \"src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java\"",
+          "replacements": [
+            {
+              "path": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+              "range": {
+                "startLine": 160,
+                "startChar": 2,
+                "endLine": 160,
+                "endChar": 7
+              },
+              "replacement": " */"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "218007ce_41411052",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-07-20T15:26:21Z",
+      "side": 1,
+      "message": "Common typo found: \" * */\" -- should it be \" */\"?\nMalformatted comment.\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.",
+      "range": {
+        "startLine": 160,
+        "startChar": 2,
+        "endLine": 160,
+        "endChar": 7
+      },
+      "revId": "b36cec83f783eb97f1840fc3df18e7e97ca8b45f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000003941428",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1366843?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "710b9301_c88b2f7a",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-07-20T15:26:21Z",
+      "side": 1,
+      "message": "Wrong casing for \"validateFidelityParamsOrder\". static final variables should be ALL_UPPERCASE.",
+      "range": {
+        "startLine": 161,
+        "startChar": 9,
+        "endLine": 161,
+        "endChar": 54
+      },
+      "revId": "b36cec83f783eb97f1840fc3df18e7e97ca8b45f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
