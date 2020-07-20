@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "77070f83_fb43039a",
+        "filename": "samples/bouncyball/app/src/main/cpp/Renderer.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-20T17:29:36Z",
+      "side": 1,
+      "message": "const",
+      "range": {
+        "startLine": 96,
+        "startChar": 4,
+        "endLine": 96,
+        "endChar": 9
+      },
+      "revId": "f191a64f44808917c1cc802092c4657ba6a1652f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8e91f2ce_22ae03fe",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 773,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-20T17:29:36Z",
+      "side": 1,
+      "message": "Why do we need to add the margin here? if the swapDuration is not smaller than the min, we shouldn\u0027t bother to switch. \nAdding the margin might cause us to switch frequently between two close periods.",
+      "range": {
+        "startLine": 773,
+        "startChar": 49,
+        "endLine": 773,
+        "endChar": 61
+      },
+      "revId": "f191a64f44808917c1cc802092c4657ba6a1652f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
