@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "ed8549bb_4ed94968",
+        "filename": "samples/bouncyball/app/src/main/cpp/Orbit.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-20T11:17:03Z",
+      "side": 1,
+      "message": "It helps to debug the issue to see the current refresh rate, swap interval and the pipeline frame time in the info overlay.",
+      "parentUuid": "7b81dac5_a8ffab6a",
+      "revId": "ce30fc13ca6ae05303d79f3b9af819caaac21fd5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0ad31f3f_1ae4ea57",
         "filename": "samples/bouncyball/app/src/main/cpp/Orbit.cpp",
         "patchSetId": 3
@@ -56,6 +74,30 @@
       "revId": "ce30fc13ca6ae05303d79f3b9af819caaac21fd5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "16b8ca39_6748fcdd",
+        "filename": "samples/bouncyball/app/src/main/cpp/Orbit.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-20T11:17:03Z",
+      "side": 1,
+      "message": "We use clang-format now, but it looks like the swapppy samples aren\u0027t included.",
+      "parentUuid": "0ad31f3f_1ae4ea57",
+      "range": {
+        "startLine": 64,
+        "startChar": 14,
+        "endLine": 64,
+        "endChar": 15
+      },
+      "revId": "ce30fc13ca6ae05303d79f3b9af819caaac21fd5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -82,6 +124,30 @@
     },
     {
       "key": {
+        "uuid": "15b61067_cf9c1f97",
+        "filename": "samples/bouncyball/app/src/main/cpp/Orbit.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-20T11:17:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ca0b2c86_57559279",
+      "range": {
+        "startLine": 65,
+        "startChar": 76,
+        "endLine": 65,
+        "endChar": 77
+      },
+      "revId": "ce30fc13ca6ae05303d79f3b9af819caaac21fd5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "491a7342_2e85a801",
         "filename": "samples/bouncyball/app/src/main/cpp/Orbit.cpp",
         "patchSetId": 3
@@ -96,6 +162,24 @@
       "revId": "ce30fc13ca6ae05303d79f3b9af819caaac21fd5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2b734b3c_f23907e4",
+        "filename": "samples/bouncyball/app/src/main/cpp/Orbit.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-20T11:17:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "491a7342_2e85a801",
+      "revId": "ce30fc13ca6ae05303d79f3b9af819caaac21fd5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -122,6 +206,30 @@
     },
     {
       "key": {
+        "uuid": "3fc746e9_a399d12d",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 769,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-20T11:17:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "415511be_9193e4d0",
+      "range": {
+        "startLine": 769,
+        "startChar": 40,
+        "endLine": 769,
+        "endChar": 62
+      },
+      "revId": "ce30fc13ca6ae05303d79f3b9af819caaac21fd5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "302fca06_ccba0a7a",
         "filename": "src/swappy/common/SwappyCommon.cpp",
         "patchSetId": 3
@@ -142,6 +250,30 @@
       "revId": "ce30fc13ca6ae05303d79f3b9af819caaac21fd5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b1b8411d_6d540a73",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 775,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-20T11:17:03Z",
+      "side": 1,
+      "message": "Yes, we don\u0027t want to swap faster than the set refresh period (as mandated in the public header).\nI added the margin.",
+      "parentUuid": "302fca06_ccba0a7a",
+      "range": {
+        "startLine": 775,
+        "startChar": 29,
+        "endLine": 775,
+        "endChar": 30
+      },
+      "revId": "ce30fc13ca6ae05303d79f3b9af819caaac21fd5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -177,6 +309,24 @@
       "revId": "ce30fc13ca6ae05303d79f3b9af819caaac21fd5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a9e1070f_c0901fc5",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 779,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-20T11:17:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4847146b_f042f4a6",
+      "revId": "ce30fc13ca6ae05303d79f3b9af819caaac21fd5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
