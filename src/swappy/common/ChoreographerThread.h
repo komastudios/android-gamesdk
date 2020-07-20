@@ -20,6 +20,7 @@
 
 #include <mutex>
 
+#include "SwappyDisplayManager.h"
 #include "Thread.h"
 
 namespace swappy {
@@ -42,7 +43,7 @@ class ChoreographerThread {
 
     static std::unique_ptr<ChoreographerThread> createChoreographerThread(
         Type type, JavaVM* vm, jobject jactivity, Callback onChoreographer,
-        Callback onRefreshRateChanged, int sdkVersion);
+        Callback onRefreshRateChanged, SdkVersion sdkVersion);
 
     virtual ~ChoreographerThread() = 0;
 

@@ -63,8 +63,8 @@ bool SwappyDisplayManager::useSwappyDisplayManager(SdkVersion sdkVersion) {
 
     // SDK 30 and above doesn't need SwappyDisplayManager as it has native
     // support in NDK
-    return !(sdkVersion.sdkInt >= 30 ||
-             (sdkVersion.sdkInt == 29 && sdkVersion.previewSdkInt == 1));
+    return !(sdkVersion.sdkInt >= 31 ||
+             (sdkVersion.sdkInt == 30 && sdkVersion.previewSdkInt == 1));
 }
 
 SwappyDisplayManager::SwappyDisplayManager(JavaVM *vm, jobject mainActivity)
@@ -142,7 +142,7 @@ void SwappyDisplayManagerJNI::onRefreshRateChanged(jlong /*cookie*/,
                                                    long refreshPeriod,
                                                    long appOffset,
                                                    long sfOffset) {
-    ALOGV("onRefreshRateChanged");
+    ALOGV("onRefreshRateChanged: refresh rate: %.0fHz", 1e9f / refreshPeriod);
     using std::chrono::nanoseconds;
     Settings::DisplayTimings displayTimings;
     displayTimings.refreshPeriod = nanoseconds(refreshPeriod);

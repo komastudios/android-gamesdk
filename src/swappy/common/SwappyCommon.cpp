@@ -161,7 +161,7 @@ SwappyCommon::SwappyCommon(JNIEnv* env, jobject jactivity)
     mChoreographerThread = ChoreographerThread::createChoreographerThread(
         ChoreographerThread::Type::Swappy, mJVM, jactivity,
         [this] { mChoreographerFilter->onChoreographer(); },
-        [this] { onRefreshRateChanged(); }, mCommonSettings.sdkVersion.sdkInt);
+        [this] { onRefreshRateChanged(); }, mCommonSettings.sdkVersion);
     if (!mChoreographerThread->isInitialized()) {
         ALOGE("failed to initialize ChoreographerThread");
         return;
@@ -207,7 +207,7 @@ SwappyCommon::SwappyCommon(const SwappyCommonSettings& settings)
     mChoreographerThread = ChoreographerThread::createChoreographerThread(
         ChoreographerThread::Type::App, nullptr, nullptr,
         [this] { mChoreographerFilter->onChoreographer(); }, [] {},
-        mCommonSettings.sdkVersion.sdkInt);
+        mCommonSettings.sdkVersion);
 
     Settings::getInstance()->addListener([this]() { onSettingsChanged(); });
     Settings::getInstance()->setDisplayTimings({mCommonSettings.refreshPeriod,
@@ -279,7 +279,7 @@ void SwappyCommon::onChoreographer(int64_t frameTimeNanos) {
             ChoreographerThread::Type::App, nullptr, nullptr,
             [this] { mChoreographerFilter->onChoreographer(); },
             [this] { onRefreshRateChanged(); },
-            mCommonSettings.sdkVersion.sdkInt);
+            mCommonSettings.sdkVersion);
     }
 
     mChoreographerThread->postFrameCallbacks();
