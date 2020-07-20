@@ -186,7 +186,7 @@ void NDKChoreographerThread::looperThread() {
             ->mOnRefreshRateChanged();
     };
 
-    if (mAChoreographer_registerRefreshRateCallback) {
+    if (mAChoreographer_registerRefreshRateCallback && mOnRefreshRateChanged) {
         mAChoreographer_registerRefreshRateCallback(mChoreographer, callback,
                                                     this);
     }
@@ -220,7 +220,7 @@ void NDKChoreographerThread::looperThread() {
         ALooper_pollAll(-1, &outFd, &outEvents, &outData);
         mWaitingMutex.lock();
     }
-    if (mAChoreographer_unregisterRefreshRateCallback) {
+    if (mAChoreographer_unregisterRefreshRateCallback && mOnRefreshRateChanged) {
         mAChoreographer_unregisterRefreshRateCallback(mChoreographer, callback,
                                                       this);
     }
@@ -485,17 +485,18 @@ ChoreographerThread::createChoreographerThread(Type type, JavaVM *vm,
                                                jobject jactivity,
                                                Callback onChoreographer,
                                                Callback onRefreshRateChanged,
-                                               int sdkVersion) {
+                                               SdkVersion sdkVersion) {
     if (type == Type::App) {
         ALOGI("Using Application's Choreographer");
         return std::make_unique<NoChoreographerThread>(onChoreographer);
     }
 
     if (vm == nullptr ||
-        sdkVersion >= NDKChoreographerThread::MIN_SDK_VERSION) {
+        sdkVersion.sdkInt >= NDKChoreographerThread::MIN_SDK_VERSION) {
         ALOGI("Using NDK Choreographer");
+        const auto refreshRateCallback = SwappyDisplayManager::useSwappyDisplayManager(sdkVersion) ? Callback() : onRefreshRateChanged;
         return std::make_unique<NDKChoreographerThread>(onChoreographer,
-                                                        onRefreshRateChanged);
+                                                        refreshRateCallback);
     }
 
     if (vm != nullptr && jactivity != nullptr) {
