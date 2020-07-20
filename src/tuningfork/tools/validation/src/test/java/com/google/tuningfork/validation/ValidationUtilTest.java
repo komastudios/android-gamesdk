@@ -18,15 +18,26 @@ package com.google.tuningfork.validation;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import com.google.common.io.Files;
 import com.google.protobuf.ByteString;
+import com.google.protobuf.Descriptors;
 import com.google.protobuf.Descriptors.Descriptor;
 
+import com.google.protobuf.DynamicMessage;
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.tuningfork.Tuningfork.Settings;
 import com.google.tuningfork.Tuningfork.Settings.AggregationStrategy;
 import com.google.tuningfork.Tuningfork.Settings.Histogram;
+import com.google.tuningfork.DevTuningfork.FidelityParams;
+import com.google.tuningfork.DevTuningfork.QualitySettings;
+import com.sun.corba.se.impl.dynamicany.DynAnyBasicImpl;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -48,6 +59,7 @@ public final class ValidationUtilTest {
       };
 
   private final ProtoCompilerHelper helper = new ProtoCompilerHelper(tempFolder);
+  private static final File PROTOC_BINARY = ProtocBinary.get();
 
   final String tuningforkPath = "assets/tuningfork";
 
@@ -76,7 +88,7 @@ public final class ValidationUtilTest {
     assertThat(parsedSettings.get()).isEqualTo(settings);
   }
 
-    @Test
+  @Test
   public void settingsLoadingAnnotationIndexWarning() throws Exception {
     Settings settings = Settings.getDefaultInstance();
 
@@ -162,7 +174,7 @@ public final class ValidationUtilTest {
             "Getting FidelityParams field from proto",
             "FidelityParams");
 
-    ValidationUtil.validateDevFidelityParams(content, desc, errors);
+    ValidationUtil.validateDevFidelityParams(content, desc, errors, new ArrayList<>());
     assertThat(errors.getErrorCount()).isEqualTo(0);
   }
 
@@ -177,7 +189,7 @@ public final class ValidationUtilTest {
     // not a valid file
     ByteString content = TestdataHelper.readByteString("annotation_complex.proto");
 
-    ValidationUtil.validateDevFidelityParams(content, desc, errors);
+    ValidationUtil.validateDevFidelityParams(content, desc, errors, new ArrayList<>());
     assertThat(errors.getErrorCount(ErrorType.DEV_FIDELITY_PARAMETERS_PARSING)).isEqualTo(1);
     assertThat(errors.getErrorCount()).isEqualTo(1);
   }
@@ -305,5 +317,109 @@ public final class ValidationUtilTest {
     assertThat(errors.getErrorCount(ErrorType.API_KEY_INVALID)).isEqualTo(1);
   }
 
+  @Test
+  public void checkZeroEnumWarning() throws Exception {
+    Descriptor desc =
+        helper.getDescriptor(
+            "fidelity_params_valid.proto",
+            "Getting FidelityParams field from proto",
+            "FidelityParams");
+    TestdataHelper thelper = new TestdataHelper(tempFolder);
+    ExternalProtoCompiler compiler = new ExternalProtoCompiler(PROTOC_BINARY);
 
+    List<File> files = new ArrayList<>();
+    files.add(thelper.getFile("dev_tuningfork_fidelityparams_4.txt"));
+    List<ByteString> filesContent = new ArrayList<>();
+
+    for (File file : files) {
+      File binaryFile = compiler.encodeFromTextprotoFile(desc.getFullName(),
+          thelper.getFile("dev_tuningfork.proto"),
+          file,
+          file.getParentFile().getAbsolutePath()
+              + "/"
+              + file.getName().replace(".txt", ".bin"),
+          Optional.empty());
+      ByteString content = ByteString.copyFrom(Files.toByteArray(binaryFile));
+      filesContent.add(content);
+    }
+
+    List<DynamicMessage> dynamicMessages = new ArrayList<>();
+    ValidationUtil.validateDevFidelityParams(filesContent, desc, errors, dynamicMessages);
+    ValidationUtil.validateDevFidelityParamsOrder(desc, dynamicMessages, errors);
+
+    assertThat(errors.getWarningCount(ErrorType.DEV_FIDELITY_PARAMETERS_ENUMS_ZERO)).isEqualTo(1);
+  }
+
+  @Test
+  public void devParamsCorrectOrder() throws Exception {
+    Descriptor desc =
+        helper.getDescriptor(
+            "fidelity_params_valid.proto",
+            "Getting FidelityParams field from proto",
+            "FidelityParams");
+    TestdataHelper thelper = new TestdataHelper(tempFolder);
+    ExternalProtoCompiler compiler = new ExternalProtoCompiler(PROTOC_BINARY);
+
+    List<File> files = new ArrayList<>();
+    files.add(thelper.getFile("dev_tuningfork_fidelityparams_1.txt"));
+    files.add(thelper.getFile("dev_tuningfork_fidelityparams_2.txt"));
+    files.add(thelper.getFile("dev_tuningfork_fidelityparams_3.txt"));
+    List<ByteString> filesContent = new ArrayList<>();
+
+    for (File file : files) {
+      File binaryFile = compiler.encodeFromTextprotoFile(desc.getFullName(),
+          thelper.getFile("dev_tuningfork.proto"),
+          file,
+          file.getParentFile().getAbsolutePath()
+              + "/"
+              + file.getName().replace(".txt", ".bin"),
+          Optional.empty());
+      ByteString content = ByteString.copyFrom(Files.toByteArray(binaryFile));
+      filesContent.add(content);
+    }
+
+    List<DynamicMessage> dynamicMessages = new ArrayList<>();
+    ValidationUtil.validateDevFidelityParams(filesContent, desc, errors, dynamicMessages);
+    ValidationUtil.validateDevFidelityParamsOrder(desc, dynamicMessages, errors);
+
+    assertThat(errors.getWarningCount(ErrorType.DEV_FIDELITY_PARAMETERS_ORDER)).isEqualTo(0);
+  }
+
+  @Test
+  public void devParamsIncorrectOrder() throws Exception {
+    Descriptor desc =
+        helper.getDescriptor(
+            "fidelity_params_valid.proto",
+            "Getting FidelityParams field from proto",
+            "FidelityParams");
+    TestdataHelper thelper = new TestdataHelper(tempFolder);
+    ExternalProtoCompiler compiler = new ExternalProtoCompiler(PROTOC_BINARY);
+
+    List<File> files = new ArrayList<>();
+    files.add(thelper.getFile("dev_tuningfork_fidelityparams_1.txt"));
+    files.add(thelper.getFile("dev_tuningfork_fidelityparams_2.txt"));
+    files.add(thelper.getFile("dev_tuningfork_fidelityparams_3.txt"));
+    files.add(thelper.getFile("dev_tuningfork_fidelityparams_4.txt"));
+    files.add(thelper.getFile("dev_tuningfork_fidelityparams_5.txt"));
+    List<ByteString> filesContent = new ArrayList<>();
+
+    for (File file : files) {
+      File binaryFile = compiler.encodeFromTextprotoFile(desc.getFullName(),
+          thelper.getFile("dev_tuningfork.proto"),
+          file,
+          file.getParentFile().getAbsolutePath()
+              + "/"
+              + file.getName().replace(".txt", ".bin"),
+          Optional.empty());
+      ByteString content = ByteString.copyFrom(Files.toByteArray(binaryFile));
+      filesContent.add(content);
+    }
+
+    List<DynamicMessage> dynamicMessages = new ArrayList<>();
+    ValidationUtil.validateDevFidelityParams(filesContent, desc, errors, dynamicMessages);
+    ValidationUtil.validateDevFidelityParamsOrder(desc, dynamicMessages, errors);
+
+    assertThat(errors.getWarningCount(ErrorType.DEV_FIDELITY_PARAMETERS_ORDER)).isEqualTo(1);
+    assertThat(errors.getWarningCount(ErrorType.DEV_FIDELITY_PARAMETERS_ENUMS_ZERO)).isEqualTo(1);
+  }
 }

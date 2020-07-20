@@ -1,0 +1,2 @@
+quality_settings: SIMPLE
+int_field: 9
