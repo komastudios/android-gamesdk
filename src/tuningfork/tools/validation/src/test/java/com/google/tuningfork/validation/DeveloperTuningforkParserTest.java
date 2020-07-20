@@ -21,6 +21,8 @@ import static com.google.common.truth.Truth.assertThat;
 import com.google.common.io.Files;
 import com.google.protobuf.ByteString;
 
+import com.google.protobuf.Descriptors.Descriptor;
+import com.google.protobuf.DynamicMessage;
 import com.google.tuningfork.DevTuningfork.FidelityParams;
 import com.google.tuningfork.DevTuningfork.QualitySettings;
 import com.google.tuningfork.Tuningfork.Settings;
