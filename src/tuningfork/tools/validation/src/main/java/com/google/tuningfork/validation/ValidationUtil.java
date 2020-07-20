@@ -19,6 +19,7 @@ package com.google.tuningfork.validation;
 import com.google.common.collect.ImmutableList;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors.Descriptor;
+import com.google.protobuf.Descriptors.EnumValueDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -31,11 +32,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
-/** Utility methods for validating Tuning Fork protos and settings. */
+/**
+ * Utility methods for validating Tuning Fork protos and settings.
+ */
 final class ValidationUtil {
 
-  private ValidationUtil() {}
+  private ValidationUtil() {
+  }
 
   private static final Integer MAX_INTSTRUMENTATION_KEYS = 256;
 
@@ -85,7 +91,8 @@ final class ValidationUtil {
    * Validate Histograms
    * No restrictions since Tuning Fork Scaled allows empty settings.
    * */
-  public static void validateSettingsHistograms(Settings settings, ErrorCollector errors) {}
+  public static void validateSettingsHistograms(Settings settings, ErrorCollector errors) {
+  }
 
   /*
    * Validate Aggregation
@@ -136,22 +143,105 @@ final class ValidationUtil {
     }
   }
 
-  public static final void validateDevFidelityParams(
+  public static final List<DynamicMessage> validateDevFidelityParams(
       Collection<ByteString> devFidelityList,
       Descriptor fidelityParamsDesc,
       ErrorCollector errors) {
     if (devFidelityList.isEmpty()) {
       errors.addError(ErrorType.DEV_FIDELITY_PARAMETERS_EMPTY, "Fidelity parameters list is empty");
-      return;
+      return null;
     }
-    devFidelityList.forEach(entry -> validateDevFidelityParams(entry, fidelityParamsDesc, errors));
+    List<DynamicMessage> fidelityMessages = new ArrayList<>();
+    devFidelityList.forEach(
+        entry -> fidelityMessages
+            .add(validateDevFidelityParams(entry, fidelityParamsDesc, errors)));
+    return fidelityMessages;
+  }
+
+  private static final float getValueHelper(int i, List<DynamicMessage> fidelityMessages,
+      FieldDescriptor field) {
+    Object fieldValue = fidelityMessages.get(i).getField(field);
+    if (fieldValue instanceof EnumValueDescriptor) {
+      return ((EnumValueDescriptor) fieldValue).getNumber();
+    } else if (fieldValue instanceof Integer) {
+      return (float) ((Integer) fieldValue).intValue();
+    }
+    return (float) fieldValue;
+  }
+
+  /*
+   * Validate content of fidelity parameters from all dev_tuningfork_fidelityparams_*.bin files.
+   * These should be in either increasing/decreasing order.
+   * Only works for int32, float, enums.
+   */
+  public static final void validateDevFidelityParamsOrder(
+      Descriptor fidelityParamsDesc,
+      List<DynamicMessage> fidelityMessages,
+      ErrorCollector errors) {
+    long isIncreasing = fidelityParamsDesc
+        .getFields()
+        .stream()
+        .filter(field ->
+            IntStream.range(1, fidelityMessages.size())
+                .allMatch(
+                    i -> getValueHelper(i - 1, fidelityMessages, field) <= getValueHelper(i,
+                        fidelityMessages, field)))
+        .count();
+
+    long isDecreasing = fidelityParamsDesc
+        .getFields()
+        .stream()
+        .filter(field ->
+            IntStream.range(1, fidelityMessages.size())
+                .allMatch(
+                    i -> getValueHelper(i - 1, fidelityMessages, field) >= getValueHelper(i,
+                        fidelityMessages, field)))
+        .count();
+
+    long allEqual = fidelityParamsDesc
+        .getFields()
+        .stream()
+        .filter(field ->
+            IntStream.range(1, fidelityMessages.size())
+                .allMatch(
+                    i -> getValueHelper(i - 1, fidelityMessages, field) == getValueHelper(i,
+                        fidelityMessages, field)))
+        .count();
+
+    if (isIncreasing + isDecreasing - allEqual != fidelityParamsDesc.getFields().size()) {
+      errors
+          .addWarning(ErrorType.DEV_FIDELITY_PARAMETERS_ORDER, "Fidelity parameters should be " +
+              "in either increasing or decreasing order.");
+    }
+  }
+
+  /*
+   * Validate content of fidelity parameters from all dev_tuningfork_fidelityparams_*.bin files.
+   * Enums usually have values different than 0.
+   */
+  public static final void validateDevFidelityParamsZero(
+      Descriptor fidelityParamsDesc,
+      List<DynamicMessage> fidelityMessages,
+      ErrorCollector errors) {
+    Stream<FieldDescriptor> hasZeroEnum = fidelityParamsDesc
+        .getFields()
+        .stream()
+        .filter(field -> fidelityMessages.stream()
+            .filter(message -> message.getField(field) instanceof EnumValueDescriptor).
+                anyMatch(
+                    message -> ((EnumValueDescriptor) message.getField(field)).getNumber() == 0)
+        );
+
+    if (hasZeroEnum.count() > 0) {
+      errors.addWarning(ErrorType.DEV_FIDELITY_PARAMETERS_ENUMS_ZERO, "A");
+    }
   }
 
   /*
    * Validate content of dev_tuningfork_fidelityparams_*.bin files
    * Each file should be parsed to Fidelity proto
    * */
-  public static final void validateDevFidelityParams(
+  public static final DynamicMessage validateDevFidelityParams(
       ByteString devFidelityContent, Descriptor fidelityParamsDesc, ErrorCollector errors) {
     try {
       DynamicMessage fidelityMessage =
@@ -159,10 +249,12 @@ final class ValidationUtil {
       if (fidelityMessage == null) {
         errors.addError(ErrorType.DEV_FIDELITY_PARAMETERS_EMPTY, "Fidelity parameters is empty");
       }
+      return fidelityMessage;
     } catch (InvalidProtocolBufferException e) {
       errors.addError(
           ErrorType.DEV_FIDELITY_PARAMETERS_PARSING, "Fidelity parameters not parsed properly", e);
     }
+    return null;
   }
 
   /*
@@ -273,7 +365,7 @@ final class ValidationUtil {
         errors.addError(ErrorType.API_KEY_INVALID, "api_key not set to a valid value");
       }
     } else {
-        errors.addError(ErrorType.API_KEY_MISSING, "api_key is missing");
+      errors.addError(ErrorType.API_KEY_MISSING, "api_key is missing");
     }
   }
 

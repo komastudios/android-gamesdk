@@ -24,13 +24,24 @@ import com.google.common.io.Files;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.FileDescriptor;
+import com.google.protobuf.DynamicMessage;
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.tuningfork.Tuningfork.Settings;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/** Tuningfork validation tool. Parses proto and settings files and validates them. */
+/**
+ * Tuningfork validation tool. Parses proto and settings files and validates them.
+ */
 public class DeveloperTuningforkParser {
 
   private Optional<File> devTuningforkProto = Optional.empty();
@@ -134,11 +145,16 @@ public class DeveloperTuningforkParser {
           FolderConfig.DEV_FIDELITY_TEXTPROTO);
     }
 
+    List<ByteString> filesContent = new ArrayList<>();
     devFidelityFiles.forEach(
-        textprotoFile -> encodeBinaryAndValidateDevFidelity(fidelityField, textprotoFile));
+        textprotoFile -> {
+          filesContent.add(encodeBinary(fidelityField, textprotoFile));
+        });
+
+    validateDevFidelityParams(fidelityField, filesContent);
   }
 
-  private void encodeBinaryAndValidateDevFidelity(Descriptor fidelityField, File textprotoFile) {
+  private ByteString encodeBinary(Descriptor fidelityField, File textprotoFile) {
     File binaryFile;
     try {
       binaryFile =
@@ -153,7 +169,7 @@ public class DeveloperTuningforkParser {
           ErrorType.DEV_FIDELITY_PARAMETERS_ENCODING,
           String.format("Encoding %s file", textprotoFile.getName()),
           e);
-      return;
+      return null;
     }
     ByteString content;
     try {
@@ -163,9 +179,16 @@ public class DeveloperTuningforkParser {
           ErrorType.DEV_FIDELITY_PARAMETERS_READING,
           String.format("Reading %s file", binaryFile.getName()),
           e);
-      return;
+      return null;
     }
-    ValidationUtil.validateDevFidelityParams(content, fidelityField, errors);
+    return content;
+  }
+
+  private void validateDevFidelityParams(Descriptor fidelityField, List<ByteString> filesContent) {
+    List<DynamicMessage> fidelityMessages = ValidationUtil
+        .validateDevFidelityParams(filesContent, fidelityField, errors);
+    ValidationUtil.validateDevFidelityParamsZero(fidelityField, fidelityMessages, errors);
+    ValidationUtil.validateDevFidelityParamsOrder(fidelityField, fidelityMessages, errors);
   }
 
   private static String getBinaryPathForTextprotoPath(File textprotoFile) {
@@ -185,9 +208,25 @@ public class DeveloperTuningforkParser {
     return Optional.of(content);
   }
 
+  private static int getFileNumberHelper(File file) {
+    Pattern p = Pattern.compile("\\d+");
+    Matcher matcher = p.matcher(file.getName());
+    if(matcher.find()) {
+      return Integer.parseInt(matcher.group(0));
+    }
+    return 0;
+  }
+
   private static ImmutableList<File> findDevFidelityParams(File folder) throws IOException {
     Pattern devFidelityPattern = Pattern.compile(FolderConfig.DEV_FIDELITY_TEXTPROTO);
-    return ImmutableList.copyOf(
+    List<File> files = Arrays.asList(
         folder.listFiles((dir, filename) -> devFidelityPattern.matcher(filename).find()));
+    Collections.sort(files, new Comparator<File>() {
+      @Override
+      public int compare(File file1, File file2) {
+        return getFileNumberHelper(file1) - getFileNumberHelper(file2);
+      }
+    });
+    return ImmutableList.copyOf(files);
   }
 }
