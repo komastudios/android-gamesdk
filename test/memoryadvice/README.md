@@ -243,7 +243,9 @@ class MyActivity extends Activity {
 ```
 
 Call the library back with the object to get an estimate in bytes of the memory
-that can safely be allocated by the application.
+that can safely be allocated by the application. Please note that this is
+currently the most experimental part of the libarary, and estimates may be
+inaccurate for combinations of devices that we have not seen in lab testing.
 
 ```java
 import android.app.Activity;
@@ -326,4 +328,5 @@ Customize the script as required.
 
 ## Reporting bugs
 
-Email [jimblackler@google.com](mailto:jimblackler@google.com)
+Email [jimblackler@google.com](mailto:jimblackler@google.com) Please include the
+output from memoryAdvisor.getDeviceInfo().toString().
