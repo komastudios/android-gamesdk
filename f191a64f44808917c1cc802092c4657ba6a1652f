@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "de6cf29f_1e40aa34",
+        "filename": "samples/bouncyball/app/src/main/cpp/Renderer.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-21T08:54:02Z",
+      "side": 1,
+      "message": "No, we call the add method on it in Orbit.cpp.",
+      "parentUuid": "77070f83_fb43039a",
+      "range": {
+        "startLine": 96,
+        "startChar": 4,
+        "endLine": 96,
+        "endChar": 9
+      },
+      "revId": "f191a64f44808917c1cc802092c4657ba6a1652f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8e91f2ce_22ae03fe",
         "filename": "src/swappy/common/SwappyCommon.cpp",
         "patchSetId": 4
@@ -36,6 +60,30 @@
       "writtenOn": "2020-07-20T17:29:36Z",
       "side": 1,
       "message": "Why do we need to add the margin here? if the swapDuration is not smaller than the min, we shouldn\u0027t bother to switch. \nAdding the margin might cause us to switch frequently between two close periods.",
+      "range": {
+        "startLine": 773,
+        "startChar": 49,
+        "endLine": 773,
+        "endChar": 61
+      },
+      "revId": "f191a64f44808917c1cc802092c4657ba6a1652f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "15b41ba0_df3ecda7",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 773,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-21T08:54:02Z",
+      "side": 1,
+      "message": "It\u0027s the same logic as before: the margin is there to allow equal swap durations but with longer refresh periods, e.g. 90Hz -\u003e 60Hz. The longer refresh period succeeds the shorter, so it will be chosen. We do see switching between close rates though if we\u0027re near a boundary, i.e. the frameRate is close to 2 possible swap durations. I\u0027ll show you later how it currently looks. I don\u0027t think changing this condition would fix that though.",
+      "parentUuid": "8e91f2ce_22ae03fe",
       "range": {
         "startLine": 773,
         "startChar": 49,
