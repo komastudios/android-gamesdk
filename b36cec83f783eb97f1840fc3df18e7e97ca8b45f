@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8f9ab009_af3b0388",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-21T12:39:29Z",
+      "side": 1,
+      "message": "Can you pass List\u003cDynamicMessage\u003e, MessageDescriptor descriptor instead?",
+      "range": {
+        "startLine": 162,
+        "startChar": 6,
+        "endLine": 162,
+        "endChar": 54
+      },
+      "revId": "b36cec83f783eb97f1840fc3df18e7e97ca8b45f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7c7f638b_d339b9fa",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-21T12:39:29Z",
+      "side": 1,
+      "message": "Will it work with next value is same as prev value? (this is a valid case)",
+      "range": {
+        "startLine": 170,
+        "startChar": 0,
+        "endLine": 170,
+        "endChar": 90
+      },
+      "revId": "b36cec83f783eb97f1840fc3df18e7e97ca8b45f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5437f4c5_6102cde4",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-21T12:39:29Z",
+      "side": 1,
+      "message": "Let\u0027s keep it as warning",
+      "range": {
+        "startLine": 173,
+        "startChar": 17,
+        "endLine": 173,
+        "endChar": 25
+      },
+      "revId": "b36cec83f783eb97f1840fc3df18e7e97ca8b45f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b0a93c61_0bc4fda7",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-21T12:39:29Z",
+      "side": 1,
+      "message": "same, warning",
+      "range": {
+        "startLine": 185,
+        "startChar": 15,
+        "endLine": 185,
+        "endChar": 23
+      },
+      "revId": "b36cec83f783eb97f1840fc3df18e7e97ca8b45f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
