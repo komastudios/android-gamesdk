@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "b77b7a56_073ef565",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/DeveloperTuningforkParser.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-21T17:18:14Z",
+      "side": 1,
+      "message": "Also, would it work with \"dev_fidelityparams_2.bin\" and \"dev_fidelityparams_10.bin\" ?",
+      "parentUuid": "ab1ee689_cc6474fd",
+      "range": {
+        "startLine": 237,
+        "startChar": 4,
+        "endLine": 237,
+        "endChar": 28
+      },
+      "revId": "b36cec83f783eb97f1840fc3df18e7e97ca8b45f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8f9ab009_af3b0388",
         "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
         "patchSetId": 1
