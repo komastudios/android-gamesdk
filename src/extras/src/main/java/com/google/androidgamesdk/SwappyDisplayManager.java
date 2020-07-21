@@ -181,7 +181,7 @@ public class SwappyDisplayManager implements DisplayManager.DisplayListener {
                 updateSupportedRefreshRates(display);
             }
 
-            if (callNativeCallback() && refreshRateChanged) {
+            if (refreshRateChanged) {
                 final long appVsyncOffsetNanos = display.getAppVsyncOffsetNanos();
                 final long vsyncPresentationDeadlineNanos =
                         mWindowManager.getDefaultDisplay().getPresentationDeadlineNanos();
@@ -196,13 +196,6 @@ public class SwappyDisplayManager implements DisplayManager.DisplayListener {
                                      sfVsyncOffsetNanos);
             }
         }
-    }
-
-    private boolean callNativeCallback() {
-        // Android 11 and beyond has an NDK callback and will get notified directly,
-        // no need to call the callback from here.
-        return (Build.VERSION.SDK_INT < 29 ||
-                (Build.VERSION.SDK_INT == 29 && Build.VERSION.PREVIEW_SDK_INT == 0));
     }
 
     private native void nSetSupportedRefreshRates(long cookie,
