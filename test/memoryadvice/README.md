@@ -302,27 +302,23 @@ class MyActivity extends Activity {
 
 ## Unity integration
 
-In Android Studio, build the library
-[memoryadvice](https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/refs/heads/master/test/memoryadvice/).
-Drag the generated AAR (e.g.
-`gamesdk/test/memoryadvice/memoryadvice/build/outputs/aar/memoryadvice-debug.aar`)
-into the Assets folder of your Unity project. See
-[Unity instructions](https://docs.unity3d.com/Manual/AndroidAARPlugins.html) for
-including Android libraries in projects.
-
-Optional: add the
-[JSON Object package](https://assetstore.unity.com/packages/tools/input-management/json-object-710)
-to your Unity project.
-
-Copy
-[UnityMemoryHandler.cs](https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/refs/heads/master/test/unitymemory/UnityMemoryHandler.cs)
-and drag the script into the Scripts folder of your Unity project.
-
-Create a new Game Object in your game scene, and drag the
-`UnityMemoryHandler.cs` script from your Assets folder to the new Game Object to
-associate it with the script.
-
-Customize the script as required.
+1.  In Android Studio, build the library
+    [memoryadvice](https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/refs/heads/master/test/memoryadvice/).
+2.  Drag the generated AAR (e.g.
+    `gamesdk/test/memoryadvice/memoryadvice/build/outputs/aar/memoryadvice-debug.aar`)
+    into the Assets folder of your Unity project. See
+    [Unity instructions](https://docs.unity3d.com/Manual/AndroidAARPlugins.html)
+    for including Android libraries in projects.
+3.  Optional: add the
+    [JSON Object package](https://assetstore.unity.com/packages/tools/input-management/json-object-710)
+    to your Unity project.
+4.  Copy
+    [UnityMemoryHandler.cs](https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/refs/heads/master/test/unitymemory/UnityMemoryHandler.cs)
+    and drag the script into the Scripts folder of your Unity project.
+5.  Create a new Game Object in your game scene, and drag the
+    `UnityMemoryHandler.cs` script from your Assets folder to the new Game
+    Object to associate it with the script.
+6.  Customize the script as required.
 
 ## Reporting bugs
 
