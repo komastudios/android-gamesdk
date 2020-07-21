@@ -93,6 +93,30 @@
       "revId": "f191a64f44808917c1cc802092c4657ba6a1652f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c13a1918_681a6d38",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 773,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2020-07-21T17:11:26Z",
+      "side": 1,
+      "message": "understood. So we will also prefer the config with the longer refresh period.",
+      "parentUuid": "15b41ba0_df3ecda7",
+      "range": {
+        "startLine": 773,
+        "startChar": 49,
+        "endLine": 773,
+        "endChar": 61
+      },
+      "revId": "f191a64f44808917c1cc802092c4657ba6a1652f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
