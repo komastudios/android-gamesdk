@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
 import java.lang.reflect.Field;
+import java.util.Properties;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,10 +29,24 @@ class BuildInfo {
       build.put("version", getStaticFields(Build.VERSION.class));
       build.put("features", getFeatures(context));
       build.put("library", getStaticFields(BuildConfig.class));
+      build.put("system", getSystem());
     } catch (JSONException ex) {
       Log.w(TAG, "Problem getting build data", ex);
     }
     return build;
+  }
+
+  private static JSONObject getSystem() {
+    JSONObject system = new JSONObject();
+    try {
+      Properties properties = System.getProperties();
+      for (String propertyName : properties.stringPropertyNames()) {
+        system.put(propertyName, System.getProperty(propertyName));
+      }
+    } catch (JSONException ex) {
+      Log.w(TAG, "Problem getting system data", ex);
+    }
+    return system;
   }
 
   /**
