@@ -103,6 +103,26 @@ library provides methods that can be called to get simple recommendations.
 However, as long as the library is experimental, this interface is not
 guaranteed to be stable.
 
+# Limitations of estimates
+
+Estimates are currently the most experimental part of the libarary, and
+estimates may be inaccurate for combinations of devices that we have not seen in
+lab testing.
+
+They may suggest a lower limit than can be allocated by an application in
+practice, because:
+
+*   Different types of memory allocation (e.g. heap allocation vs allocation via
+    graphics API) experience different limits, MB for MB. The library is
+    pessimistic so will report the lower figure.
+
+*   The memory advice library is pessimistic about the effets of zram
+    compression on memory availability. Allocated memory that is both rarely
+    used, and has compressible contents (e.g. contains repeated data) can be
+    compressed by [zram](https://en.wikipedia.org/wiki/Zram) on Android. This
+    could result in apps apparently allocating more memory that was actually
+    present on the device.
+
 # Recommended strategies
 
 The library will only be of use if client applications can vary the amount of
@@ -326,4 +346,5 @@ Customize the script as required.
 
 ## Reporting bugs
 
-Email [jimblackler@google.com](mailto:jimblackler@google.com)
+Email [jimblackler@google.com](mailto:jimblackler@google.com) Please include the
+output from memoryAdvisor.getDeviceInfo().toString().
