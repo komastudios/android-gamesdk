@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ef348f9a_92b84d9c",
+        "filename": "src/swappy/common/SwappyDisplayManager.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-21T09:12:27Z",
+      "side": 1,
+      "message": "Nit: update comment too",
+      "range": {
+        "startLine": 64,
+        "startChar": 0,
+        "endLine": 65,
+        "endChar": 21
+      },
+      "revId": "213f33531fd24e8efe6e7a791e7d4b30a80580bd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
