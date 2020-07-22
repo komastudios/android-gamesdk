@@ -5,9 +5,7 @@ import android.content.res.AssetManager;
 import android.util.Log;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,7 +17,6 @@ import static com.google.android.apps.internal.games.memoryadvice.Utils.readStre
  */
 public class MemoryAdvisor extends MemoryMonitor {
   private static final String TAG = MemoryMonitor.class.getSimpleName();
-  private static final List<String> PREDICTION_FIELDS = Collections.singletonList("oom_score");
   private final JSONObject deviceProfile;
   private final JSONObject params;
 
@@ -57,9 +54,11 @@ public class MemoryAdvisor extends MemoryMonitor {
 
   /**
    * Returns 'true' if there are any low memory warnings in the advice object.
+   * @deprecated since 0.7. Use getWarningLevel() instead.
    * @param advice The advice object returned by getAdvice().
    * @return if there are any low memory warnings in the advice object.
    */
+  @Deprecated
   public static boolean anyWarnings(JSONObject advice) {
     JSONArray warnings = advice.optJSONArray("warnings");
     return warnings != null && warnings.length() > 0;
@@ -96,9 +95,11 @@ public class MemoryAdvisor extends MemoryMonitor {
 
   /**
    * Return 'true' if there are any 'red' (critical) warnings in the advice object.
+   * @deprecated since 0.7. Use getWarningLevel() instead.
    * @param advice The advice object returned by getAdvice().
    * @return if there are any 'red' (critical) warnings in the advice object.
    */
+  @Deprecated
   public static boolean anyRedWarnings(JSONObject advice) {
     JSONArray warnings = advice.optJSONArray("warnings");
     if (warnings == null) {
@@ -112,6 +113,21 @@ public class MemoryAdvisor extends MemoryMonitor {
       }
     }
     return false;
+  }
+
+  /**
+   * Get the memory state from an advice object returned by the Memory Advisor.
+   * @param advice The object to analyze for the memory state.
+   * @return The current memory state.
+   */
+  public static MemoryState getMemoryState(JSONObject advice) {
+    if (anyRedWarnings(advice)) {
+      return MemoryState.CRITICAL;
+    }
+    if (anyWarnings(advice)) {
+      return MemoryState.APPROACHING_LIMIT;
+    }
+    return MemoryState.OK;
   }
 
   /**
@@ -399,5 +415,30 @@ public class MemoryAdvisor extends MemoryMonitor {
       Log.w(TAG, "Problem getting device info", ex);
     }
     return deviceInfo;
+  }
+
+  /**
+   * Advice passed from the memory advisor to the application about the state of memory.
+   */
+  public enum MemoryState {
+    /**
+     * The memory state cannot be determined.
+     */
+    UNKNOWN,
+
+    /**
+     * The application can safely allocate significant memory.
+     */
+    OK,
+
+    /**
+     * The application should not allocate significant memory.
+     */
+    APPROACHING_LIMIT,
+
+    /**
+     * The application should free memory as soon as possible, until the memory state changes.
+     */
+    CRITICAL
   }
 }
