@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "0687b6bd_671db445",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-22T21:03:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bda71d4a_1e0068df",
+      "revId": "ce30fc13ca6ae05303d79f3b9af819caaac21fd5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7b81dac5_a8ffab6a",
         "filename": "samples/bouncyball/app/src/main/cpp/Orbit.cpp",
         "patchSetId": 3
