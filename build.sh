@@ -14,12 +14,12 @@ export ANDROID_NDK_HOME=`pwd`/../prebuilts/ndk/r20
 if [[ $1 == "full" ]]
 then
     OUTDIR=fullsdk
-    ./gradlew packageZip -Plibraries=swappy,tuningfork -PpackageName=fullsdk -PincludeSamples=true
+    ./gradlew packageZip -Plibraries=swappy,tuningfork -PpackageName=fullsdk -PincludeSampleSources=true
     ./gradlew packageMavenZip -Plibraries=swappy -PpackageName=fullsdk
     ./gradlew packageMavenZip -Plibraries=tuningfork -PpackageName=fullsdk
 else
     OUTDIR=gamesdk
-    ./gradlew packageZip -Plibraries=swappy -PincludeSamples=true
+    ./gradlew packageZip -Plibraries=swappy -PincludeSampleSources=true
     ./gradlew packageMavenZip -Plibraries=swappy
 fi
 

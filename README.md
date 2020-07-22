@@ -101,12 +101,12 @@ The command lines presented earlier are a combination of a **build or packaging 
 * `-PpackageName=gamesdk`: the name of the package, for packaging tasks. Defaults to "gamesdk".
 * `-Psdk=14 -Pndk=r16 -Pstl='c++_static'`: the SDK, NDK and STL to use for `buildSpecific` and `packageSpecificZip` tasks.
 * `-PbuildType=Release`: the build type, "Release" (default) or "Debug".
-* `-PincludeSamples=true`: if specified, build tasks will include in their output the sources of the samples of the libraries that are built. False by default.
+* `-PincludeSampleSources=true`: if specified, build tasks will include in their output the sources of the samples of the libraries that are built. False by default.
 
 Here are some commonly used examples:
 ```bash
 # All prebuilt SDKs, with sample sources:
-ANDROID_HOME=`pwd`/../prebuilts/sdk ./gradlew packageZip -Plibraries=swappy,tuningfork -PpackageName=fullsdk -PincludeSamples=true
+ANDROID_HOME=`pwd`/../prebuilts/sdk ./gradlew packageZip -Plibraries=swappy,tuningfork -PpackageName=fullsdk -PincludeSampleSources=true
 
 # Using a specific prebuilt SDK:
 ./gradlew packageSpecificZip -Plibraries=swappy -Psdk=14 -Pndk=r16 -Pstl='c++_static'

@@ -1,5 +1,7 @@
 import com.google.androidgamesdk.BuildFolders
 import com.google.androidgamesdk.BuildOptions
+import com.google.androidgamesdk.ExternalAndroidProject
+import com.google.androidgamesdk.ExternalAndroidProjectBuilder
 import com.google.androidgamesdk.SpecificToolchain
 import com.google.androidgamesdk.LocalToolchain
 import com.google.androidgamesdk.Toolchain
@@ -36,19 +38,51 @@ def joinPath(String first, String... more) {
 
 def swappyNativeLibrary = new NativeLibrary('swappy', 'GAMESDK_BUILD_SWAPPY')
         .setAarLibrary("games-frame-pacing", "1.5.0")
-        .addSampleAndroidProject(new SampleFolder(joinPath('samples', "bouncyball")))
-        .addSampleAndroidProject(new SampleFolder(joinPath('samples', "cube")))
-        .addSampleAndroidProject(new SampleFolder(joinPath('third_party', "cube")))
+        .addSampleAndroidProject(
+                new ExternalAndroidProject(joinPath('samples', "bouncyball"))
+                        .copySourcesTo("samples/bouncyball")
+                        .buildDebugApkTo("apks/samples", "bouncyball.apk"))
+        .addSampleAndroidProject(
+                new ExternalAndroidProject(joinPath('samples', "cube"))
+                        .copySourcesTo("samples/cube")
+                        .buildDebugApkTo("apks/samples", "cube.apk")
+                        .setDebugApkLocation("third_party/cube/app/build/outputs/apk/debug/app-debug.apk"))
+        .addSampleAndroidProject(
+                new ExternalAndroidProject(joinPath('third_party', "cube"))
+                        .copySourcesTo("third_party/cube"))
+        .addSampleAndroidProject(
+                new ExternalAndroidProject("test/swappy/testapp")
+                        .buildDebugApkTo("apks/test", "swappytest.apk")
+        )
 def tuningForkNativeLibrary = new NativeLibrary('tuningfork', 'GAMESDK_BUILD_TUNINGFORK')
         .setAarLibrary("games-performance-tuner", "1.0.0")
-        .addSampleAndroidProject(new SampleFolder(joinPath('samples', 'tuningfork', 'insightsdemo')))
-        .addSampleAndroidProject(new SampleFolder(joinPath('samples', 'tuningfork', 'experimentsdemo')))
-        .addSampleAndroidProject(new SampleFolder(joinPath('src', 'tuningfork', 'tools', 'validation')))
-        .addSampleExtraFolder(new SampleFolder(joinPath('samples', 'tuningfork', "common")))
-        .addSampleExtraFolder(new SampleFolder(joinPath('src', 'protobuf')))
-        .addSampleExtraFolder(new SampleFolder(joinPath('third_party', 'protobuf-3.0.0')))
-        .addSampleExtraFolder(new SampleFolder(joinPath('..', 'external', 'nanopb-c'), joinPath('external', 'nanopb-c')))
-        .addSampleExtraFolder(new SampleFolder(joinPath('src', 'tuningfork', 'proto')).include('tuningfork.proto'))
+        .addSampleAndroidProject(
+                new ExternalAndroidProject(joinPath('samples', 'tuningfork', 'insightsdemo'))
+                        .copySourcesTo("samples/tuningfork/insightsdemo")
+                        .buildDebugApkTo("apks/samples", "insightsdemo.apk"))
+        .addSampleAndroidProject(
+                new ExternalAndroidProject(joinPath('samples', 'tuningfork', 'experimentsdemo'))
+                        .copySourcesTo("samples/tuningfork/experimentsdemo")
+                        .buildDebugApkTo("apks/samples", "experimentsdemo.apk"))
+        .addSampleAndroidProject(
+                new ExternalAndroidProject(joinPath('src', 'tuningfork', 'tools', 'validation'))
+                        .copySourcesTo("src/tuningfork/tools/validation"))
+        .addSampleAndroidProject(
+                new ExternalAndroidProject("src/tuningfork/tools/TuningForkMonitor")
+                        .buildDebugApkTo("apks/tools", "TuningForkMonitor.apk"))
+        .addSampleAndroidProject(
+                new ExternalAndroidProject("test/tuningfork/testapp")
+                        .buildDebugApkTo("apks/test", "tuningforktest.apk"))
+        .addSampleExtraFolder(
+                new SampleFolder(joinPath('samples', 'tuningfork', "common")))
+        .addSampleExtraFolder(
+                new SampleFolder(joinPath('src', 'protobuf')))
+        .addSampleExtraFolder(
+                new SampleFolder(joinPath('third_party', 'protobuf-3.0.0')))
+        .addSampleExtraFolder(
+                new SampleFolder(joinPath('..', 'external', 'nanopb-c'), joinPath('external', 'nanopb-c')))
+        .addSampleExtraFolder(
+                new SampleFolder(joinPath('src', 'tuningfork', 'proto')).include('tuningfork.proto'))
 
 def protobufInstallDir() {
     return new File("$projectDir/third_party/protobuf-3.0.0/install/"
@@ -360,7 +394,7 @@ def copyDocs(outFolder) {
 
 // Copy samples for packaging. Also rename CMakeLists.txt files so that the
 // one distributed are using the packaged game sdk.
-def copySamples(outFolder, Collection<NativeLibrary> libraries) {
+def copySampleSources(outFolder, Collection<NativeLibrary> libraries) {
     def buildFolder = getPackagePath() + '/' + outFolder
 
     // CMake utility for the Game SDK
@@ -377,10 +411,10 @@ def copySamples(outFolder, Collection<NativeLibrary> libraries) {
 
     // Library specific files
     libraries.forEach({ nativeLibrary ->
-        nativeLibrary.sampleAndroidProjectPaths.forEach({sampleFolder ->
+        nativeLibrary.sampleAndroidProjects.forEach({externalAndroidProject ->
             copy {
-                from file(sampleFolder.sourcePath)
-                into file(joinPath(buildFolder, sampleFolder.destinationPath))
+                from file(externalAndroidProject.getProjectRootPath())
+                into file(joinPath(buildFolder, sampleFolder.getProjectDestinationPath()))
                 exclude '**/build', '**/out', "local.properties", "**/.externalNativeBuild", "**/.gradle",
                         "**/OWNERS", "**/.idea", '**/CMakeLists.txt'
                 rename 'CMakeLists.for-samples-in-archive.txt', 'CMakeLists.txt'
@@ -492,9 +526,17 @@ def getPackageName() {
             project.packageName : "gamesdk"
 }
 
-def shouldIncludeSamples() {
-    return project.hasProperty("includeSamples") ?
-        project.includeSamples : false
+def shouldIncludeSampleSources() {
+    return project.hasProperty("includeSampleSources") ?
+        project.includeSampleSources : false
+}
+
+def shouldIncludeSampleArtifacts() {
+    return project.hasProperty("includeSampleArtifacts")
+}
+
+def shouldSkipSamplesBuild() {
+    return project.hasProperty("skipSamplesBuild")
 }
 
 def getSpecificToolchainConfiguration() {
@@ -536,7 +578,7 @@ task build(type: BuildTask) {
     ext.withSharedLibs = true
     ext.withStaticLibs = true
     ext.withFullBuildKey = true
-    ext.withSamples = shouldIncludeSamples()
+    ext.withSampleSources = shouldIncludeSampleSources()
     ext.buildType = getBuildType()
     ext.nativeBuild = { libraries, bt -> sdkNativeBuild(libraries, bt) }
 }
@@ -549,7 +591,7 @@ task buildUnity(type: BuildTask) {
     ext.withSharedLibs = true
     ext.withStaticLibs = true
     ext.withFullBuildKey = true
-    ext.withSamples = shouldIncludeSamples()
+    ext.withSampleSources = shouldIncludeSampleSources()
     ext.buildType = getBuildType()
     ext.nativeBuild = { libraries, bt -> unityNativeBuild(libraries, bt) }
 }
@@ -562,7 +604,7 @@ task buildLocal(type: BuildTask) {
     ext.withSharedLibs = true
     ext.withStaticLibs = true
     ext.withFullBuildKey = false
-    ext.withSamples = shouldIncludeSamples()
+    ext.withSampleSources = shouldIncludeSampleSources()
     ext.buildType = getBuildType()
     ext.nativeBuild = { libraries, bt -> localNativeBuild(libraries, "src", bt) }
 }
@@ -575,7 +617,7 @@ task buildSpecific(type: BuildTask) {
     ext.withSharedLibs = true
     ext.withStaticLibs = true
     ext.withFullBuildKey = false
-    ext.withSamples = shouldIncludeSamples()
+    ext.withSampleSources = shouldIncludeSampleSources()
     ext.buildType = getBuildType()
     ext.nativeBuild = { libraries, bt ->
         specificNativeBuild(getSpecificToolchainConfiguration(), libraries, bt)
@@ -603,8 +645,8 @@ e.g. ./gradlew build -Plibraries=swappy,tuningfork""")
 
         copyDocs(packageName)
 
-        if (withSamples) {
-            copySamples(packageName, libraries)
+        if (withSampleSources) {
+            copySampleSources(packageName, libraries)
         }
     }
 }
@@ -623,7 +665,7 @@ task buildAar {
     ext.withSharedLibs = true
     ext.withStaticLibs = true
     ext.withFullBuildKey = true
-    ext.withSamples = shouldIncludeSamples()
+    ext.withSampleSources = shouldIncludeSampleSources()
     ext.buildType = getBuildType()
     ext.nativeBuild = { libraries, bt -> sdkAarNativeBuild(libraries, bt) }
     doLast {
@@ -690,11 +732,27 @@ task format {
     }
 }
 
+task buildSampleArtifacts {
+    doFirst {
+        def buildFolder = joinPath(getPackagePath(), getPackageName())
+        def builder = new ExternalAndroidProjectBuilder(project, buildFolder)
+        builder.setSkipSamplesBuild(shouldSkipSamplesBuild())
+        getLibraries(allLibraries).forEach { nativeLibrary ->
+            logger.info("Building samples of " + nativeLibrary.nativeLibraryName + "...")
+            builder.buildSampleArtifacts(nativeLibrary)
+        }
+    }
+}
+
 // Zipping things up
 def addZipTask(name, buildTask, archName) {
     def packPath = buildTask.packageName
     tasks.register(name, Zip) {
         dependsOn buildTask
+
+        if (shouldIncludeSampleArtifacts()) {
+            dependsOn buildSampleArtifacts
+        }
         def buildFolder = joinPath(getPackagePath(), packPath)
 
         from fileTree(buildFolder)
