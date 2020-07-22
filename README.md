@@ -101,12 +101,18 @@ The command lines presented earlier are a combination of a **build or packaging 
 * `-PpackageName=gamesdk`: the name of the package, for packaging tasks. Defaults to "gamesdk".
 * `-Psdk=14 -Pndk=r16 -Pstl='c++_static'`: the SDK, NDK and STL to use for `buildSpecific` and `packageSpecificZip` tasks.
 * `-PbuildType=Release`: the build type, "Release" (default) or "Debug".
-* `-PincludeSamples=true`: if specified, build tasks will include in their output the sources of the samples of the libraries that are built. False by default.
+* Sample related properties:
+  * `-PincludeSampleSources`: if specified, build tasks will include in their output the sources of the samples of the libraries that are built.
+  * `-PincludeSampleArtifacts`: if specified, build tasks will also compile the samples and projects related to the libraries, and include their resulting artifact in the packaged archive.
+  * `-PskipSamplesBuild`: if specified and `-PincludeSampleArtifacts` is specified, this will skip the actual `gradle build` of the samples and projects related to the libraries. Use this when you want to check that the packaging works correctly and don't want to rebuild everything.
 
 Here are some commonly used examples:
 ```bash
 # All prebuilt SDKs, with sample sources:
-ANDROID_HOME=`pwd`/../prebuilts/sdk ./gradlew packageZip -Plibraries=swappy,tuningfork -PpackageName=fullsdk -PincludeSamples=true
+ANDROID_HOME=`pwd`/../prebuilts/sdk ./gradlew packageZip -Plibraries=swappy,tuningfork -PpackageName=fullsdk -PincludeSampleSources
+
+# All prebuilt SDKs, with sample sources and precompiled samples:
+ANDROID_HOME=`pwd`/../prebuilts/sdk ./gradlew packageZip -Plibraries=swappy,tuningfork -PpackageName=fullsdk -PincludeSampleSources -PincludeSampleArtifacts
 
 # Using a specific prebuilt SDK:
 ./gradlew packageSpecificZip -Plibraries=swappy -Psdk=14 -Pndk=r16 -Pstl='c++_static'
