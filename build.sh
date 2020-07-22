@@ -9,103 +9,42 @@
 #   Builds the gamesdk with Tuning Fork and all samples
 
 set -e # Exit on error
-export ANDROID_HOME=`pwd`/../prebuilts/sdk
-export ANDROID_NDK_HOME=`pwd`/../prebuilts/ndk/r20
-if [[ $1 == "full" ]]
-then
-    OUTDIR=fullsdk
-    ./gradlew packageZip -Plibraries=swappy,tuningfork -PpackageName=fullsdk -PincludeSamples=true
-    ./gradlew packageMavenZip -Plibraries=swappy -PpackageName=fullsdk
-    ./gradlew packageMavenZip -Plibraries=tuningfork -PpackageName=fullsdk
-else
-    OUTDIR=gamesdk
-    ./gradlew packageZip -Plibraries=swappy -PincludeSamples=true
-    ./gradlew packageMavenZip -Plibraries=swappy
-fi
 
+# Set up the environment
+export ANDROID_HOME=$(pwd)/../prebuilts/sdk
+export ANDROID_NDK_HOME=$(pwd)/../prebuilts/ndk/r20
+cp -Rf samples/sdk_licenses ../prebuilts/sdk/licenses
+
+# Use the distribution path given to the script by the build bot in DIST_DIR. Otherwise,
+# build in the default location.
 if [[ -z $DIST_DIR ]]
 then
-    dist_dir=`pwd`/../package/$OUTDIR
+    dist_dir=$(pwd)/../package/gamesdk
 else
-    dist_dir=$DIST_DIR/$OUTDIR
+    dist_dir=$DIST_DIR/gamesdk
 fi
 
-relative_apk_dir=apks
-apk_dir=$dist_dir/$relative_apk_dir
-
-if [[ $1 == "samples" ]] || [[ $1 == "full" ]]
-then
-   mkdir -p $apk_dir/samples
-   mkdir -p $apk_dir/test
-   mkdir -p $apk_dir/tools
-fi
-
-# Swappy samples etc.
-if [[ $1 == "samples" ]] || [[ $1 == "full" ]]
-then
-    # Build samples
-    cp -Rf samples/sdk_licenses ../prebuilts/sdk/licenses
-    pushd samples/bouncyball
-    ./gradlew build
-    popd
-    pushd samples/cube
-    ./gradlew build
-    popd
-    pushd test/swappy/testapp
-    ./gradlew build
-    popd
-
-    # Copy to $apk_dir
-    cp samples/bouncyball/app/build/outputs/apk/debug/app-debug.apk \
-      $apk_dir/samples/bouncyball.apk
-    cp third_party/cube/app/build/outputs/apk/debug/app-debug.apk \
-      $apk_dir/samples/cube.apk
-    cp test/swappy/testapp/app/build/outputs/apk/debug/app-debug.apk \
-      $apk_dir/test/swappytest.apk
-fi
-
-# Tuning fork samples etc.
+# Build the Game SDK distribution zip and the zips for Maven AARs
 if [[ $1 == "full" ]]
 then
-    # Build samples
-    pushd samples/tuningfork/experimentsdemo
-    ./gradlew build
-    popd
-    pushd samples/tuningfork/insightsdemo
-    ./gradlew build
-    popd
-    pushd src/tuningfork/tools/TuningForkMonitor
-    ./gradlew build
-    popd
-    pushd test/tuningfork/testapp
-    ./gradlew build
-    popd
-
-    # Copy to $apk_dir
-    cp samples/tuningfork/experimentsdemo/app/build/outputs/apk/debug/app-debug.apk \
-      $apk_dir/samples/experimentsdemo.apk
-    cp samples/tuningfork/insightsdemo/app/build/outputs/apk/debug/app-debug.apk \
-      $apk_dir/samples/insightsdemo.apk
-    cp src/tuningfork/tools/TuningForkMonitor/app/build/outputs/apk/debug/app-debug.apk \
-      $apk_dir/tools/TuningForkMonitor.apk
-    cp test/tuningfork/testapp/app/build/outputs/apk/debug/app-debug.apk \
-      $apk_dir/test/tuningforktest.apk
-fi
-
-# Package the apks into the zip file
-if [[ $1 == "samples" ]] || [[ $1 == "full" ]]
+    ./gradlew packageZip -Plibraries=swappy,tuningfork -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir"
+    ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir"
+    ./gradlew packageMavenZip -Plibraries=tuningfork -PdistPath="$dist_dir"
+elif [[ $1 == "samples" ]]
 then
-  pushd $dist_dir
-  zip -r -u gamesdk.zip $relative_apk_dir
-  popd
+    ./gradlew packageZip -Plibraries=swappy -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir"
+    ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir"
+else
+    ./gradlew packageZip -Plibraries=swappy -PincludeSampleSources -PdistPath="$dist_dir"
+    ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir"
 fi
 
 # Calculate hash of the zip file
-pushd $dist_dir
+pushd "$dist_dir"
 sha256sum gamesdk.zip > gamesdk.zip.sha256
 popd
 
-pushd $dist_dir
+pushd "$dist_dir"
 # Remove intermediate files that would be very costly to store
 rm -rf libs prefab
 # Remove other files that we don't care about and are polluting the output

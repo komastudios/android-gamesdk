@@ -1,5 +1,11 @@
 package com.google.androidgamesdk
 
+/**
+ * Describe a native library that can be compiled with CMake and that can
+ * have one or more sample or related Android project.
+ *
+ * @see ExternalAndroidProject
+ */
 data class NativeLibrary(
     val nativeLibraryName: String,
     val cmakeOption: String
@@ -8,7 +14,7 @@ data class NativeLibrary(
         private set
     var aarVersion: String = "0.0.0"
         private set
-    var sampleAndroidProjectPaths: ArrayList<SampleFolder> = ArrayList()
+    var sampleAndroidProjects: ArrayList<ExternalAndroidProject> = ArrayList()
         private set
     var sampleExtraFolderPaths: ArrayList<SampleFolder> = ArrayList()
         private set
@@ -23,10 +29,11 @@ data class NativeLibrary(
         return this
     }
 
-    fun addSampleAndroidProject(sampleFolder: SampleFolder): NativeLibrary {
-        sampleAndroidProjectPaths.add(sampleFolder)
-        return this
-    }
+    fun addSampleAndroidProject(sampleAndroidProject: ExternalAndroidProject):
+        NativeLibrary {
+            sampleAndroidProjects.add(sampleAndroidProject)
+            return this
+        }
 
     fun addSampleExtraFolder(sampleFolder: SampleFolder): NativeLibrary {
         sampleExtraFolderPaths.add(sampleFolder)
