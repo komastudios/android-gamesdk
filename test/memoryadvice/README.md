@@ -228,8 +228,8 @@ class MyActivity extends Activity {
 }
 ```
 
-Call the library back with the object to interpret the recommendations. "Red"
-warnings suggest that the application frees resources as soon as possible.
+One option is to call the library back with the object to interpret the
+recommendations.
 
 ```java
 import android.app.Activity;
@@ -241,15 +241,31 @@ class MyActivity extends Activity {
   // ...
   void myMethod() {
     JSONObject advice = memoryAdvisor.getAdvice();
-    boolean criticalWarnings = MemoryAdvisor.anyRedWarnings(advice);
-    // ...
+    MemoryAdvisor.MemoryState memoryState = MemoryAdvisor.getMemoryState(advice);
+    switch (memoryState) {
+      case OK:
+        // The application can safely allocate significant memory.
+        break;
+      case APPROACHING_LIMIT:
+        // The application should not allocate significant memory.
+        break;
+      case CRITICAL:
+        // The application should free memory as soon as possible, until the memory state changes.
+        break;
+    }
   }
 }
 ```
 
-When there are no more critical warnings, enough memory has been freed to avoid
-the crisis. When there are no "red" or "yellow" warnings, any assets freed can
-safely be returned.
+Another options is to initialize a `MemoryWatcher` object. This will call back
+the application when the memory warning changes.
+
+To limit the time overhead introduced by the Memory Assistance API, the calling
+application sets a budget in milliseconds per second of runtime to spend
+collecting the memory metrics and prepare the advice. The callback rate will be
+automatically adjusted to stay within this budget.
+
+In this example, a limit of 10 milliseconds per second is applied.
 
 ```java
 import android.app.Activity;
@@ -261,8 +277,24 @@ class MyActivity extends Activity {
   // ...
   void myMethod() {
     JSONObject advice = memoryAdvisor.getAdvice();
-    boolean warnings = MemoryAdvisor.anyWarnings(advice);
-    // ...
+    MemoryWatcher memoryWatcher = new MemoryWatcher(memoryAdvisor, 10,
+        new MemoryWatcher.Client(){
+      @Override
+      public void newState(MemoryAdvisor.MemoryState state) {
+        switch (memoryState) {
+          case OK:
+            // The application can safely allocate significant memory.
+            break;
+          case APPROACHING_LIMIT:
+            // The application should not allocate significant memory.
+            break;
+          case CRITICAL:
+            // The application should free memory as soon as possible, until the memory state
+            // changes.
+            break;
+        }
+      }
+    });
   }
 }
 ```
