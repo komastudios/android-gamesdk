@@ -16,7 +16,9 @@
 
 #pragma once
 
+#include <list>
 #include <memory>
+#include <mutex>
 #include <unordered_map>
 
 #include "frametime_metric.h"
@@ -34,50 +36,60 @@ struct TimeInterval {
 // These are double-buffered inside tuning fork.
 class Session {
    public:
-    Session(int max_histograms) : max_histogram_size_(max_histograms) {}
-
-    // Get functions return nullptr if the id has not been created.
+    // Get functions return nullptr if there is no availability of this type
+    // of metric left.
     template <typename T>
-    T* GetData(MetricId id) const {
+    T* GetData(MetricId id) {
+        std::lock_guard<std::mutex> lock(mutex_);
         auto it = metric_data_.find(id);
-        if (it == metric_data_.end()) return nullptr;
+        if (it == metric_data_.end()) {
+            MetricData* d;
+            switch (T::MetricType()) {
+                case Metric::Type::FRAME_TIME:
+                    d = TakeFrameTimeData(id);
+                    break;
+                case Metric::Type::LOADING_TIME:
+                    d = TakeLoadingTimeData(id);
+                    break;
+                case Metric::Type::MEMORY:
+                    d = TakeMemoryData(id);
+                    break;
+                case Metric::Type::ERROR:
+                    return nullptr;
+            }
+            if (d == nullptr) return nullptr;
+            metric_data_.insert({id, d});
+            return reinterpret_cast<T*>(d);
+        }
         if (it->second->type == T::MetricType())
-            return reinterpret_cast<T*>(it->second.get());
+            return reinterpret_cast<T*>(it->second);
         else
             return nullptr;
     }
 
-    // Create an associated object, unless capacity has been reached, in which
-    // case nullptr is returned.
+    // Create a FrameTimeHistogram and add it to the available histograms.
     FrameTimeMetricData* CreateFrameTimeHistogram(
-        const FrameTimeMetric& metric, MetricId id,
-        const Settings::Histogram& settings);
+        MetricId id, const Settings::Histogram& settings);
 
-    // Create an associated object, unless capacity has been reached, in which
-    // case nullptr is returned.
-    LoadingTimeMetricData* CreateLoadingTimeSeries(
-        const LoadingTimeMetric& metric, MetricId id);
+    // Create a LoadingTimeSeries and add it to the available loading time
+    // series.
+    LoadingTimeMetricData* CreateLoadingTimeSeries(MetricId id);
 
-    // Create an associated object, unless capacity has been reached, in which
-    // case nullptr is returned.
+    // Create a memory histogram and add it to the available memory histograms.
     MemoryMetricData* CreateMemoryHistogram(
-        const MemoryMetric& metric, MetricId id,
-        const Settings::Histogram& settings);
+        MetricId id, const Settings::Histogram& settings);
 
     // Clear the data in each created histogram or time series.
     void ClearData();
 
-    // Remove all histograms and time-series.
-    void Clear();
-
     template <typename T>
-    std::vector<std::pair<MetricId, const T*>> GetNonEmptyHistograms() const {
-        std::vector<std::pair<MetricId, const T*>> ret;
+    std::vector<const T*> GetNonEmptyHistograms() const {
+        // Note that this must only be called once the session has been frozen
+        std::vector<const T*> ret;
         for (const auto& t : metric_data_) {
             if (!t.second->Empty()) {
                 if (t.second->type == T::MetricType())
-                    ret.push_back(
-                        {t.first, reinterpret_cast<T*>(t.second.get())});
+                    ret.push_back(reinterpret_cast<T*>(t.second));
             }
         }
         return ret;
@@ -99,10 +111,49 @@ class Session {
     }
 
    private:
-    int max_histogram_size_;
+    // Get an available metric that has been set up to work with this id.
+    FrameTimeMetricData* TakeFrameTimeData(MetricId id) {
+        for (auto it = available_frame_time_data_.begin();
+             it != available_frame_time_data_.end(); ++it) {
+            auto p = *it;
+            if (p->metric_id_.detail.frame_time.ikey ==
+                id.detail.frame_time.ikey) {
+                available_frame_time_data_.erase(it);
+                p->metric_id_ = id;
+                return p;
+            }
+        }
+        return nullptr;
+    }
+
+    // Get an available metric that has been set up to work with this id.
+    LoadingTimeMetricData* TakeLoadingTimeData(MetricId id) {
+        if (available_loading_time_data_.empty()) return nullptr;
+        auto p = available_loading_time_data_.back();
+        available_loading_time_data_.pop_back();
+        p->metric_id_ = id;
+        return p;
+    }
+
+    // Get an available metric that has been set up to work with this id.
+    MemoryMetricData* TakeMemoryData(MetricId id) {
+        if (available_memory_data_.empty()) return nullptr;
+        auto p = available_memory_data_.back();
+        available_memory_data_.pop_back();
+        p->metric_id_ = id;
+        return p;
+    }
+
     TimeInterval time_;
-    std::unordered_map<MetricId, std::unique_ptr<MetricData>> metric_data_;
+    std::vector<std::unique_ptr<FrameTimeMetricData>> frame_time_data_;
+    std::vector<std::unique_ptr<LoadingTimeMetricData>> loading_time_data_;
+    std::vector<std::unique_ptr<MemoryMetricData>> memory_data_;
+    std::list<FrameTimeMetricData*> available_frame_time_data_;
+    std::vector<LoadingTimeMetricData*> available_loading_time_data_;
+    std::vector<MemoryMetricData*> available_memory_data_;
+    std::unordered_map<MetricId, MetricData*> metric_data_;
     std::vector<InstrumentationKey> instrumentation_keys_;
+    std::mutex mutex_;
 };
 
 }  // namespace tuningfork

@@ -260,7 +260,8 @@ const TuningFork_CProtobufSerialization* TrainingModeParams() {
 Settings TestSettings(Settings::AggregationStrategy::Submission method,
                       int n_ticks, int n_keys,
                       std::vector<uint32_t> annotation_size,
-                      const std::vector<Settings::Histogram>& hists = {}) {
+                      const std::vector<Settings::Histogram>& hists = {},
+                      int num_frame_time_histograms = 0) {
     Settings s{};
     s.aggregation_strategy.method = method;
     s.aggregation_strategy.intervalms_or_count = n_ticks;
@@ -271,6 +272,9 @@ Settings TestSettings(Settings::AggregationStrategy::Submission method,
     s.Check(kCacheDir);
     s.initial_request_timeout_ms = 5;
     s.ultimate_request_timeout_ms = 50;
+    s.c_settings.max_num_metrics.frame_time = num_frame_time_histograms;
+    s.loading_annotation_index = -1;
+    s.level_annotation_index = -1;
     return s;
 }
 
@@ -319,6 +323,35 @@ TuningForkLogEvent TestEndToEndWithAnnotation() {
     return test.Result();
 }
 
+TuningForkLogEvent TestEndToEndWithLimits() {
+    const int NTICKS =
+        101;  // note the first tick doesn't add anything to the histogram
+    // {3} is the number of values in the Level enum in
+    // tuningfork_extensions.proto
+    auto settings = TestSettings(
+        Settings::AggregationStrategy::Submission::TICK_BASED, NTICKS - 1, 2,
+        {3}, {}, 2 /* (1 annotation * 2 instrument keys)*/);
+    TuningForkTest test(settings, milliseconds(10));
+    Annotation ann;
+    std::unique_lock<std::mutex> lock(*test.rmutex_);
+    for (int i = 0; i < NTICKS; ++i) {
+        test.IncrementTime();
+        ann.set_level(com::google::tuningfork::LEVEL_1);
+        tuningfork::SetCurrentAnnotation(Serialize(ann));
+        tuningfork::FrameTick(TFTICK_PACED_FRAME_TIME);
+        // These ticks should be ignored because we have set a limit on the
+        // number of annotations.
+        ann.set_level(com::google::tuningfork::LEVEL_2);
+        tuningfork::SetCurrentAnnotation(Serialize(ann));
+        tuningfork::FrameTick(TFTICK_PACED_FRAME_TIME);
+    }
+    // Wait for the upload thread to complete writing the string
+    EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time) ==
+                std::cv_status::no_timeout)
+        << "Timeout";
+
+    return test.Result();
+}
 TuningForkLogEvent TestEndToEndTimeBased() {
     const int NTICKS =
         101;  // note the first tick doesn't add anything to the histogram
@@ -444,13 +477,11 @@ TEST(TuningForkTest, EndToEnd) {
     CheckStrings("Base", result, expected);
 }
 
-TEST(TuningForkTest, TestEndToEndWithAnnotation) {
-    auto result = TestEndToEndWithAnnotation();
-    TuningForkLogEvent expected = R"TF(
+static TuningForkLogEvent expected_for_annotation_test = R"TF(
 {
   "name": "applications//apks/0",
   "session_context":)TF" + session_context +
-                                  R"TF(,
+                                                         R"TF(,
   "telemetry": [{
     "context": {
       "annotations": "CAE=",
@@ -478,7 +509,17 @@ TEST(TuningForkTest, TestEndToEndWithAnnotation) {
   }]
 }
 )TF";
-    CheckStrings("Annotation", result, expected);
+
+TEST(TuningForkTest, TestEndToEndWithAnnotation) {
+    auto result = TestEndToEndWithAnnotation();
+    CheckStrings("Annotation", result, expected_for_annotation_test);
+}
+
+TEST(TuningForkTest, TestEndToEndWithLimits) {
+    auto result = TestEndToEndWithLimits();
+    // This should be the same since we try to record 2 annotations but limit
+    // to 1.
+    CheckStrings("AnnotationWithLimits", result, expected_for_annotation_test);
 }
 
 TEST(TuningForkTest, TestEndToEndTimeBased) {
@@ -702,20 +743,20 @@ TEST(TuningForkTest, EndToEndWithMemory) {
       "memory": {
         "memory_histogram": [
         {
-          "counts": [0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "counts": [0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0,
+                     1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1,
+                     0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0,
+                     1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1,
+                     0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0,
+                     0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0,
+                     1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1,
+                     0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 121],
          "histogram_config": {
           "bucket_max_bytes": "8000000000",
           "bucket_min_bytes": "0"
          },
-         "period_ms": 1000,
-         "type": 11
+         "period_ms": 100,
+         "type": 1
         },
         {
           "counts": [0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -734,20 +775,20 @@ TEST(TuningForkTest, EndToEndWithMemory) {
          "type": 2
         },
         {
-          "counts": [0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0,
-                     1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1,
-                     0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0,
-                     1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1,
-                     0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0,
-                     0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0,
-                     1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1,
-                     0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 121],
+          "counts": [0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "histogram_config": {
           "bucket_max_bytes": "8000000000",
           "bucket_min_bytes": "0"
          },
-         "period_ms": 100,
-         "type": 1
+         "period_ms": 1000,
+         "type": 11
         }]
       }
     }

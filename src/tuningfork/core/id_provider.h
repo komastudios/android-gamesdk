@@ -25,21 +25,30 @@ class AAsset;
 
 namespace tuningfork {
 
-// Interface to an object that can decode protobuf serializations of Annotations
-// and create compound ids using an InstrumentationKey.
+class MemoryMetric;
+
+// Interface to an object that can map between serializations and ids and create
+// compound ids.
 class IdProvider {
    public:
     virtual ~IdProvider() {}
     // Decode <ser> into an AnnotationId. If loading is non-null, it sets it
     // according to whether the annotation is a loading annotation.
-    virtual AnnotationId DecodeAnnotationSerialization(
-        const ProtobufSerialization& ser, bool* loading = nullptr) const = 0;
+    virtual TuningFork_ErrorCode SerializedAnnotationToAnnotationId(
+        const ProtobufSerialization& ser, AnnotationId& id,
+        bool* loading = nullptr) const = 0;
 
     // Return a new id that is made up of <annotation_id> and <k>.
     // Gives an error if the id is out-of-bounds.
     virtual TuningFork_ErrorCode MakeCompoundId(InstrumentationKey k,
                                                 AnnotationId annotation_id,
                                                 MetricId& id) = 0;
+
+    virtual TuningFork_ErrorCode AnnotationIdToSerializedAnnotation(
+        AnnotationId id, SerializedAnnotation& ser) = 0;
+
+    virtual TuningFork_ErrorCode MetricIdToMemoryMetric(MetricId id,
+                                                        MemoryMetric& m) = 0;
 };
 
 }  // namespace tuningfork
