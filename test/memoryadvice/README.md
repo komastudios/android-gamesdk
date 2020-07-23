@@ -247,9 +247,16 @@ class MyActivity extends Activity {
 }
 ```
 
-When there are no more critical warnings, enough memory has been freed to avoid
-the crisis. When there are no "red" or "yellow" warnings, any assets freed can
-safely be returned.
+Another options is to initialize a `MemoryWatcher` object. This will call back
+the application when the memory warning changes.
+
+To limit the time overhead introduced by the Memory Assistance API, the calling
+application sets a budget in milliseconds per second of runtime to spend
+collecting the memory metrics and prepare the advice. The callback rate will be
+automatically adjusted to stay within this budget.
+
+In this example, a limit of 10 milliseconds per second is applied, and a maximum
+duration between iterations of three seconds.
 
 ```java
 import android.app.Activity;
