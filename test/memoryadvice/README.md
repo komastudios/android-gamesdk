@@ -228,8 +228,8 @@ class MyActivity extends Activity {
 }
 ```
 
-Call the library back with the object to interpret the recommendations. "Red"
-warnings suggest that the application frees resources as soon as possible.
+One option is to call the library back with the object to interpret the
+recommendations.
 
 ```java
 import android.app.Activity;
@@ -241,8 +241,18 @@ class MyActivity extends Activity {
   // ...
   void myMethod() {
     JSONObject advice = memoryAdvisor.getAdvice();
-    boolean criticalWarnings = MemoryAdvisor.anyRedWarnings(advice);
-    // ...
+    MemoryAdvisor.MemoryState memoryState = MemoryAdvisor.getMemoryState(advice);
+    switch (memoryState) {
+      case OK:
+        // The application can safely allocate significant memory.
+        break;
+      case APPROACHING_LIMIT:
+        // The application should not allocate significant memory.
+        break;
+      case CRITICAL:
+        // The application should free memory as soon as possible, until the memory state changes.
+        break;
+    }
   }
 }
 ```
@@ -261,6 +271,7 @@ duration between iterations of three seconds.
 ```java
 import android.app.Activity;
 import com.google.android.apps.internal.games.memoryadvice.MemoryAdvisor;
+import com.google.android.apps.internal.games.memoryadvice.MemoryWatcher;
 import org.json.JSONObject;
 
 class MyActivity extends Activity {
@@ -268,8 +279,24 @@ class MyActivity extends Activity {
   // ...
   void myMethod() {
     JSONObject advice = memoryAdvisor.getAdvice();
-    boolean warnings = MemoryAdvisor.anyWarnings(advice);
-    // ...
+    MemoryWatcher memoryWatcher = new MemoryWatcher(memoryAdvisor, 10, 3000,
+        new MemoryWatcher.Client(){
+      @Override
+      public void newState(MemoryAdvisor.MemoryState state) {
+        switch (memoryState) {
+          case OK:
+            // The application can safely allocate significant memory.
+            break;
+          case APPROACHING_LIMIT:
+            // The application should not allocate significant memory.
+            break;
+          case CRITICAL:
+            // The application should free memory as soon as possible, until the memory state
+            // changes.
+            break;
+        }
+      }
+    });
   }
 }
 ```
