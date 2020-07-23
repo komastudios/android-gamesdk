@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4feac4f8_0e40c9df",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-07-23T10:40:51Z",
+      "side": 1,
+      "message": "Actually please hold on the CL for a new version. I\u0027ve realized a slight error in the logic as described in the comments.",
+      "revId": "308461428680690c52cecc32ce5d4f35bc6eb0af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
