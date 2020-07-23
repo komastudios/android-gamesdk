@@ -47,6 +47,10 @@ public enum ErrorType {
   SETTINGS_MISSING(ErrorGroup.SETTINGS),
   // No histogram specified in the settings.
   HISTOGRAM_EMPTY(ErrorGroup.SETTINGS),
+  // Histogram should have n_Buckets set as at least one
+  // Histogram may have non-negative Bucket_Min less
+  // than Bucket_Max or none of them (the default is used)
+  HISTOGRAM_BUCKET_INVALID(ErrorGroup.SETTINGS),
   // No aggregation strategy specified in the settings.
   AGGREGATION_EMPTY(ErrorGroup.SETTINGS),
   // Aggregation contains incorrect  max_instrumentation_keys field.
