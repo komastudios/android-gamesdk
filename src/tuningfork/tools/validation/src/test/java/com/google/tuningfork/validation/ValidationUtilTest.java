@@ -54,6 +54,35 @@ public final class ValidationUtilTest {
   private final ErrorCollector errors = new ParserErrorCollector();
 
   @Test
+  public void settingsWithHistogramsValid() throws Exception {
+    AggregationStrategy aggregation =
+            AggregationStrategy.newBuilder()
+                    .addAllAnnotationEnumSize(Arrays.asList(5, 10))
+                    .setMaxInstrumentationKeys(100)
+                    .build();
+    Histogram histogram = Histogram.newBuilder()
+            .setBucketMin(0f)
+            .setBucketMax(100f)
+            .setNBuckets(30)
+            .setInstrumentKey(0)
+            .build();
+    Settings settings =
+            Settings.newBuilder()
+                    .setAggregationStrategy(aggregation)
+                    .addHistograms(histogram)
+                    .setApiKey("test-api-key")
+                    .setLoadingAnnotationIndex(1)
+                    .build();
+
+    Optional<Settings> parsedSettings =
+            ValidationUtil.validateSettings(Arrays.asList(5, 10), settings.toString(), errors);
+
+    assertThat(errors.getErrorCount()).isEqualTo(0);
+    assertThat(errors.getWarningCount()).isEqualTo(0);
+    assertThat(parsedSettings.get()).isEqualTo(settings);
+  }
+
+  @Test
   public void settingsValid() throws Exception {
     AggregationStrategy aggregation =
         AggregationStrategy.newBuilder()
@@ -63,7 +92,6 @@ public final class ValidationUtilTest {
     Settings settings =
         Settings.newBuilder()
             .setAggregationStrategy(aggregation)
-            .addHistograms(Histogram.getDefaultInstance())
             .setApiKey("test-api-key")
             .setLoadingAnnotationIndex(1)
             .build();
@@ -303,6 +331,84 @@ public final class ValidationUtilTest {
     ValidationUtil.validateSettings(Arrays.asList(5, 10), settings2.toString(), errors);
 
     assertThat(errors.getErrorCount(ErrorType.API_KEY_INVALID)).isEqualTo(1);
+  }
+
+  @Test
+  public void validateSettingsHistogramValid() throws Exception {
+    Histogram histogram = Histogram.newBuilder()
+            .setBucketMin(6.54f)
+            .setBucketMax(60f)
+            .setNBuckets(30)
+            .setInstrumentKey(0)
+            .build();
+    Settings settings = Settings.newBuilder().addHistograms(histogram).build();
+    ValidationUtil.validateSettingsHistograms(settings, errors);
+    assertThat(errors.getWarningCount()).isEqualTo(0);
+  }
+
+  @Test
+  public void validateSettingsHistogramNegativeCoverage() throws Exception {
+    Histogram histogram = Histogram.newBuilder()
+            .setBucketMin(-10f)
+            .setBucketMax(10f)
+            .setNBuckets(30)
+            .setInstrumentKey(0)
+            .build();
+    Settings settings = Settings.newBuilder().addHistograms(histogram).build();
+    ValidationUtil.validateSettingsHistograms(settings, errors);
+    assertThat(errors.getWarningCount()).isEqualTo(2);
+  }
+
+  @Test
+  public void validateSettingsHistogramNegativeNBuckets() throws Exception {
+    Histogram histogram = Histogram.newBuilder()
+            .setBucketMin(0f)
+            .setBucketMax(100f)
+            .setNBuckets(-10)
+            .setInstrumentKey(0)
+            .build();
+    Settings settings = Settings.newBuilder().addHistograms(histogram).build();
+    ValidationUtil.validateSettingsHistograms(settings, errors);
+    assertThat(errors.getWarningCount()).isEqualTo(1);
+  }
+
+  @Test
+  public void validateSettingsHistogramCoversNothing() throws Exception {
+    Histogram histogram = Histogram.newBuilder()
+            .setBucketMin(100f)
+            .setBucketMax(1000f)
+            .setNBuckets(30)
+            .setInstrumentKey(0)
+            .build();
+    Settings settings = Settings.newBuilder().addHistograms(histogram).build();
+    ValidationUtil.validateSettingsHistograms(settings, errors);
+    assertThat(errors.getWarningCount()).isEqualTo(1);
+  }
+
+  @Test
+  public void validateSettingsHistogramCoversOne() throws Exception {
+    Histogram histogram = Histogram.newBuilder()
+            .setBucketMin(0f)
+            .setBucketMax(20f)
+            .setNBuckets(30)
+            .setInstrumentKey(0)
+            .build();
+    Settings settings = Settings.newBuilder().addHistograms(histogram).build();
+    ValidationUtil.validateSettingsHistograms(settings, errors);
+    assertThat(errors.getWarningCount()).isEqualTo(1);
+  }
+
+  @Test
+  public void validateSettingsHistogramWrongMinMaxOrder() throws Exception {
+    Histogram histogram = Histogram.newBuilder()
+            .setBucketMin(100f)
+            .setBucketMax(0f)
+            .setNBuckets(30)
+            .setInstrumentKey(0)
+            .build();
+    Settings settings = Settings.newBuilder().addHistograms(histogram).build();
+    ValidationUtil.validateSettingsHistograms(settings, errors);
+    assertThat(errors.getWarningCount()).isEqualTo(2);
   }
 
 
