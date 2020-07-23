@@ -17,6 +17,7 @@
 package com.google.tuningfork.validation;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
@@ -83,9 +84,59 @@ final class ValidationUtil {
 
   /*
    * Validate Histograms
-   * No restrictions since Tuning Fork Scaled allows empty settings.
+   * Tuning Fork Scaled allows empty settings (no warnings will be collected in that case).
+   * Number of buckets should be valid (may not be specified)
+   * The max and min fps should cover 30 or 60 (in milliseconds that is 1000 / 30 and 1000/60
+   * which is roughly 33.3 and 16.7)
+   * If they are not there, the correct default will be chosen and no check is needed
    * */
-  public static void validateSettingsHistograms(Settings settings, ErrorCollector errors) {}
+  public static void validateSettingsHistograms(Settings settings, ErrorCollector errors) {
+    float COVERS60FPS = 16.7f;
+    float COVERS30FPS = 33.3f;
+    List<Settings.Histogram> histograms = settings.getHistogramsList();
+
+    for (Settings.Histogram histogram: histograms) {
+      if (histogram.hasNBuckets() && histogram.getNBuckets() < 1) {
+        errors.addWarning(ErrorType.HISTOGRAM_N_BUCKETS_INVALID, "n_Buckets can not be set as 0 or negative");
+        return;
+      }
+      boolean covers60fps = false;
+      boolean covers30fps = false;
+      boolean coversNegative = false;
+      if (histogram.hasBucketMin()) {
+        if (histogram.getBucketMin() < COVERS60FPS) {
+          covers60fps = true;
+        }
+        if (histogram.getBucketMin() < 0.0f) {
+          coversNegative = true;
+        }
+        if (histogram.hasBucketMax() && histogram.getBucketMax() < histogram.getBucketMin()) {
+          errors.addWarning(ErrorType.HISTOGRAM_BUCKET_INVALID, "Bucket_Min has to be less than Bucket_Max");
+          return;
+        }
+      }
+      if (histogram.hasBucketMax()) {
+        if (histogram.getBucketMax() > COVERS30FPS) {
+          covers30fps = true;
+        }
+        if (histogram.getBucketMax() < 0.0f) {
+          coversNegative = true;
+        }
+      }
+      if (coversNegative) {
+        errors.addWarning(ErrorType.HISTOGRAM_BUCKET_INVALID, "Bucket_Min or Bucket_Max covers negative fps");
+        return;
+      }
+      if (!covers30fps && !covers60fps) {
+        errors.addWarning(ErrorType.HISTOGRAM_BUCKET_INVALID, "Histogram does not cover neither 30 nor 60 fps");
+        return;
+      }
+      if (covers30fps ^ covers60fps) {
+        int num = covers30fps ? 30 : 60;
+        errors.addWarning(ErrorType.HISTOGRAM_BUCKET_INVALID, "Histogram covers only " + num + " fps");
+      }
+    }
+  }
 
   /*
    * Validate Aggregation
