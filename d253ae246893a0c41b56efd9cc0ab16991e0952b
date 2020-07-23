@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5f5b95d9_746cdd1f",
+        "filename": "test/memoryadvice/memoryadvice/src/main/java/com/google/android/apps/internal/games/memoryadvice/MemoryWatcher.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-07-23T09:52:21Z",
+      "side": 1,
+      "message": "Can you help me understand how does this line maintain the timing constraint?\nThe way I see it, this will run way more often than described no matter if the budget is respected or not, since the delay for timer.schedule() is specified in milliseconds.",
+      "revId": "d253ae246893a0c41b56efd9cc0ab16991e0952b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
