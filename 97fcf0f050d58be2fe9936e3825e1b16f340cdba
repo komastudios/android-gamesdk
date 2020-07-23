@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "22ac4bb8_c1a2973c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1729535
+      },
+      "writtenOn": "2020-07-23T13:20:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "20fff824_15782a1d",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 0
+      },
+      "revId": "97fcf0f050d58be2fe9936e3825e1b16f340cdba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2a4c46ac_9dc974b2",
         "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ErrorType.java",
         "patchSetId": 1
