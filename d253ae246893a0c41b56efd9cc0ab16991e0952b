@@ -34,6 +34,24 @@
       "revId": "d253ae246893a0c41b56efd9cc0ab16991e0952b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ac2284ff_bc4d7088",
+        "filename": "test/memoryadvice/memoryadvice/src/main/java/com/google/android/apps/internal/games/memoryadvice/MemoryWatcher.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-07-23T11:55:26Z",
+      "side": 1,
+      "message": "Resolved",
+      "parentUuid": "cd163a9f_e9766f49",
+      "revId": "d253ae246893a0c41b56efd9cc0ab16991e0952b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }

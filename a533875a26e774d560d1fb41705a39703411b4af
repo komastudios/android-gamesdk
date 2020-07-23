@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f319fd03_67b691ae",
+        "filename": "test/memoryadvice/memoryadvice/src/main/java/com/google/android/apps/internal/games/memoryadvice/MemoryWatcher.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-07-23T11:55:26Z",
+      "side": 1,
+      "message": "I\u0027m satisfied this now works -- but I am also thinking about the edge case of the app going to background for some time, then returning. Since watcherStartTime does not change, wouldn\u0027t this cause a big \"budget surplus\" making the runner run almost continuously?\n\nMaybe keeping score since app start is a bit brittle -- include in the accounting only a certain number of seconds in the past instead? I recognize this could be a bit too complex.\n\nAlternatively handle the background-foreground case separately (I feel there could be other similar edge cases though, albeit I can\u0027t come up with another now).",
+      "range": {
+        "startLine": 46,
+        "startChar": 0,
+        "endLine": 53,
+        "endChar": 9
+      },
+      "revId": "a533875a26e774d560d1fb41705a39703411b4af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
