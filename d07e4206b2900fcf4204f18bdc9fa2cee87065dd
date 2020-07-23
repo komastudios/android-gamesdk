@@ -19,6 +19,52 @@
     },
     {
       "key": {
+        "uuid": "cefb7c7a_7387d2d8",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/DeveloperTuningforkParser.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-23T14:14:28Z",
+      "side": 1,
+      "message": "This part looks same as \nValidationUtil.validateDevFidelityParams(content, fidelityField, errors);\nabove.\n\npart of validation is missing(I\u0027ll mark it with another comment)",
+      "range": {
+        "startLine": 196,
+        "startChar": 5,
+        "endLine": 204,
+        "endChar": 7
+      },
+      "revId": "d07e4206b2900fcf4204f18bdc9fa2cee87065dd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d0c62972_a814cd87",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-23T14:14:28Z",
+      "side": 1,
+      "message": "This part is missing now. Is it called from anywhere?",
+      "range": {
+        "startLine": 154,
+        "startChar": 4,
+        "endLine": 157,
+        "endChar": 5
+      },
+      "revId": "d07e4206b2900fcf4204f18bdc9fa2cee87065dd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e680106d_6dc2d46e",
         "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
         "patchSetId": 4
@@ -83,6 +129,29 @@
         "startChar": 0,
         "endLine": 25,
         "endChar": 42
+      },
+      "revId": "d07e4206b2900fcf4204f18bdc9fa2cee87065dd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bca72ac8_e6de3d73",
+        "filename": "src/tuningfork/tools/validation/src/test/java/com/google/tuningfork/validation/ValidationUtilTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 465,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-23T14:14:28Z",
+      "side": 1,
+      "message": "These are DeveloperTuninforkParser tests rather then ValidationUtil tests, I would move them there + separate tests for ValidationUtil.validateDevFidelityParamsOrder(). You can have more tests for ValidationUtil.validateDevFidelityParamsOrder() to cover all cases + less tests for DeveloperTuninforkParser to cover the whole workflow.\nnit: You can add *.txt files in testdata if you want.",
+      "range": {
+        "startLine": 320,
+        "startChar": 2,
+        "endLine": 465,
+        "endChar": 3
       },
       "revId": "d07e4206b2900fcf4204f18bdc9fa2cee87065dd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
