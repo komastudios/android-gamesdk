@@ -103,13 +103,20 @@ class TuningForkImpl : public IdProvider {
 
     bool ShouldSubmit(TimePoint t, MetricData *metric_data);
 
-    AnnotationId DecodeAnnotationSerialization(const SerializedAnnotation &ser,
-                                               bool *loading) const override;
+    TuningFork_ErrorCode SerializedAnnotationToAnnotationId(
+        const SerializedAnnotation &ser, AnnotationId &id,
+        bool *loading) const override;
     // Return a new id that is made up of <annotation_id> and <k>.
     // Gives an error if the id is out-of-bounds.
-    virtual TuningFork_ErrorCode MakeCompoundId(InstrumentationKey k,
-                                                AnnotationId annotation_id,
-                                                MetricId &id) override;
+    TuningFork_ErrorCode MakeCompoundId(InstrumentationKey k,
+                                        AnnotationId annotation_id,
+                                        MetricId &id) override;
+
+    TuningFork_ErrorCode AnnotationIdToSerializedAnnotation(
+        AnnotationId id, SerializedAnnotation &ser) override;
+
+    TuningFork_ErrorCode MetricIdToMemoryMetric(MetricId id,
+                                                MemoryMetric &m) override;
 
     bool keyIsValid(InstrumentationKey key) const;
 
@@ -128,7 +135,8 @@ class TuningForkImpl : public IdProvider {
 
     void CreateSessionFrameHistograms(
         Session &session, size_t size, int max_num_instrumentation_keys,
-        const std::vector<Settings::Histogram> &histogram_settings);
+        const std::vector<Settings::Histogram> &histogram_settings,
+        const TuningFork_MetricLimits &limits);
 
     void CreateMemoryHistograms(Session &session);
 

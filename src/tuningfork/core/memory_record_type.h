@@ -39,6 +39,6 @@ enum MemoryRecordType {
     ANDROID_MEMINFO_VMDATA,
     ANDROID_MEMINFO_VMRSS,
     ANDROID_MEMINFO_VMSIZE,
-    END
+    COUNT  // Must be last entry
 };
 }  // namespace tuningfork

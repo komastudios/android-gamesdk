@@ -62,11 +62,12 @@ class DebugBackend : public IBackend {
 static std::unique_ptr<DebugBackend> s_debug_backend =
     std::make_unique<DebugBackend>();
 
-UploadThread::UploadThread(IBackend* backend)
+UploadThread::UploadThread(IBackend* backend, IdProvider* id_provider)
     : Runnable(nullptr),
       backend_(backend),
       upload_callback_(nullptr),
-      persister_(nullptr) {
+      persister_(nullptr),
+      id_provider_(id_provider) {
     if (backend_ == nullptr) backend_ = s_debug_backend.get();
     Start();
 }
@@ -81,8 +82,8 @@ void UploadThread::Start() {
 Duration UploadThread::DoWork() {
     if (ready_) {
         std::string evt_ser_json;
-        JsonSerializer::SerializeEvent(*ready_, RequestInfo::CachedValue(),
-                                       evt_ser_json);
+        JsonSerializer serializer(*ready_, id_provider_);
+        serializer.SerializeEvent(RequestInfo::CachedValue(), evt_ser_json);
         if (upload_callback_) {
             upload_callback_(evt_ser_json.c_str(), evt_ser_json.size());
         }

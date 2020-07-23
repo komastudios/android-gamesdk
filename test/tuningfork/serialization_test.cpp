@@ -87,7 +87,7 @@ std::string report_end = "]}";
 
 std::string single_tick_with_loading = R"TF({
   "context": {
-    "annotations": "",
+    "annotations": "AQID",
     "duration": "1.51s",
     "tuning_parameters": {
       "experiment_id": "expt",
@@ -118,32 +118,64 @@ std::string single_tick_with_loading = R"TF({
   }
 })TF";
 
+class IdMap : public IdProvider {
+    TuningFork_ErrorCode SerializedAnnotationToAnnotationId(
+        const ProtobufSerialization& ser, AnnotationId& id,
+        bool* loading = nullptr) const override {
+        id = 0;
+        return TUNINGFORK_ERROR_OK;
+    }
+
+    // Return a new id that is made up of <annotation_id> and <k>.
+    // Gives an error if the id is out-of-bounds.
+    TuningFork_ErrorCode MakeCompoundId(InstrumentationKey k,
+                                        AnnotationId annotation_id,
+                                        MetricId& id) override {
+        id = MetricId::FrameTime(annotation_id, k);
+        return TUNINGFORK_ERROR_OK;
+    }
+
+    TuningFork_ErrorCode AnnotationIdToSerializedAnnotation(
+        AnnotationId id, SerializedAnnotation& ann) override {
+        ann = {1, 2, 3};
+        return TUNINGFORK_ERROR_OK;
+    }
+    TuningFork_ErrorCode MetricIdToMemoryMetric(MetricId id,
+                                                MemoryMetric& m) override {
+        // Not used
+        m = {};
+        return TUNINGFORK_ERROR_OK;
+    }
+};
+
 TEST(SerializationTest, SerializationWithLoading) {
-    Session session(2 /* capacity */);
-    session.CreateLoadingTimeSeries(LoadingTimeMetric(),
-                                    MetricId::LoadingTime(0));
-    session.CreateFrameTimeHistogram(FrameTimeMetric(0),
-                                     MetricId::FrameTime(1, 0),
+    Session session{};
+    MetricId loading_time_metric = MetricId::LoadingTime(0);
+    MetricId frame_time_metric = MetricId::FrameTime(0, 0);
+    session.CreateLoadingTimeSeries(loading_time_metric);
+    session.CreateFrameTimeHistogram(frame_time_metric,
                                      Settings::DefaultHistogram(1));
 
     std::string evt_ser;
     session.SetInstrumentationKeys({1234});
-    JsonSerializer::SerializeEvent(session, test_device_info, evt_ser);
+    IdMap metric_map;
+    JsonSerializer serializer(session, &metric_map);
+    serializer.SerializeEvent(test_device_info, evt_ser);
     auto empty_report = report_start + report_end;
     EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, empty_report))
         << evt_ser << "\n!=\n"
         << empty_report;
 
     // Fill in some data
-    auto p1 = session.GetData<LoadingTimeMetricData>(MetricId::LoadingTime(0));
+    auto p1 = session.GetData<LoadingTimeMetricData>(loading_time_metric);
     ASSERT_NE(p1, nullptr);
     p1->Record(milliseconds(1500));
 
-    auto p2 = session.GetData<FrameTimeMetricData>(MetricId::FrameTime(1, 0));
+    auto p2 = session.GetData<FrameTimeMetricData>(frame_time_metric);
     ASSERT_NE(p2, nullptr);
     p2->Record(milliseconds(10));
 
-    JsonSerializer::SerializeEvent(session, test_device_info, evt_ser);
+    serializer.SerializeEvent(test_device_info, evt_ser);
     auto report = report_start + single_tick_with_loading + report_end;
     EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, report))
         << evt_ser << "\n!=\n"
@@ -152,7 +184,7 @@ TEST(SerializationTest, SerializationWithLoading) {
 
 std::string single_tick = R"TF({
   "context": {
-    "annotations": "",
+    "annotations": "AQID",
     "duration": "0.03s",
     "tuning_parameters": {
       "experiment_id": "expt",
@@ -170,21 +202,7 @@ std::string single_tick = R"TF({
   }
 })TF";
 
-class TestIdProvider : public IdProvider {
-   public:
-    uint64_t DecodeAnnotationSerialization(const ProtobufSerialization& ser,
-                                           bool* loading) const override {
-        return 0;
-    }
-    TuningFork_ErrorCode MakeCompoundId(InstrumentationKey k,
-                                        uint64_t annotation_id,
-                                        MetricId& id) override {
-        id.base = k;
-        return TUNINGFORK_ERROR_OK;
-    }
-};
-
-void CheckSessions(const Session& pc0, const Session& pc1) {
+void CheckSessions(Session& pc0, Session& pc1) {
     auto p0 = pc0.GetData<FrameTimeMetricData>(MetricId::FrameTime(0, 0));
     auto p1 = pc1.GetData<FrameTimeMetricData>(MetricId::FrameTime(0, 0));
     EXPECT_TRUE(p0 != nullptr && p1 != nullptr);
@@ -194,12 +212,14 @@ void CheckSessions(const Session& pc0, const Session& pc1) {
 Settings::Histogram DefaultHistogram() { return {-1, 10, 40, 30}; }
 
 TEST(SerializationTest, GEDeserialization) {
-    Session session(1 /* capacity */);
+    Session session{};
     FrameTimeMetric metric(0);
     MetricId metric_id{0};
-    session.CreateFrameTimeHistogram(metric, metric_id, DefaultHistogram());
+    session.CreateFrameTimeHistogram(metric_id, DefaultHistogram());
     std::string evt_ser;
-    JsonSerializer::SerializeEvent(session, test_device_info, evt_ser);
+    IdMap metric_map;
+    JsonSerializer serializer(session, &metric_map);
+    serializer.SerializeEvent(test_device_info, evt_ser);
     auto empty_report = report_start + report_end;
     EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, empty_report))
         << evt_ser << "\n!=\n"
@@ -207,16 +227,15 @@ TEST(SerializationTest, GEDeserialization) {
     // Fill in some data
     auto p = session.GetData<FrameTimeMetricData>(metric_id);
     p->Record(milliseconds(30));
-    JsonSerializer::SerializeEvent(session, test_device_info, evt_ser);
+    serializer.SerializeEvent(test_device_info, evt_ser);
     auto report = report_start + single_tick + report_end;
     EXPECT_TRUE(CompareIgnoringWhitespace(evt_ser, report))
         << evt_ser << "\n!=\n"
         << report;
-    Session session1(1 /*capacity*/);
-    session1.CreateFrameTimeHistogram(metric, metric_id, DefaultHistogram());
-    TestIdProvider id_provider;
+    Session session1{};
+    session1.CreateFrameTimeHistogram(metric_id, DefaultHistogram());
     EXPECT_EQ(
-        JsonSerializer::DeserializeAndMerge(evt_ser, id_provider, session1),
+        JsonSerializer::DeserializeAndMerge(evt_ser, metric_map, session1),
         TUNINGFORK_ERROR_OK)
         << "Deserialize single";
     CheckSessions(session1, session);

@@ -255,6 +255,19 @@ struct SwappyTracer;
 typedef void (*SwappyTracerFn)(const struct SwappyTracer*);
 
 /**
+ * @brief Limits on the number of metrics of each type.
+ *   Zero any values to get the default for that type.
+ *   Frame time: the maximum number of annotation combinations
+ *   Loading time: the number of loading time annotations + 10 possible other
+ * loading times Memory: 15 possible memory metrics
+ */
+typedef struct TuningFork_MetricLimits {
+    uint32_t frame_time;
+    uint32_t loading_time;
+    uint32_t memory;
+} TuningFork_MetricLimits;
+
+/**
  * @brief Initialization settings
  *   Zero any values that are not being used.
  */
@@ -297,6 +310,14 @@ typedef struct TuningFork_Settings {
      * The version of Swappy that swappy_tracer_fn comes from
      */
     uint32_t swappy_version;
+    /**
+     * The number of each metric that is allowed to be allocated at any given
+     * time. If any element is zero, the default for that metric type will be
+     * used. Memory for all metrics is allocated up-front at initialization.
+     * When all metrics of a given type are allocated, further requested metrics
+     * will not be added and data will be lost.
+     */
+    TuningFork_MetricLimits max_num_metrics;
 } TuningFork_Settings;
 
 /**
