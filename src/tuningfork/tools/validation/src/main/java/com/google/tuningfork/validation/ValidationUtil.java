@@ -83,9 +83,68 @@ final class ValidationUtil {
 
   /*
    * Validate Histograms
-   * No restrictions since Tuning Fork Scaled allows empty settings.
+   * Tuning Fork Scaled allows empty settings (no warnings will be collected in that case).
+   * Number of buckets should be valid (may not be specified)
+   * The max and min fps should cover 30 or 60 (in milliseconds that is 1000 / 30 and 1000/60
+   * which is roughly 33.3 and 16.7)
+   * If they are not there, the correct default will be chosen and no check is needed
    * */
-  public static void validateSettingsHistograms(Settings settings, ErrorCollector errors) {}
+  public static void validateSettingsHistograms(Settings settings, ErrorCollector errors) {
+    final float FRAME_TIME_60FPS_MS = 16.7f;
+    final float FRAME_TIME_30FPS_MS = 33.3f;
+    List<Settings.Histogram> histograms = settings.getHistogramsList();
+    for (Settings.Histogram histogram: histograms) {
+      if (histogram.getNBuckets() < 1) {
+        errors.addWarning(ErrorType.HISTOGRAM_BUCKET_INVALID,
+                "Set n_Buckets to a positive integer. It is currently " + histogram.getNBuckets());
+        return;
+      }
+      boolean bucketMinCovers60fps = histogram.getBucketMin() < FRAME_TIME_60FPS_MS;
+      boolean bucketMaxCovers30fps = histogram.getBucketMax() > FRAME_TIME_30FPS_MS;
+      boolean bucketMinFitsBetween = histogram.getBucketMin() > FRAME_TIME_60FPS_MS && histogram.getBucketMin() < FRAME_TIME_30FPS_MS;
+      boolean bucketMaxFitsBetween = histogram.getBucketMax() > FRAME_TIME_60FPS_MS && histogram.getBucketMax() < FRAME_TIME_30FPS_MS;
+      boolean covers60fps = false;
+      boolean covers30fps = false;
+      boolean coversNegative = false;
+      if (histogram.hasBucketMax() && histogram.getBucketMax() < histogram.getBucketMin()) {
+        errors.addWarning(ErrorType.HISTOGRAM_BUCKET_INVALID,
+                "Bucket_Min has to be less than Bucket_Max. Max currently is " + histogram.getBucketMax() +
+                "Min currently is " + histogram.getBucketMin());
+        return;
+      }
+      if (bucketMinCovers60fps && bucketMaxCovers30fps) {
+        covers30fps = true;
+        covers60fps = true;
+      }
+      if (bucketMinFitsBetween && bucketMaxCovers30fps) {
+        covers30fps = true;
+      }
+      if (bucketMinCovers60fps && bucketMaxFitsBetween) {
+        covers60fps = true;
+      }
+      if (histogram.getBucketMin() < 0.0f) {
+        coversNegative = true;
+      }
+      if (histogram.hasBucketMax()) {
+        if (histogram.getBucketMax() < 0.0f) {
+          coversNegative = true;
+        }
+      }
+      if (coversNegative) {
+        errors.addWarning(ErrorType.HISTOGRAM_BUCKET_INVALID, "Bucket_Min or Bucket_Max covers negative fps");
+        return;
+      }
+      if (!covers30fps && !covers60fps) {
+        errors.addWarning(ErrorType.HISTOGRAM_BUCKET_INVALID, "Histogram does not cover neither 30 nor 60 fps. It covers from "
+                + (int) 1000 / histogram.getBucketMax() + " to " + (int) 1000 / histogram.getBucketMin() + " fps");
+        return;
+      }
+      if (covers30fps ^ covers60fps) {
+        int num = covers30fps ? 30 : 60;
+        errors.addWarning(ErrorType.HISTOGRAM_BUCKET_INVALID, "Histogram covers only " + num + " fps");
+      }
+    }
+  }
 
   /*
    * Validate Aggregation
