@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2a4c46ac_9dc974b2",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ErrorType.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-23T12:39:40Z",
+      "side": 1,
+      "message": "you can just group it into histogram_bucket_invalid",
+      "range": {
+        "startLine": 53,
+        "startChar": 0,
+        "endLine": 53,
+        "endChar": 48
+      },
+      "revId": "97fcf0f050d58be2fe9936e3825e1b16f340cdba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2986290c_01488131",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-23T12:39:40Z",
+      "side": 1,
+      "message": "I think you can skip this check. It should just return 0 if you will call getBucketMin(), isn\u0027t it?\n\nif yes, you can do something e.g cover60 \u003d histogram.getBucketMin \u003c COVER60 \u0026\u0026 histogram.getBucketMax() \u003e COVER60",
+      "range": {
+        "startLine": 106,
+        "startChar": 0,
+        "endLine": 106,
+        "endChar": 37
+      },
+      "revId": "97fcf0f050d58be2fe9936e3825e1b16f340cdba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9dc0ddf0_d5c5a244",
+        "filename": "src/tuningfork/tools/validation/src/test/java/com/google/tuningfork/validation/ValidationUtilTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-23T12:39:40Z",
+      "side": 1,
+      "message": "Can you create new test for that? So the case with empty histograms is still covered.\ne.g settingsValid() - same as before, settingsWithHistogramsValid() - with histograms",
+      "range": {
+        "startLine": 63,
+        "startChar": 4,
+        "endLine": 68,
+        "endChar": 21
+      },
+      "revId": "97fcf0f050d58be2fe9936e3825e1b16f340cdba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e184f54f_970301e3",
+        "filename": "src/tuningfork/tools/validation/src/test/java/com/google/tuningfork/validation/ValidationUtilTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-23T12:39:40Z",
+      "side": 1,
+      "message": "nit: and you can skip \"1\", just \"histogram\" is fine.",
+      "range": {
+        "startLine": 72,
+        "startChar": 36,
+        "endLine": 72,
+        "endChar": 37
+      },
+      "revId": "97fcf0f050d58be2fe9936e3825e1b16f340cdba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3c119b70_afe440c0",
+        "filename": "src/tuningfork/tools/validation/src/test/java/com/google/tuningfork/validation/ValidationUtilTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 316,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-23T12:39:40Z",
+      "side": 1,
+      "message": "nit: skip \"1\" (other places too)",
+      "range": {
+        "startLine": 316,
+        "startChar": 23,
+        "endLine": 316,
+        "endChar": 24
+      },
+      "revId": "97fcf0f050d58be2fe9936e3825e1b16f340cdba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
