@@ -16,6 +16,24 @@
       "revId": "d253ae246893a0c41b56efd9cc0ab16991e0952b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cd163a9f_e9766f49",
+        "filename": "test/memoryadvice/memoryadvice/src/main/java/com/google/android/apps/internal/games/memoryadvice/MemoryWatcher.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-07-23T10:38:16Z",
+      "side": 1,
+      "message": "It could use more comments, I have added some.\n\n\u0027totalBudget\u0027 is the total amount of time that the method was allowed to have used.\nThis is compared against \u0027totalTimeSpent\u0027 which is the amount it *did* use.\n\n(The assumption at this point is that totalTimeSpent \u003e totalBudget; if that\u0027s not the case it\u0027s caught by the Math.max() clause to rerun almost immediately) \n\n\u0027overBudget\u0027 is therefore the amount of \u0027too much\u0027 time spent by the method. By delaying exactly that amount we are guaranteed to be under budget when it\u0027s called again. It\u0027s that mechanism that keeps the time spend to the limit.\n\nAll these values are in milliseconds.\n\nThe method therefore runs \u0027in arrears\u0027 of its budget. Another method would have been to have checked each time the timer fired as to whether we were under budget at that time and to sleep the timer if not. That would probably have been easier to follow. But it would be wasteful (timer firing and then resetting itself).",
+      "parentUuid": "5f5b95d9_746cdd1f",
+      "revId": "d253ae246893a0c41b56efd9cc0ab16991e0952b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
