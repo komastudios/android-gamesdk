@@ -48,31 +48,45 @@ void LoadingTimeMetricData::Record(Duration dt) {
 }
 
 FrameTimeMetricData* Session::CreateFrameTimeHistogram(
-    const FrameTimeMetric& metric, MetricId id,
-    const Settings::Histogram& settings) {
-    if (metric_data_.size() >= max_histogram_size_) return nullptr;
-    metric_data_[id] = std::make_unique<FrameTimeMetricData>(metric, settings);
-    return reinterpret_cast<FrameTimeMetricData*>(metric_data_[id].get());
+    MetricId id, const Settings::Histogram& settings) {
+    frame_time_data_.push_back(
+        std::make_unique<FrameTimeMetricData>(id, settings));
+    auto p = frame_time_data_.back().get();
+    available_frame_time_data_.push_back(p);
+    return p;
 }
 
-LoadingTimeMetricData* Session::CreateLoadingTimeSeries(
-    const LoadingTimeMetric& metric, MetricId id) {
-    if (metric_data_.size() >= max_histogram_size_) return nullptr;
-    metric_data_[id] = std::make_unique<LoadingTimeMetricData>(metric);
-    return reinterpret_cast<LoadingTimeMetricData*>(metric_data_[id].get());
+LoadingTimeMetricData* Session::CreateLoadingTimeSeries(MetricId id) {
+    loading_time_data_.push_back(std::make_unique<LoadingTimeMetricData>(id));
+    auto p = loading_time_data_.back().get();
+    available_loading_time_data_.push_back(p);
+    return p;
 }
 
 MemoryMetricData* Session::CreateMemoryHistogram(
-    const MemoryMetric& metric, MetricId id,
-    const Settings::Histogram& settings) {
-    if (metric_data_.size() >= max_histogram_size_) return nullptr;
-    metric_data_[id] = std::make_unique<MemoryMetricData>(metric, settings);
-    return reinterpret_cast<MemoryMetricData*>(metric_data_[id].get());
+    MetricId id, const Settings::Histogram& settings) {
+    memory_data_.push_back(std::make_unique<MemoryMetricData>(id, settings));
+    auto p = memory_data_.back().get();
+    available_memory_data_.push_back(p);
+    return p;
 }
 
 void Session::ClearData() {
-    for (auto& p : metric_data_) {
-        if (p.second.get() != nullptr) p.second->Clear();
+    metric_data_.clear();
+    available_frame_time_data_.clear();
+    available_loading_time_data_.clear();
+    available_memory_data_.clear();
+    for (auto& p : frame_time_data_) {
+        p->Clear();
+        available_frame_time_data_.push_back(p.get());
+    }
+    for (auto& p : loading_time_data_) {
+        p->Clear();
+        available_loading_time_data_.push_back(p.get());
+    }
+    for (auto& p : memory_data_) {
+        p->Clear();
+        available_memory_data_.push_back(p.get());
     }
     time_.start = SystemTimePoint();
     time_.end = SystemTimePoint();
@@ -83,12 +97,6 @@ void Session::Ping(SystemTimePoint t) {
         time_.start = t;
     }
     time_.end = t;
-}
-
-void Session::Clear() {
-    metric_data_.clear();
-    time_.start = SystemTimePoint();
-    time_.end = SystemTimePoint();
 }
 
 }  // namespace tuningfork

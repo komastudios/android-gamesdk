@@ -39,7 +39,7 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
     : settings_(settings),
       trace_(gamesdk::Trace::create()),
       backend_(backend),
-      upload_thread_(backend),
+      upload_thread_(backend, this),
       current_annotation_id_(MetricId::FrameTime(0, 0)),
       time_provider_(time_provider),
       meminfo_provider_(meminfo_provider),
@@ -76,15 +76,14 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
             "Neither max_annotations nor max_instrumentation_keys can be zero");
     else
         max_num_frametime_metrics = max_ikeys * annotation_radix_mult_.back();
-    int max_num_other_metrics =
-        MemoryRecordType::END;  // Number of memory metrics
     for (int i = 0; i < 2; ++i) {
-        sessions_[i] = std::make_unique<Session>(max_num_frametime_metrics +
-                                                 max_num_other_metrics);
+        sessions_[i] = std::make_unique<Session>();
         CreateSessionFrameHistograms(*sessions_[i], max_num_frametime_metrics,
-                                     max_ikeys, settings_.histograms);
-        MemoryTelemetry::CreateMemoryHistograms(*sessions_[i],
-                                                meminfo_provider_);
+                                     max_ikeys, settings_.histograms,
+                                     settings.c_settings.max_num_metrics);
+        MemoryTelemetry::CreateMemoryHistograms(
+            *sessions_[i], meminfo_provider_,
+            settings.c_settings.max_num_metrics.memory);
     }
     current_session_ = sessions_[0].get();
     live_traces_.resize(max_num_frametime_metrics);
@@ -117,24 +116,31 @@ TuningForkImpl::~TuningForkImpl() {
 
 void TuningForkImpl::CreateSessionFrameHistograms(
     Session &session, size_t size, int max_num_instrumentation_keys,
-    const std::vector<Settings::Histogram> &histogram_settings) {
+    const std::vector<Settings::Histogram> &histogram_settings,
+    const TuningFork_MetricLimits &limits) {
     InstrumentationKey ikey = 0;
+    int num_loading_created = 0;
+    int num_frametime_created = 0;
     for (uint64_t i = 0; i < size; ++i) {
         auto aid = i / max_num_instrumentation_keys;
-        SerializedAnnotation ann;
-        annotation_util::SerializeAnnotationId(aid, ann,
-                                               annotation_radix_mult_);
         if (IsLoadingAnnotationId(aid)) {
             if (ikey == 0) {
-                session.CreateLoadingTimeSeries(LoadingTimeMetric(ann),
-                                                MetricId::LoadingTime(aid));
+                if (limits.loading_time == 0 ||
+                    num_loading_created < limits.loading_time) {
+                    session.CreateLoadingTimeSeries(MetricId::LoadingTime(aid));
+                    ++num_loading_created;
+                }
             }
             // Don't create histograms for other instrument keys when loading
         } else {
             auto &h =
                 histogram_settings[ikey < histogram_settings.size() ? ikey : 0];
-            session.CreateFrameTimeHistogram(FrameTimeMetric(ikey, ann),
-                                             MetricId::FrameTime(aid, ikey), h);
+            if (limits.frame_time == 0 ||
+                num_frametime_created < limits.frame_time) {
+                session.CreateFrameTimeHistogram(MetricId::FrameTime(aid, ikey),
+                                                 h);
+                ++num_frametime_created;
+            }
         }
         ++ikey;
         if (ikey >= max_num_instrumentation_keys) ikey = 0;
@@ -146,7 +152,8 @@ MetricId TuningForkImpl::SetCurrentAnnotation(
     const ProtobufSerialization &annotation) {
     current_annotation_ = annotation;
     bool loading;
-    auto id = DecodeAnnotationSerialization(annotation, &loading);
+    AnnotationId id;
+    SerializedAnnotationToAnnotationId(annotation, id, &loading);
     if (id == annotation_util::kAnnotationError) {
         ALOGW("Error setting annotation of size %zu", annotation.size());
         current_annotation_id_ = MetricId::FrameTime(0, 0);
@@ -179,12 +186,13 @@ MetricId TuningForkImpl::SetCurrentAnnotation(
     }
 }
 
-AnnotationId TuningForkImpl::DecodeAnnotationSerialization(
-    const SerializedAnnotation &ser, bool *loading) const {
-    auto aid = annotation_util::DecodeAnnotationSerialization(
+TuningFork_ErrorCode TuningForkImpl::SerializedAnnotationToAnnotationId(
+    const tuningfork::SerializedAnnotation &ser, tuningfork::AnnotationId &id,
+    bool *loading) const {
+    id = annotation_util::DecodeAnnotationSerialization(
         ser, annotation_radix_mult_, settings_.loading_annotation_index,
         settings_.level_annotation_index, loading);
-    return aid;
+    return TUNINGFORK_ERROR_OK;
 }
 TuningFork_ErrorCode TuningForkImpl::MakeCompoundId(InstrumentationKey key,
                                                     AnnotationId annotation_id,
@@ -507,6 +515,22 @@ void TuningForkImpl::InitAsyncTelemetry() {
     MemoryTelemetry::SetUpAsyncWork(*async_telemetry_, meminfo_provider_);
     async_telemetry_->SetSession(current_session_);
     async_telemetry_->Start();
+}
+
+TuningFork_ErrorCode TuningForkImpl::MetricIdToMemoryMetric(MetricId id,
+                                                            MemoryMetric &m) {
+    m.memory_record_type_ = (MemoryRecordType)id.detail.memory.record_type;
+    m.period_ms_ =
+        std::chrono::duration_cast<std::chrono::milliseconds>(
+            MemoryTelemetry::UploadPeriodForMemoryType(m.memory_record_type_))
+            .count();
+    return TUNINGFORK_ERROR_OK;
+}
+
+TuningFork_ErrorCode TuningForkImpl::AnnotationIdToSerializedAnnotation(
+    tuningfork::AnnotationId id, tuningfork::SerializedAnnotation &ser) {
+    annotation_util::SerializeAnnotationId(id, ser, annotation_radix_mult_);
+    return TUNINGFORK_ERROR_OK;
 }
 
 }  // namespace tuningfork

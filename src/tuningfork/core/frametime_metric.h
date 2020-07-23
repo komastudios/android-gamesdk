@@ -31,14 +31,13 @@ struct FrameTimeMetric {
 };
 
 struct FrameTimeMetricData : public MetricData {
-    FrameTimeMetricData(FrameTimeMetric metric,
-                        const Settings::Histogram& settings)
+    FrameTimeMetricData(MetricId metric_id, const Settings::Histogram& settings)
         : MetricData(MetricType()),
-          metric_(metric),
+          metric_id_(metric_id),
           histogram_(settings, false /*isLoading*/),
           last_time_(TimePoint::min()),
           duration_(Duration::zero()) {}
-    FrameTimeMetric metric_;
+    MetricId metric_id_;
     Histogram<double> histogram_;
     TimePoint last_time_;
     Duration duration_;
