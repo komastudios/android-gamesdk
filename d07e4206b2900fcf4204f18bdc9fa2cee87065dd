@@ -1,0 +1,75 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e680106d_6dc2d46e",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-23T12:44:42Z",
+      "side": 1,
+      "message": "\u003e Common typo found: \" * */\" -- should it be \" */\"?\n\u003e Malformatted comment.\n\u003e Note: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.\n\nPlease fix.",
+      "parentUuid": "b738df99_a7d29b80",
+      "range": {
+        "startLine": 164,
+        "startChar": 2,
+        "endLine": 164,
+        "endChar": 7
+      },
+      "revId": "d07e4206b2900fcf4204f18bdc9fa2cee87065dd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7087e8c2_5d7f9cee",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-23T12:44:42Z",
+      "side": 1,
+      "message": "\u003e Common typo found: \" * */\" -- should it be \" */\"?\n\u003e Malformatted comment.\n\u003e Note: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.\n\nPlease fix.",
+      "parentUuid": "5e99f193_558ff4b7",
+      "range": {
+        "startLine": 192,
+        "startChar": 2,
+        "endLine": 192,
+        "endChar": 7
+      },
+      "revId": "d07e4206b2900fcf4204f18bdc9fa2cee87065dd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4440af0b_185e286c",
+        "filename": "src/tuningfork/tools/validation/src/test/java/com/google/tuningfork/validation/DeveloperTuningforkParserTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-23T12:44:42Z",
+      "side": 1,
+      "message": "Do you need new imports here?",
+      "range": {
+        "startLine": 24,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 42
+      },
+      "revId": "d07e4206b2900fcf4204f18bdc9fa2cee87065dd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
