@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "2d473afb_02fff30d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-07-23T12:53:01Z",
+      "side": 1,
+      "message": "tiny nit: start with a verb, finish with no period\n\nNote there are no hard rules on the commit message, but go/repo#commit-message is a good styling resource",
+      "revId": "d07e4206b2900fcf4204f18bdc9fa2cee87065dd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e680106d_6dc2d46e",
         "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
         "patchSetId": 4
