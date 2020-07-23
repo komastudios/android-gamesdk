@@ -1,0 +1,146 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000003991665",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1366843?revision\u003d3",
+      "fixSuggestions": [
+        {
+          "fixId": "f59d4f8e_46b0c541",
+          "description": "Change to \"src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java\"",
+          "replacements": [
+            {
+              "path": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+              "range": {
+                "startLine": 164,
+                "startChar": 2,
+                "endLine": 164,
+                "endChar": 7
+              },
+              "replacement": " */"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "030ff7d0_afb3c1fb",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-07-23T09:32:45Z",
+      "side": 1,
+      "message": "Common typo found: \" * */\" -- should it be \" */\"?\nMalformatted comment.\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.",
+      "range": {
+        "startLine": 164,
+        "startChar": 2,
+        "endLine": 164,
+        "endChar": 7
+      },
+      "revId": "c7d81b3268ffbcc12e91ce9dc0bc29a567bf9490",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000003991666",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1366843?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "e2b39f1e_a60d0413",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-07-23T09:32:45Z",
+      "side": 1,
+      "message": "Wrong casing for \"hasComparisonErrorsWithPrevValue\". static final variables should be ALL_UPPERCASE.",
+      "range": {
+        "startLine": 165,
+        "startChar": 10,
+        "endLine": 165,
+        "endChar": 63
+      },
+      "revId": "c7d81b3268ffbcc12e91ce9dc0bc29a567bf9490",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000003991665",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1366843?revision\u003d3",
+      "fixSuggestions": [
+        {
+          "fixId": "8e3c61eb_db0ab1bf",
+          "description": "Change to \"src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java\"",
+          "replacements": [
+            {
+              "path": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+              "range": {
+                "startLine": 190,
+                "startChar": 2,
+                "endLine": 190,
+                "endChar": 7
+              },
+              "replacement": " */"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "9c419f09_8aed1546",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-07-23T09:32:45Z",
+      "side": 1,
+      "message": "Common typo found: \" * */\" -- should it be \" */\"?\nMalformatted comment.\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.",
+      "range": {
+        "startLine": 190,
+        "startChar": 2,
+        "endLine": 190,
+        "endChar": 7
+      },
+      "revId": "c7d81b3268ffbcc12e91ce9dc0bc29a567bf9490",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000003991666",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1366843?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "f35a1d58_3cda87c9",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-07-23T09:32:45Z",
+      "side": 1,
+      "message": "Wrong casing for \"validateDevFidelityParamsOrder\". static final variables should be ALL_UPPERCASE.",
+      "range": {
+        "startLine": 191,
+        "startChar": 9,
+        "endLine": 191,
+        "endChar": 57
+      },
+      "revId": "c7d81b3268ffbcc12e91ce9dc0bc29a567bf9490",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
