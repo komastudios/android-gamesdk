@@ -48,6 +48,9 @@ class TuningForkImpl : public IdProvider {
     TimePoint loading_start_;
     std::unique_ptr<ProtobufSerialization> training_mode_params_;
     std::unique_ptr<AsyncTelemetry> async_telemetry_;
+    std::mutex loading_time_metadata_map_mutex_;
+    std::unordered_map<LoadingTimeMetadata, LoadingTimeMetadataId>
+        loading_time_metadata_map_;
 
    public:
     TuningForkImpl(const Settings &settings, IBackend *backend,
@@ -94,10 +97,15 @@ class TuningForkImpl : public IdProvider {
 
     TuningFork_ErrorCode EnableMemoryRecording(bool enable);
 
-   private:
-    MetricData *TickNanos(MetricId compound_id, TimePoint t);
+    TuningFork_ErrorCode RecordLoadingTime(Duration duration,
+                                           const LoadingTimeMetadata &metadata);
 
-    MetricData *TraceNanos(MetricId compound_id, Duration dt);
+   private:
+    TuningFork_ErrorCode TickNanos(MetricId compound_id, TimePoint t,
+                                   MetricData **ppdata);
+
+    TuningFork_ErrorCode TraceNanos(MetricId compound_id, Duration dt,
+                                    MetricData **ppdata);
 
     TuningFork_ErrorCode CheckForSubmit(TimePoint t, MetricData *metric_data);
 
@@ -118,6 +126,9 @@ class TuningForkImpl : public IdProvider {
     TuningFork_ErrorCode MetricIdToMemoryMetric(MetricId id,
                                                 MemoryMetric &m) override;
 
+    TuningFork_ErrorCode LoadingTimeMetadataToId(
+        const LoadingTimeMetadata &metadata, LoadingTimeMetadataId &id);
+
     bool keyIsValid(InstrumentationKey key) const;
 
     TuningFork_ErrorCode GetOrCreateInstrumentKeyIndex(InstrumentationKey key,
@@ -125,7 +136,7 @@ class TuningForkImpl : public IdProvider {
 
     bool LoadingNextScene() const { return loading_start_ != TimePoint::min(); }
 
-    bool IsLoadingAnnotationId(uint64_t id) const;
+    bool IsLoadingAnnotationId(AnnotationId id) const;
 
     void SwapSessions();
 
