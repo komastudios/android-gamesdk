@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "2c3d76fd_66992705",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-24T14:31:42Z",
+      "side": 1,
+      "message": "Memory isn\u0027t stored for different annotations currently - 15 is the number of possible metrics.",
+      "parentUuid": "c4577014_d6e80fbe",
+      "revId": "2df454327a38c9d37dbac78ee361f0bf4efd60a2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b2b38a68_9dcd702e",
         "filename": "include/tuningfork/tuningfork.h",
         "patchSetId": 2
@@ -50,6 +68,24 @@
       "revId": "2df454327a38c9d37dbac78ee361f0bf4efd60a2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a773b7b9_4917990b",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-24T14:31:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b2b38a68_9dcd702e",
+      "revId": "2df454327a38c9d37dbac78ee361f0bf4efd60a2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -70,6 +106,24 @@
     },
     {
       "key": {
+        "uuid": "b181f8d6_42ef427e",
+        "filename": "src/tuningfork/core/memory_metric.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-24T14:31:42Z",
+      "side": 1,
+      "message": "We need it so that an empty metric can be initialized and then filled in by IdProvider::MetricIdToMemoryMetric",
+      "parentUuid": "ec93a6f1_b6759ce9",
+      "revId": "2df454327a38c9d37dbac78ee361f0bf4efd60a2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "86820ce8_a92e8172",
         "filename": "src/tuningfork/core/session.cpp",
         "patchSetId": 2
@@ -84,6 +138,24 @@
       "revId": "2df454327a38c9d37dbac78ee361f0bf4efd60a2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "de18c89f_ed7d5908",
+        "filename": "src/tuningfork/core/session.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-24T14:31:42Z",
+      "side": 1,
+      "message": "We are lazily assigning the metric data, so ticks (which can happen on different threads) may modify the available_* and metric_data_ containers. We don\u0027t want another thread to be iterating over or modifying one at the same time.",
+      "parentUuid": "86820ce8_a92e8172",
+      "revId": "2df454327a38c9d37dbac78ee361f0bf4efd60a2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
