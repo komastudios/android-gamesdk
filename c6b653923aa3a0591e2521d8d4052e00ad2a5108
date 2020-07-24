@@ -1,0 +1,48 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000004016759",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1371158?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "5e70e62b_32035885",
+          "description": "Change to \"src/tuningfork/core/loadingtime_metric.h\"",
+          "replacements": [
+            {
+              "path": "src/tuningfork/core/loadingtime_metric.h",
+              "range": {
+                "startLine": 51,
+                "startChar": 39,
+                "endLine": 51,
+                "endChar": 46
+              },
+              "replacement": "Metadata"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "e4366597_63b44646",
+        "filename": "src/tuningfork/core/loadingtime_metric.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-07-24T14:33:50Z",
+      "side": 1,
+      "message": "Common typo found: \"Metdata\" -- should it be \"Metadata\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line.",
+      "range": {
+        "startLine": 51,
+        "startChar": 39,
+        "endLine": 51,
+        "endChar": 46
+      },
+      "revId": "c6b653923aa3a0591e2521d8d4052e00ad2a5108",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
