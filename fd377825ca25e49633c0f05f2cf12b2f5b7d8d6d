@@ -33,6 +33,24 @@
       "revId": "fd377825ca25e49633c0f05f2cf12b2f5b7d8d6d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "68720f50_edf96365",
+        "filename": "build.sh",
+        "patchSetId": 12
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-07-24T15:01:33Z",
+      "side": 1,
+      "message": "Yes. This is because the default packageName, if not specified to Gradle, is gamesdk.\nI\u0027m not sure \"fullsdk\" was very useful in the builds, apart from adding an extra \"if\" in the build.sh. The packageName is still useful when doing local builds for the samples (in which case -PpackageName is set to \"local\")",
+      "parentUuid": "f763e806_da78a971",
+      "revId": "fd377825ca25e49633c0f05f2cf12b2f5b7d8d6d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
