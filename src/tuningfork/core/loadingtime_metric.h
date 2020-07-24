@@ -29,12 +29,12 @@ struct LoadingTimeMetric {
 };
 
 struct LoadingTimeMetricData : public MetricData {
-    LoadingTimeMetricData(LoadingTimeMetric metric)
+    LoadingTimeMetricData(MetricId metric_id)
         : MetricData(MetricType()),
-          metric_(metric),
+          metric_id_(metric_id),
           histogram_(Settings::Histogram{}, true),
           duration_(Duration::zero()) {}
-    LoadingTimeMetric metric_;
+    MetricId metric_id_;
     // TODO (willosborn): refactor histogram into separate time-series class
     Histogram<double> histogram_;
     Duration duration_;

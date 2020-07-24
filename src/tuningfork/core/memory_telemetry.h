@@ -32,9 +32,12 @@ class Session;
 class MemoryTelemetry {
    public:
     static void CreateMemoryHistograms(Session& session,
-                                       IMemInfoProvider* mem_info_provider);
+                                       IMemInfoProvider* mem_info_provider,
+                                       uint32_t max_num_histograms);
     static void SetUpAsyncWork(AsyncTelemetry& async,
                                IMemInfoProvider* mem_info_provider);
+
+    static Duration UploadPeriodForMemoryType(MemoryRecordType t);
 };
 
 struct MemInfo {
@@ -107,9 +110,9 @@ class MemoryMetricTask : public RepeatingTask {
     MetricId metric_id_;
 
    public:
-    MemoryMetricTask(IMemInfoProvider* m, MetricId metric_id,
-                     Duration min_interval)
-        : RepeatingTask(min_interval),
+    MemoryMetricTask(IMemInfoProvider* m, MetricId metric_id)
+        : RepeatingTask(MemoryTelemetry::UploadPeriodForMemoryType(
+              (MemoryRecordType)metric_id.detail.memory.record_type)),
           mem_info_provider_(m),
           metric_id_(metric_id) {}
     virtual void DoWork(Session* session) override;
@@ -119,8 +122,7 @@ class MemoryMetricTask : public RepeatingTask {
 class DebugNativeHeapTask : public MemoryMetricTask {
    public:
     DebugNativeHeapTask(IMemInfoProvider* m)
-        : MemoryMetricTask(m, MetricId::Memory(ANDROID_DEBUG_NATIVE_HEAP),
-                           kFastMemoryMetricInterval) {}
+        : MemoryMetricTask(m, MetricId::Memory(ANDROID_DEBUG_NATIVE_HEAP)) {}
     virtual uint64_t Measure() override {
         return mem_info_provider_->GetNativeHeapAllocatedSize();
     }
@@ -129,8 +131,7 @@ class DebugNativeHeapTask : public MemoryMetricTask {
 class OomScoreTask : public MemoryMetricTask {
    public:
     OomScoreTask(IMemInfoProvider* m)
-        : MemoryMetricTask(m, MetricId::Memory(ANDROID_OOM_SCORE),
-                           kSlowMemoryMetricInterval) {}
+        : MemoryMetricTask(m, MetricId::Memory(ANDROID_OOM_SCORE)) {}
     virtual uint64_t Measure() override {
         mem_info_provider_->UpdateOomScore();
         return mem_info_provider_->GetMemInfoOomScore();
@@ -140,8 +141,7 @@ class OomScoreTask : public MemoryMetricTask {
 class MemInfoTask : public MemoryMetricTask {
    public:
     MemInfoTask(IMemInfoProvider* m)
-        : MemoryMetricTask(m, MetricId::Memory(ANDROID_MEMINFO_ACTIVE),
-                           kSlowMemoryMetricInterval) {}
+        : MemoryMetricTask(m, MetricId::Memory(ANDROID_MEMINFO_ACTIVE)) {}
     virtual void DoWork(Session* session) override;
 };
 

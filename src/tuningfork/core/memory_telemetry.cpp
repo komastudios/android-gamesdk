@@ -44,20 +44,21 @@ using memInfoMap = std::unordered_map<std::string, size_t>;
 using namespace std::chrono;
 
 void MemoryTelemetry::CreateMemoryHistograms(
-    Session &session, IMemInfoProvider *mem_info_provider) {
+    Session &session, IMemInfoProvider *mem_info_provider,
+    uint32_t max_num_histograms) {
     Settings::Histogram hist_settings{};
     if (mem_info_provider != nullptr)
         hist_settings.bucket_max = mem_info_provider->GetDeviceMemoryBytes();
     else
         hist_settings.bucket_max = DEFAULT_HIST_END;
     hist_settings.n_buckets = NUM_BUCKETS;
-    session.CreateMemoryHistogram(
-        MemoryMetric(ANDROID_DEBUG_NATIVE_HEAP, kFastMemoryMetricInterval),
-        MetricId::Memory(ANDROID_DEBUG_NATIVE_HEAP), hist_settings);
-    for (int i = ANDROID_OOM_SCORE; i < END; ++i)
+    if (max_num_histograms == 0) {
+        max_num_histograms = MemoryRecordType::COUNT;
+    }
+    for (int i = 0; i < max_num_histograms; ++i) {
         session.CreateMemoryHistogram(
-            MemoryMetric((MemoryRecordType)i, kSlowMemoryMetricInterval),
-            MetricId::Memory(MemoryRecordType(i)), hist_settings);
+            MetricId::Memory(MemoryRecordType::INVALID), hist_settings);
+    }
 }
 
 void MemoryTelemetry::SetUpAsyncWork(AsyncTelemetry &async,
@@ -65,6 +66,15 @@ void MemoryTelemetry::SetUpAsyncWork(AsyncTelemetry &async,
     async.AddTask(std::make_shared<DebugNativeHeapTask>(mem_info_provider));
     async.AddTask(std::make_shared<OomScoreTask>(mem_info_provider));
     async.AddTask(std::make_shared<MemInfoTask>(mem_info_provider));
+}
+
+Duration MemoryTelemetry::UploadPeriodForMemoryType(MemoryRecordType t) {
+    switch (t) {
+        case MemoryRecordType::ANDROID_DEBUG_NATIVE_HEAP:
+            return kFastMemoryMetricInterval;
+        default:
+            return kSlowMemoryMetricInterval;
+    }
 }
 
 void MemoryMetricTask::DoWork(Session *session) {

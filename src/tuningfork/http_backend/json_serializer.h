@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <json11/json11.hpp>
 #include <string>
 
 #include "core/id_provider.h"
@@ -25,12 +26,35 @@ namespace tuningfork {
 
 class JsonSerializer {
    public:
-    static void SerializeEvent(const Session& t, const RequestInfo& device_info,
-                               std::string& evt_json_ser);
+    JsonSerializer(const Session& session, IdProvider* id_provider)
+        : session_(session), id_provider_(id_provider) {}
+    void SerializeEvent(const RequestInfo& device_info,
+                        std::string& evt_json_ser);
 
     static TuningFork_ErrorCode DeserializeAndMerge(
         const std::string& evt_json_ser, IdProvider& id_provider,
         Session& session);
+
+   private:
+    json11::Json::object TelemetryContextJson(const AnnotationId& annotation,
+                                              const RequestInfo& request_info,
+                                              const Duration& duration);
+
+    json11::Json::object TelemetryReportJson(const AnnotationId& annotation,
+                                             bool& empty, Duration& duration);
+
+    json11::Json::object MemoryTelemetryReportJson(bool& empty);
+
+    json11::Json::object TelemetryJson(const AnnotationId& annotation,
+                                       const RequestInfo& request_info,
+                                       Duration& duration, bool& empty);
+
+    json11::Json::object MemoryTelemetryJson(const AnnotationId& annotation,
+                                             const RequestInfo& request_info,
+                                             const Duration& duration,
+                                             bool& empty);
+    const Session& session_;
+    IdProvider* id_provider_;
 };
 
 }  // namespace tuningfork

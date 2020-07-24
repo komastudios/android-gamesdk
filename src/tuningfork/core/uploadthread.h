@@ -29,9 +29,10 @@ class UploadThread : public Runnable {
     IBackend* backend_;
     TuningFork_UploadCallback upload_callback_;
     const TuningFork_Cache* persister_;
+    IdProvider* id_provider_;
 
    public:
-    UploadThread(IBackend* backend);
+    UploadThread(IBackend* backend, IdProvider* id_provider);
     ~UploadThread();
 
     void InitialChecks(Session& session, IdProvider& id_provider,

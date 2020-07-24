@@ -30,6 +30,7 @@ static const Duration kSlowMemoryMetricInterval =
     std::chrono::milliseconds(1000);
 
 struct MemoryMetric {
+    MemoryMetric() = default;
     MemoryMetric(MemoryRecordType memory_record_type, Duration period)
         : memory_record_type_(memory_record_type),
           period_ms_(
@@ -40,11 +41,11 @@ struct MemoryMetric {
 };
 
 struct MemoryMetricData : public MetricData {
-    MemoryMetricData(MemoryMetric metric, const Settings::Histogram& settings)
+    MemoryMetricData(MetricId metric_id, const Settings::Histogram& settings)
         : MetricData(MetricType()),
-          metric_(metric),
+          metric_id_(metric_id),
           histogram_(settings, false) {}
-    MemoryMetric metric_;
+    MetricId metric_id_;
     Histogram<uint64_t> histogram_;
     void Record(uint64_t value) { histogram_.Add(value); }
     virtual void Clear() override { histogram_.Clear(); }
