@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4fffd720_e99ebdf3",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-07-24T12:45:04Z",
+      "side": 1,
+      "message": "Use UPPER_SNAKE_CASE and make the name more descriptive (I suggest something like FRAME_TIME_60FPS_MS).\n\nAlso make it final (or a static final class variable).",
+      "revId": "8f935170a823795d7773ec000574e01ee0f616a9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ff4adae3_3961015e",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-07-24T12:45:04Z",
+      "side": 1,
+      "message": "See above.",
+      "revId": "8f935170a823795d7773ec000574e01ee0f616a9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
