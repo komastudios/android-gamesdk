@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6955670a_96add723",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-07-24T10:54:36Z",
+      "side": 1,
+      "message": "Looks good, have to do another pass to wrap my head around all the changes :) ",
+      "revId": "2df454327a38c9d37dbac78ee361f0bf4efd60a2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c4577014_d6e80fbe",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-07-24T10:54:36Z",
+      "side": 1,
+      "message": "For memory, if a game has 20 levels, we\u0027re already out of possible memory metrics right? Should we bump this number (15) a bit?",
+      "revId": "2df454327a38c9d37dbac78ee361f0bf4efd60a2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b2b38a68_9dcd702e",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-07-24T10:54:36Z",
+      "side": 1,
+      "message": "Line break to fix",
+      "revId": "2df454327a38c9d37dbac78ee361f0bf4efd60a2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ec93a6f1_b6759ce9",
+        "filename": "src/tuningfork/core/memory_metric.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-07-24T10:54:36Z",
+      "side": 1,
+      "message": "question: why is this needed?",
+      "revId": "2df454327a38c9d37dbac78ee361f0bf4efd60a2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "86820ce8_a92e8172",
+        "filename": "src/tuningfork/core/session.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-07-24T10:54:36Z",
+      "side": 1,
+      "message": "In which situation do you think this mutex will be helpful? Is there a risk we\u0027re clearing data at the same time the upload thread is reading them?",
+      "revId": "2df454327a38c9d37dbac78ee361f0bf4efd60a2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
