@@ -45,3 +45,37 @@ struct LoadingTimeMetricData : public MetricData {
 };
 
 }  // namespace tuningfork
+
+namespace std {
+
+// Define hash function for LoadingTimeMetadata
+template <class T>
+inline void hash_combine(std::size_t& s, const T& v) {
+    std::hash<T> h;
+    s ^= h(v) + 0x9e3779b9 + (s << 6) + (s >> 2);
+}
+template <>
+class hash<LoadingTimeMetadata> {
+   public:
+    size_t operator()(const LoadingTimeMetadata& x) const {
+        size_t result = 0;
+        hash_combine(result, x.loadingState);
+        hash_combine(result, x.source);
+        hash_combine(result, x.compressionLevel);
+        hash_combine(result, x.networkConnectivity);
+        hash_combine(result, x.networkTransferSpeed_bps);
+        hash_combine(result, x.networkLatency_ns);
+        return result;
+    }
+};
+}  // namespace std
+
+// Operator== for custom LoadingTimeMetadata struct
+inline bool operator==(const LoadingTimeMetadata& x,
+                       const LoadingTimeMetadata& y) {
+    return x.loadingState == y.loadingState && x.source == y.source &&
+           x.compressionLevel == y.compressionLevel &&
+           x.networkConnectivity == y.networkConnectivity &&
+           x.networkTransferSpeed_bps == y.networkTransferSpeed_bps &&
+           x.networkLatency_ns == y.networkLatency_ns;
+}

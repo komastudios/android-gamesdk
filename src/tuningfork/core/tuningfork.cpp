@@ -63,8 +63,6 @@
 
 namespace tuningfork {
 
-typedef uint64_t AnnotationId;
-
 class ChronoTimeProvider : public ITimeProvider {
    public:
     virtual TimePoint Now() { return std::chrono::steady_clock::now(); }
@@ -229,4 +227,11 @@ TuningFork_ErrorCode EnableMemoryRecording(bool enable) {
         return s_impl->EnableMemoryRecording(enable);
 }
 
+TuningFork_ErrorCode RecordLoadingTime(Duration duration,
+                                       const LoadingTimeMetadata &d) {
+    if (!s_impl)
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
+    else
+        return s_impl->RecordLoadingTime(duration, d);
+}
 }  // namespace tuningfork
