@@ -29,8 +29,9 @@ namespace tuningfork {
 // The instrumentation key identifies a tick point within a frame or a trace
 // segment
 typedef uint16_t InstrumentationKey;
-typedef uint64_t AnnotationId;
+typedef uint32_t AnnotationId;
 typedef uint64_t TraceHandle;
+typedef uint16_t LoadingTimeMetadataId;
 typedef ProtobufSerialization SerializedAnnotation;
 
 typedef std::chrono::steady_clock::time_point TimePoint;

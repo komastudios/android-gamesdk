@@ -163,7 +163,13 @@ typedef enum TuningFork_ErrorCode {
     TUNINGFORK_ERROR_GENERATE_TUNING_PARAMETERS_RESPONSE_NOT_SUCCESS =
         30,  ///< The response from generateTuningParameters was not a success
              ///< code
-
+    TUNINGFORK_ERROR_NO_MORE_SPACE_FOR_LOADING_TIME_DATA =
+        31,  ///< Not enough space for metric data was allocated at start-up:
+             ///< increase Settings.max_num_metrics.loading_time
+    TUNINGFORK_ERROR_NO_MORE_SPACE_FOR_FRAME_TIME_DATA =
+        32,  ///< Not enough space for metric data was allocated at start-up:
+    ///< increase Settings.max_num_metrics.frame_time or check
+    ///< max_num_instrument_keys
     // Error codes 100-150 are reserved for engines integrations.
 } TuningFork_ErrorCode;
 
@@ -514,6 +520,52 @@ TuningFork_ErrorCode TuningFork_setFidelityParameters(
  * initialized.
  */
 TuningFork_ErrorCode TuningFork_enableMemoryRecording(bool enable);
+
+/**
+ * @brief Metadata recorded with a loading time event
+ */
+typedef struct LoadingTimeMetadata {
+    enum LoadingState {
+        UNKNOWN_STATE = 0,
+        // The first time the game is run
+        FIRST_RUN = 1,
+        // App is not backgrounded
+        COLD_START = 2,
+        // App is backgrounded
+        WARM_START = 3,
+        // App is backgrounded, least work needed
+        HOT_START = 4,
+        // Asset loading between levels
+        INTER_LEVEL = 5
+    } loadingState;
+    enum Source {
+        UNKNOWN_SOURCE = 0,
+        MEMORY = 1,
+        APK = 2,
+        DEVICE_STORAGE = 2,
+        EXTERNAL_STORAGE = 3,  // e.g. SD card
+        NETWORK = 4,
+        SHADER_COMPILATION = 5
+    } source;
+    int32_t compressionLevel;  // 0 = no compression, 100 = max compression
+    enum NetworkConnectivity {
+        UNKNOWN = 0,
+        WIFI = 1,
+        MOBILE_NETWORK = 2
+    } networkConnectivity;
+    uint64_t networkTransferSpeed_bps;  // bandwidth in bits per second
+    uint64_t networkLatency_ns;         // latency in nanoseconds
+} LoadingTimeMetadata;
+
+/**
+ * @brief Record a loading time event.
+ * @param time_ns The time taken for loading event in nanoseconds
+ * @param eventMetadata A LoadingTimeMetadata structure
+ * @param eventMetadataSize Size in bytes of the LoadingTimeMetadata structure
+ **/
+TuningFork_ErrorCode TuningFork_recordLoadingTime(
+    uint64_t time_ns, const LoadingTimeMetadata* eventMetadata,
+    uint32_t eventMetadataSize);
 
 #ifdef __cplusplus
 }
