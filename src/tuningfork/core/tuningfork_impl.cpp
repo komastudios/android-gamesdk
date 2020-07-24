@@ -127,7 +127,8 @@ void TuningForkImpl::CreateSessionFrameHistograms(
             if (ikey == 0) {
                 if (limits.loading_time == 0 ||
                     num_loading_created < limits.loading_time) {
-                    session.CreateLoadingTimeSeries(MetricId::LoadingTime(aid));
+                    session.CreateLoadingTimeSeries(
+                        MetricId::LoadingTime(aid, 0));
                     ++num_loading_created;
                 }
             }
@@ -144,6 +145,10 @@ void TuningForkImpl::CreateSessionFrameHistograms(
         }
         ++ikey;
         if (ikey >= max_num_instrumentation_keys) ikey = 0;
+    }
+    // Add extra loading time metrics
+    for (int i = num_loading_created; i < limits.loading_time; ++i) {
+        session.CreateLoadingTimeSeries(MetricId::LoadingTime(0, 0));
     }
 }
 
@@ -166,7 +171,7 @@ MetricId TuningForkImpl::SetCurrentAnnotation(
                 auto dt = time_provider_->Now() - loading_start_;
                 auto h = current_session_->GetData<LoadingTimeMetricData>(
                     MetricId::LoadingTime(
-                        current_annotation_id_.detail.annotation));
+                        current_annotation_id_.detail.annotation, 0));
                 if (h) h->Record(dt);
                 int cnt =
                     (int)std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -180,7 +185,7 @@ MetricId TuningForkImpl::SetCurrentAnnotation(
                 loading_start_ = time_provider_->Now();
             }
         }
-        ALOGV("Set annotation id to %" PRIu64, id);
+        ALOGV("Set annotation id to %" PRIu32, id);
         current_annotation_id_ = MetricId::FrameTime(id, 0);
         return current_annotation_id_;
     }
@@ -291,9 +296,9 @@ TuningFork_ErrorCode TuningForkImpl::EndTrace(TraceHandle h) {
     auto i = live_traces_[h];
     if (i != TimePoint::min()) {
         trace_->endSection();
-        TraceNanos(MetricId{h}, time_provider_->Now() - i);
+        auto err = TraceNanos(MetricId{h}, time_provider_->Now() - i, nullptr);
         live_traces_[h] = TimePoint::min();
-        return TUNINGFORK_ERROR_OK;
+        return err;
     } else {
         return TUNINGFORK_ERROR_INVALID_TRACE_HANDLE;
     }
@@ -309,7 +314,9 @@ TuningFork_ErrorCode TuningForkImpl::FrameTick(InstrumentationKey key) {
     trace_->beginSection("TFTick");
     current_session_->Ping(time_provider_->SystemNow());
     auto t = time_provider_->Now();
-    auto p = TickNanos(id, t);
+    MetricData *p;
+    err = TickNanos(id, t, &p);
+    if (err != TUNINGFORK_ERROR_OK) return err;
     if (p) CheckForSubmit(t, p);
     trace_->endSection();
     return TUNINGFORK_ERROR_OK;
@@ -323,29 +330,37 @@ TuningFork_ErrorCode TuningForkImpl::FrameDeltaTimeNanos(InstrumentationKey key,
     auto err =
         MakeCompoundId(key, current_annotation_id_.detail.annotation, id);
     if (err != TUNINGFORK_ERROR_OK) return err;
-    auto p = TraceNanos(id, dt);
+    MetricData *p;
+    err = TraceNanos(id, dt, &p);
+    if (err != TUNINGFORK_ERROR_OK) return err;
     if (p) CheckForSubmit(time_provider_->Now(), p);
     return TUNINGFORK_ERROR_OK;
 }
 
-MetricData *TuningForkImpl::TickNanos(MetricId compound_id, TimePoint t) {
+TuningFork_ErrorCode TuningForkImpl::TickNanos(MetricId compound_id,
+                                               TimePoint t, MetricData **pp) {
     // Find the appropriate histogram and add this time
     auto p = current_session_->GetData<FrameTimeMetricData>(compound_id);
-    if (p)
+    if (p) {
         p->Tick(t);
-    else
-        ALOGW("Bad id or limit of number of metrics reached");
-    return p;
+        if (pp != nullptr) *pp = p;
+        return TUNINGFORK_ERROR_OK;
+    } else {
+        return TUNINGFORK_ERROR_NO_MORE_SPACE_FOR_FRAME_TIME_DATA;
+    }
 }
 
-MetricData *TuningForkImpl::TraceNanos(MetricId compound_id, Duration dt) {
+TuningFork_ErrorCode TuningForkImpl::TraceNanos(MetricId compound_id,
+                                                Duration dt, MetricData **pp) {
     // Find the appropriate histogram and add this time
     auto h = current_session_->GetData<FrameTimeMetricData>(compound_id);
-    if (h)
+    if (h) {
         h->Record(dt);
-    else
-        ALOGW("Bad id or limit of number of metrics reached");
-    return h;
+        if (pp != nullptr) *pp = h;
+        return TUNINGFORK_ERROR_OK;
+    } else {
+        return TUNINGFORK_ERROR_NO_MORE_SPACE_FOR_FRAME_TIME_DATA;
+    }
 }
 
 void TuningForkImpl::SetUploadCallback(TuningFork_UploadCallback cbk) {
@@ -530,6 +545,36 @@ TuningFork_ErrorCode TuningForkImpl::MetricIdToMemoryMetric(MetricId id,
 TuningFork_ErrorCode TuningForkImpl::AnnotationIdToSerializedAnnotation(
     tuningfork::AnnotationId id, tuningfork::SerializedAnnotation &ser) {
     annotation_util::SerializeAnnotationId(id, ser, annotation_radix_mult_);
+    return TUNINGFORK_ERROR_OK;
+}
+
+TuningFork_ErrorCode TuningForkImpl::LoadingTimeMetadataToId(
+    const LoadingTimeMetadata &metadata, LoadingTimeMetadataId &id) {
+    std::lock_guard<std::mutex> lock(loading_time_metadata_map_mutex_);
+    static LoadingTimeMetadataId loading_time_metadata_next_id =
+        1;  // 0 is implicitly an empty LoadingTimeMetadata struct
+    auto it = loading_time_metadata_map_.find(metadata);
+    if (it != loading_time_metadata_map_.end()) {
+        id = it->second;
+    } else {
+        id = loading_time_metadata_next_id++;
+        loading_time_metadata_map_.insert({metadata, id});
+    }
+    return TUNINGFORK_ERROR_OK;
+}
+
+TuningFork_ErrorCode TuningForkImpl::RecordLoadingTime(
+    Duration duration, const LoadingTimeMetadata &metadata) {
+    LoadingTimeMetadataId metadata_id;
+    LoadingTimeMetadataToId(metadata, metadata_id);
+    // Loading time is stored according to annotation and metadata_id
+    // TODO: (willosborn) restrict possible annotations
+    auto metric_id = MetricId::LoadingTime(
+        current_annotation_id_.detail.annotation, metadata_id);
+    auto data = current_session_->GetData<LoadingTimeMetricData>(metric_id);
+    if (data == nullptr)
+        return TUNINGFORK_ERROR_NO_MORE_SPACE_FOR_LOADING_TIME_DATA;
+    data->Record(duration);
     return TUNINGFORK_ERROR_OK;
 }
 

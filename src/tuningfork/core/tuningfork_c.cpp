@@ -122,6 +122,17 @@ TuningFork_ErrorCode TuningFork_enableMemoryRecording(bool enable) {
     return tf::EnableMemoryRecording(enable);
 }
 
+TuningFork_ErrorCode TuningFork_recordLoadingTime(
+    uint64_t time_ns, const TuningFork_LoadingTimeMetadata *eventMetadata,
+    uint32_t eventMetadataSize) {
+    // Handle LoadingTimeMetadata version changes here (none yet).
+    if (eventMetadata == nullptr ||
+        eventMetadataSize != sizeof(TuningFork_LoadingTimeMetadata))
+        return TUNINGFORK_ERROR_BAD_PARAMETER;
+    return tf::RecordLoadingTime(std::chrono::nanoseconds(time_ns),
+                                 *eventMetadata);
+}
+
 void TUNINGFORK_VERSION_SYMBOL() {
     // Intentionally empty: this function is used to ensure that the proper
     // version of the library is linked against the proper headers.
