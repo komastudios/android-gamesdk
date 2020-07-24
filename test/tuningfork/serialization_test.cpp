@@ -150,7 +150,7 @@ class IdMap : public IdProvider {
 
 TEST(SerializationTest, SerializationWithLoading) {
     Session session{};
-    MetricId loading_time_metric = MetricId::LoadingTime(0);
+    MetricId loading_time_metric = MetricId::LoadingTime(0, 0);
     MetricId frame_time_metric = MetricId::FrameTime(0, 0);
     session.CreateLoadingTimeSeries(loading_time_metric);
     session.CreateFrameTimeHistogram(frame_time_metric,
@@ -174,6 +174,12 @@ TEST(SerializationTest, SerializationWithLoading) {
     auto p2 = session.GetData<FrameTimeMetricData>(frame_time_metric);
     ASSERT_NE(p2, nullptr);
     p2->Record(milliseconds(10));
+
+    // Try to record with some LoadingTimeMetadata - this will fail because we
+    // didn't allocate any extra loading time space.
+    MetricId new_loading_time_metric = MetricId::LoadingTime(0, 1);
+    EXPECT_EQ(session.GetData<LoadingTimeMetricData>(new_loading_time_metric),
+              nullptr);
 
     serializer.SerializeEvent(test_device_info, evt_ser);
     auto report = report_start + single_tick_with_loading + report_end;
