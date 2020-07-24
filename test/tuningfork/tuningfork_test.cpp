@@ -343,7 +343,11 @@ TuningForkLogEvent TestEndToEndWithLimits() {
         // number of annotations.
         ann.set_level(com::google::tuningfork::LEVEL_2);
         tuningfork::SetCurrentAnnotation(Serialize(ann));
-        tuningfork::FrameTick(TFTICK_PACED_FRAME_TIME);
+        auto err = tuningfork::FrameTick(TFTICK_PACED_FRAME_TIME);
+        // The last time around, sessions will have been swapped and this will
+        // tick frame data
+        EXPECT_TRUE(err == TUNINGFORK_ERROR_NO_MORE_SPACE_FOR_FRAME_TIME_DATA ||
+                    i == NTICKS - 1);
     }
     // Wait for the upload thread to complete writing the string
     EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time) ==

@@ -24,7 +24,12 @@
 namespace tuningfork {
 
 struct Metric {
-    enum Type : uint8_t { FRAME_TIME = 0, LOADING_TIME, MEMORY, ERROR = 0xff };
+    enum Type : uint8_t {
+        FRAME_TIME = 0,
+        LOADING_TIME = 1,
+        MEMORY = 2,
+        ERROR = 0xff
+    };
 };
 
 /*
@@ -42,6 +47,7 @@ struct MetricId {
                     uint16_t ikey;
                 } frame_time;
                 struct {
+                    uint16_t metadata;
                 } loading_time;
                 struct {
                     uint8_t record_type;
@@ -59,10 +65,11 @@ struct MetricId {
         id.detail.annotation = aid;
         return id;
     }
-    static MetricId LoadingTime(AnnotationId aid) {
+    static MetricId LoadingTime(AnnotationId aid, LoadingTimeMetadataId mid) {
         MetricId id{0};
         id.detail.type = Metric::LOADING_TIME;
         id.detail.annotation = aid;
+        id.detail.loading_time.metadata = mid;
         return id;
     }
     static MetricId Memory(MemoryRecordType record_type) {
