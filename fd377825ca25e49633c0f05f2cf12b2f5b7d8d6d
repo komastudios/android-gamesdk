@@ -51,6 +51,24 @@
       "revId": "fd377825ca25e49633c0f05f2cf12b2f5b7d8d6d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2ef45639_85d93081",
+        "filename": "build.sh",
+        "patchSetId": 12
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-07-24T15:41:17Z",
+      "side": 1,
+      "message": "As discussed, restored back the output to fullsdk to avoid breaking the pipelines.",
+      "parentUuid": "68720f50_edf96365",
+      "revId": "fd377825ca25e49633c0f05f2cf12b2f5b7d8d6d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
