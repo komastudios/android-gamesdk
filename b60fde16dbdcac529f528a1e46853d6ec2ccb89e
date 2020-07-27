@@ -1,0 +1,176 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fe28f596_a6522948",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ErrorType.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-27T10:14:59Z",
+      "side": 1,
+      "message": "long line",
+      "range": {
+        "startLine": 51,
+        "startChar": 2,
+        "endLine": 51,
+        "endChar": 106
+      },
+      "revId": "b60fde16dbdcac529f528a1e46853d6ec2ccb89e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "23534053_3524feb9",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-27T10:14:59Z",
+      "side": 1,
+      "message": "This could be simplified with inlining e.g \"boolean cover60fps \u003d min \u003c 60fps \u0026\u0026 max \u003e 60fps\" and same for cover30/coverNegative. For coverNegative it is even could be \nif(min \u003c 0) {\n  add warning \n}\nwithout introducing one more variable (you have same for \"Bucket_Min has to be less than Bucket_Max\" check)",
+      "range": {
+        "startLine": 92,
+        "startChar": 21,
+        "endLine": 92,
+        "endChar": 47
+      },
+      "revId": "b60fde16dbdcac529f528a1e46853d6ec2ccb89e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "091ac511_e59bae65",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-27T10:14:59Z",
+      "side": 1,
+      "message": "Do you want to return here? It will check only first histogram, not all of them.\n(and same below)",
+      "range": {
+        "startLine": 100,
+        "startChar": 0,
+        "endLine": 100,
+        "endChar": 15
+      },
+      "revId": "b60fde16dbdcac529f528a1e46853d6ec2ccb89e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ee1d59fc_f71a243d",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-27T10:14:59Z",
+      "side": 1,
+      "message": "long lines",
+      "range": {
+        "startLine": 104,
+        "startChar": 5,
+        "endLine": 105,
+        "endChar": 134
+      },
+      "revId": "b60fde16dbdcac529f528a1e46853d6ec2ccb89e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b656aa2c_a6b01d39",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-27T10:14:59Z",
+      "side": 1,
+      "message": "long line",
+      "revId": "b60fde16dbdcac529f528a1e46853d6ec2ccb89e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "31966a20_548aeaf0",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-27T10:14:59Z",
+      "side": 1,
+      "message": "long line",
+      "revId": "b60fde16dbdcac529f528a1e46853d6ec2ccb89e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7a772f99_3dc523f8",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-27T10:14:59Z",
+      "side": 1,
+      "message": "long lines",
+      "range": {
+        "startLine": 138,
+        "startChar": 5,
+        "endLine": 139,
+        "endChar": 115
+      },
+      "revId": "b60fde16dbdcac529f528a1e46853d6ec2ccb89e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b6ce2715_d5a22793",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-27T10:14:59Z",
+      "side": 1,
+      "message": "long lines",
+      "range": {
+        "startLine": 144,
+        "startChar": 7,
+        "endLine": 144,
+        "endChar": 103
+      },
+      "revId": "b60fde16dbdcac529f528a1e46853d6ec2ccb89e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
