@@ -33,6 +33,24 @@
       "revId": "f3c256fcf80750cbb1ed3cbbf2ebc8766222fd4b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f598e4c8_7261bddb",
+        "filename": "src/tuningfork/core/tuningfork_impl.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-07-27T13:08:54Z",
+      "side": 1,
+      "message": "ppdata\u003d\u003dnullptr is valid: the data is not returned. I\u0027ve added a comment.",
+      "parentUuid": "ce836dea_f84fbf4c",
+      "revId": "f3c256fcf80750cbb1ed3cbbf2ebc8766222fd4b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
