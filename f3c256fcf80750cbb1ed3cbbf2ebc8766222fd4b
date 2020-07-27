@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "159bfae8_0e3f51ea",
+        "filename": "src/tuningfork/core/common.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-07-27T13:02:16Z",
+      "side": 1,
+      "message": "This change is a left over from a previous CL because in the MetricId, annotation is already 32 bits right?",
+      "revId": "f3c256fcf80750cbb1ed3cbbf2ebc8766222fd4b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ce836dea_f84fbf4c",
         "filename": "src/tuningfork/core/tuningfork_impl.h",
         "patchSetId": 3
