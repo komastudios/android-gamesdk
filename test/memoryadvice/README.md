@@ -66,6 +66,11 @@ written primarily in C/C++) but is itself written in Java. (As long as Android
 platform calls are needed, such as those based on ActivityManager, some Java
 components will be required in the library.)
 
+Currently the API will not work effectively for applications that run in 32 bit
+mode on devices that have 64 bit mode available (in other words where 32 bit
+mode is "forced"). This is because the stress tests that calibrate the library
+are run in 64 bit mode wherever available.
+
 # API capabilities
 
 The API can be called at any time to discover:
