@@ -2,11 +2,11 @@
 # Gamesdk build driver script
 # Usage:
 # ./build.sh
-#   Builds the gamesdk with Swappy only
+#   Builds the gamesdk with Swappy and Tuning Fork (no samples)
 # ./build.sh samples
 #   Builds the gamesdk with Swappy and the Swappy samples
 # ./build.sh full
-#   Builds the gamesdk with Tuning Fork and all samples
+#   Builds the gamesdk with Swappy, Tuning Fork and all samples
 
 set -e # Exit on error
 
@@ -38,8 +38,8 @@ then
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir"
 else
     package_name=gamesdk
-    ./gradlew packageZip -Plibraries=swappy -PincludeSampleSources -PdistPath="$dist_dir"
-    ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir"
+    ./gradlew packageZip -Plibraries=swappy,tuningfork -PincludeSampleSources -PdistPath="$dist_dir"
+    ./gradlew packageMavenZip -Plibraries=swappy,tuningfork -PdistPath="$dist_dir"
 fi
 
 # Calculate hash of the zip file
