@@ -59,10 +59,10 @@ class hash<tuningfork::LoadingTimeMetadata> {
    public:
     size_t operator()(const tuningfork::LoadingTimeMetadata& x) const {
         size_t result = 0;
-        hash_combine(result, x.loadingState);
-        hash_combine(result, x.source);
+        hash_combine(result, (uint64_t)x.loadingState);
+        hash_combine(result, (uint64_t)x.source);
         hash_combine(result, x.compressionLevel);
-        hash_combine(result, x.networkConnectivity);
+        hash_combine(result, (uint64_t)x.networkConnectivity);
         hash_combine(result, x.networkTransferSpeed_bps);
         hash_combine(result, x.networkLatency_ns);
         return result;
