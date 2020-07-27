@@ -283,10 +283,16 @@ TuningFork_ErrorCode TuningForkImpl::StartTrace(InstrumentationKey key,
     auto err =
         MakeCompoundId(key, current_annotation_id_.detail.annotation, id);
     if (err != TUNINGFORK_ERROR_OK) return err;
-    handle = id.base;
+    handle = id.detail.annotation *
+                 settings_.aggregation_strategy.max_instrumentation_keys +
+             id.detail.frame_time.ikey;
     trace_->beginSection("TFTrace");
-    live_traces_[handle] = time_provider_->Now();
-    return TUNINGFORK_ERROR_OK;
+    if (handle < live_traces_.size()) {
+        live_traces_[handle] = time_provider_->Now();
+        return TUNINGFORK_ERROR_OK;
+    } else {
+        return TUNINGFORK_ERROR_INVALID_ANNOTATION;
+    }
 }
 
 TuningFork_ErrorCode TuningForkImpl::EndTrace(TraceHandle h) {
