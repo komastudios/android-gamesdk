@@ -16,6 +16,144 @@
       "revId": "844265e0ff786f85d3582257fa5504d4865420ac",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "93baf09d_8ffab3f2",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/DeveloperTuningforkParser.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-27T12:01:38Z",
+      "side": 1,
+      "message": "Instead of passing list to function, you can return content in the method e.g \n   private ByteString encodeBinary(...)\nand same for other places (with DynamicMessage).",
+      "range": {
+        "startLine": 151,
+        "startChar": 0,
+        "endLine": 151,
+        "endChar": 67
+      },
+      "revId": "844265e0ff786f85d3582257fa5504d4865420ac",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4f9ee480_17e4b24f",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-27T12:01:38Z",
+      "side": 1,
+      "message": "you can iterate \n  for(Message message : fidelityMessages)\n     for(Field field : fields)",
+      "range": {
+        "startLine": 204,
+        "startChar": 9,
+        "endLine": 204,
+        "endChar": 97
+      },
+      "revId": "844265e0ff786f85d3582257fa5504d4865420ac",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e03dfb9c_c69b163f",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 218,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-27T12:01:38Z",
+      "side": 1,
+      "message": "You can use lambdas for \"in order\" checks / zero checks.\n\nSomething like \nboolean isIncreasing \u003d IntStream.range(0, message.size() - 1).allMatch(field for i message  \u003c\u003d field for i + 1 message);\n\nand for zeros:\n\nboolean hasZero \u003d messages.stream().flatMap(message -\u003e message.getFields()).filter(field is enum).anyMatch(if enum value is 0);",
+      "range": {
+        "startLine": 218,
+        "startChar": 0,
+        "endLine": 218,
+        "endChar": 0
+      },
+      "revId": "844265e0ff786f85d3582257fa5504d4865420ac",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "43532f10_1f6bf9d5",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-27T12:01:38Z",
+      "side": 1,
+      "message": "Do you need \"validationLoop\" here?",
+      "range": {
+        "startLine": 221,
+        "startChar": 16,
+        "endLine": 221,
+        "endChar": 30
+      },
+      "revId": "844265e0ff786f85d3582257fa5504d4865420ac",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2b0be03d_ba66043d",
+        "filename": "src/tuningfork/tools/validation/src/test/java/com/google/tuningfork/validation/DeveloperTuningforkParserTest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-27T12:01:38Z",
+      "side": 1,
+      "message": "unused imports",
+      "range": {
+        "startLine": 24,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 42
+      },
+      "revId": "844265e0ff786f85d3582257fa5504d4865420ac",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5aecb604_56f5aacb",
+        "filename": "src/tuningfork/tools/validation/src/test/java/com/google/tuningfork/validation/ValidationUtilTest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 399,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-07-27T12:01:38Z",
+      "side": 1,
+      "message": "Can you create DynamicMessage directly from textproto? 🤔",
+      "range": {
+        "startLine": 399,
+        "startChar": 0,
+        "endLine": 399,
+        "endChar": 70
+      },
+      "revId": "844265e0ff786f85d3582257fa5504d4865420ac",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
