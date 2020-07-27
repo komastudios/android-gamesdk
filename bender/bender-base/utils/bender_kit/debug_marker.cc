@@ -16,7 +16,7 @@
 #include "bender_kit.h"
 
 //Implementation based entirely on:
-//https://github.com/SaschaWillems/Vulkan/blob/master/examples/debugmarker/debugmarker.cpp
+//https://github.com/SaschaWillems/Vulkan/blob/default/examples/debugmarker/debugmarker.cpp
 namespace debugmarker {
 bool active = false;
 bool extension_present = false;
