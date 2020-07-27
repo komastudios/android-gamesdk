@@ -26,7 +26,7 @@ namespace annotation_util {
 typedef uint64_t AnnotationId;
 typedef std::vector<uint8_t> SerializedAnnotation;
 constexpr int kKeyError = -1;
-constexpr AnnotationId kAnnotationError = -1;
+constexpr AnnotationId kAnnotationError = 0xffffffff;
 constexpr uint64_t kStreamError = -1;
 
 enum ErrorCode { NO_ERROR = 0, BAD_SERIALIZATION = 1, BAD_INDEX = 2 };

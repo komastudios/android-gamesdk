@@ -33,6 +33,8 @@
 
 namespace tuningfork {
 
+typedef TuningFork_LoadingTimeMetadata LoadingTimeMetadata;
+
 // If no request_info is passed, the info for this device and game are used.
 // If no backend is passed, the default backend, which uploads to the google
 // http endpoint is used. If no timeProvider is passed,
@@ -92,5 +94,9 @@ TuningFork_ErrorCode SetFidelityParameters(const ProtobufSerialization& params);
 
 // Enable or disable memory telemetry recording.
 TuningFork_ErrorCode EnableMemoryRecording(bool enable);
+
+// Record a loading time event
+TuningFork_ErrorCode RecordLoadingTime(Duration duration,
+                                       const LoadingTimeMetadata& d);
 
 }  // namespace tuningfork
