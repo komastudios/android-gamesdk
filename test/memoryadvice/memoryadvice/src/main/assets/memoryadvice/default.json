@@ -17,7 +17,12 @@
         "CommitLimit": true,
         "HighTotal": true,
         "LowTotal": true,
-        "MemTotal": true
+        "MemTotal": true,
+        "VmallocTotal": true
+      },
+      "status": {
+        "VmExe": true,
+        "VmStk": true
       }
     },
     "variable": {
