@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7586779a_bbf3ec40",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1572660
+      },
+      "writtenOn": "2020-07-28T18:06:20Z",
+      "side": 1,
+      "message": "I believe I copy/pasted the whole message to the commit message when I did it, but the hashtag was automatically absorbed into the CL hashtags; at the time I found it a bit odd, but since it\u0027s under the CL hashtags I think it\u0027ll still get recognized.",
+      "parentUuid": "547442a5_49267398",
+      "range": {
+        "startLine": 6,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 13
+      },
+      "revId": "a7c41e1740d908fd854dc693b9563949a673bdac",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1e704d99_61044c2d",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 2
