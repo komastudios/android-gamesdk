@@ -1,0 +1,159 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f8c50868_d89f2052",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-07-28T20:23:05Z",
+      "side": 1,
+      "message": "More notes. I\u0027d say go for it and check in. The only thing I\u0027d add is a note above the font class telling people where to find a compatible font file generator.",
+      "revId": "8daf0ef89d12b8d46804b7da92604cda3f2ddeaa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9f5c4426_c6a080f3",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 12
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-07-28T20:23:05Z",
+      "side": 1,
+      "message": "Not a fix that you need to make, just a note for myself for the future more than anything.\n\nAt some point in the future we need to move to using std::string_view instead of std::string for our functions that take strings and inspect them, but don\u0027t modify them.\n\nWhich would make this:\n\ninline constexpr std::string kFontSDFPath \u003d \"blah\" etc.\n\nAnd once we can all use C++ 20, we might go backwards once more to:\n\nconstexpr std::string kFontSDFPath...\n\nAh, the joys of an evolving language.",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 58
+      },
+      "revId": "8daf0ef89d12b8d46804b7da92604cda3f2ddeaa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5c75f413_507b7f86",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 12
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-07-28T20:23:05Z",
+      "side": 1,
+      "message": "Apparently we\u0027re supposed to use something like:\n```\ninline constexpr size_t kFontNumQuadIndices \u003d 6;\n```\n... for constants in header files that are meant to compile into the code rather than be an actual thing in memory. (Inside functions, this isn\u0027t a problem - the inline is implied. Which feels like a language hole to me).",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 41
+      },
+      "revId": "8daf0ef89d12b8d46804b7da92604cda3f2ddeaa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8401c1d8_31fd7e7b",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 12
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-07-28T20:23:05Z",
+      "side": 1,
+      "message": "I might add some documentation here along the lines of:\n\n// Stateless font-rendering, using SDF fonts.\n// To generate SDF fonts, use: ... and put a link here of whatever font format you\u0027re using.",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 12
+      },
+      "revId": "8daf0ef89d12b8d46804b7da92604cda3f2ddeaa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "03724412_5f564850",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 12
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-07-28T20:23:05Z",
+      "side": 1,
+      "message": "Might need to reconcile the androidAppCtx parameter here with Omar\u0027s windows build.",
+      "range": {
+        "startLine": 23,
+        "startChar": 3,
+        "endLine": 23,
+        "endChar": 56
+      },
+      "revId": "8daf0ef89d12b8d46804b7da92604cda3f2ddeaa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f606cd2b_1e81be1a",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 12
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-07-28T20:23:05Z",
+      "side": 1,
+      "message": "Not a change, just information:\n\nIn a release-optimized build of a game, what you might do here instead is transcode your text so that it\u0027s stored as glyph indices instead of raw text, avoiding the hash lookup. (And those indices themselves would be sorted by frequency of use, although there\u0027s an argument to be made for some kind of longest-common subsequence analysis as well as pure frequency).\n\nDuring development, the needs of debugging outweight the cost of the lookup.\n\nYou can help amortize the cost by having a custom allocator which keeps all of the hash entries together in the cache, and also by packing your Font::map_character entries into a linear array, and storing only a uint16 value in the map - which is the index into the array. That way the lookup has a better chance of being in the cache for longer, and you get more hits grouped together.\n\nLet me know if you want me to expand on this some time - it\u0027s a fun topic 😊 (And if you know all this already, my apologies :D )",
+      "range": {
+        "startLine": 65,
+        "startChar": 4,
+        "endLine": 65,
+        "endChar": 59
+      },
+      "revId": "8daf0ef89d12b8d46804b7da92604cda3f2ddeaa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d2e5d23e_c3937a4f",
+        "filename": "bender/bender-base/app/src/main/shaders/sdf.vert",
+        "patchSetId": 12
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-07-28T20:23:05Z",
+      "side": 1,
+      "message": "Bonus points for this syntax, which I didn\u0027t know was a thing :)",
+      "range": {
+        "startLine": 61,
+        "startChar": 3,
+        "endLine": 61,
+        "endChar": 13
+      },
+      "revId": "8daf0ef89d12b8d46804b7da92604cda3f2ddeaa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}

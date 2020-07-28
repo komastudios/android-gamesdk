@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "145cf6ae_b1754d83",
+        "filename": "bender/bender-base/app/src/main/jni/font.cc",
+        "patchSetId": 11
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-07-28T20:23:05Z",
+      "side": 1,
+      "message": "That should be correct. Has to be a mismatch in how the shader does the lookup. \n\nRather than spend time chasing this down, check in version without this ^ change, and I\u0027ll put it on my task list to poke at later. I think what you\u0027re running into is that strings are effectively big-endian, but the CPU/GPU are little-endian in Android.",
+      "parentUuid": "949cb87d_fcc21ee4",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 5
+      },
+      "revId": "a92206a1aa09f6dc66a03708cbed5148dba4ad9c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d31923bc_c4be3016",
         "filename": "bender/bender-base/app/src/main/shaders/sdf.frag",
         "patchSetId": 11
