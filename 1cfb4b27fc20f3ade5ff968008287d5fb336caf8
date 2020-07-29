@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e246fb6e_10d7ee2a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-07-29T16:30:20Z",
+      "side": 1,
+      "message": "Just color commentary on this one. Er. Literally! :D",
+      "revId": "1cfb4b27fc20f3ade5ff968008287d5fb336caf8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}

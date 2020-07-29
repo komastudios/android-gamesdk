@@ -73,6 +73,24 @@
     },
     {
       "key": {
+        "uuid": "cc7743c6_793894b4",
+        "filename": "bender/bender-base/app/src/main/jni/material.cc",
+        "patchSetId": 8
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-07-29T16:30:20Z",
+      "side": 1,
+      "message": "SRGB is really for artist colors. So default color textures. It\u0027s also for final output framebuffers (HDR throws a wrench into things and a bit of complexity, but in most cases, SRGB is your output).\n\nThe exceptions are: \n- Intermediate, high-precision render targets using \u003e8-bits per channel. (Worth it in some cases, but usually only for HDR).\n- Normal maps/LUTs/PBR metallic/rough maps, specular maps, etc.\n- GBuffers, things like that.\n\nEverything else is SRGB. \n\nBut here\u0027s the thing: There\u0027s nothing stopping you from using SRGB data where you need to use Linear, or vice-versa - the sampling hardware will take care of it for you and do the (unnecessary?) work. When dealing with missing textures I\u0027m not sure it matters if it\u0027s darker or lighter than it needs to be. :) \n\nWe could push for better \"type safety\" for use of SRGB/Linear in different scenarios, but really we just need anything to make sure we can keep pushing forward when the assets are broken, but we don\u0027t care about those specific assets being broken right now.\n\nRealistically, this is the kind of thing best handled by putting any working dummy texture in there, but emitting something to the log that says \"Hey, this texture is completely missing! Fix it!\" for the artists.",
+      "parentUuid": "b936b97d_47d3e261",
+      "revId": "61a844ef3ad669b789afcae00499b42ffdbc9e9d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d37bf7fc_8e167111",
         "filename": "bender/bender-base/app/src/main/jni/renderer.h",
         "patchSetId": 8
