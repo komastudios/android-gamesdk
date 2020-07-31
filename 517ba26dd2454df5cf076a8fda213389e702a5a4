@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3f3ea52f_f25431db",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-07-31T14:24:05Z",
+      "side": 1,
+      "message": "Presubmit seems to have failed due to infra error. Retrying",
+      "revId": "517ba26dd2454df5cf076a8fda213389e702a5a4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
