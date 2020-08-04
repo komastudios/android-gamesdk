@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-
 #pragma once
 
-#include "Thread.h"
+#include <jni.h>
 
 #include <mutex>
+
+#include "SwappyDisplayManager.h"
+#include "Thread.h"
 
 namespace swappy {
 
 class ChoreographerThread {
-public:
+   public:
     enum class Type {
         // choreographer ticks are provided by application
         App,
@@ -35,13 +37,13 @@ public:
 
     static const char* CT_CLASS;
     static const JNINativeMethod CTNativeMethods[];
-    static constexpr int  CTNativeMethodsSize = 1;
-
+    static constexpr int CTNativeMethodsSize = 1;
 
     using Callback = std::function<void()>;
 
     static std::unique_ptr<ChoreographerThread> createChoreographerThread(
-            Type type, JavaVM *vm, jobject jactivity, Callback onChoreographer, Callback onRefreshRateChanged, int sdkVersion);
+        Type type, JavaVM* vm, jobject jactivity, Callback onChoreographer,
+        Callback onRefreshRateChanged, SdkVersion sdkVersion);
 
     virtual ~ChoreographerThread() = 0;
 
@@ -49,7 +51,7 @@ public:
 
     bool isInitialized() { return mInitialized; }
 
-protected:
+   protected:
     ChoreographerThread(Callback onChoreographer);
     virtual void scheduleNextFrameCallback() REQUIRES(mWaitingMutex) = 0;
     virtual void onChoreographer();
@@ -60,7 +62,6 @@ protected:
     bool mInitialized = false;
 
     static constexpr int MAX_CALLBACKS_BEFORE_IDLE = 10;
-
 };
 
-} // namespace swappy
+}  // namespace swappy

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-#include <set>
 #include <algorithm>
-#include <string>
+#include <set>
 #include <sstream>
+#include <string>
 
 #include "gtest/gtest.h"
 
 #define LOG_TAG "SwappyTestMain"
-#include "../../samples/common/include/Log.h"
-
 #include <jni.h>
+
+#include "../../samples/common/include/Log.h"
 
 using ::testing::EmptyTestEventListener;
 using ::testing::InitGoogleTest;
@@ -45,11 +45,13 @@ class GTestRecorder : public EmptyTestEventListener {
     std::set<std::string> tests_started;
     std::set<std::string> tests_completed;
     std::set<std::string> tests_failed;
-    std::vector<std::string> success_invocations; // Only from SUCCESS macros
-    std::vector<std::string> failed_invocations; // From any failed EXPECT or ASSERT
+    std::vector<std::string> success_invocations;  // Only from SUCCESS macros
+    std::vector<std::string>
+        failed_invocations;  // From any failed EXPECT or ASSERT
     bool overall_success;
     std::string current_test;
- private:
+
+   private:
     // Called before any test activity starts.
     void OnTestProgramStart(const UnitTest& /* unit_test */) override {
         overall_success = false;
@@ -62,7 +64,8 @@ class GTestRecorder : public EmptyTestEventListener {
 
     // Called before a test starts.
     void OnTestStart(const TestInfo& test_info) override {
-        current_test = std::string(test_info.test_case_name()) + "." + test_info.name();
+        current_test =
+            std::string(test_info.test_case_name()) + "." + test_info.name();
         tests_started.insert(current_test);
         ALOGI("TestStarted: %s", current_test.c_str());
     }
@@ -70,12 +73,14 @@ class GTestRecorder : public EmptyTestEventListener {
     // Called after a failed assertion or a SUCCEED() invocation.
     void OnTestPartResult(const TestPartResult& test_part_result) override {
         std::stringstream record;
-        record << current_test << " " << test_part_result.file_name() << ":" << test_part_result.line_number() << '\n' <<
-               test_part_result.summary() << '\n';
+        record << current_test << " " << test_part_result.file_name() << ":"
+               << test_part_result.line_number() << '\n'
+               << test_part_result.summary() << '\n';
         if (test_part_result.failed()) {
             failed_invocations.push_back(record.str());
             tests_failed.insert(current_test);
-            ALOGI("TestFailed: %s\n%s", current_test.c_str(), record.str().c_str());
+            ALOGI("TestFailed: %s\n%s", current_test.c_str(),
+                  record.str().c_str());
         } else {
             success_invocations.push_back(record.str());
         }
@@ -83,33 +88,40 @@ class GTestRecorder : public EmptyTestEventListener {
 
     // Called after a test ends.
     void OnTestEnd(const TestInfo& test_info) override {
-        tests_completed.insert(std::string(test_info.test_case_name()) + "." + test_info.name());
+        tests_completed.insert(std::string(test_info.test_case_name()) + "." +
+                               test_info.name());
     }
- public:
+
+   public:
     std::string GetResult() const {
         std::stringstream result;
-        result << "TESTS " << (overall_success ? "SUCCEEDED" : "FAILED") << '\n';
+        result << "TESTS " << (overall_success ? "SUCCEEDED" : "FAILED")
+               << '\n';
         result << "\nTests that ran to completion:\n";
-        for(auto s: tests_completed) { result << s << '\n'; }
+        for (auto s : tests_completed) {
+            result << s << '\n';
+        }
         std::set<std::string> not_completed;
         std::set_difference(tests_started.begin(), tests_started.end(),
-            tests_completed.begin(), tests_completed.end(),
-            std::inserter(not_completed, not_completed.end()));
-        if (not_completed.size()>0) {
+                            tests_completed.begin(), tests_completed.end(),
+                            std::inserter(not_completed, not_completed.end()));
+        if (not_completed.size() > 0) {
             result << "\nTests that started but failed to complete:\n";
-            for (auto s: not_completed) { result << s << '\n'; }
+            for (auto s : not_completed) {
+                result << s << '\n';
+            }
         }
         if (!tests_failed.empty()) {
             result << "\nFailed tests:\n";
-            for (auto s: tests_failed) result << s << '\n';
+            for (auto s : tests_failed) result << s << '\n';
         }
         if (!success_invocations.empty()) {
             result << "\nExplicitly recorded successes:\n";
-            for (auto s: success_invocations) result << s << '\n';
+            for (auto s : success_invocations) result << s << '\n';
         }
         if (!failed_invocations.empty()) {
             result << "\nFailure details:\n";
-            for (auto s: failed_invocations) result << s << '\n';
+            for (auto s : failed_invocations) result << s << '\n';
         }
         return result.str();
     }
@@ -117,18 +129,18 @@ class GTestRecorder : public EmptyTestEventListener {
         std::stringstream str;
         str << "Running:\n" << current_test << '\n';
         str << "\nCompleted:\n";
-        for(auto& i: tests_completed) {
+        for (auto& i : tests_completed) {
             str << i << '\n';
         }
         str << "\nFailed:\n";
-        for(auto& i: failed_invocations) {
+        for (auto& i : failed_invocations) {
             str << i << '\n';
         }
         return str.str();
     }
 };  // class GTestRecorder
 
-}
+}  // namespace
 
 static std::shared_ptr<GTestRecorder> s_recorder;
 
@@ -142,7 +154,7 @@ extern "C" size_t test_summary(char* result, size_t len) {
         return 0;
 }
 
-extern "C" int shared_main(int argc, char * argv[], JNIEnv* env, jobject context,
+extern "C" int shared_main(int argc, char* argv[], JNIEnv* env, jobject context,
                            std::string& messages) {
     ::testing::InitGoogleTest(&argc, argv);
 

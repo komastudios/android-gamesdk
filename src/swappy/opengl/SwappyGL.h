@@ -17,15 +17,15 @@
 #pragma once
 
 #include <jni.h>
+
 #include <chrono>
 #include <mutex>
 
-#include "swappy/swappyGL.h"
-#include "swappy/swappyGL_extra.h"
-
-#include "SwappyCommon.h"
 #include "EGL.h"
 #include "FrameStatistics.h"
+#include "SwappyCommon.h"
+#include "swappy/swappyGL.h"
+#include "swappy/swappyGL_extra.h"
 
 namespace swappy {
 
@@ -35,15 +35,17 @@ using EGLSurface = void *;
 using namespace std::chrono_literals;
 
 class SwappyGL {
-  private:
-    // Allows construction with std::unique_ptr from a static method, but disallows construction
-    // outside of the class since no one else can construct a ConstructorTag
+   private:
+    // Allows construction with std::unique_ptr from a static method, but
+    // disallows construction outside of the class since no one else can
+    // construct a ConstructorTag
     struct ConstructorTag {};
-  public:
+
+   public:
     SwappyGL(JNIEnv *env, jobject jactivity, ConstructorTag);
     static bool init(JNIEnv *env, jobject jactivity);
 
-    static bool setWindow(ANativeWindow* window);
+    static bool setWindow(ANativeWindow *window);
 
     static void onChoreographer(int64_t frameTimeNanos);
 
@@ -69,7 +71,7 @@ class SwappyGL {
     static void setFenceTimeout(std::chrono::nanoseconds t);
     static std::chrono::nanoseconds getFenceTimeout();
 
-private:
+   private:
     static SwappyGL *getInstance();
 
     bool enabled() const { return mEnableSwappy; }
@@ -80,11 +82,12 @@ private:
 
     bool lastFrameIsComplete(EGLDisplay display);
 
-    // Destroys the previous sync fence (if any) and creates a new one for this frame
+    // Destroys the previous sync fence (if any) and creates a new one for this
+    // frame
     void resetSyncFence(EGLDisplay display);
 
-    // Computes the desired presentation time based on the swap interval and sets it
-    // using eglPresentationTimeANDROID
+    // Computes the desired presentation time based on the swap interval and
+    // sets it using eglPresentationTimeANDROID
     bool setPresentationTime(EGLDisplay display, EGLSurface surface);
 
     bool mEnableSwappy = true;
@@ -100,4 +103,4 @@ private:
     SwappyCommon mCommonBase;
 };
 
-} //namespace swappy
+}  // namespace swappy

@@ -23,37 +23,32 @@
 // Enable thread safety attributes only with clang.
 // The attributes can be safely erased when compiling with other compilers.
 #if defined(__clang__) && (!defined(SWIG))
-    #define THREAD_ANNOTATION_ATTRIBUTE__(x)   __attribute__((x))
+#define THREAD_ANNOTATION_ATTRIBUTE__(x) __attribute__((x))
 #else
-    #define THREAD_ANNOTATION_ATTRIBUTE__(x)   // no-op
+#define THREAD_ANNOTATION_ATTRIBUTE__(x)  // no-op
 #endif
 
 #if !defined GAMESDK_THREAD_CHECKS
-    #define GAMESDK_THREAD_CHECKS 1
+#define GAMESDK_THREAD_CHECKS 1
 #endif
 
 #if GAMESDK_THREAD_CHECKS
-    #define GUARDED_BY(x)                           \
-        THREAD_ANNOTATION_ATTRIBUTE__(guarded_by(x))
+#define GUARDED_BY(x) THREAD_ANNOTATION_ATTRIBUTE__(guarded_by(x))
 
-    #define REQUIRES(...) \
-        THREAD_ANNOTATION_ATTRIBUTE__(requires_capability(__VA_ARGS__))
+#define REQUIRES(...) \
+    THREAD_ANNOTATION_ATTRIBUTE__(requires_capability(__VA_ARGS__))
 
-    #define NO_THREAD_SAFETY_ANALYSIS \
-        THREAD_ANNOTATION_ATTRIBUTE__(no_thread_safety_analysis)
+#define NO_THREAD_SAFETY_ANALYSIS \
+    THREAD_ANNOTATION_ATTRIBUTE__(no_thread_safety_analysis)
 #else
-    #define GUARDED_BY(x)
-    #define REQUIRES(...)
-    #define NO_THREAD_SAFETY_ANALYSIS
+#define GUARDED_BY(x)
+#define REQUIRES(...)
+#define NO_THREAD_SAFETY_ANALYSIS
 #endif
 
 namespace swappy {
 
-enum class Affinity {
-    None,
-    Even,
-    Odd
-};
+enum class Affinity { None, Even, Odd };
 
 int32_t getNumCpus();
 void setAffinity(int32_t cpu);
@@ -63,7 +58,8 @@ struct ThreadImpl;
 
 class Thread {
     std::unique_ptr<ThreadImpl> impl_;
-  public:
+
+   public:
     Thread() noexcept;
     Thread(std::function<void()>&& fn) noexcept;
     Thread(Thread&& rhs) noexcept;
@@ -75,4 +71,4 @@ class Thread {
     bool joinable();
 };
 
-} // namespace swappy {
+}  // namespace swappy

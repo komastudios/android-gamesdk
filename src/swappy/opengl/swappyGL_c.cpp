@@ -16,13 +16,11 @@
 
 // API entry points
 
-#include "swappy/swappyGL.h"
-
-#include "SwappyGL.h"
+#include <chrono>
 
 #include "Settings.h"
-
-#include <chrono>
+#include "SwappyGL.h"
+#include "swappy/swappyGL.h"
 
 using namespace swappy;
 
@@ -32,15 +30,13 @@ bool SwappyGL_init_internal(JNIEnv *env, jobject jactivity) {
     return SwappyGL::init(env, jactivity);
 }
 
-void SwappyGL_destroy() {
-    SwappyGL::destroyInstance();
-}
+void SwappyGL_destroy() { SwappyGL::destroyInstance(); }
 
 void SwappyGL_onChoreographer(int64_t frameTimeNanos) {
     SwappyGL::onChoreographer(frameTimeNanos);
 }
 
-bool SwappyGL_setWindow(ANativeWindow* window) {
+bool SwappyGL_setWindow(ANativeWindow *window) {
     return SwappyGL::setWindow(window);
 }
 
@@ -68,9 +64,7 @@ uint64_t SwappyGL_getSwapIntervalNS() {
     return SwappyGL::getSwapDuration().count();
 }
 
-void SwappyGL_injectTracer(const SwappyTracer *t) {
-    SwappyGL::addTracer(t);
-}
+void SwappyGL_injectTracer(const SwappyTracer *t) { SwappyGL::addTracer(t); }
 
 void SwappyGL_setAutoSwapInterval(bool enabled) {
     SwappyGL::setAutoSwapInterval(enabled);
@@ -84,21 +78,15 @@ void SwappyGL_setAutoPipelineMode(bool enabled) {
     SwappyGL::setAutoPipelineMode(enabled);
 }
 
-void SwappyGL_enableStats(bool enabled) {
-    SwappyGL::enableStats(enabled);
-}
+void SwappyGL_enableStats(bool enabled) { SwappyGL::enableStats(enabled); }
 
 void SwappyGL_recordFrameStart(EGLDisplay display, EGLSurface surface) {
     SwappyGL::recordFrameStart(display, surface);
 }
 
-void SwappyGL_getStats(SwappyStats *stats) {
-    SwappyGL::getStats(stats);
-}
+void SwappyGL_getStats(SwappyStats *stats) { SwappyGL::getStats(stats); }
 
-bool SwappyGL_isEnabled() {
-    return SwappyGL::isEnabled();
-}
+bool SwappyGL_isEnabled() { return SwappyGL::isEnabled(); }
 
 void SwappyGL_setFenceTimeoutNS(uint64_t t) {
     SwappyGL::setFenceTimeout(std::chrono::nanoseconds(t));
@@ -108,4 +96,4 @@ uint64_t SwappyGL_getFenceTimeoutNS() {
     return SwappyGL::getFenceTimeout().count();
 }
 
-} // extern "C" {
+}  // extern "C" {

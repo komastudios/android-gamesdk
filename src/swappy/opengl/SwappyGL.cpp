@@ -16,15 +16,14 @@
 
 #include "SwappyGL.h"
 
+#include <cinttypes>
 #include <cmath>
 #include <cstdlib>
-#include <cinttypes>
 
 #include "Log.h"
-#include "Trace.h"
-
-#include "Thread.h"
 #include "SystemProperties.h"
+#include "Thread.h"
+#include "Trace.h"
 
 #define LOG_TAG "Swappy"
 
@@ -62,7 +61,7 @@ void SwappyGL::onChoreographer(int64_t frameTimeNanos) {
     swappy->mCommonBase.onChoreographer(frameTimeNanos);
 }
 
-bool SwappyGL::setWindow(ANativeWindow* window) {
+bool SwappyGL::setWindow(ANativeWindow *window) {
     TRACE_CALL();
 
     SwappyGL *swappy = getInstance();
@@ -90,8 +89,6 @@ bool SwappyGL::swap(EGLDisplay display, EGLSurface surface) {
     }
 }
 
-
-
 bool SwappyGL::lastFrameIsComplete(EGLDisplay display) {
     if (!getEgl()->lastFrameIsComplete(display)) {
         gamesdk::ScopedTrace trace("lastFrameIncomplete");
@@ -103,8 +100,9 @@ bool SwappyGL::lastFrameIsComplete(EGLDisplay display) {
 
 bool SwappyGL::swapInternal(EGLDisplay display, EGLSurface surface) {
     const SwappyCommon::SwapHandlers handlers = {
-            .lastFrameIsComplete = [&]() { return lastFrameIsComplete(display); },
-            .getPrevFrameGpuTime = [&]() { return getEgl()->getFencePendingTime(); },
+        .lastFrameIsComplete = [&]() { return lastFrameIsComplete(display); },
+        .getPrevFrameGpuTime =
+            [&]() { return getEgl()->getFencePendingTime(); },
     };
 
     mCommonBase.onPreSwap(handlers);
@@ -118,7 +116,8 @@ bool SwappyGL::swapInternal(EGLDisplay display, EGLSurface surface) {
 
     resetSyncFence(display);
 
-    bool swapBuffersResult = (getEgl()->swapBuffers(display, surface) == EGL_TRUE);
+    bool swapBuffersResult =
+        (getEgl()->swapBuffers(display, surface) == EGL_TRUE);
 
     mCommonBase.onPostSwap(handlers);
 
@@ -130,8 +129,7 @@ void SwappyGL::addTracer(const SwappyTracer *tracer) {
     if (!swappy) {
         return;
     }
-    if (swappy->enabled())
-        swappy->mCommonBase.addTracerCallbacks(*tracer);
+    if (swappy->enabled()) swappy->mCommonBase.addTracerCallbacks(*tracer);
 }
 
 nanoseconds SwappyGL::getSwapDuration() {
@@ -147,8 +145,7 @@ void SwappyGL::setAutoSwapInterval(bool enabled) {
     if (!swappy) {
         return;
     }
-    if (swappy->enabled())
-        swappy->mCommonBase.setAutoSwapInterval(enabled);
+    if (swappy->enabled()) swappy->mCommonBase.setAutoSwapInterval(enabled);
 }
 
 void SwappyGL::setAutoPipelineMode(bool enabled) {
@@ -156,8 +153,7 @@ void SwappyGL::setAutoPipelineMode(bool enabled) {
     if (!swappy) {
         return;
     }
-    if (swappy->enabled())
-        swappy->mCommonBase.setAutoPipelineMode(enabled);
+    if (swappy->enabled()) swappy->mCommonBase.setAutoPipelineMode(enabled);
 }
 
 void SwappyGL::setMaxAutoSwapDuration(std::chrono::nanoseconds maxDuration) {
@@ -186,7 +182,7 @@ void SwappyGL::enableStats(bool enabled) {
 
     if (enabled && swappy->mFrameStatistics == nullptr) {
         swappy->mFrameStatistics = std::make_unique<FrameStatistics>(
-                *swappy->mEgl, swappy->mCommonBase);
+            *swappy->mEgl, swappy->mCommonBase);
         ALOGI("Enabling stats");
     } else {
         swappy->mFrameStatistics = nullptr;
@@ -211,8 +207,7 @@ void SwappyGL::getStats(SwappyStats *stats) {
         return;
     }
 
-    if (swappy->mFrameStatistics)
-        *stats = swappy->mFrameStatistics->getStats();
+    if (swappy->mFrameStatistics) *stats = swappy->mFrameStatistics->getStats();
 }
 
 SwappyGL *SwappyGL::getInstance() {
@@ -262,9 +257,7 @@ EGL *SwappyGL::getEgl() {
 }
 
 SwappyGL::SwappyGL(JNIEnv *env, jobject jactivity, ConstructorTag)
-    : mFrameStatistics(nullptr),
-      mCommonBase(env, jactivity)
-{
+    : mFrameStatistics(nullptr), mCommonBase(env, jactivity) {
     {
         std::lock_guard<std::mutex> lock(mEglMutex);
         mEgl = EGL::create(mCommonBase.getFenceTimeout());
@@ -281,7 +274,8 @@ SwappyGL::SwappyGL(JNIEnv *env, jobject jactivity, ConstructorTag)
         return;
     }
 
-    mEnableSwappy = !getSystemPropViaGetAsBool(SWAPPY_SYSTEM_PROP_KEY_DISABLE, false);
+    mEnableSwappy =
+        !getSystemPropViaGetAsBool(SWAPPY_SYSTEM_PROP_KEY_DISABLE, false);
     if (!enabled()) {
         ALOGI("Swappy is disabled");
         return;
@@ -299,13 +293,15 @@ bool SwappyGL::setPresentationTime(EGLDisplay display, EGLSurface surface) {
 
     auto displayTimings = Settings::getInstance()->getDisplayTimings();
 
-    // if we are too close to the vsync, there is no need to set presentation time
+    // if we are too close to the vsync, there is no need to set presentation
+    // time
     if ((mCommonBase.getPresentationTime() - std::chrono::steady_clock::now()) <
-            (mCommonBase.getRefreshPeriod() - displayTimings.sfOffset)) {
+        (mCommonBase.getRefreshPeriod() - displayTimings.sfOffset)) {
         return EGL_TRUE;
     }
 
-    return getEgl()->setPresentationTime(display, surface, mCommonBase.getPresentationTime());
+    return getEgl()->setPresentationTime(display, surface,
+                                         mCommonBase.getPresentationTime());
 }
 
-} // namespace swappy
+}  // namespace swappy

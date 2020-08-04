@@ -1,3 +1,4 @@
+<<<<<<< HEAD   (d88333 Merge cherrypicks of [1326755] into android-games-sdk-releas)
 /*
  * Copyright 2020 The Android Open Source Project
  *
@@ -74,3 +75,5 @@ class DefaultMemInfoProvider : public IMemInfoProvider {
 };
 
 }
+=======
+>>>>>>> BRANCH (145218 Merge "Add Tuning Fork to build.sh default target (used by p)

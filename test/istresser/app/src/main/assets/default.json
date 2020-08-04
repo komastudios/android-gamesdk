@@ -1,150 +1,68 @@
 {
   "tests": [
     [
-      {},
-      { "malloc": "40K" },
-      { "mmapAnon": "50K" },
       {
-        "mmapFile": "50K",
-        "mmapFileNames": [
-          "test0.dat",
-          "test1.dat",
-          "test2.dat",
-          "test3.dat",
-          "test4.dat",
-          "test5.dat",
-          "test6.dat",
-          "test7.dat"
-        ]
-      }
-    ],
-    [
-      {},
-      {
-        "firebaseBlocker": true
-      }
-    ],
-    [
-      {},
-      {
-        "heuristics": {
-          "trim": true
+        "glTest": "40K",
+        "maxConsumer": "2048K",
+        "timeout": "10m",
+        "metrics": {
+          "constant": {
+            "MemoryInfo": {
+              "totalMem": true,
+              "threshold": true
+            },
+            "meminfo": {
+              "CommitLimit": true,
+              "HighTotal": true,
+              "LowTotal": true,
+              "MemTotal": true
+            }
+          },
+          "variable": {
+            "debug": {
+              "nativeHeapAllocatedSize": true
+            },
+            "MemoryInfo": {
+              "availMem": true,
+              "lowMemory": true
+            },
+            "meminfo": {
+              "Active": true,
+              "Active(anon)": true,
+              "Active(file)": true,
+              "AnonPages": true,
+              "MemAvailable": true,
+              "MemFree": true,
+              "VmData": true,
+              "VmRSS": true
+            },
+            "proc": {
+              "oom_score": true
+            },
+            "status": {
+              "VmRSS": true,
+              "VmSize": true
+            },
+            "summary": {
+              "summary.native-heap": true,
+              "summary.graphics": true,
+              "summary.total-pss": true,
+              "summary.total-swap": true
+            },
+            "ActivityManager": {
+              "MemoryClass": true,
+              "LargeMemoryClass": true,
+              "LowRamDevice": true
+            }
+          }
+        },
+        "predictions": {
+          "oom_score": true
         }
-      },
-      {
-        "heuristics": {
-          "vmsize": 0.95
-        }
-      },
-      {
-        "heuristics": {
-          "oom": 400
-        }
-      },
-      {
-        "heuristics": {
-          "oom": 450
-        }
-      },
-      {
-        "heuristics": {
-          "oom": 500
-        }
-      },
-      {
-        "heuristics": {
-          "try": "64M"
-        }
-      },
-      {
-        "heuristics": {
-          "low": true
-        }
-      },
-      {
-        "heuristics": {
-          "cl": 0.95
-        }
-      },
-      {
-        "heuristics": {
-          "avail": "200M"
-        }
-      },
-      {
-        "heuristics": {
-          "avail": "300M"
-        }
-      },
-      {
-        "heuristics": {
-          "cached": 1.0
-        }
-      },
-      {
-        "heuristics": {
-          "avail2": "200M"
-        }
-      },
-      {
-        "heuristics": {
-          "avail2": "300M"
-        }
-      },
-      {
-        "heuristics": {
-          "nativeAllocated": 0.9
-        }
-      },
-      {
-        "heuristics": {
-          "VmSize": 0.8
-        }
-      },
-      {
-        "heuristics": {
-          "oom_score": 0.9
-        }
-      },
-      {
-        "heuristics": {
-          "summary.graphics": 0.9
-        }
-      },
-      {
-        "heuristics": {
-          "summary.total-pss": 0.9
-        }
-      },
-      {
-        "heuristics": {
-          "availMem": 0.4
-        }
-      },
-      {
-        "heuristics": {
-          "Cached": 0.9
-        }
-      },
-      {
-        "heuristics": {
-          "MemAvailable": 0.4
-        }
-      }
-    ],
-    [
-      {},
-      {
-        "yellowLightTesting": true
       }
     ]
   ],
   "coordinates": [
-    2,
-    0,
-    1,
     0
-  ],
-  "run": "43a57d56-7fc1-49f1-89fc-9da39bb5be91",
-  "started": 1581508211344
+  ]
 }

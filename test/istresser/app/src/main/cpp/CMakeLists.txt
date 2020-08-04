@@ -19,7 +19,11 @@ add_library( # Sets the name of the library.
         # Provides a relative path to your source file(s).
         consumer.cc
         gl-utils.cc
+        memory.cc
         test-renderer.cc
+        test-vulkan-renderer.cc
+        vulkan_wrapper/vulkan_wrapper.cpp
+
         native-lib.cc)
 
 # Searches for a specified prebuilt library and stores the path as a
@@ -47,3 +51,5 @@ target_link_libraries( # Specifies the target library.
         # Links the target library to the log library
         # included in the NDK.
         ${log-lib})
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVK_USE_PLATFORM_ANDROID_KHR")

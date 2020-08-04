@@ -15,27 +15,26 @@
  */
 
 #include <jni.h>
-#include <string>
+
 #include <sstream>
+#include <string>
 
 #include "tuningfork_test.h"
 #define LOG_TAG "TestApp"
 #include "Log.h"
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_com_tuningfork_testapp_MainActivity_runTests(
-        JNIEnv* env,
-        jobject ctx) {
+Java_com_tuningfork_testapp_MainActivity_runTests(JNIEnv* env, jobject ctx) {
     int argc = 1;
     char appName[] = "testapp";
-    char *argv[] = { appName };
+    char* argv[] = {appName};
     std::string full_record;
     int ret_code = shared_main(argc, argv, env, ctx, full_record);
-    if (ret_code == 0 ) {
+    if (ret_code == 0) {
         ALOGV("%s", full_record.c_str());
     } else {
         std::stringstream ss(full_record);
-        for (std::string record_line; std::getline(ss, record_line); ) {
+        for (std::string record_line; std::getline(ss, record_line);) {
             ALOGE("%s", record_line.c_str());
         }
     }

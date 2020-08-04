@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
+#include <sys/system_properties.h>
+
 #include <cstdlib>
 #include <string>
 
 #include "Log.h"
 
-#include <sys/system_properties.h>
-
 #define LOG_TAG "SysProp"
 
-std::string getSystemPropViaGet(const char* key, std::string default_value = "") {
+std::string getSystemPropViaGet(const char* key,
+                                std::string default_value = "") {
     char buffer[PROP_VALUE_MAX + 1];
     int bufferLen = __system_property_get(key, buffer);
     if (bufferLen > PROP_VALUE_MAX || bufferLen == 0) {

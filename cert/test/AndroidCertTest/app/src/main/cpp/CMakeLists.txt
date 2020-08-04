@@ -63,7 +63,7 @@ else ()
             DO_LOCAL_BUILD
             ROOT_DIR "${GameSDKDir}"
             PACKAGE_DIR "${GameSDKDir}/../package/local"
-            GEN_TASK "localBuild"
+            LIBRARIES "swappy"
     )
 endif ()
 
@@ -141,6 +141,7 @@ add_library(${PROJECT_NAME} SHARED
         operations/ThreadSchedulingOperation.cpp
         operations/VulkanMprotectCheckOperation.cpp
 
+        operations/gl/BigLittleCore.cpp
         operations/gl/BufferStorageGLES3Operation.cpp
         operations/gl/DependentTextureReadGLES3Operation.cpp
         operations/gl/DepthClearGLES3Operation.cpp

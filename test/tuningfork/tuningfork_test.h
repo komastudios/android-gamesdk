@@ -16,14 +16,15 @@
 
 #pragma once
 
-// This function must be declared externally and should call jni::Init and return true if a java
-// environment is available. If there is no Java env available, return false.
+// This function must be declared externally and should call jni::Init and
+// return true if a java environment is available. If there is no Java env
+// available, return false.
 extern "C" bool init_jni_for_tests();
 // This function should clear any JNI setup in the init_jni_for_tests.
 extern "C" void clear_jni_for_tests();
 
-// This function is exported by the test library and should be called to run the tests if you have a
-// Java env.
-// messages is filled with a summary of the tests run, including failure messages.
-extern "C" int shared_main(int argc, char * argv[], JNIEnv* env, jobject context,
+// This function is exported by the test library and should be called to run the
+// tests if you have a Java env. messages is filled with a summary of the tests
+// run, including failure messages.
+extern "C" int shared_main(int argc, char* argv[], JNIEnv* env, jobject context,
                            std::string& messages);

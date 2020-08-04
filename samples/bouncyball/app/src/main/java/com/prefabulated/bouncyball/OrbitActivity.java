@@ -476,7 +476,21 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
         Trace.beginSection("doFrame");
 
         TextView fpsView = findViewById(R.id.fps);
-        fpsView.setText(String.format(Locale.US, "FPS: %.1f", nGetAverageFps()));
+        float fps = nGetAverageFps();
+        fpsView.setText(String.format(Locale.US, "Frame rate: %.1f Hz (%.2f ms)", fps, 1e3f/fps));
+
+        TextView frameTimeView = findViewById(R.id.frameTime);
+        float frameTime = nGetPipelineFrameTimeNS();
+        float frameTimeStdDev = nGetPipelineFrameTimeStdDevNS();
+        frameTimeView.setText(String.format(Locale.US, "Max(cpu,gpu) time: %.2f +- %.2f ms", frameTime*1e-6f, frameTimeStdDev*1e-6f));
+
+        TextView refreshPeriodView = findViewById(R.id.refreshPeriod);
+        float refreshPeriodNS = nGetRefreshPeriodNS();
+        refreshPeriodView.setText(String.format(Locale.US, "Refresh rate: %.2f Hz (%.2f ms)", 1e9f/refreshPeriodNS, refreshPeriodNS*1e-6f));
+
+        TextView swapIntervalView = findViewById(R.id.swapInterval);
+        float swapIntervalNS = nGetSwapIntervalNS();
+        swapIntervalView.setText(String.format(Locale.US, "Swap rate: %.2f Hz (%.2f ms)", 1e9f/swapIntervalNS, swapIntervalNS*1e-6f));
 
         long now = System.nanoTime();
 
@@ -530,6 +544,10 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
     public native void nSetWorkload(int load);
     public native void nSetAutoSwapInterval(boolean enabled);
     public native float nGetAverageFps();
+    public native float nGetRefreshPeriodNS();
+    public native float nGetSwapIntervalNS();
+    public native float nGetPipelineFrameTimeNS();
+    public native float nGetPipelineFrameTimeStdDevNS();
     public native int nGetSwappyStats(int stat, int bin);
 
     private MenuItem mInfoOverlayButton;

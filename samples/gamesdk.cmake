@@ -12,7 +12,7 @@ set( _MY_DIR ${CMAKE_CURRENT_LIST_DIR})
 #    This parameter is mandatory.
 #  ROOT_DIR: where the gamesdk directory is located (relative to the caller working directory), when building from sources.
 #    This must be specified if DO_LOCAL_BUILD is set
-#  GEN_TASK: the gradle task to build the package, when building from sources.
+#  LIBRARIES: the library names to build, when building from sources.
 #    This must be specified if DO_LOCAL_BUILD is set.
 #  DO_LOCAL_BUILD: whether to add a custom build command to build the gamesdk (ON/OFF).
 #    default value: OFF
@@ -26,7 +26,7 @@ set( _MY_DIR ${CMAKE_CURRENT_LIST_DIR})
 #    default value: Release
 function(add_gamesdk_target)
     set(options DO_LOCAL_BUILD)
-    set(oneValueArgs GEN_TASK PACKAGE_DIR ROOT_DIR ANDROID_NDK_VERSION ANDROID_API_LEVEL BUILD_TYPE)
+    set(oneValueArgs LIBRARIES PACKAGE_DIR ROOT_DIR ANDROID_NDK_VERSION ANDROID_API_LEVEL BUILD_TYPE)
     cmake_parse_arguments(GAMESDK "${options}" "${oneValueArgs}" "" ${ARGN} )
 
     # Make sanity checks to avoid hard to debug errors at compile/link time.
@@ -37,8 +37,8 @@ function(add_gamesdk_target)
     if (NOT GAMESDK_DO_LOCAL_BUILD AND NOT EXISTS ${INCLUDE_FULL_PATH})
         message(FATAL_ERROR "Can't find the gamesdk includes in ${INCLUDE_FULL_PATH}. Are you sure you properly set up the path to the Game SDK using GAMESDK_PACKAGE_DIR?")
     endif()
-    if (GAMESDK_DO_LOCAL_BUILD AND NOT DEFINED GAMESDK_GEN_TASK)
-        message(FATAL_ERROR "You specified DO_LOCAL_BUILD to build the game sdk from sources, but did not specified the Gradle task to run with GEN_TASK.")
+    if (GAMESDK_DO_LOCAL_BUILD AND NOT DEFINED GAMESDK_LIBRARIES)
+        message(FATAL_ERROR "You specified DO_LOCAL_BUILD to build the game sdk from sources, but did not specified the libraries to build with LIBRARIES.")
     endif()
     if(GAMESDK_DO_LOCAL_BUILD AND NOT DEFINED GAMESDK_ROOT_DIR)
         message(FATAL_ERROR "You specified DO_LOCAL_BUILD to build the game sdk from sources, but did not specified the gamesdk root folder with ROOT_DIR (used to run Gradle).")
@@ -88,7 +88,7 @@ function(add_gamesdk_target)
             OUTPUT
                 ${DEP_LIB}
             COMMAND
-                ${CMAKE_COMMAND} -E env ANDROID_NDK_REVISION=${GAMESDK_ANDROID_NDK_VERSION} ${GAMESDK_GRADLE_BIN} ${GAMESDK_GEN_TASK} -PGAMESDK_ANDROID_API_LEVEL=${GAMESDK_ANDROID_API_LEVEL} -PGAMESDK_BUILD_TYPE=${GAMESDK_BUILD_TYPE}
+                ${GAMESDK_GRADLE_BIN} buildLocal -Plibraries=${GAMESDK_LIBRARIES} -PandroidApiLevel=${GAMESDK_ANDROID_API_LEVEL} -PbuildType=${GAMESDK_BUILD_TYPE} -PpackageName=local -Pndk=${GAMESDK_ANDROID_NDK_VERSION}
             VERBATIM
             WORKING_DIRECTORY
                 "${GAMESDK_ROOT_DIR}"

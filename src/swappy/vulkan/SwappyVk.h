@@ -31,18 +31,19 @@ namespace swappy {
 
 /***************************************************************************************************
  *
- * Singleton class that provides the high-level implementation of the Swappy entrypoints.
+ * Singleton class that provides the high-level implementation of the Swappy
+ *entrypoints.
  *
  ***************************************************************************************************/
 /**
- * Singleton class that provides the high-level implementation of the Swappy entrypoints.
+ * Singleton class that provides the high-level implementation of the Swappy
+ * entrypoints.
  *
  * This class determines which low-level implementation to use for each physical
  * device, and then calls that class's do-method for the entrypoint.
  */
-class SwappyVk
-{
-public:
+class SwappyVk {
+   public:
     static SwappyVk& getInstance() {
         static SwappyVk instance;
         return instance;
@@ -54,46 +55,40 @@ public:
         }
     }
 
-    void swappyVkDetermineDeviceExtensions(VkPhysicalDevice       physicalDevice,
-                                           uint32_t               availableExtensionCount,
-                                           VkExtensionProperties* pAvailableExtensions,
-                                           uint32_t*              pRequiredExtensionCount,
-                                           char**                 pRequiredExtensions);
-    void SetQueueFamilyIndex(VkDevice   device,
-                             VkQueue    queue,
-                             uint32_t   queueFamilyIndex);
-    bool GetRefreshCycleDuration(JNIEnv           *env,
-                                 jobject          jactivity,
+    void swappyVkDetermineDeviceExtensions(
+        VkPhysicalDevice physicalDevice, uint32_t availableExtensionCount,
+        VkExtensionProperties* pAvailableExtensions,
+        uint32_t* pRequiredExtensionCount, char** pRequiredExtensions);
+    void SetQueueFamilyIndex(VkDevice device, VkQueue queue,
+                             uint32_t queueFamilyIndex);
+    bool GetRefreshCycleDuration(JNIEnv* env, jobject jactivity,
                                  VkPhysicalDevice physicalDevice,
-                                 VkDevice         device,
-                                 VkSwapchainKHR   swapchain,
-                                 uint64_t*        pRefreshDuration);
-    void SetWindow(VkDevice       device,
-                   VkSwapchainKHR swapchain,
+                                 VkDevice device, VkSwapchainKHR swapchain,
+                                 uint64_t* pRefreshDuration);
+    void SetWindow(VkDevice device, VkSwapchainKHR swapchain,
                    ANativeWindow* window);
-    void SetSwapDuration(VkDevice       device,
-                           VkSwapchainKHR swapchain,
-                           uint64_t       swapNs);
-    VkResult QueuePresent(VkQueue                 queue,
-                          const VkPresentInfoKHR* pPresentInfo);
-    void DestroySwapchain(VkDevice                device,
-                          VkSwapchainKHR          swapchain);
+    void SetSwapDuration(VkDevice device, VkSwapchainKHR swapchain,
+                         uint64_t swapNs);
+    VkResult QueuePresent(VkQueue queue, const VkPresentInfoKHR* pPresentInfo);
+    void DestroySwapchain(VkDevice device, VkSwapchainKHR swapchain);
+    void DestroyDevice(VkDevice device);
 
     void SetAutoSwapInterval(bool enabled);
     void SetAutoPipelineMode(bool enabled);
     void SetMaxAutoSwapDuration(std::chrono::nanoseconds maxDuration);
     void SetFenceTimeout(std::chrono::nanoseconds duration);
     std::chrono::nanoseconds GetFenceTimeout() const;
+    std::chrono::nanoseconds GetSwapInterval(VkSwapchainKHR swapchain);
 
-    void addTracer(const SwappyTracer *t);
+    void addTracer(const SwappyTracer* t);
 
     void SetFunctionProvider(const SwappyVkFunctionProvider* pFunctionProvider);
     bool InitFunctions();
 
- private:
+   private:
     std::map<VkPhysicalDevice, bool> doesPhysicalDeviceHaveGoogleDisplayTiming;
-    std::map<VkDevice, std::shared_ptr<SwappyVkBase>> perDeviceImplementation;
-    std::map<VkSwapchainKHR, std::shared_ptr<SwappyVkBase>> perSwapchainImplementation;
+    std::map<VkSwapchainKHR, std::shared_ptr<SwappyVkBase>>
+        perSwapchainImplementation;
 
     struct QueueFamilyIndex {
         VkDevice device;
@@ -103,8 +98,8 @@ public:
 
     const SwappyVkFunctionProvider* pFunctionProvider = nullptr;
 
-private:
-    SwappyVk() {} // Need to implement this constructor
+   private:
+    SwappyVk() {}  // Need to implement this constructor
 
     // Forbid copies.
     SwappyVk(SwappyVk const&) = delete;

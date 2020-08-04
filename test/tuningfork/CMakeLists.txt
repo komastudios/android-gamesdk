@@ -24,7 +24,9 @@ set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGOOGLE_PROTOBUF_NO_RTTI -DHAVE_PTHREAD")
 
 set(ANDROID_GTEST_DIR "../../../external/googletest")
-add_subdirectory("${ANDROID_GTEST_DIR}/googletest"
+set(BUILD_GMOCK OFF)
+set(INSTALL_GTEST OFF)
+add_subdirectory("${ANDROID_GTEST_DIR}"
   googletest-build
 )
 
@@ -41,14 +43,14 @@ protobuf_generate_nano_c( ${CMAKE_CURRENT_SOURCE_DIR}/proto
   proto/dev_tuningfork.proto
 )
 
-message( STATUS "B CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
+option(TUNINGFORK_TEST_OPTION "" ON)
 add_subdirectory("../../src/tuningfork"
   tuningfork-build
 )
 
 include_directories(
   "${ANDROID_GTEST_DIR}/googletest/include"
-  ../../src
+  ../../src/tuningfork
   ../../src/common
   ../../include
   ../../../external/nanopb-c
