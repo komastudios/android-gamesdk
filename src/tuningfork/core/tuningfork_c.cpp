@@ -133,6 +133,11 @@ TuningFork_ErrorCode TuningFork_recordLoadingTime(
                                  *eventMetadata);
 }
 
+TuningFork_ErrorCode TuningFork_reportLifecycleEvent(TuningFork_LifecycleState state) {
+    return tf::ReportLifecycleEvent(state);
+>>>>>>> 2b49c6da... Added a method to tuning fork api to allow users to report lifecycle changes.
+}
+
 void TUNINGFORK_VERSION_SYMBOL() {
     // Intentionally empty: this function is used to ensure that the proper
     // version of the library is linked against the proper headers.
