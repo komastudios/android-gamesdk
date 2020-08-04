@@ -133,6 +133,10 @@ TuningFork_ErrorCode TuningFork_recordLoadingTime(
                                  *eventMetadata);
 }
 
+TuningFork_ErrorCode TuningFork_reportLifecycleEvent(TuningFork_LifecycleState state) {
+    return tf::ReportLifecycleEvent(state);
+}
+
 void TUNINGFORK_VERSION_SYMBOL() {
     // Intentionally empty: this function is used to ensure that the proper
     // version of the library is linked against the proper headers.
